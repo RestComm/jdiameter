@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ====================================================================== -->
+<!-- Copyright (c) 2007 jDiameter team.                                     -->
+<!-- https://jdiameter.dev.java.net                                         -->
+<!-- All rights reserved.                                                   -->
+<!-- ====================================================================== -->
+
+<xsi:schema
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.jdiameter.org/jdiameter-server"
+    xmlns="http://www.jdiameter.org/jdiameter-server"
+    elementFormDefault="qualified">
+
+    <xsi:element name="Configuration">
+        <xsi:annotation>
+            <xsi:documentation>JDiameter Client configuration</xsi:documentation>
+        </xsi:annotation>
+        <xsi:complexType>
+            <xsi:sequence>
+                <xsi:element ref="LocalPeer" minOccurs="1" maxOccurs="1"/>
+                <xsi:element ref="Parameters" minOccurs="1" maxOccurs="1"/>
+                <xsi:element ref="Network" minOccurs="1" maxOccurs="1"/>
+                <xsi:element ref="Security" minOccurs="0" maxOccurs="1"/>
+                <xsi:element ref="Extensions" minOccurs="0" maxOccurs="1"/>
+            </xsi:sequence>
+        </xsi:complexType>
+    </xsi:element>
+
+    <xsi:element name="LocalPeer" type="LocalPeerType">
+        <xsi:annotation>
+            <xsi:documentation>Local peer parameters</xsi:documentation>
+        </xsi:annotation>
+    </xsi:element>
+
+    <xsi:complexType name="LocalPeerType">
+        <xsi:sequence>
+            <xsi:element name="URI" minOccurs="1" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Local peer uri.</xsi:documentation>
+                </xsi:annotation>
+                 <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:string" use="required"/>
+                </xsi:complexType>
+            </xsi:element>
+            <xsi:element ref="IPAddresses" minOccurs="0" maxOccurs="1"/>
+            <xsi:element name="Realm" minOccurs="1" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Local peer realm.</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                   <xsi:attribute name="value" type="xsi:string" use="required"/>
+               </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="VendorID" minOccurs="1" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Local peer vendor identificator.</xsi:documentation>
+                </xsi:annotation>
+                 <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:integer" use="required"/>
+                </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="ProductName" minOccurs="1" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Product name of stack.</xsi:documentation>
+                </xsi:annotation>
+                 <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:string" use="required"/>
+                </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="FirmwareRevision" minOccurs="1" maxOccurs="1">
+                 <xsi:annotation>
+                    <xsi:documentation>Firmware revision of stack.</xsi:documentation>
+                 </xsi:annotation>
+                 <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:integer" use="required"/>
+                </xsi:complexType>
+            </xsi:element>
+            <xsi:element ref="Applications" minOccurs="0" maxOccurs="1"/>
+            <xsi:element ref="OverloadMonitor" minOccurs="0" maxOccurs="1"/>
+        </xsi:sequence>
+        <xsi:attribute name="security_ref"  type="xsi:string" use="optional"/>
+    </xsi:complexType>
+
+    <xsi:element name="IPAddresses" type="IPAddressesType">
+        <xsi:annotation>
+            <xsi:documentation>Local peer ip addresses</xsi:documentation>
+        </xsi:annotation>
+    </xsi:element>
+
+    <xsi:complexType name="IPAddressesType">
+        <xsi:sequence>
+            <xsi:element name="IPAddress" minOccurs="1" maxOccurs="unbounded">
+                 <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:string" use="required"/>
+                </xsi:complexType>                
+            </xsi:element>
+        </xsi:sequence>
+    </xsi:complexType>
+
+    <xsi:element name="OverloadMonitor" type="OverloadMonitorType">
+        <xsi:annotation>
+            <xsi:documentation>Local peer overload monitor table</xsi:documentation>
+        </xsi:annotation>
+    </xsi:element>
+
+    <xsi:complexType name="OverloadMonitorType">
+        <xsi:sequence>
+            <xsi:element ref="Entry" minOccurs="1" maxOccurs="unbounded"/>
+        </xsi:sequence>
+    </xsi:complexType>
+
+	<xsi:element name="Entry">
+		<xsi:complexType>
+			<xsi:sequence>
+				<xsi:element ref="ApplicationID"/>
+			</xsi:sequence>
+            <xsi:attribute name="index" type="xsi:integer" use="required"/>
+            <xsi:attribute name="lowThreshold"  type="xsi:double" use="required"/>
+			<xsi:attribute name="highThreshold" type="xsi:double" use="required"/>
+		</xsi:complexType>
+	</xsi:element>
+
+    <xsi:element name="Applications" type="ApplicationsType">
+        <xsi:annotation>
+            <xsi:documentation>Local peer default applications</xsi:documentation>
+        </xsi:annotation>
+    </xsi:element>
+
+    <xsi:complexType name="ApplicationsType">
+        <xsi:sequence>
+            <xsi:element ref="ApplicationID" minOccurs="0" maxOccurs="unbounded"/>
+        </xsi:sequence>
+    </xsi:complexType>
+
+    <xsi:element name="ApplicationID" type="ApplicationIDType">
+        <xsi:annotation>
+            <xsi:documentation>ApplicationID of application</xsi:documentation>
+        </xsi:annotation>
+    </xsi:element>
+
+    <xsi:complexType name="ApplicationIDType">
+        <xsi:sequence>
+            <xsi:element name="VendorId" minOccurs="0" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Vendor id.</xsi:documentation>
+                </xsi:annotation>
+                 <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:integer" use="required"/>
+                </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="AuthApplId" minOccurs="0" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Authentication application id.</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:integer" use="required"/>
+                </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="AcctApplId" minOccurs="0" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Accounting application id.</xsi:documentation>
+                </xsi:annotation>
+                 <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:integer" use="required"/>
+                </xsi:complexType>                
+            </xsi:element>
+        </xsi:sequence>
+    </xsi:complexType>
+
+    <xsi:element name="Parameters" type="ParametersType">
+        <xsi:annotation>
+            <xsi:documentation>Stack parameters</xsi:documentation>
+        </xsi:annotation>
+    </xsi:element>
+
+    <xsi:complexType name="ParametersType">
+        <xsi:sequence>
+            <xsi:element name="AcceptUndefinedPeer" minOccurs="0" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>True if local peer must accept undefined peers</xsi:documentation>
+                </xsi:annotation>
+                 <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:boolean" use="required"/>
+                </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="DuplicateProtection" minOccurs="1" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>True if duplication protection is ON</xsi:documentation>
+                </xsi:annotation>
+                 <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:boolean" use="required"/>
+                </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="DuplicateTimer" minOccurs="1" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Live time of duplication entry</xsi:documentation>
+                </xsi:annotation>
+                 <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:long" use="required"/>
+                </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="UseUriAsFqdn" minOccurs="0" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Set Origin-Host-Name Avp as Uri into CER message. Default value is false</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                   <xsi:attribute name="value" type="xsi:boolean" use="required"/>
+               </xsi:complexType>
+            </xsi:element>            
+            <xsi:element name="QueueSize" minOccurs="1" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>QueueSize of fsm event queue</xsi:documentation>
+                </xsi:annotation>
+                 <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:integer" use="required"/>
+                </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="MessageTimeOut" minOccurs="1" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Message time out in milliseconds.</xsi:documentation>
+                </xsi:annotation>
+                 <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:long" use="required"/>
+                </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="StopTimeOut" minOccurs="1" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Default stop time out in milliseconds.</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                   <xsi:attribute name="value" type="xsi:long" use="required"/>
+               </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="CeaTimeOut" minOccurs="1" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>CEA command time out in milliseconds.</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                   <xsi:attribute name="value" type="xsi:long" use="required"/>
+               </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="IacTimeOut" minOccurs="1" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Vlue of inactive time in milliseconds.</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                   <xsi:attribute name="value" type="xsi:long" use="required"/>
+               </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="DwaTimeOut" minOccurs="1" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>DWA command time out in milliseconds.</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                   <xsi:attribute name="value" type="xsi:long" use="required"/>
+               </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="DpaTimeOut" minOccurs="1" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>DPA command time out in milliseconds.</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                   <xsi:attribute name="value" type="xsi:long" use="required"/>
+               </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="RecTimeOut" minOccurs="1" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Peer reconnect pause in milliseconds.</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                   <xsi:attribute name="value" type="xsi:long" use="required"/>
+               </xsi:complexType>
+            </xsi:element>
+        </xsi:sequence>
+    </xsi:complexType>
+
+    <xsi:element name="Network" type="NetworkType">
+        <xsi:annotation>
+            <xsi:documentation>Network descriptions</xsi:documentation>
+        </xsi:annotation>
+    </xsi:element>
+
+    <xsi:complexType name="NetworkType">
+        <xsi:sequence>
+            <xsi:element ref="Peers" minOccurs="1" maxOccurs="1"/>
+            <xsi:element ref="Realms" minOccurs="1" maxOccurs="1"/>
+        </xsi:sequence>
+    </xsi:complexType>
+
+    <xsi:element name="Peers" type="PeersType">
+        <xsi:annotation>
+            <xsi:documentation>Network peers</xsi:documentation>
+        </xsi:annotation>
+    </xsi:element>
+
+    <xsi:complexType name="PeersType">
+        <xsi:sequence>
+            <xsi:element name="Peer" minOccurs="1" maxOccurs="unbounded">
+                <xsi:annotation>
+                    <xsi:documentation>Peer description.</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                   <xsi:attribute name="name" type="xsi:string" use="required"/>
+                   <xsi:attribute name="attempt_connect" type="xsi:boolean" use="required"/>
+                   <xsi:attribute name="rating" type="xsi:integer" use="required"/>
+                   <xsi:attribute name="security_ref" type="xsi:string" use="optional"/>
+               </xsi:complexType>
+            </xsi:element>
+        </xsi:sequence>
+    </xsi:complexType>
+
+    <xsi:element name="Realms" type="RealmsType">
+        <xsi:annotation>
+            <xsi:documentation>Realms description</xsi:documentation>
+        </xsi:annotation>
+    </xsi:element>
+
+    <xsi:complexType name="RealmsType">
+        <xsi:sequence>
+            <xsi:element name="Realm" minOccurs="1" maxOccurs="unbounded">
+                <xsi:annotation>
+                    <xsi:documentation>Realm description</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                    <xsi:sequence>
+                        <xsi:element ref="ApplicationID"/>
+                    </xsi:sequence>
+                   <xsi:attribute name="name"  type="xsi:string" use="required"/>
+                   <xsi:attribute name="peers" type="xsi:string" use="required"/>
+                   <xsi:attribute name="local_action" type="xsi:string" use="required"/>
+                   <xsi:attribute name="dynamic"  type="xsi:boolean" use="required"/>
+                   <xsi:attribute name="exp_time" type="xsi:long" use="required"/>
+               </xsi:complexType>
+            </xsi:element>
+        </xsi:sequence>
+    </xsi:complexType>
+
+    <xsi:element name="Security" type="SecurityType">
+        <xsi:annotation>
+            <xsi:documentation>Security descriptions</xsi:documentation>
+        </xsi:annotation>
+    </xsi:element>
+
+    <xsi:complexType name="SecurityType">
+        <xsi:sequence>
+            <xsi:element ref="SecurityData" minOccurs="1" maxOccurs="unbounded"/>
+        </xsi:sequence>
+    </xsi:complexType>
+
+    <xsi:element name="SecurityData" type="SecurityDataType">
+        <xsi:annotation>
+            <xsi:documentation>SSL description</xsi:documentation>
+        </xsi:annotation>
+    </xsi:element>
+
+    <xsi:complexType name="SecurityDataType">
+        <xsi:sequence>
+            <xsi:element name="CipherSuites" minOccurs="0" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Cipher suites separated by ','</xsi:documentation>
+                </xsi:annotation>
+            </xsi:element>
+            <xsi:element name="KeyData" minOccurs="1" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Key description</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                    <xsi:attribute name="manager" type="xsi:string" use="required"/>
+                    <xsi:attribute name="store" type="xsi:string" use="required"/>
+                    <xsi:attribute name="file" type="xsi:string" use="required"/>
+                    <xsi:attribute name="pwd" type="xsi:string" use="required"/>
+               </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="TrustData" minOccurs="1" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Trust description</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                    <xsi:attribute name="manager" type="xsi:string" use="required"/>
+                    <xsi:attribute name="store" type="xsi:string" use="required"/>
+                    <xsi:attribute name="file" type="xsi:string" use="required"/>
+                    <xsi:attribute name="pwd" type="xsi:string" use="required"/>
+               </xsi:complexType>
+            </xsi:element>
+        </xsi:sequence>
+        <xsi:attribute name="name" type="xsi:string"  use="required"/>
+        <xsi:attribute name="protocol" type="xsi:string" use="required"/>
+        <xsi:attribute name="enable_session_creation" type="xsi:boolean" use="required"/>
+        <xsi:attribute name="use_client_mode" type="xsi:boolean" use="required"/>
+        <xsi:attribute name="need_client_auth" type="xsi:boolean" use="required"/>
+    </xsi:complexType>    
+
+    <xsi:element name="Extensions" type="xsi:anyType">
+        <xsi:annotation>
+            <xsi:documentation>Extension parameters</xsi:documentation>
+        </xsi:annotation>
+    </xsi:element>
+
+</xsi:schema>

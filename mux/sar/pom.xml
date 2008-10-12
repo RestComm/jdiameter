@@ -1,0 +1,104 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.mobicents.diameter</groupId>
+  <artifactId>mobicents-diameter-mux-sar</artifactId>
+  <version>1.0.0.BETA1-SNAPSHOT</version>
+
+  <name>Mobicents Diameter Multiplexer :: ${pom.artifactId}</name>
+  <packaging>jboss-sar</packaging>
+
+  <dependencies>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>mobicents-diameter-mux-jar</artifactId>
+      <version>${pom.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+    
+  <build>
+    <finalName>mobicents-diameter-mux-${pom.version}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jboss-packaging-maven-plugin</artifactId>
+        <version>2.0-beta-1</version>
+        <extensions>true</extensions>
+        <configuration>
+          <!--<deploymentDescriptorFile>
+            xml/META-INF/jboss-service.xml
+            </deploymentDescriptorFile>
+          -->
+          <excludes>
+            <exclude>concurrent:concurrent</exclude>
+
+            <exclude>commons-collections:commons-collections</exclude>
+            <exclude>commons-logging:commons-logging</exclude>
+
+            <exclude>ant:ant-optional</exclude>
+
+            <exclude>jboss:jboss</exclude>
+            <exclude>jboss:jboss-jmx</exclude>
+            <exclude>jboss:jboss-common</exclude>
+            <exclude>jboss:jboss-j2se</exclude>
+            <exclude>jboss:jboss-minimal</exclude>
+            <exclude>jboss:jboss-system</exclude>
+            <exclude>jboss:jbossall-client</exclude>
+            <exclude>jboss:jbossall</exclude>
+            <exclude>jboss:jbossha</exclude>
+            <exclude>jboss:jmx-adaptor-plugin</exclude>
+            <exclude>javax.transaction:jta</exclude>
+            <exclude>junit:junit</exclude>
+            <exclude>log4j:log4j</exclude>
+            <exclude>javax.servlet:servlet-api</exclude>
+            <exclude>jdom:jdom</exclude>
+            <exclude>jgroups:jgroups-all</exclude>
+            <exclude>xerces:xerces</exclude>
+            <exclude>xerces:xercesImpl</exclude>
+            <exclude>xml-apis:xml-apis</exclude>
+            <exclude>slide:webdavlib</exclude>
+          </excludes>
+
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>deploy</id>
+            <phase>install</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <condition property="jboss.dir" value="${jboss.home}" else="${env.JBOSS_HOME}">
+                  <isset property="jboss.home" />
+                </condition>
+                <copy todir="${jboss.dir}/server/${node}/deploy/${project.build.finalName}.sar">
+                  <fileset dir="target/${project.build.finalName}">
+                    <include name="**" />
+                  </fileset>
+                </copy>
+              </tasks>
+            </configuration>
+          </execution>
+          <execution>
+            <id>undeploy</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <delete dir="${env.JBOSS_HOME}/server/${node}/deploy/${project.build.finalName}.sar" />
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

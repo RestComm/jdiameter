@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+	/********************************
+	 *                              *
+	 *  MOBICENTS DIAMETER SERVICE  *                                                               *
+   *                              *
+	 ********************************/
+-->
+
+
+<server>
+
+	<!-- Media Server Management MBean -->
+	<mbean
+		code="org.mobicents.diameter.stack.DiameterStackMultiplexer"
+		name="diameter.mobicents:service=DiameterStackMultiplexer"
+	>
+	</mbean>
+
+</server>
