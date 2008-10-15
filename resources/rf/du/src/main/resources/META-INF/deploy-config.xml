@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deploy-config>
+  <ra-entity resource-adaptor-id="JDiameterRfResourceAdaptor#java.net#0.8.1" entity-name="Rf">
+    <properties file="" />
+    <ra-link name="Rf" />
+  </ra-entity>
+</deploy-config>

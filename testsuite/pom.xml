@@ -1,0 +1,88 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">	
+	<modelVersion>4.0.0</modelVersion>
+	
+  <parent>
+    <groupId>org.mobicents.diameter</groupId>
+  	<artifactId>diameter-parent</artifactId>
+  	<version>1.0.0.BETA1-SNAPSHOT</version>
+	</parent>
+
+  <groupId>org.mobicents.diameter.testsuite</groupId>
+	<artifactId>testsuite-parent</artifactId>
+	
+	<name>Mobicents :: Diameter Testsuite :: ${pom.artifactId}</name>
+
+  <properties>
+    <!-- Mobicents Diameter Components Versions -->
+    <mobicents.diameter.jdiameter.version>1.5.0.1-build183</mobicents.diameter.jdiameter.version>
+    <mobicents.diameter.mux.version>1.0.0.BETA1-SNAPSHOT</mobicents.diameter.mux.version>
+    <mobicents.diameter.resources.base.version>1.0.0.BETA2-SNAPSHOT</mobicents.diameter.resources.base.version>
+    <mobicents.diameter.resources.sh-client.version>1.0.0.BETA1-SNAPSHOT</mobicents.diameter.resources.sh-client.version>
+    
+    <!-- Other Mobicents Components Versions -->
+    <mobicents.servers.jainslee.version>1.2.1.GA</mobicents.servers.jainslee.version>
+    <mobicents.tools.mavenplugin.du.version>1.0.0.BETA2</mobicents.tools.mavenplugin.du.version>
+    <mobicents.tools.mavenplugin.eclipse.version>1.0.0.BETA2</mobicents.tools.mavenplugin.eclipse.version>
+  </properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.mobicents.diameter.resources</groupId>
+			<artifactId>base-ra</artifactId>
+			<version>${mobicents.diameter.resources.base.version}</version>
+		</dependency>
+    <dependency>
+		  <groupId>org.mobicents.diameter</groupId>
+		  <artifactId>mobicents-diameter-mux-jar</artifactId>
+		  <version>${mobicents.diameter.mux.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mobicents.diameter</groupId>
+      <artifactId>jdiameter-api</artifactId>
+      <version>${mobicents.diameter.jdiameter.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mobicents.diameter</groupId>
+      <artifactId>jdiameter-impl</artifactId>
+      <version>${mobicents.diameter.jdiameter.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <artifactId>picocontainer</artifactId>
+      <groupId>picocontainer</groupId>
+      <version>${picocontainer.version}</version>
+    </dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<finalName>diameter-${pom.artifactId}-${pom.version}</finalName>
+		
+		<plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/*$*</exclude>
+            <exclude>**/TestingFramework.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+		
+		<resources>
+			<resource>
+        <directory>src/test/resources</directory>
+      </resource>
+    </resources>
+  </build>
+	
+</project>

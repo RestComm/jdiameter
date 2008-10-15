@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE resource-adaptor-jar PUBLIC "-//Sun Microsystems, Inc.//DTD JAIN SLEE Resource Adaptor 1.0//EN" "http://java.sun.com/dtd/slee-resource-adaptor-jar_1_0.dtd">
+
+<resource-adaptor-jar>
+   <resource-adaptor id="sh-client-ra">
+       <description>JDiameter Sh Client RA</description>
+       <resource-adaptor-name>JDiameterShClientResourceAdaptor</resource-adaptor-name>
+		<resource-adaptor-vendor>java.net</resource-adaptor-vendor>
+		<resource-adaptor-version>0.8.1</resource-adaptor-version>
+
+       <resource-adaptor-type-ref>
+        <resource-adaptor-type-name>Diameter Sh Client</resource-adaptor-type-name>
+        <resource-adaptor-type-vendor>java.net</resource-adaptor-type-vendor>
+        <resource-adaptor-type-version>0.8.1</resource-adaptor-type-version>
+       </resource-adaptor-type-ref>
+
+	<!--added oc-resource-adaptor.xml lines here altogether-->
+        <resource-adaptor-classes>
+            <resource-adaptor-class>
+                <resource-adaptor-class-name>
+                    org.mobicents.slee.resource.diameter.sh.client.DiamaterShClientResourceAdaptor
+                </resource-adaptor-class-name>
+            </resource-adaptor-class>
+        </resource-adaptor-classes>
+        <config-property>
+        	<description>uS after which dialog if it has not received/send any message is considered to be dead and is expunged</description>
+            <config-property-name>baseEntityName</config-property-name>
+            <config-property-type>java.lang.String</config-property-type>
+            <config-property-value>DiameterBaseResourceAdaptor</config-property-value>
+        </config-property>
+    
+    </resource-adaptor>
+</resource-adaptor-jar>

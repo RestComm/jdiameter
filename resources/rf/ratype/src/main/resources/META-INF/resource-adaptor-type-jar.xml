@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE resource-adaptor-type-jar PUBLIC "-//Sun Microsystems, Inc.//DTD JAIN SLEE Resource Adaptor Type 1.0//EN" "http://java.sun.com/dtd/slee-resource-adaptor-type-jar_1_0.dtd">
+
+<resource-adaptor-type-jar>
+  <description />
+  
+  <resource-adaptor-type>
+    <description>Diameter Rf Resource Adaptor Type</description>
+    <resource-adaptor-type-name>Diameter Rf</resource-adaptor-type-name>
+    <resource-adaptor-type-vendor>java.net</resource-adaptor-type-vendor>
+    <resource-adaptor-type-version>0.8.1</resource-adaptor-type-version>
+
+    <resource-adaptor-type-classes>
+      <activity-type>
+        <activity-type-name>net.java.slee.resource.diameter.rf.RfClientSession</activity-type-name>
+      </activity-type>
+
+      <activity-type>
+        <activity-type-name>net.java.slee.resource.diameter.rf.RfServerSession</activity-type-name>
+      </activity-type>
+
+      <activity-context-interface-factory-interface>
+        <activity-context-interface-factory-interface-name>
+          net.java.slee.resource.diameter.rf.RfActivityContextInterfaceFactory
+        </activity-context-interface-factory-interface-name>
+      </activity-context-interface-factory-interface>
+
+      <resource-adaptor-interface>
+        <resource-adaptor-interface-name>net.java.slee.resource.diameter.rf.RfProvider</resource-adaptor-interface-name>
+      </resource-adaptor-interface>
+    </resource-adaptor-type-classes>
+
+    <event-type-ref>
+      <event-type-name>net.java.resources.diameter.rf.events.AccountingRequest</event-type-name>
+      <event-type-vendor>java.net</event-type-vendor>
+      <event-type-version>0.8</event-type-version>
+    </event-type-ref>
+    <event-type-ref>
+      <event-type-name>net.java.resources.diameter.rf.events.AccountingAnswer</event-type-name>
+      <event-type-vendor>java.net</event-type-vendor>
+      <event-type-version>0.8</event-type-version>
+    </event-type-ref>
+  </resource-adaptor-type>
+  
+</resource-adaptor-type-jar>

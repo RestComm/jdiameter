@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="Example_build" default="deploy-all">
+
+  <property name="home" value="${ant.file.Example_build}/../" />
+
+  <target name="init">
+    <condition property="executable" value="mvn.bat">
+      <os family="windows"/>
+    </condition>
+    
+    <property name="executable" value="mvn" />
+  </target>
+
+  <target name="deploy-all" depends="init">
+    <exec executable="${executable}" dir="${home}/../../">
+      <arg value="install"/>
+    </exec>
+
+    <exec executable="${executable}" dir="${home}/../../core/jdiameter/">
+      <arg value="install"/>
+    </exec>
+
+    <exec executable="${executable}" dir="${home}/../../core/mux/">
+      <arg value="install"/>
+    </exec>
+
+    <exec executable="${executable}" dir="${home}/../../resources/base/">
+      <arg value="install"/>
+    </exec>
+
+    <exec executable="${executable}" dir="${home}">
+      <arg value="install"/>
+    </exec>
+  </target>
+
+  <target name="undeploy-all" depends="init">
+    <exec executable="${executable}" dir="${home}">
+      <arg value="clean"/>
+    </exec>
+
+    <exec executable="${executable}" dir="${home}/../../resources/base/">
+      <arg value="clean"/>
+    </exec>
+
+    <exec executable="${executable}" dir="${home}/../../core/mux/">
+      <arg value="clean"/>
+    </exec>
+
+    <exec executable="${executable}" dir="${home}/../../core/jdiameter/">
+      <arg value="clean"/>
+    </exec>
+
+    <exec executable="${executable}" dir="${home}/../../">
+      <arg value="clean"/>
+    </exec>
+  </target>
+
+</project>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE event-jar PUBLIC "-//Sun Microsystems, Inc.//DTD JAIN SLEE Event 1.0//EN" "http://java.sun.com/dtd/slee-event-jar_1_0.dtd">
+
+<event-jar>
+
+	
+	<description>Diameter Base Events</description>
+
+
+	<!-- REQUESTS -->
+    <event-definition>
+        <event-type-name>net.java.slee.resource.diameter.base.events.AbortSessionRequest</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8</event-type-version>
+        <event-class-name>net.java.slee.resource.diameter.base.events.AbortSessionRequest</event-class-name>
+    </event-definition>
+    
+     <event-definition>
+        <event-type-name>net.java.slee.resource.diameter.base.events.AccountingRequest</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8</event-type-version>
+        <event-class-name>net.java.slee.resource.diameter.base.events.AccountingRequest</event-class-name>
+    </event-definition>
+    
+    <event-definition>
+        <event-type-name>net.java.slee.resource.diameter.base.events.CapabilitiesExchangeRequest</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8</event-type-version>
+        <event-class-name>net.java.slee.resource.diameter.base.events.CapabilitiesExchangeRequest</event-class-name>
+    </event-definition>
+    
+     <event-definition>
+        <event-type-name>net.java.slee.resource.diameter.base.events.DeviceWatchdogRequest</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8</event-type-version>
+        <event-class-name>net.java.slee.resource.diameter.base.events.DeviceWatchdogRequest</event-class-name>
+    </event-definition>
+    
+    <event-definition>
+        <event-type-name>net.java.slee.resource.diameter.base.events.DisconnectPeerRequest</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8</event-type-version>
+        <event-class-name>net.java.slee.resource.diameter.base.events.DisconnectPeerRequest</event-class-name>
+    </event-definition>
+    
+     <event-definition>
+        <event-type-name>net.java.slee.resource.diameter.base.events.ReAuthRequest</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8</event-type-version>
+        <event-class-name>net.java.slee.resource.diameter.base.events.ReAuthRequest</event-class-name>
+    </event-definition>
+    
+    <event-definition>
+        <event-type-name>net.java.slee.resource.diameter.base.events.SessionTerminationRequest</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8</event-type-version>
+        <event-class-name>net.java.slee.resource.diameter.base.events.SessionTerminationRequest</event-class-name>
+    </event-definition>
+    
+    
+    <!-- ANSWERS -->
+    
+    <event-definition>
+        <event-type-name>net.java.slee.resource.diameter.base.events.AbortSessionAnswer</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8</event-type-version>
+        <event-class-name>net.java.slee.resource.diameter.base.events.AbortSessionAnswer</event-class-name>
+    </event-definition>
+    
+     <event-definition>
+        <event-type-name>net.java.slee.resource.diameter.base.events.AccountingAnswer</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8</event-type-version>
+        <event-class-name>net.java.slee.resource.diameter.base.events.AccountingAnswer</event-class-name>
+    </event-definition>
+    
+    <event-definition>
+        <event-type-name>net.java.slee.resource.diameter.base.events.CapabilitiesExchangeAnswer</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8</event-type-version>
+        <event-class-name>net.java.slee.resource.diameter.base.events.CapabilitiesExchangeAnswer</event-class-name>
+    </event-definition>
+    
+     <event-definition>
+        <event-type-name>net.java.slee.resource.diameter.base.events.DeviceWatchdogAnswer</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8</event-type-version>
+        <event-class-name>net.java.slee.resource.diameter.base.events.DeviceWatchdogAnswer</event-class-name>
+    </event-definition>
+    
+    <event-definition>
+        <event-type-name>net.java.slee.resource.diameter.base.events.DisconnectPeerAnswer</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8</event-type-version>
+        <event-class-name>net.java.slee.resource.diameter.base.events.DisconnectPeerAnswer</event-class-name>
+    </event-definition>
+    
+     <event-definition>
+        <event-type-name>net.java.slee.resource.diameter.base.events.ReAuthAnswer</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8</event-type-version>
+        <event-class-name>net.java.slee.resource.diameter.base.events.ReAuthAnswer</event-class-name>
+    </event-definition>
+    
+    <event-definition>
+        <event-type-name>net.java.slee.resource.diameter.base.events.SessionTerminationAnswer</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8</event-type-version>
+        <event-class-name>net.java.slee.resource.diameter.base.events.SessionTerminationAnswer</event-class-name>
+    </event-definition>
+        
+     <event-definition>
+        <event-type-name>net.java.slee.resource.diameter.base.events.ErrorAnswer</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8</event-type-version>
+        <event-class-name>net.java.slee.resource.diameter.base.events.ErrorAnswer</event-class-name>
+    </event-definition>
+    
+    <!--  EXTENSION IS A SEPARATE MSG? -->
+    
+    
+    <event-definition>
+        <event-type-name>net.java.slee.resource.diameter.base.events.ExtensionDiameterMessage</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8</event-type-version>
+        <event-class-name>net.java.slee.resource.diameter.base.events.ExtensionDiameterMessage</event-class-name>
+    </event-definition>
+    
+</event-jar>
+
+
+

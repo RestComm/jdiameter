@@ -1,0 +1,28 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+    <groupId>org.mobicents.testsuite</groupId>
+	  <artifactId>testsuite-slee-parent</artifactId>
+		<version>1.0.0.BETA1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>testsuite-slee-sbb</artifactId>
+		
+	<name>Mobicents :: Diameter Testsuite :: ${pom.artifactId}</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.mobicents.diameter.resources</groupId>
+			<artifactId>base-ra</artifactId>
+			<version>${mobicents.diameter.resources.base.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mobicents.diameter.resources</groupId>
+			<artifactId>base-ratype</artifactId>
+			<version>${mobicents.diameter.resources.base.version}</version>
+		</dependency>
+	</dependencies>
+	
+</project>

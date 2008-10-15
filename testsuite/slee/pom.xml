@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+	<packaging>pom</packaging>
+	
+	<parent>
+    <groupId>org.mobicents.diameter</groupId>
+  	<artifactId>diameter-parent</artifactId>
+  	<version>1.0.0.BETA1-SNAPSHOT</version>
+	</parent>
+
+  <groupId>org.mobicents.testsuite</groupId>
+	<artifactId>testsuite-slee-parent</artifactId>
+
+	<name>Mobicents :: Diameter Testsuite :: ${pom.artifactId}</name>
+
+  <properties>
+    <!-- Mobicents Diameter Components Versions -->
+    <mobicents.diameter.jdiameter.version>1.5.0.1-build183</mobicents.diameter.jdiameter.version>
+    <mobicents.diameter.mux.version>1.0.0.BETA1-SNAPSHOT</mobicents.diameter.mux.version>
+    <mobicents.diameter.resources.base.version>1.0.0.BETA2-SNAPSHOT</mobicents.diameter.resources.base.version>
+    <mobicents.diameter.resources.sh-client.version>1.0.0.BETA1-SNAPSHOT</mobicents.diameter.resources.sh-client.version>
+    
+    <!-- Other Mobicents Components Versions -->
+    <mobicents.servers.jainslee.version>1.2.1.GA</mobicents.servers.jainslee.version>
+    <mobicents.tools.mavenplugin.du.version>1.0.0.BETA2</mobicents.tools.mavenplugin.du.version>
+    <mobicents.tools.mavenplugin.eclipse.version>1.0.0.BETA2</mobicents.tools.mavenplugin.eclipse.version>
+  </properties>
+
+	<modules>
+		<module>sbb</module>
+		<module>du</module>
+	</modules>
+
+</project>
