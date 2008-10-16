@@ -9,7 +9,7 @@
   	<version>1.0.0.BETA1-SNAPSHOT</version>
 	</parent>
 
-  <groupId>org.mobicents.testsuite</groupId>
+  <groupId>org.mobicents.diameter.testsuite</groupId>
 	<artifactId>testsuite-slee-parent</artifactId>
 
 	<name>Mobicents :: Diameter Testsuite :: ${pom.artifactId}</name>
