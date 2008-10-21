@@ -12,4 +12,6 @@ public interface DiameterProvider
    * @return 
    */
   public String sendMessage(Message message);
+  
+  public Message sendMessageSync(Message message);
 }

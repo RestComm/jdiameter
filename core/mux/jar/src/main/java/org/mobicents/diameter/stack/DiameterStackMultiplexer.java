@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -261,6 +262,33 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       session.send( message );
       
       return session.getSessionId();
+    }
+    catch (Exception e) {
+      log.error( "", e );
+    }
+    
+    return null;
+  }
+  
+  public Message sendMessageSync( Message message )
+  {
+    try
+    {
+      Avp sessionId = null;
+      Session session = null;
+      
+      if((sessionId = message.getAvps().getAvp(Avp.SESSION_ID)) == null)
+      {
+        session = stack.getSessionFactory().getNewSession();
+      }
+      else
+      {
+        session = stack.getSessionFactory().getNewSession( sessionId.getUTF8String() );
+      }
+      
+      Future<Message> answer = session.send( message );
+      
+      return answer.get();
     }
     catch (Exception e) {
       log.error( "", e );
