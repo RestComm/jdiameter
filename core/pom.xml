@@ -20,4 +20,10 @@
 		<module>mux</module>
 	</modules>
 
+
+  <scm>
+    <connection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/diameter-core-1.0.0.BETA1</connection>
+    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/diameter-core-1.0.0.BETA1</developerConnection>
+    <url>http://mobicents.googlecode.com/svn/tags/servers/diameter/diameter-core-1.0.0.BETA1</url>
+  </scm>
 </project>
