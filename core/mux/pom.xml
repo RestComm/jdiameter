@@ -10,7 +10,7 @@
 
   <groupId>org.mobicents.diameter</groupId>
   <artifactId>mobicents-diameter-mux-parent</artifactId>
-  <version>1.0.0.BETA1-SNAPSHOT</version>
+  <version>1.0.0.BETA1</version>
 
   <name>Mobicents :: Diameter Multiplexer :: ${pom.artifactId}</name>
   
@@ -29,4 +29,10 @@
     <module>sar</module>
   </modules>
 
+
+  <scm>
+    <connection>scm:svn:https://mobicents.googlecode.com/svn/tags/diameter/diameter-core-1.0.0.BETA1</connection>
+    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/diameter/diameter-core-1.0.0.BETA1</developerConnection>
+    <url>http://mobicents.googlecode.com/svn/tags/diameter/diameter-core-1.0.0.BETA1</url>
+  </scm>
 </project>
