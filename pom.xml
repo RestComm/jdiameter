@@ -1,21 +1,43 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">	
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
+	<parent>
 		<groupId>org.mobicents</groupId>
 		<artifactId>mobicents</artifactId>
 		<version>6</version>
 		<relativePath>../../parent/pom.xml</relativePath>
 	</parent>
 
-  <groupId>org.mobicents.diameter</groupId>
+	<groupId>org.mobicents.diameter</groupId>
 	<artifactId>diameter-parent</artifactId>
 	<version>1.0.0.BETA1-SNAPSHOT</version>
 
 	<name>Mobicents :: Diameter :: ${pom.artifactId}</name>
-
+	<properties>
+		<!-- OTHER MOBICENTS COMPONENTS VERSIONS -->
+		<mobicents.tools.mavenplugin.du.version>1.0.0.BETA2</mobicents.tools.mavenplugin.du.version>
+		<mobicents.tools.mavenplugin.eclipse.version>1.0.0.BETA2</mobicents.tools.mavenplugin.eclipse.version>
+	</properties>
 	<packaging>pom</packaging>
-
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<groupId>org.mobicents.tools</groupId>
+				<version>${mobicents.tools.mavenplugin.eclipse.version}</version>
+				<inherited>false</inherited>
+				<executions />
+				<configuration>
+					<excludePoms>tools/maven-archetypes/**/pom.xml,tools/management-console/**/pom.xml,resources/sip11/tests/**/pom.xml</excludePoms>
+					<classpathExcludes>
+						<exclude>xml-apis:xml-apis</exclude>
+						<exclude>jtidy:jtidy</exclude>
+					</classpathExcludes>
+					<resolveTransitiveDependencies>true</resolveTransitiveDependencies>
+					<eclipseProjectName>mobicents-diameter-parent</eclipseProjectName>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
