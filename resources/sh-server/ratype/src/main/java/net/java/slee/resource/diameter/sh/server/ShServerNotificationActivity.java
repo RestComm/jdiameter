@@ -21,7 +21,9 @@ package net.java.slee.resource.diameter.sh.server;
 
 import java.io.IOException;
 
+import net.java.slee.resource.diameter.base.DiameterActivity;
 import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
+import net.java.slee.resource.diameter.sh.client.events.SubscribeNotificationsAnswer;
 
 /**
  * Activity used by a Diameter Sh Server for Notifications.  
@@ -38,12 +40,9 @@ import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
  *
  * @author Open Cloud
  */
-public interface ShServerNotificationActivity {
+public interface ShServerNotificationActivity extends DiameterActivity{
 
-    /**
-     * Get a message factory to create answer messages and AVPs (if necessary).
-     */
-    ShServerMessageFactory getServerMessageFactory();
+   
 
     /**
      * Sends a push notification request asynchronously.
@@ -53,4 +52,23 @@ public interface ShServerNotificationActivity {
      */
     void sendPushNotificationRequest(PushNotificationRequest message) throws IOException;
 
+    /**
+     * Create a SubscribeNotificationsAnswer containing a Result-Code or Experimental-Result AVP populated with the given value.
+     * If <code>isExperimentalResultCode</code> is <code>true</code>, the <code>resultCode</code> parameter will be set
+     * in a {@link org.mobicents.slee.resource.diameter.base.types.ExperimentalResultAvp} AVP, if it is <code>false</code> the
+     * result code will be set in a Result-Code AVP. 
+     * @return a SubscribeNotificationsAnswer object that can be sent using {@link ShServerActivity#sendSubscribeNotificationsAnswer(net.java.slee.resource.diameter.sh.types.SubscribeNotificationsAnswer)}
+     */
+    SubscribeNotificationsAnswer createSubscribeNotificationsAnswer(long resultCode, boolean isExperimentalResult);
+
+    /**
+     * Create an empty SubscribeNotificationsAnswer that will need to have AVPs set on it before being sent.
+     * @return a SubscribeNotificationsAnswer object that can be sent using {@link ShServerActivity#sendSubscribeNotificationsAnswer(net.java.slee.resource.diameter.sh.types.SubscribeNotificationsAnswer)}
+     */
+    SubscribeNotificationsAnswer createSubscribeNotificationsAnswer();
+    /**
+     * Send the SubscribeNotificationsAnswer to the peer that sent the SubscribeNotificationsRequest.
+     */
+    void sendSubscribeNotificationsAnswer(SubscribeNotificationsAnswer message) throws IOException;
+    
 }

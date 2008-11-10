@@ -89,20 +89,6 @@ public interface ShServerActivity  extends DiameterActivity{
      */
     ProfileUpdateAnswer createProfileUpdateAnswer();
 
-    /**
-     * Create a SubscribeNotificationsAnswer containing a Result-Code or Experimental-Result AVP populated with the given value.
-     * If <code>isExperimentalResultCode</code> is <code>true</code>, the <code>resultCode</code> parameter will be set
-     * in a {@link org.mobicents.slee.resource.diameter.base.types.ExperimentalResultAvp} AVP, if it is <code>false</code> the
-     * result code will be set in a Result-Code AVP. 
-     * @return a SubscribeNotificationsAnswer object that can be sent using {@link ShServerActivity#sendSubscribeNotificationsAnswer(net.java.slee.resource.diameter.sh.types.SubscribeNotificationsAnswer)}
-     */
-    SubscribeNotificationsAnswer createSubscribeNotificationsAnswer(long resultCode, boolean isExperimentalResult);
-
-    /**
-     * Create an empty SubscribeNotificationsAnswer that will need to have AVPs set on it before being sent.
-     * @return a SubscribeNotificationsAnswer object that can be sent using {@link ShServerActivity#sendSubscribeNotificationsAnswer(net.java.slee.resource.diameter.sh.types.SubscribeNotificationsAnswer)}
-     */
-    SubscribeNotificationsAnswer createSubscribeNotificationsAnswer();
     
     /**
      * Send the UserDataAnswer to the peer that sent the UserDataRequest.
@@ -114,9 +100,6 @@ public interface ShServerActivity  extends DiameterActivity{
      */
     void sendProfileUpdateAnswer(ProfileUpdateAnswer message) throws IOException;
 
-    /**
-     * Send the SubscribeNotificationsAnswer to the peer that sent the SubscribeNotificationsRequest.
-     */
-    void sendSubscribeNotificationsAnswer(SubscribeNotificationsAnswer message) throws IOException;
+    
 
 }
