@@ -2537,8 +2537,6 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 	<application id="3" name="Diameter Base Accounting" uri="http://www.ietf.org/rfc/rfc3588.txt?number=3588">
 	</application>
 
-	<application id="16777216" name="3GPP Cx" uri="http://www.ietf.org/rfc/rfc3588.txt?number=3588">
-	</application>
 
     <application id="0" name="Diameter Common Messages" uri="http://www.ietf.org/rfc/rfc3588.txt?number=3588">
   <!-- *********** Last updated 2007-04-12 ************ -->
@@ -2727,7 +2725,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 		<!-- ************************ END 3GPP Sh AVPS ******************* -->
 
 	</application>
-  	<application id="16777216" name="3GPP Cx/Dx">
+  	<application id="16777217" name="3GPP Cx/Dx" uri="http://www.ietf.org/rfc/rfc3588.txt?number=3588">
   		<!-- 3GPP Sh Application -->
 		<command name="User-Authorization"				code="300" vendor-id="TGPP"/>
 		<command name="Server-Assigment"				code="301" vendor-id="TGPP"/>
