@@ -14,11 +14,38 @@
 	
 	<name>Mobicents :: Diameter Stack :: ${pom.artifactId}</name>
 	
-	<version>1.5.0.1-build183</version> 
+	<version>1.5.0.1-build183-SNAPSHOT</version>
 
 	<modules>
 		<module>api</module>
 		<module>impl</module>
 	</modules>
 
+  <profiles>
+    <profile>
+      <id>maven-release</id>
+      <modules>
+        <!-- any module not bound to default modules, such as the ones for test, release, etc... -->
+      </modules>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <configuration>
+              <autoVersionSubmodules>true</autoVersionSubmodules>
+              <resume>false</resume>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>       
+    </profile>
+  </profiles>
+
+  <scm>
+     <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core</connection>
+    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core</developerConnection>
+    <url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core</url>
+  </scm>
+  
 </project>
