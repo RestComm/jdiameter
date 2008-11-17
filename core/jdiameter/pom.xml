@@ -35,7 +35,7 @@
             <configuration>
               <autoVersionSubmodules>true</autoVersionSubmodules>
               <resume>false</resume>
-              <tagBase>https://mobicents.googlecode.com/svn/tags/servers/diameter/core</tagBase>
+              <tagBase>https://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter</tagBase>
             </configuration>
           </plugin>
         </plugins>
