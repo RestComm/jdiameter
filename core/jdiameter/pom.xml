@@ -44,9 +44,9 @@
   </profiles>
 
   <scm>
-     <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core</connection>
-    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core</developerConnection>
-    <url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core</url>
+    <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/jdiameter</connection>
+    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/jdiameter</developerConnection>
+    <url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/jdiameter</url>
   </scm>
   
 </project>
