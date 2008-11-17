@@ -76,7 +76,7 @@ public enum CcSessionFailoverType implements Enumerated {
 		}
 	}
 
-	public CcSessionFailoverType fromInt(int presumableValue)
+	public static CcSessionFailoverType fromInt(int presumableValue)
 			throws IllegalArgumentException {
 
 		switch (presumableValue) {

@@ -74,7 +74,7 @@ public enum CreditControlFailureHandlingType implements Enumerated {
 		}
 	}
 
-	public CreditControlFailureHandlingType fromInt(int presumableValue)
+	public static CreditControlFailureHandlingType fromInt(int presumableValue)
 			throws IllegalArgumentException {
 
 		switch (presumableValue) {

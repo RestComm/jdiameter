@@ -58,7 +58,7 @@ public enum CheckBalanceResultType implements Enumerated {
 		}
 	}
 
-	public CheckBalanceResultType fromInt(int presumableValue)
+	public static CheckBalanceResultType fromInt(int presumableValue)
 			throws IllegalArgumentException {
 
 		switch (presumableValue) {

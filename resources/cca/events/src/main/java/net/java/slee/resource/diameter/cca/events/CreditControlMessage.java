@@ -28,7 +28,7 @@ import net.java.slee.resource.diameter.cca.events.avp.MultipleServicesCreditCont
  *
  */
 public interface CreditControlMessage extends DiameterMessage {
-
+   int commandCode = 272;
   /**
    * Returns the value of the Acct-Multi-Session-Id AVP, of type UTF8String.
    * 
@@ -109,7 +109,12 @@ public interface CreditControlMessage extends DiameterMessage {
    * @throws IllegalStateException 
    */
   void setCcRequestType(CcRequestType ccRequestType) throws IllegalStateException;
-
+  /**
+   * Returns tru if Multiple-Services-Credit-Control AVP is present
+   * @return
+   */
+  public boolean hasMultipleServicesCreditControl();
+  
   /**
    * Returns true if the CC-Request-Type AVP is present in the message.
    * 

@@ -61,7 +61,7 @@ public enum DirectDebitingFailureHandlingType implements Enumerated {
 		}
 	}
 
-	public DirectDebitingFailureHandlingType fromInt(int presumableValue)
+	public static DirectDebitingFailureHandlingType fromInt(int presumableValue)
 			throws IllegalArgumentException {
 
 		switch (presumableValue) {

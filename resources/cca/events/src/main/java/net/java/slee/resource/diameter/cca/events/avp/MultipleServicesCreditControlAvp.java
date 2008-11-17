@@ -80,14 +80,7 @@ import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
  * 
  */
 public interface MultipleServicesCreditControlAvp extends GroupedAvp {
-	/**
-	 * Returns the set of extension AVPs. The returned array contains the
-	 * extension AVPs in the order they appear in the message. A return value of
-	 * null implies that no extensions AVPs have been set.
-	 * 
-	 * @return
-	 */
-	DiameterAvp[] getExtensionAvps();
+
 
 	/**
 	 * Returns the value of the Final-Unit-Indication AVP, of type Grouped.
@@ -219,12 +212,6 @@ public interface MultipleServicesCreditControlAvp extends GroupedAvp {
 	 */
 	boolean hasValidityTime();
 
-	/**
-	 * Sets the set of extension AVPs with all the values in the given array.
-	 * 
-	 * @param avps
-	 */
-	void setExtensionAvps(DiameterAvp[] avps);
 
 	/**
 	 * Sets the value of the Final-Unit-Indication AVP, of type Grouped. <br>

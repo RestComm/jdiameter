@@ -48,7 +48,7 @@ public interface SubscriptionIdAvp extends GroupedAvp {
 	 * 
 	 * @param data
 	 */
-	public void setSubscriptionData(String data);
+	public void setSubscriptionIdData(String data);
 
 	/**
 	 * Returns the value of the Subscription-Id-Data AVP, of type UTF8String. A
@@ -56,12 +56,12 @@ public interface SubscriptionIdAvp extends GroupedAvp {
 	 * 
 	 * @return
 	 */
-	public String getSubscriptionData();
+	public String getSubscriptionIdData();
 
 	/**
 	 * Returns true if the Subscription-Id-Data AVP is present in the message.
 	 * 
 	 * @return
 	 */
-	public boolean hasSubscriptionData();
+	public boolean hasSubscriptionIdData();
 }
