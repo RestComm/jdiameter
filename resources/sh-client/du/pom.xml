@@ -7,7 +7,7 @@
 	<packaging>pom</packaging>
 
 	<parent>
-    <groupId>org.mobicents.diameter.resources</groupId>
+    <groupId>org.mobicents.servers.diameter.resources</groupId>
   	<artifactId>sh-client-parent</artifactId>
   	<version>1.0.0.BETA1-SNAPSHOT</version>
 	</parent>

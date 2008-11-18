@@ -4,12 +4,12 @@
 	<packaging>pom</packaging>
 	
 	<parent>
-    <groupId>org.mobicents.diameter</groupId>
+    <groupId>org.mobicents.servers.diameter</groupId>
   	<artifactId>diameter-parent</artifactId>
   	<version>1.0.0.BETA1-SNAPSHOT</version>
 	</parent>
 
-  <groupId>org.mobicents.diameter.testsuite</groupId>
+  <groupId>org.mobicents.servers.diameter.testsuite</groupId>
 	<artifactId>testsuite-slee-parent</artifactId>
 
 	<name>Mobicents :: Diameter Testsuite :: ${pom.artifactId}</name>

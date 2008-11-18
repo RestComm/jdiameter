@@ -4,7 +4,7 @@
 	<packaging>pom</packaging>
 	
 	<parent>
-    <groupId>org.mobicents.diameter.examples</groupId>
+    <groupId>org.mobicents.servers.diameter.examples</groupId>
   	<artifactId>base-parent</artifactId>
   	<version>1.0.0.BETA1-SNAPSHOT</version>
 	</parent>

@@ -4,12 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	
   <parent>
-    <groupId>org.mobicents.diameter</groupId>
+    <groupId>org.mobicents.servers.diameter</groupId>
   	<artifactId>diameter-parent</artifactId>
   	<version>1.0.0.BETA1-SNAPSHOT</version>
 	</parent>
 
-  <groupId>org.mobicents.diameter.testsuite</groupId>
+  <groupId>org.mobicents.servers.diameter.testsuite</groupId>
 	<artifactId>testsuite-parent</artifactId>
 	
 	<name>Mobicents :: Diameter Testsuite :: ${pom.artifactId}</name>
@@ -29,23 +29,23 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.mobicents.diameter.resources</groupId>
+			<groupId>org.mobicents.servers.diameter.resources</groupId>
 			<artifactId>base-ra</artifactId>
 			<version>${mobicents.diameter.resources.base.version}</version>
 		</dependency>
     <dependency>
-		  <groupId>org.mobicents.diameter</groupId>
+		  <groupId>org.mobicents.servers.diameter</groupId>
 		  <artifactId>mobicents-diameter-mux-jar</artifactId>
 		  <version>${mobicents.diameter.mux.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.mobicents.diameter</groupId>
+      <groupId>org.mobicents.servers.diameter</groupId>
       <artifactId>jdiameter-api</artifactId>
       <version>${mobicents.diameter.jdiameter.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.mobicents.diameter</groupId>
+      <groupId>org.mobicents.servers.diameter</groupId>
       <artifactId>jdiameter-impl</artifactId>
       <version>${mobicents.diameter.jdiameter.version}</version>
       <scope>runtime</scope>

@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-    <groupId>org.mobicents.diameter.resources</groupId>
+    <groupId>org.mobicents.servers.diameter.resources</groupId>
   	<artifactId>base-parent</artifactId>
   	<version>1.0.0.BETA2-SNAPSHOT</version>
 	</parent>
@@ -13,17 +13,17 @@
 
 	<dependencies>
     <dependency>
-      <groupId>org.mobicents.diameter</groupId>
+      <groupId>org.mobicents.servers.diameter</groupId>
       <artifactId>mobicents-diameter-mux-jar</artifactId>
       <version>${mobicents.diameter.mux.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.mobicents.diameter</groupId>
+      <groupId>org.mobicents.servers.diameter</groupId>
       <artifactId>jdiameter-api</artifactId>
       <version>${mobicents.diameter.jdiameter.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.mobicents.diameter</groupId>
+      <groupId>org.mobicents.servers.diameter</groupId>
       <artifactId>jdiameter-impl</artifactId>
       <version>${mobicents.diameter.jdiameter.version}</version>
     </dependency>

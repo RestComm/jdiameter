@@ -4,7 +4,7 @@
 	<packaging>pom</packaging>
 	
 	<parent>
-    <groupId>org.mobicents.diameter.testsuite</groupId>
+    <groupId>org.mobicents.servers.diameter.testsuite</groupId>
 	  <artifactId>testsuite-slee-parent</artifactId>
 		<version>1.0.0.BETA1-SNAPSHOT</version>
 	</parent>

@@ -9,8 +9,8 @@
 		<relativePath>../../../../parent/pom.xml</relativePath>
 	</parent>
 
+	<groupId>org.mobicents.servers.diameter</groupId>
 	<artifactId>jdiameter-parent</artifactId>
-	<groupId>org.mobicents.diameter</groupId>
 	
 	<name>Mobicents :: Diameter Stack :: ${pom.artifactId}</name>
 	

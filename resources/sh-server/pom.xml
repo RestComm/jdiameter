@@ -10,7 +10,7 @@
 		<relativePath>../../../../parent/pom.xml</relativePath>
 	</parent>
 
-  <groupId>org.mobicents.diameter.resources</groupId>
+  <groupId>org.mobicents.servers.diameter.resources</groupId>
 	<artifactId>sh-server-parent</artifactId>
 	<version>1.0.0.BETA1-SNAPSHOT</version>
 
