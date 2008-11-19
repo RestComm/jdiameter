@@ -10,7 +10,7 @@
 
   <groupId>org.mobicents.servers.diameter</groupId>
   <artifactId>mobicents-diameter-mux-parent</artifactId>
-  <version>1.0.0.BETA1</version>
+  <version>1.0.0.BETA1-SNAPSHOT</version>
 
   <name>Mobicents :: Diameter Multiplexer :: ${pom.artifactId}</name>
   
@@ -29,10 +29,32 @@
     <module>sar</module>
   </modules>
 
+  <profiles>
+    <profile>
+      <id>maven-release</id>
+      <modules>
+        <!-- any module not bound to default modules, such as the ones for test, release, etc... -->
+      </modules>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <configuration>
+              <autoVersionSubmodules>true</autoVersionSubmodules>
+              <resume>false</resume>
+              <tagBase>https://mobicents.googlecode.com/svn/tags/servers/diameter/core/mux</tagBase>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>       
+    </profile>
+  </profiles>
 
-  <scm>
-    <connection>scm:svn:https://mobicents.googlecode.com/svn/tags/diameter-parent-1.0.0.BETA1</connection>
-    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/diameter-parent-1.0.0.BETA1</developerConnection>
-    <url>http://mobicents.googlecode.com/svn/tags/diameter-parent-1.0.0.BETA1</url>
-  </scm>
+	<scm>
+		<connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/mux</connection>
+		<developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/mux</developerConnection>
+		<url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/mux</url>
+	</scm>
+  
 </project>
