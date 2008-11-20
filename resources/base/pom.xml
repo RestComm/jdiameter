@@ -26,7 +26,7 @@
   <properties>
     <!-- Mobicents Diameter Components Versions -->
     <mobicents.diameter.jdiameter.version>1.5.0.1-build183</mobicents.diameter.jdiameter.version>
-    <mobicents.diameter.mux.version>1.0.0.BETA1-SNAPSHOT</mobicents.diameter.mux.version>
+    <mobicents.diameter.mux.version>1.0.0.BETA1</mobicents.diameter.mux.version>
     
     <!-- Other Mobicents Components Versions -->
     <mobicents.servers.jainslee.version>1.2.1.GA</mobicents.servers.jainslee.version>
@@ -35,6 +35,26 @@
   </properties>
 
 	<profiles>
+    <profile>
+      <id>maven-release</id>
+      <modules>
+        <!-- any module not bound to default modules, such as the ones for test, release, etc... -->
+      </modules>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <configuration>
+              <autoVersionSubmodules>true</autoVersionSubmodules>
+              <resume>false</resume>
+              <tagBase>https://mobicents.googlecode.com/svn/tags/servers/diameter/resources/base</tagBase>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>       
+    </profile>
+	
 		<profile>
 			<id>release</id>
 			<build>
@@ -76,5 +96,11 @@
 			</build>
 		</profile>
 	</profiles>
+
+  <scm>
+    <connection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/resources/base</connection>
+    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/resources/base</developerConnection>
+    <url>http://mobicents.googlecode.com/svn/tags/servers/diameter/core/resources/base</url>
+  </scm>
 
 </project>
