@@ -17,7 +17,6 @@
 	<name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
 
 	<modules>
-		<module>../sh-common/events</module>
     <module>events</module>
 		<module>ratype</module>
 		<module>ra</module>
