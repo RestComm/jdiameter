@@ -29,12 +29,40 @@
     <mobicents.diameter.jdiameter.version>1.5.0.1-build183</mobicents.diameter.jdiameter.version>
     <mobicents.diameter.mux.version>1.0.0.BETA1</mobicents.diameter.mux.version>
     <mobicents.diameter.resources.base.version>1.0.0.BETA2</mobicents.diameter.resources.base.version>
-    <mobicents.diameter.resources.sh-common.version>1.0.0.BETA1-SNAPSHOT</mobicents.diameter.resources.sh-common.version>
+    <mobicents.diameter.resources.sh-common.version>1.0.0.BETA1</mobicents.diameter.resources.sh-common.version>
     
     <!-- Other Mobicents Components Versions -->
     <mobicents.servers.jainslee.version>1.2.1.GA</mobicents.servers.jainslee.version>
     <mobicents.tools.mavenplugin.du.version>1.0.0.BETA2</mobicents.tools.mavenplugin.du.version>
     <mobicents.tools.mavenplugin.eclipse.version>1.0.0.BETA2</mobicents.tools.mavenplugin.eclipse.version>
   </properties>
+
+  <profiles>
+    <profile>
+      <id>maven-release</id>
+      <modules>
+        <!-- any module not bound to default modules, such as the ones for test, release, etc... -->
+      </modules>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <configuration>
+              <autoVersionSubmodules>true</autoVersionSubmodules>
+              <resume>false</resume>
+              <tagBase>https://mobicents.googlecode.com/svn/tags/servers/diameter/resources/sh-client</tagBase>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>       
+    </profile>
+  </profiles>  
+
+  <scm>
+    <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/resources/sh-client</connection>
+    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/resources/sh-client</developerConnection>
+    <url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/resources/sh-client</url>
+  </scm>
 
 </project>
