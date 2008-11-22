@@ -23,7 +23,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>sh-server-events</artifactId>
+			<artifactId>sh-common-events</artifactId>
 			<version>${pom.version}</version>
 		</dependency>
 	</dependencies>

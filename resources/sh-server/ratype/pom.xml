@@ -16,11 +16,11 @@
 	<name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
 
 	<dependencies>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>sh-server-events</artifactId>
-			<version>${pom.version}</version>
-		</dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>sh-common-events</artifactId>
+      <version>${mobicents.diameter.resources.sh-common.version}</version>
+    </dependency>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
 			<artifactId>sh-client-ratype</artifactId>
