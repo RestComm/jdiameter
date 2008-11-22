@@ -18,11 +18,11 @@
 
 	<dependencies>
 		<!-- components -->
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>sh-client-events</artifactId>
-			<version>${pom.version}</version>
-		</dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>sh-client-events</artifactId>
+      <version>${pom.version}</version>
+    </dependency>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
 			<artifactId>sh-client-ratype</artifactId>
@@ -33,13 +33,13 @@
 			<artifactId>sh-client-ra</artifactId>
 			<version>${pom.version}</version>
 		</dependency>
-		<!-- libraries -->
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>sh-server-events</artifactId>
-			<version>${mobicents.diameter.resources.sh-server.version}</version>
-			<scope>runtime</scope>
-		</dependency>
+    <!-- libraries -->
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>sh-common-events</artifactId>
+      <version>${mobicents.diameter.resources.sh-common.version}</version>
+      <scope>runtime</scope>
+    </dependency>
 	</dependencies>
 
 	<build>
