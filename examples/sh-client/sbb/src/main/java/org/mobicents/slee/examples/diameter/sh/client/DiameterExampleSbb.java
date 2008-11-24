@@ -234,9 +234,9 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
   
   public void onTimerEvent(TimerEvent event, ActivityContextInterface aci)
   {
-	  //doSimpleTestsSendUDR();
+	  doSimpleTestsSendUDR();
 	
-	  doSimpleTestSendSNR();
+	  //doSimpleTestSendSNR();
   }
   
   private void doSimpleTestsSendUDR()
