@@ -1,0 +1,212 @@
+<?xml version="1.0"?>
+<project name="diameter.release" default="release" basedir=".">
+	
+	<property name="release.version" value="1.0.0.BETA1-SNAPSHOT" />
+	<property name="release.configurations" value="default"/>
+	<property name="release.dir" location="${ant.file.media.server.release}/../target/" />
+	
+	<property name="jboss.version" value="4.2.3.GA" />
+	<property name="jboss.config" value="default" />
+	<property name="jboss.config.default" value="default" />
+	<property name="jboss.home.relative.path" value="jboss-${jboss.version}/"/>
+	<property name="jboss.home" value="${release.dir}/${jboss.home.relative.path}/"/>
+	<property name="jboss.distro.zip.path" value="jboss-${jboss.version}.zip" />
+	<property name="jboss.download.url" value="http://downloads.sourceforge.net/jboss/jboss-${jboss.version}.zip" />
+	
+	<property name="ra.dirs" value="base,sh-client"/>
+	<property name="examples.dirs" value="base,sh-client"/>
+	
+	<property name="core.jdiameter.location" location="${ant.file.diameter.release}/../../core/jdiameter" />
+	<property name="core.mux.location" location="${ant.file.diameter.release}/../../core/mux" />
+	<property name="resources.location" location="${ant.file.diameter.release}/../../resources" />
+	<property name="examples.location" value="${ant.file.diameter.release}/../../examples" />
+	
+	<taskdef onerror="fail" resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="${ant.file.diameter.release}/../ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
+	
+	<condition property="mvn.executable" value="${sys.M2_HOME}\bin\mvn.bat" else="mvn">
+		<os family="windows"/>
+	</condition>
+	
+	<!-- ################################################################### -->
+		
+	<available file="${ant.file.diameter.release}/../${jboss.distro.zip.path}" property="got.jboss" />
+	<target name="get-jboss" unless="got.jboss">
+		<echo>Downloading JBoss AS</echo>
+		<get dest="${ant.file.diameter.release}/../${jboss.distro.zip.path}" src="${jboss.download.url}" />
+	</target>
+	
+	<target name="unzip-jboss">
+		<delete dir="${jboss.home}" failonerror="true" />
+		<mkdir dir="${jboss.home}" />
+		<unzip src="${jboss.distro.zip.path}" dest="${release.dir}" />
+		
+		<propertyregex input="${release.configurations}" regexp="(\w+)" global="true" replace="**/\1/**" property="used.configurations" />
+		<echo>Included configurations: ${release.configurations} -&gt; Excludes list: ${used.configurations}</echo>
+		
+		<delete includeemptydirs="true" failonerror="false" verbose="false">
+			<fileset dir="${jboss.home}/server" excludes="${used.configurations}" />
+		</delete>
+	</target>
+	
+	<!-- ################################################################### -->
+	
+	<condition property="mobicents.jain.slee.checked.out">
+		<available file="${ant.file.diameter.release}/../servers/jain-slee/.svn/entries" />
+	</condition>
+	<target name="get-mobicents-jain-slee" depends="checkout-jain-slee-server,update-jain-slee-server" />
+	
+	<target name="checkout-jain-slee-server" unless="mobicents.jain.slee.checked.out">
+		<echo>Checking out Mobicents JAIN-SLEE</echo>
+		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
+			<arg line="-f external-components-checkout.xml validate -P checkout" />
+		</exec>
+	</target>
+	
+	<target name="update-jain-slee-server">
+		<echo>Updating Mobicents JAIN-SLEE</echo>
+		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
+			<arg line="-f external-components-checkout.xml validate -P update" />
+		</exec>
+	</target>
+	
+	<target name="build-mobicents-jain-slee" depends="get-mobicents-jain-slee">
+		<echo>Building Mobicents JAIN-SLEE</echo>
+		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../servers/jain-slee">
+			<arg line="clean install -Djboss.home=${jboss.home} -Dnode=${jboss.config} -P set-svn-revision" />
+		</exec>
+		
+		<copy failonerror="true" file="${ant.file.diameter.release}/../servers/jain-slee/release/jbossjta-properties.xml" tofile="${jboss.home}/server/${jboss.config}/conf/jbossjta-properties.xml" overwrite="true" />
+		
+		<!-- If any resources/examples from jain-slee are needed, please see how it's done in media server release script -->
+	</target>
+	
+	<!-- ################################################################### -->
+	
+	<condition property="mobicents.diameter.server.checked.out">
+		<and>
+			<available file="${ant.file.diameter.release}/../servers/diamter/core/jdiameter/.svn/entries" />
+			<available file="${ant.file.diameter.release}/../servers/diamter/core/mux/.svn/entries" />
+		</and>
+	</condition>
+	<target name="get-custom-diameter-server" depends="checkout-diameter-server,update-diameter-server" />
+
+	<target name="checkout-diameter-server" unless="mobicents.diamter.server.checked.out">
+		<echo>Checking out diameter ...</echo>
+		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
+			<arg line="-f internal-components-checkout.xml validate -P checkout" />
+		</exec>
+	</target>
+
+	<target name="update-diameter-server">
+		<echo>Updating diameter ...</echo>
+		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
+			<arg line="-f internal-components-checkout.xml validate -P update" />
+		</exec>
+	</target>
+	
+	<!-- ################################################################### -->
+	
+	<target name="build-ras">
+		<for delimiter="," param="dir.name" list="${ra.dirs}">
+			<sequential>
+				<echo>Packaging RA for release from DIR[${resources.location}/@{dir.name}]</echo>
+				<exec executable="${mvn.executable}" dir="${resources.location}/@{dir.name}">
+					<arg line="clean install -Djboss.home=${release.dir}/tmp -Dnode=${jboss.config} -P set-svn-revision" />
+				</exec>
+				<exec executable="${mvn.executable}" dir="${resources.location}/@{dir.name}">
+					<arg line="-o install -P release,set-svn-revision -Drelease.name=target -Djboss.home=${release.dir}/tmp -Djboss.path=../../${jboss.home.relative.path} -Dnode=${jboss.config.default}" />
+				</exec>
+			</sequential>
+		</for>
+		<!--move file="${resources.location}/../release/target/resources" tofile="${release.dir}/resources" /-->
+		<delete dir="${release.dir}/tmp"/>
+	</target>
+	
+	<target name="build-examples">
+		<for delimiter="," param="dir.name" list="${ra.dirs}">
+			<sequential>
+				<echo>Packaging example for release from DIR[${examples.location}/@{dir.name}]</echo>
+				<exec executable="${mvn.executable}" dir="${examples.location}/@{dir.name}">
+					<arg line="clean install -Djboss.home=${release.dir}/tmp -Dnode=${jboss.config} -P set-svn-revision" />
+				</exec>
+				<exec executable="${mvn.executable}" dir="${examples.location}/@{dir.name}">
+					<arg line="-o install -P release,set-svn-revision -Drelease.name=target -Djboss.home=${release.dir}/tmp -Djboss.path=../../${jboss.home.relative.path} -Dnode=${jboss.config.default}" />
+				</exec>
+			</sequential>
+		</for>
+		<!--move file="${examples.location}/../release/target/examples" tofile="${release.dir}/examples" /-->
+		<delete dir="${release.dir}/tmp"/>
+	</target>
+	
+	<!-- ################################################################### -->
+	
+	<target name="zip-jboss" description="">
+		<fixcrlf srcdir="${jboss.home}/bin" includes="*.sh" eol="lf" eof="remove" />
+		<zip destfile="${ant.file.diameter.release}/../${zip.filename}" filesonly="false">
+			<zipfileset dir="${jboss.home}/bin" filemode="755" prefix="jboss-${jboss.version}/bin">
+				<include name="*.sh" />
+			</zipfileset>
+			<zipfileset dir="${jboss.home}/bin" prefix="jboss-${jboss.version}/bin">
+				<exclude name="*.sh" />
+			</zipfileset>
+			<zipfileset dir="${release.dir}" prefix="" excludes="**/bin/** **/server/*/data/** **/server/*/log/** **/server/*/tmp/** **/server/*/work/** **/server/tmp/**"/>
+		</zip>
+		
+		<checksum file="${ant.file.diameter.release}/../${zip.filename}" algorithm="sha1" fileext=".sha1.asc" forceOverwrite="yes" />
+	</target>
+	
+	<!-- ################################################################### -->
+	
+	<target name="clean">
+		<!--delete dir="${release.dir}" /-->
+	</target>
+	
+	<!-- ################################################################### -->
+	
+	<target name="release-custom" depends="get-custom-diameter-server">
+		<antcall target="release">
+			<param name="release.dir" location="${ant.file.diameter.release}/../servers/diameter/release/target"/>
+			<param name="jboss.home" location="${ant.file.diameter.release}/../servers/diameter/release/target/${jboss.home.relative.path}/"/>
+			
+			<param name="core.jdiameter.location" location="${ant.file.diameter.release}/../servers/diameter/core/jdiameter" />
+			<param name="core.mux.location" location="${ant.file.diameter.release}/../servers/diameter/core/mux" />
+			<param name="resources.location" location="${ant.file.diameter.release}/../servers/diameter/resources" />
+			<param name="examples.location" value="${ant.file.diameter.release}/../servers/diameter/examples" />
+		</antcall>
+	</target>
+	
+	<target name="release" depends="unzip-jboss,build-mobicents-jain-slee">
+		<for delimiter="," param="config.name" list="${jboss.config}">
+			<sequential>
+				<echo>Installing diameter core in '@{config.name}' configuration</echo>
+				<exec executable="${mvn.executable}" dir="${core.jdiameter.location}">
+					<arg line="clean install -P set-svn-revision -Djboss.home=${jboss.home} -Dnode=@{config.name}"/>
+				</exec>
+				<exec executable="${mvn.executable}" dir="${core.mux.location}">
+					<arg line="clean install -P set-svn-revision -Djboss.home=${jboss.home} -Dnode=@{config.name}"/>
+				</exec>
+			</sequential>
+		</for>
+		
+		<antcall target="build-ras"/>
+		<antcall target="build-examples"/>
+		
+		<tstamp>
+			<format property="time.stamp" pattern="yyyyMMdd-HHmm" />
+		</tstamp>
+		<antcall target="zip-jboss">
+			<param name="zip.filename" value="mobicents-diameter-all-${release.version}-jboss-${jboss.version}-${time.stamp}.zip" />
+			<param name="jboss.home" value="${jboss.home}" />
+		</antcall>
+		<!--antcall target="build-src-zip">
+			<param name="zip.filename" value="mobicents-jainslee-server-${release.version}-${time.stamp}-src.zip" />
+		</antcall-->
+		
+		<antcall target="clean"/>
+	</target>
+	
+</project>
