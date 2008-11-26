@@ -79,8 +79,8 @@
     								<copy overwrite="true" file="${basedir}/du/target/build.xml" tofile="${basedir}/../../release/${release.name}/examples/diameter-sh-client/du-management.xml" />
                     <copy overwrite="true" file="${basedir}/release/build.xml" todir="${basedir}/../../release/${release.name}/examples/diameter-sh-client">
     									<filterset>
-    										<filter token="JBOSS_VERSION" value="jboss-${jboss.version}" />
-                      	<filter token="JBOSS_NODE" value="${node}" />
+												<filter token="JBOSS.PATH" value="${jboss.path}" />
+												<filter token="JBOSS.CONFIG" value="${node}" />
     									</filterset>
     								</copy>
 									</tasks>
