@@ -14,7 +14,7 @@
 	<property name="jboss.download.url" value="http://downloads.sourceforge.net/jboss/jboss-${jboss.version}.zip" />
 	
 	<property name="ra.dirs" value="base,sh-client"/>
-	<property name="examples.dirs" value="base,sh-client"/>
+	<property name="examples.dirs" value="base"/>
 	
 	<property name="core.jdiameter.location" location="${ant.file.diameter.release}/../../core/jdiameter" />
 	<property name="core.mux.location" location="${ant.file.diameter.release}/../../core/mux" />
