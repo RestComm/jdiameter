@@ -127,7 +127,7 @@
 	</target>
 	
 	<target name="build-examples">
-		<for delimiter="," param="dir.name" list="${ra.dirs}">
+		<for delimiter="," param="dir.name" list="${examples.dirs}">
 			<sequential>
 				<echo>Packaging example for release from DIR[${examples.location}/@{dir.name}]</echo>
 				<exec executable="${mvn.executable}" dir="${examples.location}/@{dir.name}">
