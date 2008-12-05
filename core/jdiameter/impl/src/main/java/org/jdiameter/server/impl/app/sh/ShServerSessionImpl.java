@@ -287,6 +287,7 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 	}
 
 	protected void send(Event.Type type, AppEvent request, AppEvent answer) throws InternalException {
+		//FIXME: add impl
 	}
 	
 	protected void setState(ShSessionState newState) {
