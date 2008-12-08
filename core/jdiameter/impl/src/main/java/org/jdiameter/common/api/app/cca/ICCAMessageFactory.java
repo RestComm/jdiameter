@@ -2,8 +2,10 @@ package org.jdiameter.common.api.app.cca;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.Request;
-import org.jdiameter.api.app.AppAnswerEvent;
-import org.jdiameter.api.app.AppRequestEvent;
+import org.jdiameter.api.auth.events.ReAuthAnswer;
+import org.jdiameter.api.auth.events.ReAuthRequest;
+import org.jdiameter.api.cca.events.JCreditControlAnswer;
+import org.jdiameter.api.cca.events.JCreditControlRequest;
 
 /**
  * 
@@ -19,14 +21,14 @@ import org.jdiameter.api.app.AppRequestEvent;
 public interface ICCAMessageFactory {
 
   //FIXME: not sure why we need this, maybe to be able to execute some hacks?
-	public AppRequestEvent createReAuthRequest(Request req);
+	public ReAuthRequest createReAuthRequest(Request req);
 
-	public AppAnswerEvent createReAuthAnswer(Answer answer);
+	public ReAuthAnswer createReAuthAnswer(Answer answer);
 
 	//FIXME: make server session those those
-	public AppRequestEvent createCreditControlRequest(Request req);
+	public JCreditControlRequest createCreditControlRequest(Request req);
 
-	public AppAnswerEvent createCreditControlAnswer(Answer answer);
+	public JCreditControlAnswer createCreditControlAnswer(Answer answer);
 	
 	public long[] getApplicationIds();
 	

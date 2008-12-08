@@ -13,36 +13,35 @@ import org.jdiameter.common.api.app.IAppSessionState;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
  * @author Erick Svenson
  */
-public enum ClientCCASessionState implements IAppSessionState<ClientCCASessionState> {
+public enum ClientCCASessionState implements IAppSessionState<ClientCCASessionState>{
 
 	IDLE(0),
-	PENDING_INTERIM(1),
+	PENDING_INITIAL(1),
 	OPEN(2),
-	PENIDNG_UPDATE(3),
+	PENDING_UPDATE(3),
 	PENDING_TERMINATION(4),
 	PENDING_BUFFERED(5),
 	PENDING_EVENT(6);
-
-	private int stateValue=-1;
+	
+	private int stateValue = -1;
 
 	ClientCCASessionState(int stateV)
 	{
 		this.stateValue=stateV;
 	}
 	
-	public ClientCCASessionState fromInt(int v) throws IllegalArgumentException
+	public  ClientCCASessionState fromInt(int v) throws IllegalArgumentException
 	{
 		switch(v)
 		{
-		
 		case 0:
 			return IDLE;
 		case 1:
-			return PENDING_INTERIM;
+			return PENDING_INITIAL;
 		case 2:
 			return OPEN;
 		case 3:
-			return PENIDNG_UPDATE;
+			return PENDING_UPDATE;
 		case 4:
 			return PENDING_TERMINATION;
 		case 5:
@@ -51,13 +50,11 @@ public enum ClientCCASessionState implements IAppSessionState<ClientCCASessionSt
 			return PENDING_EVENT;
 		default:
 			throw new IllegalArgumentException("Illegal value of int representation!!!!");
-		
 		}
 	}
 
 	public int getValue()
-	{
+  {
 		return stateValue;
 	}
-	
 }
