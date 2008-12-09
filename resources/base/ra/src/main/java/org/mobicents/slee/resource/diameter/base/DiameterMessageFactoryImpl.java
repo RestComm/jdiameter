@@ -529,7 +529,7 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
     if(session == null)
     {
       try
-      { //FIXME: This should create activity, shouldnt it?
+      { //FIXME: baranowb: This should create activity, shouldnt it? Alex this has to be cleared
         msg = stack.getSessionFactory().getNewRawSession().createMessage(commandCode, applicationId);
       }
       catch ( InternalException e )

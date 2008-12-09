@@ -27,6 +27,8 @@ import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Message;
+import org.mobicents.diameter.dictionary.AvpDictionary;
+import org.mobicents.diameter.dictionary.AvpUtilities;
 import org.mobicents.slee.resource.diameter.base.events.avp.AddressAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.DiameterIdentityAvpImpl;
@@ -35,7 +37,6 @@ import org.mobicents.slee.resource.diameter.base.events.avp.FailedAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.ProxyInfoAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvpImpl;
-import org.mobicents.diameter.dictionary.AvpDictionary;
 
 /**
  * Super class for all diameter messages <br>
@@ -146,7 +147,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 			return message.getAvps().getAvp(code).getInteger32();
 		} catch (Exception e) {
 			log.warn(e);
-			return 0;
+			return -1;
 		}
 	}
 
@@ -446,8 +447,8 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 	// =============== SETTERS
 
 	public void setAvpAsAddress(int code, AddressAvp[] avps, boolean mandatory,
-			boolean... remove) {
-		if (remove.length == 0 || remove[0])
+			boolean remove) {
+		if (remove)
 			message.getAvps().removeAvp(code);
 		for (int i = 0; i < avps.length; i++) {
 			try {
@@ -463,70 +464,64 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 	}
 
 	public void setAcctApplicationId(long acctApplicationId) {
-		setAvpAsUInt32(Avp.ACCT_APPLICATION_ID, acctApplicationId, true);
+		setAvpAsUInt32(Avp.ACCT_APPLICATION_ID, acctApplicationId, true,true);
 	}
 
 	public void setAuthApplicationId(long authApplicationId) {
-		setAvpAsUInt32(Avp.AUTH_APPLICATION_ID, authApplicationId, true);
+		setAvpAsUInt32(Avp.AUTH_APPLICATION_ID, authApplicationId, true,true);
 	}
 
 	protected void setAvpAsDate(int code, Date value, boolean mandatory,
-			boolean... remove) {
-		if (remove.length == 0 || remove[0])
-			message.getAvps().removeAvp(code);
-		message.getAvps().addAvp(code, value, mandatory, false);
+			boolean remove) {
+		
+		AvpUtilities.setAvpAsDate(code, value, message.getAvps(), remove);
 	}
 
 	protected AvpSet setAvpAsGroup(int code, DiameterAvp[] childs,
-			boolean mandatory, boolean... remove) {
-		if (remove.length == 0 || remove[0])
-			message.getAvps().removeAvp(code);
-		AvpSet g = message.getAvps().addGroupedAvp(code, mandatory, false);
-		for (DiameterAvp a : childs)
-			g.addAvp(a.getCode(), a.byteArrayValue(),
-					a.getMandatoryRule() == 1, a.getProtectedRule() == 1);
-		return g;
+			boolean mandatory, boolean remove) {
+		return AvpUtilities.setAvpAsGrouped(code,0, childs, message.getAvps(), remove,mandatory,false);
 	}
 
 	protected void setAvpAsIdentity(int code, String value, boolean octet,
-			boolean mandatory, boolean... remove) {
-		if (remove.length == 0 || remove[0])
-			message.getAvps().removeAvp(code);
-		message.getAvps().addAvp(code, value, octet, mandatory, false);
+			boolean mandatory, boolean remove) {
+		
+		AvpUtilities.setAvpAsString(code, 0, octet, value, message.getAvps(), remove, mandatory, false);
 	}
 
 	protected void setAvpAsInt32(int code, int value, boolean mandatory,
-			boolean... remove) {
-		if (remove.length == 0 || remove[0])
-			message.getAvps().removeAvp(code);
-		message.getAvps().addAvp(code, value, mandatory, false);
+			boolean remove) {
+		AvpUtilities.setAvpAsInt32(code, 0, value, message.getAvps(), remove, mandatory, false);
 	}
 
 	protected void setAvpAsUInt32(int code, long value, boolean mandatory,
-			boolean... remove) {
-		if (remove.length == 0 || remove[0])
-			message.getAvps().removeAvp(code);
-		message.getAvps().addAvp(code, (int) value, mandatory, false);
+			boolean remove) {
+		AvpUtilities.setAvpAsUInt32(code, 0, value, message.getAvps(), remove, mandatory, false);
 	}
 
 	protected void setAvpAsUtf8(int code, String value, boolean mandatory,
-			boolean... remove) {
-		if (remove.length == 0 || remove[0])
-			message.getAvps().removeAvp(code);
-		message.getAvps().addAvp(code, value, false, mandatory, false);
+			boolean remove) {
+		
+		AvpUtilities.setAvpAsString(code, 0, false, value, message.getAvps(), remove, mandatory, false);
 	}
 
 	protected void setAvpsAsUInt32(int code, long[] values, boolean mandatory,
-			boolean... remove) {
+			boolean remove) {
 
-		if (remove.length == 0 || remove[0])
+		if (remove)
+		{
 			message.getAvps().removeAvp(code);
-		AvpSet g = message.getAvps();
+		}
+			
+		
 		for (long a : values)
-			g.addAvp(code, a, mandatory, false);
+			setAvpAsUInt32(code, a, mandatory, false);
 
 	}
 
+	
+	
+
+	
 	public void setDestinationHost(DiameterIdentityAvp destinationHost) {
 
 		Avp rawAvp = this.message.getAvps().getAvp(Avp.DESTINATION_HOST);
@@ -561,16 +556,16 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 	}
 
 	public void setErrorMessage(String errorMessage) {
-		setAvpAsUtf8(Avp.USER_NAME, errorMessage, false);
+		setAvpAsUtf8(Avp.USER_NAME, errorMessage, false,true);
 	}
 
 	public void setErrorReportingHost(DiameterIdentityAvp errorReportingHost) {
 		setAvpAsIdentity(Avp.ERROR_REPORTING_HOST, errorReportingHost
-				.toString(), true, false);
+				.toString(), true, false,true);
 	}
 
 	public void setEventTimestamp(Date eventTimestamp) {
-		setAvpAsDate(55, eventTimestamp, true);
+		setAvpAsDate(55, eventTimestamp, true,true);
 	}
 
 	 public void setExtensionAvps(DiameterAvp[] avps) throws AvpNotAllowedException {
@@ -620,7 +615,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 	}
 
 	public void setOriginStateId(long originStateId) {
-		setAvpAsUInt32(Avp.ORIGIN_STATE_ID, originStateId, true);
+		setAvpAsUInt32(Avp.ORIGIN_STATE_ID, originStateId, true,true);
 	}
 
 	public void setProxyInfo(ProxyInfoAvp proxyInfo) {
@@ -650,15 +645,15 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
 	public void setRedirectHostUsage(RedirectHostUsageType redirectHostUsage) {
 		setAvpAsInt32(Avp.REDIRECT_HOST_USAGE, redirectHostUsage.getValue(),
-				true);
+				true,true);
 	}
 
 	public void setRedirectMaxCacheTime(long redirectMaxCacheTime) {
-		setAvpAsUInt32(Avp.REDIRECT_MAX_CACHE_TIME, redirectMaxCacheTime, true);
+		setAvpAsUInt32(Avp.REDIRECT_MAX_CACHE_TIME, redirectMaxCacheTime, true,true);
 	}
 
 	public void setResultCode(long resultCode) {
-		setAvpAsUInt32(Avp.RESULT_CODE, resultCode, true);
+		setAvpAsUInt32(Avp.RESULT_CODE, resultCode, true,true);
 	}
 
 	public void setRouteRecord(DiameterIdentityAvp routeRecord) {
@@ -688,7 +683,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 	}
 
 	public void setUserName(String userName) {
-		setAvpAsUtf8(Avp.USER_NAME, userName, true);
+		setAvpAsUtf8(Avp.USER_NAME, userName, true,true);
 	}
 
 	public void setVendorSpecificApplicationId(VendorSpecificApplicationIdAvp id) {
@@ -855,4 +850,15 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
     return avpString;
   }
+  protected boolean hasAvp(int code)
+  {
+	  return message.getAvps().getAvps(code)!=null;
+  }
+  
+  protected void reportAvpFetchError(String msg, long code)
+  {
+	  log.error("Failed to fetch avp, code: "+code+". Message: "+msg);
+  }
+  
+  
 }

@@ -11,7 +11,9 @@ import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
 import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
 
 import org.jdiameter.api.Avp;
+import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
+import org.mobicents.diameter.dictionary.AvpUtilities;
 
 /**
  * 
@@ -108,19 +110,34 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
 	// todo set/get Avp methods is duplicate @see DiameterMessageImpl
 
 	protected void setAvpAsIdentity(int code, String value, boolean octet,
-			boolean mandatory, boolean... remove) {
-		if (remove.length == 0 || remove[0])
-			avpSet.removeAvp(code);
-		avpSet.addAvp(code, value,  mandatory, false,octet);
+			boolean mandatory, boolean remove) {
+		AvpUtilities.setAvpAsString(code, 0, octet, value, avpSet, remove, mandatory, false);
 	}
 
-	protected void setAvpAsIdentity(int code, String value, long vendorId, boolean octet,
-			boolean mandatory,boolean isProtected , boolean... remove) {
-		if (remove.length == 0 || remove[0])
-			avpSet.removeAvp(code);
-		avpSet.addAvp(code, value,vendorId , mandatory, isProtected,octet);
+	protected void setAvpAsIdentity(int code, String value, boolean octet,
+			 boolean remove) {
+		AvpUtilities.setAvpAsString(code, octet, value, avpSet, remove);
 	}
 	
+	protected void setAvpAsIdentity(int code, String value, long vendorId, boolean octet,
+			boolean mandatory,boolean isProtected , boolean remove) {
+		AvpUtilities.setAvpAsString(code, vendorId, octet, value, avpSet, remove, mandatory, false);
+	}
+	//FIXME: baranowb - those methods are the same!!!
+	protected void setAvpAsString(int code, String value, boolean octet,
+			boolean mandatory, boolean remove) {
+		AvpUtilities.setAvpAsString(code, 0, octet, value, avpSet, remove, mandatory, false);
+	}
+
+	protected void setAvpAsString(int code, String value, long vendorId, boolean octet,
+			boolean mandatory,boolean isProtected , boolean remove) {
+		AvpUtilities.setAvpAsString(code, vendorId, octet, value, avpSet, remove, mandatory, false);
+	}
+	
+	protected void setAvpAsString(int code, String value,  boolean octet,
+			  boolean remove) {
+		AvpUtilities.setAvpAsString(code, octet, value, avpSet, remove);
+	}
 	protected DiameterIdentityAvp getAvpAsIdentity(int code) {
 		try {
 			Avp rawAvp = avpSet.getAvp(code);
@@ -137,35 +154,70 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
 		}
 	}
 
-	protected void setAvpAsByteArray(int code, byte[] value, boolean mandatory) {
-		avpSet.addAvp(code, value, mandatory, false);
+	protected void setAvpAsByteArray(int code, byte[] value,boolean remove) {
+		AvpUtilities.setAvpAsRaw(code, value, avpSet, remove);
 	}
-	protected void setAvpAsByteArray(int code,long vendorId, byte[] value, boolean mandatory,boolean isProtected) {
-		avpSet.addAvp(code, value, vendorId,mandatory, isProtected);
+	protected void setAvpAsByteArray(int code,long vendorId, byte[] value, boolean mandatory,boolean isProtected, boolean remove) {
+		AvpUtilities.setAvpAsRaw(code, vendorId,value, avpSet, remove,mandatory,isProtected);
 	}
-	protected void setAvpAsUInt32(int code, long value, boolean mandatory,
-			boolean... remove) {
-		if (remove.length == 0 || remove[0])
-			avpSet.removeAvp(code);
-		avpSet.addAvp(code, (int) value, mandatory, false);
+	
+	
+
+	protected void setAvpAsByteArray(int code, byte[] value, boolean mandatory,boolean isProtected, boolean remove) {
+		AvpUtilities.setAvpAsRaw(code, 0,value, avpSet, remove,mandatory,isProtected);
+	}
+	protected void setAvpAsUInt32(int code, long value,
+			boolean remove) {
+		
+		AvpUtilities.setAvpAsUInt32(code, value, avpSet, remove);
 	}
 	
 	protected void setAvpAsUInt32(int code,long vendorId, long value, boolean mandatory, boolean isProtected,
-			boolean... remove) {
-		if (remove.length == 0 || remove[0])
-			avpSet.removeAvp(code);
-		avpSet.addAvp(code, value, vendorId,mandatory, isProtected);
+			boolean remove) {
+		AvpUtilities.setAvpAsUInt32(code, vendorId, value, avpSet, remove,mandatory,isProtected);
+		
 	}
 
+	//FIXME: again those are the same methods
+	
+	protected void setAvpAsUInt64(int code, long value, boolean mandatory,
+			boolean remove) {
+		AvpUtilities.setAvpAsUInt64(code, value, avpSet, remove);
+	}
+	
+	protected void setAvpAsUInt64(int code,long vendorId, long value, boolean mandatory, boolean isProtected,
+			boolean remove) {
+		AvpUtilities.setAvpAsUInt64(code, vendorId, value, avpSet, remove,mandatory,isProtected);
+	}
+	
+	
 	protected long getAvpAsUInt32(int code) {
 		try {
 			return avpSet.getAvp(code).getUnsigned32();
 		} catch (Exception e) {
 			log.warn(e);
-			return 0;
+			return -1;
 		}
 	}
 
+	protected int getAvpAsInt32(int code)
+	{
+		try {
+			return avpSet.getAvp(code).getInteger32();
+		} catch (Exception e) {
+			log.warn(e);
+			return Integer.MIN_VALUE;
+		}
+	}
+	protected long getAvpAsInt64(int code)
+	{
+		try {
+			return avpSet.getAvp(code).getInteger64();
+		} catch (Exception e) {
+			log.warn(e);
+			return Long.MIN_VALUE;
+		}
+	}
 	protected long[] getAllAvpAsUInt32(int code) {
 		AvpSet all = avpSet.getAvps(code);
 		long[] acc = new long[all.size()];
@@ -222,4 +274,34 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
     
     return acc.toArray(new DiameterAvp[0]);
   }  
+  
+  protected boolean hasAvp(int code)
+  {
+	  Avp rawAvp=avpSet.getAvp(code);
+		if(rawAvp!=null)
+		{	
+				return true;
+		}
+		
+		return false;
+  }
+  
+  //public AvpSet getRaw()
+  //{
+  //	  return this.avpSet;
+  //}
+
+  public byte[] getAvpAsByteArray(int code) {
+	  Avp rawAvp=this.avpSet.getAvp(code);
+	  if(rawAvp!=null)
+		  try {
+			  return rawAvp.getRaw();
+		  } catch (AvpDataException e) {
+			  reportAvpFetchError(""+e, code);
+			  e.printStackTrace();
+		  }
+		
+		  return null;
+	
+  	}
 }

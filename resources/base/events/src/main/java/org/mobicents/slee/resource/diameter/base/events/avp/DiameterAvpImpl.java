@@ -3,6 +3,7 @@ package org.mobicents.slee.resource.diameter.base.events.avp;
 
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvpType;
+
 import org.apache.log4j.Logger;
 import org.jdiameter.client.impl.parser.MessageParser;
 
@@ -17,7 +18,7 @@ import org.jdiameter.client.impl.parser.MessageParser;
  */
 public class DiameterAvpImpl implements DiameterAvp {
 
-    protected static final Logger log = Logger.getLogger(DiameterAvpImpl.class);
+    protected  final Logger log = Logger.getLogger(this.getClass());
 
     protected long vendorId;
     protected int code, mnd, prt;
@@ -120,5 +121,11 @@ public class DiameterAvpImpl implements DiameterAvp {
       "Name[" + this.name + "], Type[" + this.type + "], Mandatory[" + this.mnd + "], " +
       "Protected[" + this.prt + "], Value[" + this.value + "]]";
   }
+  protected void reportAvpFetchError(String msg, long code)
+  {
+	  log.error("Failed to fetch avp, code: "+code+". Message: "+msg);
+  }
+  
+  
 }
 
