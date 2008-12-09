@@ -10,16 +10,16 @@
        <resource-adaptor-version>0.8.1</resource-adaptor-version>
 
        <resource-adaptor-type-ref>
-            <resource-adaptor-type-name>JAIN SIP</resource-adaptor-type-name>
-            <resource-adaptor-type-vendor>javax.sip</resource-adaptor-type-vendor>
-            <resource-adaptor-type-version>1.2</resource-adaptor-type-version>
+            <resource-adaptor-type-name>Diameter CCA</resource-adaptor-type-name>
+			<resource-adaptor-type-vendor>java.net</resource-adaptor-type-vendor>
+			<resource-adaptor-type-version>0.8.1</resource-adaptor-type-version>
        </resource-adaptor-type-ref>
 
 	<!--added oc-resource-adaptor.xml lines here altogether-->
         <resource-adaptor-classes>
             <resource-adaptor-class>
                 <resource-adaptor-class-name>
-                    java.lang.Object
+                    org.mobicents.slee.resource.diameter.cca.CCAResourceAdaptor
                 </resource-adaptor-class-name>
             </resource-adaptor-class>
         </resource-adaptor-classes>

@@ -1,5 +1,6 @@
 package net.java.slee.resource.diameter.cca;
 
+import net.java.slee.resource.diameter.base.CreateActivityException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
 
 public interface CreditControlProvider {
@@ -12,7 +13,7 @@ public interface CreditControlProvider {
    * 
    * @return a instance of a CreditControlClientSession to send credit control messages
    */
-	public CreditControlClientSession createClientSession();
+	public CreditControlClientSession createClientSession()throws CreateActivityException;
 
 	/**
 	 * Create a new client session to send and receive Diameter messages.
@@ -23,10 +24,11 @@ public interface CreditControlProvider {
 	 * @param destinationHost a destination host to automatically put in all messages, may be null if not needed
 	 * @param destinationRealm a destination realm to automatically put in all messages
 	 * @return a instance of a CreditControlClientSession to send credit control messages
+	 * @throws CreateActivityException 
 	 */
 	public CreditControlClientSession createClientSession(
 			DiameterIdentityAvp destinationHost,
-			DiameterIdentityAvp destinationRealm);
+			DiameterIdentityAvp destinationRealm) throws CreateActivityException;
 
 	/**
 	 * Return a message factory to be used to create credit control messages

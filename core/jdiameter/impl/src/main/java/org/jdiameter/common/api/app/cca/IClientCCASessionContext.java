@@ -10,8 +10,8 @@ public interface IClientCCASessionContext {
 
 	void txTimerExpired(ClientCCASession session);
 	
-	int getDefaultCCFHValue();
-	int getDefaultDDFHValue();
+	long getDefaultCCFHValue();
+	long getDefaultDDFHValue();
 
 	void grantAccessOnDeliverFailure(ClientCCASession clientCCASessionImpl,Message request);
 

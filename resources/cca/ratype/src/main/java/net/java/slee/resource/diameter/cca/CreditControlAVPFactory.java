@@ -1,5 +1,6 @@
 package net.java.slee.resource.diameter.cca;
 
+import net.java.slee.resource.diameter.base.DiameterAvpFactory;
 import net.java.slee.resource.diameter.cca.events.avp.CcMoneyAvp;
 import net.java.slee.resource.diameter.cca.events.avp.CcUnitType;
 import net.java.slee.resource.diameter.cca.events.avp.CostInformationAvp;
@@ -27,6 +28,9 @@ import net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoType;
  */
 public interface CreditControlAVPFactory {
 
+	
+	public DiameterAvpFactory getBaseFactory();
+	
   /**
    * Create an empty CcMoney (Grouped AVP) instance.
    * 

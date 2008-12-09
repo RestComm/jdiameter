@@ -1,6 +1,7 @@
 package net.java.slee.resource.diameter.cca;
 
 import net.java.slee.resource.diameter.base.DiameterMessageFactory;
+import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
 import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
 
 /**
@@ -11,6 +12,9 @@ import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
  */
 public interface CreditControlMessageFactory {
 
+	public static final int _CCA_VENDOR=0;
+	public static final int _CCA_AUTH_APP_ID=4;
+	
   /**
    * Get the Diameter Base protocol message factory.
    * 
@@ -38,5 +42,30 @@ public interface CreditControlMessageFactory {
    * @throws IllegalArgumentException if sessionId is not a SessionID AVP
    */
   CreditControlRequest createCreditControlRequest(String sessionId) throws IllegalArgumentException;
+  
+  
+  /**
+   * Create a CreditControlAnswer instance, populating it with the internal
+   * AVPs not known or needed by the application. 
+   * 
+   * @param request - request that has come, can be null, in which case it is ignored. Some AVP values can be taken from request, but its up to impl.
+   * @return a new CreditControlRequest
+   */
+  CreditControlAnswer createCreditControlAnswer(CreditControlRequest request);
+
+  /**
+   * Create a CreditControlAnswer instance, populating it with the internal
+   * AVPs not known or needed by the application. Use the session ID provided
+   * to find the Diameter session. This should be used when the requests are
+   * being made synchronously and there's no CreditControlClientSessionActivity
+   * available.
+   * 
+   * @param sessionId the Session-Id AVP returned in the Answer to a previous sync call
+   * @return a new CreditControlRequest
+   * @throws IllegalArgumentException if sessionId is not a SessionID AVP
+   */
+  CreditControlAnswer createCreditControlAnswer(String sessionId) throws IllegalArgumentException;
+  
+  
   
 }

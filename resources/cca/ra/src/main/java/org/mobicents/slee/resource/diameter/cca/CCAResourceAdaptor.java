@@ -4,7 +4,6 @@ import static org.jdiameter.client.impl.helpers.Parameters.MessageTimeOut;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.management.ObjectName;
 import javax.naming.NamingException;
+import javax.naming.OperationNotSupportedException;
 import javax.slee.Address;
 import javax.slee.facilities.EventLookupFacility;
 import javax.slee.management.UnrecognizedResourceAdaptorEntityException;
@@ -24,48 +24,66 @@ import javax.slee.resource.ResourceAdaptorTypeID;
 import javax.slee.resource.ResourceException;
 import javax.slee.resource.SleeEndpoint;
 
+import net.java.slee.resource.diameter.base.CreateActivityException;
 import net.java.slee.resource.diameter.base.DiameterActivity;
+import net.java.slee.resource.diameter.base.events.AbortSessionAnswer;
+import net.java.slee.resource.diameter.base.events.AccountingAnswer;
+import net.java.slee.resource.diameter.base.events.DiameterMessage;
+import net.java.slee.resource.diameter.base.events.ErrorAnswer;
 import net.java.slee.resource.diameter.base.events.ExtensionDiameterMessage;
+import net.java.slee.resource.diameter.base.events.ReAuthAnswer;
+import net.java.slee.resource.diameter.base.events.SessionTerminationAnswer;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
-
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
+import net.java.slee.resource.diameter.cca.CreditControlActivityContextInterfaceFactory;
 import net.java.slee.resource.diameter.cca.CreditControlClientSession;
 import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
 import net.java.slee.resource.diameter.cca.CreditControlProvider;
 import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
+import net.java.slee.resource.diameter.cca.events.CreditControlMessage;
+import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
 import net.java.slee.resource.diameter.cca.handlers.CCASessionCreationListener;
 
 import org.apache.log4j.Logger;
+import org.jdiameter.api.Answer;
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
-import org.jdiameter.api.RawSession;
-import org.jdiameter.api.Session;
+import org.jdiameter.api.Request;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.Stack;
-import org.jdiameter.api.acc.ClientAccSession;
-import org.jdiameter.api.acc.ServerAccSession;
-import org.jdiameter.api.app.AppSession;
-import org.jdiameter.api.auth.ClientAuthSession;
-import org.jdiameter.api.auth.ServerAuthSession;
+import org.jdiameter.api.cca.ClientCCASession;
+import org.jdiameter.api.cca.ServerCCASession;
 import org.jdiameter.client.api.ISessionFactory;
+import org.jdiameter.server.impl.app.cca.ServerCCASessionImpl;
 import org.mobicents.diameter.stack.DiameterListener;
 import org.mobicents.diameter.stack.DiameterStackMultiplexerMBean;
 import org.mobicents.slee.container.SleeContainer;
 import org.mobicents.slee.resource.ResourceAdaptorActivityContextInterfaceFactory;
 import org.mobicents.slee.resource.ResourceAdaptorEntity;
 import org.mobicents.slee.resource.ResourceAdaptorState;
-import org.mobicents.slee.resource.diameter.base.DiameterActivityContextInterfaceFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityHandle;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
+import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterBaseResourceAdaptor;
+import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
+import org.mobicents.slee.resource.diameter.base.events.AbortSessionAnswerImpl;
+import org.mobicents.slee.resource.diameter.base.events.AbortSessionRequestImpl;
+import org.mobicents.slee.resource.diameter.base.events.AccountingAnswerImpl;
+import org.mobicents.slee.resource.diameter.base.events.AccountingRequestImpl;
+import org.mobicents.slee.resource.diameter.base.events.ErrorAnswerImpl;
+import org.mobicents.slee.resource.diameter.base.events.ReAuthAnswerImpl;
+import org.mobicents.slee.resource.diameter.base.events.ReAuthRequestImpl;
+import org.mobicents.slee.resource.diameter.base.events.SessionTerminationAnswerImpl;
+import org.mobicents.slee.resource.diameter.base.events.SessionTerminationRequestImpl;
+import org.mobicents.slee.resource.diameter.cca.events.CreditControlAnswerImpl;
+import org.mobicents.slee.resource.diameter.cca.events.CreditControlRequestImpl;
+import org.mobicents.slee.resource.diameter.cca.handlers.CreditControlSessionFactory;
 
-import org.mobicents.slee.resource.diameter.base.handlers.AccountingSessionFactory;
-import org.mobicents.slee.resource.diameter.base.handlers.AuthorizationSessionFactory;
 
 public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CCASessionCreationListener{
 
-	private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 1L;
 
 	  private static transient Logger logger = Logger.getLogger(DiameterBaseResourceAdaptor.class);
 
@@ -73,7 +91,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 
 	  private Stack stack;
 	  private SessionFactory sessionFactory = null;
-	  private long messageTimeout = 5000;
+	  
 	  //private DiameterStackMultiplexerProxyMBeanImpl proxy=new DiameterStackMultiplexerProxyMBeanImpl();
 	  private ObjectName diameterMultiplexerObjectName = null;
 	  private DiameterStackMultiplexerMBean diameterMux=null;
@@ -112,10 +130,11 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	   */
 	  private transient ConcurrentHashMap<ActivityHandle, DiameterActivity> activities = null;
 	  
-	  protected transient SessionFactory proxySessionFactory=null;
+	  //protected transient SessionFactory proxySessionFactory=null;
 	  protected transient CreditControlAVPFactory localFactory=null;
-	  protected transient CreditControlProvider raProvider=null;
-	  private static final Map<Integer, String> events;
+	  protected DiameterAvpFactoryImpl diameterAvpFactory = new DiameterAvpFactoryImpl();
+	  protected transient CreditControlProviderImpl raProvider=null;
+	  public static final Map<Integer, String> events;
 	 
 	  
 	  static
@@ -123,19 +142,39 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	    Map<Integer, String> eventsTemp = new HashMap<Integer, String>();
 
 	    eventsTemp.put(CreditControlAnswer.commandCode, "CreditControl");
-	   
-	    
+	    eventsTemp.put(ReAuthAnswer.commandCode, "ReAuth");
+	    eventsTemp.put(AbortSessionAnswer.commandCode, "AbortSession");
+	    eventsTemp.put(AccountingAnswer.commandCode, "Accounting");
+	    eventsTemp.put(ErrorAnswer.commandCode, "Error");
+	    eventsTemp.put(SessionTerminationAnswer.commandCode, "SessionTermination");
 	    // FIXME: baranowb - make sure its compilant with xml
-	    //eventsTemp.put(ExtensionDiameterMessage.commandCode, "ExtensionDiameter");
+	    eventsTemp.put(ExtensionDiameterMessage.commandCode, "ExtensionDiameter");
 	    
 	    events = Collections.unmodifiableMap(eventsTemp);
 	    
 	   
 	  }
 	  
+	  //Factories
+	  protected CreditControlSessionFactory ccaSessionFactory=null;
+	  
+	  //ACIF
+	  protected CreditControlActivityContextInterfaceFactory acif=null;
+	  
+
+	 
+	  
+	  //PROVISIONING
+	  private long messageTimeout = 5000;
+	  protected int defaultDirectDebitingFailureHandling = 0;
+	  protected int defaultCreditControlFailureHandling = 0;		
+		//its seconds
+		protected long defaultValidityTime=30;
+		protected long defaultTxTimerValue=10;
+	  
 	  public CCAResourceAdaptor()
 	  {
-	    logger.info("Diameter Base RA :: DiameterBaseResourceAdaptor.");
+	    logger.info("Diameter CCA RA :: DiameterBaseResourceAdaptor.");
 	    
 	   
 	  }
@@ -151,7 +190,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	   */
 	  public void activityEnded(ActivityHandle handle)
 	  {
-	    logger.info("Diameter Base RA :: activityEnded :: handle[" + handle + ".");
+	    logger.info("Diameter CCA RA :: activityEnded :: handle[" + handle + ".");
 	    
 	    if(this.activities != null)
 	    {
@@ -172,7 +211,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	   */
 	  public void activityUnreferenced(ActivityHandle handle)
 	  {
-	    logger.info("Diameter Base RA :: activityUnreferenced :: handle[" + handle + "].");
+	    logger.info("Diameter CCA RA :: activityUnreferenced :: handle[" + handle + "].");
 
 	    this.activityEnded(handle);
 	  }
@@ -190,11 +229,11 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	   */
 	  public void entityActivated() throws ResourceException
 	  {
-	    logger.info("Diameter Base RA :: entityActivated.");
+	    logger.info("Diameter CCA RA :: entityActivated.");
 
 	    try
 	    {
-	      logger.info("Activating Diameter Base RA Entity");
+	      logger.info("Activating Diameter CCA RA Entity");
 
 
 	        this.diameterMultiplexerObjectName=new ObjectName("diameter.mobicents:service=DiameterStackMultiplexer");
@@ -212,7 +251,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	      
 	      
 	      
-	      this.raProvider = new CCADiameterProvider();
+	      this.raProvider = new CreditControlProviderImpl();
 
 	      initializeNamingContext();
 
@@ -223,64 +262,31 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	      // Initialize the protocol stack
 	      initStack();
 
+	      
+	      
+	      
 	      // Resource Adaptor ready to rumble!
 	      this.state = ResourceAdaptorState.ACTIVE;
 	      this.sessionFactory = this.stack.getSessionFactory();
-	      this.accSessionFactory=new AccountingSessionFactory(this,messageTimeout,sessionFactory);
-	      this.authSessionFactory=new AuthorizationSessionFactory(this,messageTimeout,sessionFactory);
+	      this.ccaSessionFactory=new CreditControlSessionFactory( sessionFactory,
+	  			 this,  messageTimeout,
+				 defaultDirectDebitingFailureHandling,
+				 defaultCreditControlFailureHandling,  defaultValidityTime,
+				 defaultTxTimerValue);
+	      
 	      //this.proxySessionFactory=this.sessionFactory;
 	      
-	      this.proxySessionFactory = new SessionFactory() {
-
-	        public <T extends AppSession> T getNewAppSession(ApplicationId applicationId, Class<? extends AppSession> userSession) throws InternalException
-	        {
-	          return (T)sessionFactory.getNewAppSession(applicationId, userSession);
-	        }
-
-	        public <T extends AppSession> T getNewAppSession(String sessionId, ApplicationId applicationId, Class<? extends AppSession> userSession) throws InternalException
-	        {
-	          return (T)sessionFactory.getNewAppSession(sessionId, applicationId, userSession);
-	        }
-
-	        public RawSession getNewRawSession() throws InternalException
-	        {
-	          try
-	          {
-	            return stack.getSessionFactory().getNewRawSession();
-	          }
-	          catch ( IllegalDiameterStateException e )
-	          {
-	            logger.error( "Failure while obtaining Session Factory for new Raw Session.", e );
-	            return null;
-	          }
-	        }
-
-	        public Session getNewSession() throws InternalException
-	        {
-	          Session session = sessionFactory.getNewSession();
-	          sessionCreated(session);
-	          return session;
-	        }
-
-	        public Session getNewSession(String sessionId) throws InternalException
-	        {
-	          Session session=sessionFactory.getNewSession(sessionId);
-	          sessionCreated(session);
-	          return session;
-	        }
-	      };
+	    
 	      
-	      // Register Accounting App Session Factories
-	      ((ISessionFactory) sessionFactory).registerAppFacory(ServerAccSession.class, accSessionFactory);
-	      ((ISessionFactory) sessionFactory).registerAppFacory(ClientAccSession.class, accSessionFactory);
+	      // Register CCA App Session Factories
+	      ((ISessionFactory) sessionFactory).registerAppFacory(ServerCCASession.class, this.ccaSessionFactory);
+	      ((ISessionFactory) sessionFactory).registerAppFacory(ClientCCASession.class, this.ccaSessionFactory);
 
-	      // Register Authorization App Session Factories
-	      ((ISessionFactory) sessionFactory).registerAppFacory(ServerAuthSession.class, authSessionFactory);
-	      ((ISessionFactory) sessionFactory).registerAppFacory(ClientAuthSession.class, authSessionFactory);
+	    
 	    }
 	    catch (Exception e)
 	    {
-	      logger.error("Error Activating Diameter Base RA Entity", e);
+	      logger.error("Error Activating Diameter CCA RA Entity", e);
 	    }
 	  }
 
@@ -295,7 +301,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	   */
 	  public void entityCreated(BootstrapContext bootstrapContext) throws ResourceException
 	  {
-	    logger.info("Diameter Base RA :: entityCreated :: bootstrapContext[" + bootstrapContext + "].");
+	    logger.info("Diameter CCA RA :: entityCreated :: bootstrapContext[" + bootstrapContext + "].");
 
 	    this.bootstrapContext = bootstrapContext;
 	    this.sleeEndpoint = bootstrapContext.getSleeEndpoint();
@@ -318,9 +324,9 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	   */
 	  public void entityDeactivated()
 	  {
-	    logger.info("Diameter Base RA :: entityDeactivated.");
+	    logger.info("Diameter CCA RA :: entityDeactivated.");
 
-	    logger.info("Diameter Base RA :: Cleaning RA Activities.");
+	    logger.info("Diameter CCA RA :: Cleaning RA Activities.");
 
 	    synchronized (this.activities)
 	    {
@@ -328,7 +334,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	    }
 	    activities = null;
 
-	    logger.info("Diameter Base RA :: Cleaning naming context.");
+	    logger.info("Diameter CCA RA :: Cleaning naming context.");
 
 	    try
 	    {
@@ -336,7 +342,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	    }
 	    catch (NamingException e)
 	    {
-	      logger.error("Diameter Base RA :: Cannot unbind naming context.");
+	      logger.error("Diameter CCA RA :: Cannot unbind naming context.");
 	    }
 
 	    // Stop the stack
@@ -346,12 +352,12 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	    //}
 	    //catch (Exception e)
 	    //{
-	    //  logger.error("Diameter Base RA :: Failure while stopping ");
+	    //  logger.error("Diameter CCA RA :: Failure while stopping ");
 	    //}
 
 	    //proxy.stopService(this.bootstrapContext.getEntityName());
 	    
-	    logger.info("Diameter Base RA :: RA Stopped.");
+	    logger.info("Diameter CCA RA :: RA Stopped.");
 	  }
 
 	  /**
@@ -364,7 +370,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	   */
 	  public void entityDeactivating()
 	  {
-	    logger.info("Diameter Base RA :: entityDeactivating.");
+	    logger.info("Diameter CCA RA :: entityDeactivating.");
 	    
 	    this.state = ResourceAdaptorState.STOPPING;
 	    
@@ -413,7 +419,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 
 	    }
 	    
-	    logger.info("Diameter Base RA :: entityDeactivating completed.");
+	    logger.info("Diameter CCA RA :: entityDeactivating completed.");
 	  }
 
 	  /**
@@ -430,7 +436,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	    //this.stack.destroy();
 
 	    // Clean up!
-	    this.acif = null;
+		this.acif=null;
 	    this.activities = null;
 	    this.bootstrapContext = null;
 	    this.eventLookup = null;
@@ -438,7 +444,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	    this.sleeEndpoint = null;
 	    this.stack = null;
 
-	    logger.info("Diameter Base RA :: entityRemoved.");
+	    logger.info("Diameter CCA RA :: entityRemoved.");
 	  }
 
 	  /**
@@ -452,7 +458,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	   */
 	  public void eventProcessingFailed(ActivityHandle handle, Object event, int eventID, Address address, int flags, FailureReason reason)
 	  {
-	    logger.info("Diameter Base RA :: eventProcessingFailed :: handle[" + handle + "], event[" + event + "], eventID[" + eventID + "], address[" + address + "], flags[" + flags + 
+	    logger.info("Diameter CCA RA :: eventProcessingFailed :: handle[" + handle + "], event[" + event + "], eventID[" + eventID + "], address[" + address + "], flags[" + flags + 
 	        "], reason[" + reason + "].");
 	    
 
@@ -468,7 +474,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	   */
 	  public void eventProcessingSuccessful(ActivityHandle handle, Object event, int eventID, Address address, int flags)
 	  {
-	    logger.info("Diameter Base RA :: eventProcessingSuccessful :: handle[" + handle + "], event[" + event + "], eventID[" + eventID + "], address[" + address + "], flags[" + 
+	    logger.info("Diameter CCA RA :: eventProcessingSuccessful :: handle[" + handle + "], event[" + event + "], eventID[" + eventID + "], address[" + address + "], flags[" + 
 	        flags + "].");
 
 
@@ -483,7 +489,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	   */
 	  public Object getActivity(ActivityHandle handle)
 	  {
-	    logger.info("Diameter Base RA :: getActivity :: handle[" + handle + "].");
+	    logger.info("Diameter CCA RA :: getActivity :: handle[" + handle + "].");
 
 	    return this.activities.get(handle);
 	  }
@@ -498,7 +504,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	   */
 	  public ActivityHandle getActivityHandle(Object activity)
 	  {
-	    logger.info("Diameter Base RA :: getActivityHandle :: activity[" + activity + "].");
+	    logger.info("Diameter CCA RA :: getActivityHandle :: activity[" + activity + "].");
 
 	    if (!(activity instanceof DiameterActivity))
 	      return null;
@@ -526,7 +532,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	   */
 	  public Marshaler getMarshaler()
 	  {
-	    logger.info("Diameter Base RA :: getMarshaler");
+	    logger.info("Diameter CCA RA :: getMarshaler");
 
 	    return null;
 	  }
@@ -540,7 +546,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	   */
 	  public Object getSBBResourceAdaptorInterface(String className)
 	  {
-	    logger.info("Diameter Base RA :: getSBBResourceAdaptorInterface :: className[" + className + "].");
+	    logger.info("Diameter CCA RA :: getSBBResourceAdaptorInterface :: className[" + className + "].");
 
 	    return this.raProvider;
 	  }
@@ -553,7 +559,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	   */
 	  public void queryLiveness(ActivityHandle handle)
 	  {
-	    logger.info("Diameter Base RA :: queryLiveness :: handle[" + handle + "].");
+	    logger.info("Diameter CCA RA :: queryLiveness :: handle[" + handle + "].");
 
 	    DiameterActivityImpl activity = (DiameterActivityImpl) activities.get(handle);
 
@@ -580,7 +586,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	   */
 	  public void serviceActivated(String serviceKey)
 	  {
-	    logger.info("Diameter Base RA :: serviceActivated :: serviceKey[" + serviceKey + "].");
+	    logger.info("Diameter CCA RA :: serviceActivated :: serviceKey[" + serviceKey + "].");
 	  }
 
 	  /**
@@ -592,7 +598,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	   */
 	  public void serviceDeactivated(String serviceKey)
 	  {
-	    logger.info("Diameter Base RA :: serviceDeactivated :: serviceKey[" + serviceKey + "].");
+	    logger.info("Diameter CCA RA :: serviceDeactivated :: serviceKey[" + serviceKey + "].");
 	  }
 
 	  /**
@@ -606,7 +612,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	   */
 	  public void serviceInstalled(String serviceKey, int[] eventIDs, String[] resourceOptions)
 	  {
-	    logger.info("Diameter Base RA :: serviceInstalled :: serviceKey[" + serviceKey + "], eventIDs[" + eventIDs + "], resourceOptions[" + resourceOptions + "].");
+	    logger.info("Diameter CCA RA :: serviceInstalled :: serviceKey[" + serviceKey + "], eventIDs[" + eventIDs + "], resourceOptions[" + resourceOptions + "].");
 	  }
 
 	  /**
@@ -618,7 +624,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	   */
 	  public void serviceUninstalled(String serviceKey)
 	  {
-	    logger.info("Diameter Base RA :: serviceUninstalled :: serviceKey[" + serviceKey + "].");
+	    logger.info("Diameter CCA RA :: serviceUninstalled :: serviceKey[" + serviceKey + "].");
 	  }
 
 	  /**
@@ -646,7 +652,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	    ResourceAdaptorTypeID raTypeId = resourceAdaptorEntity.getInstalledResourceAdaptor().getRaType().getResourceAdaptorTypeID();
 
 	    // create the ActivityContextInterfaceFactory
-	    acif = new DiameterActivityContextInterfaceFactoryImpl(resourceAdaptorEntity.getServiceContainer(), entityName);
+	    acif = new CreditControlActivityContextInterfaceFactoryImpl(resourceAdaptorEntity.getServiceContainer(), entityName);
 
 	    // set the ActivityContextInterfaceFactory
 	    resourceAdaptorEntity.getServiceContainer().getActivityContextInterfaceFactories().put(raTypeId, acif);
@@ -664,11 +670,11 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	        String prefix = jndiName.substring(begind + 1, toind);
 	        String name = jndiName.substring(toind + 1);
 
-	        logger.info("Diameter Base RA :: Registering in JNDI :: Prefix[" + prefix + "], Name[" + name + "].");
+	        logger.info("Diameter CCA RA :: Registering in JNDI :: Prefix[" + prefix + "], Name[" + name + "].");
 
 	        SleeContainer.registerWithJndi(prefix, name, this.acif);
 	        
-	        logger.info("Diameter Base RA :: Registered in JNDI successfully.");
+	        logger.info("Diameter CCA RA :: Registered in JNDI successfully.");
 	      }
 	    }
 	    catch (IndexOutOfBoundsException iobe)
@@ -693,11 +699,11 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	        int begind = jndiName.indexOf(':');
 	        String javaJNDIName = jndiName.substring(begind + 1);
 
-	        logger.info("Diameter Base RA :: Unregistering from JNDI :: Name[" + javaJNDIName + "].");
+	        logger.info("Diameter CCA RA :: Unregistering from JNDI :: Name[" + javaJNDIName + "].");
 
 	        SleeContainer.unregisterWithJndi(javaJNDIName);
 	        
-	        logger.info("Diameter Base RA :: Unregistered from JNDI successfully.");
+	        logger.info("Diameter CCA RA :: Unregistered from JNDI successfully.");
 	      }
 	    }
 	    catch (IndexOutOfBoundsException iobe)
@@ -740,10 +746,12 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	      Integer ii=it.next();
 	      command[i]=ii.longValue();
 	    }
-	    this.diameterMux.registerListener( this, new ApplicationId[]{ApplicationId.createByAccAppId(193L, 19302L),ApplicationId.createByAuthAppId(193L, 19301L)});
+	    this.diameterMux.registerListener( this, new ApplicationId[]{ApplicationId.createByAccAppId(0, 4),ApplicationId.createByAuthAppId(0, 4)});
 	    this.stack=this.diameterMux.getStack();
 	    this.messageTimeout = stack.getMetaData().getConfiguration().getLongValue(MessageTimeOut.ordinal(), (Long) MessageTimeOut.defValue());
-	    logger.info("Diameter Base RA :: Successfully initialized stack.");
+	    
+	    this.localFactory=new CreditControlAVPFactoryImpl(this.diameterAvpFactory,this.stack);
+	    logger.info("Diameter CCA RA :: Successfully initialized stack.");
 	  }
 
 
@@ -787,31 +795,371 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	  }
 
 	  
-	  private class CCADiameterProvider implements CreditControlProvider
-	  {
+	 
 
-		public CreditControlClientSession createClientSession() {
-			// TODO Auto-generated method stub
+	  
+	//  ///////////////////////////
+	//  // JDiam handelr methods //
+	//  ///////////////////////////
+
+	public Answer processRequest(Request request) {
+		
+		//Here we receive initial request for which session does not exist!!!
+		//Valid messages are:
+		// * CCR - if we act as server, this is the message we receive
+		// * NO other message should make it here, if it gets its an errro ?
+		//FIXME: baranowb: check if ACR is vald here also
+		if(request.getCommandCode()==CreditControlRequest.commandCode)
+		{
+			DiameterActivity activity;
+
+			try {
+				activity = raProvider.createActivity(request);
+				if(activity==null)
+				{
+					logger.error("Diameter CCA RA :: failed to create session, Request code: "+request.getCommandCode()+", sessionId: "+request.getSessionId());
+				}else
+				{
+					//we can only have server session?, but for sake errorcatching
+					if(activity instanceof ServerCCASession)
+					{
+						ServerCCASessionImpl session=(ServerCCASessionImpl) activity;
+						session.processRequest(request);
+					}
+				}
+				
+				//baranowb: do nothing here, if its valid it should be processed, f not we will get exception
+			} catch (CreateActivityException e) {
+				logger.error("", e);
+			}
+
+			// returning null so we can answer later
 			return null;
+		}else
+		{
+			logger.info("Diameter CCA RA :: Received bad request - either its not CCR or session should exist to handle this, Request code: "+request.getCommandCode()+", sessionId: "+request.getSessionId());
+		}
+		
+		
+		return null;
+	}
+
+
+	public void receivedSuccessMessage(Request request, Answer answer) {
+
+		//NO answer should make it here, its an error, report it 
+		logger.info("Diameter CCA RA :: Received bad answer - RA should not get this - its error, session should exist to handel it, Answer code: "+answer.getCommandCode()+", sessionId: "+answer.getSessionId());
+		
+	}
+
+
+	public void timeoutExpired(Request request) {
+		
+		//NO Timeout shoudl occur here, session should exist, its and error
+		logger.info("Diameter CCA RA :: Received timeout message - RA should not get this - its error, session should exist to handel it, Request code: "+request.getCommandCode()+", sessionId: "+request.getSessionId());
+		
+	}
+
+	//  ///////////////////////////
+	//  // fire events methods   //
+	//  ///////////////////////////
+
+
+	/**
+	 * Method for firing event to SLEE
+	 * 
+	 * @param handle
+	 *            the handle for the activity where event will be fired on
+	 * @param name
+	 *            the unqualified Event name
+	 * @param request
+	 *            the request that will be wrapped in the event, if any
+	 * @param answer
+	 *            the answer that will be wrapped in the event, if any
+	 */
+	public void fireEvent(String sessionId, String name, Request request, Answer answer) {
+		DiameterActivityHandle handle=this.getActivityHandle(sessionId);
+		this.fireEvent(handle, name, request, answer);
+	}
+	
+	public void fireEvent(ActivityHandle handle, String name, Request request,
+			Answer answer) {
+		try {
+			
+			int eventID=-1;
+			int commandCode=(request==null?answer.getCommandCode():request.getCommandCode());
+			if(!this.events.containsKey(commandCode))
+			{
+				logger.error("Diameter CCA RA :: Received bad command code - RA should not get this - its error, command code: "+commandCode);
+				return;
+			}
+			if(commandCode ==CreditControlMessage.commandCode)
+			{
+			 eventID = eventLookup.getEventID("net.java.slee.resource.diameter.cca.events." + name, "java.net", "0.8");
+			}else
+			{
+				//its a base
+				eventID = eventLookup.getEventID("net.java.slee.resource.diameter.base.events." + name, "java.net", "0.8");
+			}
+			
+			
+			DiameterMessage event = (DiameterMessage) createEvent(request, answer);
+			sleeEndpoint.fireEvent(handle, event, eventID, null);
+		} catch (Exception e) {
+			logger.warn("Can not send event", e);
+		}
+		
+	
+	}
+	
+	public DiameterMessage createEvent(Request request, Answer answer) throws OperationNotSupportedException {
+		if (request == null && answer == null)
+			return null;
+
+		int commandCode = (request != null ? request.getCommandCode() : answer.getCommandCode());
+
+		switch (commandCode) {
+		case CreditControlMessage.commandCode: // CCR/CCA
+			return request != null ? new CreditControlRequestImpl(request) : new CreditControlAnswerImpl(answer);
+		case AbortSessionAnswer.commandCode: // ASR/ASA
+			return request != null ? new AbortSessionRequestImpl(request) : new AbortSessionAnswerImpl(answer);
+		case SessionTerminationAnswer.commandCode: // STR/STA
+			return request != null ? new SessionTerminationRequestImpl(request) : new SessionTerminationAnswerImpl(answer);
+		case ReAuthAnswer.commandCode: // DWR																			// RAR/RAA
+			return request != null ? new ReAuthRequestImpl(request) : new ReAuthAnswerImpl(answer);
+		case AccountingAnswer.commandCode: // ACR/ACA
+			return request != null ? new AccountingRequestImpl(request) : new AccountingAnswerImpl(answer);
+		case ErrorAnswer.commandCode:
+			if (answer != null) {
+				return new ErrorAnswerImpl(answer);
+			} else {
+				throw new IllegalArgumentException("ErrorAnswer code set on request: " + request);
+			}
+			
+			// FIXME: baranowb : should extension fall in here?
+			// FIXME: baranowb: what about Error
+		default:
+			throw new OperationNotSupportedException("Not supported message code:" + commandCode + "\n" + (request != null ? request : answer));
+		}
+	}
+	
+	
+	
+	
+	//  ///////////////////////////////////
+	//  // Session mgmt callback methods //
+	//  ///////////////////////////////////
+
+	public void sessionCreated(ClientCCASession ccClientSession) {
+		
+		
+		if(this.getActivity(getActivityHandle(ccClientSession.getSessions().get(0).getSessionId()))!=null)
+		{
+			//FIXME: baranowb: log
+			return;
+		}
+		
+		DiameterMessageFactoryImpl baseFactory=new DiameterMessageFactoryImpl(ccClientSession.getSessions().get(0),this.stack);
+		CreditControlMessageFactory ccaMsgFactory=new CreditControlMessageFactoryImpl(baseFactory,ccClientSession.getSessions().get(0),this.stack,this.localFactory);
+		
+	    CreditControlClientSessionImpl activity=new CreditControlClientSessionImpl(ccaMsgFactory,this.localFactory,ccClientSession,this.messageTimeout,null,null,this.sleeEndpoint);
+	    
+	    //FIXME: baranowb: add basic session mgmt for base? or do we relly on responses?
+	    //session.addStateChangeNotification(activity);
+	    activity.setSessionListener(this);
+	    activityCreated(activity);
+		
+		
+	}
+
+
+	public void sessionCreated(ServerCCASession ccServerSession) {
+		
+		
+		if(this.getActivity(getActivityHandle(ccServerSession.getSessions().get(0).getSessionId()))!=null)
+		{
+			//FIXME: baranowb: log
+			return;
+		}
+		DiameterMessageFactoryImpl baseFactory=new DiameterMessageFactoryImpl(ccServerSession.getSessions().get(0),this.stack);
+		CreditControlMessageFactory ccaMsgFactory=new CreditControlMessageFactoryImpl(baseFactory,ccServerSession.getSessions().get(0),this.stack,this.localFactory);
+	    CreditControlServerSessionImpl activity=new CreditControlServerSessionImpl(ccaMsgFactory,this.localFactory,ccServerSession,this.messageTimeout,null,null,this.sleeEndpoint);
+	    
+	    //FIXME: baranowb: add basic session mgmt for base? or do we relly on responses?
+	    //session.addStateChangeNotification(activity);
+	    activity.setSessionListener(this);
+	    activityCreated(activity);
+		
+	}
+
+	
+	
+	
+	public boolean sessionExists(String sessionId) {
+		
+		return this.activities.containsKey(new DiameterActivityHandle(sessionId));
+	}
+
+
+
+	public void sessionDestroyed(String sessionId, Object appSession) {
+		try
+	    {
+	      this.sleeEndpoint.activityEnding(getActivityHandle(sessionId));
+	    }
+	    catch (Exception e) {
+	      logger.error( "Failure Ending Activity with Session-Id[" + sessionId + "]", e );
+	    }
+		
+	}
+	
+	private class CreditControlProviderImpl implements CreditControlProvider
+	{
+		
+		public CreditControlClientSession createClientSession()
+				throws CreateActivityException {
+			
+			try
+			{
+			ClientCCASession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAuthAppId(CreditControlMessageFactory._CCA_VENDOR, CreditControlMessageFactory._CCA_AUTH_APP_ID), ClientCCASession.class, null);
+			
+			if (session == null)
+			{
+				logger.error("Failure creating CCA Server Session (null).");
+				return null;
+			}
+			
+			return  (CreditControlClientSession) getActivity(getActivityHandle(session.getSessions().get(0).getSessionId()));
+			
+			}
+			catch (InternalException e)
+			{
+				throw new CreateActivityException(e);
+			}
+			catch (IllegalDiameterStateException e)
+			{
+				throw new CreateActivityException(e);
+			}
+		}
+		
+		//This method should be called only for CCR
+		protected DiameterActivity createActivity(Request request) throws CreateActivityException{
+			
+			//No session exists....
+			try
+			{
+				Set<ApplicationId> appIds=request.getApplicationIdAvps();
+				if(appIds==null|| appIds.size()==0)
+				{
+					throw new CreateActivityException("No App ids present in message");
+				}
+				
+				//FIXME: add lookup for appids in req
+				ServerCCASession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(request.getSessionId(), ApplicationId.createByAuthAppId(CreditControlMessageFactory._CCA_VENDOR, CreditControlMessageFactory._CCA_AUTH_APP_ID), ServerCCASession.class, null);
+				
+				if (session == null)
+				{
+					logger.error("Failure creating CCA Server Session (null).");
+					return null;
+				}
+				
+				return (DiameterActivity) getActivity(getActivityHandle(request.getSessionId()));
+			}
+			catch (InternalException e)
+			{
+				logger.error("", e);
+				return null;
+			}
+			catch (IllegalDiameterStateException e)
+			{
+				logger.error("", e);
+				return null;
+			}
+			
+		
 		}
 
 		public CreditControlClientSession createClientSession(
 				DiameterIdentityAvp destinationHost,
-				DiameterIdentityAvp destinationRealm) {
-			// TODO Auto-generated method stub
-			return null;
+				DiameterIdentityAvp destinationRealm)
+				throws CreateActivityException {
+
+
+			CreditControlClientSessionImpl clientSession=(CreditControlClientSessionImpl) this.createClientSession();
+			clientSession.setDestinationHost(destinationHost);
+			clientSession.setDestinationRealm(destinationRealm);
+			return clientSession;
 		}
 
 		public CreditControlAVPFactory getCreditControlAVPFactory() {
-			// TODO Auto-generated method stub
-			return null;
+			return localFactory;
 		}
 
 		public CreditControlMessageFactory getCreditControlMessageFactory() {
-			// TODO Auto-generated method stub
-			return null;
+			DiameterMessageFactoryImpl baseFactory=new DiameterMessageFactoryImpl(null,stack);
+			CreditControlMessageFactory ccaMsgFactory=new CreditControlMessageFactoryImpl(baseFactory,null,stack,localFactory);
+			return ccaMsgFactory;
 		}
-		  
-	  }
+		
+	}
+
+	
+	
+	
+	// ################
+	// # PROVISIONING #
+	// ################
+	
+	public long getMessageTimeout() {
+		return messageTimeout;
+	}
+
+
+	public void setMessageTimeout(long messageTimeout) {
+		this.messageTimeout = messageTimeout;
+	}
+
+
+	public int getDefaultDirectDebitingFailureHandling() {
+		return defaultDirectDebitingFailureHandling;
+	}
+
+
+	public void setDefaultDirectDebitingFailureHandling(
+			int defaultDirectDebitingFailureHandling) {
+		this.defaultDirectDebitingFailureHandling = defaultDirectDebitingFailureHandling;
+	}
+
+
+	public int getDefaultCreditControlFailureHandling() {
+		return defaultCreditControlFailureHandling;
+	}
+
+
+	public void setDefaultCreditControlFailureHandling(
+			int defaultCreditControlFailureHandling) {
+		this.defaultCreditControlFailureHandling = defaultCreditControlFailureHandling;
+	}
+
+
+	public long getDefaultValidityTime() {
+		return defaultValidityTime;
+	}
+
+
+	public void setDefaultValidityTime(long defaultValidityTime) {
+		this.defaultValidityTime = defaultValidityTime;
+	}
+
+
+	public long getDefaultTxTimerValue() {
+		return defaultTxTimerValue;
+	}
+
+
+	public void setDefaultTxTimerValue(long defaultTxTimerValue) {
+		this.defaultTxTimerValue = defaultTxTimerValue;
+	}
+	
 	  
 }

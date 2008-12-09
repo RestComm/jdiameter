@@ -14,64 +14,64 @@
 		<resource-adaptor-type-classes>
 			<activity-type>
 				<activity-type-name>
-				  net.java.slee.resource.diameter.cca.CreditControlClientSession
+					net.java.slee.resource.diameter.cca.CreditControlClientSession
 				</activity-type-name>
 			</activity-type>
 
-      <activity-type>
-        <activity-type-name>
-          net.java.slee.resource.diameter.cca.CreditControlServerSession
+			<activity-type>
+				<activity-type-name>
+					net.java.slee.resource.diameter.cca.CreditControlServerSession
         </activity-type-name>
-      </activity-type>
+			</activity-type>
 
-      <activity-type>
-        <activity-type-name>
-          net.java.slee.resource.diameter.base.DiameterActivity
+			<activity-type>
+				<activity-type-name>
+					net.java.slee.resource.diameter.base.DiameterActivity
         </activity-type-name>
-      </activity-type>
+			</activity-type>
 
 			<activity-context-interface-factory-interface>
-			  <activity-context-interface-factory-interface-name>
-			    net.java.slee.resource.diameter.cca.CreditControlActivityContextInterfaceFactory
+				<activity-context-interface-factory-interface-name>
+					net.java.slee.resource.diameter.cca.CreditControlActivityContextInterfaceFactory
 			  </activity-context-interface-factory-interface-name>
 			</activity-context-interface-factory-interface>
-			
+
 			<resource-adaptor-interface>
-			  <resource-adaptor-interface-name>
-			    net.java.slee.resource.diameter.cca.CreditControlProvider
+				<resource-adaptor-interface-name>
+					net.java.slee.resource.diameter.cca.CreditControlProvider
 			  </resource-adaptor-interface-name>
 			</resource-adaptor-interface>
 		</resource-adaptor-type-classes>
 
-    <event-type-ref>
-        <event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlRequestEvent</event-type-name>
-        <event-type-vendor>java.net</event-type-vendor>
-        <event-type-version>0.8</event-type-version>
-    </event-type-ref>
+		<event-type-ref>
+			<event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlRequestEvent</event-type-name>
+			<event-type-vendor>java.net</event-type-vendor>
+			<event-type-version>0.8</event-type-version>
+		</event-type-ref>
 
-    <event-type-ref>
-        <event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlRequestInitial</event-type-name>
-        <event-type-vendor>java.net</event-type-vendor>
-        <event-type-version>0.8</event-type-version>
-    </event-type-ref>
+		<event-type-ref>
+			<event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlRequestInitial</event-type-name>
+			<event-type-vendor>java.net</event-type-vendor>
+			<event-type-version>0.8</event-type-version>
+		</event-type-ref>
 
-    <event-type-ref>
-        <event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlRequestUpdate</event-type-name>
-        <event-type-vendor>java.net</event-type-vendor>
-        <event-type-version>0.8</event-type-version>
-    </event-type-ref>
+		<event-type-ref>
+			<event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlRequestUpdate</event-type-name>
+			<event-type-vendor>java.net</event-type-vendor>
+			<event-type-version>0.8</event-type-version>
+		</event-type-ref>
 
-    <event-type-ref>
-        <event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlRequestTermination</event-type-name>
-        <event-type-vendor>java.net</event-type-vendor>
-        <event-type-version>0.8</event-type-version>
-    </event-type-ref>
+		<event-type-ref>
+			<event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlRequestTermination</event-type-name>
+			<event-type-vendor>java.net</event-type-vendor>
+			<event-type-version>0.8</event-type-version>
+		</event-type-ref>
 
-    <event-type-ref>
-        <event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlAnswer</event-type-name>
-        <event-type-vendor>java.net</event-type-vendor>
-        <event-type-version>0.8</event-type-version>
-    </event-type-ref>
+		<event-type-ref>
+			<event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlAnswer</event-type-name>
+			<event-type-vendor>java.net</event-type-vendor>
+			<event-type-version>0.8</event-type-version>
+		</event-type-ref>
 	</resource-adaptor-type>
-	
+
 </resource-adaptor-type-jar>

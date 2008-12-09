@@ -20,6 +20,7 @@ import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
+import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppRequestEvent;
@@ -29,6 +30,7 @@ import org.jdiameter.api.auth.events.ReAuthAnswer;
 import org.jdiameter.api.auth.events.ReAuthRequest;
 import org.jdiameter.api.cca.ClientCCASession;
 import org.jdiameter.api.cca.ClientCCASessionListener;
+import org.jdiameter.api.cca.ServerCCASessionListener;
 import org.jdiameter.api.cca.events.JCreditControlAnswer;
 import org.jdiameter.api.cca.events.JCreditControlRequest;
 import org.jdiameter.client.impl.app.cca.Event.Type;
@@ -36,6 +38,7 @@ import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.cca.ClientCCASessionState;
 import org.jdiameter.common.api.app.cca.ICCAMessageFactory;
 import org.jdiameter.common.api.app.cca.IClientCCASessionContext;
+import org.jdiameter.common.api.app.cca.IServerCCASessionContext;
 import org.jdiameter.common.api.app.cca.ServerCCASessionState;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
@@ -102,6 +105,39 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 	// This should be done by app, but if for some reason its not, we handle it.
 	protected ArrayList<Event> eventQueue = new ArrayList<Event>();
 
+	
+	public ClientCCASessionImpl(ICCAMessageFactory fct, SessionFactory sf, ClientCCASessionListener lst)
+	{
+		this(null,fct,sf,lst);
+	}
+	public ClientCCASessionImpl(String sessionId, ICCAMessageFactory fct, SessionFactory sf, ClientCCASessionListener lst)
+	{
+		if (lst == null)
+			throw new IllegalArgumentException("Listener can not be null");
+		if (fct.getApplicationIds() == null)
+			throw new IllegalArgumentException("ApplicationId can not be less than zer0");
+		if(lst instanceof IServerCCASessionContext)
+		{
+			context=(IClientCCASessionContext)lst;
+		}
+		authAppIds = fct.getApplicationIds();
+		listener = lst;
+		factory = fct;
+		try {
+			if (sessionId == null) {
+				session = sf.getNewSession();
+			} else {
+				session = sf.getNewSession(sessionId);
+			}
+			session.setRequestListener(this);
+		} catch (InternalException e) {
+			throw new IllegalArgumentException(e);
+		}
+
+	}
+	
+	
+	
 	protected int getLocalCCFH() {
 		int CCFH = -1;
 		if (gatheredCCFH >= 0) {

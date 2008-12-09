@@ -55,7 +55,7 @@ public interface CreditControlClientSession extends CreditControlSession {
    * @param ccr the CreditControlRequest to send
    * @throws IOException
    */
-  void sendUpdateCreditControlRequest(CreditControlRequest ccr);
+  void sendUpdateCreditControlRequest(CreditControlRequest ccr) throws IOException;
 
   /**
    * Send a termination Credit-Control-Request. An event containing the answer
@@ -63,8 +63,8 @@ public interface CreditControlClientSession extends CreditControlSession {
    * fired.
    * 
    * @param ccr the CreditControlRequest to send
-   * @throws IOException
+   * @throws IOException 
    */
-  void sendTerminationCreditControlRequest(CreditControlRequest ccr);
+  void sendTerminationCreditControlRequest(CreditControlRequest ccr) throws IOException;
   
 }

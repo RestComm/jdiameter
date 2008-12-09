@@ -34,8 +34,9 @@ public interface CreditControlServerSession extends CreditControlSession {
    * Send a Re-Auth-Request message to the CC client.
    * 
    * @param rar the ReAuthRequest to send
+ * @throws IOException 
    * @throws IOException
    */
-  void sendReAuthRequest(ReAuthRequest rar);
+  void sendReAuthRequest(ReAuthRequest rar) throws IOException;
   
 }

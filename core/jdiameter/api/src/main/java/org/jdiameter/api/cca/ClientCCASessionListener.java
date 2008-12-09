@@ -45,13 +45,14 @@ public interface ClientCCASessionListener {
    * <br> DDFH is of type Enumarated - int32
    * @return
    */
-  int getDefaultDirectDebitingFailureHandling();
+  
+	long getDefaultDDFHValue();
   
   /**
    * Provides with default value of CCFH avp - this is used when avp is not present or send opoeration fails for some reason
    * <br> CCFH is of type Enumarated - int32
    * @return
    */
-  int getDefaultCreditControlFailureHandling();
+	long getDefaultCCFHValue();
 
 }

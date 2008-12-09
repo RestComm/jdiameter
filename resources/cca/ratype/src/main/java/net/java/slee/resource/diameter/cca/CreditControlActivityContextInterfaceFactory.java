@@ -8,6 +8,8 @@ public interface CreditControlActivityContextInterfaceFactory {
 
 	public ActivityContextInterface getActivityContextInterface(CreditControlClientSession cccs);
 	public ActivityContextInterface getActivityContextInterface(CreditControlServerSession ccss);
-	 public ActivityContextInterface getActivityContextInterface(
-			DiameterActivity activity);
+	
+	//FIXME: baranowb : this is not required, is it?
+	//public ActivityContextInterface getActivityContextInterface(
+	//		DiameterActivity activity);
 }
