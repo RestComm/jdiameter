@@ -66,7 +66,9 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 	public ProfileUpdateRequest createProfileUpdateRequest() {
 		ApplicationId applicationId = ApplicationId.createByAuthAppId(_SH_VENDOR_ID, _SH_APP_ID);
 		Message msg = createMessage(ProfileUpdateRequest.commandCode, applicationId, null);
+		msg.setRequest(true);
 		ProfileUpdateRequestImpl pur = new ProfileUpdateRequestImpl(msg);
+		
 		return pur;
 	}
 
@@ -87,6 +89,7 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 	public PushNotificationAnswer createPushNotificationAnswer() {
 		ApplicationId applicationId = ApplicationId.createByAuthAppId(_SH_VENDOR_ID, _SH_APP_ID);
 		Message msg = createMessage(PushNotificationAnswer.commandCode, applicationId, null);
+		msg.setRequest(false);
 		PushNotificationAnswerImpl pns = new PushNotificationAnswerImpl(msg);
 		return pns;
 	}
@@ -102,6 +105,7 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 	public SubscribeNotificationsRequest createSubscribeNotificationsRequest() {
 		ApplicationId applicationId = ApplicationId.createByAuthAppId(_SH_VENDOR_ID, _SH_APP_ID);
 		Message msg = createMessage(SubscribeNotificationsRequest.commandCode, applicationId, null);
+		msg.setRequest(true);
 		SubscribeNotificationsRequestImpl snr = new SubscribeNotificationsRequestImpl(msg);
 		return snr;
 	}
@@ -116,6 +120,7 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 	public UserDataRequest createUserDataRequest() {
 		ApplicationId applicationId = ApplicationId.createByAuthAppId(_SH_VENDOR_ID, _SH_APP_ID);
 		Message msg = createMessage(UserDataRequest.commandCode, applicationId, null);
+		msg.setRequest(true);
 		UserDataRequestImpl udr = new UserDataRequestImpl(msg);
 		return udr;
 	}
