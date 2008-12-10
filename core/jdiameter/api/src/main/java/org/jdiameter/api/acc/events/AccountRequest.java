@@ -19,6 +19,11 @@ import org.jdiameter.api.app.AppRequestEvent;
 
 public interface AccountRequest extends AppRequestEvent {
 
+	public static final String _SHORT_NAME = "ACR";
+	public static final String _LONG_NAME = "Accounting-Request";
+	
+	public static final int code = 271;
+	
     /**
      * @return Record type of request
      * @throws AvpDataException if result code avp is not integer

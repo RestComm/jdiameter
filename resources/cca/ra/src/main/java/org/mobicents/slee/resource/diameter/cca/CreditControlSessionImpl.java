@@ -15,9 +15,7 @@ import org.jdiameter.api.Request;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.app.StateChangeListener;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
-import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
-import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
-import org.mobicents.slee.resource.diameter.sh.client.handlers.ShClientSessionListener;
+
 
 public abstract class CreditControlSessionImpl extends DiameterActivityImpl implements CreditControlSession,StateChangeListener{
 

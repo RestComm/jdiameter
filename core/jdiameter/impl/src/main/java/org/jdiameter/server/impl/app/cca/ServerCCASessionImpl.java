@@ -18,12 +18,15 @@ import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.SessionFactory;
+import org.jdiameter.api.acc.events.AccountAnswer;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
+import org.jdiameter.api.auth.events.AbortSessionAnswer;
 import org.jdiameter.api.auth.events.ReAuthRequest;
+import org.jdiameter.api.auth.events.SessionTermAnswer;
 import org.jdiameter.api.cca.ServerCCASession;
 import org.jdiameter.api.cca.ServerCCASessionListener;
 import org.jdiameter.api.cca.events.JCreditControlAnswer;
@@ -32,11 +35,17 @@ import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.cca.ICCAMessageFactory;
 import org.jdiameter.common.api.app.cca.IServerCCASessionContext;
 import org.jdiameter.common.api.app.cca.ServerCCASessionState;
+import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
+import org.jdiameter.common.impl.app.acc.AccountAnswerImpl;
+import org.jdiameter.common.impl.app.acc.AccountRequestImpl;
+import org.jdiameter.common.impl.app.auth.AbortSessionAnswerImpl;
+import org.jdiameter.common.impl.app.auth.AbortSessionRequestImpl;
 import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
 import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
+import org.jdiameter.common.impl.app.auth.SessionTermAnswerImpl;
+import org.jdiameter.common.impl.app.auth.SessionTermRequestImpl;
 import org.jdiameter.common.impl.app.cca.AppCCASessionImpl;
-import org.jdiameter.common.impl.app.cca.JCreditControlRequestImpl;
 
 public class ServerCCASessionImpl extends AppCCASessionImpl implements
 		ServerCCASession, NetworkReqListener,EventListener<Request, Answer> {
@@ -249,24 +258,52 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements
 	public Answer processRequest(Request request) {
 		
 		try{
-			
-			if(isValidToServerMessage(request))
+			//FIXME: baranowb: add message validation here!!!
+			//We handle CCR,STR,ACR,ASR other go into extension
+			switch(request.getCommandCode())
 			{
-				//JCreditControlRequest jRequest=new JCreditControlRequestImpl(request);
-				JCreditControlRequest jRequest=factory.createCreditControlRequest(request);
-				if(!jRequest.isRequestTypeAVPPresent())
-				{
+				case JCreditControlAnswer.code:
+					this.handleEvent(new Event(true,factory.createCreditControlRequest(request),null));
+					break;
 					
-					return this.terminateSessionOnError(request,"Avp Request-Type MUST be present", 5005);
-				}
+					//All other go straight to listner, they dont change state machine
+					//Suprisingly there is no factory.... ech
+					//FIXME: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+				case SessionTermAnswer.code:
+					listener.doSessionTerminationRequest(this, new SessionTermRequestImpl(request));
+					break;
+				case AbortSessionAnswer.code:
+					listener.doAbortSessionRequest(this, new AbortSessionRequestImpl(request));
+					break;
+				case AccountAnswer.code:
+					listener.doAccountingRequest(this, new AccountRequestImpl(request));
+					break;
+					
+					
+				default:
+					listener.doOtherEvent(this, new AppRequestEventImpl(request), null);
+					break;
+			}
+			
+
+			
+			//if(isValidToServerMessage(request))
+			//{
+				//JCreditControlRequest jRequest=new JCreditControlRequestImpl(request);
+				//JCreditControlRequest jRequest=factory.createCreditControlRequest(request);
+				//if(!jRequest.isRequestTypeAVPPresent())
+				//{
+					
+				//	return this.terminateSessionOnError(request,"Avp Request-Type MUST be present", 5005);
+				//}
 				
 				//this.handleEvent(new Event(true,new JCreditControlRequestImpl(request),null));
-				this.handleEvent(new Event(true,factory.createCreditControlRequest(request),null));
+				//this.handleEvent(new Event(true,factory.createCreditControlRequest(request),null));
 				
-			}else
-			{
-				listener.doOtherEvent(this, new AppRequestEventImpl(request), null);
-			}
+			//}else
+			//{
+			//	listener.doOtherEvent(this, new AppRequestEventImpl(request), null);
+			//}
 			
 			
 			
@@ -285,28 +322,65 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements
 	
 	public void receivedSuccessMessage(Request request, Answer answer) {
 
-		//Here is propably part for RAX
-		if(!isValidResponseToServer(request,answer))
-		{
-			//FIXME: drop?
-		}else
-		{
-			//RAA is the only response we receive, its the only one valid
-			try{
-				handleEvent(new Event(Event.Type.RECEIVED_RAA,factory.createReAuthRequest(request ),factory.createReAuthAnswer(answer)));
-			}catch(Exception e)
+		
+		try{
+			//FIXME: baranowb: add message validation here!!!
+			//We handle CCR,STR,ACR,ASR other go into extension
+			switch(request.getCommandCode())
 			{
-				e.printStackTrace();
+				case ReAuthRequest.code:
+					handleEvent(new Event(Event.Type.RECEIVED_RAA,factory.createReAuthRequest(request ),factory.createReAuthAnswer(answer)));
+					break;
+					
+					//All other go straight to listner, they dont change state machine
+					//Suprisingly there is no factory.... ech
+					//FIXME: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+				case SessionTermAnswer.code:
+					listener.doSessionTerminationAnswer(this,null ,new SessionTermAnswerImpl(answer));
+					break;
+				case AbortSessionAnswer.code:
+					listener.doAbortSessionAnswer(this,null, new AbortSessionAnswerImpl(answer));
+					break;
+				case AccountAnswer.code:
+					listener.doAccountingAnswer(this,null, new AccountAnswerImpl(answer));
+					break;
+					
+					
+				default:
+					listener.doOtherEvent(this, null, new AppAnswerEventImpl(answer));
+					break;
 			}
+		
+			
+		}catch(Exception e)
+		{
+			e.printStackTrace();
 		}
+		
+		
+		
+		//Here is propably part for RAX
+		//if(!isValidResponseToServer(request,answer))
+		//{
+			//FIXME: drop?
+		//}else
+		//{
+			//RAA is the only response we receive, its the only one valid
+		//	try{
+		//		handleEvent(new Event(Event.Type.RECEIVED_RAA,factory.createReAuthRequest(request ),factory.createReAuthAnswer(answer)));
+		//	}catch(Exception e)
+		//	{
+		//		e.printStackTrace();
+		//	}
+		//}
 		
 	}
 
 	
 	public void timeoutExpired(Request request) {
 		context.timeoutExpired(request);
-		//FIXME: do more? Only timeout is for RAR
-		//App should decide whats next
+		//FIXME: Should we release ?
+		
 		
 	}
 
@@ -441,6 +515,18 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements
 		}
 	}
 
+	
+	
+	
+	@Override
+	public void release() {
+		super.release();
+		this.stopTcc(false);
+	}
+
+
+
+
 	private class TccScheduledTask implements Runnable
 	{
 		ServerCCASession session=null;
@@ -480,16 +566,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements
 			sendAndStateLock.lock();
 			if (type != null)
 				handleEvent(new Event(type, request, answer));
-			//AppEvent event = null;
-			//if (request != null) {
-			//	event = request;
-			//} else {
-			//	event = answer;
-			//}
-			//session.send(event.getMessage(), this);
-			// Store last destinmation information
-			//destRealm = event.getMessage().getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString();
-			//destHost = event.getMessage().getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString();
+			
 		} catch (Exception exc) {
 			throw new InternalException(exc);
 		} finally {

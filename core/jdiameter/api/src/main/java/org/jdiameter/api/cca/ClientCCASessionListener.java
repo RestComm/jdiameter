@@ -4,10 +4,17 @@ import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.RouteException;
+import org.jdiameter.api.acc.events.AccountAnswer;
+import org.jdiameter.api.acc.events.AccountRequest;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
+import org.jdiameter.api.auth.events.AbortSessionAnswer;
+import org.jdiameter.api.auth.events.AbortSessionRequest;
+import org.jdiameter.api.auth.events.ReAuthAnswer;
 import org.jdiameter.api.auth.events.ReAuthRequest;
+import org.jdiameter.api.auth.events.SessionTermAnswer;
+import org.jdiameter.api.auth.events.SessionTermRequest;
 import org.jdiameter.api.cca.events.JCreditControlAnswer;
 import org.jdiameter.api.cca.events.JCreditControlRequest;
 
@@ -20,7 +27,6 @@ import org.jdiameter.api.cca.events.JCreditControlRequest;
  * <br>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
- * @author Erick Svenson
  */
 public interface ClientCCASessionListener {
 
@@ -28,8 +34,24 @@ public interface ClientCCASessionListener {
 
   void doReAuthRequest(ClientCCASession session, ReAuthRequest request)  throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
+  
+  // #############################################################################
+  // # RFC says only that this triggers schedule of term, its up to app to do so #
+  // #############################################################################
+  void doAccountingRequest(ClientCCASession session, AccountRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  
+  void doAbortSessionRequest(ClientCCASession session, AbortSessionRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  
+  void doSessionTerminationRequest(ClientCCASession session, SessionTermRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  
+  void doAccountingAnswer(ClientCCASession session, AccountRequest request, AccountAnswer answer)  throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doAbortSessionAnswer(ClientCCASession session, AbortSessionRequest request, AbortSessionAnswer answer)  throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doSessionTerminationAnswer(ClientCCASession session, SessionTermRequest request, SessionTermAnswer answer)  throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  
+  
+  
   /**
-   * Notifies this ClientCCASessionListener that the ClientCCASession has recived not CCA message, now it can be even RAR.
+   * Notifies this ClientCCASessionListener that the ClientCCASession has recived not CCA message, usually some extension.
    * @param session parent application session (FSM)
    * @param request request object
    * @param answer answer object
@@ -46,13 +68,13 @@ public interface ClientCCASessionListener {
    * @return
    */
   
-	long getDefaultDDFHValue();
+	int getDefaultDDFHValue();
   
   /**
    * Provides with default value of CCFH avp - this is used when avp is not present or send opoeration fails for some reason
    * <br> CCFH is of type Enumarated - int32
    * @return
    */
-	long getDefaultCCFHValue();
+	int getDefaultCCFHValue();
 
 }

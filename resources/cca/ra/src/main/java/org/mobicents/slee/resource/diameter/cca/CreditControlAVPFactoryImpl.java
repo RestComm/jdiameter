@@ -8,26 +8,6 @@
  */
 package org.mobicents.slee.resource.diameter.cca;
 
-import org.apache.log4j.Logger;
-import org.jdiameter.api.Stack;
-import org.jdiameter.client.impl.parser.MessageParser;
-import org.mobicents.diameter.dictionary.AvpDictionary;
-import org.mobicents.diameter.dictionary.AvpRepresentation;
-import org.mobicents.slee.resource.diameter.cca.events.avp.CcMoneyAvpImpl;
-import org.mobicents.slee.resource.diameter.cca.events.avp.CostInformationAvpImpl;
-import org.mobicents.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvpImpl;
-import org.mobicents.slee.resource.diameter.cca.events.avp.GSUPoolReferenceAvpImpl;
-import org.mobicents.slee.resource.diameter.cca.events.avp.GrantedServiceUnitAvpImpl;
-import org.mobicents.slee.resource.diameter.cca.events.avp.MultipleServicesCreditControlAvpImpl;
-import org.mobicents.slee.resource.diameter.cca.events.avp.RedirectServerAvpImpl;
-import org.mobicents.slee.resource.diameter.cca.events.avp.RequestedServiceUnitAvpImpl;
-import org.mobicents.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvpImpl;
-import org.mobicents.slee.resource.diameter.cca.events.avp.SubscriptionIdAvpImpl;
-import org.mobicents.slee.resource.diameter.cca.events.avp.UnitValueAvpImpl;
-import org.mobicents.slee.resource.diameter.cca.events.avp.UsedServiceUnitAvpImpl;
-import org.mobicents.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvpImpl;
-import org.mobicents.slee.resource.diameter.sh.client.DiameterShAvpFactoryImpl;
-
 import net.java.slee.resource.diameter.base.DiameterAvpFactory;
 import net.java.slee.resource.diameter.cca.CreditControlAVPCodes;
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
@@ -49,6 +29,25 @@ import net.java.slee.resource.diameter.cca.events.avp.UnitValueAvp;
 import net.java.slee.resource.diameter.cca.events.avp.UsedServiceUnitAvp;
 import net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvp;
 import net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoType;
+
+import org.apache.log4j.Logger;
+import org.jdiameter.api.Stack;
+import org.mobicents.diameter.dictionary.AvpDictionary;
+import org.mobicents.diameter.dictionary.AvpRepresentation;
+import org.mobicents.slee.resource.diameter.cca.events.avp.CcMoneyAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.CostInformationAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.GSUPoolReferenceAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.GrantedServiceUnitAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.MultipleServicesCreditControlAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.RedirectServerAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.RequestedServiceUnitAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.SubscriptionIdAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.UnitValueAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.UsedServiceUnitAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvpImpl;
+import org.mobicents.slee.resource.diameter.sh.client.DiameterShAvpFactoryImpl;
 
 /**
  * Start time:16:32:52 2008-12-08<br>

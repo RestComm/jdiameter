@@ -148,7 +148,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	    eventsTemp.put(ErrorAnswer.commandCode, "Error");
 	    eventsTemp.put(SessionTerminationAnswer.commandCode, "SessionTermination");
 	    // FIXME: baranowb - make sure its compilant with xml
-	    eventsTemp.put(ExtensionDiameterMessage.commandCode, "ExtensionDiameter");
+	    eventsTemp.put(ExtensionDiameterMessage.commandCode, "ExtensionDiameterMessage");
 	    
 	    events = Collections.unmodifiableMap(eventsTemp);
 	    

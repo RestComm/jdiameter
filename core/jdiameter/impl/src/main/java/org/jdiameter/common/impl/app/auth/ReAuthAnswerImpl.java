@@ -6,7 +6,7 @@ import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 
 public class ReAuthAnswerImpl extends AppAnswerEventImpl implements ReAuthAnswer {
 
-    public static int code = 258;
+ 
 
     public ReAuthAnswerImpl(Message message) {
         super(message);

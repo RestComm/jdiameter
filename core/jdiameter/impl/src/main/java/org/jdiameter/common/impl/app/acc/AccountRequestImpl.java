@@ -19,7 +19,7 @@ import org.jdiameter.common.impl.app.AppRequestEventImpl;
 
 public class AccountRequestImpl extends AppRequestEventImpl implements AccountRequest {
 
-    public final static int code = 271;
+   
 
     public AccountRequestImpl(AppSession session, int accountRecordType, int accReqNumber, String destRealm, String destHost) {
         super(session.getSessions().get(0).createRequest(code, session.getSessionAppId(), destRealm, destHost));

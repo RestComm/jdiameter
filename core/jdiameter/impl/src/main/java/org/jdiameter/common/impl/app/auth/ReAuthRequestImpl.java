@@ -9,7 +9,7 @@ import org.jdiameter.common.impl.app.AppRequestEventImpl;
 
 public class ReAuthRequestImpl extends AppRequestEventImpl implements ReAuthRequest {
 
-    public static int code = 258;
+   
 
     public ReAuthRequestImpl(Message message) {
         super(message);

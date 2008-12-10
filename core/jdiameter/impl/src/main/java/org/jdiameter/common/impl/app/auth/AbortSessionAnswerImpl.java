@@ -22,6 +22,6 @@ public class AbortSessionAnswerImpl extends AppAnswerEventImpl implements AbortS
         super(message);
     }
 
-    public final static int code = 274;
+
 
 }

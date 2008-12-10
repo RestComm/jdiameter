@@ -35,7 +35,7 @@ import org.jdiameter.api.cca.ClientCCASession;
 import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
 import org.jdiameter.common.impl.app.cca.JCreditControlRequestImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
-import org.mobicents.slee.resource.diameter.sh.client.handlers.ShClientSessionListener;
+
 
 /**
  * Start time:15:00:53 2008-12-08<br>
@@ -76,6 +76,25 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl
 
 	}
 
+	
+	public void endActivity() {
+		
+		this.listener.sessionDestroyed(this.sessionId, this);
+		this.session.release();
+		
+
+	}
+
+	public Object getDiameterAvpFactory() {
+		return this.ccaAvpFactory;
+	}
+
+	public Object getDiameterMessageFactory() {
+		
+		return this.ccaMessageFactory;
+	}
+	
+	
 	/*
 	 * (non-Javadoc)
 	 * 

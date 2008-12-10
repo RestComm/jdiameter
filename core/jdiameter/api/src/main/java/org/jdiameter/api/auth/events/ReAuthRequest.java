@@ -18,6 +18,12 @@ import org.jdiameter.api.app.AppRequestEvent;
  */
 
 public interface ReAuthRequest extends AppRequestEvent {
+	
+	public static final String _SHORT_NAME = "RAR";
+	public static final String _LONG_NAME = "Re-Auth-Request";
+	
+	public static final int code = 258;
+	
     /**
      * Return re-authentication request type
      * @return re-authentication request type

@@ -2,9 +2,6 @@ package org.mobicents.slee.resource.diameter.cca.handlers;
 
 import java.util.concurrent.ScheduledFuture;
 
-import net.java.slee.resource.diameter.cca.CreditControlClientSession;
-import net.java.slee.resource.diameter.cca.CreditControlServerSession;
-
 import org.apache.log4j.Logger;
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.ApplicationId;
@@ -15,21 +12,26 @@ import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.SessionFactory;
+import org.jdiameter.api.acc.events.AccountAnswer;
+import org.jdiameter.api.acc.events.AccountRequest;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
+import org.jdiameter.api.auth.events.AbortSessionAnswer;
+import org.jdiameter.api.auth.events.AbortSessionRequest;
 import org.jdiameter.api.auth.events.ReAuthAnswer;
 import org.jdiameter.api.auth.events.ReAuthRequest;
+import org.jdiameter.api.auth.events.SessionTermAnswer;
+import org.jdiameter.api.auth.events.SessionTermRequest;
 import org.jdiameter.api.cca.ClientCCASession;
 import org.jdiameter.api.cca.ClientCCASessionListener;
 import org.jdiameter.api.cca.ServerCCASession;
 import org.jdiameter.api.cca.ServerCCASessionListener;
 import org.jdiameter.api.cca.events.JCreditControlAnswer;
 import org.jdiameter.api.cca.events.JCreditControlRequest;
-import org.jdiameter.api.sh.ClientShSession;
+
 import org.jdiameter.client.impl.app.cca.ClientCCASessionImpl;
-import org.jdiameter.client.impl.app.sh.ShClientSessionImpl;
 import org.jdiameter.common.api.app.IAppSessionFactory;
 import org.jdiameter.common.api.app.cca.ICCAMessageFactory;
 import org.jdiameter.common.api.app.cca.IClientCCASessionContext;
@@ -131,7 +133,7 @@ public class CreditControlSessionFactory implements IAppSessionFactory,
 				value = serverSession;
 			} else {
 				throw new IllegalArgumentException("Wrong session class!!["
-						+ aClass + "]. Supported[" + ClientShSession.class
+						+ aClass + "]. Supported[" + ClientCCASession.class+","+ServerCCASession.class
 						+ "]");
 			}
 
@@ -192,7 +194,7 @@ public class CreditControlSessionFactory implements IAppSessionFactory,
 			IllegalDiameterStateException, RouteException, OverloadException {
 		DiameterActivityHandle handle = new DiameterActivityHandle(session
 				.getSessions().get(0).getSessionId());
-		//baranowb: here we get ASR/ASA STR/STA ACR/ACA and extension
+		//baranowb: here we get something weird, lets do extension
 		//Still  we relly on CCA termination mechanisms, those message are sent via generic send, which does not trigger FSM
 		
 		
@@ -201,11 +203,11 @@ public class CreditControlSessionFactory implements IAppSessionFactory,
 
 		if (answer != null)
 		{
-			this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
+			this.resourceAdaptor.fireEvent(handle, "net.java.slee.resource.diameter.base.events.ExtensionDiameterMessage", null, (Answer) answer.getMessage());
 		}
 		else
 		{
-			this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(request.getCommandCode()) + "Request", (Request) request.getMessage(), null);
+			this.resourceAdaptor.fireEvent(handle, "net.java.slee.resource.diameter.base.events.ExtensionDiameterMessage", (Request) request.getMessage(), null);
 		}
 
 	}
@@ -308,12 +310,12 @@ public class CreditControlSessionFactory implements IAppSessionFactory,
 		
 	}
 
-	public long getDefaultCCFHValue() {
+	public int getDefaultCCFHValue() {
 		
 		return defaultCreditControlFailureHandling;
 	}
 
-	public long getDefaultDDFHValue() {
+	public int getDefaultDDFHValue() {
 		
 		return defaultDirectDebitingFailureHandling;
 	}
@@ -351,6 +353,149 @@ public class CreditControlSessionFactory implements IAppSessionFactory,
 			session.release();
 			
 		
+		
+	}
+
+
+
+	public void doAbortSessionAnswer(ClientCCASession session,
+			AbortSessionRequest request, AbortSessionAnswer answer)
+			throws InternalException, IllegalDiameterStateException,
+			RouteException, OverloadException {
+		DiameterActivityHandle handle = new DiameterActivityHandle(session
+				.getSessions().get(0).getSessionId());
+
+		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
+		
+	}
+
+
+
+	public void doAbortSessionRequest(ClientCCASession session,
+			AbortSessionRequest request) throws InternalException,
+			IllegalDiameterStateException, RouteException, OverloadException {
+		DiameterActivityHandle handle = new DiameterActivityHandle(session
+				.getSessions().get(0).getSessionId());
+		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(request.getCommandCode()) + "Request",(Request)request.getMessage(), null);
+		
+	}
+
+
+
+	public void doAccountingAnswer(ClientCCASession session,
+			AccountRequest request, AccountAnswer answer)
+			throws InternalException, IllegalDiameterStateException,
+			RouteException, OverloadException {
+		DiameterActivityHandle handle = new DiameterActivityHandle(session
+				.getSessions().get(0).getSessionId());
+
+		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
+		
+	}
+
+
+
+	public void doAccountingRequest(ClientCCASession session,
+			AccountRequest request) throws InternalException,
+			IllegalDiameterStateException, RouteException, OverloadException {
+		DiameterActivityHandle handle = new DiameterActivityHandle(session
+				.getSessions().get(0).getSessionId());
+		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(request.getCommandCode()) + "Request",(Request)request.getMessage(), null);
+		
+	}
+
+
+
+	public void doSessionTerminationAnswer(ClientCCASession session,
+			SessionTermRequest request, SessionTermAnswer answer)
+			throws InternalException, IllegalDiameterStateException,
+			RouteException, OverloadException {
+		DiameterActivityHandle handle = new DiameterActivityHandle(session
+				.getSessions().get(0).getSessionId());
+
+		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
+		
+	}
+
+
+
+	public void doSessionTerminationRequest(ClientCCASession session,
+			SessionTermRequest request) throws InternalException,
+			IllegalDiameterStateException, RouteException, OverloadException {
+		DiameterActivityHandle handle = new DiameterActivityHandle(session
+				.getSessions().get(0).getSessionId());
+		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(request.getCommandCode()) + "Request",(Request)request.getMessage(), null);
+		
+	}
+
+
+
+	public void doAbortSessionAnswer(ServerCCASession session,
+			AbortSessionRequest request, AbortSessionAnswer answer)
+			throws InternalException, IllegalDiameterStateException,
+			RouteException, OverloadException {
+		DiameterActivityHandle handle = new DiameterActivityHandle(session
+				.getSessions().get(0).getSessionId());
+
+		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
+		
+	}
+
+
+
+	public void doAbortSessionRequest(ServerCCASession session,
+			AbortSessionRequest request) throws InternalException,
+			IllegalDiameterStateException, RouteException, OverloadException {
+		DiameterActivityHandle handle = new DiameterActivityHandle(session
+				.getSessions().get(0).getSessionId());
+		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(request.getCommandCode()) + "Request",(Request)request.getMessage(), null);
+		
+	}
+
+
+
+	public void doAccountingAnswer(ServerCCASession session,
+			AccountRequest request, AccountAnswer answer)
+			throws InternalException, IllegalDiameterStateException,
+			RouteException, OverloadException {
+		DiameterActivityHandle handle = new DiameterActivityHandle(session
+				.getSessions().get(0).getSessionId());
+
+		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
+	}
+
+
+
+	public void doAccountingRequest(ServerCCASession session,
+			AccountRequest request) throws InternalException,
+			IllegalDiameterStateException, RouteException, OverloadException {
+		DiameterActivityHandle handle = new DiameterActivityHandle(session
+				.getSessions().get(0).getSessionId());
+		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(request.getCommandCode()) + "Request",(Request)request.getMessage(), null);
+		
+	}
+
+
+
+	public void doSessionTerminationAnswer(ServerCCASession session,
+			SessionTermRequest request, SessionTermAnswer answer)
+			throws InternalException, IllegalDiameterStateException,
+			RouteException, OverloadException {
+		DiameterActivityHandle handle = new DiameterActivityHandle(session
+				.getSessions().get(0).getSessionId());
+
+		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
+		
+	}
+
+
+
+	public void doSessionTerminationRequest(ServerCCASession session,
+			SessionTermRequest request) throws InternalException,
+			IllegalDiameterStateException, RouteException, OverloadException {
+		DiameterActivityHandle handle = new DiameterActivityHandle(session
+				.getSessions().get(0).getSessionId());
+		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(request.getCommandCode()) + "Request",(Request)request.getMessage(), null);
 		
 	}
 

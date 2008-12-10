@@ -18,6 +18,12 @@ import org.jdiameter.api.AvpDataException;
  */
 
 public interface AbortSessionRequest extends AppRequestEvent {
+	
+	public static final String _SHORT_NAME = "ASR";
+	public static final String _LONG_NAME = "Abort-Session-Request";
+	
+	public static final int code = 274;
+	
     /**
      * Return Auth-Application-Id value of request
      * @return Auth-Application-Id value of request

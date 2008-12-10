@@ -10,7 +10,6 @@ import org.jdiameter.common.impl.app.AppRequestEventImpl;
 
 public class AbortSessionRequestImpl extends AppRequestEventImpl implements AbortSessionRequest {
 
-    public final static int code = 274;
 
     public AbortSessionRequestImpl(AppSession session, String destRealm, String destHost) {
         super(session.getSessions().get(0).createRequest(code, session.getSessionAppId(), destRealm, destHost));

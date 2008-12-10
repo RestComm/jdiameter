@@ -21,7 +21,6 @@ import org.jdiameter.common.impl.app.AppSessionImpl;
  * <br>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
- * @author Erick Svenson
  */
 public abstract class AppCCASessionImpl extends AppSessionImpl implements NetworkReqListener, StateMachine {
 

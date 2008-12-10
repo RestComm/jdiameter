@@ -6,7 +6,7 @@ import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 
 public class SessionTermAnswerImpl extends AppAnswerEventImpl implements SessionTermAnswer {
 
-    public static int code = 275;
+    
 
     public SessionTermAnswerImpl(Message message) {
         super(message);

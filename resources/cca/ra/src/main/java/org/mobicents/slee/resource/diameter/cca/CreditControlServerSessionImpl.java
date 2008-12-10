@@ -13,21 +13,6 @@ import java.util.ArrayList;
 
 import javax.slee.resource.SleeEndpoint;
 
-import org.jdiameter.api.Answer;
-import org.jdiameter.api.EventListener;
-import org.jdiameter.api.IllegalDiameterStateException;
-import org.jdiameter.api.InternalException;
-import org.jdiameter.api.OverloadException;
-import org.jdiameter.api.Request;
-import org.jdiameter.api.RouteException;
-import org.jdiameter.api.Session;
-import org.jdiameter.api.cca.ClientCCASession;
-import org.jdiameter.api.cca.ServerCCASession;
-import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
-import org.jdiameter.common.impl.app.cca.JCreditControlAnswerImpl;
-import org.jdiameter.common.impl.app.cca.JCreditControlRequestImpl;
-import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
-
 import net.java.slee.resource.diameter.base.events.ReAuthRequest;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
@@ -37,6 +22,18 @@ import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
 import net.java.slee.resource.diameter.cca.CreditControlServerSession;
 import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
 import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
+
+import org.jdiameter.api.Answer;
+import org.jdiameter.api.EventListener;
+import org.jdiameter.api.IllegalDiameterStateException;
+import org.jdiameter.api.InternalException;
+import org.jdiameter.api.OverloadException;
+import org.jdiameter.api.Request;
+import org.jdiameter.api.RouteException;
+import org.jdiameter.api.cca.ServerCCASession;
+import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
+import org.jdiameter.common.impl.app.cca.JCreditControlAnswerImpl;
+import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 
 /**
  * Start time:15:26:12 2008-12-08<br>
@@ -79,6 +76,21 @@ public class CreditControlServerSessionImpl extends CreditControlSessionImpl
 		
 	}
 
+	public void endActivity() {
+		this.listener.sessionDestroyed(this.sessionId, this);
+		this.session.release();
+	}
+
+	public Object getDiameterAvpFactory() {
+		return this.ccaAvpFactory;
+	}
+
+	public Object getDiameterMessageFactory() {
+		
+		return this.ccaMessageFactory;
+	}
+	
+	
 	/* (non-Javadoc)
 	 * @see net.java.slee.resource.diameter.cca.CreditControlServerSession#createCreditControlAnswer()
 	 */
@@ -151,7 +163,8 @@ public class CreditControlServerSessionImpl extends CreditControlSessionImpl
 	 */
 	public void stateChanged(Enum oldState, Enum newState) {
 		
-
+		
+		
 	}
 	
 	

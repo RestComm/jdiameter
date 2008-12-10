@@ -4,11 +4,17 @@ import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.RouteException;
+import org.jdiameter.api.acc.events.AccountAnswer;
+import org.jdiameter.api.acc.events.AccountRequest;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
+import org.jdiameter.api.auth.events.AbortSessionAnswer;
+import org.jdiameter.api.auth.events.AbortSessionRequest;
 import org.jdiameter.api.auth.events.ReAuthAnswer;
 import org.jdiameter.api.auth.events.ReAuthRequest;
+import org.jdiameter.api.auth.events.SessionTermAnswer;
+import org.jdiameter.api.auth.events.SessionTermRequest;
 import org.jdiameter.api.cca.events.JCreditControlRequest;
 
 public interface ServerCCASessionListener {
@@ -17,6 +23,24 @@ public interface ServerCCASessionListener {
 
   void doReAuthAnswer(ServerCCASession session, ReAuthRequest request, ReAuthAnswer answer)  throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
+  
+  
+  // #############################################################################
+  // # RFC says only that this triggers schedule of term, its up to app to do so #
+  // #############################################################################
+  void doAccountingRequest(ServerCCASession session, AccountRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  
+  void doAbortSessionRequest(ServerCCASession session, AbortSessionRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  
+  void doSessionTerminationRequest(ServerCCASession session, SessionTermRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  
+  void doAccountingAnswer(ServerCCASession session, AccountRequest request, AccountAnswer answer)  throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doAbortSessionAnswer(ServerCCASession session, AbortSessionRequest request, AbortSessionAnswer answer)  throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doSessionTerminationAnswer(ServerCCASession session, SessionTermRequest request, SessionTermAnswer answer)  throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  
+  
+  
+  
   /**
    * Notifies this ServerCCASessionListener that the ServerCCASession has recived not CCA message, now it can be even RAA.
    * @param session parent application session (FSM)

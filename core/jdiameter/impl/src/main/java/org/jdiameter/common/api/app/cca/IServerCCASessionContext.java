@@ -14,7 +14,6 @@ import org.jdiameter.api.cca.ServerCCASession;
  * <br>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
- * @author Erick Svenson
  */
 public interface IServerCCASessionContext {
 

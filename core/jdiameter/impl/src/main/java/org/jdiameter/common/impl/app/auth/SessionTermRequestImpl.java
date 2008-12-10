@@ -11,7 +11,6 @@ import org.jdiameter.common.impl.app.AppRequestEventImpl;
 
 public class SessionTermRequestImpl extends AppRequestEventImpl implements SessionTermRequest {
 
-    public static int code = 275;
 
     public SessionTermRequestImpl(AppSession session, int terminationCause, String destRealm, String destHost) {
         super(session.getSessions().get(0).createRequest(code, session.getSessionAppId(), destRealm, destHost));

@@ -16,7 +16,7 @@ import org.jdiameter.api.app.AppAnswerEvent;
  */
 public interface JCreditControlAnswer extends AppAnswerEvent {
 	
-  public static final String _SHORT_NAME = "CCA";
+	public static final String _SHORT_NAME = "CCA";
 	public static final String _LONG_NAME = "Credit-Control-Answer";
 	
 	public static final int code = 272;

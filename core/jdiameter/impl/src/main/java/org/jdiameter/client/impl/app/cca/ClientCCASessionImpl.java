@@ -21,16 +21,17 @@ import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.SessionFactory;
+import org.jdiameter.api.acc.events.AccountAnswer;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
-import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
+import org.jdiameter.api.auth.events.AbortSessionAnswer;
 import org.jdiameter.api.auth.events.ReAuthAnswer;
 import org.jdiameter.api.auth.events.ReAuthRequest;
+import org.jdiameter.api.auth.events.SessionTermAnswer;
 import org.jdiameter.api.cca.ClientCCASession;
 import org.jdiameter.api.cca.ClientCCASessionListener;
-import org.jdiameter.api.cca.ServerCCASessionListener;
 import org.jdiameter.api.cca.events.JCreditControlAnswer;
 import org.jdiameter.api.cca.events.JCreditControlRequest;
 import org.jdiameter.client.impl.app.cca.Event.Type;
@@ -39,11 +40,18 @@ import org.jdiameter.common.api.app.cca.ClientCCASessionState;
 import org.jdiameter.common.api.app.cca.ICCAMessageFactory;
 import org.jdiameter.common.api.app.cca.IClientCCASessionContext;
 import org.jdiameter.common.api.app.cca.IServerCCASessionContext;
-import org.jdiameter.common.api.app.cca.ServerCCASessionState;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
+import org.jdiameter.common.impl.app.acc.AccountAnswerImpl;
+import org.jdiameter.common.impl.app.acc.AccountRequestImpl;
+import org.jdiameter.common.impl.app.auth.AbortSessionAnswerImpl;
+import org.jdiameter.common.impl.app.auth.AbortSessionRequestImpl;
 import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
+import org.jdiameter.common.impl.app.auth.SessionTermAnswerImpl;
+import org.jdiameter.common.impl.app.auth.SessionTermRequestImpl;
 import org.jdiameter.common.impl.app.cca.AppCCASessionImpl;
+
+
 
 public class ClientCCASessionImpl extends AppCCASessionImpl implements
 		ClientCCASession, NetworkReqListener, EventListener<Request, Answer> {
@@ -533,91 +541,181 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 
 	public Answer processRequest(Request request) {
 
-		if (request.getCommandCode() == ReAuthAnswerImpl.code) {
-			try {
-				handleEvent(new Event(Event.Type.SEND_RAA, factory
-						.createReAuthRequest(request), null));
-			} catch (InternalException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (OverloadException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		
+		try{
+			//FIXME: baranowb: add message validation here!!!
+			//We handle CCR,STR,ACR,ASR other go into extension
+			switch(request.getCommandCode())
+			{
+				case ReAuthAnswerImpl.code:
+					handleEvent(new Event(Event.Type.RECEIVED_RAR, factory
+											.createReAuthRequest(request), null));
+					break;
+					
+					//All other go straight to listner, they dont change state machine
+					//Suprisingly there is no factory.... ech
+					//FIXME: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+				case SessionTermAnswer.code:
+					listener.doSessionTerminationRequest(this, new SessionTermRequestImpl(request));
+					break;
+				case AbortSessionAnswer.code:
+					listener.doAbortSessionRequest(this, new AbortSessionRequestImpl(request));
+					break;
+				case AccountAnswer.code:
+					listener.doAccountingRequest(this, new AccountRequestImpl(request));
+					break;
+					
+					
+				default:
+					listener.doOtherEvent(this, new AppRequestEventImpl(request), null);
+					break;
 			}
-		} else {
-			// FIXME ?????
-			try {
-				listener.doOtherEvent(this, new AppRequestEventImpl(request),
-						null);
-			} catch (InternalException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalDiameterStateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (RouteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (OverloadException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+			
 
+			
+			
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		
+		
+		
+		
 		return null;
+		
+		//if (request.getCommandCode() == ReAuthAnswerImpl.code) {
+		//	try {
+		//		handleEvent(new Event(Event.Type.RECEIVED_RAR, factory
+		//				.createReAuthRequest(request), null));
+		//	} catch (InternalException e) {
+				
+		//		e.printStackTrace();
+		//	} catch (OverloadException e) {
+				
+		//		e.printStackTrace();
+		//	}
+		//} else {
+			// FIXME ?????
+		//	try {
+		//		listener.doOtherEvent(this, new AppRequestEventImpl(request),
+		//				null);
+		//	} catch (InternalException e) {
+				
+		//		e.printStackTrace();
+		//	} catch (IllegalDiameterStateException e) {
+		//		
+		//		e.printStackTrace();
+		//	} catch (RouteException e) {
+				
+		//		e.printStackTrace();
+		//	} catch (OverloadException e) {
+		//		
+		//		e.printStackTrace();
+		//	}
+		//}
+
 	}
 
 	public void receivedSuccessMessage(Request request, Answer answer) {
 
-		if (answer.getCommandCode() == JCreditControlAnswer.code) {
-			extractFHAVPs(null, factory.createCreditControlAnswer(answer));
-			try {
-				handleEvent(new Event(false, factory
-						.createCreditControlRequest(request), factory
-						.createCreditControlAnswer(answer)));
-			} catch (InternalException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (OverloadException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		
+		try{
+			//FIXME: baranowb: add message validation here!!!
+			//We handle CCR,STR,ACR,ASR other go into extension
+			switch(request.getCommandCode())
+			{
+				case JCreditControlAnswer.code:
+					JCreditControlAnswer _answer=factory.createCreditControlAnswer(answer);
+					extractFHAVPs(null,_answer );
+					handleEvent(new Event(false, null, _answer));
+					break;
+				
+					//All other go straight to listner, they dont change state machine
+					//Suprisingly there is no factory.... ech
+					//FIXME: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+				case SessionTermAnswer.code:
+					listener.doSessionTerminationAnswer(this,null ,new SessionTermAnswerImpl(answer));
+					break;
+				case AbortSessionAnswer.code:
+					listener.doAbortSessionAnswer(this,null, new AbortSessionAnswerImpl(answer));
+					break;
+				case AccountAnswer.code:
+					listener.doAccountingAnswer(this,null, new AccountAnswerImpl(answer));
+					break;
+					
+					
+				default:
+					listener.doOtherEvent(this, null, new AppAnswerEventImpl(answer));
+					break;
 			}
-		} else if (answer.getCommandCode() == ReAuthAnswerImpl.code) {
-			try {
-				handleEvent(new Event(Event.Type.SEND_RAA, factory
-						.createReAuthRequest(request), factory
-						.createReAuthAnswer(answer)));
-			} catch (InternalException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (OverloadException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			// FIXME ?????
-			try {
-				listener.doOtherEvent(this, new AppRequestEventImpl(request),
-						new AppAnswerEventImpl(answer));
-			} catch (InternalException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalDiameterStateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (RouteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (OverloadException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		
+			
+		}catch(Exception e)
+		{
+			e.printStackTrace();
 		}
+		
+		
+//		if (answer.getCommandCode() == JCreditControlAnswer.code) {
+//			extractFHAVPs(null, factory.createCreditControlAnswer(answer));
+//			try {
+//				handleEvent(new Event(false, factory
+//						.createCreditControlRequest(request), factory
+//						.createCreditControlAnswer(answer)));
+//			} catch (InternalException e) {
+//				
+//				e.printStackTrace();
+//			} catch (OverloadException e) {
+//				
+//				e.printStackTrace();
+//			}
+//		} else if (answer.getCommandCode() == ReAuthAnswerImpl.code) {
+//			try {
+//				handleEvent(new Event(Event.Type.SEND_RAA, factory
+//						.createReAuthRequest(request), factory
+//						.createReAuthAnswer(answer)));
+//			} catch (InternalException e) {
+//				
+//				e.printStackTrace();
+//			} catch (OverloadException e) {
+//				
+//				e.printStackTrace();
+//			}
+//		} else {
+//			// FIXME ?????
+//			try {
+//				listener.doOtherEvent(this, new AppRequestEventImpl(request),
+//						new AppAnswerEventImpl(answer));
+//			} catch (InternalException e) {
+//				
+//				e.printStackTrace();
+//			} catch (IllegalDiameterStateException e) {
+//				
+//				e.printStackTrace();
+//			} catch (RouteException e) {
+//				
+//				e.printStackTrace();
+//			} catch (OverloadException e) {
+//				
+//				e.printStackTrace();
+//			}
+//		}
 
 	}
 
 	public void timeoutExpired(Request request) {
-		// TODO Auto-generated method stub
+		
+		if(request.getCommandCode()== JCreditControlAnswer.code)
+		{
+			try {
+				handleSendFailure(null, null, request);
+			} catch (Exception e) {
+				
+				e.printStackTrace();
+			}
+		}
 
 	}
 
@@ -659,6 +757,14 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 		}
 	}
 
+	
+	
+	@Override
+	public void release() {
+		
+		super.release();
+		this.stopTx();
+	}
 	protected void handleSendFailure(Exception e, Event.Type type,
 			Message request) throws Exception {
 
@@ -990,7 +1096,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 						handleSendFailure(e, Event.Type.SEND_EVENT_REQUEST,
 								buffer);
 					} catch (Exception e1) {
-						// TODO Auto-generated catch block
+						
 						e1.printStackTrace();
 					}
 				}
@@ -1067,7 +1173,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 			destHost = event.getMessage().getAvps()
 					.getAvp(Avp.DESTINATION_HOST).getOctetString();
 		} catch (AvpDataException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 
@@ -1119,10 +1225,10 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 				handleEvent(new Event(Event.Type.Tx_TIMER_FIRED,
 						request == null ? null : request, null));
 			} catch (InternalException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			} catch (OverloadException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			} finally {
 				sendAndStateLock.unlock();

@@ -20,7 +20,6 @@ import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 
 public class AccountAnswerImpl extends AppAnswerEventImpl implements AccountAnswer {
 
-    public final static int code = 271;
 
     public AccountAnswerImpl(Request request, int accountRecordType, int accReqNumber, long resultCode) {
         super(request.createAnswer(resultCode));
