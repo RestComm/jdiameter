@@ -57,6 +57,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 		ClientCCASession, NetworkReqListener, EventListener<Request, Answer> {
 
 	protected boolean stateless = true;
+	protected boolean statelessModeSet=false;
 	protected ClientCCASessionState state = ClientCCASessionState.IDLE;
 	protected ICCAMessageFactory factory = null;
 	protected String destHost, destRealm;
@@ -1142,6 +1143,25 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			if(!statelessModeSet)
+			{
+				statelessModeSet=true;
+				if(answer.isRequestTypeAVPPresent())
+				{
+					if(answer.getRequestTypeAVPValue()==4)
+					{
+						stateless=true;
+					}else
+					{
+						stateless=false;
+					}
+				}else
+				{
+					//FIXME: send error ?
+				}
+			}
+			
+			
 		} else if (request != null) {
 			try {
 				if (request.isRequestedActionAVPPresent()) {
@@ -1150,6 +1170,25 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+			}
+			
+			
+			if(!statelessModeSet)
+			{
+				statelessModeSet=true;
+				if(request.isRequestTypeAVPPresent())
+				{
+					if(request.getRequestTypeAVPValue()==4)
+					{
+						stateless=true;
+					}else
+					{
+						stateless=false;
+					}
+				}else
+				{
+					//FIXME: send error ?
+				}
 			}
 		}
 	}
@@ -1164,6 +1203,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 
 	protected void dispatchEvent(AppEvent event) throws InternalException,
 			IllegalDiameterStateException, RouteException, OverloadException {
+
 
 		session.send(event.getMessage(), this);
 		// Store last destinmation information
