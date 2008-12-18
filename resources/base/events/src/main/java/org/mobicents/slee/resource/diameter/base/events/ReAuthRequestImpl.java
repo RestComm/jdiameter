@@ -29,7 +29,7 @@ public class ReAuthRequestImpl extends ExtensionDiameterMessageImpl implements R
     }
 
     public void setReAuthRequestType(ReAuthRequestTypeAvp reAuthRequestType) {
-        setAvpAsInt32(Avp.RE_AUTH_REQUEST_TYPE, reAuthRequestType.getValue(), true);
+        setAvpAsInt32(Avp.RE_AUTH_REQUEST_TYPE, reAuthRequestType.getValue(), true,true);
     }
 
 	

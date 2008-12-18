@@ -47,14 +47,14 @@ public class ExperimentalResultAvpImpl extends GroupedAvpImpl implements
 
 		if(hasExperimentalResultCode())
 			throw new IllegalStateException("Cant set result code again!!!!");
-		super.setAvpAsUInt32(Avp.EXPERIMENTAL_RESULT_CODE, experimentalResultCode, true,true);
+		super.setAvpAsUInt32(Avp.EXPERIMENTAL_RESULT_CODE, experimentalResultCode,true);
 
 	}
 
 	public void setVendorId(long vendorId) {
 		if(hasVendorId())
 			throw new IllegalStateException("Cant set vendor Id again!!!!");
-		super.setAvpAsUInt32(Avp.VENDOR_ID, vendorId, true, true);
+		super.setAvpAsUInt32(Avp.VENDOR_ID, vendorId,true);
 
 	}
 

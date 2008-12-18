@@ -39,7 +39,7 @@ public class SessionTerminationRequestImpl  extends SessionTerminationAnswerImpl
     }
 
     public void setTerminationCause(TerminationCauseType terminationCause) {
-        setAvpAsInt32(Avp.TERMINATION_CAUSE, terminationCause.getValue(), true);
+        setAvpAsInt32(Avp.TERMINATION_CAUSE, terminationCause.getValue(), true,true);
     }
 	
 

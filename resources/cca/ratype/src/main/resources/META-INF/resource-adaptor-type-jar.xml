@@ -3,7 +3,6 @@
 <!DOCTYPE resource-adaptor-type-jar PUBLIC "-//Sun Microsystems, Inc.//DTD JAIN SLEE Resource Adaptor Type 1.0//EN" "http://java.sun.com/dtd/slee-resource-adaptor-type-jar_1_0.dtd">
 
 <resource-adaptor-type-jar>
-	<description />
 
 	<resource-adaptor-type>
 		<description>Diameter CCA RA Type</description>
@@ -43,35 +42,116 @@
 			</resource-adaptor-interface>
 		</resource-adaptor-type-classes>
 
+		
+		 <event-type-ref>
+        <event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlRequest</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8.1</event-type-version>
+        
+    </event-type-ref>
+
+    <event-type-ref>
+        <event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlAnswer</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8.1</event-type-version>
+        
+    </event-type-ref>
+
+
+    <event-type-ref>
+        <event-type-name>net.java.slee.resource.diameter.base.events.ReAuthRequest</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8.1</event-type-version>
+
+    </event-type-ref>
+
+    <event-type-ref>
+        <event-type-name>net.java.slee.resource.diameter.base.events.ReAuthAnswer</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8.1</event-type-version>
+    </event-type-ref>
+
+    <event-type-ref>
+        <event-type-name>net.java.slee.resource.diameter.base.events.SessionTerminationRequest</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8.1</event-type-version>
+    </event-type-ref>
+
+    <event-type-ref>
+        <event-type-name>net.java.slee.resource.diameter.base.events.SessionTerminationAnswer</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8.1</event-type-version>
+    </event-type-ref>
+
+    <event-type-ref>
+        <event-type-name>net.java.slee.resource.diameter.base.events.AbortSessionRequest</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8.1</event-type-version>
+    </event-type-ref>
+
+    <event-type-ref>
+        <event-type-name>net.java.slee.resource.diameter.base.events.AbortSessionAnswer</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8.1</event-type-version>
+    </event-type-ref>
+
+    <event-type-ref>
+        <event-type-name>net.java.slee.resource.diameter.base.events.AccountingRequest</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8.1</event-type-version>
+    </event-type-ref>
+
+    <event-type-ref>
+        <event-type-name>net.java.slee.resource.diameter.base.events.AccountingAnswer</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8.1</event-type-version>
+    </event-type-ref>
+
+	<event-type-ref>
+        <event-type-name>net.java.slee.resource.diameter.base.events.ErrorAnswer</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8</event-type-version>
+    </event-type-ref>
+	
+     <event-type-ref>
+        <event-type-name>net.java.slee.resource.diameter.base.events.ExtensionDiameterMessage</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8</event-type-version>
+    </event-type-ref>
+		
+
+
+		<!-- 
+		
 		<event-type-ref>
 			<event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlRequestEvent</event-type-name>
 			<event-type-vendor>java.net</event-type-vendor>
-			<event-type-version>0.8</event-type-version>
+			<event-type-version>0.8.1</event-type-version>
 		</event-type-ref>
-
 		<event-type-ref>
 			<event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlRequestInitial</event-type-name>
 			<event-type-vendor>java.net</event-type-vendor>
-			<event-type-version>0.8</event-type-version>
+			<event-type-version>0.8.1</event-type-version>
 		</event-type-ref>
 
 		<event-type-ref>
 			<event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlRequestUpdate</event-type-name>
 			<event-type-vendor>java.net</event-type-vendor>
-			<event-type-version>0.8</event-type-version>
+			<event-type-version>0.8.1</event-type-version>
 		</event-type-ref>
 
 		<event-type-ref>
 			<event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlRequestTermination</event-type-name>
 			<event-type-vendor>java.net</event-type-vendor>
-			<event-type-version>0.8</event-type-version>
+			<event-type-version>0.8.1</event-type-version>
 		</event-type-ref>
 
 		<event-type-ref>
 			<event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlAnswer</event-type-name>
 			<event-type-vendor>java.net</event-type-vendor>
-			<event-type-version>0.8</event-type-version>
+			<event-type-version>0.8.1</event-type-version>
 		</event-type-ref>
+		 -->
 	</resource-adaptor-type>
 
 </resource-adaptor-type-jar>

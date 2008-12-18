@@ -6,14 +6,15 @@
  *         </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-package org.mobicents.diameter.dictionary;
+package net.java.slee.resource.diameter.base.events.avp;
 
 import java.util.Date;
 
-import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpSet;
+import org.mobicents.diameter.dictionary.AvpDictionary;
+import org.mobicents.diameter.dictionary.AvpRepresentation;
 
 /**
  * Start time:13:11:26 2008-11-12<br>

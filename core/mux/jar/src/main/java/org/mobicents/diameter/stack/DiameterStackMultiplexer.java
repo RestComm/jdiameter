@@ -68,7 +68,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
       log.info("Diameter Stack Mux :: Supporting " + appIds.size() + " applications.");
 
-      network.addNetworkReqListener(this, ApplicationId.createByAccAppId( 193, 19302 ));
+      //network.addNetworkReqListener(this, ApplicationId.createByAccAppId( 193, 19302 ));
 
       for (ApplicationId appId : appIds)
       {

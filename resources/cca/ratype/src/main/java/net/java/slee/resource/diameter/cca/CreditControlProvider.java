@@ -43,4 +43,21 @@ public interface CreditControlProvider {
 	 * @return a CreditControlAVPFactory implementation
 	 */
 	public CreditControlAVPFactory getCreditControlAVPFactory();
+	
+	/**
+	 * Return the number of peers this Diameter resource adaptor is connected
+	 * to.
+	 * 
+	 * @return connected peer count
+	 */
+	int getPeerCount();
+
+	/**
+	 * Returns array containing identities of connected peers FIXME: baranowb; -
+	 * should it be InetAddres, Port pair?
+	 * 
+	 * @return
+	 */
+	DiameterIdentityAvp[] getConnectedPeers();
+	
 }

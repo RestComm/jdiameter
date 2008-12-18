@@ -14,12 +14,12 @@ public class VendorSpecificApplicationIdAvpImpl extends GroupedAvpImpl implement
     }
 
     public void setVendorId(long vendorId) {
-        setAvpAsUInt32(Avp.VENDOR_ID, vendorId, true, false);
+        setAvpAsUInt32(Avp.VENDOR_ID, vendorId,  false);
     }
 
     public void setVendorIds(long[] vendorIds) {
         for (long i : vendorIds)
-            setAvpAsUInt32(Avp.VENDOR_ID, i, true, false);
+            setAvpAsUInt32(Avp.VENDOR_ID, i,  false);
     }
 
     public boolean hasAuthApplicationId() {

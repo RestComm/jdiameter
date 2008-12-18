@@ -6,7 +6,7 @@
  *         </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-package net.java.slee.resource.diameter.cca;
+package net.java.slee.resource.diameter.cca.events.avp;
 
 /**
  * Start time:19:45:16 2008-12-08<br>

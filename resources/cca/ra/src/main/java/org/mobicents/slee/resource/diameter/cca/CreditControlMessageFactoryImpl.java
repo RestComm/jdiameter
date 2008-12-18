@@ -34,11 +34,11 @@ import net.java.slee.resource.diameter.base.NoSuchAvpException;
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
-import net.java.slee.resource.diameter.cca.CreditControlAVPCodes;
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
 import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
 import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
 import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
+import net.java.slee.resource.diameter.cca.events.avp.CreditControlAVPCodes;
 
 /**
  * Start time:11:16:00 2008-12-09<br>
@@ -338,12 +338,12 @@ public class CreditControlMessageFactoryImpl implements
 	}
 	
 	//FIXME:baranowb add removel if present
-	public synchronized void addAvpToInnerList(DiameterAvp avp)
+	public  void addAvpToInnerList(DiameterAvp avp)
 	{
 		this.avpList.add(avp);
 	}
 	
-	public synchronized void removeAvpFromInnerList(int code)
+	public  void removeAvpFromInnerList(int code)
 	{
 		  Iterator<DiameterAvp> it=this.avpList.iterator();
 		  while(it.hasNext())

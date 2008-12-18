@@ -5,6 +5,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.MessageTimeOut;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,6 +34,7 @@ import net.java.slee.resource.diameter.base.events.ErrorAnswer;
 import net.java.slee.resource.diameter.base.events.ExtensionDiameterMessage;
 import net.java.slee.resource.diameter.base.events.ReAuthAnswer;
 import net.java.slee.resource.diameter.base.events.SessionTerminationAnswer;
+import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
 import net.java.slee.resource.diameter.cca.CreditControlActivityContextInterfaceFactory;
@@ -49,6 +51,8 @@ import org.jdiameter.api.Answer;
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
+import org.jdiameter.api.Peer;
+import org.jdiameter.api.PeerTable;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.Stack;
@@ -76,6 +80,7 @@ import org.mobicents.slee.resource.diameter.base.events.ReAuthAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.events.ReAuthRequestImpl;
 import org.mobicents.slee.resource.diameter.base.events.SessionTerminationAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.events.SessionTerminationRequestImpl;
+import org.mobicents.slee.resource.diameter.base.events.avp.DiameterIdentityAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.CreditControlAnswerImpl;
 import org.mobicents.slee.resource.diameter.cca.events.CreditControlRequestImpl;
 import org.mobicents.slee.resource.diameter.cca.handlers.CreditControlSessionFactory;
@@ -87,6 +92,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 
 	  private static transient Logger logger = Logger.getLogger(DiameterBaseResourceAdaptor.class);
 
+	  
 	  private ResourceAdaptorState state;
 
 	  private Stack stack;
@@ -251,7 +257,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	      
 	      
 	      
-	      this.raProvider = new CreditControlProviderImpl();
+	      this.raProvider = new CreditControlProviderImpl(this);
 
 	      initializeNamingContext();
 
@@ -746,7 +752,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	      Integer ii=it.next();
 	      command[i]=ii.longValue();
 	    }
-	    this.diameterMux.registerListener( this, new ApplicationId[]{ApplicationId.createByAccAppId(0, 4),ApplicationId.createByAuthAppId(0, 4)});
+	    this.diameterMux.registerListener( this, new ApplicationId[]{ApplicationId.createByAuthAppId(0, 4)});
 	    this.stack=this.diameterMux.getStack();
 	    this.messageTimeout = stack.getMetaData().getConfiguration().getLongValue(MessageTimeOut.ordinal(), (Long) MessageTimeOut.defValue());
 	    
@@ -1016,6 +1022,14 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	private class CreditControlProviderImpl implements CreditControlProvider
 	{
 		
+		
+		
+		public CreditControlProviderImpl(CCAResourceAdaptor ra) {
+			super();
+			this.ra = ra;
+		}
+
+		protected CCAResourceAdaptor ra=null;
 		public CreditControlClientSession createClientSession()
 				throws CreateActivityException {
 			
@@ -1100,6 +1114,14 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 			CreditControlMessageFactory ccaMsgFactory=new CreditControlMessageFactoryImpl(baseFactory,null,stack,localFactory);
 			return ccaMsgFactory;
 		}
+
+		public DiameterIdentityAvp[] getConnectedPeers() {
+			return ra.getConnectedPeers();
+		}
+
+		public int getPeerCount() {
+			return ra.getConnectedPeers().length;
+		}
 		
 	}
 
@@ -1161,5 +1183,45 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 		this.defaultTxTimerValue = defaultTxTimerValue;
 	}
 	
+	
+	// ##################
+	// # HELPER METHODS #
+	// ##################	
+	/**
+	 * Method for obtaining the Peers the RA is currently conneceted to.
+	 * 
+	 * @return an array of DiameterIdentity AVPs representing the peers.
+	 */
+	public DiameterIdentityAvp[] getConnectedPeers()
+	{
+		if (this.stack != null)
+		{
+			try
+			{
+				// Get the list of peers from the stack
+				List<Peer> peers = stack.unwrap(PeerTable.class).getPeerTable();
+				
+				DiameterIdentityAvp[] result = new DiameterIdentityAvp[peers.size()];
+
+				int i = 0;
+
+				// Get each peer from the list and make a DiameterIdentityAvp
+				for (Peer peer : peers)
+				{
+					DiameterIdentityAvp identity = new DiameterIdentityAvpImpl(0, 0, 0, 0, peer.getUri().toString().getBytes());
+
+					result[i++] = identity;
+				}
+
+				return result;
+			}
+			catch (Exception e)
+			{
+				logger.error("Failure getting peer list.", e);
+			}
+		}
+
+		return new DiameterIdentityAvp[0];
+	}
 	  
 }

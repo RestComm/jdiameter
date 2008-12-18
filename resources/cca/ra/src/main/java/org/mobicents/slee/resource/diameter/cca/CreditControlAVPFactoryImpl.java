@@ -9,11 +9,11 @@
 package org.mobicents.slee.resource.diameter.cca;
 
 import net.java.slee.resource.diameter.base.DiameterAvpFactory;
-import net.java.slee.resource.diameter.cca.CreditControlAVPCodes;
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
 import net.java.slee.resource.diameter.cca.events.avp.CcMoneyAvp;
 import net.java.slee.resource.diameter.cca.events.avp.CcUnitType;
 import net.java.slee.resource.diameter.cca.events.avp.CostInformationAvp;
+import net.java.slee.resource.diameter.cca.events.avp.CreditControlAVPCodes;
 import net.java.slee.resource.diameter.cca.events.avp.FinalUnitActionType;
 import net.java.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvp;
 import net.java.slee.resource.diameter.cca.events.avp.GSUPoolReferenceAvp;
@@ -47,7 +47,7 @@ import org.mobicents.slee.resource.diameter.cca.events.avp.SubscriptionIdAvpImpl
 import org.mobicents.slee.resource.diameter.cca.events.avp.UnitValueAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.UsedServiceUnitAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvpImpl;
-import org.mobicents.slee.resource.diameter.sh.client.DiameterShAvpFactoryImpl;
+
 
 /**
  * Start time:16:32:52 2008-12-08<br>
@@ -61,7 +61,7 @@ public class CreditControlAVPFactoryImpl implements CreditControlAVPFactory {
 
 	
 	protected DiameterAvpFactory baseAvpFactory = null;
-	private static transient Logger logger = Logger.getLogger(DiameterShAvpFactoryImpl.class);
+	private static transient Logger logger = Logger.getLogger(CreditControlAVPFactoryImpl.class);
 
 	//protected MessageParser parser = new MessageParser(null);
 

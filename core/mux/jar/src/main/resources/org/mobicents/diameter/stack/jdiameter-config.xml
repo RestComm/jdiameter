@@ -44,11 +44,14 @@
 				rating="1"/
 			-->
 			<!-- Ericsson SDK Emulator (attempt_connect="true") -->
-			<Peer name="aaa://127.0.0.1:21812" attempt_connect="true" rating="1" />
+			<!-- Peer name="aaa://127.0.0.1:21812" attempt_connect="true" rating="1" /-->
 			<!-- Sh -->
 			<!-- Peer name="aaa://127.0.0.1:3868" attempt_connect="true" rating="1" /-->
+			
+			<Peer name="aaa://127.0.0.1:3868" attempt_connect="true" rating="1" />
 		</Peers>
 		<Realms>
+			<!-- 
 			<Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL"
 				dynamic="false" exp_time="1">
 				<ApplicationID>
@@ -57,6 +60,7 @@
 					<AcctApplId value="19302" />
 				</ApplicationID>
 			</Realm>
+			 -->
 			<!-- Sh -->
 			<!-- Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL"
 				dynamic="false" exp_time="1">
@@ -66,6 +70,14 @@
 					<AcctApplId value="0" />
 				</ApplicationID>
 			</Realm-->
+			<Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL"
+				dynamic="false" exp_time="1">
+				<ApplicationID>
+					<VendorId value="0" />
+					<AuthApplId value="4" />
+					<AcctApplId value="0" />
+				</ApplicationID>
+			</Realm>
 		</Realms>
 	</Network>
 

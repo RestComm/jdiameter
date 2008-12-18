@@ -143,7 +143,8 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl
 					(Request) msg.getGenericData()));
 		} catch (InternalException e) {
 
-			throw new IOException(e);
+			//throw new IOException(e);
+			e.printStackTrace();
 		} catch (IllegalDiameterStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -151,7 +152,8 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (OverloadException e) {
-			throw new IOException(e);
+			//throw new IOException(e);
+			e.printStackTrace();
 		}
 
 	}
@@ -174,7 +176,8 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl
 					(Request) msg.getGenericData()));
 		} catch (InternalException e) {
 
-			throw new IOException(e);
+			//throw new IOException(e);
+			e.printStackTrace();
 		} catch (IllegalDiameterStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -182,7 +185,8 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (OverloadException e) {
-			throw new IOException(e);
+			//throw new IOException(e);
+			e.printStackTrace();
 		}
 	}
 
@@ -200,7 +204,8 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl
 					.getGenericData()));
 		} catch (InternalException e) {
 
-			throw new IOException(e);
+			//throw new IOException(e);
+			e.printStackTrace();
 		} catch (IllegalDiameterStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -208,7 +213,8 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (OverloadException e) {
-			throw new IOException(e);
+			//throw new IOException(e);
+			e.printStackTrace();
 		}
 
 	}
@@ -231,7 +237,8 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl
 					(Request) msg.getGenericData()));
 		} catch (InternalException e) {
 
-			throw new IOException(e);
+			//throw new IOException(e);
+			e.printStackTrace();
 		} catch (IllegalDiameterStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -239,7 +246,8 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (OverloadException e) {
-			throw new IOException(e);
+			//throw new IOException(e);
+			e.printStackTrace();
 		}
 
 	}
@@ -262,7 +270,8 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl
 					(Request) msg.getGenericData()));
 		} catch (InternalException e) {
 
-			throw new IOException(e);
+			//throw new IOException(e);
+			e.printStackTrace();
 		} catch (IllegalDiameterStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -270,7 +279,8 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (OverloadException e) {
-			throw new IOException(e);
+			//throw new IOException(e);
+			e.printStackTrace();
 		}
 
 	}

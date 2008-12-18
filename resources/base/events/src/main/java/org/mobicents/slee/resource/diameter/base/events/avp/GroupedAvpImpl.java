@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
+import net.java.slee.resource.diameter.base.events.avp.AvpUtilities;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvpType;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
@@ -13,7 +14,6 @@ import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
-import org.mobicents.diameter.dictionary.AvpUtilities;
 
 /**
  * 

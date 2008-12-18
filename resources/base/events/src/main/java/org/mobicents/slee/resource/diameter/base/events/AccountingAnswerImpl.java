@@ -34,7 +34,7 @@ public class AccountingAnswerImpl extends ExtensionDiameterMessageImpl implement
   }
 
   public void setAccountingRecordType(AccountingRecordType accountingRecordType) {
-    setAvpAsInt32(Avp.ACC_RECORD_TYPE, accountingRecordType.getValue(), true);
+    setAvpAsInt32(Avp.ACC_RECORD_TYPE, accountingRecordType.getValue(), true,true);
   }
 
   public boolean hasAccountingRecordNumber() {
@@ -46,7 +46,7 @@ public class AccountingAnswerImpl extends ExtensionDiameterMessageImpl implement
   }
 
   public void setAccountingRecordNumber(long accountingRecordNumber) {
-    setAvpAsUInt32(Avp.ACC_RECORD_NUMBER, accountingRecordNumber, true);
+    setAvpAsUInt32(Avp.ACC_RECORD_NUMBER, accountingRecordNumber, true,true);
   }
 
   public boolean hasAccountingSubSessionId() {
@@ -58,7 +58,7 @@ public class AccountingAnswerImpl extends ExtensionDiameterMessageImpl implement
   }
 
   public void setAccountingSubSessionId(long accountingSubSessionId) {
-    setAvpAsUInt32(Avp.ACC_SUB_SESSION_ID, accountingSubSessionId, true);
+    setAvpAsUInt32(Avp.ACC_SUB_SESSION_ID, accountingSubSessionId, true,true);
   }
 
   public boolean hasAccountingSessionId() {
@@ -82,7 +82,7 @@ public class AccountingAnswerImpl extends ExtensionDiameterMessageImpl implement
   }
 
   public void setAcctMultiSessionId(String acctMultiSessionId) {
-    setAvpAsUtf8(Avp.ACC_MULTI_SESSION_ID, acctMultiSessionId, true);
+    setAvpAsUtf8(Avp.ACC_MULTI_SESSION_ID, acctMultiSessionId, true,true);
   }
 
   public boolean hasAcctInterimInterval() {
@@ -94,7 +94,7 @@ public class AccountingAnswerImpl extends ExtensionDiameterMessageImpl implement
   }
 
   public void setAcctInterimInterval(long acctInterimInterval) {
-    setAvpAsUInt32(Avp.ACCT_INTERIM_INTERVAL, acctInterimInterval, true);
+    setAvpAsUInt32(Avp.ACCT_INTERIM_INTERVAL, acctInterimInterval, true,true);
   }
 
   public boolean hasAccountingRealtimeRequired() {
@@ -106,7 +106,7 @@ public class AccountingAnswerImpl extends ExtensionDiameterMessageImpl implement
   }
 
   public void setAccountingRealtimeRequired(AccountingRealtimeRequiredType accountingRealtimeRequired) {
-    setAvpAsInt32(Avp.ACCOUNTING_REALTIME_REQUIRED, accountingRealtimeRequired.getValue(), true);
+    setAvpAsInt32(Avp.ACCOUNTING_REALTIME_REQUIRED, accountingRealtimeRequired.getValue(), true,true);
   }
 
   @Override

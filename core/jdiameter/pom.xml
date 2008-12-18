@@ -43,10 +43,11 @@
     </profile>
   </profiles>
 
+	<!-- 	
   <scm>
     <connection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter/jdiameter-1.5.0.1-build183</connection>
     <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter/jdiameter-1.5.0.1-build183</developerConnection>
     <url>http://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter/jdiameter-1.5.0.1-build183</url>
   </scm>
-  
+   -->
 </project>
