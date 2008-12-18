@@ -269,6 +269,7 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                             logger.log(Level.WARNING, "Can not send answer", e);
                         }
                     } else {
+                        logger.log(Level.WARNING, "Received message for unsupported Application-Id: " + appId);
                         resultCode = ResultCode.APPLICATION_UNSUPPORTED;
                     }
                 }
