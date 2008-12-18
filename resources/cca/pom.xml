@@ -12,7 +12,7 @@
 
 	<groupId>org.mobicents.servers.diameter.resources</groupId>
 	<artifactId>cca-parent</artifactId>
-	<version>1.0.0.BETA3-SNAPSHOT</version>
+	<version>1.0.0.BETA1-SNAPSHOT</version>
 
 	<name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
 
@@ -26,7 +26,7 @@
 	<properties>
 		<!-- Mobicents Diameter Components Versions -->
 		<mobicents.diameter.jdiameter.version>1.5.0.1-build184-SNAPSHOT</mobicents.diameter.jdiameter.version>
-		<mobicents.diameter.mux.version>1.0.0.BETA3-SNAPSHOT</mobicents.diameter.mux.version>
+		<mobicents.diameter.mux.version>1.0.0.BETA2-SNAPSHOT</mobicents.diameter.mux.version>
 		<mobicents.diameter.resources.base.version>1.0.0.BETA3-SNAPSHOT</mobicents.diameter.resources.base.version>
 
 		<!-- Other Mobicents Components Versions -->

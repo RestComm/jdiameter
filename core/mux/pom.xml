@@ -10,7 +10,7 @@
 
   <groupId>org.mobicents.servers.diameter</groupId>
   <artifactId>mobicents-diameter-mux-parent</artifactId>
-  <version>1.0.0.BETA3-SNAPSHOT</version>
+  <version>1.0.0.BETA2-SNAPSHOT</version>
 
   <name>Mobicents :: Diameter Multiplexer :: ${pom.artifactId}</name>
   
