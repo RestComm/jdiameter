@@ -45,14 +45,19 @@ public class Event implements StateEvent {
 			{
 				case 1:
 					type=Type.SEND_INITIAL_REQUEST;
+					break;
 				case 2:
 					type=Type.SEND_UPDATE_REQUEST;
+					break;
 				case 3:
 					type=Type.SEND_TERMINATE_REQUEST;
+					break;
 				case 4:
 					type=Type.SEND_EVENT_REQUEST;
+					break;
 				default:
 					throw new RuntimeException("Wrong CC-Reqeust-Type value: "+request.getRequestTypeAVPValue());
+		
 			}
 			
 		}else
@@ -61,12 +66,16 @@ public class Event implements StateEvent {
 			{
 				case 1:
 					type=Type.RECEIVED_INITIAL_ANSWER;
+					break;
 				case 2:
 					type=Type.RECEIVED_UPDATE_ANSWER;
+					break;
 				case 3:
 					type=Type.RECEIVED_TERMINATED_ANSWER;
+					break;
 				case 4:
 					type=Type.RECEIVE_EVENT_ANSWER;
+					break;
 				default:
 					throw new RuntimeException("Wrong CC-Reqeust-Type value: "+answer.getRequestTypeAVPValue());
 			}
