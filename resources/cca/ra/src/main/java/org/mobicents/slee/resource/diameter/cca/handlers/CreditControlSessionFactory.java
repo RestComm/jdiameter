@@ -108,9 +108,9 @@ public class CreditControlSessionFactory implements IAppSessionFactory,
 
 				 }else
 				 {
-				 clientSession=new	 ClientCCASessionImpl(null,this,sessionFactory,this);
+					 clientSession=new	 ClientCCASessionImpl(sessionId,this,sessionFactory,this);
 				 }
-
+				 clientSession.getSessions().get(0).setRequestListener(clientSession);
 				 clientSession.addStateChangeNotification(this);
 				this.resourceAdaptor.sessionCreated(clientSession);
 				 value=clientSession;
@@ -125,10 +125,11 @@ public class CreditControlSessionFactory implements IAppSessionFactory,
 							.getSessionId(), this, sessionFactory, this);
 
 				} else {
-					serverSession = new ServerCCASessionImpl(null, this,
+					serverSession = new ServerCCASessionImpl(sessionId, this,
 							sessionFactory, this);
 				}
 				serverSession.addStateChangeNotification(this);
+				serverSession.getSessions().get(0).setRequestListener(serverSession);
 				this.resourceAdaptor.sessionCreated(serverSession);
 				value = serverSession;
 			} else {
