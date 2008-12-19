@@ -68,7 +68,7 @@ public class Event implements StateEvent {
 						"Wrong value off avp code 416 or avp not present!!!");
 			}
 		} else {
-			switch (request.getRequestTypeAVPValue()) {
+			switch (answer.getRequestTypeAVPValue()) {
 			case 1:
 				type = Type.SENT_INITIAL_RESPONSE;
 				break;
