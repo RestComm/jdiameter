@@ -60,7 +60,10 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 	protected boolean statelessModeSet=false;
 	protected ClientCCASessionState state = ClientCCASessionState.IDLE;
 	protected ICCAMessageFactory factory = null;
-	protected String destHost, destRealm;
+	//protected String destHost, destRealm;
+	protected String originHost,originRealm;
+	
+	
 	protected Lock sendAndStateLock = new ReentrantLock();
 	protected long[] authAppIds = new long[] { 4 };
 	protected ClientCCASessionListener listener = null;
@@ -410,6 +413,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 						handleSendFailure(e, eventType, localEvent.getReqeust()
 								.getMessage());
 					}
+					break;
 				case SEND_TERMINATE_REQUEST:
 					setState(ClientCCASessionState.PENDING_TERMINATION);
 					try {
@@ -419,7 +423,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 						handleSendFailure(e, eventType, localEvent.getReqeust()
 								.getMessage());
 					}
-
+					break;
 				case RECEIVED_RAR:
 					deliverRAR((ReAuthRequest) localEvent.getReqeust());
 					break;
@@ -478,6 +482,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 				case SEND_TERMINATE_REQUEST:
 					// we schedule, once in Open state, those messages can fly
 					eventQueue.add(localEvent);
+					break;
 				case RECEIVED_RAR:
 					deliverRAR((ReAuthRequest) localEvent.getReqeust());
 					break;
@@ -1213,18 +1218,12 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 
 		session.send(event.getMessage(), this);
 		// Store last destinmation information
-		try {
-			destRealm = event.getMessage().getAvps().getAvp(
-					Avp.DESTINATION_REALM).getOctetString();
-			destHost = event.getMessage().getAvps()
-					.getAvp(Avp.DESTINATION_HOST).getOctetString();
-		} catch (AvpDataException e) {
-			
-			e.printStackTrace();
-		}
+		
 
 	}
 
+	
+	
 	protected boolean isProvisional(long unsigned32) {
 		return unsigned32 < 2000 && unsigned32 >= 1000;
 	}

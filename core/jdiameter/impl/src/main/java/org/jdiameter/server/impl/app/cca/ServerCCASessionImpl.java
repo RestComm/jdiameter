@@ -172,7 +172,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements
 							} catch (AvpDataException e) {
 								throw new InternalException(e);
 							}
-						
+							break;
 						default:
 							throw new InternalException("Wrong state: "+ServerCCASessionState.IDLE+" one event: "+eventType+" "+localEvent.getReqeust()+" "+localEvent.getAnswer());
 							
