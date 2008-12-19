@@ -12,7 +12,7 @@
 
   <groupId>org.mobicents.servers.diameter.examples</groupId>
 	<artifactId>cca-parent</artifactId>
-	<version>1.0.0.BETA2-SNAPSHOT</version>
+	<version>1.0.0.BETA1-SNAPSHOT</version>
 
 	<name>Mobicents :: Diameter Examples :: ${pom.artifactId}</name>
 				
@@ -47,7 +47,7 @@
             <configuration>
               <autoVersionSubmodules>true</autoVersionSubmodules>
               <resume>false</resume>
-              <tagBase>https://mobicents.googlecode.com/svn/tags/servers/diameter/examples/sh-client</tagBase>
+              <tagBase>https://mobicents.googlecode.com/svn/tags/servers/diameter/examples/cca</tagBase>
             </configuration>
           </plugin>
         </plugins>
@@ -69,15 +69,15 @@
 								</goals>
 								<configuration>
 									<tasks>
-    								<copy overwrite="true" todir="${basedir}/../../release/${release.name}/examples/diameter-sh-client">
+    								<copy overwrite="true" todir="${basedir}/../../release/${release.name}/examples/diameter-cca">
     									<fileset dir="${basedir}/du/target">
     										<include name="**.jar" />
     										<include name="*.xml" />
     										<include name="*.properties" />										
     									</fileset>
     								</copy>
-    								<copy overwrite="true" file="${basedir}/du/target/build.xml" tofile="${basedir}/../../release/${release.name}/examples/diameter-sh-client/du-management.xml" />
-                    <copy overwrite="true" file="${basedir}/release/build.xml" todir="${basedir}/../../release/${release.name}/examples/diameter-sh-client">
+    								<copy overwrite="true" file="${basedir}/du/target/build.xml" tofile="${basedir}/../../release/${release.name}/examples/diameter-cca/du-management.xml" />
+                    <copy overwrite="true" file="${basedir}/release/build.xml" todir="${basedir}/../../release/${release.name}/examples/diameter-cca">
     									<filterset>
 												<filter token="JBOSS.PATH" value="${jboss.path}" />
 												<filter token="JBOSS.CONFIG" value="${node}" />
@@ -94,9 +94,9 @@
 	</profiles>
 
   <scm>
-    <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/examples/sh-client</connection>
-    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/examples/sh-client</developerConnection>
-    <url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/examples/sh-client</url>
+    <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/examples/cca</connection>
+    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/examples/cca</developerConnection>
+    <url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/examples/cca</url>
   </scm>
 
 </project>

@@ -6,7 +6,7 @@
 	<parent>
     <groupId>org.mobicents.servers.diameter.examples</groupId>
   	<artifactId>cca-parent</artifactId>
-  	<version>1.0.0.BETA2-SNAPSHOT</version>
+  	<version>1.0.0.BETA1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>cca-example-DU</artifactId>
