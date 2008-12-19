@@ -220,6 +220,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 					} catch (Exception e) {
 						// This handles failure to send in PendingI state in FSM
 						// table
+						e.printStackTrace();
 						handleSendFailure(e, eventType, localEvent.getReqeust()
 								.getMessage());
 					}
@@ -726,12 +727,14 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 			txTimerValue = TX_TIMER_DEFAULT_VALUE;
 		stopTx();
 
+		System.out.println("SCHEDULING TX TIMER:"+txTimerValue);
 		this.txFuture = super.scheduler.schedule(
 				new TxTimerTask(this, request), txTimerValue, TimeUnit.SECONDS);
 	}
 
 	protected void stopTx() {
 		if (this.txFuture != null) {
+			
 			this.txFuture.cancel(true);
 			this.txFuture = null;
 		}
@@ -803,6 +806,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 					break;
 				case PENDING_BUFFERED:
 					setState(ClientCCASessionState.IDLE, false);
+					
+					//FIXME: baranowb?
+					buffer=null;
 					break;
 				default:
 					logger.error("Error - wrong state on handle send failure: "
@@ -1251,11 +1257,13 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 				JCreditControlRequest request) {
 			super();
 			this.session = session;
+			this.request=request;
 		}
 
 		public void run() {
 			try {
 				sendAndStateLock.lock();
+				System.out.println("FIRED TX TIMER");
 				txFuture = null;
 				try {
 					context.txTimerExpired(session);
