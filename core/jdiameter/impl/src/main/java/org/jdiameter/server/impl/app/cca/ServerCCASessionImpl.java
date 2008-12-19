@@ -54,7 +54,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements
 	protected boolean stateless=true;
 	protected ServerCCASessionState state=ServerCCASessionState.IDLE;
 	protected ICCAMessageFactory factory=null;
-	protected String destHost, destRealm;
+	protected String originHost, originRealm;
 	protected Lock sendAndStateLock = new ReentrantLock();
 	protected long[] authAppIds = new long[]{4};
 	protected ServerCCASessionListener listener=null;
@@ -579,11 +579,13 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements
 		try{
 			session.send(event.getMessage(), this);
 		// Store last destinmation information
-			destRealm = event.getMessage().getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString();
-			destHost = event.getMessage().getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString();
+			//FIXME: add differentation on server/client request
+			originRealm = event.getMessage().getAvps().getAvp(Avp.ORIGIN_REALM).getOctetString();
+			originHost = event.getMessage().getAvps().getAvp(Avp.ORIGIN_HOST).getOctetString();
 		}catch(Exception e)
 		{
-			throw new InternalException(e);
+			//throw new InternalException(e);
+			e.printStackTrace();
 		}
 	}
 }
