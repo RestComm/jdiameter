@@ -5,7 +5,7 @@
 		<sbb-name>CCAExampleSBB</sbb-name>
 		<sbb-vendor>org.mobicents</sbb-vendor>
 		<sbb-version>1.0</sbb-version>
-	<!--
+
 		<sbb-classes>
 			<sbb-abstract-class>
 				<sbb-abstract-class-name>
@@ -15,7 +15,7 @@
 		</sbb-classes>
 
 		<!-- EVENTS  -->
-		<!-- 
+	
 		<event event-direction="Receive" initial-event="True"
 			mask-on-attach="False">
 			<event-name>ServiceStartedEvent</event-name>
@@ -60,12 +60,12 @@
 			<initial-event-select variable="ActivityContext" />
 		</event>
 
-		 -->
-		<!-- RESOURCE ADAPTORS  
+	
+		<!-- RESOURCE ADAPTORS  -->
 
 		<resource-adaptor-type-binding>
 			<resource-adaptor-type-ref>
-				 <resource-adaptor-type-name>Diameter CCA</resource-adaptor-type-name>
+				<resource-adaptor-type-name>DiameterCCA</resource-adaptor-type-name>
 				<resource-adaptor-type-vendor>java.net</resource-adaptor-type-vendor>
 				<resource-adaptor-type-version>0.8.1</resource-adaptor-type-version>
 			</resource-adaptor-type-ref>
@@ -77,10 +77,10 @@
 				<resource-adaptor-object-name>
 					slee/resources/diameter-cca-ra-interface
 				</resource-adaptor-object-name>
-				<resource-adaptor-entity-link>ShClient
+				<resource-adaptor-entity-link>DiameterCCA
 				</resource-adaptor-entity-link>
 			</resource-adaptor-entity-binding>
 		</resource-adaptor-type-binding>
--->
+
 	</sbb>
 </sbb-jar>

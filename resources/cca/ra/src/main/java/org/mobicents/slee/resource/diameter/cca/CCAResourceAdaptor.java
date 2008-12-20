@@ -809,7 +809,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	//  ///////////////////////////
 
 	public Answer processRequest(Request request) {
-		
+		logger.info("-------- CCA GOT REQUEST: "+request.getCommandCode());
 		//Here we receive initial request for which session does not exist!!!
 		//Valid messages are:
 		// * CCR - if we act as server, this is the message we receive
@@ -854,7 +854,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	public void receivedSuccessMessage(Request request, Answer answer) {
 
 		//NO answer should make it here, its an error, report it 
-		logger.info("Diameter CCA RA :: Received bad answer - RA should not get this - its error, session should exist to handel it, Answer code: "+answer.getCommandCode()+", sessionId: "+answer.getSessionId());
+		logger.error("Diameter CCA RA :: Received bad answer - RA should not get this - its error, session should exist to handel it, Answer code: "+answer.getCommandCode()+", sessionId: "+answer.getSessionId());
 		
 	}
 
@@ -862,7 +862,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	public void timeoutExpired(Request request) {
 		
 		//NO Timeout shoudl occur here, session should exist, its and error
-		logger.info("Diameter CCA RA :: Received timeout message - RA should not get this - its error, session should exist to handel it, Request code: "+request.getCommandCode()+", sessionId: "+request.getSessionId());
+		logger.error("Diameter CCA RA :: Received timeout message - RA should not get this - its error, session should exist to handel it, Request code: "+request.getCommandCode()+", sessionId: "+request.getSessionId());
 		
 	}
 
@@ -901,15 +901,16 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 			}
 			if(commandCode ==CreditControlMessage.commandCode)
 			{
-			 eventID = eventLookup.getEventID("net.java.slee.resource.diameter.cca.events." + name, "java.net", "0.8");
+			 eventID = eventLookup.getEventID("net.java.slee.resource.diameter.cca.events." + name, "java.net", "0.8.1");
 			}else
 			{
 				//its a base
-				eventID = eventLookup.getEventID("net.java.slee.resource.diameter.base.events." + name, "java.net", "0.8");
+				eventID = eventLookup.getEventID("net.java.slee.resource.diameter.base.events." + name, "java.net", "0.8.1");
 			}
 			
 			
 			DiameterMessage event = (DiameterMessage) createEvent(request, answer);
+			logger.info("Diameter CCA RA :: FIRE EVENT: command code: "+commandCode+" EVENTID: " +eventID+" Handle: "+handle);
 			sleeEndpoint.fireEvent(handle, event, eventID, null);
 		} catch (Exception e) {
 			logger.warn("Can not send event", e);

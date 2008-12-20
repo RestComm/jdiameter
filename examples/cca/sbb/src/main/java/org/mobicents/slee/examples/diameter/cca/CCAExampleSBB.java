@@ -52,7 +52,7 @@ import org.jdiameter.api.Avp;
  *         </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public class CCAExampleSBB implements javax.slee.Sbb {
+public abstract class CCAExampleSBB implements javax.slee.Sbb {
 	private static Logger logger = Logger.getLogger(CCAExampleSBB.class);
 
 	private SbbContext sbbContext = null; // This SBB's context

@@ -6,7 +6,7 @@
 
 	<resource-adaptor-type>
 		<description>Diameter CCA RA Type</description>
-		<resource-adaptor-type-name>Diameter CCA</resource-adaptor-type-name>
+		<resource-adaptor-type-name>DiameterCCA</resource-adaptor-type-name>
 		<resource-adaptor-type-vendor>java.net</resource-adaptor-type-vendor>
 		<resource-adaptor-type-version>0.8.1</resource-adaptor-type-version>
 

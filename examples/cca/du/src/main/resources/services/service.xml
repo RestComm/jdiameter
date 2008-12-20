@@ -5,7 +5,7 @@
     <service>
         <description/>
         <service-name>CCAExampleService</service-name>
-        <service-vendor>org.mobicents.examples</service-vendor>
+        <service-vendor>org.mobicents</service-vendor>
         <service-version>1.0</service-version>
         <root-sbb>
             <description/>

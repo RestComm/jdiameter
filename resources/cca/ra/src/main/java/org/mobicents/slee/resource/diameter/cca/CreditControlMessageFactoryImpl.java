@@ -182,7 +182,13 @@ public class CreditControlMessageFactoryImpl implements
 		}
 		
 		List<DiameterAvp> list=(List<DiameterAvp>) this.avpList.clone();
-		list.set(0, sessionIdAvp);
+		if(list.size()!=0)
+		{	
+			list.set(0, sessionIdAvp);
+		}else
+		{
+			list.add(sessionIdAvp);
+		}
 		Message msg=createMessage(CreditControlAnswer.commandCode, applicationId, list.toArray(new DiameterAvp[list.size()]));
 		msg.setRequest(false);
 		CreditControlAnswerImpl answer=new CreditControlAnswerImpl(msg);
@@ -226,7 +232,13 @@ public class CreditControlMessageFactoryImpl implements
 		}
 		
 		List<DiameterAvp> list=(List<DiameterAvp>) this.avpList.clone();
-		list.set(0, sessionIdAvp);
+		if(list.size()!=0)
+		{	
+			list.set(0, sessionIdAvp);
+		}else
+		{
+			list.add(sessionIdAvp);
+		}
 		Message msg=createMessage(CreditControlAnswer.commandCode, applicationId, list.toArray(new DiameterAvp[list.size()]));
 		
 		
