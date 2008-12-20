@@ -1,12 +1,12 @@
 package org.mobicents.slee.examples.diameter.openims;
 
 import java.io.StringReader;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -58,17 +58,19 @@ import net.java.slee.resource.sip.SleeSipProvider;
 
 import org.apache.log4j.Logger;
 import org.jdiameter.api.Avp;
+import org.jdiameter.api.ResultCode;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 /**
  * 
- * DiameterExampleSbb.java
+ * DiameterOpenIMSExampleSbb.java
  *
  * <br>Super project:  mobicents
- * <br>11:34:16 PM May 26, 2008 
+ * <br>10:58:03 PM Dec 19, 2008 
  * <br>
- * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
+ * @author <a href = "mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
+ * @author <a href = "mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
  */
 public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
 
@@ -82,17 +84,22 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
 
   private ShClientMessageFactory shMessageFactory = null;
   private DiameterShAvpFactory avpFactory = null;
-  private ShClientActivityContextInterfaceFactory acif=null;
+  private ShClientActivityContextInterfaceFactory acif = null;
   private TimerFacility timerFacility = null;
 
-  private String originIP = "192.168.124.1";
-  private String destinationIP = "192.168.124.132";
+  private String originIP = "127.0.0.1";
+  private String originPort = "1812";
+  private String originRealm = "mobicents.org";
+
+  private String destinationIP = "127.0.0.1";
+  private String destinationPort = "3868";
+  private String destinationRealm = "mobicents.org";
 
   private NullActivityFactory nullActivityFactory;
 
   private NullActivityContextInterfaceFactory nullACIFactory;
 
-  private static HashMap<String, Collection<String>> missedCalls = new HashMap<String, Collection<String>>();  
+  private static HashMap<String, Collection<MissedCall>> missedCalls = new HashMap<String, Collection<MissedCall>>();  
 
   // SIP Stuff
 
@@ -102,40 +109,35 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
 
   private SleeSipProvider sipProvider;
 
+
   public void setSbbContext( SbbContext context )
   {
-    logger.info( "setSbbContext invoked." );
-
     this.sbbContext = context;
 
     try
     {
       myEnv = (Context) new InitialContext().lookup( "java:comp/env" );
 
+      // Diameter Sh Stuff
       provider = (ShClientProvider) myEnv.lookup("slee/resources/diameter-sh-client-ra-interface");
-      logger.info( "Got Provider:" + provider );
 
       shMessageFactory = provider.getClientMessageFactory();
-      logger.info( "Got Message Factory:" + provider );
-
       avpFactory = provider.getClientAvpFactory();
-      logger.info( "Got AVP Factory:" + provider );
 
-      acif=(ShClientActivityContextInterfaceFactory) myEnv.lookup("slee/resources/JDiameterShClientResourceAdaptor/java.net/0.8.1/acif");
+      acif = (ShClientActivityContextInterfaceFactory) myEnv.lookup("slee/resources/JDiameterShClientResourceAdaptor/java.net/0.8.1/acif");
 
-      // Get the timer facility
-      timerFacility  = (TimerFacility) myEnv.lookup("slee/facilities/timer");
-
-      nullActivityFactory = (NullActivityFactory)myEnv.lookup("slee/nullactivity/factory");
-
-      nullACIFactory = (NullActivityContextInterfaceFactory)myEnv.lookup("slee/nullactivity/activitycontextinterfacefactory");
-      
+      // SIP Stuff
       sipProvider = (SleeSipProvider) myEnv.lookup("slee/resources/jainsip/1.2/provider");
 
       sipAddressFactory = sipProvider.getAddressFactory();
       sipHeaderFactory = sipProvider.getHeaderFactory();
       sipMessageFactory = sipProvider.getMessageFactory();
 
+      // SLEE Facilities
+      timerFacility  = (TimerFacility) myEnv.lookup("slee/facilities/timer");
+      nullActivityFactory = (NullActivityFactory)myEnv.lookup("slee/nullactivity/factory");
+      nullACIFactory = (NullActivityContextInterfaceFactory)myEnv.lookup("slee/nullactivity/activitycontextinterfacefactory");
+      
     }
     catch ( Exception e )
     {
@@ -202,14 +204,45 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
     return sbbContext;
   }
 
+  /**
+   * Generate a custom convergence name so that related events (with the same call
+   * identifier, or session) will go to the same root SBB entity.
+   */
+  public InitialEventSelector myInitialEventSelector(InitialEventSelector ies)
+  {
+    Object event = ies.getEvent();
+    
+    if (event instanceof ResponseEvent)
+    {
+      Response response = ((ResponseEvent)event).getResponse();
+
+      if(response.getStatusCode() == 404)
+      {
+        ies.setCustomName( "OpenIMS-Example-StaticCustomName" );
+      }
+      else
+      {
+        ies.setInitialEvent( false );
+      }
+    }
+    else if(event instanceof PushNotificationRequest)
+    {
+      ies.setCustomName( "OpenIMS-Example-StaticCustomName" );
+    }
+    else
+    {
+      ies.setInitialEvent( false );
+    }
+
+    return ies;
+  }
+
   // ##########################################################################
   // ##                          EVENT HANDLERS                              ##
   // ##########################################################################
 
   public void onServiceStartedEvent( javax.slee.serviceactivity.ServiceStartedEvent event, ActivityContextInterface aci )
   {
-    logger.info( "onServiceStartedEvent invoked." );
-
     try
     {
       // check if it's my service that is starting
@@ -238,14 +271,13 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
 
         NullActivity timerBus = this.nullActivityFactory.createNullActivity();
 
-        ActivityContextInterface timerBusACI = 
-          this.nullACIFactory.getActivityContextInterface(timerBus);
+        ActivityContextInterface timerBusACI = this.nullACIFactory.getActivityContextInterface(timerBus);
 
         timerBusACI.attach( sbbContext.getSbbLocalObject() );
 
         TimerOptions options = new TimerOptions();
 
-        timerFacility.setTimer(timerBusACI, null, System.currentTimeMillis() + 15000, options);
+        timerFacility.setTimer(timerBusACI, null, System.currentTimeMillis() + 5000, options);
       }
     }
     catch ( Exception e )
@@ -256,126 +288,45 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
 
   public void onTimerEvent(TimerEvent event, ActivityContextInterface aci)
   {
-    doSimpleTestSendSNR();
-  }
-
-  /**
-   * Generate a custom convergence name so that events with the same call
-   * identifier will go to the same root SBB entity.
-   */
-  public InitialEventSelector callIDSelect(InitialEventSelector ies)
-  {
-    logger.info( "Called IES ..." );
-
-    Object event = ies.getEvent();
-    if (event instanceof ResponseEvent)
+    try
     {
-      logger.info( " » ResponseEvent!" );
+      Properties props = new Properties();
+      props.load( this.getClass().getClassLoader().getResourceAsStream("example.properties") );
+      
+      this.originIP = props.getProperty( "origin.ip" ) == null ? this.originIP : props.getProperty( "origin.ip" ); 
+      this.originPort = props.getProperty( "origin.port" ) == null ? this.originPort : props.getProperty( "origin.port" ); 
+      this.originRealm = props.getProperty( "origin.realm" ) == null ? this.originRealm : props.getProperty( "origin.realm" ); 
 
-      Response response =  ((ResponseEvent)event).getResponse();
-
-      if(response.getStatusCode() == 404)
+      this.destinationIP = props.getProperty( "destination.ip" ) == null ? this.destinationIP : props.getProperty( "destination.ip" );
+      this.destinationPort = props.getProperty( "destination.port" ) == null ? this.destinationPort : props.getProperty( "destination.port" );
+      this.destinationRealm = props.getProperty( "destination.realm" ) == null ? this.destinationRealm : props.getProperty( "destination.realm" ); 
+      
+      String usersStr = props.getProperty( "users" );
+      
+      if(usersStr != null && usersStr.length() > 0)
       {
-        logger.info( " » ResponseEvent! » 404" );
-
-        ies.setCustomName( "OpenIMS-Example-StaticCustomName" );
+        String[] users = usersStr.split( "," );
+        
+        logger.info( "Subscribing to Profile Updates from Users " + users.toString() );
+        
+        for(String user : users)
+        {
+          sendSubscribeNotificationsRequest(user.trim());
+        }
       }
       else
       {
-        ies.setInitialEvent( false );
+        logger.warn( "No Users are defined for the example. Nothing will happen..." );
       }
     }
-    else if(event instanceof PushNotificationRequest)
-    {
-      logger.info( " » PushNotificationRequest!" );
-
-      ies.setCustomName( "OpenIMS-Example-StaticCustomName" );
-    }
-    else
-    {
-      ies.setInitialEvent( false );
-    }
-
-    return ies;
-  }
-
-  private void doSimpleTestSendSNR()
-  {
-    try 
-    {
-      ShClientSubscriptionActivity shClientSubscriptionActivity=this.provider.createShClientSubscriptionActivity();
-      logger.info(" On TimerEvent: Client Subscrition Activity created");
-
-      shClientSubscriptionActivity.getDiameterAvpFactory();
-      shClientSubscriptionActivity.getDiameterMessageFactory();
-
-      logger.info(" On TimerEvent: Subscription activity methods tested");
-      ActivityContextInterface localACI=this.acif.getActivityContextInterface(shClientSubscriptionActivity);
-      localACI.attach(getSbbContext().getSbbLocalObject());
-      logger.info(" On TimerEvent: Subscription activity acif created");
-      List<DiameterAvp> avps = new ArrayList<DiameterAvp>();
-      SubscribeNotificationsRequest snr=((ShClientMessageFactory)shClientSubscriptionActivity.getDiameterMessageFactory()).createSubscribeNotificationsRequest();
-      //< Subscribe-Notifications-Request > ::=	< Diameter Header: 308, REQ, PXY, 16777217 >
-      //				< Session-Id >
-      avps.add(avpFactory.getBaseFactory().createAvp(Avp.SESSION_ID, shClientSubscriptionActivity.getSessionId().getBytes() ));
-      //				{ Vendor-Specific-Application-Id }
-      DiameterAvp avpVendorId = avpFactory.getBaseFactory().createAvp( Avp.VENDOR_ID, MessageFactory._SH_VENDOR_ID );
-      DiameterAvp avpAcctApplicationId = avpFactory.getBaseFactory().createAvp( Avp.AUTH_APPLICATION_ID, MessageFactory._SH_APP_ID );
-
-      avps.add( avpFactory.getBaseFactory().createAvp( Avp.VENDOR_SPECIFIC_APPLICATION_ID, new DiameterAvp[]{avpVendorId, avpAcctApplicationId} ) );
-
-      //				{ Auth-Session-State }
-      //				{ Origin-Host }
-      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, "aaa://" + originIP + ":1812".getBytes() ));
-      //				{ Origin-Realm }
-      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, "mobicents.org".getBytes() ));
-      //				[ Destination-Host ]
-      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, "aaa://" + destinationIP + ":3868".getBytes() ));
-      //				{ Destination-Realm }
-      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, "mobicents.org".getBytes() ));
-      //				*[ Supported-Features ]
-      //				{ User-Identity }
-      UserIdentityAvp ui=avpFactory.createUserIdentity();
-      ui.setPublicIdentity("sip:bob@open-ims.test");
-      avps.add(ui);
-      //				[ Wildcarded-PSI ]
-      //				[ Wildcarded-IMPU ]
-      //				*[ Service-Indication ]
-      //				[ Send-Data-Indication ]
-      //				[ Server-Name ]
-      //				{ Subs-Req-Type }
-
-      // 0 == Subscribe // 1 == Unsubrscribe
-      DiameterAvp srt = avpFactory.getBaseFactory().createAvp(MessageFactory._SH_VENDOR_ID,DiameterShAvpCodes.SUBS_REQ_TYPE, 0);
-      avps.add(srt);
-
-      //				*{ Data-Reference }
-      //Its enumerated: 0 == Whole data
-      DiameterAvp avp=avpFactory.getBaseFactory().createAvp(MessageFactory._SH_VENDOR_ID,DiameterShAvpCodes.DATA_REFERENCE, 11);
-      avps.add(avp);
-      //				[ Identity-Set ]
-      //				[ Expiry-Time ]
-      avps.add(avpFactory.getBaseFactory().createAvp(Avp.AUTH_SESSION_STATE, AuthSessionState.Open.ordinal()));	      
-
-      //We can user setters, but this is faster :)
-      snr.setExtensionAvps(avps.toArray(avps.toArray(new DiameterAvp[avps.size()])));
-      logger.info("---> Sending SNR");
-      shClientSubscriptionActivity.sendSubscriptionNotificationRequest(snr);
-      logger.info("---> Send SNR:\n"+snr);
-
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    catch (Exception e) {
+      logger.error( "Failure reading properties file.", e );
     }
   }
-
-  // ###################################
-  // #  REQEUSTS - PNR, this is client #
-  // ###################################
 
   public void onPushNotificationRequest(net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest pnr, ActivityContextInterface aci)
   {
-    logger.info( "Push-Notification-Request activity["+aci.getActivity()+"] received.\n"+pnr );
+    logger.info( "Push-Notification-Request received.\r\n" + pnr );
 
     String userData = pnr.getUserData();
 
@@ -403,7 +354,7 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
         }
       }
       
-      Collection<String> mCs = missedCalls.get( userId );
+      Collection<MissedCall> mCs = missedCalls.get( userId );
 
       if(mCs != null && mCs.size() > 0)
       {
@@ -415,11 +366,17 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
 
         if(userState.equals("1"))
         {
-          for(String missedCall : mCs )
+          synchronized ( mCs )
           {
-            // Send SIP Message
-            sendSIPMessage( userId, missedCall );
+            for(MissedCall missedCall : mCs )
+            {
+              // Send SIP Message
+              sendSIPMessage( userId, missedCall.getNotification() );
+            }
           }
+          
+          // Clear the missed calls for this user
+          mCs.clear();
         }
       }
     }
@@ -441,58 +398,43 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
       String to = ((ToHeader) response.getHeader("To")).getAddress().toString();
       String from = ((FromHeader) response.getHeader("From")).getAddress().toString();
 
-      logger.info( "From » " + from );
-      logger.info( "To » " + to );
+      logger.info( "From[" + from + "], To [" + to + "]");
 
       String toAddress = to.substring( to.indexOf("sip:"), to.indexOf( ">" ) );
       
-      // At which time...
-      String time = new SimpleDateFormat("dd/MM/yyyy 'at' hh:mm:ss").format(new Date());
+      // Create the MissedCall object
+      MissedCall mC = new MissedCall(from, new Date());
 
-      logger.info( "Date » " + time );
+      Collection<MissedCall> mCs = missedCalls.get(toAddress);
 
-      // Create the notification message
-      String notification = from + " has called you at " + time;
-
-      logger.info( notification );
-
-      Collection<String> mC = missedCalls.get(toAddress);
-
-      if(mC == null)
+      if(mCs == null)
       {
-        mC = new ArrayList<String>();
-        missedCalls.put( toAddress, mC );
+        mCs = new ArrayList<MissedCall>();
+        missedCalls.put( toAddress, mCs );
       }
 
-      mC.add( notification );
+      if(!mCs.contains( mC ))
+      {
+        mCs.add( mC );
+      }
     }
   }
 
   // ###################################
-  // # ASNWERS - PUA, SNA, UDA         #
-  // ###################################
-
-  public void onProfileUpdateAnswer(net.java.slee.resource.diameter.sh.client.events.ProfileUpdateAnswer pua, ActivityContextInterface aci)
-  {
-    logger.info( "Profile-Update-Answer activity["+aci.getActivity()+"] received.\n"+pua );
-  }
 
   public void onSubscriptionNotificationsAnswer(net.java.slee.resource.diameter.sh.client.events.SubscribeNotificationsAnswer sna, ActivityContextInterface aci)
   {
-    logger.info( "Subscription-Notifications-Answer activity["+aci.getActivity()+"] received.\n"+sna );
-    logger.info( "Subscription-Notifications-Answer Result-Code["+sna.getResultCode()+"].");
+    logger.info( "Subscription-Notifications-Answer received with Result-Code[" + sna.getResultCode() + "]..");
+    
+    if(sna.getResultCode() != ResultCode.SUCCESS)
+    {
+      logger.warn( "Subscription WAS NOT successful. Please check your permissions and/or users." );
+    }
   }
 
-  public void onUserDataRequestAnswer(net.java.slee.resource.diameter.sh.client.events.UserDataAnswer uda, ActivityContextInterface aci)
-  {
-    logger.info( "User-Data-Answer activity["+aci.getActivity()+"] received.\n"+uda );
-  }
-
-
-  //BCK
   public void onActivityEndEvent(ActivityEndEvent event, ActivityContextInterface aci)
   {
-    logger.info( " Activity Ended["+aci.getActivity()+"]" );
+    logger.info( " Activity Ended[" + aci.getActivity() + "]" );
   }
 
 
@@ -500,6 +442,80 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
   // ##                           PRIVATE METHODS                            ##
   // ##########################################################################
 
+  private void sendSubscribeNotificationsRequest(String user)
+  {
+    try 
+    {
+      ShClientSubscriptionActivity shClientSubscriptionActivity = this.provider.createShClientSubscriptionActivity();
+
+      shClientSubscriptionActivity.getDiameterAvpFactory();
+      shClientSubscriptionActivity.getDiameterMessageFactory();
+
+      ActivityContextInterface localACI = this.acif.getActivityContextInterface(shClientSubscriptionActivity);
+      localACI.attach(getSbbContext().getSbbLocalObject());
+
+      List<DiameterAvp> avps = new ArrayList<DiameterAvp>();
+      
+      SubscribeNotificationsRequest snr = ((ShClientMessageFactory)shClientSubscriptionActivity.getDiameterMessageFactory()).createSubscribeNotificationsRequest();
+      
+      //< Subscribe-Notifications-Request > :: =   < Diameter Header: 308, REQ, PXY, 16777217 >
+      //        < Session-Id >
+      avps.add(avpFactory.getBaseFactory().createAvp(Avp.SESSION_ID, shClientSubscriptionActivity.getSessionId().getBytes() ));
+      
+      //        { Vendor-Specific-Application-Id }
+      DiameterAvp avpVendorId = avpFactory.getBaseFactory().createAvp( Avp.VENDOR_ID, MessageFactory._SH_VENDOR_ID );
+      DiameterAvp avpAcctApplicationId = avpFactory.getBaseFactory().createAvp( Avp.AUTH_APPLICATION_ID, MessageFactory._SH_APP_ID );
+
+      avps.add( avpFactory.getBaseFactory().createAvp( Avp.VENDOR_SPECIFIC_APPLICATION_ID, new DiameterAvp[]{avpVendorId, avpAcctApplicationId} ) );
+
+      //        { Auth-Session-State }
+      //        { Origin-Host }
+      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, ("aaa://" + this.originIP + ":" + this.originPort).getBytes() ));
+      //        { Origin-Realm }
+      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, this.originRealm.getBytes() ));
+      //        [ Destination-Host ]
+      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, ("aaa://" + this.destinationIP + ":" + this.destinationPort).getBytes() ));
+      //        { Destination-Realm }
+      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, this.destinationRealm.getBytes() ));
+      //        *[ Supported-Features ]
+      //        { User-Identity }
+      
+      UserIdentityAvp ui = avpFactory.createUserIdentity();
+      ui.setPublicIdentity("sip:" + user.replaceFirst( "sip:", "" ));
+      avps.add(ui);
+      //        [ Wildcarded-PSI ]
+      //        [ Wildcarded-IMPU ]
+      //        *[ Service-Indication ]
+      //        [ Send-Data-Indication ]
+      //        [ Server-Name ]
+      //        { Subs-Req-Type }
+
+      // 0 == Subscribe // 1 == Unsubrscribe
+      DiameterAvp srt = avpFactory.getBaseFactory().createAvp(MessageFactory._SH_VENDOR_ID, DiameterShAvpCodes.SUBS_REQ_TYPE, 0);
+      avps.add(srt);
+
+      //        *{ Data-Reference }
+      //Its enumerated: 0 == Whole data
+      DiameterAvp avp = avpFactory.getBaseFactory().createAvp(MessageFactory._SH_VENDOR_ID, DiameterShAvpCodes.DATA_REFERENCE, 11);
+      avps.add(avp);
+      //        [ Identity-Set ]
+      //        [ Expiry-Time ]
+      avps.add(avpFactory.getBaseFactory().createAvp(Avp.AUTH_SESSION_STATE, AuthSessionState.Open.ordinal()));        
+
+      //We can user setters, but this is faster :)
+      snr.setExtensionAvps(avps.toArray(avps.toArray(new DiameterAvp[avps.size()])));
+      
+      logger.info( "Created Subscribe-Notifications-Request:\r\n" + snr );
+      
+      shClientSubscriptionActivity.sendSubscriptionNotificationRequest(snr);
+      
+      logger.info("Subscribe-Notifications-Request sent!");
+
+    } catch (Exception e) {
+      logger.error( "Failure trying to create/send Subscribe-Notifications-Request.", e );
+    }
+  }
+  
   private void sendSIPMessage(String toAddressString, String message)
   {
     try
@@ -510,7 +526,7 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
       ToHeader toHeader = sipHeaderFactory.createToHeader( toAddress, null );
       
       // Create From Header
-      SipURI fromAddress = sipAddressFactory.createSipURI("missed-calls", System.getProperty("bind.address","127.0.0.1"));
+      SipURI fromAddress = sipAddressFactory.createSipURI("missed-calls", System.getProperty("bind.address", "127.0.0.1"));
 
       Address fromNameAddress = sipAddressFactory.createAddress(fromAddress);
       fromNameAddress.setDisplayName("Missed Calls");
@@ -519,9 +535,9 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
       // Create Via Headers
       ArrayList viaHeaders = new ArrayList();
       ViaHeader viaHeader = sipHeaderFactory.createViaHeader(
-          sipProvider.getListeningPoints()[0].getIPAddress(),
-          sipProvider.getListeningPoints()[0].getPort(),
-          sipProvider.getListeningPoints()[0].getTransport(),
+          sipProvider.getListeningPoints()[0].getIPAddress(), 
+          sipProvider.getListeningPoints()[0].getPort(), 
+          sipProvider.getListeningPoints()[0].getTransport(), 
           null);
       viaHeaders.add(viaHeader);
 
@@ -530,7 +546,7 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
 
       // Create the Request
       URI uri = sipProvider.getAddressFactory().createURI(toAddressString);
-      Request req = sipMessageFactory.createRequest(uri, Request.MESSAGE, this.sipProvider.getNewCallId(),
+      Request req = sipMessageFactory.createRequest(uri, Request.MESSAGE, this.sipProvider.getNewCallId(), 
           sipHeaderFactory.createCSeqHeader(1L, Request.MESSAGE), fromHeader, toHeader, viaHeaders, maxForwards);
       
       // Add the content with it's type
