@@ -206,12 +206,12 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                 if (msgHost.startsWith("aaa://")) msgHost = new URI(msgHost).getFQDN();
                 URI msgURI = new URI((key + "").replace(conHost, msgHost));
                 if ( !conHost.equalsIgnoreCase( msgHost ) ) {
-                    logger.info("Connection host name not equals message origination host name");
+                    logger.info("Connection host name not equals message origination host name: "+conHost+" conURI:"+conURI+" msgHost: "+msgHost+" msgURI:"+msgURI);
                     manager.updatePeerTableEntry(conHost, conURI, msgHost, msgURI);
                     uri = msgURI;
                 }
             } catch(Exception exc) {
-                logger.log(Level.INFO, "Can not process CER");                
+                logger.log(Level.INFO, "Can not process CER",exc);                
             }
             logger.fine("CER result " + resultCode);
             return resultCode;

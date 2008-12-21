@@ -14,6 +14,7 @@ import org.jdiameter.api.EventListener;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.app.StateChangeListener;
+import org.jdiameter.common.api.app.cca.ClientCCASessionState;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
 
 
@@ -79,4 +80,7 @@ public abstract class CreditControlSessionImpl extends DiameterActivityImpl impl
 		((CreditControlMessageFactoryImpl)ccaMessageFactory).removeAvpFromInnerList(destinationRealm.getCode());
 		((CreditControlMessageFactoryImpl)ccaMessageFactory).addAvpToInnerList(destinationRealm);
 	}
+
+	
+	
 }

@@ -227,7 +227,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 						handleSendFailure(e, eventType, localEvent.getReqeust()
 								.getMessage());
 					}
-
+					break;
 				default:
 					logger.error("Wrong event type on " + state + " state:"
 							+ eventType);
@@ -261,6 +261,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 								(JCreditControlAnswer) localEvent.getAnswer());
 					} catch (AvpDataException ade) {
 						// FIXME?
+						ade.printStackTrace();
 						setState(ClientCCASessionState.IDLE, false);
 					}
 					break;
@@ -378,6 +379,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 								(JCreditControlAnswer) localEvent.getAnswer());
 					} catch (AvpDataException ade) {
 						// FIXME?
+						ade.printStackTrace();
 						setState(ClientCCASessionState.IDLE, false);
 					}
 					break;
@@ -471,6 +473,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 								(JCreditControlAnswer) localEvent.getAnswer());
 					} catch (AvpDataException ade) {
 						// FIXME?
+						ade.printStackTrace();
 						setState(ClientCCASessionState.IDLE, false);
 					}
 					break;
@@ -816,6 +819,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 					buffer=null;
 					break;
 				default:
+					//This happens when message timesout
 					logger.error("Error - wrong state on handle send failure: "
 							+ state + " for event: " + type);
 					break;

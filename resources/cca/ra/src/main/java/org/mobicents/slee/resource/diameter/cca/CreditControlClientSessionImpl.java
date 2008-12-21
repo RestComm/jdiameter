@@ -20,9 +20,11 @@ import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
 import net.java.slee.resource.diameter.cca.CreditControlClientSession;
 import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
+import net.java.slee.resource.diameter.cca.CreditControlSessionState;
 import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
 import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
 import net.java.slee.resource.diameter.cca.events.avp.CcRequestType;
+import net.java.slee.resource.diameter.cca.handlers.CCASessionCreationListener;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.EventListener;
@@ -32,6 +34,7 @@ import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.cca.ClientCCASession;
+import org.jdiameter.common.api.app.cca.ClientCCASessionState;
 import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
 import org.jdiameter.common.impl.app.cca.JCreditControlRequestImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
@@ -293,9 +296,47 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl
 	 * java.lang.Enum)
 	 */
 	public void stateChanged(Enum oldState, Enum newState) {
-		// TODO Auto-generated method stub
-
+		
+		ClientCCASessionState s=(ClientCCASessionState) newState;
+		//IDLE(0),
+		//PENDING_INITIAL(1),
+		//OPEN(2),
+		//PENDING_UPDATE(3),
+		//PENDING_TERMINATION(4),
+		//PENDING_BUFFERED(5),
+		//PENDING_EVENT(6);
+		//ints are faster :)
+		switch(s.getValue())
+		{
+			case 6:
+				this.state=CreditControlSessionState.PENDING_EVENT;
+				break;
+			case 5:
+				this.state=CreditControlSessionState.PENDING_BUFFERED;
+				break;
+			case 4: 
+				this.state=CreditControlSessionState.PENDING_TERMINATION;
+			case 3: 
+				this.state=CreditControlSessionState.PENDING_UPDATE;
+				break;
+			case 2:
+				//FIXME: this should not happen?
+				this.state=CreditControlSessionState.OPEN;
+				break;
+			case 1:
+				this.state=CreditControlSessionState.PENDING_INITIAL;
+				break;
+			case 0:
+				this.state=CreditControlSessionState.IDLE;
+				((CCASessionCreationListener)this.getSessionListener()).sessionDestroyed(sessionId, this);
+				this.session.release();
+				break;
+				default:
+					logger.error("GOT WRONG STATE NUMBER: "+s);
+		}
+		
 	}
+	
 
 	public void fetchCurrentState(CreditControlRequest ccr) {
 
