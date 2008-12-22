@@ -44,7 +44,7 @@
 			<event-type-ref>
 				<event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlRequest</event-type-name>
         <event-type-vendor>java.net</event-type-vendor>
-        <event-type-version>0.8.1</event-type-version>
+        <event-type-version>0.8</event-type-version>
 			</event-type-ref>
 			<initial-event-select variable="ActivityContext" />
 		</event>
@@ -55,7 +55,7 @@
 			<event-type-ref>
 				<event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlAnswer</event-type-name>
         		<event-type-vendor>java.net</event-type-vendor>
-       			 <event-type-version>0.8.1</event-type-version>
+       			 <event-type-version>0.8</event-type-version>
 			</event-type-ref>
 			<initial-event-select variable="ActivityContext" />
 		</event>
