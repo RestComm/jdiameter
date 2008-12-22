@@ -196,7 +196,7 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 			try {
 
 				Event localEvent = (Event) event;
-				AppEvent request = localEvent.getReqeust();
+				AppEvent request = localEvent.getRequest();
 				switch (state) {
 				case NOTSUBSCRIBED:
 
@@ -241,16 +241,16 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 				try {
 					switch ((Event.Type) localEvent.getType()) {
 					case RECEIVE_PROFILE_UPDATE_REQUEST:
-						listener.doProfileUpdateRequestEvent(this, (ProfileUpdateRequest) localEvent.getReqeust());
+						listener.doProfileUpdateRequestEvent(this, (ProfileUpdateRequest) localEvent.getRequest());
 						break;
 					case RECEIVE_PUSH_NOTIFICATION_ANSWER:
-						listener.doPushNotificationAnswerEvent(this, (PushNotificationRequest) localEvent.getReqeust(), (PushNotificationAnswer) localEvent.getAnswer());
+						listener.doPushNotificationAnswerEvent(this, (PushNotificationRequest) localEvent.getRequest(), (PushNotificationAnswer) localEvent.getAnswer());
 						break;
 					case RECEIVE_SUBSCRIBE_NOTIFICATIONS_REQUEST:
-						listener.doSubscribeNotificationsRequestEvent(this, (SubscribeNotificationsRequest) localEvent.getReqeust());
+						listener.doSubscribeNotificationsRequestEvent(this, (SubscribeNotificationsRequest) localEvent.getRequest());
 						break;
 					case RECEIVE_USER_DATA_REQUEST:
-						listener.doUserDataRequestEvent(this, (UserDataRequest) localEvent.getReqeust());
+						listener.doUserDataRequestEvent(this, (UserDataRequest) localEvent.getRequest());
 						break;
 					case SEND_PROFILE_UPDATE_ANSWER:
 					case SEND_PUSH_NOTIFICATION_REQUEST:
@@ -260,7 +260,7 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 						break;
 
 					default:
-						logger.error("Wrong messageT[" + localEvent.getType() + "] R[" + localEvent.getReqeust() + "] A[" + localEvent.getAnswer() + "]");
+						logger.error("Wrong messageT[" + localEvent.getType() + "] R[" + localEvent.getRequest() + "] A[" + localEvent.getAnswer() + "]");
 					}
 				} catch (IllegalDiameterStateException idse) {
 					throw new InternalException(idse);

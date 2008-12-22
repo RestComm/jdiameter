@@ -141,10 +141,10 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements
 					switch(eventType)
 					{
 						case RECEIVED_INITIAL:
-							listener.doCreditControlRequest(this, (JCreditControlRequest)localEvent.getReqeust());
+							listener.doCreditControlRequest(this, (JCreditControlRequest)localEvent.getRequest());
 							break;
 						case RECEIVED_EVENT:
-							listener.doCreditControlRequest(this, (JCreditControlRequest)localEvent.getReqeust());
+							listener.doCreditControlRequest(this, (JCreditControlRequest)localEvent.getRequest());
 							break;
 							//Do nothing, only deliver
 							
@@ -174,7 +174,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements
 							}
 							break;
 						default:
-							throw new InternalException("Wrong state: "+ServerCCASessionState.IDLE+" one event: "+eventType+" "+localEvent.getReqeust()+" "+localEvent.getAnswer());
+							throw new InternalException("Wrong state: "+ServerCCASessionState.IDLE+" one event: "+eventType+" "+localEvent.getRequest()+" "+localEvent.getAnswer());
 							
 					}
 				
@@ -185,7 +185,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements
 					switch(eventType)
 					{
 					 case RECEIVED_UPDATE:
-						 listener.doCreditControlRequest(this, (JCreditControlRequest)localEvent.getReqeust());
+						 listener.doCreditControlRequest(this, (JCreditControlRequest)localEvent.getRequest());
 							break;
 						 //Do nothing, deliver
 					 case SENT_UPDATE_RESPONSE:
@@ -206,7 +206,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements
 							dispatchEvent(localEvent.getAnswer());
 							break;
 					 case RECEIVED_TERMINATE:
-						 listener.doCreditControlRequest(this, (JCreditControlRequest)localEvent.getReqeust());
+						 listener.doCreditControlRequest(this, (JCreditControlRequest)localEvent.getRequest());
 							break;
 					 case SENT_TERMINATE_RESPONSE:
 						 answer=(JCreditControlAnswer) localEvent.getAnswer();
@@ -232,7 +232,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements
 							break;
 							
 					 case RECEIVED_RAA:
-						 listener.doReAuthAnswer(this, new ReAuthRequestImpl(localEvent.getReqeust().getMessage()),new ReAuthAnswerImpl(localEvent.getAnswer().getMessage()));
+						 listener.doReAuthAnswer(this, new ReAuthRequestImpl(localEvent.getRequest().getMessage()),new ReAuthAnswerImpl(localEvent.getAnswer().getMessage()));
 							break;
 					 case SENT_RAR:
 						 dispatchEvent(localEvent.getAnswer());

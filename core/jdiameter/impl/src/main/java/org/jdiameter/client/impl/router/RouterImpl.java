@@ -266,7 +266,7 @@ public class RouterImpl implements IRouter {
             // Balansing
             peer = selectPeer(avaliblePeers);
             if (peer == null)
-                throw new RouteException("Can not find valid connection to realm [" + destRealm + "]");
+                throw new RouteException("Can not find valid connection to peer[" + destHost + "] in realm[" + destRealm + "]");
             return peer;
         }
     }

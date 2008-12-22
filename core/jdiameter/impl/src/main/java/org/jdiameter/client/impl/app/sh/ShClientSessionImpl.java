@@ -158,7 +158,7 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
 						newState = doSNX(answer);
 
 					} else if (event.getType() == Event.Type.TIMEOUT_EXPIRES) {
-						if (localEvent.getReqeust().getCommandCode() == SubscribeNotificationsRequestImpl.code)
+						if (localEvent.getRequest().getCommandCode() == SubscribeNotificationsRequestImpl.code)
 							newState = ShSessionState.TERMINATED;
 					} else {
 					
@@ -178,7 +178,7 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
 						
 					
 						
-						listener.doPushNotificationRequestEvent(this, new PushNotificationRequestImpl( (Request) localEvent.getReqeust().getMessage() ));
+						listener.doPushNotificationRequestEvent(this, new PushNotificationRequestImpl( (Request) localEvent.getRequest().getMessage() ));
 						break;
 					case RECEIVE_PROFILE_UPDATE_ANSWER:
 			
@@ -201,7 +201,7 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
 						break;
 
 					default:
-						logger.error("Wrong messageT[" + localEvent.getType() + "] R[" + localEvent.getReqeust() + "] A[" + localEvent.getAnswer() + "]");
+						logger.error("Wrong messageT[" + localEvent.getType() + "] R[" + localEvent.getRequest() + "] A[" + localEvent.getAnswer() + "]");
 					}
 				} catch (IllegalDiameterStateException idse) {
 					throw new InternalException(idse);

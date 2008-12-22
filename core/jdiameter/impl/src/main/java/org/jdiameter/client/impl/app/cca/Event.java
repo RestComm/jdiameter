@@ -7,7 +7,6 @@ import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.api.cca.events.JCreditControlAnswer;
 import org.jdiameter.api.cca.events.JCreditControlRequest;
 
-
 public class Event implements StateEvent {
 
 	public enum Type {
@@ -20,7 +19,7 @@ public class Event implements StateEvent {
 	}
 
 	Type type;
-	AppRequestEvent reqeust;
+	AppRequestEvent request;
 	AppAnswerEvent answer;
 
 	Event(Type type) {
@@ -30,14 +29,14 @@ public class Event implements StateEvent {
 	Event(Type type, AppRequestEvent request, AppAnswerEvent answer) {
 		this.type = type;
 		this.answer = answer;
-		this.reqeust = request;
+		this.request = request;
 	}
 
 	Event(boolean isRequest, JCreditControlRequest request,
 			JCreditControlAnswer answer) {
 
 		this.answer = answer;
-		this.reqeust = request;
+		this.request = request;
 		
 		if(isRequest)
 		{
@@ -56,7 +55,7 @@ public class Event implements StateEvent {
 					type=Type.SEND_EVENT_REQUEST;
 					break;
 				default:
-					throw new RuntimeException("Wrong CC-Reqeust-Type value: "+request.getRequestTypeAVPValue());
+					throw new RuntimeException("Wrong CC-Request-Type value: " + request.getRequestTypeAVPValue());
 		
 			}
 			
@@ -77,7 +76,7 @@ public class Event implements StateEvent {
 					type=Type.RECEIVE_EVENT_ANSWER;
 					break;
 				default:
-					throw new RuntimeException("Wrong CC-Reqeust-Type value: "+answer.getRequestTypeAVPValue());
+					throw new RuntimeException("Wrong CC-Request-Type value: " + answer.getRequestTypeAVPValue());
 			}
 		}
 		
@@ -92,24 +91,20 @@ public class Event implements StateEvent {
 	}
 
 	public Object getData() {
-		// TODO Auto-generated method stub
-		return null;
+	  return request != null ? request : answer;
 	}
 
 	public void setData(Object data) {
-		// TODO Auto-generated method stub
-
+		// FIXME: What should we do here?! Is it request or answer?
 	}
 
-	public AppEvent getReqeust() {
-		return reqeust;
+	public AppEvent getRequest() {
+		return request;
 	}
 
 	public AppEvent getAnswer() {
 		return answer;
 	}
-
-
 
 	public <E> E encodeType(Class<E> eClass) {
 		return eClass == Event.Type.class ? (E) type : null;

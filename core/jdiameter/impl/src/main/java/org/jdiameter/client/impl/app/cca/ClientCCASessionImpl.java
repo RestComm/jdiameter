@@ -10,7 +10,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.jdiameter.api.Answer;
-import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.IllegalDiameterStateException;
@@ -51,8 +50,6 @@ import org.jdiameter.common.impl.app.auth.SessionTermAnswerImpl;
 import org.jdiameter.common.impl.app.auth.SessionTermRequestImpl;
 import org.jdiameter.common.impl.app.cca.AppCCASessionImpl;
 
-
-
 public class ClientCCASessionImpl extends AppCCASessionImpl implements
 		ClientCCASession, NetworkReqListener, EventListener<Request, Answer> {
 
@@ -74,7 +71,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 
 	protected int gatheredCCFH = -300;
 	protected int gatheredDDFH = -300;
-	protected int gatheredReqeustedAction = -300;
+	protected int gatheredRequestedAction = -300;
 
 	protected static final int CCFH_TERMINATE = 0;
 	protected static final int CCFH_CONTINUE = 1;
@@ -110,7 +107,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 	}
 
 	// FIXME: This is not described, but in FSM - transitions go from PendingI
-	// -> PendingI and PendungU -> PendingU in two cases - TermReqeust is to be
+	// -> PendingI and PendungU -> PendingU in two cases - TermRequest is to be
 	// sent and UpdateRequest
 	// Indicating that messages are queued and sent once response is received
 	// (possibly) - once session goe sinto Open state this queue is looked UP :]
@@ -216,15 +213,15 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 					// state
 					// However failure handling is complicated, so we shift
 					// state first
-					startTx((JCreditControlRequest) localEvent.getReqeust());
+					startTx((JCreditControlRequest) localEvent.getRequest());
 					setState(ClientCCASessionState.PENDING_EVENT);
 					try {
-						dispatchEvent(localEvent.getReqeust());
+						dispatchEvent(localEvent.getRequest());
 					} catch (Exception e) {
 						// This handles failure to send in PendingI state in FSM
 						// table
 						e.printStackTrace();
-						handleSendFailure(e, eventType, localEvent.getReqeust()
+						handleSendFailure(e, eventType, localEvent.getRequest()
 								.getMessage());
 					}
 					break;
@@ -253,11 +250,11 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 								.getUnsigned32())) {
 							handleFailureMessage((JCreditControlAnswer) answer,
 									(JCreditControlRequest) localEvent
-											.getReqeust(), eventType);
+											.getRequest(), eventType);
 						}
 
 						deliverCCAnswer((JCreditControlRequest) localEvent
-								.getReqeust(),
+								.getRequest(),
 								(JCreditControlAnswer) localEvent.getAnswer());
 					} catch (AvpDataException ade) {
 						// FIXME?
@@ -266,7 +263,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 					}
 					break;
 				case Tx_TIMER_FIRED:
-					handleTxExpires(localEvent.getReqeust().getMessage());
+					handleTxExpires(localEvent.getRequest().getMessage());
 					break;
 				default:
 					logger.error("Wrong event type on " + state + " state:"
@@ -287,7 +284,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 					setState(ClientCCASessionState.IDLE, false);
 					buffer = null;
 					listener.doCreditControlAnswer(this,
-							(JCreditControlRequest) localEvent.getReqeust(),
+							(JCreditControlRequest) localEvent.getRequest(),
 							(JCreditControlAnswer) localEvent.getAnswer());
 					break;
 				default:
@@ -334,14 +331,14 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 					// state
 					// However failure handling is complicated, so we shift
 					// state first
-					startTx((JCreditControlRequest) localEvent.getReqeust());
+					startTx((JCreditControlRequest) localEvent.getRequest());
 					setState(ClientCCASessionState.PENDING_INITIAL);
 					try {
-						dispatchEvent(localEvent.getReqeust());
+						dispatchEvent(localEvent.getRequest());
 					} catch (Exception e) {
 						// This handles failure to send in PendingI state in FSM
 						// table
-						handleSendFailure(e, eventType, localEvent.getReqeust()
+						handleSendFailure(e, eventType, localEvent.getRequest()
 								.getMessage());
 					}
 
@@ -371,11 +368,11 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 								.getUnsigned32())) {
 							handleFailureMessage((JCreditControlAnswer) answer,
 									(JCreditControlRequest) localEvent
-											.getReqeust(), eventType);
+											.getRequest(), eventType);
 						}
 
 						deliverCCAnswer((JCreditControlRequest) localEvent
-								.getReqeust(),
+								.getRequest(),
 								(JCreditControlAnswer) localEvent.getAnswer());
 					} catch (AvpDataException ade) {
 						// FIXME?
@@ -384,7 +381,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 					}
 					break;
 				case Tx_TIMER_FIRED:
-					handleTxExpires(localEvent.getReqeust().getMessage());
+					handleTxExpires(localEvent.getRequest().getMessage());
 					break;
 				case SEND_UPDATE_REQUEST:
 				case SEND_TERMINATE_REQUEST:
@@ -405,36 +402,36 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 				switch (eventType) {
 				case SEND_UPDATE_REQUEST:
 
-					startTx((JCreditControlRequest) localEvent.getReqeust());
+					startTx((JCreditControlRequest) localEvent.getRequest());
 					setState(ClientCCASessionState.PENDING_UPDATE);
 					try {
-						dispatchEvent(localEvent.getReqeust());
+						dispatchEvent(localEvent.getRequest());
 					} catch (Exception e) {
 						// This handles failure to send in PendingI state in FSM
 						// table
-						handleSendFailure(e, eventType, localEvent.getReqeust()
+						handleSendFailure(e, eventType, localEvent.getRequest()
 								.getMessage());
 					}
 					break;
 				case SEND_TERMINATE_REQUEST:
 					setState(ClientCCASessionState.PENDING_TERMINATION);
 					try {
-						dispatchEvent(localEvent.getReqeust());
+						dispatchEvent(localEvent.getRequest());
 					} catch (Exception e) {
 
-						handleSendFailure(e, eventType, localEvent.getReqeust()
+						handleSendFailure(e, eventType, localEvent.getRequest()
 								.getMessage());
 					}
 					break;
 				case RECEIVED_RAR:
-					deliverRAR((ReAuthRequest) localEvent.getReqeust());
+					deliverRAR((ReAuthRequest) localEvent.getRequest());
 					break;
 				case SEND_RAA:
 					try {
 						dispatchEvent(localEvent.getAnswer());
 					} catch (Exception e) {
 
-						handleSendFailure(e, eventType, localEvent.getReqeust()
+						handleSendFailure(e, eventType, localEvent.getRequest()
 								.getMessage());
 					}
 					break;
@@ -466,10 +463,10 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 								.getUnsigned32())) {
 							handleFailureMessage((JCreditControlAnswer) answer,
 									(JCreditControlRequest) localEvent
-											.getReqeust(), eventType);
+											.getRequest(), eventType);
 						}
 						deliverCCAnswer((JCreditControlRequest) localEvent
-								.getReqeust(),
+								.getRequest(),
 								(JCreditControlAnswer) localEvent.getAnswer());
 					} catch (AvpDataException ade) {
 						// FIXME?
@@ -478,7 +475,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 					}
 					break;
 				case Tx_TIMER_FIRED:
-					handleTxExpires(localEvent.getReqeust().getMessage());
+					handleTxExpires(localEvent.getRequest().getMessage());
 					break;
 
 				case SEND_UPDATE_REQUEST:
@@ -487,14 +484,14 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 					eventQueue.add(localEvent);
 					break;
 				case RECEIVED_RAR:
-					deliverRAR((ReAuthRequest) localEvent.getReqeust());
+					deliverRAR((ReAuthRequest) localEvent.getRequest());
 					break;
 				case SEND_RAA:
 					try {
 						dispatchEvent(localEvent.getAnswer());
 					} catch (Exception e) {
 
-						handleSendFailure(e, eventType, localEvent.getReqeust()
+						handleSendFailure(e, eventType, localEvent.getRequest()
 								.getMessage());
 					}
 					break;
@@ -510,7 +507,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 				switch (eventType) {
 				case SEND_UPDATE_REQUEST:
 					try {
-						dispatchEvent(localEvent.getReqeust());
+						dispatchEvent(localEvent.getRequest());
 						// No transition
 					} catch (Exception e) {
 						// This handles failure to send in PendingI state in FSM
@@ -521,7 +518,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 				case RECEIVED_TERMINATED_ANSWER:
 					setState(ClientCCASessionState.IDLE, false);
 					deliverCCAnswer((JCreditControlRequest) localEvent
-							.getReqeust(), (JCreditControlAnswer) localEvent
+							.getRequest(), (JCreditControlAnswer) localEvent
 							.getAnswer());
 
 				default:
@@ -788,20 +785,20 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 
 				switch (state) {
 				case PENDING_EVENT:
-					if (gatheredReqeustedAction == CHECK_BALANCE
-							|| gatheredReqeustedAction == PRICE_ENQUIRY) {
+					if (gatheredRequestedAction == CHECK_BALANCE
+							|| gatheredRequestedAction == PRICE_ENQUIRY) {
 						// #1
 						setState(ClientCCASessionState.IDLE);
 						context.indicateServiceError(this);
 
-					} else if (gatheredReqeustedAction == DIRECT_DEBITING
+					} else if (gatheredRequestedAction == DIRECT_DEBITING
 							&& getLocalDDFH() == TERMINATE_OR_BUFFER) {
 						// #7
 						setState(ClientCCASessionState.IDLE, false);
 						buffer = request;
 						buffer.setReTransmitted(true);
 						// context.grantAccessOnDeliverFailure(this, request);
-					} else if (gatheredReqeustedAction == REFUND_ACCOUNT) {
+					} else if (gatheredRequestedAction == REFUND_ACCOUNT) {
 						// #11
 						setState(ClientCCASessionState.IDLE, false);
 						buffer = request;
@@ -867,33 +864,33 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 						context.denyAccessOnFailureMessage(this);
 						deliverCCAnswer(request, event);
 					} else if (resultCode == CREDIT_CONTROL_NOT_APPLICABLE
-							&& gatheredReqeustedAction == DIRECT_DEBITING) {
+							&& gatheredRequestedAction == DIRECT_DEBITING) {
 						// #3
 						setState(ClientCCASessionState.IDLE);
 						context.grantAccessOnFailureMessage(this);
 						deliverCCAnswer(request, event);
 					} else if (temporaryErrorCodes.contains(resultCode)) {
 
-						if (gatheredReqeustedAction == CHECK_BALANCE
-								|| gatheredReqeustedAction == PRICE_ENQUIRY) {
+						if (gatheredRequestedAction == CHECK_BALANCE
+								|| gatheredRequestedAction == PRICE_ENQUIRY) {
 							// #1
 							setState(ClientCCASessionState.IDLE);
 							context.indicateServiceError(this);
 							deliverCCAnswer(request, event);
-						} else if (gatheredReqeustedAction == DIRECT_DEBITING
+						} else if (gatheredRequestedAction == DIRECT_DEBITING
 								&& getLocalDDFH() == CONTINUE) {
 							// #4
 							setState(ClientCCASessionState.IDLE);
 							context.grantAccessOnFailureMessage(this);
 							deliverCCAnswer(request, event);
-						} else if (gatheredReqeustedAction == DIRECT_DEBITING
+						} else if (gatheredRequestedAction == DIRECT_DEBITING
 								&& getLocalDDFH() == CONTINUE
 								&& txFuture != null) {
 							// #5
 							setState(ClientCCASessionState.IDLE);
 							context.denyAccessOnFailureMessage(this);
 							deliverCCAnswer(request, event);
-						} else if (gatheredReqeustedAction == REFUND_ACCOUNT) {
+						} else if (gatheredRequestedAction == REFUND_ACCOUNT) {
 							// #12
 							buffer = request.getMessage();
 							setState(ClientCCASessionState.IDLE, false);
@@ -905,26 +902,26 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 
 					} else {
 						// we are in fauilure zone isFailure(true}
-						if (gatheredReqeustedAction == CHECK_BALANCE
-								|| gatheredReqeustedAction == PRICE_ENQUIRY) {
+						if (gatheredRequestedAction == CHECK_BALANCE
+								|| gatheredRequestedAction == PRICE_ENQUIRY) {
 							// #1
 							setState(ClientCCASessionState.IDLE);
 							context.indicateServiceError(this);
 							deliverCCAnswer(request, event);
-						} else if (gatheredReqeustedAction == DIRECT_DEBITING
+						} else if (gatheredRequestedAction == DIRECT_DEBITING
 								&& getLocalDDFH() == CONTINUE) {
 							// #4
 							setState(ClientCCASessionState.IDLE);
 							context.grantAccessOnFailureMessage(this);
 							deliverCCAnswer(request, event);
-						} else if (gatheredReqeustedAction == DIRECT_DEBITING
+						} else if (gatheredRequestedAction == DIRECT_DEBITING
 								&& getLocalDDFH() == CONTINUE
 								&& txFuture != null) {
 							// #5
 							setState(ClientCCASessionState.IDLE);
 							context.denyAccessOnFailureMessage(this);
 							deliverCCAnswer(request, event);
-						} else if (gatheredReqeustedAction == REFUND_ACCOUNT) {
+						} else if (gatheredRequestedAction == REFUND_ACCOUNT) {
 							// #10
 
 							buffer = null;
@@ -1028,15 +1025,15 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 		ClientCCASessionState newState = state;
 		try {
 			if (isStateless()) {
-				if (gatheredReqeustedAction == CHECK_BALANCE
-						|| gatheredReqeustedAction == PRICE_ENQUIRY) {
+				if (gatheredRequestedAction == CHECK_BALANCE
+						|| gatheredRequestedAction == PRICE_ENQUIRY) {
 					// #1
 					setState(ClientCCASessionState.IDLE);
 					context.indicateServiceError(this);
-				} else if (gatheredReqeustedAction == DIRECT_DEBITING) {
+				} else if (gatheredRequestedAction == DIRECT_DEBITING) {
 					setState(ClientCCASessionState.IDLE);
 					context.grantAccessOnTxExpire(this);
-				} else if (gatheredReqeustedAction == REFUND_ACCOUNT) {
+				} else if (gatheredRequestedAction == REFUND_ACCOUNT) {
 					buffer = m;
 					buffer.setReTransmitted(true);
 					setState(ClientCCASessionState.IDLE, false);
@@ -1180,7 +1177,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 		} else if (request != null) {
 			try {
 				if (request.isRequestedActionAVPPresent()) {
-					this.gatheredReqeustedAction = request
+					this.gatheredRequestedAction = request
 							.getRequestedActionAVPValue();
 				}
 			} catch (Exception e) {

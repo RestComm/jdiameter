@@ -16,7 +16,7 @@ public class Event implements StateEvent {
 	}
 
 	Type type;
-	AppRequestEvent reqeust;
+	AppRequestEvent request;
 	AppAnswerEvent answer;
 
 	Event(Type type) {
@@ -26,14 +26,14 @@ public class Event implements StateEvent {
 	Event(Type type, AppRequestEvent request, AppAnswerEvent answer) {
 		this.type = type;
 		this.answer = answer;
-		this.reqeust = request;
+		this.request = request;
 	}
 
 	Event(boolean isRequest, JCreditControlRequest request,
 			JCreditControlAnswer answer) {
 
 		this.answer = answer;
-		this.reqeust = request;
+		this.request = request;
 		/**
 		 * <pre>
 		 * 8.3.  CC-Request-Type AVP
@@ -101,17 +101,15 @@ public class Event implements StateEvent {
 	}
 
 	public Object getData() {
-		// TODO Auto-generated method stub
-		return null;
+	  return this.request != null ? this.request : this.answer; 
 	}
 
 	public void setData(Object data) {
-		// TODO Auto-generated method stub
-
+    // FIXME: What should we do here?! Is it request or answer?
 	}
 
-	public AppEvent getReqeust() {
-		return reqeust;
+	public AppEvent getRequest() {
+		return request;
 	}
 
 	public AppEvent getAnswer() {
