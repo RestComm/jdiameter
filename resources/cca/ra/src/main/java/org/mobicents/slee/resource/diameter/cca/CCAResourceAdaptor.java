@@ -483,6 +483,15 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	    logger.info("Diameter CCA RA :: eventProcessingSuccessful :: handle[" + handle + "], event[" + event + "], eventID[" + eventID + "], address[" + address + "], flags[" + 
 	        flags + "].");
 
+	    DiameterActivity activity = activities.get(handle);
+	    
+	    if(activity instanceof CreditControlClientSessionImpl)
+	    {
+	      CreditControlClientSessionImpl ccaClientActivity = (CreditControlClientSessionImpl) activity;
+	      
+	      if(ccaClientActivity.getTerminateAfterAnswer())
+	        ccaClientActivity.endActivity();
+	    }
 
 	  }
 
@@ -901,11 +910,11 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 			}
 			if(commandCode ==CreditControlMessage.commandCode)
 			{
-			 eventID = eventLookup.getEventID("net.java.slee.resource.diameter.cca.events." + name, "java.net", "0.8.1");
+			 eventID = eventLookup.getEventID("net.java.slee.resource.diameter.cca.events." + name, "java.net", "0.8");
 			}else
 			{
 				//its a base
-				eventID = eventLookup.getEventID("net.java.slee.resource.diameter.base.events." + name, "java.net", "0.8.1");
+				eventID = eventLookup.getEventID("net.java.slee.resource.diameter.base.events." + name, "java.net", "0.8");
 			}
 			
 			
@@ -1009,15 +1018,15 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 
 
 
-	public void sessionDestroyed(String sessionId, Object appSession) {
+	public void sessionDestroyed(String sessionId, Object appSession)
+	{
 		try
-	    {
-	      this.sleeEndpoint.activityEnding(getActivityHandle(sessionId));
-	    }
-	    catch (Exception e) {
-	      logger.error( "Failure Ending Activity with Session-Id[" + sessionId + "]", e );
-	    }
-		
+    {
+      this.sleeEndpoint.activityEnding(getActivityHandle(sessionId));
+    }
+    catch (Exception e) {
+      logger.error( "Failure Ending Activity with Session-Id[" + sessionId + "]", e );
+    }
 	}
 	
 	private class CreditControlProviderImpl implements CreditControlProvider

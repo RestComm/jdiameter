@@ -196,7 +196,7 @@ public class CreditControlServerSessionImpl extends CreditControlSessionImpl
 		// ints are faster :)
 		switch (s.getValue()) {
 
-		case 2:
+		case 6:
 			// FIXME: this should not happen?
 			this.state = CreditControlSessionState.OPEN;
 			break;

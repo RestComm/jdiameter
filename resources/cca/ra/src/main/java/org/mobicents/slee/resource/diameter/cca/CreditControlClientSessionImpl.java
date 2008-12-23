@@ -54,6 +54,8 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl
 	protected ClientCCASession session = null;
 	protected ArrayList<DiameterAvp> sessionAvps = new ArrayList<DiameterAvp>();
 
+	boolean terminateAfterAnswer = false;
+	
 	/**
 	 * @param messageFactory
 	 * @param avpFactory
@@ -297,40 +299,57 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl
 	 */
 	public void stateChanged(Enum oldState, Enum newState) {
 		
-		ClientCCASessionState s=(ClientCCASessionState) newState;
+		ClientCCASessionState s = (ClientCCASessionState)newState;
 		//IDLE(0),
-		//PENDING_INITIAL(1),
-		//OPEN(2),
+    //PENDING_EVENT(1),
+		//PENDING_INITIAL(2),
 		//PENDING_UPDATE(3),
 		//PENDING_TERMINATION(4),
 		//PENDING_BUFFERED(5),
-		//PENDING_EVENT(6);
+    //OPEN(6);
 		//ints are faster :)
-		switch(s.getValue())
+		switch(s)
 		{
-			case 6:
-				this.state=CreditControlSessionState.PENDING_EVENT;
+			case PENDING_EVENT:
+				this.state = CreditControlSessionState.PENDING_EVENT;
 				break;
-			case 5:
-				this.state=CreditControlSessionState.PENDING_BUFFERED;
+				
+			case PENDING_BUFFERED:
+				this.state = CreditControlSessionState.PENDING_BUFFERED;
 				break;
-			case 4: 
-				this.state=CreditControlSessionState.PENDING_TERMINATION;
-			case 3: 
-				this.state=CreditControlSessionState.PENDING_UPDATE;
+				
+			case PENDING_TERMINATION: 
+				this.state = CreditControlSessionState.PENDING_TERMINATION;
 				break;
-			case 2:
+			case PENDING_UPDATE: 
+				this.state = CreditControlSessionState.PENDING_UPDATE;
+				break;
+				
+			case OPEN:
 				//FIXME: this should not happen?
-				this.state=CreditControlSessionState.OPEN;
+				this.state = CreditControlSessionState.OPEN;
 				break;
-			case 1:
-				this.state=CreditControlSessionState.PENDING_INITIAL;
+				
+			case PENDING_INITIAL:
+				this.state = CreditControlSessionState.PENDING_INITIAL;
 				break;
-			case 0:
-				this.state=CreditControlSessionState.IDLE;
-				((CCASessionCreationListener)this.getSessionListener()).sessionDestroyed(sessionId, this);
-				this.session.release();
+				
+			case IDLE:
+        this.state = CreditControlSessionState.IDLE;
+
+        ClientCCASessionState old = (ClientCCASessionState)oldState;
+			  if(old == ClientCCASessionState.PENDING_EVENT)
+			  {
+			    terminateAfterAnswer = true;
+			  }
+			  else
+			  {
+	        ((CCASessionCreationListener)this.getSessionListener()).sessionDestroyed(sessionId, this);
+	        this.session.release();
+			    
+			  }
 				break;
+				
 				default:
 					logger.error("GOT WRONG STATE NUMBER: "+s);
 		}
@@ -346,9 +365,11 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl
 
 	}
 
-	
 
-	
-	
+
+	public boolean getTerminateAfterAnswer()
+  {
+    return terminateAfterAnswer;
+  }
 	
 }
