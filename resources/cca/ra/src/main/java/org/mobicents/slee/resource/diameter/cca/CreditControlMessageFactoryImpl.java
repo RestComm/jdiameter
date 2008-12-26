@@ -1,11 +1,3 @@
-/**
- * Start time:11:16:00 2008-12-09<br>
- * Project: mobicents-diameter-parent<br>
- * 
- * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
- *         </a>
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
- */
 package org.mobicents.slee.resource.diameter.cca;
 
 import java.util.ArrayList;
@@ -14,6 +6,17 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import net.java.slee.resource.diameter.base.DiameterMessageFactory;
+import net.java.slee.resource.diameter.base.NoSuchAvpException;
+import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodes;
+import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
+import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
+import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
+import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
+import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
+import net.java.slee.resource.diameter.cca.events.avp.CreditControlAVPCodes;
 
 import org.apache.log4j.Logger;
 import org.jdiameter.api.ApplicationId;
@@ -25,27 +28,14 @@ import org.jdiameter.api.Message;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.Stack;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
-import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.cca.events.CreditControlAnswerImpl;
 import org.mobicents.slee.resource.diameter.cca.events.CreditControlRequestImpl;
-
-import net.java.slee.resource.diameter.base.DiameterMessageFactory;
-import net.java.slee.resource.diameter.base.NoSuchAvpException;
-import net.java.slee.resource.diameter.base.events.DiameterMessage;
-import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
-import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
-import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
-import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
-import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
-import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
-import net.java.slee.resource.diameter.cca.events.avp.CreditControlAVPCodes;
 
 /**
  * Start time:11:16:00 2008-12-09<br>
  * Project: mobicents-diameter-parent<br>
  * 
- * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
- *         </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class CreditControlMessageFactoryImpl implements
@@ -70,9 +60,8 @@ public class CreditControlMessageFactoryImpl implements
 		this.localFactory = (CreditControlAVPFactoryImpl) localFactory;
 	}
 
-	
-	
 	protected final static Set<Integer> ids;
+	
 	static
 	{
 		Set<Integer> _ids=new HashSet<Integer>();
@@ -119,40 +108,65 @@ public class CreditControlMessageFactoryImpl implements
 	 * createCreditControlAnswer
 	 * (net.java.slee.resource.diameter.cca.events.CreditControlRequest)
 	 */
-	public CreditControlAnswer createCreditControlAnswer(
-			CreditControlRequest request) {
+	public CreditControlAnswer createCreditControlAnswer(CreditControlRequest request)
+	{
 		//What shall we copy?
 		//SessionId
 		//Sub-Session-Id
 		//{ Origin-Host }
-        //{ Origin-Realm }
-        //{ Destination-Realm }
-        //{ Auth-Application-Id }
-        //{ Service-Context-Id }
-        //{ CC-Request-Type }
-        //{ CC-Request-Number }
+    //{ Origin-Realm }
+    //{ Destination-Realm }
+    //{ Auth-Application-Id }
+    //{ Service-Context-Id }
+    //{ CC-Request-Type }
+    //{ CC-Request-Number }
 		//[ CC-Sub-Session-Id ]
-        //[ Acct-Multi-Session-Id ]
-        //[ Origin-State-Id ]
-        //[ Event-Timestamp ]
-        //xx*[ Proxy-Info ]
-        //xx*[ Route-Record ]
+    //[ Acct-Multi-Session-Id ]
+    //[ Origin-State-Id ]
+    //[ Event-Timestamp ]
+    //xx*[ Proxy-Info ]
+    //xx*[ Route-Record ]
 
-		
-		
-		ArrayList<DiameterAvp> avps=new ArrayList<DiameterAvp>();
-		DiameterAvp[] messageAvps=request.getAvps();
+		ArrayList<DiameterAvp> avps = new ArrayList<DiameterAvp>();
+		DiameterAvp[] messageAvps = request.getAvps();
 		if(messageAvps!=null)
 		{
-			for(DiameterAvp a:messageAvps)
+			for(DiameterAvp a : messageAvps)
 			{
-				if(ids.contains(a.getCode()))
-				{
-					avps.add(a);
-				}
+			  try
+			  {
+  				if(ids.contains(a.getCode()))
+  				{
+  				  // Need to switch Origin-* for Destination-* and vice-versa...
+            if(a.getCode() == DiameterAvpCodes.ORIGIN_HOST)
+            {
+              avps.add(localFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, a.byteArrayValue()));
+            }
+            else if(a.getCode() == DiameterAvpCodes.ORIGIN_REALM)
+            {
+              avps.add(localFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, a.byteArrayValue()));
+            }
+            else if(a.getCode() == DiameterAvpCodes.DESTINATION_HOST)
+            {
+              avps.add(localFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, a.byteArrayValue()));
+            }
+            else if(a.getCode() == DiameterAvpCodes.DESTINATION_REALM)
+            {
+              avps.add(localFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, a.byteArrayValue()));
+            }
+            else
+            {
+  					  avps.add(a);
+            }
+  				}
+			  }
+			  catch (Exception e) {
+			    logger.error( "Failure copying AVP from Request to Answer. Code[" + a.getCode() + "]", e );
+        }
 			}
 				
 		}
+		
 		ApplicationId applicationId = ApplicationId.createByAuthAppId(_CCA_VENDOR, _CCA_AUTH_APP_ID);
 		
 		Message msg=createMessage(CreditControlAnswer.commandCode, applicationId, avps.toArray(new DiameterAvp[avps.size()]));

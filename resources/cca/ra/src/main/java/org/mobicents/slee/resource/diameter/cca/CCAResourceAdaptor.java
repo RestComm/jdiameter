@@ -41,6 +41,7 @@ import net.java.slee.resource.diameter.cca.CreditControlActivityContextInterface
 import net.java.slee.resource.diameter.cca.CreditControlClientSession;
 import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
 import net.java.slee.resource.diameter.cca.CreditControlProvider;
+import net.java.slee.resource.diameter.cca.CreditControlServerSession;
 import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
 import net.java.slee.resource.diameter.cca.events.CreditControlMessage;
 import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
@@ -90,7 +91,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 
 		private static final long serialVersionUID = 1L;
 
-	  private static transient Logger logger = Logger.getLogger(DiameterBaseResourceAdaptor.class);
+	  private static transient Logger logger = Logger.getLogger(CCAResourceAdaptor.class);
 
 	  
 	  private ResourceAdaptorState state;
@@ -817,29 +818,34 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 	//  // JDiam handelr methods //
 	//  ///////////////////////////
 
-	public Answer processRequest(Request request) {
-		logger.info("-------- CCA GOT REQUEST: "+request.getCommandCode());
+	public Answer processRequest(Request request)
+	{
+		logger.info("Diameter CCA RA :: Got Request. Command-Code[" + request.getCommandCode() + "]");
+		
 		//Here we receive initial request for which session does not exist!!!
 		//Valid messages are:
 		// * CCR - if we act as server, this is the message we receive
-		// * NO other message should make it here, if it gets its an errro ?
+		// * NO other message should make it here, if it gets its an error ?
 		//FIXME: baranowb: check if ACR is vald here also
-		if(request.getCommandCode()==CreditControlRequest.commandCode)
+		if(request.getCommandCode() == CreditControlRequest.commandCode)
 		{
 			DiameterActivity activity;
 
-			try {
+			try
+			{
 				activity = raProvider.createActivity(request);
+				
 				if(activity==null)
 				{
 					logger.error("Diameter CCA RA :: failed to create session, Request code: "+request.getCommandCode()+", sessionId: "+request.getSessionId());
-				}else
+				}
+				else
 				{
 					//we can only have server session?, but for sake errorcatching
-					if(activity instanceof ServerCCASession)
+					if(activity instanceof CreditControlServerSession)
 					{
-						ServerCCASessionImpl session=(ServerCCASessionImpl) activity;
-						session.processRequest(request);
+					  CreditControlServerSessionImpl session = (CreditControlServerSessionImpl) activity;
+						((ServerCCASessionImpl)session.getSession()).processRequest(request);
 					}
 				}
 				
@@ -850,11 +856,11 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 
 			// returning null so we can answer later
 			return null;
-		}else
+		}
+		else
 		{
 			logger.info("Diameter CCA RA :: Received bad request - either its not CCR or session should exist to handle this, Request code: "+request.getCommandCode()+", sessionId: "+request.getSessionId());
 		}
-		
 		
 		return null;
 	}
@@ -1087,7 +1093,8 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 					return null;
 				}
 				
-				return (DiameterActivity) getActivity(getActivityHandle(request.getSessionId()));
+				//return (DiameterActivity) getActivity(getActivityHandle(request.getSessionId()));
+				return (DiameterActivity) getActivity(getActivityHandle(session.getSessions().get(0).getSessionId()));
 			}
 			catch (InternalException e)
 			{
