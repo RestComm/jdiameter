@@ -115,6 +115,14 @@ public interface DiameterAvp extends Cloneable {
      * @throws 3588 if the AVP does not contain a String equivalent
      */
     String stringValue();
+    
+    /**
+     * The value of this AVP if the Diameter type is equivalent to a Java String
+     * value (e.g., OctetString)
+     * @return the AVP value as a String
+     * @throws 3588 if the AVP does not contain a String equivalent
+     */
+    String octetStringValue();
 
     /**
      * Return the raw contents of this AVP

@@ -9,6 +9,8 @@
 package org.mobicents.slee.resource.diameter.cca;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import javax.slee.resource.SleeEndpoint;
@@ -33,9 +35,10 @@ import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.cca.ServerCCASession;
-import org.jdiameter.common.api.app.cca.ServerCCASessionState;
+import org.jdiameter.common.api.app.cca.ClientCCASessionState;
 import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
 import org.jdiameter.common.impl.app.cca.JCreditControlAnswerImpl;
+import org.jdiameter.server.impl.app.cca.ServerCCASessionImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 
 /**
@@ -47,184 +50,216 @@ import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class CreditControlServerSessionImpl extends CreditControlSessionImpl
-implements CreditControlServerSession {
+		implements CreditControlServerSession {
 
-  protected ServerCCASession session = null;
-  protected ArrayList<DiameterAvp> sessionAvps = new ArrayList<DiameterAvp>();
-  protected CreditControlRequest lastRequest = null;
+	protected ServerCCASession session = null;
+	protected ArrayList<DiameterAvp> sessionAvps = new ArrayList<DiameterAvp>();
+	protected CreditControlRequest lastRequest = null;
 
-  /**
-   * @param messageFactory
-   * @param avpFactory
-   * @param session
-   * @param raEventListener
-   * @param timeout
-   * @param destinationHost
-   * @param destinationRealm
-   * @param endpoint
-   */
-  public CreditControlServerSessionImpl(
-      CreditControlMessageFactory messageFactory,
-      CreditControlAVPFactory avpFactory, ServerCCASession session,
-      long timeout, DiameterIdentityAvp destinationHost,
-      DiameterIdentityAvp destinationRealm, SleeEndpoint endpoint) {
-    super(messageFactory, avpFactory, null,
-        (EventListener<Request, Answer>) session, timeout,
-        destinationHost, destinationRealm, endpoint);
+	/**
+	 * @param messageFactory
+	 * @param avpFactory
+	 * @param session
+	 * @param raEventListener
+	 * @param timeout
+	 * @param destinationHost
+	 * @param destinationRealm
+	 * @param endpoint
+	 */
+	public CreditControlServerSessionImpl(
+			CreditControlMessageFactory messageFactory,
+			CreditControlAVPFactory avpFactory, ServerCCASession session,
+			long timeout, DiameterIdentityAvp destinationHost,
+			DiameterIdentityAvp destinationRealm, SleeEndpoint endpoint) {
+		super(messageFactory, avpFactory, null,
+				(EventListener<Request, Answer>) session, timeout,
+				destinationHost, destinationRealm, endpoint);
 
-    this.session = session;
-    this.session.addStateChangeNotification(this);
-    super.setCurrentWorkingSession(this.session.getSessions().get(0));
+		this.session = session;
+		this.session.addStateChangeNotification(this);
+		super.setCurrentWorkingSession(this.session.getSessions().get(0));
 
-  }
+	}
 
-  public void endActivity() {
-    this.listener.sessionDestroyed(this.sessionId, this);
-    this.session.release();
-  }
+	public void endActivity() {
+		this.listener.sessionDestroyed(this.sessionId, this);
+		this.session.release();
+	}
 
-  public Object getDiameterAvpFactory() {
-    return this.ccaAvpFactory;
-  }
+	public Object getDiameterAvpFactory() {
+		return this.ccaAvpFactory;
+	}
 
-  public Object getDiameterMessageFactory() {
+	public Object getDiameterMessageFactory() {
 
-    return this.ccaMessageFactory;
-  }
+		return this.ccaMessageFactory;
+	}
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @seenet.java.slee.resource.diameter.cca.CreditControlServerSession#
-   * createCreditControlAnswer()
-   */
-  public CreditControlAnswer createCreditControlAnswer()
-  {
-    return createCreditControlAnswer(lastRequest);
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seenet.java.slee.resource.diameter.cca.CreditControlServerSession#
+	 * createCreditControlAnswer()
+	 */
+	public CreditControlAnswer createCreditControlAnswer() {
+		CreditControlAnswer answer = super.ccaMessageFactory
+				.createCreditControlAnswer(lastRequest);
 
-  public CreditControlAnswer createCreditControlAnswer(CreditControlRequest request)
-  {
-    CreditControlAnswer answer = super.ccaMessageFactory.createCreditControlAnswer(request);
+		// Fille extension avps if present
+		if (sessionAvps.size() > 0) {
+			try {
+				answer.setExtensionAvps(sessionAvps
+						.toArray(new DiameterAvp[sessionAvps.size()]));
+			} catch (AvpNotAllowedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
-    // Fill extension avps if present
-    if (sessionAvps.size() > 0)
-    {
-      try
-      {
-        answer.setExtensionAvps(sessionAvps.toArray(new DiameterAvp[sessionAvps.size()]));
-      }
-      catch (AvpNotAllowedException e) {
-        logger.error( "Failure adding Session AVPs to Answer.", e );
-      }
-    }
+		return answer;
+	}
 
-    return answer;
-  }
-  /*
-   * (non-Javadoc)
-   * 
-   * @seenet.java.slee.resource.diameter.cca.CreditControlServerSession#
-   * sendCreditControlAnswer
-   * (net.java.slee.resource.diameter.cca.events.CreditControlAnswer)
-   */
-  public void sendCreditControlAnswer(CreditControlAnswer cca) throws IOException
-  {
-    fetchCurrentState(cca);
-    
-    DiameterMessageImpl msg = (DiameterMessageImpl) cca;
-    
-    try
-    {
-      session.sendCreditControlAnswer(new JCreditControlAnswerImpl((Answer) msg.getGenericData()));
-    } catch (InternalException e) {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seenet.java.slee.resource.diameter.cca.CreditControlServerSession#
+	 * sendCreditControlAnswer
+	 * (net.java.slee.resource.diameter.cca.events.CreditControlAnswer)
+	 */
+	public void sendCreditControlAnswer(CreditControlAnswer cca)
+			throws IOException {
+		fetchCurrentState(cca);
+		DiameterMessageImpl msg = (DiameterMessageImpl) cca;
+		try {
+			session.sendCreditControlAnswer(new JCreditControlAnswerImpl(
+					(Answer) msg.getGenericData()));
+		} catch (InternalException e) {
 
-      // throw new IOException(e);
-      e.printStackTrace();
-    } catch (IllegalDiameterStateException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (RouteException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (OverloadException e) {
-      // throw new IOException(e);
-      e.printStackTrace();
-    }
+			// throw new IOException(e);
+			e.printStackTrace();
+		} catch (IllegalDiameterStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RouteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (OverloadException e) {
+			// throw new IOException(e);
+			e.printStackTrace();
+		}
 
-  }
+	}
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @seenet.java.slee.resource.diameter.cca.CreditControlServerSession#
-   * sendReAuthRequest
-   * (net.java.slee.resource.diameter.base.events.ReAuthRequest)
-   */
-  public void sendReAuthRequest(ReAuthRequest rar) throws IOException {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seenet.java.slee.resource.diameter.cca.CreditControlServerSession#
+	 * sendReAuthRequest
+	 * (net.java.slee.resource.diameter.base.events.ReAuthRequest)
+	 */
+	public void sendReAuthRequest(ReAuthRequest rar) throws IOException {
 
-    DiameterMessageImpl msg = (DiameterMessageImpl) rar;
-    try {
-      session.sendReAuthRequest(new ReAuthRequestImpl((Request) msg
-          .getGenericData()));
-    } catch (InternalException e) {
+		DiameterMessageImpl msg = (DiameterMessageImpl) rar;
+		try {
+			session.sendReAuthRequest(new ReAuthRequestImpl((Request) msg
+					.getGenericData()));
+		} catch (InternalException e) {
 
-      // throw new IOException(e);
-      e.printStackTrace();
-    } catch (IllegalDiameterStateException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (RouteException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (OverloadException e) {
-      // throw new IOException(e);
-      e.printStackTrace();
-    }
-  }
+			// throw new IOException(e);
+			e.printStackTrace();
+		} catch (IllegalDiameterStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RouteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (OverloadException e) {
+			// throw new IOException(e);
+			e.printStackTrace();
+		}
+	}
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.jdiameter.api.app.StateChangeListener#stateChanged(java.lang.Enum,
-   * java.lang.Enum)
-   */
-  public void stateChanged(Enum oldState, Enum newState)
-  {
-    ServerCCASessionState s = (ServerCCASessionState) newState;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.jdiameter.api.app.StateChangeListener#stateChanged(java.lang.Enum,
+	 * java.lang.Enum)
+	 */
+	public void stateChanged(Enum oldState, Enum newState) {
 
-    // IDLE(0), OPEN(1);
-    switch (s)
-    {
-    case OPEN:
-      // FIXME: this should not happen?
-      this.state = CreditControlSessionState.OPEN;
+		
+		//System.out.println("newState: "+newState.getClass().hashCode()+" "+ClientCCASessionState.class.hashCode());
+		
+		
+		//FIXME: There is something wrong, UCL shows there is only one isntance of this enums class, however it stills throws cast exception:
+		// Cant cast ClientCCASessionState to ClientCCASessionState....
+		//ClientCCASessionState s = (ClientCCASessionState) newState;
+		// IDLE(0),
+		// PENDING_INITIAL(1),
+		// OPEN(2),
+		// PENDING_UPDATE(3),
+		// PENDING_TERMINATION(4),
+		// PENDING_BUFFERED(5),
+		// PENDING_EVENT(6);
+		// ints are faster :)
+		
+		Method m;
+		Integer in=-1;
+		try {
+			m = newState.getClass().getMethod("getValue");
+			in=(Integer) m.invoke(newState);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		//switch (s.getValue()) {
+		switch (in.intValue()) {
 
-      break;
+		case 6:
+			// FIXME: this should not happen?
+			this.state = CreditControlSessionState.OPEN;
+			break;
 
-    case IDLE:
-      this.state = CreditControlSessionState.IDLE;
+		case 0:
+			
+			this.state = CreditControlSessionState.IDLE;
+			
+			((CCASessionCreationListener) this.getSessionListener())
+					.sessionDestroyed(sessionId, this);
+			this.session.release();
+			break;
+		default:
+			//logger.error("GOT WRONG STATE NUMBER: " + s);
+			logger.error("GOT WRONG STATE NUMBER: " + in);
+		}
 
-      ((CCASessionCreationListener) this.getSessionListener()).sessionDestroyed(sessionId, this);
-      this.session.release();
+	}
 
-      break;
-    default:
-      logger.error("Wrong state in CCA Server Session: " + s);
-    }
-  }
+	public void fetchCurrentState(CreditControlRequest ccr) {
+		this.lastRequest=ccr;
+		//FIXME: do more
+	}
 
-  public void fetchCurrentState(CreditControlRequest ccr) {
+	public void fetchCurrentState(CreditControlAnswer cca) {
 
-  }
+	}
 
-  public void fetchCurrentState(CreditControlAnswer cca) {
+	public ServerCCASession getSession() {
+		return this.session;
+	}
 
-  }
-
-  public ServerCCASession getSession()
-  {
-    return this.session;
-  }
 }

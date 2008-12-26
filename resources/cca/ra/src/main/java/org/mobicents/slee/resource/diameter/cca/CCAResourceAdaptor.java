@@ -825,21 +825,18 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 		//Here we receive initial request for which session does not exist!!!
 		//Valid messages are:
 		// * CCR - if we act as server, this is the message we receive
-		// * NO other message should make it here, if it gets its an error ?
+		// * NO other message should make it here, if it gets its an errro ?
 		//FIXME: baranowb: check if ACR is vald here also
-		if(request.getCommandCode() == CreditControlRequest.commandCode)
+		if(request.getCommandCode()==CreditControlRequest.commandCode)
 		{
 			DiameterActivity activity;
 
-			try
-			{
+			try {
 				activity = raProvider.createActivity(request);
-				
 				if(activity==null)
 				{
 					logger.error("Diameter CCA RA :: failed to create session, Request code: "+request.getCommandCode()+", sessionId: "+request.getSessionId());
-				}
-				else
+				}else
 				{
 					//we can only have server session?, but for sake errorcatching
 					if(activity instanceof CreditControlServerSession)
@@ -856,11 +853,11 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 
 			// returning null so we can answer later
 			return null;
-		}
-		else
+		}else
 		{
 			logger.info("Diameter CCA RA :: Received bad request - either its not CCR or session should exist to handle this, Request code: "+request.getCommandCode()+", sessionId: "+request.getSessionId());
 		}
+		
 		
 		return null;
 	}
@@ -914,9 +911,17 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 				logger.error("Diameter CCA RA :: Received bad command code - RA should not get this - its error, command code: "+commandCode);
 				return;
 			}
+			
+			DiameterMessage event = (DiameterMessage) createEvent(request, answer);
+			
 			if(commandCode ==CreditControlMessage.commandCode)
 			{
-			 eventID = eventLookup.getEventID("net.java.slee.resource.diameter.cca.events." + name, "java.net", "0.8");
+				eventID = eventLookup.getEventID("net.java.slee.resource.diameter.cca.events." + name, "java.net", "0.8");
+				Object activity=this.activities.get(handle);
+				if(activity!=null && activity instanceof CreditControlServerSession)
+				{
+					((CreditControlServerSessionImpl)activity).fetchCurrentState((CreditControlRequest) event);
+				}
 			}else
 			{
 				//its a base
@@ -924,7 +929,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 			}
 			
 			
-			DiameterMessage event = (DiameterMessage) createEvent(request, answer);
+			
 			logger.info("Diameter CCA RA :: FIRE EVENT: command code: "+commandCode+" EVENTID: " +eventID+" Handle: "+handle);
 			sleeEndpoint.fireEvent(handle, event, eventID, null);
 		} catch (Exception e) {

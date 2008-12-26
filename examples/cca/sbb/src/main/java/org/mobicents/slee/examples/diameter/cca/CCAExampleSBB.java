@@ -33,6 +33,7 @@ import net.java.slee.resource.diameter.cca.CreditControlActivityContextInterface
 import net.java.slee.resource.diameter.cca.CreditControlClientSession;
 import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
 import net.java.slee.resource.diameter.cca.CreditControlProvider;
+import net.java.slee.resource.diameter.cca.CreditControlServerSession;
 import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
 import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
 import net.java.slee.resource.diameter.cca.events.avp.CcMoneyAvp;
@@ -41,6 +42,11 @@ import net.java.slee.resource.diameter.cca.events.avp.RequestedServiceUnitAvp;
 
 import org.apache.log4j.Logger;
 import org.jdiameter.api.Avp;
+import org.jdiameter.api.AvpDataException;
+import org.jdiameter.api.AvpSet;
+import org.jdiameter.api.Request;
+import org.jdiameter.api.cca.events.JCreditControlAnswer;
+import org.jdiameter.common.impl.app.cca.JCreditControlAnswerImpl;
 import org.mobicents.slee.resource.diameter.cca.CreditControlClientSessionImpl;
 
 /**
@@ -71,6 +77,12 @@ public abstract class CCAExampleSBB implements javax.slee.Sbb {
   private String originIP = "127.0.0.1";
   private String destinationIP = "127.0.0.1";
 
+  protected boolean isEventBased=true;
+  protected boolean sentInitialAnswer=false;
+  protected boolean sentUpdateAnswer=false;
+  protected boolean sentTerminationAnswer=false;
+  
+  
   public void setSbbContext( SbbContext context )
   {
     logger.info( "sbbRolledBack invoked." );
@@ -198,7 +210,7 @@ public abstract class CCAExampleSBB implements javax.slee.Sbb {
 
   public void onTimerEvent(TimerEvent event, ActivityContextInterface aci)
   {
-    doSendEventCCR();
+    //doSendEventCCR();
   }
 
 
@@ -266,6 +278,128 @@ public abstract class CCAExampleSBB implements javax.slee.Sbb {
   public void onCreditControlRequest(CreditControlRequest request, ActivityContextInterface aci )
   {
     logger.info("Received CCR.");
+    
+    System.out.println("--[" + this.getClass().getSimpleName()
+			+ "]-- GOT doCreditControlRequest");
+
+	System.out.println("APPLICATION ID: "+request.getHeader().getApplicationId()+"\n"+request);	
+
+//	   INITIAL_REQUEST                 1,UPDATE_REQUEST                  2,TERMINATION_REQUEST             3,EVENT_REQUEST                   4
+	CreditControlServerSession session=(CreditControlServerSession) aci.getActivity();
+	CreditControlAnswer answer=null;
+	switch (request.getCcRequestType().getValue()) {
+	case 1:
+		System.out.println("Got initial request");
+		if(sentInitialAnswer)
+		{
+			System.err.println("Error, initial answer already sent!!!!");
+			return;
+		}
+		
+		answer=session.createCreditControlAnswer();
+		answer.setResultCode(2000);
+		
+				
+		if(answer!=null)
+		{
+			System.out.println("SENGIND BACK:\n"+answer);
+			try {
+				session.sendCreditControlAnswer(answer);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			this.sentInitialAnswer=true;
+		}else
+		{
+			System.out.println("!!!!!!!!!!!!!!!!");
+		}
+		
+		break;
+	case 2:
+		System.out.println("Got update request");
+		if(sentUpdateAnswer)
+		{
+			System.err.println("Error, update answer already sent!!!!");
+			return;
+		}
+		
+		answer=session.createCreditControlAnswer();
+		answer.setResultCode(2000);
+		
+		
+		if(answer!=null)
+		{
+			System.out.println("SENGIND BACK:\n"+answer);
+			try {
+				session.sendCreditControlAnswer(answer);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			sentUpdateAnswer=true;
+		}else
+		{
+			System.out.println("!!!!!!!!!!!!!!!!");
+		}
+		
+		
+		break;
+	case 3:
+		System.out.println("Got termination request");
+		if(sentTerminationAnswer)
+		{
+			System.err.println("Error, termination answer already sent!!!!");
+			return;
+		}
+		
+		answer=session.createCreditControlAnswer();
+		answer.setResultCode(2000);
+		
+		
+		if(answer!=null)
+		{
+			System.out.println("SENGIND BACK:\n"+answer);
+			try {
+				session.sendCreditControlAnswer(answer);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			this.sentTerminationAnswer=true;
+		}else
+		{
+			System.out.println("!!!!!!!!!!!!!!!!");
+		}
+		
+		break;
+	case 4:
+		
+		answer=session.createCreditControlAnswer();
+		answer.setResultCode(2000);
+	
+		
+		if(answer!=null)
+		{
+			System.out.println("SENGIND BACK:\n"+answer);
+			try {
+				session.sendCreditControlAnswer(answer);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else
+		{
+			System.out.println("!!!!!!!!!!!!!!!!");
+		}
+		break;
+
+	default:
+		System.err.println("BAD VALUE!!!!: "
+				+ request.getCcRequestType());
+	}
+
+    
   }
   public void onCreditControlAnswer(CreditControlAnswer answer, ActivityContextInterface aci )
   {

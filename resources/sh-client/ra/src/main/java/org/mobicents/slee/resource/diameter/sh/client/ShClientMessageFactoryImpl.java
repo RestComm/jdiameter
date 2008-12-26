@@ -147,9 +147,9 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 			if(avps!=null)
 				for (DiameterAvp avp : avps) {
 					if (avp.getCode() == Avp.DESTINATION_REALM)
-						destRealm = avp.stringValue();
+						destRealm = avp.octetStringValue();
 					else if (avp.getCode() == Avp.DESTINATION_HOST)
-						destHost = avp.stringValue();
+						destHost = avp.octetStringValue();
 			}
 
 			msg = destHost == null ? session.createRequest(commandCode, applicationId, destRealm) : session.createRequest(commandCode, applicationId, destRealm, destHost);

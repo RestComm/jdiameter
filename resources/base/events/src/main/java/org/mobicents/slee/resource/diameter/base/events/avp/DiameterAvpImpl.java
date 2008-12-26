@@ -125,6 +125,15 @@ public class DiameterAvpImpl implements DiameterAvp {
   {
 	  log.error("Failed to fetch avp, code: "+code+". Message: "+msg);
   }
+
+  public String octetStringValue() {
+	  try {
+          return parser.bytesToOctetString(value);
+      } catch (Exception e) {
+          log.debug(e);
+          return null;
+      }
+  }
   
   
 }
