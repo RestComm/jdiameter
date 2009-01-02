@@ -1,16 +1,8 @@
-/**
- * Start time:21:45:41 2008-12-14<br>
- * Project: mobicents-diameter-parent<br>
- * 
- * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
- *         </a>
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
- */
 package org.mobicents.slee.examples.diameter.cca;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -23,9 +15,6 @@ import javax.slee.facilities.TimerOptions;
 import javax.slee.serviceactivity.ServiceActivity;
 import javax.slee.serviceactivity.ServiceActivityFactory;
 
-import net.java.slee.resource.diameter.base.CreateActivityException;
-import net.java.slee.resource.diameter.base.NoSuchAvpException;
-import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
@@ -42,29 +31,23 @@ import net.java.slee.resource.diameter.cca.events.avp.RequestedServiceUnitAvp;
 
 import org.apache.log4j.Logger;
 import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
-import org.jdiameter.api.AvpSet;
-import org.jdiameter.api.Request;
-import org.jdiameter.api.cca.events.JCreditControlAnswer;
-import org.jdiameter.common.impl.app.cca.JCreditControlAnswerImpl;
-import org.mobicents.slee.resource.diameter.cca.CreditControlClientSessionImpl;
 
 /**
  * Start time:21:45:41 2008-12-14<br>
  * Project: mobicents-diameter-parent<br>
  * 
- * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
- *         </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public abstract class CCAExampleSBB implements javax.slee.Sbb {
+  
   private static Logger logger = Logger.getLogger(CCAExampleSBB.class);
 
   private SbbContext sbbContext = null; // This SBB's context
 
   private Context myEnv = null; // This SBB's environment
 
-  private CreditControlActivityContextInterfaceFactory acif=null;
+  private CreditControlActivityContextInterfaceFactory acif = null;
 
   private CreditControlProvider provider = null;
 
@@ -75,14 +58,20 @@ public abstract class CCAExampleSBB implements javax.slee.Sbb {
   private TimerFacility timerFacility = null;
 
   private String originIP = "127.0.0.1";
-  private String destinationIP = "127.0.0.1";
+  private String originPort = "1812";
+  private String originRealm = "mobicents.org";
 
-  protected boolean isEventBased=true;
-  protected boolean sentInitialAnswer=false;
-  protected boolean sentUpdateAnswer=false;
-  protected boolean sentTerminationAnswer=false;
+  private String destinationIP = "127.0.0.1";
+  private String destinationPort = "3868";
+  private String destinationRealm = "mobicents.org";
+
+  private boolean actAsServer = true;
   
-  
+  protected boolean isEventBased = true;
+  protected boolean sentInitialAnswer = false;
+  protected boolean sentUpdateAnswer = false;
+  protected boolean sentTerminationAnswer = false;
+
   public void setSbbContext( SbbContext context )
   {
     logger.info( "sbbRolledBack invoked." );
@@ -92,14 +81,14 @@ public abstract class CCAExampleSBB implements javax.slee.Sbb {
     try
     {
       myEnv = (Context) new InitialContext().lookup( "java:comp/env" );
-      provider=(CreditControlProvider) myEnv.lookup("slee/resources/diameter-cca-ra-interface");
+      provider = (CreditControlProvider) myEnv.lookup("slee/resources/diameter-cca-ra-interface");
       logger.info( "Got Provider:" + provider );
 
-      messageFactory=provider.getCreditControlMessageFactory();
+      messageFactory = provider.getCreditControlMessageFactory();
       logger.info( "Got Message Factory:" + messageFactory );
-      avpFactory=provider.getCreditControlAVPFactory();
+      avpFactory = provider.getCreditControlAVPFactory();
       logger.info( "Got AVP Factory:" + avpFactory );
-      acif=(CreditControlActivityContextInterfaceFactory) myEnv.lookup("slee/resources/CCAResourceAdaptor/java.net/0.8.1/acif");
+      acif = (CreditControlActivityContextInterfaceFactory) myEnv.lookup("slee/resources/CCAResourceAdaptor/java.net/0.8.1/acif");
 
       // Get the timer facility
       timerFacility  = (TimerFacility) myEnv.lookup("slee/facilities/timer");
@@ -181,8 +170,8 @@ public abstract class CCAExampleSBB implements javax.slee.Sbb {
     try
     {
       // check if it's my service that is starting
-      ServiceActivity sa = ( (ServiceActivityFactory) myEnv.lookup( "slee/serviceactivity/factory" ) ).getActivity();
-      if( sa.equals( aci.getActivity() ) )
+      ServiceActivity sa = ((ServiceActivityFactory) myEnv.lookup("slee/serviceactivity/factory")).getActivity();
+      if( sa.equals(aci.getActivity()) )
       {
         logger.info( "Performing sanity check..." );
         logger.info( "Provider [" + provider + "]" );
@@ -194,61 +183,189 @@ public abstract class CCAExampleSBB implements javax.slee.Sbb {
         logger.info( "Connected to " + provider.getPeerCount() + " peers." );
 
         for(DiameterIdentityAvp peer : provider.getConnectedPeers())
+        {
           logger.info( "Connected to Peer[" +  peer.stringValue() + "]" );
+        }
 
-        TimerOptions options = new TimerOptions();
+        // Initialize properties
+        Properties props = new Properties();
+        props.load( this.getClass().getClassLoader().getResourceAsStream("example.properties") );
 
-        timerFacility.setTimer(aci, null, System.currentTimeMillis() + 30000, options);
+        this.originIP = props.getProperty( "origin.ip" ) == null ? this.originIP : props.getProperty( "origin.ip" ); 
+        this.originPort = props.getProperty( "origin.port" ) == null ? this.originPort : props.getProperty( "origin.port" ); 
+        this.originRealm = props.getProperty( "origin.realm" ) == null ? this.originRealm : props.getProperty( "origin.realm" ); 
 
+        this.destinationIP = props.getProperty( "destination.ip" ) == null ? this.destinationIP : props.getProperty( "destination.ip" );
+        this.destinationPort = props.getProperty( "destination.port" ) == null ? this.destinationPort : props.getProperty( "destination.port" );
+        this.destinationRealm = props.getProperty( "destination.realm" ) == null ? this.destinationRealm : props.getProperty( "destination.realm" ); 
+
+        this.actAsServer = props.getProperty( "example.mode" ) == null ? this.actAsServer : !props.getProperty("example.mode").trim().equals("client");
+        
+        logger.info( "Diameter CCA Example :: Initialized in " + (actAsServer ? "SERVER" : "CLIENT") + " mode." );
+        
+        if(!actAsServer)
+        {
+          TimerOptions options = new TimerOptions();
+          timerFacility.setTimer(aci, null, System.currentTimeMillis() + 30000, options);
+        }
       }
-
-    }catch(Exception e)
-    {
-      e.printStackTrace();
+    }
+    catch(Exception e) {
+      logger.error( "Failure initializing Service.", e );
     }
   }
 
   public void onTimerEvent(TimerEvent event, ActivityContextInterface aci)
   {
-    //doSendEventCCR();
+    doSendEventCCR();
   }
 
+  public void onCreditControlRequest(CreditControlRequest request, ActivityContextInterface aci )
+  {
+    logger.info("Received Credit-Control-Request (Application-Id[" + request.getHeader().getApplicationId() + "].");
+
+    //INITIAL_REQUEST(1), UPDATE_REQUEST(2), TERMINATION_REQUEST(3), EVENT_REQUEST(4)
+    CreditControlServerSession session = (CreditControlServerSession) aci.getActivity();
+    CreditControlAnswer answer = null;
+
+    switch (request.getCcRequestType().getValue())
+    {
+    case 1:
+      try
+      {
+        logger.info("Got INITIAL_REQUEST(1).");
+
+        if(sentInitialAnswer)
+        {
+          logger.error("Error. Initial answer already sent! Aborting.");
+          return;
+        }
+
+        answer = session.createCreditControlAnswer();
+        answer.setResultCode(2001);
+
+        logger.info("Sending Credit-Control-Answer:\n" + answer);
+
+        session.sendCreditControlAnswer(answer);
+        this.sentInitialAnswer = true;
+      }
+      catch (Exception e) {
+        logger.error( "Failed to create/send Credit-Control-Answer to reply INITIAL_REQUEST(1).", e );
+      }
+      break;
+    case 2:
+      try
+      {
+        logger.info("Got UPDATE_REQUEST(2).");
+
+        if(sentUpdateAnswer)
+        {
+          logger.error("Error. Update answer already sent! Aborting.");
+          return;
+        }
+
+        answer = session.createCreditControlAnswer();
+        answer.setResultCode(2001);
+
+        logger.info("Sending Credit-Control-Answer:\n" + answer);
+
+        session.sendCreditControlAnswer(answer);
+        sentUpdateAnswer = true;
+      }
+      catch (Exception e) {
+        logger.error( "Failed to create/send Credit-Control-Answer to reply UPDATE_REQUEST(2).", e );
+      }
+      break;
+    case 3:
+      try
+      {
+        logger.info("Got TERMINATION_REQUEST(3).");
+
+        if(sentTerminationAnswer)
+        {
+          logger.error("Error. Termination answer already sent! Aborting.");
+          return;
+        }
+
+        answer = session.createCreditControlAnswer();
+        answer.setResultCode(2001);
+
+        logger.info("Sending Credit-Control-Answer:\n" + answer);
+
+        session.sendCreditControlAnswer(answer);
+        this.sentTerminationAnswer = true;
+      }
+      catch (Exception e) {
+        logger.error( "Failed to create/send Credit-Control-Answer to reply TERMINATION_REQUEST(3).", e );
+      }
+      break;
+    case 4:
+      try
+      {
+        logger.info("Got EVENT_REQUEST(4).");
+
+        answer = session.createCreditControlAnswer();
+        answer.setResultCode(2001);
+
+        logger.info("Sending Credit-Control-Answer:\n" + answer);
+
+        session.sendCreditControlAnswer(answer);
+      }
+      catch (Exception e) {
+        logger.error( "Failed to create/send Credit-Control-Answer to reply EVENT_REQUEST(4).", e );
+      }
+      break;
+
+    default:
+      logger.error( "Unexpected CC-Request-Type in message: " + request.getCcRequestType() + ". Aborting...");
+    }
+  }
+
+  public void onCreditControlAnswer(CreditControlAnswer answer, ActivityContextInterface aci )
+  {
+    logger.info("Received CCA with Result-Code[" + answer.getResultCode() + "].");
+  }
+
+  // ##########################################################################
+  // ##                          PRIVATE METHODS                             ##
+  // ##########################################################################
 
   private void doSendEventCCR()
   {
-
-    //Create ACTIVITY: WE DONT HAVE CREATE METHOD FOR IDENTITY>.... what a mess
-    //DiameterIdentityAvp destinationHost=avpFactory.getBaseFactory().create(Avp.DESTINATION_HOST, "aaa://" + destinationIP + ":3868".getBytes() );
-    //DiameterIdentityAvp destinationRealm=avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, "mobicents.org".getBytes() );
-
-    try {
-      CreditControlClientSession session=this.provider.createClientSession();
-      ActivityContextInterface localACI=this.acif.getActivityContextInterface(session);
+    try
+    {
+      CreditControlClientSession session = this.provider.createClientSession();
+      ActivityContextInterface localACI = this.acif.getActivityContextInterface(session);
       localACI.attach(this.getSbbContext().getSbbLocalObject());
 
-      CreditControlRequest request=session.createCreditControlRequest();
+      CreditControlRequest request = session.createCreditControlRequest();
+
       List<DiameterAvp> avps = new ArrayList<DiameterAvp>();
 
+      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, ("aaa://" + originIP + ":" + originPort).getBytes() ));
+      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, originRealm.getBytes() ));
 
-      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, ("aaa://" + originIP + ":1812").getBytes() ));
-      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, "mobicents.org".getBytes() ));
+      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, ("aaa://" + destinationIP + ":" + destinationPort).getBytes() ));
+      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, destinationRealm.getBytes() ));
 
-      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, ("aaa://" + destinationIP + ":3868").getBytes() ));
-      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, "mobicents.org".getBytes() ));
       avps.add(avpFactory.getBaseFactory().createAvp(CreditControlAVPCodes.CC_Request_Type, 4l));
       avps.add(avpFactory.getBaseFactory().createAvp(CreditControlAVPCodes.CC_Request_Number, 0l));
-      RequestedServiceUnitAvp rsu=this.avpFactory.createRequestedServiceUnit();
-      CcMoneyAvp ccMoney=this.avpFactory.createCcMoney();
+
+      RequestedServiceUnitAvp rsu = this.avpFactory.createRequestedServiceUnit();
+
+      CcMoneyAvp ccMoney = this.avpFactory.createCcMoney();
       ccMoney.setCurrencyCode(100);
       ccMoney.setUnitValue(this.avpFactory.createUnitValue());
+
       rsu.setCreditControlInputOctets(10);
       rsu.setCreditControlMoneyAvp(ccMoney);
       rsu.setCreditControlServiceSpecificUnits(1000);
       rsu.setCreditControlTime(100);
       rsu.setCreditControlTotalOctets(5000);
-      avps.add(rsu);
-      avps.add(avpFactory.getBaseFactory().createAvp(CreditControlAVPCodes.Requested_Action, 0));
 
+      avps.add(rsu);
+
+      avps.add(avpFactory.getBaseFactory().createAvp(CreditControlAVPCodes.Requested_Action, 0));
 
       //Now create & send
       request.setExtensionAvps(avps.toArray(new DiameterAvp[avps.size()]));
@@ -256,154 +373,10 @@ public abstract class CCAExampleSBB implements javax.slee.Sbb {
       logger.info("About to send:\n"+request);
 
       session.sendCreditControlRequest(request);
-
-
-
-    } catch (CreateActivityException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (NoSuchAvpException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (AvpNotAllowedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
     }
-
-  }
-
-  public void onCreditControlRequest(CreditControlRequest request, ActivityContextInterface aci )
-  {
-    logger.info("Received CCR.");
-    
-    System.out.println("--[" + this.getClass().getSimpleName()
-			+ "]-- GOT doCreditControlRequest");
-
-	System.out.println("APPLICATION ID: "+request.getHeader().getApplicationId()+"\n"+request);	
-
-//	   INITIAL_REQUEST                 1,UPDATE_REQUEST                  2,TERMINATION_REQUEST             3,EVENT_REQUEST                   4
-	CreditControlServerSession session=(CreditControlServerSession) aci.getActivity();
-	CreditControlAnswer answer=null;
-	switch (request.getCcRequestType().getValue()) {
-	case 1:
-		System.out.println("Got initial request");
-		if(sentInitialAnswer)
-		{
-			System.err.println("Error, initial answer already sent!!!!");
-			return;
-		}
-		
-		answer=session.createCreditControlAnswer();
-		answer.setResultCode(2000);
-		
-				
-		if(answer!=null)
-		{
-			System.out.println("SENGIND BACK:\n"+answer);
-			try {
-				session.sendCreditControlAnswer(answer);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			this.sentInitialAnswer=true;
-		}else
-		{
-			System.out.println("!!!!!!!!!!!!!!!!");
-		}
-		
-		break;
-	case 2:
-		System.out.println("Got update request");
-		if(sentUpdateAnswer)
-		{
-			System.err.println("Error, update answer already sent!!!!");
-			return;
-		}
-		
-		answer=session.createCreditControlAnswer();
-		answer.setResultCode(2000);
-		
-		
-		if(answer!=null)
-		{
-			System.out.println("SENGIND BACK:\n"+answer);
-			try {
-				session.sendCreditControlAnswer(answer);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			sentUpdateAnswer=true;
-		}else
-		{
-			System.out.println("!!!!!!!!!!!!!!!!");
-		}
-		
-		
-		break;
-	case 3:
-		System.out.println("Got termination request");
-		if(sentTerminationAnswer)
-		{
-			System.err.println("Error, termination answer already sent!!!!");
-			return;
-		}
-		
-		answer=session.createCreditControlAnswer();
-		answer.setResultCode(2000);
-		
-		
-		if(answer!=null)
-		{
-			System.out.println("SENGIND BACK:\n"+answer);
-			try {
-				session.sendCreditControlAnswer(answer);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			this.sentTerminationAnswer=true;
-		}else
-		{
-			System.out.println("!!!!!!!!!!!!!!!!");
-		}
-		
-		break;
-	case 4:
-		
-		answer=session.createCreditControlAnswer();
-		answer.setResultCode(2000);
-	
-		
-		if(answer!=null)
-		{
-			System.out.println("SENGIND BACK:\n"+answer);
-			try {
-				session.sendCreditControlAnswer(answer);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}else
-		{
-			System.out.println("!!!!!!!!!!!!!!!!");
-		}
-		break;
-
-	default:
-		System.err.println("BAD VALUE!!!!: "
-				+ request.getCcRequestType());
-	}
-
-    
-  }
-  public void onCreditControlAnswer(CreditControlAnswer answer, ActivityContextInterface aci )
-  {
-    logger.info("Received CCA.");
-  }
+    catch (Exception e) {
+      logger.error( "Failed to create/send Credit-Control-Request.", e );
+    }
+  }  
 
 }
