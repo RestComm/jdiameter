@@ -22,22 +22,25 @@ import net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoType;
 
 /**
  * Factory to support the creation of Grouped AVP instances.
- * 
- * @author Alexandre Mendonça
  *
+ * <br>Super project:  mobicents
+ * <br>10:54:41 AM Dec 30, 2008 
+ * <br>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
  */
 public interface CreditControlAVPFactory {
 
-	
-	public DiameterAvpFactory getBaseFactory();
-	
+
+  public DiameterAvpFactory getBaseFactory();
+
   /**
    * Create an empty CcMoney (Grouped AVP) instance.
    * 
    * @return
    */
   CcMoneyAvp createCcMoney();
-  
+
   /**
    * Create a CcMoney (Grouped AVP) instance using required AVP values.
    * 
@@ -45,7 +48,7 @@ public interface CreditControlAVPFactory {
    * @return
    */
   CcMoneyAvp createCcMoney(UnitValueAvp unitValue);
-  
+
   /**
    * Create an empty CostInformation (Grouped AVP) instance.
    * 
@@ -61,14 +64,14 @@ public interface CreditControlAVPFactory {
    * @return
    */
   CostInformationAvp createCostInformation(UnitValueAvp unitValue, long currencyCode);
-  
+
   /**
    * Create an empty FinalUnitIndication (Grouped AVP) instance.
    * 
    * @return
    */
   FinalUnitIndicationAvp createFinalUnitIndication();
-  
+
   /**
    * Create a FinalUnitIndication (Grouped AVP) instance using required AVP values.
    * 
@@ -76,14 +79,14 @@ public interface CreditControlAVPFactory {
    * @return
    */
   FinalUnitIndicationAvp createFinalUnitIndication(FinalUnitActionType finalUnitType);
-  
+
   /**
    * Create an empty GrantedServiceUnit (Grouped AVP) instance.
    * 
    * @return
    */
   GrantedServiceUnitAvp createGrantedServiceUnit();
-  
+
   /**
    * Create an empty GSUPoolReference (Grouped AVP) instance.
    * 
@@ -100,14 +103,14 @@ public interface CreditControlAVPFactory {
    * @return
    */
   GSUPoolReferenceAvp createGSUPoolReference(long gsuPoolIdentifier, CcUnitType ccUnitType, UnitValueAvp unitValue);
-  
+
   /**
    * Create an empty MultipleServicesCreditControl (Grouped AVP) instance.
    * 
    * @return
    */
   MultipleServicesCreditControlAvp createMultipleServicesCreditControl();
-  
+
   /**
    * Create an empty RedirectServer (Grouped AVP) instance.
    * 
@@ -123,21 +126,21 @@ public interface CreditControlAVPFactory {
    * @return
    */
   RedirectServerAvp createRedirectServer(RedirectAddressType redirectAddressType, String redirectServerAddress);
-  
+
   /**
    * Create an empty RequestedServiceUnit (Grouped AVP) instance.
    * 
    * @return
    */
   RequestedServiceUnitAvp createRequestedServiceUnit();
-  
+
   /**
    * Create an empty ServiceParameterInfo (Grouped AVP) instance.
    * 
    * @return
    */
   ServiceParameterInfoAvp createServiceParameterInfo();
-  
+
   /**
    * Create a ServiceParameterInfo (Grouped AVP) instance using required AVP values.
    * 
@@ -146,7 +149,7 @@ public interface CreditControlAVPFactory {
    * @return
    */
   ServiceParameterInfoAvp createServiceParameterInfo(long serviceParameterType, byte[] serviceParameterValue);
-  
+
   /**
    * Create an empty SubscriptionId (Grouped AVP) instance.
    * 
@@ -162,14 +165,14 @@ public interface CreditControlAVPFactory {
    * @return
    */
   SubscriptionIdAvp createSubscriptionId(SubscriptionIdType subscriptionIdType, String subscriptionIdData);
-  
+
   /**
    * Create an empty UnitValue (Grouped AVP) instance.
    * 
    * @return
    */
   UnitValueAvp createUnitValue();
-  
+
   /**
    * Create a UnitValue (Grouped AVP) instance using required AVP values.
    * 
@@ -177,14 +180,14 @@ public interface CreditControlAVPFactory {
    * @return
    */
   UnitValueAvp createUnitValue(long valueDigits);
-  
+
   /**
    * Create an empty UsedServiceUnit (Grouped AVP) instance.
    * 
    * @return
    */
   UsedServiceUnitAvp createUsedServiceUnit();
-  
+
   /**
    * Create an empty EquipmentInfo (Grouped AVP) instance.
    * 

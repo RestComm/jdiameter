@@ -1,11 +1,3 @@
-/**
- * Start time:16:32:52 2008-12-08<br>
- * Project: mobicents-diameter-parent<br>
- * 
- * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
- *         </a>
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
- */
 package org.mobicents.slee.resource.diameter.cca;
 
 import net.java.slee.resource.diameter.base.DiameterAvpFactory;
@@ -30,7 +22,6 @@ import net.java.slee.resource.diameter.cca.events.avp.UsedServiceUnitAvp;
 import net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvp;
 import net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoType;
 
-import org.apache.log4j.Logger;
 import org.jdiameter.api.Stack;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.diameter.dictionary.AvpRepresentation;
@@ -48,274 +39,348 @@ import org.mobicents.slee.resource.diameter.cca.events.avp.UnitValueAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.UsedServiceUnitAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvpImpl;
 
-
 /**
  * Start time:16:32:52 2008-12-08<br>
  * Project: mobicents-diameter-parent<br>
  * 
- * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
- *         </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class CreditControlAVPFactoryImpl implements CreditControlAVPFactory {
 
-	
-	protected DiameterAvpFactory baseAvpFactory = null;
-	private static transient Logger logger = Logger.getLogger(CreditControlAVPFactoryImpl.class);
+  protected DiameterAvpFactory baseAvpFactory = null;
 
-	//protected MessageParser parser = new MessageParser(null);
+  private AvpDictionary avpDictionary = AvpDictionary.INSTANCE;
 
-	protected Stack stack=null;
-	
-	
-	
-	public CreditControlAVPFactoryImpl(DiameterAvpFactory baseAvpFactory,
-			Stack stack) {
-		super();
-		this.baseAvpFactory = baseAvpFactory;
-		this.stack = stack;
-	}
-	
-	
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createCcMoney()
-	 */
-	public CcMoneyAvp createCcMoney() {
-		
-		AvpRepresentation representation=AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.CC_Money);
-		CcMoneyAvpImpl avp=new CcMoneyAvpImpl(representation.getCode(),representation.getVendorId(),representation.isMandatory()?1:0,representation.isProtected()?1:0,new byte[]{});
-		
-		return avp;
-	}
+  protected Stack stack = null;
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createCcMoney(net.java.slee.resource.diameter.cca.events.avp.UnitValueAvp)
-	 */
-	public CcMoneyAvp createCcMoney(UnitValueAvp unitValue) {
-		CcMoneyAvp value= createCcMoney();
-		value.setUnitValue(unitValue);
-		return value;
-	}
+  public CreditControlAVPFactoryImpl(DiameterAvpFactory baseAvpFactory, Stack stack)
+  {
+    super();
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createCostInformation()
-	 */
-	public CostInformationAvp createCostInformation() {
-		AvpRepresentation representation=AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Cost_Information);
-		CostInformationAvpImpl avp=new CostInformationAvpImpl(representation.getCode(),representation.getVendorId(),representation.isMandatory()?1:0,representation.isProtected()?1:0,new byte[]{});
-		return avp;
-	}
+    this.baseAvpFactory = baseAvpFactory;
+    this.stack = stack;
+  }
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createCostInformation(net.java.slee.resource.diameter.cca.events.avp.UnitValueAvp, long)
-	 */
-	public CostInformationAvp createCostInformation(UnitValueAvp unitValue,
-			long currencyCode) {
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createCcMoney()
+   */
+  public CcMoneyAvp createCcMoney()
+  {
+    // Get the dictionary representation for the AVP
+    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.CC_Money);
 
-		CostInformationAvp value= createCostInformation();
-		value.setUnitValue(unitValue);
-		value.setCurrencyCode(currencyCode);
-		return value;
-	}
+    // Create the AVP with the provided representation data
+    CcMoneyAvpImpl avp = new CcMoneyAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createFinalUnitIndication()
-	 */
-	public FinalUnitIndicationAvp createFinalUnitIndication() {
-		AvpRepresentation representation=AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Final_Unit_Indication);
-		FinalUnitIndicationAvpImpl avp=new FinalUnitIndicationAvpImpl(representation.getCode(),representation.getVendorId(),representation.isMandatory()?1:0,representation.isProtected()?1:0,new byte[]{});
-		return avp;
-	}
+    return avp;
+  }
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createFinalUnitIndication(net.java.slee.resource.diameter.cca.events.avp.FinalUnitActionType)
-	 */
-	public FinalUnitIndicationAvp createFinalUnitIndication(
-			FinalUnitActionType finalUnitAction) {
-		
-		FinalUnitIndicationAvp value= createFinalUnitIndication();
-		value.setFinalUnitAction(finalUnitAction);
-		
-		return value;
-		
-	}
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createCcMoney(net.java.slee.resource.diameter.cca.events.avp.UnitValueAvp)
+   */
+  public CcMoneyAvp createCcMoney(UnitValueAvp unitValue)
+  {
+    // Create the empty AVP
+    CcMoneyAvp avp = createCcMoney();
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createGSUPoolReference()
-	 */
-	public GSUPoolReferenceAvp createGSUPoolReference() {
-		AvpRepresentation representation=AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.G_S_U_Pool_Reference);
-		GSUPoolReferenceAvpImpl avp=new GSUPoolReferenceAvpImpl(representation.getCode(),representation.getVendorId(),representation.isMandatory()?1:0,representation.isProtected()?1:0,new byte[]{});
-		return avp;
-	}
+    // Set the provided AVP values
+    avp.setUnitValue(unitValue);
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createGSUPoolReference(long, net.java.slee.resource.diameter.cca.events.avp.CcUnitType, net.java.slee.resource.diameter.cca.events.avp.UnitValueAvp)
-	 */
-	public GSUPoolReferenceAvp createGSUPoolReference(long gsuPoolIdentifier,
-			CcUnitType ccUnitType, UnitValueAvp unitValue) {
-		
-		GSUPoolReferenceAvp  value=createGSUPoolReference();
-		value.setCreditControlUnitType(ccUnitType);
-		value.setUnitValue(unitValue);
-		
-		return value;
-	}
+    return avp;
+  }
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createGrantedServiceUnit()
-	 */
-	public GrantedServiceUnitAvp createGrantedServiceUnit() {
-		AvpRepresentation representation=AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Granted_Service_Unit);
-		GrantedServiceUnitAvpImpl avp=new GrantedServiceUnitAvpImpl(representation.getCode(),representation.getVendorId(),representation.isMandatory()?1:0,representation.isProtected()?1:0,new byte[]{});
-		return avp;
-	}
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createCostInformation()
+   */
+  public CostInformationAvp createCostInformation()
+  {
+    // Get the dictionary representation for the AVP
+    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.Cost_Information);
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createMultipleServicesCreditControl()
-	 */
-	public MultipleServicesCreditControlAvp createMultipleServicesCreditControl() {
-		AvpRepresentation representation=AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Multiple_Services_Credit_Control);
-		MultipleServicesCreditControlAvpImpl avp=new MultipleServicesCreditControlAvpImpl(representation.getCode(),representation.getVendorId(),representation.isMandatory()?1:0,representation.isProtected()?1:0,new byte[]{});
-		return avp;
-	}
+    // Create the AVP with the provided representation data
+    CostInformationAvpImpl avp = new CostInformationAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createRedirectServer()
-	 */
-	public RedirectServerAvp createRedirectServer() {
-		AvpRepresentation representation=AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Redirect_Server);
-		RedirectServerAvpImpl avp=new RedirectServerAvpImpl(representation.getCode(),representation.getVendorId(),representation.isMandatory()?1:0,representation.isProtected()?1:0,new byte[]{});
-		return avp;
-	}
+    return avp;
+  }
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createRedirectServer(net.java.slee.resource.diameter.cca.events.avp.RedirectAddressType, java.lang.String)
-	 */
-	public RedirectServerAvp createRedirectServer(
-			RedirectAddressType redirectAddressType,
-			String redirectServerAddress) {
-		
-		RedirectServerAvp value=createRedirectServer();
-		value.setRedirectServerAddress(redirectServerAddress);
-		value.setRedirectAddressType(redirectAddressType);
-		
-		
-		return value;
-	}
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createCostInformation(net.java.slee.resource.diameter.cca.events.avp.UnitValueAvp, long)
+   */
+  public CostInformationAvp createCostInformation(UnitValueAvp unitValue, long currencyCode)
+  {
+    // Create the empty AVP
+    CostInformationAvp avp = createCostInformation();
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createRequestedServiceUnit()
-	 */
-	public RequestedServiceUnitAvp createRequestedServiceUnit() {
-		AvpRepresentation representation=AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Requested_Service_Unit);
-		RequestedServiceUnitAvpImpl avp=new RequestedServiceUnitAvpImpl(representation.getCode(),representation.getVendorId(),representation.isMandatory()?1:0,representation.isProtected()?1:0,new byte[]{});
-		return avp;
-	}
+    // Set the provided AVP values
+    avp.setUnitValue(unitValue);
+    avp.setCurrencyCode(currencyCode);
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createServiceParameterInfo()
-	 */
-	public ServiceParameterInfoAvp createServiceParameterInfo() {
-		AvpRepresentation representation=AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Service_Parameter_Info);
-		ServiceParameterInfoAvpImpl avp=new ServiceParameterInfoAvpImpl(representation.getCode(),representation.getVendorId(),representation.isMandatory()?1:0,representation.isProtected()?1:0,new byte[]{});
-		return avp;
-	}
+    return avp;
+  }
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createServiceParameterInfo(long, byte[])
-	 */
-	public ServiceParameterInfoAvp createServiceParameterInfo(
-			long serviceParameterType, byte[] serviceParameterValue) {
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createFinalUnitIndication()
+   */
+  public FinalUnitIndicationAvp createFinalUnitIndication()
+  {
+    // Get the dictionary representation for the AVP
+    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.Final_Unit_Indication);
 
-		ServiceParameterInfoAvp value= createServiceParameterInfo();
-		value.setServiceParameterType(serviceParameterType);
-		value.setServiceParameterValue(serviceParameterValue);
-		
-		return value;
-	}
+    // Create the AVP with the provided representation data
+    FinalUnitIndicationAvpImpl avp=new FinalUnitIndicationAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createSubscriptionId()
-	 */
-	public SubscriptionIdAvp createSubscriptionId() {
-		AvpRepresentation representation=AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Subscription_Id);
-		SubscriptionIdAvpImpl avp=new SubscriptionIdAvpImpl(representation.getCode(),representation.getVendorId(),representation.isMandatory()?1:0,representation.isProtected()?1:0,new byte[]{});
-		return avp;
-	}
+    return avp;
+  }
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createSubscriptionId(net.java.slee.resource.diameter.cca.events.avp.SubscriptionIdType, java.lang.String)
-	 */
-	public SubscriptionIdAvp createSubscriptionId(
-			SubscriptionIdType subscriptionIdType, String subscriptionIdData) {
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createFinalUnitIndication(net.java.slee.resource.diameter.cca.events.avp.FinalUnitActionType)
+   */
+  public FinalUnitIndicationAvp createFinalUnitIndication(FinalUnitActionType finalUnitAction)
+  {
+    // Create the empty AVP
+    FinalUnitIndicationAvp avp = createFinalUnitIndication();
 
-		SubscriptionIdAvp value= createSubscriptionId();
-		value.setSubscriptionIdType(subscriptionIdType);
-		value.setSubscriptionIdData(subscriptionIdData);
-		
-		return value;
-	}
+    // Set the provided AVP values
+    avp.setFinalUnitAction(finalUnitAction);
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createUnitValue()
-	 */
-	public UnitValueAvp createUnitValue() {
-		AvpRepresentation representation=AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Unit_Value);
-		UnitValueAvpImpl avp=new UnitValueAvpImpl(representation.getCode(),representation.getVendorId(),representation.isMandatory()?1:0,representation.isProtected()?1:0,new byte[]{});
-		return avp;
-	}
+    return avp;
+  }
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createUnitValue(long)
-	 */
-	public UnitValueAvp createUnitValue(long valueDigits) {
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createGSUPoolReference()
+   */
+  public GSUPoolReferenceAvp createGSUPoolReference()
+  {
+    // Get the dictionary representation for the AVP
+    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.G_S_U_Pool_Reference);
 
-		UnitValueAvp value= createUnitValue();
-		value.setValueDigits(valueDigits);
-		
-		
-		return value;
-	}
+    // Create the AVP with the provided representation data
+    GSUPoolReferenceAvpImpl avp = new GSUPoolReferenceAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createUsedServiceUnit()
-	 */
-	public UsedServiceUnitAvp createUsedServiceUnit() {
-		AvpRepresentation representation=AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Used_Service_Unit);
-		UsedServiceUnitAvpImpl avp=new UsedServiceUnitAvpImpl(representation.getCode(),representation.getVendorId(),representation.isMandatory()?1:0,representation.isProtected()?1:0,new byte[]{});
-		return avp;
-	}
+    return avp;
+  }
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createUserEquipmentInfo()
-	 */
-	public UserEquipmentInfoAvp createUserEquipmentInfo() {
-		AvpRepresentation representation=AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.User_Equipment_Info);
-		UserEquipmentInfoAvpImpl avp=new UserEquipmentInfoAvpImpl(representation.getCode(),representation.getVendorId(),representation.isMandatory()?1:0,representation.isProtected()?1:0,new byte[]{});
-		return avp;
-	}
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createGSUPoolReference(long, net.java.slee.resource.diameter.cca.events.avp.CcUnitType, net.java.slee.resource.diameter.cca.events.avp.UnitValueAvp)
+   */
+  public GSUPoolReferenceAvp createGSUPoolReference(long gsuPoolIdentifier, CcUnitType ccUnitType, UnitValueAvp unitValue)
+  {
+    // Create the empty AVP
+    GSUPoolReferenceAvp avp = createGSUPoolReference();
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createUserEquipmentInfo(net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoType, byte[])
-	 */
-	public UserEquipmentInfoAvp createUserEquipmentInfo(
-			UserEquipmentInfoType userEquipmentInfoType,
-			byte[] userEquipmentInfoValue) {
+    // Set the provided AVP values
+    avp.setCreditControlUnitType(ccUnitType);
+    avp.setUnitValue(unitValue);
 
-		UserEquipmentInfoAvp value=createUserEquipmentInfo();
-		value.setUserEquipmentInfoType(userEquipmentInfoType);
-		value.setUserEquipmentInfoValue(userEquipmentInfoValue);
-		
-		return value;
-	}
+    return avp;
+  }
 
-	/* (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#getBaseFactory()
-	 */
-	public DiameterAvpFactory getBaseFactory() {
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createGrantedServiceUnit()
+   */
+  public GrantedServiceUnitAvp createGrantedServiceUnit()
+  {
+    // Get the dictionary representation for the AVP
+    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.Granted_Service_Unit);
 
-		return this.baseAvpFactory;
-	}
+    // Create the AVP with the provided representation data
+    GrantedServiceUnitAvpImpl avp = new GrantedServiceUnitAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
 
+    return avp;
+  }
+
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createMultipleServicesCreditControl()
+   */
+  public MultipleServicesCreditControlAvp createMultipleServicesCreditControl()
+  {
+    // Get the dictionary representation for the AVP
+    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.Multiple_Services_Credit_Control);
+
+    // Create the AVP with the provided representation data
+    MultipleServicesCreditControlAvpImpl avp = new MultipleServicesCreditControlAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
+
+    return avp;
+  }
+
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createRedirectServer()
+   */
+  public RedirectServerAvp createRedirectServer()
+  {
+    // Get the dictionary representation for the AVP
+    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.Redirect_Server);
+
+    // Create the AVP with the provided representation data
+    RedirectServerAvpImpl avp = new RedirectServerAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
+
+    return avp;
+  }
+
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createRedirectServer(net.java.slee.resource.diameter.cca.events.avp.RedirectAddressType, java.lang.String)
+   */
+  public RedirectServerAvp createRedirectServer(RedirectAddressType redirectAddressType, String redirectServerAddress)
+  {
+    // Create the empty AVP
+    RedirectServerAvp avp = createRedirectServer();
+
+    // Set the provided AVP values
+    avp.setRedirectServerAddress(redirectServerAddress);
+    avp.setRedirectAddressType(redirectAddressType);
+
+    return avp;
+  }
+
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createRequestedServiceUnit()
+   */
+  public RequestedServiceUnitAvp createRequestedServiceUnit()
+  {
+    // Get the dictionary representation for the AVP
+    AvpRepresentation avpRep=avpDictionary.getAvp(CreditControlAVPCodes.Requested_Service_Unit);
+
+    // Create the AVP with the provided representation data
+    RequestedServiceUnitAvpImpl avp = new RequestedServiceUnitAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
+
+    return avp;
+  }
+
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createServiceParameterInfo()
+   */
+  public ServiceParameterInfoAvp createServiceParameterInfo()
+  {
+    // Get the dictionary representation for the AVP
+    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.Service_Parameter_Info);
+
+    // Create the AVP with the provided representation data
+    ServiceParameterInfoAvpImpl avp = new ServiceParameterInfoAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
+
+    return avp;
+  }
+
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createServiceParameterInfo(long, byte[])
+   */
+  public ServiceParameterInfoAvp createServiceParameterInfo(long serviceParameterType, byte[] serviceParameterValue)
+  {
+    // Create the empty AVP
+    ServiceParameterInfoAvp avp = createServiceParameterInfo();
+
+    // Set the provided AVP values
+    avp.setServiceParameterType(serviceParameterType);
+    avp.setServiceParameterValue(serviceParameterValue);
+
+    return avp;
+  }
+
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createSubscriptionId()
+   */
+  public SubscriptionIdAvp createSubscriptionId()
+  {
+    // Get the dictionary representation for the AVP
+    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.Subscription_Id);
+
+    // Create the AVP with the provided representation data
+    SubscriptionIdAvpImpl avp = new SubscriptionIdAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
+
+    return avp;
+  }
+
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createSubscriptionId(net.java.slee.resource.diameter.cca.events.avp.SubscriptionIdType, java.lang.String)
+   */
+  public SubscriptionIdAvp createSubscriptionId(SubscriptionIdType subscriptionIdType, String subscriptionIdData)
+  {
+    // Create the empty AVP
+    SubscriptionIdAvp avp = createSubscriptionId();
+
+    // Set the provided AVP values
+    avp.setSubscriptionIdType(subscriptionIdType);
+    avp.setSubscriptionIdData(subscriptionIdData);
+
+    return avp;
+  }
+
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createUnitValue()
+   */
+  public UnitValueAvp createUnitValue()
+  {
+    // Get the dictionary representation for the AVP
+    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.Unit_Value);
+
+    // Create the AVP with the provided representation data
+    UnitValueAvpImpl avp = new UnitValueAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
+
+    return avp;
+  }
+
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createUnitValue(long)
+   */
+  public UnitValueAvp createUnitValue(long valueDigits)
+  {
+    // Create the empty AVP
+    UnitValueAvp avp = createUnitValue();
+
+    // Set the provided AVP values
+    avp.setValueDigits(valueDigits);
+
+    return avp;
+  }
+
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createUsedServiceUnit()
+   */
+  public UsedServiceUnitAvp createUsedServiceUnit()
+  {
+    // Get the dictionary representation for the AVP
+    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.Used_Service_Unit);
+
+    // Create the AVP with the provided representation data
+    UsedServiceUnitAvpImpl avp = new UsedServiceUnitAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
+
+    return avp;
+  }
+
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createUserEquipmentInfo()
+   */
+  public UserEquipmentInfoAvp createUserEquipmentInfo()
+  {
+    // Get the dictionary representation for the AVP
+    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.User_Equipment_Info);
+
+    // Create the AVP with the provided representation data
+    UserEquipmentInfoAvpImpl avp = new UserEquipmentInfoAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
+
+    return avp;
+  }
+
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#createUserEquipmentInfo(net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoType, byte[])
+   */
+  public UserEquipmentInfoAvp createUserEquipmentInfo(UserEquipmentInfoType userEquipmentInfoType, byte[] userEquipmentInfoValue)
+  {
+    // Create the empty AVP
+    UserEquipmentInfoAvp avp = createUserEquipmentInfo();
+
+    // Set the provided AVP values
+    avp.setUserEquipmentInfoType(userEquipmentInfoType);
+    avp.setUserEquipmentInfoValue(userEquipmentInfoValue);
+
+    return avp;
+  }
+
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.cca.CreditControlAVPFactory#getBaseFactory()
+   */
+  public DiameterAvpFactory getBaseFactory()
+  {
+    return this.baseAvpFactory;
+  }
 }

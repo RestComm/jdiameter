@@ -14,73 +14,76 @@ import org.jdiameter.api.EventListener;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.app.StateChangeListener;
-import org.jdiameter.common.api.app.cca.ClientCCASessionState;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
 
-
+/**
+ * 
+ * CreditControlSessionImpl.java
+ *
+ * <br>Super project:  mobicents
+ * <br>8:34:55 PM Dec 29, 2008 
+ * <br>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
+ */
 public abstract class CreditControlSessionImpl extends DiameterActivityImpl implements CreditControlSession,StateChangeListener{
 
-	
-	protected CreditControlMessageFactory ccaMessageFactory=null;
-	protected CreditControlAVPFactory ccaAvpFactory=null;
-	protected CreditControlSessionState state=CreditControlSessionState.IDLE;
-	protected CCASessionCreationListener listener=null;
-	
-	public CreditControlSessionImpl(CreditControlMessageFactory messageFactory,
-			CreditControlAVPFactory avpFactory, Session session,
-			EventListener<Request, Answer> raEventListener, long timeout,
-			DiameterIdentityAvp destinationHost,
-			DiameterIdentityAvp destinationRealm, SleeEndpoint endpoint) {
-		super(null, null, session, raEventListener, timeout,
-				destinationHost, destinationRealm, endpoint);
-		this.ccaMessageFactory=messageFactory;
-		this.ccaAvpFactory=avpFactory;
-		
-	}
+  protected CreditControlMessageFactory ccaMessageFactory = null;
+  protected CreditControlAVPFactory ccaAvpFactory = null;
+  protected CreditControlSessionState state = CreditControlSessionState.IDLE;
+  protected CCASessionCreationListener listener = null;
 
-	
-	
-	public CreditControlSessionState getState() {
-		
-		return state;
-	}
+  public CreditControlSessionImpl(CreditControlMessageFactory messageFactory, CreditControlAVPFactory avpFactory, Session session, EventListener<Request, Answer> raEventListener, long timeout,
+      DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm, SleeEndpoint endpoint)
+  {
+    super(null, null, session, raEventListener, timeout, destinationHost, destinationRealm, endpoint);
 
-	@Override
-	public Object getDiameterAvpFactory() {
-		
-		return this.ccaAvpFactory;
-	}
+    this.ccaMessageFactory=messageFactory;
+    this.ccaAvpFactory=avpFactory;
+  }
 
-	@Override
-	public Object getDiameterMessageFactory() {
-		return this.ccaMessageFactory;
-	}
+  public CreditControlSessionState getState()
+  {
+    return state;
+  }
 
-	@Override
-	public Object getSessionListener() {
-		return this.listener;
-	}
+  @Override
+  public Object getDiameterAvpFactory()
+  {
+    return this.ccaAvpFactory;
+  }
 
-	@Override
-	public void setSessionListener(Object ra) {
-		this.listener=(CCASessionCreationListener) ra;
-	}
-	
-	public void setDestinationHost(DiameterIdentityAvp destinationHost) {
-		super.destinationHost=destinationHost;
+  @Override
+  public Object getDiameterMessageFactory()
+  {
+    return this.ccaMessageFactory;
+  }
 
+  @Override
+  public Object getSessionListener()
+  {
+    return this.listener;
+  }
 
-		((CreditControlMessageFactoryImpl)ccaMessageFactory).removeAvpFromInnerList(destinationHost.getCode());
-		((CreditControlMessageFactoryImpl)ccaMessageFactory).addAvpToInnerList(destinationHost);
-		
-	}
+  @Override
+  public void setSessionListener(Object ra)
+  {
+    this.listener = (CCASessionCreationListener) ra;
+  }
 
-	public void setDestinationRealm(DiameterIdentityAvp destinationRealm) {
-		super.destinationRealm=destinationRealm;
-		((CreditControlMessageFactoryImpl)ccaMessageFactory).removeAvpFromInnerList(destinationRealm.getCode());
-		((CreditControlMessageFactoryImpl)ccaMessageFactory).addAvpToInnerList(destinationRealm);
-	}
+  public void setDestinationHost(DiameterIdentityAvp destinationHost)
+  {
+    super.destinationHost = destinationHost;
 
-	
-	
+    ((CreditControlMessageFactoryImpl)ccaMessageFactory).removeAvpFromInnerList(destinationHost.getCode());
+    ((CreditControlMessageFactoryImpl)ccaMessageFactory).addAvpToInnerList(destinationHost);
+  }
+
+  public void setDestinationRealm(DiameterIdentityAvp destinationRealm)
+  {
+    super.destinationRealm=destinationRealm;
+
+    ((CreditControlMessageFactoryImpl)ccaMessageFactory).removeAvpFromInnerList(destinationRealm.getCode());
+    ((CreditControlMessageFactoryImpl)ccaMessageFactory).addAvpToInnerList(destinationRealm);
+  }
 }

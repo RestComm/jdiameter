@@ -6,11 +6,14 @@ import net.java.slee.resource.diameter.base.events.ReAuthAnswer;
 import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
 
 /**
- * A CreditControlClientSession represents a charging control session for
- * Credit Control clients.
  * 
- * @author Alexandre Mendonça
+ * A CreditControlClientSession represents a charging control session for Credit Control clients.
  *
+ * <br>Super project:  mobicents
+ * <br>10:58:08 AM Dec 30, 2008 
+ * <br>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
  */
 public interface CreditControlClientSession extends CreditControlSession {
 
@@ -30,7 +33,7 @@ public interface CreditControlClientSession extends CreditControlSession {
    * @throws IOException
    */
   void sendCreditControlRequest(CreditControlRequest ccr) throws IOException;
-  
+
   /**
    * Send an initial Credit-Control-Request. An event containing the answer
    * will be fired on this activity.
@@ -66,5 +69,5 @@ public interface CreditControlClientSession extends CreditControlSession {
    * @throws IOException 
    */
   void sendTerminationCreditControlRequest(CreditControlRequest ccr) throws IOException;
-  
+
 }

@@ -45,14 +45,14 @@ public interface UnitValueAvp extends GroupedAvp {
 	 * 
 	 * @param expotent
 	 */
-	public void setExpotent(int expotent);
+	public void setExponent(int exponent);
 
 	/**
 	 * Returns the value of the Exponent AVP, of type Integer32.
 	 * 
 	 * @return
 	 */
-	public int getExpotent();
+	public int getExponent();
 
 	/**
 	 * Returns true if the Exponent AVP is present in the message.

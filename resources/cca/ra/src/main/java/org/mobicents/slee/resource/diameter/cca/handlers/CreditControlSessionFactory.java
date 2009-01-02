@@ -5,16 +5,14 @@ import java.util.concurrent.ScheduledFuture;
 import org.apache.log4j.Logger;
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.ApplicationId;
-import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.Message;
-import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
-import org.jdiameter.api.RouteException;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.acc.events.AccountAnswer;
 import org.jdiameter.api.acc.events.AccountRequest;
 import org.jdiameter.api.app.AppAnswerEvent;
+import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
@@ -30,7 +28,6 @@ import org.jdiameter.api.cca.ServerCCASession;
 import org.jdiameter.api.cca.ServerCCASessionListener;
 import org.jdiameter.api.cca.events.JCreditControlAnswer;
 import org.jdiameter.api.cca.events.JCreditControlRequest;
-
 import org.jdiameter.client.impl.app.cca.ClientCCASessionImpl;
 import org.jdiameter.common.api.app.IAppSessionFactory;
 import org.jdiameter.common.api.app.cca.ICCAMessageFactory;
@@ -44,462 +41,364 @@ import org.jdiameter.server.impl.app.cca.ServerCCASessionImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityHandle;
 import org.mobicents.slee.resource.diameter.cca.CCAResourceAdaptor;
 
-public class CreditControlSessionFactory implements IAppSessionFactory,
-		ClientCCASessionListener, ServerCCASessionListener,
-		StateChangeListener, ICCAMessageFactory , IServerCCASessionContext, IClientCCASessionContext{
-
-	protected SessionFactory sessionFactory = null;
-	protected CCAResourceAdaptor resourceAdaptor = null;
-	//its miliseconds
-	protected long messageTimeout = 5000;
-
-	protected int defaultDirectDebitingFailureHandling = 0;
-	protected int defaultCreditControlFailureHandling = 0;
-
-	
-	//its seconds
-	protected long defaultValidityTime=30;
-	protected long defaultTxTimerValue=10;
-	protected Logger logger = Logger
-			.getLogger(CreditControlSessionFactory.class);
-
-	public CreditControlSessionFactory(SessionFactory sessionFactory,
-			CCAResourceAdaptor resourceAdaptor, long messageTimeout) {
-		super();
-		this.sessionFactory = sessionFactory;
-		this.resourceAdaptor = resourceAdaptor;
-		this.messageTimeout = messageTimeout;
-
-
-	}
-
-	
-	
-	public CreditControlSessionFactory(SessionFactory sessionFactory,
-			CCAResourceAdaptor resourceAdaptor, long messageTimeout,
-			int defaultDirectDebitingFailureHandling,
-			int defaultCreditControlFailureHandling, long defaultValidityTime,
-			long defaultTxTimerValue) {
-		super();
-		this.sessionFactory = sessionFactory;
-		this.resourceAdaptor = resourceAdaptor;
-		this.messageTimeout = messageTimeout;
-		this.defaultDirectDebitingFailureHandling = defaultDirectDebitingFailureHandling;
-		this.defaultCreditControlFailureHandling = defaultCreditControlFailureHandling;
-		this.defaultValidityTime = defaultValidityTime;
-		this.defaultTxTimerValue = defaultTxTimerValue;
-	}
-
-
-
-	public AppSession getNewSession(String sessionId,
-			Class<? extends AppSession> aClass, ApplicationId applicationId,
-			Object[] args) {
-
-		AppSession value = null;
-		try {
-			if (aClass == ClientCCASession.class) {
-
-				ClientCCASessionImpl clientSession=null;
-				 if(args!=null && args.length>1 && args[0] instanceof Request)
-				 {
-				 Request request = (Request) args[0];
-				 clientSession=new  ClientCCASessionImpl(request.getSessionId(),this,sessionFactory,this);
-
-				 }else
-				 {
-					 clientSession=new	 ClientCCASessionImpl(sessionId,this,sessionFactory,this);
-				 }
-				 clientSession.getSessions().get(0).setRequestListener(clientSession);
-				 clientSession.addStateChangeNotification(this);
-				this.resourceAdaptor.sessionCreated(clientSession);
-				 value=clientSession;
-
-			} else if (aClass == ServerCCASession.class) {
-				ServerCCASessionImpl serverSession = null;
-				if (args != null && args.length > 1
-						&& args[0] instanceof Request) {
-					// This shouldnt happen but just in case
-					Request request = (Request) args[0];
-					serverSession = new ServerCCASessionImpl(request
-							.getSessionId(), this, sessionFactory, this);
-
-				} else {
-					serverSession = new ServerCCASessionImpl(sessionId, this,
-							sessionFactory, this);
-				}
-				serverSession.addStateChangeNotification(this);
-				serverSession.getSessions().get(0).setRequestListener(serverSession);
-				this.resourceAdaptor.sessionCreated(serverSession);
-				value = serverSession;
-			} else {
-				throw new IllegalArgumentException("Wrong session class!!["
-						+ aClass + "]. Supported[" + ClientCCASession.class+","+ServerCCASession.class
-						+ "]");
-			}
-
-		} catch (Exception e) {
-			logger.error("Failure to obtain new Accounting Session.", e);
-		}
-
-		return value;
-	}
-
-	// //////////////////////
-	// // MESSAGE HANDLERS //
-	// //////////////////////
-
-	public void doCreditControlAnswer(ClientCCASession session,
-			JCreditControlRequest request, JCreditControlAnswer answer)
-			throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
-		DiameterActivityHandle handle = new DiameterActivityHandle(session
-				.getSessions().get(0).getSessionId());
-		
-		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
-
-	}
-
-	
-
-	public void doReAuthRequest(ClientCCASession session, ReAuthRequest request)
-			throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
-		DiameterActivityHandle handle = new DiameterActivityHandle(session
-				.getSessions().get(0).getSessionId());
-		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(request.getCommandCode()) + "Request",(Request)request.getMessage(), null);
-	}
-
-	public void doCreditControlRequest(ServerCCASession session,
-			JCreditControlRequest request) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		DiameterActivityHandle handle = new DiameterActivityHandle(session
-				.getSessions().get(0).getSessionId());
-
-		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(request.getCommandCode()) + "Request",(Request)request.getMessage(), null);
-		
-	}
-
-	public void doReAuthAnswer(ServerCCASession session, ReAuthRequest request,
-			ReAuthAnswer answer) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		DiameterActivityHandle handle = new DiameterActivityHandle(session
-				.getSessions().get(0).getSessionId());
-
-		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
-		
-	}
-
-	public void doOtherEvent(AppSession session, AppRequestEvent request,
-			AppAnswerEvent answer) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		DiameterActivityHandle handle = new DiameterActivityHandle(session
-				.getSessions().get(0).getSessionId());
-		//baranowb: here we get something weird, lets do extension
-		//Still  we relly on CCA termination mechanisms, those message are sent via generic send, which does not trigger FSM
-		
-		
-		logger.info("Diameter CCA RA :: doOtherEvent :: appSession[" + session + "], Request[" + request + "], Answer[" + answer + "]");
-		
-
-		if (answer != null)
-		{
-			this.resourceAdaptor.fireEvent(handle, "net.java.slee.resource.diameter.base.events.ExtensionDiameterMessage", null, (Answer) answer.getMessage());
-		}
-		else
-		{
-			this.resourceAdaptor.fireEvent(handle, "net.java.slee.resource.diameter.base.events.ExtensionDiameterMessage", (Request) request.getMessage(), null);
-		}
-
-	}
-	
-
-
-	public void stateChanged(Enum oldState, Enum newState) {
-		if (logger.isInfoEnabled()) {
-			logger
-					.info("Diameter CCA SessionFactory :: stateChanged :: oldState["
-							+ oldState + "], newState[" + newState + "]");
-		}
-	}
-
-	
-
-	public long[] getApplicationIds() {
-		//FIXME: ???
-		return new long[]{4};
-	}
-
-	public long getDefaultValidityTime() {
-		return this.defaultValidityTime;
-	}
-
-	
-	public JCreditControlAnswer createCreditControlAnswer(Answer answer) {
-		return new JCreditControlAnswerImpl(answer);
-	}
-
-	public JCreditControlRequest createCreditControlRequest(Request req) {
-		return new JCreditControlRequestImpl(req);
-	}
-
-	public ReAuthAnswer createReAuthAnswer(Answer answer) {
-		
-		return new ReAuthAnswerImpl(answer);
-	}
-
-	public ReAuthRequest createReAuthRequest(Request req) {
-
-		return new ReAuthRequestImpl(req);
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	// /////////////////////
-	// // CONTEXT METHODS //
-	// /////////////////////
-	public void sessionSupervisionTimerExpired(ServerCCASession session) {
-		
-		this.resourceAdaptor.sessionDestroyed(session.getSessions().get(0).getSessionId(), session);
-		session.release();
-		
-	}
-
-	public void sessionSupervisionTimerReStarted(ServerCCASession session,
-			ScheduledFuture future) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void sessionSupervisionTimerStarted(ServerCCASession session,
-			ScheduledFuture future) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void sessionSupervisionTimerStopped(ServerCCASession session,
-			ScheduledFuture future) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void timeoutExpired(Request request) {
-		//FIXME ???
-		
-	}
-
-	public void denyAccessOnDeliverFailure(
-			ClientCCASession clientCCASessionImpl, Message request) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void denyAccessOnFailureMessage(ClientCCASession clientCCASessionImpl) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void denyAccessOnTxExpire(ClientCCASession clientCCASessionImpl) {
-		this.resourceAdaptor.sessionDestroyed(clientCCASessionImpl.getSessions().get(0).getSessionId(), clientCCASessionImpl);
-		clientCCASessionImpl.release();
-		
-	}
-
-	public int getDefaultCCFHValue() {
-		
-		return defaultCreditControlFailureHandling;
-	}
-
-	public int getDefaultDDFHValue() {
-		
-		return defaultDirectDebitingFailureHandling;
-	}
-
-	public long getDefaultTxTimerValue() {
-		
-		return defaultTxTimerValue;
-	}
-
-	public void grantAccessOnDeliverFailure(
-			ClientCCASession clientCCASessionImpl, Message request) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void grantAccessOnFailureMessage(
-			ClientCCASession clientCCASessionImpl) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void grantAccessOnTxExpire(ClientCCASession clientCCASessionImpl) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void indicateServiceError(ClientCCASession clientCCASessionImpl) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void txTimerExpired(ClientCCASession session) {
-		
-			this.resourceAdaptor.sessionDestroyed(session.getSessions().get(0).getSessionId(), session);
-			session.release();
-			
-		
-		
-	}
-
-
-
-	public void doAbortSessionAnswer(ClientCCASession session,
-			AbortSessionRequest request, AbortSessionAnswer answer)
-			throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
-		DiameterActivityHandle handle = new DiameterActivityHandle(session
-				.getSessions().get(0).getSessionId());
-
-		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
-		
-	}
-
-
-
-	public void doAbortSessionRequest(ClientCCASession session,
-			AbortSessionRequest request) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		DiameterActivityHandle handle = new DiameterActivityHandle(session
-				.getSessions().get(0).getSessionId());
-		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(request.getCommandCode()) + "Request",(Request)request.getMessage(), null);
-		
-	}
-
-
-
-	public void doAccountingAnswer(ClientCCASession session,
-			AccountRequest request, AccountAnswer answer)
-			throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
-		DiameterActivityHandle handle = new DiameterActivityHandle(session
-				.getSessions().get(0).getSessionId());
-
-		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
-		
-	}
-
-
-
-	public void doAccountingRequest(ClientCCASession session,
-			AccountRequest request) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		DiameterActivityHandle handle = new DiameterActivityHandle(session
-				.getSessions().get(0).getSessionId());
-		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(request.getCommandCode()) + "Request",(Request)request.getMessage(), null);
-		
-	}
-
-
-
-	public void doSessionTerminationAnswer(ClientCCASession session,
-			SessionTermRequest request, SessionTermAnswer answer)
-			throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
-		DiameterActivityHandle handle = new DiameterActivityHandle(session
-				.getSessions().get(0).getSessionId());
-
-		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
-		
-	}
-
-
-
-	public void doSessionTerminationRequest(ClientCCASession session,
-			SessionTermRequest request) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		DiameterActivityHandle handle = new DiameterActivityHandle(session
-				.getSessions().get(0).getSessionId());
-		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(request.getCommandCode()) + "Request",(Request)request.getMessage(), null);
-		
-	}
-
-
-
-	public void doAbortSessionAnswer(ServerCCASession session,
-			AbortSessionRequest request, AbortSessionAnswer answer)
-			throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
-		DiameterActivityHandle handle = new DiameterActivityHandle(session
-				.getSessions().get(0).getSessionId());
-
-		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
-		
-	}
-
-
-
-	public void doAbortSessionRequest(ServerCCASession session,
-			AbortSessionRequest request) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		DiameterActivityHandle handle = new DiameterActivityHandle(session
-				.getSessions().get(0).getSessionId());
-		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(request.getCommandCode()) + "Request",(Request)request.getMessage(), null);
-		
-	}
-
-
-
-	public void doAccountingAnswer(ServerCCASession session,
-			AccountRequest request, AccountAnswer answer)
-			throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
-		DiameterActivityHandle handle = new DiameterActivityHandle(session
-				.getSessions().get(0).getSessionId());
-
-		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
-	}
-
-
-
-	public void doAccountingRequest(ServerCCASession session,
-			AccountRequest request) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		DiameterActivityHandle handle = new DiameterActivityHandle(session
-				.getSessions().get(0).getSessionId());
-		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(request.getCommandCode()) + "Request",(Request)request.getMessage(), null);
-		
-	}
-
-
-
-	public void doSessionTerminationAnswer(ServerCCASession session,
-			SessionTermRequest request, SessionTermAnswer answer)
-			throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
-		DiameterActivityHandle handle = new DiameterActivityHandle(session
-				.getSessions().get(0).getSessionId());
-
-		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
-		
-	}
-
-
-
-	public void doSessionTerminationRequest(ServerCCASession session,
-			SessionTermRequest request) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		DiameterActivityHandle handle = new DiameterActivityHandle(session
-				.getSessions().get(0).getSessionId());
-		this.resourceAdaptor.fireEvent(handle, this.resourceAdaptor.events.get(request.getCommandCode()) + "Request",(Request)request.getMessage(), null);
-		
-	}
-
-	
+/**
+ * 
+ * CreditControlSessionFactory.java
+ *
+ * <br>Super project:  mobicents
+ * <br>3:19:55 AM Dec 30, 2008 
+ * <br>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
+ */
+public class CreditControlSessionFactory implements IAppSessionFactory, ClientCCASessionListener, ServerCCASessionListener,
+StateChangeListener, ICCAMessageFactory , IServerCCASessionContext, IClientCCASessionContext {
+
+  protected SessionFactory sessionFactory = null;
+  protected CCAResourceAdaptor resourceAdaptor = null;
+
+  // Message timeout value (in milliseconds)
+  protected long messageTimeout = 5000;
+
+  protected int defaultDirectDebitingFailureHandling = 0;
+  protected int defaultCreditControlFailureHandling = 0;
+
+  //its seconds
+  protected long defaultValidityTime=30;
+  protected long defaultTxTimerValue=10;
+  protected Logger logger = Logger.getLogger(CreditControlSessionFactory.class);
+
+  public CreditControlSessionFactory(SessionFactory sessionFactory, CCAResourceAdaptor resourceAdaptor, long messageTimeout)
+  {
+    super();
+
+    this.sessionFactory = sessionFactory;
+    this.resourceAdaptor = resourceAdaptor;
+    this.messageTimeout = messageTimeout;
+  }
+
+  public CreditControlSessionFactory(SessionFactory sessionFactory, CCAResourceAdaptor resourceAdaptor, long messageTimeout,
+      int defaultDirectDebitingFailureHandling, int defaultCreditControlFailureHandling, long defaultValidityTime, long defaultTxTimerValue)
+  {
+    super();
+
+    this.sessionFactory = sessionFactory;
+    this.resourceAdaptor = resourceAdaptor;
+    this.messageTimeout = messageTimeout;
+    this.defaultDirectDebitingFailureHandling = defaultDirectDebitingFailureHandling;
+    this.defaultCreditControlFailureHandling = defaultCreditControlFailureHandling;
+    this.defaultValidityTime = defaultValidityTime;
+    this.defaultTxTimerValue = defaultTxTimerValue;
+  }
+
+  public AppSession getNewSession(String sessionId, Class<? extends AppSession> aClass, ApplicationId applicationId, Object[] args)
+  {
+    AppSession appSession = null;
+    try
+    {
+      if (aClass == ClientCCASession.class)
+      {
+        ClientCCASessionImpl clientSession = null;
+        if(args != null && args.length > 0 && args[0] instanceof Request)
+        {
+          Request request = (Request) args[0];
+          clientSession = new  ClientCCASessionImpl(request.getSessionId(), this, sessionFactory, this);
+        }
+        else
+        {
+          clientSession = new ClientCCASessionImpl(sessionId, this, sessionFactory, this);
+        }
+
+        clientSession.getSessions().get(0).setRequestListener(clientSession);
+        clientSession.addStateChangeNotification(this);
+
+        this.resourceAdaptor.sessionCreated(clientSession);
+
+        appSession = clientSession;
+      }
+      else if (aClass == ServerCCASession.class)
+      {
+        ServerCCASessionImpl serverSession = null;
+
+        if (args != null && args.length > 0 && args[0] instanceof Request)
+        {
+          // This shouldnt happen but just in case
+          Request request = (Request) args[0];
+          serverSession = new ServerCCASessionImpl(request.getSessionId(), this, sessionFactory, this);
+        }
+        else
+        {
+          serverSession = new ServerCCASessionImpl(sessionId, this, sessionFactory, this);
+        }
+
+        serverSession.addStateChangeNotification(this);
+        serverSession.getSessions().get(0).setRequestListener(serverSession);
+
+        this.resourceAdaptor.sessionCreated(serverSession);
+
+        appSession = serverSession;
+      }
+      else
+      {
+        throw new IllegalArgumentException("Wrong session class!![" + aClass + "]. Supported[" + ClientCCASession.class + "," + ServerCCASession.class + "]");
+      }
+    }
+    catch (Exception e) {
+      logger.error("Failure to obtain new Credit-Control Session.", e);
+    }
+
+    return appSession;
+  }
+
+  //////////////////////
+  // Message Handlers //
+  //////////////////////
+
+  private void doMessage(AppSession appSession, AppEvent message, boolean isRequest) throws InternalException
+  {
+    DiameterActivityHandle handle = new DiameterActivityHandle(appSession.getSessions().get(0).getSessionId());
+
+    if(isRequest)
+    {
+      this.resourceAdaptor.fireEvent(handle, CCAResourceAdaptor.events.get(message.getCommandCode()) + "Request", (Request) message.getMessage(), null);      
+    }
+    else
+    {
+      this.resourceAdaptor.fireEvent(handle, CCAResourceAdaptor.events.get(message.getCommandCode()) + "Answer", null, (Answer) message.getMessage());     
+    }
+  }
+
+  public void doCreditControlRequest(ServerCCASession session, JCreditControlRequest request) throws InternalException
+  {
+    doMessage( session, request, true );
+  }
+
+  public void doCreditControlAnswer(ClientCCASession session, JCreditControlRequest request, JCreditControlAnswer answer) throws InternalException
+  {
+    doMessage( session, answer, false );
+  }
+
+  public void doReAuthRequest(ClientCCASession session, ReAuthRequest request) throws InternalException
+  {
+    doMessage( session, request, true );
+  }
+
+  public void doReAuthAnswer(ServerCCASession session, ReAuthRequest request, ReAuthAnswer answer) throws InternalException
+  {
+    doMessage( session, answer, false );
+  }
+
+  public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException
+  {
+    //baranowb: here we get something weird, lets do extension
+    //Still  we relly on CCA termination mechanisms, those message are sent via generic send, which does not trigger FSM
+
+    DiameterActivityHandle handle = new DiameterActivityHandle(session.getSessions().get(0).getSessionId());
+
+    logger.info("Diameter CCA RA :: doOtherEvent :: appSession[" + session + "], Request[" + request + "], Answer[" + answer + "]");
+
+    if (answer != null)
+    {
+      this.resourceAdaptor.fireEvent(handle, "net.java.slee.resource.diameter.base.events.ExtensionDiameterMessage", null, (Answer) answer.getMessage());
+    }
+    else
+    {
+      this.resourceAdaptor.fireEvent(handle, "net.java.slee.resource.diameter.base.events.ExtensionDiameterMessage", (Request) request.getMessage(), null);
+    }
+  }
+
+  ///////////////////////////
+  // Base Message Handlers //
+  ///////////////////////////
+
+  public void doAbortSessionRequest(ClientCCASession session, AbortSessionRequest request) throws InternalException
+  {
+    doMessage( session, request, true );
+  }
+
+  public void doAbortSessionAnswer(ClientCCASession session, AbortSessionRequest request, AbortSessionAnswer answer) throws InternalException
+  {
+    doMessage( session, answer, false );
+  }
+
+  public void doAccountingRequest(ClientCCASession session, AccountRequest request) throws InternalException
+  {
+    doMessage( session, request, true );
+  }
+
+  public void doAccountingAnswer(ClientCCASession session, AccountRequest request, AccountAnswer answer) throws InternalException
+  {
+    doMessage( session, answer, false );
+  }
+
+  public void doSessionTerminationRequest(ClientCCASession session, SessionTermRequest request) throws InternalException
+  {
+    doMessage( session, request, true );
+  }
+
+  public void doSessionTerminationAnswer(ClientCCASession session, SessionTermRequest request, SessionTermAnswer answer) throws InternalException
+  {
+    doMessage( session, answer, false );
+  }
+
+  public void doAbortSessionRequest(ServerCCASession session, AbortSessionRequest request) throws InternalException
+  {
+    doMessage( session, request, true );
+  }
+
+  public void doAbortSessionAnswer(ServerCCASession session, AbortSessionRequest request, AbortSessionAnswer answer) throws InternalException 
+  {
+    doMessage( session, answer, false );
+  }
+
+  public void doAccountingRequest(ServerCCASession session, AccountRequest request) throws InternalException
+  {
+    doMessage( session, request, true );
+  }
+
+  public void doAccountingAnswer(ServerCCASession session, AccountRequest request, AccountAnswer answer) throws InternalException
+  {
+    doMessage( session, answer, false );
+  }
+
+  public void doSessionTerminationRequest(ServerCCASession session, SessionTermRequest request) throws InternalException
+  {
+    doMessage( session, request, true );
+  }
+
+  public void doSessionTerminationAnswer(ServerCCASession session, SessionTermRequest request, SessionTermAnswer answer) throws InternalException
+  {
+    doMessage( session, answer, false );
+  }
+
+  /////////////////////////////
+  // Message Factory Methods //
+  /////////////////////////////
+
+  public JCreditControlAnswer createCreditControlAnswer(Answer answer)
+  {
+    return new JCreditControlAnswerImpl(answer);
+  }
+
+  public JCreditControlRequest createCreditControlRequest(Request req)
+  {
+    return new JCreditControlRequestImpl(req);
+  }
+
+  public ReAuthAnswer createReAuthAnswer(Answer answer)
+  {
+    return new ReAuthAnswerImpl(answer);
+  }
+
+  public ReAuthRequest createReAuthRequest(Request req)
+  {
+    return new ReAuthRequestImpl(req);
+  }
+
+  /////////////////////
+  // Context Methods //
+  /////////////////////
+
+  public void stateChanged(Enum oldState, Enum newState)
+  {
+    if (logger.isInfoEnabled())
+    {
+      logger.info("Diameter CCA SessionFactory :: stateChanged :: oldState[" + oldState + "], newState[" + newState + "]");
+    }
+  }
+
+  public void sessionSupervisionTimerExpired(ServerCCASession session)
+  {
+    this.resourceAdaptor.sessionDestroyed(session.getSessions().get(0).getSessionId(), session);
+    session.release();
+  }
+
+  public void sessionSupervisionTimerReStarted(ServerCCASession session, ScheduledFuture future)
+  {
+    // TODO Complete this method.
+  }
+
+  public void sessionSupervisionTimerStarted(ServerCCASession session, ScheduledFuture future)
+  {
+    // TODO Complete this method.
+  }
+
+  public void sessionSupervisionTimerStopped(ServerCCASession session, ScheduledFuture future)
+  {
+    // TODO Complete this method.
+  }
+
+  public void timeoutExpired(Request request)
+  {
+    //FIXME What should we do when there's a timeout? 
+  }
+
+  public void denyAccessOnDeliverFailure(ClientCCASession clientCCASessionImpl, Message request)
+  {
+    // TODO Complete this method.
+  }
+
+  public void denyAccessOnFailureMessage(ClientCCASession clientCCASessionImpl)
+  {
+    // TODO Complete this method.
+  }
+
+  public void denyAccessOnTxExpire(ClientCCASession clientCCASessionImpl)
+  {
+    this.resourceAdaptor.sessionDestroyed(clientCCASessionImpl.getSessions().get(0).getSessionId(), clientCCASessionImpl);
+    clientCCASessionImpl.release();
+  }
+
+  public int getDefaultCCFHValue()
+  {
+    return defaultCreditControlFailureHandling;
+  }
+
+  public int getDefaultDDFHValue()
+  {
+    return defaultDirectDebitingFailureHandling;
+  }
+
+  public long getDefaultTxTimerValue()
+  {
+    return defaultTxTimerValue;
+  }
+
+  public void grantAccessOnDeliverFailure(ClientCCASession clientCCASessionImpl, Message request)
+  {
+    // TODO Auto-generated method stub
+  }
+
+  public void grantAccessOnFailureMessage(ClientCCASession clientCCASessionImpl)
+  {
+    // TODO Auto-generated method stub
+  }
+
+  public void grantAccessOnTxExpire(ClientCCASession clientCCASessionImpl)
+  {
+    // TODO Auto-generated method stub
+  }
+
+  public void indicateServiceError(ClientCCASession clientCCASessionImpl)
+  {
+    // TODO Auto-generated method stub
+  }
+
+  public void txTimerExpired(ClientCCASession session)
+  {
+    this.resourceAdaptor.sessionDestroyed(session.getSessions().get(0).getSessionId(), session);
+    session.release();
+  }
+
+  public long[] getApplicationIds()
+  {
+    //FIXME: What should we do here?
+    return new long[]{4};
+  }
+
+  public long getDefaultValidityTime()
+  {
+    return this.defaultValidityTime;
+  }
 
 }

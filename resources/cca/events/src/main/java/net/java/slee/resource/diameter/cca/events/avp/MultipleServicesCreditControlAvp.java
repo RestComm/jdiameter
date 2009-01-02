@@ -1,6 +1,5 @@
 package net.java.slee.resource.diameter.cca.events.avp;
 
-import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
 
 /**
