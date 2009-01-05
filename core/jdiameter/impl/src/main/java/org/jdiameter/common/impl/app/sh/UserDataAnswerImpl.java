@@ -6,7 +6,7 @@ import org.jdiameter.api.sh.events.UserDataAnswer;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 
 public class UserDataAnswerImpl extends AppAnswerEventImpl implements UserDataAnswer {
-public static final int code = 306;
+
 	
 	public UserDataAnswerImpl(Request request, long resultCode) {
 		super(request.createAnswer(resultCode));

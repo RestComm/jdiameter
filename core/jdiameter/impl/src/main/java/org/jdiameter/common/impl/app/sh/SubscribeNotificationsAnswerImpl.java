@@ -8,7 +8,7 @@ import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 public class SubscribeNotificationsAnswerImpl extends AppAnswerEventImpl implements SubscribeNotificationsAnswer {
 
 	
-	public static final int code = 308;
+	
 	
 	public SubscribeNotificationsAnswerImpl(Request request, long resultCode) {
 		super(request.createAnswer(resultCode));

@@ -1,5 +1,7 @@
 package org.jdiameter.server.impl.app.sh;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -35,9 +37,12 @@ import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.sh.IShMessageFactory;
 import org.jdiameter.common.api.app.sh.ShSessionState;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
+import org.jdiameter.common.impl.app.AppEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.jdiameter.common.impl.app.sh.ProfileUpdateRequestImpl;
+import org.jdiameter.common.impl.app.sh.PushNotificationRequestImpl;
 import org.jdiameter.common.impl.app.sh.ShSession;
+
 
 /**
  * Basic implementation of ShServerSession - can be one time - for UDR,PUR and
@@ -63,8 +68,12 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 	protected Lock sendAndStateLock = new ReentrantLock();
 	protected ServerShSessionListener listener;
 	protected long appId = -1;
+	//Subscription timer
 	protected ScheduledFuture sft = null;
-
+	protected ScheduledFuture txSft=null;
+	protected boolean receivedSubTerm=false;
+	protected TxTimerTask txTimerTask=null;
+	
 	public ShServerSessionImpl(IShMessageFactory fct, SessionFactory sf, ServerShSessionListener lst) {
 		this(null, fct, sf, lst);
 	}
@@ -116,7 +125,7 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 			sendAndStateLock.lock();
 			if (request.getApplicationId() == factory.getApplicationId()) {
 
-				if (request.getCommandCode() == ProfileUpdateRequestImpl.code) {
+				if (request.getCommandCode() == PushNotificationRequestImpl.code) {
 					handleEvent(new Event(Event.Type.RECEIVE_PUSH_NOTIFICATION_ANSWER, factory.createPushNotificationRequest(request), factory.createPushNotificationAnswer(answer)));
 					return;
 				} 
@@ -203,21 +212,43 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 					if (event.getType() == Event.Type.RECEIVE_SUBSCRIBE_NOTIFICATIONS_REQUEST) {
 						
 						//Do nothing, we have to wait for response send callback
-
+						startTxTimer(request);
+						//We use newState in case of first request, it can be unsubscribe or bad
+						newState=doSNX(request);
 					} else if (event.getType() == Event.Type.RECEIVE_PROFILE_UPDATE_REQUEST) {
-						newState=ShSessionState.TERMINATED;
+						
+						//newState=ShSessionState.TERMINATED;
+						startTxTimer(request);
 					}else if (event.getType() == Event.Type.RECEIVE_USER_DATA_REQUEST) {
-						newState=ShSessionState.TERMINATED;
+						
+						//newState=ShSessionState.TERMINATED;
+						startTxTimer(request);
 					}else if(event.getType()== Event.Type.SEND_SUBSCRIBE_NOTIFICATIONS_ANSWER)
 					{
 						
 						newState=doSNX(localEvent.getAnswer());
 					} else if (event.getType() == Event.Type.TIMEOUT_EXPIRES) {
-						//newState = ShSessionState.TERMINATED;
+						newState = ShSessionState.TERMINATED;
 						//FIXME: What happens here?
-					} else {
+					} else if(event.getType()== Event.Type.TX_TIMER_EXPIRED)
+					{
+						
+						newState = ShSessionState.TERMINATED;
+						//FIXME Result code ???
+						
+						try {
+							Answer answer= ((Request)request.getMessage()).createAnswer(5000);
+							session.send(answer);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}else {
+						
+						
 						// Other messages just make it go into terminated state
-						// and release
+						// and release send: UDA
+						stopTxTimer();
 						newState = ShSessionState.TERMINATED;
 
 					}
@@ -228,6 +259,9 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 					{
 						
 						newState=doSNX(localEvent.getAnswer());
+					}else if(event.getType() == Event.Type.RECEIVE_SUBSCRIBE_NOTIFICATIONS_REQUEST)
+					{
+						newState=doSNX(request);
 					}
 					//FIXME: Any change here - even on timeout?
 					break;
@@ -253,9 +287,17 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 						listener.doUserDataRequestEvent(this, (UserDataRequest) localEvent.getRequest());
 						break;
 					case SEND_PROFILE_UPDATE_ANSWER:
+						dispatchEvent(localEvent.getAnswer());
+						break;
 					case SEND_PUSH_NOTIFICATION_REQUEST:
+						dispatchEvent(localEvent.getRequest());
+						break;
 					case SEND_SUBSCRIBE_NOTIFICATIONS_ANSWER:
+						dispatchEvent(localEvent.getAnswer());
+						break;
 					case SEND_USER_DATA_ANSWER:
+						dispatchEvent(localEvent.getAnswer());
+						break;
 					case TIMEOUT_EXPIRES:
 						break;
 
@@ -270,7 +312,7 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 				}
 			} finally {
 				if (newState != oldState) {
-					setState(newState);
+					setState(newState, true);
 
 				}
 			}
@@ -287,9 +329,36 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 	}
 
 	protected void send(Event.Type type, AppEvent request, AppEvent answer) throws InternalException {
-		//FIXME: add impl
+		try {
+			
+			//FIXME: isnt this bad? Shouldnt send be before state change?
+			sendAndStateLock.lock();
+			if (type != null)
+			{
+				handleEvent(new Event(type, request, answer));
+				
+			}
+			
+			
+		} catch (Exception exc) {
+			throw new InternalException(exc);
+		} finally {
+			sendAndStateLock.unlock();
+		}
 	}
-	
+	protected void dispatchEvent(AppEvent event) throws InternalException
+	{
+		try{
+			session.send(event.getMessage(), this);
+		// Store last destinmation information
+			//FIXME: add differentation on server/client request
+			
+		}catch(Exception e)
+		{
+			//throw new InternalException(e);
+			e.printStackTrace();
+		}
+	}
 	protected void setState(ShSessionState newState) {
 		setState(newState, true);
 	}
@@ -331,53 +400,199 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 		return -1;
 	}
 	
-	protected ShSessionState doSNX(AppEvent answer) throws InternalException {
+	protected ShSessionState doSNX(AppEvent message) throws InternalException {
 		ShSessionState newState = state;
-		AvpSet set = answer.getMessage().getAvps();
+		AvpSet set = message.getMessage().getAvps();
 		long resultCode = -1;
 		// Experimental-Result-Code:297, Result-Code:268
 		Avp avp = null;
-		if (set.getAvp(297) != null) {
-			avp = set.getAvp(297);
-			// FIXME: how to handle that?
-			newState = ShSessionState.SUBSCRIBED;
-		} else {
-			avp = set.getAvp(268);
-			try {
-				resultCode = avp.getUnsigned32();
-				if (resultCode > 2000 && resultCode < 2005) {
-					long expiryTime = extractExpirationTime(answer.getMessage());
-					if (expiryTime >= 0) {
-						if(this.sft!=null)
-						{
-							this.sft.cancel(true);
-						}
-						this.sft = scheduler.schedule(new Runnable() {
-
-							public void run() {
-								try {
-									sendAndStateLock.lock();
-									if (state != ShSessionState.TERMINATED)
-										setState(ShSessionState.TERMINATED);
-
-								} finally {
-									sendAndStateLock.unlock();
-								}
-							}
-						}, expiryTime, TimeUnit.SECONDS);
-					} else {
-						// FIXME:we relly on user?
-					}
-					newState = ShSessionState.SUBSCRIBED;
-				} else {
-					// its a failure?
-					newState = ShSessionState.TERMINATED;
+		try{
+		if(message.getMessage().isRequest())
+		{
+	
+			Avp subsReqType=set.getAvp(705);
+			if(subsReqType==null || subsReqType.getInteger32()<0 || subsReqType.getInteger32()>1)
+			{
+				//This is wrong!!!!
+		
+				newState=ShSessionState.TERMINATED;
+				
+			}else
+			{
+				switch(subsReqType.getInteger32())
+				{
+					case 0:
+						//Subscribe
+		
+						startSubscriptionTimer(message.getMessage());
+						break;
+					case 1:
+		
+						receivedSubTerm=true;
+						break;
 				}
-			} catch (AvpDataException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
+		}else
+		{
+			if(receivedSubTerm)
+			{
+				newState=ShSessionState.TERMINATED;
+				stopSubscriptionTimer();
+			}else
+			{
+				if (set.getAvp(297) != null) {
+					avp = ((AvpSet)set.getAvp(297)).getAvp(298);
+					// FIXME: how to handle that?
+				
+				} else {
+					avp = set.getAvp(268);
+				
+				}
+				
+				try {
+					 resultCode = avp.getUnsigned32();
+					if (resultCode > 2000 && resultCode < 2005) {
+						
+						startSubscriptionTimer(message.getMessage());
+						newState= ShSessionState.SUBSCRIBED;
+					} else {
+						// its a failure?
+						newState= ShSessionState.TERMINATED;
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}	
+				
+			}
+			
+			
+		}
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			newState=ShSessionState.TERMINATED;
 		}
 		return newState;
 	}
+	
+	private void startSubscriptionTimer( Message message)
+	{
+		
+		long expiryTime = extractExpirationTime(message);
+		if (expiryTime >= 0) {
+			stopSubscriptionTimer();
+			this.sft = scheduler.schedule(new Runnable() {
+
+				public void run() {
+					try {
+						sendAndStateLock.lock();
+						if (state != ShSessionState.TERMINATED)
+							setState(ShSessionState.TERMINATED);
+
+					} finally {
+						sendAndStateLock.unlock();
+					}
+				}
+			}, expiryTime, TimeUnit.SECONDS);
+		}
+	}
+	
+	private void stopSubscriptionTimer()
+	{
+		if(this.sft!=null)
+		{
+			this.sft.cancel(true);
+			this.sft=null;
+		}
+	}
+	
+	private void startTxTimer(AppEvent request)
+	{
+		try {
+			
+			//FIXME: isnt this bad? Shouldnt send be before state change?
+			sendAndStateLock.lock();
+			if (this.txTimerTask != null)
+				{
+					this.txSft.cancel(true);
+					this.txSft=null;
+					this.txTimerTask=null;
+				}
+			
+			this.txTimerTask=new TxTimerTask(request);
+			this.txSft=super.scheduler.schedule(this.txTimerTask, this.factory.getMessageTimeout(), TimeUnit.MILLISECONDS);
+		} catch (Exception exc) {
+			
+		} finally {
+			sendAndStateLock.unlock();
+		}
+	}
+	
+	private void stopTxTimer()
+	{
+		try {
+			
+			//FIXME: isnt this bad? Shouldnt send be before state change?
+			sendAndStateLock.lock();
+			if (this.txTimerTask != null)
+				{
+					this.txSft.cancel(true);
+					this.txSft=null;
+					this.txTimerTask=null;
+				}
+			
+		} catch (Exception exc) {
+			
+		} finally {
+			sendAndStateLock.unlock();
+		}
+	}
+	
+	private class TxTimerTask extends TimerTask
+	{
+		
+		private AppEvent request=null;
+		
+		
+		public TxTimerTask(AppEvent request2) {
+			super();
+			this.request = request2;
+		}
+
+
+		@Override
+		public void run() {
+		try {
+			
+			//FIXME: isnt this bad? Shouldnt send be before state change?
+			sendAndStateLock.lock();
+			handleEvent(new Event(Event.Type.TX_TIMER_EXPIRED,request,null));
+		} catch (InternalException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (OverloadException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			sendAndStateLock.unlock();
+		}
+	}
+	
+	}
+	protected  boolean isProvisional(long unsigned32) {
+		return unsigned32<2000 && unsigned32>=1000;
+	}
+	
+	protected boolean isSuccess(long code)
+	{
+		if(code<3000 && code>=2000)
+		{
+			return true;
+		}else
+		{
+			return false;
+		}
+	}
+	
 }

@@ -21,4 +21,5 @@ public interface IShMessageFactory {
 	AppAnswerEvent createUserDataAnswer(Answer answer);
 	
 	long getApplicationId();
+	long getMessageTimeout();
 }

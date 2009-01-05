@@ -5,15 +5,12 @@ import org.jdiameter.api.Request;
 import org.jdiameter.api.sh.events.SubscribeNotificationsRequest;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 
-public class SubscribeNotificationsRequestImpl extends AppRequestEventImpl implements SubscribeNotificationsRequest {
+public class SubscribeNotificationsRequestImpl extends AppRequestEventImpl
+		implements SubscribeNotificationsRequest {
 
-public static final int code = 308;
-	
+	public SubscribeNotificationsRequestImpl(Request request) {
+		super(request);
 
-	
-	public SubscribeNotificationsRequestImpl(Answer answer) {
-		super(answer);
-		
 	}
-	
+
 }

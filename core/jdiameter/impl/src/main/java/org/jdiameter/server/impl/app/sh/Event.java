@@ -14,7 +14,9 @@ public class Event implements StateEvent {
     SEND_USER_DATA_ANSWER, 
     SEND_PROFILE_UPDATE_ANSWER, 
     SEND_SUBSCRIBE_NOTIFICATIONS_ANSWER,
-    TIMEOUT_EXPIRES
+    TIMEOUT_EXPIRES,
+    //Add this to allow app to respond, and in case of app error not to leave it behind
+    TX_TIMER_EXPIRED;
   }
 
   Type type;

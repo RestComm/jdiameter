@@ -7,7 +7,7 @@ import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 
 public class ProfileUpdateAnswerImpl extends AppAnswerEventImpl implements ProfileUpdateAnswer {
 
-	public static final int code=307;
+	
 	public ProfileUpdateAnswerImpl(Request request, long resultCode) {
 		super(request.createAnswer(resultCode));
 		

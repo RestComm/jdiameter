@@ -3,7 +3,7 @@ package org.jdiameter.common.api.app.sh;
 import org.jdiameter.common.api.app.IAppSessionState;
 
 /**
- * This is pseudo state - it is usedonly to determine wheather Sh Session should be kept alive
+ * This is pseudo state - it is used only to determine wheather Sh Session should be kept alive
  * <br><br>Super project:  mobicents-jainslee-server
  * <br>13:52:51 2008-09-04	
  * <br>

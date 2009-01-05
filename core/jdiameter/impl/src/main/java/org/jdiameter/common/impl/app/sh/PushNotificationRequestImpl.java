@@ -6,7 +6,7 @@ import org.jdiameter.api.sh.events.PushNotificationRequest;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 
 public class PushNotificationRequestImpl extends AppRequestEventImpl implements PushNotificationRequest {
-	public static final int code = 309;
+	
 
 
 
