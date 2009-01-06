@@ -90,11 +90,17 @@ class MessageImpl implements IMessage {
     MessageImpl(MetaData metaData, MessageParser parser, int commandCode, long appId) {
         this(parser, commandCode, appId);
         try {
-            getAvps().addAvp(
-                Avp.ORIGIN_HOST,
-                metaData.getLocalPeer().getUri().getFQDN(),
-                true, false, true
-            );
+            //getAvps().addAvp(
+            //   Avp.ORIGIN_HOST,
+            //    metaData.getLocalPeer().getUri().getFQDN(),
+            //    true, false, true
+            //);
+        	
+        	getAvps().addAvp(
+                    Avp.ORIGIN_HOST,
+                    metaData.getLocalPeer().getUri().toString(),
+                    true, false, true
+                );
             getAvps().addAvp(
                 Avp.ORIGIN_REALM,
                 metaData.getLocalPeer().getRealmName(),
