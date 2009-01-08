@@ -47,10 +47,6 @@ import net.java.slee.resource.diameter.sh.client.events.UserDataAnswer;
  */
 public interface ShServerActivity  extends DiameterActivity{
 
-    /**
-     * Get a message factory to create answer messages and AVPs (if necessary).
-     */
-    ShServerMessageFactory getServerMessageFactory();
 
     /**
      * Create a UserDataAnswer using the given parameter to populate the User-Data AVP.  The Result-Code AVP is 

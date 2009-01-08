@@ -38,9 +38,8 @@ import net.java.slee.resource.diameter.sh.client.events.SubscribeNotificationsAn
  * <LI>PushNotificationRequest
 * </UL>
  *
- * @author Open Cloud
  */
-public interface ShServerNotificationActivity extends DiameterActivity{
+public interface ShServerSubscriptionActivity extends DiameterActivity{
 
    
 
@@ -51,7 +50,11 @@ public interface ShServerNotificationActivity extends DiameterActivity{
      * @throws IOException if there is an error sending the message
      */
     void sendPushNotificationRequest(PushNotificationRequest message) throws IOException;
-
+    /**
+     * Create an empty PushNotificationRequest that will need to have AVPs set on it before being sent. It has only minimal set of avps set.
+     * @return a SubscribeNotificationsAnswer object that can be sent using {@link ShServerActivity#sendSubscribeNotificationsAnswer(net.java.slee.resource.diameter.sh.types.SubscribeNotificationsAnswer)}
+     */
+    PushNotificationRequest createPushNotificationRequest();
     /**
      * Create a SubscribeNotificationsAnswer containing a Result-Code or Experimental-Result AVP populated with the given value.
      * If <code>isExperimentalResultCode</code> is <code>true</code>, the <code>resultCode</code> parameter will be set

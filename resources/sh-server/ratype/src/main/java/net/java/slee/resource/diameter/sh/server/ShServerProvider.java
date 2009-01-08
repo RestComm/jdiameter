@@ -22,13 +22,14 @@ package net.java.slee.resource.diameter.sh.server;
 import java.io.IOException;
 
 import net.java.slee.resource.diameter.base.CreateActivityException;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
 import net.java.slee.resource.diameter.sh.server.events.PushNotificationAnswer;
 
 /**
  * The ShServerProvider can be used by a SLEE service to provide HSS functions on an IMS network.
  *
- * @author Open Cloud
  */
 public interface ShServerProvider {
 
@@ -38,13 +39,38 @@ public interface ShServerProvider {
      * @return ServerMesageFactory
      */
     ShServerMessageFactory getServerMessageFactory();
+    
+    DiameterShAvpFactory getAvpFactory();
+    
+    /**
+     * Return the number of peers this Diameter resource adaptor is connected
+     * to.
+     * 
+     * @return connected peer count
+     */
+    int getPeerCount();
+
+    /**
+     * Returns array containing identities of connected peers FIXME: baranowb; -
+     * should it be InetAddres, Port pair?
+     * 
+     * @return
+     */
+    DiameterIdentityAvp[] getConnectedPeers();
 
     /**
      * Create a new Sh server activity to send and receive Diameter Sh messages.
-     * @return an ShServerNotificationActivity 
+     * @return an ShServerSubscriptionActivity 
      * @throws CreateActivityException if the RA could not create the activity for any reason
      */
-    ShServerNotificationActivity createShServerNotifiicationActivity() throws CreateActivityException;
+    //ShServerSubscriptionActivity createShServerSubscriptionActivity() throws CreateActivityException;
+    
+    /**
+     * Create a new Sh server activity to send and receive Diameter Sh messages.
+     * @return an ShServerSubscriptionActivity 
+     * @throws CreateActivityException if the RA could not create the activity for any reason
+     */
+    //ShServerActivity createShServerActivity() throws CreateActivityException;
 
     /**
      * Sends a synchronous PushNotificationRequest which will block until an answer is received from the peer.

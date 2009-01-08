@@ -22,6 +22,8 @@ package net.java.slee.resource.diameter.sh.server;
 import javax.slee.ActivityContextInterface;
 import javax.slee.UnrecognizedActivityException;
 
+
+
 /**
  * Obtains an ActivityContextInterface for a given Sh activity
  *
@@ -31,6 +33,6 @@ public interface ShServerActivityContextInterfaceFactory {
 
     ActivityContextInterface getActivityContextInterface(ShServerActivity activity) throws UnrecognizedActivityException;
 
-    ActivityContextInterface getActivityContextInterface(ShServerNotificationActivity activity) throws UnrecognizedActivityException;
+    ActivityContextInterface getActivityContextInterface(ShServerSubscriptionActivity activity) throws UnrecognizedActivityException;
     
 }

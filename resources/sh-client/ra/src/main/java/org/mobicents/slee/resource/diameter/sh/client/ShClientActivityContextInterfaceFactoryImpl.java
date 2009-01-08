@@ -31,10 +31,10 @@ public class ShClientActivityContextInterfaceFactoryImpl implements ShClientActi
 	  {
 	    super();
 
-	    logger.info("Diameter ShClient RA :: ShClientActivityContextInterfaceFactoryImpl :: serviceContainer[" + serviceContainer + "], jndiName[" + jndiName + "].");
+	    logger.info("Diameter ShClient RA :: ShClientActivityContextInterfaceFactory :: serviceContainer[" + serviceContainer + "], jndiName[" + jndiName + "].");
 	    
 	    this.serviceContainer = serviceContainer;
-	    this.jndiName = "java:slee/resources/" + jndiName + "/diameter-base-ra-acif";
+	    this.jndiName = "java:slee/resources/" + jndiName + "/diameter-shclient-ra-acif";
 	    this.factory = serviceContainer.getActivityContextFactory();
 	    this.raEntityName = jndiName;
 	  }

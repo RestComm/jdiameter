@@ -87,7 +87,7 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl
 
 	public void sendPushNotificationAnswer(long resultCode,
 			boolean isExperimentalResultCode) throws IOException {
-		// TODO Auto-generated method stub
+		this.sendPushNotificationAnswer(this.messageFactory.createPushNotificationAnswer(resultCode, isExperimentalResultCode));
 
 	}
 
@@ -97,7 +97,7 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl
 		try {
 			this.clientSession
 					.sendSubscribeNotificationsRequest(new SubscribeNotificationsRequestImpl(
-							(Answer) msg.getGenericData()));
+							(Request) msg.getGenericData()));
 		} catch (InternalException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
