@@ -120,7 +120,7 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl
 		try {
 			this.serverSession.sendPushNotificationRequest(new PushNotificationRequestImpl((Request) msg.getGenericData()));
 		} catch (Exception e) {
-			throw new IOException(e);
+			throw new IOException(e.getLocalizedMessage());
 		} 
 
 	}
@@ -141,7 +141,7 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl
 		try {
 			this.serverSession.sendSubscribeNotificationsAnswer(new SubscribeNotificationsAnswerImpl((Answer) msg.getGenericData()));
 		} catch (Exception e) {
-			throw new IOException(e);
+			throw new IOException(e.getLocalizedMessage());
 		} 
 
 	}

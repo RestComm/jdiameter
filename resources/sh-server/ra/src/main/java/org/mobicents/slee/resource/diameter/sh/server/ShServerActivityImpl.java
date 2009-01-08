@@ -89,7 +89,7 @@ public class ShServerActivityImpl extends DiameterActivityImpl implements
 		try {
 			this.serverSession.sendProfileUpdateAnswer(new ProfileUpdateAnswerImpl((Answer) msg.getGenericData()));
 		} catch (Exception e) {
-			throw new IOException(e);
+			throw new IOException(e.getLocalizedMessage());
 		} 
 
 	}
@@ -100,7 +100,7 @@ public class ShServerActivityImpl extends DiameterActivityImpl implements
 		try {
 			this.serverSession.sendUserDataAnswer(new UserDataAnswerImpl((Answer) msg.getGenericData()));
 		} catch (Exception e) {
-			throw new IOException(e);
+			throw new IOException(e.getLocalizedMessage());
 		} 
 
 	}
