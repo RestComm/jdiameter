@@ -216,7 +216,9 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     public void updatePeerTableEntry(String oldName, URI oldUri, String newName, URI newUri) {
         synchronized( regLock ) {
             alias.replace(oldName, newName);
-            peerTable.put(newUri, peerTable.remove(oldUri));
+            if(!peerTable.containsKey(newUri) && peerTable.containsKey(oldUri)) {
+              peerTable.put(newUri, peerTable.remove(oldUri));
+            }
         }
     }
 
