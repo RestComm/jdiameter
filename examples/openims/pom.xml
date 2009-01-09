@@ -29,7 +29,7 @@
     
     <!-- Other Mobicents Components Versions -->
     <mobicents.servers.jainslee.version>1.2.2.GA</mobicents.servers.jainslee.version>
-    <mobicents.servers.jainslee.resources.sip11.version>1.2.3.GA-SNAPSHOT</mobicents.servers.jainslee.resources.sip11.version>
+    <mobicents.servers.jainslee.resources.sip11.version>1.2.3.GA</mobicents.servers.jainslee.resources.sip11.version>
     <mobicents.tools.mavenplugin.du.version>1.0.0.BETA2</mobicents.tools.mavenplugin.du.version>
     <mobicents.tools.mavenplugin.eclipse.version>1.0.0.BETA2</mobicents.tools.mavenplugin.eclipse.version>
   </properties>
