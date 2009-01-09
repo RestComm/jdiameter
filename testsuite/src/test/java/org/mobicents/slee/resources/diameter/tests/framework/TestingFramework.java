@@ -63,7 +63,7 @@ public class TestingFramework
   
   private static int timeout = 30 * 1000;
 
-  private static String clientHost = "localhost";
+  private static String clientHost = "127.0.0.1";
   private static String clientPort = "21812";
   private static String clientURI  = "aaa://" + clientHost + ":" + clientPort;
   
