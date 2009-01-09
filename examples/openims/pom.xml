@@ -48,7 +48,7 @@
             <configuration>
               <autoVersionSubmodules>true</autoVersionSubmodules>
               <resume>false</resume>
-              <tagBase>https://mobicents.googlecode.com/svn/tags/servers/diameter/examples/sh-client</tagBase>
+              <tagBase>https://mobicents.googlecode.com/svn/tags/servers/diameter/examples/openims</tagBase>
             </configuration>
           </plugin>
         </plugins>
