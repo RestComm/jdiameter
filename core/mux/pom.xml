@@ -2,11 +2,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-		<groupId>org.mobicents</groupId>
-		<artifactId>mobicents</artifactId>
-		<version>6</version>
-		<relativePath>../../../../parent/pom.xml</relativePath>
-	</parent>
+    <groupId>org.mobicents</groupId>
+    <artifactId>mobicents</artifactId>
+    <version>6</version>
+    <relativePath>../../../../parent/pom.xml</relativePath>
+  </parent>
 
   <groupId>org.mobicents.servers.diameter</groupId>
   <artifactId>mobicents-diameter-mux-parent</artifactId>
@@ -16,7 +16,7 @@
   
   <properties>
     <!-- Mobicents Diameter Components Versions -->
-    <mobicents.diameter.jdiameter.version>1.5.0.1-build184-SNAPSHOT</mobicents.diameter.jdiameter.version>
+    <mobicents.diameter.jdiameter.version>1.5.0.1-build184</mobicents.diameter.jdiameter.version>
     
     <!-- Other Mobicents Components Versions -->
     <mobicents.tools.mavenplugin.eclipse.version>1.0.0.BETA2</mobicents.tools.mavenplugin.eclipse.version>
@@ -51,10 +51,10 @@
     </profile>
   </profiles>
 
-	<scm>
-		<connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/mux</connection>
-		<developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/mux</developerConnection>
-		<url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/mux</url>
-	</scm>
+  <scm>
+    <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/mux</connection>
+    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/mux</developerConnection>
+    <url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/mux</url>
+  </scm>
   
 </project>
