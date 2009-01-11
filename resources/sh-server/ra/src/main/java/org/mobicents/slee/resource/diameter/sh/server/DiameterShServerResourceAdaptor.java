@@ -135,7 +135,7 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
 	 * events
 	 */
 	private transient EventLookupFacility eventLookup = null;
-	private static final Map<Integer, String> events;
+	public static final Map<Integer, String> events;
 	
 	static {
 		Map<Integer, String> eventsTemp = new HashMap<Integer, String>();

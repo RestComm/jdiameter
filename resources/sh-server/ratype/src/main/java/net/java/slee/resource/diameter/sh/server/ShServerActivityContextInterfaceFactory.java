@@ -22,14 +22,15 @@ package net.java.slee.resource.diameter.sh.server;
 import javax.slee.ActivityContextInterface;
 import javax.slee.UnrecognizedActivityException;
 
+import org.mobicents.slee.resource.ResourceAdaptorActivityContextInterfaceFactory;
+
 
 
 /**
  * Obtains an ActivityContextInterface for a given Sh activity
  *
- * @author Open Cloud
  */
-public interface ShServerActivityContextInterfaceFactory {
+public interface ShServerActivityContextInterfaceFactory extends ResourceAdaptorActivityContextInterfaceFactory{
 
     ActivityContextInterface getActivityContextInterface(ShServerActivity activity) throws UnrecognizedActivityException;
 

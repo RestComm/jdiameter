@@ -22,8 +22,6 @@ import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
-import org.jdiameter.api.cca.ClientCCASession;
-import org.jdiameter.api.cca.ServerCCASession;
 import org.jdiameter.api.sh.ClientShSession;
 import org.jdiameter.api.sh.ClientShSessionListener;
 import org.jdiameter.api.sh.ServerShSession;
@@ -48,7 +46,6 @@ import org.jdiameter.common.impl.app.sh.UserDataAnswerImpl;
 import org.jdiameter.common.impl.app.sh.UserDataRequestImpl;
 import org.jdiameter.server.impl.app.sh.ShServerSessionImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityHandle;
-import org.mobicents.slee.resource.diameter.cca.CCAResourceAdaptor;
 import org.mobicents.slee.resource.diameter.sh.server.DiameterShServerResourceAdaptor;
 
 /**
@@ -125,11 +122,11 @@ public class ShServerSessionFactory implements IAppSessionFactory,
 
 	    if(isRequest)
 	    {
-	      this.resourceAdaptor.fireEvent(handle, CCAResourceAdaptor.events.get(message.getCommandCode()) + "Request", (Request) message.getMessage(), null);      
+	      this.resourceAdaptor.fireEvent(handle, DiameterShServerResourceAdaptor.events.get(message.getCommandCode()) + "Request", (Request) message.getMessage(), null);      
 	    }
 	    else
 	    {
-	      this.resourceAdaptor.fireEvent(handle, CCAResourceAdaptor.events.get(message.getCommandCode()) + "Answer", null, (Answer) message.getMessage());     
+	      this.resourceAdaptor.fireEvent(handle, DiameterShServerResourceAdaptor.events.get(message.getCommandCode()) + "Answer", null, (Answer) message.getMessage());     
 	    }
 	  }
 	
