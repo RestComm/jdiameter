@@ -52,6 +52,10 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl
 	protected DiameterShAvpFactory shAvpFactory = null;
 	protected ShServerMessageFactoryImpl messageFactory = null;
 
+	
+	protected DiameterIdentityAvp clientOriginHost=null;
+	protected DiameterIdentityAvp clientOriginRealm=null;
+	
 	public ShServerSubscriptionActivityImpl(
 			ShServerMessageFactory shServerMessageFactory,
 			DiameterShAvpFactory diameterShAvpFactory, ServerShSession session,
@@ -76,8 +80,9 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl
 	 * #createPushNotificationRequest()
 	 */
 	public PushNotificationRequest createPushNotificationRequest() {
-
-		return this.messageFactory.createPushNotificationRequest();
+		PushNotificationRequest request=this.messageFactory.createPushNotificationRequest();
+		
+		return request; 
 	}
 
 	/*
@@ -89,8 +94,14 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl
 	 */
 	public SubscribeNotificationsAnswer createSubscribeNotificationsAnswer(
 			long resultCode, boolean isExperimentalResult) {
-		return this.createSubscribeNotificationsAnswer(resultCode,
+		
+		SubscribeNotificationsAnswer answer=this.messageFactory.createSubscribeNotificationsAnswer(resultCode,
 				isExperimentalResult);
+		if(answer.getDestinationHost()==null && clientOriginHost!=null)
+			answer.setDestinationHost(clientOriginHost);
+		if(answer.getDestinationRealm()==null && clientOriginRealm!=null)
+			answer.setDestinationRealm(clientOriginRealm);
+		return answer;
 	}
 
 	/*
@@ -101,7 +112,14 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl
 	 * #createSubscribeNotificationsAnswer()
 	 */
 	public SubscribeNotificationsAnswer createSubscribeNotificationsAnswer() {
-		return this.createSubscribeNotificationsAnswer();
+		
+		SubscribeNotificationsAnswer answer=this.messageFactory.createSubscribeNotificationsAnswer();
+		if(answer.getDestinationHost()==null && clientOriginHost!=null)
+			answer.setDestinationHost(clientOriginHost);
+		if(answer.getDestinationRealm()==null && clientOriginRealm!=null)
+			answer.setDestinationRealm(clientOriginRealm);
+		return answer;
+		
 	}
 
 	/*
@@ -116,7 +134,7 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl
 	public void sendPushNotificationRequest(PushNotificationRequest message)
 			throws IOException {
 		DiameterMessageImpl msg = (DiameterMessageImpl) message;
-		fetchSessionData(msg);
+		fetchSessionData(msg,false);
 		try {
 			this.serverSession.sendPushNotificationRequest(new PushNotificationRequestImpl((Request) msg.getGenericData()));
 		} catch (Exception e) {
@@ -137,7 +155,7 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl
 	public void sendSubscribeNotificationsAnswer(
 			SubscribeNotificationsAnswer message) throws IOException {
 		DiameterMessageImpl msg = (DiameterMessageImpl) message;
-		fetchSessionData(msg);
+		fetchSessionData(msg,false);
 		try {
 			this.serverSession.sendSubscribeNotificationsAnswer(new SubscribeNotificationsAnswerImpl((Answer) msg.getGenericData()));
 		} catch (Exception e) {
@@ -165,9 +183,22 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl
 
 	}
 
-	private void fetchSessionData(DiameterMessage msg)
+	public void fetchSessionData(DiameterMessage msg, boolean incoming)
 	{
-		
+		if(msg.getHeader().isRequest())
+		{
+			//Well it should always be getting this on request and only once ?
+			if(incoming)
+			{
+				if(this.clientOriginHost==null)
+					this.clientOriginHost=msg.getOriginHost();
+				if(this.clientOriginRealm==null)
+					this.clientOriginRealm=msg.getOriginRealm();
+			}else
+			{
+				//FIXME, do more :)
+			}
+		}
 	}
 
 	@Override
@@ -181,5 +212,14 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl
 		return this.messageFactory;
 	}
 	
-	
+	@Override
+	public Object getSessionListener() {
+
+		return this.listener;
+	}
+
+	@Override
+	public void setSessionListener(Object ra) {
+		this.listener = listener;
+	}
 }

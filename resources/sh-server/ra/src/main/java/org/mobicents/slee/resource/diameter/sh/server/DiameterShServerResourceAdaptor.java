@@ -248,7 +248,7 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
 			this.state = ResourceAdaptorState.ACTIVE;
 			this.sessionFactory = this.stack.getSessionFactory();
 
-			((ISessionFactory) sessionFactory).registerAppFacory(ClientShSession.class, new ShServerSessionFactory(this.sessionFactory,this,this.messageTimeout));
+			((ISessionFactory) sessionFactory).registerAppFacory(ServerShSession.class, new ShServerSessionFactory(this.sessionFactory,this,this.messageTimeout));
 		} catch (Exception e) {
 			logger.error("Error Activating Diameter ShServer RA Entity", e);
 		}
@@ -616,6 +616,14 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
 			int eventID = eventLookup.getEventID("net.java.slee.resource.diameter.sh." + name, "java.net", "0.8");
 
 			DiameterMessage event = (DiameterMessage) createEvent(request, answer);
+			Object activity=getActivity(handle);
+			if(activity instanceof ShServerActivityImpl)
+			{
+				((ShServerActivityImpl)activity).fetchSessionData(event,true);
+			}else if(activity instanceof ShServerSubscriptionActivityImpl)
+			{
+				((ShServerSubscriptionActivityImpl)activity).fetchSessionData(event,true);
+			}
 			sleeEndpoint.fireEvent(handle, event, eventID, null);
 		} catch (Exception e) {
 			logger.warn("Can not send event", e);
@@ -753,11 +761,11 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
 
 		//Here we only act on reqeusts, answer dont concern us ?
 		public DiameterActivity createActivity(Request request) throws CreateActivityException {
-			long commandCode=request.getCommandCode();
+			int commandCode=request.getCommandCode();
 			String sessionId = request.getSessionId();
 			if(!events.keySet().contains(commandCode))
 			{
-				throw new CreateActivityException("Cant create activity for nknown command code: "+commandCode);
+				throw new CreateActivityException("Cant create activity for unknown command code: "+commandCode);
 			}
 			
 			try{
@@ -770,6 +778,7 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
 				session.processRequest(request);
 			}catch(Exception e)
 			{
+				e.printStackTrace();
 				throw new CreateActivityException(e);
 			}
 			 return   (DiameterActivity) getActivity(getActivityHandle(sessionId));
@@ -807,7 +816,7 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
 
 	public void fireEvent(String sessionId, String name, Request request,
 			Answer answer) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 

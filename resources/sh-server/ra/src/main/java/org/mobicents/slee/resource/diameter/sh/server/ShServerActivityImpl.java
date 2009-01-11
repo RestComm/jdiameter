@@ -44,6 +44,10 @@ public class ShServerActivityImpl extends DiameterActivityImpl implements
 	protected DiameterShAvpFactory shAvpFactory = null;
 	protected ShServerMessageFactoryImpl messageFactory = null;
 
+	
+	protected DiameterIdentityAvp clientOriginHost=null;
+	protected DiameterIdentityAvp clientOriginRealm=null;
+	
 	public ShServerActivityImpl(
 			ShServerMessageFactory shServerMessageFactory,
 			DiameterShAvpFactory diameterShAvpFactory, ServerShSession session,
@@ -62,30 +66,58 @@ public class ShServerActivityImpl extends DiameterActivityImpl implements
 	
 	public ProfileUpdateAnswer createProfileUpdateAnswer(long resultCode,
 			boolean isExperimentalResult) {
-		return this.messageFactory.createProfileUpdateAnswer(resultCode, isExperimentalResult);
+		ProfileUpdateAnswer answer=this.messageFactory.createProfileUpdateAnswer(resultCode, isExperimentalResult);
+		if(answer.getDestinationHost()==null && clientOriginHost!=null)
+			answer.setDestinationHost(clientOriginHost);
+		if(answer.getDestinationRealm()==null && clientOriginRealm!=null)
+			answer.setDestinationRealm(clientOriginRealm);
+		return answer;
 	}
 
 	public ProfileUpdateAnswer createProfileUpdateAnswer() {
-		return this.messageFactory.createProfileUpdateAnswer();
+		
+		ProfileUpdateAnswer answer=this.messageFactory.createProfileUpdateAnswer();
+		if(answer.getDestinationHost()==null && clientOriginHost!=null)
+			answer.setDestinationHost(clientOriginHost);
+		if(answer.getDestinationRealm()==null && clientOriginRealm!=null)
+			answer.setDestinationRealm(clientOriginRealm);
+		return answer;
+		
 	}
 
 	public UserDataAnswer createUserDataAnswer(byte[] userData) {
-		return this.messageFactory.createUserDataAnswer(userData);
+		
+		UserDataAnswer answer=createUserDataAnswer(userData);
+		if(answer.getDestinationHost()==null && clientOriginHost!=null)
+			answer.setDestinationHost(clientOriginHost);
+		if(answer.getDestinationRealm()==null && clientOriginRealm!=null)
+			answer.setDestinationRealm(clientOriginRealm);
+		return answer;
 	}
 
 	public UserDataAnswer createUserDataAnswer(long resultCode,
 			boolean isExperimentalResult) {
-		return this.messageFactory.createUserDataAnswer(resultCode, isExperimentalResult);
+		UserDataAnswer answer=this.messageFactory.createUserDataAnswer(resultCode, isExperimentalResult);
+		if(answer.getDestinationHost()==null && clientOriginHost!=null)
+			answer.setDestinationHost(clientOriginHost);
+		if(answer.getDestinationRealm()==null && clientOriginRealm!=null)
+			answer.setDestinationRealm(clientOriginRealm);
+		return answer;
 	}
 
 	public UserDataAnswer createUserDataAnswer() {
-		return this.messageFactory.createUserDataAnswer();
+		UserDataAnswer answer=this.messageFactory.createUserDataAnswer();
+		if(answer.getDestinationHost()==null && clientOriginHost!=null)
+			answer.setDestinationHost(clientOriginHost);
+		if(answer.getDestinationRealm()==null && clientOriginRealm!=null)
+			answer.setDestinationRealm(clientOriginRealm);
+		return answer;
 	}
 
 	public void sendProfileUpdateAnswer(ProfileUpdateAnswer message)
 			throws IOException {
 		DiameterMessageImpl msg = (DiameterMessageImpl) message;
-		fetchSessionData(msg);
+		fetchSessionData(msg,false);
 		try {
 			this.serverSession.sendProfileUpdateAnswer(new ProfileUpdateAnswerImpl((Answer) msg.getGenericData()));
 		} catch (Exception e) {
@@ -96,7 +128,7 @@ public class ShServerActivityImpl extends DiameterActivityImpl implements
 
 	public void sendUserDataAnswer(UserDataAnswer message) throws IOException {
 		DiameterMessageImpl msg = (DiameterMessageImpl) message;
-		fetchSessionData(msg);
+		fetchSessionData(msg,false);
 		try {
 			this.serverSession.sendUserDataAnswer(new UserDataAnswerImpl((Answer) msg.getGenericData()));
 		} catch (Exception e) {
@@ -122,9 +154,22 @@ public class ShServerActivityImpl extends DiameterActivityImpl implements
 		}
 	}
 	
-	private void fetchSessionData(DiameterMessage msg)
+	public void fetchSessionData(DiameterMessage msg, boolean incoming)
 	{
-		
+		if(msg.getHeader().isRequest())
+		{
+			//Well it should always be getting this on request and only once ?
+			if(incoming)
+			{
+				if(this.clientOriginHost==null)
+					this.clientOriginHost=msg.getOriginHost();
+				if(this.clientOriginRealm==null)
+					this.clientOriginRealm=msg.getOriginRealm();
+			}else
+			{
+				//FIXME, do more :)
+			}
+		}
 	}
 
 	@Override
@@ -136,6 +181,17 @@ public class ShServerActivityImpl extends DiameterActivityImpl implements
 	@Override
 	public Object getDiameterMessageFactory() {
 		return this.messageFactory;
+	}
+
+	@Override
+	public Object getSessionListener() {
+
+		return this.listener;
+	}
+
+	@Override
+	public void setSessionListener(Object ra) {
+		this.listener = listener;
 	}
 
 }

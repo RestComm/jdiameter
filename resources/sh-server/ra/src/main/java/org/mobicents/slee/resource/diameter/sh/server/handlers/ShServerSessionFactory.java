@@ -80,9 +80,11 @@ public class ShServerSessionFactory implements IAppSessionFactory,
 			Class<? extends AppSession> aClass, ApplicationId applicationId,
 			Object[] args) {
 		AppSession value=null;
+
 		if (aClass == ServerShSession.class) {
 			ShServerSessionImpl serverSession = null;
-			if (args != null && args.length > 1
+			
+			if (args != null && args.length > 0
 					&& args[0] instanceof Request) {
 				// This shouldnt happen but just in case
 				Request request = (Request) args[0];
@@ -96,6 +98,7 @@ public class ShServerSessionFactory implements IAppSessionFactory,
 				{
 					this.resourceAdaptor.sessionCreated(serverSession, false);
 				}
+
 			} else {
 				//serverSession = new ShServerSessionImpl(sessionId, this,
 				//		sessionFactory, this);

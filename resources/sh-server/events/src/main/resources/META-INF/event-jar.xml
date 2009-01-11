@@ -31,28 +31,28 @@
         <event-type-name>net.java.slee.resource.diameter.sh.UserDataRequest</event-type-name>
         <event-type-vendor>java.net</event-type-vendor>
         <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.sh.types.UserDataRequest</event-class-name>
+        <event-class-name>net.java.slee.resource.diameter.sh.server.events.UserDataRequest</event-class-name>
     </event-definition>
 
     <event-definition>
         <event-type-name>net.java.slee.resource.diameter.sh.ProfileUpdateRequest</event-type-name>
         <event-type-vendor>java.net</event-type-vendor>
         <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.sh.types.ProfileUpdateRequest</event-class-name>
+        <event-class-name>net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest</event-class-name>
     </event-definition>
 
     <event-definition>
         <event-type-name>net.java.slee.resource.diameter.sh.SubscribeNotificationsRequest</event-type-name>
         <event-type-vendor>java.net</event-type-vendor>
         <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.sh.types.SubscribeNotificationsRequest</event-class-name>
+        <event-class-name>net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest</event-class-name>
     </event-definition>
 
     <event-definition>
         <event-type-name>net.java.slee.resource.diameter.sh.PushNotificationAnswer</event-type-name>
         <event-type-vendor>java.net</event-type-vendor>
         <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.sh.types.PushNotificationAnswer</event-class-name>
+        <event-class-name>net.java.slee.resource.diameter.sh.server.events.PushNotificationAnswer</event-class-name>
     </event-definition>
 
 </event-jar>
