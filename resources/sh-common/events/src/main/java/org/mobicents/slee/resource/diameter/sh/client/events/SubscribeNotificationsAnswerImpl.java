@@ -14,6 +14,7 @@ public class SubscribeNotificationsAnswerImpl extends ProfileUpdateAnswerImpl im
 
 	public SubscribeNotificationsAnswerImpl(Message msg) {
 		super(msg);
+		msg.setRequest(false);
 		super.longMessageName="Subscribe-Notification-Answer";
 		super.shortMessageName="SNA";
 	}

@@ -20,6 +20,7 @@ public class SubscribeNotificationsRequestImpl extends DiameterShMessageImpl imp
 
 	public SubscribeNotificationsRequestImpl(Message msg) {
 		super(msg);
+		msg.setRequest(true);
 		super.longMessageName="Subscribe-Notification-Request";
 		super.shortMessageName="SNR";
 	}

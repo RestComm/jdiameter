@@ -23,6 +23,7 @@ public class UserDataAnswerImpl extends ProfileUpdateAnswerImpl implements UserD
 
 	public UserDataAnswerImpl(Message msg) {
 		super(msg);
+		msg.setRequest(false);
 		super.longMessageName="User-Data-Answer";
 		super.shortMessageName="UDA";
 	}

@@ -132,6 +132,7 @@ public class ShServerActivityImpl extends DiameterActivityImpl implements
 		try {
 			this.serverSession.sendUserDataAnswer(new UserDataAnswerImpl((Answer) msg.getGenericData()));
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new IOException(e.getLocalizedMessage());
 		} 
 
@@ -149,7 +150,7 @@ public class ShServerActivityImpl extends DiameterActivityImpl implements
 			break;
 		case TERMINATED:
 			state=ShSessionState.TERMINATED;
-			listener.sessionDestroyed(getSessionId(),serverSession);
+			this.listener.sessionDestroyed(getSessionId(),serverSession);
 			break;
 		}
 	}
@@ -191,7 +192,7 @@ public class ShServerActivityImpl extends DiameterActivityImpl implements
 
 	@Override
 	public void setSessionListener(Object ra) {
-		this.listener = listener;
+		this.listener = (ShServerSessionListener) ra;
 	}
 
 }

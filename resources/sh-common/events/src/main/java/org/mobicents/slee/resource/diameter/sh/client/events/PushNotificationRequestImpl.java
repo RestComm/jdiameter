@@ -14,6 +14,7 @@ public class PushNotificationRequestImpl extends DiameterShMessageImpl implement
 
 	public PushNotificationRequestImpl(Message msg) {
 		super(msg);
+		msg.setRequest(true);
 		super.longMessageName="Push-Notification-Request";
 		super.shortMessageName="PNR";
 	}

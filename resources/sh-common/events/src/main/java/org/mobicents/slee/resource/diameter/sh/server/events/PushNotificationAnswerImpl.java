@@ -14,6 +14,7 @@ public class PushNotificationAnswerImpl extends DiameterShMessageImpl implements
 
 	public PushNotificationAnswerImpl(Message msg) {
 		super(msg);
+		msg.setRequest(false);
 		super.longMessageName="Push-Notificaton-Answer";
 		super.shortMessageName="PNA";
 	}

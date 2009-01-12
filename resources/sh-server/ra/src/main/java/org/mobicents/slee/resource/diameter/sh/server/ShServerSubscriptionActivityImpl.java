@@ -220,6 +220,6 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl
 
 	@Override
 	public void setSessionListener(Object ra) {
-		this.listener = listener;
+		this.listener = (ShServerSessionListener) ra;
 	}
 }

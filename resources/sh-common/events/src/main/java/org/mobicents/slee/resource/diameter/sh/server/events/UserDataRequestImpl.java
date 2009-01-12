@@ -19,7 +19,7 @@ public class UserDataRequestImpl extends SubscribeNotificationsRequestImpl imple
 
 	public UserDataRequestImpl(Message msg) {
 		super(msg);
-	
+		msg.setRequest(true);
 		super.longMessageName="User-Data-Request";
 		super.shortMessageName="UDR";
 	}

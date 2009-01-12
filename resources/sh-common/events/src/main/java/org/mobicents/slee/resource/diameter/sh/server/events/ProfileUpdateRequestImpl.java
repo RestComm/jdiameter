@@ -15,6 +15,7 @@ public class ProfileUpdateRequestImpl extends DiameterShMessageImpl implements P
 
 	public ProfileUpdateRequestImpl(Message msg) {
 		super(msg);
+		msg.setRequest(true);
 		super.longMessageName="Profile-Update-Request";
 		super.shortMessageName="PUR";
 	}
