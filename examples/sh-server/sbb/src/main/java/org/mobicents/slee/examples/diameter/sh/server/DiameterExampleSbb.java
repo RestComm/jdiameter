@@ -1,8 +1,7 @@
 package org.mobicents.slee.examples.diameter.sh.server;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -12,46 +11,30 @@ import javax.slee.RolledBackContext;
 import javax.slee.SLEEException;
 import javax.slee.SbbContext;
 import javax.slee.TransactionRequiredLocalException;
-import javax.slee.UnrecognizedActivityException;
 import javax.slee.facilities.TimerEvent;
 import javax.slee.facilities.TimerFacility;
 import javax.slee.facilities.TimerOptions;
 import javax.slee.serviceactivity.ServiceActivity;
 import javax.slee.serviceactivity.ServiceActivityFactory;
 
-import net.java.slee.resource.diameter.base.AccountingClientSessionActivity;
-import net.java.slee.resource.diameter.base.CreateActivityException;
-import net.java.slee.resource.diameter.base.DiameterActivity;
-import net.java.slee.resource.diameter.base.DiameterAvpFactory;
-import net.java.slee.resource.diameter.base.DiameterMessageFactory;
-import net.java.slee.resource.diameter.base.DiameterProvider;
-import net.java.slee.resource.diameter.base.events.AccountingAnswer;
-import net.java.slee.resource.diameter.base.events.AccountingRequest;
-import net.java.slee.resource.diameter.base.events.DiameterMessage;
+import net.java.slee.resource.diameter.base.events.DiameterHeader;
+import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
-import net.java.slee.resource.diameter.sh.client.MessageFactory;
-import net.java.slee.resource.diameter.sh.client.ShClientActivity;
-import net.java.slee.resource.diameter.sh.client.ShClientActivityContextInterfaceFactory;
-import net.java.slee.resource.diameter.sh.client.ShClientMessageFactory;
-import net.java.slee.resource.diameter.sh.client.ShClientProvider;
-import net.java.slee.resource.diameter.sh.client.ShClientSubscriptionActivity;
+import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
+import net.java.slee.resource.diameter.sh.client.events.SubscribeNotificationsAnswer;
 import net.java.slee.resource.diameter.sh.client.events.UserDataAnswer;
-import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
-import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
+import net.java.slee.resource.diameter.sh.client.events.avp.SubsReqType;
 import net.java.slee.resource.diameter.sh.server.ShServerActivity;
 import net.java.slee.resource.diameter.sh.server.ShServerActivityContextInterfaceFactory;
 import net.java.slee.resource.diameter.sh.server.ShServerMessageFactory;
 import net.java.slee.resource.diameter.sh.server.ShServerProvider;
+import net.java.slee.resource.diameter.sh.server.ShServerSubscriptionActivity;
 import net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest;
 import net.java.slee.resource.diameter.sh.server.events.UserDataRequest;
 
 import org.apache.log4j.Logger;
-import org.jdiameter.api.Avp;
-import org.jdiameter.api.ResultCode;
-
-import org.mobicents.slee.resource.diameter.base.AccountingServerSessionActivityImpl;
 
 /**
  * 
@@ -216,7 +199,31 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
   
   public void onTimerEvent(TimerEvent event, ActivityContextInterface aci)
   {
-
+	  	ShServerSubscriptionActivity activity=null;
+	  	
+	  	for(ActivityContextInterface _aci:this.getSbbContext().getActivities())
+	  	{
+	  		if(_aci.getActivity() instanceof ShServerSubscriptionActivity)
+	  		{
+	  			activity=(ShServerSubscriptionActivity) _aci.getActivity();
+	  			break;
+	  		}
+	  	}
+	  	
+	  	if(activity==null)
+	  	{
+	  		logger.error("ACTIVITY IS NULL, with list: "+Arrays.toString(this.getSbbContext().getActivities()));
+	  	}
+	  	
+	  	PushNotificationRequest request=activity.createPushNotificationRequest();
+	  	logger.info("TIMER PNR:\n"+request);
+	  	try {
+			activity.sendPushNotificationRequest(request);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	  	
+	  	
   }
   
   
@@ -225,6 +232,12 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 	  logger.info(" onUserDataRequest :: "+event);
 	  UserDataAnswer answer=((ShServerActivity)aci.getActivity()).createUserDataAnswer(2001, false);
 	  try {
+		  //Forge, this is required since answer is populated with wrong values by default
+		  DiameterHeader hdr=answer.getHeader();
+		  
+		  DiameterHeader reqHeader=event.getHeader();
+		  hdr.setEndToEndId(reqHeader.getEndToEndId());
+		  hdr.setHopByHopId(reqHeader.getHopByHopId());
 		  logger.info(" onUserDataRequest :: Answer:"+answer);
 		((ShServerActivity)aci.getActivity()).sendUserDataAnswer(answer);
 	} catch (TransactionRequiredLocalException e) {
@@ -239,6 +252,62 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 	}
   }
  
+  public void onSubscribeNotificationsRequest(SubscribeNotificationsRequest event,ActivityContextInterface aci)
+  {
+	  logger.info(" onSubscribeNotificationsRequest :: "+event);
+	  SubscribeNotificationsAnswer answer=((ShServerSubscriptionActivity)aci.getActivity()).createSubscribeNotificationsAnswer(2001, false);
+	  try {
+		  //Forge, this is required since answer is populated with wrong values by default
+		  DiameterHeader hdr=answer.getHeader();
+		  
+		  DiameterHeader reqHeader=event.getHeader();
+		  hdr.setEndToEndId(reqHeader.getEndToEndId());
+		  hdr.setHopByHopId(reqHeader.getHopByHopId());
+		  
+		  //This will be fixed in B2, we need more accessors
+		  DiameterAvp requestNumber=null;
+		 
+		  for(DiameterAvp a:event.getAvps())
+		  {
+			  if(a.getCode()==705)
+			  {
+				  requestNumber=a;
+				  break;
+			  }
+		  }
+		  
+		  
+		  
+		  if(requestNumber!=null)
+			  answer.setExtensionAvps(requestNumber);
+		  logger.info(" onSubscribeNotificationsRequest :: Answer:"+answer);
+		((ShServerSubscriptionActivity)aci.getActivity()).sendSubscribeNotificationsAnswer(answer);
+		
+		
+		if(event.getSubsReqType()==SubsReqType.SUBSCRIBE)
+		{
+			TimerOptions options = new TimerOptions();
+	    	timerFacility.setTimer(aci, null, System.currentTimeMillis() + 5000, options);
+		}
+		
+	} catch (TransactionRequiredLocalException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (SLEEException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (AvpNotAllowedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+  }
+  
+  
+  
+  
   public void onActivityEndEvent(ActivityEndEvent event,
 			ActivityContextInterface aci) {
 		logger.info( " Activity Ended["+aci.getActivity()+"]" );
