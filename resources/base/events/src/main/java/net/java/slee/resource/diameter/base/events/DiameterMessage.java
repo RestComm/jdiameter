@@ -160,6 +160,6 @@ public interface DiameterMessage extends Cloneable {
      *   (i.e. an AVP for which get/set methods already appear in this class)
      * @throws IllegalStateException if setExtensionAvps has already been called
      */
-    void setExtensionAvps(DiameterAvp[] avps) throws AvpNotAllowedException;
+    void setExtensionAvps(DiameterAvp... avps) throws AvpNotAllowedException;
     
 }

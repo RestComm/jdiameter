@@ -25,14 +25,11 @@ import net.java.slee.resource.diameter.sh.server.handlers.ShServerSessionListene
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.Request;
-import org.jdiameter.api.Session;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.sh.ServerShSession;
 import org.jdiameter.common.impl.app.sh.PushNotificationRequestImpl;
 import org.jdiameter.common.impl.app.sh.SubscribeNotificationsAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
-import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
-import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 
 /**
@@ -81,7 +78,10 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl
 	 */
 	public PushNotificationRequest createPushNotificationRequest() {
 		PushNotificationRequest request=this.messageFactory.createPushNotificationRequest();
-		
+		if(request.getDestinationHost()==null && clientOriginHost!=null)
+			request.setDestinationHost(clientOriginHost);
+		if(request.getDestinationRealm()==null && clientOriginRealm!=null)
+			request.setDestinationRealm(clientOriginRealm);
 		return request; 
 	}
 
@@ -138,6 +138,7 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl
 		try {
 			this.serverSession.sendPushNotificationRequest(new PushNotificationRequestImpl((Request) msg.getGenericData()));
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new IOException(e.getLocalizedMessage());
 		} 
 
@@ -159,13 +160,15 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl
 		try {
 			this.serverSession.sendSubscribeNotificationsAnswer(new SubscribeNotificationsAnswerImpl((Answer) msg.getGenericData()));
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new IOException(e.getLocalizedMessage());
 		} 
 
 	}
 
 	public void stateChanged(Enum oldState, Enum newState) {
-		ShSessionState _state=(ShSessionState) newState;
+		org.jdiameter.common.api.app.sh.ShSessionState _state=(org.jdiameter.common.api.app.sh.ShSessionState) newState;
+
 		
 		switch (_state) {
 		case NOTSUBSCRIBED:

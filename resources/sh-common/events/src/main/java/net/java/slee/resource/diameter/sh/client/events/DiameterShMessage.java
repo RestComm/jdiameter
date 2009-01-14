@@ -22,8 +22,6 @@ package net.java.slee.resource.diameter.sh.client.events;
 
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.avp.AuthSessionStateType;
-import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
-import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
 import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp;
@@ -154,25 +152,12 @@ public interface DiameterShMessage extends DiameterMessage {
      *  has already been called
      */
     void setSupportedFeatureses(SupportedFeaturesAvp[] supportedFeatureses);
-
     /**
-     * Returns the set of extension AVPs. The returned array contains the extension AVPs
-     * in the order they appear in the message.
-     * A return value of null implies that no extensions AVPs have been set.
+     * Returns the set of Supported-Features AVPs. The returned array contains
+     * the AVPs in the order they appear in the message.
+     * A return value of null implies that no Supported-Features AVPs have been set.
+     * The elements in the given array are SupportedFeatures objects.
      */
-    DiameterAvp[] getExtensionAvps();
-
-    /**
-     * Sets the set of extension AVPs with all the values in the given array.
-     * The AVPs will be added to message in the order in which they appear in the array.
-     *
-     * Note: the array must not be altered by the caller following this call, and
-     * getExtensionAvps() is not guaranteed to return the same array instance,
-     * e.g. an "==" check would fail.
-     *
-     * @throws AvpNotAllowedException if an AVP is encountered of a type already known to this class
-     *   (i.e. an AVP for which get/set methods already appear in this class)
-     * @throws IllegalStateException if setExtensionAvps has already been called
-     */
-    void setExtensionAvps(DiameterAvp[] avps) throws AvpNotAllowedException;
+    SupportedFeaturesAvp getSupportedFeatures();
+   
 }

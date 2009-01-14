@@ -103,4 +103,19 @@ public class DiameterShMessageImpl extends DiameterMessageImpl implements Diamet
 
 	}
 
+	public SupportedFeaturesAvp getSupportedFeatures() {
+		Avp rawAvp=super.message.getAvps().getAvp(DiameterShAvpCodes.SUPPORTED_FEATURES);
+		
+		if(rawAvp!=null)
+			try {
+				return new SupportedFeaturesAvpImpl(rawAvp.getCode(),rawAvp.getVendorId(),(rawAvp.isMandatory()?1:0),(rawAvp.isEncrypted()?1:0),rawAvp.getRaw());
+			} catch (AvpDataException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	
+			
+		return null;
+	}
+
 }

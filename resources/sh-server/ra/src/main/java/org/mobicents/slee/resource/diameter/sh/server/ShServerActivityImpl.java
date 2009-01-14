@@ -19,11 +19,8 @@ import org.jdiameter.api.Request;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.sh.ServerShSession;
 import org.jdiameter.common.impl.app.sh.ProfileUpdateAnswerImpl;
-import org.jdiameter.common.impl.app.sh.SubscribeNotificationsAnswerImpl;
 import org.jdiameter.common.impl.app.sh.UserDataAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
-import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
-import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 /**
  * Start time:16:43:18 2009-01-06<br>

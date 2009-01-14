@@ -51,6 +51,19 @@ public interface DiameterHeader extends Cloneable {
     boolean isPotentiallyRetransmitted();
 
     /**
+     * Set Hop-by-Hop ID from this Diameter header. Used in case of message creation. In some cases value can be corrupted or not filled properly. 
+     * @return the hop-by-hop id
+     */
+    void setHopByHopId(long hbh);
+
+    /**
+     * Set End-to-End ID from this Diameter header. Used in case of message creation. In some cases value can be corrupted or not filled properly.
+     * @return the end-to-end id
+     */
+    void setEndToEndId(long etd);
+    
+    
+    /**
      * Return application ID from this Diameter header.
      * @return the application ID
      */
@@ -67,6 +80,8 @@ public interface DiameterHeader extends Cloneable {
      * @return the end-to-end id
      */
     long getEndToEndId();
+
+    
 
     /**
      * Return the Diameter version ID from this Diameter header.

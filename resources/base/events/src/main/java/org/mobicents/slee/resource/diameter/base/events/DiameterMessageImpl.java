@@ -29,6 +29,7 @@ import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Message;
 import org.mobicents.diameter.dictionary.AvpDictionary;
+import org.mobicents.diameter.dictionary.AvpRepresentation;
 import org.mobicents.slee.resource.diameter.base.events.avp.AddressAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.DiameterIdentityAvpImpl;
@@ -276,14 +277,15 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 	public DiameterHeader getHeader()
 	{
 		// FIXME: baranowb; how do we set properly length?
-		DiameterHeaderImpl dh = new DiameterHeaderImpl(
-		    this.message.getApplicationId(), this.message.getHopByHopIdentifier(),
-				this.message.getEndToEndIdentifier(), 0, this.message.getCommandCode(),
-				this.message.isRequest(), this.message.isProxiable(), 
-				this.message.isError(), this.message.isReTransmitted()
-		);
+//		DiameterHeaderImpl dh = new DiameterHeaderImpl(
+//		    this.message.getApplicationId(), this.message.getHopByHopIdentifier(),
+//				this.message.getEndToEndIdentifier(), 0, this.message.getCommandCode(),
+//				this.message.isRequest(), this.message.isProxiable(), 
+//				this.message.isError(), this.message.isReTransmitted()
+//		);
 
-		return dh;
+		//return dh;
+		return new DiameterHeaderImpl(this.message);
 	}
 
 	/**
@@ -756,7 +758,13 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
     {
       // FIXME: alexandre: This is how I can check if it's a Grouped AVP... 
       // should use dictionary (again). a.getGrouped() get's into deadlock.
-      if(AvpDictionary.INSTANCE.getAvp( a.getCode(), a.getVendorId() ).getType().equals("Grouped"))
+    	AvpRepresentation avpRep=AvpDictionary.INSTANCE.getAvp( a.getCode(), a.getVendorId() );
+    	if(avpRep==null)
+    	{
+    		log.error("Avp with code: "+a.getCode()+" VendorId: "+a.getVendorId()+" is not listed in dictionary, skipping!");
+    		continue;
+    	}
+      if(avpRep.getType().equals("Grouped"))
       {
         GroupedAvpImpl gAVP = new GroupedAvpImpl(a.getCode(), a.getVendorId(), 
             a.isMandatory() ? 1 : 0, a.isEncrypted() ? 1: 0, a.getRaw());
