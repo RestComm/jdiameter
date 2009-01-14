@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-class MessageImpl implements IMessage {
+public class MessageImpl implements IMessage {
 
     protected static Logger logger = Logger.getLogger(Loggers.Message.fullName());
 

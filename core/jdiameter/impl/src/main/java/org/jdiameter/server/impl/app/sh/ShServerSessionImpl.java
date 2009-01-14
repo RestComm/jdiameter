@@ -227,6 +227,7 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 					{
 						
 						newState=doSNX(localEvent.getAnswer());
+						stopTxTimer();
 					} else if (event.getType() == Event.Type.TIMEOUT_EXPIRES) {
 						newState = ShSessionState.TERMINATED;
 						//FIXME: What happens here?
@@ -255,6 +256,8 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 
 					break;
 				case SUBSCRIBED:
+					
+					//FIXME: should we also use here startTx, stopTx?
 					if(event.getType()== Event.Type.SEND_SUBSCRIBE_NOTIFICATIONS_ANSWER)
 					{
 						
