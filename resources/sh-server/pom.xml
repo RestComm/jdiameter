@@ -1,28 +1,27 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<packaging>pom</packaging>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <packaging>pom</packaging>
 
   <parent>
-		<groupId>org.mobicents</groupId>
-		<artifactId>mobicents</artifactId>
-		<version>6</version>
-		<relativePath>../../../../parent/pom.xml</relativePath>
-	</parent>
+    <groupId>org.mobicents</groupId>
+    <artifactId>mobicents</artifactId>
+    <version>9</version>
+    <relativePath>../../../../parent/pom.xml</relativePath>
+  </parent>
 
-  	<groupId>org.mobicents.servers.diameter.resources</groupId>
-	<artifactId>sh-server-parent</artifactId>
-	<version>1.0.0.BETA1-SNAPSHOT</version>
+  <groupId>org.mobicents.servers.diameter.resources</groupId>
+  <artifactId>sh-server-parent</artifactId>
+  <version>1.0.0.BETA1-SNAPSHOT</version>
 
-	<name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
+  <name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
 
-	<modules>
-		<!-- module>../sh-common/events</module -->
-    	<module>events</module>
-		<module>ratype</module>
-		<module>ra</module>
-		<module>du</module>
-	</modules>
+  <modules>
+    <module>events</module>
+    <module>ratype</module>
+    <module>ra</module>
+    <module>du</module>
+  </modules>
 
   <properties>
     <!-- Mobicents Diameter Components Versions -->
@@ -30,10 +29,9 @@
     <mobicents.diameter.mux.version>1.0.0.BETA2-SNAPSHOT</mobicents.diameter.mux.version>
     <mobicents.diameter.resources.base.version>1.0.0.BETA4-SNAPSHOT</mobicents.diameter.resources.base.version>
     <mobicents.diameter.resources.sh-common.version>1.0.0.BETA3-SNAPSHOT</mobicents.diameter.resources.sh-common.version>
-    <mobicents.diameter.resources.sh-client.version>1.0.0.BETA3-SNAPSHOT</mobicents.diameter.resources.sh-client.version>
     
     <!-- Other Mobicents Components Versions -->
-    <mobicents.servers.jainslee.version>1.2.1.GA</mobicents.servers.jainslee.version>
+    <mobicents.servers.jainslee.version>1.2.3.GA</mobicents.servers.jainslee.version>
     <mobicents.tools.mavenplugin.du.version>1.0.0.BETA2</mobicents.tools.mavenplugin.du.version>
     <mobicents.tools.mavenplugin.eclipse.version>1.0.0.BETA2</mobicents.tools.mavenplugin.eclipse.version>
   </properties>

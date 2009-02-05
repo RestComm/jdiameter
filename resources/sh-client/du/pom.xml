@@ -36,6 +36,18 @@
       <version>${mobicents.diameter.resources.sh-common.version}</version>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>sh-common-ratype</artifactId>
+      <version>${mobicents.diameter.resources.sh-common.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>sh-common-ra</artifactId>
+      <version>${mobicents.diameter.resources.sh-common.version}</version>
+      <scope>runtime</scope>
+    </dependency>
 	</dependencies>
 
 	<build>

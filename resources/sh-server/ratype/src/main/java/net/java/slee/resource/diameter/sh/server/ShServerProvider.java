@@ -21,7 +21,6 @@ package net.java.slee.resource.diameter.sh.server;
 
 import java.io.IOException;
 
-import net.java.slee.resource.diameter.base.CreateActivityException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;

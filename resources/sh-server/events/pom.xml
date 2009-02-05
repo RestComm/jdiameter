@@ -15,13 +15,13 @@
 
 	<name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
 
-	<dependencies>
+	<dependencies><!--
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
 			<artifactId>sh-client-events</artifactId>
 			<version>${mobicents.diameter.resources.sh-client.version}</version>
 		</dependency>
-		<dependency>
+		--><dependency>
 			<groupId>${pom.groupId}</groupId>
 			<artifactId>base-events</artifactId>
 			<version>${mobicents.diameter.resources.base.version}</version>

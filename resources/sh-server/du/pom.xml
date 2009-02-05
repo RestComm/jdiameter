@@ -31,24 +31,24 @@
 			<version>${pom.version}</version>
 		</dependency>
 		<!-- libraries -->
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>sh-common-events</artifactId>
-			<version>${mobicents.diameter.resources.sh-common.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>sh-client-ra</artifactId>
-			<version>${mobicents.diameter.resources.sh-client.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>sh-client-ratype</artifactId>
-			<version>${mobicents.diameter.resources.sh-client.version}</version>
-			<scope>runtime</scope>
-		</dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>sh-common-events</artifactId>
+      <version>${mobicents.diameter.resources.sh-common.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>sh-common-ratype</artifactId>
+      <version>${mobicents.diameter.resources.sh-common.version}</version>
+      <scope>runtime</scope>
+    </dependency>    
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>sh-common-ra</artifactId>
+      <version>${mobicents.diameter.resources.sh-common.version}</version>
+      <scope>runtime</scope>
+    </dependency>    
 	</dependencies>
 
 	<build>

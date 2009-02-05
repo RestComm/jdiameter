@@ -28,8 +28,13 @@
 		</dependency>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>sh-client-ra</artifactId>
-			<version>${mobicents.diameter.resources.sh-client.version}</version>
+			<artifactId>sh-common-ratype</artifactId>
+			<version>${mobicents.diameter.resources.sh-common.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${pom.groupId}</groupId>
+			<artifactId>sh-common-ra</artifactId>
+			<version>${mobicents.diameter.resources.sh-common.version}</version>
 		</dependency>
 	</dependencies>
 
