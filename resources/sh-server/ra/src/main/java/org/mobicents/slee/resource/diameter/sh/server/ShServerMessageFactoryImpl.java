@@ -284,7 +284,7 @@ public class ShServerMessageFactoryImpl implements ShServerMessageFactory {
 
 	protected Message createShMessage(int commandCode, String sessionId,
 			boolean isRequest) throws IllegalArgumentException {
-		ApplicationId applicationId = ApplicationId.createByAccAppId(
+		ApplicationId applicationId = ApplicationId.createByAuthAppId(
 				_SH_VENDOR_ID, _SH_APP_ID);
 
 		List<DiameterAvp> list = (List<DiameterAvp>) this.avpList.clone();
