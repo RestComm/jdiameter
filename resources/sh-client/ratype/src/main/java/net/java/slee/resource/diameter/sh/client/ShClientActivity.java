@@ -44,12 +44,19 @@ public interface ShClientActivity extends DiameterActivity{
     void sendUserDataRequest(UserDataRequest message) throws IOException;
 
     /**
+     * Send a Subscribe-Notifications-Request message asynchronously.
+     *
+     * @param message request message to send
+     * @throws IOException if the request message could not be sent
+     */
+    void sendSubscribeNotificationsRequest(SubscribeNotificationsRequest message) throws IOException; 
+    
+    /**
      * Send a Profile-Update-Request message asynchronously.
      *
      * @param message request message to send
      * @throws IOException if the request message could not be sent
      */
     void sendProfileUpdateRequest(ProfileUpdateRequest message) throws IOException;
-
 
 }

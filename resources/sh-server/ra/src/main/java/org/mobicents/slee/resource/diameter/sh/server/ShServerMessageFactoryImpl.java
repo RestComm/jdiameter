@@ -141,18 +141,24 @@ public class ShServerMessageFactoryImpl implements ShServerMessageFactory {
 		return sna;
 	}
 
-	public UserDataAnswer createUserDataAnswer(byte[] userData) {
-		// TODO Auto-generated method stub
-		return null;
+	public UserDataAnswer createUserDataAnswer(byte[] userData)
+	{
+    UserDataAnswer uda = this.createUserDataAnswer();
+    uda.setUserData( userData );
+    
+    return uda;
 	}
 
-	public UserDataAnswer createUserDataAnswer(long resultCode,
-			boolean isExperimentalResult) {
+	public UserDataAnswer createUserDataAnswer(long resultCode, boolean isExperimentalResult)
+	{
 		UserDataAnswer uda = this.createUserDataAnswer();
-		if (isExperimentalResult) {
-			uda.setExperimentalResult(this.localFactory.getBaseFactory()
-					.createExperimentalResult(_SH_VENDOR_ID, resultCode));
-		} else {
+		
+		if(isExperimentalResult)
+		{
+			uda.setExperimentalResult(this.localFactory.getBaseFactory().createExperimentalResult(_SH_VENDOR_ID, resultCode));
+		}
+		else
+		{
 			uda.setResultCode(resultCode);
 		}
 
@@ -165,8 +171,7 @@ public class ShServerMessageFactoryImpl implements ShServerMessageFactory {
 		// Message msg = createMessage(UserDataAnswer.commandCode,
 		// applicationId, null);
 		// msg.setRequest(false);
-		Message msg = createShMessage(UserDataAnswer.commandCode, session
-				.getSessionId(), false);
+		Message msg = createShMessage(UserDataAnswer.commandCode, session != null ? session.getSessionId() : null, false);
 		UserDataAnswerImpl uda = new UserDataAnswerImpl(msg);
 		return uda;
 	}

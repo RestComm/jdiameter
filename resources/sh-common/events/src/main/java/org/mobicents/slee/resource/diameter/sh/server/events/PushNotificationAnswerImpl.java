@@ -4,6 +4,7 @@ import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodes;
 import net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp;
 import net.java.slee.resource.diameter.sh.server.events.PushNotificationAnswer;
 
+import org.apache.log4j.Logger;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Message;
@@ -12,38 +13,46 @@ import org.mobicents.slee.resource.diameter.sh.client.events.DiameterShMessageIm
 
 public class PushNotificationAnswerImpl extends DiameterShMessageImpl implements PushNotificationAnswer {
 
-	public PushNotificationAnswerImpl(Message msg) {
+  private static transient Logger logger = Logger.getLogger(PushNotificationAnswerImpl.class);
+
+  public PushNotificationAnswerImpl(Message msg)
+	{
 		super(msg);
+		
 		msg.setRequest(false);
-		super.longMessageName="Push-Notificaton-Answer";
-		super.shortMessageName="PNA";
-	}
-
-	public ExperimentalResultAvp getExperimentalResult() {
-
-
-		if(!hasExperimentalResult())
-			return null;
 		
-		Avp rawAvp=super.message.getAvps().getAvp(DiameterAvpCodes.EXPERIMENTAL_RESULT);
-		
-		try {
-			return new ExperimentalResultAvpImpl(rawAvp.getCode(),rawAvp.getVendorId(),rawAvp.isMandatory()?1:0,rawAvp.isEncrypted()?1:0,rawAvp.getRaw());
-		} catch (AvpDataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		super.longMessageName = "Push-Notificaton-Answer";
+		super.shortMessageName = "PNA";
 	}
 
-	public boolean hasExperimentalResult() {
-		return super.message.getAvps().getAvp(DiameterAvpCodes.EXPERIMENTAL_RESULT)!=null;
-	}
+  public ExperimentalResultAvp getExperimentalResult()
+  {
+    if(!hasExperimentalResult())
+    {
+      return null;
+    }
 
-	public void setExperimentalResult(ExperimentalResultAvp experimentalResult) {
-		//FIXME: Baranowb ???
-		super.setAvpAsGroup(experimentalResult.getCode(), new ExperimentalResultAvp[]{experimentalResult}, experimentalResult.getMandatoryRule()==1, true);
+    try
+    {
+      Avp rawAvp = super.message.getAvps().getAvp(DiameterAvpCodes.EXPERIMENTAL_RESULT);
 
-	}
+      return new ExperimentalResultAvpImpl(rawAvp.getCode(), rawAvp.getVendorId(), rawAvp.isMandatory() ? 1 : 0, rawAvp.isEncrypted() ? 1 : 0, rawAvp.getRaw());
+    }
+    catch (AvpDataException e) {
+      logger.error( "Unable to decode Experimental-Result AVP contents.", e );
+    }
+
+    return null;
+  }
+
+  public boolean hasExperimentalResult()
+  {
+    return super.message.getAvps().getAvp(DiameterAvpCodes.EXPERIMENTAL_RESULT)!=null;
+  }
+
+  public void setExperimentalResult(ExperimentalResultAvp experimentalResult)
+  {
+    super.setAvpAsGroup(experimentalResult.getCode(), new ExperimentalResultAvp[]{experimentalResult}, experimentalResult.getMandatoryRule()==1, true);
+  }
 
 }
