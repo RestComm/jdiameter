@@ -178,7 +178,6 @@ public class ShServerActivityImpl extends DiameterActivityImpl implements ShServ
 		this.listener = (ShServerSessionListener) ra;
 	}
 
-  
 	public void fetchSessionData( DiameterMessage message, boolean incoming )
   {
 	  // FIXME: This is just stub, what was being done was not needed. Leaving it for further evaluation. 
