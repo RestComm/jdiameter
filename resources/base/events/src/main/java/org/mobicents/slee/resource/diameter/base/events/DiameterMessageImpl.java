@@ -928,7 +928,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
   
   protected boolean hasAvp(int code)
   {
-    return message.getAvps().getAvps(code) != null;
+    return message.getAvps().getAvp(code) != null;
   }
 
   protected void reportAvpFetchError(String msg, long code)
