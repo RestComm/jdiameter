@@ -579,7 +579,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
   public void setDestinationHost(DiameterIdentityAvp destinationHost)
   {
-    if (hasDestinationHost())
+    if (!hasDestinationHost())
     {
       this.message.getAvps().addAvp(Avp.DESTINATION_HOST, destinationHost.stringValue(), true, false, true);
     }
@@ -591,7 +591,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
   public void setDestinationRealm(DiameterIdentityAvp destinationRealm)
   {
-    if(hasDestinationRealm())
+    if(!hasDestinationRealm())
     {
       this.message.getAvps().addAvp(Avp.DESTINATION_REALM, destinationRealm.stringValue(), true, false, true);
     }
@@ -639,7 +639,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
   public void setOriginHost(DiameterIdentityAvp originHost)
   {
-    if (hasOriginHost())
+    if (!hasOriginHost())
     {
       this.message.getAvps().addAvp(Avp.ORIGIN_HOST, originHost.stringValue(), true, false, true);
     }
@@ -651,7 +651,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
   public void setOriginRealm(DiameterIdentityAvp originRealm)
   {
-    if (hasOriginRealm())
+    if (!hasOriginRealm())
     {
       this.message.getAvps().addAvp(Avp.ORIGIN_REALM, originRealm.stringValue(), true, false, true);
 
@@ -733,7 +733,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
   public void setSessionId(String sessionId)
   {
-    if (hasSessionId())
+    if (!hasSessionId())
     {
       this.message.getAvps().addAvp(Avp.SESSION_ID, sessionId, true, false, true);
     }
