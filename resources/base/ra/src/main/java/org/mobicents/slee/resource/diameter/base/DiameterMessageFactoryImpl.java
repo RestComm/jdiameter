@@ -71,33 +71,27 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
 
   // Used for generating session id's
   public static final UIDGenerator uid = new UIDGenerator();
-  
+
   protected Session session;
   protected Stack stack;
-  
-  public DiameterMessageFactoryImpl(Session session, Stack stack, DiameterIdentityAvp ... avps ) {
+
+  public DiameterMessageFactoryImpl(Session session, Stack stack, DiameterIdentityAvp ... avps )
+  {
     this.session = session;
     this.stack = stack;
   }
 
-  public DiameterMessageFactoryImpl(Stack stack) {
-    try
-    {
-      this.stack = stack;
-    }
-    catch ( Exception e )
-    {
-      logger.error( "", e );
-    }
+  public DiameterMessageFactoryImpl(Stack stack)
+  {
+    this.stack = stack;
   }
 
   public AbortSessionAnswer createAbortSessionAnswer( DiameterAvp[] avps ) throws AvpNotAllowedException
   {
     Message msg = this.createMessage( Message.ABORT_SESSION_ANSWER, avps );
+    msg.setRequest( false );
     
-    AbortSessionAnswer asa = new AbortSessionAnswerImpl( msg );
-    
-    return asa;
+    return new AbortSessionAnswerImpl( msg );
   }
 
   public AbortSessionAnswer createAbortSessionAnswer()
@@ -117,12 +111,12 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
   {
     // FIXME: alexandre: What should be used here?
     //ApplicationId aid = ApplicationId.createByAccAppId( ApplicationId.Standard.DIAMETER_COMMON_MESSAGE );
-    
+
     Message msg = this.createMessage( Message.ABORT_SESSION_REQUEST, avps );
     msg.setRequest( true );
-    
+
     AbortSessionRequest asr = new AbortSessionRequestImpl( msg );
-    
+
     return asr;
   }
 
@@ -142,14 +136,14 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
   public AccountingAnswer createAccountingAnswer( DiameterAvp[] avps ) throws AvpNotAllowedException
   {
     // FIXME: alexandre: What should be used here?
-   // ApplicationId aid = ApplicationId.createByAccAppId( ApplicationId.Standard.DIAMETER_COMMON_MESSAGE );
-    
+    // ApplicationId aid = ApplicationId.createByAccAppId( ApplicationId.Standard.DIAMETER_COMMON_MESSAGE );
+
     Message msg = this.createMessage( Message.ACCOUNTING_ANSWER, avps );
-    
+
     msg.setRequest(false);
 
     AccountingAnswer aca = new AccountingAnswerImpl( msg );
-    
+
     return aca;
   }
 
@@ -170,12 +164,12 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
   {
     // FIXME: alexandre: What should be used here?
     //ApplicationId aid = ApplicationId.createByAccAppId( 193, 19302 );
-    
+
     Message msg = this.createMessage( Message.ACCOUNTING_REQUEST, avps );
     msg.setRequest( true );
-    
+
     AccountingRequest acr = new AccountingRequestImpl( msg );
-    
+
     return acr;
   }
 
@@ -196,11 +190,11 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
   {
     // FIXME: alexandre: What should be used here?
     //ApplicationId aid = ApplicationId.createByAccAppId( ApplicationId.Standard.DIAMETER_COMMON_MESSAGE );
-    
+
     Message msg = this.createMessage( Message.CAPABILITIES_EXCHANGE_ANSWER, avps );
 
     CapabilitiesExchangeAnswer cea = new CapabilitiesExchangeAnswerImpl( msg );
-    
+
     return cea;
   }
 
@@ -216,21 +210,21 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
       return null;
     }
   }
-  
+
 
   public CapabilitiesExchangeRequest createCapabilitiesExchangeRequest( DiameterAvp[] avps ) throws AvpNotAllowedException
   {
     // FIXME: alexandre: What should be used here?
     //ApplicationId aid = ApplicationId.createByAccAppId( ApplicationId.Standard.DIAMETER_COMMON_MESSAGE );
-    
+
     Message msg = this.createMessage( Message.CAPABILITIES_EXCHANGE_REQUEST, avps );
     msg.setRequest( true );
-    
+
     CapabilitiesExchangeRequest cer = new CapabilitiesExchangeRequestImpl( msg );
-    
+
     return cer;
   }
-  
+
 
   public CapabilitiesExchangeRequest createCapabilitiesExchangeRequest()
   {
@@ -249,11 +243,11 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
   {
     // FIXME: alexandre: What should be used here?
     //ApplicationId aid = ApplicationId.createByAccAppId( ApplicationId.Standard.DIAMETER_COMMON_MESSAGE );
-    
+
     Message msg = this.createMessage( Message.DEVICE_WATCHDOG_ANSWER, avps );
-    
+
     DeviceWatchdogAnswer dwa = new DeviceWatchdogAnswerImpl( msg );
-    
+
     return dwa;
   }
 
@@ -274,12 +268,12 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
   {
     // FIXME: alexandre: What should be used here?
     //ApplicationId aid = ApplicationId.createByAccAppId( ApplicationId.Standard.DIAMETER_COMMON_MESSAGE );
-    
+
     Message msg = this.createMessage( Message.DEVICE_WATCHDOG_REQUEST, avps );
     msg.setRequest( true );
-    
+
     DeviceWatchdogRequest dwr = new DeviceWatchdogRequestImpl( msg );
-    
+
     return dwr;
   }
 
@@ -300,11 +294,11 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
   {
     // FIXME: alexandre: What should be used here?
     //ApplicationId aid = ApplicationId.createByAccAppId( ApplicationId.Standard.DIAMETER_COMMON_MESSAGE );
-    
+
     Message msg = this.createMessage( Message.DISCONNECT_PEER_ANSWER, avps );
 
     DisconnectPeerAnswer dpa = new DisconnectPeerAnswerImpl( msg );
-    
+
     return dpa;
   }
 
@@ -325,12 +319,12 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
   {
     // FIXME: alexandre: What should be used here?
     //ApplicationId aid = ApplicationId.createByAccAppId( ApplicationId.Standard.DIAMETER_COMMON_MESSAGE );
-    
+
     Message msg = this.createMessage( Message.DISCONNECT_PEER_REQUEST, avps );
     msg.setRequest( true );
-    
+
     DisconnectPeerRequest dpr = new DisconnectPeerRequestImpl( msg );
-    
+
     return dpr;
   }
 
@@ -351,7 +345,7 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
   {
     // FIXME: alexandre: What should be used here?
     //ApplicationId aid = ApplicationId.createByAccAppId( ApplicationId.Standard.DIAMETER_COMMON_MESSAGE );
-    
+
     return new ExtensionDiameterMessageImpl( this.createMessage(command.getCode(), null) );
   }
 
@@ -368,43 +362,43 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
 
       for(DiameterAvp avp : avps)
         msg.getAvps().addAvp( avp.getCode(), avp.byteArrayValue() );
-      
+
       DiameterMessage diamMessage = null;
-      
+
       switch(commandCode)
       {
-        case Message.ABORT_SESSION_REQUEST:
-          diamMessage = header.isRequest() ? new AbortSessionRequestImpl(msg) : new AbortSessionAnswerImpl(msg);
-          break;
-        case Message.ACCOUNTING_REQUEST:
-          diamMessage = header.isRequest() ? new AccountingRequestImpl(msg) : new AccountingAnswerImpl(msg);
-          break;
-        case Message.CAPABILITIES_EXCHANGE_REQUEST:
-          diamMessage = header.isRequest() ? new CapabilitiesExchangeRequestImpl(msg) : new CapabilitiesExchangeAnswerImpl(msg);
-          break;
-        case Message.DEVICE_WATCHDOG_REQUEST:
-          diamMessage = header.isRequest() ? new DeviceWatchdogRequestImpl(msg) : new DeviceWatchdogAnswerImpl(msg);
-          break;
-        case Message.DISCONNECT_PEER_REQUEST:
-          diamMessage = header.isRequest() ? new DisconnectPeerRequestImpl(msg) : new DisconnectPeerAnswerImpl(msg);
-          break;
-        case Message.RE_AUTH_REQUEST:
-          diamMessage = header.isRequest() ? new ReAuthRequestImpl(msg) : new ReAuthAnswerImpl(msg);
-          break;
-        case Message.SESSION_TERMINATION_REQUEST:
-          diamMessage = header.isRequest() ? new SessionTerminationRequestImpl(msg) : new SessionTerminationAnswerImpl(msg);
-          break;
-        default:
-          diamMessage = new ExtensionDiameterMessageImpl(msg);
+      case Message.ABORT_SESSION_REQUEST:
+        diamMessage = header.isRequest() ? new AbortSessionRequestImpl(msg) : new AbortSessionAnswerImpl(msg);
+        break;
+      case Message.ACCOUNTING_REQUEST:
+        diamMessage = header.isRequest() ? new AccountingRequestImpl(msg) : new AccountingAnswerImpl(msg);
+        break;
+      case Message.CAPABILITIES_EXCHANGE_REQUEST:
+        diamMessage = header.isRequest() ? new CapabilitiesExchangeRequestImpl(msg) : new CapabilitiesExchangeAnswerImpl(msg);
+        break;
+      case Message.DEVICE_WATCHDOG_REQUEST:
+        diamMessage = header.isRequest() ? new DeviceWatchdogRequestImpl(msg) : new DeviceWatchdogAnswerImpl(msg);
+        break;
+      case Message.DISCONNECT_PEER_REQUEST:
+        diamMessage = header.isRequest() ? new DisconnectPeerRequestImpl(msg) : new DisconnectPeerAnswerImpl(msg);
+        break;
+      case Message.RE_AUTH_REQUEST:
+        diamMessage = header.isRequest() ? new ReAuthRequestImpl(msg) : new ReAuthAnswerImpl(msg);
+        break;
+      case Message.SESSION_TERMINATION_REQUEST:
+        diamMessage = header.isRequest() ? new SessionTerminationRequestImpl(msg) : new SessionTerminationAnswerImpl(msg);
+        break;
+      default:
+        diamMessage = new ExtensionDiameterMessageImpl(msg);
       }
-      
+
       return diamMessage;
     }
     catch (Exception e)
     {
       logger.error( "", e );
     }
-    
+
     return null;
   }
 
@@ -412,11 +406,11 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
   {
     // FIXME: alexandre: What should be used here?
     //ApplicationId aid = ApplicationId.createByAccAppId( ApplicationId.Standard.DIAMETER_COMMON_MESSAGE );
-    
+
     Message msg = this.createMessage( Message.RE_AUTH_ANSWER, avps );
-    
+
     ReAuthAnswer raa = new ReAuthAnswerImpl( msg );
-    
+
     return raa;
   }
 
@@ -437,12 +431,12 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
   {
     // FIXME: alexandre: What should be used here?
     //ApplicationId aid = ApplicationId.createByAccAppId( ApplicationId.Standard.DIAMETER_COMMON_MESSAGE );
-    
+
     Message msg = this.createMessage( Message.RE_AUTH_REQUEST, avps );
     msg.setRequest( true );
-    
+
     ReAuthRequest rar = new ReAuthRequestImpl( msg );
-    
+
     return rar;
   }
 
@@ -463,11 +457,11 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
   {
     // FIXME: alexandre: What should be used here?
     //ApplicationId aid = ApplicationId.createByAccAppId( ApplicationId.Standard.DIAMETER_COMMON_MESSAGE );
-    
+
     Message msg = this.createMessage( Message.SESSION_TERMINATION_ANSWER, avps );
-    
+
     SessionTerminationAnswer sta = new SessionTerminationAnswerImpl( msg );
-    
+
     return sta;
   }
 
@@ -488,12 +482,12 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
   {
     // FIXME: alexandre: What should be used here?
     //ApplicationId aid = ApplicationId.createByAccAppId( ApplicationId.Standard.DIAMETER_COMMON_MESSAGE );
-    
+
     Message msg = this.createMessage( Message.SESSION_TERMINATION_REQUEST, avps );
     msg.setRequest( true );
-    
+
     SessionTerminationRequest str = new SessionTerminationRequestImpl( msg );
-    
+
     return str;
   }
 
@@ -511,84 +505,63 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
   }
 
   // ========== AUX STUFF ==========
-  
+
   public String generateSessionId()
   {
     String host = stack.getMetaData().getLocalPeer().getUri().getFQDN(); 
-    
+
     long id = uid.nextLong();
     long high32 = (id & 0xffffffff00000000L) >> 32;
     long low32 = (id & 0xffffffffL);
-    
+
     return host + ";" + high32 + ";" + low32;
   }
-  
+
   protected Message createMessage(int commandCode, DiameterAvp[] avps)
   {
     Message msg = null;
+
+    ApplicationId applicationId = null;
     
+    // Try to get Application-Id from Message AVPs
+    if(avps != null)
+    {
+      for(DiameterAvp avp : avps)
+      {
+        if(avp.getCode() == Avp.ACCT_APPLICATION_ID)
+        {
+          applicationId = ApplicationId.createByAccAppId( avp.getVendorId(),avp.longValue() );
+          break;
+        }
+        else if(avp.getCode() == Avp.AUTH_APPLICATION_ID)
+        {
+          applicationId = ApplicationId.createByAuthAppId( avp.getVendorId(),avp.longValue() );
+          break;
+        }
+      }
+    }
     
-    ApplicationId applicationId =null;
-	List<DiameterAvp> list=(List<DiameterAvp>) this.avpList.clone();
-	for(DiameterAvp avp: avps)
-	{
-		if(avp.getCode()==Avp.ACCT_APPLICATION_ID)
-		{
-			applicationId=ApplicationId.createByAccAppId( avp.getVendorId(),avp.longValue() );
-			break;
-		}else if(avp.getCode()==Avp.AUTH_APPLICATION_ID)
-		{
-			applicationId=ApplicationId.createByAuthAppId( avp.getVendorId(),avp.longValue() );
-			break;
-		}
-			
-	}
-	
-	if(applicationId==null)
-	{
-		for(DiameterAvp avp: avpList)
-		{
-			if(avpList.contains(Avp.ACCT_APPLICATION_ID))
-			{
-			
-				applicationId=ApplicationId.createByAccAppId( avp.getVendorId(),avp.longValue() );
-				break;
-			}else if(avpList.contains(Avp.AUTH_APPLICATION_ID))
-			{
-			
-				applicationId=ApplicationId.createByAuthAppId( avp.getVendorId(),avp.longValue() );
-				break;
-			}
-		}
-	}
-	
-	if(applicationId==null)
-	{
-		applicationId = ApplicationId.createByAccAppId( ApplicationId.Standard.DIAMETER_COMMON_MESSAGE );
-	}
-    
+    if(applicationId == null)
+    {
+      applicationId = ApplicationId.createByAccAppId( ApplicationId.Standard.DIAMETER_COMMON_MESSAGE );
+    }
+
     if(session == null)
     {
       try
       { //FIXME: baranowb: This should create activity, shouldnt it? Alex this has to be cleared
         msg = stack.getSessionFactory().getNewRawSession().createMessage(commandCode, applicationId);
       }
-      catch ( InternalException e )
+      catch ( Exception e )
       {
-        // TODO Auto-generated catch block
-        logger.error( "", e );
-      }
-      catch ( IllegalDiameterStateException e )
-      {
-        // TODO Auto-generated catch block
-        logger.error( "", e );
+        logger.error("Failure creating jDiameter message.", e);
       }
     }
     else
     {
       String destRealm = null;
       String destHost = null;
-      
+
       for(DiameterAvp avp : avps)
       {
         if(avp.getCode() == Avp.DESTINATION_REALM)
@@ -599,7 +572,7 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
 
       msg = destHost == null ? 
           session.createRequest( commandCode, applicationId, destRealm) : 
-          session.createRequest( commandCode, applicationId, destRealm, destHost);
+            session.createRequest( commandCode, applicationId, destRealm, destHost);
     }
 
     if( avps != null)
@@ -612,18 +585,20 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
 
     // Do we have a session-id already or shall we make one?
     if(msg.getAvps().getAvp( Avp.SESSION_ID ) == null )
+    {
       msg.getAvps().addAvp( Avp.SESSION_ID, generateSessionId(), true, false, false);
-
+    }
+    
     return msg;
   }
-  
+
   protected void addAvp(DiameterAvp avp, AvpSet set)
   {
     // FIXME: alexandre: Should we look at the types and add them with proper function?
     if(avp instanceof GroupedAvp)
     {
       AvpSet avpSet = set.addGroupedAvp(avp.getCode(), avp.getVendorId(), avp.getMandatoryRule() == 1, avp.getProtectedRule() == 1);
-      
+
       DiameterAvp[] groupedAVPs = ((GroupedAvp)avp).getExtensionAvps();
       for(DiameterAvp avpFromGroup : groupedAVPs)
       {
@@ -633,35 +608,10 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory
     else if(avp != null)
       set.addAvp(avp.getCode(), avp.byteArrayValue(), avp.getVendorId(), avp.getMandatoryRule() == 1, avp.getProtectedRule() == 1);
   }
-  
-  
+
+
   // ################
   // # PROVISIONING #
   // ################
-  
-  protected ArrayList<DiameterAvp> avpList=new ArrayList<DiameterAvp>();
-  
-  public List<DiameterAvp> getInnerAvps()
-	{
-		return this.avpList;
-	}
-	
-	//FIXME:baranowb add removel if present
-	public synchronized void addAvpToInnerList(DiameterAvp avp)
-	{
-		this.avpList.add(avp);
-	}
-	
-	public synchronized void removeAvpFromInnerList(int code)
-	{
-		  Iterator<DiameterAvp> it=this.avpList.iterator();
-		  while(it.hasNext())
-		  {
-			  if(it.next().getCode()==code)
-			  {
-				  it.remove();
-			  }
-		  }
-	}
-  
+
 }

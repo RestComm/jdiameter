@@ -221,12 +221,16 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
     Message msg = null;
 
     DiameterAvp sessionIdAvp = null;
-    for (DiameterAvp avp : avps)
+    
+    if(avps != null)
     {
-      if(avp.getCode() == Avp.SESSION_ID)
+      for (DiameterAvp avp : avps)
       {
-        sessionIdAvp = avp;
-        break;
+        if(avp.getCode() == Avp.SESSION_ID)
+        {
+          sessionIdAvp = avp;
+          break;
+        }
       }
     }
 
@@ -327,27 +331,30 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
     {
       DiameterAvp sessionIdAvp;
 
-      try {
+      try
+      {
         sessionIdAvp = this.localFactory.getBaseFactory().createAvp(Avp.SESSION_ID, sessionId);
+
+        // Clean any present Session-Id AVP
+        for(DiameterAvp avp : list)
+        {
+          if(avp.getCode() == Avp.SESSION_ID)
+          {
+            list.remove( avp );
+          }
+        }
+
+        // And add this to as close as possible to the header
+        list.add(0, sessionIdAvp);
       }
-      catch (NoSuchAvpException e) {
+      catch (NoSuchAvpException e)
+      {
         throw new IllegalArgumentException(e);
       }
-
-      // Clean any present Session-Id AVP
-      for(DiameterAvp avp : list)
-      {
-        if(avp.getCode() == Avp.SESSION_ID)
-        {
-          list.remove( avp );
-        }
-      }
-
-      // And add this to as close as possible to the header
-      list.add(0, sessionIdAvp);
     }
 
-    Message msg = createMessage(CreditControlAnswer.commandCode, applicationId, list.toArray(new DiameterAvp[list.size()]));
+    Message msg = createMessage(CreditControlAnswer.commandCode, applicationId, list.size() > 0 ? list.toArray(new DiameterAvp[list.size()]) : null);
+    msg.setRequest( isRequest );
 
     return isRequest ? new CreditControlRequestImpl(msg) : new CreditControlAnswerImpl(msg);
   }

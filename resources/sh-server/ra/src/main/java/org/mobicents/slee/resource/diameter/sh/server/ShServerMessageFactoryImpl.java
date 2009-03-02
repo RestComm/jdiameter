@@ -83,7 +83,7 @@ public class ShServerMessageFactoryImpl implements ShServerMessageFactory {
 
   public ProfileUpdateAnswer createProfileUpdateAnswer()
   {
-    Message msg = createShMessage(ProfileUpdateRequest.commandCode, session.getSessionId(), false);
+    Message msg = createShMessage(ProfileUpdateRequest.commandCode, session == null ? null : session.getSessionId(), false);
 
     return new ProfileUpdateAnswerImpl(msg);
   }
@@ -100,7 +100,7 @@ public class ShServerMessageFactoryImpl implements ShServerMessageFactory {
 
   public PushNotificationRequest createPushNotificationRequest()
   {
-    Message msg = createShMessage(PushNotificationRequest.commandCode, session.getSessionId(), true);
+    Message msg = createShMessage(PushNotificationRequest.commandCode, session == null ? null : session.getSessionId(), true);
 
     return new PushNotificationRequestImpl(msg);
   }
@@ -123,7 +123,7 @@ public class ShServerMessageFactoryImpl implements ShServerMessageFactory {
 
   public SubscribeNotificationsAnswer createSubscribeNotificationsAnswer()
   {
-    Message msg = createShMessage(SubscribeNotificationsAnswer.commandCode, session.getSessionId(), false);
+    Message msg = createShMessage(SubscribeNotificationsAnswer.commandCode, session == null ? null : session.getSessionId(), false);
 
     return new SubscribeNotificationsAnswerImpl(msg);
   }
@@ -325,6 +325,7 @@ public class ShServerMessageFactoryImpl implements ShServerMessageFactory {
     }
 
     Message msg = createMessage(commandCode, applicationId, list.toArray(new DiameterAvp[list.size()]));
+    msg.setRequest( isRequest );
 
     return msg;
   }
