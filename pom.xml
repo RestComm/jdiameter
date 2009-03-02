@@ -20,6 +20,10 @@
 
   <modules>
     <module>core</module>
+    <module>resources/base</module>
+    <module>resources/cca</module>
+    <module>resources/sh-client</module>
+    <module>resources/sh-server</module>
   </modules>
 
 	<properties>
