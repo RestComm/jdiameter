@@ -50,16 +50,6 @@
 			<artifactId>base-ra</artifactId>
 			<version>${mobicents.diameter.resources.base.version}</version>
 		</dependency>
-		<!--dependency>
-			<groupId>org.mobicents.servers.diameter.resources</groupId>
-			<artifactId>base-ratype</artifactId>
-			<version>${mobicents.diameter.resources.base.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mobicents.servers.diameter.resources</groupId>
-			<artifactId>base-events</artifactId>
-			<version>${mobicents.diameter.resources.base.version}</version>
-		</dependency-->
     <dependency>
 		  <groupId>org.mobicents.servers.diameter</groupId>
 		  <artifactId>mobicents-diameter-mux-jar</artifactId>

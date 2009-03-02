@@ -27,7 +27,7 @@
     <mobicents.diameter.resources.base.version>1.0.0.BETA4-SNAPSHOT</mobicents.diameter.resources.base.version>
     
     <!-- Other Mobicents Components Versions -->
-    <mobicents.servers.jainslee.version>1.2.3.GA</mobicents.servers.jainslee.version>
+    <mobicents.servers.jainslee.version>1.2.4.GA</mobicents.servers.jainslee.version>
     <mobicents.tools.mavenplugin.du.version>1.0.0.BETA2</mobicents.tools.mavenplugin.du.version>
     <mobicents.tools.mavenplugin.eclipse.version>1.0.0.BETA2</mobicents.tools.mavenplugin.eclipse.version>
   </properties>
