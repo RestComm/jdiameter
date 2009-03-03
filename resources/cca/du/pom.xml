@@ -29,25 +29,6 @@
 			<artifactId>cca-ra</artifactId>
 			<version>${pom.version}</version>
 		</dependency>
-		<!-- libraries -->
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>base-events</artifactId>
-			<version>${mobicents.diameter.resources.base.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>base-ratype</artifactId>
-			<version>${mobicents.diameter.resources.base.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>base-ra</artifactId>
-			<version>${mobicents.diameter.resources.base.version}</version>
-			<scope>runtime</scope>
-		</dependency>
 	</dependencies>
 
 	<build>
