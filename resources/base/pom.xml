@@ -11,7 +11,7 @@
 
   <groupId>org.mobicents.servers.diameter.resources</groupId>
   <artifactId>base-parent</artifactId>
-  <version>1.0.0.BETA5-SNAPSHOT</version>
+  <version>1.0.0.BETA4-SNAPSHOT</version>
 
   <name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
 
