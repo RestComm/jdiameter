@@ -175,7 +175,7 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 
         TimerOptions options = new TimerOptions();
         
-        timerFacility.setTimer(aci, null, System.currentTimeMillis() + 5000, options);
+        timerFacility.setTimer(aci, null, System.currentTimeMillis() + 15000, options);
         
         /* Uncomment for basic message sending testing (DWR/DWA)
 
@@ -392,7 +392,7 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
       avps.add(avpFactory.createAvp(Avp.SESSION_ID, activity.getSessionId().getBytes() ));
   
       DiameterAvp avpVendorId = avpFactory.createAvp( Avp.VENDOR_ID, 193 );
-      DiameterAvp avpAcctApplicationId = avpFactory.createAvp( Avp.ACCT_APPLICATION_ID, 193 );
+      DiameterAvp avpAcctApplicationId = avpFactory.createAvp( Avp.ACCT_APPLICATION_ID, 19302 );
       
       avps.add( avpFactory.createAvp( Avp.VENDOR_SPECIFIC_APPLICATION_ID, new DiameterAvp[]{avpVendorId, avpAcctApplicationId} ) );
       
