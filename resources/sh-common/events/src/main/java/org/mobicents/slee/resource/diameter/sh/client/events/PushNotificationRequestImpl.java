@@ -1,5 +1,6 @@
 package org.mobicents.slee.resource.diameter.sh.client.events;
 
+import net.java.slee.resource.diameter.sh.client.MessageFactory;
 import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
 import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
@@ -48,7 +49,7 @@ public class PushNotificationRequestImpl extends DiameterShMessageImpl implement
 
   public void setUserIdentity(UserIdentityAvp userIdentity)
   {
-    super.setAvpAsGroup(userIdentity.getCode(), new UserIdentityAvp[] { userIdentity }, true, true);
+    super.setAvpAsGroup(userIdentity.getCode(), MessageFactory._SH_VENDOR_ID, new UserIdentityAvp[] { userIdentity }, true, true);
   }
 
   public boolean hasUserData()
@@ -72,7 +73,7 @@ public class PushNotificationRequestImpl extends DiameterShMessageImpl implement
   public void setUserData(byte[] userData)
   {
     super.message.getAvps().removeAvp(DiameterShAvpCodes.USER_DATA);
-    super.message.getAvps().addAvp(DiameterShAvpCodes.USER_DATA, userData, 10415L, true, false);
+    super.message.getAvps().addAvp(DiameterShAvpCodes.USER_DATA, userData, MessageFactory._SH_VENDOR_ID, true, false);
   }
 
 }

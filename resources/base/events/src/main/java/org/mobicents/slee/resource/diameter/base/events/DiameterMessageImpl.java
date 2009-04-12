@@ -541,7 +541,12 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
   protected AvpSet setAvpAsGroup(int code, DiameterAvp[] childs, boolean mandatory, boolean remove)
   {
-    return AvpUtilities.setAvpAsGrouped(code,0, childs, message.getAvps(), remove, mandatory, false);
+    return AvpUtilities.setAvpAsGrouped(code, 0, childs, message.getAvps(), remove, mandatory, false);
+  }
+
+  protected AvpSet setAvpAsGroup(int code, long vendorId, DiameterAvp[] childs, boolean mandatory, boolean remove)
+  {
+    return AvpUtilities.setAvpAsGrouped(code, vendorId, childs, message.getAvps(), remove, mandatory, false);
   }
 
   protected void setAvpAsIdentity(int code, String value, boolean octet, boolean mandatory, boolean remove)
