@@ -440,6 +440,13 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       
       Collection<ApplicationId> appIds = this.listenerToAppId.remove(listener);
       
+      if(appIds == null)
+      {
+        log.warn( "Diameter Stack Mux :: unregisterListener :: Listener has no App-Ids registered. Give up..." );
+        
+        return;
+      }
+
       Network network = stack.unwrap(Network.class);
       
       for (ApplicationId appId : appIds)
