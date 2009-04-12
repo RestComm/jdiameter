@@ -277,13 +277,12 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
   
   protected boolean hasAvp(int code)
   {
-	  Avp rawAvp=avpSet.getAvp(code);
-		if(rawAvp!=null)
-		{	
-				return true;
-		}
-		
-		return false;
+    return hasAvp(code, 0L);
+  }
+  
+  protected boolean hasAvp(int code, long vendorId)
+  {
+    return avpSet.getAvp(code, vendorId) != null;
   }
   
   //public AvpSet getRaw()
