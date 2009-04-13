@@ -701,7 +701,7 @@ public class ImsInformationImpl extends GroupedAvpImpl implements ImsInformation
    */
   public void setCalledPartyAddress( String calledPartyAddress )
   {
-    if(hasBearerService())
+    if(hasCalledPartyAddress())
     {
       throw new IllegalStateException("AVP Called-Party-Address is already present in message and cannot be overwritten.");
     }
@@ -721,7 +721,7 @@ public class ImsInformationImpl extends GroupedAvpImpl implements ImsInformation
    */
   public void setCallingPartyAddress( String callingPartyAddress )
   {
-    if(hasBearerService())
+    if(hasCallingPartyAddress())
     {
       throw new IllegalStateException("AVP Calling-Party-Address is already present in message and cannot be overwritten.");
     }
@@ -781,7 +781,7 @@ public class ImsInformationImpl extends GroupedAvpImpl implements ImsInformation
    */
   public void setImsChargingIdentifier( String imsChargingIdentifier )
   {
-    if(hasEventType())
+    if(hasImsChargingIdentifier())
     {
       throw new IllegalStateException("AVP IMS-Charging-Identifier is already present in message and cannot be overwritten.");
     }
@@ -1017,7 +1017,7 @@ public class ImsInformationImpl extends GroupedAvpImpl implements ImsInformation
    */
   public void setServiceSpecificData( String serviceSpecificData )
   {
-    if(hasServiceId())
+    if(hasServiceSpecificData())
     {
       throw new IllegalStateException("AVP Service-Specific-Data is already present in message and cannot be overwritten.");
     }
@@ -1057,7 +1057,7 @@ public class ImsInformationImpl extends GroupedAvpImpl implements ImsInformation
    */
   public void setTrunkGroupId( TrunkGroupId trunkGroupId )
   {
-    if(hasTimeStamps())
+    if(hasTrunkGroupId())
     {
       throw new IllegalStateException("AVP Trunk-Group-Id is already present in message and cannot be overwritten.");
     }
