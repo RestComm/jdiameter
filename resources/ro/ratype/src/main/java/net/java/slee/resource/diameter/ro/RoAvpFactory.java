@@ -1,10 +1,38 @@
 package net.java.slee.resource.diameter.ro;
 
-import net.java.slee.resource.diameter.base.events.avp.AddressAvp;
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
-import net.java.slee.resource.diameter.ro.events.avp.*;
+import net.java.slee.resource.diameter.ro.events.avp.AdditionalContentInformation;
+import net.java.slee.resource.diameter.ro.events.avp.AddressDomain;
+import net.java.slee.resource.diameter.ro.events.avp.ApplicationServerInformation;
+import net.java.slee.resource.diameter.ro.events.avp.EventType;
+import net.java.slee.resource.diameter.ro.events.avp.ImsInformation;
+import net.java.slee.resource.diameter.ro.events.avp.InterOperatorIdentifier;
+import net.java.slee.resource.diameter.ro.events.avp.LcsClientId;
+import net.java.slee.resource.diameter.ro.events.avp.LcsClientName;
+import net.java.slee.resource.diameter.ro.events.avp.LcsInformation;
+import net.java.slee.resource.diameter.ro.events.avp.LcsRequestorId;
+import net.java.slee.resource.diameter.ro.events.avp.LocationType;
+import net.java.slee.resource.diameter.ro.events.avp.MbmsInformation;
+import net.java.slee.resource.diameter.ro.events.avp.MbmsUserServiceType;
+import net.java.slee.resource.diameter.ro.events.avp.MessageBody;
+import net.java.slee.resource.diameter.ro.events.avp.MessageClass;
+import net.java.slee.resource.diameter.ro.events.avp.MmContentType;
+import net.java.slee.resource.diameter.ro.events.avp.MmsInformation;
+import net.java.slee.resource.diameter.ro.events.avp.NodeFunctionality;
+import net.java.slee.resource.diameter.ro.events.avp.OriginatorAddress;
+import net.java.slee.resource.diameter.ro.events.avp.PocInformation;
+import net.java.slee.resource.diameter.ro.events.avp.PsFurnishChargingInformation;
+import net.java.slee.resource.diameter.ro.events.avp.PsInformation;
+import net.java.slee.resource.diameter.ro.events.avp.RecipientAddress;
+import net.java.slee.resource.diameter.ro.events.avp.SdpMediaComponent;
+import net.java.slee.resource.diameter.ro.events.avp.ServiceInformation;
+import net.java.slee.resource.diameter.ro.events.avp.TalkBurstExchange;
+import net.java.slee.resource.diameter.ro.events.avp.TimeStamps;
+import net.java.slee.resource.diameter.ro.events.avp.TrunkGroupId;
+import net.java.slee.resource.diameter.ro.events.avp.WlanInformation;
+import net.java.slee.resource.diameter.ro.events.avp.WlanRadioContainer;
 
-public interface RoAvpFactory {
+public interface RoAvpFactory extends CreditControlAVPFactory {
 
 	public CreditControlAVPFactory getCreditControlAVPFactory();
 
@@ -16,31 +44,11 @@ public interface RoAvpFactory {
 	AdditionalContentInformation createAdditionalContentInformation();
 
 	/**
-	 * Creates an empty AiidtionContentInformation (Grouped AVP) instance with
-	 * prefilled value of the Additional-Type-Information.
-	 * 
-	 * @param additionalTypeInformation
-	 * @return
-	 */
-	AdditionalContentInformation createAdditionalContentInformation(
-			String additionalTypeInformation);
-
-	/**
 	 * Create an empty AddressDomain (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
 	AddressDomain createAddressDomain();
-
-	/**
-	 * Create AddressDomain (Grouped AVP) instance. It prefills Domain-Name and
-	 * TGPP-IMSI-MCC-MNC AVPs
-	 * 
-	 * @param domainName
-	 * @param tgppImsiMccMnc
-	 * @return
-	 */
-	AddressDomain createAddressDomain(String domainName, byte[] tgppImsiMccMnc);
 
 	/**
 	 * Create an empty ApplicationServerInformation (Grouped AVP) instance.
@@ -50,18 +58,6 @@ public interface RoAvpFactory {
 	ApplicationServerInformation createApplicationServerInformation();
 
 	/**
-	 * Create ApplicationServerInformation (Grouped AVP) instance. Prefills
-	 * Application-Provided-Called-Party-Address and Application-Server AVPs.
-	 * 
-	 * @param applicationServer
-	 * @param applicationProvidedCalledPartyAddress
-	 * @return
-	 */
-	ApplicationServerInformation createApplicationServerInformation(
-			String applicationServer,
-			String[] applicationProvidedCalledPartyAddress);
-
-	/**
 	 * Create an empty EventType (Grouped AVP) instance.
 	 * 
 	 * @return
@@ -69,61 +65,11 @@ public interface RoAvpFactory {
 	EventType createEventType();
 
 	/**
-	 * Creates EventType AVP (Grouped AVP) with prefiled values of
-	 * Event,SIP-Method and Expires AVPs
-	 * 
-	 * @param sipMethod
-	 * @param event
-	 * @param expires
-	 * @return
-	 */
-	EventType createEventType(String sipMethod, String event, long expires);
-
-	/**
 	 * Create an empty ImsInformation (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
 	ImsInformation createImsInformation();
-
-	/**
-	 * Create ImsInformation (Grouped AVP) instance. Fills proper AVPs with
-	 * passed values, see {@link ImsInformation} for details on populated AVPs.
-	 * 
-	 * @param applicationServerInformations
-	 * @param timestamps
-	 * @param eventType
-	 * @param imsChargingIdentifier
-	 * @param interOperatiorIdentifiers
-	 * @param messageBodies
-	 * @param nodeFunc
-	 * @param role
-	 * @param mediaComponents
-	 * @param sdpSessionDescriptors
-	 * @param serverPartyIPAddress
-	 * @param trunkGroupId
-	 * @param serviceSpecificData
-	 * @param serviceID
-	 * @param calledPartyAddresses
-	 * @param callingParrtyAddresses
-	 * @param serSessionId
-	 * @param bearerService
-	 * @param serverCapabilities
-	 * @param causeCode
-	 * @return
-	 */
-	ImsInformation createImsInformation(
-			ApplicationServerInformation[] applicationServerInformations,
-			TimeStamps timestamps, EventType eventType,
-			String imsChargingIdentifier,
-			InterOperatorIdentifier[] interOperatiorIdentifiers,
-			MessageBody[] messageBodies, NodeFunctionality nodeFunc,
-			RoleOfNode role, SdpMediaComponent[] mediaComponents,
-			String[] sdpSessionDescriptors, AddressAvp serverPartyIPAddress,
-			TrunkGroupId trunkGroupId, String serviceSpecificData,
-			String serviceID, String[] calledPartyAddresses,
-			String[] callingParrtyAddresses, String serSessionId,
-			byte[] bearerService, byte[] serverCapabilities, int causeCode);
 
 	/**
 	 * Create a ImsInformation (Grouped AVP) instance using required AVP values.
@@ -140,12 +86,6 @@ public interface RoAvpFactory {
 	 */
 	InterOperatorIdentifier createInterOperatorIdentifier();
 
-	InterOperatorIdentifier createInterOperatorIdentifier(String originatingIoi);
-
-	InterOperatorIdentifier createInterOperatorIdentifier(
-			String originatingIoi, String terminatingToi);
-
-	
 	/**
 	 * Create an empty LcsClientId (Grouped AVP) instance.
 	 * 
@@ -197,8 +137,7 @@ public interface RoAvpFactory {
 	 * @param mbmsUserServiceType
 	 * @return
 	 */
-	MbmsInformation createMbmsInformation(byte[] tmgi, byte[] mbmsServiceType,
-			MbmsUserServiceType mbmsUserServiceType);
+	MbmsInformation createMbmsInformation(byte[] tmgi, byte[] mbmsServiceType, MbmsUserServiceType mbmsUserServiceType);
 
 	/**
 	 * Create an empty MessageBody (Grouped AVP) instance.
@@ -257,8 +196,7 @@ public interface RoAvpFactory {
 	 * @param psFreeFormatData
 	 * @return
 	 */
-	PsFurnishChargingInformation createPsFurnishChargingInformation(
-			byte[] tgppChargingId, byte[] psFreeFormatData);
+	PsFurnishChargingInformation createPsFurnishChargingInformation(byte[] tgppChargingId, byte[] psFreeFormatData);
 
 	/**
 	 * Create an empty PsInformation (Grouped AVP) instance.
@@ -323,5 +261,4 @@ public interface RoAvpFactory {
 	 */
 	WlanRadioContainer createWlanRadioContainer();
 
-	//FIXME: Bartek -> I have restrained myself from createing more methods - like in case of createImsInformation(...) cause Im not sure of exact case when those methods can be invoked and with what
 }
