@@ -15,6 +15,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.events.ProfileUpdateAnswer;
 import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
 import net.java.slee.resource.diameter.sh.client.events.SubscribeNotificationsAnswer;
@@ -23,6 +24,9 @@ import net.java.slee.resource.diameter.sh.client.events.UserDataAnswer;
 import org.jdiameter.api.Stack;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
 import org.junit.Test;
+import org.mobicents.diameter.dictionary.AvpDictionary;
+import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
+import org.mobicents.slee.resource.diameter.sh.client.DiameterShAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.server.ShServerMessageFactoryImpl;
 
 /**
@@ -48,6 +52,7 @@ public class ShServerFactoriesTest {
   private static String realmName = "mobicents.org";
 
   private static ShServerMessageFactoryImpl shServerFactory;
+  private static DiameterShAvpFactory shAvpFactory;
   
   static
   {
@@ -55,12 +60,15 @@ public class ShServerFactoriesTest {
     try
     {
       stack.init(new MyConfiguration());
+      AvpDictionary.INSTANCE.parseDictionary( ShServerFactoriesTest.class.getClassLoader().getResourceAsStream( "dictionary.xml" ) );
     }
     catch ( Exception e ) {
       throw new RuntimeException("Failed to initialize the stack.");
     }
     
-    shServerFactory = new ShServerMessageFactoryImpl(stack);
+    DiameterMessageFactoryImpl baseMessageFactory = new DiameterMessageFactoryImpl(stack);
+    shAvpFactory = new DiameterShAvpFactoryImpl(stack);
+    shServerFactory = new ShServerMessageFactoryImpl(baseMessageFactory, null, stack, shAvpFactory);
   }
   
   @Test
@@ -91,6 +99,18 @@ public class ShServerFactoriesTest {
     assertFalse("Request Flag in User-Data-Answer is set.", uda.getHeader().isRequest());
   }
 
+  @Test
+  public void isExperimentalResultCorrectlySet() throws Exception
+  {
+    long originalValue = 5001;
+
+    UserDataAnswer uda = shServerFactory.createUserDataAnswer( originalValue, true );
+    
+    long obtainedValue = uda.getExperimentalResult().getExperimentalResultCode();
+    
+    assertTrue("Experimental-Result-Code should be " + originalValue +" and is " + obtainedValue + ".", originalValue == obtainedValue);
+  }
+  
   /**
    * Class representing the Diameter Configuration  
    */

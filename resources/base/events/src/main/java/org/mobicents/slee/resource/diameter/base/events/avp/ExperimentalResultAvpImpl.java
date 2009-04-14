@@ -6,56 +6,81 @@ import org.apache.log4j.Logger;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 
-public class ExperimentalResultAvpImpl extends GroupedAvpImpl implements
-		ExperimentalResultAvp {
+public class ExperimentalResultAvpImpl extends GroupedAvpImpl implements ExperimentalResultAvp {
 
   private static transient Logger logger = Logger.getLogger(ExperimentalResultAvpImpl.class);
 
-	public ExperimentalResultAvpImpl(int code, long vendorId, int mnd, int prt,
-			byte[] value) {
+	public ExperimentalResultAvpImpl(int code, long vendorId, int mnd, int prt, byte[] value)
+	{
 		super(code, vendorId, mnd, prt, value);
-		
 	}
 
-	public long getExperimentalResultCode() {
-
-		
+	public long getExperimentalResultCode()
+	{
 		if (!hasExperimentalResultCode())
-			return 0;
+		{
+			return -1;
+		}
 		else
+		{
 			try {
 				Avp rawAvp = super.avpSet.getAvp(Avp.EXPERIMENTAL_RESULT_CODE);
 				return rawAvp.getUnsigned32();
-			} catch (AvpDataException e) {
+			}
+			catch (AvpDataException e) {
 			  logger.error( "", e );			
 				return -1;
 			}
+		}
+	}
+	
+	public long getVendorId()
+	{
+    if (!hasVendorId())
+    {
+      return -1;
+    }
+    else
+    {
+      try {
+        Avp rawAvp = super.avpSet.getAvp(Avp.VENDOR_ID);
+        return rawAvp.getUnsigned32();
+      }
+      catch (AvpDataException e) {
+        logger.error( "", e );      
+        return -1;
+      }
+    }
+  }
+
+	public boolean hasExperimentalResultCode()
+	{
+		return super.avpSet.getAvp(Avp.EXPERIMENTAL_RESULT_CODE) != null;
 	}
 
-	public boolean hasExperimentalResultCode() {
-		Avp rawAvp = super.avpSet.getAvp(Avp.EXPERIMENTAL_RESULT_CODE);
-		return rawAvp!=null;
-		
+	public boolean hasVendorId()
+	{
+		return super.avpSet.getAvp(Avp.VENDOR_ID) != null;
 	}
 
-	public boolean hasVendorId() {
-		Avp rawAvp = super.avpSet.getAvp(Avp.VENDOR_ID);
-		return rawAvp!=null;
-	}
-
-	public void setExperimentalResultCode(long experimentalResultCode) {
-
+	public void setExperimentalResultCode(long experimentalResultCode)
+	{
 		if(hasExperimentalResultCode())
-			throw new IllegalStateException("Cant set result code again!!!!");
+		{
+			throw new IllegalStateException("Cannot set Experimental-Result-Code AVP again.");
+		}
+		
 		super.setAvpAsUInt32(Avp.EXPERIMENTAL_RESULT_CODE, experimentalResultCode,true);
-
 	}
 
-	public void setVendorId(long vendorId) {
+	public void setVendorId(long vendorId)
+	{
 		if(hasVendorId())
-			throw new IllegalStateException("Cant set vendor Id again!!!!");
+		{
+			throw new IllegalStateException("Cannot set Vendor-Id AVP again.");
+		}
+		
 		super.setAvpAsUInt32(Avp.VENDOR_ID, vendorId,true);
-
 	}
 
 }

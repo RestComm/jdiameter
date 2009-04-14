@@ -142,7 +142,7 @@ public class ShServerMessageFactoryImpl implements ShServerMessageFactory {
 
     if(isExperimentalResult)
     {
-      uda.setExperimentalResult(this.localFactory.getBaseFactory().createExperimentalResult(_SH_VENDOR_ID, resultCode));
+      uda.setExperimentalResult(this.localFactory.getBaseFactory().createExperimentalResult(0, resultCode));
     }
     else
     {
