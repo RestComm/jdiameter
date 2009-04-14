@@ -18,12 +18,17 @@ import org.jdiameter.api.Message;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.Stack;
 import org.jdiameter.api.acc.ServerAccSession;
-import org.jdiameter.api.auth.ServerAuthSession;
 import org.jdiameter.common.api.app.acc.ServerAccSessionState;
-import org.jdiameter.server.impl.app.auth.ServerAuthSessionImpl;
 import org.mobicents.slee.resource.diameter.base.events.AccountingAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 
+/**
+ * 
+ * AccountingServerSessionActivityImpl.java
+ *
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 public class AccountingServerSessionActivityImpl extends AccountingSessionActivityImpl
 		implements AccountingServerSessionActivity {
 
@@ -49,7 +54,7 @@ public class AccountingServerSessionActivityImpl extends AccountingSessionActivi
     this.originRealm = stack.getMetaData().getLocalPeer().getRealmName();
 	}
 
-	public AccountingAnswer createAccountAnswer(AccountingRequest request, int resultCode)
+	public AccountingAnswer createAccountAnswer(AccountingRequest request)
 	{
     try
     {
@@ -68,10 +73,7 @@ public class AccountingServerSessionActivityImpl extends AccountingSessionActivi
       
       DiameterAvp sessionId = avpFactory.createAvp(Avp.SESSION_ID, rawMessage.getAvps().getAvp(Avp.SESSION_ID).getRaw());
       
-      // Add the Result-code
-      DiameterAvp resultCodeAvp = avpFactory.createAvp(Avp.RESULT_CODE, resultCode );
-
-      DiameterMessageImpl answer = (DiameterMessageImpl) messageFactory.createMessage( implRequest.getHeader(), new DiameterAvp[]{accRecordNumber, accRecordType, originHost, originRealm, sessionId, resultCodeAvp} );
+      DiameterMessageImpl answer = (DiameterMessageImpl) messageFactory.createMessage( implRequest.getHeader(), new DiameterAvp[]{accRecordNumber, accRecordType, originHost, originRealm, sessionId} );
       
       // RFC3588, Page 119-120
       // One of Acct-Application-Id and Vendor-Specific-Application-Id AVPs
@@ -101,7 +103,17 @@ public class AccountingServerSessionActivityImpl extends AccountingSessionActivi
       logger.error( "", e );
     }
 
-	  return null;
+    return null;
+  }
+
+	
+	public AccountingAnswer createAccountAnswer(AccountingRequest request, int resultCode)
+	{
+	  AccountingAnswer answer = this.createAccountAnswer( request );
+	  
+	  answer.setResultCode( resultCode );
+	  
+	  return answer;
 	}
 	
 	public void sendAccountAnswer(AccountingAnswer answer) throws IOException

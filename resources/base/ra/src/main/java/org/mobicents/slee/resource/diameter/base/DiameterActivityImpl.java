@@ -7,8 +7,6 @@ import javax.naming.OperationNotSupportedException;
 import javax.slee.resource.SleeEndpoint;
 
 import net.java.slee.resource.diameter.base.DiameterActivity;
-import net.java.slee.resource.diameter.base.DiameterAvpFactory;
-import net.java.slee.resource.diameter.base.DiameterMessageFactory;
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
 
@@ -55,7 +53,10 @@ public class DiameterActivityImpl implements DiameterActivity {
 		this.destinationRealm = destinationRealm;
 		
 		if(session != null)
+		{
 			this.setCurrentWorkingSession(session);
+			this.sessionId = session.getSessionId();
+		}
 		
 		this.endpoint = endpoint;
 	}
