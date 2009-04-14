@@ -56,7 +56,12 @@ public class RfServerSessionImpl extends AccountingServerSessionActivityImpl imp
   {
     AccountingAnswer answer = messageFactory.createAccountingAnswer();
     
-    answer.setSessionId( sessionId );
+    if(sessionId != null)
+    {
+      answer.setSessionId( sessionId );
+    }
+    
+    answer.setAcctApplicationId( 3L );
     
     return answer;
   }
