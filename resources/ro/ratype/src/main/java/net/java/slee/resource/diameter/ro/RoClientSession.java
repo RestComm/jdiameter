@@ -2,7 +2,7 @@ package net.java.slee.resource.diameter.ro;
 
 import java.io.IOException;
 
-import net.java.slee.resource.diameter.cca.CreditControlServerSession;
+import net.java.slee.resource.diameter.cca.CreditControlClientSession;
 import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
 
 /**
@@ -16,7 +16,7 @@ import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
-public interface RoClientSession extends RoSession, CreditControlServerSession {
+public interface RoClientSession extends RoSession, CreditControlClientSession {
 
   /**
    * Send an event Credit-Control-Request.
