@@ -32,6 +32,14 @@ import net.java.slee.resource.diameter.ro.events.avp.TrunkGroupId;
 import net.java.slee.resource.diameter.ro.events.avp.WlanInformation;
 import net.java.slee.resource.diameter.ro.events.avp.WlanRadioContainer;
 
+/**
+ * 
+ * Used by applications to create Diameter Ro request messages.
+ * Ro answer messages can be created using the RoServerSessionActivity.createRoCreditControlAnswer() method. 
+ * 
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 public interface RoAvpFactory extends CreditControlAVPFactory {
 
 	public CreditControlAVPFactory getCreditControlAVPFactory();
@@ -41,35 +49,35 @@ public interface RoAvpFactory extends CreditControlAVPFactory {
 	 * 
 	 * @return
 	 */
-	AdditionalContentInformation createAdditionalContentInformation();
+	public AdditionalContentInformation createAdditionalContentInformation();
 
 	/**
 	 * Create an empty AddressDomain (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	AddressDomain createAddressDomain();
+	public AddressDomain createAddressDomain();
 
 	/**
 	 * Create an empty ApplicationServerInformation (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	ApplicationServerInformation createApplicationServerInformation();
+	public ApplicationServerInformation createApplicationServerInformation();
 
 	/**
 	 * Create an empty EventType (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	EventType createEventType();
+	public EventType createEventType();
 
 	/**
 	 * Create an empty ImsInformation (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	ImsInformation createImsInformation();
+	public ImsInformation createImsInformation();
 
 	/**
 	 * Create a ImsInformation (Grouped AVP) instance using required AVP values.
@@ -77,56 +85,56 @@ public interface RoAvpFactory extends CreditControlAVPFactory {
 	 * @param nodeFunctionality
 	 * @return
 	 */
-	ImsInformation createImsInformation(NodeFunctionality nodeFunctionality);
+	public ImsInformation createImsInformation(NodeFunctionality nodeFunctionality);
 
 	/**
 	 * Create an empty InterOperatorIdentifier (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	InterOperatorIdentifier createInterOperatorIdentifier();
+	public InterOperatorIdentifier createInterOperatorIdentifier();
 
 	/**
 	 * Create an empty LcsClientId (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	LcsClientId createLcsClientId();
+	public LcsClientId createLcsClientId();
 
 	/**
 	 * Create an empty LcsClientName (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	LcsClientName createLcsClientName();
+	public LcsClientName createLcsClientName();
 
 	/**
 	 * Create an empty LcsInformation (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	LcsInformation createLcsInformation();
+	public LcsInformation createLcsInformation();
 
 	/**
 	 * Create an empty LcsRequestorId (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	LcsRequestorId createLcsRequestorId();
+	public LcsRequestorId createLcsRequestorId();
 
 	/**
 	 * Create an empty LocationType (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	LocationType createLocationType();
+	public LocationType createLocationType();
 
 	/**
 	 * Create an empty MbmsInformation (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	MbmsInformation createMbmsInformation();
+	public MbmsInformation createMbmsInformation();
 
 	/**
 	 * Create a MbmsInformation (Grouped AVP) instance using required AVP
@@ -137,56 +145,56 @@ public interface RoAvpFactory extends CreditControlAVPFactory {
 	 * @param mbmsUserServiceType
 	 * @return
 	 */
-	MbmsInformation createMbmsInformation(byte[] tmgi, byte[] mbmsServiceType, MbmsUserServiceType mbmsUserServiceType);
+	public MbmsInformation createMbmsInformation(byte[] tmgi, byte[] mbmsServiceType, MbmsUserServiceType mbmsUserServiceType);
 
 	/**
 	 * Create an empty MessageBody (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	MessageBody createMessageBody();
+	public MessageBody createMessageBody();
 
 	/**
 	 * Create an empty MessageClass (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	MessageClass createMessageClass();
+	public MessageClass createMessageClass();
 
 	/**
 	 * Create an empty MmContentType (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	MmContentType createMmContentType();
+	public MmContentType createMmContentType();
 
 	/**
 	 * Create an empty MmsInformation (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	MmsInformation createMmsInformation();
+	public MmsInformation createMmsInformation();
 
 	/**
 	 * Create an empty OriginatorAddress (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	OriginatorAddress createOriginatorAddress();
+	public OriginatorAddress createOriginatorAddress();
 
 	/**
 	 * Create an empty PocInformation (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	PocInformation createPocInformation();
+	public PocInformation createPocInformation();
 
 	/**
 	 * Create an empty PsFurnishChargingInformation (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	PsFurnishChargingInformation createPsFurnishChargingInformation();
+	public PsFurnishChargingInformation createPsFurnishChargingInformation();
 
 	/**
 	 * Create a PsFurnishChargingInformation (Grouped AVP) instance using
@@ -196,69 +204,69 @@ public interface RoAvpFactory extends CreditControlAVPFactory {
 	 * @param psFreeFormatData
 	 * @return
 	 */
-	PsFurnishChargingInformation createPsFurnishChargingInformation(byte[] tgppChargingId, byte[] psFreeFormatData);
+	public PsFurnishChargingInformation createPsFurnishChargingInformation(byte[] tgppChargingId, byte[] psFreeFormatData);
 
 	/**
 	 * Create an empty PsInformation (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	PsInformation createPsInformation();
+	public PsInformation createPsInformation();
 
 	/**
 	 * Create an empty RecipientAddress (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	RecipientAddress createRecipientAddress();
+	public RecipientAddress createRecipientAddress();
 
 	/**
 	 * Create an empty SdpMediaComponent (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	SdpMediaComponent createSdpMediaComponent();
+	public SdpMediaComponent createSdpMediaComponent();
 
 	/**
 	 * Create an empty ServiceInformation (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	ServiceInformation createServiceInformation();
+	public ServiceInformation createServiceInformation();
 
 	/**
 	 * Create an empty TalkBurstExchange (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	TalkBurstExchange createTalkBurstExchange();
+	public TalkBurstExchange createTalkBurstExchange();
 
 	/**
 	 * Create an empty TimeStamps (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	TimeStamps createTimeStamps();
+	public TimeStamps createTimeStamps();
 
 	/**
 	 * Create an empty TrunkGroupId (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	TrunkGroupId createTrunkGroupId();
+	public TrunkGroupId createTrunkGroupId();
 
 	/**
 	 * Create an empty WlanInformation (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	WlanInformation createWlanInformation();
+	public WlanInformation createWlanInformation();
 
 	/**
 	 * Create an empty WlanRadioContainer (Grouped AVP) instance.
 	 * 
 	 * @return
 	 */
-	WlanRadioContainer createWlanRadioContainer();
+	public WlanRadioContainer createWlanRadioContainer();
 
 }
