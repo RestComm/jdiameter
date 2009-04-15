@@ -14,6 +14,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
 import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
@@ -151,6 +152,21 @@ public class RoFactoriesTest implements ICCAMessageFactory, ServerCCASessionList
     CreditControlAnswer cca = roServerSession.createRoCreditControlAnswer();
     assertTrue("Auth-Application-Id AVP in Ro CCA must be 4, it is " + cca.getAuthApplicationId(), cca.getAuthApplicationId() == 4);
   }
+  
+  @Test
+  public void hasDestinationHostCCA() throws Exception
+  {
+    CreditControlAnswer cca = roServerSession.createRoCreditControlAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", cca.getDestinationHost());    
+  }
+
+  @Test
+  public void hasDestinationRealmCCA() throws Exception
+  {
+    CreditControlAnswer cca = roServerSession.createRoCreditControlAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", cca.getDestinationRealm());    
+  }
+
   
   /**
    * Class representing the Diameter Configuration  

@@ -2,7 +2,6 @@ package net.java.slee.resource.diameter.ro;
 
 import net.java.slee.resource.diameter.base.DiameterMessageFactory;
 import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
-import net.java.slee.resource.diameter.sh.client.MessageFactory;
 
 /**
  * 
@@ -12,7 +11,7 @@ import net.java.slee.resource.diameter.sh.client.MessageFactory;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
-public interface RoMessageFactory extends MessageFactory {
+public interface RoMessageFactory {
 
   public static final long _RO_TGPP_VENDOR_ID = 10415L;
   public static final int  _RO_AUTH_APP_ID = 4;

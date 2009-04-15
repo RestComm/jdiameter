@@ -14,6 +14,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import net.java.slee.resource.diameter.base.events.AccountingAnswer;
 import net.java.slee.resource.diameter.base.events.AccountingRequest;
@@ -46,7 +47,7 @@ import org.mobicents.slee.resource.diameter.ro.RoAvpFactoryImpl;
 
 /**
  * 
- * RoFactoriesTest.java
+ * RfFactoriesTest.java
  *
  * <br>Project:  mobicents
  * <br>2:10:37 PM Apr 14, 2009 
@@ -141,7 +142,7 @@ public class RfFactoriesTest implements BaseSessionCreationListener {
     AccountingAnswer aca = rfServerSession.createRfAccountingAnswer();
     assertFalse("Request Flag in Accounting-Answer is set.", aca.getHeader().isRequest());
   }
-
+  
   @Test
   public void hasRfApplicationIdACA() throws Exception
   {
@@ -149,6 +150,20 @@ public class RfFactoriesTest implements BaseSessionCreationListener {
     assertTrue("Acct-Application-Id AVP in Ro ACA must be 3, it is " + aca.getAcctApplicationId(), aca.getAcctApplicationId() == 3);
   }
   
+  @Test
+  public void hasDestinationHostACA() throws Exception
+  {
+    AccountingAnswer aca = rfServerSession.createRfAccountingAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", aca.getDestinationHost());    
+  }
+
+  @Test
+  public void hasDestinationRealmACA() throws Exception
+  {
+    AccountingAnswer aca = rfServerSession.createRfAccountingAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", aca.getDestinationRealm());    
+  }
+
   /**
    * Class representing the Diameter Configuration  
    */

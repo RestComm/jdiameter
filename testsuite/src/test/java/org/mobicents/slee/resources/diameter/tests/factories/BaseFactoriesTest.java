@@ -80,6 +80,20 @@ public class BaseFactoriesTest {
   }
   
   @Test
+  public void hasDestinationHostASA() throws Exception
+  {
+    AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", asa.getDestinationHost());    
+  }
+
+  @Test
+  public void hasDestinationRealmASA() throws Exception
+  {
+    AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", asa.getDestinationRealm());    
+  }
+  
+  @Test
   public void isRequestACR() throws Exception
   {
     AccountingRequest acr = messageFactory.createAccountingRequest();
@@ -91,6 +105,20 @@ public class BaseFactoriesTest {
   {
     AccountingAnswer aca = messageFactory.createAccountingAnswer();
     assertFalse("Request Flag in Abort-Session-Answer is set.", aca.getHeader().isRequest());
+  }
+
+  @Test
+  public void hasDestinationHostACA() throws Exception
+  {
+    AccountingAnswer aca = messageFactory.createAccountingAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", aca.getDestinationHost());    
+  }
+
+  @Test
+  public void hasDestinationRealmACA() throws Exception
+  {
+    AccountingAnswer aca = messageFactory.createAccountingAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", aca.getDestinationRealm());    
   }
   
   @Test
@@ -108,6 +136,20 @@ public class BaseFactoriesTest {
   }
   
   @Test
+  public void hasDestinationHostCEA() throws Exception
+  {
+    CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", cea.getDestinationHost());    
+  }
+
+  @Test
+  public void hasDestinationRealmCEA() throws Exception
+  {
+    CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", cea.getDestinationRealm());    
+  }
+
+  @Test
   public void isRequestDWR() throws Exception
   {
     DeviceWatchdogRequest dwr = messageFactory.createDeviceWatchdogRequest();
@@ -121,6 +163,20 @@ public class BaseFactoriesTest {
     assertFalse("Request Flag in Device-Watchdog-Answer is set.", dwa.getHeader().isRequest());
   }
   
+  @Test
+  public void hasDestinationHostDWA() throws Exception
+  {
+    DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", dwa.getDestinationHost());    
+  }
+
+  @Test
+  public void hasDestinationRealmDWA() throws Exception
+  {
+    DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", dwa.getDestinationRealm());    
+  }
+
   @Test
   public void isRequestDPR() throws Exception
   {
@@ -136,6 +192,20 @@ public class BaseFactoriesTest {
   }
   
   @Test
+  public void hasDestinationHostDPA() throws Exception
+  {
+    DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", dpa.getDestinationHost());    
+  }
+
+  @Test
+  public void hasDestinationRealmDPA() throws Exception
+  {
+    DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", dpa.getDestinationRealm());    
+  }
+
+  @Test
   public void isRequestRAR() throws Exception
   {
     ReAuthRequest rar = messageFactory.createReAuthRequest();
@@ -150,6 +220,20 @@ public class BaseFactoriesTest {
   }
   
   @Test
+  public void hasDestinationHostRAA() throws Exception
+  {
+    ReAuthAnswer raa = messageFactory.createReAuthAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", raa.getDestinationHost());    
+  }
+
+  @Test
+  public void hasDestinationRealmRAA() throws Exception
+  {
+    ReAuthAnswer raa = messageFactory.createReAuthAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", raa.getDestinationRealm());    
+  }
+  
+  @Test
   public void isRequestSTR() throws Exception
   {
     SessionTerminationRequest str = messageFactory.createSessionTerminationRequest();
@@ -161,6 +245,20 @@ public class BaseFactoriesTest {
   {
     SessionTerminationAnswer sta = messageFactory.createSessionTerminationAnswer();
     assertFalse("Request Flag in Disconnect-Peer-Answer is set.", sta.getHeader().isRequest());
+  }
+  
+  @Test
+  public void hasDestinationHostSTA() throws Exception
+  {
+    SessionTerminationAnswer sta = messageFactory.createSessionTerminationAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", sta.getDestinationHost());    
+  }
+
+  @Test
+  public void hasDestinationRealmSTA() throws Exception
+  {
+    SessionTerminationAnswer sta = messageFactory.createSessionTerminationAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", sta.getDestinationRealm());    
   }
   
   /**

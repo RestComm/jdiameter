@@ -93,6 +93,20 @@ public class CCAFactoriesTest {
     assertFalse("Request Flag in Credit-Control-Answer is set.", cca.getHeader().isRequest());
   }
 
+  @Test
+  public void hasDestinationHostCCA() throws Exception
+  {
+    CreditControlAnswer cca = ccaMessageFactory.createCreditControlAnswer( "582364567346578348" );
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", cca.getDestinationHost());    
+  }
+
+  @Test
+  public void hasDestinationRealmCCA() throws Exception
+  {
+    CreditControlAnswer cca = ccaMessageFactory.createCreditControlAnswer( "582364567346578348" );
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", cca.getDestinationRealm());    
+  }
+  
   /**
    * Class representing the Diameter Configuration  
    */

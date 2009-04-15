@@ -14,6 +14,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest;
 import net.java.slee.resource.diameter.sh.server.events.PushNotificationAnswer;
@@ -78,6 +79,20 @@ public class ShClientFactoriesTest {
   }
 
   @Test
+  public void hasDestinationHostPNA() throws Exception
+  {
+    PushNotificationAnswer pna = shClientFactory.createPushNotificationAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", pna.getDestinationHost());    
+  }
+
+  @Test
+  public void hasDestinationRealmPNA() throws Exception
+  {
+    PushNotificationAnswer pna = shClientFactory.createPushNotificationAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", pna.getDestinationRealm());    
+  }
+
+  @Test
   public void isRequestSNR() throws Exception
   {
     SubscribeNotificationsRequest snr = shClientFactory.createSubscribeNotificationsRequest();
@@ -85,7 +100,7 @@ public class ShClientFactoriesTest {
   }
   
   @Test
-  public void isAnswerUDR() throws Exception
+  public void isRequestUDR() throws Exception
   {
     UserDataRequest udr = shClientFactory.createUserDataRequest();
     assertTrue("Request Flag in User-Data-Request is not set.", udr.getHeader().isRequest());

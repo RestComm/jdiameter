@@ -23,11 +23,6 @@
 		</dependency>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>cca-ratype</artifactId>
-			<version>${mobicents.diameter.resources.cca.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
 			<artifactId>base-events</artifactId>
 			<version>${mobicents.diameter.resources.base.version}</version>
 		</dependency>

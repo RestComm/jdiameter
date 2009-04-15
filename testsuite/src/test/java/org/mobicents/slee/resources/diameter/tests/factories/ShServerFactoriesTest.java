@@ -14,6 +14,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.events.ProfileUpdateAnswer;
@@ -72,31 +73,73 @@ public class ShServerFactoriesTest {
   }
   
   @Test
-  public void isRequestPUA() throws Exception
+  public void isAnswerPUA() throws Exception
   {
     ProfileUpdateAnswer pua = shServerFactory.createProfileUpdateAnswer();
     assertFalse("Request Flag in Profile-Update-Answer is set.", pua.getHeader().isRequest());
   }
   
   @Test
-  public void isAnswerPNR() throws Exception
+  public void hasDestinationHostPUA() throws Exception
+  {
+    ProfileUpdateAnswer pua = shServerFactory.createProfileUpdateAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", pua.getDestinationHost());    
+  }
+
+  @Test
+  public void hasDestinationRealmPUA() throws Exception
+  {
+    ProfileUpdateAnswer pua = shServerFactory.createProfileUpdateAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", pua.getDestinationRealm());    
+  }
+  
+  @Test
+  public void isRequestPNR() throws Exception
   {
     PushNotificationRequest pnr = shServerFactory.createPushNotificationRequest();
     assertTrue("Request Flag in Push-Notification-Request is not set.", pnr.getHeader().isRequest());
   }
 
   @Test
-  public void isRequestSNA() throws Exception
+  public void isAnswerSNA() throws Exception
   {
     SubscribeNotificationsAnswer sna = shServerFactory.createSubscribeNotificationsAnswer();
     assertFalse("Request Flag in Subscribe-Notifications-Answer is set.", sna.getHeader().isRequest());
   }
   
   @Test
+  public void hasDestinationHostSNA() throws Exception
+  {
+    SubscribeNotificationsAnswer sna = shServerFactory.createSubscribeNotificationsAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", sna.getDestinationHost());    
+  }
+
+  @Test
+  public void hasDestinationRealmSNA() throws Exception
+  {
+    SubscribeNotificationsAnswer sna = shServerFactory.createSubscribeNotificationsAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", sna.getDestinationRealm());    
+  }
+
+  @Test
   public void isAnswerUDA() throws Exception
   {
     UserDataAnswer uda = shServerFactory.createUserDataAnswer();
     assertFalse("Request Flag in User-Data-Answer is set.", uda.getHeader().isRequest());
+  }
+
+  @Test
+  public void hasDestinationHostUDA() throws Exception
+  {
+    UserDataAnswer uda = shServerFactory.createUserDataAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", uda.getDestinationHost());    
+  }
+
+  @Test
+  public void hasDestinationRealmUDA() throws Exception
+  {
+    UserDataAnswer uda = shServerFactory.createUserDataAnswer();
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", uda.getDestinationRealm());    
   }
 
   @Test
