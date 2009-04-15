@@ -25,6 +25,8 @@
     <module>resources/sh-common</module>
     <module>resources/sh-client</module>
     <module>resources/sh-server</module>
+    <module>resources/ro</module>
+    <module>resources/rf</module>
   </modules>
 
 	<properties>
