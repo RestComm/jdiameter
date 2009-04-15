@@ -66,7 +66,7 @@ public class ShServerActivityImpl extends DiameterActivityImpl implements ShServ
 
 	public UserDataAnswer createUserDataAnswer(byte[] userData)
 	{
-		return createUserDataAnswer(userData);
+		return this.messageFactory.createUserDataAnswer(userData);
 	}
 
 	public UserDataAnswer createUserDataAnswer(long resultCode, boolean isExperimentalResult)
