@@ -1,5 +1,6 @@
 package org.mobicents.slee.examples.diameter.sh.client;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,21 +10,12 @@ import javax.slee.ActivityContextInterface;
 import javax.slee.ActivityEndEvent;
 import javax.slee.RolledBackContext;
 import javax.slee.SbbContext;
-import javax.slee.UnrecognizedActivityException;
 import javax.slee.facilities.TimerEvent;
 import javax.slee.facilities.TimerFacility;
 import javax.slee.facilities.TimerOptions;
 import javax.slee.serviceactivity.ServiceActivity;
 import javax.slee.serviceactivity.ServiceActivityFactory;
 
-import net.java.slee.resource.diameter.base.AccountingClientSessionActivity;
-import net.java.slee.resource.diameter.base.CreateActivityException;
-import net.java.slee.resource.diameter.base.DiameterActivity;
-import net.java.slee.resource.diameter.base.DiameterAvpFactory;
-import net.java.slee.resource.diameter.base.DiameterMessageFactory;
-import net.java.slee.resource.diameter.base.DiameterProvider;
-import net.java.slee.resource.diameter.base.events.AccountingAnswer;
-import net.java.slee.resource.diameter.base.events.AccountingRequest;
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
@@ -41,9 +33,7 @@ import net.java.slee.resource.diameter.sh.server.events.UserDataRequest;
 
 import org.apache.log4j.Logger;
 import org.jdiameter.api.Avp;
-import org.jdiameter.api.ResultCode;
-
-import org.mobicents.slee.resource.diameter.base.AccountingServerSessionActivityImpl;
+import org.mobicents.slee.resource.diameter.sh.client.ShClientSubscriptionActivityImpl;
 
 /**
  * 
@@ -280,10 +270,10 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 		      
 		      avps.add( avpFactory.getBaseFactory().createAvp( Avp.VENDOR_SPECIFIC_APPLICATION_ID, new DiameterAvp[]{avpVendorId, avpAcctApplicationId} ) );
 		      
-		      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, "aaa://" + originIP + ":1812".getBytes() ));
+		      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, ("aaa://" + originIP + ":1812").getBytes() ));
 		      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, "mobicents.org".getBytes() ));
 		      
-		      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, "aaa://" + destinationIP + ":3868".getBytes() ));
+		      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, ("aaa://" + destinationIP + ":3868").getBytes() ));
 		      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, "mobicents.org".getBytes() ));
 		      UserIdentityAvp ui=avpFactory.createUserIdentity();
 		      ui.setPublicIdentity("sip:subscriber@mobicents.org");
@@ -303,8 +293,7 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 			
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		  logger.error( "Failure trying to create/sen UDR.", e );
 		}
   }
 
@@ -368,8 +357,7 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 	      logger.info("---> Send SNR:\n"+snr);
 
 	  } catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	    logger.error( "Failure creating/sending SNR.", e );
 		}
   }
   
@@ -380,7 +368,18 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
   										
   public void onPushNotificationRequest(net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest pnr, ActivityContextInterface aci)
   {
-	  logger.info( "Push-Notification-Request activity["+aci.getActivity()+"] received.\n"+pnr );
+	  try
+    {
+	    logger.info( "Push-Notification-Request activity["+aci.getActivity()+"] received.\n"+pnr );
+	    
+	    // Let's be nice and say OK :)
+	    ShClientSubscriptionActivityImpl shActivity = (ShClientSubscriptionActivityImpl) aci.getActivity();
+
+	    shActivity.sendPushNotificationAnswer( 2001, false );
+    }
+    catch ( IOException e ) {
+      logger.error( "Failure while creating/sending PNA.", e );
+    }
   }
   
   
@@ -403,174 +402,10 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
   {
 	  logger.info( "User-Data-Answer activity["+aci.getActivity()+"] received.\n"+uda );
   }
-  
-  
-  //BCK
-  public void onAccountingRequest(net.java.slee.resource.diameter.base.events.AccountingRequest acr, ActivityContextInterface aci)
-  {
-    long start = System.currentTimeMillis();
-    logger.info( "Accounting-Request received. [" + acr + "]" );
 
-    boolean actAsProxy = false;
-
-    try
-    {
-      // Are we gonna act as a proxy?
-      if(actAsProxy)
-      {
-        // In here we act as a "proxy". Just for testing we take the original message,
-        // replace the Origin/Destination Host/Realm AVPs and send it to the emulator.
-        
-        boolean hasDestinationHost = false;
-        boolean hasDestinationRealm = false;
-
-        List<DiameterAvp> avps = new ArrayList<DiameterAvp>(); 
-          
-        for(DiameterAvp avp : acr.getAvps())
-        {
-          switch(avp.getCode())
-          {
-          case Avp.ORIGIN_HOST:
-            avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, "aaa://" + originIP + ":1812".getBytes() ));
-            break;
-          case Avp.ORIGIN_REALM:
-            avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, "mobicents.org".getBytes() ));
-            break;
-          case Avp.DESTINATION_HOST:
-            avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, "aaa://" + destinationIP + ":21812".getBytes() ));
-            hasDestinationHost = true;
-            break;
-          case Avp.DESTINATION_REALM:
-            avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, "mobicents.org".getBytes() ));
-            hasDestinationRealm = true;
-            break;
-          default:
-            avps.add(avp);
-          }
-        }
-
-        if(!hasDestinationHost)
-          avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, destinationIP.getBytes() ));
-        
-        if(!hasDestinationRealm)
-          avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, "mobicents.org".getBytes() ));
-  
-        logger.info( "AVPs ==> " + avps );
-       
-        DiameterAvp[] avpArray = new DiameterAvp[avps.size()];
-        avpArray = avps.toArray(avpArray);
-        
-        logger.info( "Creating Custom Message..." );
-        //DiameterMessage ms = messageFactory.createAccountingRequest(avpArray);
-        //logger.info( "Created Custom Message[" + ms + "]" );
-       
-        logger.info( "Sending Custom Message..." );
-       // provider.createActivity().sendMessage( ms );
-        //logger.info( "Sent Custom Message[" + ms + "]" );
-      }
-      else
-      {
-        // In here we act as a server and just say it's SUCCESS.
-        
-        if(aci.getActivity() instanceof AccountingServerSessionActivityImpl)
-        {
-          AccountingServerSessionActivityImpl assa = (AccountingServerSessionActivityImpl)aci.getActivity();
-          
-          AccountingAnswer ans = assa.createAccountAnswer( acr, ResultCode.SUCCESS );
-          
-          logger.info( "Sending Accounting-Answer [" + ans + "]" );
-  
-          assa.sendAccountAnswer( ans );
-  
-          logger.info( "Accounting-Answer sent." );          
-        }
-      }
-    }
-    catch (Exception e)
-    {
-      logger.error( "", e );
-    }
-    
-    long end = System.currentTimeMillis();
-    
-    logger.info( "Accounting-Request proccessed. [" + (end-start) + "ms]" );
-  }
-	public void onActivityEndEvent(ActivityEndEvent event,
+  public void onActivityEndEvent(ActivityEndEvent event,
 			ActivityContextInterface aci) {
 		logger.info( " Activity Ended["+aci.getActivity()+"]" );
 	}
-
-  
-  // ##########################################################################
-  // ##                           PRIVATE METHODS                            ##
-  // ##########################################################################
-  
-  private void sendAccountingRequest()
-  {
-    try
-    {
-    	/*
-      AccountingClientSessionActivity activity = provider.createAccountingActivity();
-      
-      List<DiameterAvp> avps = new ArrayList<DiameterAvp>();
-      
-      avps.add(avpFactory.createAvp(Avp.SESSION_ID, activity.getSessionId().getBytes() ));
-  
-      DiameterAvp avpVendorId = avpFactory.createAvp( Avp.VENDOR_ID, 193 );
-      DiameterAvp avpAcctApplicationId = avpFactory.createAvp( Avp.ACCT_APPLICATION_ID, 193 );
-      
-      avps.add( avpFactory.createAvp( Avp.VENDOR_SPECIFIC_APPLICATION_ID, new DiameterAvp[]{avpVendorId, avpAcctApplicationId} ) );
-      
-      avps.add(avpFactory.createAvp(Avp.ORIGIN_HOST, "aaa://127.0.0.1:1812".getBytes() ));
-      avps.add(avpFactory.createAvp(Avp.ORIGIN_REALM, "mobicents.org".getBytes() ));
-      
-      avps.add(avpFactory.createAvp(Avp.DESTINATION_HOST, "aaa://127.0.0.1:21812".getBytes() ));
-      avps.add(avpFactory.createAvp(Avp.DESTINATION_REALM, "mobicents.org".getBytes() ));
-  
-      // Subscription ID
-      DiameterAvp subscriptionIdType = avpFactory.createAvp( 193, 555, 0 );
-      DiameterAvp subscriptionIdData = avpFactory.createAvp( 193, 554, "00001000" );
-      avps.add( avpFactory.createAvp( 193, 553, new DiameterAvp[]{subscriptionIdType, subscriptionIdData} ) );
-      
-      // Requested Service Unit 
-      DiameterAvp unitType = avpFactory.createAvp( 193, 611, 2 );
-      DiameterAvp valueDigits = avpFactory.createAvp( 193, 617, 10L );
-      DiameterAvp unitValue = avpFactory.createAvp( 193, 612, new DiameterAvp[]{valueDigits} );
-      avps.add( avpFactory.createAvp( 193, 606, new DiameterAvp[]{unitType, unitValue} ) );
-
-      // Record Number and Type 
-      avps.add(avpFactory.createAvp(Avp.ACC_RECORD_NUMBER, 0 ));
-      avps.add(avpFactory.createAvp(Avp.ACC_RECORD_TYPE, 1 ));
-
-      // Requested action
-      avps.add( avpFactory.createAvp( 193, 615, 0 ) );
-      
-      // Service Parameter Type
-      DiameterAvp serviceParameterType = avpFactory.createAvp( 193, 608, 0 );
-      DiameterAvp serviceParameterValue = avpFactory.createAvp( 193, 609, "510" );
-      avps.add( avpFactory.createAvp( 193, 607, new DiameterAvp[]{serviceParameterType, serviceParameterValue} ) );
-      
-      // Service Parameter Type
-      DiameterAvp serviceParameterType2 = avpFactory.createAvp( 193, 608, 14 );
-      DiameterAvp serviceParameterValue2 = avpFactory.createAvp( 193, 609, "20" );
-      avps.add( avpFactory.createAvp( 193, 607, new DiameterAvp[]{serviceParameterType2, serviceParameterValue2} ) );
-  
-      DiameterAvp[] avpArray = new DiameterAvp[avps.size()];
-      avpArray = avps.toArray(avpArray);
-      
-      logger.info( "Creating Custom Message..." );
-      DiameterMessage ms = messageFactory.createAccountingRequest(avpArray);
-      logger.info( "Created Custom Message[" + ms + "]" );
-      
-      logger.info( "Sending Custom Message..." );
-      activity.sendAccountRequest((AccountingRequest) ms);
-      logger.info( "Sent Custom Message[" + ms + "]" );
-      */
-    }
-    catch (Exception e)
-    {
-      logger.error( "", e );
-    }
-  }
 
 }

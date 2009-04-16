@@ -15,10 +15,10 @@ import javax.slee.facilities.TimerOptions;
 import javax.slee.serviceactivity.ServiceActivity;
 import javax.slee.serviceactivity.ServiceActivityFactory;
 
-import net.java.slee.resource.diameter.base.events.DiameterHeader;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
+import net.java.slee.resource.diameter.sh.client.events.ProfileUpdateAnswer;
 import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
 import net.java.slee.resource.diameter.sh.client.events.SubscribeNotificationsAnswer;
 import net.java.slee.resource.diameter.sh.client.events.UserDataAnswer;
@@ -29,6 +29,7 @@ import net.java.slee.resource.diameter.sh.server.ShServerActivityContextInterfac
 import net.java.slee.resource.diameter.sh.server.ShServerMessageFactory;
 import net.java.slee.resource.diameter.sh.server.ShServerProvider;
 import net.java.slee.resource.diameter.sh.server.ShServerSubscriptionActivity;
+import net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest;
 import net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest;
 import net.java.slee.resource.diameter.sh.server.events.UserDataRequest;
 
@@ -226,13 +227,6 @@ public abstract class DiameterShServerExampleSbb implements javax.slee.Sbb {
 
     try
     {
-      //Forge, this is required since answer is populated with wrong values by default
-      DiameterHeader hdr = answer.getHeader();
-
-      DiameterHeader reqHeader = event.getHeader();
-      hdr.setEndToEndId(reqHeader.getEndToEndId());
-      hdr.setHopByHopId(reqHeader.getHopByHopId());
-
       logger.info("onUserDataRequest :: Created UDA:\r\n" + answer);
 
       ((ShServerActivity)aci.getActivity()).sendUserDataAnswer(answer);
@@ -250,13 +244,6 @@ public abstract class DiameterShServerExampleSbb implements javax.slee.Sbb {
 
     try
     {
-      //Forge, this is required since answer is populated with wrong values by default
-      DiameterHeader hdr=answer.getHeader();
-
-      DiameterHeader reqHeader=event.getHeader();
-      hdr.setEndToEndId(reqHeader.getEndToEndId());
-      hdr.setHopByHopId(reqHeader.getHopByHopId());
-
       //This will be fixed in B2, we need more accessors
       DiameterAvp requestNumber = null;
 
@@ -291,6 +278,23 @@ public abstract class DiameterShServerExampleSbb implements javax.slee.Sbb {
     }
   }
 
+  public void onProfileUpdateRequest(ProfileUpdateRequest event, ActivityContextInterface aci)
+  {
+    try
+    {
+      logger.info("onProfileUpdateRequest :: " + event);
+
+      ProfileUpdateAnswer answer = ((ShServerActivity)aci.getActivity()).createProfileUpdateAnswer(2001, false);
+      
+      logger.info( "Created Profile-Update-Answer:\r\n" + answer );
+      
+      ((ShServerActivity)aci.getActivity()).sendProfileUpdateAnswer( answer );
+    }
+    catch (Exception e) {
+      logger.error( "Failed to create/send PUA.", e );
+    }
+  }
+  
   public void onActivityEndEvent(ActivityEndEvent event, ActivityContextInterface aci)
   {
     logger.info( " Activity Ended["+aci.getActivity()+"]" );
