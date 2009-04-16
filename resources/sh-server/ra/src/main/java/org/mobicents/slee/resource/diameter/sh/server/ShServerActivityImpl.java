@@ -43,6 +43,9 @@ public class ShServerActivityImpl extends DiameterActivityImpl implements ShServ
 	protected DiameterShAvpFactory shAvpFactory = null;
 	protected ShServerMessageFactoryImpl messageFactory = null;
 
+	// Last received message
+	protected DiameterMessage lastMessage = null;
+	
 	public ShServerActivityImpl(ShServerMessageFactory shServerMessageFactory, DiameterShAvpFactory diameterShAvpFactory, ServerShSession session, long timeout, DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm, SleeEndpoint endpoint)
 	{
 		super(null, null, null, (EventListener<Request, Answer>) session, timeout, destinationHost, destinationRealm, endpoint);
@@ -56,37 +59,65 @@ public class ShServerActivityImpl extends DiameterActivityImpl implements ShServ
 	
 	public ProfileUpdateAnswer createProfileUpdateAnswer(long resultCode, boolean isExperimentalResult)
 	{
-		return this.messageFactory.createProfileUpdateAnswer(resultCode, isExperimentalResult);
+	  ProfileUpdateAnswer pua = this.messageFactory.createProfileUpdateAnswer(resultCode, isExperimentalResult);
+	  
+	  setSessionData( pua );
+	  
+	  return pua;
 	}
 
 	public ProfileUpdateAnswer createProfileUpdateAnswer()
 	{
-		return this.messageFactory.createProfileUpdateAnswer();
+		ProfileUpdateAnswer pua = this.messageFactory.createProfileUpdateAnswer();
+
+		setSessionData(pua);
+    
+    return pua;
 	}
 
 	public UserDataAnswer createUserDataAnswer(byte[] userData)
 	{
-		return this.messageFactory.createUserDataAnswer(userData);
-	}
+		UserDataAnswer uda = this.messageFactory.createUserDataAnswer(userData);
+
+    setSessionData(uda);
+    
+    return uda;
+  }
 
 	public UserDataAnswer createUserDataAnswer(long resultCode, boolean isExperimentalResult)
 	{
-		return this.messageFactory.createUserDataAnswer(resultCode, isExperimentalResult);
+		UserDataAnswer uda = this.messageFactory.createUserDataAnswer(resultCode, isExperimentalResult);
+		
+    setSessionData(uda);
+    
+    return uda;
 	}
 
 	public UserDataAnswer createUserDataAnswer()
 	{
-		return this.messageFactory.createUserDataAnswer();
+    UserDataAnswer uda = this.messageFactory.createUserDataAnswer();
+    
+    setSessionData(uda);
+    
+    return uda;
 	}
 
   public SubscribeNotificationsAnswer createSubscribeNotificationsAnswer()
   {
-    return this.messageFactory.createSubscribeNotificationsAnswer();
+    SubscribeNotificationsAnswer sna = this.messageFactory.createSubscribeNotificationsAnswer();
+    
+    setSessionData(sna);
+    
+    return sna;
   }
 
   public SubscribeNotificationsAnswer createSubscribeNotificationsAnswer(long resultCode, boolean isExperimentalResult)
   {
-    return this.messageFactory.createSubscribeNotificationsAnswer(resultCode, isExperimentalResult);
+    SubscribeNotificationsAnswer sna = this.messageFactory.createSubscribeNotificationsAnswer(resultCode, isExperimentalResult);
+    
+    setSessionData(sna);
+    
+    return sna;
   }
 
 	public void sendProfileUpdateAnswer(ProfileUpdateAnswer message) throws IOException
@@ -180,7 +211,18 @@ public class ShServerActivityImpl extends DiameterActivityImpl implements ShServ
 
 	public void fetchSessionData( DiameterMessage message, boolean incoming )
   {
-	  // FIXME: This is just stub, what was being done was not needed. Leaving it for further evaluation. 
+	  this.lastMessage = message;
   }
 
+	private boolean setSessionData(DiameterMessage message)
+	{
+	  // Just some sanity checks...
+	  if(lastMessage != null && lastMessage.getCommand().getCode() == message.getCommand().getCode())
+	  {
+	    message.getHeader().setEndToEndId( lastMessage.getHeader().getEndToEndId() );
+	    message.getHeader().setHopByHopId( lastMessage.getHeader().getHopByHopId() );
+	    return true;
+	  }
+    return false;
+	}
 }
