@@ -91,14 +91,9 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl imple
 	 */
 	public void sendPushNotificationAnswer(long resultCode, boolean isExperimentalResultCode) throws IOException
 	{
-    //DiameterMessageImpl msg = (DiameterMessageImpl) answer;
-    //PushNotificationAnswerImpl pna = new PushNotificationAnswerImpl((Answer) msg.getGenericData());
-    
     PushNotificationAnswer pna = this.messageFactory.createPushNotificationAnswer(resultCode, isExperimentalResultCode);
 
     setSessionData( pna );
-    
-    System.out.println(pna);
     
 		this.sendPushNotificationAnswer(pna);
 	}
