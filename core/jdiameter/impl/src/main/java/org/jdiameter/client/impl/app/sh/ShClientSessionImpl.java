@@ -23,13 +23,9 @@ import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.api.sh.ClientShSession;
 import org.jdiameter.api.sh.ClientShSessionListener;
-import org.jdiameter.api.sh.events.ProfileUpdateAnswer;
 import org.jdiameter.api.sh.events.ProfileUpdateRequest;
 import org.jdiameter.api.sh.events.PushNotificationAnswer;
-import org.jdiameter.api.sh.events.PushNotificationRequest;
-import org.jdiameter.api.sh.events.SubscribeNotificationsAnswer;
 import org.jdiameter.api.sh.events.SubscribeNotificationsRequest;
-import org.jdiameter.api.sh.events.UserDataAnswer;
 import org.jdiameter.api.sh.events.UserDataRequest;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.sh.IShMessageFactory;
@@ -57,13 +53,14 @@ import org.jdiameter.common.impl.app.sh.UserDataRequestImpl;
  * Super project: mobicents-jainslee-server <br>
  * 10:53:02 2008-09-05 <br>
  * 
- * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
- *         </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class ShClientSessionImpl extends ShSession implements ClientShSession, EventListener<Request, Answer>, NetworkReqListener {
 
-	protected ShSessionState state = ShSessionState.NOTSUBSCRIBED;
+  private static final long serialVersionUID = 1L;
+  
+  protected ShSessionState state = ShSessionState.NOTSUBSCRIBED;
 	protected boolean stateless = false;
 	protected IShMessageFactory factory = null;
 	protected String destHost, destRealm;
@@ -308,9 +305,21 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
 				event = answer;
 			}
 			session.send(event.getMessage(), this);
-			// Store last destinmation information
-			destRealm = event.getMessage().getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString();
-			destHost = event.getMessage().getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString();
+			
+			if(request != null)
+			{
+			  AvpSet avps = request.getMessage().getAvps();
+			  Avp a = null;
+  			// Store last destinmation information
+        if((a = avps.getAvp(Avp.DESTINATION_REALM)) != null)
+        {
+          destRealm = a.getOctetString();         
+        }
+        if((a = avps.getAvp(Avp.DESTINATION_HOST)) != null)
+        {
+          destHost = a.getOctetString();         
+        }
+			}
 		} catch (Exception exc) {
 			throw new InternalException(exc);
 		} finally {
