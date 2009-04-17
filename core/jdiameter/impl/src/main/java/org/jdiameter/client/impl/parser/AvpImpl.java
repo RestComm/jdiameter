@@ -168,6 +168,6 @@ class AvpImpl implements Avp {
     }
 
     public byte[] getRawData() {
-        return rawData;
+        return (rawData == null || rawData.length == 0) ? parser.encodeAvpSet(groupedData) : rawData;
     }
 }

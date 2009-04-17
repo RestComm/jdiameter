@@ -284,16 +284,16 @@ public class MessageParser extends ElementParser implements IMessageParser {
                                  (avp.isMandatory() ? 0x40:0)     |
                                  (avp.isEncrypted() ? 0x20:0)
                                );
-            int origLength = avp.getRawData().length + 8 + (avp.getVendorId() != 0 ? 4:0);
+            int origLength = avp.getRaw().length + 8 + (avp.getVendorId() != 0 ? 4:0);
             int newLength  = origLength;
             if (newLength % 4 != 0)
                 newLength += 4 - (newLength % 4);
             data.writeInt( ((flags << 24) & 0xFF000000 ) + origLength);
             if (avp.getVendorId() != 0)
                 data.writeInt((int)avp.getVendorId());
-            data.write(avp.getRawData());
-            if(avp.getRawData().length % 4 != 0) {
-                for(int i = 0; i < 4 - avp.getRawData().length % 4; i++) data.write(0);
+            data.write(avp.getRaw());
+            if(avp.getRaw().length % 4 != 0) {
+                for(int i = 0; i < 4 - avp.getRaw().length % 4; i++) data.write(0);
             }
         } catch(Exception e) {
            logger.log(Level.FINEST, "Error during encode avp", e);
