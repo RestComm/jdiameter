@@ -422,11 +422,11 @@ public class AvpUtilities {
 
 		AvpSet g = set.addGroupedAvp(avpCode, vendorId,isMandatory, isProtected);
 		for (DiameterAvp a : childs)
-			g.addAvp(a.getCode(), a.byteArrayValue(),
-					a.getMandatoryRule() == 1, a.getProtectedRule() == 1);
+		{
+			g.addAvp(a.getCode(), a.byteArrayValue(), a.getVendorId(), a.getMandatoryRule() == 1, a.getProtectedRule() == 1);
+		}
 		
 		return g;
-		
 	}
 	
 	
