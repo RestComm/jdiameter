@@ -47,6 +47,16 @@
     </event>
     
     <event event-direction="Receive" initial-event="True">
+      <event-name>ProfileUpdateRequest</event-name>
+      <event-type-ref>
+        <event-type-name>net.java.slee.resource.diameter.sh.ProfileUpdateRequest</event-type-name>
+        <event-type-vendor>java.net</event-type-vendor>
+        <event-type-version>0.8</event-type-version>
+      </event-type-ref>
+      <initial-event-select variable="ActivityContext" />
+    </event>
+    
+    <event event-direction="Receive" initial-event="True">
       <event-name>SubscribeNotificationsRequest</event-name>
       <event-type-ref>
         <event-type-name>net.java.slee.resource.diameter.sh.SubscribeNotificationsRequest</event-type-name>

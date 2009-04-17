@@ -10,7 +10,6 @@ import net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp
 import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
 
 import org.jdiameter.api.Stack;
-import org.jdiameter.client.impl.parser.MessageParser;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.diameter.dictionary.AvpRepresentation;
 import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
@@ -21,8 +20,6 @@ import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp
 public class DiameterShAvpFactoryImpl implements DiameterShAvpFactory {
 
   protected DiameterAvpFactory baseAvpFactory = null;
-
-  protected MessageParser parser = new MessageParser(null);
 
   protected Stack stack=null;
 

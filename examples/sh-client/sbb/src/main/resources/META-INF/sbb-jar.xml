@@ -40,7 +40,7 @@
 			</event-type-ref>
 		</event>
 
-		<event event-direction="Receive" initial-event="False">
+		<event event-direction="Receive" initial-event="True">
 			<event-name>PushNotificationRequest
 			</event-name>
 			<event-type-ref>

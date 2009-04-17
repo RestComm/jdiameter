@@ -16,6 +16,8 @@ import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import net.java.slee.resource.diameter.sh.client.events.avp.DataReferenceType;
+import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
 import net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest;
 import net.java.slee.resource.diameter.sh.server.events.PushNotificationAnswer;
 import net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest;
@@ -24,7 +26,9 @@ import net.java.slee.resource.diameter.sh.server.events.UserDataRequest;
 import org.jdiameter.api.Stack;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
 import org.junit.Test;
+import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.slee.resource.diameter.sh.client.ShClientMessageFactoryImpl;
+import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvpImpl;
 
 /**
  * 
@@ -49,6 +53,7 @@ public class ShClientFactoriesTest {
   private static String realmName = "mobicents.org";
 
   private static ShClientMessageFactoryImpl shClientFactory;
+  //private static DiameterShAvpFactoryImpl shAvpFactory;
   
   static
   {
@@ -56,12 +61,14 @@ public class ShClientFactoriesTest {
     try
     {
       stack.init(new MyConfiguration());
+      AvpDictionary.INSTANCE.parseDictionary( ShClientFactoriesTest.class.getClassLoader().getResourceAsStream( "dictionary.xml" ) );
     }
     catch ( Exception e ) {
       throw new RuntimeException("Failed to initialize the stack.");
     }
     
     shClientFactory = new ShClientMessageFactoryImpl(stack);
+    //shAvpFactory = new DiameterShAvpFactoryImpl(stack);
   }
   
   @Test
@@ -104,6 +111,23 @@ public class ShClientFactoriesTest {
   {
     UserDataRequest udr = shClientFactory.createUserDataRequest();
     assertTrue("Request Flag in User-Data-Request is not set.", udr.getHeader().isRequest());
+  }
+
+  @Test
+  public void isPublicIdentityAccessibleTwice() throws Exception
+  {
+    String originalValue = "sip:alexandre@diameter.mobicents.org";
+
+    UserIdentityAvpImpl uiAvp = new UserIdentityAvpImpl(DiameterShAvpCodes.USER_IDENTITY, 10415L, 1, 0, new byte[]{});
+    uiAvp.setPublicIdentity( originalValue );
+    
+    UserDataRequest udr = shClientFactory.createUserDataRequest( uiAvp, DataReferenceType.IMS_PUBLIC_IDENTITY );
+    
+    String obtainedValue1 = udr.getUserIdentity().getPublicIdentity();
+    String obtainedValue2 = udr.getUserIdentity().getPublicIdentity();
+    
+    assertTrue("Obtained value for Public-Identity AVP differs from original.", obtainedValue1.equals( originalValue ));
+    assertTrue("Obtained #1 value for Public-Identity AVP differs from Obtained #2.", obtainedValue1.equals( obtainedValue2 ));
   }
 
   /**
