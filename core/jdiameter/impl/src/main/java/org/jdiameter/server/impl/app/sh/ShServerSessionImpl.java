@@ -441,35 +441,29 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 			{
 				newState=ShSessionState.TERMINATED;
 				stopSubscriptionTimer();
-			}else
+			}
+			else
 			{
-				if (set.getAvp(297) != null) {
-					avp = ((AvpSet)set.getAvp(297)).getAvp(298);
-					// FIXME: how to handle that?
-				
-				} else {
-					avp = set.getAvp(268);
-				
-				}
-				
-				try {
-					 resultCode = avp.getUnsigned32();
-					if (resultCode > 2000 && resultCode < 2005) {
-						
+        avp = set.getAvp(297) != null ? set.getAvp(297).getGrouped().getAvp(298) : set.getAvp(268);
+
+				try
+				{
+				  resultCode = avp.getUnsigned32();
+					if (resultCode > 2000 && resultCode < 2005)
+					{
 						startSubscriptionTimer(message.getMessage());
 						newState= ShSessionState.SUBSCRIBED;
-					} else {
+					}
+					else {
 						// its a failure?
 						newState= ShSessionState.TERMINATED;
 					}
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}	
-				
 			}
-			
-			
 		}
 		}catch(Exception e)
 		{

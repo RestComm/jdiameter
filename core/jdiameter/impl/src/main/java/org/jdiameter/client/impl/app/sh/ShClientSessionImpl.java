@@ -223,48 +223,44 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
 		ShSessionState newState = state;
 		AvpSet set = answer.getMessage().getAvps();
 		long resultCode = -1;
-		// Experimental-Result-Code:297, Result-Code:268
-		Avp avp = null;
-		if (set.getAvp(297) != null) {
-			avp = set.getAvp(297);
-			// FIXME: how to handle that?
-			newState = ShSessionState.SUBSCRIBED;
-		} else {
-			avp = set.getAvp(268);
-			try {
-				resultCode = avp.getUnsigned32();
-				if (resultCode > 2000 && resultCode < 2005) {
-					long expiryTime = extractExpirationTime(answer.getMessage());
-					if (expiryTime >= 0) {
-						if (this.sft != null) {
-							this.sft.cancel(true);
-						}
-						this.sft = scheduler.schedule(new Runnable() {
 
-							public void run() {
-								try {
-									sendAndStateLock.lock();
-									if (state != ShSessionState.TERMINATED)
-										setState(ShSessionState.TERMINATED);
-
-								} finally {
-									sendAndStateLock.unlock();
-								}
-							}
-						}, expiryTime, TimeUnit.SECONDS);
-					} else {
-						// FIXME:we relly on user?
+		try {
+	    // Experimental-Result-Code:297, Result-Code:268
+	    Avp avp = set.getAvp(297) != null ? set.getAvp(297).getGrouped().getAvp(298) : set.getAvp(268);
+	    
+			resultCode = avp.getUnsigned32();
+			if (resultCode > 2000 && resultCode < 2005) {
+				long expiryTime = extractExpirationTime(answer.getMessage());
+				if (expiryTime >= 0) {
+					if (this.sft != null) {
+						this.sft.cancel(true);
 					}
-					newState = ShSessionState.SUBSCRIBED;
+					this.sft = scheduler.schedule(new Runnable() {
+
+						public void run() {
+							try {
+								sendAndStateLock.lock();
+								if (state != ShSessionState.TERMINATED)
+									setState(ShSessionState.TERMINATED);
+
+							} finally {
+								sendAndStateLock.unlock();
+							}
+						}
+					}, expiryTime, TimeUnit.SECONDS);
 				} else {
-					// its a failure?
-					newState = ShSessionState.TERMINATED;
+					// FIXME:we relly on user?
 				}
-			} catch (AvpDataException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				newState = ShSessionState.SUBSCRIBED;
+			} else {
+				// its a failure?
+				newState = ShSessionState.TERMINATED;
 			}
+		} catch (AvpDataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+			
 		return newState;
 	}
 
