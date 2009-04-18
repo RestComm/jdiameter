@@ -15,7 +15,12 @@
 
 	<name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
 
-	<dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>ro-ra</artifactId>
+      <version>${mobicents.diameter.resources.ro.version}</version>
+    </dependency>
     <dependency>
       <groupId>${pom.groupId}</groupId>
       <artifactId>ro-ratype</artifactId>
@@ -31,11 +36,11 @@
       <artifactId>rf-ratype</artifactId>
       <version>${pom.version}</version>
     </dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>rf-events</artifactId>
-			<version>${pom.version}</version>
-		</dependency>
-	</dependencies>
+      <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>rf-events</artifactId>
+      <version>${pom.version}</version>
+    </dependency>
+  </dependencies>
 
 </project>

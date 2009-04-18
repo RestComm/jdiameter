@@ -36,8 +36,38 @@
 		<!-- libraries -->
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>base-events</artifactId>
-			<version>${mobicents.diameter.resources.base.version}</version>
+			<artifactId>ro-events</artifactId>
+			<version>${mobicents.diameter.resources.ro.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>${pom.groupId}</groupId>
+			<artifactId>ro-ratype</artifactId>
+			<version>${mobicents.diameter.resources.ro.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>${pom.groupId}</groupId>
+			<artifactId>ro-ra</artifactId>
+			<version>${mobicents.diameter.resources.ro.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>${pom.groupId}</groupId>
+			<artifactId>cca-ratype</artifactId>
+			<version>${mobicents.diameter.resources.cca.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>${pom.groupId}</groupId>
+			<artifactId>cca-ra</artifactId>
+			<version>${mobicents.diameter.resources.cca.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>${pom.groupId}</groupId>
+			<artifactId>cca-events</artifactId>
+			<version>${mobicents.diameter.resources.cca.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
