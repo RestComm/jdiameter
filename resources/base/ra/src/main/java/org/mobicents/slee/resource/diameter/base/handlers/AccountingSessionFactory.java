@@ -90,8 +90,9 @@ public class AccountingSessionFactory implements IAppSessionFactory, ServerAccSe
 	  this.ras = new HashMap<ApplicationId, BaseSessionCreationListener>();
 	}
 	
-	public void registerListener(BaseSessionCreationListener ra, long messageTimeout, SessionFactory sessionFactory, ApplicationId appId)
+	public void registerListener(BaseSessionCreationListener ra, long messageTimeout, SessionFactory sessionFactory)
 	{
+	  for(ApplicationId appId : ra.getSupportedApplications())
     this.ras.put(appId, ra);
     this.messageTimeout = messageTimeout;
     this.sessionFactory = sessionFactory;	  

@@ -301,7 +301,7 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
       this.state = ResourceAdaptorState.ACTIVE;
       this.sessionFactory = this.stack.getSessionFactory();
       this.accSessionFactory = AccountingSessionFactory.INSTANCE;
-      this.accSessionFactory.registerListener(this,messageTimeout,sessionFactory, ApplicationId.createByAccAppId(193, 19302));
+      this.accSessionFactory.registerListener(this, messageTimeout, sessionFactory);
       this.authSessionFactory=new AuthorizationSessionFactory(this,messageTimeout,sessionFactory);
       //this.proxySessionFactory=this.sessionFactory;
       
@@ -1585,7 +1585,10 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
     return this.activities.containsKey(getActivityHandle(sessionId));
   }
 
-
+  /*
+   * (non-Javadoc)
+   * @see org.mobicents.slee.resource.diameter.base.handlers.BaseSessionCreationListener#getSupportedApplications()
+   */
   public ApplicationId[] getSupportedApplications()
   {
     return new ApplicationId[]{ApplicationId.createByAccAppId(0), ApplicationId.createByAuthAppId(0), ApplicationId.createByAccAppId(193, 19302)};

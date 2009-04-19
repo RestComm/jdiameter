@@ -1,7 +1,6 @@
 package org.mobicents.slee.resources.diameter.tests.factories;
 
 import static org.jdiameter.client.impl.helpers.Parameters.AcctApplId;
-import static org.jdiameter.client.impl.helpers.Parameters.ApplicationId;
 import static org.jdiameter.client.impl.helpers.Parameters.Assembler;
 import static org.jdiameter.client.impl.helpers.Parameters.AuthApplId;
 import static org.jdiameter.client.impl.helpers.Parameters.OwnDiameterURI;
@@ -24,6 +23,7 @@ import net.java.slee.resource.diameter.rf.RfServerSession;
 import net.java.slee.resource.diameter.ro.RoAvpFactory;
 
 import org.jdiameter.api.Answer;
+import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.SessionFactory;
@@ -108,7 +108,8 @@ public class RfFactoriesTest implements BaseSessionCreationListener {
     try
     {
       SessionFactory sf = stack.getSessionFactory();
-      this.accSessionFactory = new AccountingSessionFactory(this, 5000L, sf);
+      this.accSessionFactory = AccountingSessionFactory.INSTANCE;
+      this.accSessionFactory.registerListener(this, 5000L, sf);
       
       ((ISessionFactory) sf).registerAppFacory(ServerAccSession.class, accSessionFactory);
 
@@ -180,12 +181,12 @@ public class RfFactoriesTest implements BaseSessionCreationListener {
       // Set Ericsson SDK feature
       //add(UseUriAsFqdn, true);
       // Set Common Applications
-      add(ApplicationId,
+      add(org.jdiameter.client.impl.helpers.Parameters.ApplicationId,
           // AppId 1
           getInstance().
-          add(VendorId,   193L).
+          add(VendorId,   0L).
           add(AuthApplId, 0L).
-          add(AcctApplId, 19302L)
+          add(AcctApplId, 3L)
       );
       // Set peer table
       add(PeerTable,
@@ -248,6 +249,11 @@ public class RfFactoriesTest implements BaseSessionCreationListener {
   {
     // TODO Auto-generated method stub
     return false;
+  }
+
+  public ApplicationId[] getSupportedApplications()
+  {
+    return new ApplicationId[]{ApplicationId.createByAccAppId(0L, 3L)};
   }
 
 }

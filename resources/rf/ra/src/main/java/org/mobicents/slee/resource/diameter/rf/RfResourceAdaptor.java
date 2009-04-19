@@ -290,7 +290,7 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
       this.sessionFactory = this.stack.getSessionFactory();
 
       this.accSessionFactory = AccountingSessionFactory.INSTANCE;
-      this.accSessionFactory.registerListener(this,messageTimeout,sessionFactory, ApplicationId.createByAccAppId(10415, 3L));
+      this.accSessionFactory.registerListener(this,messageTimeout,sessionFactory);
 
       ((ISessionFactory) sessionFactory).registerAppFacory(ServerAccSession.class, accSessionFactory);
       ((ISessionFactory) sessionFactory).registerAppFacory(ClientAccSession.class, accSessionFactory);
@@ -1167,7 +1167,7 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
    */
   public ApplicationId[] getSupportedApplications()
   {
-    return new ApplicationId[]{ApplicationId.createByAccAppId(10415L, 3L)};
+    return new ApplicationId[]{ApplicationId.createByAccAppId(0L, 3L)};
   }
 
 }
