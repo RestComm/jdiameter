@@ -289,7 +289,8 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
       // Register Accounting App Session Factories
       this.sessionFactory = this.stack.getSessionFactory();
 
-      this.accSessionFactory = new AccountingSessionFactory(this, messageTimeout, sessionFactory);
+      this.accSessionFactory = AccountingSessionFactory.INSTANCE;
+      this.accSessionFactory.registerListener(this,messageTimeout,sessionFactory, ApplicationId.createByAccAppId(10415, 3L));
 
       ((ISessionFactory) sessionFactory).registerAppFacory(ServerAccSession.class, accSessionFactory);
       ((ISessionFactory) sessionFactory).registerAppFacory(ClientAccSession.class, accSessionFactory);
@@ -991,7 +992,8 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
 
       try
       {
-        session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, null, ServerAccSession.class, request);
+        ApplicationId appId = request.getApplicationIdAvps().isEmpty() ? null : request.getApplicationIdAvps().iterator().next(); 
+        session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(request.getSessionId(), appId, ServerAccSession.class, request);
 
         if (session == null)
         {
@@ -1156,6 +1158,16 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
   public boolean sessionExists(String sessionId)
   {
     return this.activities.containsKey(getActivityHandle(sessionId));
+  }
+
+
+  /*
+   * (non-Javadoc)
+   * @see org.mobicents.slee.resource.diameter.base.handlers.BaseSessionCreationListener#getSupportedApplications()
+   */
+  public ApplicationId[] getSupportedApplications()
+  {
+    return new ApplicationId[]{ApplicationId.createByAccAppId(10415L, 3L)};
   }
 
 }

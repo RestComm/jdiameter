@@ -16,7 +16,6 @@ import javax.management.ObjectName;
 import javax.naming.NamingException;
 import javax.naming.OperationNotSupportedException;
 import javax.slee.Address;
-import javax.slee.UnrecognizedActivityException;
 import javax.slee.facilities.EventLookupFacility;
 import javax.slee.management.UnrecognizedResourceAdaptorEntityException;
 import javax.slee.resource.ActivityHandle;
@@ -301,7 +300,8 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
       // Resource Adaptor ready to rumble!
       this.state = ResourceAdaptorState.ACTIVE;
       this.sessionFactory = this.stack.getSessionFactory();
-      this.accSessionFactory=new AccountingSessionFactory(this,messageTimeout,sessionFactory);
+      this.accSessionFactory = AccountingSessionFactory.INSTANCE;
+      this.accSessionFactory.registerListener(this,messageTimeout,sessionFactory, ApplicationId.createByAccAppId(193, 19302));
       this.authSessionFactory=new AuthorizationSessionFactory(this,messageTimeout,sessionFactory);
       //this.proxySessionFactory=this.sessionFactory;
       
@@ -1264,7 +1264,8 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
 
       try
       {
-        session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, null, ServerAccSession.class, req);
+        ApplicationId appId = req.getApplicationIdAvps().isEmpty() ? null : req.getApplicationIdAvps().iterator().next(); 
+        session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(req.getSessionId(), appId, ServerAccSession.class, req);
         
         if (session == null)
         {
@@ -1582,6 +1583,12 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
   public boolean sessionExists(String sessionId)
   {
     return this.activities.containsKey(getActivityHandle(sessionId));
+  }
+
+
+  public ApplicationId[] getSupportedApplications()
+  {
+    return new ApplicationId[]{ApplicationId.createByAccAppId(0), ApplicationId.createByAuthAppId(0), ApplicationId.createByAccAppId(193, 19302)};
   }
 
 }
