@@ -25,58 +25,18 @@
 <!DOCTYPE event-jar PUBLIC "-//Sun Microsystems, Inc.//DTD JAIN SLEE Event 1.0//EN" "http://java.sun.com/dtd/slee-event-jar_1_0.dtd">
 
 <event-jar>
-    <description>Diameter Ro Events</description>
+  <description>Diameter Ro Events</description>
 
-    <!-- CLIENT SENDS: Requests == CCA, BASE -->
-    <event-definition>
-    	<event-type-name>net.java.slee.resource.diameter.base.events.CapabilitiesExchangeRequest</event-type-name>
-        <event-type-vendor>java.net</event-type-vendor>
-        <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.CapabilitiesExchangeRequest</event-class-name>
-    </event-definition>
 	<event-definition>
 		<event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlRequest</event-type-name>
 		<event-type-vendor>java.net</event-type-vendor>
 		<event-type-version>0.8</event-type-version>
 		<event-class-name>net.java.slee.resource.diameter.cca.events.CreditControlRequest</event-class-name>
 	</event-definition>
-	<!-- CLIENT SENDS: Answers == BASE -->
-	<event-definition>
-        <event-type-name>net.java.slee.resource.diameter.base.events.ReAuthAnswer</event-type-name>
-        <event-type-vendor>java.net</event-type-vendor>
-        <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.ReAuthAnswer</event-class-name>
-    </event-definition>
-    <event-definition>
-        <event-type-name>net.java.slee.resource.diameter.base.events.AbortSessionAnswer</event-type-name>
-        <event-type-vendor>java.net</event-type-vendor>
-        <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.AbortSessionAnswer</event-class-name>
-    </event-definition>
-    <!-- SERVER SENDS: BASE -->
-    <event-definition>
-        <event-type-name>net.java.slee.resource.diameter.base.events.AbortSessionRequest</event-type-name>
-        <event-type-vendor>java.net</event-type-vendor>
-        <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.AbortSessionRequest</event-class-name>
-    </event-definition>
-    <event-definition>
-        <event-type-name>net.java.slee.resource.diameter.base.events.ReAuthRequest</event-type-name>
-        <event-type-vendor>java.net</event-type-vendor>
-        <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.ReAuthRequest</event-class-name>
-    </event-definition>
-    <!-- SERVER SENDS: Answers == CCA, BASE -->
 	<event-definition>
 		<event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlAnswer</event-type-name>
 		<event-type-vendor>java.net</event-type-vendor>
 		<event-type-version>0.8</event-type-version>
 		<event-class-name>net.java.slee.resource.diameter.cca.events.CreditControlAnswer</event-class-name>
 	</event-definition>
-	<event-definition>
-        <event-type-name>net.java.slee.resource.diameter.base.events.CapabilitiesExchangeAnswer</event-type-name>
-        <event-type-vendor>java.net</event-type-vendor>
-        <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.CapabilitiesExchangeAnswer</event-class-name>
-    </event-definition>
 </event-jar>

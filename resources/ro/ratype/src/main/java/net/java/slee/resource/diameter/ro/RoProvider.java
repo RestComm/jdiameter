@@ -49,7 +49,7 @@ public interface RoProvider {
    * @return a DiameterActivity
    * @throws CreateActivityException if the RA could not create the activity for any reason
    */
-  public RoClientSession createRoClientSessionActivity();
+  public RoClientSession createRoClientSessionActivity() throws CreateActivityException;
 
   /**
    * Create a new activity to send and receive Diameter messages.

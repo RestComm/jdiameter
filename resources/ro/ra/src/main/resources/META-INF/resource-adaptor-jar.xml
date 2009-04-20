@@ -19,7 +19,7 @@
         <resource-adaptor-classes>
             <resource-adaptor-class>
                 <resource-adaptor-class-name>
-                    java.lang.Object
+                    org.mobicents.slee.resource.diameter.ro.RoResourceAdaptor
                 </resource-adaptor-class-name>
             </resource-adaptor-class>
         </resource-adaptor-classes>

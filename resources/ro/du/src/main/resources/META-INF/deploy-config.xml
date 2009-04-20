@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deploy-config>
-  <ra-entity resource-adaptor-id="JDiameterRoResourceAdaptor#java.net#0.8.1" entity-name="ShClient">
+  <ra-entity resource-adaptor-id="JDiameterRoResourceAdaptor#java.net#0.8.1" entity-name="Ro">
     <properties file="" />
     <ra-link name="Ro" />
   </ra-entity>

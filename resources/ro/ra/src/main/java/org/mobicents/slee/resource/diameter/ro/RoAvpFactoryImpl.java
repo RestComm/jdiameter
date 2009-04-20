@@ -92,7 +92,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public AdditionalContentInformation createAdditionalContentInformation()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.ADDITIONAL_CONTENT_INFORMATION);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.ADDITIONAL_CONTENT_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     AdditionalContentInformation avp = new AdditionalContentInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -103,7 +103,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public AddressDomain createAddressDomain()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.ADDRESS_DOMAIN);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.ADDRESS_DOMAIN, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     AddressDomain avp = new AddressDomainImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -114,7 +114,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public ApplicationServerInformation createApplicationServerInformation()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.APPLICATION_SERVER_INFORMATION);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.APPLICATION_SERVER_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     ApplicationServerInformation avp = new ApplicationServerInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -125,7 +125,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public EventType createEventType()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.EVENT_TYPE);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.EVENT_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     EventType avp = new EventTypeImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -136,7 +136,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public ImsInformation createImsInformation()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.IMS_INFORMATION);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.IMS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     ImsInformation avp = new ImsInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -147,7 +147,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public ImsInformation createImsInformation( NodeFunctionality nodeFunctionality )
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.IMS_INFORMATION);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.IMS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     ImsInformation avp = new ImsInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -161,7 +161,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public InterOperatorIdentifier createInterOperatorIdentifier()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.INTER_OPERATOR_IDENTIFIER);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.INTER_OPERATOR_IDENTIFIER, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     InterOperatorIdentifier avp = new InterOperatorIdentifierImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -172,7 +172,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public LcsClientId createLcsClientId()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.LCS_CLIENT_ID);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.LCS_CLIENT_ID, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     LcsClientId avp = new LcsClientIdImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -183,7 +183,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public LcsClientName createLcsClientName()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.LCS_CLIENT_NAME);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.LCS_CLIENT_NAME, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     LcsClientName avp = new LcsClientNameImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -194,7 +194,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public LcsInformation createLcsInformation()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.LCS_INFORMATION);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.LCS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     LcsInformation avp = new LcsInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -205,7 +205,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public LcsRequestorId createLcsRequestorId()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.LCS_REQUESTOR_ID);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.LCS_REQUESTOR_ID, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     LcsRequestorId avp = new LcsRequestorIdImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -216,7 +216,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public LocationType createLocationType()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.LOCATION_TYPE);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.LOCATION_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     LocationType avp = new LocationTypeImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -227,7 +227,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public MbmsInformation createMbmsInformation()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.MBMS_INFORMATION);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.MBMS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     MbmsInformation avp = new MbmsInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -238,7 +238,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public MbmsInformation createMbmsInformation( byte[] tmgi, byte[] mbmsServiceType, MbmsUserServiceType mbmsUserServiceType )
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.MBMS_INFORMATION);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.MBMS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     MbmsInformation avp = new MbmsInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -254,7 +254,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public MessageBody createMessageBody()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.MESSAGE_BODY);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.MESSAGE_BODY, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     MessageBody avp = new MessageBodyImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -265,7 +265,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public MessageClass createMessageClass()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.MESSAGE_CLASS);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.MESSAGE_CLASS, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     MessageClass avp = new MessageClassImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -276,7 +276,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public MmContentType createMmContentType()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.MM_CONTENT_TYPE);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.MM_CONTENT_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     MmContentType avp = new MmContentTypeImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -287,7 +287,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public MmsInformation createMmsInformation()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.MMS_INFORMATION);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.MMS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     MmsInformation avp = new MmsInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -298,7 +298,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public OriginatorAddress createOriginatorAddress()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.ORIGINATOR_ADDRESS);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.ORIGINATOR_ADDRESS, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     OriginatorAddress avp = new OriginatorAddressImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -309,7 +309,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public PocInformation createPocInformation()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.POC_INFORMATION);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.POC_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     PocInformation avp = new PocInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -320,7 +320,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public PsFurnishChargingInformation createPsFurnishChargingInformation()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.PS_FURNISH_CHARGING_INFORMATION);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.PS_FURNISH_CHARGING_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     PsFurnishChargingInformation avp = new PsFurnishChargingInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -331,7 +331,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public PsFurnishChargingInformation createPsFurnishChargingInformation( byte[] tgppChargingId, byte[] psFreeFormatData )
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.PS_FURNISH_CHARGING_INFORMATION);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.PS_FURNISH_CHARGING_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     PsFurnishChargingInformation avp = new PsFurnishChargingInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -346,7 +346,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public PsInformation createPsInformation()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.PS_INFORMATION);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.PS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     PsInformation avp = new PsInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -357,7 +357,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public RecipientAddress createRecipientAddress()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.RECIPIENT_ADDRESS);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.RECIPIENT_ADDRESS, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     RecipientAddress avp = new RecipientAddressImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -368,7 +368,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public SdpMediaComponent createSdpMediaComponent()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.SDP_MEDIA_COMPONENT);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.SDP_MEDIA_COMPONENT, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     SdpMediaComponent avp = new SdpMediaComponentImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -379,7 +379,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public ServiceInformation createServiceInformation()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.SERVICE_INFORMATION);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.SERVICE_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     ServiceInformation avp = new ServiceInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -390,7 +390,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public TalkBurstExchange createTalkBurstExchange()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.TALK_BURST_EXCHANGE);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.TALK_BURST_EXCHANGE, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     TalkBurstExchange avp = new TalkBurstExchangeImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -401,7 +401,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public TimeStamps createTimeStamps()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.TIME_STAMPS);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.TIME_STAMPS, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     TimeStamps avp = new TimeStampsImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -412,7 +412,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public TrunkGroupId createTrunkGroupId()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.TRUNK_GROUP_ID);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.TRUNK_GROUP_ID, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     TrunkGroupId avp = new TrunkGroupIdImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -423,7 +423,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public WlanInformation createWlanInformation()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.WLAN_INFORMATION);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.WLAN_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     WlanInformation avp = new WlanInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
@@ -434,7 +434,7 @@ public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoA
   public WlanRadioContainer createWlanRadioContainer()
   {
     // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.WLAN_RADIO_CONTAINER);
+    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.WLAN_RADIO_CONTAINER, DiameterRoAvpCodes.TGPP_VENDOR_ID);
 
     // Create the AVP with no data
     WlanRadioContainer avp = new WlanRadioContainerImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
