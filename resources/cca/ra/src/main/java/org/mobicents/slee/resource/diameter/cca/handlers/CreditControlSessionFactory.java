@@ -2,6 +2,8 @@ package org.mobicents.slee.resource.diameter.cca.handlers;
 
 import java.util.concurrent.ScheduledFuture;
 
+import net.java.slee.resource.diameter.cca.handlers.CCASessionCreationListener;
+
 import org.apache.log4j.Logger;
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.ApplicationId;
@@ -55,7 +57,7 @@ public class CreditControlSessionFactory implements IAppSessionFactory, ClientCC
 StateChangeListener, ICCAMessageFactory , IServerCCASessionContext, IClientCCASessionContext {
 
   protected SessionFactory sessionFactory = null;
-  protected CCAResourceAdaptor resourceAdaptor = null;
+  protected CCASessionCreationListener resourceAdaptor = null;
 
   // Message timeout value (in milliseconds)
   protected long messageTimeout = 5000;
@@ -68,7 +70,7 @@ StateChangeListener, ICCAMessageFactory , IServerCCASessionContext, IClientCCASe
   protected long defaultTxTimerValue=10;
   protected Logger logger = Logger.getLogger(CreditControlSessionFactory.class);
 
-  public CreditControlSessionFactory(SessionFactory sessionFactory, CCAResourceAdaptor resourceAdaptor, long messageTimeout)
+  public CreditControlSessionFactory(SessionFactory sessionFactory, CCASessionCreationListener resourceAdaptor, long messageTimeout)
   {
     super();
 
@@ -77,7 +79,7 @@ StateChangeListener, ICCAMessageFactory , IServerCCASessionContext, IClientCCASe
     this.messageTimeout = messageTimeout;
   }
 
-  public CreditControlSessionFactory(SessionFactory sessionFactory, CCAResourceAdaptor resourceAdaptor, long messageTimeout,
+  public CreditControlSessionFactory(SessionFactory sessionFactory, CCASessionCreationListener resourceAdaptor, long messageTimeout,
       int defaultDirectDebitingFailureHandling, int defaultCreditControlFailureHandling, long defaultValidityTime, long defaultTxTimerValue)
   {
     super();
