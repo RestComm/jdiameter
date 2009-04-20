@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.mobicents.servers.diameter</groupId>
     <artifactId>jdiameter-parent</artifactId>
-    <version>1.5.0.1-build186</version>
+    <version>1.5.0.1-build186-SNAPSHOT</version>
   </parent>
 
-	<artifactId>jdiameter-api</artifactId>
-	<name>Mobicents :: Diameter Stack :: ${pom.artifactId}</name>
+  <artifactId>jdiameter-api</artifactId>
+  <name>Mobicents :: Diameter Stack :: ${pom.artifactId}</name>
 
-	<dependencies />
+  <dependencies />
 
 </project>
