@@ -1,7 +1,6 @@
 package org.mobicents.slee.resource.diameter.sh.client.events;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;

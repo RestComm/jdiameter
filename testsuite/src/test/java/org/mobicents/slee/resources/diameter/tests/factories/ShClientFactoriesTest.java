@@ -99,6 +99,24 @@ public class ShClientFactoriesTest {
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", pna.getDestinationRealm());    
   }
 
+  /**
+   * Test for Issue #665 (Diameter Experimental Result AVP is Nested)
+   * http://code.google.com/p/mobicents/issues/detail?id=655
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void isExperimentalResultCorrectlySetPNA() throws Exception
+  {
+    long originalValue = 5001;
+
+    PushNotificationAnswer pna = shClientFactory.createPushNotificationAnswer(originalValue, true );
+    
+    long obtainedValue = pna.getExperimentalResult().getExperimentalResultCode();
+    
+    assertTrue("Experimental-Result-Code in PNA should be " + originalValue +" and is " + obtainedValue + ".", originalValue == obtainedValue);
+  }
+  
   @Test
   public void isRequestSNR() throws Exception
   {

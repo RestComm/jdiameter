@@ -67,18 +67,18 @@ public class ShServerMessageFactoryImpl implements ShServerMessageFactory {
 
   public ProfileUpdateAnswer createProfileUpdateAnswer(long resultCode, boolean isExperimentalResult)
   {
-    ProfileUpdateAnswer pus = this.createProfileUpdateAnswer();
+    ProfileUpdateAnswer pua = this.createProfileUpdateAnswer();
 
     if (isExperimentalResult)
     {
-      pus.setExperimentalResult(this.localFactory.getBaseFactory().createExperimentalResult(_SH_VENDOR_ID, resultCode));
+      pua.setExperimentalResult(this.localFactory.getBaseFactory().createExperimentalResult(0, resultCode));
     }
     else
     {
-      pus.setResultCode(resultCode);
+      pua.setResultCode(resultCode);
     }
 
-    return pus;
+    return pua;
   }
 
   public ProfileUpdateAnswer createProfileUpdateAnswer()
@@ -107,18 +107,18 @@ public class ShServerMessageFactoryImpl implements ShServerMessageFactory {
 
   public SubscribeNotificationsAnswer createSubscribeNotificationsAnswer(long resultCode, boolean isExperimentalResult)
   {
-    SubscribeNotificationsAnswer pus = this.createSubscribeNotificationsAnswer();
+    SubscribeNotificationsAnswer sna = this.createSubscribeNotificationsAnswer();
 
     if (isExperimentalResult)
     {
-      pus.setExperimentalResult(this.localFactory.getBaseFactory().createExperimentalResult(_SH_VENDOR_ID, resultCode));
+      sna.setExperimentalResult(this.localFactory.getBaseFactory().createExperimentalResult(0, resultCode));
     }
     else
     {
-      pus.setResultCode(resultCode);
+      sna.setResultCode(resultCode);
     }
 
-    return pus;
+    return sna;
   }
 
   public SubscribeNotificationsAnswer createSubscribeNotificationsAnswer()

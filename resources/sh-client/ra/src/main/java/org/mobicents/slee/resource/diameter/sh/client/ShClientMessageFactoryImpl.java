@@ -22,6 +22,7 @@ import org.jdiameter.api.Message;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.Stack;
 import org.jdiameter.client.impl.helpers.UIDGenerator;
+import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.server.events.ProfileUpdateRequestImpl;
 import org.mobicents.slee.resource.diameter.sh.server.events.PushNotificationAnswerImpl;
@@ -45,12 +46,14 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 		this.session = session;
 		this.stack = stack;
 		this.baseFactory = new DiameterMessageFactoryImpl(this.session, this.stack);
+		this.baseAvpFactory = new DiameterAvpFactoryImpl();
 	}
 
 	public ShClientMessageFactoryImpl(Stack stack) {
 		super();
 		this.stack = stack;
 		this.baseFactory = new DiameterMessageFactoryImpl(this.stack);
+    this.baseAvpFactory = new DiameterAvpFactoryImpl();
 	}
 
 	public ProfileUpdateRequest createProfileUpdateRequest(UserIdentityAvp userIdentity, DataReferenceType reference, byte[] userData) {
@@ -74,16 +77,18 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 
 	public PushNotificationAnswer createPushNotificationAnswer(long resultCode, boolean isExperimentalResultCode) {
 
-		PushNotificationAnswer pns = this.createPushNotificationAnswer();
-		// FIXME: Baranowb issue 317
-		if (isExperimentalResultCode) {
+	  PushNotificationAnswer pna = this.createPushNotificationAnswer();
 
-			pns.setExperimentalResult(this.baseAvpFactory.createExperimentalResult(_SH_VENDOR_ID, resultCode));
-		} else {
-			pns.setResultCode(resultCode);
-		}
+    if (isExperimentalResultCode)
+    {
+      pna.setExperimentalResult(this.baseAvpFactory.createExperimentalResult(0, resultCode));
+    }
+    else
+    {
+      pna.setResultCode(resultCode);
+    }
 
-		return pns;
+    return pna;
 	}
 
 	public PushNotificationAnswer createPushNotificationAnswer() {

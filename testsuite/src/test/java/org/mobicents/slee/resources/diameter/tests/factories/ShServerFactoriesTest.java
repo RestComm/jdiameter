@@ -93,6 +93,24 @@ public class ShServerFactoriesTest {
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", pua.getDestinationRealm());    
   }
   
+  /**
+   * Test for Issue #665 (Diameter Experimental Result AVP is Nested)
+   * http://code.google.com/p/mobicents/issues/detail?id=655
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void isExperimentalResultCorrectlySetPUA() throws Exception
+  {
+    long originalValue = 5001;
+
+    ProfileUpdateAnswer pua = shServerFactory.createProfileUpdateAnswer( originalValue, true );
+    
+    long obtainedValue = pua.getExperimentalResult().getExperimentalResultCode();
+    
+    assertTrue("Experimental-Result-Code in PUA should be " + originalValue +" and is " + obtainedValue + ".", originalValue == obtainedValue);
+  }
+  
   @Test
   public void isRequestPNR() throws Exception
   {
@@ -121,6 +139,25 @@ public class ShServerFactoriesTest {
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", sna.getDestinationRealm());    
   }
 
+  
+  /**
+   * Test for Issue #665 (Diameter Experimental Result AVP is Nested)
+   * http://code.google.com/p/mobicents/issues/detail?id=655
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void isExperimentalResultCorrectlySetSNA() throws Exception
+  {
+    long originalValue = 5001;
+
+    SubscribeNotificationsAnswer sna = shServerFactory.createSubscribeNotificationsAnswer( originalValue, true );
+    
+    long obtainedValue = sna.getExperimentalResult().getExperimentalResultCode();
+    
+    assertTrue("Experimental-Result-Code in SNA should be " + originalValue +" and is " + obtainedValue + ".", originalValue == obtainedValue);
+  }
+  
   @Test
   public void isAnswerUDA() throws Exception
   {
@@ -142,8 +179,14 @@ public class ShServerFactoriesTest {
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", uda.getDestinationRealm());    
   }
 
+  /**
+   * Test for Issue #665 (Diameter Experimental Result AVP is Nested)
+   * http://code.google.com/p/mobicents/issues/detail?id=655
+   * 
+   * @throws Exception
+   */
   @Test
-  public void isExperimentalResultCorrectlySet() throws Exception
+  public void isExperimentalResultCorrectlySetUDA() throws Exception
   {
     long originalValue = 5001;
 
@@ -151,7 +194,7 @@ public class ShServerFactoriesTest {
     
     long obtainedValue = uda.getExperimentalResult().getExperimentalResultCode();
     
-    assertTrue("Experimental-Result-Code should be " + originalValue +" and is " + obtainedValue + ".", originalValue == obtainedValue);
+    assertTrue("Experimental-Result-Code in UDA should be " + originalValue +" and is " + obtainedValue + ".", originalValue == obtainedValue);
   }
   
   /**
