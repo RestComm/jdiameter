@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import javax.slee.resource.SleeEndpoint;
 
+import net.java.slee.resource.diameter.base.DiameterException;
 import net.java.slee.resource.diameter.base.events.ReAuthAnswer;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
@@ -13,7 +14,6 @@ import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
 import net.java.slee.resource.diameter.cca.CreditControlClientSession;
 import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
 import net.java.slee.resource.diameter.cca.CreditControlSessionState;
-import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
 import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
 import net.java.slee.resource.diameter.cca.events.avp.CcRequestType;
 import net.java.slee.resource.diameter.cca.handlers.CCASessionCreationListener;
@@ -36,267 +36,276 @@ import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
  */
 public class CreditControlClientSessionImpl extends CreditControlSessionImpl implements CreditControlClientSession {
 
-  protected ClientCCASession session = null;
-  protected ArrayList<DiameterAvp> sessionAvps = new ArrayList<DiameterAvp>();
+	protected ClientCCASession session = null;
+	protected ArrayList<DiameterAvp> sessionAvps = new ArrayList<DiameterAvp>();
 
-  boolean terminateAfterAnswer = false;
+	boolean terminateAfterAnswer = false;
 
-  /**
-   * @param messageFactory
-   * @param avpFactory
-   * @param session
-   * @param raEventListener
-   * @param timeout
-   * @param destinationHost
-   * @param destinationRealm
-   * @param endpoint
-   */
-  public CreditControlClientSessionImpl(CreditControlMessageFactory messageFactory, CreditControlAVPFactory avpFactory, ClientCCASession session,
-      long timeout, DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm, SleeEndpoint endpoint)
-  {
-    super(messageFactory, avpFactory, null, (EventListener<Request, Answer>) session, timeout, destinationHost, destinationRealm, endpoint);
+	/**
+	 * @param messageFactory
+	 * @param avpFactory
+	 * @param session
+	 * @param raEventListener
+	 * @param timeout
+	 * @param destinationHost
+	 * @param destinationRealm
+	 * @param endpoint
+	 */
+	public CreditControlClientSessionImpl(CreditControlMessageFactory messageFactory, CreditControlAVPFactory avpFactory, ClientCCASession session, long timeout, DiameterIdentityAvp destinationHost,
+			DiameterIdentityAvp destinationRealm, SleeEndpoint endpoint) {
+		super(messageFactory, avpFactory, null, (EventListener<Request, Answer>) session, timeout, destinationHost, destinationRealm, endpoint);
 
-    this.session = session;
-    this.session.addStateChangeNotification(this);
+		this.session = session;
+		this.session.addStateChangeNotification(this);
 
-    super.setCurrentWorkingSession(this.session.getSessions().get(0));
-  }
+		super.setCurrentWorkingSession(this.session.getSessions().get(0));
+	}
 
-  public void endActivity()
-  {
-    this.listener.sessionDestroyed(this.sessionId, this);
-    this.session.release();
-  }
+	public void endActivity() {
+		this.listener.sessionDestroyed(this.sessionId, this);
+		this.session.release();
+	}
 
-  public Object getDiameterAvpFactory()
-  {
-    return this.ccaAvpFactory;
-  }
+	public Object getDiameterAvpFactory() {
+		return this.ccaAvpFactory;
+	}
 
-  public Object getDiameterMessageFactory()
-  {
-    return this.ccaMessageFactory;
-  }
+	public Object getDiameterMessageFactory() {
+		return this.ccaMessageFactory;
+	}
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see net.java.slee.resource.diameter.cca.CreditControlClientSession#createCreditControlRequest()
-   */
-  public CreditControlRequest createCreditControlRequest()
-  {
-    // Create the request
-    CreditControlRequest request = super.ccaMessageFactory.createCreditControlRequest(super.getSessionId());
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seenet.java.slee.resource.diameter.cca.CreditControlClientSession#
+	 * createCreditControlRequest()
+	 */
+	public CreditControlRequest createCreditControlRequest() {
+		// Create the request
+		CreditControlRequest request = super.ccaMessageFactory.createCreditControlRequest(super.getSessionId());
 
-    // If there's a Destination-Host, add the AVP
-    if (destinationHost != null)
-    {
-      request.setDestinationHost(destinationHost);
-    }
+		// If there's a Destination-Host, add the AVP
+		if (destinationHost != null) {
+			request.setDestinationHost(destinationHost);
+		}
 
-    if (destinationRealm != null)
-    {
-      request.setDestinationRealm(destinationRealm);
-    }
+		if (destinationRealm != null) {
+			request.setDestinationRealm(destinationRealm);
+		}
 
-    // Fill extension avps if present
-    if (sessionAvps.size() > 0)
-    {
-      try
-      {
-        request.setExtensionAvps(sessionAvps.toArray(new DiameterAvp[sessionAvps.size()]));
-      }
-      catch (AvpNotAllowedException e) {
-        logger.error( "Failed to add Session AVPs to request.", e );
-      }
-    }
+		// Fill extension avps if present
+		if (sessionAvps.size() > 0) {
+			try {
+				request.setExtensionAvps(sessionAvps.toArray(new DiameterAvp[sessionAvps.size()]));
+			} catch (AvpNotAllowedException e) {
+				logger.error("Failed to add Session AVPs to request.", e);
+			}
+		}
 
-    return request;
-  }
+		return request;
+	}
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see net.java.slee.resource.diameter.cca.CreditControlClientSession#sendCreditControlRequest
-   * (net.java.slee.resource.diameter.cca.events.CreditControlRequest)
-   */
-  public void sendCreditControlRequest(CreditControlRequest ccr) throws IOException
-  {
-    fetchCurrentState(ccr);
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seenet.java.slee.resource.diameter.cca.CreditControlClientSession#
+	 * sendCreditControlRequest
+	 * (net.java.slee.resource.diameter.cca.events.CreditControlRequest)
+	 */
+	public void sendCreditControlRequest(CreditControlRequest ccr) throws IOException {
+		// fetchCurrentState(ccr);
 
-    DiameterMessageImpl msg = (DiameterMessageImpl) ccr;
+		DiameterMessageImpl msg = (DiameterMessageImpl) ccr;
+		validateState(ccr);
+		try {
+			session.sendCreditControlRequest(new JCreditControlRequestImpl((Request) msg.getGenericData()));
+		} catch (Exception e) {
+			logger.error("Failed while trying to send Credit-Control-Request.", e);
+		}
+	}
 
-    try
-    {
-      session.sendCreditControlRequest(new JCreditControlRequestImpl((Request) msg.getGenericData()));
-    }
-    catch (Exception e) {
-      logger.error( "Failed while trying to send Credit-Control-Request.", e );
-    }
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seenet.java.slee.resource.diameter.cca.CreditControlClientSession#
+	 * sendInitialCreditControlRequest
+	 * (net.java.slee.resource.diameter.cca.events.CreditControlRequest)
+	 */
+	public void sendInitialCreditControlRequest(CreditControlRequest ccr) throws IOException {
+		// FIXME: should this affect FSM ?
+		ccr.setCcRequestType(CcRequestType.INITIAL_REQUEST);
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see net.java.slee.resource.diameter.cca.CreditControlClientSession#sendInitialCreditControlRequest
-   * (net.java.slee.resource.diameter.cca.events.CreditControlRequest)
-   */
-  public void sendInitialCreditControlRequest(CreditControlRequest ccr) throws IOException
-  {
-    // FIXME: Should this come already in the CCR?
-    ccr.setCcRequestType(CcRequestType.INITIAL_REQUEST);
+		validateState(ccr);
 
-    fetchCurrentState(ccr);
+		DiameterMessageImpl msg = (DiameterMessageImpl) ccr;
 
-    DiameterMessageImpl msg = (DiameterMessageImpl) ccr;
+		try {
+			session.sendCreditControlRequest(new JCreditControlRequestImpl((Request) msg.getGenericData()));
+		} catch (Exception e) {
+			logger.error("Failed while trying to send Credit-Control-Request (INITIAL_REQUEST).", e);
+		}
+	}
 
-    try
-    {
-      session.sendCreditControlRequest(new JCreditControlRequestImpl((Request) msg.getGenericData()));
-    }
-    catch (Exception e) {
-      logger.error( "Failed while trying to send Credit-Control-Request (INITIAL_REQUEST).", e );
-    }
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seenet.java.slee.resource.diameter.cca.CreditControlClientSession#
+	 * sendUpdateCreditControlRequest
+	 * (net.java.slee.resource.diameter.cca.events.CreditControlRequest)
+	 */
+	public void sendUpdateCreditControlRequest(CreditControlRequest ccr) throws IOException {
+		// FIXME: Should this come already in the CCR?
+		ccr.setCcRequestType(CcRequestType.UPDATE_REQUEST);
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see net.java.slee.resource.diameter.cca.CreditControlClientSession#sendUpdateCreditControlRequest
-   * (net.java.slee.resource.diameter.cca.events.CreditControlRequest)
-   */
-  public void sendUpdateCreditControlRequest(CreditControlRequest ccr) throws IOException
-  {
-    // FIXME: Should this come already in the CCR?
-    ccr.setCcRequestType(CcRequestType.UPDATE_REQUEST);
-  
-    fetchCurrentState(ccr);
-  
-    DiameterMessageImpl msg = (DiameterMessageImpl) ccr;
-  
-    try
-    {
-      session.sendCreditControlRequest(new JCreditControlRequestImpl((Request) msg.getGenericData()));
-    }
-    catch (Exception e) {
-      logger.error( "Failed while trying to send Credit-Control-Request (UPDATE_REQUEST).", e );
-    }
-  }
+		validateState(ccr);
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see net.java.slee.resource.diameter.cca.CreditControlClientSession#sendTerminationCreditControlRequest
-   * (net.java.slee.resource.diameter.cca.events.CreditControlRequest)
-   */
-  public void sendTerminationCreditControlRequest(CreditControlRequest ccr) throws IOException
-  {
-    // This should not be used to terminate sub-sessions!
-  
-    // FIXME: Should this come already in the CCR?
-    ccr.setCcRequestType(CcRequestType.TERMINATION_REQUEST);
-  
-    fetchCurrentState(ccr);
-  
-    DiameterMessageImpl msg = (DiameterMessageImpl) ccr;
-  
-    try
-    {
-      session.sendCreditControlRequest(new JCreditControlRequestImpl((Request) msg.getGenericData()));
-    }
-    catch (Exception e) {
-      logger.error( "Failed while trying to send Credit-Control-Request (TERMINATION_REQUEST).", e );
-    }
-  }
+		DiameterMessageImpl msg = (DiameterMessageImpl) ccr;
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see net.java.slee.resource.diameter.cca.CreditControlClientSession#sendReAuthAnswer
-   * (net.java.slee.resource.diameter.base.events.ReAuthAnswer)
-   */
-  public void sendReAuthAnswer(ReAuthAnswer rar) throws IOException
-  {
-    DiameterMessageImpl msg = (DiameterMessageImpl) rar;
+		try {
+			session.sendCreditControlRequest(new JCreditControlRequestImpl((Request) msg.getGenericData()));
+		} catch (Exception e) {
+			logger.error("Failed while trying to send Credit-Control-Request (UPDATE_REQUEST).", e);
+		}
+	}
 
-    try
-    {
-      session.sendReAuthAnswer(new ReAuthAnswerImpl((Answer) msg.getGenericData()));
-    }
-    catch (Exception e) {
-      logger.error( "Failed while trying to send Re-Auth-Answer.", e );
-    }
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seenet.java.slee.resource.diameter.cca.CreditControlClientSession#
+	 * sendTerminationCreditControlRequest
+	 * (net.java.slee.resource.diameter.cca.events.CreditControlRequest)
+	 */
+	public void sendTerminationCreditControlRequest(CreditControlRequest ccr) {
+		// This should not be used to terminate sub-sessions!
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.jdiameter.api.app.StateChangeListener#stateChanged(java.lang.Enum, java.lang.Enum)
-   */
-  public void stateChanged(Enum oldState, Enum newState)
-  {
-    ClientCCASessionState s = (ClientCCASessionState)newState;
+		// FIXME: Should this come already in the CCR?
+		ccr.setCcRequestType(CcRequestType.TERMINATION_REQUEST);
 
-    //IDLE(0), PENDING_EVENT(1), PENDING_INITIAL(2), PENDING_UPDATE(3),
-    //PENDING_TERMINATION(4), PENDING_BUFFERED(5), OPEN(6);
-    switch(s)
-    {
-    case PENDING_EVENT:
-      this.state = CreditControlSessionState.PENDING_EVENT;
-      break;
+		validateState(ccr);
 
-    case PENDING_BUFFERED:
-      this.state = CreditControlSessionState.PENDING_BUFFERED;
-      break;
+		DiameterMessageImpl msg = (DiameterMessageImpl) ccr;
 
-    case PENDING_TERMINATION: 
-      this.state = CreditControlSessionState.PENDING_TERMINATION;
-      break;
-    case PENDING_UPDATE: 
-      this.state = CreditControlSessionState.PENDING_UPDATE;
-      break;
+		try {
+			session.sendCreditControlRequest(new JCreditControlRequestImpl((Request) msg.getGenericData()));
+		} catch (Exception e) {
+			logger.error("Failed while trying to send Credit-Control-Request (TERMINATION_REQUEST).", e);
+		}
+	}
 
-    case OPEN:
-      //FIXME: this should not happen?
-      this.state = CreditControlSessionState.OPEN;
-      break;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seenet.java.slee.resource.diameter.cca.CreditControlClientSession#
+	 * sendReAuthAnswer
+	 * (net.java.slee.resource.diameter.base.events.ReAuthAnswer)
+	 */
+	public void sendReAuthAnswer(ReAuthAnswer rar) throws IOException {
+		DiameterMessageImpl msg = (DiameterMessageImpl) rar;
 
-    case PENDING_INITIAL:
-      this.state = CreditControlSessionState.PENDING_INITIAL;
-      break;
+		try {
+			session.sendReAuthAnswer(new ReAuthAnswerImpl((Answer) msg.getGenericData()));
+		} catch (Exception e) {
+			logger.error("Failed while trying to send Re-Auth-Answer.", e);
+		}
+	}
 
-    case IDLE:
-      this.state = CreditControlSessionState.IDLE;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.jdiameter.api.app.StateChangeListener#stateChanged(java.lang.Enum,
+	 * java.lang.Enum)
+	 */
+	public void stateChanged(Enum oldState, Enum newState) {
+		ClientCCASessionState s = (ClientCCASessionState) newState;
 
-      ClientCCASessionState old = (ClientCCASessionState)oldState;
-      if(old == ClientCCASessionState.PENDING_EVENT)
-      {
-        terminateAfterAnswer = true;
-      }
-      else
-      {
-        ((CCASessionCreationListener)this.getSessionListener()).sessionDestroyed(sessionId, this);
-        this.session.release();
-      }
-      break;
+		// IDLE(0), PENDING_EVENT(1), PENDING_INITIAL(2), PENDING_UPDATE(3),
+		// PENDING_TERMINATION(4), PENDING_BUFFERED(5), OPEN(6);
+		switch (s) {
+		case PENDING_EVENT:
+			this.state = CreditControlSessionState.PENDING_EVENT;
+			break;
 
-    default:
-      logger.error("Unexpected state in Credit-Control Client FSM: " + s);
-    }
-  }
+		case PENDING_BUFFERED:
+			this.state = CreditControlSessionState.PENDING_BUFFERED;
+			break;
 
-  public void fetchCurrentState(CreditControlRequest ccr)
-  {
-    // TODO: Complete this method.
-  }
+		case PENDING_TERMINATION:
+			this.state = CreditControlSessionState.PENDING_TERMINATION;
+			break;
+		case PENDING_UPDATE:
+			this.state = CreditControlSessionState.PENDING_UPDATE;
+			break;
 
-  public void fetchCurrentState(CreditControlAnswer cca)
-  {
-    // TODO: Complete this method.
-  }
+		case OPEN:
+			// FIXME: this should not happen?
+			this.state = CreditControlSessionState.OPEN;
+			break;
 
-  public boolean getTerminateAfterAnswer()
-  {
-    return this.terminateAfterAnswer;
-  }
+		case PENDING_INITIAL:
+			this.state = CreditControlSessionState.PENDING_INITIAL;
+			break;
+
+		case IDLE:
+			this.state = CreditControlSessionState.IDLE;
+
+			ClientCCASessionState old = (ClientCCASessionState) oldState;
+			if (old == ClientCCASessionState.PENDING_EVENT) {
+				terminateAfterAnswer = true;
+			} else {
+				((CCASessionCreationListener) this.getSessionListener()).sessionDestroyed(sessionId, this);
+				this.session.release();
+			}
+			break;
+
+		default:
+			logger.error("Unexpected state in Credit-Control Client FSM: " + s);
+		}
+	}
+
+	private void validateState(CreditControlRequest ccr) {
+		//this is used for methods that send specific messages. should be done in jdiam, but there is not hook for it now.
+		if(ccr.getCcRequestType()==null)
+		{
+			throw new DiameterException("No request type is present!!");
+		}
+		int t = ccr.getCcRequestType().getValue();
+		CreditControlSessionState currentState = this.getState();
+		if(t == CcRequestType._INITIAL_REQUEST)
+		{
+			
+			if(currentState!=CreditControlSessionState.IDLE )
+			{
+				//FIXME: change all exception to DiameterException
+				throw new DiameterException("Failed to validate, intial event, wrong state: "+currentState);
+			}
+				
+		}else if(t == CcRequestType._UPDATE_REQUEST)
+		{
+			if(currentState!=CreditControlSessionState.OPEN )
+			{
+				//FIXME: change all exception to DiameterException
+				throw new DiameterException("Failed to validate, intial event, wrong state: "+currentState);
+			}
+		}else if(t == CcRequestType._TERMINATION_REQUEST)
+		{
+			if(currentState!=CreditControlSessionState.OPEN )
+			{
+				//FIXME: change all exception to DiameterException
+				throw new DiameterException("Failed to validate, intial event, wrong state: "+currentState);
+			}
+		}else if(t == CcRequestType._EVENT_REQUEST)
+		{
+			if(currentState!=CreditControlSessionState.IDLE )
+			{
+				//FIXME: change all exception to DiameterException
+				throw new DiameterException("Failed to validate, intial event, wrong state: "+currentState);
+			}
+		}
+
+	}
+
+	public boolean getTerminateAfterAnswer() {
+		return this.terminateAfterAnswer;
+	}
 }
