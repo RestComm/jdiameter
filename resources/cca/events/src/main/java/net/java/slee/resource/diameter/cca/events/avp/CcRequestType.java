@@ -46,7 +46,11 @@ import net.java.slee.resource.diameter.base.events.avp.Enumerated;
 public enum CcRequestType implements Enumerated {
 	EVENT_REQUEST(4), INITIAL_REQUEST(1), TERMINATION_REQUEST(3), UPDATE_REQUEST(2); 
 	
-	
+	public static final int _UPDATE_REQUEST = UPDATE_REQUEST.getValue();
+	public static final int _TERMINATION_REQUEST = TERMINATION_REQUEST.getValue();
+	public static final int _INITIAL_REQUEST = INITIAL_REQUEST.getValue();
+	public static final int _EVENT_REQUEST = EVENT_REQUEST.getValue();
+
 	private int value=-1;
 	
 	
