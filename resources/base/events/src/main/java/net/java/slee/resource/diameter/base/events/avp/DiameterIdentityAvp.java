@@ -38,7 +38,6 @@ package net.java.slee.resource.diameter.base.events.avp;
  * node, whatever the connection it is sent on.
  *
  *
- * @author Open Cloud
  */
 
 public interface DiameterIdentityAvp extends DiameterAvp{

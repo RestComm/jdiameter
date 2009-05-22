@@ -32,7 +32,7 @@ import net.java.slee.resource.diameter.base.events.avp.FailedAvp;
  */
 public interface DeviceWatchdogAnswer extends DiameterMessage {
 
-    int commandCode = 280;
+	static final int commandCode = 280;
 
     /**
      * Returns true if the Result-Code AVP is present in the message.

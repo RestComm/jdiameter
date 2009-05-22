@@ -40,7 +40,7 @@ import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
  */
 public interface AbortSessionRequest extends DiameterMessage {
 
-    int commandCode = 274;
+	static final   int commandCode = 274;
 
 
     /**

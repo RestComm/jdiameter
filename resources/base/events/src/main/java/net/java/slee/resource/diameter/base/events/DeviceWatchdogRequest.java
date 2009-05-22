@@ -28,7 +28,7 @@ import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
  */
 public interface DeviceWatchdogRequest extends DiameterMessage {
 
-    int commandCode = 280;
+	static final  int commandCode = 280;
 
 
 

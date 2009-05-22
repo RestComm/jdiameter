@@ -44,7 +44,7 @@ import net.java.slee.resource.diameter.base.events.avp.ReAuthRequestTypeAvp;
  */
 public interface ReAuthRequest extends DiameterMessage {
 
-    int commandCode = 258;
+	static final int commandCode = 258;
 
  
     /**

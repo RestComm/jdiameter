@@ -52,7 +52,7 @@ import net.java.slee.resource.diameter.base.events.avp.RedirectHostUsageType;
  */
 public interface AbortSessionAnswer extends DiameterMessage {
 
-    int commandCode = 274;
+	static final int commandCode = 274;
 
 
     /**

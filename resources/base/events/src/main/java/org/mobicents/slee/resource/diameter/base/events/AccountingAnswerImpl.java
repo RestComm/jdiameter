@@ -1,3 +1,29 @@
+/*
+ * Mobicents, Communications Middleware
+ * 
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party
+ * contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package org.mobicents.slee.resource.diameter.base.events;
 
 import net.java.slee.resource.diameter.base.events.AccountingAnswer;
@@ -10,145 +36,53 @@ import org.jdiameter.api.Message;
 /**
  * 
  * AccountingAnswerImpl.java
- *
- * <br>Super project:  mobicents
- * <br>5:57:50 PM Jun 20, 2008 
+ * 
  * <br>
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
- * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
+ * Super project: mobicents <br>
+ * 5:57:50 PM Jun 20, 2008 <br>
+ * 
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author Erick Svenson
  */
-public class AccountingAnswerImpl extends ExtensionDiameterMessageImpl implements AccountingAnswer
-{
+public class AccountingAnswerImpl extends AccountingMessageImpl implements AccountingAnswer {
 
-  public AccountingAnswerImpl(Message message) {
-    super(message);
-  }
+	public AccountingAnswerImpl(Message message) {
+		super(message);
+	}
 
-  public boolean hasAccountingRecordType() {
-    return message.getAvps().getAvp(Avp.ACC_RECORD_TYPE) != null;
-  }
+	@Override
+	public String getLongName() {
 
-  public AccountingRecordType getAccountingRecordType() {
-    return AccountingRecordType.fromInt(getAvpAsInt32(Avp.ACC_RECORD_TYPE));
-  }
+		return "Accounting-Answer";
+	}
 
-  public void setAccountingRecordType(AccountingRecordType accountingRecordType) {
-    setAvpAsInt32(Avp.ACC_RECORD_TYPE, accountingRecordType.getValue(), true,true);
-  }
+	@Override
+	public String getShortName() {
 
-  public boolean hasAccountingRecordNumber() {
-    return message.getAvps().getAvp(Avp.ACC_RECORD_NUMBER) != null;
-  }
+		return "ACA";
+	}
 
-  public long getAccountingRecordNumber() {
-    return getAvpAsUInt32(Avp.ACC_RECORD_NUMBER);
-  }
+	public boolean isValid() {
+		// RFC3588, Page 119-120
+		// One of Acct-Application-Id and Vendor-Specific-Application-Id AVPs
+		// MUST be present. If the Vendor-Specific-Application-Id grouped AVP
+		// is present, it must have an Acct-Application-Id inside.
 
-  public void setAccountingRecordNumber(long accountingRecordNumber) {
-    setAvpAsUInt32(Avp.ACC_RECORD_NUMBER, accountingRecordNumber, true,true);
-  }
+		if (this.message.isRequest()) {
+			return false;
+		} else if (!this.hasAccountingRealtimeRequired()) {
+			if (!this.hasVendorSpecificApplicationId()) {
+				return false;
+			} else {
+				if (this.getVendorSpecificApplicationId().getAcctApplicationId() == -1) {
+					return false;
+				}
+			}
+		}
 
-  public boolean hasAccountingSubSessionId() {
-    return message.getAvps().getAvp(Avp.ACC_SUB_SESSION_ID) != null;
-  }
+		return true;
 
-  public long getAccountingSubSessionId() {
-    return getAvpAsUInt32(Avp.ACC_SUB_SESSION_ID);
-  }
-
-  public void setAccountingSubSessionId(long accountingSubSessionId) {
-    setAvpAsUInt32(Avp.ACC_SUB_SESSION_ID, accountingSubSessionId, true,true);
-  }
-
-  public boolean hasAccountingSessionId() {
-    return false;  // todo unknown
-  }
-
-  public byte[] getAccountingSessionId() {
-    return new byte[0];  // todo unknown
-  }
-
-  public void setAccountingSessionId(byte[] accountingSessionId) {
-    // todo unknown
-  }
-
-  public boolean hasAcctMultiSessionId() {
-    return message.getAvps().getAvp(Avp.ACC_MULTI_SESSION_ID) != null;
-  }
-
-  public String getAcctMultiSessionId() {
-    return getAvpAsUtf8(Avp.ACC_MULTI_SESSION_ID);
-  }
-
-  public void setAcctMultiSessionId(String acctMultiSessionId) {
-    setAvpAsUtf8(Avp.ACC_MULTI_SESSION_ID, acctMultiSessionId, true,true);
-  }
-
-  public boolean hasAcctInterimInterval() {
-    return message.getAvps().getAvp(Avp.ACCT_INTERIM_INTERVAL) != null;
-  }
-
-  public long getAcctInterimInterval() {
-    return getAvpAsUInt32(Avp.ACCT_INTERIM_INTERVAL);
-  }
-
-  public void setAcctInterimInterval(long acctInterimInterval) {
-    setAvpAsUInt32(Avp.ACCT_INTERIM_INTERVAL, acctInterimInterval, true,true);
-  }
-
-  public boolean hasAccountingRealtimeRequired() {
-    return message.getAvps().getAvp(Avp.ACCOUNTING_REALTIME_REQUIRED) != null;
-  }
-
-  public AccountingRealtimeRequiredType getAccountingRealtimeRequired() {
-    return AccountingRealtimeRequiredType.fromInt(getAvpAsInt32(Avp.ACCOUNTING_REALTIME_REQUIRED));
-  }
-
-  public void setAccountingRealtimeRequired(AccountingRealtimeRequiredType accountingRealtimeRequired) {
-    setAvpAsInt32(Avp.ACCOUNTING_REALTIME_REQUIRED, accountingRealtimeRequired.getValue(), true,true);
-  }
-
-  @Override
-  public String getLongName() {
-
-    return "Accounting-Answer";
-  }
-
-  @Override
-  public String getShortName() {
-
-    return "ACA";
-  }
-
-  public boolean isValid()
-  {
-    // RFC3588, Page 119-120
-    // One of Acct-Application-Id and Vendor-Specific-Application-Id AVPs
-    // MUST be present.  If the Vendor-Specific-Application-Id grouped AVP
-    // is present, it must have an Acct-Application-Id inside.
-    
-    if(this.message.isRequest())
-    {
-      return false;
-    }
-    else if(!this.hasAccountingRealtimeRequired())
-    {
-      if(!this.hasVendorSpecificApplicationId())
-      {
-        return false;
-      }
-      else
-      {
-        if(this.getVendorSpecificApplicationId().getAcctApplicationId() == -1)
-        {
-          return false;
-        }
-      }
-    }
-    
-    return true;
-    
-  }
+	}
 
 }

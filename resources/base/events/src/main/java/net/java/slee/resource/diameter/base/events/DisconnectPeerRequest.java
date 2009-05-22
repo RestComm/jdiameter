@@ -27,7 +27,7 @@ import net.java.slee.resource.diameter.base.events.avp.DisconnectCauseType;
  */
 public interface DisconnectPeerRequest extends DiameterMessage {
 
-	int commandCode = 282;
+	static final int commandCode = 282;
 
 	/**
 	 * Returns true if the Disconnect-Cause AVP is present in the message.

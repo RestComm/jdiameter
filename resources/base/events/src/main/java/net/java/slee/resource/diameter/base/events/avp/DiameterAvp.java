@@ -130,14 +130,6 @@ public interface DiameterAvp extends Cloneable {
      */
     byte[] byteArrayValue();
 
-    ///**
-    // * Return the AVPs contained in this GroupedAvp as an array of DiameterAvp objects
-    // * if the AVP is a Grouped AVP.
-    // * AVPs are returned in the same order in which they appear in the message.
-    // * @return the AVP value as an array of AVPs
-    // * @throws IllegalArgumentException if the AVP is not of Grouped type
-    // */
-    //DiameterAvp[] groupedAvpValue();
 
     /**
      * Creates and returns a deep copy of this AVP instance.

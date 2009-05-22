@@ -47,7 +47,7 @@ import net.java.slee.resource.diameter.base.events.avp.RedirectHostUsageType;
  */
 public interface ReAuthAnswer extends DiameterMessage {
 
-	int commandCode = 258;
+	static final int commandCode = 258;
 
 	/**
 	 * Returns true if the Result-Code AVP is present in the message.

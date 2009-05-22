@@ -1,3 +1,29 @@
+/*
+ * Mobicents, Communications Middleware
+ * 
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party
+ * contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package org.mobicents.slee.resource.diameter.base.events;
 
 import org.jdiameter.api.Message;
@@ -14,94 +40,8 @@ import net.java.slee.resource.diameter.base.events.DiameterHeader;
  * 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
- * @author Erick Svenson
  */
 public class DiameterHeaderImpl implements DiameterHeader {
-
-	// private long applicationId;
-	// private long hopByHopId;
-	// private long endToEndId;
-	// private int messageLength;
-	// private int commandCode;
-	// private boolean request;
-	// private boolean proxiable;
-	// private boolean error;
-	// private boolean potentiallyRetransmitted;
-
-	// public DiameterHeaderImpl(long applicationId, long hopByHopId,
-	// long endToEndId, int messageLength, int commandCode,
-	// boolean request, boolean proxiable, boolean error,
-	// boolean potentiallyRetransmitted) {
-	// this.applicationId = applicationId;
-	// this.hopByHopId = hopByHopId;
-	// this.endToEndId = endToEndId;
-	// this.messageLength = messageLength;
-	// this.commandCode = commandCode;
-	// this.request = request;
-	// this.proxiable = proxiable;
-	// this.error = error;
-	// this.potentiallyRetransmitted = potentiallyRetransmitted;
-	// }
-	//
-	// public long getApplicationId() {
-	// return applicationId;
-	// }
-	//
-	// public long getHopByHopId() {
-	// return hopByHopId;
-	// }
-	//
-	// public long getEndToEndId() {
-	// return endToEndId;
-	// }
-	//
-	// public int getMessageLength() {
-	// return messageLength;
-	// }
-	//
-	// public int getCommandCode() {
-	// return commandCode;
-	// }
-	//
-	// public boolean isRequest() {
-	// return request;
-	// }
-	//
-	// public boolean isProxiable() {
-	// return proxiable;
-	// }
-	//
-	// public boolean isError() {
-	// return error;
-	// }
-	//
-	// public boolean isPotentiallyRetransmitted() {
-	// return potentiallyRetransmitted;
-	// }
-	//
-	// public short getVersion() {
-	// return 1;
-	// }
-	//
-	// public Object clone() {
-	// return new DiameterHeaderImpl(applicationId, hopByHopId, endToEndId,
-	// messageLength, commandCode, request, proxiable, error,
-	// potentiallyRetransmitted);
-	// }
-	//
-	// public void setApplicationId(long appId) {
-	// this.applicationId = appId;
-	//
-	// }
-	//
-	// public void setEndToEndId(long etd) {
-	// this.endToEndId=etd;
-	//
-	// }
-	//
-	// public void setHopByHopId(long hbh) {
-	// this.hopByHopId=hbh;
-	// }
 
 	private Message msg = null;
 
@@ -150,15 +90,14 @@ public class DiameterHeaderImpl implements DiameterHeader {
 		return this.msg.isRequest();
 	}
 
-
 	public void setEndToEndId(long etd) {
-		((org.jdiameter.client.impl.parser.MessageImpl)this.msg).setEndToEndIdentifier(etd);
-		
+		((org.jdiameter.client.impl.parser.MessageImpl) this.msg).setEndToEndIdentifier(etd);
+
 	}
 
 	public void setHopByHopId(long hbh) {
-		((org.jdiameter.client.impl.parser.MessageImpl)this.msg).setHopByHopIdentifier(hbh);
-		
+		((org.jdiameter.client.impl.parser.MessageImpl) this.msg).setHopByHopIdentifier(hbh);
+
 	}
 
 	@Override

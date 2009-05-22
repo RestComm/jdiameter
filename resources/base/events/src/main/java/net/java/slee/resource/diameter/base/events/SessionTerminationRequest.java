@@ -3,12 +3,6 @@ package net.java.slee.resource.diameter.base.events;
 
 
 
-import java.util.Iterator;
-
-
-
-import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
-import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
 import net.java.slee.resource.diameter.base.events.avp.TerminationCauseType;
@@ -45,7 +39,7 @@ import net.java.slee.resource.diameter.base.events.avp.TerminationCauseType;
  */
 public interface SessionTerminationRequest extends DiameterMessage {
 
-    int commandCode = 275;
+	static final  int commandCode = 275;
 
     /**
      * Returns true if the Destination-Realm AVP is present in the message.
@@ -88,22 +82,7 @@ public interface SessionTerminationRequest extends DiameterMessage {
      */
     void setTerminationCause(TerminationCauseType terminationCause);
 
-    /**
-     * Returns true if the User-Name AVP is present in the message.
-     */
-    boolean hasUserName();
-
-    /**
-     * Returns the value of the User-Name AVP, of type UTF8String.
-     * @return the value of the User-Name AVP or null if it has not been set on this message
-     */
-    String getUserName();
-
-    /**
-     * Sets the value of the User-Name AVP, of type UTF8String.
-     * @throws IllegalStateException if setUserName has already been called
-     */
-    void setUserName(String userName);
+    
 
     /**
      * Returns true if the Destination-Host AVP is present in the message.

@@ -30,7 +30,7 @@ import net.java.slee.resource.diameter.base.events.avp.FailedAvp;
  */
 public interface DisconnectPeerAnswer extends DiameterMessage {
 
-	int commandCode = 282;
+	static final int commandCode = 282;
 
 	/**
 	 * Returns true if the Result-Code AVP is present in the message.
@@ -83,6 +83,13 @@ public interface DisconnectPeerAnswer extends DiameterMessage {
 	 * are FailedAvp objects.
 	 */
 	FailedAvp[] getFailedAvps();
+	/**
+	 * Returns the set of Failed-AVP AVPs. The returned array contains the AVPs
+	 * in the order they appear in the message. A return value of null implies
+	 * that no Failed-AVP AVPs have been set. The elements in the given array
+	 * are FailedAvp objects.
+	 */
+	FailedAvp getFailedAvp();
 
 	/**
 	 * Sets a single Failed-AVP AVP in the message, of type Grouped.
@@ -105,5 +112,8 @@ public interface DisconnectPeerAnswer extends DiameterMessage {
 	 *             if setFailedAvp or setFailedAvps has already been called
 	 */
 	void setFailedAvps(FailedAvp[] failedAvps);
-
+	/**
+	 * Returns  true if the set of Failed-AVP AVPs is not empty. 
+	 */
+	boolean hasFailedAvp();
 }
