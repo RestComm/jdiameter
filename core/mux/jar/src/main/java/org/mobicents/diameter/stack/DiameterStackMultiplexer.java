@@ -55,7 +55,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
       // Get configuration
       String configFile = "jdiameter-config.xml";
-      is = this.getClass().getResourceAsStream(configFile);
+      is = this.getClass().getClassLoader().getResourceAsStream(configFile);
 
       // Load the configuration
       Configuration config = new XMLConfiguration(is);
