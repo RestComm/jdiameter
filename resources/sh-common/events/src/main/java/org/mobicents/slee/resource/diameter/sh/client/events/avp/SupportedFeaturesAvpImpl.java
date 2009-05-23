@@ -27,6 +27,7 @@
 package org.mobicents.slee.resource.diameter.sh.client.events.avp;
 
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
+import net.java.slee.resource.diameter.sh.client.events.avp.SupportedApplicationsAvp;
 import net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp;
 
 import org.jdiameter.api.Avp;
@@ -39,6 +40,7 @@ import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
  * <br>
  * Super project: mobicents <br>
  * 5:34:33 PM Dec 18, 2008 <br>
+ * Implementation of AVP: {@link SupportedFeaturesAvp} interface.
  * 
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
@@ -91,5 +93,5 @@ public class SupportedFeaturesAvpImpl extends GroupedAvpImpl implements Supporte
 
 		super.setAvpAsUInt32(Avp.VENDOR_ID, vendorId, true);
 	}
-	
+
 }

@@ -26,7 +26,6 @@
  */
 package net.java.slee.resource.diameter.sh.server.events;
 
-
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
 import net.java.slee.resource.diameter.sh.client.events.DiameterShMessage;
 import net.java.slee.resource.diameter.sh.client.events.avp.CurrentLocationType;
@@ -38,8 +37,10 @@ import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
 
 /**
  * Defines an interface representing the User-Data-Request command.
- *
- * From the Diameter Sh Reference Point Protocol Details (3GPP TS 29.329 V7.1.0) specification:
+ * 
+ * From the Diameter Sh Reference Point Protocol Details (3GPP TS 29.329 V7.1.0)
+ * specification:
+ * 
  * <pre>
  * 6.1.1        User-Data-Request (UDR) Command
  * 
@@ -73,199 +74,222 @@ public interface UserDataRequest extends DiameterShMessage {
 
 	static final int commandCode = 306;
 
-  
+	/**
+	 * Returns true if the Destination-Realm AVP is present in the message.
+	 */
+	boolean hasDestinationRealm();
 
-    
+	/**
+	 * Sets the set of Supported-Features AVPs, with all the values in the given
+	 * array. The AVPs will be added to message in the order in which they
+	 * appear in the array.
+	 * 
+	 * Note: the array must not be altered by the caller following this call,
+	 * and getSupportedFeatureses() is not guaranteed to return the same array
+	 * instance, e.g. an "==" check would fail.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setSupportedFeatures or setSupportedFeatureses has already
+	 *             been called
+	 */
+	void setSupportedFeatureses(SupportedFeaturesAvp[] supportedFeatureses);
 
-    /**
-     * Returns true if the Destination-Realm AVP is present in the message.
-     */
-    boolean hasDestinationRealm();
+	/**
+	 * Returns true if the User-Identity AVP is present in the message.
+	 */
+	boolean hasUserIdentity();
 
-   
+	/**
+	 * Returns the value of the User-Identity AVP, of type Grouped.
+	 * 
+	 * @return the value of the User-Identity AVP or null if it has not been set
+	 *         on this message
+	 */
+	UserIdentityAvp getUserIdentity();
 
-    /**
-     * Sets the set of Supported-Features AVPs, with all the values in the given array.
-     * The AVPs will be added to message in the order in which they appear in the array.
-     *
-     * Note: the array must not be altered by the caller following this call, and
-     * getSupportedFeatureses() is not guaranteed to return the same array instance,
-     * e.g. an "==" check would fail.
-     *
-     * @throws IllegalStateException if setSupportedFeatures or setSupportedFeatureses
-     *  has already been called
-     */
-    void setSupportedFeatureses(SupportedFeaturesAvp[] supportedFeatureses);
+	/**
+	 * Sets the value of the User-Identity AVP, of type Grouped.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setUserIdentity has already been called
+	 */
+	void setUserIdentity(UserIdentityAvp userIdentity);
 
-    /**
-     * Returns true if the User-Identity AVP is present in the message.
-     */
-    boolean hasUserIdentity();
+	/**
+	 * Returns true if the Server-Name AVP is present in the message.
+	 */
+	boolean hasServerName();
 
-    /**
-     * Returns the value of the User-Identity AVP, of type Grouped.
-     * @return the value of the User-Identity AVP or null if it has not been set on this message
-     */
-    UserIdentityAvp getUserIdentity();
+	/**
+	 * Returns the value of the Server-Name AVP, of type UTF8String.
+	 * 
+	 * @return the value of the Server-Name AVP or null if it has not been set
+	 *         on this message
+	 */
+	String getServerName();
 
-    /**
-     * Sets the value of the User-Identity AVP, of type Grouped.
-     * @throws IllegalStateException if setUserIdentity has already been called
-     */
-    void setUserIdentity(UserIdentityAvp userIdentity);
+	/**
+	 * Sets the value of the Server-Name AVP, of type UTF8String.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setServerName has already been called
+	 */
+	void setServerName(String serverName);
 
-    /**
-     * Returns true if the Server-Name AVP is present in the message.
-     */
-    boolean hasServerName();
+	/**
+	 * Returns the set of Service-Indication AVPs. The returned array contains
+	 * the AVPs in the order they appear in the message. A return value of null
+	 * implies that no Service-Indication AVPs have been set. The elements in
+	 * the given array are byte[] objects.
+	 */
+	byte[][] getServiceIndications();
 
-    /**
-     * Returns the value of the Server-Name AVP, of type UTF8String.
-     * @return the value of the Server-Name AVP or null if it has not been set on this message
-     */
-    String getServerName();
+	/**
+	 * Sets a single Service-Indication AVP in the message, of type OctetString.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setServiceIndication or setServiceIndications has already
+	 *             been called
+	 */
+	void setServiceIndication(byte[] serviceIndication);
 
-    /**
-     * Sets the value of the Server-Name AVP, of type UTF8String.
-     * @throws IllegalStateException if setServerName has already been called
-     */
-    void setServerName(String serverName);
+	/**
+	 * Sets the set of Service-Indication AVPs, with all the values in the given
+	 * array. The AVPs will be added to message in the order in which they
+	 * appear in the array.
+	 * 
+	 * Note: the array must not be altered by the caller following this call,
+	 * and getServiceIndications() is not guaranteed to return the same array
+	 * instance, e.g. an "==" check would fail.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setServiceIndication or setServiceIndications has already
+	 *             been called
+	 */
+	void setServiceIndications(byte[][] serviceIndications);
 
-    /**
-     * Returns the set of Service-Indication AVPs. The returned array contains
-     * the AVPs in the order they appear in the message.
-     * A return value of null implies that no Service-Indication AVPs have been set.
-     * The elements in the given array are byte[] objects.
-     */
-    byte[][] getServiceIndications();
+	/**
+	 * Returns the set of Data-Reference AVPs. The returned array contains the
+	 * AVPs in the order they appear in the message. A return value of null
+	 * implies that no Data-Reference AVPs have been set. The elements in the
+	 * given array are DataReference objects.
+	 */
+	DataReferenceType[] getDataReferences();
 
-    /**
-     * Sets a single Service-Indication AVP in the message, of type OctetString.
-     * @throws IllegalStateException if setServiceIndication or setServiceIndications
-     *  has already been called
-     */
-    void setServiceIndication(byte[] serviceIndication);
+	/**
+	 * Sets a single Data-Reference AVP in the message, of type Enumerated.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setDataReference or setDataReferences has already been
+	 *             called
+	 */
+	void setDataReference(DataReferenceType dataReference);
 
-    /**
-     * Sets the set of Service-Indication AVPs, with all the values in the given array.
-     * The AVPs will be added to message in the order in which they appear in the array.
-     *
-     * Note: the array must not be altered by the caller following this call, and
-     * getServiceIndications() is not guaranteed to return the same array instance,
-     * e.g. an "==" check would fail.
-     *
-     * @throws IllegalStateException if setServiceIndication or setServiceIndications
-     *  has already been called
-     */
-    void setServiceIndications(byte[][] serviceIndications);
+	/**
+	 * Sets the set of Data-Reference AVPs, with all the values in the given
+	 * array. The AVPs will be added to message in the order in which they
+	 * appear in the array.
+	 * 
+	 * Note: the array must not be altered by the caller following this call,
+	 * and getDataReferences() is not guaranteed to return the same array
+	 * instance, e.g. an "==" check would fail.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setDataReference or setDataReferences has already been
+	 *             called
+	 */
+	void setDataReferences(DataReferenceType[] dataReferences);
 
-    /**
-     * Returns the set of Data-Reference AVPs. The returned array contains
-     * the AVPs in the order they appear in the message.
-     * A return value of null implies that no Data-Reference AVPs have been set.
-     * The elements in the given array are DataReference objects.
-     */
-    DataReferenceType[] getDataReferences();
+	/**
+	 * Returns true if the Identity-Set AVP is present in the message.
+	 */
+	boolean hasIdentitySet();
 
-    /**
-     * Sets a single Data-Reference AVP in the message, of type Enumerated.
-     * @throws IllegalStateException if setDataReference or setDataReferences
-     *  has already been called
-     */
-    void setDataReference(DataReferenceType dataReference);
+	/**
+	 * Returns the value of the Identity-Set AVP, of type Enumerated.
+	 * 
+	 * @return the value of the Identity-Set AVP or null if it has not been set
+	 *         on this message
+	 */
+	IdentitySetType getIdentitySet();
 
-    /**
-     * Sets the set of Data-Reference AVPs, with all the values in the given array.
-     * The AVPs will be added to message in the order in which they appear in the array.
-     *
-     * Note: the array must not be altered by the caller following this call, and
-     * getDataReferences() is not guaranteed to return the same array instance,
-     * e.g. an "==" check would fail.
-     *
-     * @throws IllegalStateException if setDataReference or setDataReferences
-     *  has already been called
-     */
-    void setDataReferences(DataReferenceType[] dataReferences);
+	/**
+	 * Sets the value of the Identity-Set AVP, of type Enumerated.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setIdentitySet has already been called
+	 */
+	void setIdentitySet(IdentitySetType identitySet);
 
-    /**
-     * Returns true if the Identity-Set AVP is present in the message.
-     */
-    boolean hasIdentitySet();
+	/**
+	 * Returns true if the Requested-Domain AVP is present in the message.
+	 */
+	boolean hasRequestedDomain();
 
-    /**
-     * Returns the value of the Identity-Set AVP, of type Enumerated.
-     * @return the value of the Identity-Set AVP or null if it has not been set on this message
-     */
-    IdentitySetType getIdentitySet();
+	/**
+	 * Returns the value of the Requested-Domain AVP, of type Enumerated.
+	 * 
+	 * @return the value of the Requested-Domain AVP or null if it has not been
+	 *         set on this message
+	 */
+	RequestedDomainType getRequestedDomain();
 
-    /**
-     * Sets the value of the Identity-Set AVP, of type Enumerated.
-     * @throws IllegalStateException if setIdentitySet has already been called
-     */
-    void setIdentitySet(IdentitySetType identitySet);
+	/**
+	 * Sets the value of the Requested-Domain AVP, of type Enumerated.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setRequestedDomain has already been called
+	 */
+	void setRequestedDomain(RequestedDomainType requestedDomain);
 
-    /**
-     * Returns true if the Requested-Domain AVP is present in the message.
-     */
-    boolean hasRequestedDomain();
+	/**
+	 * Returns true if the Current-Location AVP is present in the message.
+	 */
+	boolean hasCurrentLocation();
 
-    /**
-     * Returns the value of the Requested-Domain AVP, of type Enumerated.
-     * @return the value of the Requested-Domain AVP or null if it has not been set on this message
-     */
-    RequestedDomainType getRequestedDomain();
+	/**
+	 * Returns the value of the Current-Location AVP, of type Enumerated.
+	 * 
+	 * @return the value of the Current-Location AVP or null if it has not been
+	 *         set on this message
+	 */
+	CurrentLocationType getCurrentLocation();
 
-    /**
-     * Sets the value of the Requested-Domain AVP, of type Enumerated.
-     * @throws IllegalStateException if setRequestedDomain has already been called
-     */
-    void setRequestedDomain(RequestedDomainType requestedDomain);
+	/**
+	 * Sets the value of the Current-Location AVP, of type Enumerated.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setCurrentLocation has already been called
+	 */
+	void setCurrentLocation(CurrentLocationType currentLocation);
 
-    /**
-     * Returns true if the Current-Location AVP is present in the message.
-     */
-    boolean hasCurrentLocation();
+	/**
+	 * Returns the set of Proxy-Info AVPs. The returned array contains the AVPs
+	 * in the order they appear in the message. A return value of null implies
+	 * that no Proxy-Info AVPs have been set. The elements in the given array
+	 * are ProxyInfo objects.
+	 */
+	ProxyInfoAvp[] getProxyInfos();
 
-    /**
-     * Returns the value of the Current-Location AVP, of type Enumerated.
-     * @return the value of the Current-Location AVP or null if it has not been set on this message
-     */
-    CurrentLocationType getCurrentLocation();
+	/**
+	 * Sets a single Proxy-Info AVP in the message, of type Grouped.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setProxyInfo or setProxyInfos has already been called
+	 */
+	void setProxyInfo(ProxyInfoAvp proxyInfo);
 
-    /**
-     * Sets the value of the Current-Location AVP, of type Enumerated.
-     * @throws IllegalStateException if setCurrentLocation has already been called
-     */
-    void setCurrentLocation(CurrentLocationType currentLocation);
-
-    /**
-     * Returns the set of Proxy-Info AVPs. The returned array contains
-     * the AVPs in the order they appear in the message.
-     * A return value of null implies that no Proxy-Info AVPs have been set.
-     * The elements in the given array are ProxyInfo objects.
-     */
-    ProxyInfoAvp[] getProxyInfos();
-
-    /**
-     * Sets a single Proxy-Info AVP in the message, of type Grouped.
-     * @throws IllegalStateException if setProxyInfo or setProxyInfos
-     *  has already been called
-     */
-    void setProxyInfo(ProxyInfoAvp proxyInfo);
-
-    /**
-     * Sets the set of Proxy-Info AVPs, with all the values in the given array.
-     * The AVPs will be added to message in the order in which they appear in the array.
-     *
-     * Note: the array must not be altered by the caller following this call, and
-     * getProxyInfos() is not guaranteed to return the same array instance,
-     * e.g. an "==" check would fail.
-     *
-     * @throws IllegalStateException if setProxyInfo or setProxyInfos
-     *  has already been called
-     */
- 
-
- 
+	/**
+	 * Sets the set of Proxy-Info AVPs, with all the values in the given array.
+	 * The AVPs will be added to message in the order in which they appear in
+	 * the array.
+	 * 
+	 * Note: the array must not be altered by the caller following this call,
+	 * and getProxyInfos() is not guaranteed to return the same array instance,
+	 * e.g. an "==" check would fail.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setProxyInfo or setProxyInfos has already been called
+	 */
 
 }

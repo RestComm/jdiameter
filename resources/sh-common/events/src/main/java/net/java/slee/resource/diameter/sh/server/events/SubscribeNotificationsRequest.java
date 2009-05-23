@@ -35,9 +35,12 @@ import net.java.slee.resource.diameter.sh.client.events.avp.SubsReqType;
 import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
 
 /**
- * Defines an interface representing the Subscribe-Notifications-Request command.
- *
- * From the Diameter Sh Reference Point Protocol Details (3GPP TS 29.329 V7.1.0) specification:
+ * Defines an interface representing the Subscribe-Notifications-Request
+ * command.
+ * 
+ * From the Diameter Sh Reference Point Protocol Details (3GPP TS 29.329 V7.1.0)
+ * specification:
+ * 
  * <pre>
  * 6.1.5        Subscribe-Notifications-Request (SNR) Command
  * 
@@ -73,162 +76,183 @@ public interface SubscribeNotificationsRequest extends DiameterShMessage {
 
 	static final int commandCode = 308;
 
-  
+	/**
+	 * Returns true if the Destination-Host AVP is present in the message.
+	 */
+	boolean hasDestinationHost();
 
-    /**
-     * Returns true if the Destination-Host AVP is present in the message.
-     */
-    boolean hasDestinationHost();
+	/**
+	 * Returns true if the Destination-Realm AVP is present in the message.
+	 */
+	boolean hasDestinationRealm();
 
-    /**
-     * Returns true if the Destination-Realm AVP is present in the message.
-     */
-    boolean hasDestinationRealm();
+	/**
+	 * Returns true if the User-Identity AVP is present in the message.
+	 */
+	boolean hasUserIdentity();
 
-  
+	/**
+	 * Returns the value of the User-Identity AVP, of type Grouped.
+	 * 
+	 * @return the value of the User-Identity AVP or null if it has not been set
+	 *         on this message
+	 */
+	UserIdentityAvp getUserIdentity();
 
- 
+	/**
+	 * Sets the value of the User-Identity AVP, of type Grouped.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setUserIdentity has already been called
+	 */
+	void setUserIdentity(UserIdentityAvp userIdentity);
 
-    /**
-     * Returns true if the User-Identity AVP is present in the message.
-     */
-    boolean hasUserIdentity();
+	/**
+	 * Returns the set of Service-Indication AVPs. The returned array contains
+	 * the AVPs in the order they appear in the message. A return value of null
+	 * implies that no Service-Indication AVPs have been set. The elements in
+	 * the given array are byte[] objects.
+	 */
+	byte[][] getServiceIndications();
 
-    /**
-     * Returns the value of the User-Identity AVP, of type Grouped.
-     * @return the value of the User-Identity AVP or null if it has not been set on this message
-     */
-    UserIdentityAvp getUserIdentity();
+	/**
+	 * Sets a single Service-Indication AVP in the message, of type OctetString.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setServiceIndication or setServiceIndications has already
+	 *             been called
+	 */
+	void setServiceIndication(byte[] serviceIndication);
 
-    /**
-     * Sets the value of the User-Identity AVP, of type Grouped.
-     * @throws IllegalStateException if setUserIdentity has already been called
-     */
-    void setUserIdentity(UserIdentityAvp userIdentity);
+	/**
+	 * Sets the set of Service-Indication AVPs, with all the values in the given
+	 * array. The AVPs will be added to message in the order in which they
+	 * appear in the array.
+	 * 
+	 * Note: the array must not be altered by the caller following this call,
+	 * and getServiceIndications() is not guaranteed to return the same array
+	 * instance, e.g. an "==" check would fail.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setServiceIndication or setServiceIndications has already
+	 *             been called
+	 */
+	void setServiceIndications(byte[][] serviceIndications);
 
-    /**
-     * Returns the set of Service-Indication AVPs. The returned array contains
-     * the AVPs in the order they appear in the message.
-     * A return value of null implies that no Service-Indication AVPs have been set.
-     * The elements in the given array are byte[] objects.
-     */
-    byte[][] getServiceIndications();
+	/**
+	 * Returns true if the Server-Name AVP is present in the message.
+	 */
+	boolean hasServerName();
 
-    /**
-     * Sets a single Service-Indication AVP in the message, of type OctetString.
-     * @throws IllegalStateException if setServiceIndication or setServiceIndications
-     *  has already been called
-     */
-    void setServiceIndication(byte[] serviceIndication);
+	/**
+	 * Returns the value of the Server-Name AVP, of type UTF8String.
+	 * 
+	 * @return the value of the Server-Name AVP or null if it has not been set
+	 *         on this message
+	 */
+	String getServerName();
 
-    /**
-     * Sets the set of Service-Indication AVPs, with all the values in the given array.
-     * The AVPs will be added to message in the order in which they appear in the array.
-     *
-     * Note: the array must not be altered by the caller following this call, and
-     * getServiceIndications() is not guaranteed to return the same array instance,
-     * e.g. an "==" check would fail.
-     *
-     * @throws IllegalStateException if setServiceIndication or setServiceIndications
-     *  has already been called
-     */
-    void setServiceIndications(byte[][] serviceIndications);
+	/**
+	 * Sets the value of the Server-Name AVP, of type UTF8String.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setServerName has already been called
+	 */
+	void setServerName(String serverName);
 
-    /**
-     * Returns true if the Server-Name AVP is present in the message.
-     */
-    boolean hasServerName();
+	/**
+	 * Returns true if the Subs-Req-Type AVP is present in the message.
+	 */
+	boolean hasSubsReqType();
 
-    /**
-     * Returns the value of the Server-Name AVP, of type UTF8String.
-     * @return the value of the Server-Name AVP or null if it has not been set on this message
-     */
-    String getServerName();
+	/**
+	 * Returns the value of the Subs-Req-Type AVP, of type Enumerated.
+	 * 
+	 * @return the value of the Subs-Req-Type AVP or null if it has not been set
+	 *         on this message
+	 */
+	SubsReqType getSubsReqType();
 
-    /**
-     * Sets the value of the Server-Name AVP, of type UTF8String.
-     * @throws IllegalStateException if setServerName has already been called
-     */
-    void setServerName(String serverName);
+	/**
+	 * Sets the value of the Subs-Req-Type AVP, of type Enumerated.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setSubsReqType has already been called
+	 */
+	void setSubsReqType(SubsReqType subsReqType);
 
-    /**
-     * Returns true if the Subs-Req-Type AVP is present in the message.
-     */
-    boolean hasSubsReqType();
+	/**
+	 * Returns the set of Data-Reference AVPs. The returned array contains the
+	 * AVPs in the order they appear in the message. A return value of null
+	 * implies that no Data-Reference AVPs have been set. The elements in the
+	 * given array are DataReference objects.
+	 */
+	DataReferenceType[] getDataReferences();
 
-    /**
-     * Returns the value of the Subs-Req-Type AVP, of type Enumerated.
-     * @return the value of the Subs-Req-Type AVP or null if it has not been set on this message
-     */
-    SubsReqType getSubsReqType();
+	/**
+	 * Sets a single Data-Reference AVP in the message, of type Enumerated.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setDataReference or setDataReferences has already been
+	 *             called
+	 */
+	void setDataReference(DataReferenceType dataReference);
 
-    /**
-     * Sets the value of the Subs-Req-Type AVP, of type Enumerated.
-     * @throws IllegalStateException if setSubsReqType has already been called
-     */
-    void setSubsReqType(SubsReqType subsReqType);
+	/**
+	 * Sets the set of Data-Reference AVPs, with all the values in the given
+	 * array. The AVPs will be added to message in the order in which they
+	 * appear in the array.
+	 * 
+	 * Note: the array must not be altered by the caller following this call,
+	 * and getDataReferences() is not guaranteed to return the same array
+	 * instance, e.g. an "==" check would fail.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setDataReference or setDataReferences has already been
+	 *             called
+	 */
+	void setDataReferences(DataReferenceType[] dataReferences);
 
-    /**
-     * Returns the set of Data-Reference AVPs. The returned array contains
-     * the AVPs in the order they appear in the message.
-     * A return value of null implies that no Data-Reference AVPs have been set.
-     * The elements in the given array are DataReference objects.
-     */
-    DataReferenceType[] getDataReferences();
+	/**
+	 * Returns true if the Expiry-Time AVP is present in the message.
+	 */
+	boolean hasExpiryTime();
 
-    /**
-     * Sets a single Data-Reference AVP in the message, of type Enumerated.
-     * @throws IllegalStateException if setDataReference or setDataReferences
-     *  has already been called
-     */
-    void setDataReference(DataReferenceType dataReference);
+	/**
+	 * Returns the value of the Expiry-Time AVP, of type Time.
+	 * 
+	 * @return the value of the Expiry-Time AVP or null if it has not been set
+	 *         on this message
+	 */
+	Date getExpiryTime();
 
-    /**
-     * Sets the set of Data-Reference AVPs, with all the values in the given array.
-     * The AVPs will be added to message in the order in which they appear in the array.
-     *
-     * Note: the array must not be altered by the caller following this call, and
-     * getDataReferences() is not guaranteed to return the same array instance,
-     * e.g. an "==" check would fail.
-     *
-     * @throws IllegalStateException if setDataReference or setDataReferences
-     *  has already been called
-     */
-    void setDataReferences(DataReferenceType[] dataReferences);
+	/**
+	 * Sets the value of the Expiry-Time AVP, of type Time.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setExpiryTime has already been called
+	 */
+	void setExpiryTime(Date expiryTime);
 
-    /**
-     * Returns true if the Expiry-Time AVP is present in the message.
-     */
-    boolean hasExpiryTime();
+	/**
+	 * Returns true if the Send-Data-Indication AVP is present in the message.
+	 */
+	boolean hasSendDataIndication();
 
-    /**
-     * Returns the value of the Expiry-Time AVP, of type Time.
-     * @return the value of the Expiry-Time AVP or null if it has not been set on this message
-     */
-    Date getExpiryTime();
+	/**
+	 * Returns the value of the Send-Data-Indication AVP, of type Enumerated.
+	 * 
+	 * @return the value of the Send-Data-Indication AVP or null if it has not
+	 *         been set on this message
+	 */
+	SendDataIndicationType getSendDataIndication();
 
-    /**
-     * Sets the value of the Expiry-Time AVP, of type Time.
-     * @throws IllegalStateException if setExpiryTime has already been called
-     */
-    void setExpiryTime(Date expiryTime);
-
-    /**
-     * Returns true if the Send-Data-Indication AVP is present in the message.
-     */
-    boolean hasSendDataIndication();
-
-    /**
-     * Returns the value of the Send-Data-Indication AVP, of type Enumerated.
-     * @return the value of the Send-Data-Indication AVP or null if it has not been set on this message
-     */
-    SendDataIndicationType getSendDataIndication();
-
-    /**
-     * Sets the value of the Send-Data-Indication AVP, of type Enumerated.
-     * @throws IllegalStateException if setSendDataIndication has already been called
-     */
-    void setSendDataIndication(SendDataIndicationType sendDataIndication);
-
+	/**
+	 * Sets the value of the Send-Data-Indication AVP, of type Enumerated.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setSendDataIndication has already been called
+	 */
+	void setSendDataIndication(SendDataIndicationType sendDataIndication);
 
 }

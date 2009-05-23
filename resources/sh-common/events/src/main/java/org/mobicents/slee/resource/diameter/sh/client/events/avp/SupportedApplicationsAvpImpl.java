@@ -36,6 +36,15 @@ import org.jdiameter.api.AvpSet;
 import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvpImpl;
 
+/**
+ * 
+ * Start time:15:52:05 2009-05-23<br>
+ * Project: diameter-parent<br>
+ * Implementation of AVP: {@link SupportedApplicationsAvp} interface.
+ * 
+ * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ */
 public class SupportedApplicationsAvpImpl extends GroupedAvpImpl implements SupportedApplicationsAvp {
 
 	public SupportedApplicationsAvpImpl(int code, long vendorId, int mnd, int prt, byte[] value) {
@@ -94,8 +103,8 @@ public class SupportedApplicationsAvpImpl extends GroupedAvpImpl implements Supp
 			int counter = 0;
 			for (Avp raw : set) {
 				try {
-					VendorSpecificApplicationIdAvpImpl vsai = new VendorSpecificApplicationIdAvpImpl(DiameterAvpCodes.VENDOR_SPECIFIC_APPLICATION_ID, raw.getVendorId(), raw
-							.isMandatory() ? 1 : 0, raw.isEncrypted() ? 1 : 0, raw.getRaw());
+					VendorSpecificApplicationIdAvpImpl vsai = new VendorSpecificApplicationIdAvpImpl(DiameterAvpCodes.VENDOR_SPECIFIC_APPLICATION_ID, raw.getVendorId(), raw.isMandatory() ? 1 : 0, raw
+							.isEncrypted() ? 1 : 0, raw.getRaw());
 					returnValue[counter++] = vsai;
 				} catch (AvpDataException e) {
 
@@ -137,16 +146,16 @@ public class SupportedApplicationsAvpImpl extends GroupedAvpImpl implements Supp
 
 	public void setVendorSpecificApplicationId(VendorSpecificApplicationIdAvp vendorSpecificApplicationId) {
 		super.avpSet.removeAvp(DiameterAvpCodes.VENDOR_SPECIFIC_APPLICATION_ID);
-		super.avpSet.addAvp(vendorSpecificApplicationId.getCode(), vendorSpecificApplicationId.byteArrayValue(), vendorSpecificApplicationId.getMandatoryRule() == 1,
-				vendorSpecificApplicationId.getProtectedRule() == 1);
+		super.avpSet.addAvp(vendorSpecificApplicationId.getCode(), vendorSpecificApplicationId.byteArrayValue(), vendorSpecificApplicationId.getMandatoryRule() == 1, vendorSpecificApplicationId
+				.getProtectedRule() == 1);
 
 	}
 
 	public void setVendorSpecificApplicationIds(VendorSpecificApplicationIdAvp[] vendorSpecificApplicationIds) {
 		super.avpSet.removeAvp(DiameterAvpCodes.VENDOR_SPECIFIC_APPLICATION_ID);
 		for (VendorSpecificApplicationIdAvp vendorSpecificApplicationId : vendorSpecificApplicationIds)
-			super.avpSet.addAvp(vendorSpecificApplicationId.getCode(), vendorSpecificApplicationId.byteArrayValue(), vendorSpecificApplicationId.getMandatoryRule() == 1,
-					vendorSpecificApplicationId.getProtectedRule() == 1);
+			super.avpSet.addAvp(vendorSpecificApplicationId.getCode(), vendorSpecificApplicationId.byteArrayValue(), vendorSpecificApplicationId.getMandatoryRule() == 1, vendorSpecificApplicationId
+					.getProtectedRule() == 1);
 	}
 
 }

@@ -5,7 +5,15 @@ import javax.slee.resource.ActivityHandle;
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.sh.ServerShSession;
-
+/**
+ * 
+ * Start time:16:53:56 2009-05-23<br>
+ * Project: diameter-parent<br>
+ * ShServerSession listener - class that is used to inform entities outise AppSession factories/stack session operations has been performed.
+ * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski
+ *         </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ */
 public interface ShServerSessionListener {
 
   public void sessionDestroyed(String sessionId,ServerShSession session);

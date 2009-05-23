@@ -135,7 +135,7 @@ public class CreditControlServerSessionImpl extends CreditControlSessionImpl imp
 	  
 	//RFC 4006 5.5
 	rar.setReAuthRequestType(ReAuthRequestTypeAvp.AUTHORIZE_ONLY);
-	rar.setAuthApplicationId(4);
+	rar.setAuthApplicationId(CreditControlMessageFactory._CCA_AUTH_APP_ID);
 	
     DiameterMessageImpl msg = (DiameterMessageImpl) rar;
 

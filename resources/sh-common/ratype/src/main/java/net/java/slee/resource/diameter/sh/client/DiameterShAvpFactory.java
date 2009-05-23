@@ -31,7 +31,15 @@ import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplication
 import net.java.slee.resource.diameter.sh.client.events.avp.SupportedApplicationsAvp;
 import net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp;
 import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
-
+/**
+ * 
+ * Start time:16:25:30 2009-05-23<br>
+ * Project: diameter-parent<br>
+ * Diameter Sh avp factory interface defining methods to create Sh specific avps.
+ * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
+ *         </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ */
 public interface DiameterShAvpFactory {
 
   public DiameterAvpFactory getBaseFactory();

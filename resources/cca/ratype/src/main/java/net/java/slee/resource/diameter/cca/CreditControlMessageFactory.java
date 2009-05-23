@@ -1,6 +1,7 @@
 package net.java.slee.resource.diameter.cca;
 
 import net.java.slee.resource.diameter.base.DiameterMessageFactory;
+import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
 import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
 
@@ -33,6 +34,7 @@ public interface CreditControlMessageFactory {
    * @return a new CreditControlRequest
    */
   CreditControlRequest createCreditControlRequest();
+ 
 
   /**
    * Create a CreditControlRequest instance, populating it with the internal

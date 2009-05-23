@@ -29,7 +29,6 @@ package org.mobicents.slee.resource.diameter.sh.server.events;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodes;
 import net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp;
 import net.java.slee.resource.diameter.sh.server.events.PushNotificationAnswer;
-import net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest;
 
 import org.apache.log4j.Logger;
 import org.jdiameter.api.Avp;

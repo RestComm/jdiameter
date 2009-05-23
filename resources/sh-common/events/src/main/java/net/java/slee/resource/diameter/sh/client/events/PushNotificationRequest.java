@@ -26,15 +26,14 @@
  */
 package net.java.slee.resource.diameter.sh.client.events;
 
-
 import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
-
-
 
 /**
  * Defines an interface representing the Push-Notification-Request command.
- *
- * From the Diameter Sh Reference Point Protocol Details (3GPP TS 29.329 V7.1.0) specification:
+ * 
+ * From the Diameter Sh Reference Point Protocol Details (3GPP TS 29.329 V7.1.0)
+ * specification:
+ * 
  * <pre>
  * 6.1.7        Push-Notification-Request (PNR) Command
  * 
@@ -64,51 +63,56 @@ public interface PushNotificationRequest extends DiameterShMessage {
 
 	static final int commandCode = 309;
 
- 
+	/**
+	 * Returns true if the Destination-Host AVP is present in the message.
+	 */
+	boolean hasDestinationHost();
 
+	/**
+	 * Returns true if the Destination-Realm AVP is present in the message.
+	 */
+	boolean hasDestinationRealm();
 
-    /**
-     * Returns true if the Destination-Host AVP is present in the message.
-     */
-    boolean hasDestinationHost();
+	/**
+	 * Returns true if the User-Identity AVP is present in the message.
+	 */
+	boolean hasUserIdentity();
 
-    /**
-     * Returns true if the Destination-Realm AVP is present in the message.
-     */
-    boolean hasDestinationRealm();
+	/**
+	 * Returns the value of the User-Identity AVP, of type Grouped.
+	 * 
+	 * @return the value of the User-Identity AVP or null if it has not been set
+	 *         on this message
+	 */
+	UserIdentityAvp getUserIdentity();
 
-    /**
-     * Returns true if the User-Identity AVP is present in the message.
-     */
-    boolean hasUserIdentity();
+	/**
+	 * Sets the value of the User-Identity AVP, of type Grouped.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setUserIdentity has already been called
+	 */
+	void setUserIdentity(UserIdentityAvp userIdentity);
 
-    /**
-     * Returns the value of the User-Identity AVP, of type Grouped.
-     * @return the value of the User-Identity AVP or null if it has not been set on this message
-     */
-    UserIdentityAvp getUserIdentity();
+	/**
+	 * Returns true if the User-Data AVP is present in the message.
+	 */
+	boolean hasUserData();
 
-    /**
-     * Sets the value of the User-Identity AVP, of type Grouped.
-     * @throws IllegalStateException if setUserIdentity has already been called
-     */
-    void setUserIdentity(UserIdentityAvp userIdentity);
+	/**
+	 * Returns the value of the User-Data AVP, of type UserData.
+	 * 
+	 * @return the value of the User-Data AVP or null if it has not been set on
+	 *         this message
+	 */
+	String getUserData();
 
-    /**
-     * Returns true if the User-Data AVP is present in the message.
-     */
-    boolean hasUserData();
-
-    /**
-     * Returns the value of the User-Data AVP, of type UserData.
-     * @return the value of the User-Data AVP or null if it has not been set on this message
-     */
-    String getUserData();
-
-    /**
-     * Sets the value of the User-Data AVP, of type UserData.
-     * @throws IllegalStateException if setUserData has already been called
-     */
-    void setUserData(byte[] userData);
+	/**
+	 * Sets the value of the User-Data AVP, of type UserData.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setUserData has already been called
+	 */
+	void setUserData(byte[] userData);
 
 }

@@ -75,7 +75,7 @@ public abstract class CreditControlSessionImpl extends DiameterActivityImpl impl
   {
     super.destinationHost = destinationHost;
 
-    ((CreditControlMessageFactoryImpl)ccaMessageFactory).removeAvpFromInnerList(destinationHost.getCode());
+    //((CreditControlMessageFactoryImpl)ccaMessageFactory).removeAvpFromInnerList(destinationHost.getCode());
     ((CreditControlMessageFactoryImpl)ccaMessageFactory).addAvpToInnerList(destinationHost);
   }
 
@@ -83,7 +83,7 @@ public abstract class CreditControlSessionImpl extends DiameterActivityImpl impl
   {
     super.destinationRealm=destinationRealm;
 
-    ((CreditControlMessageFactoryImpl)ccaMessageFactory).removeAvpFromInnerList(destinationRealm.getCode());
+    //((CreditControlMessageFactoryImpl)ccaMessageFactory).removeAvpFromInnerList(destinationRealm.getCode());
     ((CreditControlMessageFactoryImpl)ccaMessageFactory).addAvpToInnerList(destinationRealm);
   }
 }

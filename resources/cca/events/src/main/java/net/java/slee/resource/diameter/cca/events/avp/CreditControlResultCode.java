@@ -1,5 +1,15 @@
 package net.java.slee.resource.diameter.cca.events.avp;
 
+/**
+ * 
+ * Start time:15:00:42 2009-05-23<br>
+ * Project: diameter-parent<br>
+ * Defines rturn codes used by CCA messages.
+ * 
+ * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
+ *         </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ */
 public class CreditControlResultCode {
 
 	/**

@@ -26,6 +26,20 @@
  */
 package net.java.slee.resource.diameter.sh.client;
 
+/**
+ * 
+ * Start time:16:33:52 2009-05-23<br>
+ * Project: diameter-parent<br>
+ * Enum which defines Sh session state. Possible values:
+ * <ul>
+ * <li>NOTSUBSCRIBED - start state of sessions - both subscribe type and request/response</li>
+ * <li>SUBSCRIBED - indicates that subscription suceeded</li>
+ * <li>TERMINATED - indicates end of life, activity is removed.</li>
+ * </ul>
+ * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
+ *         </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ */
 public enum ShSessionState {
 
   NOTSUBSCRIBED,SUBSCRIBED,TERMINATED;

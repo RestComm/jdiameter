@@ -40,7 +40,15 @@ import org.jdiameter.api.Message;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 
 import org.mobicents.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvpImpl;
-
+/**
+ * 
+ * Start time:15:44:42 2009-05-23<br>
+ * Project: diameter-parent<br>
+ * Implementation of common methods for sh messages.
+ * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
+ *         </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ */
 public class DiameterShMessageImpl extends DiameterMessageImpl implements DiameterShMessage {
 
   private static transient Logger logger = Logger.getLogger(DiameterShMessageImpl.class);

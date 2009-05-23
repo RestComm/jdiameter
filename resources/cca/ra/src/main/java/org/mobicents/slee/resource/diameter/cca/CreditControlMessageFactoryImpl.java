@@ -211,7 +211,7 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
       }
     }
   }
-
+  
   // »»»»»»»»»»»»»»»»»»»»»
   // »» PRIVATE METHODS ««
   // «««««««««««««««««««««
@@ -321,7 +321,7 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
     }
   }
 
-  private CreditControlMessage createCreditControlMessage(String sessionId, boolean isRequest) throws IllegalArgumentException
+  private CreditControlMessage createCreditControlMessage(String sessionId, boolean isRequest ) throws IllegalArgumentException
   {
     ApplicationId applicationId = ApplicationId.createByAuthAppId(_CCA_VENDOR, _CCA_AUTH_APP_ID);
 
@@ -352,10 +352,12 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
         throw new IllegalArgumentException(e);
       }
     }
-
+    
     Message msg = createMessage(CreditControlAnswer.commandCode, applicationId, list.size() > 0 ? list.toArray(new DiameterAvp[list.size()]) : null);
     msg.setRequest( isRequest );
 
     return isRequest ? new CreditControlRequestImpl(msg) : new CreditControlAnswerImpl(msg);
   }
+
+
 }
