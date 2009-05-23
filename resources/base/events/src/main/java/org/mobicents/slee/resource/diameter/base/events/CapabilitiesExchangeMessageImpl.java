@@ -7,7 +7,6 @@
  */
 package org.mobicents.slee.resource.diameter.base.events;
 
-
 import net.java.slee.resource.diameter.base.events.CapabilitiesExchangeMessage;
 import net.java.slee.resource.diameter.base.events.avp.AddressAvp;
 import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp;
@@ -115,7 +114,7 @@ public abstract class CapabilitiesExchangeMessageImpl extends DiameterMessageImp
 
 	public void setAuthApplicationIds(long[] authApplicationIds) {
 		// FIXME: baranowb; setting mandatory to false
-		super.setAvpsAsUInt32(Avp.AUTH_APPLICATION_ID, authApplicationIds, false, true);
+		super.setAvpsAsUInt32(Avp.AUTH_APPLICATION_ID, authApplicationIds, true, true);
 
 	}
 
@@ -175,28 +174,21 @@ public abstract class CapabilitiesExchangeMessageImpl extends DiameterMessageImp
 
 	}
 
-
-
 	public AddressAvp getHostIpAddress() {
-		if(hasAcctApplicationId())
-		{
-			return  super.getAvpAsAddress(Avp.HOST_IP_ADDRESS)[0];
-		}else
-		{
+		if (hasAcctApplicationId()) {
+			return super.getAvpAsAddress(Avp.HOST_IP_ADDRESS)[0];
+		} else {
 			return null;
 		}
 	}
 
 	public long getInbandSecurityId() {
-		if(hasAcctApplicationId())
-		{
+		if (hasAcctApplicationId()) {
 			return super.getAvpAsUInt32(Avp.INBAND_SECURITY_ID);
-		}else
-		{
+		} else {
 			return Long.MIN_VALUE;
 		}
 	}
-
 
 	public boolean hasHostIpAddress() {
 		return super.hasAvp(Avp.HOST_IP_ADDRESS);
@@ -209,8 +201,5 @@ public abstract class CapabilitiesExchangeMessageImpl extends DiameterMessageImp
 	public boolean hasSupportedVendorId() {
 		return super.hasAvp(Avp.SUPPORTED_VENDOR_ID);
 	}
-
-
-
 
 }

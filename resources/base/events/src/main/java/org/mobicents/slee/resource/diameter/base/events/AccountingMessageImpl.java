@@ -70,15 +70,22 @@ public abstract class AccountingMessageImpl extends DiameterMessageImpl implemen
 	}
 
 	public boolean hasAccountingSessionId() {
-		return false; // todo unknown
+		return super.hasAvp(Avp.ACC_SESSION_ID);
 	}
 
 	public byte[] getAccountingSessionId() {
-		return new byte[0]; // todo unknown
+		if(hasAccountingSessionId())
+		{
+			return super.getAvpAsOctet(Avp.ACC_SESSION_ID).getBytes();
+		}
+		
+		return null;
+		
 	}
 
 	public void setAccountingSessionId(byte[] accountingSessionId) {
-		// todo unknown
+
+		super.setAvpAsOctet(Avp.ACC_SESSION_ID, new String(accountingSessionId), true, true);
 	}
 
 	public boolean hasAcctMultiSessionId() {

@@ -186,7 +186,14 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 			return null;
 		}
 	}
-
+	protected String getAvpAsOctet(int code) {
+		try {
+			return message.getAvps().getAvp(code).getOctetString();
+		} catch (Exception e) {
+			log.error("Failed to decode AVP data. (code: " + code + ")", e);
+			return null;
+		}
+	}
 	protected long[] getAvpsAsUInt32(int code) {
 		AvpSet avps = message.getAvps().getAvps(code);
 
@@ -521,7 +528,9 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 	protected void setAvpAsUtf8(int code, String value, boolean mandatory, boolean remove) {
 		AvpUtilities.setAvpAsString(code, 0, false, value, message.getAvps(), remove, mandatory, false);
 	}
-
+	protected void setAvpAsOctet(int code, String value, boolean mandatory, boolean remove) {
+		AvpUtilities.setAvpAsString(code, 0, true, value, message.getAvps(), remove, mandatory, false);
+	}
 	protected void setAvpsAsUInt32(int code, long[] values, boolean mandatory, boolean remove) {
 		if (remove) {
 			message.getAvps().removeAvp(code);
