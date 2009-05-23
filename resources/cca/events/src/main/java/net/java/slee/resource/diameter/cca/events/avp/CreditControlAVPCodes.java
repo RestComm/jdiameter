@@ -2,7 +2,7 @@
  * Start time:19:45:16 2008-12-08<br>
  * Project: mobicents-diameter-parent<br>
  * 
- * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
+ * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski
  *         </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
@@ -13,8 +13,7 @@ package net.java.slee.resource.diameter.cca.events.avp;
  * Project: mobicents-diameter-parent<br>
  * Contains definition of avp codes and values used by Diameter CCA - rfc 4006
  * 
- * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
- *         </a>
+ * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public final class CreditControlAVPCodes {

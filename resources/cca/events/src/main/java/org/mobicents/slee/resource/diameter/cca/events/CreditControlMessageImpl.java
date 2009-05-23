@@ -13,6 +13,7 @@ import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Message;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.diameter.dictionary.AvpRepresentation;
+import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.base.events.ExtensionDiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.MultipleServicesCreditControlAvpImpl;
 
@@ -26,7 +27,7 @@ import org.mobicents.slee.resource.diameter.cca.events.avp.MultipleServicesCredi
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public class CreditControlMessageImpl extends ExtensionDiameterMessageImpl implements CreditControlMessage {
+public abstract class CreditControlMessageImpl extends DiameterMessageImpl implements CreditControlMessage {
 
   private static transient Logger logger = Logger.getLogger(CreditControlMessageImpl.class);
 

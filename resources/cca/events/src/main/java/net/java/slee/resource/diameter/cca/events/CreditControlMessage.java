@@ -28,7 +28,7 @@ import net.java.slee.resource.diameter.cca.events.avp.MultipleServicesCreditCont
  *
  */
 public interface CreditControlMessage extends DiameterMessage {
-   int commandCode = 272;
+   final static int commandCode = 272;
   /**
    * Returns the value of the Acct-Multi-Session-Id AVP, of type UTF8String.
    * 
