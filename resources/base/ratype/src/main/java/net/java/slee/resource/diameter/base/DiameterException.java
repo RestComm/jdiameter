@@ -30,7 +30,7 @@ package net.java.slee.resource.diameter.base;
  * Start time:12:52:37 2009-05-21<br>
  * Project: diameter-parent<br>
  * Class that should be used to inidcate diameter problems.
- * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
+ * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski
  *         </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
