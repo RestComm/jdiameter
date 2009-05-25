@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import net.java.slee.resource.diameter.sh.client.events.avp.DataReferenceType;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
+import net.java.slee.resource.diameter.sh.client.events.avp.SubsReqType;
 import net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest;
 import net.java.slee.resource.diameter.sh.server.events.PushNotificationAnswer;
 import net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest;
@@ -132,7 +133,7 @@ public class ShClientFactoriesTest {
   }
 
   @Test
-  public void isPublicIdentityAccessibleTwice() throws Exception
+  public void isUDRPublicIdentityAccessibleTwice() throws Exception
   {
     String originalValue = "sip:alexandre@diameter.mobicents.org";
 
@@ -140,6 +141,40 @@ public class ShClientFactoriesTest {
     uiAvp.setPublicIdentity( originalValue );
     
     UserDataRequest udr = shClientFactory.createUserDataRequest( uiAvp, DataReferenceType.IMS_PUBLIC_IDENTITY );
+    
+    String obtainedValue1 = udr.getUserIdentity().getPublicIdentity();
+    String obtainedValue2 = udr.getUserIdentity().getPublicIdentity();
+    
+    assertTrue("Obtained value for Public-Identity AVP differs from original.", obtainedValue1.equals( originalValue ));
+    assertTrue("Obtained #1 value for Public-Identity AVP differs from Obtained #2.", obtainedValue1.equals( obtainedValue2 ));
+  }
+  
+  @Test
+  public void isPURPublicIdentityAccessibleTwice() throws Exception
+  {
+    String originalValue = "sip:alexandre@diameter.mobicents.org";
+
+    UserIdentityAvpImpl uiAvp = new UserIdentityAvpImpl(DiameterShAvpCodes.USER_IDENTITY, 10415L, 1, 0, new byte[]{});
+    uiAvp.setPublicIdentity( originalValue );
+    
+    ProfileUpdateRequest udr = shClientFactory.createProfileUpdateRequest( uiAvp, DataReferenceType.IMS_PUBLIC_IDENTITY, new byte[1] );
+    
+    String obtainedValue1 = udr.getUserIdentity().getPublicIdentity();
+    String obtainedValue2 = udr.getUserIdentity().getPublicIdentity();
+    
+    assertTrue("Obtained value for Public-Identity AVP differs from original.", obtainedValue1.equals( originalValue ));
+    assertTrue("Obtained #1 value for Public-Identity AVP differs from Obtained #2.", obtainedValue1.equals( obtainedValue2 ));
+  }
+  
+  @Test
+  public void isSNRPublicIdentityAccessibleTwice() throws Exception
+  {
+    String originalValue = "sip:alexandre@diameter.mobicents.org";
+
+    UserIdentityAvpImpl uiAvp = new UserIdentityAvpImpl(DiameterShAvpCodes.USER_IDENTITY, 10415L, 1, 0, new byte[]{});
+    uiAvp.setPublicIdentity( originalValue );
+    
+    SubscribeNotificationsRequest udr = shClientFactory.createSubscribeNotificationsRequest( uiAvp, DataReferenceType.IMS_PUBLIC_IDENTITY,SubsReqType.SUBSCRIBE );
     
     String obtainedValue1 = udr.getUserIdentity().getPublicIdentity();
     String obtainedValue2 = udr.getUserIdentity().getPublicIdentity();

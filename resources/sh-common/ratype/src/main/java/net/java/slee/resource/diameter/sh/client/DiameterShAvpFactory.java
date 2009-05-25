@@ -69,4 +69,13 @@ public interface DiameterShAvpFactory {
    */
   UserIdentityAvp createUserIdentity();
 
+  
+  /**
+	 * Validates User data against XML schema.
+	 * 
+	 * @return - Returns <b>true</b> xml validation passed - this requiers data
+	 *         to be valid xml document and must follow user data xml schema.
+	 */
+	boolean validateUserData(byte[] b);
+  
 }

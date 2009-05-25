@@ -27,23 +27,26 @@
 package net.java.slee.resource.diameter.sh.client;
 
 /**
- * Factory to support the creation of concrete instances of AVPs for Diameter Sh applications.
- *
+ * Factory to support the creation of concrete instances of AVPs for Diameter Sh
+ * applications.
+ * 
  */
 public interface MessageFactory {
 	/**
 	 * variable equal to SH application ID
 	 */
-  public static final int _SH_APP_ID = 16777217;
-  /**
-   * ID of Sh application vendor - 3GPP
-   */
-  public static final int _SH_VENDOR_ID = 10415;
+	public static final int _SH_APP_ID = 16777217;
+	/**
+	 * ID of Sh application vendor - 3GPP
+	 */
+	public static final int _SH_VENDOR_ID = 10415;
 
-  /**
-   * Get a factory to create AVPs and messages defined by Diameter Base.
-   * @return base Diameter message factory
-   */
-  //DiameterMessageFactory getBaseMessageFactory();
+	/**
+	 * Get a factory to create AVPs and messages defined by Diameter Base.
+	 * 
+	 * @return base Diameter message factory
+	 */
+	// DiameterMessageFactory getBaseMessageFactory();
+	
 
 }

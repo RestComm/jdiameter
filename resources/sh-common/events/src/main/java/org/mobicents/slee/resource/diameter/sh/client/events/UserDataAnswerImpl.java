@@ -26,19 +26,10 @@
  */
 package org.mobicents.slee.resource.diameter.sh.client.events;
 
-import java.io.ByteArrayInputStream;
-
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodes;
 import net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp;
 import net.java.slee.resource.diameter.sh.client.events.UserDataAnswer;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
-import net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest;
 
 import org.apache.log4j.Logger;
 import org.jdiameter.api.Avp;
@@ -52,30 +43,14 @@ import org.mobicents.slee.resource.diameter.base.events.avp.ExperimentalResultAv
  * Project: diameter-parent<br>
  * Implementation of {@link UserDataAnswer} interface.
  * 
- * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski
- *         </a>
+ * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class UserDataAnswerImpl extends DiameterShMessageImpl implements UserDataAnswer {
 
 	private static transient Logger logger = Logger.getLogger(UserDataAnswerImpl.class);
 
-	private static DocumentBuilder docBuilder = null;
-
-	static {
-		try {
-			SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			Schema schema = schemaFactory.newSchema(UserDataAnswerImpl.class.getClassLoader().getResource("ShDataType.xsd"));
-
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			factory.setSchema(schema);
-
-			docBuilder = factory.newDocumentBuilder();
-		} catch (Exception e) {
-			logger.error("Failed to initialize Sh-Data schema validator. No validation will be available.", e);
-		}
-	}
-
+	
 	public UserDataAnswerImpl(Message msg) {
 		super(msg);
 		msg.setRequest(false);
@@ -100,14 +75,7 @@ public class UserDataAnswerImpl extends DiameterShMessageImpl implements UserDat
 	}
 
 	public void setUserData(byte[] userData) {
-		if (docBuilder != null) {
-			try {
-				docBuilder.parse(new ByteArrayInputStream(userData));
-			} catch (Exception e) {
-				logger.error("Failure while validating User-Data:", e);
-				return;
-			}
-		}
+	
 
 		super.message.getAvps().removeAvp(DiameterShAvpCodes.USER_DATA);
 		super.message.getAvps().addAvp(DiameterShAvpCodes.USER_DATA, userData, 10415L, true, false);

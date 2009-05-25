@@ -21,6 +21,9 @@ import net.java.slee.resource.diameter.sh.client.events.ProfileUpdateAnswer;
 import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
 import net.java.slee.resource.diameter.sh.client.events.SubscribeNotificationsAnswer;
 import net.java.slee.resource.diameter.sh.client.events.UserDataAnswer;
+import net.java.slee.resource.diameter.sh.client.events.avp.DataReferenceType;
+import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
+import net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest;
 
 import org.jdiameter.api.Stack;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
@@ -28,6 +31,7 @@ import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.client.DiameterShAvpFactoryImpl;
+import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.server.ShServerMessageFactoryImpl;
 
 /**
@@ -197,6 +201,22 @@ public class ShServerFactoriesTest {
     assertTrue("Experimental-Result-Code in UDA should be " + originalValue +" and is " + obtainedValue + ".", originalValue == obtainedValue);
   }
   
+  @Test
+  public void isPNRPublicIdentityAccessibleTwice() throws Exception
+  {
+    String originalValue = "sip:alexandre@diameter.mobicents.org";
+
+    UserIdentityAvpImpl uiAvp = new UserIdentityAvpImpl(DiameterShAvpCodes.USER_IDENTITY, 10415L, 1, 0, new byte[]{});
+    uiAvp.setPublicIdentity( originalValue );
+    
+    PushNotificationRequest udr = shServerFactory.createPushNotificationRequest(uiAvp, new byte[1]);
+    
+    String obtainedValue1 = udr.getUserIdentity().getPublicIdentity();
+    String obtainedValue2 = udr.getUserIdentity().getPublicIdentity();
+    
+    assertTrue("Obtained value for Public-Identity AVP differs from original.", obtainedValue1.equals( originalValue ));
+    assertTrue("Obtained #1 value for Public-Identity AVP differs from Obtained #2.", obtainedValue1.equals( obtainedValue2 ));
+  }
   /**
    * Class representing the Diameter Configuration  
    */
