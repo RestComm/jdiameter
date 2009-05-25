@@ -26,6 +26,8 @@
  */
 package org.mobicents.slee.resource.diameter.sh.server.events;
 
+import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
+import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.sh.client.events.avp.DataReferenceType;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
 import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
@@ -35,6 +37,7 @@ import org.apache.log4j.Logger;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Message;
+import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.DiameterShMessageImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvpImpl;
 
@@ -73,10 +76,21 @@ public class ProfileUpdateRequestImpl extends DiameterShMessageImpl implements P
 
 	public UserIdentityAvp getUserIdentity() {
 		if (hasUserIdentity()) {
-			Avp rawAvp = super.message.getAvps().getAvp(DiameterShAvpCodes.USER_IDENTITY);
-
 			try {
-				return new UserIdentityAvpImpl(rawAvp.getCode(), rawAvp.getVendorId(), rawAvp.isMandatory() ? 1 : 0, rawAvp.isEncrypted() ? 1 : 0, rawAvp.getRaw());
+				Avp rawAvp = super.message.getAvps().getAvp(DiameterShAvpCodes.USER_IDENTITY, 10415L);
+
+				UserIdentityAvpImpl a = new UserIdentityAvpImpl(rawAvp.getCode(), rawAvp.getVendorId(), rawAvp.isMandatory() ? 1 : 0, rawAvp.isEncrypted() ? 1 : 0, new byte[] {});
+
+				for (Avp subAvp : rawAvp.getGrouped()) {
+					try {
+						a.setExtensionAvps(new DiameterAvp[] { new DiameterAvpImpl(subAvp.getCode(), subAvp.getVendorId(), subAvp.isMandatory() ? 1 : 0, subAvp.isEncrypted() ? 1 : 0, subAvp.getRaw(),
+								null) });
+					} catch (AvpNotAllowedException e) {
+						logger.error("Unable to add child AVPs to User-Identity AVP.", e);
+					}
+				}
+
+				return a;
 			} catch (AvpDataException e) {
 				logger.error("Unable to decode User-Identity AVP contents.", e);
 			}

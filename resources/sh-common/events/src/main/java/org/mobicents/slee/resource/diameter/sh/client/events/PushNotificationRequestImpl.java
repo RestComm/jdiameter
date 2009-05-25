@@ -26,6 +26,8 @@
  */
 package org.mobicents.slee.resource.diameter.sh.client.events;
 
+import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
+import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
 import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
@@ -36,6 +38,7 @@ import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Message;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.diameter.dictionary.AvpRepresentation;
+import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvpImpl;
 
 /**
@@ -60,21 +63,31 @@ public class PushNotificationRequestImpl extends DiameterShMessageImpl implement
 		super.shortMessageName = "PNR";
 	}
 
-	public UserIdentityAvp getUserIdentity() {
-		if (!hasUserIdentity()) {
-			return null;
-		}
+	 public UserIdentityAvp getUserIdentity() {
+		if (hasUserIdentity()) {
+			try {
+				Avp rawAvp = super.message.getAvps().getAvp(DiameterShAvpCodes.USER_IDENTITY, 10415L);
 
-		Avp rawAvp = super.message.getAvps().getAvp(DiameterShAvpCodes.USER_IDENTITY);
+				UserIdentityAvpImpl a = new UserIdentityAvpImpl(rawAvp.getCode(), rawAvp.getVendorId(), rawAvp.isMandatory() ? 1 : 0, rawAvp.isEncrypted() ? 1 : 0, new byte[] {});
 
-		try {
-			return new UserIdentityAvpImpl(rawAvp.getCode(), rawAvp.getVendorId(), rawAvp.isMandatory() ? 1 : 0, rawAvp.isEncrypted() ? 1 : 0, rawAvp.getRaw());
-		} catch (AvpDataException e) {
-			logger.error("Unable to decode User-Identity AVP contents.", e);
+				for (Avp subAvp : rawAvp.getGrouped()) {
+					try {
+						a.setExtensionAvps(new DiameterAvp[] { new DiameterAvpImpl(subAvp.getCode(), subAvp.getVendorId(), subAvp.isMandatory() ? 1 : 0, subAvp.isEncrypted() ? 1 : 0, subAvp.getRaw(),
+								null) });
+					} catch (AvpNotAllowedException e) {
+						logger.error("Unable to add child AVPs to User-Identity AVP.", e);
+					}
+				}
+
+				return a;
+			} catch (AvpDataException e) {
+				logger.error("Unable to decode User-Identity AVP contents.", e);
+			}
 		}
 
 		return null;
 	}
+
 
 	public boolean hasUserIdentity() {
 		return super.message.getAvps().getAvp(DiameterShAvpCodes.USER_IDENTITY) != null;
