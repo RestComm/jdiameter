@@ -42,6 +42,8 @@ import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Message;
+import org.mobicents.diameter.dictionary.AvpDictionary;
+import org.mobicents.diameter.dictionary.AvpRepresentation;
 import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.DiameterShMessageImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvpImpl;
@@ -291,7 +293,19 @@ public class SubscribeNotificationsRequestImpl extends DiameterShMessageImpl imp
 
   public void setUserIdentity(UserIdentityAvp userIdentity)
   {
-    super.setAvpAsGroup(userIdentity.getCode(), new UserIdentityAvp[] { userIdentity }, true, true);
+    if(hasUserIdentity())
+    {
+      throw new IllegalStateException("AVP User-Identity is already present in message and cannot be overwritten.");
+    }
+    else
+    {
+      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterShAvpCodes.USER_IDENTITY, 10415L);
+      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
+      // int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
+
+      // FIXME: Alexandre: Need to specify protected!
+      super.setAvpAsGroup(avpRep.getCode(), avpRep.getVendorId(), userIdentity.getExtensionAvps(), mandatoryAvp == 1, false);
+    }
   }
 
 }

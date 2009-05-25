@@ -37,6 +37,8 @@ import org.apache.log4j.Logger;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Message;
+import org.mobicents.diameter.dictionary.AvpDictionary;
+import org.mobicents.diameter.dictionary.AvpRepresentation;
 import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.DiameterShMessageImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvpImpl;
@@ -47,8 +49,7 @@ import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp
  * Project: diameter-parent<br>
  * Implementation of {@link ProfileUpdateRequest} interface.
  * 
- * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski
- *         </a>
+ * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class ProfileUpdateRequestImpl extends DiameterShMessageImpl implements ProfileUpdateRequest {
@@ -115,9 +116,22 @@ public class ProfileUpdateRequestImpl extends DiameterShMessageImpl implements P
 		super.setAvpAsInt32(DiameterShAvpCodes.DATA_REFERENCE, dataReference.getValue(), true, true);
 	}
 
-	public void setUserIdentity(UserIdentityAvp userIdentity) {
-		super.setAvpAsGroup(userIdentity.getCode(), new UserIdentityAvp[] { userIdentity }, true, true);
-	}
+	public void setUserIdentity(UserIdentityAvp userIdentity)
+	  {
+	    if(hasUserIdentity())
+	    {
+	      throw new IllegalStateException("AVP User-Identity is already present in message and cannot be overwritten.");
+	    }
+	    else
+	    {
+	      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterShAvpCodes.USER_IDENTITY, 10415L);
+	      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
+	      // int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
+
+	      // FIXME: Alexandre: Need to specify protected!
+	      super.setAvpAsGroup(avpRep.getCode(), avpRep.getVendorId(), userIdentity.getExtensionAvps(), mandatoryAvp == 1, false);
+	    }
+	  }
 
 	public String getUserData() {
 		try {
