@@ -288,11 +288,12 @@ public class SubscribeNotificationsRequestImpl extends DiameterShMessageImpl imp
 
   public void setExpiryTime(Date expiryTime)
   {
-    super.setAvpAsDate(DiameterShAvpCodes.EXPIRY_TIME, expiryTime, true, true);
+    addAvp(DiameterShAvpCodes.EXPIRY_TIME, expiryTime);
   }
 
   public void setUserIdentity(UserIdentityAvp userIdentity)
   {
+    // FIXME: Alexandre: Make it use addAvp(...)
     if(hasUserIdentity())
     {
       throw new IllegalStateException("AVP User-Identity is already present in message and cannot be overwritten.");
@@ -300,11 +301,11 @@ public class SubscribeNotificationsRequestImpl extends DiameterShMessageImpl imp
     else
     {
       AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterShAvpCodes.USER_IDENTITY, 10415L);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      // int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
+      boolean mandatoryAvp = !(avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot"));
+      boolean protectedAvp = avpRep.getRuleProtected().equals("must");
 
       // FIXME: Alexandre: Need to specify protected!
-      super.setAvpAsGroup(avpRep.getCode(), avpRep.getVendorId(), userIdentity.getExtensionAvps(), mandatoryAvp == 1, false);
+      super.setAvpAsGrouped(avpRep.getCode(), avpRep.getVendorId(), userIdentity.getExtensionAvps(), mandatoryAvp, protectedAvp);
     }
   }
 

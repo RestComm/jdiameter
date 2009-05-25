@@ -460,7 +460,7 @@
          field MUST be set to 12 (16 if the 'V' bit is enabled).
 	-->
 		<typedefn type-name="VendorId" type-parent="Unsigned32"/>
-		<typedefn type-name="AppId" type-parent="Integer32"/>
+		<typedefn type-name="AppId" type-parent="Unsigned32"/>
 		
 		<typedefn type-name="Float64"/>
 		
@@ -496,10 +496,11 @@
          64 bit unsigned value, in network byte order. The AVP Length
          field MUST be set to 16 (20 if the 'V' bit is enabled).
 	-->
-		<typedefn type-name="Enumerated" type-parent="Unsigned32"/>
+		<typedefn type-name="Enumerated" type-parent="Integer32"/>
 		<typedefn type-name="DiameterURI" type-parent="UTF8String"/>
 
-		<!-- ************************* End Typedefns ************************-->
+		<!-- ************************* End Typedefns ************************
+-->
 		<!-- ******************* RADIUS AVPS ************************ -->
 		<!-- http://www.iana.org/assignments/aaa-parameters -->
 		<!-- 1-255    Radius attributes                  [RAD-IANA] -->
@@ -872,7 +873,8 @@
 		<avp name="Framed-IPv6-Prefix" code="97" mandatory="may">
 			<type type-name="OctetString"/>
 		</avp>
-		<!-- ******************* DIAMETER BASE PROTOCOL AVPS ************************-->
+		<!-- ******************* DIAMETER BASE PROTOCOL AVPS ************************
+-->
 		<avp name="Host-IP-Address" code="257" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="mustnot">
 			<type type-name="IPAddress"/>
 		</avp>
@@ -1134,7 +1136,8 @@
 		<avp name="Accounting-Sub-Session-Id" code="287" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot">
 			<type type-name="Unsigned64"/>
 		</avp>
-<!-- 288-290    Unallocated http://www.iana.org/assignments/aaa-parameters (last updated 20 September 2005)??-->
+<!-- 288-290    Unallocated http://www.iana.org/assignments/aaa-parameters (last updated 20 September 2005)??
+-->
 		<avp name="Authorization-Lifetime" code="291" mandatory="must" may-encrypt="no" vendor-bit="mustnot">
 			<type type-name="Integer32"/>
 		</avp>
@@ -1167,7 +1170,8 @@
 				<gavp name="Experimental-Result-Code"/>
 			</grouped>
 		</avp>
-		<!-- 3GPP TS 29.230 version 6.5.0 Release 6, ETSI TS 129 230 V6.5.0 (2005-09)-->
+		<!-- 3GPP TS 29.230 version 6.5.0 Release 6, ETSI TS 129 230 V6.5.0 (2005-09)
+-->
 		<avp name="Experimental-Result-Code" code="298" mandatory="must" may-encrypt="no" protected="mustnot" vendor-bit="mustnot">
 			<type type-name="Unsigned32"/>
 			<enum name="DIAMETER_FIRST_REGISTRATION" code="2001"/>
@@ -1219,10 +1223,13 @@
 			</grouped>
 		</avp>
 		<!-- 301-317    Unallocated -->
-<!-- AVP:s 318 - 348 Belongs to Diameter Mobile IPv4 Application and is defined in mobileipv4.xml--> 
+<!-- AVP:s 318 - 348 Belongs to Diameter Mobile IPv4 Application and is defined in mobileipv4.xml
+--> 
 <!-- AVP:s 349-362        Unassigned -->
-<!-- AVP:s 363 - 408 Belongs to Diameter Network Access Server Application and is defined in nasreq.xml-->
-<!-- AVP:s 411 - 461 Belongs to Carge Control and is defined in chargecontrol.xml--> 
+<!-- AVP:s 363 - 408 Belongs to Diameter Network Access Server Application and is defined in nasreq.xml
+-->
+<!-- AVP:s 411 - 461 Belongs to Carge Control and is defined in chargecontrol.xml
+--> 
 <!-- 466-479    Unallocated -->
 		<avp name="Accounting-Record-Type" code="480" mandatory="must" may-encrypt="yes" vendor-bit="mustnot">
 			<type type-name="Enumerated"/>
@@ -1253,7 +1260,8 @@
 				<gavp name="Host-IP-Address"/>
 			</grouped>
 		</avp>
-		<!-- ************************ END DIAMETER BASE PROTOCOL AVPS *******************-->
+		<!-- ************************ END DIAMETER BASE PROTOCOL AVPS *******************
+-->
 <!--
 3GPP TS 29.230 version 7.7.0 Release 7  Table 7.1: 3GPP specific AVP codes
 Note: The AVP codes from 1 to 255 are reserved for backwards compatibility with 3GPP RADIUS Vendor
@@ -1417,7 +1425,8 @@ Note: The AVP codes from 800 to 822 are reserved for TS 32.299.
 		</avp>
 		<!-- In 3GPP TS 32.299 version 6.5.0 Release 6 (2005-12)					-->
 		<!-- type type-name="UTF8String"											-->
-		<!-- but according to 3GPP TS 32.299 version 7.4.0 Release 7(2006-12) it-->
+		<!-- but according to 3GPP TS 32.299 version 7.4.0 Release 7(2006-12) it
+-->
 		<!-- should be:																-->
 		<avp name="Content-Length" code="827" mandatory="must" may-encrypt="no" protected="mustnot" vendor-bit="must" vendor-id="TGPP" >
 			<type type-name="Unsigned32"/>
@@ -1963,7 +1972,8 @@ Note: The AVP codes from 900 to 999 are reserved for TS 29.061
 Note: The AVP codes from 1015 to 1099 are reserved for TS 29.210
 
 -->
-<!-- Note: The AVP codes from 1015 to 1099 are reserved for TS 29.210-->
+<!-- Note: The AVP codes from 1015 to 1099 are reserved for TS 29.210
+-->
 <!-- ETSI TS 129 140 V6.3.0 (2005-12) -->
 		<avp name="Served-User-Identity" code="1100" may-encrypt="no" protected="mustnot" vendor-bit="must" vendor-id="TGPP">
 			<grouped>
@@ -2084,9 +2094,12 @@ Note: The AVP codes from 1119 to 1199 are reserved for TS 29.140
 				<gavp name="Additional-Content-Information"/>
 			</grouped>
 		</avp>
-<!-- The Type-Number AVP (AVP code1204) is of type Enumerated and identifies the well-known-->
-<!-- media types. The values are taken from OMNA WSP Content Type Codes database-->
-<!-- http://www.openmobilealliance.org/tech/omna/omna-wsp-content-type.htm-->
+<!-- The Type-Number AVP (AVP code1204) is of type Enumerated and identifies the well-known
+-->
+<!-- media types. The values are taken from OMNA WSP Content Type Codes database
+-->
+<!-- http://www.openmobilealliance.org/tech/omna/omna-wsp-content-type.htm
+-->
 		<avp name="Type-Number" code="1204" may-encrypt="no" protected="mustnot" vendor-bit="must" vendor-id="TGPP">
 			<type type-name="Enumerated"/>
 			<enum name="text/*" code="0"/>
@@ -2736,7 +2749,8 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 		<command name="Registration-Termination"		code="304" vendor-id="TGPP"/>
 		<command name="Push-Profile"					code="305" vendor-id="TGPP"/>
 		
-		<!-- ************************** 3GPP Cx/Dx AVPS *********************-->
+		<!-- ************************** 3GPP Cx/Dx AVPS *********************
+-->
 		<avp name="Visited-Network-Identifier" code="600" mandatory="must" vendor-bit="must" vendor-id="TGPP" may-encrypt="no">
 			<type type-name="OctetString"/>
 		</avp>

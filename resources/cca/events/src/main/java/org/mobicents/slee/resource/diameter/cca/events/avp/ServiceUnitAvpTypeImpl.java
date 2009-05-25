@@ -1,9 +1,27 @@
-/**
- * Start time:14:32:32 2009-05-23<br>
- * Project: diameter-parent<br>
+/*
+ * Mobicents, Communications Middleware
  * 
- * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
  */
 package org.mobicents.slee.resource.diameter.cca.events.avp;
 
@@ -35,8 +53,7 @@ import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
  *                         *[ AVP ]
  *
  * </pre>
- * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
- *         </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @see RequestedServiceUnitAvpImpl
  * @see GrantedServiceUnitAvpImpl
@@ -266,15 +283,7 @@ public class ServiceUnitAvpTypeImpl extends GroupedAvpImpl {
 	   */
 	  public void setCreditControlInputOctets(long ttc)
 	  {
-	    if(hasAvp(CreditControlAVPCodes.CC_Input_Octets))
-	    {
-	      throw new IllegalStateException("AVP CC-Input-Octets is already present in message and cannot be overwritten.");
-	    }
-
-	    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.CC_Input_Octets);
-	    int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-
-	    super.setAvpAsUInt64(CreditControlAVPCodes.CC_Input_Octets, ttc, mandatoryAvp == 1, true);
+	    addAvp(CreditControlAVPCodes.CC_Input_Octets, ttc);
 	  }
 
 	  /* (non-Javadoc)
@@ -300,15 +309,7 @@ public class ServiceUnitAvpTypeImpl extends GroupedAvpImpl {
 	   */
 	  public void setCreditControlOutputOctets(long ccoo)
 	  {
-	    if(hasAvp(CreditControlAVPCodes.CC_Output_Octets))
-	    {
-	      throw new IllegalStateException("AVP CC-Output-Octets is already present in message and cannot be overwritten.");
-	    }
-
-	    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.CC_Output_Octets);
-	    int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-
-	    super.setAvpAsUInt64(CreditControlAVPCodes.CC_Output_Octets, ccoo, mandatoryAvp == 1, true);
+	    addAvp(CreditControlAVPCodes.CC_Output_Octets, ccoo);
 	  }
 
 	  /* (non-Javadoc)
@@ -316,15 +317,7 @@ public class ServiceUnitAvpTypeImpl extends GroupedAvpImpl {
 	   */
 	  public void setCreditControlServiceSpecificUnits(long ccssu)
 	  {
-	    if(hasAvp(CreditControlAVPCodes.CC_Service_Specific_Units))
-	    {
-	      throw new IllegalStateException("AVP CC-Service-Specific-Units is already present in message and cannot be overwritten.");
-	    }
-
-	    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.CC_Service_Specific_Units);
-	    int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-
-	    super.setAvpAsUInt64(CreditControlAVPCodes.CC_Service_Specific_Units, ccssu, mandatoryAvp == 1, true);
+	    addAvp(CreditControlAVPCodes.CC_Service_Specific_Units, ccssu);
 	  }
 
 	  /* (non-Javadoc)
@@ -332,15 +325,7 @@ public class ServiceUnitAvpTypeImpl extends GroupedAvpImpl {
 	   */
 	  public void setCreditControlTime(long cct)
 	  {
-	    if(hasAvp(CreditControlAVPCodes.CC_Time))
-	    {
-	      throw new IllegalStateException("AVP CC-Time is already present in message and cannot be overwritten.");
-	    }
-
-	    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.CC_Time);
-	    int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-
-	    super.setAvpAsUInt64(CreditControlAVPCodes.CC_Time, cct, mandatoryAvp == 1, true);
+	    addAvp(CreditControlAVPCodes.CC_Time, cct);
 	  }
 
 	  /* (non-Javadoc)
@@ -348,15 +333,7 @@ public class ServiceUnitAvpTypeImpl extends GroupedAvpImpl {
 	   */
 	  public void setCreditControlTotalOctets(long ccto)
 	  {
-	    if(hasAvp(CreditControlAVPCodes.CC_Total_Octets))
-	    {
-	      throw new IllegalStateException("AVP CC-Total-Octets is already present in message and cannot be overwritten.");
-	    }
-
-	    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.CC_Total_Octets);
-	    int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-
-	    super.setAvpAsUInt64(CreditControlAVPCodes.CC_Total_Octets, ccto, mandatoryAvp == 1, true);
+	    addAvp(CreditControlAVPCodes.CC_Total_Octets, ccto);
 	  }
 
 	  /* (non-Javadoc)
@@ -364,15 +341,6 @@ public class ServiceUnitAvpTypeImpl extends GroupedAvpImpl {
 	   */
 	  public void setTariffTimeChange(Date ttc)
 	  {
-	    if(hasAvp(CreditControlAVPCodes.Tariff_Time_Change))
-	    {
-	      throw new IllegalStateException("AVP Tariff-Time-Change is already present in message and cannot be overwritten.");
-	    }
-
-	    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Tariff_Time_Change);
-	    int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-	    int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-	    super.avpSet.addAvp(CreditControlAVPCodes.Tariff_Time_Change	, ttc, mandatoryAvp == 1, protectedAvp == 1);
+	    addAvp(CreditControlAVPCodes.Tariff_Time_Change	, ttc);
 	  }
 }

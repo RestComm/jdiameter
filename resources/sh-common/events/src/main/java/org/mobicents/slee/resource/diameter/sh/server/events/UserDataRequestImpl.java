@@ -1,8 +1,7 @@
 /*
  * Mobicents, Communications Middleware
  * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party
- * contributors as
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
  * distributed under license by Red Hat Middleware LLC.
@@ -359,11 +358,10 @@ public class UserDataRequestImpl extends DiameterShMessageImpl implements UserDa
     else
     {
       AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterShAvpCodes.USER_IDENTITY, 10415L);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      // int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
+      boolean mandatoryAvp = !(avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot"));
+      boolean protectedAvp = avpRep.getRuleProtected().equals("must");
 
-      // FIXME: Alexandre: Need to specify protected!
-      super.setAvpAsGroup(avpRep.getCode(), avpRep.getVendorId(), userIdentity.getExtensionAvps(), mandatoryAvp == 1, false);
+      super.setAvpAsGrouped(avpRep.getCode(), avpRep.getVendorId(), userIdentity.getExtensionAvps(), mandatoryAvp, protectedAvp);
     }
   }
 

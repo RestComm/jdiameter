@@ -1,8 +1,7 @@
 /*
  * Mobicents, Communications Middleware
  * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party
- * contributors as
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
  * distributed under license by Red Hat Middleware LLC.
@@ -32,38 +31,41 @@ import net.java.slee.resource.diameter.base.events.avp.ReAuthRequestTypeAvp;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.Message;
 
+/**
+ * 
+ * Start time:16:56:38 2009-05-22<br>
+ * Project: diameter-parent<br>
+ * 
+ * <br>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 public class ReAuthRequestImpl extends ExtensionDiameterMessageImpl implements ReAuthRequest
 {
+  public ReAuthRequestImpl(Message message) {
+    super(message);
+  }
 
-	
-	public ReAuthRequestImpl(Message message) {
-        super(message);
-    }
+  public boolean hasReAuthRequestType() {
+    return message.getAvps().getAvp(Avp.RE_AUTH_REQUEST_TYPE) != null;
+  }
 
-    public boolean hasReAuthRequestType() {
-        return message.getAvps().getAvp(Avp.RE_AUTH_REQUEST_TYPE) != null;
-    }
+  public ReAuthRequestTypeAvp getReAuthRequestType() {
+    return ReAuthRequestTypeAvp.fromInt(getAvpAsInt32(Avp.RE_AUTH_REQUEST_TYPE));
+  }
 
-    public ReAuthRequestTypeAvp getReAuthRequestType() {
-        return ReAuthRequestTypeAvp.fromInt(getAvpAsInt32(Avp.RE_AUTH_REQUEST_TYPE));
-    }
+  public void setReAuthRequestType(ReAuthRequestTypeAvp reAuthRequestType) {
+    addAvp(Avp.RE_AUTH_REQUEST_TYPE, reAuthRequestType.getValue());
+  }
 
-    public void setReAuthRequestType(ReAuthRequestTypeAvp reAuthRequestType) {
-        setAvpAsInt32(Avp.RE_AUTH_REQUEST_TYPE, reAuthRequestType.getValue(), true,true);
-    }
+  @Override
+  public String getLongName() {
+    return "Re-Auth-Request";
+  }
 
-	
-	@Override
-	public String getLongName() {
-		
-		return "Re-Auth-Request";
-	}
+  @Override
+  public String getShortName() {
+    return "RAR";
+  }
 
-	@Override
-	public String getShortName() {
-
-		return "RAR";
-	}
-
-	
 }

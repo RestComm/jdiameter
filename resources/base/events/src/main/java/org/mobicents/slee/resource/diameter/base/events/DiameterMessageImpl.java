@@ -1,8 +1,7 @@
 /*
  * Mobicents, Communications Middleware
  * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party
- * contributors as
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
  * distributed under license by Red Hat Middleware LLC.
@@ -79,10 +78,143 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
 	protected Message message = null;
 
-	public DiameterMessageImpl(Message message) {
-		this.message = message;
-	}
+	/**
+	 * Constructor taking a jDiameter {@link Message} as argument.
+	 * 
+	 * @param message the jDiameter Message object to create the DiameterMessage from
+	 */
+  public DiameterMessageImpl(Message message)
+  {
+    this.message = message;
+  }
 
+	// Begin of DiameterMessage Implementation
+	
+  public DiameterHeader getHeader()
+  {
+    return new DiameterHeaderImpl(this.message);
+  }
+
+  public DiameterCommand getCommand()
+  {
+    return new DiameterCommandImpl(this.message.getCommandCode(), this.message.getApplicationId(), getShortName(), getLongName(), this.message.isRequest(), this.message.isProxiable());
+  }
+
+  public DiameterAvp[] getAvps()
+  {
+  	DiameterAvp[] avps = new DiameterAvp[0];
+  
+  	try {
+  		avps = getAvpsInternal(message.getAvps());
+  	}
+  	catch (Exception e) {
+  		log.error("Failed to obtain/decode AVP/data.", e);
+  	}
+  
+  	return avps;
+  }
+
+  public String getSessionId()
+  {
+  	return message.getSessionId();
+  }
+
+  public boolean hasSessionId()
+  {
+    return hasAvp(Avp.SESSION_ID);
+  }
+
+  public void setSessionId(String sessionId)
+  {
+  	if (!hasSessionId()) {
+  		this.message.getAvps().addAvp(Avp.SESSION_ID, sessionId, true, false, true);
+  	}
+  	else {
+  		this.message.getAvps().removeAvp(Avp.SESSION_ID);
+  		this.message.getAvps().addAvp(Avp.SESSION_ID, sessionId, true, false, true);
+  		// throw new
+  		// IllegalStateException("Unable to set Session-Id AVP. Already set.");
+  	}
+  }
+
+  public DiameterIdentityAvp getOriginHost()
+  {
+  	return getAvpAsIdentity(Avp.ORIGIN_HOST);
+  }
+
+  public boolean hasOriginHost()
+  {
+  	return hasAvp(Avp.ORIGIN_HOST);
+  }
+
+  public void setOriginHost(DiameterIdentityAvp originHost)
+  {
+  	if (!hasOriginHost()) {
+  		this.message.getAvps().addAvp(Avp.ORIGIN_HOST, originHost.stringValue(), true, false, true);
+  	}
+  	else {
+  		throw new IllegalStateException("Unable to set Origin-Host AVP. Already set.");
+  	}
+  }
+
+  public DiameterIdentityAvp getOriginRealm()
+  {
+  	return getAvpAsIdentity(Avp.ORIGIN_REALM);
+  }
+
+  public boolean hasOriginRealm()
+  {
+  	return hasAvp(Avp.ORIGIN_REALM);
+  }
+
+  public void setOriginRealm(DiameterIdentityAvp originRealm)
+  {
+  	if (!hasOriginRealm()) {
+  		this.message.getAvps().addAvp(Avp.ORIGIN_REALM, originRealm.stringValue(), true, false, true);
+  	}
+  	else {
+  		throw new IllegalStateException("Unable to set Origin-Realm AVP. Already set.");
+  	}
+  }
+
+  public DiameterIdentityAvp getDestinationHost()
+  {
+  	return getAvpAsIdentity(Avp.DESTINATION_HOST);
+  }
+
+  public void setDestinationHost(DiameterIdentityAvp destinationHost) {
+  	if (!hasDestinationHost()) {
+  		this.message.getAvps().addAvp(Avp.DESTINATION_HOST, destinationHost.stringValue(), true, false, true);
+  	} else {
+  		throw new IllegalStateException("Unable to set Destination-Host AVP. Already set.");
+  	}
+  }
+
+  public DiameterIdentityAvp getDestinationRealm()
+  {
+  	return getAvpAsIdentity(Avp.DESTINATION_REALM);
+  }
+
+  public void setDestinationRealm(DiameterIdentityAvp destinationRealm) {
+  	if (!hasDestinationRealm()) {
+  		this.message.getAvps().addAvp(Avp.DESTINATION_REALM, destinationRealm.stringValue(), true, false, true);
+  	} else {
+  		throw new IllegalStateException("Unable to set Destination-Realm AVP. Already set.");
+  	}
+  }
+
+  public DiameterAvp[] getExtensionAvps() {
+  	return getAvps();
+  }
+
+  public void setExtensionAvps(DiameterAvp... avps) throws AvpNotAllowedException {
+  	for (DiameterAvp a : avps) {
+  		this.addAvp(a);
+  	}
+  }
+
+  // End of DiameterMessage Implementation
+  
 	protected void setAvpAsByteArray(int code, long vendorId, byte[] value, boolean mandatory, boolean _protected) {
 		message.getAvps().addAvp(code, value, mandatory, _protected);
 	}
@@ -234,30 +366,6 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 		}
 	}
 
-	public DiameterAvp[] getAvps() {
-		DiameterAvp[] acc = new DiameterAvp[0];
-
-		try {
-			acc = getAvpsInternal(message.getAvps());
-		} catch (Exception e) {
-			log.error("Failed to obtain/decode AVP/data.", e);
-		}
-
-		return acc;
-	}
-
-	public DiameterCommand getCommand() {
-		return new DiameterCommandImpl(this.message.getCommandCode(), this.message.getApplicationId(), getShortName(), getLongName(), this.message.isRequest(), this.message.isProxiable());
-	}
-
-	public DiameterIdentityAvp getDestinationHost() {
-		return getAvpAsIdentity(Avp.DESTINATION_HOST);
-	}
-
-	public DiameterIdentityAvp getDestinationRealm() {
-		return getAvpAsIdentity(Avp.DESTINATION_REALM);
-	}
-
 	public String getErrorMessage() {
 		return getAvpAsUtf8(Avp.ERROR_MESSAGE);
 	}
@@ -268,10 +376,6 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
 	public Date getEventTimestamp() {
 		return getAvpAsDate(Avp.EVENT_TIMESTAMP);
-	}
-
-	public DiameterAvp[] getExtensionAvps() {
-		return getAvps();
 	}
 
 	public FailedAvp[] getFailedAvps() {
@@ -311,10 +415,6 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 		return message;
 	}
 
-	public DiameterHeader getHeader() {
-		return new DiameterHeaderImpl(this.message);
-	}
-
 	/**
 	 * This method returns long name of this message type - Like
 	 * Device-Watchdog-Request
@@ -322,14 +422,6 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 	 * @return
 	 */
 	public abstract String getLongName();
-
-	public DiameterIdentityAvp getOriginHost() {
-		return getAvpAsIdentity(Avp.ORIGIN_HOST);
-	}
-
-	public DiameterIdentityAvp getOriginRealm() {
-		return getAvpAsIdentity(Avp.ORIGIN_REALM);
-	}
 
 	public long getOriginStateId() {
 		return getAvpAsUInt32(Avp.ORIGIN_STATE_ID);
@@ -378,10 +470,6 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
 	public DiameterIdentityAvp[] getRouteRecords() {
 		return getAllAvpAsIdentity(Avp.ROUTE_RECORD);
-	}
-
-	public String getSessionId() {
-		return message.getSessionId();
 	}
 
 	/**
@@ -437,14 +525,6 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 		return hasAvp(Avp.EVENT_TIMESTAMP);
 	}
 
-	public boolean hasOriginHost() {
-		return hasAvp(Avp.ORIGIN_HOST);
-	}
-
-	public boolean hasOriginRealm() {
-		return hasAvp(Avp.ORIGIN_REALM);
-	}
-
 	public boolean hasOriginStateId() {
 		return hasAvp(Avp.ORIGIN_STATE_ID);
 	}
@@ -459,10 +539,6 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
 	public boolean hasResultCode() {
 		return hasAvp(Avp.RESULT_CODE);
-	}
-
-	public boolean hasSessionId() {
-		return hasAvp(Avp.SESSION_ID);
 	}
 
 	public boolean hasUserName() {
@@ -483,131 +559,191 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
 	// =============== SETTERS
 
-	public void setAvpAsAddress(int code, AddressAvp[] avps, boolean mandatory, boolean remove) {
-		if (remove) {
-			message.getAvps().removeAvp(code);
-		}
+  public void addAvp(String avpName, Object avp)
+  {
+    AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpName);
+    
+    if(rep != null)
+    {
+      addAvp(rep.getCode(), rep.getVendorId(), avp);
+    }
+  }
 
-		for (int i = 0; i < avps.length; i++) {
-			message.getAvps().addAvp(code, avps[i].getAddress(), mandatory, false);
-		}
-	}
+  public void addAvp(int avpCode, Object avp)
+  {
+    addAvp(avpCode, 0, avp );
+  }
+	
+  public void addAvp(int avpCode, long vendorId, Object avp)
+  {
+    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
+    
+    if(avpRep != null)
+    {
+      DiameterAvpType avpType = DiameterAvpType.fromString(avpRep.getType());
+      
+      boolean isMandatoryAvp = !(avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot"));
+      boolean isProtectedAvp = avpRep.getRuleProtected().equals("must");
+      
+      if(avp instanceof byte[])
+      {
+        setAvpAsByteArray(avpCode, vendorId, (byte[]) avp, isMandatoryAvp, isProtectedAvp);
+      }
+      else
+      {
+        switch (avpType.getType())
+        {
+        case DiameterAvpType._ADDRESS:
+        case DiameterAvpType._DIAMETER_IDENTITY:
+        case DiameterAvpType._DIAMETER_URI:
+        case DiameterAvpType._IP_FILTER_RULE:
+        case DiameterAvpType._OCTET_STRING:
+        case DiameterAvpType._QOS_FILTER_RULE:
+        {
+          setAvpAsOctetString(avpCode, vendorId, (String) avp, isMandatoryAvp, isProtectedAvp);
+          break;
+        }
+        case DiameterAvpType._ENUMERATED:
+        case DiameterAvpType._INTEGER_32:
+        {
+          setAvpAsInteger32(avpCode, vendorId, (Integer) avp, isMandatoryAvp, isProtectedAvp);        
+          break;
+        }
+        case DiameterAvpType._FLOAT_32:
+        {
+          setAvpAsFloat32(avpCode, vendorId, (Float) avp, isMandatoryAvp, isProtectedAvp);        
+          break;
+        }
+        case DiameterAvpType._FLOAT_64:
+        {
+          setAvpAsFloat64(avpCode, vendorId, (Float) avp, isMandatoryAvp, isProtectedAvp);        
+          break;
+        }
+        case DiameterAvpType._GROUPED:
+        {
+          setAvpAsGrouped(avpCode, vendorId, (DiameterAvp[]) avp, isMandatoryAvp, isProtectedAvp);        
+          break;
+        }
+        case DiameterAvpType._INTEGER_64:
+        {
+          setAvpAsInteger64(avpCode, vendorId, (Integer) avp, isMandatoryAvp, isProtectedAvp);
+          break;
+        }
+        case DiameterAvpType._TIME:
+        {
+          setAvpAsTime(avpCode, vendorId, (Date) avp, isMandatoryAvp, isProtectedAvp);
+          break;
+        }
+        case DiameterAvpType._UNSIGNED_32:
+        {
+          setAvpAsUnsigned32(avpCode, vendorId, (Long) avp, isMandatoryAvp, isProtectedAvp);
+          break;
+        }
+        case DiameterAvpType._UNSIGNED_64:
+        {
+          setAvpAsUnsigned64(avpCode, vendorId, (Long) avp, isMandatoryAvp, isProtectedAvp);
+          break;
+        }
+        case DiameterAvpType._UTF8_STRING:
+        {
+          setAvpAsUTF8String(avpCode, vendorId, (String) avp, isMandatoryAvp, isProtectedAvp);
+          break;
+        }
+        }
+      }
+    }
+  }
 
 	public void setAcctApplicationId(long acctApplicationId) {
-		setAvpAsUInt32(Avp.ACCT_APPLICATION_ID, acctApplicationId, true, true);
+		addAvp(Avp.ACCT_APPLICATION_ID, acctApplicationId);
 	}
 
 	public void setAuthApplicationId(long authApplicationId) {
-		setAvpAsUInt32(Avp.AUTH_APPLICATION_ID, authApplicationId, true, true);
+	  addAvp(Avp.AUTH_APPLICATION_ID, authApplicationId);
 	}
 
-	protected void setAvpAsDate(int code, Date value, boolean mandatory, boolean remove) {
-		AvpUtilities.setAvpAsDate(code, value, message.getAvps(), remove);
+  protected void setAvpAsTime(int code, long vendorId, Date value, boolean isMandatory, boolean isProtected)
+  {
+    AvpUtilities.setAvpAsTime(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
+  }
+
+  protected void setAvpAsFloat32(int code, long vendorId, float value, boolean isMandatory, boolean isProtected)
+  {
+    AvpUtilities.setAvpAsFloat32(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
+  }
+
+  protected void setAvpAsFloat64(int code, long vendorId, float value, boolean isMandatory, boolean isProtected)
+  {
+    AvpUtilities.setAvpAsFloat64(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
+  }
+
+	protected AvpSet setAvpAsGrouped(int code, long vendorId, DiameterAvp[] childs, boolean isMandatory, boolean isProtected)
+	{
+		return AvpUtilities.setAvpAsGrouped(code, vendorId, childs, message.getAvps(), isMandatory, isProtected);
 	}
 
-	protected AvpSet setAvpAsGroup(int code, DiameterAvp[] childs, boolean mandatory, boolean remove) {
-		return AvpUtilities.setAvpAsGrouped(code, 0, childs, message.getAvps(), remove, mandatory, false);
-	}
+  protected void setAvpAsInteger32(int code, long vendorId, int value, boolean isMandatory, boolean isProtected)
+  {
+    AvpUtilities.setAvpAsInteger32(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
+  }
 
-	protected AvpSet setAvpAsGroup(int code, long vendorId, DiameterAvp[] childs, boolean mandatory, boolean remove) {
-		return AvpUtilities.setAvpAsGrouped(code, vendorId, childs, message.getAvps(), remove, mandatory, false);
-	}
+  protected void setAvpAsInteger64(int code, long vendorId, long value, boolean isMandatory, boolean isProtected)
+  {
+    AvpUtilities.setAvpAsInteger64(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
+  }
 
-	protected void setAvpAsIdentity(int code, String value, boolean octet, boolean mandatory, boolean remove) {
-		AvpUtilities.setAvpAsString(code, 0, octet, value, message.getAvps(), remove, mandatory, false);
-	}
+  protected void setAvpAsUnsigned32(int code, long vendorId, long value, boolean isMandatory, boolean isProtected)
+  {
+    AvpUtilities.setAvpAsUnsigned32(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
+  }
 
-	protected void setAvpAsInt32(int code, int value, boolean mandatory, boolean remove) {
-		AvpUtilities.setAvpAsInt32(code, 0, value, message.getAvps(), remove, mandatory, false);
-	}
+  protected void setAvpAsUnsigned64(int code, long vendorId, long value, boolean isMandatory, boolean isProtected)
+  {
+    AvpUtilities.setAvpAsUnsigned64(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
+  }
 
-	protected void setAvpAsUInt32(int code, long value, boolean mandatory, boolean remove) {
-		AvpUtilities.setAvpAsUInt32(code, 0, value, message.getAvps(), remove, mandatory, false);
+	protected void setAvpAsUTF8String(int code, long vendorId, String value, boolean isMandatory, boolean isProtected)
+	{
+		AvpUtilities.setAvpAsUTF8String(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
 	}
-
-	protected void setAvpAsUtf8(int code, String value, boolean mandatory, boolean remove) {
-		AvpUtilities.setAvpAsString(code, 0, false, value, message.getAvps(), remove, mandatory, false);
+	
+	protected void setAvpAsOctetString(int code, long vendorId, String value, boolean isMandatory, boolean isProtected)
+	{
+		AvpUtilities.setAvpAsOctetString(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
 	}
-	protected void setAvpAsOctet(int code, String value, boolean mandatory, boolean remove) {
-		AvpUtilities.setAvpAsString(code, 0, true, value, message.getAvps(), remove, mandatory, false);
-	}
-	protected void setAvpsAsUInt32(int code, long[] values, boolean mandatory, boolean remove) {
-		if (remove) {
-			message.getAvps().removeAvp(code);
-		}
-
-		for (long a : values) {
-			setAvpAsUInt32(code, a, mandatory, false);
-		}
-	}
-
-	public void setDestinationHost(DiameterIdentityAvp destinationHost) {
-		if (!hasDestinationHost()) {
-			this.message.getAvps().addAvp(Avp.DESTINATION_HOST, destinationHost.stringValue(), true, false, true);
-		} else {
-			throw new IllegalStateException("Unable to set Destination-Host AVP. Already set.");
-		}
-	}
-
-	public void setDestinationRealm(DiameterIdentityAvp destinationRealm) {
-		if (!hasDestinationRealm()) {
-			this.message.getAvps().addAvp(Avp.DESTINATION_REALM, destinationRealm.stringValue(), true, false, true);
-		} else {
-			throw new IllegalStateException("Unable to set Destination-Realm AVP. Already set.");
-		}
-	}
-
+	
 	public void setErrorMessage(String errorMessage) {
-		setAvpAsUtf8(Avp.USER_NAME, errorMessage, false, true);
+		addAvp(Avp.USER_NAME, errorMessage);
 	}
 
 	public void setErrorReportingHost(DiameterIdentityAvp errorReportingHost) {
-		setAvpAsIdentity(Avp.ERROR_REPORTING_HOST, errorReportingHost.toString(), true, false, true);
+		addAvp(Avp.ERROR_REPORTING_HOST, errorReportingHost.toString());
 	}
 
 	public void setEventTimestamp(Date eventTimestamp) {
-		setAvpAsDate(Avp.EVENT_TIMESTAMP, eventTimestamp, true, true);
-	}
-
-	public void setExtensionAvps(DiameterAvp... avps) throws AvpNotAllowedException {
-		for (DiameterAvp a : avps) {
-			this.addAvp(a);
-		}
+		addAvp(Avp.EVENT_TIMESTAMP, eventTimestamp);
 	}
 
 	public void setFailedAvp(FailedAvp failedAvp) {
-		setAvpAsGroup(Avp.FAILED_AVP, failedAvp.getExtensionAvps(), true, false);
+	  addAvp(Avp.FAILED_AVP, failedAvp.getExtensionAvps());
 	}
 
-	public void setFailedAvps(FailedAvp[] failedAvps) {
+	public void setFailedAvps(FailedAvp[] failedAvps)
+	{
 		for (FailedAvp f : failedAvps) {
 			setFailedAvp(f);
 		}
 	}
 
-	public void setOriginHost(DiameterIdentityAvp originHost) {
-		if (!hasOriginHost()) {
-			this.message.getAvps().addAvp(Avp.ORIGIN_HOST, originHost.stringValue(), true, false, true);
-		} else {
-			throw new IllegalStateException("Unable to set Origin-Host AVP. Already set.");
-		}
+	public void setOriginStateId(long originStateId)
+	{
+	  addAvp(Avp.ORIGIN_STATE_ID, originStateId);
 	}
 
-	public void setOriginRealm(DiameterIdentityAvp originRealm) {
-		if (!hasOriginRealm()) {
-			this.message.getAvps().addAvp(Avp.ORIGIN_REALM, originRealm.stringValue(), true, false, true);
-
-		} else {
-			throw new IllegalStateException("Unable to set Origin-Realm AVP. Already set.");
-		}
-	}
-
-	public void setOriginStateId(long originStateId) {
-		setAvpAsUInt32(Avp.ORIGIN_STATE_ID, originStateId, true, true);
-	}
-
-	public void setProxyInfo(ProxyInfoAvp proxyInfo) {
-		AvpSet g = setAvpAsGroup(Avp.PROXY_INFO, proxyInfo.getExtensionAvps(), true, false);
+	public void setProxyInfo(ProxyInfoAvp proxyInfo)
+	{
+    // FIXME: Alexandre: Make it use addAvp(...)
+		AvpSet g = setAvpAsGrouped(Avp.PROXY_INFO, 0, proxyInfo.getExtensionAvps(), true, false);
 
 		if (proxyInfo.hasProxyHost()) {
 			g.addAvp(Avp.PROXY_HOST, proxyInfo.getProxyHost().toString(), true, true, false);
@@ -625,7 +761,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 	}
 
 	public void setRedirectHost(DiameterURIAvp redirectHost) {
-		setAvpAsIdentity(Avp.REDIRECT_HOST, redirectHost.toString(), true, true, false);
+		addAvp(Avp.REDIRECT_HOST, redirectHost.toString());
 	}
 
 	public void setRedirectHosts(DiameterURIAvp[] redirectHosts) {
@@ -635,53 +771,44 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 	}
 
 	public void setRedirectHostUsage(RedirectHostUsageType redirectHostUsage) {
-		setAvpAsInt32(Avp.REDIRECT_HOST_USAGE, redirectHostUsage.getValue(), true, true);
+	  addAvp(Avp.REDIRECT_HOST_USAGE, redirectHostUsage.getValue());
 	}
 
 	public void setRedirectMaxCacheTime(long redirectMaxCacheTime) {
-		setAvpAsUInt32(Avp.REDIRECT_MAX_CACHE_TIME, redirectMaxCacheTime, true, true);
+	  addAvp(Avp.REDIRECT_MAX_CACHE_TIME, redirectMaxCacheTime);
 	}
 
 	public void setResultCode(long resultCode) {
-		setAvpAsUInt32(Avp.RESULT_CODE, resultCode, true, true);
+	  addAvp(Avp.RESULT_CODE, resultCode);
 	}
 
 	public void setRouteRecord(DiameterIdentityAvp routeRecord) {
-		setAvpAsIdentity(Avp.ROUTE_RECORD, routeRecord.toString(), true, true, false);
+	  addAvp(Avp.ROUTE_RECORD, routeRecord.toString());
 	}
 
 	public void setRouteRecords(DiameterIdentityAvp[] routeRecords) {
-		for (DiameterIdentityAvp i : routeRecords) {
-			setAvpAsIdentity(Avp.ROUTE_RECORD, i.toString(), true, true, false);
-		}
-	}
-
-	public void setSessionId(String sessionId) {
-		if (!hasSessionId()) {
-			this.message.getAvps().addAvp(Avp.SESSION_ID, sessionId, true, false, true);
-		} else {
-			this.message.getAvps().removeAvp(Avp.SESSION_ID);
-			this.message.getAvps().addAvp(Avp.SESSION_ID, sessionId, true, false, true);
-			// throw new
-			// IllegalStateException("Unable to set Session-Id AVP. Already set.");
+		for (DiameterIdentityAvp routeRecord : routeRecords) {
+		  addAvp(Avp.ROUTE_RECORD, routeRecord.toString());
 		}
 	}
 
 	public void setUserName(String userName) {
-		setAvpAsUtf8(Avp.USER_NAME, userName, true, true);
+		addAvp(Avp.USER_NAME, userName);
 	}
 
-	public void setVendorSpecificApplicationId(VendorSpecificApplicationIdAvp id) {
-		AvpSet g = setAvpAsGroup(Avp.VENDOR_SPECIFIC_APPLICATION_ID, id.getExtensionAvps(), true, false);
+	public void setVendorSpecificApplicationId(VendorSpecificApplicationIdAvp vsaid)
+	{
+	  // FIXME: Alexandre: Make it use addAvp(...)
+		AvpSet g = setAvpAsGrouped(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, vsaid.getExtensionAvps(), true, false);
 
-		g.addAvp(Avp.VENDOR_ID, (int) id.getVendorId(), true, false);
+		g.addAvp(Avp.VENDOR_ID, (int) vsaid.getVendorId(), true, false);
 
-		if (id.hasAcctApplicationId()) {
-			g.addAvp(Avp.ACCT_APPLICATION_ID, (int) id.getAcctApplicationId(), true, false);
+		if (vsaid.hasAcctApplicationId()) {
+			g.addAvp(Avp.ACCT_APPLICATION_ID, (int) vsaid.getAcctApplicationId(), true, false);
 		}
 
-		if (id.hasAuthApplicationId()) {
-			g.addAvp(Avp.AUTH_APPLICATION_ID, (int) id.getAuthApplicationId(), true, false);
+		if (vsaid.hasAuthApplicationId()) {
+			g.addAvp(Avp.AUTH_APPLICATION_ID, (int) vsaid.getAuthApplicationId(), true, false);
 		}
 	}
 
@@ -805,5 +932,6 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 	protected void reportAvpFetchError(String msg, long code) {
 		log.error("Failed to fetch avp, code: " + code + ". Message: " + msg);
 	}
+
 
 }

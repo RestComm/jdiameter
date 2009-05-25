@@ -1,15 +1,31 @@
-/**
- * Start time:13:11:26 2008-11-12<br>
- * Project: mobicents-diameter-parent<br>
- * 
- * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
- *         </a>
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+/*
+ * Mobicents, Communications Middleware
+ *
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors. All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
  */
 package net.java.slee.resource.diameter.base.events.avp;
 
 import java.util.Date;
-
 
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpSet;
@@ -19,438 +35,707 @@ import org.mobicents.diameter.dictionary.AvpRepresentation;
 /**
  * Start time:13:11:26 2008-11-12<br>
  * Project: mobicents-diameter-parent<br>
- * This class contains some handy methods. It requires avp dictionary to be loaded
- * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
- *         </a>
+ * This class contains some handy methods. It requires avp dictionary to be
+ * loaded
+ * 
+ * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class AvpUtilities {
 
-	public static void setAvpAsString(int avpCode,boolean isOctetString, String value, AvpSet set,boolean remove)
-	{
-	
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode);
-		if(rep!=null)
-		{
-			setAvpAsString(avpCode,rep.getVendorId(),isOctetString,value,set,remove,rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-			setAvpAsString(avpCode,0,isOctetString,value,set,remove,true,false);
-		}
-	}
-	
-	public static void setAvpAsString(int avpCode,long vendorId,boolean isOctetString, String value, AvpSet set, boolean remove)
-	{
-		
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode,vendorId);
-		if(rep!=null)
-		{
-			setAvpAsString(avpCode,rep.getVendorId(),isOctetString,value,set,remove,rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-			setAvpAsString(avpCode,vendorId,isOctetString,value,set,remove,true,false);
-		}
-	}
-	
-	public static void setAvpAsString(int avpCode,long vendorId,boolean isOctetString, String value, AvpSet set, boolean remove, boolean isMandatory,boolean isProtected)
-	{
-		
-		if(remove)
-		{
-			set.removeAvp(avpCode);
-		}
+  private static long _DEFAULT_VENDOR_ID = 0L;
 
-		set.addAvp(avpCode,value,vendorId,isMandatory,isProtected,isOctetString);
-	}
-	
-	public static void setAvpAsUInt32(int avpCode,long value, AvpSet set,boolean remove)
-	{
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode);
-		if(rep!=null)
-		{
-			setAvpAsUInt32(avpCode, rep.getVendorId(), value, set, remove, rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-			setAvpAsUInt32(avpCode, 0, value, set, remove,true,false);
-		}
-		
-	}
-	
-	public static void setAvpAsUInt32(int avpCode,long vendorId,long value, AvpSet set, boolean remove)
-	{
-		
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode,vendorId);
-		if(rep!=null)
-		{
-			setAvpAsUInt32(avpCode, vendorId, value, set, remove, rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-			setAvpAsUInt32(avpCode, vendorId, value, set, remove,true,false);
-		}
-	}
-	
-	public static void setAvpAsUInt32(int avpCode,long vendorId,long value, AvpSet set, boolean remove, boolean isMandatory,boolean isProtected)
-	{
-		if(remove)
-		{
-			set.removeAvp(avpCode);
-		}
+  private static boolean _DEFAULT_MANDATORY = true;
+  private static boolean _DEFAULT_PROTECTED = false;
 
-		set.addAvp(avpCode,value,vendorId,isMandatory,isProtected,true);
-	
-	}
-	
-	public static void setAvpAsUInt64(int avpCode,long value, AvpSet set,boolean remove)
-	{
-	
-		//FIXME: whats the diff with UInt32 setter
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode);
-		if(rep!=null)
-		{
-			setAvpAsUInt64(avpCode, rep.getVendorId(), value, set, remove, rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-			setAvpAsUInt64(avpCode, 0, value, set, remove,true,false);
-		}
-	}
-	
-	public static void setAvpAsUInt64(int avpCode,long vendorId,long value, AvpSet set, boolean remove)
-	{
-		
-		//FIXME: whats the diff with UInt32 setter
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode,vendorId);
-		if(rep!=null)
-		{
-			setAvpAsUInt64(avpCode, vendorId, value, set, remove, rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-			setAvpAsUInt64(avpCode, vendorId, value, set, remove,true,false);
-		}
-		
-	}
-	
-	public static void setAvpAsUInt64(int avpCode,long vendorId,long value, AvpSet set, boolean remove, boolean isMandatory,boolean isProtected)
-	{
-		if(remove)
-		{
-			set.removeAvp(avpCode);
-		}
+  private static boolean _AVP_REMOVAL_ALLOWED = false;
 
-		set.addAvp(avpCode,value,vendorId,isMandatory,isProtected,true);
-	
-	}
-	
-	public static void setAvpAsInt32(int avpCode,int value, AvpSet set,boolean remove)
-	{
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode);
-		if(rep!=null)
-		{
-			setAvpAsInt32(avpCode, rep.getVendorId(), value, set, remove, rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-			setAvpAsInt32(avpCode, 0, value, set, remove,true,false);
-		}
-		
-	}
-	
-	public static void setAvpAsInt32(int avpCode,long vendorId,int value, AvpSet set, boolean remove)
-	{
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode,vendorId);
-		if(rep!=null)
-		{
-			setAvpAsInt32(avpCode, vendorId, value, set, remove, rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-			setAvpAsInt32(avpCode, vendorId, value, set, remove,true,false);
-		}
-		
-	}
-	
-	public static void setAvpAsInt32(int avpCode,long vendorId,int value, AvpSet set, boolean remove, boolean isMandatory,boolean isProtected)
-	{
-		if(remove)
-		{
-			set.removeAvp(avpCode);
-		}
+  public static boolean isAvpRemoveAllowed()
+  {
+    return _AVP_REMOVAL_ALLOWED;
+  }
 
-		set.addAvp(avpCode,value,vendorId,isMandatory,isProtected);
-	
-	}
-	
-	public static void setAvpAsInt64(int avpCode,long value, AvpSet set,boolean remove)
-	{
-	
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode);
-		if(rep!=null)
-		{
-			setAvpAsInt64(avpCode, rep.getVendorId(), value, set, remove, rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-			setAvpAsInt64(avpCode, 0, value, set, remove,true,false);
-		}
-	}
-	
-	public static void setAvpAsInt64(int avpCode,long vendorId,long value, AvpSet set, boolean remove)
-	{
-		
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode,vendorId);
-		if(rep!=null)
-		{
-			setAvpAsInt64(avpCode, vendorId, value, set, remove, rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-			setAvpAsInt64(avpCode, vendorId, value, set, remove,true,false);
-		}
-	}
-	
-	public static void setAvpAsInt64(int avpCode,long vendorId,long value, AvpSet set, boolean remove, boolean isMandatory,boolean isProtected)
-	{
-		
-		if(remove)
-		{
-			set.removeAvp(avpCode);
-		}
+  public static boolean hasAvp(int avpCode, long vendorId, AvpSet set)
+  {
+    AvpSet inner = set.getAvps(avpCode, vendorId);
 
-		set.addAvp(avpCode,value,vendorId,isMandatory,isProtected);
-	}
-	
-	public static void setAvpAsFloat32(int avpCode,float value, AvpSet set,boolean remove)
-	{
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode);
-		if(rep!=null)
-		{
-			setAvpAsFloat32(avpCode, rep.getVendorId(), value, set, remove, rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-			setAvpAsFloat32(avpCode, 0, value, set, remove, true,false);		}
-		
-	}
-	
-	public static void setAvpAsFloat32(int avpCode,long vendorId,float value, AvpSet set, boolean remove)
-	{
-		
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode,vendorId);
-		if(rep!=null)
-		{
-			setAvpAsFloat32(avpCode, vendorId, value, set, remove, rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-			setAvpAsFloat32(avpCode, vendorId, value, set, remove, true,false);
-		}
-	}
-	
-	public static void setAvpAsFloat32(int avpCode,long vendorId,float value, AvpSet set, boolean remove, boolean isMandatory,boolean isProtected)
-	{
-		if(remove)
-		{
-			set.removeAvp(avpCode);
-		}
+    if (inner.getAvp(avpCode, vendorId) != null) {
+      return true;
+    }
+    else if (set.getAvp(avpCode, vendorId) != null) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
 
-		set.addAvp(avpCode,value,vendorId,isMandatory,isProtected);
-	
-	}
-	
-	public static void setAvpAsFloat64(int avpCode,double value, AvpSet set,boolean remove)
-	{
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode);
-		if(rep!=null)
-		{
-			setAvpAsFloat64(avpCode, rep.getVendorId(), value, set, remove, rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-			setAvpAsFloat64(avpCode, 0, value, set, remove, true,false);
-		}
-		
-	}
-	
-	public static void setAvpAsFloat64(int avpCode,long vendorId,double value, AvpSet set, boolean remove)
-	{
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode,vendorId);
-		if(rep!=null)
-		{
-			setAvpAsFloat64(avpCode, vendorId, value, set, remove, rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-			setAvpAsFloat64(avpCode, vendorId, value, set, remove, true,false);
-		}
-		
-	}
-	
-	public static void setAvpAsFloat64(int avpCode,long vendorId,double value, AvpSet set, boolean remove, boolean isMandatory,boolean isProtected)
-	{
-		
-		if(remove)
-		{
-			set.removeAvp(avpCode);
-		}
+  /**
+   * @param avpCode
+   * @param vendorId
+   * @param set
+   */
+  private static void performPreAddOperations(int avpCode, long vendorId, AvpSet set)
+  {
+    if (hasAvp(avpCode, vendorId, set) && !isAvpRemoveAllowed()) {
+      throw new IllegalStateException("AVP is already present in message and cannot be overwritten.");
+    }
+    else {
+      set.removeAvp(avpCode);
+    }
+  }
 
-		set.addAvp(avpCode,value,vendorId,isMandatory,isProtected);
-	}
-	
-	
-	public static void setAvpAsRaw(int avpCode, byte[] value, AvpSet set,boolean remove)
-	{
-		
-		
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode);
-		if(rep!=null)
-		{
-			setAvpAsRaw(avpCode, rep.getVendorId(), value, set, remove, rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-			setAvpAsRaw(avpCode, 0, value, set, remove, true,false);
-		}
-	}
-	
-	public static void setAvpAsRaw(int avpCode,long vendorId,byte[] value, AvpSet set, boolean remove)
-	{
-		
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode,vendorId);
-		if(rep!=null)
-		{
-			setAvpAsRaw(avpCode, vendorId, value, set, remove, rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-			
-			setAvpAsRaw(avpCode, vendorId, value, set, remove, true,false);
-		}
-	}
-	
-	public static void setAvpAsRaw(int avpCode,long vendorId,byte[] value, AvpSet set, boolean remove, boolean isMandatory,boolean isProtected)
-	{
-		if(remove)
-		{
-			set.removeAvp(avpCode);
-		}
+  /**
+   * Returns an {@link AvpRepresentation} of the AVP with the given code and given Vendor-Id, if found.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @return
+   */
+  private static AvpRepresentation getAvpRepresentation(int avpCode, long vendorId)
+  {
+    return AvpDictionary.INSTANCE.getAvp(avpCode);
+  }
 
-		set.addAvp(avpCode,value,vendorId,isMandatory,isProtected);
-		
-	}
-	
-	public static void setAvpAsDate(int avpCode, Date date, AvpSet set,boolean remove)
-	{
-		
-	
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode);
-		if(rep!=null)
-		{
-			setAvpAsDate(avpCode, rep.getVendorId(), date, set, remove, rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-			setAvpAsDate(avpCode, 0, date, set, remove, true,false);
-		}
-	}
-	
-	public static void setAvpAsDate(int avpCode,long vendorId,Date date, AvpSet set, boolean remove)
-	{
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode,vendorId);
-		if(rep!=null)
-		{
-			setAvpAsDate(avpCode, vendorId, date, set, remove, rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-		
-			setAvpAsDate(avpCode, vendorId, date, set, remove, true,false);
-		}
-	}
-	
-	public static void setAvpAsDate(int avpCode,long vendorId,Date date, AvpSet set, boolean remove, boolean isMandatory,boolean isProtected)
-	{
-		if(remove)
-		{
-			set.removeAvp(avpCode);
-		}
+  /**
+   * Adds AVP to {@link AvpSet} as String (Octet or UTF-8) with the given code and Base Vendor-Id (0).
+   * 
+   * @param avpCode the code of the AVP
+   * @param isOctetString if true added as OctetString type, otherwise as UTF8String
+   * @param set the AvpSet to add AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsString(int avpCode, boolean isOctetString, AvpSet set, String value)
+  {
+    setAvpAsString(avpCode, _DEFAULT_VENDOR_ID, isOctetString, set, value);
+  }
 
-		set.addAvp(avpCode,date,vendorId,isMandatory,isProtected);
-		
-	}
-	
-	
-	public static AvpSet setAvpAsGrouped(int avpCode, DiameterAvp[] childs, AvpSet set,boolean remove)
-	{
-	
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode);
-		if(rep!=null)
-		{
-			return setAvpAsGrouped(avpCode, rep.getVendorId(), childs, set, remove, rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-			
-			return setAvpAsGrouped(avpCode, 0, childs, set, remove, true,false);
-		}
-	}
-	
-	public static AvpSet setAvpAsGrouped(int avpCode,long vendorId,DiameterAvp[] childs, AvpSet set, boolean remove)
-	{
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode,vendorId);
-		if(rep!=null)
-		{
-			return setAvpAsGrouped(avpCode, vendorId, childs, set, remove, rep.isMandatory(),rep.isProtected());
-		}
-		else
-		{
-			
-			return setAvpAsGrouped(avpCode, vendorId, childs, set, remove, true,false);
-		}
-	}
-	
-	public static AvpSet setAvpAsGrouped(int avpCode,long vendorId,DiameterAvp[] childs, AvpSet set, boolean remove, boolean isMandatory,boolean isProtected)
-	{
-		if(remove)
-		{
-			set.removeAvp(avpCode);
-		}
+  /**
+   * Adds AVP to {@link AvpSet} as String (Octet or UTF-8) with the given code and given Vendor-Id.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param isOctetString if true added as OctetString type, otherwise as UTF8String
+   * @param set the AvpSet to add AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsString(int avpCode, long vendorId, boolean isOctetString, AvpSet set, String value)
+  {
+    AvpRepresentation rep = getAvpRepresentation(avpCode, vendorId);
 
-		AvpSet g = set.addGroupedAvp(avpCode, vendorId,isMandatory, isProtected);
-		for (DiameterAvp a : childs)
-		{
-			g.addAvp(a.getCode(), a.byteArrayValue(), a.getVendorId(), a.getMandatoryRule() == 1, a.getProtectedRule() == 1);
-		}
-		
-		return g;
-	}
-	
-	
-	public static Avp getAvp(int avpCode, AvpSet set)
-	{
-		AvpRepresentation rep=AvpDictionary.INSTANCE.getAvp(avpCode);
-		if(rep!=null)
-			return set.getAvp(avpCode, rep.getVendorId());
-		else
-			return set.getAvp(avpCode,0);
-	}
-	
-	public static Avp getAvp(int avpCode,long vendorId,AvpSet set)
-	{
-		
-		return set.getAvp(avpCode, vendorId);
-	}
-	
-	public static void removeAvp(int avpCode, AvpSet set)
-	{
-		
-	}
-	
-	
-	
-	
+    if (rep != null) {
+      setAvpAsString(avpCode, vendorId, isOctetString, set, rep.isMandatory(), rep.isProtected(), value);
+    }
+    else {
+      setAvpAsString(avpCode, vendorId, isOctetString, set, _DEFAULT_MANDATORY, _DEFAULT_PROTECTED, value);
+    }
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as String (Octet or UTF-8) with the given code and given Vendor-Id plus defined mandatory and protected flags.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param isOctetString if true added as OctetString type, otherwise as UTF8String
+   * @param set the AvpSet to add AVP
+   * @param isMandatory the value for the mandatory bit
+   * @param isProtected the value for the protected bit
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsString(int avpCode, long vendorId, boolean isOctetString, AvpSet set, boolean isMandatory, boolean isProtected, String value)
+  {
+    performPreAddOperations(avpCode, vendorId, set);
+
+    set.addAvp(avpCode, value, vendorId, isMandatory, isProtected, isOctetString);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as OctetString with the given code and Base Vendor-Id (0).
+   * 
+   * @param avpCode the code of the AVP
+   * @param set the AvpSet to add AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsOctetString(int avpCode, AvpSet set, String value)
+  {
+    setAvpAsOctetString(avpCode, _DEFAULT_VENDOR_ID, set, value);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as OctetString with the given code and given Vendor-Id.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsOctetString(int avpCode, long vendorId, AvpSet set, String value)
+  {
+    AvpRepresentation rep = getAvpRepresentation(avpCode, vendorId);
+
+    if (rep != null) {
+      setAvpAsOctetString(avpCode, vendorId, set, rep.isMandatory(), rep.isProtected(), value);
+    }
+    else {
+      setAvpAsOctetString(avpCode, vendorId, set, _DEFAULT_MANDATORY, _DEFAULT_PROTECTED, value);
+    }
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as OctetString with the given code and given Vendor-Id plus defined mandatory and protected flags.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param isMandatory the value for the mandatory bit
+   * @param isProtected the value for the protected bit
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsOctetString(int avpCode, long vendorId, AvpSet set, boolean isMandatory, boolean isProtected, String value)
+  {
+    performPreAddOperations(avpCode, vendorId, set);
+
+    set.addAvp(avpCode, value, vendorId, isMandatory, isProtected, true);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as UTF8String with the given code and Base Vendor-Id (0).
+   * 
+   * @param avpCode the code of the AVP
+   * @param set the AvpSet to add AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsUTF8String(int avpCode, boolean isOctetString, AvpSet set, String value)
+  {
+    setAvpAsUTF8String(avpCode, _DEFAULT_VENDOR_ID, set, value);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as UTF8String with the given code and given Vendor-Id.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsUTF8String(int avpCode, long vendorId, AvpSet set, String value)
+  {
+    AvpRepresentation rep = getAvpRepresentation(avpCode, vendorId);
+
+    if (rep != null) {
+      setAvpAsUTF8String(avpCode, vendorId, set, rep.isMandatory(), rep.isProtected(), value);
+    }
+    else {
+      setAvpAsUTF8String(avpCode, vendorId, set, _DEFAULT_MANDATORY, _DEFAULT_PROTECTED, value);
+    }
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as OctetString with the given code and given Vendor-Id plus defined mandatory and protected flags.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param isMandatory the value for the mandatory bit
+   * @param isProtected the value for the protected bit
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsUTF8String(int avpCode, long vendorId, AvpSet set, boolean isMandatory, boolean isProtected, String value)
+  {
+    performPreAddOperations(avpCode, vendorId, set);
+
+    set.addAvp(avpCode, value, vendorId, isMandatory, isProtected, false);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Unsigned32 with the given code and Base Vendor-Id (0).
+   * 
+   * @param avpCode the code of the AVP
+   * @param set the AvpSet to add AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsUnsigned32(int avpCode, AvpSet set, long value)
+  {
+    setAvpAsUnsigned32(avpCode, _DEFAULT_VENDOR_ID, set, value);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Unsigned32 with the given code and given Vendor-Id.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsUnsigned32(int avpCode, long vendorId, AvpSet set, long value)
+  {
+    AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
+
+    if (rep != null) {
+      setAvpAsUnsigned32(avpCode, vendorId, set, rep.isMandatory(), rep.isProtected(), value);
+    }
+    else {
+      setAvpAsUnsigned32(avpCode, vendorId, set, _DEFAULT_MANDATORY, _DEFAULT_PROTECTED, value);
+    }
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Unsigned32 with the given code and given Vendor-Id plus defined mandatory and protected flags.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param isMandatory the value for the mandatory bit
+   * @param isProtected the value for the protected bit
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsUnsigned32(int avpCode, long vendorId, AvpSet set, boolean isMandatory, boolean isProtected, long value)
+  { 
+    performPreAddOperations(avpCode, vendorId, set);
+
+    set.addAvp(avpCode, value, vendorId, isMandatory, isProtected, true);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Unsigned64 with the given code and Base Vendor-Id (0).
+   * 
+   * @param avpCode the code of the AVP
+   * @param set the Vendor-Id of the AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsUnsigned64(int avpCode, AvpSet set, long value)
+  {
+    setAvpAsUnsigned64(avpCode, _DEFAULT_VENDOR_ID, set, value);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Unsigned64 with the given code and given Vendor-Id.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsUnsigned64(int avpCode, long vendorId, AvpSet set, long value)
+  {
+    AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
+
+    if (rep != null) {
+      setAvpAsUnsigned64(avpCode, vendorId, set, rep.isMandatory(), rep.isProtected(), value);
+    }
+    else {
+      setAvpAsUnsigned64(avpCode, vendorId, set, _DEFAULT_MANDATORY, _DEFAULT_PROTECTED, value);
+    }
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Unsigned64 with the given code and given Vendor-Id plus defined mandatory and protected flags.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param isMandatory the value for the mandatory bit
+   * @param isProtected the value for the protected bit
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsUnsigned64(int avpCode, long vendorId, AvpSet set, boolean isMandatory, boolean isProtected, long value)
+  {
+    performPreAddOperations(avpCode, vendorId, set);
+
+    set.addAvp(avpCode, value, vendorId, isMandatory, isProtected, false);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Integer32 with the given code and Base Vendor-Id (0).
+   * 
+   * @param avpCode the code of the AVP
+   * @param set the Vendor-Id of the AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsInteger32(int avpCode, AvpSet set, int value)
+  {
+    setAvpAsInteger32(avpCode, _DEFAULT_VENDOR_ID, set, value);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Integer32 with the given code and given Vendor-Id.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsInteger32(int avpCode, long vendorId, AvpSet set, int value)
+  {
+    AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
+
+    if (rep != null) {
+      setAvpAsInteger32(avpCode, vendorId, set, rep.isMandatory(), rep.isProtected(), value);
+    }
+    else {
+      setAvpAsInteger32(avpCode, vendorId, set, _DEFAULT_MANDATORY, _DEFAULT_PROTECTED, value);
+    }
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Integer32 with the given code and given Vendor-Id plus defined mandatory and protected flags.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param isMandatory the value for the mandatory bit
+   * @param isProtected the value for the protected bit
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsInteger32(int avpCode, long vendorId, AvpSet set, boolean isMandatory, boolean isProtected, int value)
+  {
+    performPreAddOperations(avpCode, vendorId, set);
+
+    set.addAvp(avpCode, value, vendorId, isMandatory, isProtected);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Integer64 with the given code and Base Vendor-Id (0).
+   * 
+   * @param avpCode the code of the AVP
+   * @param set the Vendor-Id of the AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsInteger64(int avpCode, AvpSet set, long value)
+  {
+    setAvpAsInteger64(avpCode, value, set, value);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Integer64 with the given code and given Vendor-Id.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsInteger64(int avpCode, long vendorId, AvpSet set, long value)
+  {
+    AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
+
+    if (rep != null) {
+      setAvpAsInteger64(avpCode, vendorId, set, rep.isMandatory(), rep.isProtected(), value);
+    }
+    else {
+      setAvpAsInteger64(avpCode, vendorId, set, _DEFAULT_MANDATORY, _DEFAULT_PROTECTED, value);
+    }
+  }
+
+
+  /**
+   * Adds AVP to {@link AvpSet} as Integer64 with the given code and given Vendor-Id plus defined mandatory and protected flags.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param isMandatory the value for the mandatory bit
+   * @param isProtected the value for the protected bit
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsInteger64(int avpCode, long vendorId, AvpSet set, boolean isMandatory, boolean isProtected, long value)
+  {
+    performPreAddOperations(avpCode, vendorId, set);
+
+    set.addAvp(avpCode, value, vendorId, isMandatory, isProtected, true);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Float32 with the given code and Base Vendor-Id (0).
+   * 
+   * @param avpCode the code of the AVP
+   * @param set the Vendor-Id of the AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsFloat32(int avpCode, AvpSet set, float value)
+  {
+    setAvpAsFloat32(avpCode, _DEFAULT_VENDOR_ID, set, value);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Float32 with the given code and given Vendor-Id.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsFloat32(int avpCode, long vendorId, AvpSet set, float value)
+  {
+    AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
+
+    if (rep != null) {
+      setAvpAsFloat32(avpCode, vendorId, set, rep.isMandatory(), rep.isProtected(), value);
+    }
+    else {
+      setAvpAsFloat32(avpCode, vendorId, set, _DEFAULT_MANDATORY, _DEFAULT_PROTECTED, value);
+    }
+  }
+
+
+  /**
+   * Adds AVP to {@link AvpSet} as Float32 with the given code and given Vendor-Id plus defined mandatory and protected flags.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param isMandatory the value for the mandatory bit
+   * @param isProtected the value for the protected bit
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsFloat32(int avpCode, long vendorId, AvpSet set, boolean isMandatory, boolean isProtected, float value)
+  {
+    performPreAddOperations(avpCode, vendorId, set);
+
+    set.addAvp(avpCode, value, vendorId, isMandatory, isProtected);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Float64 with the given code and Base Vendor-Id (0).
+   * 
+   * @param avpCode the code of the AVP
+   * @param set the Vendor-Id of the AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsFloat64(int avpCode, AvpSet set, double value)
+  {
+    setAvpAsFloat64(avpCode, _DEFAULT_VENDOR_ID, set, value);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Float64 with the given code and given Vendor-Id.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsFloat64(int avpCode, long vendorId, AvpSet set, double value)
+  {
+    AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
+
+    if (rep != null) {
+      setAvpAsFloat64(avpCode, vendorId, set, rep.isMandatory(), rep.isProtected(), value);
+    }
+    else {
+      setAvpAsFloat64(avpCode, vendorId, set, _DEFAULT_MANDATORY, _DEFAULT_PROTECTED, value);
+    }
+  }
+  
+
+  /**
+   * Adds AVP to {@link AvpSet} as Float64 with the given code and given Vendor-Id plus defined mandatory and protected flags.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param isMandatory the value for the mandatory bit
+   * @param isProtected the value for the protected bit
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsFloat64(int avpCode, long vendorId, AvpSet set, boolean isMandatory, boolean isProtected, double value)
+  {
+    performPreAddOperations(avpCode, vendorId, set);
+
+    set.addAvp(avpCode, value, vendorId, isMandatory, isProtected);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as raw data with the given code and Base Vendor-Id (0).
+   * 
+   * @param avpCode the code of the AVP
+   * @param set the Vendor-Id of the AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsRaw(int avpCode, AvpSet set, byte[] value)
+  {
+    setAvpAsRaw(avpCode, _DEFAULT_VENDOR_ID, set, value);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as raw data with the given code and given Vendor-Id.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsRaw(int avpCode, long vendorId, AvpSet set, byte[] value)
+  {
+    AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
+
+    if (rep != null) {
+      setAvpAsRaw(avpCode, vendorId, set, rep.isMandatory(), rep.isProtected(), value);
+    }
+    else {
+      setAvpAsRaw(avpCode, vendorId, set, _DEFAULT_MANDATORY, _DEFAULT_PROTECTED, value);
+    }
+  }
+
+
+  /**
+   * Adds AVP to {@link AvpSet} as raw data with the given code and given Vendor-Id plus defined mandatory and protected flags.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param isMandatory the value for the mandatory bit
+   * @param isProtected the value for the protected bit
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsRaw(int avpCode, long vendorId, AvpSet set, boolean isMandatory, boolean isProtected, byte[] value)
+  {
+    performPreAddOperations(avpCode, vendorId, set);
+
+    set.addAvp(avpCode, value, vendorId, isMandatory, isProtected);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Time with the given code and Base Vendor-Id (0).
+   * 
+   * @param avpCode the code of the AVP
+   * @param set the Vendor-Id of the AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsTime(int avpCode, AvpSet set, Date value)
+  {
+    setAvpAsTime(avpCode, _DEFAULT_VENDOR_ID, set, value);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Time with the given code and given Vendor-Id.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the Vendor-Id of the AVP
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsTime(int avpCode, long vendorId, AvpSet set, Date value)
+  {
+    AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
+    
+    if (rep != null) {
+      setAvpAsTime(avpCode, vendorId, set, rep.isMandatory(), rep.isProtected(), value);
+    }
+    else {
+      setAvpAsTime(avpCode, vendorId, set, _DEFAULT_MANDATORY, _DEFAULT_PROTECTED, value);
+    }
+  }
+  
+
+  /**
+   * Adds AVP to {@link AvpSet} as Time with the given code and given Vendor-Id plus defined mandatory and protected flags.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param isMandatory the value for the mandatory bit
+   * @param isProtected the value for the protected bit
+   * @param value the value of the AVP to add
+   */
+  public static void setAvpAsTime(int avpCode, long vendorId, AvpSet set, boolean isMandatory, boolean isProtected, Date value)
+  {
+    performPreAddOperations(avpCode, vendorId, set);
+    
+    set.addAvp(avpCode, value, vendorId, isMandatory, isProtected);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Grouped with the given code and Base Vendor-Id (0).
+   * 
+   * @param avpCode the code of the AVP
+   * @param set the Vendor-Id of the AVP
+   * @param value the value of the AVP to add
+   */
+  public static AvpSet setAvpAsGrouped(int avpCode, DiameterAvp[] childs, AvpSet set)
+  {
+    return setAvpAsGrouped(avpCode, _DEFAULT_VENDOR_ID, childs, set);
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Grouped with the given code and given Vendor-Id.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the Vendor-Id of the AVP
+   * @param value the value of the AVP to add
+   */
+  public static AvpSet setAvpAsGrouped(int avpCode, long vendorId, DiameterAvp[] childs, AvpSet set)
+  {
+    AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
+    
+    if (rep != null) {
+      return setAvpAsGrouped(avpCode, vendorId, childs, set, rep.isMandatory(), rep.isProtected());
+    }
+    else {
+      return setAvpAsGrouped(avpCode, vendorId, childs, set, _DEFAULT_MANDATORY, _DEFAULT_PROTECTED);
+    }
+  }
+
+  /**
+   * Adds AVP to {@link AvpSet} as Grouped with the given code and given Vendor-Id plus defined mandatory and protected flags.
+   * 
+   * @param avpCode the code of the AVP
+   * @param vendorId the Vendor-Id of the AVP
+   * @param set the AvpSet to add AVP
+   * @param isMandatory the value for the mandatory bit
+   * @param isProtected the value for the protected bit
+   * @param value the value of the AVP to add
+   */
+  public static AvpSet setAvpAsGrouped(int avpCode, long vendorId, DiameterAvp[] childs, AvpSet set, boolean isMandatory, boolean isProtected)
+  {
+    performPreAddOperations(avpCode, vendorId, set);
+
+    AvpSet grouped = set.addGroupedAvp(avpCode, vendorId, isMandatory, isProtected);
+    
+    for (DiameterAvp child : childs) {
+      grouped.addAvp(child.getCode(), child.byteArrayValue(), child.getVendorId(), child.getMandatoryRule() == 1, child.getProtectedRule() == 1);
+    }
+
+    return grouped;
+  }
+
+  /**
+   * Method for obtaining AVP with given code and any Vendor-Id.
+   * 
+   * @param avpCode the code of the AVP to look for
+   * @param set the set of AVPs where to look
+   * 
+   * @return an AVP with the given code, or null if none is present.
+   */
+  public static Avp getAvp(int avpCode, AvpSet set)
+  {
+    return set.getAvp(avpCode);
+  }
+  
+
+  /**
+   * Method for obtaining AVP with given code and Vendor-Id.
+   * 
+   * @param avpCode the code of the AVP to look for
+   * @param vendorId the Vendor-Id of the AVP to look for
+   * @param set the set of AVPs where to look
+   * 
+   * @return an AVP with the given code and Vendor-Id, or null if none is present.
+   */
+  public static Avp getAvp(int avpCode, long vendorId, AvpSet set)
+  {
+    return set.getAvp(avpCode, vendorId);
+  }
+  
+  /**
+   * Method for removing AVP with given code.
+   * 
+   * @param avpCode the code of the AVP to be removed
+   * @param set the AvpSet to remove the AVP from
+   */
+  public static void removeAvp(int avpCode, AvpSet set)
+  {
+    set.removeAvp(avpCode);
+  }
+
 }

@@ -1,3 +1,28 @@
+/*
+ * Mobicents, Communications Middleware
+ * 
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package org.mobicents.slee.resource.diameter.cca.events.avp;
 
 import net.java.slee.resource.diameter.cca.events.avp.CreditControlAVPCodes;
@@ -27,8 +52,7 @@ public class RedirectServerAvpImpl extends GroupedAvpImpl implements RedirectSer
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @seenet.java.slee.resource.diameter.cca.events.avp.RedirectServerAvp#
-	 * getRedirectAddressType()
+	 * @see net.java.slee.resource.diameter.cca.events.avp.RedirectServerAvp#getRedirectAddressType()
 	 */
 	public RedirectAddressType getRedirectAddressType() {
 		if (hasRedirectAddressType()) {
@@ -71,7 +95,7 @@ public class RedirectServerAvpImpl extends GroupedAvpImpl implements RedirectSer
 	 * hasRedirectAddressType()
 	 */
 	public boolean hasRedirectAddressType() {
-		return super.hasAvp(CreditControlAVPCodes.Redirect_Address_Type);
+		return hasAvp(CreditControlAVPCodes.Redirect_Address_Type);
 	}
 
 	/*
@@ -81,7 +105,7 @@ public class RedirectServerAvpImpl extends GroupedAvpImpl implements RedirectSer
 	 * hasRedirectServerAddress()
 	 */
 	public boolean hasRedirectServerAddress() {
-		return super.hasAvp(CreditControlAVPCodes.Redirect_Server_Address);
+		return hasAvp(CreditControlAVPCodes.Redirect_Server_Address);
 	}
 
 	/*
@@ -92,11 +116,7 @@ public class RedirectServerAvpImpl extends GroupedAvpImpl implements RedirectSer
 	 * (net.java.slee.resource.diameter.cca.events.avp.RedirectAddressType)
 	 */
 	public void setRedirectAddressType(RedirectAddressType redirectAddressType) {
-		if (hasAvp(CreditControlAVPCodes.Redirect_Address_Type)) {
-			throw new IllegalStateException("AVP Redirect-Address-Type is already present in message and cannot be overwritten.");
-		}
-
-		super.setAvpAsUInt32(CreditControlAVPCodes.Redirect_Address_Type, redirectAddressType.getValue(), true);
+		addAvp(CreditControlAVPCodes.Redirect_Address_Type, redirectAddressType.getValue());
 	}
 
 	/*
@@ -106,11 +126,7 @@ public class RedirectServerAvpImpl extends GroupedAvpImpl implements RedirectSer
 	 * setRedirectServerAddress(java.lang.String)
 	 */
 	public void setRedirectServerAddress(String redirectServerAddress) {
-		if (hasAvp(CreditControlAVPCodes.Redirect_Server_Address)) {
-			throw new IllegalStateException("AVP Redirect-Server-Address is already present in message and cannot be overwritten.");
-		}
-
-		super.setAvpAsString(CreditControlAVPCodes.Redirect_Server_Address, redirectServerAddress, false, true);
+		addAvp(CreditControlAVPCodes.Redirect_Server_Address, redirectServerAddress);
 	}
 
 }

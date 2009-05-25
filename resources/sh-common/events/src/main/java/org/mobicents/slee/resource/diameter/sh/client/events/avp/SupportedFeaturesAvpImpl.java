@@ -1,8 +1,7 @@
 /*
  * Mobicents, Communications Middleware
  * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party
- * contributors as
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
  * distributed under license by Red Hat Middleware LLC.
@@ -27,7 +26,6 @@
 package org.mobicents.slee.resource.diameter.sh.client.events.avp;
 
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
-import net.java.slee.resource.diameter.sh.client.events.avp.SupportedApplicationsAvp;
 import net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp;
 
 import org.jdiameter.api.Avp;
@@ -48,10 +46,22 @@ import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
  */
 public class SupportedFeaturesAvpImpl extends GroupedAvpImpl implements SupportedFeaturesAvp {
 
+  /**
+   * 
+   * @param code
+   * @param vendorId
+   * @param mnd
+   * @param prt
+   * @param value
+   */
 	public SupportedFeaturesAvpImpl(int code, long vendorId, int mnd, int prt, byte[] value) {
 		super(code, vendorId, mnd, prt, value);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp#getFeatureList()
+	 */
 	public long getFeatureList() {
 		if (hasFeatureList())
 			return super.getAvpAsUInt32(DiameterShAvpCodes.FEATURE_LIST);
@@ -59,6 +69,10 @@ public class SupportedFeaturesAvpImpl extends GroupedAvpImpl implements Supporte
 			return -1;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp#getFeatureListId()
+	 */
 	public long getFeatureListId() {
 		if (hasFeatureListId())
 			return super.getAvpAsUInt32(DiameterShAvpCodes.FEATURE_LIST_ID);
@@ -66,32 +80,52 @@ public class SupportedFeaturesAvpImpl extends GroupedAvpImpl implements Supporte
 			return -1;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp#hasFeatureList()
+	 */
 	public boolean hasFeatureList() {
 		return super.avpSet.getAvp(DiameterShAvpCodes.FEATURE_LIST) != null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp#hasFeatureListId()
+	 */
 	public boolean hasFeatureListId() {
 		return super.avpSet.getAvp(DiameterShAvpCodes.FEATURE_LIST_ID) != null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp#setFeatureList(long)
+	 */
 	public void setFeatureList(long featureList) {
-		super.setAvpAsUInt32(DiameterShAvpCodes.FEATURE_LIST, featureList, true);
+		addAvp(DiameterShAvpCodes.FEATURE_LIST, featureList);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp#setFeatureListId(long)
+	 */
 	public void setFeatureListId(long featureListId) {
-		super.setAvpAsUInt32(DiameterShAvpCodes.FEATURE_LIST_ID, featureListId, true);
+	  addAvp(DiameterShAvpCodes.FEATURE_LIST_ID, featureListId);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp#hasVendorId()
+	 */
 	public boolean hasVendorId() {
 		return super.avpSet.getAvp(Avp.VENDOR_ID) != null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp#setVendorId(long)
+	 */
 	public void setVendorId(long vendorId) {
-		if (hasVendorId()) {
-			throw new IllegalStateException("Unable to set Vendor-Id AVP, it is already present in this message.");
-		}
-
-		super.setAvpAsUInt32(Avp.VENDOR_ID, vendorId, true);
+	  addAvp(Avp.VENDOR_ID, vendorId);
 	}
 
 }

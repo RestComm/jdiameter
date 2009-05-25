@@ -1,8 +1,7 @@
 /*
  * Mobicents, Communications Middleware
  * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party
- * contributors as
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
  * distributed under license by Red Hat Middleware LLC.
@@ -44,9 +43,9 @@ import org.mobicents.slee.resource.diameter.sh.client.events.avp.SupportedFeatur
  * 
  * Start time:15:44:42 2009-05-23<br>
  * Project: diameter-parent<br>
- * Implementation of common methods for sh messages.
- * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
- *         </a>
+ * Implementation of common methods for Sh messages.
+ * 
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class DiameterShMessageImpl extends DiameterMessageImpl implements DiameterShMessage {
@@ -113,17 +112,20 @@ public class DiameterShMessageImpl extends DiameterMessageImpl implements Diamet
 
 	public void setAuthSessionState(AuthSessionStateType authSessionState)
 	{
-		super.setAvpAsUInt32(DiameterAvpCodes.AUTH_SESSION_STATE, authSessionState.getValue(), true, true);
+		addAvp(DiameterAvpCodes.AUTH_SESSION_STATE, authSessionState.getValue());
 	}
 
 	public void setSupportedFeatures(SupportedFeaturesAvp supportedFeatures)
 	{
-		super.setAvpAsGroup(supportedFeatures.getCode(), new SupportedFeaturesAvp[]{supportedFeatures}, true, true);
+    // FIXME: Alexandre: Make it use addAvp(...)
+		super.setAvpAsGrouped(supportedFeatures.getCode(), supportedFeatures.getVendorId(), supportedFeatures.getExtensionAvps(), supportedFeatures.getMandatoryRule() == 0, supportedFeatures.getProtectedRule() == 0);
 	}
 
 	public void setSupportedFeatureses(SupportedFeaturesAvp[] supportedFeatureses)
 	{
-		super.setAvpAsGroup(DiameterShAvpCodes.SUPPORTED_FEATURES, supportedFeatureses, true, true);
+	  for(SupportedFeaturesAvp supportedFeatures : supportedFeatureses) {
+	    setSupportedFeatures(supportedFeatures);
+	  }
 	}
 
 	public SupportedFeaturesAvp getSupportedFeatures()

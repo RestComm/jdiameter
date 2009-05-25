@@ -1,10 +1,33 @@
+/*
+ * Mobicents, Communications Middleware
+ * 
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package org.mobicents.slee.resource.diameter.cca.events.avp;
 
 import net.java.slee.resource.diameter.cca.events.avp.CreditControlAVPCodes;
 import net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp;
 
-import org.mobicents.diameter.dictionary.AvpDictionary;
-import org.mobicents.diameter.dictionary.AvpRepresentation;
 import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
 
 /**
@@ -25,86 +48,60 @@ public class ServiceParameterInfoAvpImpl extends GroupedAvpImpl implements Servi
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp
-	 * #getServiceParameterType()
+	 * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#getServiceParameterType()
 	 */
 	public long getServiceParameterType() {
-		if (hasServiceParameterType()) {
-			return super.getAvpAsUInt32(CreditControlAVPCodes.Service_Parameter_Type);
-		}
-
-		return -1;
+	  return super.getAvpAsUInt32(CreditControlAVPCodes.Service_Parameter_Type);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp
-	 * #getServiceParameterValue()
+	 * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#getServiceParameterValue()
 	 */
 	public byte[] getServiceParameterValue() {
-		if (hasServiceParameterValue()) {
-			return super.getAvpAsByteArray(CreditControlAVPCodes.Service_Parameter_Value);
-		}
-
-		return null;
+	  return getAvpAsByteArray(CreditControlAVPCodes.Service_Parameter_Value);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp
-	 * #hasServiceParameterType()
+	 * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#hasServiceParameterType()
 	 */
 	public boolean hasServiceParameterType() {
-		return super.hasAvp(CreditControlAVPCodes.Service_Parameter_Type);
+		return hasAvp(CreditControlAVPCodes.Service_Parameter_Type);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp
-	 * #hasServiceParameterValue()
+	 * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#hasServiceParameterValue()
 	 */
 	public boolean hasServiceParameterValue() {
-		return super.hasAvp(CreditControlAVPCodes.Service_Parameter_Value);
+		return hasAvp(CreditControlAVPCodes.Service_Parameter_Value);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp
-	 * #setServiceParameterType(long)
+	 * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#setServiceParameterType(long)
 	 */
 	public void setServiceParameterType(long serviceParameterType) {
-		if (hasAvp(CreditControlAVPCodes.Service_Parameter_Type)) {
-			throw new IllegalStateException("AVP Service-Parameter-Type is already present in message and cannot be overwritten.");
-		}
-
-		super.setAvpAsUInt32(CreditControlAVPCodes.Service_Parameter_Type, serviceParameterType, true);
+		addAvp(CreditControlAVPCodes.Service_Parameter_Type, serviceParameterType);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp
-	 * #setServiceParameterValue(byte[])
+	 * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#setServiceParameterValue(byte[])
 	 */
 	public void setServiceParameterValue(byte[] serviceParameterValue) {
-		if (hasAvp(CreditControlAVPCodes.Service_Parameter_Value)) {
-			throw new IllegalStateException("AVP Service-Parameter-Value is already present in message and cannot be overwritten.");
-		}
-
-		AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Service_Parameter_Value);
-		int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-		int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-		super.setAvpAsByteArray(CreditControlAVPCodes.Service_Parameter_Value, serviceParameterValue, mandatoryAvp == 1, protectedAvp == 1, true);
+		addAvp(CreditControlAVPCodes.Service_Parameter_Value, serviceParameterValue);
 	}
 
 }

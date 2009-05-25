@@ -1,9 +1,27 @@
-/**
- * Start time:16:56:38 2009-05-22<br>
- * Project: diameter-parent<br>
+/*
+ * Mobicents, Communications Middleware
  * 
- * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
  */
 package org.mobicents.slee.resource.diameter.base.events;
 
@@ -17,9 +35,9 @@ import org.jdiameter.api.Message;
 /**
  * Start time:16:56:38 2009-05-22<br>
  * Project: diameter-parent<br>
- * Super class for CEX messages
+ * Super class for ACX messages
  * 
- * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public abstract class AccountingMessageImpl extends DiameterMessageImpl implements AccountingMessage {
@@ -42,7 +60,7 @@ public abstract class AccountingMessageImpl extends DiameterMessageImpl implemen
 	}
 
 	public void setAccountingRecordType(AccountingRecordType accountingRecordType) {
-		setAvpAsInt32(Avp.ACC_RECORD_TYPE, accountingRecordType.getValue(), true, true);
+		addAvp(Avp.ACC_RECORD_TYPE, accountingRecordType.getValue());
 	}
 
 	public boolean hasAccountingRecordNumber() {
@@ -54,7 +72,7 @@ public abstract class AccountingMessageImpl extends DiameterMessageImpl implemen
 	}
 
 	public void setAccountingRecordNumber(long accountingRecordNumber) {
-		setAvpAsUInt32(Avp.ACC_RECORD_NUMBER, accountingRecordNumber, true, true);
+		addAvp(Avp.ACC_RECORD_NUMBER, accountingRecordNumber);
 	}
 
 	public boolean hasAccountingSubSessionId() {
@@ -66,7 +84,7 @@ public abstract class AccountingMessageImpl extends DiameterMessageImpl implemen
 	}
 
 	public void setAccountingSubSessionId(long accountingSubSessionId) {
-		setAvpAsUInt32(Avp.ACC_SUB_SESSION_ID, accountingSubSessionId, true, true);
+		addAvp(Avp.ACC_SUB_SESSION_ID, accountingSubSessionId);
 	}
 
 	public boolean hasAccountingSessionId() {
@@ -80,12 +98,10 @@ public abstract class AccountingMessageImpl extends DiameterMessageImpl implemen
 		}
 		
 		return null;
-		
 	}
 
 	public void setAccountingSessionId(byte[] accountingSessionId) {
-
-		super.setAvpAsOctet(Avp.ACC_SESSION_ID, new String(accountingSessionId), true, true);
+		addAvp(Avp.ACC_SESSION_ID, new String(accountingSessionId));
 	}
 
 	public boolean hasAcctMultiSessionId() {
@@ -97,7 +113,7 @@ public abstract class AccountingMessageImpl extends DiameterMessageImpl implemen
 	}
 
 	public void setAcctMultiSessionId(String acctMultiSessionId) {
-		setAvpAsUtf8(Avp.ACC_MULTI_SESSION_ID, acctMultiSessionId, true, true);
+		addAvp(Avp.ACC_MULTI_SESSION_ID, acctMultiSessionId);
 	}
 
 	public boolean hasAcctInterimInterval() {
@@ -109,7 +125,7 @@ public abstract class AccountingMessageImpl extends DiameterMessageImpl implemen
 	}
 
 	public void setAcctInterimInterval(long acctInterimInterval) {
-		setAvpAsUInt32(Avp.ACCT_INTERIM_INTERVAL, acctInterimInterval, true, true);
+		addAvp(Avp.ACCT_INTERIM_INTERVAL, acctInterimInterval);
 	}
 
 	public boolean hasAccountingRealtimeRequired() {
@@ -121,7 +137,7 @@ public abstract class AccountingMessageImpl extends DiameterMessageImpl implemen
 	}
 
 	public void setAccountingRealtimeRequired(AccountingRealtimeRequiredType accountingRealtimeRequired) {
-		setAvpAsInt32(Avp.ACCOUNTING_REALTIME_REQUIRED, accountingRealtimeRequired.getValue(), true, true);
+		addAvp(Avp.ACCOUNTING_REALTIME_REQUIRED, accountingRealtimeRequired.getValue());
 	}
 
 }

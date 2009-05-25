@@ -1,8 +1,7 @@
 /*
  * Mobicents, Communications Middleware
  * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party
- * contributors as
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
  * distributed under license by Red Hat Middleware LLC.
@@ -43,7 +42,7 @@ import org.mobicents.slee.resource.diameter.base.events.avp.ExperimentalResultAv
  * Project: diameter-parent<br>
  * Implementation of {@link PushNotificationRequest} interface.
  * 
- * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class ProfileUpdateAnswerImpl extends DiameterShMessageImpl implements ProfileUpdateAnswer {
@@ -89,7 +88,8 @@ public class ProfileUpdateAnswerImpl extends DiameterShMessageImpl implements Pr
 	}
 
 	public void setExperimentalResult(ExperimentalResultAvp experimentalResult) {
-		super.setAvpAsGroup(experimentalResult.getCode(), experimentalResult.getExtensionAvps(), experimentalResult.getMandatoryRule() == 1, true);
+    // FIXME: Alexandre: Make it use addAvp(...)
+		super.setAvpAsGrouped(experimentalResult.getCode(), experimentalResult.getVendorId(), experimentalResult.getExtensionAvps(), experimentalResult.getMandatoryRule() == 0, experimentalResult.getProtectedRule() == 0);
 	}
 
 }

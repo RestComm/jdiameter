@@ -1,8 +1,7 @@
 /*
  * Mobicents, Communications Middleware
  * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party
- * contributors as
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
  * distributed under license by Red Hat Middleware LLC.
@@ -32,35 +31,43 @@ import net.java.slee.resource.diameter.base.events.avp.TerminationCauseType;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.Message;
 
+/**
+ * <br>Project: mobicents-diameter-server
+ * <br>11:21:03 AM May 25, 2009 
+ * <br>
+ *
+ * SessionTerminationRequestImpl.java
+ *
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:emmartins@gmail.com"> Eduardo Martins </a>
+ */
 public class SessionTerminationRequestImpl  extends SessionTerminationMessageImpl implements SessionTerminationRequest{
 
-	@Override
-	public String getLongName() {
-		
-		return "Session-Termination-Request";
-	}
+  public SessionTerminationRequestImpl(Message message) {
+    super(message);
+  }
 
-	@Override
-	public String getShortName() {
+  @Override
+  public String getLongName() {
+    return "Session-Termination-Request";
+  }
 
-		return "STR";
-	}
+  @Override
+  public String getShortName() {
+    return "STR";
+  }
 
-	public SessionTerminationRequestImpl(Message message) {
-        super(message);
-    }
+  public boolean hasTerminationCause() {
+    return message.getAvps().getAvp(Avp.TERMINATION_CAUSE) != null;
+  }
 
-    public boolean hasTerminationCause() {
-        return message.getAvps().getAvp(Avp.TERMINATION_CAUSE) != null;
-    }
+  public TerminationCauseType getTerminationCause() {
+    return TerminationCauseType.fromInt(getAvpAsInt32(Avp.TERMINATION_CAUSE));
+  }
 
-    public TerminationCauseType getTerminationCause() {
-        return TerminationCauseType.fromInt(getAvpAsInt32(Avp.TERMINATION_CAUSE));
-    }
-
-    public void setTerminationCause(TerminationCauseType terminationCause) {
-        setAvpAsInt32(Avp.TERMINATION_CAUSE, terminationCause.getValue(), true,true);
-    }
-	
+  public void setTerminationCause(TerminationCauseType terminationCause) {
+    addAvp(Avp.TERMINATION_CAUSE, terminationCause.getValue());
+  }
 
 }

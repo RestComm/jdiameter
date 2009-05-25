@@ -1,8 +1,7 @@
 /*
  * Mobicents, Communications Middleware
  * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party
- * contributors as
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
  * distributed under license by Red Hat Middleware LLC.
@@ -48,71 +47,97 @@ import org.mobicents.slee.resource.diameter.base.events.avp.ExperimentalResultAv
  */
 public class UserDataAnswerImpl extends DiameterShMessageImpl implements UserDataAnswer {
 
-	private static transient Logger logger = Logger.getLogger(UserDataAnswerImpl.class);
+  private static transient Logger logger = Logger.getLogger(UserDataAnswerImpl.class);
 
-	
-	public UserDataAnswerImpl(Message msg) {
-		super(msg);
-		msg.setRequest(false);
-		super.longMessageName = "User-Data-Answer";
-		super.shortMessageName = "UDA";
-	}
+  /**
+   * 
+   * @param msg
+   */
+  public UserDataAnswerImpl(Message msg) {
+    super(msg);
+    msg.setRequest(false);
+    super.longMessageName = "User-Data-Answer";
+    super.shortMessageName = "UDA";
+  }
 
-	public boolean hasUserData() {
-		return super.message.getAvps().getAvp(DiameterShAvpCodes.USER_DATA) != null;
-	}
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.sh.client.events.UserDataAnswer#hasUserData()
+   */
+  public boolean hasUserData() {
+    return super.message.getAvps().getAvp(DiameterShAvpCodes.USER_DATA) != null;
+  }
 
-	public String getUserData() {
-		if (hasUserData()) {
-			try {
-				return new String(super.message.getAvps().getAvp(DiameterShAvpCodes.USER_DATA).getRaw());
-			} catch (AvpDataException e) {
-				logger.error("Unable to decode User-Data AVP contents.", e);
-			}
-		}
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.sh.client.events.UserDataAnswer#getUserData()
+   */
+  public String getUserData() {
+    if (hasUserData()) {
+      try {
+        return new String(super.message.getAvps().getAvp(DiameterShAvpCodes.USER_DATA).getRaw());
+      }
+      catch (AvpDataException e) {
+        logger.error("Unable to decode User-Data AVP contents.", e);
+      }
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	public void setUserData(byte[] userData) {
-	
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.sh.client.events.UserDataAnswer#setUserData(byte[])
+   */
+  public void setUserData(byte[] userData) {
+    addAvp(DiameterShAvpCodes.USER_DATA, 10415L, userData);
+  }
 
-		super.message.getAvps().removeAvp(DiameterShAvpCodes.USER_DATA);
-		super.message.getAvps().addAvp(DiameterShAvpCodes.USER_DATA, userData, 10415L, true, false);
-	}
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.sh.client.events.UserDataAnswer#getExperimentalResult()
+   */
+  public ExperimentalResultAvp getExperimentalResult() {
+    ExperimentalResultAvp avp = null;
 
-	public ExperimentalResultAvp getExperimentalResult() {
-		ExperimentalResultAvp avp = null;
+    try {
+      Avp rawAvp = super.message.getAvps().getAvp(DiameterAvpCodes.EXPERIMENTAL_RESULT);
 
-		try {
-			Avp rawAvp = super.message.getAvps().getAvp(DiameterAvpCodes.EXPERIMENTAL_RESULT);
+      if (rawAvp != null) {
+        Avp ercAvp = rawAvp.getGrouped().getAvp(DiameterAvpCodes.EXPERIMENTAL_RESULT_CODE);
+        Avp vidAvp = rawAvp.getGrouped().getAvp(DiameterAvpCodes.VENDOR_ID);
 
-			if (rawAvp != null) {
-				Avp ercAvp = rawAvp.getGrouped().getAvp(DiameterAvpCodes.EXPERIMENTAL_RESULT_CODE);
-				Avp vidAvp = rawAvp.getGrouped().getAvp(DiameterAvpCodes.VENDOR_ID);
+        avp = new ExperimentalResultAvpImpl(rawAvp.getCode(), rawAvp.getVendorId(), rawAvp.isMandatory() ? 1 : 0, rawAvp.isEncrypted() ? 1 : 0, new byte[] {});
 
-				avp = new ExperimentalResultAvpImpl(rawAvp.getCode(), rawAvp.getVendorId(), rawAvp.isMandatory() ? 1 : 0, rawAvp.isEncrypted() ? 1 : 0, new byte[] {});
+        if (ercAvp != null) {
+          avp.setExperimentalResultCode(ercAvp.getUnsigned32());
+        }
 
-				if (ercAvp != null) {
-					avp.setExperimentalResultCode(ercAvp.getUnsigned32());
-				}
+        if (vidAvp != null) {
+          avp.setVendorId(vidAvp.getUnsigned32());
+        }
+      }
+    }
+    catch (AvpDataException e) {
+      logger.error("Unable to decode Experimental-Result AVP contents.", e);
+    }
 
-				if (vidAvp != null) {
-					avp.setVendorId(vidAvp.getUnsigned32());
-				}
-			}
-		} catch (AvpDataException e) {
-			logger.error("Unable to decode Experimental-Result AVP contents.", e);
-		}
+    return avp;
+  }
 
-		return avp;
-	}
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.sh.client.events.UserDataAnswer#hasExperimentalResult()
+   */
+  public boolean hasExperimentalResult() {
+    return super.message.getAvps().getAvp(DiameterAvpCodes.EXPERIMENTAL_RESULT) != null;
+  }
 
-	public boolean hasExperimentalResult() {
-		return super.message.getAvps().getAvp(DiameterAvpCodes.EXPERIMENTAL_RESULT) != null;
-	}
-
-	public void setExperimentalResult(ExperimentalResultAvp experimentalResult) {
-		super.setAvpAsGroup(experimentalResult.getCode(), experimentalResult.getExtensionAvps(), experimentalResult.getMandatoryRule() == 1, true);
-	}
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.sh.client.events.UserDataAnswer#setExperimentalResult(net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp)
+   */
+  public void setExperimentalResult(ExperimentalResultAvp experimentalResult) {
+    setAvpAsGrouped(experimentalResult.getCode(), experimentalResult.getVendorId(), experimentalResult.getExtensionAvps(), experimentalResult.getMandatoryRule() == 0, experimentalResult.getProtectedRule() == 0);
+  }
 }

@@ -1,8 +1,7 @@
 /*
  * Mobicents, Communications Middleware
  * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party
- * contributors as
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
  * distributed under license by Red Hat Middleware LLC.
@@ -43,8 +42,7 @@ import org.mobicents.slee.resource.diameter.sh.client.events.DiameterShMessageIm
  * Project: diameter-parent<br>
  * Implementation of {@link PushNotificationAnswer} interface.
  * 
- * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski
- *         </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class PushNotificationAnswerImpl extends DiameterShMessageImpl implements PushNotificationAnswer {
@@ -80,7 +78,8 @@ public class PushNotificationAnswerImpl extends DiameterShMessageImpl implements
 					avp.setVendorId(vidAvp.getUnsigned32());
 				}
 			}
-		} catch (AvpDataException e) {
+		}
+		catch (AvpDataException e) {
 			logger.error("Unable to decode Experimental-Result AVP contents.", e);
 		}
 
@@ -92,7 +91,7 @@ public class PushNotificationAnswerImpl extends DiameterShMessageImpl implements
 	}
 
 	public void setExperimentalResult(ExperimentalResultAvp experimentalResult) {
-		super.setAvpAsGroup(experimentalResult.getCode(), experimentalResult.getExtensionAvps(), experimentalResult.getMandatoryRule() == 1, true);
+		super.setAvpAsGrouped(experimentalResult.getCode(), experimentalResult.getVendorId(), experimentalResult.getExtensionAvps(), experimentalResult.getMandatoryRule() == 0, experimentalResult.getProtectedRule() == 0);
 	}
 
 }
