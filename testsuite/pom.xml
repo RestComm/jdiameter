@@ -17,13 +17,13 @@
   <properties>
     <!-- Mobicents Diameter Components Versions -->
     <mobicents.diameter.jdiameter.version>1.5.0.1-build186-SNAPSHOT</mobicents.diameter.jdiameter.version>
-    <mobicents.diameter.mux.version>1.0.0.BETA4-SNAPSHOT</mobicents.diameter.mux.version>
-    <mobicents.diameter.resources.base.version>1.0.0.BETA5-SNAPSHOT</mobicents.diameter.resources.base.version>
-    <mobicents.diameter.resources.cca.version>1.0.0.BETA3-SNAPSHOT</mobicents.diameter.resources.cca.version>
-    <mobicents.diameter.resources.sh-client.version>1.0.0.BETA4-SNAPSHOT</mobicents.diameter.resources.sh-client.version>
-    <mobicents.diameter.resources.sh-server.version>1.0.0.BETA2-SNAPSHOT</mobicents.diameter.resources.sh-server.version>
-    <mobicents.diameter.resources.ro.version>1.0.0.BETA1-SNAPSHOT</mobicents.diameter.resources.ro.version>
-    <mobicents.diameter.resources.rf.version>1.0.0.BETA1-SNAPSHOT</mobicents.diameter.resources.rf.version>
+    <mobicents.diameter.mux.version>1.0.0.BETA5-SNAPSHOT</mobicents.diameter.mux.version>
+    <mobicents.diameter.resources.base.version>1.0.0.BETA6-SNAPSHOT</mobicents.diameter.resources.base.version>
+    <mobicents.diameter.resources.cca.version>1.0.0.BETA4-SNAPSHOT</mobicents.diameter.resources.cca.version>
+    <mobicents.diameter.resources.sh-client.version>1.0.0.BETA5-SNAPSHOT</mobicents.diameter.resources.sh-client.version>
+    <mobicents.diameter.resources.sh-server.version>1.0.0.BETA3-SNAPSHOT</mobicents.diameter.resources.sh-server.version>
+    <mobicents.diameter.resources.ro.version>1.0.0.BETA2-SNAPSHOT</mobicents.diameter.resources.ro.version>
+    <mobicents.diameter.resources.rf.version>1.0.0.BETA2-SNAPSHOT</mobicents.diameter.resources.rf.version>
     
     <!-- Other Mobicents Components Versions -->
     <mobicents.servers.jainslee.version>1.2.4.GA</mobicents.servers.jainslee.version>
