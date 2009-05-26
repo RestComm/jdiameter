@@ -51,11 +51,7 @@ public class UnitValueAvpImpl extends GroupedAvpImpl implements UnitValueAvp {
    * @see net.java.slee.resource.diameter.cca.events.avp.UnitValueAvp#getExpotent()
    */
   public int getExponent() {
-    if (hasExponent()) {
-      return super.getAvpAsInt32(CreditControlAVPCodes.Exponent);
-    }
-
-    return Integer.MIN_VALUE;
+    return (Integer) getAvp(CreditControlAVPCodes.Exponent);
   }
 
   /*
@@ -64,11 +60,7 @@ public class UnitValueAvpImpl extends GroupedAvpImpl implements UnitValueAvp {
    * @see net.java.slee.resource.diameter.cca.events.avp.UnitValueAvp#getValueDigits()
    */
   public long getValueDigits() {
-    if (hasValueDigits()) {
-      return super.getAvpAsInt64(CreditControlAVPCodes.Value_Digits);
-    }
-
-    return Long.MIN_VALUE;
+    return (Long) getAvp(CreditControlAVPCodes.Value_Digits);
   }
 
   /*
@@ -77,7 +69,7 @@ public class UnitValueAvpImpl extends GroupedAvpImpl implements UnitValueAvp {
    * @see net.java.slee.resource.diameter.cca.events.avp.UnitValueAvp#hasExponent()
    */
   public boolean hasExponent() {
-    return super.hasAvp(CreditControlAVPCodes.Exponent);
+    return hasAvp(CreditControlAVPCodes.Exponent);
   }
 
   /*
@@ -86,7 +78,7 @@ public class UnitValueAvpImpl extends GroupedAvpImpl implements UnitValueAvp {
    * @see net.java.slee.resource.diameter.cca.events.avp.UnitValueAvp#hasValueDigits()
    */
   public boolean hasValueDigits() {
-    return super.hasAvp(CreditControlAVPCodes.Value_Digits);
+    return hasAvp(CreditControlAVPCodes.Value_Digits);
   }
 
   /*

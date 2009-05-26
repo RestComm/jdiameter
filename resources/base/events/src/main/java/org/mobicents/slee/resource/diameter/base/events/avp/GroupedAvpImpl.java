@@ -38,7 +38,6 @@ import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
 import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
 
 import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.diameter.dictionary.AvpRepresentation;
@@ -58,32 +57,15 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
 
   protected AvpSet avpSet;
 
-  public GroupedAvpImpl(int code, long vendorId, int mnd, int prt, 
-      byte[] value) {
+  public GroupedAvpImpl(int code, long vendorId, int mnd, int prt, byte[] value)
+  {
     super(code, vendorId, mnd, prt, null, DiameterAvpType.GROUPED);
-    try
-    {
+    
+    try {
       avpSet = parser.decodeAvpSet(value);
     }
-    catch ( IOException e )
-    {
-      log.error("", e);
-    }
-
-  }
-
-  public void setExtensionAvps(DiameterAvp[] extensions) throws AvpNotAllowedException
-  {
-    try
-    {
-      for (DiameterAvp avp : extensions)
-      {
-        addAvp( avp, avpSet );
-      }
-    }
-    catch (Exception e)
-    {
-      log.error("", e);
+    catch ( IOException e ) {
+      log.error("Failure creating Grouped AVP.", e);
     }
   }
 
@@ -91,16 +73,31 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
   {
     DiameterAvp[] acc = new DiameterAvp[0];
 
-    try
-    {
+    try {
       acc = getExtensionAvpsInternal(avpSet);
     }
-    catch ( Exception e )
-    {
-      log.error("", e);
+    catch ( Exception e ) {
+      log.error("Failure getting Extension AVPs.", e);
     }
 
     return acc;
+  }
+
+  public boolean hasExtensionAvps() {
+    return getExtensionAvps().length > 0;
+  }
+
+  public void setExtensionAvps(DiameterAvp[] extensions) throws AvpNotAllowedException
+  {
+    try
+    {
+      for (DiameterAvp avp : extensions) {
+        addAvp( avp, avpSet );
+      }
+    }
+    catch (Exception e) {
+      log.error("Failure setting Extension AVPs.", e);
+    }
   }
 
   public double doubleValue() {
@@ -123,25 +120,12 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
     throw new IllegalArgumentException();
   }
 
-  public boolean hasExtensionAvps() {
-    return getExtensionAvps().length > 0;
-  }
-
   public byte[] byteArrayValue() {
     return parser.encodeAvpSet(avpSet);
   }
 
   public Object clone() {
     return new GroupedAvpImpl(code, vendorId, mnd, prt, byteArrayValue());
-  }
-
-  protected long getAvpAsUInt32(int code) {
-    try {
-      return avpSet.getAvp(code).getUnsigned32();
-    } catch (Exception e) {
-      log.warn(e);
-      return -1;
-    }
   }
 
   protected DiameterIdentityAvp getAvpAsIdentity(int code) {
@@ -160,24 +144,6 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
     }
   }
 
-  protected int getAvpAsInt32(int code)
-  {
-    try {
-      return avpSet.getAvp(code).getInteger32();
-    } catch (Exception e) {
-      log.warn(e);
-      return Integer.MIN_VALUE;
-    }
-  }
-  protected long getAvpAsInt64(int code)
-  {
-    try {
-      return avpSet.getAvp(code).getInteger64();
-    } catch (Exception e) {
-      log.warn(e);
-      return Long.MIN_VALUE;
-    }
-  }
   protected long[] getAllAvpAsUInt32(int code) {
     AvpSet all = avpSet.getAvps(code);
     long[] acc = new long[all.size()];
@@ -235,35 +201,31 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
     return acc.toArray(new DiameterAvp[0]);
   }  
 
-  protected boolean hasAvp(int code)
-  {
-    return hasAvp(code, 0L);
-  }
-
-  protected boolean hasAvp(int code, long vendorId)
-  {
-    return avpSet.getAvp(code, vendorId)  !=  null;
-  }
-
-  public byte[] getAvpAsByteArray(int code) {
-    Avp rawAvp = this.avpSet.getAvp(code);
-    if(rawAvp != null)
-      try {
-        return rawAvp.getRaw();
-      } catch (AvpDataException e) {
-        reportAvpFetchError(""+e, code);
-        e.printStackTrace();
-      }
-
-      return null;
-
-  }
+  // AVP Utilities Proxy Methods
   
-  
-  ////// Copied from DiameterMessageImpl ...
+  protected Date getAvpAsTime(int code)
+  {
+    return AvpUtilities.getAvpAsTime(code, avpSet);
+  }
+
+  protected Date getAvpAsTime(int code, long vendorId)
+  {
+    return AvpUtilities.getAvpAsTime(code, vendorId, avpSet);
+  }
+
   protected void setAvpAsTime(int code, long vendorId, Date value, boolean isMandatory, boolean isProtected)
   {
     AvpUtilities.setAvpAsTime(code, vendorId, avpSet, isMandatory, isProtected, value);
+  }
+  
+  protected float getAvpAsFloat32(int code)
+  {
+    return AvpUtilities.getAvpAsFloat32(code, avpSet);
+  }
+
+  protected float getAvpAsFloat32(int code, long vendorId)
+  {
+    return AvpUtilities.getAvpAsFloat32(code, vendorId, avpSet);
   }
 
   protected void setAvpAsFloat32(int code, long vendorId, float value, boolean isMandatory, boolean isProtected)
@@ -271,14 +233,44 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
     AvpUtilities.setAvpAsFloat32(code, vendorId, avpSet, isMandatory, isProtected, value);
   }
 
+  protected double getAvpAsFloat64(int code)
+  {
+    return AvpUtilities.getAvpAsFloat64(code, avpSet);
+  }
+
+  protected double getAvpAsFloat64(int code, long vendorId)
+  {
+    return AvpUtilities.getAvpAsFloat64(code, vendorId, avpSet);
+  }
+
   protected void setAvpAsFloat64(int code, long vendorId, float value, boolean isMandatory, boolean isProtected)
   {
     AvpUtilities.setAvpAsFloat64(code, vendorId, avpSet, isMandatory, isProtected, value);
   }
 
+  protected AvpSet getAvpAsGrouped(int code)
+  {
+    return AvpUtilities.getAvpAsGrouped(code, avpSet);
+  }
+
+  protected AvpSet getAvpAsGrouped(int code, long vendorId)
+  {
+    return AvpUtilities.getAvpAsGrouped(code, vendorId, avpSet);
+  }
+
   protected AvpSet setAvpAsGrouped(int code, long vendorId, DiameterAvp[] childs, boolean isMandatory, boolean isProtected)
   {
-    return AvpUtilities.setAvpAsGrouped(code, vendorId, childs, avpSet, isMandatory, isProtected);
+    return AvpUtilities.setAvpAsGrouped(code, vendorId, avpSet, isMandatory, isProtected, childs);
+  }
+
+  protected int getAvpAsInteger32(int code)
+  {
+    return AvpUtilities.getAvpAsInteger32(code, avpSet);
+  }
+
+  protected int getAvpAsInteger32(int code, long vendorId)
+  {
+    return AvpUtilities.getAvpAsInteger32(code, vendorId, avpSet);
   }
 
   protected void setAvpAsInteger32(int code, long vendorId, int value, boolean isMandatory, boolean isProtected)
@@ -286,9 +278,29 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
     AvpUtilities.setAvpAsInteger32(code, vendorId, avpSet, isMandatory, isProtected, value);
   }
 
+  protected long getAvpAsInteger64(int code)
+  {
+    return AvpUtilities.getAvpAsInteger64(code, avpSet);
+  }
+
+  protected long getAvpAsInteger64(int code, long vendorId)
+  {
+    return AvpUtilities.getAvpAsInteger64(code, vendorId, avpSet);
+  }
+
   protected void setAvpAsInteger64(int code, long vendorId, long value, boolean isMandatory, boolean isProtected)
   {
     AvpUtilities.setAvpAsInteger64(code, vendorId, avpSet, isMandatory, isProtected, value);
+  }
+
+  protected long getAvpAsUnsigned32(int code)
+  {
+    return AvpUtilities.getAvpAsUnsigned32(code, avpSet);
+  }
+
+  protected long getAvpAsUnsigned32(int code, long vendorId)
+  {
+    return AvpUtilities.getAvpAsUnsigned32(code, vendorId, avpSet);
   }
 
   protected void setAvpAsUnsigned32(int code, long vendorId, long value, boolean isMandatory, boolean isProtected)
@@ -296,14 +308,44 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
     AvpUtilities.setAvpAsUnsigned32(code, vendorId, avpSet, isMandatory, isProtected, value);
   }
 
+  protected long getAvpAsUnsigned64(int code)
+  {
+    return AvpUtilities.getAvpAsUnsigned64(code, avpSet);
+  }
+
+  protected long getAvpAsUnsigned64(int code, long vendorId)
+  {
+    return AvpUtilities.getAvpAsUnsigned64(code, vendorId, avpSet);
+  }
+
   protected void setAvpAsUnsigned64(int code, long vendorId, long value, boolean isMandatory, boolean isProtected)
   {
     AvpUtilities.setAvpAsUnsigned64(code, vendorId, avpSet, isMandatory, isProtected, value);
   }
 
+  protected String getAvpAsUTF8String(int code)
+  {
+    return AvpUtilities.getAvpAsUTF8String(code, avpSet);
+  }
+
+  protected String getAvpAsUTF8String(int code, long vendorId)
+  {
+    return AvpUtilities.getAvpAsUTF8String(code, vendorId, avpSet);
+  }
+  
   protected void setAvpAsUTF8String(int code, long vendorId, String value, boolean isMandatory, boolean isProtected)
   {
     AvpUtilities.setAvpAsUTF8String(code, vendorId, avpSet, isMandatory, isProtected, value);
+  }
+  
+  protected String getAvpAsOctetString(int code)
+  {
+    return AvpUtilities.getAvpAsOctetString(code, avpSet);
+  }
+
+  protected String getAvpAsOctetString(int code, long vendorId)
+  {
+    return AvpUtilities.getAvpAsOctetString(code, vendorId, avpSet);
   }
   
   protected void setAvpAsOctetString(int code, long vendorId, String value, boolean isMandatory, boolean isProtected)
@@ -311,37 +353,76 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
     AvpUtilities.setAvpAsOctetString(code, vendorId, avpSet, isMandatory, isProtected, value);
   }
   
+  protected byte[] getAvpAsRaw(int code)
+  {
+    return AvpUtilities.getAvpAsRaw(code, avpSet);
+  }
+
+  protected byte[] getAvpAsRaw(int code, long vendorId)
+  {
+    return AvpUtilities.getAvpAsRaw(code, vendorId, avpSet);
+  }
+  
   protected void setAvpAsRaw(int code, long vendorId, byte[] value, boolean isMandatory, boolean isProtected)
   {
     AvpUtilities.setAvpAsRaw(code, vendorId, avpSet, isMandatory, isProtected, value);
   }
   
-  public void addAvp(String avpName, Object avp)
+  protected void addAvp(String avpName, Object avp)
   {
-    AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpName);
-    
-    if(rep != null)
-    {
-      addAvp(rep.getCode(), rep.getVendorId(), avp);
-    }
+    AvpUtilities.addAvp(avpName, avpSet, avp);
   }
 
-  public void addAvp(int avpCode, Object avp)
+  protected void addAvp(int avpCode, Object avp)
   {
-    addAvp(avpCode, 0, avp );
+    AvpUtilities.addAvp(avpCode, 0L, avpSet, avp);
   }
   
-  public void addAvp(int avpCode, long vendorId, Object avp)
+  protected void addAvp(int avpCode, long vendorId, Object avp)
+  {
+    AvpUtilities.addAvp(avpCode, vendorId, avpSet, avp);
+  }
+
+  protected boolean hasAvp(int code)
+  {
+    return AvpUtilities.hasAvp(code, 0L, avpSet);
+  }
+
+  protected boolean hasAvp(int code, long vendorId)
+  {
+    return AvpUtilities.hasAvp(code, vendorId, avpSet);
+  }
+
+  protected Object getAvp(int avpCode)
+  {
+    Avp avp = avpSet.getAvp(avpCode);
+    
+    if(avp != null) {
+      return getAvp(avp.getCode(), avp.getVendorId());
+    }
+    
+    return null;
+  }
+
+  protected Object getAvp(String avpName)
+  {
+    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(avpName);
+    
+    if(avpRep != null) {
+      return getAvp(avpRep.getCode(), avpRep.getVendorId());
+    }
+    
+    return null;
+  }
+  
+  protected Object getAvp(int avpCode, long vendorId)
   {
     AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
-    
+
     if(avpRep != null)
     {
       DiameterAvpType avpType = DiameterAvpType.fromString(avpRep.getType());
-      
-      boolean isMandatoryAvp = !(avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot"));
-      boolean isProtectedAvp = avpRep.getRuleProtected().equals("must");
-      
+
       switch (avpType.getType())
       {
       case DiameterAvpType._ADDRESS:
@@ -351,57 +432,52 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
       case DiameterAvpType._OCTET_STRING:
       case DiameterAvpType._QOS_FILTER_RULE:
       {
-        setAvpAsOctetString(avpCode, vendorId, (String) avp, isMandatoryAvp, isProtectedAvp);
-        break;
+        return getAvpAsOctetString(avpCode, vendorId);
       }
       case DiameterAvpType._ENUMERATED:
       case DiameterAvpType._INTEGER_32:
       {
-        setAvpAsInteger32(avpCode, vendorId, (Integer) avp, isMandatoryAvp, isProtectedAvp);        
-        break;
+        return getAvpAsInteger32(avpCode, vendorId);        
       }
       case DiameterAvpType._FLOAT_32:
       {
-        setAvpAsFloat32(avpCode, vendorId, (Float) avp, isMandatoryAvp, isProtectedAvp);        
-        break;
+        return getAvpAsFloat32(avpCode, vendorId);        
       }
       case DiameterAvpType._FLOAT_64:
       {
-        setAvpAsFloat64(avpCode, vendorId, (Float) avp, isMandatoryAvp, isProtectedAvp);        
-        break;
+        return getAvpAsFloat64(avpCode, vendorId);        
       }
       case DiameterAvpType._GROUPED:
       {
-        setAvpAsGrouped(avpCode, vendorId, (DiameterAvp[]) avp, isMandatoryAvp, isProtectedAvp);        
-        break;
+        return getAvpAsGrouped(avpCode, vendorId);
       }
       case DiameterAvpType._INTEGER_64:
       {
-        setAvpAsInteger64(avpCode, vendorId, (Integer) avp, isMandatoryAvp, isProtectedAvp);
-        break;
+        return getAvpAsInteger64(avpCode, vendorId);
       }
       case DiameterAvpType._TIME:
       {
-        setAvpAsTime(avpCode, vendorId, (Date) avp, isMandatoryAvp, isProtectedAvp);
-        break;
+        return getAvpAsTime(avpCode, vendorId);
       }
       case DiameterAvpType._UNSIGNED_32:
       {
-        setAvpAsUnsigned32(avpCode, vendorId, (Long) avp, isMandatoryAvp, isProtectedAvp);
-        break;
+        return getAvpAsUnsigned32(avpCode, vendorId);
       }
       case DiameterAvpType._UNSIGNED_64:
       {
-        setAvpAsUnsigned64(avpCode, vendorId, (Long) avp, isMandatoryAvp, isProtectedAvp);
-        break;
+        return getAvpAsUnsigned64(avpCode, vendorId);
       }
       case DiameterAvpType._UTF8_STRING:
       {
-        setAvpAsUTF8String(avpCode, vendorId, (String) avp, isMandatoryAvp, isProtectedAvp);
-        break;
+        return getAvpAsUTF8String(avpCode, vendorId);
+      }
+      default:
+      {
+        return getAvpAsRaw(avpCode, vendorId);
       }
       }
     }
+    
+    return null;
   }
-
 }

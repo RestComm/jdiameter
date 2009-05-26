@@ -27,7 +27,9 @@ package net.java.slee.resource.diameter.base.events.avp;
 
 import java.util.Date;
 
+import org.apache.log4j.Logger;
 import org.jdiameter.api.Avp;
+import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.diameter.dictionary.AvpRepresentation;
@@ -42,6 +44,8 @@ import org.mobicents.diameter.dictionary.AvpRepresentation;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class AvpUtilities {
+
+  private static transient final Logger logger = Logger.getLogger(AvpUtilities.class);
 
   private static long _DEFAULT_VENDOR_ID = 0L;
 
@@ -149,6 +153,30 @@ public class AvpUtilities {
     set.addAvp(avpCode, value, vendorId, isMandatory, isProtected, isOctetString);
   }
 
+  public static String getAvpAsOctetString(int avpCode, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode);
+      return avp != null ? avp.getOctetString() : null;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " as type OctetString.", e);
+      return null;
+    }
+  }
+
+  public static String getAvpAsOctetString(int avpCode, long vendorId, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode, vendorId);
+      return avp != null ? avp.getOctetString() : null;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " and Vendor-Id " + vendorId + " as type OctetString.", e);
+      return null;
+    }
+  }
+
   /**
    * Adds AVP to {@link AvpSet} as OctetString with the given code and Base Vendor-Id (0).
    * 
@@ -196,6 +224,30 @@ public class AvpUtilities {
     performPreAddOperations(avpCode, vendorId, set);
 
     set.addAvp(avpCode, value, vendorId, isMandatory, isProtected, true);
+  }
+
+  public static String getAvpAsUTF8String(int avpCode, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode);
+      return avp != null ? avp.getUTF8String() : null;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " as type UTF8String.", e);
+      return null;
+    }
+  }
+
+  public static String getAvpAsUTF8String(int avpCode, long vendorId, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode, vendorId);
+      return avp != null ? avp.getUTF8String() : null;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " and Vendor-Id " + vendorId + " as type UTF8String.", e);
+      return null;
+    }
   }
 
   /**
@@ -247,6 +299,30 @@ public class AvpUtilities {
     set.addAvp(avpCode, value, vendorId, isMandatory, isProtected, false);
   }
 
+  public static long getAvpAsUnsigned32(int avpCode, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode);
+      return avp != null ? avp.getUnsigned32() : Long.MIN_VALUE;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " as type Unsigned32.", e);
+      return Long.MIN_VALUE;
+    }
+  }
+
+  public static long getAvpAsUnsigned32(int avpCode, long vendorId, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode, vendorId);
+      return avp != null ? avp.getUnsigned32() : Long.MIN_VALUE;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " and Vendor-Id " + vendorId + " as type Unsigned32.", e);
+      return Long.MIN_VALUE;
+    }
+  }
+
   /**
    * Adds AVP to {@link AvpSet} as Unsigned32 with the given code and Base Vendor-Id (0).
    * 
@@ -294,6 +370,30 @@ public class AvpUtilities {
     performPreAddOperations(avpCode, vendorId, set);
 
     set.addAvp(avpCode, value, vendorId, isMandatory, isProtected, true);
+  }
+
+  public static long getAvpAsUnsigned64(int avpCode, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode);
+      return avp != null ? avp.getUnsigned64() : Long.MIN_VALUE;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " as type Unsigned64.", e);
+      return Long.MIN_VALUE;
+    }
+  }
+
+  public static long getAvpAsUnsigned64(int avpCode, long vendorId, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode, vendorId);
+      return avp != null ? avp.getUnsigned64() : Long.MIN_VALUE;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " and Vendor-Id " + vendorId + " as type Unsigned64.", e);
+      return Long.MIN_VALUE;
+    }
   }
 
   /**
@@ -345,6 +445,30 @@ public class AvpUtilities {
     set.addAvp(avpCode, value, vendorId, isMandatory, isProtected, false);
   }
 
+  public static int getAvpAsInteger32(int avpCode, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode);
+      return avp != null ? avp.getInteger32() : Integer.MIN_VALUE;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " as type Integer32.", e);
+      return Integer.MIN_VALUE;
+    }
+  }
+
+  public static int getAvpAsInteger32(int avpCode, long vendorId, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode, vendorId);
+      return avp != null ? avp.getInteger32() : Integer.MIN_VALUE;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " and Vendor-Id " + vendorId + " as type Integer32.", e);
+      return Integer.MIN_VALUE;
+    }
+  }
+
   /**
    * Adds AVP to {@link AvpSet} as Integer32 with the given code and Base Vendor-Id (0).
    * 
@@ -394,6 +518,30 @@ public class AvpUtilities {
     set.addAvp(avpCode, value, vendorId, isMandatory, isProtected);
   }
 
+  public static long getAvpAsInteger64(int avpCode, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode);
+      return avp != null ? avp.getInteger64() : Long.MIN_VALUE;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " as type Integer64.", e);
+      return Long.MIN_VALUE;
+    }
+  }
+
+  public static long getAvpAsInteger64(int avpCode, long vendorId, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode, vendorId);
+      return avp != null ? avp.getInteger64() : Long.MIN_VALUE;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " and Vendor-Id " + vendorId + " as type Integer64.", e);
+      return Long.MIN_VALUE;
+    }
+  }
+
   /**
    * Adds AVP to {@link AvpSet} as Integer64 with the given code and Base Vendor-Id (0).
    * 
@@ -426,7 +574,6 @@ public class AvpUtilities {
     }
   }
 
-
   /**
    * Adds AVP to {@link AvpSet} as Integer64 with the given code and given Vendor-Id plus defined mandatory and protected flags.
    * 
@@ -442,6 +589,30 @@ public class AvpUtilities {
     performPreAddOperations(avpCode, vendorId, set);
 
     set.addAvp(avpCode, value, vendorId, isMandatory, isProtected, true);
+  }
+
+  public static float getAvpAsFloat32(int avpCode, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode);
+      return avp != null ? avp.getFloat32() : Float.MIN_VALUE;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " as type Float32.", e);
+      return Float.MIN_VALUE;
+    }
+  }
+
+  public static float getAvpAsFloat32(int avpCode, long vendorId, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode, vendorId);
+      return avp != null ? avp.getFloat32() : Float.MIN_VALUE;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " and Vendor-Id " + vendorId + " as type Float32.", e);
+      return Float.MIN_VALUE;
+    }
   }
 
   /**
@@ -476,7 +647,6 @@ public class AvpUtilities {
     }
   }
 
-
   /**
    * Adds AVP to {@link AvpSet} as Float32 with the given code and given Vendor-Id plus defined mandatory and protected flags.
    * 
@@ -492,6 +662,30 @@ public class AvpUtilities {
     performPreAddOperations(avpCode, vendorId, set);
 
     set.addAvp(avpCode, value, vendorId, isMandatory, isProtected);
+  }
+
+  public static double getAvpAsFloat64(int avpCode, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode);
+      return avp != null ? avp.getFloat64() : Double.MIN_VALUE;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " as type Float64.", e);
+      return Double.MIN_VALUE;
+    }
+  }
+
+  public static double getAvpAsFloat64(int avpCode, long vendorId, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode, vendorId);
+      return avp != null ? avp.getFloat64() : Double.MIN_VALUE;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " and Vendor-Id " + vendorId + " as type Float64.", e);
+      return Double.MIN_VALUE;
+    }
   }
 
   /**
@@ -525,7 +719,6 @@ public class AvpUtilities {
       setAvpAsFloat64(avpCode, vendorId, set, _DEFAULT_MANDATORY, _DEFAULT_PROTECTED, value);
     }
   }
-  
 
   /**
    * Adds AVP to {@link AvpSet} as Float64 with the given code and given Vendor-Id plus defined mandatory and protected flags.
@@ -542,6 +735,30 @@ public class AvpUtilities {
     performPreAddOperations(avpCode, vendorId, set);
 
     set.addAvp(avpCode, value, vendorId, isMandatory, isProtected);
+  }
+
+  public static byte[] getAvpAsRaw(int avpCode, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode);
+      return avp != null ? avp.getRaw() : null;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " as type Raw.", e);
+      return  null;
+    }
+  }
+
+  public static byte[] getAvpAsRaw(int avpCode, long vendorId, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode, vendorId);
+      return avp != null ? avp.getRaw() : null;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " and Vendor-Id " + vendorId + " as type Raw.", e);
+      return null;
+    }
   }
 
   /**
@@ -576,7 +793,6 @@ public class AvpUtilities {
     }
   }
 
-
   /**
    * Adds AVP to {@link AvpSet} as raw data with the given code and given Vendor-Id plus defined mandatory and protected flags.
    * 
@@ -592,6 +808,30 @@ public class AvpUtilities {
     performPreAddOperations(avpCode, vendorId, set);
 
     set.addAvp(avpCode, value, vendorId, isMandatory, isProtected);
+  }
+
+  public static Date getAvpAsTime(int avpCode, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode);
+      return avp != null ? avp.getTime() : null;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " as type Time.", e);
+      return  null;
+    }
+  }
+
+  public static Date getAvpAsTime(int avpCode, long vendorId, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode, vendorId);
+      return avp != null ? avp.getTime() : null;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " and Vendor-Id " + vendorId + " as type Time.", e);
+      return null;
+    }
   }
 
   /**
@@ -617,7 +857,7 @@ public class AvpUtilities {
   public static void setAvpAsTime(int avpCode, long vendorId, AvpSet set, Date value)
   {
     AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
-    
+
     if (rep != null) {
       setAvpAsTime(avpCode, vendorId, set, rep.isMandatory(), rep.isProtected(), value);
     }
@@ -625,7 +865,6 @@ public class AvpUtilities {
       setAvpAsTime(avpCode, vendorId, set, _DEFAULT_MANDATORY, _DEFAULT_PROTECTED, value);
     }
   }
-  
 
   /**
    * Adds AVP to {@link AvpSet} as Time with the given code and given Vendor-Id plus defined mandatory and protected flags.
@@ -640,8 +879,32 @@ public class AvpUtilities {
   public static void setAvpAsTime(int avpCode, long vendorId, AvpSet set, boolean isMandatory, boolean isProtected, Date value)
   {
     performPreAddOperations(avpCode, vendorId, set);
-    
+
     set.addAvp(avpCode, value, vendorId, isMandatory, isProtected);
+  }
+
+  public static AvpSet getAvpAsGrouped(int avpCode, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode);
+      return avp != null ? avp.getGrouped() : null;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " as type Grouped.", e);
+      return  null;
+    }
+  }
+
+  public static AvpSet getAvpAsGrouped(int avpCode, long vendorId, AvpSet set)
+  {
+    try {
+      Avp avp = set.getAvp(avpCode, vendorId);
+      return avp != null ? avp.getGrouped() : null;
+    }
+    catch (AvpDataException e) {
+      logger.debug("Failed to obtain AVP with code " + avpCode + " and Vendor-Id " + vendorId + " as type Grouped.", e);
+      return null;
+    }
   }
 
   /**
@@ -651,9 +914,9 @@ public class AvpUtilities {
    * @param set the Vendor-Id of the AVP
    * @param value the value of the AVP to add
    */
-  public static AvpSet setAvpAsGrouped(int avpCode, DiameterAvp[] childs, AvpSet set)
+  public static AvpSet setAvpAsGrouped(int avpCode, AvpSet set, DiameterAvp[] childs)
   {
-    return setAvpAsGrouped(avpCode, _DEFAULT_VENDOR_ID, childs, set);
+    return setAvpAsGrouped(avpCode, _DEFAULT_VENDOR_ID, set, childs);
   }
 
   /**
@@ -664,15 +927,15 @@ public class AvpUtilities {
    * @param set the Vendor-Id of the AVP
    * @param value the value of the AVP to add
    */
-  public static AvpSet setAvpAsGrouped(int avpCode, long vendorId, DiameterAvp[] childs, AvpSet set)
+  public static AvpSet setAvpAsGrouped(int avpCode, long vendorId, AvpSet set, DiameterAvp[] childs)
   {
     AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
-    
+
     if (rep != null) {
-      return setAvpAsGrouped(avpCode, vendorId, childs, set, rep.isMandatory(), rep.isProtected());
+      return setAvpAsGrouped(avpCode, vendorId, set, rep.isMandatory(), rep.isProtected(), childs);
     }
     else {
-      return setAvpAsGrouped(avpCode, vendorId, childs, set, _DEFAULT_MANDATORY, _DEFAULT_PROTECTED);
+      return setAvpAsGrouped(avpCode, vendorId, set, _DEFAULT_MANDATORY, _DEFAULT_PROTECTED, childs);
     }
   }
 
@@ -686,12 +949,12 @@ public class AvpUtilities {
    * @param isProtected the value for the protected bit
    * @param value the value of the AVP to add
    */
-  public static AvpSet setAvpAsGrouped(int avpCode, long vendorId, DiameterAvp[] childs, AvpSet set, boolean isMandatory, boolean isProtected)
+  public static AvpSet setAvpAsGrouped(int avpCode, long vendorId, AvpSet set, boolean isMandatory, boolean isProtected, DiameterAvp[] childs)
   {
     performPreAddOperations(avpCode, vendorId, set);
 
     AvpSet grouped = set.addGroupedAvp(avpCode, vendorId, isMandatory, isProtected);
-    
+
     for (DiameterAvp child : childs) {
       grouped.addAvp(child.getCode(), child.byteArrayValue(), child.getVendorId(), child.getMandatoryRule() == 1, child.getProtectedRule() == 1);
     }
@@ -707,11 +970,10 @@ public class AvpUtilities {
    * 
    * @return an AVP with the given code, or null if none is present.
    */
-  public static Avp getAvp(int avpCode, AvpSet set)
+  public static Avp getJDAvp(int avpCode, AvpSet set)
   {
     return set.getAvp(avpCode);
   }
-  
 
   /**
    * Method for obtaining AVP with given code and Vendor-Id.
@@ -722,11 +984,114 @@ public class AvpUtilities {
    * 
    * @return an AVP with the given code and Vendor-Id, or null if none is present.
    */
-  public static Avp getAvp(int avpCode, long vendorId, AvpSet set)
+  public static Avp getJDAvp(int avpCode, long vendorId, AvpSet set)
   {
     return set.getAvp(avpCode, vendorId);
   }
-  
+
+  public static void addAvp(String avpName, AvpSet set, Object avp)
+  {
+    AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpName);
+
+    if(rep != null)
+    {
+      addAvp(rep.getCode(), rep.getVendorId(), set, avp);
+    }
+  }
+
+  public static void addAvp(int avpCode, AvpSet set, Object avp)
+  {
+    addAvp(avpCode, 0L, set, avp);
+  }
+
+  /**
+   * Method for adding AVP with given code and Vendor-Id to the given set.
+   * 
+   * @param avpCode the code of the AVP to look for
+   * @param vendorId the Vendor-Id of the AVP to be added
+   * @param avp the AVP object
+   * @param set the AvpSet where to add the AVP
+   */
+  public static void addAvp(int avpCode, long vendorId, AvpSet set, Object avp)
+  {
+    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
+
+    if(avpRep != null)
+    {
+      DiameterAvpType avpType = DiameterAvpType.fromString(avpRep.getType());
+
+      boolean isMandatoryAvp = !(avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot"));
+      boolean isProtectedAvp = avpRep.getRuleProtected().equals("must");
+
+      if(avp instanceof byte[])
+      {
+        setAvpAsRaw(avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, (byte[]) avp);
+      }
+      else
+      {
+        switch (avpType.getType())
+        {
+        case DiameterAvpType._ADDRESS:
+        case DiameterAvpType._DIAMETER_IDENTITY:
+        case DiameterAvpType._DIAMETER_URI:
+        case DiameterAvpType._IP_FILTER_RULE:
+        case DiameterAvpType._OCTET_STRING:
+        case DiameterAvpType._QOS_FILTER_RULE:
+        {
+          setAvpAsOctetString(avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, (String) avp);
+          break;
+        }
+        case DiameterAvpType._ENUMERATED:
+        case DiameterAvpType._INTEGER_32:
+        {
+          setAvpAsInteger32(avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, (Integer) avp);        
+          break;
+        }
+        case DiameterAvpType._FLOAT_32:
+        {
+          setAvpAsFloat32(avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, (Float) avp);        
+          break;
+        }
+        case DiameterAvpType._FLOAT_64:
+        {
+          setAvpAsFloat64(avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, (Float) avp);        
+          break;
+        }
+        case DiameterAvpType._GROUPED:
+        {
+          setAvpAsGrouped(avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, (DiameterAvp[]) avp);
+          break;
+        }
+        case DiameterAvpType._INTEGER_64:
+        {
+          setAvpAsInteger64(avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, (Integer) avp);
+          break;
+        }
+        case DiameterAvpType._TIME:
+        {
+          setAvpAsTime(avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, (Date) avp);
+          break;
+        }
+        case DiameterAvpType._UNSIGNED_32:
+        {
+          setAvpAsUnsigned32(avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, (Long) avp);
+          break;
+        }
+        case DiameterAvpType._UNSIGNED_64:
+        {
+          setAvpAsUnsigned64(avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, (Long) avp);
+          break;
+        }
+        case DiameterAvpType._UTF8_STRING:
+        {
+          setAvpAsUTF8String(avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, (String) avp);
+          break;
+        }
+        }
+      }
+    }
+  }
+
   /**
    * Method for removing AVP with given code.
    * 
@@ -736,6 +1101,94 @@ public class AvpUtilities {
   public static void removeAvp(int avpCode, AvpSet set)
   {
     set.removeAvp(avpCode);
+  }
+
+  public static Object getAvp(int avpCode, AvpSet set)
+  {
+    Avp avp = set.getAvp(avpCode);
+    
+    if(avp != null) {
+      return getAvp(avp.getCode(), avp.getVendorId(), set);
+    }
+    
+    return null;
+  }
+
+  public static Object getAvp(String avpName, AvpSet set)
+  {
+    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(avpName);
+    
+    if(avpRep != null) {
+      return getAvp(avpRep.getCode(), avpRep.getVendorId(), set);
+    }
+    
+    return null;
+  }
+  
+  public static Object getAvp(int avpCode, long vendorId, AvpSet set)
+  {
+    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
+
+    if(avpRep != null)
+    {
+      DiameterAvpType avpType = DiameterAvpType.fromString(avpRep.getType());
+
+      switch (avpType.getType())
+      {
+      case DiameterAvpType._ADDRESS:
+      case DiameterAvpType._DIAMETER_IDENTITY:
+      case DiameterAvpType._DIAMETER_URI:
+      case DiameterAvpType._IP_FILTER_RULE:
+      case DiameterAvpType._OCTET_STRING:
+      case DiameterAvpType._QOS_FILTER_RULE:
+      {
+        return getAvpAsOctetString(avpCode, vendorId, set);
+      }
+      case DiameterAvpType._ENUMERATED:
+      case DiameterAvpType._INTEGER_32:
+      {
+        return getAvpAsInteger32(avpCode, vendorId, set);        
+      }
+      case DiameterAvpType._FLOAT_32:
+      {
+        return getAvpAsFloat32(avpCode, vendorId, set);        
+      }
+      case DiameterAvpType._FLOAT_64:
+      {
+        return getAvpAsFloat64(avpCode, vendorId, set);        
+      }
+      case DiameterAvpType._GROUPED:
+      {
+        return getAvpAsGrouped(avpCode, vendorId, set);
+      }
+      case DiameterAvpType._INTEGER_64:
+      {
+        return getAvpAsInteger64(avpCode, vendorId, set);
+      }
+      case DiameterAvpType._TIME:
+      {
+        return getAvpAsTime(avpCode, vendorId, set);
+      }
+      case DiameterAvpType._UNSIGNED_32:
+      {
+        return getAvpAsUnsigned32(avpCode, vendorId, set);
+      }
+      case DiameterAvpType._UNSIGNED_64:
+      {
+        return getAvpAsUnsigned64(avpCode, vendorId, set);
+      }
+      case DiameterAvpType._UTF8_STRING:
+      {
+        return getAvpAsUTF8String(avpCode, vendorId, set);
+      }
+      default:
+      {
+        return getAvpAsRaw(avpCode, vendorId, set);
+      }
+      }
+    }
+    
+    return null;
   }
 
 }

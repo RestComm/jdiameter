@@ -559,101 +559,6 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
 	// =============== SETTERS
 
-  public void addAvp(String avpName, Object avp)
-  {
-    AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpName);
-    
-    if(rep != null)
-    {
-      addAvp(rep.getCode(), rep.getVendorId(), avp);
-    }
-  }
-
-  public void addAvp(int avpCode, Object avp)
-  {
-    addAvp(avpCode, 0, avp );
-  }
-	
-  public void addAvp(int avpCode, long vendorId, Object avp)
-  {
-    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
-    
-    if(avpRep != null)
-    {
-      DiameterAvpType avpType = DiameterAvpType.fromString(avpRep.getType());
-      
-      boolean isMandatoryAvp = !(avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot"));
-      boolean isProtectedAvp = avpRep.getRuleProtected().equals("must");
-      
-      if(avp instanceof byte[])
-      {
-        setAvpAsByteArray(avpCode, vendorId, (byte[]) avp, isMandatoryAvp, isProtectedAvp);
-      }
-      else
-      {
-        switch (avpType.getType())
-        {
-        case DiameterAvpType._ADDRESS:
-        case DiameterAvpType._DIAMETER_IDENTITY:
-        case DiameterAvpType._DIAMETER_URI:
-        case DiameterAvpType._IP_FILTER_RULE:
-        case DiameterAvpType._OCTET_STRING:
-        case DiameterAvpType._QOS_FILTER_RULE:
-        {
-          setAvpAsOctetString(avpCode, vendorId, (String) avp, isMandatoryAvp, isProtectedAvp);
-          break;
-        }
-        case DiameterAvpType._ENUMERATED:
-        case DiameterAvpType._INTEGER_32:
-        {
-          setAvpAsInteger32(avpCode, vendorId, (Integer) avp, isMandatoryAvp, isProtectedAvp);        
-          break;
-        }
-        case DiameterAvpType._FLOAT_32:
-        {
-          setAvpAsFloat32(avpCode, vendorId, (Float) avp, isMandatoryAvp, isProtectedAvp);        
-          break;
-        }
-        case DiameterAvpType._FLOAT_64:
-        {
-          setAvpAsFloat64(avpCode, vendorId, (Float) avp, isMandatoryAvp, isProtectedAvp);        
-          break;
-        }
-        case DiameterAvpType._GROUPED:
-        {
-          setAvpAsGrouped(avpCode, vendorId, (DiameterAvp[]) avp, isMandatoryAvp, isProtectedAvp);        
-          break;
-        }
-        case DiameterAvpType._INTEGER_64:
-        {
-          setAvpAsInteger64(avpCode, vendorId, (Integer) avp, isMandatoryAvp, isProtectedAvp);
-          break;
-        }
-        case DiameterAvpType._TIME:
-        {
-          setAvpAsTime(avpCode, vendorId, (Date) avp, isMandatoryAvp, isProtectedAvp);
-          break;
-        }
-        case DiameterAvpType._UNSIGNED_32:
-        {
-          setAvpAsUnsigned32(avpCode, vendorId, (Long) avp, isMandatoryAvp, isProtectedAvp);
-          break;
-        }
-        case DiameterAvpType._UNSIGNED_64:
-        {
-          setAvpAsUnsigned64(avpCode, vendorId, (Long) avp, isMandatoryAvp, isProtectedAvp);
-          break;
-        }
-        case DiameterAvpType._UTF8_STRING:
-        {
-          setAvpAsUTF8String(avpCode, vendorId, (String) avp, isMandatoryAvp, isProtectedAvp);
-          break;
-        }
-        }
-      }
-    }
-  }
-
 	public void setAcctApplicationId(long acctApplicationId) {
 		addAvp(Avp.ACCT_APPLICATION_ID, acctApplicationId);
 	}
@@ -661,7 +566,23 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 	public void setAuthApplicationId(long authApplicationId) {
 	  addAvp(Avp.AUTH_APPLICATION_ID, authApplicationId);
 	}
+	
+	// AVP Utilities Proxy Methods
+	protected void addAvp(String avpName, Object avp)
+  {
+    AvpUtilities.addAvp(avpName, message.getAvps(), avp);
+  }
 
+  protected void addAvp(int avpCode, Object avp)
+  {
+    AvpUtilities.addAvp(avpCode, message.getAvps(), avp);
+  }
+
+  protected void addAvp(int avpCode, long vendorId, Object avp)
+  {
+    AvpUtilities.addAvp(avpCode, vendorId, message.getAvps(), avp);
+  }
+  
   protected void setAvpAsTime(int code, long vendorId, Date value, boolean isMandatory, boolean isProtected)
   {
     AvpUtilities.setAvpAsTime(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
@@ -679,7 +600,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
 	protected AvpSet setAvpAsGrouped(int code, long vendorId, DiameterAvp[] childs, boolean isMandatory, boolean isProtected)
 	{
-		return AvpUtilities.setAvpAsGrouped(code, vendorId, childs, message.getAvps(), isMandatory, isProtected);
+		return AvpUtilities.setAvpAsGrouped(code, vendorId, message.getAvps(), isMandatory, isProtected, childs);
 	}
 
   protected void setAvpAsInteger32(int code, long vendorId, int value, boolean isMandatory, boolean isProtected)

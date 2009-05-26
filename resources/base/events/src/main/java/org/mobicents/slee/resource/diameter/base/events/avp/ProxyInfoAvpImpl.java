@@ -65,7 +65,7 @@ public class ProxyInfoAvpImpl extends GroupedAvpImpl implements ProxyInfoAvp {
   }
 
   public byte[] getProxyState() {
-      return getAvpAsByteArray(PROXY_STATE);
+    return getAvpAsRaw(PROXY_STATE);
   }
 
   public void setProxyState(byte[] proxyState) {

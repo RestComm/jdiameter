@@ -103,16 +103,7 @@ public class UserIdentityAvpImpl extends GroupedAvpImpl implements UserIdentityA
 	}
 
 	public void setPublicIdentity(String publicIdentity) {
-		if (hasPublicIdentity()) {
-			throw new IllegalStateException("AVP Public-Identity is already present in message and cannot be overwritten.");
-		} else {
-			AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterShAvpCodes.PUBLIC_IDENTITY, 10415L);
-			int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-			int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-			// super.avpSet.removeAvp(DiameterShAvpCodes.PUBLIC_IDENTITY);
-			super.avpSet.addAvp(DiameterShAvpCodes.PUBLIC_IDENTITY, publicIdentity, 10415L, mandatoryAvp == 1, protectedAvp == 1, false);
-		}
+	  addAvp(DiameterShAvpCodes.PUBLIC_IDENTITY, 10415L, publicIdentity);
 	}
 
 }

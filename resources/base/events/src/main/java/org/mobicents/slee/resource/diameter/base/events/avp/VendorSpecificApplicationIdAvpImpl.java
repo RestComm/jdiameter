@@ -84,7 +84,7 @@ public class VendorSpecificApplicationIdAvpImpl extends GroupedAvpImpl implement
    * @see net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp#hasAuthApplicationId()
    */
   public boolean hasAuthApplicationId() {
-    return avpSet.getAvp(Avp.AUTH_APPLICATION_ID) != null;
+    return hasAvp(Avp.AUTH_APPLICATION_ID);
   }
 
   /*
@@ -92,7 +92,7 @@ public class VendorSpecificApplicationIdAvpImpl extends GroupedAvpImpl implement
    * @see net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp#getAuthApplicationId()
    */
   public long getAuthApplicationId() {
-    return getAvpAsUInt32(Avp.AUTH_APPLICATION_ID);
+    return (Long) getAvp(Avp.AUTH_APPLICATION_ID);
   }
 
   /*
@@ -108,7 +108,7 @@ public class VendorSpecificApplicationIdAvpImpl extends GroupedAvpImpl implement
    * @see net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp#hasAcctApplicationId()
    */
   public boolean hasAcctApplicationId() {
-    return avpSet.getAvp(Avp.ACCT_APPLICATION_ID) != null;
+    return hasAvp(Avp.ACCT_APPLICATION_ID);
   }
 
   /*
@@ -116,7 +116,7 @@ public class VendorSpecificApplicationIdAvpImpl extends GroupedAvpImpl implement
    * @see net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp#getAcctApplicationId()
    */
   public long getAcctApplicationId() {
-    return getAvpAsUInt32(Avp.ACCT_APPLICATION_ID);
+    return (Long) getAvp(Avp.ACCT_APPLICATION_ID);
   }
 
   /*

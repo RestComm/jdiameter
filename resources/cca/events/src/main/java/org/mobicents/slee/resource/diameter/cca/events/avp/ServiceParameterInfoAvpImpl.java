@@ -40,68 +40,68 @@ import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
  */
 public class ServiceParameterInfoAvpImpl extends GroupedAvpImpl implements ServiceParameterInfoAvp {
 
-	public ServiceParameterInfoAvpImpl(int code, long vendorId, int mnd, int prt, byte[] value) {
-		super(code, vendorId, mnd, prt, value);
-	}
+  public ServiceParameterInfoAvpImpl(int code, long vendorId, int mnd, int prt, byte[] value) {
+    super(code, vendorId, mnd, prt, value);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#getServiceParameterType()
-	 */
-	public long getServiceParameterType() {
-	  return super.getAvpAsUInt32(CreditControlAVPCodes.Service_Parameter_Type);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#getServiceParameterType()
+   */
+  public long getServiceParameterType() {
+    return (Long) getAvp(CreditControlAVPCodes.Service_Parameter_Type);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#getServiceParameterValue()
-	 */
-	public byte[] getServiceParameterValue() {
-	  return getAvpAsByteArray(CreditControlAVPCodes.Service_Parameter_Value);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#getServiceParameterValue()
+   */
+  public byte[] getServiceParameterValue() {
+    return (byte[]) getAvp(CreditControlAVPCodes.Service_Parameter_Value);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#hasServiceParameterType()
-	 */
-	public boolean hasServiceParameterType() {
-		return hasAvp(CreditControlAVPCodes.Service_Parameter_Type);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#hasServiceParameterType()
+   */
+  public boolean hasServiceParameterType() {
+    return hasAvp(CreditControlAVPCodes.Service_Parameter_Type);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#hasServiceParameterValue()
-	 */
-	public boolean hasServiceParameterValue() {
-		return hasAvp(CreditControlAVPCodes.Service_Parameter_Value);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#hasServiceParameterValue()
+   */
+  public boolean hasServiceParameterValue() {
+    return hasAvp(CreditControlAVPCodes.Service_Parameter_Value);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#setServiceParameterType(long)
-	 */
-	public void setServiceParameterType(long serviceParameterType) {
-		addAvp(CreditControlAVPCodes.Service_Parameter_Type, serviceParameterType);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#setServiceParameterType(long)
+   */
+  public void setServiceParameterType(long serviceParameterType) {
+    addAvp(CreditControlAVPCodes.Service_Parameter_Type, serviceParameterType);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#setServiceParameterValue(byte[])
-	 */
-	public void setServiceParameterValue(byte[] serviceParameterValue) {
-		addAvp(CreditControlAVPCodes.Service_Parameter_Value, serviceParameterValue);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#setServiceParameterValue(byte[])
+   */
+  public void setServiceParameterValue(byte[] serviceParameterValue) {
+    addAvp(CreditControlAVPCodes.Service_Parameter_Value, serviceParameterValue);
+  }
 
 }

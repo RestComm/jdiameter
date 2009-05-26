@@ -51,8 +51,8 @@ public class UserEquipmentInfoAvpImpl extends GroupedAvpImpl implements UserEqui
    * @see net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvp#getUserEquipmentInfoType()
    */
   public UserEquipmentInfoType getUserEquipmentInfoType() {
-    int v = getAvpAsInt32(CreditControlAVPCodes.User_Equipment_Info_Type);
-    return v != -1 ? UserEquipmentInfoType.EUI64.fromInt(v) : null;
+    int v = (Integer) getAvp(CreditControlAVPCodes.User_Equipment_Info_Type);
+    return v != Integer.MIN_VALUE ? UserEquipmentInfoType.EUI64.fromInt(v) : null;
   }
 
   /*
@@ -61,7 +61,7 @@ public class UserEquipmentInfoAvpImpl extends GroupedAvpImpl implements UserEqui
    * @see net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvp#getUserEquipmentInfoValue()
    */
   public byte[] getUserEquipmentInfoValue() {
-    return getAvpAsByteArray(CreditControlAVPCodes.User_Equipment_Info_Value);
+    return (byte[]) getAvp(CreditControlAVPCodes.User_Equipment_Info_Value);
   }
 
   /*

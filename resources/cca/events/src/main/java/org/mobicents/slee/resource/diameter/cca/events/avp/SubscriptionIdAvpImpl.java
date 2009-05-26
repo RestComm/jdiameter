@@ -44,86 +44,81 @@ import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
  */
 public class SubscriptionIdAvpImpl extends GroupedAvpImpl implements SubscriptionIdAvp {
 
-	private static transient Logger logger = Logger.getLogger(SubscriptionIdAvpImpl.class);
+  private static transient Logger logger = Logger.getLogger(SubscriptionIdAvpImpl.class);
 
-	public SubscriptionIdAvpImpl(int code, long vendorId, int mnd, int prt, byte[] value) {
-		super(code, vendorId, mnd, prt, value);
-	}
+  public SubscriptionIdAvpImpl(int code, long vendorId, int mnd, int prt, byte[] value) {
+    super(code, vendorId, mnd, prt, value);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seenet.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#
-	 * getSubscriptionIdData()
-	 */
-	public String getSubscriptionIdData() {
-		if (hasSubscriptionIdData()) {
-			Avp rawAvp = super.avpSet.getAvp(CreditControlAVPCodes.Subscription_Id_Data);
-			try {
-				return rawAvp.getUTF8String();
-			} catch (AvpDataException e) {
-				reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.Subscription_Id_Data);
-				logger.error("Failure while trying to obtain Subscription-Id-Data AVP.", e);
-			}
-		}
+  /*
+   * (non-Javadoc)
+   * 
+   * @seenet.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#
+   * getSubscriptionIdData()
+   */
+  public String getSubscriptionIdData() {
+    if (hasSubscriptionIdData()) {
+      Avp rawAvp = super.avpSet.getAvp(CreditControlAVPCodes.Subscription_Id_Data);
+      try {
+        return rawAvp.getUTF8String();
+      } catch (AvpDataException e) {
+        reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.Subscription_Id_Data);
+        logger.error("Failure while trying to obtain Subscription-Id-Data AVP.", e);
+      }
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seenet.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#
-	 * getSubscriptionIdType()
-	 */
-	public SubscriptionIdType getSubscriptionIdType() {
-		if (hasSubscriptionIdType()) {
-			int v = (int) super.getAvpAsUInt32(CreditControlAVPCodes.Subscription_Id_Type);
-			return SubscriptionIdType.END_USER_E164.fromInt(v);
-		}
+  /*
+   * (non-Javadoc)
+   * 
+   * @seenet.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#
+   * getSubscriptionIdType()
+   */
+  public SubscriptionIdType getSubscriptionIdType() {
+    int v = (Integer) getAvp(CreditControlAVPCodes.Subscription_Id_Type);
+    return v != Integer.MIN_VALUE ? SubscriptionIdType.END_USER_E164.fromInt(v) : null;
+  }
 
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @seenet.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#
+   * hasSubscriptionIdData()
+   */
+  public boolean hasSubscriptionIdData() {
+    return hasAvp(CreditControlAVPCodes.Subscription_Id_Data);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seenet.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#
-	 * hasSubscriptionIdData()
-	 */
-	public boolean hasSubscriptionIdData() {
-		return super.hasAvp(CreditControlAVPCodes.Subscription_Id_Data);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @seenet.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#
+   * hasSubscriptionIdType()
+   */
+  public boolean hasSubscriptionIdType() {
+    return hasAvp(CreditControlAVPCodes.Subscription_Id_Type);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seenet.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#
-	 * hasSubscriptionIdType()
-	 */
-	public boolean hasSubscriptionIdType() {
-		return super.hasAvp(CreditControlAVPCodes.Subscription_Id_Type);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @seenet.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#
+   * setSubscriptionIdData(java.lang.String)
+   */
+  public void setSubscriptionIdData(String data) {
+    addAvp(CreditControlAVPCodes.Subscription_Id_Data, 10415L, data);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seenet.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#
-	 * setSubscriptionIdData(java.lang.String)
-	 */
-	public void setSubscriptionIdData(String data) {
-		addAvp(CreditControlAVPCodes.Subscription_Id_Data, 10415L, data);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seenet.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#
-	 * setSubscriptionIdType
-	 * (net.java.slee.resource.diameter.cca.events.avp.SubscriptionIdType)
-	 */
-	public void setSubscriptionIdType(SubscriptionIdType type) {
-	  addAvp(CreditControlAVPCodes.Subscription_Id_Type, 10415L, type.getValue());
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @seenet.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#setSubscriptionIdType
+   * (net.java.slee.resource.diameter.cca.events.avp.SubscriptionIdType)
+   */
+  public void setSubscriptionIdType(SubscriptionIdType type) {
+    addAvp(CreditControlAVPCodes.Subscription_Id_Type, 10415L, type.getValue());
+  }
 
 }
