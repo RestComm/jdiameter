@@ -22,7 +22,7 @@ package net.java.slee.resource.diameter.sh.client;
 import java.io.IOException;
 
 import net.java.slee.resource.diameter.base.CreateActivityException;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.sh.client.events.ProfileUpdateAnswer;
 import net.java.slee.resource.diameter.sh.client.events.SubscribeNotificationsAnswer;
 import net.java.slee.resource.diameter.sh.client.events.UserDataAnswer;
@@ -102,6 +102,6 @@ public interface ShClientProvider {
 	 * 
 	 * @return
 	 */
-	DiameterIdentityAvp[] getConnectedPeers();
+	DiameterIdentity[] getConnectedPeers();
     
 }

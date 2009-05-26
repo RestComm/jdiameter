@@ -3,7 +3,7 @@ package net.java.slee.resource.diameter.base.events;
 
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
 
 
@@ -142,14 +142,14 @@ public interface AbortSessionRequest extends DiameterMessage {
      * A return value of null implies that no Route-Record AVPs have been set.
      * The elements in the given array are DiameterIdentity objects.
      */
-    DiameterIdentityAvp[] getRouteRecords();
+    DiameterIdentity[] getRouteRecords();
 
     /**
      * Sets a single Route-Record AVP in the message, of type DiameterIdentity.
      * @throws IllegalStateException if setRouteRecord or setRouteRecords
      *  has already been called
      */
-    void setRouteRecord(DiameterIdentityAvp routeRecord);
+    void setRouteRecord(DiameterIdentity routeRecord);
 
     /**
      * Sets the set of Route-Record AVPs, with all the values in the given array.
@@ -162,7 +162,7 @@ public interface AbortSessionRequest extends DiameterMessage {
      * @throws IllegalStateException if setRouteRecord or setRouteRecords
      *  has already been called
      */
-    void setRouteRecords(DiameterIdentityAvp[] routeRecords);
+    void setRouteRecords(DiameterIdentity[] routeRecords);
 
     
 

@@ -3,8 +3,8 @@ package net.java.slee.resource.diameter.base.events;
 
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
-import net.java.slee.resource.diameter.base.events.avp.DiameterURIAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
+import net.java.slee.resource.diameter.base.events.avp.DiameterURI;
 import net.java.slee.resource.diameter.base.events.avp.FailedAvp;
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
 import net.java.slee.resource.diameter.base.events.avp.RedirectHostUsageType;
@@ -138,13 +138,13 @@ public interface AbortSessionAnswer extends DiameterMessage {
      * Returns the value of the Error-Reporting-Host AVP, of type DiameterIdentity.
      * @return the value of the Error-Reporting-Host AVP or null if it has not been set on this message
      */
-    DiameterIdentityAvp getErrorReportingHost();
+    DiameterIdentity getErrorReportingHost();
 
     /**
      * Sets the value of the Error-Reporting-Host AVP, of type DiameterIdentity.
      * @throws IllegalStateException if setErrorReportingHost has already been called
      */
-    void setErrorReportingHost(DiameterIdentityAvp errorReportingHost);
+    void setErrorReportingHost(DiameterIdentity errorReportingHost);
 
     /**
      * Returns the set of Failed-AVP AVPs. The returned array contains
@@ -180,14 +180,14 @@ public interface AbortSessionAnswer extends DiameterMessage {
      * A return value of null implies that no Redirect-Host AVPs have been set.
      * The elements in the given array are DiameterURI objects.
      */
-    DiameterURIAvp[] getRedirectHosts();
+    DiameterURI[] getRedirectHosts();
 
     /**
      * Sets a single Redirect-Host AVP in the message, of type DiameterURI.
      * @throws IllegalStateException if setRedirectHost or setRedirectHosts
      *  has already been called
      */
-    void setRedirectHost(DiameterURIAvp redirectHost);
+    void setRedirectHost(DiameterURI redirectHost);
 
     /**
      * Sets the set of Redirect-Host AVPs, with all the values in the given array.
@@ -200,7 +200,7 @@ public interface AbortSessionAnswer extends DiameterMessage {
      * @throws IllegalStateException if setRedirectHost or setRedirectHosts
      *  has already been called
      */
-    void setRedirectHosts(DiameterURIAvp[] redirectHosts);
+    void setRedirectHosts(DiameterURI[] redirectHosts);
 
     /**
      * Returns true if the Redirect-Host-Usage AVP is present in the message.

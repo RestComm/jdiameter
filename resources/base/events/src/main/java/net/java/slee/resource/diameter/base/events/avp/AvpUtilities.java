@@ -25,6 +25,7 @@
  */
 package net.java.slee.resource.diameter.base.events.avp;
 
+import java.net.URISyntaxException;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
@@ -1136,10 +1137,33 @@ public class AvpUtilities {
       switch (avpType.getType())
       {
       case DiameterAvpType._ADDRESS:
+      {
+        return AddressAvp.decode( getAvpAsRaw(avpCode, vendorId, set) );
+      }
       case DiameterAvpType._DIAMETER_IDENTITY:
+      {
+        return new DiameterIdentity(getAvpAsOctetString(avpCode, vendorId, set));
+      }
       case DiameterAvpType._DIAMETER_URI:
+      {
+        try
+        {
+          return new DiameterURI(getAvpAsOctetString(avpCode, vendorId, set));
+        }
+        catch ( URISyntaxException e )
+        {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
       case DiameterAvpType._IP_FILTER_RULE:
+      {
+        
+      }
       case DiameterAvpType._OCTET_STRING:
+      {
+        
+      }
       case DiameterAvpType._QOS_FILTER_RULE:
       {
         return getAvpAsOctetString(avpCode, vendorId, set);

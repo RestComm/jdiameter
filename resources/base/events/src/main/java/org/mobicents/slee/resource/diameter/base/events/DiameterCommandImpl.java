@@ -26,17 +26,25 @@
  */
 package org.mobicents.slee.resource.diameter.base.events;
 
-import org.jdiameter.api.Message;
-
 import net.java.slee.resource.diameter.base.events.DiameterCommand;
 
+/**
+ * 
+ * Class implementing {@link DiameterCommand} interface.
+ *
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 public class DiameterCommandImpl implements DiameterCommand {
 
 	private int code;
 	private long applicationId;
+	
 	private String shortName = "undefined";
 	private String longName = "undefined";
-	private boolean request, proxiable;
+	
+	private boolean request;
+	private boolean proxiable;
 
 	public DiameterCommandImpl(int code, int applicationId, boolean request, boolean proxiable) {
 		this.code = code;

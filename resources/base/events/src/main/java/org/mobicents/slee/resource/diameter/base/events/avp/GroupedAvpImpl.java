@@ -34,7 +34,7 @@ import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.AvpUtilities;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvpType;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
 
 import org.jdiameter.api.Avp;
@@ -128,14 +128,11 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
     return new GroupedAvpImpl(code, vendorId, mnd, prt, byteArrayValue());
   }
 
-  protected DiameterIdentityAvp getAvpAsIdentity(int code) {
+  protected DiameterIdentity getAvpAsIdentity(int code) {
     try {
       Avp rawAvp = avpSet.getAvp(code);
       if (rawAvp != null) {
-        int mndr = rawAvp.isMandatory() ? 1 : 0;
-        // FIXME: baranowb; how to set prt here?
-        return new DiameterIdentityAvpImpl(rawAvp.getCode(), rawAvp
-            .getVendorId(), mndr, 1, rawAvp.getRaw());
+        return new DiameterIdentity(rawAvp.getDiameterIdentity());
       }
       return null;
     } catch (Exception e) {

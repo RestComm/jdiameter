@@ -8,8 +8,8 @@ import javax.slee.resource.SleeEndpoint;
 import net.java.slee.resource.diameter.base.events.ReAuthRequest;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
-import net.java.slee.resource.diameter.base.events.avp.ReAuthRequestTypeAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
+import net.java.slee.resource.diameter.base.events.avp.ReAuthRequestType;
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
 import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
 import net.java.slee.resource.diameter.cca.CreditControlServerSession;
@@ -54,7 +54,7 @@ public class CreditControlServerSessionImpl extends CreditControlSessionImpl imp
    * @param endpoint
    */
   public CreditControlServerSessionImpl(CreditControlMessageFactory messageFactory, CreditControlAVPFactory avpFactory, ServerCCASession session,
-      long timeout, DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm, SleeEndpoint endpoint)
+      long timeout, DiameterIdentity destinationHost, DiameterIdentity destinationRealm, SleeEndpoint endpoint)
   {
     super(messageFactory, avpFactory, null, (EventListener<Request, Answer>) session, timeout, destinationHost, destinationRealm, endpoint);
 
@@ -134,7 +134,7 @@ public class CreditControlServerSessionImpl extends CreditControlSessionImpl imp
   {
 	  
 	//RFC 4006 5.5
-	rar.setReAuthRequestType(ReAuthRequestTypeAvp.AUTHORIZE_ONLY);
+	rar.setReAuthRequestType(ReAuthRequestType.AUTHORIZE_ONLY);
 	rar.setAuthApplicationId(CreditControlMessageFactory._CCA_AUTH_APP_ID);
 	
     DiameterMessageImpl msg = (DiameterMessageImpl) rar;

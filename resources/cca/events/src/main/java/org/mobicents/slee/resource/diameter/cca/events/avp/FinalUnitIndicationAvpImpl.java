@@ -37,7 +37,6 @@ import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
 import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
-import org.mobicents.slee.resource.diameter.base.events.avp.IPFilterRuleAvpImpl;
 
 /**
  * Start time:13:51:00 2008-11-10<br>
@@ -133,7 +132,7 @@ public class FinalUnitIndicationAvpImpl extends GroupedAvpImpl implements FinalU
       for (int index = 0; index < set.size(); index++) {
         Avp rawAvp = set.getAvpByIndex(index);
         try {
-          result[index] = new IPFilterRuleAvpImpl(rawAvp.getOctetString(), rawAvp.getVendorId(), rawAvp.isMandatory(), rawAvp.isEncrypted());
+          result[index] = new IPFilterRuleAvp(rawAvp.getOctetString());
         } catch (AvpDataException e) {
           reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.Restriction_Filter_Rule);
           logger.error("Failure while trying to obtain Restriction-Filter-Rule AVP.", e);
@@ -220,7 +219,7 @@ public class FinalUnitIndicationAvpImpl extends GroupedAvpImpl implements FinalU
    * (net.java.slee.resource.diameter.base.events.avp.IPFilterRuleAvp[])
    */
   public void setRestrictionFilterRules(IPFilterRuleAvp[] restrictionFilterRules) {
-    for (IPFilterRuleAvpImpl restrictionFilterRule : (IPFilterRuleAvpImpl[]) restrictionFilterRules) {
+    for (IPFilterRuleAvp restrictionFilterRule : (IPFilterRuleAvp[]) restrictionFilterRules) {
       setRestrictionFilterRule(restrictionFilterRule);
     }
   }

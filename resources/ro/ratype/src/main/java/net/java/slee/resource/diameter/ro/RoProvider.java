@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import net.java.slee.resource.diameter.base.CreateActivityException;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
 import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
 
@@ -59,7 +59,7 @@ public interface RoProvider {
    * @return a DiameterActivity 
    * @throws CreateActivityException if the RA could not create the activity for any reason
    */
-  public RoClientSession createRoClientSessionActivity(DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm) throws CreateActivityException;
+  public RoClientSession createRoClientSessionActivity(DiameterIdentity destinationHost, DiameterIdentity destinationRealm) throws CreateActivityException;
 
   /**
    * Send a Credit-Control-Request message to the appropriate peers, and block until the response is received then return it.

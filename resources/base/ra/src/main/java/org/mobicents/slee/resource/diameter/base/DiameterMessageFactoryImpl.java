@@ -21,7 +21,7 @@ import net.java.slee.resource.diameter.base.events.SessionTerminationAnswer;
 import net.java.slee.resource.diameter.base.events.SessionTerminationRequest;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
 
 import org.apache.log4j.Logger;
@@ -69,7 +69,7 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 	protected Session session;
 	protected Stack stack;
 
-	public DiameterMessageFactoryImpl(Session session, Stack stack, DiameterIdentityAvp... avps) {
+	public DiameterMessageFactoryImpl(Session session, Stack stack, DiameterIdentity... avps) {
 		this.session = session;
 		this.stack = stack;
 	}

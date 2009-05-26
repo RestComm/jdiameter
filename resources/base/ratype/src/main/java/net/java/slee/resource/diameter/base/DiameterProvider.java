@@ -27,7 +27,7 @@
 package net.java.slee.resource.diameter.base;
 
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 
 import java.io.IOException;
 
@@ -74,17 +74,17 @@ public interface DiameterProvider {
 	 * @throws CreateActivityException
 	 *             if the RA could not create the activity for any reason
 	 */
-	DiameterActivity createActivity(DiameterIdentityAvp destinationHost,
-			DiameterIdentityAvp destinationRealm)
+	DiameterActivity createActivity(DiameterIdentity destinationHost,
+			DiameterIdentity destinationRealm)
 			throws CreateActivityException;
 
 	AccountingClientSessionActivity createAccountingActivity(
-			DiameterIdentityAvp destinationHost,
-			DiameterIdentityAvp destinationRealm)throws CreateActivityException ;
+			DiameterIdentity destinationHost,
+			DiameterIdentity destinationRealm)throws CreateActivityException ;
 
 	AuthClientSessionActivity createAuthenticationActivity(
-			DiameterIdentityAvp destinationHost,
-			DiameterIdentityAvp destinationRealm)throws CreateActivityException ;
+			DiameterIdentity destinationHost,
+			DiameterIdentity destinationRealm)throws CreateActivityException ;
 
 	AccountingClientSessionActivity createAccountingActivity()throws CreateActivityException ;
 
@@ -113,5 +113,5 @@ public interface DiameterProvider {
 	 * 
 	 * @return
 	 */
-	DiameterIdentityAvp[] getConnectedPeers();
+	DiameterIdentity[] getConnectedPeers();
 }

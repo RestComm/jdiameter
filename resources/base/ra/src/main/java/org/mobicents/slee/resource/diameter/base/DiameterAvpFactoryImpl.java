@@ -10,7 +10,7 @@ import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodes;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvpType;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.Enumerated;
 import net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp;
 import net.java.slee.resource.diameter.base.events.avp.FailedAvp;
@@ -293,7 +293,7 @@ public class DiameterAvpFactoryImpl implements DiameterAvpFactory
     return fAvp;
   }
 
-  public ProxyInfoAvp createProxyInfo( DiameterIdentityAvp proxyHost, byte[] proxyState )
+  public ProxyInfoAvp createProxyInfo( DiameterIdentity proxyHost, byte[] proxyState )
   {
     ProxyInfoAvp proxyInfo = createProxyInfo();
     

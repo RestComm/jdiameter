@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.slee.resource.SleeEndpoint;
 
 import net.java.slee.resource.diameter.base.events.AccountingRequest;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.rf.RfClientSession;
 import net.java.slee.resource.diameter.rf.RfMessageFactory;
 
@@ -39,7 +39,7 @@ public class RfClientSessionImpl extends AccountingClientSessionActivityImpl imp
    * @param destinationRealm
    * @param endpoint
    */
-  public RfClientSessionImpl( DiameterMessageFactoryImpl messageFactory, DiameterAvpFactoryImpl avpFactory, ClientAccSession clientSession, long timeout, DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm, SleeEndpoint endpoint, Stack stack )
+  public RfClientSessionImpl( DiameterMessageFactoryImpl messageFactory, DiameterAvpFactoryImpl avpFactory, ClientAccSession clientSession, long timeout, DiameterIdentity destinationHost, DiameterIdentity destinationRealm, SleeEndpoint endpoint, Stack stack )
   {
     super( messageFactory, avpFactory, clientSession, timeout, destinationHost, destinationRealm, endpoint );
     

@@ -27,7 +27,7 @@ import net.java.slee.resource.diameter.base.events.AccountingAnswer;
 import net.java.slee.resource.diameter.base.events.AccountingRequest;
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.ErrorAnswer;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.rf.RfActivityContextInterfaceFactory;
 import net.java.slee.resource.diameter.rf.RfClientSession;
 import net.java.slee.resource.diameter.rf.RfMessageFactory;
@@ -68,7 +68,6 @@ import org.mobicents.slee.resource.diameter.base.events.AccountingAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.events.AccountingRequestImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.base.events.ErrorAnswerImpl;
-import org.mobicents.slee.resource.diameter.base.events.avp.DiameterIdentityAvpImpl;
 import org.mobicents.slee.resource.diameter.base.handlers.AccountingSessionFactory;
 import org.mobicents.slee.resource.diameter.base.handlers.BaseSessionCreationListener;
 import org.mobicents.slee.resource.diameter.ro.RoAvpFactoryImpl;
@@ -954,14 +953,14 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
           AvpSet avps = message.getAvps();
           Avp avp = null;
 
-          DiameterIdentityAvp destinationHost = null;
-          DiameterIdentityAvp destinationRealm = null;
+          DiameterIdentity destinationHost = null;
+          DiameterIdentity destinationRealm = null;
 
           if ((avp = avps.getAvp(Avp.DESTINATION_HOST)) != null)
           {
             try
             {
-              destinationHost = new DiameterIdentityAvpImpl(Avp.DESTINATION_HOST, avp.getVendorId(), 1, 0, avp.getRaw());
+              destinationHost = new DiameterIdentity(avp.getDiameterIdentity());
             }
             catch (AvpDataException e)
             {
@@ -973,7 +972,7 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
           {
             try
             {
-              destinationRealm = new DiameterIdentityAvpImpl(Avp.DESTINATION_REALM, 0, 1, 0, avp.getRaw());
+              destinationRealm = new DiameterIdentity(avp.getDiameterIdentity());
             }
             catch (AvpDataException e)
             {
@@ -1017,7 +1016,7 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
       return createRfClientSessionActivity( null, null );
     }
 
-    public RfClientSession createRfClientSessionActivity( DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm ) throws CreateActivityException
+    public RfClientSession createRfClientSessionActivity( DiameterIdentity destinationHost, DiameterIdentity destinationRealm ) throws CreateActivityException
     {
       try
       {

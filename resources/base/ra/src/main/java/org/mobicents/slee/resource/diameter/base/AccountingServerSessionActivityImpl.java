@@ -9,7 +9,7 @@ import net.java.slee.resource.diameter.base.AccountingSessionState;
 import net.java.slee.resource.diameter.base.events.AccountingAnswer;
 import net.java.slee.resource.diameter.base.events.AccountingRequest;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.Avp;
@@ -40,7 +40,7 @@ public class AccountingServerSessionActivityImpl extends AccountingSessionActivi
 	
 	boolean destroyAfterSending = false;
 	
-	public AccountingServerSessionActivityImpl(DiameterMessageFactoryImpl messageFactory, DiameterAvpFactoryImpl avpFactory, ServerAccSession serverSession, long timeout, DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm,SleeEndpoint endpoint,
+	public AccountingServerSessionActivityImpl(DiameterMessageFactoryImpl messageFactory, DiameterAvpFactoryImpl avpFactory, ServerAccSession serverSession, long timeout, DiameterIdentity destinationHost, DiameterIdentity destinationRealm,SleeEndpoint endpoint,
 			Stack stack) 
 	{
 		super(messageFactory, avpFactory, null, (EventListener<Request, Answer>) serverSession, timeout, destinationHost, destinationRealm,endpoint);

@@ -1,7 +1,10 @@
 /*
- * Diameter Sh Resource Adaptor Type
- *
  * Copyright (C) 2006 Open Cloud Ltd.
+ *
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of version 2.1 of the GNU Lesser 
@@ -25,15 +28,18 @@ package net.java.slee.resource.diameter.base.events.avp;
  * @author Open Cloud
  */
 public class AvpNotAllowedException extends Exception {
-    public AvpNotAllowedException(String message) {
-        super(message);
-    }
+  
+  private static final long serialVersionUID = 1L;
 
-    public AvpNotAllowedException(Throwable cause) {
-        super(cause);
-    }
+  public AvpNotAllowedException(String message) {
+    super(message);
+  }
 
-    public AvpNotAllowedException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public AvpNotAllowedException(Throwable cause) {
+    super(cause);
+  }
+
+  public AvpNotAllowedException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

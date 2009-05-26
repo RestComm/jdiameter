@@ -18,7 +18,7 @@ import javax.slee.serviceactivity.ServiceActivityFactory;
 
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.MessageFactory;
 import net.java.slee.resource.diameter.sh.client.ShClientActivity;
@@ -180,8 +180,8 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 
         logger.info( "Connected to " + provider.getPeerCount() + " peers." );
         
-        for(DiameterIdentityAvp peer : provider.getConnectedPeers())
-          logger.info( "Connected to Peer[" +  peer.stringValue() + "]" );
+        for(DiameterIdentity peer : provider.getConnectedPeers())
+          logger.info( "Connected to Peer[" +  peer.toString() + "]" );
 
         TimerOptions options = new TimerOptions();
         
@@ -250,11 +250,11 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 			localACI.attach(getSbbContext().getSbbLocalObject());
 			
 			
-			DiameterIdentityAvp[] peers=provider.getConnectedPeers();
+			DiameterIdentity[] peers=provider.getConnectedPeers();
 			
-			for(DiameterIdentityAvp peer: peers)
+			for(DiameterIdentity peer: peers)
 			{
-				logger.info(" On TimerEvent: Connected Peer: "+peer.stringValue());
+				logger.info(" On TimerEvent: Connected Peer: "+peer.toString());
 			}
 			
 			logger.info(" On TimerEvent: creating UDR");

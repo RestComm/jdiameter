@@ -51,13 +51,13 @@ public interface ProxyInfoAvp extends GroupedAvp {
      * Returns the value of the Proxy-Host AVP, of type DiameterIdentity.
      * A return value of null implies that the AVP has not been set.
      */
-    public DiameterIdentityAvp getProxyHost();
+    public DiameterIdentity getProxyHost();
 
     /**
      * Sets the value of the Proxy-Host AVP, of type DiameterIdentity.
      * @throws IllegalStateException if setProxyHost has already been called
      */
-    public void setProxyHost(DiameterIdentityAvp proxyHost);
+    public void setProxyHost(DiameterIdentity proxyHost);
 
     /**
      * Returns true if the Proxy-State AVP is present in the message.

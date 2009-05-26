@@ -28,7 +28,7 @@ package net.java.slee.resource.diameter.sh.server;
 
 import java.io.IOException;
 
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
 import net.java.slee.resource.diameter.sh.server.events.PushNotificationAnswer;
@@ -62,7 +62,7 @@ public interface ShServerProvider {
      * 
      * @return
      */
-    DiameterIdentityAvp[] getConnectedPeers();
+    DiameterIdentity[] getConnectedPeers();
 
     /**
      * Create a new Sh server activity to send and receive Diameter Sh messages.

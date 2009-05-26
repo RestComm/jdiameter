@@ -1,7 +1,7 @@
 package net.java.slee.resource.diameter.cca.events;
 
 
-import net.java.slee.resource.diameter.base.events.avp.DiameterURIAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterURI;
 import net.java.slee.resource.diameter.base.events.avp.FailedAvp;
 import net.java.slee.resource.diameter.base.events.avp.RedirectHostUsageType;
 import net.java.slee.resource.diameter.cca.events.avp.CcSessionFailoverType;
@@ -237,7 +237,7 @@ public interface CreditControlAnswer extends CreditControlMessage {
    * 
    * @return
    */
-  net.java.slee.resource.diameter.base.events.avp.DiameterURIAvp[] getRedirectHosts();;
+  net.java.slee.resource.diameter.base.events.avp.DiameterURI[] getRedirectHosts();;
   
   /**
    * Sets a single Redirect-Host AVP in the message, of type DiameterURI.
@@ -245,7 +245,7 @@ public interface CreditControlAnswer extends CreditControlMessage {
    * @param redirectHost
    * @throws IllegalStateException 
    */
-  void setRedirectHost(DiameterURIAvp redirectHost) throws IllegalStateException;
+  void setRedirectHost(DiameterURI redirectHost) throws IllegalStateException;
 
   /**
    * Sets the set of Redirect-Host AVPs, with all the values in the given array.
@@ -253,7 +253,7 @@ public interface CreditControlAnswer extends CreditControlMessage {
    * @param redirectHosts
    * @throws IllegalStateException 
    */
-  void setRedirectHosts(DiameterURIAvp[] redirectHosts) throws IllegalStateException;
+  void setRedirectHosts(DiameterURI[] redirectHosts) throws IllegalStateException;
 
   /**
    * Returns the value of the Redirect-Host-Usage AVP, of type Enumerated.

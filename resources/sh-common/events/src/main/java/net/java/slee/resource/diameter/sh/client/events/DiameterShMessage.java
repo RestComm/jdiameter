@@ -28,7 +28,7 @@ package net.java.slee.resource.diameter.sh.client.events;
 
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.avp.AuthSessionStateType;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
 import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp;
 import net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp;
@@ -115,7 +115,7 @@ public interface DiameterShMessage extends DiameterMessage {
 	 * implies that no Route-Record AVPs have been set. The elements in the
 	 * given array are DiameterIdentity objects.
 	 */
-	DiameterIdentityAvp[] getRouteRecords();
+	DiameterIdentity[] getRouteRecords();
 
 	/**
 	 * Sets a single Route-Record AVP in the message, of type DiameterIdentity.
@@ -123,7 +123,7 @@ public interface DiameterShMessage extends DiameterMessage {
 	 * @throws IllegalStateException
 	 *             if setRouteRecord or setRouteRecords has already been called
 	 */
-	void setRouteRecord(DiameterIdentityAvp routeRecord);
+	void setRouteRecord(DiameterIdentity routeRecord);
 
 	/**
 	 * Sets the set of Route-Record AVPs, with all the values in the given
@@ -137,7 +137,7 @@ public interface DiameterShMessage extends DiameterMessage {
 	 * @throws IllegalStateException
 	 *             if setRouteRecord or setRouteRecords has already been called
 	 */
-	void setRouteRecords(DiameterIdentityAvp[] routeRecords);
+	void setRouteRecords(DiameterIdentity[] routeRecords);
 
 	/**
 	 * Returns the set of Supported-Features AVPs. The returned array contains

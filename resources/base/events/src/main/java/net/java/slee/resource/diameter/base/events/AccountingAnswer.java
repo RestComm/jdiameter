@@ -4,7 +4,7 @@ import java.util.Date;
 
 import net.java.slee.resource.diameter.base.events.avp.AccountingRealtimeRequiredType;
 import net.java.slee.resource.diameter.base.events.avp.AccountingRecordType;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
 import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp;
 
@@ -107,13 +107,13 @@ public interface AccountingAnswer extends DiameterMessage , AccountingMessage{
      * Returns the value of the Error-Reporting-Host AVP, of type DiameterIdentity.
      * @return the value of the Error-Reporting-Host AVP or null if it has not been set on this message
      */
-    DiameterIdentityAvp getErrorReportingHost();
+    DiameterIdentity getErrorReportingHost();
 
     /**
      * Sets the value of the Error-Reporting-Host AVP, of type DiameterIdentity.
      * @throws IllegalStateException if setErrorReportingHost has already been called
      */
-    void setErrorReportingHost(DiameterIdentityAvp errorReportingHost);
+    void setErrorReportingHost(DiameterIdentity errorReportingHost);
 
     
 

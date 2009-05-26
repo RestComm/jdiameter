@@ -1,7 +1,10 @@
 /*
- * Diameter Sh Resource Adaptor Type
- *
  * Copyright (C) 2006 Open Cloud Ltd.
+ *
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of version 2.1 of the GNU Lesser 
@@ -18,9 +21,6 @@
  * MA  02110-1301  USA, or see the FSF site: http://www.fsf.org.
  */
 package net.java.slee.resource.diameter.base.events.avp;
-
-
-import java.util.Iterator;
 
 /**
  * Defines an interface representing the Failed-AVP grouped AVP type.

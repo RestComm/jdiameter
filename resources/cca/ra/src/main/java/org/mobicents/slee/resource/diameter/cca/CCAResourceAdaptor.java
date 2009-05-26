@@ -33,7 +33,7 @@ import net.java.slee.resource.diameter.base.events.ErrorAnswer;
 import net.java.slee.resource.diameter.base.events.ExtensionDiameterMessage;
 import net.java.slee.resource.diameter.base.events.ReAuthAnswer;
 import net.java.slee.resource.diameter.base.events.SessionTerminationAnswer;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
 import net.java.slee.resource.diameter.cca.CreditControlActivityContextInterfaceFactory;
 import net.java.slee.resource.diameter.cca.CreditControlClientSession;
@@ -76,7 +76,6 @@ import org.mobicents.slee.resource.diameter.base.events.ReAuthAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.events.ReAuthRequestImpl;
 import org.mobicents.slee.resource.diameter.base.events.SessionTerminationAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.events.SessionTerminationRequestImpl;
-import org.mobicents.slee.resource.diameter.base.events.avp.DiameterIdentityAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.CreditControlAnswerImpl;
 import org.mobicents.slee.resource.diameter.cca.events.CreditControlRequestImpl;
 import org.mobicents.slee.resource.diameter.cca.handlers.CreditControlSessionFactory;
@@ -1013,7 +1012,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
       }
     }
 
-    public CreditControlClientSession createClientSession(DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm) throws CreateActivityException
+    public CreditControlClientSession createClientSession(DiameterIdentity destinationHost, DiameterIdentity destinationRealm) throws CreateActivityException
     {
       CreditControlClientSessionImpl clientSession=(CreditControlClientSessionImpl) this.createClientSession();
 
@@ -1036,7 +1035,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
       return ccaMsgFactory;
     }
 
-    public DiameterIdentityAvp[] getConnectedPeers()
+    public DiameterIdentity[] getConnectedPeers()
     {
       return ra.getConnectedPeers();
     }
@@ -1110,7 +1109,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
    * 
    * @return an array of DiameterIdentity AVPs representing the peers.
    */
-  public DiameterIdentityAvp[] getConnectedPeers()
+  public DiameterIdentity[] getConnectedPeers()
   {
     if (this.stack != null)
     {
@@ -1119,14 +1118,14 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
         // Get the list of peers from the stack
         List<Peer> peers = stack.unwrap(PeerTable.class).getPeerTable();
 
-        DiameterIdentityAvp[] result = new DiameterIdentityAvp[peers.size()];
+        DiameterIdentity[] result = new DiameterIdentity[peers.size()];
 
         int i = 0;
 
-        // Get each peer from the list and make a DiameterIdentityAvp
+        // Get each peer from the list and make a DiameterIdentity
         for (Peer peer : peers)
         {
-          DiameterIdentityAvp identity = new DiameterIdentityAvpImpl(0, 0, 0, 0, peer.getUri().toString().getBytes());
+          DiameterIdentity identity = new DiameterIdentity(peer.getUri().toString());
 
           result[i++] = identity;
         }
@@ -1139,7 +1138,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
       }
     }
 
-    return new DiameterIdentityAvp[0];
+    return new DiameterIdentity[0];
   }
 
 }

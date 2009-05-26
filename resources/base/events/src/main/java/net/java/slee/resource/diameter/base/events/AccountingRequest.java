@@ -4,7 +4,7 @@ import java.util.Date;
 
 import net.java.slee.resource.diameter.base.events.avp.AccountingRealtimeRequiredType;
 import net.java.slee.resource.diameter.base.events.avp.AccountingRecordType;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
 import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp;
 
@@ -97,7 +97,7 @@ public interface AccountingRequest extends DiameterMessage, AccountingMessage {
 	 * implies that no Route-Record AVPs have been set. The elements in the
 	 * given array are DiameterIdentity objects.
 	 */
-	DiameterIdentityAvp[] getRouteRecords();
+	DiameterIdentity[] getRouteRecords();
 
 	/**
 	 * Sets a single Route-Record AVP in the message, of type DiameterIdentity.
@@ -105,7 +105,7 @@ public interface AccountingRequest extends DiameterMessage, AccountingMessage {
 	 * @throws IllegalStateException
 	 *             if setRouteRecord or setRouteRecords has already been called
 	 */
-	void setRouteRecord(DiameterIdentityAvp routeRecord);
+	void setRouteRecord(DiameterIdentity routeRecord);
 
 	/**
 	 * Sets the set of Route-Record AVPs, with all the values in the given
@@ -119,6 +119,6 @@ public interface AccountingRequest extends DiameterMessage, AccountingMessage {
 	 * @throws IllegalStateException
 	 *             if setRouteRecord or setRouteRecords has already been called
 	 */
-	void setRouteRecords(DiameterIdentityAvp[] routeRecords);
+	void setRouteRecords(DiameterIdentity[] routeRecords);
 
 }

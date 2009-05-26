@@ -19,7 +19,7 @@ import net.java.slee.resource.diameter.base.events.AbortSessionAnswer;
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.ReAuthAnswer;
 import net.java.slee.resource.diameter.base.events.SessionTerminationRequest;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 
 public class AuthClientSessionActivityImpl extends AuthSessionActivityImpl
 		implements AuthClientSessionActivity {
@@ -31,8 +31,8 @@ public class AuthClientSessionActivityImpl extends AuthSessionActivityImpl
 			DiameterMessageFactoryImpl messageFactory,
 			DiameterAvpFactoryImpl avpFactory, ClientAuthSession clientSession,
 			 long timeout,
-			DiameterIdentityAvp destinationHost,
-			DiameterIdentityAvp destinationRealm,SleeEndpoint endpoint) {
+			DiameterIdentity destinationHost,
+			DiameterIdentity destinationRealm,SleeEndpoint endpoint) {
 		super(messageFactory, avpFactory, null, (EventListener<Request, Answer>) clientSession, timeout,
 				destinationHost, destinationRealm,endpoint);
 		

@@ -1,8 +1,36 @@
+/*
+ * Mobicents, Communications Middleware
+ * 
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package org.mobicents.slee.resource.diameter.cca;
 
 import javax.slee.resource.SleeEndpoint;
 
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodes;
+import net.java.slee.resource.diameter.base.events.avp.DiameterAvpType;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
 import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
 import net.java.slee.resource.diameter.cca.CreditControlSession;
@@ -15,6 +43,7 @@ import org.jdiameter.api.Request;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.app.StateChangeListener;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
+import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
 
 /**
  * 
@@ -34,7 +63,7 @@ public abstract class CreditControlSessionImpl extends DiameterActivityImpl impl
   protected CCASessionCreationListener listener = null;
 
   public CreditControlSessionImpl(CreditControlMessageFactory messageFactory, CreditControlAVPFactory avpFactory, Session session, EventListener<Request, Answer> raEventListener, long timeout,
-      DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm, SleeEndpoint endpoint)
+      DiameterIdentity destinationHost, DiameterIdentity destinationRealm, SleeEndpoint endpoint)
   {
     super(null, null, session, raEventListener, timeout, destinationHost, destinationRealm, endpoint);
 
@@ -71,19 +100,23 @@ public abstract class CreditControlSessionImpl extends DiameterActivityImpl impl
     this.listener = (CCASessionCreationListener) ra;
   }
 
-  public void setDestinationHost(DiameterIdentityAvp destinationHost)
+  public void setDestinationHost(DiameterIdentity destinationHost)
   {
     super.destinationHost = destinationHost;
 
-    //((CreditControlMessageFactoryImpl)ccaMessageFactory).removeAvpFromInnerList(destinationHost.getCode());
-    ((CreditControlMessageFactoryImpl)ccaMessageFactory).addAvpToInnerList(destinationHost);
+    DiameterAvp avp = new DiameterAvpImpl(DiameterAvpCodes.DESTINATION_HOST, 0L, 0, 0, destinationHost.toString().getBytes(), DiameterAvpType.DIAMETER_IDENTITY);
+    
+    //((CreditControlMessageFactoryImpl)ccaMessageFactory).removeAvpFromInnerList(avp);
+    ((CreditControlMessageFactoryImpl)ccaMessageFactory).addAvpToInnerList(avp);
   }
 
-  public void setDestinationRealm(DiameterIdentityAvp destinationRealm)
+  public void setDestinationRealm(DiameterIdentity destinationRealm)
   {
     super.destinationRealm=destinationRealm;
 
-    //((CreditControlMessageFactoryImpl)ccaMessageFactory).removeAvpFromInnerList(destinationRealm.getCode());
-    ((CreditControlMessageFactoryImpl)ccaMessageFactory).addAvpToInnerList(destinationRealm);
+    DiameterAvp avp = new DiameterAvpImpl(DiameterAvpCodes.DESTINATION_REALM, 0L, 0, 0, destinationHost.toString().getBytes(), DiameterAvpType.DIAMETER_IDENTITY);
+
+    //((CreditControlMessageFactoryImpl)ccaMessageFactory).removeAvpFromInnerList(avp);
+    ((CreditControlMessageFactoryImpl)ccaMessageFactory).addAvpToInnerList(avp);
   }
 }

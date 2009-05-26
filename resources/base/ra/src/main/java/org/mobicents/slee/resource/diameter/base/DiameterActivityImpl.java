@@ -8,7 +8,7 @@ import javax.slee.resource.SleeEndpoint;
 
 import net.java.slee.resource.diameter.base.DiameterActivity;
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 
 import org.apache.log4j.Logger;
 import org.jdiameter.api.Answer;
@@ -30,7 +30,7 @@ public class DiameterActivityImpl implements DiameterActivity {
 	protected long timeout = 5000;
 	protected static Logger logger = Logger
 			.getLogger(DiameterActivityImpl.class);
-	protected DiameterIdentityAvp destinationHost, destinationRealm;
+	protected DiameterIdentity destinationHost, destinationRealm;
 	protected SleeEndpoint endpoint=null;
 	
 
@@ -38,8 +38,8 @@ public class DiameterActivityImpl implements DiameterActivity {
 	protected BaseSessionCreationListener baseListener=null;
 	
 	public DiameterActivityImpl(DiameterMessageFactoryImpl messageFactory, DiameterAvpFactoryImpl avpFactory, Session session,
-			EventListener<Request, Answer> raEventListener, long timeout, DiameterIdentityAvp destinationHost, 
-			DiameterIdentityAvp destinationRealm, SleeEndpoint endpoint)
+			EventListener<Request, Answer> raEventListener, long timeout, DiameterIdentity destinationHost, 
+			DiameterIdentity destinationRealm, SleeEndpoint endpoint)
 	{
 		super();
 		

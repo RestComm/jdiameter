@@ -9,9 +9,9 @@ import java.util.Iterator;
 
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
-import net.java.slee.resource.diameter.base.events.avp.ReAuthRequestTypeAvp;
+import net.java.slee.resource.diameter.base.events.avp.ReAuthRequestType;
 
 /**
  * Defines an interface representing the Re-Auth-Request command.
@@ -87,13 +87,13 @@ public interface ReAuthRequest extends DiameterMessage {
      * Returns the value of the Re-Auth-Request-Type AVP, of type Enumerated.
      * @return the value of the Re-Auth-Request-Type AVP or null if it has not been set on this message
      */
-    ReAuthRequestTypeAvp getReAuthRequestType();
+    ReAuthRequestType getReAuthRequestType();
 
     /**
      * Sets the value of the Re-Auth-Request-Type AVP, of type Enumerated.
      * @throws IllegalStateException if setReAuthRequestType has already been called
      */
-    void setReAuthRequestType(ReAuthRequestTypeAvp reAuthRequestType);
+    void setReAuthRequestType(ReAuthRequestType reAuthRequestType);
 
     /**
      * Returns true if the User-Name AVP is present in the message.
@@ -165,14 +165,14 @@ public interface ReAuthRequest extends DiameterMessage {
      * A return value of null implies that no Route-Record AVPs have been set.
      * The elements in the given array are DiameterIdentity objects.
      */
-    DiameterIdentityAvp[] getRouteRecords();
+    DiameterIdentity[] getRouteRecords();
 
     /**
      * Sets a single Route-Record AVP in the message, of type DiameterIdentity.
      * @throws IllegalStateException if setRouteRecord or setRouteRecords
      *  has already been called
      */
-    void setRouteRecord(DiameterIdentityAvp routeRecord);
+    void setRouteRecord(DiameterIdentity routeRecord);
 
     /**
      * Sets the set of Route-Record AVPs, with all the values in the given array.
@@ -185,7 +185,7 @@ public interface ReAuthRequest extends DiameterMessage {
      * @throws IllegalStateException if setRouteRecord or setRouteRecords
      *  has already been called
      */
-    void setRouteRecords(DiameterIdentityAvp[] routeRecords);
+    void setRouteRecords(DiameterIdentity[] routeRecords);
 
 
 }

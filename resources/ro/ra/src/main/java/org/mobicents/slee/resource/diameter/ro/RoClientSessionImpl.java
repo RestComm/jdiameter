@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import javax.slee.resource.SleeEndpoint;
 
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
 import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
 import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
@@ -38,7 +38,7 @@ public class RoClientSessionImpl extends CreditControlClientSessionImpl implemen
    * @param destinationRealm
    * @param endpoint
    */
-  public RoClientSessionImpl( CreditControlMessageFactory messageFactory, CreditControlAVPFactory avpFactory, ClientCCASession session, long timeout, DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm, SleeEndpoint endpoint, Stack stack )
+  public RoClientSessionImpl( CreditControlMessageFactory messageFactory, CreditControlAVPFactory avpFactory, ClientCCASession session, long timeout, DiameterIdentity destinationHost, DiameterIdentity destinationRealm, SleeEndpoint endpoint, Stack stack )
   {
     super( messageFactory, avpFactory, session, timeout, destinationHost, destinationRealm, endpoint );
     

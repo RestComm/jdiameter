@@ -9,7 +9,7 @@ import net.java.slee.resource.diameter.base.DiameterException;
 import net.java.slee.resource.diameter.base.events.ReAuthAnswer;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
 import net.java.slee.resource.diameter.cca.CreditControlClientSession;
 import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
@@ -51,8 +51,8 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl imp
 	 * @param destinationRealm
 	 * @param endpoint
 	 */
-	public CreditControlClientSessionImpl(CreditControlMessageFactory messageFactory, CreditControlAVPFactory avpFactory, ClientCCASession session, long timeout, DiameterIdentityAvp destinationHost,
-			DiameterIdentityAvp destinationRealm, SleeEndpoint endpoint) {
+	public CreditControlClientSessionImpl(CreditControlMessageFactory messageFactory, CreditControlAVPFactory avpFactory, ClientCCASession session, long timeout, DiameterIdentity destinationHost,
+			DiameterIdentity destinationRealm, SleeEndpoint endpoint) {
 		super(messageFactory, avpFactory, null, (EventListener<Request, Answer>) session, timeout, destinationHost, destinationRealm, endpoint);
 
 		this.session = session;

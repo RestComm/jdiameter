@@ -5,7 +5,7 @@ import java.io.IOException;
 import net.java.slee.resource.diameter.base.CreateActivityException;
 import net.java.slee.resource.diameter.base.events.AccountingAnswer;
 import net.java.slee.resource.diameter.base.events.AccountingRequest;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 
 /**
  * 
@@ -47,7 +47,7 @@ public interface RfProvider {
    * @return
    * @throws CreateActivityException if the RA could not create the activity for any reason
    */
-  public RfClientSession createRfClientSessionActivity(DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm) throws CreateActivityException;
+  public RfClientSession createRfClientSessionActivity(DiameterIdentity destinationHost, DiameterIdentity destinationRealm) throws CreateActivityException;
 
   /**
    * Send an Accounting Request.

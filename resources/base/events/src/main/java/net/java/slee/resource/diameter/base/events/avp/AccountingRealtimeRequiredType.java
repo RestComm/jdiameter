@@ -1,7 +1,10 @@
 /*
- * Diameter Sh Resource Adaptor Type
- *
  * Copyright (C) 2006 Open Cloud Ltd.
+ *
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of version 2.1 of the GNU Lesser 
@@ -39,7 +42,9 @@ import java.io.StreamCorruptedException;
 
 public class AccountingRealtimeRequiredType implements Serializable, Enumerated {
 
-	public static final int _DELIVER_AND_GRANT = 1;
+  private static final long serialVersionUID = 1L;
+  
+  public static final int _DELIVER_AND_GRANT = 1;
 	public static final int _GRANT_AND_STORE = 2;
 	public static final int _GRANT_AND_LOSE = 3;
 

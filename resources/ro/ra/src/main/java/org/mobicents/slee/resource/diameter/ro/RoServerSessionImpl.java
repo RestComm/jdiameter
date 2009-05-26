@@ -2,7 +2,7 @@ package org.mobicents.slee.resource.diameter.ro;
 
 import javax.slee.resource.SleeEndpoint;
 
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
 import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
 import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
@@ -35,7 +35,7 @@ public class RoServerSessionImpl extends CreditControlServerSessionImpl implemen
    * @param destinationRealm
    * @param endpoint
    */
-  public RoServerSessionImpl( CreditControlMessageFactory messageFactory, CreditControlAVPFactory avpFactory, ServerCCASession session, long timeout, DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm, SleeEndpoint endpoint, Stack stack )
+  public RoServerSessionImpl( CreditControlMessageFactory messageFactory, CreditControlAVPFactory avpFactory, ServerCCASession session, long timeout, DiameterIdentity destinationHost, DiameterIdentity destinationRealm, SleeEndpoint endpoint, Stack stack )
   {
     super( messageFactory, avpFactory, session, timeout, destinationHost, destinationRealm, endpoint );
     

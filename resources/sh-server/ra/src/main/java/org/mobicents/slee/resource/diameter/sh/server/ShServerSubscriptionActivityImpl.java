@@ -31,7 +31,7 @@ import java.io.IOException;
 import javax.slee.resource.SleeEndpoint;
 
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.ShSessionState;
 import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
@@ -66,11 +66,11 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl imple
   protected DiameterShAvpFactory shAvpFactory = null;
   protected ShServerMessageFactoryImpl messageFactory = null;
 
-  protected DiameterIdentityAvp clientOriginHost=null;
-  protected DiameterIdentityAvp clientOriginRealm=null;
+  protected DiameterIdentity clientOriginHost=null;
+  protected DiameterIdentity clientOriginRealm=null;
 
   public ShServerSubscriptionActivityImpl(ShServerMessageFactory shServerMessageFactory, DiameterShAvpFactory diameterShAvpFactory, ServerShSession session,
-      long timeout, DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm, SleeEndpoint endpoint)
+      long timeout, DiameterIdentity destinationHost, DiameterIdentity destinationRealm, SleeEndpoint endpoint)
   {
     super(null, null, null, (EventListener<Request, Answer>) session, timeout, destinationHost, destinationRealm, endpoint);
 

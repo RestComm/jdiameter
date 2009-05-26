@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
 
 /**
@@ -103,7 +103,7 @@ public interface ErrorAnswer extends DiameterMessage {
 	 * @return the value of the Error-Reporting-Host AVP or null if it has not
 	 *         been set on this message
 	 */
-	DiameterIdentityAvp getErrorReportingHost();
+	DiameterIdentity getErrorReportingHost();
 
 	/**
 	 * Sets the value of the Error-Reporting-Host AVP, of type DiameterIdentity.
@@ -111,7 +111,7 @@ public interface ErrorAnswer extends DiameterMessage {
 	 * @throws IllegalStateException
 	 *             if setErrorReportingHost has already been called
 	 */
-	void setErrorReportingHost(DiameterIdentityAvp errorReportingHost);
+	void setErrorReportingHost(DiameterIdentity errorReportingHost);
 
 	/**
 	 * Returns true if the Proxy-Info AVP is present in the message.

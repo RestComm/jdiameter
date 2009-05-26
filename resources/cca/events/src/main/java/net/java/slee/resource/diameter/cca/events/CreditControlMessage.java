@@ -4,7 +4,7 @@ import java.util.Date;
 
 
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
 import net.java.slee.resource.diameter.cca.events.avp.CcRequestType;
 import net.java.slee.resource.diameter.cca.events.avp.MultipleServicesCreditControlAvp;
@@ -238,7 +238,7 @@ public interface CreditControlMessage extends DiameterMessage {
    * 
    * @return
    */
-  DiameterIdentityAvp[] getRouteRecords();
+  DiameterIdentity[] getRouteRecords();
   
   /**
    * Sets a single Route-Record AVP in the message, of type DiameterIdentity.
@@ -246,7 +246,7 @@ public interface CreditControlMessage extends DiameterMessage {
    * @param routeRecord
    * @throws IllegalStateException 
    */
-  void setRouteRecord(DiameterIdentityAvp routeRecord) throws IllegalStateException;
+  void setRouteRecord(DiameterIdentity routeRecord) throws IllegalStateException;
 
   /**
    * Sets the set of Route-Record AVPs, with all the values in the given array.
@@ -254,7 +254,7 @@ public interface CreditControlMessage extends DiameterMessage {
    * @param routeRecords
    * @throws IllegalStateException 
    */
-  void setRouteRecords(DiameterIdentityAvp[] routeRecords) throws IllegalStateException;
+  void setRouteRecords(DiameterIdentity[] routeRecords) throws IllegalStateException;
 
   /**
    * Returns the value of the User-Name AVP, of type UTF8String.

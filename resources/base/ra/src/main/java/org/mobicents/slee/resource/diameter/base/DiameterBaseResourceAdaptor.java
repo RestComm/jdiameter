@@ -1,3 +1,28 @@
+/*
+ * Mobicents, Communications Middleware
+ * 
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package org.mobicents.slee.resource.diameter.base;
 
 import static org.jdiameter.client.impl.helpers.Parameters.MessageTimeOut;
@@ -48,7 +73,7 @@ import net.java.slee.resource.diameter.base.events.ExtensionDiameterMessage;
 import net.java.slee.resource.diameter.base.events.ReAuthAnswer;
 import net.java.slee.resource.diameter.base.events.SessionTerminationAnswer;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodes;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 
 import org.apache.log4j.Logger;
 import org.jdiameter.api.Answer;
@@ -99,13 +124,12 @@ import org.mobicents.slee.resource.diameter.base.events.ReAuthAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.events.ReAuthRequestImpl;
 import org.mobicents.slee.resource.diameter.base.events.SessionTerminationAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.events.SessionTerminationRequestImpl;
-import org.mobicents.slee.resource.diameter.base.events.avp.DiameterIdentityAvpImpl;
 import org.mobicents.slee.resource.diameter.base.handlers.AccountingSessionFactory;
 import org.mobicents.slee.resource.diameter.base.handlers.AuthorizationSessionFactory;
 import org.mobicents.slee.resource.diameter.base.handlers.BaseSessionCreationListener;
 
 /**
- * Diameter Resource Adaptor
+ * Diameter Base Resource Adaptor
  * 
  * <br>
  * Super project: mobicents <br>
@@ -954,7 +978,7 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
    * 
    * @return an array of DiameterIdentity AVPs representing the peers.
    */
-  public DiameterIdentityAvp[] getConnectedPeers()
+  public DiameterIdentity[] getConnectedPeers()
   {
     if (this.stack != null)
     {
@@ -963,14 +987,14 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
         // Get the list of peers from the stack
         List<Peer> peers = stack.unwrap(PeerTable.class).getPeerTable();
         
-        DiameterIdentityAvp[] result = new DiameterIdentityAvp[peers.size()];
+        DiameterIdentity[] result = new DiameterIdentity[peers.size()];
 
         int i = 0;
 
-        // Get each peer from the list and make a DiameterIdentityAvp
+        // Get each peer from the list and make a DiameterIdentity
         for (Peer peer : peers)
         {
-          DiameterIdentityAvp identity = new DiameterIdentityAvpImpl(0, 0, 0, 0, peer.getUri().toString().getBytes());
+          DiameterIdentity identity = new DiameterIdentity(peer.getUri().toString());
 
           result[i++] = identity;
         }
@@ -1138,16 +1162,16 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
 
     /*
      * (non-Javadoc)
-     * @see net.java.slee.resource.diameter.base.DiameterProvider#createActivity(net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp, net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp)
+     * @see net.java.slee.resource.diameter.base.DiameterProvider#createActivity(net.java.slee.resource.diameter.base.events.avp.DiameterIdentity, net.java.slee.resource.diameter.base.events.avp.DiameterIdentity)
      */
-    public DiameterActivity createActivity(DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm) throws CreateActivityException
+    public DiameterActivity createActivity(DiameterIdentity destinationHost, DiameterIdentity destinationRealm) throws CreateActivityException
     {
       logger.info("Diameter Base RA :: createActivity :: destinationHost[" + destinationHost + "], destinationRealm[" + destinationRealm + "]");
 
       return createActivity(destinationHost, destinationRealm, null);
     }
 
-    public DiameterActivity createActivity(DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm, String sessionId) throws CreateActivityException
+    public DiameterActivity createActivity(DiameterIdentity destinationHost, DiameterIdentity destinationRealm, String sessionId) throws CreateActivityException
     {
       Session session = null;
 
@@ -1186,9 +1210,9 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
 
     /*
      * (non-Javadoc)
-     * @see net.java.slee.resource.diameter.base.DiameterProvider#createAuthenticationActivity(net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp, net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp)
+     * @see net.java.slee.resource.diameter.base.DiameterProvider#createAuthenticationActivity(net.java.slee.resource.diameter.base.events.avp.DiameterIdentity, net.java.slee.resource.diameter.base.events.avp.DiameterIdentity)
      */
-    public AuthClientSessionActivity createAuthenticationActivity(DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm) throws CreateActivityException
+    public AuthClientSessionActivity createAuthenticationActivity(DiameterIdentity destinationHost, DiameterIdentity destinationRealm) throws CreateActivityException
     {
       try 
       {
@@ -1205,7 +1229,7 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
       }
     }
 
-    public AuthServerSessionActivity createAuthenticationServerActivity(DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm) throws CreateActivityException
+    public AuthServerSessionActivity createAuthenticationServerActivity(DiameterIdentity destinationHost, DiameterIdentity destinationRealm) throws CreateActivityException
     {
       ServerAuthSession session = null;
 
@@ -1239,9 +1263,9 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
 
     /*
      * (non-Javadoc)
-     * @see net.java.slee.resource.diameter.base.DiameterProvider#createAccountingActivity(net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp, net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp)
+     * @see net.java.slee.resource.diameter.base.DiameterProvider#createAccountingActivity(net.java.slee.resource.diameter.base.events.avp.DiameterIdentity, net.java.slee.resource.diameter.base.events.avp.DiameterIdentity)
      */
-    public AccountingClientSessionActivity createAccountingActivity(DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm) throws CreateActivityException
+    public AccountingClientSessionActivity createAccountingActivity(DiameterIdentity destinationHost, DiameterIdentity destinationRealm) throws CreateActivityException
     {
       try
       {
@@ -1280,8 +1304,8 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
       }
       
       // XXX: REMOVE THIS
-      //DiameterIdentityAvp destinationHost = null;
-      //DiameterIdentityAvp destinationRealm = null;
+      //DiameterIdentity destinationHost = null;
+      //DiameterIdentity destinationRealm = null;
       //
       //AvpSet avps = req.getAvps();
       //
@@ -1347,8 +1371,8 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
       }
       else 
       {
-        DiameterIdentityAvp destinationHost = null;
-        DiameterIdentityAvp destinationRealm = null;
+        DiameterIdentity destinationHost = null;
+        DiameterIdentity destinationRealm = null;
 
         AvpSet avps = message.getAvps();
 
@@ -1358,7 +1382,7 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
         {
           try 
           {
-            destinationHost = new DiameterIdentityAvpImpl(Avp.DESTINATION_HOST, 0, 0, 0, raw.getRaw());
+            destinationHost = new DiameterIdentity(raw.getDiameterIdentity());
           }
           catch (AvpDataException e) 
           {
@@ -1370,7 +1394,7 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
         {
           try 
           {
-            destinationRealm = new DiameterIdentityAvpImpl(Avp.DESTINATION_REALM, 0, 0, 0, raw.getRaw());
+            destinationRealm = new DiameterIdentity(raw.getDiameterIdentity());
           }
           catch (AvpDataException e)
           {
@@ -1468,7 +1492,7 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
       return null;
     }
 
-    public DiameterIdentityAvp[] getConnectedPeers() {
+    public DiameterIdentity[] getConnectedPeers() {
       return this.ra.getConnectedPeers();
     }
 

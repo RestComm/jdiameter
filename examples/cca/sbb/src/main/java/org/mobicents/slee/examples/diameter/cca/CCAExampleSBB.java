@@ -16,7 +16,7 @@ import javax.slee.serviceactivity.ServiceActivity;
 import javax.slee.serviceactivity.ServiceActivityFactory;
 
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
 import net.java.slee.resource.diameter.cca.CreditControlActivityContextInterfaceFactory;
 import net.java.slee.resource.diameter.cca.CreditControlClientSession;
@@ -182,9 +182,9 @@ public abstract class CCAExampleSBB implements javax.slee.Sbb {
 
         logger.info( "Connected to " + provider.getPeerCount() + " peers." );
 
-        for(DiameterIdentityAvp peer : provider.getConnectedPeers())
+        for(DiameterIdentity peer : provider.getConnectedPeers())
         {
-          logger.info( "Connected to Peer[" +  peer.stringValue() + "]" );
+          logger.info( "Connected to Peer[" +  peer.toString() + "]" );
         }
 
         // Initialize properties

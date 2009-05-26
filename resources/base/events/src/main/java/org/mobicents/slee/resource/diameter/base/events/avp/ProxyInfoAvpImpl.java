@@ -27,7 +27,7 @@ package org.mobicents.slee.resource.diameter.base.events.avp;
 
 import static org.jdiameter.api.Avp.PROXY_HOST;
 import static org.jdiameter.api.Avp.PROXY_STATE;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
 
 /**
@@ -52,11 +52,11 @@ public class ProxyInfoAvpImpl extends GroupedAvpImpl implements ProxyInfoAvp {
     return hasAvp(PROXY_HOST);
   }
 
-  public DiameterIdentityAvp getProxyHost() {
+  public DiameterIdentity getProxyHost() {
     return getAvpAsIdentity(PROXY_HOST);
   }
 
-  public void setProxyHost(DiameterIdentityAvp proxyHost) {
+  public void setProxyHost(DiameterIdentity proxyHost) {
     addAvp(PROXY_HOST, proxyHost.toString());
   }
 

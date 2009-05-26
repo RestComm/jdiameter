@@ -33,7 +33,7 @@ import net.java.slee.resource.diameter.base.events.ExtensionDiameterMessage;
 import net.java.slee.resource.diameter.base.events.ReAuthAnswer;
 import net.java.slee.resource.diameter.base.events.SessionTerminationAnswer;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
 import net.java.slee.resource.diameter.cca.CreditControlServerSession;
 import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
@@ -79,7 +79,6 @@ import org.mobicents.slee.resource.diameter.base.events.ReAuthAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.events.ReAuthRequestImpl;
 import org.mobicents.slee.resource.diameter.base.events.SessionTerminationAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.events.SessionTerminationRequestImpl;
-import org.mobicents.slee.resource.diameter.base.events.avp.DiameterIdentityAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.CreditControlMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.cca.events.CreditControlAnswerImpl;
 import org.mobicents.slee.resource.diameter.cca.events.CreditControlRequestImpl;
@@ -769,7 +768,7 @@ public class RoResourceAdaptor implements ResourceAdaptor, DiameterListener, CCA
       }
     }
 
-    public RoClientSession createRoClientSessionActivity( DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm ) throws CreateActivityException
+    public RoClientSession createRoClientSessionActivity( DiameterIdentity destinationHost, DiameterIdentity destinationRealm ) throws CreateActivityException
     {
       RoClientSessionImpl clientSession = (RoClientSessionImpl) this.createRoClientSessionActivity();
 
@@ -929,14 +928,14 @@ public class RoResourceAdaptor implements ResourceAdaptor, DiameterListener, CCA
           AvpSet avps = message.getAvps();
           Avp avp = null;
 
-          DiameterIdentityAvp destinationHost = null;
-          DiameterIdentityAvp destinationRealm = null;
+          DiameterIdentity destinationHost = null;
+          DiameterIdentity destinationRealm = null;
 
           if ((avp = avps.getAvp(Avp.DESTINATION_HOST)) != null)
           {
             try
             {
-              destinationHost = new DiameterIdentityAvpImpl(Avp.DESTINATION_HOST, avp.getVendorId(), 1, 0, avp.getRaw());
+              destinationHost = new DiameterIdentity(avp.getDiameterIdentity());
             }
             catch (AvpDataException e)
             {
@@ -948,7 +947,7 @@ public class RoResourceAdaptor implements ResourceAdaptor, DiameterListener, CCA
           {
             try
             {
-              destinationRealm = new DiameterIdentityAvpImpl(Avp.DESTINATION_REALM, 0, 1, 0, avp.getRaw());
+              destinationRealm = new DiameterIdentity(avp.getDiameterIdentity());
             }
             catch (AvpDataException e)
             {

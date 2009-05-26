@@ -5,7 +5,7 @@ package net.java.slee.resource.diameter.base.events;
 import java.util.Iterator;
 
 
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.FailedAvp;
 
 /**

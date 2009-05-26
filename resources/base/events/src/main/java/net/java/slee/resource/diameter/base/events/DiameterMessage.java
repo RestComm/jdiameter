@@ -27,7 +27,7 @@ package net.java.slee.resource.diameter.base.events;
 
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 
 /**
  * A Diameter message containing a command code and a collection of AVPs.
@@ -86,7 +86,7 @@ public interface DiameterMessage extends Cloneable {
 	 * Returns the value of the Origin-Host AVP, of type DiameterIdentity. A
 	 * return value of null implies that the AVP has not been set.
 	 */
-	DiameterIdentityAvp getOriginHost();
+	DiameterIdentity getOriginHost();
 
 	/**
 	 * Sets the value of the Origin-Host AVP, of type DiameterIdentity.
@@ -94,13 +94,13 @@ public interface DiameterMessage extends Cloneable {
 	 * @throws IllegalStateException
 	 *             if setOriginHost has already been called
 	 */
-	void setOriginHost(DiameterIdentityAvp originHost);
+	void setOriginHost(DiameterIdentity originHost);
 
 	/**
 	 * Returns the value of the Origin-Realm AVP, of type DiameterIdentity. A
 	 * return value of null implies that the AVP has not been set.
 	 */
-	DiameterIdentityAvp getOriginRealm();
+	DiameterIdentity getOriginRealm();
 
 	/**
 	 * Sets the value of the Origin-Realm AVP, of type DiameterIdentity.
@@ -108,13 +108,13 @@ public interface DiameterMessage extends Cloneable {
 	 * @throws IllegalStateException
 	 *             if setOriginRealm has already been called
 	 */
-	void setOriginRealm(DiameterIdentityAvp originRealm);
+	void setOriginRealm(DiameterIdentity originRealm);
 
 	/**
 	 * Returns the value of the Destination-Realm AVP, of type DiameterIdentity.
 	 * A return value of null implies that the AVP has not been set.
 	 */
-	DiameterIdentityAvp getDestinationRealm();
+	DiameterIdentity getDestinationRealm();
 
 	/**
 	 * Sets the value of the Destination-Realm AVP, of type DiameterIdentity.
@@ -122,13 +122,13 @@ public interface DiameterMessage extends Cloneable {
 	 * @throws IllegalStateException
 	 *             if setDestinationRealm has already been called
 	 */
-	void setDestinationRealm(DiameterIdentityAvp destinationRealm);
+	void setDestinationRealm(DiameterIdentity destinationRealm);
 
 	/**
 	 * Returns the value of the Destination-Host AVP, of type DiameterIdentity.
 	 * A return value of null implies that the AVP has not been set.
 	 */
-	DiameterIdentityAvp getDestinationHost();
+	DiameterIdentity getDestinationHost();
 
 	/**
 	 * Sets the value of the Destination-Host AVP, of type DiameterIdentity.
@@ -136,7 +136,7 @@ public interface DiameterMessage extends Cloneable {
 	 * @throws IllegalStateException
 	 *             if setDestinationHost has already been called
 	 */
-	void setDestinationHost(DiameterIdentityAvp destinationHost);
+	void setDestinationHost(DiameterIdentity destinationHost);
 
 	/**
 	 * Creates and returns a deep copy of this Diameter message.

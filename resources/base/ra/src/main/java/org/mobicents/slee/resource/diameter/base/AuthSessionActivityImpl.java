@@ -4,7 +4,7 @@ import javax.slee.resource.SleeEndpoint;
 
 import net.java.slee.resource.diameter.base.AuthSessionActivity;
 import net.java.slee.resource.diameter.base.AuthSessionState;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.EventListener;
@@ -20,8 +20,8 @@ public abstract class AuthSessionActivityImpl extends DiameterActivityImpl
 	public AuthSessionActivityImpl(DiameterMessageFactoryImpl messageFactory,
 			DiameterAvpFactoryImpl avpFactory, Session session,
 			EventListener<Request, Answer> raEventListener, long timeout,
-			DiameterIdentityAvp destinationHost,
-			DiameterIdentityAvp destinationRealm, SleeEndpoint endpoint) {
+			DiameterIdentity destinationHost,
+			DiameterIdentity destinationRealm, SleeEndpoint endpoint) {
 		super(messageFactory, avpFactory, session, raEventListener, timeout,
 				destinationHost, destinationRealm, endpoint);
 		// TODO Auto-generated constructor stub

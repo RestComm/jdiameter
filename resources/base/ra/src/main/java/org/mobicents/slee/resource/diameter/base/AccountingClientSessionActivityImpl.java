@@ -7,7 +7,7 @@ import javax.slee.resource.SleeEndpoint;
 import net.java.slee.resource.diameter.base.AccountingClientSessionActivity;
 import net.java.slee.resource.diameter.base.AccountingSessionState;
 import net.java.slee.resource.diameter.base.events.AccountingRequest;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.EventListener;
@@ -33,8 +33,8 @@ public class AccountingClientSessionActivityImpl extends
 	public AccountingClientSessionActivityImpl(
 			DiameterMessageFactoryImpl messageFactory,
 			DiameterAvpFactoryImpl avpFactory, ClientAccSession clientSession,
-			long timeout, DiameterIdentityAvp destinationHost,
-			DiameterIdentityAvp destinationRealm, SleeEndpoint endpoint) {
+			long timeout, DiameterIdentity destinationHost,
+			DiameterIdentity destinationRealm, SleeEndpoint endpoint) {
 		super(messageFactory, avpFactory, null,
 				(EventListener<Request, Answer>) clientSession, timeout,
 				destinationHost, destinationRealm, endpoint);

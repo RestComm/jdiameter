@@ -42,7 +42,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.java.slee.resource.diameter.base.AuthSessionState;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.MessageFactory;
@@ -264,9 +264,9 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
 
         logger.info( "Connected to " + provider.getPeerCount() + " peers." );
 
-        for(DiameterIdentityAvp peer : provider.getConnectedPeers())
+        for(DiameterIdentity peer : provider.getConnectedPeers())
         {
-          logger.info( "Connected to Peer[" +  peer.stringValue() + "]" );
+          logger.info( "Connected to Peer[" +  peer.toString() + "]" );
         }
 
         NullActivity timerBus = this.nullActivityFactory.createNullActivity();

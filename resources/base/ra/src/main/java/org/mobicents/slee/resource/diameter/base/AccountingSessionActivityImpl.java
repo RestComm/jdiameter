@@ -4,7 +4,7 @@ import javax.slee.resource.SleeEndpoint;
 
 import net.java.slee.resource.diameter.base.AccountingSessionActivity;
 import net.java.slee.resource.diameter.base.AccountingSessionState;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.EventListener;
@@ -22,7 +22,7 @@ import org.jdiameter.api.app.StateChangeListener;
 public abstract class AccountingSessionActivityImpl extends DiameterActivityImpl implements AccountingSessionActivity, StateChangeListener {
 
 	public AccountingSessionActivityImpl(DiameterMessageFactoryImpl messageFactory, DiameterAvpFactoryImpl avpFactory, Session session,
-			EventListener<Request, Answer> raEventListener, long timeout, DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm, 
+			EventListener<Request, Answer> raEventListener, long timeout, DiameterIdentity destinationHost, DiameterIdentity destinationRealm, 
 			SleeEndpoint endpoint)
 	{
 		

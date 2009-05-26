@@ -6,7 +6,7 @@ import javax.slee.resource.SleeEndpoint;
 
 import net.java.slee.resource.diameter.base.events.AccountingAnswer;
 import net.java.slee.resource.diameter.base.events.AccountingRequest;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.rf.RfMessageFactory;
 import net.java.slee.resource.diameter.rf.RfServerSession;
 
@@ -41,7 +41,7 @@ public class RfServerSessionImpl extends AccountingServerSessionActivityImpl imp
    * @param endpoint
    * @param stack
    */
-  public RfServerSessionImpl( DiameterMessageFactoryImpl messageFactory, DiameterAvpFactoryImpl avpFactory, ServerAccSession serverSession, long timeout, DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm, SleeEndpoint endpoint, Stack stack )
+  public RfServerSessionImpl( DiameterMessageFactoryImpl messageFactory, DiameterAvpFactoryImpl avpFactory, ServerAccSession serverSession, long timeout, DiameterIdentity destinationHost, DiameterIdentity destinationRealm, SleeEndpoint endpoint, Stack stack )
   {
     super( messageFactory, avpFactory, serverSession, timeout, destinationHost, destinationRealm, endpoint, stack );
     

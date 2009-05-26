@@ -3,7 +3,7 @@ package net.java.slee.resource.diameter.base;
 import net.java.slee.resource.diameter.base.events.DiameterCommand;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp;
 import net.java.slee.resource.diameter.base.events.avp.FailedAvp;
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
@@ -240,7 +240,7 @@ public interface DiameterAvpFactory {
      * Create a ProxyInfo (Grouped AVP) instance using required AVP values.
      */
     ProxyInfoAvp createProxyInfo(
-        DiameterIdentityAvp proxyHost
+        DiameterIdentity proxyHost
         , byte[] proxyState
     );
 

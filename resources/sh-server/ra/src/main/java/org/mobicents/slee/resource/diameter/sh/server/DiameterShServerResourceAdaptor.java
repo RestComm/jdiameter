@@ -1,8 +1,7 @@
 /*
  * Mobicents, Communications Middleware
  * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party
- * contributors as
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
  * distributed under license by Red Hat Middleware LLC.
@@ -55,7 +54,7 @@ import net.java.slee.resource.diameter.base.CreateActivityException;
 import net.java.slee.resource.diameter.base.DiameterActivity;
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.ErrorAnswer;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
 import net.java.slee.resource.diameter.sh.client.events.SubscribeNotificationsAnswer;
@@ -91,7 +90,6 @@ import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.events.ErrorAnswerImpl;
-import org.mobicents.slee.resource.diameter.base.events.avp.DiameterIdentityAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.client.DiameterShAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.ProfileUpdateAnswerImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.PushNotificationRequestImpl;
@@ -606,7 +604,7 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
    * 
    * @return an array of DiameterIdentity AVPs representing the peers.
    */
-  public DiameterIdentityAvp[] getConnectedPeers()
+  public DiameterIdentity[] getConnectedPeers()
   {
     if (this.stack != null)
     {
@@ -615,14 +613,14 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
         // Get the list of peers from the stack
         List<Peer> peers = stack.unwrap(PeerTable.class).getPeerTable();
 
-        DiameterIdentityAvp[] result = new DiameterIdentityAvp[peers.size()];
+        DiameterIdentity[] result = new DiameterIdentity[peers.size()];
 
         int i = 0;
 
-        // Get each peer from the list and make a DiameterIdentityAvp
+        // Get each peer from the list and make a DiameterIdentity
         for (Peer peer : peers)
         {
-          DiameterIdentityAvp identity = new DiameterIdentityAvpImpl(0, 0, 0, 0, peer.getUri().toString().getBytes());
+          DiameterIdentity identity = new DiameterIdentity(peer.getUri().toString());
 
           result[i++] = identity;
         }
@@ -862,7 +860,7 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
       return null;
     }
 
-    public DiameterIdentityAvp[] getConnectedPeers()
+    public DiameterIdentity[] getConnectedPeers()
     {
       return ra.getConnectedPeers();
     }

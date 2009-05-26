@@ -2,7 +2,7 @@ package org.mobicents.slee.resource.diameter.ro;
 
 import javax.slee.resource.SleeEndpoint;
 
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentityAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.ro.RoAvpFactory;
 import net.java.slee.resource.diameter.ro.RoMessageFactory;
 import net.java.slee.resource.diameter.ro.RoSession;
@@ -36,7 +36,7 @@ public abstract class RoSessionImpl extends CreditControlSessionImpl implements 
    * @param destinationRealm
    * @param endpoint
    */
-  public RoSessionImpl( RoMessageFactory messageFactory, RoAvpFactory avpFactory, Session session, EventListener<Request, Answer> raEventListener, long timeout, DiameterIdentityAvp destinationHost, DiameterIdentityAvp destinationRealm, SleeEndpoint endpoint )
+  public RoSessionImpl( RoMessageFactory messageFactory, RoAvpFactory avpFactory, Session session, EventListener<Request, Answer> raEventListener, long timeout, DiameterIdentity destinationHost, DiameterIdentity destinationRealm, SleeEndpoint endpoint )
   {
     // FIXME: Alexandre: Not sure here...
     super( null, null, session, raEventListener, timeout, destinationHost, destinationRealm, endpoint );

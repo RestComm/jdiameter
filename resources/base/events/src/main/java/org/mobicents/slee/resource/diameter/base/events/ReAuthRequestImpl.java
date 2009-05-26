@@ -26,7 +26,7 @@
 package org.mobicents.slee.resource.diameter.base.events;
 
 import net.java.slee.resource.diameter.base.events.ReAuthRequest;
-import net.java.slee.resource.diameter.base.events.avp.ReAuthRequestTypeAvp;
+import net.java.slee.resource.diameter.base.events.avp.ReAuthRequestType;
 
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.Message;
@@ -50,11 +50,11 @@ public class ReAuthRequestImpl extends ExtensionDiameterMessageImpl implements R
     return message.getAvps().getAvp(Avp.RE_AUTH_REQUEST_TYPE) != null;
   }
 
-  public ReAuthRequestTypeAvp getReAuthRequestType() {
-    return ReAuthRequestTypeAvp.fromInt(getAvpAsInt32(Avp.RE_AUTH_REQUEST_TYPE));
+  public ReAuthRequestType getReAuthRequestType() {
+    return ReAuthRequestType.fromInt(getAvpAsInt32(Avp.RE_AUTH_REQUEST_TYPE));
   }
 
-  public void setReAuthRequestType(ReAuthRequestTypeAvp reAuthRequestType) {
+  public void setReAuthRequestType(ReAuthRequestType reAuthRequestType) {
     addAvp(Avp.RE_AUTH_REQUEST_TYPE, reAuthRequestType.getValue());
   }
 
