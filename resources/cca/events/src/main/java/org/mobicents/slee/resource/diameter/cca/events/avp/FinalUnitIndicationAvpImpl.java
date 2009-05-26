@@ -26,7 +26,7 @@
 package org.mobicents.slee.resource.diameter.cca.events.avp;
 
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodesNotSupported;
-import net.java.slee.resource.diameter.base.events.avp.IPFilterRuleAvp;
+import net.java.slee.resource.diameter.base.events.avp.IPFilterRule;
 import net.java.slee.resource.diameter.cca.events.avp.CreditControlAVPCodes;
 import net.java.slee.resource.diameter.cca.events.avp.FinalUnitActionType;
 import net.java.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvp;
@@ -124,15 +124,15 @@ public class FinalUnitIndicationAvpImpl extends GroupedAvpImpl implements FinalU
    * 
    * @see net.java.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvp#getRestrictionFilterRules()
    */
-  public IPFilterRuleAvp[] getRestrictionFilterRules() {
+  public IPFilterRule[] getRestrictionFilterRules() {
     if (hasAvp(CreditControlAVPCodes.Restriction_Filter_Rule)) {
       AvpSet set = super.avpSet.getAvps(CreditControlAVPCodes.Restriction_Filter_Rule);
-      IPFilterRuleAvp[] result = new IPFilterRuleAvp[set.size()];
+      IPFilterRule[] result = new IPFilterRule[set.size()];
 
       for (int index = 0; index < set.size(); index++) {
         Avp rawAvp = set.getAvpByIndex(index);
         try {
-          result[index] = new IPFilterRuleAvp(rawAvp.getOctetString());
+          result[index] = new IPFilterRule(rawAvp.getOctetString());
         } catch (AvpDataException e) {
           reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.Restriction_Filter_Rule);
           logger.error("Failure while trying to obtain Restriction-Filter-Rule AVP.", e);
@@ -206,9 +206,9 @@ public class FinalUnitIndicationAvpImpl extends GroupedAvpImpl implements FinalU
    * (non-Javadoc)
    * 
    * @see net.java.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvp#setRestrictionFilterRule
-   * (net.java.slee.resource.diameter.base.events.avp.IPFilterRuleAvp)
+   * (net.java.slee.resource.diameter.base.events.avp.IPFilterRule)
    */
-  public void setRestrictionFilterRule(IPFilterRuleAvp restrictionFilterRule) {
+  public void setRestrictionFilterRule(IPFilterRule restrictionFilterRule) {
     addAvp(CreditControlAVPCodes.Restriction_Filter_Rule, restrictionFilterRule);
   }
 
@@ -216,10 +216,10 @@ public class FinalUnitIndicationAvpImpl extends GroupedAvpImpl implements FinalU
    * (non-Javadoc)
    * 
    * @see net.java.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvp#setRestrictionFilterRules
-   * (net.java.slee.resource.diameter.base.events.avp.IPFilterRuleAvp[])
+   * (net.java.slee.resource.diameter.base.events.avp.IPFilterRule[])
    */
-  public void setRestrictionFilterRules(IPFilterRuleAvp[] restrictionFilterRules) {
-    for (IPFilterRuleAvp restrictionFilterRule : (IPFilterRuleAvp[]) restrictionFilterRules) {
+  public void setRestrictionFilterRules(IPFilterRule[] restrictionFilterRules) {
+    for (IPFilterRule restrictionFilterRule : (IPFilterRule[]) restrictionFilterRules) {
       setRestrictionFilterRule(restrictionFilterRule);
     }
   }

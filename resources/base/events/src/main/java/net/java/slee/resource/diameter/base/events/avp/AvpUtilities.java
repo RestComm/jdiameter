@@ -25,6 +25,7 @@
  */
 package net.java.slee.resource.diameter.base.events.avp;
 
+import java.lang.reflect.Constructor;
 import java.net.URISyntaxException;
 import java.util.Date;
 
@@ -884,25 +885,25 @@ public class AvpUtilities {
     set.addAvp(avpCode, value, vendorId, isMandatory, isProtected);
   }
 
-  public static AvpSet getAvpAsGrouped(int avpCode, AvpSet set)
+  public static byte[] getAvpAsGrouped(int avpCode, AvpSet set)
   {
     try {
       Avp avp = set.getAvp(avpCode);
-      return avp != null ? avp.getGrouped() : null;
+      return avp != null ? avp.getRawData() : null;
     }
-    catch (AvpDataException e) {
+    catch (Exception e) {
       logger.debug("Failed to obtain AVP with code " + avpCode + " as type Grouped.", e);
       return  null;
     }
   }
 
-  public static AvpSet getAvpAsGrouped(int avpCode, long vendorId, AvpSet set)
+  public static byte[] getAvpAsGrouped(int avpCode, long vendorId, AvpSet set)
   {
     try {
       Avp avp = set.getAvp(avpCode, vendorId);
-      return avp != null ? avp.getGrouped() : null;
+      return avp != null ? avp.getRawData() : null;
     }
-    catch (AvpDataException e) {
+    catch (Exception e) {
       logger.debug("Failed to obtain AVP with code " + avpCode + " and Vendor-Id " + vendorId + " as type Grouped.", e);
       return null;
     }
@@ -1158,11 +1159,11 @@ public class AvpUtilities {
       }
       case DiameterAvpType._IP_FILTER_RULE:
       {
-        
+        return new IPFilterRule(getAvpAsOctetString(avpCode, vendorId, set));
       }
       case DiameterAvpType._OCTET_STRING:
       {
-        
+        return getAvpAsOctetString(avpCode, vendorId, set);
       }
       case DiameterAvpType._QOS_FILTER_RULE:
       {
@@ -1214,5 +1215,32 @@ public class AvpUtilities {
     
     return null;
   }
+  
+  public static Object getAvpAsCustom(int avpCode, AvpSet set, Class clazz)
+  {
+    return getAvpAsCustom(avpCode, 0L, set, clazz);
+  }
+  
+  public static Object getAvpAsCustom(int avpCode, long vendorId, AvpSet set, Class clazz)
+  {
+    Avp avp = set.getAvp(avpCode, vendorId);
 
+    if (avp != null)
+    {
+      AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
+      
+      Constructor c = null;
+
+      try {
+        c = clazz.getConstructor(int.class, long.class, int.class, int.class, byte[].class);
+        return c.newInstance(rep.getCode(), rep.getVendorId(), rep.getRuleMandatoryAsInt(), rep.getRuleProtectedAsInt(), avp.getRawData());
+      }
+      catch (Exception e) {
+        logger.error( "Failed to obtain AVP constructor.", e );
+        return null;
+      }
+    }
+    
+    return null;
+  }
 }

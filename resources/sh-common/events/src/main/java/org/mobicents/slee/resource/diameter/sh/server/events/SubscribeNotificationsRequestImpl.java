@@ -234,28 +234,9 @@ public class SubscribeNotificationsRequestImpl extends DiameterShMessageImpl imp
   }
 
   public UserIdentityAvp getUserIdentity() {
-		if (hasUserIdentity()) {
-			try {
-				Avp rawAvp = super.message.getAvps().getAvp(DiameterShAvpCodes.USER_IDENTITY, 10415L);
-
-				UserIdentityAvpImpl a = new UserIdentityAvpImpl(rawAvp.getCode(), rawAvp.getVendorId(), rawAvp.isMandatory() ? 1 : 0, rawAvp.isEncrypted() ? 1 : 0, new byte[] {});
-
-				for (Avp subAvp : rawAvp.getGrouped()) {
-					try {
-						a.setExtensionAvps(new DiameterAvp[] { new DiameterAvpImpl(subAvp.getCode(), subAvp.getVendorId(), subAvp.isMandatory() ? 1 : 0, subAvp.isEncrypted() ? 1 : 0, subAvp.getRaw(),
-								null) });
-					} catch (AvpNotAllowedException e) {
-						logger.error("Unable to add child AVPs to User-Identity AVP.", e);
-					}
-				}
-
-				return a;
-			} catch (AvpDataException e) {
-				logger.error("Unable to decode User-Identity AVP contents.", e);
-			}
-		}
-
-		return null;
+    //byte[] avpBytes = getAvpAsGrouped(DiameterShAvpCodes.USER_IDENTITY, 10415L);
+    
+    return (UserIdentityAvp) getAvpAsCustom(DiameterShAvpCodes.USER_IDENTITY, 10415L, UserIdentityAvpImpl.class);
 	}
 
   public boolean hasUserData()

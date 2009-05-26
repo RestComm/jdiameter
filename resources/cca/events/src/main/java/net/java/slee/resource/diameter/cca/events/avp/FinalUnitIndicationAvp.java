@@ -1,7 +1,7 @@
 package net.java.slee.resource.diameter.cca.events.avp;
 
 import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
-import net.java.slee.resource.diameter.base.events.avp.IPFilterRuleAvp;
+import net.java.slee.resource.diameter.base.events.avp.IPFilterRule;
 
 /**
  * <pre>
@@ -100,7 +100,7 @@ public interface FinalUnitIndicationAvp extends GroupedAvp {
 	 * 
 	 * @return
 	 */
-	IPFilterRuleAvp[] getRestrictionFilterRules();
+	IPFilterRule[] getRestrictionFilterRules();
 
 	/**
 	 * Returns true if the Final-Unit-Action AVP is present in the message.
@@ -156,7 +156,7 @@ public interface FinalUnitIndicationAvp extends GroupedAvp {
 	 * 
 	 * @param restrictionFilterRule
 	 */
-	void setRestrictionFilterRule(IPFilterRuleAvp restrictionFilterRule);
+	void setRestrictionFilterRule(IPFilterRule restrictionFilterRule);
 
 	/**
 	 * Sets the set of Restriction-Filter-Rule AVPs, with all the values in the
@@ -164,6 +164,6 @@ public interface FinalUnitIndicationAvp extends GroupedAvp {
 	 * 
 	 * @param restrictionFilterRules
 	 */
-	void setRestrictionFilterRules(IPFilterRuleAvp[] restrictionFilterRules);
+	void setRestrictionFilterRules(IPFilterRule[] restrictionFilterRules);
 
 }

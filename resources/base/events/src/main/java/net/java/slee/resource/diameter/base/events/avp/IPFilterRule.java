@@ -166,7 +166,7 @@ import java.util.regex.Matcher;
 
  * @author Open Cloud
  */
-public class IPFilterRuleAvp {
+public class IPFilterRule {
 
   public static final int ACTION_PERMIT = 0;
   public static final int ACTION_DENY = 1;
@@ -190,7 +190,7 @@ public class IPFilterRuleAvp {
   private String tcpflags = null;
   private String icmptypes = null;
 
-  public IPFilterRuleAvp(String rule) {
+  public IPFilterRule(String rule) {
     parseRule(rule);
   }
 
@@ -488,7 +488,7 @@ public class IPFilterRuleAvp {
     for (int i = 0; i < rules.length; i++) {
       String rule = rules[i];
       try {
-        System.out.println(rule + " -> " + new IPFilterRuleAvp(rule).toString());
+        System.out.println(rule + " -> " + new IPFilterRule(rule).toString());
       }
       catch (IllegalArgumentException iae) {
         System.out.println(iae.getMessage());

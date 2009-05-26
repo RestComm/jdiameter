@@ -50,7 +50,7 @@ public class AvpRepresentation
   private final static String _DEFAULT_PROTECTED = "may";
   private final static String _DEFAULT_VENDOR = "mustnot";
 
-  enum Rule { MUST, MAY, MUSTNOT, SHOULDNOT };
+  enum Rule { must, may, mustnot, shouldnot };
 
   public AvpRepresentation( String name, String description, int code, boolean mayEncrypt, String ruleMandatory, String ruleProtected, String ruleVendorBit, long vendorId, boolean constrained, String type )
   {
@@ -101,16 +101,31 @@ public class AvpRepresentation
     return ruleMandatory;
   }
 
+  public int getRuleMandatoryAsInt()
+  {
+    return Rule.valueOf(ruleMandatory).ordinal();
+  }
+  
   public String getRuleProtected()
   {
     return ruleProtected;
   }
 
+  public int getRuleProtectedAsInt()
+  {
+    return Rule.valueOf(ruleProtected).ordinal();
+  }
+  
   public String getRuleVendorBit()
   {
     return ruleVendorBit;
   }
 
+  public int getRuleVendorBitAsInt()
+  {
+    return Rule.valueOf(ruleVendorBit).ordinal();
+  }
+  
   public long getVendorId()
   {
     return vendorId;
