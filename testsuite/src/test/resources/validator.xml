@@ -761,7 +761,8 @@
 	</command>
 	
 	<!-- 3GPP applications section, unfortunetly they dont provide tables like rfc 3588 or 4006 that are easy to parse to prepare this document...
-		So below we have compliation of TS xx.xxx contet and some common sense.-->
+		So below we have compliation of TS xx.xxx contet and some common sense.
+-->
 	<!-- 
 	< User-Data -Request> ::=	< Diameter Header: 306, REQ, PXY, 16777217 >
 									< Session-Id >
