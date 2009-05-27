@@ -1,8 +1,7 @@
 /*
  * Mobicents, Communications Middleware, Diameter Base
  * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party
- * contributors as
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
  * distributed under license by Red Hat Middleware LLC.
@@ -30,13 +29,15 @@ package net.java.slee.resource.diameter.base;
  * Start time:12:52:37 2009-05-21<br>
  * Project: diameter-parent<br>
  * Class that should be used to inidcate diameter problems.
- * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski
- *         </a>
+ * 
+ * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski</a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class DiameterException extends RuntimeException {
 
-	//FIXME: add fields.
+  private static final long serialVersionUID = 1L;
+
+  //FIXME: add fields.
 	/**
 	 */
 	public DiameterException() {

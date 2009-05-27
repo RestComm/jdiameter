@@ -16,6 +16,8 @@ import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.controller.IPeerTable;
 import static org.jdiameter.client.impl.helpers.ExtensionPoint.*;
 import org.jdiameter.client.impl.helpers.Loggers;
+import org.jdiameter.common.impl.validation.DiameterMessageValidator;
+
 import static org.jdiameter.client.impl.helpers.Parameters.Assembler;
 
 import java.io.IOException;
@@ -40,6 +42,7 @@ public class StackImpl implements IContainer, StackImplMBean {
     protected IPeerTable peerManager;
     protected StackState state = StackState.IDLE;
     protected Lock lock = new ReentrantLock();
+    protected DiameterMessageValidator validator = DiameterMessageValidator.getInstance();
     /**
      * Use for processing request time-out tasks (for all active peers)
      */

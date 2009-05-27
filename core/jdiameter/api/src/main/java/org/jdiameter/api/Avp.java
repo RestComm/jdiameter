@@ -345,4 +345,6 @@ public interface Avp extends Wrapper, Serializable {
      * @throws AvpDataException if data has incorrect format
      */
     AvpSet getGrouped() throws AvpDataException;
+
+    public byte[] getRawData();
 }

@@ -7,7 +7,7 @@ import org.jdiameter.common.api.app.IAppSessionState;
  * <br><br>Super project:  mobicents-jainslee-server
  * <br>13:52:51 2008-09-04	
  * <br>
- * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski </a> 
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
  * @author Erick Svenson
  */

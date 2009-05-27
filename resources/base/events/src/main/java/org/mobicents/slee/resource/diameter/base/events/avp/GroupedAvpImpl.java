@@ -212,7 +212,7 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
 
   protected void setAvpAsTime(int code, long vendorId, Date value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsTime(code, vendorId, avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsTime(null,code, vendorId, avpSet, isMandatory, isProtected, value);
   }
   
   protected float getAvpAsFloat32(int code)
@@ -227,7 +227,7 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
 
   protected void setAvpAsFloat32(int code, long vendorId, float value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsFloat32(code, vendorId, avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsFloat32(null,code, vendorId, avpSet, isMandatory, isProtected, value);
   }
 
   protected double getAvpAsFloat64(int code)
@@ -242,7 +242,7 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
 
   protected void setAvpAsFloat64(int code, long vendorId, float value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsFloat64(code, vendorId, avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsFloat64(null,code, vendorId, avpSet, isMandatory, isProtected, value);
   }
 
   protected byte[] getAvpAsGrouped(int code)
@@ -257,7 +257,7 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
 
   protected AvpSet setAvpAsGrouped(int code, long vendorId, DiameterAvp[] childs, boolean isMandatory, boolean isProtected)
   {
-    return AvpUtilities.setAvpAsGrouped(code, vendorId, avpSet, isMandatory, isProtected, childs);
+    return AvpUtilities.setAvpAsGrouped(null,code, vendorId, avpSet, isMandatory, isProtected, childs);
   }
 
   protected int getAvpAsInteger32(int code)
@@ -272,7 +272,7 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
 
   protected void setAvpAsInteger32(int code, long vendorId, int value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsInteger32(code, vendorId, avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsInteger32(null,code, vendorId, avpSet, isMandatory, isProtected, value);
   }
 
   protected long getAvpAsInteger64(int code)
@@ -287,7 +287,7 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
 
   protected void setAvpAsInteger64(int code, long vendorId, long value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsInteger64(code, vendorId, avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsInteger64(null,code, vendorId, avpSet, isMandatory, isProtected, value);
   }
 
   protected long getAvpAsUnsigned32(int code)
@@ -302,7 +302,7 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
 
   protected void setAvpAsUnsigned32(int code, long vendorId, long value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsUnsigned32(code, vendorId, avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsUnsigned32(null,code, vendorId, avpSet, isMandatory, isProtected, value);
   }
 
   protected long getAvpAsUnsigned64(int code)
@@ -317,7 +317,7 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
 
   protected void setAvpAsUnsigned64(int code, long vendorId, long value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsUnsigned64(code, vendorId, avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsUnsigned64(null,code, vendorId, avpSet, isMandatory, isProtected, value);
   }
 
   protected String getAvpAsUTF8String(int code)
@@ -332,7 +332,7 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
   
   protected void setAvpAsUTF8String(int code, long vendorId, String value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsUTF8String(code, vendorId, avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsUTF8String(null,code, vendorId, avpSet, isMandatory, isProtected, value);
   }
   
   protected String getAvpAsOctetString(int code)
@@ -347,7 +347,7 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
   
   protected void setAvpAsOctetString(int code, long vendorId, String value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsOctetString(code, vendorId, avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsOctetString(null,code, vendorId, avpSet, isMandatory, isProtected, value);
   }
   
   protected byte[] getAvpAsRaw(int code)
@@ -362,7 +362,7 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
   
   protected void setAvpAsRaw(int code, long vendorId, byte[] value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsRaw(code, vendorId, avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsRaw(null,code, vendorId, avpSet, isMandatory, isProtected, value);
   }
   
   protected Object getAvpAsCustom(int code, Class clazz)
@@ -377,17 +377,17 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
   
   protected void addAvp(String avpName, Object avp)
   {
-    AvpUtilities.addAvp(avpName, avpSet, avp);
+    AvpUtilities.addAvp(null,avpName, avpSet, avp);
   }
 
   protected void addAvp(int avpCode, Object avp)
   {
-    AvpUtilities.addAvp(avpCode, 0L, avpSet, avp);
+    AvpUtilities.addAvp(null,avpCode, 0L, avpSet, avp);
   }
   
   protected void addAvp(int avpCode, long vendorId, Object avp)
   {
-    AvpUtilities.addAvp(avpCode, vendorId, avpSet, avp);
+    AvpUtilities.addAvp(null,avpCode, vendorId, avpSet, avp);
   }
 
   protected boolean hasAvp(int code)

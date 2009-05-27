@@ -27,7 +27,7 @@ package net.java.slee.resource.diameter.base.events.avp;
  * 
  * @author Open Cloud
  */
-public class AvpNotAllowedException extends Exception {
+public class AvpNotAllowedException extends RuntimeException {
   
   private static final long serialVersionUID = 1L;
 

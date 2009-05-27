@@ -788,7 +788,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
   protected void setAvpAsTime(int code, long vendorId, Date value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsTime(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsTime(message, code, vendorId, message.getAvps(), isMandatory, isProtected, value);
   }
   
   protected float getAvpAsFloat32(int code)
@@ -803,7 +803,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
   protected void setAvpAsFloat32(int code, long vendorId, float value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsFloat32(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsFloat32(message, code, vendorId, message.getAvps(), isMandatory, isProtected, value);
   }
 
   protected double getAvpAsFloat64(int code)
@@ -818,7 +818,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
   protected void setAvpAsFloat64(int code, long vendorId, float value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsFloat64(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsFloat64(message, code, vendorId, message.getAvps(), isMandatory, isProtected, value);
   }
 
   protected byte[] getAvpAsGrouped(int code)
@@ -833,7 +833,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
   protected AvpSet setAvpAsGrouped(int code, long vendorId, DiameterAvp[] childs, boolean isMandatory, boolean isProtected)
   {
-    return AvpUtilities.setAvpAsGrouped(code, vendorId, message.getAvps(), isMandatory, isProtected, childs);
+    return AvpUtilities.setAvpAsGrouped(message, code, vendorId, message.getAvps(), isMandatory, isProtected, childs);
   }
 
   protected int getAvpAsInteger32(int code)
@@ -848,7 +848,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
   protected void setAvpAsInteger32(int code, long vendorId, int value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsInteger32(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsInteger32(message, code, vendorId, message.getAvps(), isMandatory, isProtected, value);
   }
 
   protected long getAvpAsInteger64(int code)
@@ -863,7 +863,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
   protected void setAvpAsInteger64(int code, long vendorId, long value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsInteger64(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsInteger64(message, code, vendorId, message.getAvps(), isMandatory, isProtected, value);
   }
 
   protected long getAvpAsUnsigned32(int code)
@@ -878,7 +878,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
   protected void setAvpAsUnsigned32(int code, long vendorId, long value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsUnsigned32(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsUnsigned32(message, code, vendorId, message.getAvps(), isMandatory, isProtected, value);
   }
 
   protected long getAvpAsUnsigned64(int code)
@@ -893,7 +893,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
 
   protected void setAvpAsUnsigned64(int code, long vendorId, long value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsUnsigned64(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsUnsigned64(message, code, vendorId, message.getAvps(), isMandatory, isProtected, value);
   }
 
   protected String getAvpAsUTF8String(int code)
@@ -908,7 +908,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
   
   protected void setAvpAsUTF8String(int code, long vendorId, String value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsUTF8String(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsUTF8String(message, code, vendorId, message.getAvps(), isMandatory, isProtected, value);
   }
   
   protected String getAvpAsOctetString(int code)
@@ -923,7 +923,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
   
   protected void setAvpAsOctetString(int code, long vendorId, String value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsOctetString(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsOctetString(message, code, vendorId, message.getAvps(), isMandatory, isProtected, value);
   }
   
   protected byte[] getAvpAsRaw(int code)
@@ -938,7 +938,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
   
   protected void setAvpAsRaw(int code, long vendorId, byte[] value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsRaw(code, vendorId, message.getAvps(), isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsRaw(message, code, vendorId, message.getAvps(), isMandatory, isProtected, value);
   }
   
   protected Object getAvpAsCustom(int code, Class clazz)
@@ -953,17 +953,17 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
   
   protected void addAvp(String avpName, Object avp)
   {
-    AvpUtilities.addAvp(avpName, message.getAvps(), avp);
+    AvpUtilities.addAvp(message, avpName, message.getAvps(), avp);
   }
 
   protected void addAvp(int avpCode, Object avp)
   {
-    AvpUtilities.addAvp(avpCode, 0L, message.getAvps(), avp);
+    AvpUtilities.addAvp(message, avpCode, 0L, message.getAvps(), avp);
   }
   
   protected void addAvp(int avpCode, long vendorId, Object avp)
   {
-    AvpUtilities.addAvp(avpCode, vendorId, message.getAvps(), avp);
+    AvpUtilities.addAvp(message, avpCode, vendorId, message.getAvps(), avp);
   }
 
   protected boolean hasAvp(int code)

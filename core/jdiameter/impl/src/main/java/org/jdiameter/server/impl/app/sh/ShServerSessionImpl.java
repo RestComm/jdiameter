@@ -56,7 +56,7 @@ import org.jdiameter.common.impl.app.sh.ShSession;
  * Super project: mobicents-jainslee-server <br>
  * 10:53:02 2008-09-05 <br>
  * 
- * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
+ * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski
  *         </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
