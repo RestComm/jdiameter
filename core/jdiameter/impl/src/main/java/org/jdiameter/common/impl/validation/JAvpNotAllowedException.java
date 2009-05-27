@@ -16,31 +16,37 @@ import org.jdiameter.common.api.DiameterRuntimeException;
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public class AvpNotAllowedException extends DiameterRuntimeException {
+public class JAvpNotAllowedException extends DiameterRuntimeException {
+
+	private int avpCode = -1;
+	private long vendorId = -1l;
 
 	/**
 	 * 	
 	 */
-	public AvpNotAllowedException() {
-		// TODO Auto-generated constructor stub
+	public JAvpNotAllowedException(int code, long vendor) {
+		this.avpCode = code;
+		this.vendorId = vendor;
 	}
 
 	/**
 	 * 
 	 * @param message
 	 */
-	public AvpNotAllowedException(String message) {
+	public JAvpNotAllowedException(String message, int code, long vendor) {
 		super(message);
-		// TODO Auto-generated constructor stub
+		this.avpCode = code;
+		this.vendorId = vendor;
 	}
 
 	/**
 	 * 
 	 * @param cause
 	 */
-	public AvpNotAllowedException(Throwable cause) {
+	public JAvpNotAllowedException(Throwable cause, int code, long vendor) {
 		super(cause);
-		// TODO Auto-generated constructor stub
+		this.avpCode = code;
+		this.vendorId = vendor;
 	}
 
 	/**
@@ -48,9 +54,18 @@ public class AvpNotAllowedException extends DiameterRuntimeException {
 	 * @param message
 	 * @param cause
 	 */
-	public AvpNotAllowedException(String message, Throwable cause) {
+	public JAvpNotAllowedException(String message, Throwable cause, int code, long vendor) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
+		this.avpCode = code;
+		this.vendorId = vendor;
+	}
+
+	public int getAvpCode() {
+		return avpCode;
+	}
+
+	public long getVendorId() {
+		return vendorId;
 	}
 
 }

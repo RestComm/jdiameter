@@ -14,6 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpSet;
+import org.jdiameter.api.Message;
 import org.jdiameter.client.impl.parser.MessageImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -32,19 +33,21 @@ public class DiameterMessageValidator {
 	private static final DiameterMessageValidator instance = new DiameterMessageValidator();
 	private static final String fileName = "validator.xml";
 	private Map<MessageRepresentation, MessageRepresentation> configuredMessageTypes = new TreeMap<MessageRepresentation, MessageRepresentation>();
+	private boolean on = true;
 
 	/**
 	 * 	
 	 */
 	private DiameterMessageValidator() {
-		parseConfiguration();
+		InputStream is = DiameterMessageValidator.class.getClassLoader().getResourceAsStream(fileName);
+		parseConfiguration(is);
 	}
 
 	/**
 	 * 
 	 */
-	private void parseConfiguration() {
-		InputStream is = DiameterMessageValidator.class.getClassLoader().getResourceAsStream(fileName);
+	public void parseConfiguration(InputStream is) {
+
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setValidating(false);
 		DocumentBuilder db;
@@ -52,6 +55,15 @@ public class DiameterMessageValidator {
 			db = dbf.newDocumentBuilder();
 			Document doc = db.parse(is);
 			doc.getDocumentElement().normalize();
+
+			Element docElement = doc.getDocumentElement();
+			String onAttr = docElement.getAttribute("on");
+			System.err.println("ON ATRS: "+onAttr);
+			if (onAttr == null || onAttr.equals("") || !Boolean.valueOf(onAttr)) {
+				on = false;
+			} else {
+				on = true;
+			}
 
 			NodeList commandNodes = doc.getElementsByTagName("command");
 
@@ -67,7 +79,7 @@ public class DiameterMessageValidator {
 						String request = cmdElement.getAttribute("request");
 
 						MessageRepresentation msgRepresentation = new MessageRepresentation(Integer.valueOf(cmdCode), applicationID != null ? Long.valueOf(applicationID) : 0, Boolean.valueOf(request));
-						Map<AvpRepresentation,AvpRepresentation> avpList = new HashMap<AvpRepresentation,AvpRepresentation>();
+						Map<AvpRepresentation, AvpRepresentation> avpList = new HashMap<AvpRepresentation, AvpRepresentation>();
 						msgRepresentation.setMessageAvps(avpList);
 						configuredMessageTypes.put(msgRepresentation, msgRepresentation);
 
@@ -87,7 +99,7 @@ public class DiameterMessageValidator {
 									AvpRepresentation ap = new AvpRepresentation(Integer.valueOf(indexIndicator), Integer.valueOf(avpCode), avpVendor != null ? Long.valueOf(avpVendor) : 0,
 											multiPlicity, name);
 
-									avpList.put(ap,ap);
+									avpList.put(ap, ap);
 								}
 							} catch (Exception e) {
 								e.printStackTrace();
@@ -110,20 +122,29 @@ public class DiameterMessageValidator {
 		return DiameterMessageValidator.instance;
 	}
 
+	public boolean isOn() {
+		return on;
+	}
 
-	public void validate(MessageImpl msg) throws AvpNotAllowedException {
+	public void validate(Message msg) throws JAvpNotAllowedException {
+		if (!on)
+			throw new IllegalStateException("validation is of.");
+
 		MessageRepresentation rep = new MessageRepresentation(msg.getCommandCode(), msg.getApplicationId(), msg.isRequest());
 		rep = this.configuredMessageTypes.get(rep);
 		if (rep == null) {
 			// no notion, lets leave it.
+			
 			return;
 		}
 
 		rep.validate(msg);
 	}
-	public void validate(int commandCode, long appId, boolean isRequest,AvpSet destination, Avp avp)
-	{
-		MessageRepresentation rep = new MessageRepresentation(commandCode,appId,isRequest);
+
+	public void validate(int commandCode, long appId, boolean isRequest, AvpSet destination, Avp avp) {
+		if (!on)
+			throw new IllegalStateException("validation is of.");
+		MessageRepresentation rep = new MessageRepresentation(commandCode, appId, isRequest);
 		rep = this.configuredMessageTypes.get(rep);
 		if (rep == null) {
 			// no notion, lets leave it.
@@ -132,34 +153,47 @@ public class DiameterMessageValidator {
 
 		rep.validate(destination, avp);
 	}
-	
-	public boolean isCountValidForMultiplicity(int commandCode, long appId, boolean isRequest,AvpSet destination, int avpCode,long avpVendor)
-	{
-		MessageRepresentation rep = new MessageRepresentation(commandCode,appId,isRequest);
+
+	public boolean isCountValidForMultiplicity(int commandCode, long appId, boolean isRequest, AvpSet destination, int avpCode, long avpVendor) {
+		if (!on)
+			throw new IllegalStateException("validation is of.");
+		MessageRepresentation rep = new MessageRepresentation(commandCode, appId, isRequest);
 		rep = this.configuredMessageTypes.get(rep);
 		if (rep == null) {
 			// no notion, lets leave it.
 			return true;
 		}
 		AvpSet innerSet = destination.getAvps(avpCode, avpVendor);
-		int count = 0;
-		if(innerSet!=null)
-		{
-			count+=innerSet.size();
+		// FIXME: 1 is for avp beeing added
+		int count = 1;
+		if (innerSet != null) {
+			count += innerSet.size();
 		}
-		
+
 		return rep.isCountValidForMultiplicity(avpCode, avpVendor, count);
 	}
-	
-	public boolean isAllowed(int commandCode, long appId, boolean isRequest, int avpCode,long avpVendor)
-	{
-		MessageRepresentation rep = new MessageRepresentation(commandCode,appId,isRequest);
+
+	public boolean isAllowed(int commandCode, long appId, boolean isRequest, int avpCode, long avpVendor) {
+		if (!on)
+			throw new IllegalStateException("validation is of.");
+		MessageRepresentation rep = new MessageRepresentation(commandCode, appId, isRequest);
 		rep = this.configuredMessageTypes.get(rep);
 		if (rep == null) {
 			// no notion, lets leave it.
 			return true;
 		}
-		
-		return rep.isAllowed(avpCode,avpVendor);
+
+		return rep.isAllowed(avpCode, avpVendor);
+	}
+
+	public boolean hasRepresentation(int commandCode, long appId, boolean isRequest, int avpCode, long avpVendor) {
+		MessageRepresentation rep = new MessageRepresentation(commandCode, appId, isRequest);
+		rep = this.configuredMessageTypes.get(rep);
+		if (rep == null) {
+			// no notion, lets leave it.
+			return false;
+		}
+
+		return rep.hasRepresentation(avpCode, avpVendor);
 	}
 }

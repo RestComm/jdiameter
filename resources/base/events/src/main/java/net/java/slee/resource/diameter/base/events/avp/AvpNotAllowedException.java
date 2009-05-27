@@ -23,23 +23,61 @@
 package net.java.slee.resource.diameter.base.events.avp;
 
 /**
- * Thrown when an AVP is not allowed to be added to a Diameter command or grouped AVP type.
+ * Thrown when an AVP is not allowed to be added to a Diameter command or
+ * grouped AVP type.
  * 
  * @author Open Cloud
  */
 public class AvpNotAllowedException extends RuntimeException {
-  
-  private static final long serialVersionUID = 1L;
 
-  public AvpNotAllowedException(String message) {
-    super(message);
-  }
+	private static final long serialVersionUID = 1L;
+	private int avpCode = -1;
+	private long vendorId = -1l;
 
-  public AvpNotAllowedException(Throwable cause) {
-    super(cause);
-  }
+	/**
+	 * 	
+	 */
+	public AvpNotAllowedException(int code, long vendor) {
+		this.avpCode = code;
+		this.vendorId = vendor;
+	}
 
-  public AvpNotAllowedException(String message, Throwable cause) {
-    super(message, cause);
-  }
+	/**
+	 * 
+	 * @param message
+	 */
+	public AvpNotAllowedException(String message, int code, long vendor) {
+		super(message);
+		this.avpCode = code;
+		this.vendorId = vendor;
+	}
+
+	/**
+	 * 
+	 * @param cause
+	 */
+	public AvpNotAllowedException(Throwable cause, int code, long vendor) {
+		super(cause);
+		this.avpCode = code;
+		this.vendorId = vendor;
+	}
+
+	/**
+	 * 
+	 * @param message
+	 * @param cause
+	 */
+	public AvpNotAllowedException(String message, Throwable cause, int code, long vendor) {
+		super(message, cause);
+		this.avpCode = code;
+		this.vendorId = vendor;
+	}
+
+	public int getAvpCode() {
+		return avpCode;
+	}
+
+	public long getVendorId() {
+		return vendorId;
+	}
 }

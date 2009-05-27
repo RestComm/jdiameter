@@ -5,6 +5,8 @@ import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IEventListener;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.parser.IMessageParser;
+import org.jdiameter.common.impl.validation.DiameterMessageValidator;
+
 import static org.jdiameter.client.impl.helpers.Parameters.MessageTimeOut;
 
 import java.util.concurrent.*;
@@ -29,7 +31,9 @@ public abstract class BaseSessionImpl implements BaseSession {
     protected transient IContainer container;
     protected transient IMessageParser parser;
     protected NetworkReqListener reqListener;
-
+    protected static final DiameterMessageValidator messageValidator = DiameterMessageValidator.getInstance();
+    
+    
     public long getCreationTime() {
         return creationTime;
     }
@@ -44,6 +48,10 @@ public abstract class BaseSessionImpl implements BaseSession {
 
     protected void genericSend(Message message, EventListener listener) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
         if (isValid) {
+        	if(BaseSessionImpl.messageValidator.isOn())
+        	{
+        		BaseSessionImpl.messageValidator.validate(message);
+        	}
             long timeOut = container.getConfiguration().getLongValue(
                     MessageTimeOut.ordinal(), (Long) MessageTimeOut.defValue()
             );
@@ -57,6 +65,11 @@ public abstract class BaseSessionImpl implements BaseSession {
         if ( isValid ) {
             lastAccessedTime = System.currentTimeMillis();
 
+            if(BaseSessionImpl.messageValidator.isOn())
+        	{
+            	
+        		BaseSessionImpl.messageValidator.validate(aMessage);
+        	}
             IMessage message = (IMessage) aMessage;
             IEventListener localListener = createListenerWrapper(listener);
             if (message.isRequest())

@@ -89,10 +89,11 @@ public class MessageRepresentation implements Comparable<MessageRepresentation>{
 	}
 
 
-	public void validate(MessageImpl msg) throws AvpNotAllowedException
+	public void validate(Message msg) throws JAvpNotAllowedException
 	{
 		for(AvpRepresentation ap: this.messageAvps.values())
 		{
+			
 			AvpSet innerSet = msg.getAvps().getAvps(ap.getCode(), ap.getVendor());
 			int count = 0;
 			if(innerSet!=null)
@@ -103,7 +104,7 @@ public class MessageRepresentation implements Comparable<MessageRepresentation>{
 			
 			if(!ap.isCountValidForMultiplicity(count))
 			{
-				throw new AvpNotAllowedException("AVP: "+ap+" is not allowed, to many avps present already - "+(count-1));
+				throw new JAvpNotAllowedException("AVP: "+ap+" has wrong count in message - "+(count),ap.getCode(),ap.getVendor());
 			}
 		}
 	}
@@ -117,7 +118,7 @@ public class MessageRepresentation implements Comparable<MessageRepresentation>{
 		
 		if(!avpRep.isAllowed())
 		{
-			throw new AvpNotAllowedException("AVP: "+avpRep+" is not allowed.");
+			throw new JAvpNotAllowedException("AVP: "+avpRep+" is not allowed.",avp.getCode(),avp.getVendorId());
 		}
 		//For avp beeing added :)
 		int count = 1;
@@ -130,7 +131,7 @@ public class MessageRepresentation implements Comparable<MessageRepresentation>{
 		
 		if(!avpRep.isCountValidForMultiplicity(count))
 		{
-			throw new AvpNotAllowedException("AVP: "+avpRep+" is not allowed, to many avps present already - "+(count-1));
+			throw new JAvpNotAllowedException("AVP: "+avpRep+" is not allowed, to many avps present already - "+(count-1),avp.getCode(),avp.getVendorId());
 		}
 	}
 
@@ -176,5 +177,21 @@ public class MessageRepresentation implements Comparable<MessageRepresentation>{
 		if(avpRep == null)
 			return true;
 		return avpRep.isAllowed();
+	}
+
+
+
+	/**
+	 * @param avpCode
+	 * @param avpVendor
+	 * @return
+	 */
+	public boolean hasRepresentation(int avpCode, long avpVendor) {
+		AvpRepresentation avpRep= new AvpRepresentation(avpCode,avpVendor);
+		avpRep  = this.messageAvps.get(avpRep);
+		if(avpRep == null)
+			return false;
+		else
+			return true;
 	}
 }

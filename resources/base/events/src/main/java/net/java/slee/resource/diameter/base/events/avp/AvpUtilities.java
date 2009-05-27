@@ -63,6 +63,12 @@ public class AvpUtilities {
     return _AVP_REMOVAL_ALLOWED;
   }
 
+  
+  public static void allowRemove(boolean flag)
+  {
+	  _AVP_REMOVAL_ALLOWED = flag;
+  }
+  
   public static boolean hasAvp(int avpCode, long vendorId, AvpSet set)
   {
     AvpSet inner = set.getAvps(avpCode, vendorId);
@@ -84,7 +90,7 @@ public class AvpUtilities {
    * @param set
    * @throws AvpNotAllowedException 
    */
-  private static void performPreAddOperations(Message msg, int avpCode, long vendorId, AvpSet set) throws AvpNotAllowedException
+  public static void performPreAddOperations(Message msg, int avpCode, long vendorId, AvpSet set) throws AvpNotAllowedException
   {
     if (msg == null) {
       if (hasAvp(avpCode, vendorId, set) && !isAvpRemoveAllowed()) {
@@ -99,27 +105,31 @@ public class AvpUtilities {
       //We might just invoke validate, but we need more info
       //we need some more stuff to be sure.
       DiameterMessageValidator validator = DiameterMessageValidator.getInstance();
-      if(!validator.isAllowed(msg.getCommandCode(), msg.getApplicationId(), msg.isRequest(), avpCode, vendorId))
+      if(validator.isOn() && !validator.isAllowed(msg.getCommandCode(), msg.getApplicationId(), msg.isRequest(), avpCode, vendorId))
       {
-        throw new AvpNotAllowedException("Avp defined by code: "+avpCode+", vendorId: "+vendorId+" is nto allowed in message - code: "+msg.getCommandCode()+", appId: "+msg.getApplicationId()+", isRequest: "+msg.isRequest());
+        throw new AvpNotAllowedException("Avp defined by code: "+avpCode+", vendorId: "+vendorId+" is nto allowed in message - code: "+msg.getCommandCode()+", appId: "+msg.getApplicationId()+", isRequest: "+msg.isRequest(),avpCode,vendorId);
       }
-
+      
+      
       //we are allowed to add this to msg
-      if(validator.isCountValidForMultiplicity(msg.getCommandCode(), msg.getApplicationId(), msg.isRequest(), msg.getAvps(), avpCode, vendorId))
+      if(validator.isOn() && validator.hasRepresentation(msg.getCommandCode(), msg.getApplicationId(), msg.isRequest(), avpCode, vendorId) && validator.isCountValidForMultiplicity(msg.getCommandCode(), msg.getApplicationId(), msg.isRequest(), msg.getAvps(), avpCode, vendorId))
       {
+    	  
+    	  System.err.println("CODE: "+avpCode);
         //its ok.
         return;
       }
       else if(isAvpRemoveAllowed())
       {
-        AvpSet removed=set.removeAvp(avpCode);
-        removed.removeAvpByIndex(removed.hashCode()-1);
+    	
+        AvpSet removed=set.removeAvp(avpCode);  
+        removed.removeAvpByIndex(removed.size()-1);
         set.addAvp(removed);
         return;
       }
       else
       {
-        throw new AvpNotAllowedException("Avp not allowed, count exceeded.");
+        throw new AvpNotAllowedException("Avp not allowed, count exceeded.",avpCode,vendorId);
       }
     }
   }
@@ -292,7 +302,7 @@ public class AvpUtilities {
    * @param set the AvpSet to add AVP
    * @param value the value of the AVP to add
    */
-  public static void setAvpAsUTF8String(Message msg, int avpCode, boolean isOctetString, AvpSet set, String value)
+  public static void setAvpAsUTF8String(Message msg, int avpCode, AvpSet set, String value)
   {
     setAvpAsUTF8String(msg, avpCode, _DEFAULT_VENDOR_ID, set, value);
   }
