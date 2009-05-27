@@ -1,0 +1,1088 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<validator>
+<!-- 
+ code - code for declared comopnent
+ vendor - vendor id for decalred component, "0" if not present, or ommit.
+ request - determine if its request, "true"|"false"
+ multiplicity - determines how many avps there may be:
+      0     The AVP MUST NOT be present in the message.
+      0+    Zero or more instances of the AVP MAY be present in the
+            message.
+      0-1   Zero or one instance of the AVP MAY be present in the
+            message.  It is considered an error if there are more than
+            one instance of the AVP.
+      1     One instance of the AVP MUST be present in the message.
+      1+    At least one instance of the AVP MUST be present in the
+            message.
+ index - determines index of avp, "-1: if its not fixed
+   
+ -->
+<!--  
+<command code="271" request="true" vendor="0">
+	<avp name="" code="12" vendor="12" multiplicity="0+" index="-1"/>
+</command>
+-->
+<!-- BASE:ACR 
+<ACR> ::= < Diameter Header: 271, REQ, PXY >
+                < Session-Id >
+                { Origin-Host }
+                { Origin-Realm }
+                { Destination-Realm }
+                { Accounting-Record-Type }
+                { Accounting-Record-Number }
+                [ Acct-Application-Id ]
+                [ Vendor-Specific-Application-Id ]
+                [ User-Name ]
+                [ Accounting-Sub-Session-Id ]
+                [ Acct-Session-Id ]
+                [ Acct-Multi-Session-Id ]
+                [ Acct-Interim-Interval ]
+                [ Accounting-Realtime-Required ]
+                [ Origin-State-Id ]
+                [ Event-Timestamp ]
+              * [ Proxy-Info ]
+              * [ Route-Record ]
+              * [ AVP ]
+
+
+-->
+<command name="ACR" code="271" request="true" application="0">
+	<avp name="Session-Id" 					code="263" vendor="0" multiplicity="1" index="0"/>
+	<avp name="Origin-Host" 				code="264" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Origin-Realm" 				code="296" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Destination-Realm" 			code="283" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Accounting-Record-Type" 		code="480" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Accounting-Record-Number" 	code="485" vendor="0" multiplicity="1" index="-1"/>
+
+	<avp name="Acct-Application-Id" 			code="259" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Vendor-Specific-Application-Id" 	code="260" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="User-Name" 						code="1" 		vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Accounting-Sub-Session-Id" 		code="287" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Acct-Session-Id" 				code="44" 		vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Acct-Multi-Session-Id" 			code="50" 		vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Acct-Interim-Interval" 			code="85"	 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Accounting-Realtime-Required" 	code="483" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Origin-State-Id" 				code="278" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Event-Timestamp" 				code="55" 		vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Proxy-Info" 						code="284" 	vendor="0" multiplicity="0+"  index="-1"/>
+	<avp name="Route-Record" 					code="282" 	vendor="0" multiplicity="0+"  index="-1"/>
+	<avp name="Class"		 					code="25" 	vendor="0" multiplicity="0+"  index="-1"/>
+	
+	
+	<!-- FORBBIDEN -->
+	<avp name="Auth-Application-Id" 	code="258" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Error-Reporting-Host" 	code="294" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Experimental-Result" 	code="297" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Result-Code" 			code="268" 	vendor="0" multiplicity="0"  index="-1"/>
+	
+
+</command>
+<!-- BASE:ACA 
+<ACA> ::= < Diameter Header: 271, PXY >
+                < Session-Id >
+                { Result-Code }
+                { Origin-Host }
+                { Origin-Realm }
+                { Accounting-Record-Type }
+                { Accounting-Record-Number }
+                [ Acct-Application-Id ]
+                [ Vendor-Specific-Application-Id ]
+                [ User-Name ]
+                [ Accounting-Sub-Session-Id ]
+                [ Acct-Session-Id ]
+                [ Acct-Multi-Session-Id ]
+                [ Error-Reporting-Host ]
+                [ Acct-Interim-Interval ]
+                [ Accounting-Realtime-Required ]
+                [ Origin-State-Id ]
+                [ Event-Timestamp ]
+              * [ Proxy-Info ]
+              * [ AVP ]
+
+
+
+-->
+<command name="ACA" code="271" request="false" application="0">
+	<avp name="Session-Id" 					code="263" vendor="0" multiplicity="1" index="0"/>
+	<avp name="Result-Code" 				code="268" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Origin-Host" 				code="264" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Origin-Realm" 				code="296" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Accounting-Record-Type" 		code="480" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Accounting-Record-Number" 	code="485" vendor="0" multiplicity="1" index="-1"/>
+	
+	<avp name="Acct-Application-Id" 			code="259" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Vendor-Specific-Application-Id" 	code="260" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="User-Name" 						code="1" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Accounting-Sub-Session-Id" 		code="287" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Error-Reporting-Host" 			code="294" 	vendor="0" multiplicity="0+"  index="-1"/>
+	<avp name="Acct-Session-Id" 				code="44" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Acct-Multi-Session-Id" 			code="50" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Acct-Interim-Interval" 			code="85"	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Accounting-Realtime-Required" 	code="483" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Origin-State-Id" 				code="278" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Event-Timestamp" 				code="55" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Proxy-Info" 						code="284" 	vendor="0" multiplicity="0+"  index="-1"/>
+	<avp name="Route-Record" 					code="282" 	vendor="0" multiplicity="0+"  index="-1"/>
+	<avp name="Class"		 					code="25" 	vendor="0" multiplicity="0+"  index="-1"/>
+	
+	<!-- FORBBIDEN -->
+	<avp name="Auth-Application-Id" 	code="258" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Experimental-Result" 	code="297" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Destination-Realm" 		code="283" 	vendor="0" multiplicity="0"  index="-1"/>
+	
+
+</command>
+<!-- BASE:RAR
+      <RAR>  ::= < Diameter Header: 258, REQ, PXY >
+                 < Session-Id >
+                 { Origin-Host }
+                 { Origin-Realm }
+                 { Destination-Realm }
+                 { Destination-Host }
+                 { Auth-Application-Id }
+                 { Re-Auth-Request-Type }
+                 [ User-Name ]
+                 [ Origin-State-Id ]
+               * [ Proxy-Info ]
+               * [ Route-Record ]
+               * [ AVP ]
+
+
+
+-->
+<command name="RAR" code="258" request="true" application="0">
+	<avp name="Session-Id" 					code="263" vendor="0" multiplicity="1" index="0"/>
+	<avp name="Origin-Host" 				code="264" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Origin-Realm" 				code="296" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Destination-Realm" 			code="283" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Destination-Host" 			code="293" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Auth-Application-Id" 		code="258" 	vendor="0" multiplicity="1"  index="-1"/>
+	<avp name="Re-Auth-Request-Type" 		code="285" 	vendor="0" multiplicity="1"  index="-1"/>
+	
+	
+	
+	<avp name="Acct-Interim-Interval" 			code="85"	 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Accounting-Realtime-Required" 	code="483" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Origin-State-Id" 				code="278" 	vendor="0" multiplicity="0-1" index="-1"/>
+	
+	<avp name="User-Name" 						code="1" 		vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Proxy-Info" 						code="284" 	vendor="0" multiplicity="0+"  index="-1"/>
+	<avp name="Route-Record" 					code="282" 	vendor="0" multiplicity="0+"  index="-1"/>
+	
+	
+	
+	<!-- FORBBIDEN -->
+	<avp name="Auth-Application-Id" 	code="258" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Error-Reporting-Host" 	code="294" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Experimental-Result" 	code="297" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Result-Code" 			code="268" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Acct-Application-Id" 	code="259" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Auth-Grace-Period" 		code="276" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Auth-Request-Type" 		code="274" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Auth-Session-State" 		code="277" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Authorization-Lifetime"	code="291" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Class"		 			code="25" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Disconnect-Cause"		code="273" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Error-Message"			code="281" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Error-Reporting-Host"	code="294" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Failed-AVP"				code="279" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Firmware-Revision"		code="267" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Host-IP-Address"			code="257" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Inband-Security-Id"		code="299" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Multi-Round-Time-Out"	code="272" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Product-Name"			code="269" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Redirect-Host"			code="292" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Redirect-Host-Usage"		code="267" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Redirect-Max-Cache-Time"	code="262" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Session-Binding"			code="270" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Session-Server-Failover"	code="271" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Session-Timeout"			code="27" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Supported-Vendor-Id"		code="265" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Termination-Cause"		code="295" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Vendor-Id"				code="266" 	vendor="0" multiplicity="0"  index="-1"/>
+	
+
+	<avp name="Vendor-Specific-Application-Id" 	code="260" 	vendor="0" multiplicity="0" index="-1"/>
+</command>
+
+
+
+<command name="RAA" code="258" request="false" vendor="0">
+	<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Result-Code" code="268" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+	<avp name="Error-Message" code="281" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Redirect-Host" code="292" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Acct-Interim-Interval" code="85" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Accounting-Realtime-Required" code="483" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Acct-Application-Id" code="259" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Grace-Period" code="276" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Request-Type" code="274" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Authorization-Lifetime" code="291" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Class" code="25" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Disconnect-Cause" code="273" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Firmware-Revision" code="267" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Host-IP-Address" code="257" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Inband-Security-Id" code="299" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Multi-Round-Time-Out" code="272" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Product-Name" code="269" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Re-Auth-Request-Type" code="285" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Route-Record" code="282" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Binding" code="270" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Server-Failover" code="271" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Timeout" code="27" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Supported-Vendor-Id" code="265" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Termination-Cause" code="295" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Vendor-Id" code="266" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
+</command>
+<command name="STR" code="275" request="true" application="0">
+	<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+	<avp name="Termination-Cause" code="295" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Class" code="25" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Acct-Interim-Interval" code="85" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Accounting-Realtime-Required" code="483" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Acct-Application-Id" code="259" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Grace-Period" code="276" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Request-Type" code="274" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Authorization-Lifetime" code="291" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Disconnect-Cause" code="273" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Error-Message" code="281" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Firmware-Revision" code="267" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Host-IP-Address" code="257" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Inband-Security-Id" code="299" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Multi-Round-Time-Out" code="272" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Product-Name" code="269" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Redirect-Host" code="292" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Re-Auth-Request-Type" code="285" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Binding" code="270" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Server-Failover" code="271" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Timeout" code="27" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Supported-Vendor-Id" code="265" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Vendor-Id" code="266" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Experimental-Result" 	code="297" 	vendor="0" multiplicity="0"  index="-1"/>
+</command>
+<command name="CEA" code="257" request="false" application="0">
+	<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Product-Name" code="269" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Result-Code" code="268" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Vendor-Id" code="266" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Error-Message" code="281" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Firmware-Revision" code="267" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Acct-Application-Id" code="259" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Inband-Security-Id" code="299" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Supported-Vendor-Id" code="265" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Host-IP-Address" code="257" vendor="0" multiplicity="1+" index="-1" />
+	<avp name="Acct-Interim-Interval" code="85" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Accounting-Realtime-Required" code="483" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Grace-Period" code="276" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Request-Type" code="274" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Authorization-Lifetime" code="291" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Class" code="25" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Disconnect-Cause" code="273" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Multi-Round-Time-Out" code="272" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Redirect-Host" code="292" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Re-Auth-Request-Type" code="285" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Route-Record" code="282" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Binding" code="270" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Id" code="263" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Server-Failover" code="271" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Timeout" code="27" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Termination-Cause" code="295" vendor="0" multiplicity="0" index="-1" />
+	<avp name="User-Name" code="1" vendor="0" multiplicity="0" index="-1" />
+</command>
+<command name="CER" code="257" request="true" application="0">
+	<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Product-Name" code="269" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Vendor-Id" code="266" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Firmware-Revision" code="267" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Acct-Application-Id" code="259" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Inband-Security-Id" code="299" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Supported-Vendor-Id" code="265" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Host-IP-Address" code="257" vendor="0" multiplicity="1+" index="-1" />
+	<avp name="Acct-Interim-Interval" code="85" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Accounting-Realtime-Required" code="483" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Grace-Period" code="276" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Request-Type" code="274" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Authorization-Lifetime" code="291" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Class" code="25" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Disconnect-Cause" code="273" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Error-Message" code="281" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Multi-Round-Time-Out" code="272" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Redirect-Host" code="292" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Re-Auth-Request-Type" code="285" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Route-Record" code="282" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Binding" code="270" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Id" code="263" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Server-Failover" code="271" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Timeout" code="27" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Termination-Cause" code="295" vendor="0" multiplicity="0" index="-1" />
+	<avp name="User-Name" code="1" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Experimental-Result" 	code="297" 	vendor="0" multiplicity="0"  index="-1"/>
+</command>
+<command name="ASA" code="274" request="false" application="0">
+	<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+	<avp name="Error-Message" code="281" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Redirect-Host" code="292" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Acct-Interim-Interval" code="85" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Accounting-Realtime-Required" code="483" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Acct-Application-Id" code="259" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Grace-Period" code="276" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Request-Type" code="274" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Authorization-Lifetime" code="291" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Class" code="25" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Disconnect-Cause" code="273" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Firmware-Revision" code="267" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Host-IP-Address" code="257" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Inband-Security-Id" code="299" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Multi-Round-Time-Out" code="272" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Product-Name" code="269" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Re-Auth-Request-Type" code="285" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Route-Record" code="282" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Binding" code="270" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Server-Failover" code="271" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Timeout" code="27" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Supported-Vendor-Id" code="265" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Termination-Cause" code="295" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Vendor-Id" code="266" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
+</command>
+<command name="STA" code="275" request="false" application="0">
+	<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Result-Code" code="268" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+	<avp name="Error-Message" code="281" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Class" code="25" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Redirect-Host" code="292" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Acct-Interim-Interval" code="85" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Accounting-Realtime-Required" code="483" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Acct-Application-Id" code="259" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Grace-Period" code="276" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Request-Type" code="274" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Authorization-Lifetime" code="291" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Disconnect-Cause" code="273" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Firmware-Revision" code="267" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Host-IP-Address" code="257" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Inband-Security-Id" code="299" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Multi-Round-Time-Out" code="272" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Product-Name" code="269" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Re-Auth-Request-Type" code="285" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Route-Record" code="282" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Binding" code="270" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Server-Failover" code="271" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Timeout" code="27" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Supported-Vendor-Id" code="265" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Termination-Cause" code="295" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Vendor-Id" code="266" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
+</command>
+<command name="ASR" code="274" request="true" application="0">
+	<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Destination-Host" code="293" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+	<avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Acct-Interim-Interval" code="85" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Accounting-Realtime-Required" code="483" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Acct-Application-Id" code="259" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Grace-Period" code="276" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Request-Type" code="274" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Authorization-Lifetime" code="291" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Class" code="25" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Disconnect-Cause" code="273" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Error-Message" code="281" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Firmware-Revision" code="267" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Host-IP-Address" code="257" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Inband-Security-Id" code="299" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Multi-Round-Time-Out" code="272" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Product-Name" code="269" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Redirect-Host" code="292" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Re-Auth-Request-Type" code="285" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Binding" code="270" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Server-Failover" code="271" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Timeout" code="27" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Supported-Vendor-Id" code="265" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Termination-Cause" code="295" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Vendor-Id" code="266" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Experimental-Result" 	code="297" 	vendor="0" multiplicity="0"  index="-1"/>
+</command>
+<command name="DWA" code="280" request="false" application="0">
+	<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Result-Code" code="268" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Error-Message" code="281" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Acct-Interim-Interval" code="85" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Accounting-Realtime-Required" code="483" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Acct-Application-Id" code="259" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Grace-Period" code="276" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Request-Type" code="274" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Authorization-Lifetime" code="291" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Class" code="25" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Disconnect-Cause" code="273" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Firmware-Revision" code="267" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Host-IP-Address" code="257" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Inband-Security-Id" code="299" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Multi-Round-Time-Out" code="272" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Product-Name" code="269" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Redirect-Host" code="292" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Re-Auth-Request-Type" code="285" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Route-Record" code="282" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Binding" code="270" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Id" code="263" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Server-Failover" code="271" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Timeout" code="27" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Supported-Vendor-Id" code="265" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Termination-Cause" code="295" vendor="0" multiplicity="0" index="-1" />
+	<avp name="User-Name" code="1" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Vendor-Id" code="266" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
+</command>
+<command name="DPA" code="282" request="false" application="0">
+	<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Result-Code" code="268" vendor="0" multiplicity="1" index="-1" />
+	<avp name="Error-Message" code="281" vendor="0" multiplicity="0-1" index="-1" />
+	<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
+	<avp name="Acct-Interim-Interval" code="85" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Accounting-Realtime-Required" code="483" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Acct-Application-Id" code="259" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Grace-Period" code="276" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Request-Type" code="274" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Authorization-Lifetime" code="291" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Class" code="25" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Disconnect-Cause" code="273" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Firmware-Revision" code="267" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Host-IP-Address" code="257" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Inband-Security-Id" code="299" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Multi-Round-Time-Out" code="272" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Product-Name" code="269" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Redirect-Host" code="292" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Re-Auth-Request-Type" code="285" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Route-Record" code="282" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Binding" code="270" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Id" code="263" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Server-Failover" code="271" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Session-Timeout" code="27" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Supported-Vendor-Id" code="265" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Termination-Cause" code="295" vendor="0" multiplicity="0" index="-1" />
+	<avp name="User-Name" code="1" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Vendor-Id" code="266" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
+	</command>
+	<command name="DPR" code="282" request="true" application="0">
+		<avp name="Disconnect-Cause" code="273" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Acct-Interim-Interval" code="85" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Accounting-Realtime-Required" code="483" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Acct-Application-Id" code="259" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Auth-Grace-Period" code="276" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Auth-Request-Type" code="274" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Authorization-Lifetime" code="291" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Class" code="25" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Error-Message" code="281" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Firmware-Revision" code="267" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Host-IP-Address" code="257" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Inband-Security-Id" code="299" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Multi-Round-Time-Out" code="272" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Product-Name" code="269" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Host" code="292" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Re-Auth-Request-Type" code="285" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Route-Record" code="282" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Session-Binding" code="270" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Session-Id" code="263" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Session-Server-Failover" code="271" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Session-Timeout" code="27" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Supported-Vendor-Id" code="265" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Termination-Cause" code="295" vendor="0" multiplicity="0" index="-1" />
+		<avp name="User-Name" code="1" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Vendor-Id" code="266" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Experimental-Result" 	code="297" 	vendor="0" multiplicity="0"  index="-1"/>
+	</command>
+	<command name="DWR" code="280" request="true" application="0">
+		<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Acct-Interim-Interval" code="85" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Accounting-Realtime-Required" code="483" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Acct-Application-Id" code="259" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Auth-Grace-Period" code="276" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Auth-Request-Type" code="274" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Authorization-Lifetime" code="291" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Class" code="25" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Disconnect-Cause" code="273" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Error-Message" code="281" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Firmware-Revision" code="267" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Host-IP-Address" code="257" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Inband-Security-Id" code="299" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Multi-Round-Time-Out" code="272" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Product-Name" code="269" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Host" code="292" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Re-Auth-Request-Type" code="285" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Route-Record" code="282" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Session-Binding" code="270" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Session-Id" code="263" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Session-Server-Failover" code="271" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Session-Timeout" code="27" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Supported-Vendor-Id" code="265" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Termination-Cause" code="295" vendor="0" multiplicity="0" index="-1" />
+		<avp name="User-Name" code="1" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Vendor-Id" code="266" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Experimental-Result" 	code="297" 	vendor="0" multiplicity="0"  index="-1"/>
+	</command>
+
+
+<!-- CC App -->
+	<command name="CCR" code="272" request="true" application="0">
+		<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="1" index="-1" />
+		<avp name="CC-Request-Number" code="415" vendor="0" multiplicity="1" index="-1" />
+		<avp name="CC-Request-Type" code="416" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Service-Context-Id" code="461" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+	
+		<!-- MAY -->
+		<avp name="Acct-Multi-Session-Id" code="-2" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="CC-Correlation-Id" code="411" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="CC-Sub-Session-Id" code="419" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Event-Timestamp" code="55" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Multiple-Services-Indicator" code="455" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Requested-Action" code="436" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Requested-Service-Unit" code="437" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Service-Identifier" code="439" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Termination-Cause" code="295" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="User-Equipment-Info" code="458" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Multiple-Services-Credit-Control" code="456" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Service-Parameter-Info" code="440" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Subscription-Id" code="443" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Used-Service-Unit" code="446" vendor="0" multiplicity="0+" index="-1" />
+	
+		<!-- FORBBIDEN -->
+		<avp name="CC-Session-Failover" code="418" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Check-Balance-Result" code="422" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Cost-Information" code="423" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Credit-Control-Failure-Handling" code="427" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Direct-Debiting-Failure-Handling" code="428" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Final-Unit-Indication" code="430" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Granted-Service-Unit" code="431" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Host" code="292" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Experimental-Result" 	code="297" 	vendor="0" multiplicity="0"  index="-1"/>
+		<avp name="Validity-Time" code="-2" vendor="0" multiplicity="0" index="-1" />
+	</command>
+	<command name="CCA" code="272" request="false" application="0">
+		<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="1" index="-1" />
+		<avp name="CC-Request-Number" code="415" vendor="0" multiplicity="1" index="-1" />
+		<avp name="CC-Request-Type" code="416" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Result-Code" code="268" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+		
+		<!-- MAY -->
+		<avp name="Acct-Multi-Session-Id" code="-2" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="CC-Session-Failover" code="418" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="CC-Sub-Session-Id" code="419" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Check-Balance-Result" code="422" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Cost-Information" code="423" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Credit-Control-Failure-Handling" code="427" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Direct-Debiting-Failure-Handling" code="428" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Event-Timestamp" code="55" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Final-Unit-Indication" code="430" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Granted-Service-Unit" code="431" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Validity-Time" code="-2" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Multiple-Services-Credit-Control" code="456" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Redirect-Host" code="292" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
+		
+		<!-- FORBBIDEN -->
+		<avp name="CC-Correlation-Id" code="411" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Multiple-Services-Indicator" code="455" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Requested-Action" code="436" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Requested-Service-Unit" code="437" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Service-Context-Id" code="461" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Service-Identifier" code="439" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Service-Parameter-Info" code="440" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Subscription-Id" code="443" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Termination-Cause" code="295" vendor="0" multiplicity="0" index="-1" />
+		<avp name="User-Equipment-Info" code="458" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Used-Service-Unit" code="446" vendor="0" multiplicity="0" index="-1" />
+	</command>
+	
+	<!-- 3GPP applications section, unfortunetly they dont provide tables like rfc 3588 or 4006 that are easy to parse to prepare this document...
+		So below we have compliation of TS xx.xxx contet and some common sense.-->
+	<!-- 
+	< User-Data -Request> ::=	< Diameter Header: 306, REQ, PXY, 16777217 >
+									< Session-Id >
+									{ Vendor-Specific-Application-Id }
+									{ Auth-Session-State }
+									{ Origin-Host }
+									{ Origin-Realm }
+									[ Destination-Host ]
+									{ Destination-Realm }
+									*[ Supported-Features ]
+									{ User-Identity }
+									[ Server-Name ]
+									*[ Service-Indication ]
+									*{ Data-Reference }
+									[ Identity-Set ]
+									[ Requested-Domain ]
+									[ Current-Location ]
+									*[ AVP ]
+									*[ Proxy-Info ]
+									*[ Route-Record ]
+	
+	 -->
+	 <command name="UDR" code="306" request="true" application="16777217">
+	 	<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+	 	<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="1" index="-1" />
+	 	<avp name="Auth-Session-State" 		code="277" 	vendor="0" multiplicity="1"  index="-1"/>
+	 	<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
+		<avp name="User-Identity" code="700" vendor="10415" multiplicity="1" index="-1" />
+		<avp name="Data-Reference" code="703" vendor="10415" multiplicity="1+" index="-1" />
+		
+		<avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
+		<avp name="Server-Name" code="602" vendor="10415" multiplicity="0-1" index="-1" />
+		<avp name="Service-Indication" code="704" vendor="10415" multiplicity="0+" index="-1" />
+		<avp name="Identity-Set" code="708" vendor="10415" multiplicity="0-1" index="-1" />
+		<avp name="Requested-Domain" code="706" vendor="10415" multiplicity="0-1" index="-1" />
+		<avp name="Current-Location" code="707" vendor="10415" multiplicity="0-1" index="-1" />
+		<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
+		
+		<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Host" code="292" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Experimental-Result" 	code="297" 	vendor="0" multiplicity="0"  index="-1"/>
+	 </command>
+	 
+	 
+	 <!-- 
+	 < User-Data-Answer > ::=		< Diameter Header: 306, PXY, 16777217 >
+										< Session-Id >
+										{ Vendor-Specific-Application-Id }
+										[ Result-Code ]
+										[ Experimental-Result ]
+										{ Auth-Session-State }
+										{ Origin-Host }
+										{ Origin-Realm }
+										*[ Supported-Features ]
+ 										[ User-Data ]
+										*[ AVP ]
+										*[ Failed-AVP ]
+										*[ Proxy-Info ]
+										*[ Route-Record ]
+	  -->
+	 <command name="UDA" code="306" request="false" application="16777217">
+	 	<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+	 	<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="1" index="-1" />
+	 	<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+	
+		<avp name="Result-Code" code="268" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Experimental-Result" 	code="297" 	vendor="0" multiplicity="0-1"  index="-1"/>
+		<avp name="User-Data" 	code="702" 	vendor="10415" multiplicity="0-1"  index="-1"/>
+		<avp name="Supported-Features" 	code="628" 	vendor="10415" multiplicity="0+"  index="-1"/>	
+		<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
+		
+		
+		<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
+	 </command>
+	 
+	 <!-- 
+	 < Profile-Update-Request > ::=		< Diameter Header: 307, REQ, PXY, 16777217 >
+										< Session-Id >
+										{ Vendor-Specific-Application-Id }
+										{ Auth-Session-State }
+										{ Origin-Host }
+										{ Origin-Realm }
+										[ Destination-Host ]
+										{ Destination-Realm }
+										*[ Supported-Features ]
+										{ User-Identity }
+										{ Data-Reference }
+										{ User-Data }
+										*[ AVP ]
+										*[ Proxy-Info ]
+										*[ Route-Record ] 
+	  -->
+	 <command name="PUR" code="307" request="true" application="16777217">
+	 	<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+	 	<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="1" index="-1" />
+	 	<avp name="Auth-Session-State" 		code="277" 	vendor="0" multiplicity="1"  index="-1"/>
+	 	<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
+		<avp name="User-Identity" code="700" vendor="10415" multiplicity="1" index="-1" />
+		<avp name="Data-Reference" code="703" vendor="10415" multiplicity="1" index="-1" />
+		<avp name="User-Data" 	code="702" 	vendor="10415" multiplicity="1"  index="-1"/>
+		
+		
+		<avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
+		
+		
+		<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Host" code="292" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Experimental-Result" 	code="297" 	vendor="0" multiplicity="0"  index="-1"/>
+	 </command>
+	 <!-- 
+	 < Profile-Update-Answer > ::=< Diameter Header: 307, PXY, 16777217 >
+									< Session-Id >
+									{ Vendor-Specific-Application-Id }
+									[ Result-Code ]
+									[ Experimental-Result ]
+									{ Auth-Session-State }
+									{ Origin-Host }
+									{ Origin-Realm }
+									*[ Supported-Features ]
+									*[ AVP ]
+									*[ Failed-AVP ]
+									*[ Proxy-Info ]
+									*[ Route-Record ]
+	  -->
+	<command name="PUA" code="307" request="false" application="16777217">
+	 	<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+	 	<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="1" index="-1" />
+	 	<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+	
+		<avp name="Result-Code" code="268" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Experimental-Result" 	code="297" 	vendor="0" multiplicity="0-1"  index="-1"/>
+		<avp name="User-Data" 	code="702" 	vendor="10415" multiplicity="0-1"  index="-1"/>
+		<avp name="Supported-Features" 	code="628" 	vendor="10415" multiplicity="0+"  index="-1"/>	
+		<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
+		
+		
+		<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
+	 </command>
+	 
+	 
+	 
+	 <!-- 
+	 < Subscribe-Notifications-Request > ::=	< Diameter Header: 308, REQ, PXY, 16777217 >
+												< Session-Id >
+												{ Vendor-Specific-Application-Id }
+												{ Auth-Session-State }
+												{ Origin-Host }
+												{ Origin-Realm }
+												[ Destination-Host ]
+												{ Destination-Realm }
+												*[ Supported-Features ]
+												{ User-Identity }
+												*[ Service-Indication]
+												[ Server-Name ]
+												{ Subs-Req-Type }
+												*{ Data-Reference }
+												[ Expiry-Time ]
+												*[ AVP ]
+												*[ Proxy-Info ]
+												*[ Route-Record ]
+	 
+	  -->
+	  <command name="SNR" code="308" request="true" application="16777217">
+	 	<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+	 	<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="1" index="-1" />
+	 	<avp name="Auth-Session-State" 		code="277" 	vendor="0" multiplicity="1"  index="-1"/>
+	 	<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
+		<avp name="User-Identity" code="700" vendor="10415" multiplicity="1" index="-1" />
+		<avp name="Data-Reference" code="703" vendor="10415" multiplicity="1+" index="-1" />
+		<avp name="Subs-Req-Type" 	code="705" 	vendor="10415" multiplicity="1"  index="-1"/>
+		
+		
+		<avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
+		<avp name="Service-Indication" code="704" vendor="10415" multiplicity="0+" index="-1" />
+		<avp name="Server-Name" code="602" vendor="10415" multiplicity="0-1" index="-1" />
+		<avp name="Expiry-Time" code="709" vendor="10415" multiplicity="0-1" index="-1" />
+		<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
+		
+		<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Host" code="292" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Experimental-Result" 	code="297" 	vendor="0" multiplicity="0"  index="-1"/>
+	 </command>
+	  
+	  <!-- 
+	  < Subscribe-Notifications-Answer > ::=		< Diameter Header: 308, PXY, 16777217 >
+													< Session-Id >
+													{ Vendor-Specific-Application-Id }
+													{ Auth-Session-State }
+													[ Result-Code ]
+													[ Experimental-Result ]
+													{ Origin-Host }
+													{ Origin-Realm }
+													*[ Supported-Features ]
+													[ Expiry-Time ]
+													*[ AVP ]
+													*[ Failed-AVP ]
+													*[ Proxy-Info ]
+													*[ Route-Record ]
+	  
+	   -->
+	<command name="SNA" code="308" request="false" application="16777217">
+		<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+		<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+
+		<avp name="Result-Code" code="268" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
+		<avp name="Service-Indication" code="704" vendor="10415" multiplicity="0+" index="-1" />
+		<avp name="Expiry-Time" code="709" vendor="10415" multiplicity="0-1" index="-1" />
+		<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
+
+		<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
+	</command>
+	 
+	 
+	 <!-- 
+	 < Push-Notification-Request > ::=			< Diameter Header:  309, REQ, PXY, 16777217 >
+												< Session-Id >
+												{ Vendor-Specific-Application-Id }
+												{ Auth-Session-State }
+												{ Origin-Host }
+												{ Origin-Realm }
+												{ Destination-Host }
+												{ Destination-Realm }
+												*[ Supported-Features ]
+												{ User-Identity }
+												{ User-Data }
+												*[ AVP ]
+												*[ Proxy-Info ]
+												*[ Route-Record ]
+	  -->
+	<command name="PNR" code="309" request="true" application="16777217">
+		<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+		<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Destination-Host" code="293" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
+		<avp name="User-Identity" code="700" vendor="10415" multiplicity="1" index="-1" />
+		<avp name="User-Data" 	code="702" 	vendor="10415" multiplicity="1"  index="-1"/>
+		
+		<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
+		<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
+		
+		<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Host" code="292" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Experimental-Result" 	code="297" 	vendor="0" multiplicity="0"  index="-1"/>
+	</command>
+	
+	
+	
+	
+	<!-- 
+	< Push-Notification-Answer > ::=< Diameter Header: 309, PXY, 16777217 >
+										< Session-Id >
+										{ Vendor-Specific-Application-Id }
+										[ Result-Code ]
+										[ Experimental-Result ]
+										{ Auth-Session-State }
+										{ Origin-Host }
+										{ Origin-Realm }
+										*[ Supported-Features ]
+										*[ AVP ]
+										*[ Failed-AVP ]
+										*[ Proxy-Info ]
+										*[ Route-Record ]
+	 -->
+	 <command name="PNA" code="309" request="false" application="16777217">
+	 	<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+		<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+		<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+		
+		<avp name="Result-Code" code="268" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0-1" index="-1" />
+		<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
+		<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
+		<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
+		
+		<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
+		<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
+	 </command>
+</validator>
