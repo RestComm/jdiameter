@@ -191,7 +191,7 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl imp
 	 * sendTerminationCreditControlRequest
 	 * (net.java.slee.resource.diameter.cca.events.CreditControlRequest)
 	 */
-	public void sendTerminationCreditControlRequest(CreditControlRequest ccr) {
+	public void sendTerminationCreditControlRequest(CreditControlRequest ccr) throws IOException {
 		// This should not be used to terminate sub-sessions!
 
 		// FIXME: Should this come already in the CCR?
