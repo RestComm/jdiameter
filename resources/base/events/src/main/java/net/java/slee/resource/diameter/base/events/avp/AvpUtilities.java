@@ -90,7 +90,7 @@ public class AvpUtilities {
    * @param set
    * @throws AvpNotAllowedException 
    */
-  public static void performPreAddOperations(Message msg, int avpCode, long vendorId, AvpSet set) throws AvpNotAllowedException
+  private static void performPreAddOperations(Message msg, int avpCode, long vendorId, AvpSet set) throws AvpNotAllowedException
   {
     if (msg == null) {
       if (hasAvp(avpCode, vendorId, set) && !isAvpRemoveAllowed()) {
