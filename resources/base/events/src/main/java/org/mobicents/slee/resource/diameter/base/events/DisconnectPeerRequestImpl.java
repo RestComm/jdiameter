@@ -35,20 +35,20 @@ import org.jdiameter.api.Message;
 
 /**
  * 
- * <br>Project: mobicents-diameter-server
- * <br>2:37:56 PM May 25, 2009 
  * <br>
- *
+ * Project: mobicents-diameter-server <br>
+ * 2:37:56 PM May 25, 2009 <br>
+ * 
  * Implementation of {@link DisconnectPeerRequest}.
- *
+ * 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @see DiameterMessageImpl
  */
-public class DisconnectPeerRequestImpl extends DiameterMessageImpl implements DisconnectPeerRequest
-{
-  private static transient Logger logger = Logger.getLogger(DisconnectPeerRequestImpl.class);
+public class DisconnectPeerRequestImpl extends DiameterMessageImpl implements DisconnectPeerRequest {
+	private static transient Logger logger = Logger.getLogger(DisconnectPeerRequestImpl.class);
 
-  public DisconnectPeerRequestImpl(Message message) {
+	public DisconnectPeerRequestImpl(Message message) {
 		super(message);
 		// TODO Auto-generated constructor stub
 	}
@@ -64,29 +64,27 @@ public class DisconnectPeerRequestImpl extends DiameterMessageImpl implements Di
 	}
 
 	public DisconnectCauseType getDisconnectCause() {
-		if(!hasDisconnectCause())
+		if (!hasDisconnectCause())
 			return null;
-		
+
 		Avp avp = super.message.getAvps().getAvp(Avp.DISCONNECT_CAUSE);
-		
+
 		try {
-			DisconnectCauseType type=DisconnectCauseType.fromInt(avp.getInteger32());
+			DisconnectCauseType type = DisconnectCauseType.fromInt(avp.getInteger32());
 			return type;
-		}
-		catch (AvpDataException e) {
+		} catch (AvpDataException e) {
 			logger.error("Failure while obtaining Disconnect-Cause AVP.", e);
 		}
-		
+
 		return null;
 	}
 
 	public boolean hasDisconnectCause() {
-		return super.message.getAvps().getAvp(Avp.DISCONNECT_CAUSE)!=null;
+		return super.message.getAvps().getAvp(Avp.DISCONNECT_CAUSE) != null;
 	}
-
 
 	public void setDisconnectCause(DisconnectCauseType disconnectCause) {
 		addAvp(Avp.DISCONNECT_CAUSE, disconnectCause.getValue());
 	}
-  
+
 }

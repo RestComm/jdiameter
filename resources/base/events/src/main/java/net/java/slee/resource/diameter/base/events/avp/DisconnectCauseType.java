@@ -22,72 +22,84 @@ package net.java.slee.resource.diameter.base.events.avp;
 import java.io.Serializable;
 import java.io.StreamCorruptedException;
 
-
 /**
  * Java class to represent the DisconnectCause enumerated type.
  *<P/>
  * Documentation from the relevant specification:
  *<P/>
- * The Disconnect-Cause AVP (AVP Code 273) is of type Enumerated. A Diameter node MUST include this AVP in the Disconnect-Peer-Request message to inform the peer of the reason for its intention to shutdown the transport connection. 
- *
+ * The Disconnect-Cause AVP (AVP Code 273) is of type Enumerated. A Diameter
+ * node MUST include this AVP in the Disconnect-Peer-Request message to inform
+ * the peer of the reason for its intention to shutdown the transport
+ * connection.
+ * 
  * @author Open Cloud
  */
 
 public class DisconnectCauseType implements Serializable, Enumerated {
 
-    public static final int _REBOOTING = 0;
-    public static final int _BUSY = 1;
-    public static final int _DO_NOT_WANT_TO_TALK_TO_YOU = 2;
+	public static final int _REBOOTING = 0;
+	public static final int _BUSY = 1;
+	public static final int _DO_NOT_WANT_TO_TALK_TO_YOU = 2;
 
-    /**
-     * A scheduled reboot is imminent. 
-     */
-    public static final DisconnectCauseType REBOOTING = new DisconnectCauseType(_REBOOTING);
+	/**
+	 * A scheduled reboot is imminent.
+	 */
+	public static final DisconnectCauseType REBOOTING = new DisconnectCauseType(_REBOOTING);
 
-    /**
-     * The peer's internal resources are constrained, and it has determined that the transport connection needs to be closed. 
-     */
-    public static final DisconnectCauseType BUSY = new DisconnectCauseType(_BUSY);
+	/**
+	 * The peer's internal resources are constrained, and it has determined that
+	 * the transport connection needs to be closed.
+	 */
+	public static final DisconnectCauseType BUSY = new DisconnectCauseType(_BUSY);
 
-    /**
-     * The peer has determined that it does not see a need for the transport connection to exist, since it does not expect any messages to be exchanged in the near future. 
-     */
-    public static final DisconnectCauseType DO_NOT_WANT_TO_TALK_TO_YOU = new DisconnectCauseType(_DO_NOT_WANT_TO_TALK_TO_YOU);
+	/**
+	 * The peer has determined that it does not see a need for the transport
+	 * connection to exist, since it does not expect any messages to be
+	 * exchanged in the near future.
+	 */
+	public static final DisconnectCauseType DO_NOT_WANT_TO_TALK_TO_YOU = new DisconnectCauseType(_DO_NOT_WANT_TO_TALK_TO_YOU);
 
-    private DisconnectCauseType(int value) {
-        this.value = value;
-    }
+	private DisconnectCauseType(int value) {
+		this.value = value;
+	}
 
-    public static DisconnectCauseType fromInt(int type) {
-        switch(type) {
-            case _REBOOTING: return REBOOTING;
-            case _BUSY: return BUSY;
-            case _DO_NOT_WANT_TO_TALK_TO_YOU: return DO_NOT_WANT_TO_TALK_TO_YOU;
-            default: throw new IllegalArgumentException("Invalid DisconnectCause value: " + type);
-        }
-    }
+	public static DisconnectCauseType fromInt(int type) {
+		switch (type) {
+		case _REBOOTING:
+			return REBOOTING;
+		case _BUSY:
+			return BUSY;
+		case _DO_NOT_WANT_TO_TALK_TO_YOU:
+			return DO_NOT_WANT_TO_TALK_TO_YOU;
+		default:
+			throw new IllegalArgumentException("Invalid DisconnectCause value: " + type);
+		}
+	}
 
-    public int getValue() {
-        return value;
-    }
+	public int getValue() {
+		return value;
+	}
 
-    public String toString() {
-        switch(value) {
-            case _REBOOTING: return "REBOOTING";
-            case _BUSY: return "BUSY";
-            case _DO_NOT_WANT_TO_TALK_TO_YOU: return "DO_NOT_WANT_TO_TALK_TO_YOU";
-            default: return "<Invalid Value>";
-        }
-    }
+	public String toString() {
+		switch (value) {
+		case _REBOOTING:
+			return "REBOOTING";
+		case _BUSY:
+			return "BUSY";
+		case _DO_NOT_WANT_TO_TALK_TO_YOU:
+			return "DO_NOT_WANT_TO_TALK_TO_YOU";
+		default:
+			return "<Invalid Value>";
+		}
+	}
 
-    private Object readResolve() throws StreamCorruptedException {
-        try {
-            return fromInt(value);
-        }
-        catch (IllegalArgumentException iae) {
-            throw new StreamCorruptedException("Invalid internal state found: " + value);
-        }
-    }
+	private Object readResolve() throws StreamCorruptedException {
+		try {
+			return fromInt(value);
+		} catch (IllegalArgumentException iae) {
+			throw new StreamCorruptedException("Invalid internal state found: " + value);
+		}
+	}
 
-    private int value;
+	private int value;
 }

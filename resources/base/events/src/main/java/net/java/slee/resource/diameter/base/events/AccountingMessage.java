@@ -1,10 +1,3 @@
-/**
- * Start time:17:09:12 2009-05-22<br>
- * Project: diameter-parent<br>
- * 
- * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
- */
 package net.java.slee.resource.diameter.base.events;
 
 import java.util.Date;

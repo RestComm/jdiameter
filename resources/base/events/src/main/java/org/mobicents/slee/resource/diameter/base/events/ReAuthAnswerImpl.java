@@ -30,15 +30,26 @@ import net.java.slee.resource.diameter.base.events.ReAuthAnswer;
 
 import org.jdiameter.api.Message;
 
-public class ReAuthAnswerImpl extends DiameterMessageImpl implements ReAuthAnswer
-{
+/**
+ * 
+ * Start time:19:56:14 2009-05-28<br>
+ * Project: diameter-parent<br>
+ * 
+ * Implementation of {@link ReAuthAnswer}
+ * 
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @see DiameterMessageImpl
+ */
+public class ReAuthAnswerImpl extends DiameterMessageImpl implements ReAuthAnswer {
 
 	public ReAuthAnswerImpl(Message message) {
-        super(message);
-    }
+		super(message);
+	}
+
 	@Override
 	public String getLongName() {
-		
+
 		return "Re-Auth-Answer";
 	}
 
@@ -48,7 +59,4 @@ public class ReAuthAnswerImpl extends DiameterMessageImpl implements ReAuthAnswe
 		return "RAA";
 	}
 
-	
-
-  
 }

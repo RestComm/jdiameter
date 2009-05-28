@@ -1,12 +1,7 @@
 package net.java.slee.resource.diameter.base.events;
 
-import java.util.Date;
-
-import net.java.slee.resource.diameter.base.events.avp.AccountingRealtimeRequiredType;
-import net.java.slee.resource.diameter.base.events.avp.AccountingRecordType;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
-import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp;
 
 /**
  * Defines an interface representing the Accounting-Request command.

@@ -38,9 +38,10 @@ import org.mobicents.slee.resource.diameter.base.events.avp.VendorSpecificApplic
 /**
  * Start time:18:16:51 2009-05-22<br>
  * Project: diameter-parent<br>
- * 
+ * Super class definnig common methods for CER and CEA. Implmenets methods {@link CapabilitiesExchangeMessage}
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @see DiameterMessageImpl
  */
 public abstract class CapabilitiesExchangeMessageImpl extends DiameterMessageImpl implements CapabilitiesExchangeMessage {
 

@@ -29,8 +29,17 @@ import net.java.slee.resource.diameter.base.events.DisconnectPeerAnswer;
 
 import org.jdiameter.api.Message;
 
-public class DisconnectPeerAnswerImpl extends DiameterMessageImpl implements DisconnectPeerAnswer
-{
+/**
+ * 
+ * Start time:19:01:02 2009-05-28<br>
+ * Project: diameter-parent<br>
+ * Implementation {@link DisconnectPeerAnswer}
+ * 
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @see DiameterMessageImpl
+ */
+public class DisconnectPeerAnswerImpl extends DiameterMessageImpl implements DisconnectPeerAnswer {
 	public DisconnectPeerAnswerImpl(Message message) {
 		super(message);
 		// TODO Auto-generated constructor stub
@@ -38,14 +47,14 @@ public class DisconnectPeerAnswerImpl extends DiameterMessageImpl implements Dis
 
 	@Override
 	public String getLongName() {
-		
+
 		return "Disconnect-Peer-Answer";
 	}
 
 	@Override
 	public String getShortName() {
-		
+
 		return "DPA";
 	}
-  
+
 }

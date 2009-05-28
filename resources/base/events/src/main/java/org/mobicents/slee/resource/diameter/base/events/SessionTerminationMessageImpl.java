@@ -37,69 +37,73 @@ import net.java.slee.resource.diameter.base.events.SessionTerminationMessage;
  * Start time:19:08:53 2009-05-22<br>
  * Project: diameter-parent<br>
  * 
+ * Implementation of {@link SessionTerminationMessage}. Its super class for STR
+ * and STA, it implements common methods.
+ * 
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @see DiameterMessageImpl
  */
 public abstract class SessionTerminationMessageImpl extends DiameterMessageImpl implements SessionTerminationMessage {
-  
-  private Logger logger = Logger.getLogger(SessionTerminationMessageImpl.class);
 
-  /**
-   * 
-   * @param message
-   */
-  public SessionTerminationMessageImpl(Message message) {
-    super(message);
-    // TODO Auto-generated constructor stub
-  }
+	private Logger logger = Logger.getLogger(SessionTerminationMessageImpl.class);
 
-  public byte[][] getClassAvps() {
-    if (hasClassAvp()) {
-      AvpSet s = message.getAvps().getAvps(Avp.CLASS);
+	/**
+	 * 
+	 * @param message
+	 */
+	public SessionTerminationMessageImpl(Message message) {
+		super(message);
+		// TODO Auto-generated constructor stub
+	}
 
-      byte[][] rc = new byte[s.size()][];
+	public byte[][] getClassAvps() {
+		if (hasClassAvp()) {
+			AvpSet s = message.getAvps().getAvps(Avp.CLASS);
 
-      for (int i = 0; i < s.size(); i++) {
-        try {
-          rc[i] = s.getAvpByIndex(i).getRaw();
-        } catch (Exception e) {
-          logger.error("Unable to obtain/decode AVP (code:" + Avp.CLASS + ")", e);
-        }
-      }
+			byte[][] rc = new byte[s.size()][];
 
-      return rc;
-    } else {
-      return null;
-    }
-  }
+			for (int i = 0; i < s.size(); i++) {
+				try {
+					rc[i] = s.getAvpByIndex(i).getRaw();
+				} catch (Exception e) {
+					logger.error("Unable to obtain/decode AVP (code:" + Avp.CLASS + ")", e);
+				}
+			}
 
-  public void setClassAvp(byte[] classAvp) {
-    message.getAvps().addAvp(25, classAvp, true, false);
-  }
+			return rc;
+		} else {
+			return null;
+		}
+	}
 
-  public void setClassAvps(byte[][] classAvps) {
-    for (byte[] i : classAvps) {
-      setClassAvp(i);
-    }
-  }
+	public void setClassAvp(byte[] classAvp) {
+		message.getAvps().addAvp(25, classAvp, true, false);
+	}
 
-  public byte[] getClassAvp() {
-    if (hasClassAvp()) {
-      Avp s = message.getAvps().getAvp(Avp.CLASS);
+	public void setClassAvps(byte[][] classAvps) {
+		for (byte[] i : classAvps) {
+			setClassAvp(i);
+		}
+	}
 
-      try {
-        return s.getRaw();
-      } catch (AvpDataException e) {
-        logger.error("Unable to obtain/decode AVP (code:" + Avp.CLASS + ")", e);
-        return null;
-      }
-    } else {
-      return null;
-    }
-  }
+	public byte[] getClassAvp() {
+		if (hasClassAvp()) {
+			Avp s = message.getAvps().getAvp(Avp.CLASS);
 
-  public boolean hasClassAvp() {
-    return super.hasAvp(Avp.CLASS);
-  }
+			try {
+				return s.getRaw();
+			} catch (AvpDataException e) {
+				logger.error("Unable to obtain/decode AVP (code:" + Avp.CLASS + ")", e);
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	public boolean hasClassAvp() {
+		return super.hasAvp(Avp.CLASS);
+	}
 
 }

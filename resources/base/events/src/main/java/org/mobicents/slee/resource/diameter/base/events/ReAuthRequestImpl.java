@@ -36,36 +36,38 @@ import org.jdiameter.api.Message;
  * Start time:16:56:38 2009-05-22<br>
  * Project: diameter-parent<br>
  * 
- * <br>
+ * 
+ * Implementation of {@link ReAuthRequest}
+ * 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @see DiameterMessageImpl
  */
-public class ReAuthRequestImpl extends ExtensionDiameterMessageImpl implements ReAuthRequest
-{
-  public ReAuthRequestImpl(Message message) {
-    super(message);
-  }
+public class ReAuthRequestImpl extends DiameterMessageImpl implements ReAuthRequest {
+	public ReAuthRequestImpl(Message message) {
+		super(message);
+	}
 
-  public boolean hasReAuthRequestType() {
-    return message.getAvps().getAvp(Avp.RE_AUTH_REQUEST_TYPE) != null;
-  }
+	public boolean hasReAuthRequestType() {
+		return message.getAvps().getAvp(Avp.RE_AUTH_REQUEST_TYPE) != null;
+	}
 
-  public ReAuthRequestType getReAuthRequestType() {
-    return ReAuthRequestType.fromInt(getAvpAsInt32(Avp.RE_AUTH_REQUEST_TYPE));
-  }
+	public ReAuthRequestType getReAuthRequestType() {
+		return ReAuthRequestType.fromInt(getAvpAsInt32(Avp.RE_AUTH_REQUEST_TYPE));
+	}
 
-  public void setReAuthRequestType(ReAuthRequestType reAuthRequestType) {
-    addAvp(Avp.RE_AUTH_REQUEST_TYPE, reAuthRequestType.getValue());
-  }
+	public void setReAuthRequestType(ReAuthRequestType reAuthRequestType) {
+		addAvp(Avp.RE_AUTH_REQUEST_TYPE, reAuthRequestType.getValue());
+	}
 
-  @Override
-  public String getLongName() {
-    return "Re-Auth-Request";
-  }
+	@Override
+	public String getLongName() {
+		return "Re-Auth-Request";
+	}
 
-  @Override
-  public String getShortName() {
-    return "RAR";
-  }
+	@Override
+	public String getShortName() {
+		return "RAR";
+	}
 
 }

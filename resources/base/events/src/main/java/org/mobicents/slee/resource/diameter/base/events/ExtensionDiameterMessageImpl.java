@@ -30,25 +30,34 @@ import net.java.slee.resource.diameter.base.events.ExtensionDiameterMessage;
 
 import org.jdiameter.api.Message;
 
-public class ExtensionDiameterMessageImpl extends DiameterMessageImpl implements ExtensionDiameterMessage
-{
+/**
+ * 
+ * Start time:19:52:31 2009-05-28<br>
+ * Project: diameter-parent<br>
+ * 
+ * 
+ * Implementation of {@link ExtensionDiameterMessage}
+ * 
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @see DiameterMessageImpl
+ */
+public class ExtensionDiameterMessageImpl extends DiameterMessageImpl implements ExtensionDiameterMessage {
 
-  @Override
-  public String getLongName() {
-    //FIXME: baranowb; not documented
-    return "Extension-Message";
-  }
+	@Override
+	public String getLongName() {
+		// FIXME: baranowb; not documented
+		return "Extension-Message";
+	}
 
-  @Override
-  public String getShortName() {
-    //FIXME: baranowb; not documented
-    return "EM";
-  }
+	@Override
+	public String getShortName() {
+		// FIXME: baranowb; not documented
+		return "EM";
+	}
 
-  public ExtensionDiameterMessageImpl(Message message) {
-    super(message);
-  }
-
-  
+	public ExtensionDiameterMessageImpl(Message message) {
+		super(message);
+	}
 
 }

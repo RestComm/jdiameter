@@ -34,13 +34,12 @@ import org.jdiameter.api.Message;
 /**
  * <br>Project: mobicents-diameter-server
  * <br>11:21:03 AM May 25, 2009 
- * <br>
- *
- * SessionTerminationRequestImpl.java
- *
+ * 
+ *Implementation of {@link SessionTerminationRequest}.
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:emmartins@gmail.com"> Eduardo Martins </a>
+ * @see SessionTerminationMessageImpl
  */
 public class SessionTerminationRequestImpl  extends SessionTerminationMessageImpl implements SessionTerminationRequest{
 

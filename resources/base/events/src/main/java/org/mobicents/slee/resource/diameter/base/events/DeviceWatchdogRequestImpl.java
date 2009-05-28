@@ -30,8 +30,18 @@ import net.java.slee.resource.diameter.base.events.DeviceWatchdogRequest;
 
 import org.jdiameter.api.Message;
 
-public class DeviceWatchdogRequestImpl extends DiameterMessageImpl implements DeviceWatchdogRequest
-{
+/**
+ * 
+ * Start time:18:57:04 2009-05-28<br>
+ * Project: diameter-parent<br>
+ * 
+ * Implementation of {@link DeviceWatchdogRequest}
+ * 
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @see DiameterMessageImpl
+ */
+public class DeviceWatchdogRequestImpl extends DiameterMessageImpl implements DeviceWatchdogRequest {
 
 	public DeviceWatchdogRequestImpl(Message message) {
 		super(message);
@@ -46,9 +56,8 @@ public class DeviceWatchdogRequestImpl extends DiameterMessageImpl implements De
 
 	@Override
 	public String getShortName() {
-		
+
 		return "DWR";
 	}
-  
 
 }

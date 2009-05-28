@@ -27,16 +27,20 @@
 package org.mobicents.slee.resource.diameter.base.events;
 
 import net.java.slee.resource.diameter.base.events.CapabilitiesExchangeAnswer;
-import net.java.slee.resource.diameter.base.events.avp.AddressAvp;
-import net.java.slee.resource.diameter.base.events.avp.FailedAvp;
-import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp;
 
-import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
-import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Message;
-import org.mobicents.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvpImpl;
 
+/**
+ * 
+ * Start time:18:51:25 2009-05-28<br>
+ * Project: diameter-parent<br>
+ * Implementation of {@link CapabilitiesExchangeAnswer} 
+ * 
+ * 
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @see CapabilitiesExchangeMessageImpl
+ */
 public class CapabilitiesExchangeAnswerImpl extends CapabilitiesExchangeMessageImpl implements CapabilitiesExchangeAnswer {
 
 	public CapabilitiesExchangeAnswerImpl(Message message) {

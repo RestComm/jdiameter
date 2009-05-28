@@ -30,12 +30,21 @@ import net.java.slee.resource.diameter.base.events.AbortSessionRequest;
 
 import org.jdiameter.api.Message;
 
+/**
+ * 
+ * Start time:18:17:59 2009-05-28<br>
+ * Project: diameter-parent<br>
+ * Implementation of {@link AbortSessionRequest}
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @see DiameterMessageImpl
+ */
 public class AbortSessionRequestImpl extends DiameterMessageImpl implements AbortSessionRequest {
 
-
 	public AbortSessionRequestImpl(Message message) {
-        super(message);
-    }
+		super(message);
+	}
+
 	@Override
 	public String getLongName() {
 
@@ -44,10 +53,8 @@ public class AbortSessionRequestImpl extends DiameterMessageImpl implements Abor
 
 	@Override
 	public String getShortName() {
-		
+
 		return "ASR";
 	}
 
-	
-  
 }

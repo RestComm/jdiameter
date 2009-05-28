@@ -31,16 +31,15 @@ import net.java.slee.resource.diameter.base.events.AccountingRequest;
 import org.jdiameter.api.Message;
 
 /**
- * 
- * AccountingRequestImpl.java
- * 
  * <br>
  * Super project: mobicents <br>
  * 5:57:35 PM Jun 20, 2008 <br>
+ * Implementation of {@link AccountingRequest}
  * 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author Erick Svenson
+ * @see AccountingMessageImpl
  */
 public class AccountingRequestImpl extends AccountingMessageImpl implements AccountingRequest {
 

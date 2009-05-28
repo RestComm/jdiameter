@@ -31,27 +31,33 @@ import net.java.slee.resource.diameter.base.events.SessionTerminationAnswer;
 import org.apache.log4j.Logger;
 import org.jdiameter.api.Message;
 
-public class SessionTerminationAnswerImpl extends DiameterMessageImpl implements SessionTerminationAnswer
-{
+/**
+ * 
+ * Start time:19:58:38 2009-05-28<br>
+ * Project: diameter-parent<br>
+ * 
+ * Implementation of {@link SessionTerminationAnswer}
+ * 
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @see DiameterMessageImpl
+ */
+public class SessionTerminationAnswerImpl extends DiameterMessageImpl implements SessionTerminationAnswer {
 
-  private Logger logger = Logger.getLogger(SessionTerminationAnswerImpl.class);
+	private Logger logger = Logger.getLogger(SessionTerminationAnswerImpl.class);
 
-  @Override
-  public String getLongName()
-  {
-    return "Session-Termination-Answer";
-  }
+	@Override
+	public String getLongName() {
+		return "Session-Termination-Answer";
+	}
 
-  @Override
-  public String getShortName()
-  {
-    return "STA";
-  }
+	@Override
+	public String getShortName() {
+		return "STA";
+	}
 
-  public SessionTerminationAnswerImpl(Message message)
-  {
-    super(message);
-  }
+	public SessionTerminationAnswerImpl(Message message) {
+		super(message);
+	}
 
-  
 }

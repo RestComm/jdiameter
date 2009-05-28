@@ -1,15 +1,6 @@
 package net.java.slee.resource.diameter.base.events;
 
 
-import java.util.Iterator;
-
-
-import net.java.slee.resource.diameter.base.events.avp.AddressAvp;
-
-import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
-import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
-import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp;
 
 /**
  * Defines an interface representing the Capabilities-Exchange-Request command.

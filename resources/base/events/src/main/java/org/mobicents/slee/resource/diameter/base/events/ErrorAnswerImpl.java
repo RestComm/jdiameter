@@ -31,16 +31,26 @@ import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
 
 import org.jdiameter.api.Message;
 
-public class ErrorAnswerImpl extends DiameterMessageImpl implements
-		ErrorAnswer {
+/**
+ * 
+ * Start time:19:51:02 2009-05-28<br>
+ * Project: diameter-parent<br>
+ * 
+ * Implementatiot of {@link ErrorAnswer}.
+ * 
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @see DiameterMessageImpl
+ */
+public class ErrorAnswerImpl extends DiameterMessageImpl implements ErrorAnswer {
 
 	public ErrorAnswerImpl(Message message) {
 		super(message);
-		
+
 	}
 
 	public ProxyInfoAvp getProxyInfo() {
-		if(hasProxyInfo())
+		if (hasProxyInfo())
 			return super.getProxyInfos()[0];
 		else
 			return null;
@@ -54,8 +64,12 @@ public class ErrorAnswerImpl extends DiameterMessageImpl implements
 			return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl#getLongName()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl#
+	 * getLongName()
 	 */
 	@Override
 	public String getLongName() {
@@ -63,8 +77,12 @@ public class ErrorAnswerImpl extends DiameterMessageImpl implements
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl#getShortName()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl#
+	 * getShortName()
 	 */
 	@Override
 	public String getShortName() {

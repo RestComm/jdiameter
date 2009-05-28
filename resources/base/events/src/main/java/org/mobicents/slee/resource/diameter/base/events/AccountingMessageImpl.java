@@ -35,10 +35,12 @@ import org.jdiameter.api.Message;
 /**
  * Start time:16:56:38 2009-05-22<br>
  * Project: diameter-parent<br>
- * Super class for ACX messages
+ * Super class for ACX messages Super class implementing methods for ACR and
+ * ACA. it implements methods from {@link AccountingMessage}
  * 
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @see DiameterMessageImpl
  */
 public abstract class AccountingMessageImpl extends DiameterMessageImpl implements AccountingMessage {
 
@@ -92,11 +94,10 @@ public abstract class AccountingMessageImpl extends DiameterMessageImpl implemen
 	}
 
 	public byte[] getAccountingSessionId() {
-		if(hasAccountingSessionId())
-		{
+		if (hasAccountingSessionId()) {
 			return super.getAvpAsOctet(Avp.ACC_SESSION_ID).getBytes();
 		}
-		
+
 		return null;
 	}
 

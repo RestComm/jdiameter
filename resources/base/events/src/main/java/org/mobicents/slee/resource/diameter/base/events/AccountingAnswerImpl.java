@@ -27,23 +27,19 @@
 package org.mobicents.slee.resource.diameter.base.events;
 
 import net.java.slee.resource.diameter.base.events.AccountingAnswer;
-import net.java.slee.resource.diameter.base.events.avp.AccountingRealtimeRequiredType;
-import net.java.slee.resource.diameter.base.events.avp.AccountingRecordType;
 
-import org.jdiameter.api.Avp;
 import org.jdiameter.api.Message;
 
 /**
  * 
- * AccountingAnswerImpl.java
- * 
  * <br>
  * Super project: mobicents <br>
  * 5:57:50 PM Jun 20, 2008 <br>
- * 
+ * Implementtation of {@link AccountingAnswer}
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author Erick Svenson
+ * @see AccountingMessageImpl
  */
 public class AccountingAnswerImpl extends AccountingMessageImpl implements AccountingAnswer {
 

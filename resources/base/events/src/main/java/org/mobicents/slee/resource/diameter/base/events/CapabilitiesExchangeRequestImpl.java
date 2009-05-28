@@ -30,8 +30,17 @@ import net.java.slee.resource.diameter.base.events.CapabilitiesExchangeRequest;
 
 import org.jdiameter.api.Message;
 
-public class CapabilitiesExchangeRequestImpl extends CapabilitiesExchangeMessageImpl implements CapabilitiesExchangeRequest
-{
+/**
+ * 
+ * Start time:18:54:41 2009-05-28<br>
+ * Project: diameter-parent<br>
+ * Implementation of {@link CapabilitiesExchangeRequest}
+ * 
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @see CapabilitiesExchangeMessageImpl
+ */
+public class CapabilitiesExchangeRequestImpl extends CapabilitiesExchangeMessageImpl implements CapabilitiesExchangeRequest {
 
 	public CapabilitiesExchangeRequestImpl(Message message) {
 		super(message);
@@ -40,7 +49,7 @@ public class CapabilitiesExchangeRequestImpl extends CapabilitiesExchangeMessage
 
 	@Override
 	public String getLongName() {
-		
+
 		return "Capabilities-Exchange-Request";
 	}
 
@@ -50,7 +59,4 @@ public class CapabilitiesExchangeRequestImpl extends CapabilitiesExchangeMessage
 		return "CER";
 	}
 
-	
-
-	
 }

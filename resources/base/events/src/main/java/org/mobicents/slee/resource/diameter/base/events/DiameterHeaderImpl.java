@@ -32,11 +32,11 @@ import net.java.slee.resource.diameter.base.events.DiameterHeader;
 
 /**
  * 
- * DiameterHeaderImpl.java
- * 
  * <br>
  * Super project: mobicents <br>
  * 3:05:20 PM Jun 20, 2008 <br>
+ * 
+ * Implements {@link DiameterHeader}.
  * 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>

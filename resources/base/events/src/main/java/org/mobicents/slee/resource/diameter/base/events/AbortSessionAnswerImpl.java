@@ -30,14 +30,22 @@ import net.java.slee.resource.diameter.base.events.AbortSessionAnswer;
 
 import org.jdiameter.api.Message;
 
-public class AbortSessionAnswerImpl extends DiameterMessageImpl implements
-		AbortSessionAnswer {
+/**
+ * 
+ * Start time:18:41:01 2009-05-28<br>
+ * Project: diameter-parent<br>
+ * Implementation of {@link AbortSessionAnswer}
+ * 
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @see DiameterMessageImpl
+ * 
+ */
+public class AbortSessionAnswerImpl extends DiameterMessageImpl implements AbortSessionAnswer {
 
-	
 	public AbortSessionAnswerImpl(Message message) {
-        super(message);
-    }
-	
+		super(message);
+	}
 
 	@Override
 	public String getLongName() {
