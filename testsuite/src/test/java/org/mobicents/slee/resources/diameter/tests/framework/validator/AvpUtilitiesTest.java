@@ -526,11 +526,12 @@ public class AvpUtilitiesTest {
 		
 		if(set.size()>0)
 		{
+			String s="";
 			for(Avp a: set)
 			{
-				System.err.println("------> "+a.getCode());
+				s+="Code["+a.getCode()+"] Vendor["+a.getVendorId()+"],";
 			}
-			fail("Wrong count of avps, removed all expected, left overs: "+set.size());
+			fail("Wrong count of avps, removed all expected, left overs: "+set.size()+" -- "+s);
 		}
 		
 	}
