@@ -20,6 +20,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.PeerTable;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
+import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,24 +30,17 @@ import net.java.slee.resource.diameter.base.events.avp.AvpUtilities;
 
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpSet;
-import org.jdiameter.api.IllegalDiameterStateException;
-import org.jdiameter.api.InternalException;
-import org.jdiameter.api.OverloadException;
-import org.jdiameter.api.RouteException;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.Stack;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
-import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.jdiameter.common.impl.validation.DiameterMessageValidator;
+import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
-import org.mobicents.slee.resource.diameter.base.events.AccountingAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.events.AccountingRequestImpl;
-
-import static org.junit.Assert.*;
 
 /**
  * Start time:14:15:19 2009-05-27<br>
@@ -58,15 +52,15 @@ import static org.junit.Assert.*;
  */
 public class AvpUtilitiesTest {
 
-	private static String clientHost = "127.0.0.1";
+	private static String clientHost = "99.99.99.99";
 	private static String clientPort = "21812";
 	private static String clientURI = "aaa://" + clientHost + ":" + clientPort;
 
-	private static String serverHost = "localhost";
+	private static String serverHost = "99.99.99.99";
 	private static String serverPort = "1812";
 	private static String serverURI = "aaa://" + serverHost + ":" + serverPort;
 
-	private static String realmName = "mobicents.org";
+	private static String realmName = "mobicentsXYZ.org";
 
 	private static DiameterMessageFactoryImpl baseFactory;
 
@@ -363,7 +357,131 @@ public class AvpUtilitiesTest {
 		AvpUtilities.allowRemove(true);
 		instance.parseConfiguration(this.getClass().getClassLoader().getResourceAsStream(validatorOffFile));
 		
+		// It has session id
+		AccountingRequestImpl request = (AccountingRequestImpl) baseFactory.createAccountingRequest();
+
+		// <avp name="Session-Id" code="263" vendor="0" multiplicity="1"
+		// index="0"/>
+		AvpUtilities.setAvpAsUTF8String(request.getGenericData(), 263, request.getGenericData().getAvps(), "1346ferg5y");
+		// <avp name="Origin-Host" code="264" vendor="0" multiplicity="1"
+		// index="-1"/>
+		AvpUtilities.setAvpAsOctetString(request.getGenericData(), 264, request.getGenericData().getAvps(), clientURI);
+		// <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1"
+		// index="-1"/>
+		AvpUtilities.setAvpAsOctetString(request.getGenericData(), 296, request.getGenericData().getAvps(), realmName);
+		AvpUtilities.setAvpAsOctetString(request.getGenericData(), 296, request.getGenericData().getAvps(), realmName);
+		// <avp name="Destination-Realm" code="283" vendor="0" multiplicity="1"
+		// index="-1"/>
+		AvpUtilities.setAvpAsOctetString(request.getGenericData(), 283, request.getGenericData().getAvps(), realmName);
+		// <avp name="Accounting-Record-Type" code="480" vendor="0"
+		// multiplicity="1" index="-1"/>
+		AvpUtilities.setAvpAsUnsigned32(request.getGenericData(), 480, request.getGenericData().getAvps(), 1);
+		String sessionId = AvpUtilities.getAvpAsUTF8String(263, request.getGenericData().getAvps());
+		Session localSession = null;
+		try {
+			localSession = stack.getSessionFactory().getNewSession(sessionId);
+
+			localSession.send(request.getGenericData());
+
+			// this should fail eve so, but just in case
+			fail("We should not send this message.");
+		} catch (org.jdiameter.api.RouteException e) {
+			
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			fail("Failed to create session/send request due to wrong reason: "+e);
+		}
+
+		// <avp name="Accounting-Record-Number" code="485" vendor="0"
+		// multiplicity="1" index="-1"/>
+		AvpUtilities.setAvpAsUnsigned32(request.getGenericData(), 485, request.getGenericData().getAvps(), 1);
+
+		// Here it should be ok. since we are here, validation works,
+		try {
+			localSession.send(request.getGenericData());
+			// this will fail, as there is no route
+			fail("Should not allow to send");
+		} catch (org.jdiameter.api.RouteException e) {
+			// its ok :)
+		} catch (Exception e) {
+			// this includes validation error
+			e.printStackTrace();
+			fail("Failed to create session/send request due to wrong reason: "+e);
+		}
+
+		// <avp name="Acct-Application-Id" code="259" vendor="0"
+		// multiplicity="0-1" index="-1"/>
+
+		AvpUtilities.setAvpAsUnsigned32(request.getGenericData(), 259, request.getGenericData().getAvps(), 1);
+		// Here it should be ok. since we are here, validation works,
+		try {
+			localSession.send(request.getGenericData());
+			// this will fail, as there is no route
+			fail("Should not allow to send");
+		} catch (org.jdiameter.api.RouteException e) {
+			// its ok :)
+	
+		} catch (Exception e) {
+			// this includes validation error
+			e.printStackTrace();
+			fail("Received wrong exception...: " + e);
+		}
+
+		// <!-- FORBBIDEN -->
+		// <avp name="Auth-Application-Id" code="258" vendor="0"
+		// multiplicity="0" index="-1"/>
+
+		try {
+			AvpUtilities.setAvpAsUnsigned32(request.getGenericData(), 258, request.getGenericData().getAvps(), 1);
+			// this should fail eve so, but just in case
+			
+		} catch (AvpNotAllowedException e) {
+			fail("We should not get here.");
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			fail("Faield, we should get AvpNotAllowedException, not: " + e);
+		}
+
+		//This is just in case
 		
+		Map<ExpectedAvp,ExpectedAvp> expectedAvps = new HashMap<ExpectedAvp, ExpectedAvp>();
+		ExpectedAvp a = new ExpectedAvp();
+		a.code = 263;
+		a.count = 2;
+		expectedAvps.put(a, a);
+		a = new ExpectedAvp();
+		a.code = 264;
+		a.count = 1;
+		expectedAvps.put(a, a);
+		a = new ExpectedAvp();
+		a.code = 296;
+		//cause its legal in this case.
+		a.count = 2;
+		expectedAvps.put(a, a);
+		a = new ExpectedAvp();
+		a.code = 283;
+		a.count = 1;
+		expectedAvps.put(a, a);
+		a = new ExpectedAvp();
+		a.code = 480;
+		a.count = 1;
+		expectedAvps.put(a, a);
+		a = new ExpectedAvp();
+		a.code = 485;
+		a.count = 1;
+		expectedAvps.put(a, a);
+		a = new ExpectedAvp();
+		a.code = 259;
+		a.count = 1;
+		expectedAvps.put(a, a);
+		// yes, its legal also. we dont check
+		a = new ExpectedAvp();
+		a.code = 258;
+		a.count = 1;
+		expectedAvps.put(a, a);
+		testPresentAvps(request.getGenericData().getAvps(),expectedAvps);
 		
 		
 	}
@@ -408,6 +526,10 @@ public class AvpUtilitiesTest {
 		
 		if(set.size()>0)
 		{
+			for(Avp a: set)
+			{
+				System.err.println("------> "+a.getCode());
+			}
 			fail("Wrong count of avps, removed all expected, left overs: "+set.size());
 		}
 		
