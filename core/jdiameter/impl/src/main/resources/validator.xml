@@ -77,6 +77,37 @@
 	
 
 </command>
+<command name="ACR" code="271" request="true" application="19302">
+	<avp name="Session-Id" 					code="263" vendor="0" multiplicity="1" index="0"/>
+	<avp name="Origin-Host" 				code="264" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Origin-Realm" 				code="296" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Destination-Realm" 			code="283" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Accounting-Record-Type" 		code="480" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Accounting-Record-Number" 	code="485" vendor="0" multiplicity="1" index="-1"/>
+
+	<avp name="Acct-Application-Id" 			code="259" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Vendor-Specific-Application-Id" 	code="260" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="User-Name" 						code="1" 		vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Accounting-Sub-Session-Id" 		code="287" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Acct-Session-Id" 				code="44" 		vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Acct-Multi-Session-Id" 			code="50" 		vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Acct-Interim-Interval" 			code="85"	 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Accounting-Realtime-Required" 	code="483" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Origin-State-Id" 				code="278" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Event-Timestamp" 				code="55" 		vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Proxy-Info" 						code="284" 	vendor="0" multiplicity="0+"  index="-1"/>
+	<avp name="Route-Record" 					code="282" 	vendor="0" multiplicity="0+"  index="-1"/>
+	<avp name="Class"		 					code="25" 	vendor="0" multiplicity="0+"  index="-1"/>
+	
+	
+	<!-- FORBBIDEN -->
+	<avp name="Auth-Application-Id" 	code="258" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Error-Reporting-Host" 	code="294" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Experimental-Result" 	code="297" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Result-Code" 			code="268" 	vendor="0" multiplicity="0"  index="-1"/>
+	
+
+</command>
 <!-- BASE:ACA 
 <ACA> ::= < Diameter Header: 271, PXY >
                 < Session-Id >
@@ -103,6 +134,36 @@
 
 -->
 <command name="ACA" code="271" request="false" application="0">
+	<avp name="Session-Id" 					code="263" vendor="0" multiplicity="1" index="0"/>
+	<avp name="Result-Code" 				code="268" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Origin-Host" 				code="264" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Origin-Realm" 				code="296" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Accounting-Record-Type" 		code="480" vendor="0" multiplicity="1" index="-1"/>
+	<avp name="Accounting-Record-Number" 	code="485" vendor="0" multiplicity="1" index="-1"/>
+	
+	<avp name="Acct-Application-Id" 			code="259" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Vendor-Specific-Application-Id" 	code="260" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="User-Name" 						code="1" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Accounting-Sub-Session-Id" 		code="287" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Error-Reporting-Host" 			code="294" 	vendor="0" multiplicity="0+"  index="-1"/>
+	<avp name="Acct-Session-Id" 				code="44" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Acct-Multi-Session-Id" 			code="50" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Acct-Interim-Interval" 			code="85"	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Accounting-Realtime-Required" 	code="483" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Origin-State-Id" 				code="278" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Event-Timestamp" 				code="55" 	vendor="0" multiplicity="0-1" index="-1"/>
+	<avp name="Proxy-Info" 						code="284" 	vendor="0" multiplicity="0+"  index="-1"/>
+	<avp name="Route-Record" 					code="282" 	vendor="0" multiplicity="0+"  index="-1"/>
+	<avp name="Class"		 					code="25" 	vendor="0" multiplicity="0+"  index="-1"/>
+	
+	<!-- FORBBIDEN -->
+	<avp name="Auth-Application-Id" 	code="258" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Experimental-Result" 	code="297" 	vendor="0" multiplicity="0"  index="-1"/>
+	<avp name="Destination-Realm" 		code="283" 	vendor="0" multiplicity="0"  index="-1"/>
+	
+
+</command>
+<command name="ACA" code="271" request="false" application="19302">
 	<avp name="Session-Id" 					code="263" vendor="0" multiplicity="1" index="0"/>
 	<avp name="Result-Code" 				code="268" vendor="0" multiplicity="1" index="-1"/>
 	<avp name="Origin-Host" 				code="264" vendor="0" multiplicity="1" index="-1"/>
