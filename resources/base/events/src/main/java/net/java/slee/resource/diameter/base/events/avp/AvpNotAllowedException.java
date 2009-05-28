@@ -79,4 +79,11 @@ public class AvpNotAllowedException extends RuntimeException {
 	public long getVendorId() {
 		return vendorId;
 	}
+
+	@Override
+	public String toString() {
+		return "AvpNotAllowedException: "+super.getMessage()+", avp code: "+this.getAvpCode()+", vendor: "+this.getVendorId();
+	}
+	
+	
 }
