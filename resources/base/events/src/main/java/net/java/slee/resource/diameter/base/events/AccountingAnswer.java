@@ -1,17 +1,12 @@
 package net.java.slee.resource.diameter.base.events;
 
-import java.util.Date;
-
-import net.java.slee.resource.diameter.base.events.avp.AccountingRealtimeRequiredType;
-import net.java.slee.resource.diameter.base.events.avp.AccountingRecordType;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
-import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
-import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp;
 
 /**
  * Defines an interface representing the Accounting-Answer command.
- *
+ * 
  * From the Diameter Base Protocol (rfc3588.txt) specification:
+ * 
  * <pre>
  * 9.7.2.  Accounting-Answer
  * 
@@ -60,70 +55,53 @@ import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplication
  *               * [ AVP ]
  * </pre>
  */
-public interface AccountingAnswer extends DiameterMessage , AccountingMessage{
+public interface AccountingAnswer extends DiameterMessage, AccountingMessage {
 
 	static final int commandCode = 271;
 
-    
+	/**
+	 * Returns true if the Result-Code AVP is present in the message.
+	 */
+	boolean hasResultCode();
 
-    /**
-     * Returns true if the Result-Code AVP is present in the message.
-     */
-    boolean hasResultCode();
+	/**
+	 * Returns the value of the Result-Code AVP, of type Unsigned32. Use
+	 * {@link #hasResultCode()} to check the existence of this AVP.
+	 * 
+	 * @return the value of the Result-Code AVP
+	 * @throws IllegalStateException
+	 *             if the Result-Code AVP has not been set on this message
+	 */
+	long getResultCode();
 
-    /**
-     * Returns the value of the Result-Code AVP, of type Unsigned32.
-     * Use {@link #hasResultCode()} to check the existence of this AVP.  
-     * @return the value of the Result-Code AVP
-     * @throws IllegalStateException if the Result-Code AVP has not been set on this message
-     */
-    long getResultCode();
+	/**
+	 * Sets the value of the Result-Code AVP, of type Unsigned32.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setResultCode has already been called
+	 */
+	void setResultCode(long resultCode);
 
-    /**
-     * Sets the value of the Result-Code AVP, of type Unsigned32.
-     * @throws IllegalStateException if setResultCode has already been called
-     */
-    void setResultCode(long resultCode);
+	/**
+	 * Returns true if the Error-Reporting-Host AVP is present in the message.
+	 */
+	boolean hasErrorReportingHost();
 
-    
-    
+	/**
+	 * Returns the value of the Error-Reporting-Host AVP, of type
+	 * DiameterIdentity.
+	 * 
+	 * @return the value of the Error-Reporting-Host AVP or null if it has not
+	 *         been set on this message
+	 */
+	DiameterIdentity getErrorReportingHost();
 
-   
-
-    
-
-   
-
-   
-
-   
-
-    /**
-     * Returns true if the Error-Reporting-Host AVP is present in the message.
-     */
-    boolean hasErrorReportingHost();
-
-    /**
-     * Returns the value of the Error-Reporting-Host AVP, of type DiameterIdentity.
-     * @return the value of the Error-Reporting-Host AVP or null if it has not been set on this message
-     */
-    DiameterIdentity getErrorReportingHost();
-
-    /**
-     * Sets the value of the Error-Reporting-Host AVP, of type DiameterIdentity.
-     * @throws IllegalStateException if setErrorReportingHost has already been called
-     */
-    void setErrorReportingHost(DiameterIdentity errorReportingHost);
-
-    
-
-    
-
-    
-
-    
-
-   
-
+	/**
+	 * Sets the value of the Error-Reporting-Host AVP, of type DiameterIdentity.
+	 * 
+	 * @throws IllegalStateException
+	 *             if setErrorReportingHost has already been called
+	 */
+	void setErrorReportingHost(DiameterIdentity errorReportingHost);
 
 }
