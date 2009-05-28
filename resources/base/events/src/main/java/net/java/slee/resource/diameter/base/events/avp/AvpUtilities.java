@@ -105,17 +105,21 @@ public class AvpUtilities {
       //We might just invoke validate, but we need more info
       //we need some more stuff to be sure.
       DiameterMessageValidator validator = DiameterMessageValidator.getInstance();
-      if(validator.isOn() && !validator.isAllowed(msg.getCommandCode(), msg.getApplicationId(), msg.isRequest(), avpCode, vendorId))
+      if(!validator.isOn())
+    	  return;
+      
+      
+      
+      if(!validator.isAllowed(msg.getCommandCode(), msg.getApplicationId(), msg.isRequest(), avpCode, vendorId))
       {
         throw new AvpNotAllowedException("Avp defined by code: "+avpCode+", vendorId: "+vendorId+" is nto allowed in message - code: "+msg.getCommandCode()+", appId: "+msg.getApplicationId()+", isRequest: "+msg.isRequest(),avpCode,vendorId);
       }
       
       
       //we are allowed to add this to msg
-      if(validator.isOn() && validator.hasRepresentation(msg.getCommandCode(), msg.getApplicationId(), msg.isRequest(), avpCode, vendorId) && validator.isCountValidForMultiplicity(msg.getCommandCode(), msg.getApplicationId(), msg.isRequest(), msg.getAvps(), avpCode, vendorId))
+      if( validator.hasRepresentation(msg.getCommandCode(), msg.getApplicationId(), msg.isRequest(), avpCode, vendorId) && validator.isCountValidForMultiplicity(msg.getCommandCode(), msg.getApplicationId(), msg.isRequest(), msg.getAvps(), avpCode, vendorId))
       {
-    	  
-    	  System.err.println("CODE: "+avpCode);
+
         //its ok.
         return;
       }

@@ -26,7 +26,6 @@ package net.java.slee.resource.diameter.base.events.avp;
  * Thrown when an AVP is not allowed to be added to a Diameter command or
  * grouped AVP type.
  * 
- * @author Open Cloud
  */
 public class AvpNotAllowedException extends RuntimeException {
 
