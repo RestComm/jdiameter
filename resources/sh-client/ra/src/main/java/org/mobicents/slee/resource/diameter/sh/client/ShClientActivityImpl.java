@@ -31,6 +31,7 @@ import java.io.IOException;
 import javax.slee.resource.SleeEndpoint;
 
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
+import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.ShClientActivity;
@@ -48,6 +49,7 @@ import org.jdiameter.api.sh.ClientShSession;
 import org.jdiameter.common.impl.app.sh.ProfileUpdateRequestImpl;
 import org.jdiameter.common.impl.app.sh.SubscribeNotificationsRequestImpl;
 import org.jdiameter.common.impl.app.sh.UserDataRequestImpl;
+import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
@@ -85,41 +87,47 @@ public class ShClientActivityImpl extends DiameterActivityImpl implements ShClie
 
   }
 
-  public void sendProfileUpdateRequest(ProfileUpdateRequest message) throws IOException
-  {
-    try
-    {
-      DiameterMessageImpl msg = (DiameterMessageImpl) message;
-      clientSession.sendProfileUpdateRequest(new ProfileUpdateRequestImpl((Request) msg.getGenericData()));
-    }
-    catch (Exception e) {
-      logger.error( "Failed to send Profile-Update-Request.", e );
-    }
-  }
+  public void sendProfileUpdateRequest(ProfileUpdateRequest message) throws IOException {
+		try {
+			DiameterMessageImpl msg = (DiameterMessageImpl) message;
+			clientSession.sendProfileUpdateRequest(new ProfileUpdateRequestImpl((Request) msg.getGenericData()));
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
+		} catch (Exception e) {
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
+		}
+	}
 
-  public void sendSubscribeNotificationsRequest( SubscribeNotificationsRequest message ) throws IOException
-  {
-    try
-    {
-      DiameterMessageImpl msg = (DiameterMessageImpl) message;
-      this.clientSession.sendSubscribeNotificationsRequest(new SubscribeNotificationsRequestImpl((Request) msg.getGenericData()));
-    }
-    catch (Exception e) {
-      logger.error( "Failed to send Subscribe-Notifications-Request.", e );
-    }
-  }
+	public void sendSubscribeNotificationsRequest(SubscribeNotificationsRequest message) throws IOException {
+		try {
+			DiameterMessageImpl msg = (DiameterMessageImpl) message;
+			this.clientSession.sendSubscribeNotificationsRequest(new SubscribeNotificationsRequestImpl((Request) msg.getGenericData()));
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
+		} catch (Exception e) {
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
+		}
+	}
 
-  public void sendUserDataRequest(UserDataRequest message) throws IOException
-  {
-    try
-    {
-      DiameterMessageImpl msg = (DiameterMessageImpl) message;
-      this.clientSession.sendUserDataRequest(new UserDataRequestImpl((Request) msg.getGenericData()));
-    }
-    catch (Exception e) {
-      logger.error( "Failed to send User-Data-Request.", e );
-    }
-  }
+	public void sendUserDataRequest(UserDataRequest message) throws IOException {
+		try {
+			DiameterMessageImpl msg = (DiameterMessageImpl) message;
+			this.clientSession.sendUserDataRequest(new UserDataRequestImpl((Request) msg.getGenericData()));
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
+		} catch (Exception e) {
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
+		}
+	}
 
   @Override
   public Object getSessionListener()

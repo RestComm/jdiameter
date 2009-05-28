@@ -58,7 +58,7 @@ public class DiameterMessageValidator {
 
 			Element docElement = doc.getDocumentElement();
 			String onAttr = docElement.getAttribute("on");
-			System.err.println("ON ATRS: "+onAttr);
+
 			if (onAttr == null || onAttr.equals("") || !Boolean.valueOf(onAttr)) {
 				on = false;
 			} else {

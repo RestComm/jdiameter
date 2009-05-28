@@ -10,6 +10,12 @@ import org.jdiameter.api.Request;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.auth.ServerAuthSession;
 import org.jdiameter.common.api.app.auth.ServerAuthSessionState;
+import org.jdiameter.common.impl.app.AppAnswerEventImpl;
+import org.jdiameter.common.impl.app.auth.AbortSessionRequestImpl;
+import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
+import org.jdiameter.common.impl.app.auth.SessionTermAnswerImpl;
+import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
+import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 
 import net.java.slee.resource.diameter.base.AuthServerSessionActivity;
 import net.java.slee.resource.diameter.base.AuthSessionState;
@@ -17,6 +23,7 @@ import net.java.slee.resource.diameter.base.events.AbortSessionRequest;
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.ReAuthRequest;
 import net.java.slee.resource.diameter.base.events.SessionTerminationAnswer;
+import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 
 public class AuthServerSessionActivityImpl extends AuthSessionActivityImpl
@@ -40,23 +47,70 @@ public class AuthServerSessionActivityImpl extends AuthSessionActivityImpl
 	}
 
 	public void sendAbortSessionRequest(AbortSessionRequest request) throws IOException {
-		super.sendMessage(request);
-
+		try {
+			
+			//super.sendMessage(request);
+			DiameterMessageImpl msg = (DiameterMessageImpl) request;
+			this.serverSession.sendAbortSessionRequest(new AbortSessionRequestImpl(msg.getGenericData()));
+			
+			
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
+		} catch (Exception e) {
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
+		}
 	}
 
 	public void sendAuthAnswer(DiameterMessage answer) throws IOException {
-		super.sendMessage(answer);
-
+		try {
+			
+			//super.sendMessage(answer);
+			DiameterMessageImpl msg = (DiameterMessageImpl) answer;
+			//FIXME: this needs to get right impl.??
+			this.serverSession.sendAuthAnswer(new AppAnswerEventImpl(msg.getGenericData()));
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
+		} catch (Exception e) {
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
+		}
 	}
 
 	public void sendReAuthRequest(ReAuthRequest request) throws IOException {
-		super.sendMessage(request);
-
+		try {
+			
+			//super.sendMessage(request);
+			DiameterMessageImpl msg = (DiameterMessageImpl) request;
+			this.serverSession.sendReAuthRequest(new ReAuthRequestImpl(msg.getGenericData()));
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
+		} catch (Exception e) {
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
+		}
 	}
 
 	public void sendSessionTerminationAnswer(SessionTerminationAnswer request) throws IOException {
-		super.sendMessage(request);
-
+		try {
+			
+			//super.sendMessage(request);
+			DiameterMessageImpl msg = (DiameterMessageImpl) request;
+			this.serverSession.sendSessionTerminationAnswer(new SessionTermAnswerImpl(msg.getGenericData()));
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
+		} catch (Exception e) {
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
+		}
 	}
 
 	public ServerAuthSession getSession()

@@ -81,7 +81,11 @@ public abstract class BaseSessionImpl implements BaseSession {
             message.createTimer(container.getScheduledFacility(), timeout, timeUnit);
             try {
                 container.sendMessage(message);
-            } catch (Exception e) {
+            }catch(RouteException e)
+            {
+            	throw e;
+            }
+            catch (Exception e) {
                 e.printStackTrace();
                 message.clearTimer();
                 throw new InternalException(e);

@@ -26,6 +26,7 @@ import org.jdiameter.api.cca.ServerCCASession;
 import org.jdiameter.common.api.app.cca.ServerCCASessionState;
 import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
 import org.jdiameter.common.impl.app.cca.JCreditControlAnswerImpl;
+import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 
 /**
@@ -118,10 +119,14 @@ public class CreditControlServerSessionImpl extends CreditControlSessionImpl imp
     try
     {
       session.sendCreditControlAnswer(new JCreditControlAnswerImpl((Answer) msg.getGenericData()));
-    }
-    catch (Exception e) {
-      logger.error( "Failed to send Credit-Control-Answer.", e );
-    }
+	} catch (JAvpNotAllowedException e) {
+		AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+		throw anae;
+	} catch (Exception e) {
+		e.printStackTrace();
+		IOException ioe = new IOException("Failed to send message, due to: " + e);
+		throw ioe;
+	}
   }
 
   /*
@@ -142,10 +147,14 @@ public class CreditControlServerSessionImpl extends CreditControlSessionImpl imp
     try
     {
       session.sendReAuthRequest(new ReAuthRequestImpl((Request) msg.getGenericData()));
-    }
-    catch (Exception e) {
-      logger.error( "Failed to send Re-Auth-Request.", e );
-    }
+	} catch (JAvpNotAllowedException e) {
+		AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+		throw anae;
+	} catch (Exception e) {
+		e.printStackTrace();
+		IOException ioe = new IOException("Failed to send message, due to: " + e);
+		throw ioe;
+	}
   }
 
   /*

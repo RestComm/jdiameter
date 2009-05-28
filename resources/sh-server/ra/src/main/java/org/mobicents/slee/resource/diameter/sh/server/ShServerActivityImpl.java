@@ -31,6 +31,7 @@ import java.io.IOException;
 import javax.slee.resource.SleeEndpoint;
 
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
+import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.ShSessionState;
@@ -49,6 +50,7 @@ import org.jdiameter.api.sh.ServerShSession;
 import org.jdiameter.common.impl.app.sh.ProfileUpdateAnswerImpl;
 import org.jdiameter.common.impl.app.sh.SubscribeNotificationsAnswerImpl;
 import org.jdiameter.common.impl.app.sh.UserDataAnswerImpl;
+import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 
@@ -147,44 +149,50 @@ public class ShServerActivityImpl extends DiameterActivityImpl implements ShServ
     return sna;
   }
 
-	public void sendProfileUpdateAnswer(ProfileUpdateAnswer message) throws IOException
-	{
-		try
-		{
-	    DiameterMessageImpl msg = (DiameterMessageImpl) message;
-	    
+	public void sendProfileUpdateAnswer(ProfileUpdateAnswer message) throws IOException {
+		try {
+			DiameterMessageImpl msg = (DiameterMessageImpl) message;
+
 			this.serverSession.sendProfileUpdateAnswer(new ProfileUpdateAnswerImpl((Answer) msg.getGenericData()));
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
+		} catch (Exception e) {
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
 		}
-		catch (Exception e) {
-			throw new IOException(e.getLocalizedMessage());
-		} 
-	}
-	
-	public void sendUserDataAnswer(UserDataAnswer message) throws IOException
-	{
-		try
-		{
-	    DiameterMessageImpl msg = (DiameterMessageImpl) message;
-	    
-			this.serverSession.sendUserDataAnswer(new UserDataAnswerImpl((Answer) msg.getGenericData()));
-		}
-		catch (Exception e) {
-			throw new IOException(e.getLocalizedMessage());
-		} 
 	}
 
-  public void sendSubscribeNotificationsAnswer(SubscribeNotificationsAnswer message) throws IOException
-  {
-    try
-    {
-      DiameterMessageImpl msg = (DiameterMessageImpl) message;
-      
-      this.serverSession.sendSubscribeNotificationsAnswer(new SubscribeNotificationsAnswerImpl((Answer) msg.getGenericData()));
-    }
-    catch (Exception e) {
-      throw new IOException(e.getLocalizedMessage());
-    } 
-  }
+	public void sendUserDataAnswer(UserDataAnswer message) throws IOException {
+		try {
+			DiameterMessageImpl msg = (DiameterMessageImpl) message;
+
+			this.serverSession.sendUserDataAnswer(new UserDataAnswerImpl((Answer) msg.getGenericData()));
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
+		} catch (Exception e) {
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
+		}
+	}
+
+	public void sendSubscribeNotificationsAnswer(SubscribeNotificationsAnswer message) throws IOException {
+		try {
+			DiameterMessageImpl msg = (DiameterMessageImpl) message;
+
+			this.serverSession.sendSubscribeNotificationsAnswer(new SubscribeNotificationsAnswerImpl((Answer) msg.getGenericData()));
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
+		} catch (Exception e) {
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
+		}
+	}
 
   @Override
   public Object getDiameterAvpFactory()

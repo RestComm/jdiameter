@@ -8,6 +8,7 @@ import net.java.slee.resource.diameter.base.AccountingServerSessionActivity;
 import net.java.slee.resource.diameter.base.AccountingSessionState;
 import net.java.slee.resource.diameter.base.events.AccountingAnswer;
 import net.java.slee.resource.diameter.base.events.AccountingRequest;
+import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 
@@ -19,6 +20,9 @@ import org.jdiameter.api.Request;
 import org.jdiameter.api.Stack;
 import org.jdiameter.api.acc.ServerAccSession;
 import org.jdiameter.common.api.app.acc.ServerAccSessionState;
+import org.jdiameter.common.impl.app.acc.AccountAnswerImpl;
+import org.jdiameter.common.impl.app.acc.AccountRequestImpl;
+import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.mobicents.slee.resource.diameter.base.events.AccountingAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 
@@ -116,28 +120,49 @@ public class AccountingServerSessionActivityImpl extends AccountingSessionActivi
 	  return answer;
 	}
 	
-	public void sendAccountAnswer(AccountingAnswer answer) throws IOException
-	{
+	public void sendAccountAnswer(AccountingAnswer answer) throws IOException {
 		// FIXME: baranowb - add setting of proper session
-		//super.sendMessage(answer);
-	  
-    try
-    {
-      AccountingAnswerImpl aca = (AccountingAnswerImpl)answer;
+		// super.sendMessage(answer);
 
-      this.serverSession.getSessions().get(0).send( aca.getGenericData() );
-      
-      if( destroyAfterSending )
-      {
-        String sessionId = this.serverSession.getSessions().get(0).getSessionId();
-        this.serverSession.release();
-        this.baseListener.sessionDestroyed(sessionId, this.serverSession);        
-      }
-    }
-    catch ( Exception e )
-    {
-      logger.error( "Failure sending Account-Answer.", e );
-    }
+		// try
+		// {
+		// AccountingAnswerImpl aca = (AccountingAnswerImpl)answer;
+		//
+		// this.serverSession.getSessions().get(0).send( aca.getGenericData() );
+		//      
+		// if( destroyAfterSending )
+		// {
+		// String sessionId =
+		// this.serverSession.getSessions().get(0).getSessionId();
+		// this.serverSession.release();
+		// this.baseListener.sessionDestroyed(sessionId, this.serverSession);
+		// }
+		// }
+		// catch ( Exception e )
+		// {
+		// logger.error( "Failure sending Account-Answer.", e );
+		// }
+
+		try {
+			AccountingAnswerImpl aca = (AccountingAnswerImpl) answer;
+
+			this.serverSession.sendAccountAnswer(new AccountAnswerImpl((Answer) aca.getGenericData()));
+
+			// FIXME: check this?
+			if (destroyAfterSending) {
+				String sessionId = this.serverSession.getSessions().get(0).getSessionId();
+				this.serverSession.release();
+				this.baseListener.sessionDestroyed(sessionId, this.serverSession);
+			}
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
+		} catch (Exception e) {
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
+		}
+
 	}
 
 	public ServerAccSession getSession() {

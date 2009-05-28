@@ -72,6 +72,7 @@ import net.java.slee.resource.diameter.base.events.ErrorAnswer;
 import net.java.slee.resource.diameter.base.events.ExtensionDiameterMessage;
 import net.java.slee.resource.diameter.base.events.ReAuthAnswer;
 import net.java.slee.resource.diameter.base.events.SessionTerminationAnswer;
+import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodes;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 
@@ -99,6 +100,7 @@ import org.jdiameter.api.auth.ServerAuthSession;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.impl.app.acc.ClientAccSessionImpl;
 import org.jdiameter.client.impl.app.auth.ClientAuthSessionImpl;
+import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.jdiameter.server.impl.app.acc.ServerAccSessionImpl;
 import org.jdiameter.server.impl.app.auth.ServerAuthSessionImpl;
 import org.mobicents.diameter.stack.DiameterListener;
@@ -1482,11 +1484,14 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
           
           return activity.sendSyncMessage(message);
         }
-      }
-      catch (Exception e)
-      {
-        logger.error("Failure sending sync request.", e);
-      }
+      } catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
+		} catch (Exception e) {
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
+		}
 
       // FIXME Throw unknown message exception?
       return null;

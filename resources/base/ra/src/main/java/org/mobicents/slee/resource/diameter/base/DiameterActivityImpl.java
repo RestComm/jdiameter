@@ -8,6 +8,7 @@ import javax.slee.resource.SleeEndpoint;
 
 import net.java.slee.resource.diameter.base.DiameterActivity;
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
+import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 
 import org.apache.log4j.Logger;
@@ -16,6 +17,7 @@ import org.jdiameter.api.EventListener;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.Session;
+import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.base.handlers.BaseSessionCreationListener;
 
@@ -114,8 +116,13 @@ public class DiameterActivityImpl implements DiameterActivity {
 						"Trying to send wrong type of message? ["
 								+ message.getClass() + "] \n" + message);
 			}
+		}  catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
 		} catch (Exception e) {
-			logger.error("Failure sending sync request.", e);
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
 		}
 	}
 
@@ -126,7 +133,6 @@ public class DiameterActivityImpl implements DiameterActivity {
 	}
 
 	public DiameterMessage sendSyncMessage(DiameterMessage message) {
-  	// FIXME: alexandre: is this the right way to send sync?
     try {
       if (message instanceof DiameterMessageImpl) {
         DiameterMessageImpl msg = (DiameterMessageImpl) message;
@@ -140,7 +146,10 @@ public class DiameterActivityImpl implements DiameterActivity {
             "Trying to send wrong type of message? ["
                 + message.getClass() + "] \n" + message);
       }
-    } catch (Exception e) {
+	} catch (JAvpNotAllowedException e) {
+		AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+		throw anae;
+	} catch (Exception e) {
       logger.error("Failure sending sync request.", e);
     }
     

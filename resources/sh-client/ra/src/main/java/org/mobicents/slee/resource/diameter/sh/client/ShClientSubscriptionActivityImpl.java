@@ -31,6 +31,7 @@ import java.io.IOException;
 import javax.slee.resource.SleeEndpoint;
 
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
+import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.ShClientMessageFactory;
@@ -50,6 +51,7 @@ import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.sh.ClientShSession;
 import org.jdiameter.common.impl.app.sh.PushNotificationAnswerImpl;
 import org.jdiameter.common.impl.app.sh.SubscribeNotificationsRequestImpl;
+import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
@@ -99,67 +101,83 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl imple
 	 * (non-Javadoc)
 	 * @see net.java.slee.resource.diameter.sh.client.ShClientSubscriptionActivity#sendPushNotificationAnswer(net.java.slee.resource.diameter.sh.server.events.PushNotificationAnswer)
 	 */
-	public void sendPushNotificationAnswer(PushNotificationAnswer answer) throws IOException
-	{
-		try
-		{
-	    DiameterMessageImpl msg = (DiameterMessageImpl) answer;
-	    
+	public void sendPushNotificationAnswer(PushNotificationAnswer answer) throws IOException {
+		try {
+			DiameterMessageImpl msg = (DiameterMessageImpl) answer;
+
 			this.clientSession.sendPushNotificationAnswer(new PushNotificationAnswerImpl((Answer) msg.getGenericData()));
-		}
-		catch (Exception e) {
-		  throw new IOException("Failure while trying to send Push-Notification-Answer: " + e.getMessage());
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
+		} catch (Exception e) {
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
 		}
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.sh.client.ShClientSubscriptionActivity#sendPushNotificationAnswer(long, boolean)
+	 * 
+	 * @see
+	 * net.java.slee.resource.diameter.sh.client.ShClientSubscriptionActivity
+	 * #sendPushNotificationAnswer(long, boolean)
 	 */
-	public void sendPushNotificationAnswer(long resultCode, boolean isExperimentalResultCode) throws IOException
-	{
-    PushNotificationAnswer pna = this.messageFactory.createPushNotificationAnswer(resultCode, isExperimentalResultCode);
+	public void sendPushNotificationAnswer(long resultCode, boolean isExperimentalResultCode) throws IOException {
+		PushNotificationAnswer pna = this.messageFactory.createPushNotificationAnswer(resultCode, isExperimentalResultCode);
 
-    setSessionData( pna );
-    
+		setSessionData(pna);
+
 		this.sendPushNotificationAnswer(pna);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.sh.client.ShClientSubscriptionActivity#sendSubscriptionNotificationRequest(net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest)
+	 * 
+	 * @see
+	 * net.java.slee.resource.diameter.sh.client.ShClientSubscriptionActivity
+	 * #sendSubscriptionNotificationRequest
+	 * (net.java.slee.resource.diameter.sh.server
+	 * .events.SubscribeNotificationsRequest)
 	 */
-	public void sendSubscriptionNotificationRequest(SubscribeNotificationsRequest request) throws IOException
-	{
-    try
-    {
-		  DiameterMessageImpl msg = (DiameterMessageImpl) request;
-		  
+	public void sendSubscriptionNotificationRequest(SubscribeNotificationsRequest request) throws IOException {
+		try {
+			DiameterMessageImpl msg = (DiameterMessageImpl) request;
+
 			this.clientSession.sendSubscribeNotificationsRequest(new SubscribeNotificationsRequestImpl((Request) msg.getGenericData()));
-		}
-    catch (Exception e) {
-      throw new IOException("Failure while trying to send Push-Notification-Answer: " + e.getMessage());
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
+		} catch (Exception e) {
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
 		}
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.sh.client.ShClientSubscriptionActivity#sendUnsubscribeRequest()
+	 * 
+	 * @see
+	 * net.java.slee.resource.diameter.sh.client.ShClientSubscriptionActivity
+	 * #sendUnsubscribeRequest()
 	 */
-	public void sendUnsubscribeRequest() throws IOException
-	{
-    try
-    {
-  	  // FIXME: Alexandre: How do we know DataReferenceType?
-  	  SubscribeNotificationsRequest snr = this.messageFactory.createSubscribeNotificationsRequest( getSubscribedUserIdendity(), DataReferenceType.REPOSITORY_DATA, SubsReqType.UNSUBSCRIBE );
-  	  
-      DiameterMessageImpl msg = (DiameterMessageImpl) snr;
-  
-      this.clientSession.sendSubscribeNotificationsRequest(new SubscribeNotificationsRequestImpl((Request) msg.getGenericData()));
-    }
-    catch (Exception e) {
-      throw new IOException("Failure while trying to send Subscribe-Notifications-Request for unsubscribing: " + e.getMessage());
-    }
+	public void sendUnsubscribeRequest() throws IOException {
+		try {
+			// FIXME: Alexandre: How do we know DataReferenceType?
+			SubscribeNotificationsRequest snr = this.messageFactory.createSubscribeNotificationsRequest(getSubscribedUserIdendity(), DataReferenceType.REPOSITORY_DATA, SubsReqType.UNSUBSCRIBE);
+
+			DiameterMessageImpl msg = (DiameterMessageImpl) snr;
+
+			this.clientSession.sendSubscribeNotificationsRequest(new SubscribeNotificationsRequestImpl((Request) msg.getGenericData()));
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
+		} catch (Exception e) {
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
+		}
 	}
 
 	/*

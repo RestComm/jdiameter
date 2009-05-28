@@ -1,5 +1,6 @@
 package org.jdiameter.common.impl.app.auth;
 
+import org.jdiameter.api.Answer;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.Request;
@@ -18,7 +19,7 @@ public class AbortSessionAnswerImpl extends AppAnswerEventImpl implements AbortS
         }
     }
 
-    public AbortSessionAnswerImpl(Message message) {
+    public AbortSessionAnswerImpl(Answer message) {
         super(message);
     }
 

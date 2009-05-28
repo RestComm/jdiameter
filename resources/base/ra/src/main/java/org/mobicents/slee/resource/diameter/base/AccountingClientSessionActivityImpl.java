@@ -7,6 +7,7 @@ import javax.slee.resource.SleeEndpoint;
 import net.java.slee.resource.diameter.base.AccountingClientSessionActivity;
 import net.java.slee.resource.diameter.base.AccountingSessionState;
 import net.java.slee.resource.diameter.base.events.AccountingRequest;
+import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 
 import org.jdiameter.api.Answer;
@@ -16,11 +17,9 @@ import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.acc.ClientAccSession;
-import org.jdiameter.api.app.StateChangeListener;
-import org.jdiameter.client.impl.app.acc.ClientAccSessionImpl;
 import org.jdiameter.common.api.app.acc.ClientAccSessionState;
-import org.jdiameter.common.api.app.acc.ServerAccSessionState;
 import org.jdiameter.common.impl.app.acc.AccountRequestImpl;
+import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 
 public class AccountingClientSessionActivityImpl extends
@@ -47,27 +46,20 @@ public class AccountingClientSessionActivityImpl extends
 		// TODO Auto-generated constructor stub
 	}
 
-	public void sendAccountRequest(AccountingRequest request)
-			throws IOException {
+	public void sendAccountRequest(AccountingRequest request) throws IOException {
 
 		// FIXME: baranowb - add here magic to pick up and set in super correct
 		// Session in case of Relly agent
 		DiameterMessageImpl msg = (DiameterMessageImpl) request;
 		try {
-			this.clientSession.sendAccountRequest(new AccountRequestImpl(
-					(Request) msg.getGenericData()));
-		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
+			this.clientSession.sendAccountRequest(new AccountRequestImpl((Request) msg.getGenericData()));
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (InternalException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RouteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (OverloadException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
 		}
 
 	}

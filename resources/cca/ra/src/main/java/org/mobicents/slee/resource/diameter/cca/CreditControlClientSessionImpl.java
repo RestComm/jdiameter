@@ -25,6 +25,7 @@ import org.jdiameter.api.cca.ClientCCASession;
 import org.jdiameter.common.api.app.cca.ClientCCASessionState;
 import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
 import org.jdiameter.common.impl.app.cca.JCreditControlRequestImpl;
+import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 
 /**
@@ -119,8 +120,13 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl imp
 		validateState(ccr);
 		try {
 			session.sendCreditControlRequest(new JCreditControlRequestImpl((Request) msg.getGenericData()));
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
 		} catch (Exception e) {
-			logger.error("Failed while trying to send Credit-Control-Request.", e);
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
 		}
 	}
 
@@ -141,8 +147,13 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl imp
 
 		try {
 			session.sendCreditControlRequest(new JCreditControlRequestImpl((Request) msg.getGenericData()));
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
 		} catch (Exception e) {
-			logger.error("Failed while trying to send Credit-Control-Request (INITIAL_REQUEST).", e);
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
 		}
 	}
 
@@ -163,8 +174,13 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl imp
 
 		try {
 			session.sendCreditControlRequest(new JCreditControlRequestImpl((Request) msg.getGenericData()));
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
 		} catch (Exception e) {
-			logger.error("Failed while trying to send Credit-Control-Request (UPDATE_REQUEST).", e);
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
 		}
 	}
 
@@ -187,8 +203,13 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl imp
 
 		try {
 			session.sendCreditControlRequest(new JCreditControlRequestImpl((Request) msg.getGenericData()));
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
 		} catch (Exception e) {
-			logger.error("Failed while trying to send Credit-Control-Request (TERMINATION_REQUEST).", e);
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
 		}
 	}
 
@@ -204,8 +225,13 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl imp
 
 		try {
 			session.sendReAuthAnswer(new ReAuthAnswerImpl((Answer) msg.getGenericData()));
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
 		} catch (Exception e) {
-			logger.error("Failed while trying to send Re-Auth-Answer.", e);
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
 		}
 	}
 
