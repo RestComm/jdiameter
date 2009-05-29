@@ -203,7 +203,7 @@ public class MultipleServicesCreditControlAvpImpl extends GroupedAvpImpl impleme
 	 * MultipleServicesCreditControlAvp#getServiceIdentifiers()
 	 */
 	public long[] getServiceIdentifiers() {
-		return super.getAllAvpAsUInt32(CreditControlAVPCodes.Service_Identifier);
+		return getAvpsAsUnsigned32(CreditControlAVPCodes.Service_Identifier);
 	}
 
 	/*

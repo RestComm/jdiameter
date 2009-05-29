@@ -1,8 +1,7 @@
 /*
  * Mobicents, Communications Middleware
  * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party
- * contributors as
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
  * distributed under license by Red Hat Middleware LLC.
@@ -43,19 +42,17 @@ import org.jdiameter.api.Message;
  */
 public class AbortSessionAnswerImpl extends DiameterMessageImpl implements AbortSessionAnswer {
 
-	public AbortSessionAnswerImpl(Message message) {
-		super(message);
-	}
+  public AbortSessionAnswerImpl(Message message) {
+    super(message);
+  }
 
-	@Override
-	public String getLongName() {
+  @Override
+  public String getLongName() {
+    return "Abort-Session-Answer";
+  }
 
-		return "Abort-Session-Answer";
-	}
-
-	@Override
-	public String getShortName() {
-
-		return "ASA";
-	}
+  @Override
+  public String getShortName() {
+    return "ASA";
+  }
 }

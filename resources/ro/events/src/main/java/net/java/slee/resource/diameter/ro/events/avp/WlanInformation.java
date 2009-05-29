@@ -6,7 +6,7 @@ public interface WlanInformation extends net.java.slee.resource.diameter.base.ev
     /**
      * Returns the value of the PDG-Address AVP, of type Address. A return value of null implies that the AVP has not been set.
      */
-    abstract net.java.slee.resource.diameter.base.events.avp.AddressAvp getPdgAddress();
+    abstract net.java.slee.resource.diameter.base.events.avp.Address getPdgAddress();
 
     /**
      * Returns the value of the PDG-Charging-Id AVP, of type Unsigned32. A return value of null implies that the AVP has not been set.
@@ -16,7 +16,7 @@ public interface WlanInformation extends net.java.slee.resource.diameter.base.ev
     /**
      * Returns the value of the WAG-Address AVP, of type Address. A return value of null implies that the AVP has not been set.
      */
-    abstract net.java.slee.resource.diameter.base.events.avp.AddressAvp getWagAddress();
+    abstract net.java.slee.resource.diameter.base.events.avp.Address getWagAddress();
 
     /**
      * Returns the value of the WAG-PLMN-Id AVP, of type OctetString. A return value of null implies that the AVP has not been set.
@@ -36,7 +36,7 @@ public interface WlanInformation extends net.java.slee.resource.diameter.base.ev
     /**
      * Returns the value of the WLAN-UE-Local-IPAddress AVP, of type Address. A return value of null implies that the AVP has not been set.
      */
-    abstract net.java.slee.resource.diameter.base.events.avp.AddressAvp getWlanUeLocalIpaddress();
+    abstract net.java.slee.resource.diameter.base.events.avp.Address getWlanUeLocalIpaddress();
 
     /**
      * Returns true if the PDG-Address AVP is present in the message.
@@ -76,7 +76,7 @@ public interface WlanInformation extends net.java.slee.resource.diameter.base.ev
     /**
      * Sets the value of the PDG-Address AVP, of type Address.
      */
-    abstract void setPdgAddress(net.java.slee.resource.diameter.base.events.avp.AddressAvp pdgAddress);
+    abstract void setPdgAddress(net.java.slee.resource.diameter.base.events.avp.Address pdgAddress);
 
     /**
      * Sets the value of the PDG-Charging-Id AVP, of type Unsigned32.
@@ -86,7 +86,7 @@ public interface WlanInformation extends net.java.slee.resource.diameter.base.ev
     /**
      * Sets the value of the WAG-Address AVP, of type Address.
      */
-    abstract void setWagAddress(net.java.slee.resource.diameter.base.events.avp.AddressAvp wagAddress);
+    abstract void setWagAddress(net.java.slee.resource.diameter.base.events.avp.Address wagAddress);
 
     /**
      * Sets the value of the WAG-PLMN-Id AVP, of type OctetString.
@@ -106,6 +106,6 @@ public interface WlanInformation extends net.java.slee.resource.diameter.base.ev
     /**
      * Sets the value of the WLAN-UE-Local-IPAddress AVP, of type Address.
      */
-    abstract void setWlanUeLocalIpaddress(net.java.slee.resource.diameter.base.events.avp.AddressAvp wlanUeLocalIpaddress);
+    abstract void setWlanUeLocalIpaddress(net.java.slee.resource.diameter.base.events.avp.Address wlanUeLocalIpaddress);
 
 }

@@ -25,7 +25,7 @@
  */
 package org.mobicents.slee.resource.diameter.ro.events.avp;
 
-import net.java.slee.resource.diameter.base.events.avp.AddressAvp;
+import net.java.slee.resource.diameter.base.events.avp.Address;
 import net.java.slee.resource.diameter.ro.events.avp.PsFurnishChargingInformation;
 import net.java.slee.resource.diameter.ro.events.avp.PsInformation;
 
@@ -65,7 +65,7 @@ public class PsInformationImpl extends GroupedAvpImpl implements PsInformation {
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.PsInformation#getCgAddress()
    */
-  public AddressAvp getCgAddress()
+  public Address getCgAddress()
   {
     if(hasCgAddress())
     {
@@ -73,7 +73,7 @@ public class PsInformationImpl extends GroupedAvpImpl implements PsInformation {
 
       try
       {
-        return AddressAvp.decode( rawAvp.getRaw() );
+        return Address.decode( rawAvp.getRaw() );
       }
       catch (AvpDataException e) {
         reportAvpFetchError(e.getMessage(), DiameterRoAvpCodes.CG_ADDRESS);
@@ -109,7 +109,7 @@ public class PsInformationImpl extends GroupedAvpImpl implements PsInformation {
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.PsInformation#getGgsnAddress()
    */
-  public AddressAvp getGgsnAddress()
+  public Address getGgsnAddress()
   {
     if(hasGgsnAddress())
     {
@@ -117,7 +117,7 @@ public class PsInformationImpl extends GroupedAvpImpl implements PsInformation {
 
       try
       {
-        return AddressAvp.decode( rawAvp.getRaw() );
+        return Address.decode( rawAvp.getRaw() );
       }
       catch (AvpDataException e) {
         reportAvpFetchError(e.getMessage(), DiameterRoAvpCodes.GGSN_ADDRESS);
@@ -131,7 +131,7 @@ public class PsInformationImpl extends GroupedAvpImpl implements PsInformation {
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.PsInformation#getPdpAddress()
    */
-  public AddressAvp getPdpAddress()
+  public Address getPdpAddress()
   {
     if(hasPdpAddress())
     {
@@ -139,7 +139,7 @@ public class PsInformationImpl extends GroupedAvpImpl implements PsInformation {
 
       try
       {
-        return AddressAvp.decode( rawAvp.getRaw() );
+        return Address.decode( rawAvp.getRaw() );
       }
       catch (AvpDataException e) {
         reportAvpFetchError(e.getMessage(), DiameterRoAvpCodes.PDP_ADDRESS);
@@ -175,7 +175,7 @@ public class PsInformationImpl extends GroupedAvpImpl implements PsInformation {
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.PsInformation#getSgsnAddress()
    */
-  public AddressAvp getSgsnAddress()
+  public Address getSgsnAddress()
   {
     if(hasSgsnAddress())
     {
@@ -183,7 +183,7 @@ public class PsInformationImpl extends GroupedAvpImpl implements PsInformation {
 
       try
       {
-        return AddressAvp.decode( rawAvp.getRaw() );
+        return Address.decode( rawAvp.getRaw() );
       }
       catch (AvpDataException e) {
         reportAvpFetchError(e.getMessage(), DiameterRoAvpCodes.SGSN_ADDRESS);
@@ -663,9 +663,9 @@ public class PsInformationImpl extends GroupedAvpImpl implements PsInformation {
   }
 
   /* (non-Javadoc)
-   * @see net.java.slee.resource.diameter.ro.events.avp.PsInformation#setCgAddress(net.java.slee.resource.diameter.base.events.avp.AddressAvp)
+   * @see net.java.slee.resource.diameter.ro.events.avp.PsInformation#setCgAddress(net.java.slee.resource.diameter.base.events.avp.Address)
    */
-  public void setCgAddress( AddressAvp cgAddress )
+  public void setCgAddress( Address cgAddress )
   {
     if(hasCgAddress())
     {
@@ -703,9 +703,9 @@ public class PsInformationImpl extends GroupedAvpImpl implements PsInformation {
   }
 
   /* (non-Javadoc)
-   * @see net.java.slee.resource.diameter.ro.events.avp.PsInformation#setGgsnAddress(net.java.slee.resource.diameter.base.events.avp.AddressAvp)
+   * @see net.java.slee.resource.diameter.ro.events.avp.PsInformation#setGgsnAddress(net.java.slee.resource.diameter.base.events.avp.Address)
    */
-  public void setGgsnAddress( AddressAvp ggsnAddress )
+  public void setGgsnAddress( Address ggsnAddress )
   {
     if(hasGgsnAddress())
     {
@@ -723,9 +723,9 @@ public class PsInformationImpl extends GroupedAvpImpl implements PsInformation {
   }
 
   /* (non-Javadoc)
-   * @see net.java.slee.resource.diameter.ro.events.avp.PsInformation#setPdpAddress(net.java.slee.resource.diameter.base.events.avp.AddressAvp)
+   * @see net.java.slee.resource.diameter.ro.events.avp.PsInformation#setPdpAddress(net.java.slee.resource.diameter.base.events.avp.Address)
    */
-  public void setPdpAddress( AddressAvp pdpAddress )
+  public void setPdpAddress( Address pdpAddress )
   {
     if(hasPdpAddress())
     {
@@ -763,9 +763,9 @@ public class PsInformationImpl extends GroupedAvpImpl implements PsInformation {
   }
 
   /* (non-Javadoc)
-   * @see net.java.slee.resource.diameter.ro.events.avp.PsInformation#setSgsnAddress(net.java.slee.resource.diameter.base.events.avp.AddressAvp)
+   * @see net.java.slee.resource.diameter.ro.events.avp.PsInformation#setSgsnAddress(net.java.slee.resource.diameter.base.events.avp.Address)
    */
-  public void setSgsnAddress( AddressAvp sgsnAddress )
+  public void setSgsnAddress( Address sgsnAddress )
   {
     if(hasSgsnAddress())
     {

@@ -1,8 +1,7 @@
 /*
  * Mobicents, Communications Middleware
  * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party
- * contributors as
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
  * distributed under license by Red Hat Middleware LLC.
@@ -55,32 +54,38 @@ package net.java.slee.resource.diameter.base.events.avp;
  */
 public interface ExperimentalResultAvp extends GroupedAvp {
 
-    /**
-     * Returns true if the Vendor-Id AVP is present in the message.
-     */
-    public boolean hasVendorId();
+  /**
+   * Returns true if the Vendor-Id AVP is present in the message.
+   */
+  public boolean hasVendorIdAVP();
 
-    /**
-     * Sets the value of the Vendor-Id AVP, of type Unsigned32.
-     * @throws IllegalStateException if setVendorId has already been called
-     */
-    public void setVendorId(long vendorId);
+  /**
+   * Returns the value of the Vendor-Id AVP, of type Unsigned32.
+   * A return value of Long.MIN_VALUE implies that the AVP has not been set or some error has been encountered.
+   */
+  public long getVendorIdAVP();
 
-    /**
-     * Returns true if the Experimental-Result-Code AVP is present in the message.
-     */
-    public boolean hasExperimentalResultCode();
+  /**
+   * Sets the value of the Vendor-Id AVP, of type Unsigned32.
+   * @throws IllegalStateException if setVendorId has already been called
+   */
+  public void setVendorIdAVP(long vendorId);
 
-    /**
-     * Returns the value of the Experimental-Result-Code AVP, of type Unsigned32.
-     * A return value of -1 implies that the AVP has not been set or some error has been encountered.
-     */
-    public long getExperimentalResultCode();
+  /**
+   * Returns true if the Experimental-Result-Code AVP is present in the message.
+   */
+  public boolean hasExperimentalResultCode();
 
-    /**
-     * Sets the value of the Experimental-Result-Code AVP, of type Unsigned32.
-     * @throws IllegalStateException if setExperimentalResultCode has already been called
-     */
-    public void setExperimentalResultCode(long experimentalResultCode);
+  /**
+   * Returns the value of the Experimental-Result-Code AVP, of type Unsigned32.
+   * A return value of Long.MIN_VALUE implies that the AVP has not been set or some error has been encountered.
+   */
+  public long getExperimentalResultCode();
+
+  /**
+   * Sets the value of the Experimental-Result-Code AVP, of type Unsigned32.
+   * @throws IllegalStateException if setExperimentalResultCode has already been called
+   */
+  public void setExperimentalResultCode(long experimentalResultCode);
 
 }

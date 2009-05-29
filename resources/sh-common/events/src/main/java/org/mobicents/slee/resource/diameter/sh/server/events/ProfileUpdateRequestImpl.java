@@ -25,20 +25,12 @@
  */
 package org.mobicents.slee.resource.diameter.sh.server.events;
 
-import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
-import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.sh.client.events.avp.DataReferenceType;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
 import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
 import net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest;
 
-import org.apache.log4j.Logger;
-import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Message;
-import org.mobicents.diameter.dictionary.AvpDictionary;
-import org.mobicents.diameter.dictionary.AvpRepresentation;
-import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.DiameterShMessageImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvpImpl;
 
@@ -53,8 +45,6 @@ import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp
  */
 public class ProfileUpdateRequestImpl extends DiameterShMessageImpl implements ProfileUpdateRequest {
 
-  private static transient Logger logger = Logger.getLogger(ProfileUpdateRequestImpl.class);
-
   public ProfileUpdateRequestImpl(Message msg) {
     super(msg);
 
@@ -65,85 +55,40 @@ public class ProfileUpdateRequestImpl extends DiameterShMessageImpl implements P
   }
 
   public DataReferenceType getDataReference() {
-    try {
-      return hasDataReference() ? DataReferenceType.fromInt(super.message.getAvps().getAvp(DiameterShAvpCodes.DATA_REFERENCE).getInteger32()) : null;
-    } catch (AvpDataException e) {
-      logger.error("Unable to decode Data-Reference AVP contents.", e);
-    }
-
-    return null;
+    return (DataReferenceType) getAvpAsEnumerated(DiameterShAvpCodes.DATA_REFERENCE, DiameterShAvpCodes.SH_VENDOR_ID, DataReferenceType.class);
   }
 
   public UserIdentityAvp getUserIdentity() {
-    if (hasUserIdentity()) {
-      try {
-        Avp rawAvp = super.message.getAvps().getAvp(DiameterShAvpCodes.USER_IDENTITY, 10415L);
-
-        UserIdentityAvpImpl a = new UserIdentityAvpImpl(rawAvp.getCode(), rawAvp.getVendorId(), rawAvp.isMandatory() ? 1 : 0, rawAvp.isEncrypted() ? 1 : 0, new byte[] {});
-
-        for (Avp subAvp : rawAvp.getGrouped()) {
-          try {
-            a.setExtensionAvps(new DiameterAvp[] { new DiameterAvpImpl(subAvp.getCode(), subAvp.getVendorId(), subAvp.isMandatory() ? 1 : 0, subAvp.isEncrypted() ? 1 : 0, subAvp.getRaw(),
-                null) });
-          } catch (AvpNotAllowedException e) {
-            logger.error("Unable to add child AVPs to User-Identity AVP.", e);
-          }
-        }
-
-        return a;
-      } catch (AvpDataException e) {
-        logger.error("Unable to decode User-Identity AVP contents.", e);
-      }
-    }
-
-    return null;
+    return (UserIdentityAvp) getAvpAsCustom(DiameterShAvpCodes.USER_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID, UserIdentityAvpImpl.class);
   }
 
   public boolean hasDataReference() {
-    return super.message.getAvps().getAvp(DiameterShAvpCodes.DATA_REFERENCE) != null;
+    return hasAvp(DiameterShAvpCodes.DATA_REFERENCE);
   }
 
   public boolean hasUserData() {
-    return super.message.getAvps().getAvp(DiameterShAvpCodes.USER_DATA) != null;
+    return hasAvp(DiameterShAvpCodes.USER_DATA);
   }
 
   public boolean hasUserIdentity() {
-    return super.message.getAvps().getAvp(DiameterShAvpCodes.USER_IDENTITY) != null;
+    return hasAvp(DiameterShAvpCodes.USER_IDENTITY);
   }
 
   public void setDataReference(DataReferenceType dataReference) {
-    addAvp(DiameterShAvpCodes.DATA_REFERENCE, dataReference.getValue());
+    addAvp(DiameterShAvpCodes.DATA_REFERENCE, DiameterShAvpCodes.SH_VENDOR_ID, (long)dataReference.getValue());
   }
 
   public void setUserIdentity(UserIdentityAvp userIdentity)
   {
-    // FIXME: Alexandre: Use addAvp(...)
-    if(hasUserIdentity())
-    {
-      throw new IllegalStateException("AVP User-Identity is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterShAvpCodes.USER_IDENTITY, 10415L);
-      boolean mandatoryAvp = !(avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot"));
-      boolean protectedAvp = avpRep.getRuleProtected().equals("must");
-
-      super.setAvpAsGrouped(avpRep.getCode(), avpRep.getVendorId(), userIdentity.getExtensionAvps(), mandatoryAvp, protectedAvp);
-    }
+    addAvp(DiameterShAvpCodes.USER_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID, userIdentity.byteArrayValue());
   }
 
   public String getUserData() {
-    try {
-      return hasUserData() ? super.message.getAvps().getAvp(DiameterShAvpCodes.USER_DATA).getUTF8String() : null;
-    } catch (AvpDataException e) {
-      logger.error("Unable to decode User-Data AVP contents.", e);
-    }
-
-    return null;
+    return getAvpAsOctetString(DiameterShAvpCodes.USER_DATA, DiameterShAvpCodes.SH_VENDOR_ID);
   }
 
-  public void setUserData(byte[] userData) {
-    addAvp(DiameterShAvpCodes.USER_DATA, 10415L, userData);
+  public void setUserData(String userData) {
+    addAvp(DiameterShAvpCodes.USER_DATA, DiameterShAvpCodes.SH_VENDOR_ID, userData);
   }
 
 }

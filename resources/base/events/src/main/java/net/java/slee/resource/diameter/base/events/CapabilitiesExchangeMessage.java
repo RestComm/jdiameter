@@ -1,6 +1,6 @@
 package net.java.slee.resource.diameter.base.events;
 
-import net.java.slee.resource.diameter.base.events.avp.AddressAvp;
+import net.java.slee.resource.diameter.base.events.avp.Address;
 import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp;
 
 /**
@@ -26,7 +26,7 @@ public interface CapabilitiesExchangeMessage extends DiameterMessage{
 	 * implies that no Host-IP-Address AVPs have been set. The elements in the
 	 * given array are Address objects.
 	 */
-	AddressAvp[] getHostIpAddresses();
+	Address[] getHostIpAddresses();
 
 	/**
 	 * Sets a single Host-IP-Address AVP in the message, of type Address.
@@ -35,7 +35,7 @@ public interface CapabilitiesExchangeMessage extends DiameterMessage{
 	 *             if setHostIpAddress or setHostIpAddresses has already been
 	 *             called
 	 */
-	void setHostIpAddress(AddressAvp hostIpAddress);
+	void setHostIpAddress(Address hostIpAddress);
 
 	/**
 	 * Returns the set of Host-IP-Address AVPs. The returned array contains the
@@ -43,7 +43,7 @@ public interface CapabilitiesExchangeMessage extends DiameterMessage{
 	 * implies that no Host-IP-Address AVPs have been set. The elements in the
 	 * given array are Address objects.
 	 */
-	AddressAvp getHostIpAddress();
+	Address getHostIpAddress();
 
 	/**
 	 * Sets the set of Host-IP-Address AVPs, with all the values in the given
@@ -58,7 +58,7 @@ public interface CapabilitiesExchangeMessage extends DiameterMessage{
 	 *             if setHostIpAddress or setHostIpAddresses has already been
 	 *             called
 	 */
-	void setHostIpAddresses(AddressAvp[] hostIpAddresses);
+	void setHostIpAddresses(Address[] hostIpAddresses);
 
 	/**
 	 * Returns true if the Vendor-Id AVP is present in the message.

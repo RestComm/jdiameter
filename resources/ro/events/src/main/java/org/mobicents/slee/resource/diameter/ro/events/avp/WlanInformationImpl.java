@@ -25,7 +25,7 @@
  */
 package org.mobicents.slee.resource.diameter.ro.events.avp;
 
-import net.java.slee.resource.diameter.base.events.avp.AddressAvp;
+import net.java.slee.resource.diameter.base.events.avp.Address;
 import net.java.slee.resource.diameter.ro.events.avp.WlanInformation;
 import net.java.slee.resource.diameter.ro.events.avp.WlanRadioContainer;
 
@@ -65,7 +65,7 @@ public class WlanInformationImpl extends GroupedAvpImpl implements WlanInformati
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.WlanInformation#getPdgAddress()
    */
-  public AddressAvp getPdgAddress()
+  public Address getPdgAddress()
   {
     if(hasPdgAddress())
     {
@@ -73,7 +73,7 @@ public class WlanInformationImpl extends GroupedAvpImpl implements WlanInformati
 
       try
       {
-        return AddressAvp.decode( rawAvp.getRaw() );
+        return Address.decode( rawAvp.getRaw() );
       }
       catch (AvpDataException e) {
         reportAvpFetchError(e.getMessage(), DiameterRoAvpCodes.PDG_ADDRESS);
@@ -109,7 +109,7 @@ public class WlanInformationImpl extends GroupedAvpImpl implements WlanInformati
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.WlanInformation#getWagAddress()
    */
-  public AddressAvp getWagAddress()
+  public Address getWagAddress()
   {
     if(hasWagAddress())
     {
@@ -117,7 +117,7 @@ public class WlanInformationImpl extends GroupedAvpImpl implements WlanInformati
 
       try
       {
-        return AddressAvp.decode( rawAvp.getRaw() );
+        return Address.decode( rawAvp.getRaw() );
       }
       catch (AvpDataException e) {
         reportAvpFetchError(e.getMessage(), DiameterRoAvpCodes.WAG_ADDRESS);
@@ -197,7 +197,7 @@ public class WlanInformationImpl extends GroupedAvpImpl implements WlanInformati
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.WlanInformation#getWlanUeLocalIpaddress()
    */
-  public AddressAvp getWlanUeLocalIpaddress()
+  public Address getWlanUeLocalIpaddress()
   {
     if(hasWlanUeLocalIpaddress())
     {
@@ -205,7 +205,7 @@ public class WlanInformationImpl extends GroupedAvpImpl implements WlanInformati
 
       try
       {
-        return AddressAvp.decode( rawAvp.getRaw() );
+        return Address.decode( rawAvp.getRaw() );
       }
       catch (AvpDataException e) {
         reportAvpFetchError(e.getMessage(), DiameterRoAvpCodes.WLAN_UE_LOCAL_IPADDRESS);
@@ -273,9 +273,9 @@ public class WlanInformationImpl extends GroupedAvpImpl implements WlanInformati
   }
 
   /* (non-Javadoc)
-   * @see net.java.slee.resource.diameter.ro.events.avp.WlanInformation#setPdgAddress(net.java.slee.resource.diameter.base.events.avp.AddressAvp)
+   * @see net.java.slee.resource.diameter.ro.events.avp.WlanInformation#setPdgAddress(net.java.slee.resource.diameter.base.events.avp.Address)
    */
-  public void setPdgAddress( AddressAvp pdgAddress )
+  public void setPdgAddress( Address pdgAddress )
   {
     if(hasPdgAddress())
     {
@@ -313,9 +313,9 @@ public class WlanInformationImpl extends GroupedAvpImpl implements WlanInformati
   }
 
   /* (non-Javadoc)
-   * @see net.java.slee.resource.diameter.ro.events.avp.WlanInformation#setWagAddress(net.java.slee.resource.diameter.base.events.avp.AddressAvp)
+   * @see net.java.slee.resource.diameter.ro.events.avp.WlanInformation#setWagAddress(net.java.slee.resource.diameter.base.events.avp.Address)
    */
-  public void setWagAddress( AddressAvp wagAddress )
+  public void setWagAddress( Address wagAddress )
   {
     if(hasWagAddress())
     {
@@ -393,9 +393,9 @@ public class WlanInformationImpl extends GroupedAvpImpl implements WlanInformati
   }
 
   /* (non-Javadoc)
-   * @see net.java.slee.resource.diameter.ro.events.avp.WlanInformation#setWlanUeLocalIpaddress(net.java.slee.resource.diameter.base.events.avp.AddressAvp)
+   * @see net.java.slee.resource.diameter.ro.events.avp.WlanInformation#setWlanUeLocalIpaddress(net.java.slee.resource.diameter.base.events.avp.Address)
    */
-  public void setWlanUeLocalIpaddress( AddressAvp wlanUeLocalIpaddress )
+  public void setWlanUeLocalIpaddress( Address wlanUeLocalIpaddress )
   {
     if(hasWlanUeLocalIpaddress())
     {

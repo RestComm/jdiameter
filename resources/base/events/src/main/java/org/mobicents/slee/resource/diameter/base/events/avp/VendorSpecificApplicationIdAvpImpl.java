@@ -58,7 +58,7 @@ public class VendorSpecificApplicationIdAvpImpl extends GroupedAvpImpl implement
    * @see net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp#getVendorIds()
    */
   public long[] getVendorIds() {
-    return getAllAvpAsUInt32(Avp.VENDOR_ID);
+    return getAvpsAsUnsigned32(Avp.VENDOR_ID);
   }
 
   /*

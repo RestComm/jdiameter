@@ -31,13 +31,9 @@ import net.java.slee.resource.diameter.sh.client.events.DiameterShMessage;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
 import net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp;
 
-import org.apache.log4j.Logger;
 import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
-import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Message;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
-
 import org.mobicents.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvpImpl;
 /**
  * 
@@ -50,100 +46,61 @@ import org.mobicents.slee.resource.diameter.sh.client.events.avp.SupportedFeatur
  */
 public class DiameterShMessageImpl extends DiameterMessageImpl implements DiameterShMessage {
 
-  private static transient Logger logger = Logger.getLogger(DiameterShMessageImpl.class);
-
   protected String longMessageName = null;
-	protected String shortMessageName = null;
-	
-	public DiameterShMessageImpl(Message msg)
-	{
-		super(msg);
-	}
+  protected String shortMessageName = null;
 
-	@Override
-	public String getLongName()
-	{
-		return this.longMessageName;
-	}
+  public DiameterShMessageImpl(Message msg)
+  {
+    super(msg);
+  }
 
-	@Override
-	public String getShortName()
-	{
-		return this.shortMessageName;
-	}
+  @Override
+  public String getLongName()
+  {
+    return this.longMessageName;
+  }
 
-	public AuthSessionStateType getAuthSessionState()
-	{
-	  try
-    {
-      return hasAuthSessionState() ? AuthSessionStateType.fromInt(super.message.getAvps().getAvp(DiameterAvpCodes.AUTH_SESSION_STATE).getInteger32()) : null;
+  @Override
+  public String getShortName()
+  {
+    return this.shortMessageName;
+  }
+
+  public AuthSessionStateType getAuthSessionState()
+  {
+    return (AuthSessionStateType) getAvpAsEnumerated(Avp.AUTH_SESSION_STATE, AuthSessionStateType.class);
+  }
+
+  public SupportedFeaturesAvp[] getSupportedFeatureses()
+  {
+    return (SupportedFeaturesAvp[]) getAvpsAsCustom(DiameterShAvpCodes.SUPPORTED_FEATURES, DiameterShAvpCodes.SH_VENDOR_ID, SupportedFeaturesAvpImpl.class);
+  }
+
+  public boolean hasAuthSessionState()
+  {
+    return hasAvp(DiameterAvpCodes.AUTH_SESSION_STATE);
+  }
+
+  public void setAuthSessionState(AuthSessionStateType authSessionState)
+  {
+    addAvp(DiameterAvpCodes.AUTH_SESSION_STATE, (long)authSessionState.getValue());
+  }
+
+  public void setSupportedFeatures(SupportedFeaturesAvp supportedFeatures)
+  {
+    addAvp(DiameterShAvpCodes.SUPPORTED_FEATURES, DiameterShAvpCodes.SH_VENDOR_ID, supportedFeatures.byteArrayValue());
+  }
+
+  public void setSupportedFeatureses(SupportedFeaturesAvp[] supportedFeatureses)
+  {
+    for(SupportedFeaturesAvp supportedFeatures : supportedFeatureses) {
+      setSupportedFeatures(supportedFeatures);
     }
-    catch ( AvpDataException e ) {
-      logger.error( "Unable to decode Auth-Session-State AVP contents.", e );
-    }
-    
-    return null;
-	}
+  }
 
-	public SupportedFeaturesAvp[] getSupportedFeatureses()
-	{
-		AvpSet set = super.message.getAvps().getAvps(DiameterShAvpCodes.SUPPORTED_FEATURES);
-		SupportedFeaturesAvp[] returnValue = new SupportedFeaturesAvp[set.size()];
-		int counter=0;
-
-		for(Avp rawAvp : set)
-		{
-			try
-			{
-				returnValue[counter++] = new SupportedFeaturesAvpImpl(rawAvp.getCode(), rawAvp.getVendorId(), rawAvp.isMandatory() ? 1 : 0, rawAvp.isEncrypted() ? 1 : 0, rawAvp.getRaw());
-			}
-			catch (AvpDataException e) {
-	      logger.error( "Unable to decode Supported-Features AVP contents.", e );
-			}
-		}
-		
-		return returnValue;
-	}
-
-	public boolean hasAuthSessionState()
-	{
-		return super.message.getAvps().getAvp(DiameterAvpCodes.AUTH_SESSION_STATE) != null;
-	}
-
-	public void setAuthSessionState(AuthSessionStateType authSessionState)
-	{
-		addAvp(DiameterAvpCodes.AUTH_SESSION_STATE, authSessionState.getValue());
-	}
-
-	public void setSupportedFeatures(SupportedFeaturesAvp supportedFeatures)
-	{
-    // FIXME: Alexandre: Make it use addAvp(...)
-		super.setAvpAsGrouped(supportedFeatures.getCode(), supportedFeatures.getVendorId(), supportedFeatures.getExtensionAvps(), supportedFeatures.getMandatoryRule() == 0, supportedFeatures.getProtectedRule() == 0);
-	}
-
-	public void setSupportedFeatureses(SupportedFeaturesAvp[] supportedFeatureses)
-	{
-	  for(SupportedFeaturesAvp supportedFeatures : supportedFeatureses) {
-	    setSupportedFeatures(supportedFeatures);
-	  }
-	}
-
-	public SupportedFeaturesAvp getSupportedFeatures()
-	{
-		Avp rawAvp = super.message.getAvps().getAvp(DiameterShAvpCodes.SUPPORTED_FEATURES);
-		
-		if(rawAvp != null)
-		{
-			try
-			{
-				return new SupportedFeaturesAvpImpl(rawAvp.getCode(), rawAvp.getVendorId(), rawAvp.isMandatory() ? 1 : 0, rawAvp.isEncrypted() ? 1 : 0, rawAvp.getRaw());
-			}
-			catch (AvpDataException e) {
-        logger.error( "Unable to decode Supported-Features AVP contents.", e );
-			}
-		}
-			
-		return null;
-	}
+  public SupportedFeaturesAvp getSupportedFeatures()
+  {
+    return (SupportedFeaturesAvp) getAvpAsCustom(DiameterShAvpCodes.SUPPORTED_FEATURES, DiameterShAvpCodes.SH_VENDOR_ID, SupportedFeaturesAvpImpl.class);
+  }
 
 }

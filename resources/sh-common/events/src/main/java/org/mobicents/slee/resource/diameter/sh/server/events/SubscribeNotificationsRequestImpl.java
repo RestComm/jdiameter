@@ -28,8 +28,6 @@ package org.mobicents.slee.resource.diameter.sh.server.events;
 
 import java.util.Date;
 
-import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
-import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.sh.client.events.avp.DataReferenceType;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
 import net.java.slee.resource.diameter.sh.client.events.avp.SendDataIndicationType;
@@ -42,9 +40,6 @@ import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Message;
-import org.mobicents.diameter.dictionary.AvpDictionary;
-import org.mobicents.diameter.dictionary.AvpRepresentation;
-import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.DiameterShMessageImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvpImpl;
 /**
@@ -52,8 +47,7 @@ import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp
  * Start time:12:38:45 2009-05-22<br>
  * Project: diameter-parent<br>
  * Implementation of {@link SubscribeNotificationsRequest} interface.
- * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski
- *         </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class SubscribeNotificationsRequestImpl extends DiameterShMessageImpl implements SubscribeNotificationsRequest {
@@ -72,7 +66,7 @@ public class SubscribeNotificationsRequestImpl extends DiameterShMessageImpl imp
 
   public DataReferenceType[] getDataReferences()
   {
-    AvpSet set = super.message.getAvps().getAvps(DiameterShAvpCodes.DATA_REFERENCE, 10415L);
+    AvpSet set = super.message.getAvps().getAvps(DiameterShAvpCodes.DATA_REFERENCE, DiameterShAvpCodes.SH_VENDOR_ID);
     if(set == null )
     {
       return null;
@@ -103,7 +97,7 @@ public class SubscribeNotificationsRequestImpl extends DiameterShMessageImpl imp
   {
     try
     {
-      return hasSendDataIndication() ? SendDataIndicationType.fromInt(super.message.getAvps().getAvp(DiameterShAvpCodes.SEND_DATA_INDICATION, 10415L).getInteger32()) : null;
+      return hasSendDataIndication() ? SendDataIndicationType.fromInt(super.message.getAvps().getAvp(DiameterShAvpCodes.SEND_DATA_INDICATION, DiameterShAvpCodes.SH_VENDOR_ID).getInteger32()) : null;
     }
     catch ( AvpDataException e ) {
       logger.error( "Unable to decode Send-Data-Indication AVP contents.", e );
@@ -116,7 +110,7 @@ public class SubscribeNotificationsRequestImpl extends DiameterShMessageImpl imp
   {
     try
     {
-      return hasServerName() ? super.message.getAvps().getAvp(DiameterShAvpCodes.SERVER_NAME, 10415L).getUTF8String() : null;
+      return hasServerName() ? super.message.getAvps().getAvp(DiameterShAvpCodes.SERVER_NAME, DiameterShAvpCodes.SH_VENDOR_ID).getUTF8String() : null;
     }
     catch ( AvpDataException e ) {
       logger.error( "Unable to decode Server-Name AVP contents.", e );
@@ -127,7 +121,7 @@ public class SubscribeNotificationsRequestImpl extends DiameterShMessageImpl imp
 
   public byte[][] getServiceIndications()
   {
-    AvpSet set = super.message.getAvps().getAvps(DiameterShAvpCodes.SERVICE_INDICATION, 10415L);
+    AvpSet set = super.message.getAvps().getAvps(DiameterShAvpCodes.SERVICE_INDICATION, DiameterShAvpCodes.SH_VENDOR_ID);
     
     if(set == null)
     {
@@ -161,7 +155,7 @@ public class SubscribeNotificationsRequestImpl extends DiameterShMessageImpl imp
     {
       try
       {
-        return SubsReqType.fromInt(super.message.getAvps().getAvp(DiameterShAvpCodes.SUBS_REQ_TYPE, 10415L).getInteger32());
+        return SubsReqType.fromInt(super.message.getAvps().getAvp(DiameterShAvpCodes.SUBS_REQ_TYPE, DiameterShAvpCodes.SH_VENDOR_ID).getInteger32());
       }
       catch (AvpDataException e) {
         logger.error( "Unable to decode Subs-Req-Type AVP contents.", e );
@@ -173,22 +167,22 @@ public class SubscribeNotificationsRequestImpl extends DiameterShMessageImpl imp
 
   public boolean hasSendDataIndication()
   {
-    return super.message.getAvps().getAvp(DiameterShAvpCodes.SEND_DATA_INDICATION, 10415L) != null;
+    return hasAvp(DiameterShAvpCodes.SEND_DATA_INDICATION, DiameterShAvpCodes.SH_VENDOR_ID);
   }
 
   public boolean hasServerName()
   {
-    return super.message.getAvps().getAvp(DiameterShAvpCodes.SERVER_NAME, 10415L) != null;
+    return hasAvp(DiameterShAvpCodes.SERVER_NAME, DiameterShAvpCodes.SH_VENDOR_ID);
   }
 
   public boolean hasSubsReqType()
   {
-    return super.message.getAvps().getAvp(DiameterShAvpCodes.SUBS_REQ_TYPE, 10415L) != null;
+    return hasAvp(DiameterShAvpCodes.SUBS_REQ_TYPE, DiameterShAvpCodes.SH_VENDOR_ID);
   }
 
   public void setDataReference(DataReferenceType dataReference)
   {
-    super.message.getAvps().addAvp(DiameterShAvpCodes.DATA_REFERENCE, dataReference.getValue(), 10415L, true, true);
+    addAvp(DiameterShAvpCodes.DATA_REFERENCE, DiameterShAvpCodes.SH_VENDOR_ID, (long)dataReference.getValue());
   }
 
   public void setDataReferences(DataReferenceType[] dataReferences)
@@ -197,25 +191,23 @@ public class SubscribeNotificationsRequestImpl extends DiameterShMessageImpl imp
     
     for (DataReferenceType drt : dataReferences)
     {
-      super.message.getAvps().addAvp(DiameterShAvpCodes.DATA_REFERENCE, drt.getValue(), 10415L, true, false);
+      super.message.getAvps().addAvp(DiameterShAvpCodes.DATA_REFERENCE, drt.getValue(), DiameterShAvpCodes.SH_VENDOR_ID, true, false);
     }
   }
 
   public void setSendDataIndication(SendDataIndicationType sendDataIndication)
   {
-    super.message.getAvps().addAvp(DiameterShAvpCodes.SEND_DATA_INDICATION, sendDataIndication.getValue(), 10415L, true, true);
+    addAvp(DiameterShAvpCodes.SEND_DATA_INDICATION, DiameterShAvpCodes.SH_VENDOR_ID, sendDataIndication.getValue());
   }
 
   public void setServerName(String serverName)
   {
-    // FIXME: alexandre: is this OctetString?
-    super.message.getAvps().addAvp(DiameterShAvpCodes.SERVER_NAME, serverName, 10415L, true, true, true);
+    addAvp(DiameterShAvpCodes.SERVER_NAME, DiameterShAvpCodes.SH_VENDOR_ID, serverName);
   }
 
   public void setServiceIndication(byte[] serviceIndication)
   {
-    super.message.getAvps().removeAvp(DiameterShAvpCodes.SERVICE_INDICATION);
-    super.message.getAvps().addAvp(DiameterShAvpCodes.SERVICE_INDICATION, serviceIndication, 10415L, true, false);
+    addAvp(DiameterShAvpCodes.SERVICE_INDICATION, DiameterShAvpCodes.SH_VENDOR_ID, serviceIndication);
   }
 
   public void setServiceIndications(byte[][] serviceIndications)
@@ -224,70 +216,47 @@ public class SubscribeNotificationsRequestImpl extends DiameterShMessageImpl imp
     
     for (byte[] b : serviceIndications)
     {
-      super.message.getAvps().addAvp(DiameterShAvpCodes.SERVICE_INDICATION, b, 10415L, true, false);
+      super.message.getAvps().addAvp(DiameterShAvpCodes.SERVICE_INDICATION, b, DiameterShAvpCodes.SH_VENDOR_ID, true, false);
     }
   }
 
   public void setSubsReqType(SubsReqType subsReqType)
   {
-    super.message.getAvps().addAvp(DiameterShAvpCodes.SUBS_REQ_TYPE, subsReqType.getValue(), 10415L, true, true);
+    addAvp(DiameterShAvpCodes.SUBS_REQ_TYPE, DiameterShAvpCodes.SH_VENDOR_ID, (long)subsReqType.getValue());
   }
 
   public UserIdentityAvp getUserIdentity() {
-    //byte[] avpBytes = getAvpAsGrouped(DiameterShAvpCodes.USER_IDENTITY, 10415L);
-    
-    return (UserIdentityAvp) getAvpAsCustom(DiameterShAvpCodes.USER_IDENTITY, 10415L, UserIdentityAvpImpl.class);
+    return (UserIdentityAvp) getAvpAsCustom(DiameterShAvpCodes.USER_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID, UserIdentityAvpImpl.class);
 	}
 
   public boolean hasUserData()
   {
-    return super.message.getAvps().getAvp(DiameterShAvpCodes.USER_DATA, 10415L) != null;
+    return hasAvp(DiameterShAvpCodes.USER_DATA, DiameterShAvpCodes.SH_VENDOR_ID);
   }
 
   public boolean hasUserIdentity()
   {
-    return super.message.getAvps().getAvp(DiameterShAvpCodes.USER_IDENTITY, 10415L) != null;
+    return hasAvp(DiameterShAvpCodes.USER_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID);
   }
 
   public Date getExpiryTime()
   {
-    try
-    {
-      return hasExpiryTime() ? super.message.getAvps().getAvp(DiameterShAvpCodes.EXPIRY_TIME, 10415L).getTime() : null;
-    }
-    catch ( AvpDataException e ) {
-      logger.error( "Unable to decode Expiry-Time AVP contents.", e );
-    }
-    
-    return null;
+    return getAvpAsTime(DiameterShAvpCodes.EXPIRY_TIME, DiameterShAvpCodes.SH_VENDOR_ID);
   }
 
   public boolean hasExpiryTime()
   {
-    return super.message.getAvps().getAvp(DiameterShAvpCodes.EXPIRY_TIME) != null;
+    return hasAvp(DiameterShAvpCodes.EXPIRY_TIME, DiameterShAvpCodes.SH_VENDOR_ID);
   }
 
   public void setExpiryTime(Date expiryTime)
   {
-    addAvp(DiameterShAvpCodes.EXPIRY_TIME, expiryTime);
+    addAvp(DiameterShAvpCodes.EXPIRY_TIME, DiameterShAvpCodes.SH_VENDOR_ID, expiryTime);
   }
 
   public void setUserIdentity(UserIdentityAvp userIdentity)
   {
-    // FIXME: Alexandre: Make it use addAvp(...)
-    if(hasUserIdentity())
-    {
-      throw new IllegalStateException("AVP User-Identity is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterShAvpCodes.USER_IDENTITY, 10415L);
-      boolean mandatoryAvp = !(avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot"));
-      boolean protectedAvp = avpRep.getRuleProtected().equals("must");
-
-      // FIXME: Alexandre: Need to specify protected!
-      super.setAvpAsGrouped(avpRep.getCode(), avpRep.getVendorId(), userIdentity.getExtensionAvps(), mandatoryAvp, protectedAvp);
-    }
+    addAvp(DiameterShAvpCodes.USER_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID, userIdentity.byteArrayValue() );
   }
 
 }

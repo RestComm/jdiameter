@@ -44,101 +44,97 @@ import org.jdiameter.api.Message;
  */
 public abstract class AccountingMessageImpl extends DiameterMessageImpl implements AccountingMessage {
 
-	/**
-	 * 
-	 * @param message
-	 */
-	public AccountingMessageImpl(Message message) {
-		super(message);
-		// TODO Auto-generated constructor stub
-	}
+  /**
+   * 
+   * @param message
+   */
+  public AccountingMessageImpl(Message message) {
+    super(message);
+    // TODO Auto-generated constructor stub
+  }
 
-	public boolean hasAccountingRecordType() {
-		return message.getAvps().getAvp(Avp.ACC_RECORD_TYPE) != null;
-	}
+  public boolean hasAccountingRecordType() {
+    return hasAvp(Avp.ACC_RECORD_TYPE);
+  }
 
-	public AccountingRecordType getAccountingRecordType() {
-		return AccountingRecordType.fromInt(getAvpAsInt32(Avp.ACC_RECORD_TYPE));
-	}
+  public AccountingRecordType getAccountingRecordType() {
+    return AccountingRecordType.fromInt(getAvpAsInteger32(Avp.ACC_RECORD_TYPE));
+  }
 
-	public void setAccountingRecordType(AccountingRecordType accountingRecordType) {
-		addAvp(Avp.ACC_RECORD_TYPE, accountingRecordType.getValue());
-	}
+  public void setAccountingRecordType(AccountingRecordType accountingRecordType) {
+    addAvp(Avp.ACC_RECORD_TYPE, accountingRecordType.getValue());
+  }
 
-	public boolean hasAccountingRecordNumber() {
-		return message.getAvps().getAvp(Avp.ACC_RECORD_NUMBER) != null;
-	}
+  public boolean hasAccountingRecordNumber() {
+    return hasAvp(Avp.ACC_RECORD_NUMBER);
+  }
 
-	public long getAccountingRecordNumber() {
-		return getAvpAsUInt32(Avp.ACC_RECORD_NUMBER);
-	}
+  public long getAccountingRecordNumber() {
+    return getAvpAsUnsigned32(Avp.ACC_RECORD_NUMBER);
+  }
 
-	public void setAccountingRecordNumber(long accountingRecordNumber) {
-		addAvp(Avp.ACC_RECORD_NUMBER, accountingRecordNumber);
-	}
+  public void setAccountingRecordNumber(long accountingRecordNumber) {
+    addAvp(Avp.ACC_RECORD_NUMBER, accountingRecordNumber);
+  }
 
-	public boolean hasAccountingSubSessionId() {
-		return message.getAvps().getAvp(Avp.ACC_SUB_SESSION_ID) != null;
-	}
+  public boolean hasAccountingSubSessionId() {
+    return message.getAvps().getAvp(Avp.ACC_SUB_SESSION_ID) != null;
+  }
 
-	public long getAccountingSubSessionId() {
-		return getAvpAsUInt32(Avp.ACC_SUB_SESSION_ID);
-	}
+  public long getAccountingSubSessionId() {
+    return getAvpAsUnsigned32(Avp.ACC_SUB_SESSION_ID);
+  }
 
-	public void setAccountingSubSessionId(long accountingSubSessionId) {
-		addAvp(Avp.ACC_SUB_SESSION_ID, accountingSubSessionId);
-	}
+  public void setAccountingSubSessionId(long accountingSubSessionId) {
+    addAvp(Avp.ACC_SUB_SESSION_ID, accountingSubSessionId);
+  }
 
-	public boolean hasAccountingSessionId() {
-		return super.hasAvp(Avp.ACC_SESSION_ID);
-	}
+  public boolean hasAccountingSessionId() {
+    return super.hasAvp(Avp.ACC_SESSION_ID);
+  }
 
-	public byte[] getAccountingSessionId() {
-		if (hasAccountingSessionId()) {
-			return super.getAvpAsOctet(Avp.ACC_SESSION_ID).getBytes();
-		}
+  public byte[] getAccountingSessionId() {
+      return getAvpAsOctetString(Avp.ACC_SESSION_ID).getBytes();
+  }
 
-		return null;
-	}
+  public void setAccountingSessionId(byte[] accountingSessionId) {
+    addAvp(Avp.ACC_SESSION_ID, new String(accountingSessionId));
+  }
 
-	public void setAccountingSessionId(byte[] accountingSessionId) {
-		addAvp(Avp.ACC_SESSION_ID, new String(accountingSessionId));
-	}
+  public boolean hasAcctMultiSessionId() {
+    return message.getAvps().getAvp(Avp.ACC_MULTI_SESSION_ID) != null;
+  }
 
-	public boolean hasAcctMultiSessionId() {
-		return message.getAvps().getAvp(Avp.ACC_MULTI_SESSION_ID) != null;
-	}
+  public String getAcctMultiSessionId() {
+    return getAvpAsUTF8String(Avp.ACC_MULTI_SESSION_ID);
+  }
 
-	public String getAcctMultiSessionId() {
-		return getAvpAsUtf8(Avp.ACC_MULTI_SESSION_ID);
-	}
+  public void setAcctMultiSessionId(String acctMultiSessionId) {
+    addAvp(Avp.ACC_MULTI_SESSION_ID, acctMultiSessionId);
+  }
 
-	public void setAcctMultiSessionId(String acctMultiSessionId) {
-		addAvp(Avp.ACC_MULTI_SESSION_ID, acctMultiSessionId);
-	}
+  public boolean hasAcctInterimInterval() {
+    return message.getAvps().getAvp(Avp.ACCT_INTERIM_INTERVAL) != null;
+  }
 
-	public boolean hasAcctInterimInterval() {
-		return message.getAvps().getAvp(Avp.ACCT_INTERIM_INTERVAL) != null;
-	}
+  public long getAcctInterimInterval() {
+    return getAvpAsUnsigned32(Avp.ACCT_INTERIM_INTERVAL);
+  }
 
-	public long getAcctInterimInterval() {
-		return getAvpAsUInt32(Avp.ACCT_INTERIM_INTERVAL);
-	}
+  public void setAcctInterimInterval(long acctInterimInterval) {
+    addAvp(Avp.ACCT_INTERIM_INTERVAL, acctInterimInterval);
+  }
 
-	public void setAcctInterimInterval(long acctInterimInterval) {
-		addAvp(Avp.ACCT_INTERIM_INTERVAL, acctInterimInterval);
-	}
+  public boolean hasAccountingRealtimeRequired() {
+    return message.getAvps().getAvp(Avp.ACCOUNTING_REALTIME_REQUIRED) != null;
+  }
 
-	public boolean hasAccountingRealtimeRequired() {
-		return message.getAvps().getAvp(Avp.ACCOUNTING_REALTIME_REQUIRED) != null;
-	}
+  public AccountingRealtimeRequiredType getAccountingRealtimeRequired() {
+    return AccountingRealtimeRequiredType.fromInt(getAvpAsInteger32(Avp.ACCOUNTING_REALTIME_REQUIRED));
+  }
 
-	public AccountingRealtimeRequiredType getAccountingRealtimeRequired() {
-		return AccountingRealtimeRequiredType.fromInt(getAvpAsInt32(Avp.ACCOUNTING_REALTIME_REQUIRED));
-	}
-
-	public void setAccountingRealtimeRequired(AccountingRealtimeRequiredType accountingRealtimeRequired) {
-		addAvp(Avp.ACCOUNTING_REALTIME_REQUIRED, accountingRealtimeRequired.getValue());
-	}
+  public void setAccountingRealtimeRequired(AccountingRealtimeRequiredType accountingRealtimeRequired) {
+    addAvp(Avp.ACCOUNTING_REALTIME_REQUIRED, accountingRealtimeRequired.getValue());
+  }
 
 }

@@ -53,7 +53,7 @@ public class ProxyInfoAvpImpl extends GroupedAvpImpl implements ProxyInfoAvp {
   }
 
   public DiameterIdentity getProxyHost() {
-    return getAvpAsIdentity(PROXY_HOST);
+    return getAvpAsDiameterIdentity(PROXY_HOST);
   }
 
   public void setProxyHost(DiameterIdentity proxyHost) {

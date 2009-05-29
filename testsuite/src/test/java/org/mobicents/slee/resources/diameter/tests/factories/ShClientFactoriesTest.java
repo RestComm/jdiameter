@@ -1,7 +1,6 @@
 package org.mobicents.slee.resources.diameter.tests.factories;
 
 import static org.jdiameter.client.impl.helpers.Parameters.AcctApplId;
-import static org.jdiameter.client.impl.helpers.Parameters.ApplicationId;
 import static org.jdiameter.client.impl.helpers.Parameters.Assembler;
 import static org.jdiameter.client.impl.helpers.Parameters.AuthApplId;
 import static org.jdiameter.client.impl.helpers.Parameters.OwnDiameterURI;
@@ -46,19 +45,20 @@ public class ShClientFactoriesTest {
   private static String clientHost = "127.0.0.1";
   private static String clientPort = "21812";
   private static String clientURI  = "aaa://" + clientHost + ":" + clientPort;
-  
+
   private static String serverHost = "localhost";
   private static String serverPort = "1812";
   private static String serverURI = "aaa://" + serverHost + ":" + serverPort;
-  
+
   private static String realmName = "mobicents.org";
 
   private static ShClientMessageFactoryImpl shClientFactory;
   //private static DiameterShAvpFactoryImpl shAvpFactory;
-  
+  private static Stack stack;
+
   static
   {
-    Stack stack = new org.jdiameter.client.impl.StackImpl();
+    stack = new org.jdiameter.client.impl.StackImpl();
     try
     {
       stack.init(new MyConfiguration());
@@ -67,23 +67,43 @@ public class ShClientFactoriesTest {
     catch ( Exception e ) {
       throw new RuntimeException("Failed to initialize the stack.");
     }
-    
+
     shClientFactory = new ShClientMessageFactoryImpl(stack);
     //shAvpFactory = new DiameterShAvpFactoryImpl(stack);
   }
-  
+
   @Test
   public void isRequestPUR() throws Exception
   {
     ProfileUpdateRequest pur = shClientFactory.createProfileUpdateRequest();
     assertTrue("Request Flag in Profile-Update-Request is not set.", pur.getHeader().isRequest());
   }
-  
+
+  @Test
+  public void testGettersAndSettersPUR() throws Exception
+  {
+    ProfileUpdateRequest pur = shClientFactory.createProfileUpdateRequest();
+    
+    int nFailures = AvpAssistant.testMethods(pur, ProfileUpdateRequest.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }
+
   @Test
   public void isAnswerPNA() throws Exception
   {
     PushNotificationAnswer pna = shClientFactory.createPushNotificationAnswer();
     assertFalse("Request Flag in Push-Notification-Answer is set.", pna.getHeader().isRequest());
+  }
+
+  @Test
+  public void testGettersAndSettersPNA() throws Exception
+  {
+    PushNotificationAnswer pna = shClientFactory.createPushNotificationAnswer();
+    
+    int nFailures = AvpAssistant.testMethods(pna, PushNotificationAnswer.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
   }
 
   @Test
@@ -112,24 +132,44 @@ public class ShClientFactoriesTest {
     long originalValue = 5001;
 
     PushNotificationAnswer pna = shClientFactory.createPushNotificationAnswer(originalValue, true );
-    
+
     long obtainedValue = pna.getExperimentalResult().getExperimentalResultCode();
-    
+
     assertTrue("Experimental-Result-Code in PNA should be " + originalValue +" and is " + obtainedValue + ".", originalValue == obtainedValue);
   }
-  
+
   @Test
   public void isRequestSNR() throws Exception
   {
     SubscribeNotificationsRequest snr = shClientFactory.createSubscribeNotificationsRequest();
     assertTrue("Request Flag in Subscribe-Notifications-Request is not set.", snr.getHeader().isRequest());
   }
-  
+
+  @Test
+  public void testGettersAndSettersSNR() throws Exception
+  {
+    SubscribeNotificationsRequest snr = shClientFactory.createSubscribeNotificationsRequest();
+    
+    int nFailures = AvpAssistant.testMethods(snr, SubscribeNotificationsRequest.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }
+
   @Test
   public void isRequestUDR() throws Exception
   {
     UserDataRequest udr = shClientFactory.createUserDataRequest();
     assertTrue("Request Flag in User-Data-Request is not set.", udr.getHeader().isRequest());
+  }
+
+  @Test
+  public void testGettersAndSettersUDR() throws Exception
+  {
+    UserDataRequest udr = shClientFactory.createUserDataRequest();
+    
+    int nFailures = AvpAssistant.testMethods(udr, UserDataRequest.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
   }
 
   @Test
@@ -139,16 +179,16 @@ public class ShClientFactoriesTest {
 
     UserIdentityAvpImpl uiAvp = new UserIdentityAvpImpl(DiameterShAvpCodes.USER_IDENTITY, 10415L, 1, 0, new byte[]{});
     uiAvp.setPublicIdentity( originalValue );
-    
+
     UserDataRequest udr = shClientFactory.createUserDataRequest( uiAvp, DataReferenceType.IMS_PUBLIC_IDENTITY );
-    
+
     String obtainedValue1 = udr.getUserIdentity().getPublicIdentity();
     String obtainedValue2 = udr.getUserIdentity().getPublicIdentity();
-    
+
     assertTrue("Obtained value for Public-Identity AVP differs from original.", obtainedValue1.equals( originalValue ));
     assertTrue("Obtained #1 value for Public-Identity AVP differs from Obtained #2.", obtainedValue1.equals( obtainedValue2 ));
   }
-  
+
   @Test
   public void isPURPublicIdentityAccessibleTwice() throws Exception
   {
@@ -156,16 +196,16 @@ public class ShClientFactoriesTest {
 
     UserIdentityAvpImpl uiAvp = new UserIdentityAvpImpl(DiameterShAvpCodes.USER_IDENTITY, 10415L, 1, 0, new byte[]{});
     uiAvp.setPublicIdentity( originalValue );
-    
+
     ProfileUpdateRequest udr = shClientFactory.createProfileUpdateRequest( uiAvp, DataReferenceType.IMS_PUBLIC_IDENTITY, new byte[1] );
-    
+
     String obtainedValue1 = udr.getUserIdentity().getPublicIdentity();
     String obtainedValue2 = udr.getUserIdentity().getPublicIdentity();
-    
+
     assertTrue("Obtained value for Public-Identity AVP differs from original.", obtainedValue1.equals( originalValue ));
     assertTrue("Obtained #1 value for Public-Identity AVP differs from Obtained #2.", obtainedValue1.equals( obtainedValue2 ));
   }
-  
+
   @Test
   public void isSNRPublicIdentityAccessibleTwice() throws Exception
   {
@@ -173,12 +213,12 @@ public class ShClientFactoriesTest {
 
     UserIdentityAvpImpl uiAvp = new UserIdentityAvpImpl(DiameterShAvpCodes.USER_IDENTITY, 10415L, 1, 0, new byte[]{});
     uiAvp.setPublicIdentity( originalValue );
-    
+
     SubscribeNotificationsRequest udr = shClientFactory.createSubscribeNotificationsRequest( uiAvp, DataReferenceType.IMS_PUBLIC_IDENTITY,SubsReqType.SUBSCRIBE );
-    
+
     String obtainedValue1 = udr.getUserIdentity().getPublicIdentity();
     String obtainedValue2 = udr.getUserIdentity().getPublicIdentity();
-    
+
     assertTrue("Obtained value for Public-Identity AVP differs from original.", obtainedValue1.equals( originalValue ));
     assertTrue("Obtained #1 value for Public-Identity AVP differs from Obtained #2.", obtainedValue1.equals( obtainedValue2 ));
   }
@@ -191,7 +231,7 @@ public class ShClientFactoriesTest {
     public MyConfiguration() 
     {
       super();
-      
+
       add(Assembler, Assembler.defValue());
       add(OwnDiameterURI, clientURI);
       add(OwnRealm, realmName);
@@ -199,7 +239,7 @@ public class ShClientFactoriesTest {
       // Set Ericsson SDK feature
       //add(UseUriAsFqdn, true);
       // Set Common Applications
-      add(ApplicationId,
+      add(org.jdiameter.client.impl.helpers.Parameters.ApplicationId,
           // AppId 1
           getInstance().
           add(VendorId,   193L).

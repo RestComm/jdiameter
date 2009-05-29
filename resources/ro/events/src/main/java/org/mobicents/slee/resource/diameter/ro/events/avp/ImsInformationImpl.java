@@ -25,7 +25,7 @@
  */
 package org.mobicents.slee.resource.diameter.ro.events.avp;
 
-import net.java.slee.resource.diameter.base.events.avp.AddressAvp;
+import net.java.slee.resource.diameter.base.events.avp.Address;
 import net.java.slee.resource.diameter.ro.events.avp.ApplicationServerInformation;
 import net.java.slee.resource.diameter.ro.events.avp.EventType;
 import net.java.slee.resource.diameter.ro.events.avp.ImsInformation;
@@ -400,7 +400,7 @@ public class ImsInformationImpl extends GroupedAvpImpl implements ImsInformation
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.ImsInformation#getServedPartyIpAddress()
    */
-  public AddressAvp getServedPartyIpAddress()
+  public Address getServedPartyIpAddress()
   {
     if(hasServedPartyIpAddress())
     {
@@ -408,7 +408,7 @@ public class ImsInformationImpl extends GroupedAvpImpl implements ImsInformation
 
       try
       {
-        return AddressAvp.decode(rawAvp.getRaw());
+        return Address.decode(rawAvp.getRaw());
       }
       catch (AvpDataException e) {
         reportAvpFetchError(e.getMessage(), DiameterRoAvpCodes.SERVED_PARTY_IP_ADDRESS);
@@ -977,9 +977,9 @@ public class ImsInformationImpl extends GroupedAvpImpl implements ImsInformation
   }
 
   /* (non-Javadoc)
-   * @see net.java.slee.resource.diameter.ro.events.avp.ImsInformation#setServedPartyIpAddress(net.java.slee.resource.diameter.base.events.avp.AddressAvp)
+   * @see net.java.slee.resource.diameter.ro.events.avp.ImsInformation#setServedPartyIpAddress(net.java.slee.resource.diameter.base.events.avp.Address)
    */
-  public void setServedPartyIpAddress( AddressAvp servedPartyIpAddress )
+  public void setServedPartyIpAddress( Address servedPartyIpAddress )
   {
     if(hasServedPartyIpAddress())
     {

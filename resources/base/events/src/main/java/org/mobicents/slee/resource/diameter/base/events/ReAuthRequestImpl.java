@@ -52,9 +52,9 @@ public class ReAuthRequestImpl extends DiameterMessageImpl implements ReAuthRequ
 		return message.getAvps().getAvp(Avp.RE_AUTH_REQUEST_TYPE) != null;
 	}
 
-	public ReAuthRequestType getReAuthRequestType() {
-		return ReAuthRequestType.fromInt(getAvpAsInt32(Avp.RE_AUTH_REQUEST_TYPE));
-	}
+  public ReAuthRequestType getReAuthRequestType() {
+    return ReAuthRequestType.fromInt(getAvpAsInteger32(Avp.RE_AUTH_REQUEST_TYPE));
+  }
 
 	public void setReAuthRequestType(ReAuthRequestType reAuthRequestType) {
 		addAvp(Avp.RE_AUTH_REQUEST_TYPE, reAuthRequestType.getValue());

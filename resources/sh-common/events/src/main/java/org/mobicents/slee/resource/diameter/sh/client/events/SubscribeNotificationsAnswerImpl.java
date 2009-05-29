@@ -59,7 +59,7 @@ public class SubscribeNotificationsAnswerImpl extends DiameterShMessageImpl impl
 	}
 
 	public Date getExpiryTime() {
-		return this.hasExpiryTime() ? super.getAvpAsDate(DiameterShAvpCodes.EXPIRY_TIME) : null;
+		return getAvpAsTime(DiameterShAvpCodes.EXPIRY_TIME);
 	}
 
 	public boolean hasExpiryTime() {
@@ -87,7 +87,7 @@ public class SubscribeNotificationsAnswerImpl extends DiameterShMessageImpl impl
 				}
 
 				if (vidAvp != null) {
-					avp.setVendorId(vidAvp.getUnsigned32());
+					avp.setVendorIdAVP(vidAvp.getUnsigned32());
 				}
 			}
 		}

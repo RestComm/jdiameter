@@ -1,6 +1,6 @@
 package net.java.slee.resource.diameter.ro.events.avp;
 
-import net.java.slee.resource.diameter.base.events.avp.AddressAvp;
+import net.java.slee.resource.diameter.base.events.avp.Address;
 import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
 
 /**
@@ -75,7 +75,7 @@ public interface ImsInformation extends GroupedAvp{
     /**
      * Returns the value of the Served-Party-IP-Address AVP, of type Address. A return value of null implies that the AVP has not been set.
      */
-    abstract AddressAvp getServedPartyIpAddress();
+    abstract Address getServedPartyIpAddress();
 
     /**
      * Returns the value of the Server-Capabilities AVP, of type OctetString. A return value of null implies that the AVP has not been set.
@@ -275,7 +275,7 @@ public interface ImsInformation extends GroupedAvp{
     /**
      * Sets the value of the Served-Party-IP-Address AVP, of type Address.
      */
-    abstract void setServedPartyIpAddress(AddressAvp servedPartyIpAddress);
+    abstract void setServedPartyIpAddress(Address servedPartyIpAddress);
 
     /**
      * Sets the value of the Server-Capabilities AVP, of type OctetString.

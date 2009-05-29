@@ -27,9 +27,7 @@ package org.mobicents.slee.resource.diameter.base.events.avp;
 
 import net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp;
 
-import org.apache.log4j.Logger;
 import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
 
 /**
  * 
@@ -44,8 +42,6 @@ import org.jdiameter.api.AvpDataException;
  */
 public class ExperimentalResultAvpImpl extends GroupedAvpImpl implements ExperimentalResultAvp {
 
-  private static transient Logger logger = Logger.getLogger(ExperimentalResultAvpImpl.class);
-
   /**
    * 
    * @param code
@@ -54,41 +50,27 @@ public class ExperimentalResultAvpImpl extends GroupedAvpImpl implements Experim
    * @param prt
    * @param value
    */
-	public ExperimentalResultAvpImpl(int code, long vendorId, int mnd, int prt, byte[] value)
-	{
-		super(code, vendorId, mnd, prt, value);
-	}
+  public ExperimentalResultAvpImpl(int code, long vendorId, int mnd, int prt, byte[] value)
+  {
+    super(code, vendorId, mnd, prt, value);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp#getExperimentalResultCode()
-	 */
-	public long getExperimentalResultCode()
-	{
-		if (!hasExperimentalResultCode())
-		{
-			return -1;
-		}
-		else
-		{
-			try {
-				Avp rawAvp = super.avpSet.getAvp(Avp.EXPERIMENTAL_RESULT_CODE);
-				return rawAvp.getUnsigned32();
-			}
-			catch (AvpDataException e) {
-			  logger.error( "", e );			
-				return -1;
-			}
-		}
-	}
-	
-	/*
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp#getExperimentalResultCode()
+   */
+  public long getExperimentalResultCode()
+  {
+    return getAvpAsUnsigned32(Avp.EXPERIMENTAL_RESULT_CODE);
+  }
+
+  /*
    * (non-Javadoc)
    * @see net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp#hasExperimentalResultCode()
    */
   public boolean hasExperimentalResultCode()
   {
-  	return super.avpSet.getAvp(Avp.EXPERIMENTAL_RESULT_CODE) != null;
+    return hasAvp(Avp.EXPERIMENTAL_RESULT_CODE);
   }
 
   /*
@@ -101,44 +83,30 @@ public class ExperimentalResultAvpImpl extends GroupedAvpImpl implements Experim
   }
 
   /*
-	 * (non-Javadoc)
-	 * @see org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl#getVendorId()
-	 */
-	public long getVendorId()
-	{
-    if (!hasVendorId())
-    {
-      return -1;
-    }
-    else
-    {
-      try {
-        Avp rawAvp = super.avpSet.getAvp(Avp.VENDOR_ID);
-        return rawAvp.getUnsigned32();
-      }
-      catch (AvpDataException e) {
-        logger.error( "", e );      
-        return -1;
-      }
-    }
+   * (non-Javadoc)
+   * @see org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl#getVendorId()
+   */
+  public long getVendorIdAVP()
+  {
+    return getAvpAsUnsigned32(Avp.VENDOR_ID);
   }
 
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp#hasVendorId()
-	 */
-	public boolean hasVendorId()
-	{
-		return super.avpSet.getAvp(Avp.VENDOR_ID) != null;
-	}
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp#hasVendorId()
+   */
+  public boolean hasVendorIdAVP()
+  {
+    return hasAvp(Avp.VENDOR_ID);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp#setVendorId(long)
-	 */
-	public void setVendorId(long vendorId)
-	{
-	  addAvp(Avp.VENDOR_ID, vendorId,true);
-	}
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp#setVendorId(long)
+   */
+  public void setVendorIdAVP(long vendorId)
+  {
+    addAvp(Avp.VENDOR_ID, vendorId);
+  }
 
 }

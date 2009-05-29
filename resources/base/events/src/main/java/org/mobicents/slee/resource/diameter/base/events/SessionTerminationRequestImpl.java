@@ -38,7 +38,6 @@ import org.jdiameter.api.Message;
  *Implementation of {@link SessionTerminationRequest}.
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
- * @author <a href="mailto:emmartins@gmail.com"> Eduardo Martins </a>
  * @see SessionTerminationMessageImpl
  */
 public class SessionTerminationRequestImpl  extends SessionTerminationMessageImpl implements SessionTerminationRequest{
@@ -62,7 +61,7 @@ public class SessionTerminationRequestImpl  extends SessionTerminationMessageImp
   }
 
   public TerminationCauseType getTerminationCause() {
-    return TerminationCauseType.fromInt(getAvpAsInt32(Avp.TERMINATION_CAUSE));
+    return TerminationCauseType.fromInt(getAvpAsInteger32(Avp.TERMINATION_CAUSE));
   }
 
   public void setTerminationCause(TerminationCauseType terminationCause) {

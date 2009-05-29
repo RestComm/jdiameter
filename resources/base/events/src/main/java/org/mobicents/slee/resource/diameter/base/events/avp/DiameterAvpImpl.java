@@ -25,6 +25,8 @@
  */
 package org.mobicents.slee.resource.diameter.base.events.avp;
 
+import java.util.Arrays;
+
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvpType;
 
@@ -33,129 +35,141 @@ import org.jdiameter.client.impl.parser.MessageParser;
 
 /**
  * 
- * Super project: mobicents 12:51:53 <br>
- * 2008-05-08 Base class for all AVP classes.<br>
- * Implementation of {@link DiameterAvp}
- * 
- * @author <a href = "mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * Super project:  mobicents
+ * 12:51:53 2008-05-08	
+ * @author <a href = "mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
  * @author <a href = "mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author Erick Svenson
  */
 public class DiameterAvpImpl implements DiameterAvp {
 
-	protected final Logger log = Logger.getLogger(DiameterAvpImpl.class);
+  protected  final Logger log = Logger.getLogger(DiameterAvpImpl.class);
 
-	protected long vendorId;
-	protected int code, mnd, prt;
-	protected String name = "undefined";
-	// FIXME: baranowb; isnt this wrong?
-	protected DiameterAvpType type = DiameterAvpType.DIAMETER_IDENTITY;
-	protected MessageParser parser = new MessageParser(null);
+  protected long vendorId;
+  protected int code, mnd, prt;
+  protected String name = "undefined";
+  protected DiameterAvpType type = null;
+  protected MessageParser parser = new MessageParser(null);
 
-	private byte[] value;
+  protected byte[] value;
 
-	public DiameterAvpImpl(int code, long vendorId, int mnd, int prt, byte[] value, DiameterAvpType type) {
-		this.code = code;
-		this.vendorId = vendorId;
-		this.mnd = mnd;
-		this.prt = prt;
-		this.value = value;
-		this.type = type;
-	}
+  public DiameterAvpImpl(int code, long vendorId, int mnd, int prt, byte[] value, DiameterAvpType type) {
+    this.code = code;
+    this.vendorId = vendorId;
+    this.mnd = mnd;
+    this.prt = prt;
+    this.value = value;
+    this.type=type;
+  }
 
-	public int getCode() {
-		return code;
-	}
+  public int getCode() {
+    return code;
+  }
 
-	public long getVendorId() {
-		return vendorId;
-	}
+  public long getVendorId() {
+    return vendorId;
+  }
 
-	public String getName() {
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public DiameterAvpType getType() {
-		return type;
-	}
+  public DiameterAvpType getType() {
+    return type;
+  }
 
-	public int getMandatoryRule() {
-		return mnd;
-	}
+  public int getMandatoryRule() {
+    return mnd;
+  }
 
-	public int getProtectedRule() {
-		return prt;
-	}
+  public int getProtectedRule() {
+    return prt;
+  }
 
-	public double doubleValue() {
-		try {
-			return parser.bytesToDouble(value);
-		} catch (Exception e) {
-			return 0;
-		}
-	}
+  public double doubleValue() {
+    try {
+      return parser.bytesToDouble(value);
+    }
+    catch (Exception e) {
+      return Double.MIN_VALUE;
+    }
+  }
 
-	public float floatValue() {
-		try {
-			return parser.bytesToFloat(value);
-		} catch (Exception e) {
-			log.debug(e);
-			return 0;
-		}
-	}
+  public float floatValue() {
+    try {
+      return parser.bytesToFloat(value);
+    } catch (Exception e) {
+      log.debug(e);
+      return Float.MIN_VALUE;
+    }
+  }
 
-	public int intValue() {
-		try {
-			return parser.bytesToInt(value);
-		} catch (Exception e) {
-			log.debug(e);
-			return 0;
-		}
-	}
+  public int intValue() {
+    try {
+      return parser.bytesToInt(value);
+    } catch (Exception e) {
+      log.debug(e);
+      return Integer.MIN_VALUE;
+    }
+  }
 
-	public long longValue() {
-		try {
-			return parser.bytesToLong(value);
-		} catch (Exception e) {
-			log.debug(e);
-			return 0;
-		}
-	}
+  public long longValue() {
+    try {
+      return  parser.bytesToLong(value);
+    } catch (Exception e) {
+      log.debug(e);
+      return Long.MIN_VALUE;
+    }
+  }
 
-	public String stringValue() {
-		try {
-			return parser.bytesToUtf8String(value);
-		} catch (Exception e) {
-			log.debug(e);
-			return null;
-		}
-	}
+  public String stringValue() {
+    try {
+      return parser.bytesToUtf8String(value);
+    } catch (Exception e) {
+      log.debug(e);
+      return null;
+    }
+  }
 
-	public byte[] byteArrayValue() {
-		return value;
-	}
+  public byte[] byteArrayValue() {
+    return value;
+  }
 
-	public Object clone() {
-		return new DiameterAvpImpl(code, vendorId, mnd, prt, value, type);
-	}
+  public Object clone() {
+    return new DiameterAvpImpl(code, vendorId, mnd, prt, value,type);
+  }
 
-	@Override
-	public String toString() {
-		return "DiameterAVP[Vendor[" + this.vendorId + "], Code[" + this.code + "], " + "Name[" + this.name + "], Type[" + this.type + "], Mandatory[" + this.mnd + "], " + "Protected[" + this.prt
-				+ "], Value[" + this.value + "]]";
-	}
+  @Override
+  public String toString()
+  {
+    return "DiameterAVP[Vendor[" + this.vendorId + "], Code[" + this.code +"], " +
+                        "Name[" + this.name + "], Type[" + this.type + "], Mandatory[" + this.mnd + "], " +
+                        "Protected[" + this.prt + "], Value[" + this.value + "]]";
+  }
 
-	protected void reportAvpFetchError(String msg, long code) {
-		log.error("Failed to fetch avp, code: " + code + ". Message: " + msg);
-	}
+  protected void reportAvpFetchError(String msg, long code)
+  {
+    log.error("Failed to fetch avp, code: "+code+". Message: "+msg);
+  }
 
-	public String octetStringValue() {
-		try {
-			return parser.bytesToOctetString(value);
-		} catch (Exception e) {
-			log.debug(e);
-			return null;
-		}
-	}
-
+  public String octetStringValue() {
+    try {
+      return parser.bytesToOctetString(value);
+    } catch (Exception e) {
+      log.debug(e);
+      return null;
+    }
+  }
+  
+  @Override
+  public boolean equals(Object that)
+  {
+    if(!(that instanceof DiameterAvp))
+      return false;
+    else
+    {
+      DiameterAvp other = (DiameterAvp) that;
+      return this == other || (this.code == other.getCode() && this.vendorId == other.getVendorId() && Arrays.equals( this.byteArrayValue(), other.byteArrayValue() ));
+    }
+  }
 }

@@ -73,7 +73,7 @@ public class ProfileUpdateAnswerImpl extends DiameterShMessageImpl implements Pr
 				}
 
 				if (vidAvp != null) {
-					avp.setVendorId(vidAvp.getUnsigned32());
+					avp.setVendorIdAVP(vidAvp.getUnsigned32());
 				}
 			}
 		} catch (AvpDataException e) {

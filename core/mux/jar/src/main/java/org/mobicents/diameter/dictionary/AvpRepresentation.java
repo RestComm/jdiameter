@@ -52,6 +52,8 @@ public class AvpRepresentation
 
   enum Rule { must, may, mustnot, shouldnot };
 
+  public enum Type { OctetString, Integer32, Integer64, Unsigned32, Unsigned64, Float32, Float64, Grouped, Address, Time, UTF8String, DiameterIdentity, DiameterURI, Enumerated, IPFilterRule, QoSFilterRule };
+
   public AvpRepresentation( String name, String description, int code, boolean mayEncrypt, String ruleMandatory, String ruleProtected, String ruleVendorBit, long vendorId, boolean constrained, String type )
   {
     this.name = name;

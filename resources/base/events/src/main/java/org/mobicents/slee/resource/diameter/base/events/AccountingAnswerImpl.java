@@ -1,8 +1,7 @@
 /*
  * Mobicents, Communications Middleware
  * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party
- * contributors as
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
  * distributed under license by Red Hat Middleware LLC.
@@ -49,13 +48,11 @@ public class AccountingAnswerImpl extends AccountingMessageImpl implements Accou
 
 	@Override
 	public String getLongName() {
-
 		return "Accounting-Answer";
 	}
 
 	@Override
 	public String getShortName() {
-
 		return "ACA";
 	}
 
@@ -67,10 +64,12 @@ public class AccountingAnswerImpl extends AccountingMessageImpl implements Accou
 
 		if (this.message.isRequest()) {
 			return false;
-		} else if (!this.hasAccountingRealtimeRequired()) {
+		}
+		else if (!this.hasAccountingRealtimeRequired()) {
 			if (!this.hasVendorSpecificApplicationId()) {
 				return false;
-			} else {
+			}
+			else {
 				if (this.getVendorSpecificApplicationId().getAcctApplicationId() == -1) {
 					return false;
 				}
@@ -78,7 +77,6 @@ public class AccountingAnswerImpl extends AccountingMessageImpl implements Accou
 		}
 
 		return true;
-
 	}
 
 }

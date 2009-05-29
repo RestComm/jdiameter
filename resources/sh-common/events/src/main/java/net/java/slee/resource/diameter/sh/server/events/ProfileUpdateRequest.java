@@ -137,6 +137,6 @@ public interface ProfileUpdateRequest extends DiameterShMessage {
 	 * @throws IllegalStateException
 	 *             if setUserData has already been called
 	 */
-	void setUserData(byte[] userData);
+	void setUserData(String userData);
 
 }

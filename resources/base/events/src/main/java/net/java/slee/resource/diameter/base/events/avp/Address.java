@@ -36,12 +36,12 @@ package net.java.slee.resource.diameter.base.events.avp;
  * defined in [IANAADFAM].  The AddressType is used to discriminate
  * the content and format of the remaining octets.
  */
-public class AddressAvp {
+public class Address {
 
   private final AddressType addressType;
   private final byte[] address;
 
-  public AddressAvp(AddressType addressType, byte[] address) {
+  public Address(AddressType addressType, byte[] address) {
     this.addressType = addressType;
     this.address = address;
   }
@@ -54,7 +54,7 @@ public class AddressAvp {
     return address;
   }
 
-  public static AddressAvp decode(byte[] encodedAddress) {
+  public static Address decode(byte[] encodedAddress) {
     // "The first two octets of the Address AVP represents the AddressType"
     // And in 8bits at a time
     int addressTypeInt = (encodedAddress[0] << 8);
@@ -64,7 +64,7 @@ public class AddressAvp {
     byte[] addressBytes = new byte[encodedAddress.length - 2];
     System.arraycopy(encodedAddress, 2, addressBytes, 0, addressBytes.length);
 
-    return new AddressAvp(AddressType.fromInt(addressTypeInt), addressBytes);
+    return new Address(AddressType.fromInt(addressTypeInt), addressBytes);
   }
 
   public byte[] encode() {

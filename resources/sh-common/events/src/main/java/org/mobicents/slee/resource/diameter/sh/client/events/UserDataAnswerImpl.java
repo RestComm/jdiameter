@@ -114,7 +114,7 @@ public class UserDataAnswerImpl extends DiameterShMessageImpl implements UserDat
         }
 
         if (vidAvp != null) {
-          avp.setVendorId(vidAvp.getUnsigned32());
+          avp.setVendorIdAVP(vidAvp.getUnsigned32());
         }
       }
     }

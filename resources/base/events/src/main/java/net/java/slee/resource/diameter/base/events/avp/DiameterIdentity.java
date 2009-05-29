@@ -48,10 +48,27 @@ public class DiameterIdentity
 
   public DiameterIdentity(String identity)
   {
+    if(identity == null)
+      throw new NullPointerException("The contents of the string MUST be the FQDN of the Diameter node, it was null.");
+    
     this.identity = identity;
   }
 
   public String toString() {
     return this.identity;
+  }
+  
+  @Override
+  public boolean equals(Object that) {
+    if (this == that)
+      return true;
+    
+    if(that instanceof DiameterIdentity) {
+      DiameterIdentity other = (DiameterIdentity) that;
+      
+      return this.identity == other.identity || (this.identity != null && this.identity.equals(other.identity));
+    }
+    
+    return false;
   }
 }

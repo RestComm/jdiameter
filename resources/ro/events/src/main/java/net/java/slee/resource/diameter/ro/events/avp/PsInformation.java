@@ -6,7 +6,7 @@ public interface PsInformation extends net.java.slee.resource.diameter.base.even
     /**
      * Returns the value of the CG-Address AVP, of type Address. A return value of null implies that the AVP has not been set.
      */
-    abstract net.java.slee.resource.diameter.base.events.avp.AddressAvp getCgAddress();
+    abstract net.java.slee.resource.diameter.base.events.avp.Address getCgAddress();
 
     /**
      * Returns the value of the Charging-Rule-Base-Name AVP, of type OctetString. A return value of null implies that the AVP has not been set.
@@ -16,12 +16,12 @@ public interface PsInformation extends net.java.slee.resource.diameter.base.even
     /**
      * Returns the value of the GGSN-Address AVP, of type Address. A return value of null implies that the AVP has not been set.
      */
-    abstract net.java.slee.resource.diameter.base.events.avp.AddressAvp getGgsnAddress();
+    abstract net.java.slee.resource.diameter.base.events.avp.Address getGgsnAddress();
 
     /**
      * Returns the value of the PDP-Address AVP, of type Address. A return value of null implies that the AVP has not been set.
      */
-    abstract net.java.slee.resource.diameter.base.events.avp.AddressAvp getPdpAddress();
+    abstract net.java.slee.resource.diameter.base.events.avp.Address getPdpAddress();
 
     /**
      * Returns the value of the PS-Furnish-Charging-Information AVP, of type Grouped. A return value of null implies that the AVP has not been set.
@@ -31,7 +31,7 @@ public interface PsInformation extends net.java.slee.resource.diameter.base.even
     /**
      * Returns the value of the SGSN-Address AVP, of type Address. A return value of null implies that the AVP has not been set.
      */
-    abstract net.java.slee.resource.diameter.base.events.avp.AddressAvp getSgsnAddress();
+    abstract net.java.slee.resource.diameter.base.events.avp.Address getSgsnAddress();
 
     /**
      * Returns the value of the TGPP-CAMEL-Charging-Info AVP, of type OctetString. A return value of null implies that the AVP has not been set.
@@ -206,7 +206,7 @@ public interface PsInformation extends net.java.slee.resource.diameter.base.even
     /**
      * Sets the value of the CG-Address AVP, of type Address.
      */
-    abstract void setCgAddress(net.java.slee.resource.diameter.base.events.avp.AddressAvp cgAddress);
+    abstract void setCgAddress(net.java.slee.resource.diameter.base.events.avp.Address cgAddress);
 
     /**
      * Sets the value of the Charging-Rule-Base-Name AVP, of type OctetString.
@@ -216,12 +216,12 @@ public interface PsInformation extends net.java.slee.resource.diameter.base.even
     /**
      * Sets the value of the GGSN-Address AVP, of type Address.
      */
-    abstract void setGgsnAddress(net.java.slee.resource.diameter.base.events.avp.AddressAvp ggsnAddress);
+    abstract void setGgsnAddress(net.java.slee.resource.diameter.base.events.avp.Address ggsnAddress);
 
     /**
      * Sets the value of the PDP-Address AVP, of type Address.
      */
-    abstract void setPdpAddress(net.java.slee.resource.diameter.base.events.avp.AddressAvp pdpAddress);
+    abstract void setPdpAddress(net.java.slee.resource.diameter.base.events.avp.Address pdpAddress);
 
     /**
      * Sets the value of the PS-Furnish-Charging-Information AVP, of type Grouped.
@@ -231,7 +231,7 @@ public interface PsInformation extends net.java.slee.resource.diameter.base.even
     /**
      * Sets the value of the SGSN-Address AVP, of type Address.
      */
-    abstract void setSgsnAddress(net.java.slee.resource.diameter.base.events.avp.AddressAvp sgsnAddress);
+    abstract void setSgsnAddress(net.java.slee.resource.diameter.base.events.avp.Address sgsnAddress);
 
     /**
      * Sets the value of the TGPP-CAMEL-Charging-Info AVP, of type OctetString.

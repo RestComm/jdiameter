@@ -23,35 +23,52 @@
  *
  * Boston, MA  02110-1301  USA
  */
-package org.mobicents.slee.resource.diameter.base.events;
-
-import net.java.slee.resource.diameter.base.events.AbortSessionRequest;
-
-import org.jdiameter.api.Message;
+package org.mobicents.diameter.dictionary;
 
 /**
  * 
- * Start time:18:17:59 2009-05-28<br>
- * Project: diameter-parent<br>
- * Implementation of {@link AbortSessionRequest}
- * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * <br>Project: mobicents-diameter-server
+ * <br>6:18:48 PM May 27, 2009 
+ * <br>
+ *
+ * >Class representing an AVP key, to be used in dictionary lookup.
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
- * @see DiameterMessageImpl
  */
-public class AbortSessionRequestImpl extends DiameterMessageImpl implements AbortSessionRequest {
+public class AvpKey {
 
-  public AbortSessionRequestImpl(Message message) {
-    super(message);
+  int avpCode;
+  long vendorId;
+  
+  public AvpKey(int avpCode)
+  {
+    this.avpCode = avpCode;
+  }
+  
+  public AvpKey(int avpCode, long vendorId)
+  {
+    this.avpCode = avpCode;
+    this.vendorId = vendorId;
+  }
+
+  @Override
+  public int hashCode()
+  {
+    return (int) ( avpCode * 31 + vendorId );
   }
   
   @Override
-  public String getLongName() {
-    return "Abort-Session-Request";
+  public boolean equals( Object that )
+  {
+    if(this == that)
+      return true;
+    
+    if(that instanceof AvpKey)
+    {
+      AvpKey other = (AvpKey) that;
+      return (this.avpCode == other.avpCode) && (this.vendorId == other.vendorId); 
+    }
+    
+    return false;
   }
-
-  @Override
-  public String getShortName() {
-    return "ASR";
-  }
-
 }

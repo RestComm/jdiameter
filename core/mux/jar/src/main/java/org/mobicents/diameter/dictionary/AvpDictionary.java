@@ -47,11 +47,11 @@ import org.w3c.dom.NodeList;
  */
 public class AvpDictionary
 {
-  private static Logger logger = Logger.getLogger( AvpDictionary.class );
+  private static transient Logger logger = Logger.getLogger( AvpDictionary.class );
 
   public final static AvpDictionary INSTANCE = new AvpDictionary();
 
-  private static HashMap<String, AvpRepresentation> avpMap = new HashMap<String, AvpRepresentation>();
+  private static HashMap<AvpKey, AvpRepresentation> avpMap = new HashMap<AvpKey, AvpRepresentation>();
 
   private static HashMap<String, String> vendorMap = new HashMap<String, String>();
 
@@ -59,7 +59,7 @@ public class AvpDictionary
 
   private static HashMap<String, String> typedefMap = new HashMap<String, String>();
 
-  private static HashMap<String, String> nameToCodeMap = new HashMap<String, String>();
+  private static HashMap<String, AvpKey> nameToCodeMap = new HashMap<String, AvpKey>();
 
   private AvpDictionary() {
     // Exists only to defeat instantiation.
@@ -180,7 +180,7 @@ public class AvpDictionary
         String typeName = typedefElement.getAttribute( "type-name" );
         String typeParent = typedefElement.getAttribute( "type-parent" );
 
-        if(typeParent.equals(""))
+        if(typeParent.equals("") || typeName.equals("UTF8String"))
           typeParent = typeName;
 
         typedefMap.put(typeName, typeParent);
@@ -271,9 +271,11 @@ public class AvpDictionary
               avpMayEncrypt.equals("yes"), avpMandatory, avpProtected, avpVendorBit, getVendorCode(avpVendorId), 
               avpConstrained.equals("true"), avpType);
 
-          avpMap.put( avp.getVendorId() + "-" + avp.getCode(), avp );
+          AvpKey mapKey = getMapKey(avp.getCode(), avp.getVendorId());
+          
+          avpMap.put( mapKey, avp );
 
-          nameToCodeMap.put( avp.getName(), avp.getVendorId() + "-" + avp.getCode() );
+          nameToCodeMap.put( avp.getName(), mapKey );
         }catch(Exception e)
         {
           logger.error("Parsed AVP: Name[" + avpName + "] Description[" + avpDescription + "] Code[" + avpCode + "] May-Encrypt[" + avpMayEncrypt + "] Mandatory[" + avpMandatory +
@@ -296,25 +298,15 @@ public class AvpDictionary
 
   public AvpRepresentation getAvp(int code, long vendorId)
   {
-    AvpRepresentation avp = avpMap.get(vendorId + "-" + code);
+    AvpRepresentation avp = avpMap.get(getMapKey(code, vendorId));
     return avp;
   }
 
   public AvpRepresentation getAvp(String avpName)
   {
-    String codeAndVendor = nameToCodeMap.get(avpName);
+    AvpKey avpKey = nameToCodeMap.get(avpName);
 
-    if(codeAndVendor != null)
-    {
-      String[] splitCodeAndVendor = codeAndVendor.split("-");
-
-      int vendor = Integer.valueOf(splitCodeAndVendor[0]);
-      int code = Integer.valueOf(splitCodeAndVendor[1]);
-
-      return getAvp( code, vendor );
-    }
-
-    return null;
+    return avpKey != null ? avpMap.get(avpKey) : null;
   }
 
   private long getVendorCode(String vendorId)
@@ -336,4 +328,8 @@ public class AvpDictionary
     return value;
   }
 
+  private AvpKey getMapKey(int avpCode, long vendorId)
+  {
+    return new AvpKey(avpCode, vendorId); 
+  }
 }
