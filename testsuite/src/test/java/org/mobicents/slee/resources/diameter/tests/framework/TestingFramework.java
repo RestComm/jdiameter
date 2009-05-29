@@ -80,6 +80,9 @@ public class TestingFramework
   private static Stack stack;
   private static SessionFactory factory;
   
+  // The AVPs that may be pre-filled in message.
+  private final int[] prefilledAVPs = new int[]{Avp.DESTINATION_HOST, Avp.DESTINATION_REALM, Avp.ORIGIN_HOST, Avp.ORIGIN_REALM, Avp.SESSION_ID, Avp.VENDOR_SPECIFIC_APPLICATION_ID};
+  
   protected MessageParser parser = new MessageParser(null);
   
   private boolean printAVPs = false;
@@ -267,14 +270,14 @@ public class TestingFramework
         
         if(session == null)
         {
-          if(avps.getAvp(263) != null)
-            session = factory.getNewSession(avps.getAvp(263).getUTF8String());
+          if(avps.getAvp(Avp.SESSION_ID) != null)
+            session = factory.getNewSession(avps.getAvp(Avp.SESSION_ID).getUTF8String());
           else
             session = factory.getNewSession();
         }
-        else if(avps.getAvp(263) != null && !session.getSessionId().equals(avps.getAvp(263).getUTF8String()))
+        else if(avps.getAvp(Avp.SESSION_ID) != null && !session.getSessionId().equals(avps.getAvp(Avp.SESSION_ID).getUTF8String()))
         {
-          session = factory.getNewSession(avps.getAvp(263).getUTF8String());
+          session = factory.getNewSession(avps.getAvp(Avp.SESSION_ID).getUTF8String());
         }
         
         Request msg = session.createRequest(
@@ -293,8 +296,18 @@ public class TestingFramework
           msg.setError( messageFlags.contains("error") );
           msg.setReTransmitted( messageFlags.contains("retransmitted") );
         }
-              
-        msg.getAvps().addAvp( avps );
+        
+        AvpSet msgAVPs = msg.getAvps();
+        
+        // In case we want to override pre-filled AVPs
+        for(int prefilledAVP : prefilledAVPs)
+        {
+          if(avps.getAvp(prefilledAVP) != null) {
+            msgAVPs.removeAvp(prefilledAVP);
+          }
+        }
+        
+        msgAVPs.addAvp( avps );
         
         session.send(msg, listener);
         
