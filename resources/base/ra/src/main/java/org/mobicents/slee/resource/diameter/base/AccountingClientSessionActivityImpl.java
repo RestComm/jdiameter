@@ -12,10 +12,7 @@ import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.EventListener;
-import org.jdiameter.api.InternalException;
-import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
-import org.jdiameter.api.RouteException;
 import org.jdiameter.api.acc.ClientAccSession;
 import org.jdiameter.common.api.app.acc.ClientAccSessionState;
 import org.jdiameter.common.impl.app.acc.AccountRequestImpl;
