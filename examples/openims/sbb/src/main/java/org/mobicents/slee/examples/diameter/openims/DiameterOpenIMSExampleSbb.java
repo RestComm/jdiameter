@@ -2,6 +2,7 @@ package org.mobicents.slee.examples.diameter.openims;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -307,7 +308,7 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
       {
         String[] users = usersStr.split( "," );
         
-        logger.info( "Subscribing to Profile Updates from Users " + users.toString() );
+        logger.info( "Subscribing to Profile Updates from Users " + Arrays.deepToString(users) );
         
         for(String user : users)
         {
@@ -389,7 +390,7 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
   {
     Response response = event.getResponse();
 
-    logger.info( "Received SIP 4xx » " + response.getStatusCode() );
+    logger.info( "Received SIP 4xx ï¿½ " + response.getStatusCode() );
 
     // Is it a 404?
     if(response.getStatusCode() == 404)
@@ -458,6 +459,8 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
       
       SubscribeNotificationsRequest snr = ((ShClientMessageFactory)shClientSubscriptionActivity.getDiameterMessageFactory()).createSubscribeNotificationsRequest();
       
+      /* lbarreiro: Not needed anymore
+       
       //< Subscribe-Notifications-Request > :: =   < Diameter Header: 308, REQ, PXY, 16777217 >
       //        < Session-Id >
       avps.add(avpFactory.getBaseFactory().createAvp(Avp.SESSION_ID, shClientSubscriptionActivity.getSessionId().getBytes() ));
@@ -471,14 +474,18 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
       //        { Auth-Session-State }
       //        { Origin-Host }
       avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, ("aaa://" + this.originIP + ":" + this.originPort).getBytes() ));
+
       //        { Origin-Realm }
       avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, this.originRealm.getBytes() ));
+      */
+      
       //        [ Destination-Host ]
       avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, ("aaa://" + this.destinationIP + ":" + this.destinationPort).getBytes() ));
       //        { Destination-Realm }
       avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, this.destinationRealm.getBytes() ));
       //        *[ Supported-Features ]
       //        { User-Identity }
+      
       
       UserIdentityAvp ui = avpFactory.createUserIdentity();
       ui.setPublicIdentity("sip:" + user.replaceFirst( "sip:", "" ));
@@ -533,7 +540,7 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
       FromHeader fromHeader = sipHeaderFactory.createFromHeader(fromNameAddress, "12345SomeTagID6789");
 
       // Create Via Headers
-      ArrayList viaHeaders = new ArrayList();
+      ArrayList<ViaHeader> viaHeaders = new ArrayList<ViaHeader>();
       ViaHeader viaHeader = sipHeaderFactory.createViaHeader(
           sipProvider.getListeningPoints()[0].getIPAddress(), 
           sipProvider.getListeningPoints()[0].getPort(), 
