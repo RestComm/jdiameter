@@ -865,7 +865,7 @@
 			<type type-name="OctetString"/>
 		</avp>
 		<avp name="Acct-Interim-Interval" code="85" mandatory="must" may-encrypt="no" protected="mustnot" vendor-bit="mustnot">
-			<type type-name="Integer32"/>
+			<type type-name="Unsigned32"/>
 		</avp>
 		<avp name="Framed-Interface-Id" code="96" mandatory="may">
 			<type type-name="Unsigned64"/>

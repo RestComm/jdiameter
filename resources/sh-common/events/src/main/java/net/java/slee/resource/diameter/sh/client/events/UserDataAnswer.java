@@ -147,7 +147,7 @@ public interface UserDataAnswer extends DiameterShMessage {
 	 * @throws IllegalStateException
 	 *             if setUserData has already been called
 	 */
-	void setUserData(byte[] userData);
+	void setUserData(String userData);
 
 	/**
 	 * Returns the set of Failed-AVP AVPs. The returned array contains the AVPs

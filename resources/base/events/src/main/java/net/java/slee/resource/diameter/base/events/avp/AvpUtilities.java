@@ -1618,7 +1618,7 @@ public class AvpUtilities {
         case DiameterAvpType._OCTET_STRING:
         case DiameterAvpType._QOS_FILTER_RULE:
         {
-          setAvpAsOctetString(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, (String) avp);
+          setAvpAsOctetString(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, avp.toString());
           break;
         }
         case DiameterAvpType._ENUMERATED:

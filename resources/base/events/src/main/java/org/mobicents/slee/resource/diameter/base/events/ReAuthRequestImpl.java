@@ -44,30 +44,30 @@ import org.jdiameter.api.Message;
  * @see DiameterMessageImpl
  */
 public class ReAuthRequestImpl extends DiameterMessageImpl implements ReAuthRequest {
-	public ReAuthRequestImpl(Message message) {
-		super(message);
-	}
-
-	public boolean hasReAuthRequestType() {
-		return message.getAvps().getAvp(Avp.RE_AUTH_REQUEST_TYPE) != null;
-	}
-
-  public ReAuthRequestType getReAuthRequestType() {
-    return ReAuthRequestType.fromInt(getAvpAsInteger32(Avp.RE_AUTH_REQUEST_TYPE));
+  public ReAuthRequestImpl(Message message) {
+    super(message);
   }
 
-	public void setReAuthRequestType(ReAuthRequestType reAuthRequestType) {
-		addAvp(Avp.RE_AUTH_REQUEST_TYPE, reAuthRequestType.getValue());
-	}
+  public boolean hasReAuthRequestType() {
+    return hasAvp(Avp.RE_AUTH_REQUEST_TYPE);
+  }
 
-	@Override
-	public String getLongName() {
-		return "Re-Auth-Request";
-	}
+  public ReAuthRequestType getReAuthRequestType() {
+    return (ReAuthRequestType) getAvpAsEnumerated(Avp.RE_AUTH_REQUEST_TYPE, ReAuthRequestType.class);
+  }
 
-	@Override
-	public String getShortName() {
-		return "RAR";
-	}
+  public void setReAuthRequestType(ReAuthRequestType reAuthRequestType) {
+    addAvp(Avp.RE_AUTH_REQUEST_TYPE, (long)reAuthRequestType.getValue());
+  }
+
+  @Override
+  public String getLongName() {
+    return "Re-Auth-Request";
+  }
+
+  @Override
+  public String getShortName() {
+    return "RAR";
+  }
 
 }

@@ -39,6 +39,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -68,6 +69,8 @@ import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.Stack;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
+import org.junit.Assert;
+import org.junit.Test;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.ExperimentalResultAvpImpl;
@@ -119,22 +122,28 @@ public class AvpAssistant {
     typeValues.put( String.class, "alexandre_and_bartosz_pwn_diameter" );
 
     typeValues.put( int.class, 2805 );
-    typeValues.put( int[].class, 2805 );
+    typeValues.put( int[].class, new int[]{2805} );
 
     typeValues.put( Integer.class, 2805 );
-    typeValues.put( Integer[].class, 2805 );
+    typeValues.put( Integer[].class, new Integer[]{2805} );
 
     typeValues.put( long.class, 28052009L );
-    typeValues.put( long.class, 28052009L );
+    typeValues.put( long[].class, new long[]{28052009L} );
 
     typeValues.put( Long.class, 28052009L );
-    typeValues.put( Long.class, 28052009L );
+    typeValues.put( Long[].class, new Long[]{28052009L} );
 
     typeValues.put( short.class, 28 );
-    typeValues.put( short.class, 28 );
+    typeValues.put( short[].class, new short[]{28} );
 
     typeValues.put( Short.class, 28 );
-    typeValues.put( Short.class, 28 );
+    typeValues.put( Short[].class, new Short[]{28} );
+
+    typeValues.put( boolean.class, true );
+    typeValues.put( boolean[].class, new boolean[]{true} );
+
+    typeValues.put( Boolean.class, true );
+    typeValues.put( Boolean[].class, new Boolean[]{true} );
 
     typeValues.put( Date.class, new Date(1243500000000L) );
     typeValues.put( Date[].class, new Date[]{new Date(1243500000000L)} );
@@ -187,9 +196,16 @@ public class AvpAssistant {
     {
       if(interfaze == Enumerated.class)
       {
-        Object object = realClazz.getMethod( "fromInt", int.class ).invoke( null, 0 );
+        Object object = null;
+        
+        for(Field f : realClazz.getFields()) {
+          if(f.getType() == realClazz) {
+            object = f.get(null);
+            break;
+          }
+        }
 
-        if(clazz.isArray())
+        if(object != null && clazz.isArray())
         {
           Object array = Array.newInstance( realClazz, 1 );
           Array.set( array, 0, object);
@@ -237,25 +253,55 @@ public class AvpAssistant {
           toGo = AvpAssistant.getValueFromClass(avpType);
 
         if(toGo != null) {
+          
+          Method hasser = null;
+          
+          try {
+            hasser = interfaze.getMethod( getSingularMethodName(m.getName().replaceFirst("get", "has")) );
+            
+            Object hasAvpBeforeSet = hasser.invoke(message);
+            
+            Assert.assertFalse( "Message already has value before setting for " + m.getName().replaceAll("get","") + "... aborting", (Boolean)hasAvpBeforeSet);
+          }
+          catch (NoSuchMethodException e) {
+            // skip it...
+          }
+          
           Method setter = interfaze.getMethod( m.getName().replaceFirst("g", "s"), avpType );
+
+          //System.out.println("Setting value " + setter.getName() +"(" + toGo.toString() +")");
+
           setter.invoke( message, toGo );
 
-          //System.out.println("Set value " + setter.getName() +"(" + toGo.toString() +")");
-
+          if(hasser != null) {
+            Object hasAvpAfterSet = hasser.invoke(message);
+            
+            Assert.assertTrue( "Message does not has value after setting for " + m.getName().replaceAll("get","") + "... aborting", (Boolean)hasAvpAfterSet);
+          }
+          
           //System.out.println("Current message: \r\n" + snr);
 
           Object obtained = m.invoke( message );
           //System.out.println("Got value " + obtained.toString());
           boolean passed = false;
           try {
-            passed = (avpType.isArray() ? Arrays.equals( (Object[])toGo, (Object[])obtained ) : obtained.equals(toGo));            
+            if(avpType == byte[].class) {
+              passed = Arrays.equals( (byte[])toGo, (byte[])obtained );
+            }            
+            else if(avpType == long[].class) {
+              passed = Arrays.equals( (long[])toGo, (long[])obtained );
+            }
+            else {
+              passed = (avpType.isArray() ? Arrays.equals( (Object[])toGo, (Object[])obtained ) : obtained.equals(toGo));
+            }
           }
           catch (Exception e) {
+            e.printStackTrace();
             // ignore... we fail!
           }
 
           nFailures = passed ? nFailures : nFailures+1;
-          System.out.println("[" + (passed ? "PASSED" : "FAILED") + "] " + m.getName().replace("get", "") + " with param of type '"+ avpType.getName() + "'.");
+          System.out.println("[" + (passed ? "PASSED" : "FAILED") + "] " + m.getName().replace("get", "") + " with param of type '"+ avpType.getName() + "' " + (hasser != null ? " WITH has" : " WITHOUT has"));
         }
         else {
           System.out.println("[??????] Unable to test " + m.getName().replace("get", "") + " with param of type '"+ avpType.getName() + "'.");
@@ -266,6 +312,15 @@ public class AvpAssistant {
     return nFailures;
   }
 
+  private static String getSingularMethodName(String pluralMethodName) {
+    if(pluralMethodName.endsWith("eses"))
+      return pluralMethodName.substring(0, pluralMethodName.length()-2);
+    else if(pluralMethodName.endsWith("s"))
+      return pluralMethodName.substring(0, pluralMethodName.length()-1);
+    else
+      return pluralMethodName;
+  }
+  
   public static class MyConfiguration extends EmptyConfiguration 
   {
     public MyConfiguration() 

@@ -58,7 +58,7 @@ public abstract class AccountingMessageImpl extends DiameterMessageImpl implemen
   }
 
   public AccountingRecordType getAccountingRecordType() {
-    return AccountingRecordType.fromInt(getAvpAsInteger32(Avp.ACC_RECORD_TYPE));
+    return (AccountingRecordType) getAvpAsEnumerated(Avp.ACC_RECORD_TYPE, AccountingRecordType.class);
   }
 
   public void setAccountingRecordType(AccountingRecordType accountingRecordType) {
@@ -78,11 +78,11 @@ public abstract class AccountingMessageImpl extends DiameterMessageImpl implemen
   }
 
   public boolean hasAccountingSubSessionId() {
-    return message.getAvps().getAvp(Avp.ACC_SUB_SESSION_ID) != null;
+    return hasAvp(Avp.ACC_SUB_SESSION_ID);
   }
 
   public long getAccountingSubSessionId() {
-    return getAvpAsUnsigned32(Avp.ACC_SUB_SESSION_ID);
+    return getAvpAsUnsigned64(Avp.ACC_SUB_SESSION_ID);
   }
 
   public void setAccountingSubSessionId(long accountingSubSessionId) {
@@ -94,15 +94,15 @@ public abstract class AccountingMessageImpl extends DiameterMessageImpl implemen
   }
 
   public byte[] getAccountingSessionId() {
-      return getAvpAsOctetString(Avp.ACC_SESSION_ID).getBytes();
+    return getAvpAsRaw(Avp.ACC_SESSION_ID);
   }
 
   public void setAccountingSessionId(byte[] accountingSessionId) {
-    addAvp(Avp.ACC_SESSION_ID, new String(accountingSessionId));
+    addAvp(Avp.ACC_SESSION_ID, accountingSessionId);
   }
 
   public boolean hasAcctMultiSessionId() {
-    return message.getAvps().getAvp(Avp.ACC_MULTI_SESSION_ID) != null;
+    return hasAvp(Avp.ACC_MULTI_SESSION_ID);
   }
 
   public String getAcctMultiSessionId() {
@@ -114,7 +114,7 @@ public abstract class AccountingMessageImpl extends DiameterMessageImpl implemen
   }
 
   public boolean hasAcctInterimInterval() {
-    return message.getAvps().getAvp(Avp.ACCT_INTERIM_INTERVAL) != null;
+    return hasAvp(Avp.ACCT_INTERIM_INTERVAL);
   }
 
   public long getAcctInterimInterval() {
@@ -126,15 +126,15 @@ public abstract class AccountingMessageImpl extends DiameterMessageImpl implemen
   }
 
   public boolean hasAccountingRealtimeRequired() {
-    return message.getAvps().getAvp(Avp.ACCOUNTING_REALTIME_REQUIRED) != null;
+    return hasAvp(Avp.ACCOUNTING_REALTIME_REQUIRED);
   }
 
   public AccountingRealtimeRequiredType getAccountingRealtimeRequired() {
-    return AccountingRealtimeRequiredType.fromInt(getAvpAsInteger32(Avp.ACCOUNTING_REALTIME_REQUIRED));
+    return (AccountingRealtimeRequiredType) getAvpAsEnumerated(Avp.ACCOUNTING_REALTIME_REQUIRED, AccountingRealtimeRequiredType.class);
   }
 
   public void setAccountingRealtimeRequired(AccountingRealtimeRequiredType accountingRealtimeRequired) {
-    addAvp(Avp.ACCOUNTING_REALTIME_REQUIRED, accountingRealtimeRequired.getValue());
+    addAvp(Avp.ACCOUNTING_REALTIME_REQUIRED, (long)accountingRealtimeRequired.getValue());
   }
 
 }

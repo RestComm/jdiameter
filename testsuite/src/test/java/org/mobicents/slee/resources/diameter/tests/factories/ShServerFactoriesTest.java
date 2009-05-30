@@ -21,9 +21,7 @@ import net.java.slee.resource.diameter.sh.client.events.ProfileUpdateAnswer;
 import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
 import net.java.slee.resource.diameter.sh.client.events.SubscribeNotificationsAnswer;
 import net.java.slee.resource.diameter.sh.client.events.UserDataAnswer;
-import net.java.slee.resource.diameter.sh.client.events.avp.DataReferenceType;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
-import net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest;
 
 import org.jdiameter.api.Stack;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
@@ -84,6 +82,16 @@ public class ShServerFactoriesTest {
   }
   
   @Test
+  public void testGettersAndSettersPUA() throws Exception
+  {
+    ProfileUpdateAnswer pua = shServerFactory.createProfileUpdateAnswer();
+    
+    int nFailures = AvpAssistant.testMethods(pua, ProfileUpdateAnswer.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }
+  
+  @Test
   public void hasDestinationHostPUA() throws Exception
   {
     ProfileUpdateAnswer pua = shServerFactory.createProfileUpdateAnswer();
@@ -123,10 +131,47 @@ public class ShServerFactoriesTest {
   }
 
   @Test
+  public void testGettersAndSettersPNR() throws Exception
+  {
+    PushNotificationRequest pnr = shServerFactory.createPushNotificationRequest();
+    
+    int nFailures = AvpAssistant.testMethods(pnr, PushNotificationRequest.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }
+  
+  @Test
+  public void isPNRPublicIdentityAccessibleTwice() throws Exception
+  {
+    String originalValue = "sip:alexandre@diameter.mobicents.org";
+
+    UserIdentityAvpImpl uiAvp = new UserIdentityAvpImpl(DiameterShAvpCodes.USER_IDENTITY, 10415L, 1, 0, new byte[]{});
+    uiAvp.setPublicIdentity( originalValue );
+    
+    PushNotificationRequest udr = shServerFactory.createPushNotificationRequest(uiAvp, new byte[1]);
+    
+    String obtainedValue1 = udr.getUserIdentity().getPublicIdentity();
+    String obtainedValue2 = udr.getUserIdentity().getPublicIdentity();
+    
+    assertTrue("Obtained value for Public-Identity AVP differs from original.", obtainedValue1.equals( originalValue ));
+    assertTrue("Obtained #1 value for Public-Identity AVP differs from Obtained #2.", obtainedValue1.equals( obtainedValue2 ));
+  }
+
+  @Test
   public void isAnswerSNA() throws Exception
   {
     SubscribeNotificationsAnswer sna = shServerFactory.createSubscribeNotificationsAnswer();
     assertFalse("Request Flag in Subscribe-Notifications-Answer is set.", sna.getHeader().isRequest());
+  }
+  
+  @Test
+  public void testGettersAndSettersSNA() throws Exception
+  {
+    SubscribeNotificationsAnswer sna = shServerFactory.createSubscribeNotificationsAnswer();
+    
+    int nFailures = AvpAssistant.testMethods(sna, SubscribeNotificationsAnswer.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
   }
   
   @Test
@@ -170,6 +215,16 @@ public class ShServerFactoriesTest {
   }
 
   @Test
+  public void testGettersAndSettersUDA() throws Exception
+  {
+    UserDataAnswer uda = shServerFactory.createUserDataAnswer();
+    
+    int nFailures = AvpAssistant.testMethods(uda, UserDataAnswer.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }
+  
+  @Test
   public void hasDestinationHostUDA() throws Exception
   {
     UserDataAnswer uda = shServerFactory.createUserDataAnswer();
@@ -201,22 +256,6 @@ public class ShServerFactoriesTest {
     assertTrue("Experimental-Result-Code in UDA should be " + originalValue +" and is " + obtainedValue + ".", originalValue == obtainedValue);
   }
   
-  @Test
-  public void isPNRPublicIdentityAccessibleTwice() throws Exception
-  {
-    String originalValue = "sip:alexandre@diameter.mobicents.org";
-
-    UserIdentityAvpImpl uiAvp = new UserIdentityAvpImpl(DiameterShAvpCodes.USER_IDENTITY, 10415L, 1, 0, new byte[]{});
-    uiAvp.setPublicIdentity( originalValue );
-    
-    PushNotificationRequest udr = shServerFactory.createPushNotificationRequest(uiAvp, new byte[1]);
-    
-    String obtainedValue1 = udr.getUserIdentity().getPublicIdentity();
-    String obtainedValue2 = udr.getUserIdentity().getPublicIdentity();
-    
-    assertTrue("Obtained value for Public-Identity AVP differs from original.", obtainedValue1.equals( originalValue ));
-    assertTrue("Obtained #1 value for Public-Identity AVP differs from Obtained #2.", obtainedValue1.equals( obtainedValue2 ));
-  }
   /**
    * Class representing the Diameter Configuration  
    */

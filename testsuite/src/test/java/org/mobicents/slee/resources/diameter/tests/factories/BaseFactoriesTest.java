@@ -30,10 +30,12 @@ import net.java.slee.resource.diameter.base.events.ReAuthAnswer;
 import net.java.slee.resource.diameter.base.events.ReAuthRequest;
 import net.java.slee.resource.diameter.base.events.SessionTerminationAnswer;
 import net.java.slee.resource.diameter.base.events.SessionTerminationRequest;
+import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
 
 import org.jdiameter.api.Stack;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
 import org.junit.Test;
+import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 
 public class BaseFactoriesTest {
@@ -56,6 +58,7 @@ public class BaseFactoriesTest {
     try
     {
       stack.init(new MyConfiguration());
+      AvpDictionary.INSTANCE.parseDictionary( ShClientFactoriesTest.class.getClassLoader().getResourceAsStream( "dictionary.xml" ) );
     }
     catch ( Exception e )
     {
@@ -73,11 +76,31 @@ public class BaseFactoriesTest {
   }
   
   @Test
+  public void testGettersAndSettersASR() throws Exception
+  {
+    AbortSessionRequest asr = messageFactory.createAbortSessionRequest();
+    
+    int nFailures = AvpAssistant.testMethods(asr, AbortSessionRequest.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
+  
+  @Test
   public void isAnswerASA() throws Exception
   {
     AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer();
     assertFalse("Request Flag in Abort-Session-Answer is set.", asa.getHeader().isRequest());
   }
+  
+  @Test
+  public void testGettersAndSettersASA() throws Exception
+  {
+    AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer();
+    
+    int nFailures = AvpAssistant.testMethods(asa, AbortSessionAnswer.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
   
   @Test
   public void hasDestinationHostASA() throws Exception
@@ -101,12 +124,32 @@ public class BaseFactoriesTest {
   }
   
   @Test
+  public void testGettersAndSettersACR() throws Exception
+  {
+    AccountingRequest acr = messageFactory.createAccountingRequest();
+    
+    int nFailures = AvpAssistant.testMethods(acr, AccountingRequest.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
+  
+  @Test
   public void isAnswerACA() throws Exception
   {
     AccountingAnswer aca = messageFactory.createAccountingAnswer();
     assertFalse("Request Flag in Abort-Session-Answer is set.", aca.getHeader().isRequest());
   }
 
+  @Test
+  public void testGettersAndSettersACA() throws Exception
+  {
+    AccountingAnswer aca = messageFactory.createAccountingAnswer();
+    
+    int nFailures = AvpAssistant.testMethods(aca, AccountingAnswer.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
+  
   @Test
   public void hasDestinationHostACA() throws Exception
   {
@@ -129,11 +172,31 @@ public class BaseFactoriesTest {
   }
   
   @Test
+  public void testGettersAndSettersCER() throws Exception
+  {
+    CapabilitiesExchangeRequest cer = messageFactory.createCapabilitiesExchangeRequest();
+    
+    int nFailures = AvpAssistant.testMethods(cer, CapabilitiesExchangeRequest.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
+  
+  @Test
   public void isAnswerCEA() throws Exception
   {
     CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer();
     assertFalse("Request Flag in Capabilities-Exchange-Answer is set.", cea.getHeader().isRequest());
   }
+  
+  @Test
+  public void testGettersAndSettersCEA() throws Exception
+  {
+    CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer();
+    
+    int nFailures = AvpAssistant.testMethods(cea, CapabilitiesExchangeAnswer.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
   
   @Test
   public void hasDestinationHostCEA() throws Exception
@@ -157,11 +220,31 @@ public class BaseFactoriesTest {
   }
   
   @Test
+  public void testGettersAndSettersDWR() throws Exception
+  {
+    DeviceWatchdogRequest dwr = messageFactory.createDeviceWatchdogRequest();
+    
+    int nFailures = AvpAssistant.testMethods(dwr, DeviceWatchdogRequest.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
+  
+  @Test
   public void isAnswerDWA() throws Exception
   {
     DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer();
     assertFalse("Request Flag in Device-Watchdog-Answer is set.", dwa.getHeader().isRequest());
   }
+  
+  @Test
+  public void testGettersAndSettersDWA() throws Exception
+  {
+    DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer();
+    
+    int nFailures = AvpAssistant.testMethods(dwa, DeviceWatchdogAnswer.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
   
   @Test
   public void hasDestinationHostDWA() throws Exception
@@ -185,11 +268,31 @@ public class BaseFactoriesTest {
   }
   
   @Test
+  public void testGettersAndSettersDPR() throws Exception
+  {
+    DisconnectPeerRequest dpr = messageFactory.createDisconnectPeerRequest();
+    
+    int nFailures = AvpAssistant.testMethods(dpr, DisconnectPeerRequest.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
+  
+  @Test
   public void isAnswerDPA() throws Exception
   {
     DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer();
     assertFalse("Request Flag in Disconnect-Peer-Answer is set.", dpa.getHeader().isRequest());
   }
+  
+  @Test
+  public void testGettersAndSettersDPA() throws Exception
+  {
+    DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer();
+    
+    int nFailures = AvpAssistant.testMethods(dpa, DisconnectPeerAnswer.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
   
   @Test
   public void hasDestinationHostDPA() throws Exception
@@ -213,11 +316,31 @@ public class BaseFactoriesTest {
   }
   
   @Test
+  public void testGettersAndSettersRAR() throws Exception
+  {
+    ReAuthRequest rar = messageFactory.createReAuthRequest();
+    
+    int nFailures = AvpAssistant.testMethods(rar, ReAuthRequest.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
+  
+  @Test
   public void isAnswerRAA() throws Exception
   {
     ReAuthAnswer raa = messageFactory.createReAuthAnswer();
     assertFalse("Request Flag in Disconnect-Peer-Answer is set.", raa.getHeader().isRequest());
   }
+  
+  @Test
+  public void testGettersAndSettersRAA() throws Exception
+  {
+    ReAuthAnswer raa = messageFactory.createReAuthAnswer();
+    
+    int nFailures = AvpAssistant.testMethods(raa, ReAuthAnswer.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
   
   @Test
   public void hasDestinationHostRAA() throws Exception
@@ -241,11 +364,31 @@ public class BaseFactoriesTest {
   }
   
   @Test
+  public void testGettersAndSettersSTR() throws Exception
+  {
+    SessionTerminationRequest str = messageFactory.createSessionTerminationRequest();
+    
+    int nFailures = AvpAssistant.testMethods(str, SessionTerminationRequest.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
+  
+  @Test
   public void isAnswerSTA() throws Exception
   {
     SessionTerminationAnswer sta = messageFactory.createSessionTerminationAnswer();
     assertFalse("Request Flag in Disconnect-Peer-Answer is set.", sta.getHeader().isRequest());
   }
+  
+  @Test
+  public void testGettersAndSettersSTA() throws Exception
+  {
+    SessionTerminationAnswer str = messageFactory.createSessionTerminationAnswer();
+    
+    int nFailures = AvpAssistant.testMethods(str, SessionTerminationAnswer.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
   
   @Test
   public void hasDestinationHostSTA() throws Exception

@@ -40,21 +40,19 @@ import org.jdiameter.api.Message;
  * @see DiameterMessageImpl
  */
 public class DisconnectPeerAnswerImpl extends DiameterMessageImpl implements DisconnectPeerAnswer {
-	public DisconnectPeerAnswerImpl(Message message) {
-		super(message);
-		// TODO Auto-generated constructor stub
-	}
+  public DisconnectPeerAnswerImpl(Message message) {
+    super(message);
+    // TODO Auto-generated constructor stub
+  }
 
-	@Override
-	public String getLongName() {
+  @Override
+  public String getLongName() {
+    return "Disconnect-Peer-Answer";
+  }
 
-		return "Disconnect-Peer-Answer";
-	}
-
-	@Override
-	public String getShortName() {
-
-		return "DPA";
-	}
+  @Override
+  public String getShortName() {
+    return "DPA";
+  }
 
 }

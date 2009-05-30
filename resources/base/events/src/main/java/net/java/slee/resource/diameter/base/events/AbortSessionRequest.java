@@ -162,6 +162,9 @@ public interface AbortSessionRequest extends DiameterMessage {
      */
     void setRouteRecords(DiameterIdentity[] routeRecords);
 
-    
+    /**
+     * Returns true if the Proxy-Info AVP is present in the message.
+     */
+    boolean hasProxyInfo();
 
 }

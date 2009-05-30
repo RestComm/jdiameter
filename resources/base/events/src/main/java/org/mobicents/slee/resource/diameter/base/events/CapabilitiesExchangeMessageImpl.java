@@ -30,8 +30,6 @@ import net.java.slee.resource.diameter.base.events.avp.Address;
 import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp;
 
 import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
-import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Message;
 import org.mobicents.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvpImpl;
 
@@ -54,157 +52,115 @@ public abstract class CapabilitiesExchangeMessageImpl extends DiameterMessageImp
     // TODO Auto-generated constructor stub
   }
 
-  public long[] getAcctApplicationIds()
-  {
+  public long[] getAcctApplicationIds() {
     return getAvpsAsUnsigned32(Avp.ACCT_APPLICATION_ID);
   }
 
-  public long[] getAuthApplicationIds()
-  {
+  public long[] getAuthApplicationIds() {
     return getAvpsAsUnsigned32(Avp.AUTH_APPLICATION_ID);
   }
 
-  public long getFirmwareRevision()
-  {
+  public long getFirmwareRevision() {
     return getAvpAsUnsigned32(Avp.FIRMWARE_REVISION);
   }
 
-  public Address[] getHostIpAddresses()
-  {
+  public Address[] getHostIpAddresses() {
     return getAvpsAsAddress(Avp.HOST_IP_ADDRESS);
   }
 
-  public long[] getInbandSecurityIds()
-  {
+  public long[] getInbandSecurityIds() {
     return getAvpsAsUnsigned32(Avp.INBAND_SECURITY_ID);
   }
 
-  public String getProductName()
-  {
+  public String getProductName() {
     return getAvpAsUTF8String(Avp.PRODUCT_NAME);
   }
 
-  public long[] getSupportedVendorIds()
-  {
+  public long[] getSupportedVendorIds() {
     return getAvpsAsUnsigned32(Avp.SUPPORTED_VENDOR_ID);
   }
 
-  public long getVendorId()
-  {
+  public long getVendorId() {
     return getAvpAsUnsigned32(Avp.VENDOR_ID);
   }
 
-  public VendorSpecificApplicationIdAvp[] getVendorSpecificApplicationIds()
-  {
-    AvpSet avps = message.getAvps().getAvps(Avp.VENDOR_SPECIFIC_APPLICATION_ID);
-    if (avps == null)
-      return null;
-
-    VendorSpecificApplicationIdAvp[] r = new VendorSpecificApplicationIdAvp[avps.size()];
-    Avp avp = null;
-    for (int i = 0; i < avps.size(); i++) {
-      // FIXME:baranowb ; setting prt to 0
-      avp = avps.getAvpByIndex(i);
-      try {
-        r[i] = new VendorSpecificApplicationIdAvpImpl(Avp.VENDOR_SPECIFIC_APPLICATION_ID, avp.getVendorId(), avp.isMandatory() ? 1 : 0, 0, avp.getRaw());
-      } catch (AvpDataException e) {
-
-        e.printStackTrace();
-        return null;
-      }
-    }
-    return r;
+  public VendorSpecificApplicationIdAvp[] getVendorSpecificApplicationIds() {
+    return (VendorSpecificApplicationIdAvp[]) getAvpsAsCustom(Avp.VENDOR_SPECIFIC_APPLICATION_ID, VendorSpecificApplicationIdAvpImpl.class);
   }
 
-  public boolean hasFirmwareRevision()
-  {
-    return getFirmwareRevision() > 0;
+  public boolean hasFirmwareRevision() {
+    return hasAvp(Avp.FIRMWARE_REVISION);
   }
 
-  public boolean hasProductName()
-  {
-    return getProductName() != null;
+  public boolean hasProductName() {
+    return hasAvp(Avp.PRODUCT_NAME);
   }
 
-  public boolean hasVendorId()
-  {
-    return getVendorId() > 0;
+  public boolean hasVendorId() {
+    return hasAvp(Avp.VENDOR_ID);
   }
 
-  public void setAcctApplicationIds(long[] acctApplicationIds)
-  {
+  public void setAcctApplicationIds(long[] acctApplicationIds) {
     for(long acctApplicationId : acctApplicationIds) {
       addAvp(Avp.ACCT_APPLICATION_ID, acctApplicationId);
     }
   }
 
-  public void setAuthApplicationIds(long[] authApplicationIds)
-  {
+  public void setAuthApplicationIds(long[] authApplicationIds) {
     for(long authApplicationId : authApplicationIds) {
       addAvp(Avp.AUTH_APPLICATION_ID, authApplicationId);
     }
   }
 
-  public void setFirmwareRevision(long firmwareRevision)
-  {
+  public void setFirmwareRevision(long firmwareRevision) {
     addAvp(Avp.FIRMWARE_REVISION, firmwareRevision);
   }
 
-  public void setHostIpAddress(Address hostIpAddress)
-  {
-    addAvp(Avp.HOST_IP_ADDRESS, hostIpAddress);
+  public void setHostIpAddress(Address hostIpAddress) {
+    addAvp(Avp.HOST_IP_ADDRESS, hostIpAddress.encode());
   }
 
-  public void setHostIpAddresses(Address[] hostIpAddresses)
-  {
+  public void setHostIpAddresses(Address[] hostIpAddresses) {
     for(Address hostIpAddress : hostIpAddresses) {
       setHostIpAddress(hostIpAddress);
     }
   }
 
-  public void setInbandSecurityId(long inbandSecurityId)
-  {
+  public void setInbandSecurityId(long inbandSecurityId) {
     addAvp(Avp.INBAND_SECURITY_ID, inbandSecurityId);
   }
 
-  public void setInbandSecurityIds(long[] inbandSecurityIds)
-  {
+  public void setInbandSecurityIds(long[] inbandSecurityIds) {
     for(long inbandSecurityId : inbandSecurityIds) {
       setInbandSecurityId(inbandSecurityId);
     }
   }
 
-  public void setProductName(String productName)
-  {
+  public void setProductName(String productName) {
     addAvp(Avp.PRODUCT_NAME, productName);
   }
 
-  public void setSupportedVendorId(long supportedVendorId)
-  {
+  public void setSupportedVendorId(long supportedVendorId) {
     addAvp(Avp.SUPPORTED_VENDOR_ID, supportedVendorId);
   }
 
-  public void setSupportedVendorIds(long[] supportedVendorIds)
-  {
+  public void setSupportedVendorIds(long[] supportedVendorIds) {
     for(long supportedVendorId : supportedVendorIds) {
       addAvp(Avp.SUPPORTED_VENDOR_ID, supportedVendorId);
     }
   }
 
-  public void setVendorId(long vendorId)
-  {
+  public void setVendorId(long vendorId) {
     addAvp(Avp.VENDOR_ID, vendorId);
   }
 
-  public void setVendorSpecificApplicationIds(VendorSpecificApplicationIdAvp[] vendorSpecificApplicationIds)
-  {
+  public void setVendorSpecificApplicationIds(VendorSpecificApplicationIdAvp[] vendorSpecificApplicationIds) {
     for(VendorSpecificApplicationIdAvp vendorSpecificApplicationId : vendorSpecificApplicationIds) {
-      addAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, vendorSpecificApplicationId);
+      setVendorSpecificApplicationId(vendorSpecificApplicationId);
     }
   }
 
-  public Address getHostIpAddress()
-  {
+  public Address getHostIpAddress() {
     return getAvpAsAddress(Avp.HOST_IP_ADDRESS);
   }
 

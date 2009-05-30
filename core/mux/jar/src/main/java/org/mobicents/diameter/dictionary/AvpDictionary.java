@@ -299,6 +299,11 @@ public class AvpDictionary
   public AvpRepresentation getAvp(int code, long vendorId)
   {
     AvpRepresentation avp = avpMap.get(getMapKey(code, vendorId));
+    
+    if(avp == null) {
+      logger.warn("AVP with code " + code + " and Vendor-Id "  + vendorId + " not present in dictionary!");
+    }
+    
     return avp;
   }
 

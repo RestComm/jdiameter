@@ -86,6 +86,11 @@ public interface AccountingRequest extends DiameterMessage, AccountingMessage {
 	 */
 	void setProxyInfos(ProxyInfoAvp[] proxyInfos);
 
+  /**
+   * Returns true if the Proxy-Info AVP is present in the message.
+   */
+  boolean hasProxyInfo();
+
 	/**
 	 * Returns the set of Route-Record AVPs. The returned array contains the
 	 * AVPs in the order they appear in the message. A return value of null

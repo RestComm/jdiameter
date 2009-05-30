@@ -28,9 +28,7 @@ package org.mobicents.slee.resource.diameter.base.events;
 import net.java.slee.resource.diameter.base.events.DisconnectPeerRequest;
 import net.java.slee.resource.diameter.base.events.avp.DisconnectCauseType;
 
-import org.apache.log4j.Logger;
 import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Message;
 
 /**
@@ -46,45 +44,32 @@ import org.jdiameter.api.Message;
  * @see DiameterMessageImpl
  */
 public class DisconnectPeerRequestImpl extends DiameterMessageImpl implements DisconnectPeerRequest {
-	private static transient Logger logger = Logger.getLogger(DisconnectPeerRequestImpl.class);
 
-	public DisconnectPeerRequestImpl(Message message) {
-		super(message);
-		// TODO Auto-generated constructor stub
-	}
+  public DisconnectPeerRequestImpl(Message message) {
+    super(message);
+    // TODO Auto-generated constructor stub
+  }
 
-	@Override
-	public String getLongName() {
-		return "Disconnect-Peer-Request";
-	}
+  @Override
+  public String getLongName() {
+    return "Disconnect-Peer-Request";
+  }
 
-	@Override
-	public String getShortName() {
-		return "DPR";
-	}
+  @Override
+  public String getShortName() {
+    return "DPR";
+  }
 
-	public DisconnectCauseType getDisconnectCause() {
-		if (!hasDisconnectCause())
-			return null;
+  public DisconnectCauseType getDisconnectCause() {
+    return (DisconnectCauseType) getAvpAsEnumerated(Avp.DISCONNECT_CAUSE, DisconnectCauseType.class);
+  }
 
-		Avp avp = super.message.getAvps().getAvp(Avp.DISCONNECT_CAUSE);
+  public boolean hasDisconnectCause() {
+    return hasAvp(Avp.DISCONNECT_CAUSE);
+  }
 
-		try {
-			DisconnectCauseType type = DisconnectCauseType.fromInt(avp.getInteger32());
-			return type;
-		} catch (AvpDataException e) {
-			logger.error("Failure while obtaining Disconnect-Cause AVP.", e);
-		}
-
-		return null;
-	}
-
-	public boolean hasDisconnectCause() {
-		return super.message.getAvps().getAvp(Avp.DISCONNECT_CAUSE) != null;
-	}
-
-	public void setDisconnectCause(DisconnectCauseType disconnectCause) {
-		addAvp(Avp.DISCONNECT_CAUSE, disconnectCause.getValue());
-	}
+  public void setDisconnectCause(DisconnectCauseType disconnectCause) {
+    addAvp(Avp.DISCONNECT_CAUSE, (long)disconnectCause.getValue());
+  }
 
 }

@@ -1,8 +1,7 @@
 /*
  * Mobicents, Communications Middleware
  * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party
- * contributors as
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
  * distributed under license by Red Hat Middleware LLC.
@@ -42,21 +41,19 @@ import org.jdiameter.api.Message;
  */
 public class CapabilitiesExchangeRequestImpl extends CapabilitiesExchangeMessageImpl implements CapabilitiesExchangeRequest {
 
-	public CapabilitiesExchangeRequestImpl(Message message) {
-		super(message);
-		// TODO Auto-generated constructor stub
-	}
+  public CapabilitiesExchangeRequestImpl(Message message) {
+    super(message);
+    // TODO Auto-generated constructor stub
+  }
 
-	@Override
-	public String getLongName() {
+  @Override
+  public String getLongName() {
+    return "Capabilities-Exchange-Request";
+  }
 
-		return "Capabilities-Exchange-Request";
-	}
-
-	@Override
-	public String getShortName() {
-
-		return "CER";
-	}
+  @Override
+  public String getShortName() {
+    return "CER";
+  }
 
 }

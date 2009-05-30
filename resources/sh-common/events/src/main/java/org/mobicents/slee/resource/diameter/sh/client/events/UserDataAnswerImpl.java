@@ -30,9 +30,7 @@ import net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp;
 import net.java.slee.resource.diameter.sh.client.events.UserDataAnswer;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
 
-import org.apache.log4j.Logger;
 import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Message;
 import org.mobicents.slee.resource.diameter.base.events.avp.ExperimentalResultAvpImpl;
 
@@ -46,8 +44,6 @@ import org.mobicents.slee.resource.diameter.base.events.avp.ExperimentalResultAv
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class UserDataAnswerImpl extends DiameterShMessageImpl implements UserDataAnswer {
-
-  private static transient Logger logger = Logger.getLogger(UserDataAnswerImpl.class);
 
   /**
    * 
@@ -65,7 +61,7 @@ public class UserDataAnswerImpl extends DiameterShMessageImpl implements UserDat
    * @see net.java.slee.resource.diameter.sh.client.events.UserDataAnswer#hasUserData()
    */
   public boolean hasUserData() {
-    return super.message.getAvps().getAvp(DiameterShAvpCodes.USER_DATA) != null;
+    return hasAvp(DiameterShAvpCodes.USER_DATA, DiameterShAvpCodes.SH_VENDOR_ID);
   }
 
   /*
@@ -73,56 +69,15 @@ public class UserDataAnswerImpl extends DiameterShMessageImpl implements UserDat
    * @see net.java.slee.resource.diameter.sh.client.events.UserDataAnswer#getUserData()
    */
   public String getUserData() {
-    if (hasUserData()) {
-      try {
-        return new String(super.message.getAvps().getAvp(DiameterShAvpCodes.USER_DATA).getRaw());
-      }
-      catch (AvpDataException e) {
-        logger.error("Unable to decode User-Data AVP contents.", e);
-      }
-    }
-
-    return null;
+    return getAvpAsOctetString(DiameterShAvpCodes.USER_DATA, DiameterShAvpCodes.SH_VENDOR_ID);
   }
 
   /*
    * (non-Javadoc)
    * @see net.java.slee.resource.diameter.sh.client.events.UserDataAnswer#setUserData(byte[])
    */
-  public void setUserData(byte[] userData) {
-    addAvp(DiameterShAvpCodes.USER_DATA, 10415L, userData);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see net.java.slee.resource.diameter.sh.client.events.UserDataAnswer#getExperimentalResult()
-   */
-  public ExperimentalResultAvp getExperimentalResult() {
-    ExperimentalResultAvp avp = null;
-
-    try {
-      Avp rawAvp = super.message.getAvps().getAvp(DiameterAvpCodes.EXPERIMENTAL_RESULT);
-
-      if (rawAvp != null) {
-        Avp ercAvp = rawAvp.getGrouped().getAvp(DiameterAvpCodes.EXPERIMENTAL_RESULT_CODE);
-        Avp vidAvp = rawAvp.getGrouped().getAvp(DiameterAvpCodes.VENDOR_ID);
-
-        avp = new ExperimentalResultAvpImpl(rawAvp.getCode(), rawAvp.getVendorId(), rawAvp.isMandatory() ? 1 : 0, rawAvp.isEncrypted() ? 1 : 0, new byte[] {});
-
-        if (ercAvp != null) {
-          avp.setExperimentalResultCode(ercAvp.getUnsigned32());
-        }
-
-        if (vidAvp != null) {
-          avp.setVendorIdAVP(vidAvp.getUnsigned32());
-        }
-      }
-    }
-    catch (AvpDataException e) {
-      logger.error("Unable to decode Experimental-Result AVP contents.", e);
-    }
-
-    return avp;
+  public void setUserData(String userData) {
+    addAvp(DiameterShAvpCodes.USER_DATA, DiameterShAvpCodes.SH_VENDOR_ID, userData);
   }
 
   /*
@@ -130,7 +85,15 @@ public class UserDataAnswerImpl extends DiameterShMessageImpl implements UserDat
    * @see net.java.slee.resource.diameter.sh.client.events.UserDataAnswer#hasExperimentalResult()
    */
   public boolean hasExperimentalResult() {
-    return super.message.getAvps().getAvp(DiameterAvpCodes.EXPERIMENTAL_RESULT) != null;
+    return hasAvp(DiameterAvpCodes.EXPERIMENTAL_RESULT);
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.sh.client.events.UserDataAnswer#getExperimentalResult()
+   */
+  public ExperimentalResultAvp getExperimentalResult() {
+    return (ExperimentalResultAvp) getAvpAsCustom(Avp.EXPERIMENTAL_RESULT, ExperimentalResultAvpImpl.class);
   }
 
   /*
@@ -138,6 +101,7 @@ public class UserDataAnswerImpl extends DiameterShMessageImpl implements UserDat
    * @see net.java.slee.resource.diameter.sh.client.events.UserDataAnswer#setExperimentalResult(net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp)
    */
   public void setExperimentalResult(ExperimentalResultAvp experimentalResult) {
-    setAvpAsGrouped(experimentalResult.getCode(), experimentalResult.getVendorId(), experimentalResult.getExtensionAvps(), experimentalResult.getMandatoryRule() == 0, experimentalResult.getProtectedRule() == 0);
+    addAvp(Avp.EXPERIMENTAL_RESULT, experimentalResult.byteArrayValue());
   }
+
 }

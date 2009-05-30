@@ -25,6 +25,8 @@
  */
 package net.java.slee.resource.diameter.base.events.avp;
 
+import java.util.Arrays;
+
 /**
  * Java class to represent the Address AVP type.
  * <p/>
@@ -80,4 +82,23 @@ public class Address {
     return encodedAddress;
   }
 
+  @Override
+  public String toString() {
+    return addressType + "=" + new String(address);
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if(obj == null) {
+      return false;
+    }
+    
+    if(obj instanceof Address) {
+      Address that = (Address) obj;
+      return this.addressType == that.addressType && Arrays.equals(this.address, that.address); 
+    }
+    
+    return false;
+  }
+  
 }

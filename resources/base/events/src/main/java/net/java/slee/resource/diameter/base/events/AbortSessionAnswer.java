@@ -264,6 +264,9 @@ public interface AbortSessionAnswer extends DiameterMessage {
      */
     void setProxyInfos(ProxyInfoAvp[] proxyInfos);
 
-
+    /**
+     * Returns true if the Proxy-Info AVP is present in the message.
+     */
+    boolean hasProxyInfo();
 
 }

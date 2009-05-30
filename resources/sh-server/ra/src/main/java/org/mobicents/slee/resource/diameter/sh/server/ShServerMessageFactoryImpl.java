@@ -1,8 +1,7 @@
 /*
  * Mobicents, Communications Middleware
  * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party
- * contributors as
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
  * distributed under license by Red Hat Middleware LLC.
@@ -120,7 +119,7 @@ public class ShServerMessageFactoryImpl implements ShServerMessageFactory {
 		PushNotificationRequest pnr = this.createPushNotificationRequest();
 
 		pnr.setUserIdentity(userIdentity);
-		pnr.setUserData(userData);
+		pnr.setUserData(new String(userData));
 
 		return pnr;
 	}
@@ -151,7 +150,7 @@ public class ShServerMessageFactoryImpl implements ShServerMessageFactory {
 
 	public UserDataAnswer createUserDataAnswer(byte[] userData) {
 		UserDataAnswer uda = this.createUserDataAnswer();
-		uda.setUserData(userData);
+		uda.setUserData(new String(userData));
 
 		return uda;
 	}

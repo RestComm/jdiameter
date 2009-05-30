@@ -63,15 +63,15 @@ public class ProfileUpdateRequestImpl extends DiameterShMessageImpl implements P
   }
 
   public boolean hasDataReference() {
-    return hasAvp(DiameterShAvpCodes.DATA_REFERENCE);
+    return hasAvp(DiameterShAvpCodes.DATA_REFERENCE, DiameterShAvpCodes.SH_VENDOR_ID);
   }
 
   public boolean hasUserData() {
-    return hasAvp(DiameterShAvpCodes.USER_DATA);
+    return hasAvp(DiameterShAvpCodes.USER_DATA, DiameterShAvpCodes.SH_VENDOR_ID);
   }
 
   public boolean hasUserIdentity() {
-    return hasAvp(DiameterShAvpCodes.USER_IDENTITY);
+    return hasAvp(DiameterShAvpCodes.USER_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID);
   }
 
   public void setDataReference(DataReferenceType dataReference) {

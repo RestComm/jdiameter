@@ -57,15 +57,15 @@ public class SessionTerminationRequestImpl  extends SessionTerminationMessageImp
   }
 
   public boolean hasTerminationCause() {
-    return message.getAvps().getAvp(Avp.TERMINATION_CAUSE) != null;
+    return hasAvp(Avp.TERMINATION_CAUSE);
   }
 
   public TerminationCauseType getTerminationCause() {
-    return TerminationCauseType.fromInt(getAvpAsInteger32(Avp.TERMINATION_CAUSE));
+    return (TerminationCauseType) getAvpAsEnumerated(Avp.TERMINATION_CAUSE, TerminationCauseType.class);
   }
 
   public void setTerminationCause(TerminationCauseType terminationCause) {
-    addAvp(Avp.TERMINATION_CAUSE, terminationCause.getValue());
+    addAvp(Avp.TERMINATION_CAUSE, (long)terminationCause.getValue());
   }
 
 }
