@@ -59,6 +59,16 @@ import net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp;
 import net.java.slee.resource.diameter.base.events.avp.FailedAvp;
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
 import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp;
+import net.java.slee.resource.diameter.cca.events.avp.CostInformationAvp;
+import net.java.slee.resource.diameter.cca.events.avp.CreditControlAVPCodes;
+import net.java.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvp;
+import net.java.slee.resource.diameter.cca.events.avp.GrantedServiceUnitAvp;
+import net.java.slee.resource.diameter.cca.events.avp.MultipleServicesCreditControlAvp;
+import net.java.slee.resource.diameter.cca.events.avp.RequestedServiceUnitAvp;
+import net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp;
+import net.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp;
+import net.java.slee.resource.diameter.cca.events.avp.UsedServiceUnitAvp;
+import net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvp;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
 import net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp;
 import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
@@ -70,13 +80,21 @@ import org.jdiameter.api.Message;
 import org.jdiameter.api.Stack;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
 import org.junit.Assert;
-import org.junit.Test;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.ExperimentalResultAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.FailedAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.ProxyInfoAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.CostInformationAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.GrantedServiceUnitAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.MultipleServicesCreditControlAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.RequestedServiceUnitAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.SubscriptionIdAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.UsedServiceUnitAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvpImpl;
 
@@ -183,9 +201,38 @@ public class AvpAssistant {
     typeValues.put( FailedAvp.class, new FailedAvpImpl(Avp.FAILED_AVP, 0L, 0, 1, dummyAvpBytes) );
     typeValues.put( FailedAvp[].class, new FailedAvpImpl[]{new FailedAvpImpl(Avp.FAILED_AVP, 0L, 0, 1, dummyAvpBytes)});
 
+    // CCA RA
+    
+    typeValues.put( CostInformationAvp.class, new CostInformationAvpImpl(CreditControlAVPCodes.Cost_Information, 0L, 0, 1, dummyAvpBytes) );
+    typeValues.put( CostInformationAvp[].class, new CostInformationAvpImpl[]{new CostInformationAvpImpl(CreditControlAVPCodes.Cost_Information, 0L, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( FinalUnitIndicationAvp.class, new FinalUnitIndicationAvpImpl(CreditControlAVPCodes.Final_Unit_Indication, 0L, 0, 1, dummyAvpBytes) );
+    typeValues.put( FinalUnitIndicationAvp[].class, new FinalUnitIndicationAvpImpl[]{new FinalUnitIndicationAvpImpl(CreditControlAVPCodes.Final_Unit_Indication, 0L, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( GrantedServiceUnitAvp.class, new GrantedServiceUnitAvpImpl(CreditControlAVPCodes.Granted_Service_Unit, 0L, 0, 1, dummyAvpBytes) );
+    typeValues.put( GrantedServiceUnitAvp[].class, new GrantedServiceUnitAvpImpl[]{new GrantedServiceUnitAvpImpl(CreditControlAVPCodes.Granted_Service_Unit, 0L, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( MultipleServicesCreditControlAvp.class, new MultipleServicesCreditControlAvpImpl(CreditControlAVPCodes.Multiple_Services_Credit_Control, 0L, 0, 1, dummyAvpBytes) );
+    typeValues.put( MultipleServicesCreditControlAvp[].class, new MultipleServicesCreditControlAvpImpl[]{new MultipleServicesCreditControlAvpImpl(CreditControlAVPCodes.Multiple_Services_Credit_Control, 0L, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( RequestedServiceUnitAvp.class, new RequestedServiceUnitAvpImpl(CreditControlAVPCodes.Requested_Service_Unit, 0L, 0, 1, dummyAvpBytes) );
+    typeValues.put( RequestedServiceUnitAvp[].class, new RequestedServiceUnitAvpImpl[]{new RequestedServiceUnitAvpImpl(CreditControlAVPCodes.Requested_Service_Unit, 0L, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( ServiceParameterInfoAvp.class, new ServiceParameterInfoAvpImpl(CreditControlAVPCodes.Service_Parameter_Info, 0L, 0, 1, dummyAvpBytes) );
+    typeValues.put( ServiceParameterInfoAvp[].class, new ServiceParameterInfoAvpImpl[]{new ServiceParameterInfoAvpImpl(CreditControlAVPCodes.Service_Parameter_Info, 0L, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( SubscriptionIdAvp.class, new SubscriptionIdAvpImpl(CreditControlAVPCodes.Subscription_Id, 0L, 0, 1, dummyAvpBytes) );
+    typeValues.put( SubscriptionIdAvp[].class, new SubscriptionIdAvpImpl[]{new SubscriptionIdAvpImpl(CreditControlAVPCodes.Subscription_Id, 0L, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( UserEquipmentInfoAvp.class, new UserEquipmentInfoAvpImpl(CreditControlAVPCodes.User_Equipment_Info, 0L, 0, 1, dummyAvpBytes) );
+    typeValues.put( UserEquipmentInfoAvp[].class, new UserEquipmentInfoAvpImpl[]{new UserEquipmentInfoAvpImpl(CreditControlAVPCodes.User_Equipment_Info, 0L, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( UsedServiceUnitAvp.class, new UsedServiceUnitAvpImpl(CreditControlAVPCodes.Used_Service_Unit, 0L, 0, 1, dummyAvpBytes) );
+    typeValues.put( UsedServiceUnitAvp[].class, new UsedServiceUnitAvpImpl[]{new UsedServiceUnitAvpImpl(CreditControlAVPCodes.Used_Service_Unit, 0L, 0, 1, dummyAvpBytes)});
+
     typeValues.put( DiameterAvp.class, new DiameterAvpImpl(0, 0, 0, 1, dummyAvpBytes, null) );
     typeValues.put( DiameterAvp[].class, new DiameterAvpImpl[]{new DiameterAvpImpl(0, 0, 0, 1, dummyAvpBytes, null)});
-    
+
   }
 
   public static Object getValueFromEnumerated(Class clazz) throws IllegalArgumentException, SecurityException, IllegalAccessException, InvocationTargetException, NoSuchMethodException
@@ -197,7 +244,7 @@ public class AvpAssistant {
       if(interfaze == Enumerated.class)
       {
         Object object = null;
-        
+
         for(Field f : realClazz.getFields()) {
           if(f.getType() == realClazz) {
             object = f.get(null);
@@ -228,7 +275,7 @@ public class AvpAssistant {
     while(set.size() > 0)
       set.removeAvpByIndex(0);    
   }
-  
+
   public static int testMethods(DiameterMessage message, Class interfaze) throws Exception
   {
     System.out.println(":::::::: Testing accessors for Class " + message.getClass().getSimpleName() + " ::::::::");
@@ -237,8 +284,10 @@ public class AvpAssistant {
 
     for(Method m : interfaze.getMethods())
     {
+      //System.out.println("-------> " + m.getName());
+
       clearAVPsInMessage(message);
-      
+
       if(AvpAssistant.methodsToIgnore.contains( m.getName() )) {
         continue;
       }
@@ -252,21 +301,21 @@ public class AvpAssistant {
         if(toGo == null)
           toGo = AvpAssistant.getValueFromClass(avpType);
 
-        if(toGo != null) {
-          
+        if(toGo != null)
+        {
           Method hasser = null;
-          
+
           try {
             hasser = interfaze.getMethod( getSingularMethodName(m.getName().replaceFirst("get", "has")) );
-            
+
             Object hasAvpBeforeSet = hasser.invoke(message);
-            
+
             Assert.assertFalse( "Message already has value before setting for " + m.getName().replaceAll("get","") + "... aborting", (Boolean)hasAvpBeforeSet);
           }
           catch (NoSuchMethodException e) {
             // skip it...
           }
-          
+
           Method setter = interfaze.getMethod( m.getName().replaceFirst("g", "s"), avpType );
 
           //System.out.println("Setting value " + setter.getName() +"(" + toGo.toString() +")");
@@ -275,10 +324,10 @@ public class AvpAssistant {
 
           if(hasser != null) {
             Object hasAvpAfterSet = hasser.invoke(message);
-            
+
             Assert.assertTrue( "Message does not has value after setting for " + m.getName().replaceAll("get","") + "... aborting", (Boolean)hasAvpAfterSet);
           }
-          
+
           //System.out.println("Current message: \r\n" + snr);
 
           Object obtained = m.invoke( message );
@@ -305,6 +354,7 @@ public class AvpAssistant {
         }
         else {
           System.out.println("[??????] Unable to test " + m.getName().replace("get", "") + " with param of type '"+ avpType.getName() + "'.");
+          Assert.fail("Missing AVP Implementation class to test " + m.getName());
         }
       }
     }
@@ -320,7 +370,7 @@ public class AvpAssistant {
     else
       return pluralMethodName;
   }
-  
+
   public static class MyConfiguration extends EmptyConfiguration 
   {
     public MyConfiguration() 

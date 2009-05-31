@@ -1,3 +1,28 @@
+/*
+ * Mobicents, Communications Middleware
+ *
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors. All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package org.mobicents.slee.resource.diameter.cca.events;
 
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodes;
@@ -6,15 +31,8 @@ import net.java.slee.resource.diameter.cca.events.avp.CcRequestType;
 import net.java.slee.resource.diameter.cca.events.avp.CreditControlAVPCodes;
 import net.java.slee.resource.diameter.cca.events.avp.MultipleServicesCreditControlAvp;
 
-import org.apache.log4j.Logger;
-import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
-import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Message;
-import org.mobicents.diameter.dictionary.AvpDictionary;
-import org.mobicents.diameter.dictionary.AvpRepresentation;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
-import org.mobicents.slee.resource.diameter.base.events.ExtensionDiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.MultipleServicesCreditControlAvpImpl;
 
 /**
@@ -29,14 +47,11 @@ import org.mobicents.slee.resource.diameter.cca.events.avp.MultipleServicesCredi
  */
 public abstract class CreditControlMessageImpl extends DiameterMessageImpl implements CreditControlMessage {
 
-  private static transient Logger logger = Logger.getLogger(CreditControlMessageImpl.class);
-
   /**
    * Constructor.
    * @param message the Message object to be wrapped
    */
-  public CreditControlMessageImpl(Message message)
-  {
+  public CreditControlMessageImpl(Message message) {
     super(message);
   }
 
@@ -45,20 +60,7 @@ public abstract class CreditControlMessageImpl extends DiameterMessageImpl imple
    */
   public String getAcctMultiSessionId()
   {
-    if(hasAcctMultiSessionId())
-    {
-      Avp raw = super.message.getAvps().getAvp(DiameterAvpCodes.ACCT_MULTI_SESSION_ID);
-      try
-      {
-        return raw.getUTF8String();
-      }
-      catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), DiameterAvpCodes.ACCT_MULTI_SESSION_ID);
-        logger.error( "Failure while trying to obtain Acct-Multi-Session-Id AVP.", e );
-      }
-    }
-
-    return null;
+    return getAvpAsUTF8String(DiameterAvpCodes.ACCT_MULTI_SESSION_ID);
   }
 
   /* (non-Javadoc)
@@ -66,20 +68,7 @@ public abstract class CreditControlMessageImpl extends DiameterMessageImpl imple
    */
   public long getCcRequestNumber()
   {
-    if(hasCcRequestNumber())
-    {
-      Avp raw = super.message.getAvps().getAvp(CreditControlAVPCodes.CC_Request_Number);
-      try
-      {
-        return raw.getUnsigned32();
-      }
-      catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.CC_Request_Number);
-        logger.error( "Failure while trying to obtain CC-Request-Number AVP.", e );
-      }
-    }
-
-    return -1;
+    return getAvpAsUnsigned32(CreditControlAVPCodes.CC_Request_Number);
   }
 
   /* (non-Javadoc)
@@ -87,20 +76,7 @@ public abstract class CreditControlMessageImpl extends DiameterMessageImpl imple
    */
   public CcRequestType getCcRequestType()
   {
-    if(hasCcRequestType())
-    {
-      Avp raw = super.message.getAvps().getAvp(CreditControlAVPCodes.CC_Request_Type);
-      try
-      {
-        return CcRequestType.EVENT_REQUEST.fromInt(raw.getInteger32());
-      }
-      catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.CC_Request_Type);
-        logger.error( "Failure while trying to obtain CC-Request-Type AVP.", e );
-      }
-    }
-
-    return null;
+    return (CcRequestType) getAvpAsEnumerated(CreditControlAVPCodes.CC_Request_Type, CcRequestType.class);
   }
 
   /* (non-Javadoc)
@@ -108,20 +84,7 @@ public abstract class CreditControlMessageImpl extends DiameterMessageImpl imple
    */
   public long getCcSubSessionId()
   {
-    if(hasCcSubSessionId())
-    {
-      Avp raw = super.message.getAvps().getAvp(CreditControlAVPCodes.CC_Sub_Session_Id);
-      try
-      {
-        return raw.getUnsigned64();
-      }
-      catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.CC_Sub_Session_Id);
-        logger.error( "Failure while trying to obtain CC-Sub-Session-Id AVP.", e );
-      }
-    }
-
-    return -1;
+    return getAvpAsUnsigned64(CreditControlAVPCodes.CC_Sub_Session_Id);
   }
 
   /* (non-Javadoc)
@@ -129,26 +92,7 @@ public abstract class CreditControlMessageImpl extends DiameterMessageImpl imple
    */
   public MultipleServicesCreditControlAvp[] getMultipleServicesCreditControls()
   {
-    if(hasMultipleServicesCreditControl())
-    {
-      AvpSet set = super.message.getAvps().getAvps(CreditControlAVPCodes.Multiple_Services_Credit_Control);
-      MultipleServicesCreditControlAvp[] avps = new MultipleServicesCreditControlAvp[set.size()];
-      for(int index=0;index<set.size();index++)
-      {
-        Avp avp = set.getAvpByIndex(index);
-        try
-        {
-          avps[index] = new MultipleServicesCreditControlAvpImpl(avp.getCode(), avp.getVendorId(), avp.isMandatory() ? 1 : 0, avp.isEncrypted() ? 1 : 0, avp.getRaw());
-        }
-        catch (AvpDataException e) {
-          reportAvpFetchError("Failed on index: " + index + ", " + e.getMessage(), CreditControlAVPCodes.Multiple_Services_Credit_Control);
-          logger.error( "Failure while trying to obtain Multiple-Services-Credit-Control AVP.", e );
-        }
-      }
-      return avps;
-    }
-
-    return null;
+    return (MultipleServicesCreditControlAvp[]) getAvpsAsCustom(CreditControlAVPCodes.Multiple_Services_Credit_Control, MultipleServicesCreditControlAvpImpl.class);
   }
 
   /*
@@ -157,7 +101,7 @@ public abstract class CreditControlMessageImpl extends DiameterMessageImpl imple
    */
   public boolean hasMultipleServicesCreditControl()
   {
-    return super.hasAvp(CreditControlAVPCodes.Multiple_Services_Credit_Control);
+    return hasAvp(CreditControlAVPCodes.Multiple_Services_Credit_Control);
   }
 
   /* (non-Javadoc)
@@ -165,7 +109,7 @@ public abstract class CreditControlMessageImpl extends DiameterMessageImpl imple
    */
   public boolean hasAcctMultiSessionId()
   {
-    return super.hasAvp(DiameterAvpCodes.ACCT_MULTI_SESSION_ID);
+    return hasAvp(DiameterAvpCodes.ACCT_MULTI_SESSION_ID);
   }
 
   /* (non-Javadoc)
@@ -173,7 +117,7 @@ public abstract class CreditControlMessageImpl extends DiameterMessageImpl imple
    */
   public boolean hasCcRequestNumber()
   {
-    return super.hasAvp(CreditControlAVPCodes.CC_Request_Number);
+    return hasAvp(CreditControlAVPCodes.CC_Request_Number);
   }
 
   /* (non-Javadoc)
@@ -181,7 +125,7 @@ public abstract class CreditControlMessageImpl extends DiameterMessageImpl imple
    */
   public boolean hasCcRequestType()
   {
-    return super.hasAvp(CreditControlAVPCodes.CC_Request_Type);
+    return hasAvp(CreditControlAVPCodes.CC_Request_Type);
   }
 
   /* (non-Javadoc)
@@ -189,7 +133,7 @@ public abstract class CreditControlMessageImpl extends DiameterMessageImpl imple
    */
   public boolean hasCcSubSessionId()
   {
-    return super.hasAvp(CreditControlAVPCodes.CC_Sub_Session_Id);
+    return hasAvp(CreditControlAVPCodes.CC_Sub_Session_Id);
   }
 
   /* (non-Javadoc)
@@ -197,18 +141,7 @@ public abstract class CreditControlMessageImpl extends DiameterMessageImpl imple
    */
   public void setAcctMultiSessionId(String acctMultiSessionId) throws IllegalStateException
   {
-    if(hasAcctMultiSessionId())
-    {
-      throw new IllegalStateException("AVP Acct-Multi-Session-Id is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      super.message.getAvps().removeAvp(DiameterAvpCodes.ACCT_MULTI_SESSION_ID);
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterAvpCodes.ACCT_MULTI_SESSION_ID);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-      super.message.getAvps().addAvp(DiameterAvpCodes.ACCT_MULTI_SESSION_ID, acctMultiSessionId, protectedAvp == 1, mandatoryAvp == 1, false);
-    }
+    addAvp(DiameterAvpCodes.ACCT_MULTI_SESSION_ID, acctMultiSessionId);
   }
 
   /* (non-Javadoc)
@@ -216,18 +149,7 @@ public abstract class CreditControlMessageImpl extends DiameterMessageImpl imple
    */
   public void setCcRequestNumber(long ccRequestNumber) throws IllegalStateException
   {
-    if(hasCcRequestNumber())
-    {
-      throw new IllegalStateException("AVP CC-Request-Number is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      super.message.getAvps().removeAvp(CreditControlAVPCodes.CC_Request_Number);
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.CC_Request_Number);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-      super.message.getAvps().addAvp(CreditControlAVPCodes.CC_Request_Number, ccRequestNumber, protectedAvp == 1, mandatoryAvp == 1, true);
-    }
+    addAvp(CreditControlAVPCodes.CC_Request_Number, ccRequestNumber);
   }
 
   /* (non-Javadoc)
@@ -235,18 +157,7 @@ public abstract class CreditControlMessageImpl extends DiameterMessageImpl imple
    */
   public void setCcRequestType(CcRequestType ccRequestType) throws IllegalStateException
   {
-    if(hasCcRequestType())
-    {
-      throw new IllegalStateException("AVP CC-Request-Type is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      super.message.getAvps().removeAvp(CreditControlAVPCodes.CC_Request_Type);
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.CC_Request_Type);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-      super.message.getAvps().addAvp(CreditControlAVPCodes.CC_Request_Type, ccRequestType.getValue(), protectedAvp == 1, mandatoryAvp == 1, false);
-    }
+    addAvp(CreditControlAVPCodes.CC_Request_Type, (long)ccRequestType.getValue());
   }
 
   /* (non-Javadoc)
@@ -254,18 +165,7 @@ public abstract class CreditControlMessageImpl extends DiameterMessageImpl imple
    */
   public void setCcSubSessionId(long ccSubSessionId) throws IllegalStateException
   {
-    if(hasCcSubSessionId())
-    {
-      throw new IllegalStateException("AVP CC-Sub-Session-Id is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      super.message.getAvps().removeAvp(CreditControlAVPCodes.CC_Sub_Session_Id);
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.CC_Sub_Session_Id);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-      super.message.getAvps().addAvp(CreditControlAVPCodes.CC_Request_Number, ccSubSessionId, protectedAvp == 1, mandatoryAvp == 1, true);
-    }
+    addAvp(CreditControlAVPCodes.CC_Sub_Session_Id, ccSubSessionId);
   }
 
   /* (non-Javadoc)
@@ -273,7 +173,7 @@ public abstract class CreditControlMessageImpl extends DiameterMessageImpl imple
    */
   public void setMultipleServicesCreditControl(MultipleServicesCreditControlAvp multipleServicesCreditControl) throws IllegalStateException
   {
-    this.setMultipleServicesCreditControls(new MultipleServicesCreditControlAvp[]{multipleServicesCreditControl});
+    addAvp(CreditControlAVPCodes.Multiple_Services_Credit_Control, multipleServicesCreditControl.byteArrayValue());
   }
 
   /* (non-Javadoc)
@@ -281,21 +181,8 @@ public abstract class CreditControlMessageImpl extends DiameterMessageImpl imple
    */
   public void setMultipleServicesCreditControls(MultipleServicesCreditControlAvp[] multipleServicesCreditControls) throws IllegalStateException
   {
-    if(hasMultipleServicesCreditControl())
-    {
-      throw new IllegalStateException("AVP Multiple-Services-Credit-Control is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      super.message.getAvps().removeAvp(CreditControlAVPCodes.Multiple_Services_Credit_Control);
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Multiple_Services_Credit_Control);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      for(MultipleServicesCreditControlAvp multipleServicesCreditControlAvp: multipleServicesCreditControls)
-      {
-        super.message.getAvps().addAvp(CreditControlAVPCodes.Multiple_Services_Credit_Control, multipleServicesCreditControlAvp.byteArrayValue(), protectedAvp == 1, mandatoryAvp == 1);
-      }
+    for(MultipleServicesCreditControlAvp multipleServicesCreditControl : multipleServicesCreditControls) {
+      setMultipleServicesCreditControl(multipleServicesCreditControl);
     }
   }
 

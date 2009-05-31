@@ -1,3 +1,28 @@
+/*
+ * Mobicents, Communications Middleware
+ * 
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package org.mobicents.slee.resources.diameter.tests.factories;
 
 import static org.jdiameter.client.impl.helpers.Parameters.AcctApplId;
@@ -87,12 +112,32 @@ public class CCAFactoriesTest {
   }
   
   @Test
+  public void testGettersAndSettersCCR() throws Exception
+  {
+    CreditControlRequest ccr = ccaMessageFactory.createCreditControlRequest();
+    
+    int nFailures = AvpAssistant.testMethods(ccr, CreditControlRequest.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
+  
+  @Test
   public void isAnswerCCA() throws Exception
   {
     CreditControlAnswer cca = ccaMessageFactory.createCreditControlAnswer( "582364567346578348" );
     assertFalse("Request Flag in Credit-Control-Answer is set.", cca.getHeader().isRequest());
   }
 
+  @Test
+  public void testGettersAndSettersCCA() throws Exception
+  {
+    CreditControlAnswer cca = ccaMessageFactory.createCreditControlAnswer("3242342");
+    
+    int nFailures = AvpAssistant.testMethods(cca, CreditControlAnswer.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
+  
   @Test
   public void hasDestinationHostCCA() throws Exception
   {

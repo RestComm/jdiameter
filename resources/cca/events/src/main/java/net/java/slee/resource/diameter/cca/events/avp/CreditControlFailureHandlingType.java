@@ -1,3 +1,28 @@
+/*
+ * Mobicents, Communications Middleware
+ * 
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package net.java.slee.resource.diameter.cca.events.avp;
 
 import java.io.StreamCorruptedException;
@@ -49,45 +74,44 @@ import net.java.slee.resource.diameter.base.events.avp.Enumerated;
  *      the service SHOULD not be granted when the credit-control messages
  *      can't be delivered.
  *      <pre>
- * @author baranowb
- *
+ *      
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public enum CreditControlFailureHandlingType implements Enumerated {
-	TERMINATE(0), CONTINUE(1),RETRY_AND_TERMINATE(2);
+  TERMINATE(0), CONTINUE(1),RETRY_AND_TERMINATE(2);
 
-	private int value = -1;
+  private int value = -1;
 
-	private CreditControlFailureHandlingType(int val) {
-		this.value = val;
-	}
+  private CreditControlFailureHandlingType(int value) {
+    this.value = value;
+  }
 
-	public int getValue() {
-		return this.value;
-	}
+  public int getValue() {
+    return this.value;
+  }
 
-	private Object readResolve() throws StreamCorruptedException {
-		try {
-			return fromInt(value);
-		} catch (IllegalArgumentException iae) {
-			throw new StreamCorruptedException("Invalid internal state found: "
-					+ value);
-		}
-	}
+  private Object readResolve() throws StreamCorruptedException {
+    try {
+      return fromInt(value);
+    }
+    catch (IllegalArgumentException iae) {
+      throw new StreamCorruptedException("Invalid internal state found: " + value);
+    }
+  }
 
-	public static CreditControlFailureHandlingType fromInt(int presumableValue)
-			throws IllegalArgumentException {
+  public static CreditControlFailureHandlingType fromInt(int presumableValue) throws IllegalArgumentException
+  {
+    switch (presumableValue) {
+    case 0:
+      return TERMINATE;
+    case 1:
+      return CONTINUE;
+    case 2:
+      return RETRY_AND_TERMINATE;
+    default:
+      throw new IllegalArgumentException();
+    }
+  }
 
-		switch (presumableValue) {
-		case 0:
-			return TERMINATE;
-		case 1:
-			return CONTINUE;
-		case 2:
-			return RETRY_AND_TERMINATE;
-		default:
-			throw new IllegalArgumentException();
-
-		}
-
-	}
 }

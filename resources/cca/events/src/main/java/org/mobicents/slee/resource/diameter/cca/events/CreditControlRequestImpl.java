@@ -1,3 +1,28 @@
+/*
+ * Mobicents, Communications Middleware
+ * 
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package org.mobicents.slee.resource.diameter.cca.events;
 
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodes;
@@ -12,13 +37,7 @@ import net.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp;
 import net.java.slee.resource.diameter.cca.events.avp.UsedServiceUnitAvp;
 import net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvp;
 
-import org.apache.log4j.Logger;
-import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
-import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Message;
-import org.mobicents.diameter.dictionary.AvpDictionary;
-import org.mobicents.diameter.dictionary.AvpRepresentation;
 import org.mobicents.slee.resource.diameter.cca.events.avp.RequestedServiceUnitAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.SubscriptionIdAvpImpl;
@@ -37,26 +56,21 @@ import org.mobicents.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvpI
  */
 public class CreditControlRequestImpl extends CreditControlMessageImpl implements CreditControlRequest{
 
-  private static transient Logger logger = Logger.getLogger(CreditControlRequestImpl.class);
-
   /**
    * Constructor.
    * @param message the message to construct the Request
    */
-  public CreditControlRequestImpl(Message message)
-  {
+  public CreditControlRequestImpl(Message message) {
     super(message);
   }
 
   @Override
-  public String getLongName()
-  {
+  public String getLongName() {
     return "Credit-Control-Request";
   }
 
   @Override
-  public String getShortName()
-  {
+  public String getShortName() {
     return "CCR";
   }
 
@@ -66,19 +80,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public byte[] getCcCorrelationId()
   {
-    if(hasCcCorrelationId())
-    {
-      try
-      {
-        return super.message.getAvps().getAvp(CreditControlAVPCodes.CC_Correlation_Id).getRaw();
-      }
-      catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.CC_Correlation_Id);
-        logger.error( "Failure while trying to obtain CC-Correlation-Id AVP.", e );
-      }
-    }
-
-    return null;
+    return getAvpAsRaw(CreditControlAVPCodes.CC_Correlation_Id);
   }
 
   /*
@@ -87,19 +89,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public MultipleServicesIndicatorType getMultipleServicesIndicator()
   {
-    if(hasMultipleServicesIndicator())
-    {
-      try
-      {
-        return MultipleServicesIndicatorType.MULTIPLE_SERVICES_NOT_SUPPORTED.fromInt(super.message.getAvps().getAvp(CreditControlAVPCodes.Multiple_Services_Indicator).getInteger32());
-      }
-      catch (Exception e) {
-        reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.Multiple_Services_Indicator);
-        logger.error( "Failure while trying to obtain Multiple-Services-Indicator AVP.", e );
-      } 
-    }
-
-    return null;
+    return (MultipleServicesIndicatorType) getAvpAsEnumerated(CreditControlAVPCodes.Multiple_Services_Indicator, MultipleServicesIndicatorType.class);
   }
 
   /*
@@ -108,19 +98,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public RequestedActionType getRequestedAction()
   {
-    if(hasRequestedAction())
-    {
-      try
-      {
-        return RequestedActionType.CHECK_BALANCE.fromInt(super.message.getAvps().getAvp(CreditControlAVPCodes.Requested_Action).getInteger32());
-      }
-      catch (Exception e) {
-        reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.Requested_Action);
-        logger.error( "Failure while trying to obtain Requested-Action AVP.", e );
-      }
-    }
-
-    return null;
+    return (RequestedActionType) getAvpAsEnumerated(CreditControlAVPCodes.Requested_Action, RequestedActionType.class);
   }
 
   /*
@@ -129,20 +107,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public RequestedServiceUnitAvp getRequestedServiceUnit()
   {
-    if(hasRequestedServiceUnit())
-    {
-      Avp rawAvp = super.message.getAvps().getAvp(CreditControlAVPCodes.Requested_Service_Unit);
-      try
-      {
-        return new RequestedServiceUnitAvpImpl(CreditControlAVPCodes.Requested_Service_Unit, rawAvp.getVendorId(), rawAvp.isMandatory() ? 1 : 0, rawAvp.isEncrypted() ? 1 : 0, rawAvp.getRaw());
-      }
-      catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.Requested_Service_Unit);
-        logger.error( "Failure while trying to obtain Requested-Service-Unit AVP.", e );
-      }
-    }
-
-    return null;
+    return (RequestedServiceUnitAvp) getAvpAsCustom(CreditControlAVPCodes.Requested_Service_Unit, RequestedServiceUnitAvpImpl.class);
   }
 
   /*
@@ -151,19 +116,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public String getServiceContextId()
   {
-    if(hasServiceContextId())
-    {
-      try
-      {
-        return super.message.getAvps().getAvp(CreditControlAVPCodes.Service_Context_Id).getUTF8String();
-      }
-      catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.Service_Context_Id);
-        logger.error( "Failure while trying to obtain Service-Context-Id AVP.", e );
-      }
-    }
-
-    return null;
+    return getAvpAsUTF8String(CreditControlAVPCodes.Service_Context_Id);
   }
 
   /*
@@ -172,19 +125,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public long getServiceIdentifier()
   {
-    if(hasServiceIdentifier())
-    {
-      try
-      {
-        return super.message.getAvps().getAvp(CreditControlAVPCodes.Service_Identifier).getUnsigned32();
-      }
-      catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.Service_Identifier);
-        logger.error( "Failure while trying to obtain Service-Identifier AVP.", e );
-      }
-    }
-
-    return -1;
+    return getAvpAsUnsigned32(CreditControlAVPCodes.Service_Identifier);
   }
 
   /*
@@ -193,28 +134,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public ServiceParameterInfoAvp[] getServiceParameterInfos()
   {
-    if(super.hasAvp(CreditControlAVPCodes.Service_Parameter_Info))
-    {
-      AvpSet set = super.message.getAvps().getAvps(CreditControlAVPCodes.Service_Parameter_Info);
-      ServiceParameterInfoAvp[] avps = new ServiceParameterInfoAvp[set.size()];
-
-      for(int index = 0;index < set.size(); index++)
-      {
-        try
-        {
-          Avp rawAvp = set.getAvpByIndex(index);
-          ServiceParameterInfoAvp avp = new ServiceParameterInfoAvpImpl(CreditControlAVPCodes.Service_Parameter_Info, rawAvp.getVendorId(), rawAvp.isMandatory() ? 1 : 0, rawAvp.isEncrypted() ? 1 : 0, rawAvp.getRaw());
-          avps[index] = avp;
-        }
-        catch (AvpDataException e) {
-          reportAvpFetchError("Failed at index: " + index + ", " + e.getMessage(), CreditControlAVPCodes.Service_Parameter_Info);
-          logger.error( "Failure while trying to obtain Service-Parameter-Info AVP.", e );
-        }
-        return avps;
-      }
-    }
-
-    return null;
+    return (ServiceParameterInfoAvp[]) getAvpsAsCustom(CreditControlAVPCodes.Service_Parameter_Info, ServiceParameterInfoAvpImpl.class);
   }
 
   /*
@@ -223,28 +143,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public SubscriptionIdAvp[] getSubscriptionIds()
   {
-    if(super.hasAvp(CreditControlAVPCodes.Subscription_Id))
-    {
-      AvpSet set = super.message.getAvps().getAvps(CreditControlAVPCodes.Subscription_Id);
-      SubscriptionIdAvp[] avps = new SubscriptionIdAvp[set.size()];
-
-      for(int index = 0;index < set.size(); index++)
-      {
-        try
-        {
-          Avp rawAvp = set.getAvpByIndex(index);
-          SubscriptionIdAvp avp = new SubscriptionIdAvpImpl(CreditControlAVPCodes.Subscription_Id, rawAvp.getVendorId(), rawAvp.isMandatory() ? 1 : 0, rawAvp.isEncrypted() ? 1 : 0, rawAvp.getRaw());
-          avps[index] = avp;
-        }
-        catch (AvpDataException e) {
-          reportAvpFetchError("Failed at index: " + index + ", " + e.getMessage(), CreditControlAVPCodes.Subscription_Id);
-          logger.error( "Failure while trying to obtain Subscription-Id AVP.", e );
-        }
-        return avps;
-      }
-    }
-
-    return null;
+    return (SubscriptionIdAvp[]) getAvpsAsCustom(CreditControlAVPCodes.Subscription_Id, SubscriptionIdAvpImpl.class);
   }
 
   /*
@@ -253,19 +152,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public TerminationCauseType getTerminationCause()
   {
-    if(hasTerminationCause())
-    {
-      try
-      {
-        return TerminationCauseType.fromInt(super.message.getAvps().getAvp(DiameterAvpCodes.TERMINATION_CAUSE).getInteger32());
-      }
-      catch (Exception e) {
-        reportAvpFetchError(e.getMessage(), DiameterAvpCodes.TERMINATION_CAUSE);
-        logger.error( "Failure while trying to obtain Termination-Cause AVP.", e );
-      }
-    }
-
-    return null;
+    return (TerminationCauseType) getAvpAsEnumerated(DiameterAvpCodes.TERMINATION_CAUSE, TerminationCauseType.class);
   }
 
   /*
@@ -274,28 +161,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public UsedServiceUnitAvp[] getUsedServiceUnits()
   {
-    if(super.hasAvp(CreditControlAVPCodes.Used_Service_Unit))
-    {
-      AvpSet set = super.message.getAvps().getAvps(CreditControlAVPCodes.Used_Service_Unit);
-      UsedServiceUnitAvp[] avps = new UsedServiceUnitAvp[set.size()];
-
-      for(int index = 0;index < set.size(); index++)
-      {
-        try
-        {
-          Avp rawAvp = set.getAvpByIndex(index);
-          UsedServiceUnitAvp avp = new UsedServiceUnitAvpImpl(CreditControlAVPCodes.Used_Service_Unit, rawAvp.getVendorId(), rawAvp.isMandatory() ? 1 : 0, rawAvp.isEncrypted() ? 1 : 0, rawAvp.getRaw());
-          avps[index] = avp;
-        }
-        catch (AvpDataException e) {
-          reportAvpFetchError("Failed at index: " + index + ", " + e.getMessage(), CreditControlAVPCodes.Used_Service_Unit);
-          logger.error( "Failure while trying to obtain Used-Service-Unit AVP.", e );
-        }
-        return avps;
-      }
-    }
-
-    return null;
+    return (UsedServiceUnitAvp[]) getAvpsAsCustom(CreditControlAVPCodes.Used_Service_Unit, UsedServiceUnitAvpImpl.class);
   }
 
   /*
@@ -304,20 +170,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public UserEquipmentInfoAvp getUserEquipmentInfo()
   {
-    if(hasUserEquipmentInfo())
-    {
-      Avp rawAvp = super.message.getAvps().getAvp(CreditControlAVPCodes.User_Equipment_Info);
-      try
-      {
-        return new UserEquipmentInfoAvpImpl(CreditControlAVPCodes.User_Equipment_Info, rawAvp.getVendorId(), rawAvp.isMandatory() ? 1 : 0, rawAvp.isEncrypted() ? 1 : 0, rawAvp.getRaw());
-      }
-      catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.User_Equipment_Info);
-        logger.error( "Failure while trying to obtain User-Equipment-Info AVP.", e );
-      }
-    }
-
-    return null;
+    return (UserEquipmentInfoAvp) getAvpAsCustom(CreditControlAVPCodes.User_Equipment_Info, UserEquipmentInfoAvpImpl.class);
   }
 
   /*
@@ -326,7 +179,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public boolean hasCcCorrelationId()
   {
-    return super.hasAvp(CreditControlAVPCodes.CC_Correlation_Id);
+    return hasAvp(CreditControlAVPCodes.CC_Correlation_Id);
   }
 
   /*
@@ -335,7 +188,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public boolean hasMultipleServicesIndicator()
   {
-    return super.hasAvp(CreditControlAVPCodes.Multiple_Services_Indicator);
+    return hasAvp(CreditControlAVPCodes.Multiple_Services_Indicator);
   }
 
   /*
@@ -344,7 +197,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public boolean hasRequestedAction()
   {
-    return super.hasAvp(CreditControlAVPCodes.Requested_Action);
+    return hasAvp(CreditControlAVPCodes.Requested_Action);
   }
 
   /*
@@ -353,7 +206,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public boolean hasRequestedServiceUnit()
   {
-    return super.hasAvp(CreditControlAVPCodes.Requested_Service_Unit);
+    return hasAvp(CreditControlAVPCodes.Requested_Service_Unit);
   }
 
   /*
@@ -362,7 +215,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public boolean hasServiceContextId()
   {
-    return super.hasAvp(CreditControlAVPCodes.Service_Context_Id);
+    return hasAvp(CreditControlAVPCodes.Service_Context_Id);
   }
 
   /*
@@ -371,7 +224,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public boolean hasServiceIdentifier()
   {
-    return super.hasAvp(CreditControlAVPCodes.Service_Identifier);
+    return hasAvp(CreditControlAVPCodes.Service_Identifier);
   }
 
   /*
@@ -380,7 +233,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public boolean hasTerminationCause()
   {
-    return super.hasAvp(DiameterAvpCodes.TERMINATION_CAUSE);
+    return hasAvp(DiameterAvpCodes.TERMINATION_CAUSE);
   }
 
   /*
@@ -389,7 +242,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public boolean hasUserEquipmentInfo()
   {
-    return super.hasAvp(CreditControlAVPCodes.User_Equipment_Info);
+    return hasAvp(CreditControlAVPCodes.User_Equipment_Info);
   }
 
   /*
@@ -398,19 +251,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public void setCcCorrelationId(byte[] ccCorrelationId) throws IllegalStateException
   {
-    if(hasCcCorrelationId())
-    {
-      throw new IllegalStateException("AVP CC-Correlation-Id is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.CC_Correlation_Id);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      //super.message.getAvps().removeAvp(CreditControlAVPCodes.CC_Correlation_Id);
-      super.message.getAvps().addAvp(CreditControlAVPCodes.CC_Correlation_Id, ccCorrelationId, mandatoryAvp == 1, protectedAvp == 1);
-    }
+    addAvp(CreditControlAVPCodes.CC_Correlation_Id, ccCorrelationId);
   }
 
   /*
@@ -419,20 +260,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public void setMultipleServicesIndicator(MultipleServicesIndicatorType multipleServicesIndicator) throws IllegalStateException
   {
-    if(hasMultipleServicesIndicator())
-    {
-      throw new IllegalStateException("AVP Multiple-Services-Indicator is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Multiple_Services_Indicator);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      //super.message.getAvps().removeAvp(CreditControlAVPCodes.Multiple_Services_Indicator);
-      super.message.getAvps().addAvp(CreditControlAVPCodes.Multiple_Services_Indicator, multipleServicesIndicator.getValue(), mandatoryAvp == 1, protectedAvp == 1);
-    }
-
+    addAvp(CreditControlAVPCodes.Multiple_Services_Indicator, (long)multipleServicesIndicator.getValue());
   }
 
   /*
@@ -441,19 +269,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public void setRequestedAction(RequestedActionType requestedAction) throws IllegalStateException
   {
-    if(hasRequestedAction())
-    {
-      throw new IllegalStateException("AVP Requested-Action is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Requested_Action);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      //super.message.getAvps().removeAvp(CreditControlAVPCodes.Requested_Action);
-      super.message.getAvps().addAvp(CreditControlAVPCodes.Requested_Action, requestedAction.getValue(), mandatoryAvp == 1, protectedAvp == 1);
-    }
+    addAvp(CreditControlAVPCodes.Requested_Action, (long)requestedAction.getValue());
   }
 
   /*
@@ -462,19 +278,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public void setRequestedServiceUnit(RequestedServiceUnitAvp requestedServiceUnit) throws IllegalStateException
   {
-    if(hasRequestedServiceUnit())
-    {
-      throw new IllegalStateException("AVP Requested-Service-Unit is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Requested_Service_Unit);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      //super.message.getAvps().removeAvp(CreditControlAVPCodes.Requested_Service_Unit);
-      super.message.getAvps().addAvp(CreditControlAVPCodes.Requested_Service_Unit, requestedServiceUnit.byteArrayValue(), mandatoryAvp == 1, protectedAvp == 1);
-    }
+    addAvp(CreditControlAVPCodes.Requested_Service_Unit, requestedServiceUnit.byteArrayValue());
   }
 
   /*
@@ -483,19 +287,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public void setServiceContextId(String serviceContextId) throws IllegalStateException
   {
-    if(hasServiceContextId())
-    {
-      throw new IllegalStateException("AVP Service-Context-Id is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Service_Context_Id);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      //super.message.getAvps().removeAvp(CreditControlAVPCodes.Service_Context_Id);
-      super.message.getAvps().addAvp(CreditControlAVPCodes.Service_Context_Id, serviceContextId, false, mandatoryAvp == 1, protectedAvp == 1);
-    }
+    addAvp(CreditControlAVPCodes.Service_Context_Id, serviceContextId);
   }
 
   /*
@@ -504,18 +296,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public void setServiceIdentifier(long serviceIdentifier) throws IllegalStateException
   {
-    if(hasServiceIdentifier())
-    {
-      throw new IllegalStateException("AVP Service-Identifier is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Service_Identifier);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-      super.message.getAvps().removeAvp(CreditControlAVPCodes.Service_Identifier);
-      super.message.getAvps().addAvp(CreditControlAVPCodes.Service_Identifier, serviceIdentifier, mandatoryAvp == 1, protectedAvp == 1);
-    }
+    addAvp(CreditControlAVPCodes.Service_Identifier, serviceIdentifier);
   }
 
   /*
@@ -524,7 +305,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public void setServiceParameterInfo(ServiceParameterInfoAvp serviceParameterInfo) throws IllegalStateException
   {
-    this.setServiceParameterInfos(new ServiceParameterInfoAvp[]{serviceParameterInfo});
+    addAvp(CreditControlAVPCodes.Service_Parameter_Info, serviceParameterInfo.byteArrayValue());
   }
 
   /*
@@ -533,21 +314,8 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public void setServiceParameterInfos(ServiceParameterInfoAvp[] serviceParameterInfos) throws IllegalStateException
   {
-    if(hasAvp(CreditControlAVPCodes.Service_Parameter_Info))
-    {
-      throw new IllegalStateException("AVP Service-Parameter-Info is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Service_Parameter_Info);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      //super.message.getAvps().removeAvp(CreditControlAVPCodes.Service_Parameter_Info);
-      for(ServiceParameterInfoAvp serviceParameterInfo: serviceParameterInfos)
-      {
-        super.message.getAvps().addAvp(CreditControlAVPCodes.Service_Parameter_Info, serviceParameterInfo.byteArrayValue(), mandatoryAvp == 1, protectedAvp == 1);
-      }
+    for(ServiceParameterInfoAvp serviceParameterInfo: serviceParameterInfos) {
+      setServiceParameterInfo(serviceParameterInfo);
     }
   }
 
@@ -557,7 +325,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public void setSubscriptionId(SubscriptionIdAvp subscriptionId) throws IllegalStateException
   {
-    this.setSubscriptionIds(new SubscriptionIdAvp[]{subscriptionId});
+    addAvp(CreditControlAVPCodes.Subscription_Id, subscriptionId.byteArrayValue());
   }
 
   /*
@@ -566,21 +334,8 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public void setSubscriptionIds(SubscriptionIdAvp[] subscriptionIds) throws IllegalStateException
   {
-    if(hasAvp(CreditControlAVPCodes.Subscription_Id))
-    {
-      throw new IllegalStateException("AVP Subscription-Id is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Subscription_Id);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      super.message.getAvps().removeAvp(CreditControlAVPCodes.Subscription_Id);
-      for(SubscriptionIdAvp subscriptionId: subscriptionIds)
-      {
-        super.message.getAvps().addAvp(CreditControlAVPCodes.Subscription_Id, subscriptionId.byteArrayValue(), mandatoryAvp == 1, protectedAvp == 1);
-      }
+    for(SubscriptionIdAvp subscriptionId : subscriptionIds) {
+      setSubscriptionId(subscriptionId);
     }
   }
 
@@ -590,19 +345,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public void setTerminationCause(TerminationCauseType terminationCause) throws IllegalStateException
   {
-    if(hasTerminationCause())
-    {
-      throw new IllegalStateException("AVP Termination-Cause is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterAvpCodes.TERMINATION_CAUSE);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      //super.message.getAvps().removeAvp(DiameterAvpCodes.TERMINATION_CAUSE);
-      super.message.getAvps().addAvp(DiameterAvpCodes.TERMINATION_CAUSE, terminationCause.getValue(), avpRep.getVendorId(), mandatoryAvp == 1, protectedAvp == 1);
-    }
+    addAvp(DiameterAvpCodes.TERMINATION_CAUSE, (long)terminationCause.getValue());
   }
 
   /*
@@ -611,7 +354,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public void setUsedServiceUnit(UsedServiceUnitAvp usedServiceUnit) throws IllegalStateException
   {
-    this.setUsedServiceUnits(new UsedServiceUnitAvp[]{usedServiceUnit});
+    addAvp(CreditControlAVPCodes.Used_Service_Unit, usedServiceUnit.byteArrayValue());
   }
 
   /*
@@ -620,21 +363,8 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public void setUsedServiceUnits(UsedServiceUnitAvp[] usedServiceUnits) throws IllegalStateException
   {
-    if(hasAvp(CreditControlAVPCodes.Used_Service_Unit))
-    {
-      throw new IllegalStateException("AVP Used-Service-Unit is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.Used_Service_Unit);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      //super.message.getAvps().removeAvp(CreditControlAVPCodes.Used_Service_Unit);
-      for(UsedServiceUnitAvp usedServiceUnit: usedServiceUnits)
-      {
-        super.message.getAvps().addAvp(CreditControlAVPCodes.Used_Service_Unit, usedServiceUnit.byteArrayValue(), mandatoryAvp == 1, protectedAvp == 1);
-      }
+    for(UsedServiceUnitAvp usedServiceUnit : usedServiceUnits) {
+      setUsedServiceUnit(usedServiceUnit);
     }
   }
 
@@ -644,19 +374,7 @@ public class CreditControlRequestImpl extends CreditControlMessageImpl implement
    */
   public void setUserEquipmentInfo(UserEquipmentInfoAvp userEquipmentInfo) throws IllegalStateException
   {
-    if(hasUserEquipmentInfo())
-    {
-      throw new IllegalStateException("AVP User-Equipment-Info is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(CreditControlAVPCodes.User_Equipment_Info);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      //super.message.getAvps().removeAvp(CreditControlAVPCodes.User_Equipment_Info);
-      super.message.getAvps().addAvp(CreditControlAVPCodes.User_Equipment_Info, userEquipmentInfo.byteArrayValue(), mandatoryAvp == 1, protectedAvp == 1);
-    }
+    addAvp(CreditControlAVPCodes.User_Equipment_Info, userEquipmentInfo.byteArrayValue());
   }
 
 }

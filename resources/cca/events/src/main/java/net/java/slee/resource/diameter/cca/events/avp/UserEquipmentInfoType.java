@@ -1,3 +1,28 @@
+/*
+ * Mobicents, Communications Middleware
+ * 
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package net.java.slee.resource.diameter.cca.events.avp;
 
 import java.io.StreamCorruptedException;
@@ -36,51 +61,47 @@ import net.java.slee.resource.diameter.base.events.avp.Enumerated;
  *      documentation.
  *      
  *      </pre>
- * @author baranowb
- *
+ *  
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public enum UserEquipmentInfoType implements Enumerated {
 
-	IMEISV(0), MAC(1), EUI64(2), MODIFIED_EUI64(3);
+  IMEISV(0), MAC(1), EUI64(2), MODIFIED_EUI64(3);
 
-	private int value = -1;
+  private int value = -1;
 
-	private UserEquipmentInfoType(int value) {
-		this.value = value;
-	}
+  private UserEquipmentInfoType(int value) {
+    this.value = value;
+  }
 
-	private Object readResolve() throws StreamCorruptedException {
-		try {
-			return fromInt(value);
-		} catch (IllegalArgumentException iae) {
-			throw new StreamCorruptedException("Invalid internal state found: "
-					+ value);
-		}
-	}
+  private Object readResolve() throws StreamCorruptedException {
+    try {
+      return fromInt(value);
+    }
+    catch (IllegalArgumentException iae) {
+      throw new StreamCorruptedException("Invalid internal state found: " + value);
+    }
+  }
 
-	public UserEquipmentInfoType fromInt(int presumableValue)
-			throws IllegalArgumentException {
+  public UserEquipmentInfoType fromInt(int presumableValue) throws IllegalArgumentException
+  {
+    switch (presumableValue) {
+    case 0:
+      return IMEISV;
+    case 1:
+      return MAC;
+    case 2:
+      return EUI64;
+    case 3:
+      return MODIFIED_EUI64;
 
-		switch (presumableValue) {
-		case 0:
-			return IMEISV;
-		case 1:
-			return MAC;
-		case 2:
-			return EUI64;
+    default:
+      throw new IllegalArgumentException();
+    }
+  }
 
-		case 3:
-			return MODIFIED_EUI64;
-
-		default:
-			throw new IllegalArgumentException();
-
-		}
-
-	}
-
-	public int getValue() {
-
-		return this.value;
-	}
+  public int getValue() {
+    return this.value;
+  }
 }

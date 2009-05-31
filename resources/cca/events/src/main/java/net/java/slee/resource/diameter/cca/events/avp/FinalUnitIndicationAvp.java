@@ -1,3 +1,28 @@
+/*
+ * Mobicents, Communications Middleware
+ * 
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package net.java.slee.resource.diameter.cca.events.avp;
 
 import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
@@ -58,112 +83,110 @@ import net.java.slee.resource.diameter.base.events.avp.IPFilterRule;
  *                               *[ Filter-Id ]
  *                                [ Redirect-Server ]
  * </pre>
- * 
- * @author baranowb
- * 
+ *      
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public interface FinalUnitIndicationAvp extends GroupedAvp {
 
-	// TODO: Should we require that values can be set only once?
+  /**
+   * Returns the set of Filter-Id AVPs. The returned array contains the AVPs
+   * in the order they appear in the message. A return value of null implies
+   * that no Filter-Id AVPs have been set. The elements in the given array are
+   * String objects (Filter-Id is of type UTF8String).
+   * 
+   * @return
+   */
+  java.lang.String[] getFilterIds();
 
-	/**
-	 * Returns the set of Filter-Id AVPs. The returned array contains the AVPs
-	 * in the order they appear in the message. A return value of null implies
-	 * that no Filter-Id AVPs have been set. The elements in the given array are
-	 * String objects (Filter-Id is of type UTF8String).
-	 * 
-	 * @return
-	 */
-	java.lang.String[] getFilterIds();
+  /**
+   * Returns the value of the Final-Unit-Action AVP, of type Enumerated.
+   * Return value of null indicates that this avp has not been set. See:
+   * {@link FinalUnitActionType}
+   * 
+   * @return
+   */
+  FinalUnitActionType getFinalUnitAction();
 
-	/**
-	 * Returns the value of the Final-Unit-Action AVP, of type Enumerated.
-	 * Return value of null indicates that this avp has not been set. See:
-	 * {@link FinalUnitActionType}
-	 * 
-	 * @return
-	 */
-	FinalUnitActionType getFinalUnitAction();
+  /**
+   * Returns the value of the Redirect-Server AVP, of type Grouped. Return
+   * value of null indicates that this avp has not been set. See:
+   * {@link RedirectServerAvp}
+   * 
+   * @return
+   */
+  RedirectServerAvp getRedirectServer();
 
-	/**
-	 * Returns the value of the Redirect-Server AVP, of type Grouped. Return
-	 * value of null indicates that this avp has not been set. See:
-	 * {@link RedirectServerAvp}
-	 * 
-	 * @return
-	 */
-	RedirectServerAvp getRedirectServer();
+  /**
+   * Returns the set of Restriction-Filter-Rule AVPs. Null value implies that
+   * value has not been set. See: {@link IPFilterRule}
+   * 
+   * @return
+   */
+  IPFilterRule[] getRestrictionFilterRules();
 
-	/**
-	 * Returns the set of Restriction-Filter-Rule AVPs. Null value implies that
-	 * value has not been set. See: {@link IPFilterRule}
-	 * 
-	 * @return
-	 */
-	IPFilterRule[] getRestrictionFilterRules();
+  /**
+   * Returns true if the Final-Unit-Action AVP is present in the message.
+   * 
+   * @return
+   */
+  boolean hasFinalUnitAction();
 
-	/**
-	 * Returns true if the Final-Unit-Action AVP is present in the message.
-	 * 
-	 * @return
-	 */
-	boolean hasFinalUnitAction();
+  /**
+   * Returns true if the Redirect-Server AVP is present in the message.
+   * 
+   * @return
+   */
+  boolean hasRedirectServer();
 
-	/**
-	 * Returns true if the Redirect-Server AVP is present in the message.
-	 * 
-	 * @return
-	 */
-	boolean hasRedirectServer();
+  /**
+   * Sets a single Filter-Id AVP in the message, of type UTF8String.
+   * 
+   * @param filterId
+   */
+  void setFilterId(java.lang.String filterId);
 
-	/**
-	 * Sets a single Filter-Id AVP in the message, of type UTF8String.
-	 * 
-	 * @param filterId
-	 */
-	void setFilterId(java.lang.String filterId);
+  /**
+   * Sets the set of Filter-Id AVPs, with all the values in the given array.
+   * 
+   * @param filterIds
+   */
+  void setFilterIds(java.lang.String[] filterIds);
 
-	/**
-	 * Sets the set of Filter-Id AVPs, with all the values in the given array.
-	 * 
-	 * @param filterIds
-	 */
-	void setFilterIds(java.lang.String[] filterIds);
+  /**
+   * Sets the value of the Final-Unit-Action AVP, of type Enumerated. See:
+   * {@link FinalUnitActionType}
+   * 
+   * @param finalUnitAction
+   */
+  void setFinalUnitAction(FinalUnitActionType finalUnitAction);
 
-	/**
-	 * Sets the value of the Final-Unit-Action AVP, of type Enumerated. See:
-	 * {@link FinalUnitActionType}
-	 * 
-	 * @param finalUnitAction
-	 */
-	void setFinalUnitAction(FinalUnitActionType finalUnitAction);
+  /**
+   * Sets the value of the Redirect-Server AVP, of type Grouped. See:
+   * {@link RedirectServerAvp}
+   * 
+   * @param redirectServer
+   */
+  void setRedirectServer(RedirectServerAvp redirectServer);
 
-	/**
-	 * Sets the value of the Redirect-Server AVP, of type Grouped. See:
-	 * {@link RedirectServerAvp}
-	 * 
-	 * @param redirectServer
-	 */
-	void setRedirectServer(RedirectServerAvp redirectServer);
+  /**
+   * Sets the set of Restriction-Filter-Rule AVPs, with all the values in the
+   * given array. The AVPs will be added to message in the order in which they
+   * appear in the array. Note: the array must not be altered by the caller
+   * following this call, and getRestrictionFilterRules() is not guaranteed to
+   * return the same array instance, e.g. an "==" check would fail. See:
+   * {@link IPFilterRule}
+   * 
+   * @param restrictionFilterRule
+   */
+  void setRestrictionFilterRule(IPFilterRule restrictionFilterRule);
 
-	/**
-	 * Sets the set of Restriction-Filter-Rule AVPs, with all the values in the
-	 * given array. The AVPs will be added to message in the order in which they
-	 * appear in the array. Note: the array must not be altered by the caller
-	 * following this call, and getRestrictionFilterRules() is not guaranteed to
-	 * return the same array instance, e.g. an "==" check would fail. See:
-	 * {@link IPFilterRule}
-	 * 
-	 * @param restrictionFilterRule
-	 */
-	void setRestrictionFilterRule(IPFilterRule restrictionFilterRule);
-
-	/**
-	 * Sets the set of Restriction-Filter-Rule AVPs, with all the values in the
-	 * given array. See: {@link IPFilterRule}
-	 * 
-	 * @param restrictionFilterRules
-	 */
-	void setRestrictionFilterRules(IPFilterRule[] restrictionFilterRules);
+  /**
+   * Sets the set of Restriction-Filter-Rule AVPs, with all the values in the
+   * given array. See: {@link IPFilterRule}
+   * 
+   * @param restrictionFilterRules
+   */
+  void setRestrictionFilterRules(IPFilterRule[] restrictionFilterRules);
 
 }

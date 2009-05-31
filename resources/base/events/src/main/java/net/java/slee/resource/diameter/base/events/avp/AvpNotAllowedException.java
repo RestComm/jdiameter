@@ -82,7 +82,7 @@ public class AvpNotAllowedException extends RuntimeException {
 
 	@Override
 	public String toString() {
-		return "AvpNotAllowedException: "+super.getMessage()+", avp code: "+this.getAvpCode()+", vendor: "+this.getVendorId();
+		return "AvpNotAllowedException: "+super.getMessage()+" AVP Code: "+this.getAvpCode()+", Vendor-Id: "+this.getVendorId();
 	}
 	
 	

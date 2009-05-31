@@ -1,3 +1,28 @@
+/*
+ * Mobicents, Communications Middleware
+ * 
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package net.java.slee.resource.diameter.cca.events.avp;
 
 import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
@@ -74,241 +99,241 @@ import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
  *                                             [ Final-Unit-Indication ]
  * 										      *[ AVP ]
  * </pre>
- * 
- * @author baranowb
- * 
+ *      
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public interface MultipleServicesCreditControlAvp extends GroupedAvp {
 
 
-	/**
-	 * Returns the value of the Final-Unit-Indication AVP, of type Grouped.
-	 * Return value of null indicates that AVP has not been set. <br>
-	 * See: {@link FinalUnitIndicationAvp}
-	 * 
-	 * @return
-	 */
-	FinalUnitIndicationAvp getFinalUnitIndication();
+  /**
+   * Returns the value of the Final-Unit-Indication AVP, of type Grouped.
+   * Return value of null indicates that AVP has not been set. <br>
+   * See: {@link FinalUnitIndicationAvp}
+   * 
+   * @return
+   */
+  FinalUnitIndicationAvp getFinalUnitIndication();
 
-	/**
-	 * Returns the value of the Granted-Service-Unit AVP, of type Grouped.Return
-	 * value of null indicates that AVP has not been set. <br>
-	 * See: {@link GrantedServiceUnitAvp}
-	 * 
-	 * @return
-	 */
-	GrantedServiceUnitAvp getGrantedServiceUnit();
+  /**
+   * Returns the value of the Granted-Service-Unit AVP, of type Grouped.Return
+   * value of null indicates that AVP has not been set. <br>
+   * See: {@link GrantedServiceUnitAvp}
+   * 
+   * @return
+   */
+  GrantedServiceUnitAvp getGrantedServiceUnit();
 
-	/**
-	 * Returns the set of G-S-U-Pool-Reference AVPs.Return value of null
-	 * indicates that AVP has not been set. <br>
-	 * See: {@link GSUPoolReferenceAvp}
-	 * 
-	 * @return
-	 */
-	GSUPoolReferenceAvp[] getGsuPoolReferences();
+  /**
+   * Returns the set of G-S-U-Pool-Reference AVPs.Return value of null
+   * indicates that AVP has not been set. <br>
+   * See: {@link GSUPoolReferenceAvp}
+   * 
+   * @return
+   */
+  GSUPoolReferenceAvp[] getGsuPoolReferences();
 
-	/**
-	 * Returns the value of the Rating-Group AVP, of type Unsigned32.
-	 * 
-	 * @return
-	 */
-	long getRatingGroup();
+  /**
+   * Returns the value of the Rating-Group AVP, of type Unsigned32.
+   * 
+   * @return
+   */
+  long getRatingGroup();
 
-	/**
-	 * Returns the value of the Requested-Service-Unit AVP, of type
-	 * Grouped.Return value of null indicates that AVP has not been set. <br>
-	 * See: {@link RequestedServiceUnitAvp}
-	 * 
-	 * @return
-	 */
-	RequestedServiceUnitAvp getRequestedServiceUnit();
+  /**
+   * Returns the value of the Requested-Service-Unit AVP, of type
+   * Grouped.Return value of null indicates that AVP has not been set. <br>
+   * See: {@link RequestedServiceUnitAvp}
+   * 
+   * @return
+   */
+  RequestedServiceUnitAvp getRequestedServiceUnit();
 
-	/**
-	 * Returns the value of the Result-Code AVP, of type Unsigned32.
-	 * 
-	 * @return
-	 */
-	long getResultCode();
+  /**
+   * Returns the value of the Result-Code AVP, of type Unsigned32.
+   * 
+   * @return
+   */
+  long getResultCode();
 
-	/**
-	 * Returns the set of Service-Identifier AVPs. The returned array contains
-	 * the AVPs in the order they appear in the message. A return value of null
-	 * implies that no Service-Identifier AVPs have been set. The elements in
-	 * the given array are long objects.
-	 * 
-	 * @return
-	 */
-	long[] getServiceIdentifiers();
+  /**
+   * Returns the set of Service-Identifier AVPs. The returned array contains
+   * the AVPs in the order they appear in the message. A return value of null
+   * implies that no Service-Identifier AVPs have been set. The elements in
+   * the given array are long objects.
+   * 
+   * @return
+   */
+  long[] getServiceIdentifiers();
 
-	/**
-	 * Returns the value of the Tariff-Change-Usage AVP, of type Enumerated. A
-	 * return value of null implies that the AVP has not been set. <br>
-	 * See: {@link TariffChangeUsageType}.
-	 * 
-	 * @return
-	 */
-	TariffChangeUsageType getTariffChangeUsage();
+  /**
+   * Returns the value of the Tariff-Change-Usage AVP, of type Enumerated. A
+   * return value of null implies that the AVP has not been set. <br>
+   * See: {@link TariffChangeUsageType}.
+   * 
+   * @return
+   */
+  TariffChangeUsageType getTariffChangeUsage();
 
-	/**
-	 * Returns the set of Used-Service-Unit AVPs. The returned array contains
-	 * the AVPs in the order they appear in the message. A return value of null
-	 * implies that no Used-Service-Unit AVPs have been set. <br>
-	 * See: {@link UsedServiceUnitAvp}.
-	 * 
-	 * @return
-	 */
-	UsedServiceUnitAvp[] getUsedServiceUnits();
+  /**
+   * Returns the set of Used-Service-Unit AVPs. The returned array contains
+   * the AVPs in the order they appear in the message. A return value of null
+   * implies that no Used-Service-Unit AVPs have been set. <br>
+   * See: {@link UsedServiceUnitAvp}.
+   * 
+   * @return
+   */
+  UsedServiceUnitAvp[] getUsedServiceUnits();
 
-	/**
-	 * Returns the value of the Validity-Time AVP, of type Unsigned32.
-	 * 
-	 * @return
-	 */
-	long getValidityTime();
+  /**
+   * Returns the value of the Validity-Time AVP, of type Unsigned32.
+   * 
+   * @return
+   */
+  long getValidityTime();
 
-	/**
-	 * Returns the value of the Validity-Time AVP, of type Unsigned32.
-	 * 
-	 * @return
-	 */
-	boolean hasFinalUnitIndication();
+  /**
+   * Returns the value of the Validity-Time AVP, of type Unsigned32.
+   * 
+   * @return
+   */
+  boolean hasFinalUnitIndication();
 
-	/**
-	 * Returns true if the Granted-Service-Unit AVP is present in the message.
-	 * 
-	 * @return
-	 */
-	boolean hasGrantedServiceUnit();
+  /**
+   * Returns true if the Granted-Service-Unit AVP is present in the message.
+   * 
+   * @return
+   */
+  boolean hasGrantedServiceUnit();
 
-	boolean hasRatingGroup();
+  boolean hasRatingGroup();
 
-	/**
-	 * Returns true if the Rating-Group AVP is present in the message.
-	 * 
-	 * @return
-	 */
-	boolean hasRequestedServiceUnit();
+  /**
+   * Returns true if the Rating-Group AVP is present in the message.
+   * 
+   * @return
+   */
+  boolean hasRequestedServiceUnit();
 
-	/**
-	 * Returns true if the Requested-Service-Unit AVP is present in the message.
-	 * 
-	 * @return
-	 */
-	boolean hasResultCode();
+  /**
+   * Returns true if the Requested-Service-Unit AVP is present in the message.
+   * 
+   * @return
+   */
+  boolean hasResultCode();
 
-	/**
-	 * Returns true if the Result-Code AVP is present in the message.
-	 * 
-	 * @return
-	 */
-	boolean hasTariffChangeUsage();
+  /**
+   * Returns true if the Result-Code AVP is present in the message.
+   * 
+   * @return
+   */
+  boolean hasTariffChangeUsage();
 
-	/**
-	 * Returns true if the Validity-Time AVP is present in the message.
-	 * 
-	 * @return
-	 */
-	boolean hasValidityTime();
+  /**
+   * Returns true if the Validity-Time AVP is present in the message.
+   * 
+   * @return
+   */
+  boolean hasValidityTime();
 
 
-	/**
-	 * Sets the value of the Final-Unit-Indication AVP, of type Grouped. <br>
-	 * See: {@link FinalUnitIndicationAvp}
-	 */
-	void setFinalUnitIndication(FinalUnitIndicationAvp finalUnitIndication);
+  /**
+   * Sets the value of the Final-Unit-Indication AVP, of type Grouped. <br>
+   * See: {@link FinalUnitIndicationAvp}
+   */
+  void setFinalUnitIndication(FinalUnitIndicationAvp finalUnitIndication);
 
-	/**
-	 * Sets the value of the Granted-Service-Unit AVP, of type Grouped. <br>
-	 * See: {@link GrantedServiceUnitAvp}
-	 * 
-	 * @param grantedServiceUnit
-	 */
-	void setGrantedServiceUnit(GrantedServiceUnitAvp grantedServiceUnit);
+  /**
+   * Sets the value of the Granted-Service-Unit AVP, of type Grouped. <br>
+   * See: {@link GrantedServiceUnitAvp}
+   * 
+   * @param grantedServiceUnit
+   */
+  void setGrantedServiceUnit(GrantedServiceUnitAvp grantedServiceUnit);
 
-	/**
-	 * Sets a single G-S-U-Pool-Reference AVP in the message, of type Grouped.
-	 * <br>
-	 * See: {@link GSUPoolReferenceAvp}
-	 * 
-	 * @param gsuPoolReference
-	 */
-	void setGsuPoolReference(GSUPoolReferenceAvp gsuPoolReference);
+  /**
+   * Sets a single G-S-U-Pool-Reference AVP in the message, of type Grouped.
+   * <br>
+   * See: {@link GSUPoolReferenceAvp}
+   * 
+   * @param gsuPoolReference
+   */
+  void setGsuPoolReference(GSUPoolReferenceAvp gsuPoolReference);
 
-	/**
-	 * Sets the set of G-S-U-Pool-Reference AVPs, with all the values in the
-	 * given array. <br>
-	 * See: {@link GSUPoolReferenceAvp}
-	 * 
-	 * @param gsuPoolReferences
-	 */
-	void setGsuPoolReferences(GSUPoolReferenceAvp[] gsuPoolReferences);
+  /**
+   * Sets the set of G-S-U-Pool-Reference AVPs, with all the values in the
+   * given array. <br>
+   * See: {@link GSUPoolReferenceAvp}
+   * 
+   * @param gsuPoolReferences
+   */
+  void setGsuPoolReferences(GSUPoolReferenceAvp[] gsuPoolReferences);
 
-	/**
-	 * Sets the value of the Rating-Group AVP, of type Unsigned32.
-	 * 
-	 * @param ratingGroup
-	 */
-	void setRatingGroup(long ratingGroup);
+  /**
+   * Sets the value of the Rating-Group AVP, of type Unsigned32.
+   * 
+   * @param ratingGroup
+   */
+  void setRatingGroup(long ratingGroup);
 
-	/**
-	 * Sets the value of the Requested-Service-Unit AVP, of type Grouped.
-	 * 
-	 * @param requestedServiceUnit
-	 */
-	void setRequestedServiceUnit(RequestedServiceUnitAvp requestedServiceUnit);
+  /**
+   * Sets the value of the Requested-Service-Unit AVP, of type Grouped.
+   * 
+   * @param requestedServiceUnit
+   */
+  void setRequestedServiceUnit(RequestedServiceUnitAvp requestedServiceUnit);
 
-	/**
-	 * Sets the value of the Result-Code AVP, of type Unsigned32.
-	 * 
-	 * @param resultCode
-	 */
-	void setResultCode(long resultCode);
+  /**
+   * Sets the value of the Result-Code AVP, of type Unsigned32.
+   * 
+   * @param resultCode
+   */
+  void setResultCode(long resultCode);
 
-	/**
-	 * Sets a single Service-Identifier AVP in the message, of type Unsigned32.
-	 * 
-	 * @param serviceIdentifier
-	 */
-	void setServiceIdentifier(long serviceIdentifier);
+  /**
+   * Sets a single Service-Identifier AVP in the message, of type Unsigned32.
+   * 
+   * @param serviceIdentifier
+   */
+  void setServiceIdentifier(long serviceIdentifier);
 
-	/**
-	 * Sets the set of Service-Identifier AVPs, with all the values in the given
-	 * array.
-	 * 
-	 * @param serviceIdentifiers
-	 */
-	void setServiceIdentifiers(long[] serviceIdentifiers);
+  /**
+   * Sets the set of Service-Identifier AVPs, with all the values in the given
+   * array.
+   * 
+   * @param serviceIdentifiers
+   */
+  void setServiceIdentifiers(long[] serviceIdentifiers);
 
-	/**
-	 * Sets the value of the Tariff-Change-Usage AVP, of type Enumerated.
-	 * 
-	 * @param tariffChangeUsage
-	 */
-	void setTariffChangeUsage(TariffChangeUsageType tariffChangeUsage);
+  /**
+   * Sets the value of the Tariff-Change-Usage AVP, of type Enumerated.
+   * 
+   * @param tariffChangeUsage
+   */
+  void setTariffChangeUsage(TariffChangeUsageType tariffChangeUsage);
 
-	/**
-	 * Sets a single Used-Service-Unit AVP in the message, of type Grouped. <br>
-	 * See: {@link TariffChangeUsageType}
-	 * 
-	 * @param usedServiceUnit
-	 */
-	void setUsedServiceUnit(UsedServiceUnitAvp usedServiceUnit);
+  /**
+   * Sets a single Used-Service-Unit AVP in the message, of type Grouped. <br>
+   * See: {@link TariffChangeUsageType}
+   * 
+   * @param usedServiceUnit
+   */
+  void setUsedServiceUnit(UsedServiceUnitAvp usedServiceUnit);
 
-	/**
-	 * Sets the set of Used-Service-Unit AVPs, with all the values in the given
-	 * array. <br>
-	 * See: {@link UsedServiceUnitAvp}
-	 * 
-	 * @param usedServiceUnits
-	 */
-	void setUsedServiceUnits(UsedServiceUnitAvp[] usedServiceUnits);
+  /**
+   * Sets the set of Used-Service-Unit AVPs, with all the values in the given
+   * array. <br>
+   * See: {@link UsedServiceUnitAvp}
+   * 
+   * @param usedServiceUnits
+   */
+  void setUsedServiceUnits(UsedServiceUnitAvp[] usedServiceUnits);
 
-	/**
-	 * Sets the value of the Validity-Time AVP, of type Unsigned32.
-	 * 
-	 * @param validityTime
-	 */
-	void setValidityTime(long validityTime);
+  /**
+   * Sets the value of the Validity-Time AVP, of type Unsigned32.
+   * 
+   * @param validityTime
+   */
+  void setValidityTime(long validityTime);
 
 }
