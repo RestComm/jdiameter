@@ -205,9 +205,14 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
   protected transient AccountingSessionFactory accSessionFactory=null;
   protected transient SessionFactory proxySessionFactory=null;
   
+  /**
+   * Holds code to name
+   */
   private static final Map<Integer, String> events;
   private static HashSet<Integer> accEventCodes = new HashSet<Integer>();
   private static HashSet<Integer> authEventCodes = new HashSet<Integer>();
+  
+  //private static final Map<String,Integer> evenName2EventID = new HashMap<String, Integer>();
   
   static
   {
@@ -223,7 +228,7 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
     eventsTemp.put(ErrorAnswer.commandCode, "Error");
     
     // FIXME: baranowb - make sure its compilant with xml
-    eventsTemp.put(ExtensionDiameterMessage.commandCode, "ExtensionDiameter");
+    //eventsTemp.put(ExtensionDiameterMessage.commandCode, "ExtensionDiameter");
     
     events = Collections.unmodifiableMap(eventsTemp);
     
@@ -234,6 +239,8 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
     accEventCodes.add(AccountingAnswer.commandCode);
   }
 
+  
+  
   public DiameterBaseResourceAdaptor()
   {
     logger.info("Diameter Base RA :: DiameterBaseResourceAdaptor.");
@@ -904,39 +911,29 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
 
     int commandCode = (request != null ? request.getCommandCode() : answer.getCommandCode());
 
-    switch (commandCode)
-    {
-    case AbortSessionAnswer.commandCode: // ASR/ASA
-      return request != null ? new AbortSessionRequestImpl(request) : new AbortSessionAnswerImpl(answer);
-    case AccountingAnswer.commandCode: // ACR/ACA
-      return request != null ? new AccountingRequestImpl(request) : new AccountingAnswerImpl(answer);
-    case CapabilitiesExchangeAnswer.commandCode: // CER/CEA
-      return request != null ? new CapabilitiesExchangeRequestImpl(request) : new CapabilitiesExchangeAnswerImpl(answer);
-    case DeviceWatchdogAnswer.commandCode: // DWR/DWA
-      return request != null ? new DeviceWatchdogRequestImpl(request) : new DeviceWatchdogAnswerImpl(answer);
-    case DisconnectPeerAnswer.commandCode: // DPR/DPA
-      return request != null ? new DisconnectPeerRequestImpl(request) : new DisconnectPeerAnswerImpl(answer);
-    case ReAuthAnswer.commandCode: // RAR/RAA
-      return request != null ? new ReAuthRequestImpl(request) : new ReAuthAnswerImpl(answer);
-    case SessionTerminationAnswer.commandCode: // STR/STA
-      return request != null ? new SessionTerminationRequestImpl(request) : new SessionTerminationAnswerImpl(answer);
-    case ErrorAnswer.commandCode:
-      if (answer != null)
-      {
-        return new ErrorAnswerImpl(answer);
-      }
-      else
-      {
-        throw new IllegalArgumentException("ErrorAnswer code set on request: " + request);
-      }
-    case ExtensionDiameterMessage.commandCode:
-      // FIXME: baranowb - is this correct ?
-      return new ExtensionDiameterMessageImpl(request != null ? request : answer);
-
-    default:
-      throw new OperationNotSupportedException("Not supported message code:" + commandCode + "\n" + (request != null ? request : answer));
-    }
-  }
+	if (answer != null && answer.isError()) {
+		return new ErrorAnswerImpl(answer);
+	}
+    
+    switch (commandCode) {
+		case AbortSessionAnswer.commandCode: // ASR/ASA
+			return request != null ? new AbortSessionRequestImpl(request) : new AbortSessionAnswerImpl(answer);
+		case AccountingAnswer.commandCode: // ACR/ACA
+			return request != null ? new AccountingRequestImpl(request) : new AccountingAnswerImpl(answer);
+		case CapabilitiesExchangeAnswer.commandCode: // CER/CEA
+			return request != null ? new CapabilitiesExchangeRequestImpl(request) : new CapabilitiesExchangeAnswerImpl(answer);
+		case DeviceWatchdogAnswer.commandCode: // DWR/DWA
+			return request != null ? new DeviceWatchdogRequestImpl(request) : new DeviceWatchdogAnswerImpl(answer);
+		case DisconnectPeerAnswer.commandCode: // DPR/DPA
+			return request != null ? new DisconnectPeerRequestImpl(request) : new DisconnectPeerAnswerImpl(answer);
+		case ReAuthAnswer.commandCode: // RAR/RAA
+			return request != null ? new ReAuthRequestImpl(request) : new ReAuthAnswerImpl(answer);
+		case SessionTerminationAnswer.commandCode: // STR/STA
+			return request != null ? new SessionTerminationRequestImpl(request) : new SessionTerminationAnswerImpl(answer);
+		default:
+			return new ExtensionDiameterMessageImpl(request != null ? request : answer);
+		}
+	}
 
   /**
    * Method for firing event to SLEE
@@ -952,12 +949,20 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
    */
   private void fireEvent(ActivityHandle handle, String name, Request request, Answer answer)
   {
+	  //FIXME: add even lookup cache.
     try
     {
-      int eventID = eventLookup.getEventID("net.java.slee.resource.diameter.base.events." + name, "java.net", "0.8");
+    	int eventID = -1;
 
       DiameterMessage event = (DiameterMessage) createEvent(request, answer);
-
+      if(event instanceof ErrorAnswer)
+      {
+    	  eventID = eventLookup.getEventID("net.java.slee.resource.diameter.base.events.ErrorAnswer", "java.net", "0.8");
+      }
+      else
+      {
+    	  eventID = eventLookup.getEventID(name, "java.net", "0.8");
+      }
       sleeEndpoint.fireEvent(handle, event, eventID, null);
     }
     catch (Exception e)
@@ -966,6 +971,7 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
     }
   }
 
+  
   /*
    * (non-Javadoc)
    * @see org.mobicents.slee.resource.diameter.base.handlers.BaseSessionCreationListener#fireEvent(java.lang.String, java.lang.String, org.jdiameter.api.Request, org.jdiameter.api.Answer)
@@ -1064,7 +1070,7 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
       }
       else if(activity instanceof DiameterActivityImpl)
       {
-        fireEvent(activity.getActivityHandle(), events.get(request.getCommandCode())+"Request", request, null);
+        fireEvent(activity.getActivityHandle(),_ExtensionDiameterMessage, request, null);
       }
       else
       {

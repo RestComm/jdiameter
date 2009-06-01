@@ -22,7 +22,7 @@ public class DiameterActivityHandle implements ActivityHandle
   
   public DiameterActivityHandle(String id)
   {
-    logger.info("Diameter Base RA :: DiameterActivityHandle :: id[" + id + "].");
+    //logger.info("Diameter Base RA :: DiameterActivityHandle :: id[" + id + "].");
     
     this.handle = id;
   }

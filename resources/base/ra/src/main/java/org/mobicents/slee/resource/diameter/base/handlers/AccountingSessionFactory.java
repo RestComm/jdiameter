@@ -38,7 +38,7 @@ import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.client.impl.app.acc.ClientAccSessionImpl;
 import org.jdiameter.common.api.app.IAppSessionFactory;
 import org.jdiameter.server.impl.app.acc.ServerAccSessionImpl;
-
+import static org.mobicents.slee.resource.diameter.base.handlers.BaseSessionCreationListener.*;
 
 public class AccountingSessionFactory implements IAppSessionFactory, ServerAccSessionListener, StateChangeListener, ClientAccSessionListener {
 
@@ -75,115 +75,112 @@ public class AccountingSessionFactory implements IAppSessionFactory, ServerAccSe
 	protected SessionFactory sessionFactory = null;
 	protected final static Logger logger = Logger.getLogger(AccountingSessionFactory.class);
 
-	public static AccountingSessionFactory INSTANCE = new AccountingSessionFactory(); 
-	
-	/*public AccountingSessionFactory(BaseSessionCreationListener ra, long messageTimeout, SessionFactory sessionFactory, ApplicationId appId)
-	{
-		super();
-		this.ras.put(appId, ra);
+	public static AccountingSessionFactory INSTANCE = new AccountingSessionFactory();
+
+	/*
+	 * public AccountingSessionFactory(BaseSessionCreationListener ra, long
+	 * messageTimeout, SessionFactory sessionFactory, ApplicationId appId) {
+	 * super(); this.ras.put(appId, ra); this.messageTimeout = messageTimeout;
+	 * this.sessionFactory = sessionFactory; }
+	 */
+
+	private AccountingSessionFactory() {
+		this.ras = new HashMap<ApplicationId, BaseSessionCreationListener>();
+	}
+
+	public void registerListener(BaseSessionCreationListener ra, long messageTimeout, SessionFactory sessionFactory) {
+		for (ApplicationId appId : ra.getSupportedApplications())
+			this.ras.put(appId, ra);
 		this.messageTimeout = messageTimeout;
 		this.sessionFactory = sessionFactory;
-	}*/
+	}
 
-	private AccountingSessionFactory()
-	{
-	  this.ras = new HashMap<ApplicationId, BaseSessionCreationListener>();
-	}
-	
-	public void registerListener(BaseSessionCreationListener ra, long messageTimeout, SessionFactory sessionFactory)
-	{
-	  for(ApplicationId appId : ra.getSupportedApplications())
-    this.ras.put(appId, ra);
-    this.messageTimeout = messageTimeout;
-    this.sessionFactory = sessionFactory;	  
-	}
-	
-	public AppSession getNewSession(String sessionId, Class<? extends AppSession> aClass, ApplicationId applicationId, Object[] args)
-	{
-		try
-		{
-			if (aClass == ServerAccSession.class)
-			{
+	public AppSession getNewSession(String sessionId, Class<? extends AppSession> aClass, ApplicationId applicationId, Object[] args) {
+		try {
+			if (aClass == ServerAccSession.class) {
 				Request request = (Request) args[0];
 
 				ServerAccSessionImpl session = new ServerAccSessionImpl(sessionFactory.getNewSession(request.getSessionId()), request, this, messageTimeout, true, new StateChangeListener[] { this });
 				BaseSessionCreationListener ra = this.ras.get(applicationId) != null ? this.ras.get(applicationId) : this.ras.values().iterator().next();
 				ra.sessionCreated(session);
 				return session;
+			} else if (aClass == ClientAccSession.class) {
+				ClientAccSessionImpl session = sessionId == null ? new ClientAccSessionImpl(sessionFactory, this, applicationId) : new ClientAccSessionImpl(sessionFactory, sessionId, this,
+						applicationId);
+				session.addStateChangeNotification(this);
+				BaseSessionCreationListener ra = this.ras.get(applicationId) != null ? this.ras.get(applicationId) : this.ras.values().iterator().next();
+				ra.sessionCreated(session);
+				return session;
 			}
-			else if (aClass == ClientAccSession.class)
-			{
-					ClientAccSessionImpl session = sessionId == null ? new ClientAccSessionImpl(sessionFactory, this, applicationId) : new ClientAccSessionImpl(sessionFactory, sessionId, this, applicationId);
-					session.addStateChangeNotification(this);		
-	        BaseSessionCreationListener ra = this.ras.get(applicationId) != null ? this.ras.get(applicationId) : this.ras.values().iterator().next();
-	        ra.sessionCreated(session);
-					return session;
-			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error("Failure to obtain new Accounting Session.", e);
 		}
 
 		return null;
 	}
 
-	public void doAccRequestEvent(ServerAccSession appSession, AccountRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException
-	{
+	public void doAccRequestEvent(ServerAccSession appSession, AccountRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
 		logger.info("Diameter Base AccountingSessionFactory :: doAccRequestEvent :: appSession[" + appSession + "], Request[" + request + "]");
 
 		ApplicationId appId = null;
 		Iterator<ApplicationId> appIdIt = request.getMessage().getApplicationIdAvps().iterator();
-		while(appIdIt.hasNext() && appId == null)
-		{
-		  appId = appIdIt.next();
-		  appId = appId.getAcctAppId() != ApplicationId.UNDEFINED_VALUE  && this.ras.containsKey(appId) ? appId : null;
+		while (appIdIt.hasNext() && appId == null) {
+			appId = appIdIt.next();
+			appId = appId.getAcctAppId() != ApplicationId.UNDEFINED_VALUE && this.ras.containsKey(appId) ? appId : null;
 		}
-    BaseSessionCreationListener ra = appId != null ? this.ras.get(appId) : this.ras.values().iterator().next();
-    
-		ra.fireEvent(appSession.getSessions().get(0).getSessionId(), events.get(request.getCommandCode()) + "Request", (Request) request.getMessage(), null);
+
+		BaseSessionCreationListener ra = appId != null ? this.ras.get(appId) : this.ras.values().iterator().next();
+
+		ra.fireEvent(appSession.getSessions().get(0).getSessionId(), _AccountingRequest, (Request) request.getMessage(), null);
 	}
 
-	public void doAccAnswerEvent(ClientAccSession appSession, AccountRequest request, AccountAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException
-	{
+	public void doAccAnswerEvent(ClientAccSession appSession, AccountRequest request, AccountAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
 		logger.info("doAccAnswerEvent :: appSession[" + appSession + "], request[" + request + "], answer[" + answer + "]");
 
-    ApplicationId appId = null;
-    Iterator<ApplicationId> appIdIt = request.getMessage().getApplicationIdAvps().iterator();
-    while(appIdIt.hasNext() && appId == null)
-    {
-      appId = appIdIt.next();
-      appId = appId.getAcctAppId() != ApplicationId.UNDEFINED_VALUE  && this.ras.containsKey(appId) ? appId : null;
-    }
-    BaseSessionCreationListener ra = appId != null ? this.ras.get(appId) : this.ras.values().iterator().next();
-
-    ra.fireEvent(appSession.getSessions().get(0).getSessionId(), events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
+		ApplicationId appId = null;
+		Iterator<ApplicationId> appIdIt = request.getMessage().getApplicationIdAvps().iterator();
+		while (appIdIt.hasNext() && appId == null) {
+			appId = appIdIt.next();
+			appId = appId.getAcctAppId() != ApplicationId.UNDEFINED_VALUE && this.ras.containsKey(appId) ? appId : null;
+		}
+		BaseSessionCreationListener ra = appId != null ? this.ras.get(appId) : this.ras.values().iterator().next();
+		if(answer.getMessage().isError())
+		{
+			ra.fireEvent(appSession.getSessions().get(0).getSessionId(), _ErrorAnswer, null, (Answer) answer.getMessage());
+		}else
+		{
+			ra.fireEvent(appSession.getSessions().get(0).getSessionId(), _AccountingAnswer, null, (Answer) answer.getMessage());
+		}
 	}
 
-	public void doOtherEvent(AppSession appSession, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException
-	{
+	public void doOtherEvent(AppSession appSession, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
 		logger.info("Diameter Base AccountingSessionFactory :: doOtherEvent :: appSession[" + appSession + "], Request[" + request + "], Answer[" + answer + "]");
 
-    ApplicationId appId = null;
-    Iterator<ApplicationId> appIdIt = request.getMessage().getApplicationIdAvps().iterator();
-    while(appIdIt.hasNext() && appId == null)
-    {
-      appId = appIdIt.next();
-      appId = appId.getAcctAppId() != ApplicationId.UNDEFINED_VALUE  && this.ras.containsKey(appId) ? appId : null;
-    }
-    BaseSessionCreationListener ra = appId != null ? this.ras.get(appId) : this.ras.values().iterator().next();
-
-    if (answer != null)
-		{
-			ra.fireEvent(appSession.getSessions().get(0).getSessionId(), events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
+		ApplicationId appId = null;
+		Iterator<ApplicationId> appIdIt = request.getMessage().getApplicationIdAvps().iterator();
+		while (appIdIt.hasNext() && appId == null) {
+			appId = appIdIt.next();
+			appId = appId.getAcctAppId() != ApplicationId.UNDEFINED_VALUE && this.ras.containsKey(appId) ? appId : null;
 		}
-		else
-		{
-			ra.fireEvent(appSession.getSessions().get(0).getSessionId(), events.get(request.getCommandCode()) + "Request", (Request) request.getMessage(), null);
+		BaseSessionCreationListener ra = appId != null ? this.ras.get(appId) : this.ras.values().iterator().next();
+
+		//FIXME: Alex validate :}
+		if (answer != null) {
+			if(answer.getMessage().isError())
+			{
+				ra.fireEvent(appSession.getSessions().get(0).getSessionId(), _ErrorAnswer, null, (Answer) answer.getMessage());
+			}else
+			{
+				ra.fireEvent(appSession.getSessions().get(0).getSessionId(), _ExtensionDiameterMessage, null, (Answer) answer.getMessage());
+			}
+		} else {
+			ra.fireEvent(appSession.getSessions().get(0).getSessionId(), _ExtensionDiameterMessage, (Request) request.getMessage(), null);
 		}
 	}
 
-	public void stateChanged(Enum oldState, Enum newState)
-	{
+	public void stateChanged(Enum oldState, Enum newState) {
 		logger.info("Diameter Base AccountingSessionFactory :: stateChanged :: oldState[" + oldState + "], newState[" + newState + "]");
+		//FIXME: add code here.
+		
 	}
 }

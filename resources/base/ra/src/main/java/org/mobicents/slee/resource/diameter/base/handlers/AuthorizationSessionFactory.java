@@ -42,10 +42,8 @@ import org.jdiameter.common.api.app.auth.IAuthMessageFactory;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.jdiameter.server.impl.app.auth.ServerAuthSessionImpl;
-
-public class AuthorizationSessionFactory implements IAppSessionFactory,
-		IAuthMessageFactory, ServerAuthSessionListener, StateChangeListener,
-		ClientAuthSessionListener {
+import static org.mobicents.slee.resource.diameter.base.handlers.BaseSessionCreationListener.*;
+public class AuthorizationSessionFactory implements IAppSessionFactory, IAuthMessageFactory, ServerAuthSessionListener, StateChangeListener, ClientAuthSessionListener {
 
 	private long authAppId = 19301L;
 	private static final Map<Integer, String> events;
@@ -57,18 +55,15 @@ public class AuthorizationSessionFactory implements IAppSessionFactory,
 
 		eventsTemp.put(AbortSessionAnswer.commandCode, "AbortSession");
 		eventsTemp.put(AccountingAnswer.commandCode, "Accounting");
-		eventsTemp.put(CapabilitiesExchangeAnswer.commandCode,
-				"CapabilitiesExchange");
+		eventsTemp.put(CapabilitiesExchangeAnswer.commandCode, "CapabilitiesExchange");
 		eventsTemp.put(DeviceWatchdogAnswer.commandCode, "DeviceWatchdog");
 		eventsTemp.put(DisconnectPeerAnswer.commandCode, "DisconnectPeer");
 		eventsTemp.put(ReAuthAnswer.commandCode, "ReAuth");
-		eventsTemp.put(SessionTerminationAnswer.commandCode,
-				"SessionTermination");
+		eventsTemp.put(SessionTerminationAnswer.commandCode, "SessionTermination");
 		eventsTemp.put(ErrorAnswer.commandCode, "Error");
 
 		// FIXME: baranowb - make sure its compilant with xml
-		eventsTemp.put(ExtensionDiameterMessage.commandCode,
-				"ExtensionDiameter");
+		eventsTemp.put(ExtensionDiameterMessage.commandCode, "ExtensionDiameter");
 
 		events = Collections.unmodifiableMap(eventsTemp);
 
@@ -79,46 +74,39 @@ public class AuthorizationSessionFactory implements IAppSessionFactory,
 		accEventCodes.add(AccountingAnswer.commandCode);
 	}
 
+
+	
 	protected BaseSessionCreationListener ra;
 	protected long messageTimeout = 5000;
 	protected SessionFactory sessionFactory = null;
-	protected final static Logger logger = Logger
-			.getLogger(AccountingSessionFactory.class);
+	protected final static Logger logger = Logger.getLogger(AccountingSessionFactory.class);
 
 	private boolean stateless = true;
 
-	public AuthorizationSessionFactory(BaseSessionCreationListener ra,
-			long messageTimeout, SessionFactory sessionFactory) {
+	public AuthorizationSessionFactory(BaseSessionCreationListener ra, long messageTimeout, SessionFactory sessionFactory) {
 		super();
 		this.ra = ra;
 		this.messageTimeout = messageTimeout;
 		this.sessionFactory = sessionFactory;
 	}
 
-	public AppSession getNewSession(String sessionId,
-			Class<? extends AppSession> aClass, ApplicationId applicationId,
-			Object[] args) {
+	public AppSession getNewSession(String sessionId, Class<? extends AppSession> aClass, ApplicationId applicationId, Object[] args) {
 		try {
 			if (aClass == ServerAuthSession.class) {
 				Request request = (Request) args[0];
-				
-				ServerAuthSessionImpl session=new ServerAuthSessionImpl(sessionFactory
-						.getNewSession(request.getSessionId()), request, this,
-						this, messageTimeout, stateless, this);
+
+				ServerAuthSessionImpl session = new ServerAuthSessionImpl(sessionFactory.getNewSession(request.getSessionId()), request, this, this, messageTimeout, stateless, this);
 				this.ra.sessionCreated(session);
-				
+
 				return session;
 			} else {
-				if (aClass == ClientAuthSession.class)
-				{
-					ClientAuthSessionImpl session=sessionId == null ? new ClientAuthSessionImpl(
-							stateless, this, sessionFactory, this)
-					: new ClientAuthSessionImpl(stateless, sessionId,
-							this, sessionFactory, this);
-							session.addStateChangeNotification(this);
-							this.ra.sessionCreated(session);
+				if (aClass == ClientAuthSession.class) {
+					ClientAuthSessionImpl session = sessionId == null ? new ClientAuthSessionImpl(stateless, this, sessionFactory, this) : new ClientAuthSessionImpl(stateless, sessionId, this,
+							sessionFactory, this);
+					session.addStateChangeNotification(this);
+					this.ra.sessionCreated(session);
 					return session;
-			}
+				}
 			}
 		} catch (Exception e) {
 			logger.error("", e);
@@ -128,133 +116,77 @@ public class AuthorizationSessionFactory implements IAppSessionFactory,
 	}
 
 	public void stateChanged(Enum oldState, Enum newState) {
-		logger
-				.info("Diameter Base AuthorizationSessionFactory :: stateChanged :: oldState["
-						+ oldState + "], newState[" + newState + "]");
+		logger.info("Diameter Base AuthorizationSessionFactory :: stateChanged :: oldState[" + oldState + "], newState[" + newState + "]");
 	}
 
-	public void doAbortSessionRequestEvent(ClientAuthSession appSession,
-			AbortSessionRequest asr) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		logger
-				.info("Diameter Base AuthorizationSessionFactory :: doAbortSessionRequestEvent :: appSession["
-						+ appSession + "], ASR[" + asr + "]");
+	public void doAbortSessionRequestEvent(ClientAuthSession appSession, AbortSessionRequest asr) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+		logger.info("Diameter Base AuthorizationSessionFactory :: doAbortSessionRequestEvent :: appSession[" + appSession + "], ASR[" + asr + "]");
 
-		this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(),
-				events.get(asr.getCommandCode()) + "Request", (Request) asr
-						.getMessage(), null);
+		this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(), _AbortSessionRequest, (Request) asr.getMessage(), null);
 	}
 
-	public void doAbortSessionAnswerEvent(ServerAuthSession appSession,
-			org.jdiameter.api.auth.events.AbortSessionAnswer asa)
-			throws InternalException, IllegalDiameterStateException,
+	public void doAbortSessionAnswerEvent(ServerAuthSession appSession, org.jdiameter.api.auth.events.AbortSessionAnswer asa) throws InternalException, IllegalDiameterStateException, RouteException,
+			OverloadException {
+		logger.info("Diameter Base AuthorizationSessionFactory :: doAbortSessionAnswerEvent :: appSession[" + appSession + "], ASA[" + asa + "]");
+
+		if (asa.getMessage().isError())
+			this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(), _ErrorAnswer, null, (Answer) asa.getMessage());
+		else
+			this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(), _AbortSessionAnswer, null, (Answer) asa.getMessage());
+	}
+
+	public void doSessionTerminationRequestEvent(ServerAuthSession appSession, SessionTermRequest str) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+		logger.info("Diameter Base AuthorizationSessionFactory :: doSessionTerminationRequestEvent :: appSession[" + appSession + "], STA[" + str + "]");
+
+		this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(), _SessionTerminationRequest, (Request) str.getMessage(), null);
+	}
+
+	public void doSessionTerminationAnswerEvent(ClientAuthSession appSession, SessionTermAnswer sta) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+		logger.info("Diameter Base AuthorizationSessionFactory :: doSessionTerminationAnswerEvent :: appSession[" + appSession + "], STA[" + sta + "]");
+		if (sta.getMessage().isError())
+			this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(), _ErrorAnswer, null, (Answer) sta.getMessage());
+		else
+			this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(), _SessionTerminationAnswer, null, (Answer) sta.getMessage());
+	}
+
+	public void doAuthRequestEvent(ServerAuthSession appSession, AppRequestEvent request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+		logger.info("Diameter Base AuthorizationSessionFactory :: doAuthRequestEvent :: appSession[" + appSession + "], Request[" + request + "]");
+		// FIXME???
+		this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(), events.get(request.getCommandCode()) + "Request", (Request) request.getMessage(), null);
+	}
+
+	public void doAuthAnswerEvent(ClientAuthSession appSession, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException,
+			OverloadException {
+		logger.info("Diameter Base AuthorizationSessionFactory :: doAuthAnswerEvent :: appSession[" + appSession + "], Request[" + request + "], Answer[" + answer + "]");
+		// FIXME???
+		this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(), events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
+	}
+
+	public void doReAuthRequestEvent(ClientAuthSession appSession, ReAuthRequest rar) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+		logger.info("Diameter Base AuthorizationSessionFactory :: doReAuthRequestEvent :: appSession[" + appSession + "], RAR[" + rar + "]");
+
+		this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(), _ReAuthRequest, (Request) rar.getMessage(), null);
+	}
+
+	public void doReAuthAnswerEvent(ServerAuthSession appSession, ReAuthRequest rar, org.jdiameter.api.auth.events.ReAuthAnswer raa) throws InternalException, IllegalDiameterStateException,
 			RouteException, OverloadException {
-		logger
-				.info("Diameter Base AuthorizationSessionFactory :: doAbortSessionAnswerEvent :: appSession["
-						+ appSession + "], ASA[" + asa + "]");
-
-		this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(),
-				events.get(asa.getCommandCode()) + "Answer", null, (Answer) asa
-						.getMessage());
+		logger.info("Diameter Base AuthorizationSessionFactory :: doReAuthAnswerEvent :: appSession[" + appSession + "], RAR[" + rar + "], RAA[" + raa + "]");
+		if (raa.getMessage().isError())
+			this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(), _ErrorAnswer, null, (Answer) raa.getMessage());
+		else
+			this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(), _ReAuthAnswer, null, (Answer) raa.getMessage());
 	}
 
-	public void doSessionTerminationRequestEvent(ServerAuthSession appSession,
-			SessionTermRequest str) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		logger
-				.info("Diameter Base AuthorizationSessionFactory :: doSessionTerminationRequestEvent :: appSession["
-						+ appSession + "], STA[" + str + "]");
-
-		this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(),
-				events.get(str.getCommandCode()) + "Request", (Request) str
-						.getMessage(), null);
-	}
-
-	public void doSessionTerminationAnswerEvent(ClientAuthSession appSession,
-			SessionTermAnswer sta) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		logger
-				.info("Diameter Base AuthorizationSessionFactory :: doSessionTerminationAnswerEvent :: appSession["
-						+ appSession + "], STA[" + sta + "]");
-
-		this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(),
-				events.get(sta.getCommandCode()) + "Answer", null, (Answer) sta
-						.getMessage());
-	}
-
-	public void doAuthRequestEvent(ServerAuthSession appSession,
-			AppRequestEvent request) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		logger
-				.info("Diameter Base AuthorizationSessionFactory :: doAuthRequestEvent :: appSession["
-						+ appSession + "], Request[" + request + "]");
-
-		this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(),
-				events.get(request.getCommandCode()) + "Request",
-				(Request) request.getMessage(), null);
-	}
-
-	public void doAuthAnswerEvent(ClientAuthSession appSession,
-			AppRequestEvent request, AppAnswerEvent answer)
-			throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
-		logger
-				.info("Diameter Base AuthorizationSessionFactory :: doAuthAnswerEvent :: appSession["
-						+ appSession
-						+ "], Request["
-						+ request
-						+ "], Answer["
-						+ answer + "]");
-
-		this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(),
-				events.get(answer.getCommandCode()) + "Answer", null,
-				(Answer) answer.getMessage());
-	}
-
-	public void doReAuthRequestEvent(ClientAuthSession appSession,
-			ReAuthRequest rar) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		logger
-				.info("Diameter Base AuthorizationSessionFactory :: doReAuthRequestEvent :: appSession["
-						+ appSession + "], RAR[" + rar + "]");
-
-		this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(),
-				events.get(rar.getCommandCode()) + "Request", (Request) rar
-						.getMessage(), null);
-	}
-
-	public void doReAuthAnswerEvent(ServerAuthSession appSession,
-			ReAuthRequest rar, org.jdiameter.api.auth.events.ReAuthAnswer raa)
-			throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
-		logger
-				.info("Diameter Base AuthorizationSessionFactory :: doReAuthAnswerEvent :: appSession["
-						+ appSession + "], RAR[" + rar + "], RAA[" + raa + "]");
-
-		this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(),
-				events.get(raa.getCommandCode()) + "Answer", null, (Answer) raa
-						.getMessage());
-	}
-
-	public void doOtherEvent(AppSession appSession, AppRequestEvent request,
-			AppAnswerEvent answer) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		logger
-				.info("Diameter Base AuthorizationSessionFactory :: doOtherEvent :: appSession["
-						+ appSession
-						+ "], Request["
-						+ request
-						+ "], Answer["
-						+ answer + "]");
+	public void doOtherEvent(AppSession appSession, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+		logger.info("Diameter Base AuthorizationSessionFactory :: doOtherEvent :: appSession[" + appSession + "], Request[" + request + "], Answer[" + answer + "]");
 
 		if (answer != null) {
-			this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(),
-					events.get(answer.getCommandCode()) + "Answer", null,
-					(Answer) answer.getMessage());
+			if (answer.getMessage().isError())
+				this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(), _ErrorAnswer, null, (Answer) answer.getMessage());
+			else
+				this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(), _ExtensionDiameterMessage, (Request) request.getMessage(), null);
 		} else {
-			this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(),
-					events.get(request.getCommandCode()) + "Request",
-					(Request) request.getMessage(), null);
+			this.ra.fireEvent(appSession.getSessions().get(0).getSessionId(), _ExtensionDiameterMessage, (Request) request.getMessage(), null);
 		}
 	}
 
