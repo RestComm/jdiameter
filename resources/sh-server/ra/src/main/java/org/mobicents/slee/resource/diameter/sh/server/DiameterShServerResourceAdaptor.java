@@ -657,7 +657,8 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
   {
     try
     {
-      int eventID = eventLookup.getEventID("net.java.slee.resource.diameter.sh." + name, "java.net", "0.8");
+     
+      int eventID = eventLookup.getEventID(name, "java.net", "0.8");
 
       DiameterMessage event = (DiameterMessage) createEvent(request, answer);
       Object activity = getActivity(handle);
@@ -943,6 +944,7 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
 
   public void fireEvent(String sessionId, String name, Request request, Answer answer)
   {
+	  
     //FIXME: alexandre: do we need this? confusing...
     this.fireEvent(getActivityHandle(sessionId), name, request, answer);
   }
