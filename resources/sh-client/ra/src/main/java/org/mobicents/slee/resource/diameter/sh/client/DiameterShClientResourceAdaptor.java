@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 
 import javax.management.ObjectName;
 import javax.naming.NamingException;
@@ -54,6 +55,7 @@ import net.java.slee.resource.diameter.base.CreateActivityException;
 import net.java.slee.resource.diameter.base.DiameterActivity;
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.ErrorAnswer;
+import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.ShClientActivity;
@@ -78,6 +80,7 @@ import org.jdiameter.api.Peer;
 import org.jdiameter.api.PeerTable;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
+import org.jdiameter.api.Session;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.Stack;
 import org.jdiameter.api.app.AppAnswerEvent;
@@ -108,6 +111,7 @@ import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.base.events.ErrorAnswerImpl;
+import org.mobicents.slee.resource.diameter.base.events.ExtensionDiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.ProfileUpdateAnswerImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.PushNotificationRequestImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.SubscribeNotificationsAnswerImpl;
@@ -676,11 +680,11 @@ public class DiameterShClientResourceAdaptor implements ResourceAdaptor, Diamete
    * @param answer
    *            the answer that will be wrapped in the event, if any
    */
-  private void fireEvent(ActivityHandle handle, String name, Request request, Answer answer)
+  public void fireEvent(ActivityHandle handle, String name, Request request, Answer answer)
   {
     try
     {
-      int eventID = eventLookup.getEventID("net.java.slee.resource.diameter.sh." + name, "java.net", "0.8");
+      int eventID = eventLookup.getEventID(name, "java.net", "0.8");
 
       DiameterMessage event = (DiameterMessage) createEvent(request, answer);
       sleeEndpoint.fireEvent(handle, event, eventID, null);
@@ -700,42 +704,30 @@ public class DiameterShClientResourceAdaptor implements ResourceAdaptor, Diamete
    * @return a DiameterMessage object wrapping the request/answer
    * @throws OperationNotSupportedException
    */
-  public DiameterMessage createEvent(Request request, Answer answer) throws OperationNotSupportedException
-  {
-    if (request == null && answer == null)
-    {
-      return null;
-    }
+  public DiameterMessage createEvent(Request request, Answer answer) throws OperationNotSupportedException {
+		if (request == null && answer == null) {
+			return null;
+		}
 
-    int commandCode = (request != null ? request.getCommandCode() : answer.getCommandCode());
+		int commandCode = (request != null ? request.getCommandCode() : answer.getCommandCode());
+		if (answer != null && answer.isError()) {
+			return new ErrorAnswerImpl(answer);
+		}
 
-    switch (commandCode)
-    {
-    case PushNotificationRequestImpl.commandCode: // PNR/PNA
-      return request != null ? new PushNotificationRequestImpl(request) : new PushNotificationAnswerImpl(answer);
-    case ProfileUpdateRequestImpl.commandCode: // PUR/PUA
-      return request != null ? new ProfileUpdateRequestImpl(request) : new ProfileUpdateAnswerImpl(answer);
-    case SubscribeNotificationsRequestImpl.commandCode: // SNR/SNA
-      return request != null ? new SubscribeNotificationsRequestImpl(request) : new SubscribeNotificationsAnswerImpl(answer);
-    case net.java.slee.resource.diameter.sh.server.events.UserDataRequest.commandCode: // UDR/UDA
-      return request != null ? new UserDataRequestImpl(request) : new UserDataAnswerImpl(answer);
+		switch (commandCode) {
+		case PushNotificationRequestImpl.commandCode: // PNR/PNA
+			return request != null ? new PushNotificationRequestImpl(request) : new PushNotificationAnswerImpl(answer);
+		case ProfileUpdateRequestImpl.commandCode: // PUR/PUA
+			return request != null ? new ProfileUpdateRequestImpl(request) : new ProfileUpdateAnswerImpl(answer);
+		case SubscribeNotificationsRequestImpl.commandCode: // SNR/SNA
+			return request != null ? new SubscribeNotificationsRequestImpl(request) : new SubscribeNotificationsAnswerImpl(answer);
+		case net.java.slee.resource.diameter.sh.server.events.UserDataRequest.commandCode: // UDR/UDA
+			return request != null ? new UserDataRequestImpl(request) : new UserDataAnswerImpl(answer);
 
-    case ErrorAnswer.commandCode:
-      if (answer != null)
-      {
-        return new ErrorAnswerImpl(answer);
-      }
-      else
-      {
-        throw new IllegalArgumentException("ErrorAnswer code set on request: " + request);
-      }
-
-      // FIXME: baranowb : should extension fall in here?
-      // FIXME: baranowb: what about Error
-    default:
-      throw new OperationNotSupportedException("Not supported message code:" + commandCode + "\n" + (request != null ? request : answer));
-    }
-  }
+		default:
+			return new ExtensionDiameterMessageImpl(request != null ? request : answer);
+		}
+	}
 
   /**
    * Method for performing tasks when activity is created, such as informing
@@ -815,11 +807,14 @@ public class DiameterShClientResourceAdaptor implements ResourceAdaptor, Diamete
 
       if (answer != null)
       {
-        this.ra.fireEvent(handle, events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
+    	  if(answer.getMessage().isError())
+    		  this.ra.fireEvent(handle, _ErrorAnswer, null, (Answer) answer.getMessage());
+    	  else
+    		  this.ra.fireEvent(handle, _ExtensionDiameterMessage, null, (Answer) answer.getMessage());
       }
       else
       {
-        this.ra.fireEvent(handle, events.get(request.getCommandCode()) + "Request", (Request) request.getMessage(), null);
+    	  this.ra.fireEvent(handle, _ExtensionDiameterMessage, (Request) request.getMessage(), null);
       }
     }
 
@@ -829,7 +824,10 @@ public class DiameterShClientResourceAdaptor implements ResourceAdaptor, Diamete
 
       DiameterActivityHandle handle = new DiameterActivityHandle(appSession.getSessions().get(0).getSessionId());
 
-      this.ra.fireEvent(handle, events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
+      if(answer.getMessage().isError())
+		  this.ra.fireEvent(handle, _ErrorAnswer, null, (Answer) answer.getMessage());
+	  else
+		  this.ra.fireEvent(handle, _ProfileUpdateAnswer, null, (Answer) answer.getMessage());
     }
 
     public void doPushNotificationRequestEvent(ClientShSession appSession, PushNotificationRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException
@@ -838,7 +836,7 @@ public class DiameterShClientResourceAdaptor implements ResourceAdaptor, Diamete
 
       DiameterActivityHandle handle = new DiameterActivityHandle(appSession.getSessions().get(0).getSessionId());
 
-      this.ra.fireEvent(handle, events.get(request.getCommandCode()) + "Request", (Request) request.getMessage(), null);
+      this.ra.fireEvent(handle, _PushNotificationRequest, (Request) request.getMessage(), null);
     }
 
     public void doSubscribeNotificationsAnswerEvent(ClientShSession appSession, SubscribeNotificationsRequest request, org.jdiameter.api.sh.events.SubscribeNotificationsAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException
@@ -847,7 +845,10 @@ public class DiameterShClientResourceAdaptor implements ResourceAdaptor, Diamete
 
       DiameterActivityHandle handle = new DiameterActivityHandle(appSession.getSessions().get(0).getSessionId());
 
-      this.ra.fireEvent(handle, events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
+      if(answer.getMessage().isError())
+		  this.ra.fireEvent(handle, _ErrorAnswer, null, (Answer) answer.getMessage());
+	  else
+		  this.ra.fireEvent(handle, _SubscribeNotificationsAnswer, null, (Answer) answer.getMessage());
     }
 
     public void doUserDataAnswerEvent(ClientShSession appSession, UserDataRequest request, org.jdiameter.api.sh.events.UserDataAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException
@@ -856,7 +857,10 @@ public class DiameterShClientResourceAdaptor implements ResourceAdaptor, Diamete
 
       DiameterActivityHandle handle = new DiameterActivityHandle(appSession.getSessions().get(0).getSessionId());
 
-      this.ra.fireEvent(handle, events.get(answer.getCommandCode()) + "Answer", null, (Answer) answer.getMessage());
+      if(answer.getMessage().isError())
+		  this.ra.fireEvent(handle, _ErrorAnswer, null, (Answer) answer.getMessage());
+	  else
+		  this.ra.fireEvent(handle, _UserDataAnswer, null, (Answer) answer.getMessage());
     }
 
     public void stateChanged(Enum oldState, Enum newState)
@@ -1029,23 +1033,73 @@ public class DiameterShClientResourceAdaptor implements ResourceAdaptor, Diamete
       return new ShClientMessageFactoryImpl(stack);
     }
 
-    public net.java.slee.resource.diameter.sh.client.events.ProfileUpdateAnswer profileUpdateRequest(ProfileUpdateRequest message) throws IOException
-    {
-      // TODO Auto-generated method stub
-      return null;
-    }
+    public net.java.slee.resource.diameter.sh.client.events.ProfileUpdateAnswer profileUpdateRequest(ProfileUpdateRequest message) throws IOException {
+			// This is sync, we dont care about activities or FSM, someone else
+			// should care...
+			if (message == null)
+				throw new IOException("Cant send null message");
+			try {
 
-    public SubscribeNotificationsAnswer subscribeNotificationsRequest(net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest message) throws IOException
-    {
-      // TODO Auto-generated method stub
-      return null;
-    }
+				String sessionID = message.getSessionId();
+				if (sessionID == null) {
+					throw new IllegalArgumentException("Session Id must not be null.");
+				}
+				Session session = stack.getSessionFactory().getNewSession(sessionID);
+				Future<Message> f = session.send(((DiameterMessageImpl) message).getGenericData());
+				return new ProfileUpdateAnswerImpl(f.get());
+			} catch (AvpNotAllowedException e) {
+				throw e;
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new IOException("Failed to send due to: " + e);
+			}
 
-    public UserDataAnswer userDataRequest(net.java.slee.resource.diameter.sh.server.events.UserDataRequest message) throws IOException
-    {
-      // TODO Auto-generated method stub
-      return null;
-    }
+		}
+
+		public SubscribeNotificationsAnswer subscribeNotificationsRequest(net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest message) throws IOException {
+			// This is sync, we dont care about activities or FSM, someone else
+			// should care...
+			if (message == null)
+				throw new IOException("Cant send null message");
+			try {
+
+				String sessionID = message.getSessionId();
+				if (sessionID == null) {
+					throw new IllegalArgumentException("Session Id must not be null.");
+				}
+				Session session = stack.getSessionFactory().getNewSession(sessionID);
+				Future<Message> f = session.send(((DiameterMessageImpl) message).getGenericData());
+				return new SubscribeNotificationsAnswerImpl(f.get());
+			} catch (AvpNotAllowedException e) {
+				throw e;
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new IOException("Failed to send due to: " + e);
+			}
+		}
+
+		public UserDataAnswer userDataRequest(net.java.slee.resource.diameter.sh.server.events.UserDataRequest message) throws IOException {
+			// This is sync, we dont care about activities or FSM, someone else
+			// should care...
+			if (message == null)
+				throw new IOException("Cant send null message");
+			try {
+
+				String sessionID = message.getSessionId();
+				if (sessionID == null) {
+					throw new IllegalArgumentException("Session Id must not be null.");
+				}
+				Session session = stack.getSessionFactory().getNewSession(sessionID);
+				Future<Message> f = session.send(((DiameterMessageImpl) message).getGenericData());
+
+				return new UserDataAnswerImpl(f.get());
+			} catch (AvpNotAllowedException e) {
+				throw e;
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new IOException("Failed to send due to: " + e);
+			}
+		}
 
     public ShClientSubscriptionActivity createShClientSubscriptionActivity() throws CreateActivityException
     {
