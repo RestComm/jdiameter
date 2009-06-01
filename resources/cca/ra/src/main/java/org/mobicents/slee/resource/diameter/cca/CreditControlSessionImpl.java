@@ -35,7 +35,6 @@ import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
 import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
 import net.java.slee.resource.diameter.cca.CreditControlSession;
 import net.java.slee.resource.diameter.cca.CreditControlSessionState;
-import net.java.slee.resource.diameter.cca.handlers.CCASessionCreationListener;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.EventListener;
@@ -44,6 +43,7 @@ import org.jdiameter.api.Session;
 import org.jdiameter.api.app.StateChangeListener;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.handlers.CCASessionCreationListener;
 
 /**
  * 

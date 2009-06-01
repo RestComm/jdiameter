@@ -43,7 +43,6 @@ import net.java.slee.resource.diameter.cca.CreditControlServerSession;
 import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
 import net.java.slee.resource.diameter.cca.events.CreditControlMessage;
 import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
-import net.java.slee.resource.diameter.cca.handlers.CCASessionCreationListener;
 
 import org.apache.log4j.Logger;
 import org.jdiameter.api.Answer;
@@ -72,12 +71,14 @@ import org.mobicents.slee.resource.diameter.base.events.AbortSessionRequestImpl;
 import org.mobicents.slee.resource.diameter.base.events.AccountingAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.events.AccountingRequestImpl;
 import org.mobicents.slee.resource.diameter.base.events.ErrorAnswerImpl;
+import org.mobicents.slee.resource.diameter.base.events.ExtensionDiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.base.events.ReAuthAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.events.ReAuthRequestImpl;
 import org.mobicents.slee.resource.diameter.base.events.SessionTerminationAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.events.SessionTerminationRequestImpl;
 import org.mobicents.slee.resource.diameter.cca.events.CreditControlAnswerImpl;
 import org.mobicents.slee.resource.diameter.cca.events.CreditControlRequestImpl;
+import org.mobicents.slee.resource.diameter.cca.handlers.CCASessionCreationListener;
 import org.mobicents.slee.resource.diameter.cca.handlers.CreditControlSessionFactory;
 
 /**
@@ -152,7 +153,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
     eventsTemp.put(ErrorAnswer.commandCode, "Error");
     eventsTemp.put(SessionTerminationAnswer.commandCode, "SessionTermination");
     // FIXME: baranowb - make sure its compilant with xml
-    eventsTemp.put(ExtensionDiameterMessage.commandCode, "ExtensionDiameterMessage");
+    //eventsTemp.put(ExtensionDiameterMessage.commandCode, "ExtensionDiameterMessage");
 
     events = Collections.unmodifiableMap(eventsTemp);
   }
@@ -176,7 +177,8 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 
   public CCAResourceAdaptor()
   {
-    logger.info("Diameter CCA RA :: DiameterBaseResourceAdaptor.");
+	  if (logger.isInfoEnabled())
+		  logger.info("Diameter CCA RA :: DiameterBaseResourceAdaptor.");
   }
 
   /**
@@ -189,7 +191,8 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
    */
   public void activityEnded(ActivityHandle handle)
   {
-    logger.info("Diameter CCA RA :: activityEnded :: handle[" + handle + ".");
+	if (logger.isInfoEnabled()) 
+		  logger.info("Diameter CCA RA :: activityEnded :: handle[" + handle + ".");
 
     if(this.activities != null)
     {
@@ -210,7 +213,8 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
    */
   public void activityUnreferenced(ActivityHandle handle)
   {
-    logger.info("Diameter CCA RA :: activityUnreferenced :: handle[" + handle + "].");
+	  if (logger.isInfoEnabled())
+		  logger.info("Diameter CCA RA :: activityUnreferenced :: handle[" + handle + "].");
 
     this.activityEnded(handle);
   }
@@ -228,7 +232,8 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
    */
   public void entityActivated() throws ResourceException
   {
-    logger.info("Diameter CCA RA :: entityActivated.");
+	  if (logger.isInfoEnabled())
+		  logger.info("Diameter CCA RA :: entityActivated.");
 
     try
     {
@@ -286,7 +291,8 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
    */
   public void entityCreated(BootstrapContext bootstrapContext) throws ResourceException
   {
-    logger.info("Diameter CCA RA :: entityCreated :: bootstrapContext[" + bootstrapContext + "].");
+	  if (logger.isInfoEnabled())
+		  logger.info("Diameter CCA RA :: entityCreated :: bootstrapContext[" + bootstrapContext + "].");
 
     this.bootstrapContext = bootstrapContext;
     this.sleeEndpoint = bootstrapContext.getSleeEndpoint();
@@ -309,16 +315,18 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
    */
   public void entityDeactivated()
   {
+	  if (logger.isInfoEnabled())
+	  {
     logger.info("Diameter CCA RA :: entityDeactivated.");
 
     logger.info("Diameter CCA RA :: Cleaning RA Activities.");
-
+	  }
     synchronized (this.activities)
     {
       activities.clear();
     }
     activities = null;
-
+    if (logger.isInfoEnabled())
     logger.info("Diameter CCA RA :: Cleaning naming context.");
 
     try
@@ -329,7 +337,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
     {
       logger.error("Diameter CCA RA :: Cannot unbind naming context.");
     }
-
+    if (logger.isInfoEnabled())
     logger.info("Diameter CCA RA :: RA Stopped.");
   }
 
@@ -343,7 +351,8 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
    */
   public void entityDeactivating()
   {
-    logger.info("Diameter CCA RA :: entityDeactivating.");
+	  if (logger.isInfoEnabled())
+		  logger.info("Diameter CCA RA :: entityDeactivating.");
 
     this.state = ResourceAdaptorState.STOPPING;
 
@@ -372,7 +381,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
         }
       }
     }
-
+    if (logger.isInfoEnabled())
     logger.info("Diameter CCA RA :: entityDeactivating completed.");
   }
 
@@ -394,7 +403,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
     this.raProvider = null;
     this.sleeEndpoint = null;
     this.stack = null;
-
+    if (logger.isInfoEnabled())
     logger.info("Diameter CCA RA :: entityRemoved.");
   }
 
@@ -409,6 +418,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
    */
   public void eventProcessingFailed(ActivityHandle handle, Object event, int eventID, Address address, int flags, FailureReason reason)
   {
+	  if (logger.isInfoEnabled())
     logger.info("Diameter CCA RA :: eventProcessingFailed :: handle[" + handle + "], event[" + event + "], eventID[" + eventID + "], address[" + address + "], flags[" + flags + 
         "], reason[" + reason + "].");
   }
@@ -423,6 +433,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
    */
   public void eventProcessingSuccessful(ActivityHandle handle, Object event, int eventID, Address address, int flags)
   {
+	  if (logger.isInfoEnabled())
     logger.info("Diameter CCA RA :: eventProcessingSuccessful :: handle[" + handle + "], event[" + event + "], eventID[" + eventID + "], address[" + address + "], flags[" + 
         flags + "].");
 
@@ -448,6 +459,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
    */
   public Object getActivity(ActivityHandle handle)
   {
+	  if (logger.isInfoEnabled())
     logger.info("Diameter CCA RA :: getActivity :: handle[" + handle + "].");
 
     return this.activities.get(handle);
@@ -463,6 +475,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
    */
   public ActivityHandle getActivityHandle(Object activity)
   {
+	  if (logger.isInfoEnabled())
     logger.info("Diameter CCA RA :: getActivityHandle :: activity[" + activity + "].");
 
     if (!(activity instanceof DiameterActivity))
@@ -510,6 +523,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
    */
   public Object getSBBResourceAdaptorInterface(String className)
   {
+	  if (logger.isInfoEnabled())
     logger.info("Diameter CCA RA :: getSBBResourceAdaptorInterface :: className[" + className + "].");
 
     return this.raProvider;
@@ -523,6 +537,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
    */
   public void queryLiveness(ActivityHandle handle)
   {
+	  if (logger.isInfoEnabled())
     logger.info("Diameter CCA RA :: queryLiveness :: handle[" + handle + "].");
 
     DiameterActivityImpl activity = (DiameterActivityImpl) activities.get(handle);
@@ -549,6 +564,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
    */
   public void serviceActivated(String serviceKey)
   {
+	  if (logger.isInfoEnabled())
     logger.info("Diameter CCA RA :: serviceActivated :: serviceKey[" + serviceKey + "].");
   }
 
@@ -561,6 +577,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
    */
   public void serviceDeactivated(String serviceKey)
   {
+	  if (logger.isInfoEnabled())
     logger.info("Diameter CCA RA :: serviceDeactivated :: serviceKey[" + serviceKey + "].");
   }
 
@@ -575,6 +592,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
    */
   public void serviceInstalled(String serviceKey, int[] eventIDs, String[] resourceOptions)
   {
+	  if (logger.isInfoEnabled())
     logger.info("Diameter CCA RA :: serviceInstalled :: serviceKey[" + serviceKey + "], eventIDs[" + eventIDs + "], resourceOptions[" + resourceOptions + "].");
   }
 
@@ -587,6 +605,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
    */
   public void serviceUninstalled(String serviceKey)
   {
+	  if (logger.isInfoEnabled())
     logger.info("Diameter CCA RA :: serviceUninstalled :: serviceKey[" + serviceKey + "].");
   }
 
@@ -718,7 +737,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 
       // Put it into our activites map
       activities.put(activity.getActivityHandle(), activity);
-
+      if (logger.isInfoEnabled())
       logger.info("Activity started [" + activity.getActivityHandle() + "]");
     }
     catch (Exception e)
@@ -735,6 +754,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
 
   public Answer processRequest(Request request)
   {
+	  if (logger.isInfoEnabled())
     logger.info("Diameter CCA RA :: Got Request. Command-Code[" + request.getCommandCode() + "]");
 
     // Here we receive initial request for which session does not exist!
@@ -773,7 +793,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
     }
     else
     {
-      logger.info("Diameter CCA RA :: Received unexpected Request. Either its not CCR or session should exist to handle this, Command-Code: "+request.getCommandCode()+", Session-Id: "+request.getSessionId());
+      logger.error("Diameter CCA RA :: Received unexpected Request. Either its not CCR or session should exist to handle this, Command-Code: "+request.getCommandCode()+", Session-Id: "+request.getSessionId());
     }
 
     return null;
@@ -818,17 +838,17 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
       int eventID = -1;
       int commandCode = (request != null ? request.getCommandCode() : answer.getCommandCode());
 
-      if(!CCAResourceAdaptor.events.containsKey(commandCode))
-      {
-        logger.error("Diameter CCA RA :: Received unknown CCA Command-Code[" + commandCode + "].");
-        return;
-      }
+      //FIXME: Alex validate this.
+      //if(!CCAResourceAdaptor.events.containsKey(commandCode))
+      //{
+       // logger.error("Diameter CCA RA :: Received unknown CCA Command-Code[" + commandCode + "].");
+       // return;
+      //}
 
       DiameterMessage event = (DiameterMessage) createEvent(request, answer);
-
       if(commandCode == CreditControlMessage.commandCode)
       {
-        eventID = eventLookup.getEventID("net.java.slee.resource.diameter.cca.events." + name, "java.net", "0.8");
+        eventID = eventLookup.getEventID(name, "java.net", "0.8");
 
         Object activity = this.activities.get(handle);
 
@@ -840,9 +860,9 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
       else
       {
         //its a base
-        eventID = eventLookup.getEventID("net.java.slee.resource.diameter.base.events." + name, "java.net", "0.8");
+        eventID = eventLookup.getEventID( name, "java.net", "0.8");
       }
-
+      if (logger.isInfoEnabled())
       logger.info("Diameter CCA RA :: fireEvent :: Command-Code[" + commandCode + "] Event-Id: " + eventID + " Handle[" + handle + "]");
 
       sleeEndpoint.fireEvent(handle, event, eventID, null);
@@ -852,43 +872,31 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
     }
   }
 
-  public DiameterMessage createEvent(Request request, Answer answer) throws OperationNotSupportedException
-  {
-    if (request == null && answer == null)
-    {
-      logger.warn( "Trying to create Event from neither Request nor Answer. Returning null." );
-      return null;
-    }
+  public DiameterMessage createEvent(Request request, Answer answer) throws OperationNotSupportedException {
+		if (request == null && answer == null) {
+			logger.warn("Trying to create Event from neither Request nor Answer. Returning null.");
+			return null;
+		}
 
-    int commandCode = (request != null ? request.getCommandCode() : answer.getCommandCode());
-
-    switch (commandCode)
-    {
-    case CreditControlMessage.commandCode: // CCR/CCA
-      return request != null ? new CreditControlRequestImpl(request) : new CreditControlAnswerImpl(answer);
-    case AbortSessionAnswer.commandCode: // ASR/ASA
-      return request != null ? new AbortSessionRequestImpl(request) : new AbortSessionAnswerImpl(answer);
-    case SessionTerminationAnswer.commandCode: // STR/STA
-      return request != null ? new SessionTerminationRequestImpl(request) : new SessionTerminationAnswerImpl(answer);
-    case ReAuthAnswer.commandCode: // RAR/RAA
-      return request != null ? new ReAuthRequestImpl(request) : new ReAuthAnswerImpl(answer);
-    case AccountingAnswer.commandCode: // ACR/ACA
-      return request != null ? new AccountingRequestImpl(request) : new AccountingAnswerImpl(answer);
-    case ErrorAnswer.commandCode:
-      if (answer != null)
-      {
-        return new ErrorAnswerImpl(answer);
-      }
-      else
-      {
-        throw new IllegalArgumentException("ErrorAnswer code set on request: " + request);
-      }
-      // FIXME: baranowb : should extension fall in here?
-      // FIXME: baranowb: what about Error
-    default:
-      throw new OperationNotSupportedException("Not supported message code:" + commandCode + "\n" + (request != null ? request : answer));
-    }
-  }
+		int commandCode = (request != null ? request.getCommandCode() : answer.getCommandCode());
+		if (answer != null && answer.isError()) {
+			return new ErrorAnswerImpl(answer);
+		}
+		switch (commandCode) {
+		case CreditControlMessage.commandCode: // CCR/CCA
+			return request != null ? new CreditControlRequestImpl(request) : new CreditControlAnswerImpl(answer);
+		case AbortSessionAnswer.commandCode: // ASR/ASA
+			return request != null ? new AbortSessionRequestImpl(request) : new AbortSessionAnswerImpl(answer);
+		case SessionTerminationAnswer.commandCode: // STR/STA
+			return request != null ? new SessionTerminationRequestImpl(request) : new SessionTerminationAnswerImpl(answer);
+		case ReAuthAnswer.commandCode: // RAR/RAA
+			return request != null ? new ReAuthRequestImpl(request) : new ReAuthAnswerImpl(answer);
+		case AccountingAnswer.commandCode: // ACR/ACA
+			return request != null ? new AccountingRequestImpl(request) : new AccountingAnswerImpl(answer);
+		default:
+			return new ExtensionDiameterMessageImpl(request != null ? request : answer);
+		}
+	}
 
   /////////////////////////////////////////
   // Session Management Callback Methods //
@@ -947,6 +955,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
   {
     try
     {
+      
       this.sleeEndpoint.activityEnding(getActivityHandle(sessionId));
     }
     catch (Exception e) {

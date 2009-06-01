@@ -27,6 +27,7 @@ import org.jdiameter.api.Message;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.Stack;
+import org.jdiameter.client.impl.parser.MessageImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.cca.events.CreditControlAnswerImpl;
 import org.mobicents.slee.resource.diameter.cca.events.CreditControlRequestImpl;
@@ -65,17 +66,18 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
     Set<Integer> _ids = new HashSet<Integer>();
 
     //SessionId
-    _ids.add(Avp.SESSION_ID);
+    //_ids.add(Avp.SESSION_ID);
     //Sub-Session-Id
     _ids.add(CreditControlAVPCodes.CC_Sub_Session_Id);
     //{ Origin-Host }
-    _ids.add(Avp.ORIGIN_HOST);
+    //_ids.add(Avp.ORIGIN_HOST);
     //{ Origin-Realm }
-    _ids.add(Avp.ORIGIN_REALM);
+   // _ids.add(Avp.ORIGIN_REALM);
     //{ Destination-Realm }
     _ids.add(Avp.DESTINATION_REALM);
+    _ids.add(Avp.DESTINATION_HOST);
     //{ Auth-Application-Id }
-    _ids.add(Avp.AUTH_APPLICATION_ID);
+    //_ids.add(Avp.AUTH_APPLICATION_ID);
     //{ Service-Context-Id }
     _ids.add(CreditControlAVPCodes.Service_Context_Id);
     //{ CC-Request-Type }
@@ -102,15 +104,24 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
    */
   public CreditControlAnswer createCreditControlAnswer(CreditControlRequest request)
   {
+	  
+	  
     // Create the answer from the request
     CreditControlRequestImpl ccr = (CreditControlRequestImpl)request;
     Request req = (Request)ccr.getGenericData(); 
 
-    Message msg = session.createRequest(req);
-    msg.setRequest(false);
-
-    CreditControlAnswerImpl answer = new CreditControlAnswerImpl(msg);
-
+    //Message msg = session.createRequest(req);
+    CreditControlAnswerImpl msg = (CreditControlAnswerImpl) createCreditControlMessage(req.getSessionId(),false);
+    //msg.setRequest(false);
+    ((MessageImpl)msg.getGenericData()).setEndToEndIdentifier(req.getEndToEndIdentifier());
+    ((MessageImpl)msg.getGenericData()).setHopByHopIdentifier(req.getHopByHopIdentifier());
+    
+    
+    msg.getGenericData().getAvps().removeAvp(DiameterAvpCodes.DESTINATION_HOST);
+    msg.getGenericData().getAvps().removeAvp(DiameterAvpCodes.DESTINATION_REALM);
+    msg.getGenericData().getAvps().removeAvp(DiameterAvpCodes.ORIGIN_HOST);
+    msg.getGenericData().getAvps().removeAvp(DiameterAvpCodes.ORIGIN_REALM);
+   
     // Now copy the needed AVPs 
 
     DiameterAvp[] messageAvps = request.getAvps();
@@ -125,15 +136,15 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
             // Need to switch Destination-* for Origin-*
             if(a.getCode() == DiameterAvpCodes.DESTINATION_HOST)
             {
-              answer.addAvp(localFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, a.byteArrayValue()));
+            	msg.addAvp(localFactory.getBaseFactory().createAvp(DiameterAvpCodes.ORIGIN_HOST, a.byteArrayValue()));
             }
             else if(a.getCode() == DiameterAvpCodes.DESTINATION_REALM)
             {
-              answer.addAvp(localFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, a.byteArrayValue()));
+            	msg.addAvp(localFactory.getBaseFactory().createAvp(DiameterAvpCodes.ORIGIN_REALM, a.byteArrayValue()));
             }
-            else
+            else 
             {
-              answer.addAvp(a);
+            	msg.addAvp(a);
             }
           }
         }
@@ -142,8 +153,8 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
         }
       }
     }
-
-    return answer;
+    
+    return msg;
   }
 
   /*

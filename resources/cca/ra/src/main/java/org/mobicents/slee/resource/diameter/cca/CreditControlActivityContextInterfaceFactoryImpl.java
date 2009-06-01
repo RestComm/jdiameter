@@ -29,7 +29,7 @@ public class CreditControlActivityContextInterfaceFactoryImpl implements CreditC
   public CreditControlActivityContextInterfaceFactoryImpl(SleeContainer serviceContainer, String jndiName)
   {
     super();
-
+    if (logger.isInfoEnabled())
     logger.info("Diameter CCA RA :: CreditControlActivityContextInterfaceFactoryImpl :: serviceContainer["+ serviceContainer + "], jndiName[" + jndiName + "].");
 
     this.serviceContainer = serviceContainer;
@@ -49,6 +49,7 @@ public class CreditControlActivityContextInterfaceFactoryImpl implements CreditC
    */
   public ActivityContextInterface getActivityContextInterface(CreditControlClientSession cccs)
   {
+	  if (logger.isInfoEnabled())
     logger.info("Diameter CCA RA :: getActivityContextInterface :: activity[" + cccs + "].");
 
     return this.getActivityContextInterface( (DiameterActivityImpl)cccs );
@@ -60,6 +61,7 @@ public class CreditControlActivityContextInterfaceFactoryImpl implements CreditC
    */
   public ActivityContextInterface getActivityContextInterface(CreditControlServerSession ccss)
   {
+	  if (logger.isInfoEnabled())
     logger.info("Diameter CCA RA :: getActivityContextInterface :: activity[" + ccss + "].");
 
     return this.getActivityContextInterface( (DiameterActivityImpl)ccss );

@@ -16,7 +16,6 @@ import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
 import net.java.slee.resource.diameter.cca.CreditControlSessionState;
 import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
 import net.java.slee.resource.diameter.cca.events.avp.CcRequestType;
-import net.java.slee.resource.diameter.cca.handlers.CCASessionCreationListener;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.EventListener;
@@ -27,6 +26,7 @@ import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
 import org.jdiameter.common.impl.app.cca.JCreditControlRequestImpl;
 import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
+import org.mobicents.slee.resource.diameter.cca.handlers.CCASessionCreationListener;
 
 /**
  * Start time:15:00:53 2008-12-08<br>
@@ -63,7 +63,7 @@ public class CreditControlClientSessionImpl extends CreditControlSessionImpl imp
 	}
 
 	public void endActivity() {
-		this.listener.sessionDestroyed(this.sessionId, this);
+		//this.listener.sessionDestroyed(this.sessionId, this);
 		this.session.release();
 	}
 

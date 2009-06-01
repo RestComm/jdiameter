@@ -2,6 +2,7 @@ package org.mobicents.slee.resource.diameter.cca;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.slee.resource.SleeEndpoint;
 
@@ -16,7 +17,6 @@ import net.java.slee.resource.diameter.cca.CreditControlServerSession;
 import net.java.slee.resource.diameter.cca.CreditControlSessionState;
 import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
 import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
-import net.java.slee.resource.diameter.cca.handlers.CCASessionCreationListener;
 
 import org.apache.log4j.Logger;
 import org.jdiameter.api.Answer;
@@ -28,6 +28,7 @@ import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
 import org.jdiameter.common.impl.app.cca.JCreditControlAnswerImpl;
 import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
+import org.mobicents.slee.resource.diameter.cca.handlers.CCASessionCreationListener;
 
 /**
  * Start time:15:26:12 2008-12-08<br>
@@ -66,7 +67,7 @@ public class CreditControlServerSessionImpl extends CreditControlSessionImpl imp
 
   public void endActivity()
   {
-    this.listener.sessionDestroyed(this.sessionId, this);
+   // this.listener.sessionDestroyed(this.sessionId, this);
     this.session.release();
   }
 
@@ -90,16 +91,17 @@ public class CreditControlServerSessionImpl extends CreditControlSessionImpl imp
     CreditControlAnswer answer = super.ccaMessageFactory.createCreditControlAnswer(lastRequest);
 
     // Fill extension avps if present
-    if (sessionAvps.size() > 0)
-    {
-      try
-      {
-        answer.setExtensionAvps(sessionAvps.toArray(new DiameterAvp[sessionAvps.size()]));
-      }
-      catch (AvpNotAllowedException e) {
-        logger.error( "Failed to add Session AVPs to answer.", e );
-      }
-    }
+//    if (sessionAvps.size() > 0)
+//    {
+//      try
+//      {
+//    	System.err.println("MSG: "+answer+"\nADFDITIONAL: "+Arrays.toString(sessionAvps.toArray(new DiameterAvp[sessionAvps.size()])));  
+//        answer.setExtensionAvps(sessionAvps.toArray(new DiameterAvp[sessionAvps.size()]));
+//      }
+//      catch (AvpNotAllowedException e) {
+//        logger.error( "Failed to add Session AVPs to answer.", e );
+//      }
+//    }
 
     return answer;
   }
@@ -120,6 +122,7 @@ public class CreditControlServerSessionImpl extends CreditControlSessionImpl imp
     {
       session.sendCreditControlAnswer(new JCreditControlAnswerImpl((Answer) msg.getGenericData()));
 	} catch (JAvpNotAllowedException e) {
+		System.err.println("_+_+_+_+_+_GOT JAVP EXCEPTION");
 		AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
 		throw anae;
 	} catch (Exception e) {
@@ -164,6 +167,7 @@ public class CreditControlServerSessionImpl extends CreditControlSessionImpl imp
    */
   public void stateChanged(Enum oldState, Enum newState)
   {
+	  if (logger.isInfoEnabled())
     logger.info( "Credit-Control Server FSM State Changed: " + oldState + " => " + newState );
 
     ServerCCASessionState s = (ServerCCASessionState) newState;
