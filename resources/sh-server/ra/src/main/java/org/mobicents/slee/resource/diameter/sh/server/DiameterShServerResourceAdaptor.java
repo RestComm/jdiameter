@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 
 import javax.management.ObjectName;
 import javax.naming.NamingException;
@@ -54,6 +55,7 @@ import net.java.slee.resource.diameter.base.CreateActivityException;
 import net.java.slee.resource.diameter.base.DiameterActivity;
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.ErrorAnswer;
+import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
@@ -64,15 +66,16 @@ import net.java.slee.resource.diameter.sh.server.ShServerMessageFactory;
 import net.java.slee.resource.diameter.sh.server.ShServerProvider;
 import net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest;
 import net.java.slee.resource.diameter.sh.server.events.PushNotificationAnswer;
-import net.java.slee.resource.diameter.sh.server.handlers.ShServerSessionListener;
 
 import org.apache.log4j.Logger;
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.AvpDataException;
+import org.jdiameter.api.Message;
 import org.jdiameter.api.Peer;
 import org.jdiameter.api.PeerTable;
 import org.jdiameter.api.Request;
+import org.jdiameter.api.Session;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.Stack;
 import org.jdiameter.api.sh.ClientShSession;
@@ -89,7 +92,9 @@ import org.mobicents.slee.resource.diameter.base.DiameterActivityHandle;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
+import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.base.events.ErrorAnswerImpl;
+import org.mobicents.slee.resource.diameter.base.events.ExtensionDiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.sh.client.DiameterShAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.ProfileUpdateAnswerImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.PushNotificationRequestImpl;
@@ -100,6 +105,7 @@ import org.mobicents.slee.resource.diameter.sh.server.events.PushNotificationAns
 import org.mobicents.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequestImpl;
 import org.mobicents.slee.resource.diameter.sh.server.events.UserDataRequestImpl;
 import org.mobicents.slee.resource.diameter.sh.server.handlers.ShServerSessionFactory;
+import org.mobicents.slee.resource.diameter.sh.server.handlers.ShServerSessionListener;
 
 /**
  * Start time:17:53:55 2009-01-06<br>
@@ -681,40 +687,30 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
    * @return a DiameterMessage object wrapping the request/answer
    * @throws OperationNotSupportedException
    */
-  public DiameterMessage createEvent(Request request, Answer answer) throws OperationNotSupportedException
-  {
-    if (request == null && answer == null)
-    {
-      return null;
-    }
+  public DiameterMessage createEvent(Request request, Answer answer) throws OperationNotSupportedException {
+		if (request == null && answer == null) {
+			return null;
+		}
 
-    int commandCode = (request != null ? request.getCommandCode() : answer.getCommandCode());
+		int commandCode = (request != null ? request.getCommandCode() : answer.getCommandCode());
+		if (answer != null && answer.isError()) {
+			return new ErrorAnswerImpl(answer);
+		}
 
-    switch (commandCode)
-    {
-    case PushNotificationRequestImpl.commandCode: // PNR/PNA
-      return request != null ? new PushNotificationRequestImpl(request) : new PushNotificationAnswerImpl(answer);
-    case ProfileUpdateRequestImpl.commandCode: // PUR/PUA
-      return request != null ? new ProfileUpdateRequestImpl(request) : new ProfileUpdateAnswerImpl(answer);
-    case SubscribeNotificationsRequestImpl.commandCode: // SNR/SNA
-      return request != null ? new SubscribeNotificationsRequestImpl(request) : new SubscribeNotificationsAnswerImpl(answer);
-    case net.java.slee.resource.diameter.sh.server.events.UserDataRequest.commandCode: // UDR/UDA
-      return request != null ? new UserDataRequestImpl(request) : new UserDataAnswerImpl(answer);
+		switch (commandCode) {
+		case PushNotificationRequestImpl.commandCode: // PNR/PNA
+			return request != null ? new PushNotificationRequestImpl(request) : new PushNotificationAnswerImpl(answer);
+		case ProfileUpdateRequestImpl.commandCode: // PUR/PUA
+			return request != null ? new ProfileUpdateRequestImpl(request) : new ProfileUpdateAnswerImpl(answer);
+		case SubscribeNotificationsRequestImpl.commandCode: // SNR/SNA
+			return request != null ? new SubscribeNotificationsRequestImpl(request) : new SubscribeNotificationsAnswerImpl(answer);
+		case net.java.slee.resource.diameter.sh.server.events.UserDataRequest.commandCode: // UDR/UDA
+			return request != null ? new UserDataRequestImpl(request) : new UserDataAnswerImpl(answer);
 
-    case ErrorAnswer.commandCode:
-      if (answer != null)
-      {
-        return new ErrorAnswerImpl(answer);
-      }
-      else
-      {
-        throw new IllegalArgumentException("ErrorAnswer code set on request: " + request);
-      }
-
-    default:
-      throw new OperationNotSupportedException("Not supported message code:" + commandCode + "\n" + (request != null ? request : answer));
-    }
-  }
+		default:
+			return new ExtensionDiameterMessageImpl(request != null ? request : answer);
+		}
+	}
 
   /**
    * Method for performing tasks when activity is created, such as informing
@@ -856,8 +852,23 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
 
     public PushNotificationAnswer pushNotificationRequest(PushNotificationRequest message) throws IOException
     {
-      // FIXME: alexandre: send message and wait for answer.
-      return null;
+    	if (message == null)
+			throw new IOException("Cant send null message");
+		try {
+
+			String sessionID = message.getSessionId();
+			if (sessionID == null) {
+				throw new IllegalArgumentException("Session Id must not be null.");
+			}
+			Session session = stack.getSessionFactory().getNewSession(sessionID);
+			Future<Message> f = session.send(((DiameterMessageImpl) message).getGenericData());
+			return new PushNotificationAnswerImpl(f.get());
+		} catch (AvpNotAllowedException e) {
+			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new IOException("Failed to send due to: " + e);
+		}
     }
 
     public DiameterIdentity[] getConnectedPeers()

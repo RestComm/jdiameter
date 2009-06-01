@@ -40,7 +40,6 @@ import net.java.slee.resource.diameter.sh.client.events.SubscribeNotificationsAn
 import net.java.slee.resource.diameter.sh.client.events.UserDataAnswer;
 import net.java.slee.resource.diameter.sh.server.ShServerActivity;
 import net.java.slee.resource.diameter.sh.server.ShServerMessageFactory;
-import net.java.slee.resource.diameter.sh.server.handlers.ShServerSessionListener;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.EventListener;
@@ -53,6 +52,7 @@ import org.jdiameter.common.impl.app.sh.UserDataAnswerImpl;
 import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
+import org.mobicents.slee.resource.diameter.sh.server.handlers.ShServerSessionListener;
 
 /**
  * Start time:16:43:18 2009-01-06<br>

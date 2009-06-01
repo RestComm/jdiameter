@@ -67,7 +67,7 @@ import org.jdiameter.common.impl.app.sh.UserDataRequestImpl;
 import org.jdiameter.server.impl.app.sh.ShServerSessionImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityHandle;
 import org.mobicents.slee.resource.diameter.sh.server.DiameterShServerResourceAdaptor;
-
+import static  org.mobicents.slee.resource.diameter.sh.server.handlers.ShServerSessionListener.*;
 /**
  * Start time:18:16:01 2009-01-06<br>
  * Project: mobicents-diameter-parent<br>
@@ -75,7 +75,7 @@ import org.mobicents.slee.resource.diameter.sh.server.DiameterShServerResourceAd
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public class ShServerSessionFactory implements IAppSessionFactory, ServerShSessionListener, ClientShSessionListener, StateChangeListener, IShMessageFactory {
+public class ShServerSessionFactory implements IAppSessionFactory, ServerShSessionListener, StateChangeListener, IShMessageFactory {
 
   protected SessionFactory sessionFactory = null;
   protected DiameterShServerResourceAdaptor resourceAdaptor = null;
@@ -130,17 +130,17 @@ public class ShServerSessionFactory implements IAppSessionFactory, ServerShSessi
   // Message Handlers //
   //////////////////////
 
-  private void doMessage(AppSession appSession, AppEvent message, boolean isRequest) throws InternalException
+  private void doMessage(String name,AppSession appSession, AppEvent message, boolean isRequest) throws InternalException
   {
     DiameterActivityHandle handle = new DiameterActivityHandle(appSession.getSessions().get(0).getSessionId());
 
     if(isRequest)
     {
-      this.resourceAdaptor.fireEvent(handle, DiameterShServerResourceAdaptor.events.get(message.getCommandCode()) + "Request", (Request) message.getMessage(), null);      
+      this.resourceAdaptor.fireEvent(handle, name, (Request) message.getMessage(), null);      
     }
     else
     {
-      this.resourceAdaptor.fireEvent(handle, DiameterShServerResourceAdaptor.events.get(message.getCommandCode()) + "Answer", null, (Answer) message.getMessage());     
+      this.resourceAdaptor.fireEvent(handle, name, null, (Answer) message.getMessage());     
     }
   }
 
@@ -152,53 +152,59 @@ public class ShServerSessionFactory implements IAppSessionFactory, ServerShSessi
 
     if (answer != null)
     {
-      this.resourceAdaptor.fireEvent(handle, "net.java.slee.resource.diameter.base.events.ExtensionDiameterMessage", null, (Answer) answer.getMessage());
+    	if(answer.getMessage().isError())
+    		this.resourceAdaptor.fireEvent(handle, _ErrorAnswer, null, (Answer) answer.getMessage());
+    	else
+    		this.resourceAdaptor.fireEvent(handle, _ExtensionDiameterMessage, null, (Answer) answer.getMessage());
     }
     else
     {
-      this.resourceAdaptor.fireEvent(handle, "net.java.slee.resource.diameter.base.events.ExtensionDiameterMessage", (Request) request.getMessage(), null);
+      this.resourceAdaptor.fireEvent(handle, _ExtensionDiameterMessage, (Request) request.getMessage(), null);
     }
   }
 
   public void doProfileUpdateRequestEvent(ServerShSession session, ProfileUpdateRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException
   {
-    doMessage(session, request, true);
+    doMessage(_ProfileUpdateRequest,session, request, true);
   }
 
   public void doPushNotificationAnswerEvent(ServerShSession session, PushNotificationRequest request, PushNotificationAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException
   {
-    doMessage(session, answer, false);
+	  if(answer.getMessage().isError())
+		  doMessage(_ErrorAnswer,session, answer, false);
+	  else
+		  doMessage(_PushNotificationAnswer,session, answer, false);
   }
 
   public void doSubscribeNotificationsRequestEvent(ServerShSession session, SubscribeNotificationsRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException
   {
-    doMessage(session, request, true);
+    doMessage(_SubscribeNotificationsRequest,session, request, true);
   }
 
   public void doUserDataRequestEvent(ServerShSession session, UserDataRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException
   {
-    doMessage(session, request, true);
+    doMessage(_UserDataRequest,session, request, true);
   }
 
-  public void doProfileUpdateAnswerEvent(ClientShSession session, ProfileUpdateRequest request, ProfileUpdateAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException
-  {
-    doMessage(session, answer, false);
-  }
-
-  public void doPushNotificationRequestEvent(ClientShSession session, PushNotificationRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException
-  {
-    doMessage(session, request, true);
-  }
-
-  public void doSubscribeNotificationsAnswerEvent(ClientShSession session, SubscribeNotificationsRequest request, SubscribeNotificationsAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException
-  {
-    doMessage(session, answer, false);
-  }
-
-  public void doUserDataAnswerEvent(ClientShSession session, UserDataRequest request, UserDataAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException
-  {
-    doMessage(session, answer, false);
-  }
+//  public void doProfileUpdateAnswerEvent(ClientShSession session, ProfileUpdateRequest request, ProfileUpdateAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException
+//  {
+//    doMessage(session, answer, false);
+//  }
+//
+//  public void doPushNotificationRequestEvent(ClientShSession session, PushNotificationRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException
+//  {
+//    doMessage(session, request, true);
+//  }
+//
+//  public void doSubscribeNotificationsAnswerEvent(ClientShSession session, SubscribeNotificationsRequest request, SubscribeNotificationsAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException
+//  {
+//    doMessage(session, answer, false);
+//  }
+//
+//  public void doUserDataAnswerEvent(ClientShSession session, UserDataRequest request, UserDataAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException
+//  {
+//    doMessage(session, answer, false);
+//  }
 
   public void stateChanged(Enum oldState, Enum newState)
   {
