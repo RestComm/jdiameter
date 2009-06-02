@@ -51,7 +51,7 @@ public class UnitValueAvpImpl extends GroupedAvpImpl implements UnitValueAvp {
    * @see net.java.slee.resource.diameter.cca.events.avp.UnitValueAvp#getExpotent()
    */
   public int getExponent() {
-    return (Integer) getAvp(CreditControlAVPCodes.Exponent);
+    return getAvpAsInteger32(CreditControlAVPCodes.Exponent);
   }
 
   /*
@@ -60,7 +60,7 @@ public class UnitValueAvpImpl extends GroupedAvpImpl implements UnitValueAvp {
    * @see net.java.slee.resource.diameter.cca.events.avp.UnitValueAvp#getValueDigits()
    */
   public long getValueDigits() {
-    return (Long) getAvp(CreditControlAVPCodes.Value_Digits);
+    return getAvpAsInteger64(CreditControlAVPCodes.Value_Digits);
   }
 
   /*

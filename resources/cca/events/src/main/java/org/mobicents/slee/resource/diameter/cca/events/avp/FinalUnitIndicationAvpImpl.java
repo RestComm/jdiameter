@@ -25,17 +25,13 @@
  */
 package org.mobicents.slee.resource.diameter.cca.events.avp;
 
-import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodesNotSupported;
+import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodes;
 import net.java.slee.resource.diameter.base.events.avp.IPFilterRule;
 import net.java.slee.resource.diameter.cca.events.avp.CreditControlAVPCodes;
 import net.java.slee.resource.diameter.cca.events.avp.FinalUnitActionType;
 import net.java.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvp;
 import net.java.slee.resource.diameter.cca.events.avp.RedirectServerAvp;
 
-import org.apache.log4j.Logger;
-import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
-import org.jdiameter.api.AvpSet;
 import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
 
 /**
@@ -48,8 +44,6 @@ import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
  */
 public class FinalUnitIndicationAvpImpl extends GroupedAvpImpl implements FinalUnitIndicationAvp {
 
-  private static transient Logger logger = Logger.getLogger(FinalUnitIndicationAvpImpl.class);
-
   public FinalUnitIndicationAvpImpl(int code, long vendorId, int mnd, int prt, byte[] value) {
     super(code, vendorId, mnd, prt, value);
   }
@@ -60,24 +54,7 @@ public class FinalUnitIndicationAvpImpl extends GroupedAvpImpl implements FinalU
    * @see net.java.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvp#getFilterIds()
    */
   public String[] getFilterIds() {
-    if (!hasAvp(DiameterAvpCodesNotSupported.FILTER_ID)) {
-      return null;
-    }
-
-    AvpSet set = super.avpSet.getAvps(DiameterAvpCodesNotSupported.FILTER_ID);
-    String[] result = new String[set.size()];
-
-    for (int index = 0; index < set.size(); index++) {
-      Avp rawAvp = set.getAvpByIndex(index);
-      try {
-        result[index] = rawAvp.getUTF8String();
-      } catch (AvpDataException e) {
-        reportAvpFetchError("Failed at index: " + index + ", " + e.getMessage(), DiameterAvpCodesNotSupported.FILTER_ID);
-        logger.error("Failure while trying to obtain Filter-Id AVP.", e);
-      }
-    }
-
-    return result;
+    return getAvpsAsUTF8String(DiameterAvpCodes.FILTER_ID);
   }
 
   /*
@@ -86,17 +63,7 @@ public class FinalUnitIndicationAvpImpl extends GroupedAvpImpl implements FinalU
    * @see net.java.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvp#getFinalUnitAction()
    */
   public FinalUnitActionType getFinalUnitAction() {
-    if (hasAvp(CreditControlAVPCodes.Final_Unit_Action)) {
-      Avp rawAvp = super.avpSet.getAvp(CreditControlAVPCodes.Final_Unit_Action);
-      try {
-        return FinalUnitActionType.REDIRECT.fromInt(rawAvp.getInteger32());
-      } catch (Exception e) {
-        reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.Final_Unit_Action);
-        logger.error("Failure while trying to obtain Final-Unit-Action AVP.", e);
-      }
-    }
-
-    return null;
+    return (FinalUnitActionType) getAvpAsEnumerated(CreditControlAVPCodes.Final_Unit_Action,FinalUnitActionType.class);
   }
 
   /*
@@ -105,18 +72,7 @@ public class FinalUnitIndicationAvpImpl extends GroupedAvpImpl implements FinalU
    * @see net.java.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvp#getRedirectServer()
    */
   public RedirectServerAvp getRedirectServer() {
-    if (hasRedirectServer()) {
-      Avp rawAvp = super.avpSet.getAvp(CreditControlAVPCodes.Redirect_Server);
-      try {
-
-        return new RedirectServerAvpImpl(CreditControlAVPCodes.Redirect_Server, rawAvp.getVendorId(), rawAvp.isMandatory() ? 1 : 0, rawAvp.isEncrypted() ? 1 : 0, rawAvp.getRaw());
-      } catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.Redirect_Server);
-        logger.error("Failure while trying to obtain Redirect-Server AVP.", e);
-      }
-    }
-
-    return null;
+    return (RedirectServerAvp) getAvpAsCustom(CreditControlAVPCodes.Redirect_Server, RedirectServerAvpImpl.class);
   }
 
   /*
@@ -125,23 +81,7 @@ public class FinalUnitIndicationAvpImpl extends GroupedAvpImpl implements FinalU
    * @see net.java.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvp#getRestrictionFilterRules()
    */
   public IPFilterRule[] getRestrictionFilterRules() {
-    if (hasAvp(CreditControlAVPCodes.Restriction_Filter_Rule)) {
-      AvpSet set = super.avpSet.getAvps(CreditControlAVPCodes.Restriction_Filter_Rule);
-      IPFilterRule[] result = new IPFilterRule[set.size()];
-
-      for (int index = 0; index < set.size(); index++) {
-        Avp rawAvp = set.getAvpByIndex(index);
-        try {
-          result[index] = new IPFilterRule(rawAvp.getOctetString());
-        } catch (AvpDataException e) {
-          reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.Restriction_Filter_Rule);
-          logger.error("Failure while trying to obtain Restriction-Filter-Rule AVP.", e);
-        }
-      }
-      return result;
-    }
-
-    return null;
+    return (IPFilterRule[]) getAvpsAsEnumerated(CreditControlAVPCodes.Restriction_Filter_Rule, IPFilterRule.class);
   }
 
   /*
@@ -159,7 +99,7 @@ public class FinalUnitIndicationAvpImpl extends GroupedAvpImpl implements FinalU
    * @see net.java.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvp#hasRedirectServer()
    */
   public boolean hasRedirectServer() {
-    return hasAvp(CreditControlAVPCodes.Final_Unit_Indication);
+    return hasAvp(CreditControlAVPCodes.Redirect_Server);
   }
 
   /*
@@ -168,7 +108,7 @@ public class FinalUnitIndicationAvpImpl extends GroupedAvpImpl implements FinalU
    * @see net.java.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvp#setFilterId(java.lang.String)
    */
   public void setFilterId(String filterId) {
-    this.setFilterIds(new String[] { filterId });
+    addAvp(DiameterAvpCodes.FILTER_ID, filterId);
   }
 
   /*
@@ -189,7 +129,7 @@ public class FinalUnitIndicationAvpImpl extends GroupedAvpImpl implements FinalU
    * (net.java.slee.resource.diameter.cca.events.avp.FinalUnitActionType)
    */
   public void setFinalUnitAction(FinalUnitActionType finalUnitAction) {
-    addAvp(CreditControlAVPCodes.Final_Unit_Action, finalUnitAction.getValue());
+    addAvp(CreditControlAVPCodes.Final_Unit_Action, (long)finalUnitAction.getValue());
   }
 
   /*
@@ -199,7 +139,7 @@ public class FinalUnitIndicationAvpImpl extends GroupedAvpImpl implements FinalU
    * (net.java.slee.resource.diameter.cca.events.avp.RedirectServerAvp)
    */
   public void setRedirectServer(RedirectServerAvp redirectServer) {
-    addAvp(CreditControlAVPCodes.Redirect_Server, redirectServer);
+    addAvp(CreditControlAVPCodes.Redirect_Server, redirectServer.byteArrayValue());
   }
 
   /*
@@ -209,7 +149,7 @@ public class FinalUnitIndicationAvpImpl extends GroupedAvpImpl implements FinalU
    * (net.java.slee.resource.diameter.base.events.avp.IPFilterRule)
    */
   public void setRestrictionFilterRule(IPFilterRule restrictionFilterRule) {
-    addAvp(CreditControlAVPCodes.Restriction_Filter_Rule, restrictionFilterRule);
+    addAvp(CreditControlAVPCodes.Restriction_Filter_Rule, restrictionFilterRule.getRuleString());
   }
 
   /*

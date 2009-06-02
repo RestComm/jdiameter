@@ -1,7 +1,10 @@
 /*
- * Diameter Sh Resource Adaptor Type
- *
  * Copyright (C) 2006 Open Cloud Ltd.
+ *
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of version 2.1 of the GNU Lesser 
@@ -18,10 +21,6 @@
  * MA  02110-1301  USA, or see the FSF site: http://www.fsf.org.
  */
 package net.java.slee.resource.diameter.base.events.avp;
-
-
-
-import java.util.Iterator;
 
 /**
  * Defines an interface representing the Vendor-Specific-Application-Id grouped AVP type.
@@ -57,14 +56,14 @@ public interface VendorSpecificApplicationIdAvp extends GroupedAvp {
      * A return value of null implies that no Vendor-Id AVPs have been set.
      * The elements in the given array are long objects.
      */
-    public long[] getVendorIds();
+    public long[] getVendorIdsAvp();
 
     /**
      * Sets a single Vendor-Id AVP in the message, of type Unsigned32.
      * @throws IllegalStateException if setVendorId or setVendorIds
      *  has already been called
      */
-    public void setVendorId(long vendorId);
+    public void setVendorIdAvp(long vendorId);
 
     /**
      * Sets the set of Vendor-Id AVPs, with all the values in the given array.
@@ -77,7 +76,7 @@ public interface VendorSpecificApplicationIdAvp extends GroupedAvp {
      * @throws IllegalStateException if setVendorId or setVendorIds
      *  has already been called
      */
-    public void setVendorIds(long[] vendorIds);
+    public void setVendorIdsAvp(long[] vendorIds);
 
     /**
      * Returns true if the Auth-Application-Id AVP is present in the message.

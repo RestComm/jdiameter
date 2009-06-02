@@ -57,16 +57,21 @@ import net.java.slee.resource.diameter.base.events.avp.DiameterURI;
 import net.java.slee.resource.diameter.base.events.avp.Enumerated;
 import net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp;
 import net.java.slee.resource.diameter.base.events.avp.FailedAvp;
+import net.java.slee.resource.diameter.base.events.avp.IPFilterRule;
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
 import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp;
+import net.java.slee.resource.diameter.cca.events.avp.CcMoneyAvp;
 import net.java.slee.resource.diameter.cca.events.avp.CostInformationAvp;
 import net.java.slee.resource.diameter.cca.events.avp.CreditControlAVPCodes;
 import net.java.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvp;
+import net.java.slee.resource.diameter.cca.events.avp.GSUPoolReferenceAvp;
 import net.java.slee.resource.diameter.cca.events.avp.GrantedServiceUnitAvp;
 import net.java.slee.resource.diameter.cca.events.avp.MultipleServicesCreditControlAvp;
+import net.java.slee.resource.diameter.cca.events.avp.RedirectServerAvp;
 import net.java.slee.resource.diameter.cca.events.avp.RequestedServiceUnitAvp;
 import net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp;
 import net.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp;
+import net.java.slee.resource.diameter.cca.events.avp.UnitValueAvp;
 import net.java.slee.resource.diameter.cca.events.avp.UsedServiceUnitAvp;
 import net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvp;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
@@ -86,13 +91,17 @@ import org.mobicents.slee.resource.diameter.base.events.avp.ExperimentalResultAv
 import org.mobicents.slee.resource.diameter.base.events.avp.FailedAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.ProxyInfoAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.CcMoneyAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.CostInformationAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.GSUPoolReferenceAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.GrantedServiceUnitAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.MultipleServicesCreditControlAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.RedirectServerAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.RequestedServiceUnitAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.SubscriptionIdAvpImpl;
+import org.mobicents.slee.resource.diameter.cca.events.avp.UnitValueAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.UsedServiceUnitAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvpImpl;
@@ -111,6 +120,10 @@ public class AvpAssistant {
 
   public static Collection methodsToIgnore = new ArrayList<String>();
 
+  public static Collection methodsToIgnoreInRequest = new ArrayList<String>();
+
+  public static Collection methodsToIgnoreInAnswer = new ArrayList<String>();
+
   public static AvpAssistant INSTANCE;
 
   static {
@@ -127,7 +140,22 @@ public class AvpAssistant {
     methodsToIgnore.add("getAvps");
     methodsToIgnore.add("getCommand");
     methodsToIgnore.add("getExtensionAvps");
+    methodsToIgnore.add("setExtensionAvps");
+    
     methodsToIgnore.add("getHeader");
+    methodsToIgnore.add("getClass");
+    methodsToIgnore.add("getCode");
+    methodsToIgnore.add("getVendorId");
+    methodsToIgnore.add("getMandatoryRule");
+    methodsToIgnore.add("getProtectedRule");
+    methodsToIgnore.add("getName");
+    methodsToIgnore.add("getType");
+
+    methodsToIgnore.add("hasExtensionAvps");
+    methodsToIgnore.add("hashCode");
+    
+    methodsToIgnoreInAnswer.add("getDestinationHost");
+    methodsToIgnoreInAnswer.add("getDestinationRealm");
 
     Stack stack = new org.jdiameter.client.impl.StackImpl();
     stack.init( new MyConfiguration() );
@@ -136,8 +164,11 @@ public class AvpAssistant {
     rawAvp.addGroupedAvp(0).addAvp( 666, "pwning_more", true );
     byte[] dummyAvpBytes = rawAvp.getAvp(0).getRawData();
 
+    //DiameterAvpFactory baseAvpFactory = new DiameterAvpFactoryImpl();
+    //CreditControlAVPFactory ccaAvpFactory = new CreditControlAVPFactoryImpl(baseAvpFactory, stack);
+
     typeValues.put( String.class, "alexandre_and_bartosz_pwn_diameter" );
-    typeValues.put( String.class, "alexandre_and_bartosz_pwn_diameter" );
+    typeValues.put( String[].class, new String[]{"alexandre_and_bartosz_pwn_diameter"} );
 
     typeValues.put( int.class, 2805 );
     typeValues.put( int[].class, new int[]{2805} );
@@ -176,7 +207,7 @@ public class AvpAssistant {
     typeValues.put( Address[].class, new Address[]{new Address(AddressType.ADDRESS_IP, "127.0.0.2".getBytes())} );
 
     typeValues.put( byte.class, (byte)'m');
-    typeValues.put( byte[].class, new byte[]{(byte)'m'} );
+    typeValues.put( byte[].class, "mobicents".getBytes() );
 
     typeValues.put( byte[][].class, new byte[][]{{(byte)'m'},{(byte)'m'}} );
 
@@ -202,7 +233,7 @@ public class AvpAssistant {
     typeValues.put( FailedAvp[].class, new FailedAvpImpl[]{new FailedAvpImpl(Avp.FAILED_AVP, 0L, 0, 1, dummyAvpBytes)});
 
     // CCA RA
-    
+
     typeValues.put( CostInformationAvp.class, new CostInformationAvpImpl(CreditControlAVPCodes.Cost_Information, 0L, 0, 1, dummyAvpBytes) );
     typeValues.put( CostInformationAvp[].class, new CostInformationAvpImpl[]{new CostInformationAvpImpl(CreditControlAVPCodes.Cost_Information, 0L, 0, 1, dummyAvpBytes)});
 
@@ -211,7 +242,7 @@ public class AvpAssistant {
 
     typeValues.put( GrantedServiceUnitAvp.class, new GrantedServiceUnitAvpImpl(CreditControlAVPCodes.Granted_Service_Unit, 0L, 0, 1, dummyAvpBytes) );
     typeValues.put( GrantedServiceUnitAvp[].class, new GrantedServiceUnitAvpImpl[]{new GrantedServiceUnitAvpImpl(CreditControlAVPCodes.Granted_Service_Unit, 0L, 0, 1, dummyAvpBytes)});
-    
+
     typeValues.put( MultipleServicesCreditControlAvp.class, new MultipleServicesCreditControlAvpImpl(CreditControlAVPCodes.Multiple_Services_Credit_Control, 0L, 0, 1, dummyAvpBytes) );
     typeValues.put( MultipleServicesCreditControlAvp[].class, new MultipleServicesCreditControlAvpImpl[]{new MultipleServicesCreditControlAvpImpl(CreditControlAVPCodes.Multiple_Services_Credit_Control, 0L, 0, 1, dummyAvpBytes)});
 
@@ -230,9 +261,26 @@ public class AvpAssistant {
     typeValues.put( UsedServiceUnitAvp.class, new UsedServiceUnitAvpImpl(CreditControlAVPCodes.Used_Service_Unit, 0L, 0, 1, dummyAvpBytes) );
     typeValues.put( UsedServiceUnitAvp[].class, new UsedServiceUnitAvpImpl[]{new UsedServiceUnitAvpImpl(CreditControlAVPCodes.Used_Service_Unit, 0L, 0, 1, dummyAvpBytes)});
 
+    // CCA AVP Factory
+    
+    typeValues.put( CcMoneyAvp.class, new CcMoneyAvpImpl(CreditControlAVPCodes.CC_Money, 0L, 0, 1, dummyAvpBytes) );
+    typeValues.put( CcMoneyAvp[].class, new CcMoneyAvpImpl[]{new CcMoneyAvpImpl(CreditControlAVPCodes.CC_Money, 0L, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( GSUPoolReferenceAvp.class, new GSUPoolReferenceAvpImpl(CreditControlAVPCodes.G_S_U_Pool_Reference, 0L, 0, 1, dummyAvpBytes) );
+    typeValues.put( GSUPoolReferenceAvp[].class, new GSUPoolReferenceAvpImpl[]{new GSUPoolReferenceAvpImpl(CreditControlAVPCodes.G_S_U_Pool_Reference, 0L, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( IPFilterRule.class, new IPFilterRule("permit in ip from 192.168.0.0/24 10,11,12,20-30 to 192.168.1.1 99 frag established") );
+    typeValues.put( IPFilterRule[].class, new IPFilterRule[]{new IPFilterRule("permit in ip from 192.168.0.0/24 10,11,12,20-30 to 192.168.1.1 99 frag established")});
+    
+    typeValues.put( RedirectServerAvp.class, new RedirectServerAvpImpl(CreditControlAVPCodes.Redirect_Server, 0L, 0, 1, dummyAvpBytes) );
+    typeValues.put( RedirectServerAvp[].class, new RedirectServerAvpImpl[]{new RedirectServerAvpImpl(CreditControlAVPCodes.Redirect_Server, 0L, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( UnitValueAvp.class, new UnitValueAvpImpl(CreditControlAVPCodes.Unit_Value, 0L, 0, 1, dummyAvpBytes) );
+    typeValues.put( UnitValueAvp[].class, new UnitValueAvpImpl[]{new UnitValueAvpImpl(CreditControlAVPCodes.Unit_Value, 0L, 0, 1, dummyAvpBytes)});
+    
     typeValues.put( DiameterAvp.class, new DiameterAvpImpl(0, 0, 0, 1, dummyAvpBytes, null) );
     typeValues.put( DiameterAvp[].class, new DiameterAvpImpl[]{new DiameterAvpImpl(0, 0, 0, 1, dummyAvpBytes, null)});
-
+    
   }
 
   public static Object getValueFromEnumerated(Class clazz) throws IllegalArgumentException, SecurityException, IllegalAccessException, InvocationTargetException, NoSuchMethodException
@@ -289,6 +337,12 @@ public class AvpAssistant {
       clearAVPsInMessage(message);
 
       if(AvpAssistant.methodsToIgnore.contains( m.getName() )) {
+        continue;
+      }
+      else if(message.getHeader().isRequest() && AvpAssistant.methodsToIgnoreInRequest.contains( m.getName() )) {
+        continue;
+      }
+      else if(!message.getHeader().isRequest() && AvpAssistant.methodsToIgnoreInAnswer.contains( m.getName() )) {
         continue;
       }
 
@@ -360,6 +414,137 @@ public class AvpAssistant {
     }
 
     return nFailures;
+  }
+
+  public static void testSetters(Object object) throws Exception
+  {
+    for(Method m : object.getClass().getMethods())
+    {
+      if(!methodsToIgnore.contains(m.getName()) && m.getName().startsWith("set"))
+      {
+        //System.out.println("==> " + m.getName() + " <==");
+        Class[] pTypes = m.getParameterTypes();
+
+        Object[] params = new Object[pTypes.length];
+
+        for(int i = 0; i < params.length; i++)
+        {
+          params[i] = AvpAssistant.getValueFromEnumerated(pTypes[i]);
+
+          if(params[i] == null) {
+            params[i] = getValueFromClass(pTypes[i]);
+          }
+
+          if(params[i] == null) {
+            System.out.println("Could not find value for " + pTypes[i]);
+            throw new NullPointerException("Could not find value for " + pTypes[i]);
+          }
+        }
+
+        m.invoke(object, params);
+      }
+    }
+  }
+
+  public static void testGetters(Object object) throws Exception
+  {
+    for(Method m : object.getClass().getMethods())
+    {
+      if(!methodsToIgnore.contains(m.getName()) && m.getName().startsWith("get"))
+      {
+        //System.out.println("==> " + m.getName() + " <==");
+        Class rType = m.getReturnType();
+
+        if(rType.isArray() && rType != byte[].class) {
+          continue;
+        }
+        
+        Object expected = AvpAssistant.getValueFromEnumerated(rType);
+
+        if(expected == null) {
+          expected = getValueFromClass(rType);
+        }
+
+        if(expected == null) {
+          System.out.println("Could not find value for " + rType);
+          throw new NullPointerException("Could not find value for " + rType);
+        }
+
+        Object obtained = m.invoke(object);
+        
+        boolean passed;
+        if(rType == byte[].class) {
+          passed = Arrays.equals( (byte[])expected, (byte[])obtained );
+        }            
+        else if(rType == long[].class) {
+          
+          passed = Arrays.equals( (long[])expected, (long[])obtained );
+        }
+        else if(rType.isArray()){
+          passed =  Arrays.equals( (Object[])expected, (Object[])obtained );
+        }
+        else {
+          passed = obtained.equals( expected );
+        }
+        
+        if(!passed)
+          Assert.fail("Getter " + m.getName() + " did not return expected value.");
+      }
+    }
+  }
+
+  private static Object[] getSingleObjectAndArrauObject(Method m) throws Exception
+  {
+    Class rType = m.getReturnType();
+
+    Object returnObject = AvpAssistant.getValueFromEnumerated(rType);
+
+    if(returnObject == null) {
+      returnObject = getValueFromClass(rType);
+    }
+
+    if(returnObject == null) {
+      System.out.println("Could not find value for " + rType);
+      throw new NullPointerException("Could not find value for " + rType);
+    }
+    
+    
+    Object singleReturnObject = AvpAssistant.getValueFromEnumerated(rType.getComponentType());
+
+    if(singleReturnObject == null) {
+      singleReturnObject = getValueFromClass(rType);
+    }
+
+    if(singleReturnObject == null) {
+      System.out.println("Could not find value for " + rType);
+      throw new NullPointerException("Could not find value for " + rType);
+    }
+
+    Object newArray = Array.newInstance(rType, ((Object[])returnObject).length+1);
+    
+    int i = 0;
+    for(Object arrayObject : ((Object[])returnObject)) {
+      Array.set(newArray, i++, arrayObject );
+    }
+    
+    Array.set(newArray, ((Object[])returnObject).length, singleReturnObject );
+    
+    return (Object[]) newArray;
+  }
+  
+  public static void testHassers(Object object, boolean expected) throws Exception
+  {
+    for(Method m : object.getClass().getMethods())
+    {
+      if(!methodsToIgnore.contains(m.getName()) && m.getName().startsWith("has"))
+      {
+        //System.out.println("==> " + m.getName() + " <==");
+
+        Object obtained = m.invoke(object);
+        
+        Assert.assertEquals("Hasser " + m.getName() + " did not return expected value.", expected, obtained);
+      }
+    }
   }
 
   private static String getSingularMethodName(String pluralMethodName) {

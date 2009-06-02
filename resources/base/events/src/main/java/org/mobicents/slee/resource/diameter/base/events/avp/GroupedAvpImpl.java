@@ -92,6 +92,10 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
 
   public void setExtensionAvps(DiameterAvp[] extensions) throws AvpNotAllowedException
   {
+    if(extensions == null) {
+      return;
+    }
+    
     try
     {
       for (DiameterAvp avp : extensions) {
@@ -180,382 +184,402 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
   
   protected Date getAvpAsTime(int code)
   {
-    return AvpUtilities.getAvpAsTime(code, this.avpSet);
+    return AvpUtilities.getAvpAsTime(code, avpSet);
   }
 
   protected Date getAvpAsTime(int code, long vendorId)
   {
-    return AvpUtilities.getAvpAsTime(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpAsTime(code, vendorId, avpSet);
   }
 
   protected Date[] getAvpsAsTime(int code)
   {
-    return AvpUtilities.getAvpsAsTime(code, this.avpSet);
+    return AvpUtilities.getAvpsAsTime(code, avpSet);
   }
 
   protected Date[] getAvpsAsTime(int code, long vendorId)
   {
-    return AvpUtilities.getAvpsAsTime(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpsAsTime(code, vendorId, avpSet);
   }
 
   protected void setAvpAsTime(int code, long vendorId, Date value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsTime(null, code, vendorId, this.avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsTime(null, code, vendorId, avpSet, isMandatory, isProtected, value);
   }
-  
+
   protected float getAvpAsFloat32(int code)
   {
-    return AvpUtilities.getAvpAsFloat32(code, this.avpSet);
+    return AvpUtilities.getAvpAsFloat32(code, avpSet);
   }
 
   protected float getAvpAsFloat32(int code, long vendorId)
   {
-    return AvpUtilities.getAvpAsFloat32(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpAsFloat32(code, vendorId, avpSet);
   }
 
   protected float[] getAvpsAsFloat32(int code)
   {
-    return AvpUtilities.getAvpsAsFloat32(code, this.avpSet);
+    return AvpUtilities.getAvpsAsFloat32(code, avpSet);
   }
 
   protected float[] getAvpsAsFloat32(int code, long vendorId)
   {
-    return AvpUtilities.getAvpsAsFloat32(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpsAsFloat32(code, vendorId, avpSet);
   }
 
   protected void setAvpAsFloat32(int code, long vendorId, float value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsFloat32(null, code, vendorId, this.avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsFloat32(null, code, vendorId, avpSet, isMandatory, isProtected, value);
   }
 
   protected double getAvpAsFloat64(int code)
   {
-    return AvpUtilities.getAvpAsFloat64(code, this.avpSet);
+    return AvpUtilities.getAvpAsFloat64(code, avpSet);
   }
 
   protected double getAvpAsFloat64(int code, long vendorId)
   {
-    return AvpUtilities.getAvpAsFloat64(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpAsFloat64(code, vendorId, avpSet);
   }
 
   protected double[] getAvpsAsFloat64(int code)
   {
-    return AvpUtilities.getAvpsAsFloat64(code, this.avpSet);
+    return AvpUtilities.getAvpsAsFloat64(code, avpSet);
   }
 
   protected double[] getAvpsAsFloat64(int code, long vendorId)
   {
-    return AvpUtilities.getAvpsAsFloat64(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpsAsFloat64(code, vendorId, avpSet);
   }
 
   protected void setAvpAsFloat64(int code, long vendorId, float value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsFloat64(null, code, vendorId, this.avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsFloat64(null, code, vendorId, avpSet, isMandatory, isProtected, value);
   }
 
   protected byte[] getAvpAsGrouped(int code)
   {
-    return AvpUtilities.getAvpAsGrouped(code, this.avpSet);
+    return AvpUtilities.getAvpAsGrouped(code, avpSet);
   }
 
   protected byte[] getAvpAsGrouped(int code, long vendorId)
   {
-    return AvpUtilities.getAvpAsGrouped(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpAsGrouped(code, vendorId, avpSet);
   }
 
   protected byte[][] getAvpsAsGrouped(int code)
   {
-    return AvpUtilities.getAvpsAsGrouped(code, this.avpSet);
+    return AvpUtilities.getAvpsAsGrouped(code, avpSet);
   }
 
   protected byte[][] getAvpsAsGrouped(int code, long vendorId)
   {
-    return AvpUtilities.getAvpsAsGrouped(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpsAsGrouped(code, vendorId, avpSet);
   }
 
   protected AvpSet setAvpAsGrouped(int code, long vendorId, DiameterAvp[] childs, boolean isMandatory, boolean isProtected)
   {
-    return AvpUtilities.setAvpAsGrouped(null, code, vendorId, this.avpSet, isMandatory, isProtected, childs);
+    return AvpUtilities.setAvpAsGrouped(null, code, vendorId, avpSet, isMandatory, isProtected, childs);
   }
 
   protected int getAvpAsInteger32(int code)
   {
-    return AvpUtilities.getAvpAsInteger32(code, this.avpSet);
+    return AvpUtilities.getAvpAsInteger32(code, avpSet);
   }
 
   protected int getAvpAsInteger32(int code, long vendorId)
   {
-    return AvpUtilities.getAvpAsInteger32(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpAsInteger32(code, vendorId, avpSet);
   }
 
   protected int[] getAvpsAsInteger32(int code)
   {
-    return AvpUtilities.getAvpsAsInteger32(code, this.avpSet);
+    return AvpUtilities.getAvpsAsInteger32(code, avpSet);
   }
 
   protected int[] getAvpsAsInteger32(int code, long vendorId)
   {
-    return AvpUtilities.getAvpsAsInteger32(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpsAsInteger32(code, vendorId, avpSet);
   }
 
   protected void setAvpAsInteger32(int code, long vendorId, int value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsInteger32(null, code, vendorId, this.avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsInteger32(null, code, vendorId, avpSet, isMandatory, isProtected, value);
   }
 
   protected long getAvpAsInteger64(int code)
   {
-    return AvpUtilities.getAvpAsInteger64(code, this.avpSet);
+    return AvpUtilities.getAvpAsInteger64(code, avpSet);
   }
 
   protected long getAvpAsInteger64(int code, long vendorId)
   {
-    return AvpUtilities.getAvpAsInteger64(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpAsInteger64(code, vendorId, avpSet);
   }
 
   protected long[] getAvpsAsInteger64(int code)
   {
-    return AvpUtilities.getAvpsAsInteger64(code, this.avpSet);
+    return AvpUtilities.getAvpsAsInteger64(code, avpSet);
   }
 
   protected long[] getAvpsAsInteger64(int code, long vendorId)
   {
-    return AvpUtilities.getAvpsAsInteger64(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpsAsInteger64(code, vendorId, avpSet);
   }
 
   protected void setAvpAsInteger64(int code, long vendorId, long value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsInteger64(null, code, vendorId, this.avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsInteger64(null, code, vendorId, avpSet, isMandatory, isProtected, value);
   }
 
   protected long getAvpAsUnsigned32(int code)
   {
-    return AvpUtilities.getAvpAsUnsigned32(code, this.avpSet);
+    return AvpUtilities.getAvpAsUnsigned32(code, avpSet);
   }
 
   protected long getAvpAsUnsigned32(int code, long vendorId)
   {
-    return AvpUtilities.getAvpAsUnsigned32(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpAsUnsigned32(code, vendorId, avpSet);
   }
 
   protected long[] getAvpsAsUnsigned32(int code)
   {
-    return AvpUtilities.getAvpsAsUnsigned32(code, this.avpSet);
+    return AvpUtilities.getAvpsAsUnsigned32(code, avpSet);
   }
 
   protected long[] getAvpsAsUnsigned32(int code, long vendorId)
   {
-    return AvpUtilities.getAvpsAsUnsigned32(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpsAsUnsigned32(code, vendorId, avpSet);
   }
 
   protected void setAvpAsUnsigned32(int code, long vendorId, long value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsUnsigned32(null, code, vendorId, this.avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsUnsigned32(null, code, vendorId, avpSet, isMandatory, isProtected, value);
   }
 
   protected long getAvpAsUnsigned64(int code)
   {
-    return AvpUtilities.getAvpAsUnsigned64(code, this.avpSet);
+    return AvpUtilities.getAvpAsUnsigned64(code, avpSet);
   }
 
   protected long getAvpAsUnsigned64(int code, long vendorId)
   {
-    return AvpUtilities.getAvpAsUnsigned64(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpAsUnsigned64(code, vendorId, avpSet);
   }
 
   protected long[] getAvpsAsUnsigned64(int code)
   {
-    return AvpUtilities.getAvpsAsUnsigned64(code, this.avpSet);
+    return AvpUtilities.getAvpsAsUnsigned64(code, avpSet);
   }
 
   protected long[] getAvpsAsUnsigned64(int code, long vendorId)
   {
-    return AvpUtilities.getAvpsAsUnsigned64(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpsAsUnsigned64(code, vendorId, avpSet);
   }
 
   protected void setAvpAsUnsigned64(int code, long vendorId, long value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsUnsigned64(null, code, vendorId, this.avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsUnsigned64(null, code, vendorId, avpSet, isMandatory, isProtected, value);
   }
 
   protected String getAvpAsUTF8String(int code)
   {
-    return AvpUtilities.getAvpAsUTF8String(code, this.avpSet);
+    return AvpUtilities.getAvpAsUTF8String(code, avpSet);
   }
 
   protected String getAvpAsUTF8String(int code, long vendorId)
   {
-    return AvpUtilities.getAvpAsUTF8String(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpAsUTF8String(code, vendorId, avpSet);
   }
-  
+
   protected String[] getAvpsAsUTF8String(int code)
   {
-    return AvpUtilities.getAvpsAsUTF8String(code, this.avpSet);
+    return AvpUtilities.getAvpsAsUTF8String(code, avpSet);
   }
 
   protected String[] getAvpsAsUTF8String(int code, long vendorId)
   {
-    return AvpUtilities.getAvpsAsUTF8String(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpsAsUTF8String(code, vendorId, avpSet);
   }
-  
+
   protected void setAvpAsUTF8String(int code, long vendorId, String value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsUTF8String(null, code, vendorId, this.avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsUTF8String(null, code, vendorId, avpSet, isMandatory, isProtected, value);
   }
-  
+
   protected String getAvpAsOctetString(int code)
   {
-    return AvpUtilities.getAvpAsOctetString(code, this.avpSet);
+    return AvpUtilities.getAvpAsOctetString(code, avpSet);
   }
 
   protected String getAvpAsOctetString(int code, long vendorId)
   {
-    return AvpUtilities.getAvpAsOctetString(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpAsOctetString(code, vendorId, avpSet);
   }
-  
+
   protected String[] getAvpsAsOctetString(int code)
   {
-    return AvpUtilities.getAvpsAsOctetString(code, this.avpSet);
+    return AvpUtilities.getAvpsAsOctetString(code, avpSet);
   }
 
   protected String[] getAvpsAsOctetString(int code, long vendorId)
   {
-    return AvpUtilities.getAvpsAsOctetString(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpsAsOctetString(code, vendorId, avpSet);
   }
-  
+
   protected void setAvpAsOctetString(int code, long vendorId, String value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsOctetString(null, code, vendorId, this.avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsOctetString(null, code, vendorId, avpSet, isMandatory, isProtected, value);
   }
-  
+
   protected byte[] getAvpAsRaw(int code)
   {
-    return AvpUtilities.getAvpAsRaw(code, this.avpSet);
+    return AvpUtilities.getAvpAsRaw(code, avpSet);
   }
 
   protected byte[] getAvpAsRaw(int code, long vendorId)
   {
-    return AvpUtilities.getAvpAsRaw(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpAsRaw(code, vendorId, avpSet);
   }
-  
+
   protected byte[][] getAvpsAsRaw(int code)
   {
-    return AvpUtilities.getAvpsAsRaw(code, this.avpSet);
+    return AvpUtilities.getAvpsAsRaw(code, avpSet);
   }
 
   protected byte[][] getAvpsAsRaw(int code, long vendorId)
   {
-    return AvpUtilities.getAvpsAsRaw(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpsAsRaw(code, vendorId, avpSet);
   }
-  
+
   protected void setAvpAsRaw(int code, long vendorId, byte[] value, boolean isMandatory, boolean isProtected)
   {
-    AvpUtilities.setAvpAsRaw(null, code, vendorId, this.avpSet, isMandatory, isProtected, value);
+    AvpUtilities.setAvpAsRaw(null, code, vendorId, avpSet, isMandatory, isProtected, value);
   }
-  
+
   protected Object getAvpAsCustom(int code, Class clazz)
   {
-    return AvpUtilities.getAvpAsCustom(code, this.avpSet, clazz);
+    return AvpUtilities.getAvpAsCustom(code, avpSet, clazz);
   }
-  
+
   protected Object getAvpAsCustom(int code, long vendorId, Class clazz)
   {
-    return AvpUtilities.getAvpAsCustom(code, vendorId, this.avpSet, clazz);
+    return AvpUtilities.getAvpAsCustom(code, vendorId, avpSet, clazz);
   }
-  
+
   protected Object[] getAvpsAsCustom(int code, Class clazz)
   {
-    return AvpUtilities.getAvpsAsCustom(code, this.avpSet, clazz);
+    return AvpUtilities.getAvpsAsCustom(code, avpSet, clazz);
   }
-  
+
   protected Object[] getAvpsAsCustom(int code, long vendorId, Class clazz)
   {
-    return AvpUtilities.getAvpsAsCustom(code, vendorId, this.avpSet, clazz);
+    return AvpUtilities.getAvpsAsCustom(code, vendorId, avpSet, clazz);
   }
-  
+
   protected DiameterIdentity getAvpAsDiameterIdentity(int code)
   {
-    return AvpUtilities.getAvpAsDiameterIdentity(code, this.avpSet);
+    return AvpUtilities.getAvpAsDiameterIdentity(code, avpSet);
   }
-  
+
   protected DiameterIdentity getAvpAsDiameterIdentity(int code, long vendorId)
   {
-    return AvpUtilities.getAvpAsDiameterIdentity(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpAsDiameterIdentity(code, vendorId, avpSet);
   }
-  
+
   protected DiameterIdentity[] getAvpsAsDiameterIdentity(int code)
   {
-    return AvpUtilities.getAvpsAsDiameterIdentity(code, this.avpSet);
+    return AvpUtilities.getAvpsAsDiameterIdentity(code, avpSet);
   }
-  
+
   protected DiameterIdentity[] getAvpsAsDiameterIdentity(int code, long vendorId)
   {
-    return AvpUtilities.getAvpsAsDiameterIdentity(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpsAsDiameterIdentity(code, vendorId, avpSet);
   }
-  
+
   protected DiameterURI getAvpAsDiameterURI(int code)
   {
-    return AvpUtilities.getAvpAsDiameterURI(code, this.avpSet);
+    return AvpUtilities.getAvpAsDiameterURI(code, avpSet);
   }
-  
+
   protected DiameterURI getAvpAsDiameterURI(int code, long vendorId)
   {
-    return AvpUtilities.getAvpAsDiameterURI(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpAsDiameterURI(code, vendorId, avpSet);
   }
-  
+
   protected DiameterURI[] getAvpsAsDiameterURI(int code)
   {
-    return AvpUtilities.getAvpsAsDiameterURI(code, this.avpSet);
+    return AvpUtilities.getAvpsAsDiameterURI(code, avpSet);
   }
-  
+
   protected DiameterURI[] getAvpsAsDiameterURI(int code, long vendorId)
   {
-    return AvpUtilities.getAvpsAsDiameterURI(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpsAsDiameterURI(code, vendorId, avpSet);
   }
-  
+
   protected Address getAvpAsAddress(int code)
   {
-    return AvpUtilities.getAvpAsAddress(code, this.avpSet);
+    return AvpUtilities.getAvpAsAddress(code, avpSet);
   }
-  
+
   protected Address getAvpAsAddress(int code, long vendorId)
   {
-    return AvpUtilities.getAvpAsAddress(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpAsAddress(code, vendorId, avpSet);
   }
-  
+
   protected Address[] getAvpsAsAddress(int code)
   {
-    return AvpUtilities.getAvpsAsAddress(code, this.avpSet);
+    return AvpUtilities.getAvpsAsAddress(code, avpSet);
   }
-  
+
   protected Address[] getAvpsAsAddress(int code, long vendorId)
   {
-    return AvpUtilities.getAvpsAsAddress(code, vendorId, this.avpSet);
+    return AvpUtilities.getAvpsAsAddress(code, vendorId, avpSet);
   }
-  
+
+  protected Object getAvpAsEnumerated(int code, Class clazz)
+  {
+    return AvpUtilities.getAvpAsEnumerated(code, avpSet, clazz);
+  }
+
+  protected Object getAvpAsEnumerated(int code, long vendorId, Class clazz)
+  {
+    return AvpUtilities.getAvpAsEnumerated(code, vendorId, avpSet, clazz);
+  }
+
+  protected Object[] getAvpsAsEnumerated(int code, Class clazz)
+  {
+    return AvpUtilities.getAvpsAsEnumerated(code, avpSet, clazz);
+  }
+
+  protected Object[] getAvpsAsEnumerated(int code, long vendorId, Class clazz)
+  {
+    return AvpUtilities.getAvpsAsEnumerated(code, vendorId, avpSet, clazz);
+  }
+
   protected void addAvp(String avpName, Object avp)
   {
-    AvpUtilities.addAvp(null, avpName, this.avpSet, avp);
+    AvpUtilities.addAvp(null, avpName, avpSet, avp);
   }
 
   protected void addAvp(int avpCode, Object avp)
   {
-    AvpUtilities.addAvp(null, avpCode, 0L, this.avpSet, avp);
+    AvpUtilities.addAvp(null, avpCode, 0L, avpSet, avp);
   }
-  
+
   protected void addAvp(int avpCode, long vendorId, Object avp)
   {
-    AvpUtilities.addAvp(null, avpCode, vendorId, this.avpSet, avp);
+    AvpUtilities.addAvp(null, avpCode, vendorId, avpSet, avp);
   }
 
   protected boolean hasAvp(int code)
   {
-    return AvpUtilities.hasAvp(code, 0L, this.avpSet);
+    return AvpUtilities.hasAvp(code, 0L, avpSet);
   }
 
   protected boolean hasAvp(int code, long vendorId)
   {
-    return AvpUtilities.hasAvp(code, vendorId, this.avpSet);
+    return AvpUtilities.hasAvp(code, vendorId, avpSet);
   }
 
   protected Object getAvp(int avpCode)
@@ -566,14 +590,14 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
   protected Object getAvp(String avpName)
   {
     AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(avpName);
-    
+
     if(avpRep != null) {
       return getAvp(avpRep.getCode(), avpRep.getVendorId());
     }
-    
+
     return null;
   }
-  
+
   protected Object getAvp(int avpCode, long vendorId)
   {
     AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
@@ -636,12 +660,12 @@ public class GroupedAvpImpl extends DiameterAvpImpl implements GroupedAvp {
       }
       }
     }
-    
+
     return null;
   }
 
   public void addAvp(DiameterAvp avp) {
-    AvpUtilities.addAvp(avp, this.avpSet);
+    AvpUtilities.addAvp(avp, avpSet);
   }
 
   @Override

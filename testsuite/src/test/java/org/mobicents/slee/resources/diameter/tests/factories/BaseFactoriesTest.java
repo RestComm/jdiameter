@@ -1,6 +1,29 @@
+/*
+ * Mobicents, Communications Middleware
+ * 
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package org.mobicents.slee.resources.diameter.tests.factories;
-
-import static org.junit.Assert.*;
 
 import static org.jdiameter.client.impl.helpers.Parameters.AcctApplId;
 import static org.jdiameter.client.impl.helpers.Parameters.ApplicationId;
@@ -15,7 +38,9 @@ import static org.jdiameter.client.impl.helpers.Parameters.PeerTable;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
-
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import net.java.slee.resource.diameter.base.events.AbortSessionAnswer;
 import net.java.slee.resource.diameter.base.events.AbortSessionRequest;
 import net.java.slee.resource.diameter.base.events.AccountingAnswer;
@@ -30,14 +55,30 @@ import net.java.slee.resource.diameter.base.events.ReAuthAnswer;
 import net.java.slee.resource.diameter.base.events.ReAuthRequest;
 import net.java.slee.resource.diameter.base.events.SessionTerminationAnswer;
 import net.java.slee.resource.diameter.base.events.SessionTerminationRequest;
-import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
+import net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp;
+import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
+import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp;
 
 import org.jdiameter.api.Stack;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
+import org.junit.Assert;
 import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
+import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 
+/**
+ * 
+ * <br>Project: mobicents-diameter-server
+ * <br>3:37:56 PM Jun 1, 2009 
+ * <br>
+ *
+ * BaseFactoriesTest.java
+ *
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 public class BaseFactoriesTest {
 
   private static String clientHost = "127.0.0.1";
@@ -51,6 +92,7 @@ public class BaseFactoriesTest {
   private static String realmName = "mobicents.org";
 
   private static DiameterMessageFactoryImpl messageFactory;
+  private static DiameterAvpFactoryImpl avpFactory;
   
   static
   {
@@ -65,7 +107,8 @@ public class BaseFactoriesTest {
       throw new RuntimeException("");
     }
     
-    messageFactory = new DiameterMessageFactoryImpl(stack);    
+    messageFactory = new DiameterMessageFactoryImpl(stack);
+    avpFactory = new DiameterAvpFactoryImpl();
   }
   
   @Test
@@ -402,6 +445,54 @@ public class BaseFactoriesTest {
   {
     SessionTerminationAnswer sta = messageFactory.createSessionTerminationAnswer();
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", sta.getDestinationRealm());    
+  }
+  
+  @Test
+  public void testAvpFactoryCreateExperimentalResult()
+  {
+    ExperimentalResultAvp erAvp1 = avpFactory.createExperimentalResult(10609L, 9999L);
+    
+    Assert.assertNotNull("Created Experimental-Result AVP from objects should not be null.", erAvp1);
+
+    ExperimentalResultAvp erAvp2 = avpFactory.createExperimentalResult(erAvp1.getExtensionAvps());
+    
+    Assert.assertEquals("Created Experimental-Result AVP from extension avps should be equal to original.", erAvp1, erAvp2);
+    
+    ExperimentalResultAvp erAvp3 = avpFactory.createExperimentalResult(erAvp2.getVendorIdAVP(), erAvp2.getExperimentalResultCode());
+    
+    Assert.assertEquals("Created Experimental-Result AVP from getters should be equal to original.", erAvp1, erAvp3);    
+  }
+  
+  @Test
+  public void testAvpFactoryCreateProxyInfo()
+  {
+    ProxyInfoAvp piAvp1 = avpFactory.createProxyInfo( new DiameterIdentity("diameter.mobicents.org"), "INITIALIZED".getBytes() );
+    
+    Assert.assertNotNull("Created Proxy-Info AVP from objects should not be null.", piAvp1);
+
+    ProxyInfoAvp piAvp2 = avpFactory.createProxyInfo(piAvp1.getExtensionAvps());
+    
+    Assert.assertEquals("Created Proxy-Info AVP from extension avps should be equal to original.", piAvp1, piAvp2);
+    
+    ProxyInfoAvp piAvp3 = avpFactory.createProxyInfo(piAvp2.getProxyHost(), piAvp2.getProxyState());
+    
+    Assert.assertEquals("Created Proxy-Info AVP from getters should be equal to original.", piAvp1, piAvp3);    
+  }
+  
+  @Test
+  public void testAvpFactoryCreateVendorSpecificApplicationId()
+  {
+    VendorSpecificApplicationIdAvp vsaidAvp1 = avpFactory.createVendorSpecificApplicationId(10609L);
+    
+    Assert.assertNotNull("Created Vendor-Specific-Application-Id AVP from objects should not be null.", vsaidAvp1);
+
+    VendorSpecificApplicationIdAvp vsaidAvp2 = avpFactory.createVendorSpecificApplicationId(vsaidAvp1.getExtensionAvps());
+    
+    Assert.assertEquals("Created Vendor-Specific-Application-Id AVP from extension avps should be equal to original.", vsaidAvp1, vsaidAvp2);
+    
+    VendorSpecificApplicationIdAvp vsaidAvp3 = avpFactory.createVendorSpecificApplicationId(vsaidAvp2.getVendorIdsAvp()[0]);
+    
+    Assert.assertEquals("Created Vendor-Specific-Application-Id AVP from getters should be equal to original.", vsaidAvp1, vsaidAvp3);    
   }
   
   /**

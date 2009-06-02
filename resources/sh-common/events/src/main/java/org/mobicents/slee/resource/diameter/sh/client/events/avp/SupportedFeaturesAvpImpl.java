@@ -63,7 +63,7 @@ public class SupportedFeaturesAvpImpl extends GroupedAvpImpl implements Supporte
    * @see net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp#getFeatureList()
    */
   public long getFeatureList() {
-    return (Long) getAvp(DiameterShAvpCodes.FEATURE_LIST);
+    return getAvpAsUnsigned32(DiameterShAvpCodes.FEATURE_LIST, DiameterShAvpCodes.SH_VENDOR_ID);
   }
 
   /*
@@ -71,7 +71,7 @@ public class SupportedFeaturesAvpImpl extends GroupedAvpImpl implements Supporte
    * @see net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp#hasFeatureList()
    */
   public boolean hasFeatureList() {
-    return hasAvp(DiameterShAvpCodes.FEATURE_LIST);
+    return hasAvp(DiameterShAvpCodes.FEATURE_LIST, DiameterShAvpCodes.SH_VENDOR_ID);
   }
 
   /*
@@ -79,7 +79,7 @@ public class SupportedFeaturesAvpImpl extends GroupedAvpImpl implements Supporte
    * @see net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp#setFeatureList(long)
    */
   public void setFeatureList(long featureList) {
-    addAvp(DiameterShAvpCodes.FEATURE_LIST, featureList);
+    addAvp(DiameterShAvpCodes.FEATURE_LIST, DiameterShAvpCodes.SH_VENDOR_ID, featureList);
   }
 
   /*
@@ -87,7 +87,7 @@ public class SupportedFeaturesAvpImpl extends GroupedAvpImpl implements Supporte
    * @see net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp#getFeatureListId()
    */
   public long getFeatureListId() {
-    return (Long) getAvp(DiameterShAvpCodes.FEATURE_LIST_ID);
+    return getAvpAsUnsigned32(DiameterShAvpCodes.FEATURE_LIST_ID, DiameterShAvpCodes.SH_VENDOR_ID);
   }
 
   /*
@@ -95,7 +95,7 @@ public class SupportedFeaturesAvpImpl extends GroupedAvpImpl implements Supporte
    * @see net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp#hasFeatureListId()
    */
   public boolean hasFeatureListId() {
-    return hasAvp(DiameterShAvpCodes.FEATURE_LIST_ID);
+    return hasAvp(DiameterShAvpCodes.FEATURE_LIST_ID, DiameterShAvpCodes.SH_VENDOR_ID);
   }
 
   /*
@@ -103,7 +103,7 @@ public class SupportedFeaturesAvpImpl extends GroupedAvpImpl implements Supporte
    * @see net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp#setFeatureListId(long)
    */
   public void setFeatureListId(long featureListId) {
-    addAvp(DiameterShAvpCodes.FEATURE_LIST_ID, featureListId);
+    addAvp(DiameterShAvpCodes.FEATURE_LIST_ID, DiameterShAvpCodes.SH_VENDOR_ID, featureListId);
   }
 
   /*

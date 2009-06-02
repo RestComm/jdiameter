@@ -51,6 +51,7 @@ import net.java.slee.resource.diameter.base.events.avp.Enumerated;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public enum CcUnitType implements Enumerated {
+  
   TIME(0), MONEY(1), TOTAL_OCTETS(2), INPUT_OCTETS(3), OUTPUT_OCTETS(4), SERVICE_SPECIFIC_UNITS(5);
 
   private int value = -1;
@@ -62,14 +63,13 @@ public enum CcUnitType implements Enumerated {
   private Object readResolve() throws StreamCorruptedException {
     try {
       return fromInt(value);
-    } catch (IllegalArgumentException iae) {
-      throw new StreamCorruptedException("Invalid internal state found: "
-          + value);
+    }
+    catch (IllegalArgumentException iae) {
+      throw new StreamCorruptedException("Invalid internal state found: " + value);
     }
   }
 
-  public CcUnitType fromInt(int presumableValue)
-  throws IllegalArgumentException {
+  public static CcUnitType fromInt(int presumableValue) throws IllegalArgumentException {
 
     switch (presumableValue) {
     case 0:
@@ -84,6 +84,7 @@ public enum CcUnitType implements Enumerated {
       return OUTPUT_OCTETS;
     case 5:
       return SERVICE_SPECIFIC_UNITS;
+      
     default:
       throw new IllegalArgumentException();
     }

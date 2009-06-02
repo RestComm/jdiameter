@@ -29,9 +29,6 @@ import net.java.slee.resource.diameter.cca.events.avp.CreditControlAVPCodes;
 import net.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp;
 import net.java.slee.resource.diameter.cca.events.avp.SubscriptionIdType;
 
-import org.apache.log4j.Logger;
-import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
 import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
 
 /**
@@ -44,8 +41,6 @@ import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
  */
 public class SubscriptionIdAvpImpl extends GroupedAvpImpl implements SubscriptionIdAvp {
 
-  private static transient Logger logger = Logger.getLogger(SubscriptionIdAvpImpl.class);
-
   public SubscriptionIdAvpImpl(int code, long vendorId, int mnd, int prt, byte[] value) {
     super(code, vendorId, mnd, prt, value);
   }
@@ -53,39 +48,25 @@ public class SubscriptionIdAvpImpl extends GroupedAvpImpl implements Subscriptio
   /*
    * (non-Javadoc)
    * 
-   * @seenet.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#
-   * getSubscriptionIdData()
+   * @see net.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#getSubscriptionIdData()
    */
   public String getSubscriptionIdData() {
-    if (hasSubscriptionIdData()) {
-      Avp rawAvp = super.avpSet.getAvp(CreditControlAVPCodes.Subscription_Id_Data);
-      try {
-        return rawAvp.getUTF8String();
-      } catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.Subscription_Id_Data);
-        logger.error("Failure while trying to obtain Subscription-Id-Data AVP.", e);
-      }
-    }
-
-    return null;
+    return getAvpAsOctetString(CreditControlAVPCodes.Subscription_Id_Data);
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @seenet.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#
-   * getSubscriptionIdType()
+   * @see net.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#getSubscriptionIdType()
    */
   public SubscriptionIdType getSubscriptionIdType() {
-    int v = (Integer) getAvp(CreditControlAVPCodes.Subscription_Id_Type);
-    return v != Integer.MIN_VALUE ? SubscriptionIdType.END_USER_E164.fromInt(v) : null;
+    return (SubscriptionIdType) getAvpAsEnumerated(CreditControlAVPCodes.Subscription_Id_Type, SubscriptionIdType.class);
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @seenet.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#
-   * hasSubscriptionIdData()
+   * @see net.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#hasSubscriptionIdData()
    */
   public boolean hasSubscriptionIdData() {
     return hasAvp(CreditControlAVPCodes.Subscription_Id_Data);
@@ -94,8 +75,7 @@ public class SubscriptionIdAvpImpl extends GroupedAvpImpl implements Subscriptio
   /*
    * (non-Javadoc)
    * 
-   * @seenet.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#
-   * hasSubscriptionIdType()
+   * @see net.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#hasSubscriptionIdType()
    */
   public boolean hasSubscriptionIdType() {
     return hasAvp(CreditControlAVPCodes.Subscription_Id_Type);
@@ -104,21 +84,19 @@ public class SubscriptionIdAvpImpl extends GroupedAvpImpl implements Subscriptio
   /*
    * (non-Javadoc)
    * 
-   * @seenet.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#
-   * setSubscriptionIdData(java.lang.String)
+   * @see net.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#setSubscriptionIdData(java.lang.String)
    */
   public void setSubscriptionIdData(String data) {
-    addAvp(CreditControlAVPCodes.Subscription_Id_Data, 10415L, data);
+    addAvp(CreditControlAVPCodes.Subscription_Id_Data, data);
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @seenet.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#setSubscriptionIdType
-   * (net.java.slee.resource.diameter.cca.events.avp.SubscriptionIdType)
+   * @see net.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp#setSubscriptionIdType(net.java.slee.resource.diameter.cca.events.avp.SubscriptionIdType)
    */
   public void setSubscriptionIdType(SubscriptionIdType type) {
-    addAvp(CreditControlAVPCodes.Subscription_Id_Type, 10415L, type.getValue());
+    addAvp(CreditControlAVPCodes.Subscription_Id_Type, (long)type.getValue());
   }
 
 }

@@ -133,6 +133,16 @@ public class RoFactoriesTest implements ICCAMessageFactory, ServerCCASessionList
   }
   
   @Test
+  public void testGettersAndSettersACA() throws Exception
+  {
+    CreditControlRequest ccr = roMessageFactory.createRoCreditControlRequest();
+    
+    int nFailures = AvpAssistant.testMethods(ccr, CreditControlRequest.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
+  
+  @Test
   public void hasRoApplicationIdCCR() throws Exception
   {
     CreditControlRequest ccr = roMessageFactory.createRoCreditControlRequest();
@@ -146,6 +156,16 @@ public class RoFactoriesTest implements ICCAMessageFactory, ServerCCASessionList
     assertFalse("Request Flag in Credit-Control-Answer is set.", cca.getHeader().isRequest());
   }
 
+  @Test
+  public void testGettersAndSettersCCA() throws Exception
+  {
+    CreditControlAnswer cca = roServerSession.createRoCreditControlAnswer();
+    
+    int nFailures = AvpAssistant.testMethods(cca, CreditControlAnswer.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
+  
   @Test
   public void hasRoApplicationIdCCA() throws Exception
   {

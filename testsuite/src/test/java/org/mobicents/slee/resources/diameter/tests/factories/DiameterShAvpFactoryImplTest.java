@@ -30,6 +30,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.client.DiameterShAvpFactoryImpl;
 
 /**
@@ -53,7 +54,7 @@ public class DiameterShAvpFactoryImplTest {
 	@Before
     public void setUp() {
 		//FIXME: add more init for other tests later.
-		this.shAvpFactory = new DiameterShAvpFactoryImpl(null,null);
+		this.shAvpFactory = new DiameterShAvpFactoryImpl(new DiameterAvpFactoryImpl());
     }
 
     @After

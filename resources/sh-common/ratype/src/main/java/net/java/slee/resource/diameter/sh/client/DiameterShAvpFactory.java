@@ -1,8 +1,7 @@
 /*
  * Mobicents, Communications Middleware
  * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party
- * contributors as
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
  * distributed under license by Red Hat Middleware LLC.
@@ -31,13 +30,14 @@ import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplication
 import net.java.slee.resource.diameter.sh.client.events.avp.SupportedApplicationsAvp;
 import net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp;
 import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
+
 /**
  * 
  * Start time:16:25:30 2009-05-23<br>
  * Project: diameter-parent<br>
  * Diameter Sh avp factory interface defining methods to create Sh specific avps.
- * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
- *         </a>
+ * 
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public interface DiameterShAvpFactory {
@@ -69,13 +69,13 @@ public interface DiameterShAvpFactory {
    */
   UserIdentityAvp createUserIdentity();
 
-  
+
   /**
-	 * Validates User data against XML schema.
-	 * 
-	 * @return - Returns <b>true</b> xml validation passed - this requiers data
-	 *         to be valid xml document and must follow user data xml schema.
-	 */
-	boolean validateUserData(byte[] b);
-  
+   * Validates User data against XML schema.
+   * 
+   * @return - Returns <b>true</b> xml validation passed - this requiers data
+   *         to be valid xml document and must follow user data xml schema.
+   */
+  boolean validateUserData(byte[] b);
+
 }

@@ -1,6 +1,7 @@
 package org.mobicents.slee.resource.diameter.cca;
 
 import net.java.slee.resource.diameter.base.DiameterAvpFactory;
+import net.java.slee.resource.diameter.base.events.avp.AvpUtilities;
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
 import net.java.slee.resource.diameter.cca.events.avp.CcMoneyAvp;
 import net.java.slee.resource.diameter.cca.events.avp.CcUnitType;
@@ -23,8 +24,6 @@ import net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvp;
 import net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoType;
 
 import org.jdiameter.api.Stack;
-import org.mobicents.diameter.dictionary.AvpDictionary;
-import org.mobicents.diameter.dictionary.AvpRepresentation;
 import org.mobicents.slee.resource.diameter.cca.events.avp.CcMoneyAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.CostInformationAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvpImpl;
@@ -50,8 +49,6 @@ public class CreditControlAVPFactoryImpl implements CreditControlAVPFactory {
 
   protected DiameterAvpFactory baseAvpFactory = null;
 
-  private AvpDictionary avpDictionary = AvpDictionary.INSTANCE;
-
   protected Stack stack = null;
 
   public CreditControlAVPFactoryImpl(DiameterAvpFactory baseAvpFactory, Stack stack)
@@ -67,13 +64,7 @@ public class CreditControlAVPFactoryImpl implements CreditControlAVPFactory {
    */
   public CcMoneyAvp createCcMoney()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.CC_Money);
-
-    // Create the AVP with the provided representation data
-    CcMoneyAvpImpl avp = new CcMoneyAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-
-    return avp;
+    return (CcMoneyAvp) AvpUtilities.createAvp( CreditControlAVPCodes.CC_Money, null, CcMoneyAvpImpl.class );
   }
 
   /* (non-Javadoc)
@@ -95,13 +86,7 @@ public class CreditControlAVPFactoryImpl implements CreditControlAVPFactory {
    */
   public CostInformationAvp createCostInformation()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.Cost_Information);
-
-    // Create the AVP with the provided representation data
-    CostInformationAvpImpl avp = new CostInformationAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-
-    return avp;
+    return (CostInformationAvp) AvpUtilities.createAvp( CreditControlAVPCodes.Cost_Information, null, CostInformationAvpImpl.class );
   }
 
   /* (non-Javadoc)
@@ -124,13 +109,7 @@ public class CreditControlAVPFactoryImpl implements CreditControlAVPFactory {
    */
   public FinalUnitIndicationAvp createFinalUnitIndication()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.Final_Unit_Indication);
-
-    // Create the AVP with the provided representation data
-    FinalUnitIndicationAvpImpl avp=new FinalUnitIndicationAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-
-    return avp;
+    return (FinalUnitIndicationAvp) AvpUtilities.createAvp( CreditControlAVPCodes.Final_Unit_Indication, null, FinalUnitIndicationAvpImpl.class );
   }
 
   /* (non-Javadoc)
@@ -152,13 +131,7 @@ public class CreditControlAVPFactoryImpl implements CreditControlAVPFactory {
    */
   public GSUPoolReferenceAvp createGSUPoolReference()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.G_S_U_Pool_Reference);
-
-    // Create the AVP with the provided representation data
-    GSUPoolReferenceAvpImpl avp = new GSUPoolReferenceAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-
-    return avp;
+    return (GSUPoolReferenceAvp) AvpUtilities.createAvp( CreditControlAVPCodes.G_S_U_Pool_Reference, null, GSUPoolReferenceAvpImpl.class );
   }
 
   /* (non-Javadoc)
@@ -170,6 +143,7 @@ public class CreditControlAVPFactoryImpl implements CreditControlAVPFactory {
     GSUPoolReferenceAvp avp = createGSUPoolReference();
 
     // Set the provided AVP values
+    avp.setGSUPoolIdentifier(gsuPoolIdentifier);
     avp.setCreditControlUnitType(ccUnitType);
     avp.setUnitValue(unitValue);
 
@@ -181,13 +155,7 @@ public class CreditControlAVPFactoryImpl implements CreditControlAVPFactory {
    */
   public GrantedServiceUnitAvp createGrantedServiceUnit()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.Granted_Service_Unit);
-
-    // Create the AVP with the provided representation data
-    GrantedServiceUnitAvpImpl avp = new GrantedServiceUnitAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-
-    return avp;
+    return (GrantedServiceUnitAvp) AvpUtilities.createAvp( CreditControlAVPCodes.Granted_Service_Unit, null, GrantedServiceUnitAvpImpl.class );
   }
 
   /* (non-Javadoc)
@@ -195,13 +163,7 @@ public class CreditControlAVPFactoryImpl implements CreditControlAVPFactory {
    */
   public MultipleServicesCreditControlAvp createMultipleServicesCreditControl()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.Multiple_Services_Credit_Control);
-
-    // Create the AVP with the provided representation data
-    MultipleServicesCreditControlAvpImpl avp = new MultipleServicesCreditControlAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-
-    return avp;
+    return (MultipleServicesCreditControlAvp) AvpUtilities.createAvp( CreditControlAVPCodes.Multiple_Services_Credit_Control, null, MultipleServicesCreditControlAvpImpl.class );
   }
 
   /* (non-Javadoc)
@@ -209,13 +171,7 @@ public class CreditControlAVPFactoryImpl implements CreditControlAVPFactory {
    */
   public RedirectServerAvp createRedirectServer()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.Redirect_Server);
-
-    // Create the AVP with the provided representation data
-    RedirectServerAvpImpl avp = new RedirectServerAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-
-    return avp;
+    return (RedirectServerAvp) AvpUtilities.createAvp( CreditControlAVPCodes.Redirect_Server, null, RedirectServerAvpImpl.class );
   }
 
   /* (non-Javadoc)
@@ -238,13 +194,7 @@ public class CreditControlAVPFactoryImpl implements CreditControlAVPFactory {
    */
   public RequestedServiceUnitAvp createRequestedServiceUnit()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep=avpDictionary.getAvp(CreditControlAVPCodes.Requested_Service_Unit);
-
-    // Create the AVP with the provided representation data
-    RequestedServiceUnitAvpImpl avp = new RequestedServiceUnitAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-
-    return avp;
+    return (RequestedServiceUnitAvp) AvpUtilities.createAvp( CreditControlAVPCodes.Requested_Service_Unit, null, RequestedServiceUnitAvpImpl.class );
   }
 
   /* (non-Javadoc)
@@ -252,13 +202,7 @@ public class CreditControlAVPFactoryImpl implements CreditControlAVPFactory {
    */
   public ServiceParameterInfoAvp createServiceParameterInfo()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.Service_Parameter_Info);
-
-    // Create the AVP with the provided representation data
-    ServiceParameterInfoAvpImpl avp = new ServiceParameterInfoAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-
-    return avp;
+    return (ServiceParameterInfoAvp) AvpUtilities.createAvp( CreditControlAVPCodes.Service_Parameter_Info, null, ServiceParameterInfoAvpImpl.class );
   }
 
   /* (non-Javadoc)
@@ -281,13 +225,7 @@ public class CreditControlAVPFactoryImpl implements CreditControlAVPFactory {
    */
   public SubscriptionIdAvp createSubscriptionId()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.Subscription_Id);
-
-    // Create the AVP with the provided representation data
-    SubscriptionIdAvpImpl avp = new SubscriptionIdAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-
-    return avp;
+    return (SubscriptionIdAvp) AvpUtilities.createAvp( CreditControlAVPCodes.Subscription_Id, null, SubscriptionIdAvpImpl.class );
   }
 
   /* (non-Javadoc)
@@ -310,13 +248,7 @@ public class CreditControlAVPFactoryImpl implements CreditControlAVPFactory {
    */
   public UnitValueAvp createUnitValue()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.Unit_Value);
-
-    // Create the AVP with the provided representation data
-    UnitValueAvpImpl avp = new UnitValueAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-
-    return avp;
+    return (UnitValueAvp) AvpUtilities.createAvp( CreditControlAVPCodes.Unit_Value, null, UnitValueAvpImpl.class );
   }
 
   /* (non-Javadoc)
@@ -338,13 +270,7 @@ public class CreditControlAVPFactoryImpl implements CreditControlAVPFactory {
    */
   public UsedServiceUnitAvp createUsedServiceUnit()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.Used_Service_Unit);
-
-    // Create the AVP with the provided representation data
-    UsedServiceUnitAvpImpl avp = new UsedServiceUnitAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-
-    return avp;
+    return (UsedServiceUnitAvp) AvpUtilities.createAvp( CreditControlAVPCodes.Used_Service_Unit, null, UsedServiceUnitAvpImpl.class );
   }
 
   /* (non-Javadoc)
@@ -352,13 +278,7 @@ public class CreditControlAVPFactoryImpl implements CreditControlAVPFactory {
    */
   public UserEquipmentInfoAvp createUserEquipmentInfo()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(CreditControlAVPCodes.User_Equipment_Info);
-
-    // Create the AVP with the provided representation data
-    UserEquipmentInfoAvpImpl avp = new UserEquipmentInfoAvpImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-
-    return avp;
+    return (UserEquipmentInfoAvp) AvpUtilities.createAvp( CreditControlAVPCodes.User_Equipment_Info, null, UserEquipmentInfoAvpImpl.class );
   }
 
   /* (non-Javadoc)

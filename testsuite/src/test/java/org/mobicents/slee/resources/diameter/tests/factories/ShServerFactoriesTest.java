@@ -27,6 +27,7 @@ import org.jdiameter.api.Stack;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
 import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
+import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.client.DiameterShAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvpImpl;
@@ -70,7 +71,7 @@ public class ShServerFactoriesTest {
     }
     
     DiameterMessageFactoryImpl baseMessageFactory = new DiameterMessageFactoryImpl(stack);
-    shAvpFactory = new DiameterShAvpFactoryImpl(stack);
+    shAvpFactory = new DiameterShAvpFactoryImpl(new DiameterAvpFactoryImpl());
     shServerFactory = new ShServerMessageFactoryImpl(baseMessageFactory, null, stack, shAvpFactory);
   }
   

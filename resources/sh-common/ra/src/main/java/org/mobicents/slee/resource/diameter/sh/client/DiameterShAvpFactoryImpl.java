@@ -1,8 +1,7 @@
 /*
  * Mobicents, Communications Middleware
  * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party
- * contributors as
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
  * distributed under license by Red Hat Middleware LLC.
@@ -35,19 +34,15 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import net.java.slee.resource.diameter.base.DiameterAvpFactory;
+import net.java.slee.resource.diameter.base.events.avp.AvpUtilities;
 import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
-import net.java.slee.resource.diameter.sh.client.MessageFactory;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
 import net.java.slee.resource.diameter.sh.client.events.avp.SupportedApplicationsAvp;
 import net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp;
 import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
 
 import org.apache.log4j.Logger;
-import org.jdiameter.api.Stack;
-import org.mobicents.diameter.dictionary.AvpDictionary;
-import org.mobicents.diameter.dictionary.AvpRepresentation;
-import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.avp.SupportedApplicationsAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvpImpl;
@@ -61,162 +56,104 @@ import org.xml.sax.SAXParseException;
  * Project: diameter-parent<br>
  * Implementation of Sh AVP factory.
  * 
- * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @see DiameterShAvpFactory
  */
 public class DiameterShAvpFactoryImpl implements DiameterShAvpFactory {
 
-	protected DiameterAvpFactory baseAvpFactory = null;
-	private DocumentBuilder docBuilder = null;
-	protected final transient Logger logger = Logger.getLogger(this.getClass());
-	protected Stack stack = null;
+  protected DiameterAvpFactory baseAvpFactory = null;
+  private DocumentBuilder docBuilder = null;
+  protected final transient Logger logger = Logger.getLogger(this.getClass());
 
-	public DiameterShAvpFactoryImpl(DiameterAvpFactory baseAvpFactory, Stack stack) {
-		super();
-		this.baseAvpFactory = baseAvpFactory;
-		this.stack = stack;
-		try {
-			SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			Schema schema = schemaFactory.newSchema(DiameterShAvpFactoryImpl.class.getClassLoader().getResource("ShDataType.xsd"));
+  public DiameterShAvpFactoryImpl(DiameterAvpFactory baseAvpFactory) {
+    super();
+    this.baseAvpFactory = baseAvpFactory;
 
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			//factory.setValidating(true);
-			factory.setSchema(schema);
+    try {
+      SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+      Schema schema = schemaFactory.newSchema(DiameterShAvpFactoryImpl.class.getClassLoader().getResource("ShDataType.xsd"));
 
-			docBuilder = factory.newDocumentBuilder();
-			docBuilder.setErrorHandler(new ErrorHandler(){
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      //factory.setValidating(true);
+      factory.setSchema(schema);
 
-				public void error(SAXParseException exception) throws SAXException {
-					throw exception;
-					
-				}
+      docBuilder = factory.newDocumentBuilder();
+      docBuilder.setErrorHandler(new ErrorHandler() {
 
-				public void fatalError(SAXParseException exception) throws SAXException {
-					throw exception;
-					
-				}
+        public void error(SAXParseException exception) throws SAXException { throw exception; }
 
-				public void warning(SAXParseException exception) throws SAXException {
-					throw exception;
-					
-				}});
-		} catch (Exception e) {
-			logger.error("Failed to initialize Sh-Data schema validator. No validation will be available.", e);
-		}
-	}
+        public void fatalError(SAXParseException exception) throws SAXException { throw exception; }
 
-	public DiameterShAvpFactoryImpl(Stack stack) {
-		super();
-		this.stack = stack;
-		this.baseAvpFactory = new DiameterAvpFactoryImpl();
-		try {
-			SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			Schema schema = schemaFactory.newSchema(DiameterShAvpFactoryImpl.class.getClassLoader().getResource("ShDataType.xsd"));
+        public void warning(SAXParseException exception) throws SAXException { throw exception; }
+      });
+    }
+    catch (Exception e) {
+      logger.error("Failed to initialize Sh-Data schema validator. No validation will be available.", e);
+    }
+  }
 
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			factory.setSchema(schema);
-			//factory.setValidating(true);
-			
-			docBuilder = factory.newDocumentBuilder();
-			
-			docBuilder.setErrorHandler(new ErrorHandler(){
+  public SupportedApplicationsAvp createSupportedApplications(long authApplicationId, long acctApplicationId, VendorSpecificApplicationIdAvp vendorSpecificApplicationId)
+  {
+    // Create the empty AVP
+    SupportedApplicationsAvp avp = createSupportedApplications();
 
-				public void error(SAXParseException exception) throws SAXException {
-					throw exception;
-					
-				}
+    // Set the provided AVP values
+    avp.setAuthApplicationId(authApplicationId);
+    avp.setAcctApplicationId(acctApplicationId);
+    avp.setVendorSpecificApplicationId(vendorSpecificApplicationId);
 
-				public void fatalError(SAXParseException exception) throws SAXException {
-					throw exception;
-					
-				}
+    return avp;
+  }
 
-				public void warning(SAXParseException exception) throws SAXException {
-					throw exception;
-				}});
-		} catch (Exception e) {
-			logger.error("Failed to initialize Sh-Data schema validator. No validation will be available.", e);
-		}
-	}
+  public SupportedApplicationsAvp createSupportedApplications() {
+    return (SupportedApplicationsAvp) AvpUtilities.createAvp( DiameterShAvpCodes.SUPPORTED_APPLICATIONS, DiameterShAvpCodes.SH_VENDOR_ID, null, SupportedApplicationsAvpImpl.class );
+  }
 
-	public SupportedApplicationsAvp createSupportedApplications(long authApplicationId, long acctApplicationId, VendorSpecificApplicationIdAvp vendorSpecificApplicationId) {
-		SupportedApplicationsAvp saAvp = this.createSupportedApplications();
+  public SupportedFeaturesAvp createSupportedFeatures(long vendorId, long featureListId, long featureList)
+  {
+    // Create the empty AVP
+    SupportedFeaturesAvp avp = createSupportedFeatures();
 
-		saAvp.setAcctApplicationId(acctApplicationId);
-		saAvp.setAuthApplicationId(authApplicationId);
+    // Set the provided AVP values
+    avp.setVendorId( vendorId );
+    avp.setFeatureListId( featureListId );
+    avp.setFeatureList( featureList );
 
-		return saAvp;
-	}
+    return avp;
+  }
 
-	public SupportedApplicationsAvp createSupportedApplications() {
-		AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterShAvpCodes.SUPPORTED_APPLICATIONS, MessageFactory._SH_VENDOR_ID);
+  public SupportedFeaturesAvp createSupportedFeatures() {
+    return (SupportedFeaturesAvp) AvpUtilities.createAvp( DiameterShAvpCodes.SUPPORTED_FEATURES, DiameterShAvpCodes.SH_VENDOR_ID, null, SupportedFeaturesAvpImpl.class );
+  }
 
-		int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-		int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
+  public UserIdentityAvp createUserIdentity() {
+    return (UserIdentityAvp) AvpUtilities.createAvp( DiameterShAvpCodes.USER_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID, null, UserIdentityAvpImpl.class );
+  }
 
-		SupportedApplicationsAvpImpl saAvp = new SupportedApplicationsAvpImpl(DiameterShAvpCodes.SUPPORTED_APPLICATIONS, MessageFactory._SH_VENDOR_ID, mandatoryAvp, protectedAvp, new byte[] {});
+  public DiameterAvpFactory getBaseFactory() {
+    return this.baseAvpFactory;
+  }
 
-		return saAvp;
-	}
-
-	public SupportedFeaturesAvp createSupportedFeatures(long vendorId, long featureListId, long featureList) {
-		SupportedFeaturesAvp sfAvp = this.createSupportedFeatures();
-
-		sfAvp.setVendorId(vendorId);
-		sfAvp.setFeatureList(featureList);
-		sfAvp.setFeatureListId(featureListId);
-
-		return sfAvp;
-	}
-
-	public SupportedFeaturesAvp createSupportedFeatures() {
-		AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterShAvpCodes.SUPPORTED_FEATURES, MessageFactory._SH_VENDOR_ID);
-
-		int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-		int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-		SupportedFeaturesAvpImpl sfAvp = new SupportedFeaturesAvpImpl(DiameterShAvpCodes.SUPPORTED_FEATURES, MessageFactory._SH_VENDOR_ID, mandatoryAvp, protectedAvp, new byte[] {});
-
-		return sfAvp;
-	}
-
-	public UserIdentityAvp createUserIdentity() {
-		AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterShAvpCodes.USER_IDENTITY, MessageFactory._SH_VENDOR_ID);
-
-		int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-		int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-		UserIdentityAvpImpl uiAvp = new UserIdentityAvpImpl(DiameterShAvpCodes.USER_IDENTITY, MessageFactory._SH_VENDOR_ID, mandatoryAvp, protectedAvp, new byte[] {});
-
-		return uiAvp;
-	}
-
-	public DiameterAvpFactory getBaseFactory() {
-		return this.baseAvpFactory;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seenet.java.slee.resource.diameter.sh.client.DiameterShAvpFactory#
-	 * validateUserData(byte[])
-	 */
-	public boolean validateUserData(byte[] userData) {
-		if (docBuilder != null && userData!=null) {
-			try {
-				docBuilder.parse(new ByteArrayInputStream(userData));
-				return true;
-			} catch (Throwable e) {
-			//} catch (Exception e) {
-				e.printStackTrace();
-				
-				logger.error("Failure while validating User-Data:", e);
-				
-
-			}
-		}
-		return false;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @seenet.java.slee.resource.diameter.sh.client.DiameterShAvpFactory#
+   * validateUserData(byte[])
+   */
+  public boolean validateUserData(byte[] userData)
+  {
+    if (docBuilder != null && userData!=null)
+    {
+      try {
+        docBuilder.parse(new ByteArrayInputStream(userData));
+        return true;
+      }
+      catch (Throwable e) {
+        logger.error("Failure while validating User-Data:", e);
+      }
+    }
+    return false;
+  }
 
 }

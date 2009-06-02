@@ -51,7 +51,7 @@ public class ServiceParameterInfoAvpImpl extends GroupedAvpImpl implements Servi
    * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#getServiceParameterType()
    */
   public long getServiceParameterType() {
-    return (Long) getAvp(CreditControlAVPCodes.Service_Parameter_Type);
+    return getAvpAsUnsigned32(CreditControlAVPCodes.Service_Parameter_Type);
   }
 
   /*
@@ -61,7 +61,7 @@ public class ServiceParameterInfoAvpImpl extends GroupedAvpImpl implements Servi
    * net.java.slee.resource.diameter.cca.events.avp.ServiceParameterInfoAvp#getServiceParameterValue()
    */
   public byte[] getServiceParameterValue() {
-    return (byte[]) getAvp(CreditControlAVPCodes.Service_Parameter_Value);
+    return getAvpAsRaw(CreditControlAVPCodes.Service_Parameter_Value);
   }
 
   /*

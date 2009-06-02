@@ -84,7 +84,7 @@ public enum UserEquipmentInfoType implements Enumerated {
     }
   }
 
-  public UserEquipmentInfoType fromInt(int presumableValue) throws IllegalArgumentException
+  public static UserEquipmentInfoType fromInt(int presumableValue) throws IllegalArgumentException
   {
     switch (presumableValue) {
     case 0:

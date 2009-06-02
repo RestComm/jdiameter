@@ -1,3 +1,28 @@
+/*
+ * Mobicents, Communications Middleware
+ * 
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package org.mobicents.slee.resource.diameter.base;
 
 import java.net.InetAddress;
@@ -7,9 +32,9 @@ import net.java.slee.resource.diameter.base.DiameterAvpFactory;
 import net.java.slee.resource.diameter.base.NoSuchAvpException;
 import net.java.slee.resource.diameter.base.events.DiameterCommand;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
+import net.java.slee.resource.diameter.base.events.avp.AvpUtilities;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodes;
-import net.java.slee.resource.diameter.base.events.avp.DiameterAvpType;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.Enumerated;
 import net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp;
@@ -17,18 +42,12 @@ import net.java.slee.resource.diameter.base.events.avp.FailedAvp;
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
 import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp;
 
-import org.apache.log4j.Logger;
-import org.jdiameter.client.api.parser.DecodeException;
-import org.jdiameter.client.impl.parser.MessageParser;
 import org.mobicents.slee.resource.diameter.base.events.DiameterCommandImpl;
-import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.ExperimentalResultAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.FailedAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.ProxyInfoAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvpImpl;
-import org.mobicents.diameter.dictionary.AvpDictionary;
-import org.mobicents.diameter.dictionary.AvpRepresentation;
 
 
 /**
@@ -47,252 +66,277 @@ public class DiameterAvpFactoryImpl implements DiameterAvpFactory
   // Flags field settings:
   //   The ’M’ bit MUST be set.  The ’V’ bit MUST NOT be set.
   
-  private static transient Logger logger = Logger.getLogger(DiameterAvpFactoryImpl.class);
-
-  private final long DEFAULT_VENDOR_ID = 0L;
+  private final static long BASE_VENDOR_ID = 0L;
   
-  protected MessageParser parser = new MessageParser(null);
-  
-  private DiameterAvpType getAvpType(int code, long vendorID) throws NoSuchAvpException
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createCommand(int, int, java.lang.String, java.lang.String, boolean, boolean)
+   */
+  public DiameterCommand createCommand( int commandCode, int applicationId, String shortName, String longName, boolean isRequest, boolean isProxiable )
   {
-    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(code, vendorID);
-    
-    if(avpRep != null)
-      return DiameterAvpType.fromString(avpRep.getType());
-    
-    return null;
+    return new DiameterCommandImpl( commandCode, applicationId, shortName, longName, isRequest, isProxiable );
   }
+
+  // Generic AVP Creators
   
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, net.java.slee.resource.diameter.base.events.avp.DiameterAvp[])
+   */
   public DiameterAvp createAvp( int avpCode, DiameterAvp[] avps ) throws NoSuchAvpException, AvpNotAllowedException
   {
-    return createAvp((int)DEFAULT_VENDOR_ID, avpCode, avps);
+    return createAvp((int)BASE_VENDOR_ID, avpCode, avps);
   }
 
-  public DiameterAvp createAvp( int vendorID, int avpCode, DiameterAvp[] avps ) throws NoSuchAvpException, AvpNotAllowedException
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, int, net.java.slee.resource.diameter.base.events.avp.DiameterAvp[])
+   */
+  public DiameterAvp createAvp( int vendorId, int avpCode, DiameterAvp[] avps ) throws NoSuchAvpException, AvpNotAllowedException
   {
-    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorID);
-    
-    int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-    int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-    GroupedAvpImpl avp = new GroupedAvpImpl(avpCode, vendorID, mandatoryAvp, protectedAvp, new byte[]{});
+    GroupedAvpImpl avp = (GroupedAvpImpl) AvpUtilities.createAvp( avpCode, vendorId, GroupedAvpImpl.class );
     
     avp.setExtensionAvps( avps );
     
     return avp;
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, byte[])
+   */
   public DiameterAvp createAvp( int avpCode, byte[] value ) throws NoSuchAvpException
   {
-    return createAvp((int)DEFAULT_VENDOR_ID, avpCode, value);
+    return createAvp((int)BASE_VENDOR_ID, avpCode, value);
   }
 
-  public DiameterAvp createAvp( int vendorID, int avpCode, byte[] value ) throws NoSuchAvpException
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, int, byte[])
+   */
+  public DiameterAvp createAvp( int vendorId, int avpCode, byte[] value ) throws NoSuchAvpException
   {
-    return createAvpInternal(vendorID, avpCode, value);
+    return AvpUtilities.createAvp(avpCode, vendorId, value);
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, int)
+   */
   public DiameterAvp createAvp( int avpCode, int value ) throws NoSuchAvpException
   {
-    return createAvp((int)DEFAULT_VENDOR_ID, avpCode, value);
+    return createAvp((int)BASE_VENDOR_ID, avpCode, value);
   }
 
-  public DiameterAvp createAvp( int vendorID, int avpCode, int value ) throws NoSuchAvpException
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, int, int)
+   */
+  public DiameterAvp createAvp( int vendorId, int avpCode, int value ) throws NoSuchAvpException
   {
-    return createAvpInternal(vendorID, avpCode, parser.int32ToBytes(value));    
+    return AvpUtilities.createAvp(avpCode, vendorId, value);
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, long)
+   */
   public DiameterAvp createAvp( int avpCode, long value ) throws NoSuchAvpException
   {
-    return createAvp((int)DEFAULT_VENDOR_ID, avpCode, value);
+    return createAvp((int)BASE_VENDOR_ID, avpCode, value);
   }
 
-  public DiameterAvp createAvp( int vendorID, int avpCode, long value ) throws NoSuchAvpException
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, int, long)
+   */
+  public DiameterAvp createAvp( int vendorId, int avpCode, long value ) throws NoSuchAvpException
   {
-    DiameterAvpType avpType = getAvpType( avpCode, vendorID );
-    
-    byte[] byteValue = null;
-    
-    if( avpType.getType() ==  DiameterAvpType._INTEGER_64  || avpType.getType() ==  DiameterAvpType._UNSIGNED_64 )
-      byteValue = parser.int64ToBytes(value);
-    else if ( avpType.getType() ==  DiameterAvpType._UNSIGNED_32 )
-      byteValue = parser.intU32ToBytes(value);
-    else
-      throw new NoSuchAvpException("Unrecongnized type");
-    
-    return createAvpInternal(vendorID, avpCode, byteValue);    
+    return AvpUtilities.createAvp(avpCode, vendorId, value);
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, float)
+   */
   public DiameterAvp createAvp( int avpCode, float value ) throws NoSuchAvpException
   {
-    return createAvp((int)DEFAULT_VENDOR_ID, avpCode, value);
+    return createAvp((int)BASE_VENDOR_ID, avpCode, value);
   }
 
-  public DiameterAvp createAvp( int vendorID, int avpCode, float value ) throws NoSuchAvpException
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, int, float)
+   */
+  public DiameterAvp createAvp( int vendorId, int avpCode, float value ) throws NoSuchAvpException
   {
-    return createAvpInternal(vendorID, avpCode, parser.float32ToBytes(value));
+    return AvpUtilities.createAvp(avpCode, vendorId, value);
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, double)
+   */
   public DiameterAvp createAvp( int avpCode, double value ) throws NoSuchAvpException
   {
-    return createAvp((int)DEFAULT_VENDOR_ID, avpCode, value);
+    return createAvp((int)BASE_VENDOR_ID, avpCode, value);
   }
 
-  public DiameterAvp createAvp( int vendorID, int avpCode, double value ) throws NoSuchAvpException
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, int, double)
+   */
+  public DiameterAvp createAvp( int vendorId, int avpCode, double value ) throws NoSuchAvpException
   {
-    return createAvpInternal(vendorID, avpCode, parser.float64ToBytes(value));
+    return AvpUtilities.createAvp(avpCode, vendorId, value);
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, java.net.InetAddress)
+   */
   public DiameterAvp createAvp( int avpCode, InetAddress value ) throws NoSuchAvpException
   {
-    return createAvp((int)DEFAULT_VENDOR_ID, avpCode, value);
+    return createAvp((int)BASE_VENDOR_ID, avpCode, value);
   }
 
-  public DiameterAvp createAvp( int vendorID, int avpCode, InetAddress value ) throws NoSuchAvpException
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, int, java.net.InetAddress)
+   */
+  public DiameterAvp createAvp( int vendorId, int avpCode, InetAddress value ) throws NoSuchAvpException
   {
-    return createAvpInternal(vendorID, avpCode, parser.addressToBytes(value));
+    return AvpUtilities.createAvp(avpCode, vendorId, value);
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, java.util.Date)
+   */
   public DiameterAvp createAvp( int avpCode, Date value ) throws NoSuchAvpException
   {
-    return createAvp((int)DEFAULT_VENDOR_ID, avpCode, value);
+    return createAvp((int)BASE_VENDOR_ID, avpCode, value);
   }
 
-  public DiameterAvp createAvp( int vendorID, int avpCode, Date value ) throws NoSuchAvpException
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, int, java.util.Date)
+   */
+  public DiameterAvp createAvp( int vendorId, int avpCode, Date value ) throws NoSuchAvpException
   {
-    return createAvpInternal(vendorID, avpCode, parser.dateToBytes(value));
+    return AvpUtilities.createAvp(avpCode, vendorId, value);
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, java.lang.String)
+   */
   public DiameterAvp createAvp( int avpCode, String value ) throws NoSuchAvpException
   {
-    return createAvp((int)DEFAULT_VENDOR_ID, avpCode, value);
+    return createAvp((int)BASE_VENDOR_ID, avpCode, value);
   }
 
-  public DiameterAvp createAvp( int vendorID, int avpCode, String value ) throws NoSuchAvpException
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, int, java.lang.String)
+   */
+  public DiameterAvp createAvp( int vendorId, int avpCode, String value ) throws NoSuchAvpException
   {
-    DiameterAvpType avpType = getAvpType( avpCode, vendorID );
-    
-    byte[] byteValue = null;
-      
-    try
-    {
-      if( avpType.getType() ==  DiameterAvpType._OCTET_STRING )
-        byteValue = parser.octetStringToBytes(value);
-      else if ( avpType.getType() ==  DiameterAvpType._UTF8_STRING )
-        byteValue = parser.utf8StringToBytes(value);
-      else
-        throw new NoSuchAvpException("Unrecongnized type for AVP code " + avpCode);
-    }
-    catch (Exception e) {
-      logger.error( "Failed to create AVP.", e );
-      return null;
-    }
-    
-    return createAvpInternal(vendorID, avpCode, byteValue);    
+    return AvpUtilities.createAvp(avpCode, vendorId, value);
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, net.java.slee.resource.diameter.base.events.avp.Enumerated)
+   */
   public DiameterAvp createAvp( int avpCode, Enumerated value ) throws NoSuchAvpException
   {
-    return createAvp((int)DEFAULT_VENDOR_ID, avpCode, value);
+    return createAvp((int)BASE_VENDOR_ID, avpCode, value);
   }
 
-  public DiameterAvp createAvp( int vendorID, int avpCode, Enumerated value ) throws NoSuchAvpException
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createAvp(int, int, net.java.slee.resource.diameter.base.events.avp.Enumerated)
+   */
+  public DiameterAvp createAvp( int vendorId, int avpCode, Enumerated value ) throws NoSuchAvpException
   {
-    try
-    {
-      return createAvpInternal(vendorID, avpCode, parser.objectToBytes(value));
-    }
-    catch ( DecodeException e )
-    {
-      logger.error("Failed to create AVP.", e);
-      return null;
-    }
+    return AvpUtilities.createAvp(avpCode, vendorId, value);
   }
-
-  public DiameterCommand createCommand( int commandCode, int applicationId, String shortName, String longName, boolean isRequest, boolean isProxiable )
-  {
-    return new DiameterCommandImpl( commandCode, applicationId, shortName, longName, isRequest, isProxiable );
-  }
-
+  
+  // Custom Grouped AVP Creators
+  
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createExperimentalResult(long, long)
+   */
   public ExperimentalResultAvp createExperimentalResult( long vendorId, long experimentalResultCode )
   {
-    try
-    {
-      DiameterAvp resultCodeAvp = createAvp((int)vendorId, DiameterAvpCodes.EXPERIMENTAL_RESULT_CODE, experimentalResultCode );
-      return createExperimentalResult(resultCodeAvp);
-    }
-    catch ( Exception e )
-    {
-      logger.error( "Failed to create Experimental-Result AVP.", e );
-      
-      return null;
-    }
+    ExperimentalResultAvp experimentalResultAvp = createExperimentalResult();
+    
+    experimentalResultAvp.setVendorIdAVP(vendorId);
+    experimentalResultAvp.setExperimentalResultCode(experimentalResultCode);
+    
+    return experimentalResultAvp;
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createExperimentalResult()
+   */
   public ExperimentalResultAvp createExperimentalResult()
   {
-    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterAvpCodes.EXPERIMENTAL_RESULT);
-    
-    int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-    int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-    return new ExperimentalResultAvpImpl(avpRep.getCode(), DEFAULT_VENDOR_ID, mandatoryAvp, protectedAvp, new byte[]{});
+    return createExperimentalResult( new DiameterAvp[0] );
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createExperimentalResult(net.java.slee.resource.diameter.base.events.avp.DiameterAvp)
+   */
   public ExperimentalResultAvp createExperimentalResult( DiameterAvp avp ) throws AvpNotAllowedException
   {
     return createExperimentalResult( new DiameterAvp[]{ avp } );
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createExperimentalResult(net.java.slee.resource.diameter.base.events.avp.DiameterAvp[])
+   */
   public ExperimentalResultAvp createExperimentalResult( DiameterAvp[] avps ) throws AvpNotAllowedException
   {
-    ExperimentalResultAvp expResultAvp = createExperimentalResult();
-    
-    try
-    {
-      expResultAvp.setExtensionAvps( avps );
-    }
-    catch ( AvpNotAllowedException e )
-    {
-      logger.error( "Failed to create Failed-AVP.", e );
-      return null;
-    }
-    
-    return expResultAvp;
+    return (ExperimentalResultAvp) AvpUtilities.createAvp( DiameterAvpCodes.EXPERIMENTAL_RESULT, avps, ExperimentalResultAvpImpl.class );
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createFailedAvp()
+   */
   public FailedAvp createFailedAvp()
   {
-    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterAvpCodes.FAILED_AVP);
-    
-    int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-    int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-    return new FailedAvpImpl(avpRep.getCode(), DEFAULT_VENDOR_ID, mandatoryAvp, protectedAvp, new byte[]{});
+    return createFailedAvp( new DiameterAvp[0] );
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createFailedAvp(net.java.slee.resource.diameter.base.events.avp.DiameterAvp)
+   */
   public FailedAvp createFailedAvp( DiameterAvp avp )
   {
     return createFailedAvp( new DiameterAvp[]{ avp } );
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createFailedAvp(net.java.slee.resource.diameter.base.events.avp.DiameterAvp[])
+   */
   public FailedAvp createFailedAvp( DiameterAvp[] avps )
   {
-    FailedAvp fAvp = createFailedAvp();
-    
-    try
-    {
-      fAvp.setExtensionAvps( avps );
-    }
-    catch ( AvpNotAllowedException e )
-    {
-      logger.error( "Failed to create Failed-AVP.", e );
-      return null;
-    }
-    
-    return fAvp;
+    return (FailedAvp) AvpUtilities.createAvp( DiameterAvpCodes.FAILED_AVP, avps, FailedAvpImpl.class );
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createProxyInfo(net.java.slee.resource.diameter.base.events.avp.DiameterIdentity, byte[])
+   */
   public ProxyInfoAvp createProxyInfo( DiameterIdentity proxyHost, byte[] proxyState )
   {
     ProxyInfoAvp proxyInfo = createProxyInfo();
@@ -303,79 +347,71 @@ public class DiameterAvpFactoryImpl implements DiameterAvpFactory
     return proxyInfo;
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createProxyInfo()
+   */
   public ProxyInfoAvp createProxyInfo()
   {
-    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterAvpCodes.PROXY_INFO);
-    
-    int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-    int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-    return new ProxyInfoAvpImpl(DiameterAvpCodes.PROXY_INFO, DEFAULT_VENDOR_ID, mandatoryAvp, protectedAvp, new byte[]{});
+    return createProxyInfo(new DiameterAvp[0]);
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createProxyInfo(net.java.slee.resource.diameter.base.events.avp.DiameterAvp)
+   */
   public ProxyInfoAvp createProxyInfo( DiameterAvp avp )
   {
     return createProxyInfo( new DiameterAvp[]{avp} );
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createProxyInfo(net.java.slee.resource.diameter.base.events.avp.DiameterAvp[])
+   */
   public ProxyInfoAvp createProxyInfo( DiameterAvp[] avps )
   {
-    ProxyInfoAvp proxyInfo = createProxyInfo();
-    
-    try
-    {
-      proxyInfo.setExtensionAvps( avps );
-    }
-    catch ( AvpNotAllowedException e )
-    {
-      logger.error( "Failed to create Proxy-Info AVP.", e );
-      
-      return null;
-    }
-    
-    return proxyInfo;
+    return (ProxyInfoAvp) AvpUtilities.createAvp( DiameterAvpCodes.PROXY_INFO, avps, ProxyInfoAvpImpl.class );
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createVendorSpecificApplicationId(long)
+   */
   public VendorSpecificApplicationIdAvp createVendorSpecificApplicationId( long vendorId )
   {
     VendorSpecificApplicationIdAvp vsaidAvp = createVendorSpecificApplicationId();
     
-    vsaidAvp.setVendorId(vendorId);
+    vsaidAvp.setVendorIdAvp(vendorId);
     
     return vsaidAvp;
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createVendorSpecificApplicationId()
+   */
   public VendorSpecificApplicationIdAvp createVendorSpecificApplicationId()
   {
-    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterAvpCodes.VENDOR_SPECIFIC_APPLICATION_ID);
-    
-    int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-    int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-    return new VendorSpecificApplicationIdAvpImpl(avpRep.getCode(), DEFAULT_VENDOR_ID, mandatoryAvp, protectedAvp, new byte[]{});
+    return createVendorSpecificApplicationId( new DiameterAvp[0] );
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createVendorSpecificApplicationId(net.java.slee.resource.diameter.base.events.avp.DiameterAvp)
+   */
   public VendorSpecificApplicationIdAvp createVendorSpecificApplicationId( DiameterAvp avp ) throws AvpNotAllowedException
   {
     return createVendorSpecificApplicationId( new DiameterAvp[]{avp} );
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.java.slee.resource.diameter.base.DiameterAvpFactory#createVendorSpecificApplicationId(net.java.slee.resource.diameter.base.events.avp.DiameterAvp[])
+   */
   public VendorSpecificApplicationIdAvp createVendorSpecificApplicationId( DiameterAvp[] avps ) throws AvpNotAllowedException
   {
-    VendorSpecificApplicationIdAvp vsaidAvp = createVendorSpecificApplicationId();
-    
-    vsaidAvp.setExtensionAvps( avps );
-    
-    return vsaidAvp;
+    return (VendorSpecificApplicationIdAvp) AvpUtilities.createAvp( DiameterAvpCodes.VENDOR_SPECIFIC_APPLICATION_ID, avps, VendorSpecificApplicationIdAvpImpl.class );
   }
 
-  private DiameterAvp createAvpInternal(long vendorID, int avpCode, byte[] value)
-  {
-    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp( avpCode, vendorID );
-    
-    int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-    int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-    
-    return new DiameterAvpImpl( avpCode, vendorID, mandatoryAvp, protectedAvp, value, DiameterAvpType.fromString(avpRep.getType()) );    
-  }
 }

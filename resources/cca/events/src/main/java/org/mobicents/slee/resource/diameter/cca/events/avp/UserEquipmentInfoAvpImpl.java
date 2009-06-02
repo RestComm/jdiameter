@@ -51,8 +51,7 @@ public class UserEquipmentInfoAvpImpl extends GroupedAvpImpl implements UserEqui
    * @see net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvp#getUserEquipmentInfoType()
    */
   public UserEquipmentInfoType getUserEquipmentInfoType() {
-    int v = (Integer) getAvp(CreditControlAVPCodes.User_Equipment_Info_Type);
-    return v != Integer.MIN_VALUE ? UserEquipmentInfoType.EUI64.fromInt(v) : null;
+    return (UserEquipmentInfoType) getAvpAsEnumerated(CreditControlAVPCodes.User_Equipment_Info_Type, UserEquipmentInfoType.class);
   }
 
   /*
@@ -61,7 +60,7 @@ public class UserEquipmentInfoAvpImpl extends GroupedAvpImpl implements UserEqui
    * @see net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvp#getUserEquipmentInfoValue()
    */
   public byte[] getUserEquipmentInfoValue() {
-    return (byte[]) getAvp(CreditControlAVPCodes.User_Equipment_Info_Value);
+    return getAvpAsRaw(CreditControlAVPCodes.User_Equipment_Info_Value);
   }
 
   /*
@@ -89,7 +88,7 @@ public class UserEquipmentInfoAvpImpl extends GroupedAvpImpl implements UserEqui
    * (net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoType)
    */
   public void setUserEquipmentInfoType(UserEquipmentInfoType type) {
-    addAvp(CreditControlAVPCodes.User_Equipment_Info_Type, type.getValue());
+    addAvp(CreditControlAVPCodes.User_Equipment_Info_Type, (long)type.getValue());
   }
 
   /*

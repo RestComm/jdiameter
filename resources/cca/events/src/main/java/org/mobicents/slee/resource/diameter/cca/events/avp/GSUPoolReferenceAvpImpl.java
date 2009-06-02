@@ -30,8 +30,6 @@ import net.java.slee.resource.diameter.cca.events.avp.CreditControlAVPCodes;
 import net.java.slee.resource.diameter.cca.events.avp.GSUPoolReferenceAvp;
 import net.java.slee.resource.diameter.cca.events.avp.UnitValueAvp;
 
-import org.apache.log4j.Logger;
-import org.jdiameter.api.Avp;
 import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
 
 /**
@@ -44,8 +42,6 @@ import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
  */
 public class GSUPoolReferenceAvpImpl extends GroupedAvpImpl implements GSUPoolReferenceAvp {
 
-  private static transient Logger logger = Logger.getLogger(GSUPoolReferenceAvpImpl.class);
-
   public GSUPoolReferenceAvpImpl(int code, long vendorId, int mnd, int prt, byte[] value) {
     super(code, vendorId, mnd, prt, value);
   }
@@ -56,17 +52,7 @@ public class GSUPoolReferenceAvpImpl extends GroupedAvpImpl implements GSUPoolRe
    * @see net.java.slee.resource.diameter.cca.events.avp.GSUPoolReferenceAvp#getCreditControlUnitType()
    */
   public CcUnitType getCreditControlUnitType() {
-    if (hasCreditControlUnitType()) {
-      Avp rawAvp = super.avpSet.getAvp(CreditControlAVPCodes.CC_Unit_Type);
-      try {
-        return CcUnitType.INPUT_OCTETS.fromInt(rawAvp.getInteger32());
-      } catch (Exception e) {
-        reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.CC_Unit_Type);
-        logger.error("Failure while trying to obtain CC-Unit-Type AVP.", e);
-      }
-    }
-
-    return null;
+    return (CcUnitType) getAvpAsEnumerated(CreditControlAVPCodes.CC_Unit_Type, CcUnitType.class);
   }
 
   /*
@@ -75,18 +61,7 @@ public class GSUPoolReferenceAvpImpl extends GroupedAvpImpl implements GSUPoolRe
    * @see net.java.slee.resource.diameter.cca.events.avp.GSUPoolReferenceAvp#getGSUPoolIdentifier()
    */
   public long getGSUPoolIdentifier() {
-    if (hasGSUPoolIdentifier()) {
-      Avp rawAvp = super.avpSet.getAvp(CreditControlAVPCodes.G_S_U_Pool_Identifier);
-
-      try {
-        return rawAvp.getUnsigned32();
-      } catch (Exception e) {
-        reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.G_S_U_Pool_Identifier);
-        logger.error("Failure while trying to obtain G-S-U-Pool-Identifier AVP.", e);
-      }
-    }
-
-    return -1;
+    return getAvpAsUnsigned32(CreditControlAVPCodes.G_S_U_Pool_Identifier);
   }
 
   /*
@@ -95,17 +70,7 @@ public class GSUPoolReferenceAvpImpl extends GroupedAvpImpl implements GSUPoolRe
    * @see net.java.slee.resource.diameter.cca.events.avp.GSUPoolReferenceAvp#getUnitValue()
    */
   public UnitValueAvp getUnitValue() {
-    if (hasUnitValue()) {
-      Avp rawAvp = super.avpSet.getAvp(CreditControlAVPCodes.Unit_Value);
-      try {
-        return new UnitValueAvpImpl(CreditControlAVPCodes.Unit_Value, rawAvp.getVendorId(), rawAvp.isMandatory() ? 1 : 0, rawAvp.isEncrypted() ? 1 : 0, rawAvp.getRaw());
-      } catch (Exception e) {
-        reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.Unit_Value);
-        logger.error("Failure while trying to obtain Unit-Value AVP.", e);
-      }
-    }
-
-    return null;
+    return (UnitValueAvp) getAvpAsCustom(CreditControlAVPCodes.Unit_Value, UnitValueAvpImpl.class);
   }
 
   /*
@@ -114,7 +79,7 @@ public class GSUPoolReferenceAvpImpl extends GroupedAvpImpl implements GSUPoolRe
    * @see net.java.slee.resource.diameter.cca.events.avp.GSUPoolReferenceAvp#hasCreditControlUnitType()
    */
   public boolean hasCreditControlUnitType() {
-    return super.hasAvp(CreditControlAVPCodes.CC_Unit_Type);
+    return hasAvp(CreditControlAVPCodes.CC_Unit_Type);
   }
 
   /*
@@ -123,7 +88,7 @@ public class GSUPoolReferenceAvpImpl extends GroupedAvpImpl implements GSUPoolRe
    * @see net.java.slee.resource.diameter.cca.events.avp.GSUPoolReferenceAvp#hasGSUPoolIdentifier()
    */
   public boolean hasGSUPoolIdentifier() {
-    return super.hasAvp(CreditControlAVPCodes.G_S_U_Pool_Identifier);
+    return hasAvp(CreditControlAVPCodes.G_S_U_Pool_Identifier);
   }
 
   /*
@@ -132,7 +97,7 @@ public class GSUPoolReferenceAvpImpl extends GroupedAvpImpl implements GSUPoolRe
    * @see net.java.slee.resource.diameter.cca.events.avp.GSUPoolReferenceAvp#hasUnitValue()
    */
   public boolean hasUnitValue() {
-    return super.hasAvp(CreditControlAVPCodes.Unit_Value);
+    return hasAvp(CreditControlAVPCodes.Unit_Value);
   }
 
   /*
@@ -142,7 +107,7 @@ public class GSUPoolReferenceAvpImpl extends GroupedAvpImpl implements GSUPoolRe
    * (net.java.slee.resource.diameter.cca.events.avp.CcUnitType)
    */
   public void setCreditControlUnitType(CcUnitType ccUnitType) {
-    addAvp(CreditControlAVPCodes.CC_Unit_Type, ccUnitType.getValue());
+    addAvp(CreditControlAVPCodes.CC_Unit_Type, (long)ccUnitType.getValue());
   }
 
   /*

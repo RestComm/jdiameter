@@ -29,8 +29,6 @@ import net.java.slee.resource.diameter.cca.events.avp.CreditControlAVPCodes;
 import net.java.slee.resource.diameter.cca.events.avp.RedirectAddressType;
 import net.java.slee.resource.diameter.cca.events.avp.RedirectServerAvp;
 
-import org.apache.log4j.Logger;
-import org.jdiameter.api.Avp;
 import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
 
 /**
@@ -43,90 +41,68 @@ import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
  */
 public class RedirectServerAvpImpl extends GroupedAvpImpl implements RedirectServerAvp {
 
-	private static transient Logger logger = Logger.getLogger(RedirectServerAvpImpl.class);
+  public RedirectServerAvpImpl(int code, long vendorId, int mnd, int prt, byte[] value) {
+    super(code, vendorId, mnd, prt, value);
+  }
 
-	public RedirectServerAvpImpl(int code, long vendorId, int mnd, int prt, byte[] value) {
-		super(code, vendorId, mnd, prt, value);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see net.java.slee.resource.diameter.cca.events.avp.RedirectServerAvp#getRedirectAddressType()
+   */
+  public RedirectAddressType getRedirectAddressType() {
+    return (RedirectAddressType) getAvpAsEnumerated(CreditControlAVPCodes.Redirect_Address_Type, RedirectAddressType.class);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.java.slee.resource.diameter.cca.events.avp.RedirectServerAvp#getRedirectAddressType()
-	 */
-	public RedirectAddressType getRedirectAddressType() {
-		if (hasRedirectAddressType()) {
-			Avp rawAvp = super.avpSet.getAvp(CreditControlAVPCodes.Redirect_Address_Type);
-			try {
-				return RedirectAddressType.IPv4_Address.fromInt(rawAvp.getInteger32());
-			} catch (Exception e) {
-				reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.Redirect_Address_Type);
-				logger.error("Failure while trying to obtain Redirect-Address-Type AVP.", e);
-			}
-		}
+  /*
+   * (non-Javadoc)
+   * 
+   * @seenet.java.slee.resource.diameter.cca.events.avp.RedirectServerAvp#
+   * getRedirectServerAddress()
+   */
+  public String getRedirectServerAddress() {
+    return getAvpAsUTF8String(CreditControlAVPCodes.Redirect_Server_Address);
+  }
 
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @seenet.java.slee.resource.diameter.cca.events.avp.RedirectServerAvp#
+   * hasRedirectAddressType()
+   */
+  public boolean hasRedirectAddressType() {
+    return hasAvp(CreditControlAVPCodes.Redirect_Address_Type);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seenet.java.slee.resource.diameter.cca.events.avp.RedirectServerAvp#
-	 * getRedirectServerAddress()
-	 */
-	public String getRedirectServerAddress() {
-		if (hasRedirectServerAddress()) {
-			Avp rawAvp = super.avpSet.getAvp(CreditControlAVPCodes.Redirect_Server_Address);
-			try {
-				return rawAvp.getUTF8String();
-			} catch (Exception e) {
-				reportAvpFetchError(e.getMessage(), CreditControlAVPCodes.Redirect_Server_Address);
-				logger.error("Failure while trying to obtain Redirect-Server-Address AVP.", e);
-			}
-		}
+  /*
+   * (non-Javadoc)
+   * 
+   * @seenet.java.slee.resource.diameter.cca.events.avp.RedirectServerAvp#
+   * hasRedirectServerAddress()
+   */
+  public boolean hasRedirectServerAddress() {
+    return hasAvp(CreditControlAVPCodes.Redirect_Server_Address);
+  }
 
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @seenet.java.slee.resource.diameter.cca.events.avp.RedirectServerAvp#
+   * setRedirectAddressType
+   * (net.java.slee.resource.diameter.cca.events.avp.RedirectAddressType)
+   */
+  public void setRedirectAddressType(RedirectAddressType redirectAddressType) {
+    addAvp(CreditControlAVPCodes.Redirect_Address_Type, (long)redirectAddressType.getValue());
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seenet.java.slee.resource.diameter.cca.events.avp.RedirectServerAvp#
-	 * hasRedirectAddressType()
-	 */
-	public boolean hasRedirectAddressType() {
-		return hasAvp(CreditControlAVPCodes.Redirect_Address_Type);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seenet.java.slee.resource.diameter.cca.events.avp.RedirectServerAvp#
-	 * hasRedirectServerAddress()
-	 */
-	public boolean hasRedirectServerAddress() {
-		return hasAvp(CreditControlAVPCodes.Redirect_Server_Address);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seenet.java.slee.resource.diameter.cca.events.avp.RedirectServerAvp#
-	 * setRedirectAddressType
-	 * (net.java.slee.resource.diameter.cca.events.avp.RedirectAddressType)
-	 */
-	public void setRedirectAddressType(RedirectAddressType redirectAddressType) {
-		addAvp(CreditControlAVPCodes.Redirect_Address_Type, redirectAddressType.getValue());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seenet.java.slee.resource.diameter.cca.events.avp.RedirectServerAvp#
-	 * setRedirectServerAddress(java.lang.String)
-	 */
-	public void setRedirectServerAddress(String redirectServerAddress) {
-		addAvp(CreditControlAVPCodes.Redirect_Server_Address, redirectServerAddress);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @seenet.java.slee.resource.diameter.cca.events.avp.RedirectServerAvp#
+   * setRedirectServerAddress(java.lang.String)
+   */
+  public void setRedirectServerAddress(String redirectServerAddress) {
+    addAvp(CreditControlAVPCodes.Redirect_Server_Address, redirectServerAddress);
+  }
 
 }

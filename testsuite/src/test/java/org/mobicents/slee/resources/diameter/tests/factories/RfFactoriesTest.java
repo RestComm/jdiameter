@@ -131,6 +131,16 @@ public class RfFactoriesTest implements BaseSessionCreationListener {
   }
   
   @Test
+  public void testGettersAndSettersACR() throws Exception
+  {
+    AccountingRequest acr = rfMessageFactory.createRfAccountingRequest( AccountingRecordType.EVENT_RECORD );
+    
+    int nFailures = AvpAssistant.testMethods(acr, AccountingRequest.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
+  
+  @Test
   public void hasRfApplicationIdACR() throws Exception
   {
     AccountingRequest acr = rfMessageFactory.createRfAccountingRequest( AccountingRecordType.EVENT_RECORD );
@@ -145,6 +155,16 @@ public class RfFactoriesTest implements BaseSessionCreationListener {
   }
   
   @Test
+  public void testGettersAndSettersACA() throws Exception
+  {
+    AccountingAnswer aca = rfServerSession.createRfAccountingAnswer();
+    
+    int nFailures = AvpAssistant.testMethods(aca, AccountingAnswer.class);
+    
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
+  
+ @Test
   public void hasRfApplicationIdACA() throws Exception
   {
     AccountingAnswer aca = rfServerSession.createRfAccountingAnswer();

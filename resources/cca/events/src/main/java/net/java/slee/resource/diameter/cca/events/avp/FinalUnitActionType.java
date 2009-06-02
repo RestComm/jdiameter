@@ -81,7 +81,7 @@ public enum FinalUnitActionType implements Enumerated {
     }
   }
 
-  public FinalUnitActionType fromInt(int type) throws IllegalArgumentException
+  public static FinalUnitActionType fromInt(int type) throws IllegalArgumentException
   {
     switch (type) {
     case 0:

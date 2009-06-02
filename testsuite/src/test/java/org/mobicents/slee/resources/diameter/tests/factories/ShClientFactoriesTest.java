@@ -18,6 +18,9 @@ import static org.junit.Assert.assertTrue;
 import net.java.slee.resource.diameter.sh.client.events.avp.DataReferenceType;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
 import net.java.slee.resource.diameter.sh.client.events.avp.SubsReqType;
+import net.java.slee.resource.diameter.sh.client.events.avp.SupportedApplicationsAvp;
+import net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp;
+import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
 import net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest;
 import net.java.slee.resource.diameter.sh.server.events.PushNotificationAnswer;
 import net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest;
@@ -25,8 +28,11 @@ import net.java.slee.resource.diameter.sh.server.events.UserDataRequest;
 
 import org.jdiameter.api.Stack;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
+import org.junit.Assert;
 import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
+import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
+import org.mobicents.slee.resource.diameter.sh.client.DiameterShAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.client.ShClientMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvpImpl;
 
@@ -53,7 +59,7 @@ public class ShClientFactoriesTest {
   private static String realmName = "mobicents.org";
 
   private static ShClientMessageFactoryImpl shClientFactory;
-  //private static DiameterShAvpFactoryImpl shAvpFactory;
+  private static DiameterShAvpFactoryImpl shAvpFactory;
   private static Stack stack;
 
   static
@@ -69,7 +75,7 @@ public class ShClientFactoriesTest {
     }
 
     shClientFactory = new ShClientMessageFactoryImpl(stack);
-    //shAvpFactory = new DiameterShAvpFactoryImpl(stack);
+    shAvpFactory = new DiameterShAvpFactoryImpl(new DiameterAvpFactoryImpl());
   }
 
   @Test
@@ -223,6 +229,155 @@ public class ShClientFactoriesTest {
     assertTrue("Obtained #1 value for Public-Identity AVP differs from Obtained #2.", obtainedValue1.equals( obtainedValue2 ));
   }
 
+  // AVP Factory Testing
+  
+  @Test
+  public void testAvpFactoryCreateSupportedApplications() throws Exception
+  {
+    String avpName = "Supported-Applications";
+    
+    // Create AVP with mandatory values
+    SupportedApplicationsAvp saAvp1 = shAvpFactory.createSupportedApplications( 123L, 456L, shAvpFactory.getBaseFactory().createVendorSpecificApplicationId(999L));
+    
+    // Make sure it's not null
+    Assert.assertNotNull("Created " + avpName + " AVP from objects should not be null.", saAvp1);
+
+    // Create AVP with default constructor
+    SupportedApplicationsAvp saAvp2 = shAvpFactory.createSupportedApplications();
+    
+    // Should not contain mandatory values
+
+    // Set mandatory values
+    saAvp2.setAuthApplicationId(123L);
+    saAvp2.setAcctApplicationId(456L);
+    saAvp2.setVendorSpecificApplicationId(shAvpFactory.getBaseFactory().createVendorSpecificApplicationId(999L));
+    
+    // Make sure it's equal to the one created with mandatory values constructor
+    Assert.assertEquals("Created " + avpName + " AVP from default constructor + set<Mandatory-AVPs> should be equal to original.", saAvp1, saAvp2);
+    
+    // Make new copy
+    saAvp2 = shAvpFactory.createSupportedApplications();
+    
+    // And set all values using setters
+    AvpAssistant.testSetters(saAvp2);
+    
+    // Create empty...
+    SupportedApplicationsAvp saAvp3 = shAvpFactory.createSupportedApplications();
+    
+    // Verify that no values have been set
+    AvpAssistant.testHassers(saAvp3, false);
+
+    // Set all previous values
+    saAvp3.setExtensionAvps(saAvp2.getExtensionAvps());
+    
+    // Verify if values have been set
+    AvpAssistant.testHassers(saAvp3, true);
+    
+    // Verify if values have been correctly set
+    AvpAssistant.testGetters(saAvp3);
+    
+    // Make sure they match!
+    Assert.assertEquals("Created " + avpName + " AVP from default constructor + setUnitValue should be equal to original.", saAvp2, saAvp3);
+  }
+
+  @Test
+  public void testAvpFactoryCreateSupportedFeatures() throws Exception
+  {
+    String avpName = "Supported-Features";
+    
+    // Create AVP with mandatory values
+    SupportedFeaturesAvp sfAvp1 = shAvpFactory.createSupportedFeatures(123L, 456L, 789L);
+    
+    // Make sure it's not null
+    Assert.assertNotNull("Created " + avpName + " AVP from objects should not be null.", sfAvp1);
+
+    // Create AVP with default constructor
+    SupportedFeaturesAvp sfAvp2 = shAvpFactory.createSupportedFeatures();
+    
+    // Should not contain mandatory values
+    Assert.assertFalse("Created " + avpName + " AVP from default constructor should not have Vendor-Id AVP.", sfAvp2.hasVendorId());
+    Assert.assertFalse("Created " + avpName + " AVP from default constructor should not have Feature-List-Id AVP.", sfAvp2.hasFeatureListId());
+    Assert.assertFalse("Created " + avpName + " AVP from default constructor should not have Feature-List AVP.", sfAvp2.hasFeatureList());
+    
+    // Set mandatory values
+    sfAvp2.setVendorId(123L);
+    sfAvp2.setFeatureListId(456L);
+    sfAvp2.setFeatureList(789L);
+    
+    // Make sure it's equal to the one created with mandatory values constructor
+    Assert.assertEquals("Created " + avpName + " AVP from default constructor + set<Mandatory-AVPs> should be equal to original.", sfAvp1, sfAvp2);
+    
+    // Make new copy
+    sfAvp2 = shAvpFactory.createSupportedFeatures();
+    
+    // And set all values using setters
+    AvpAssistant.testSetters(sfAvp2);
+    
+    // Create empty...
+    SupportedFeaturesAvp sfAvp3 = shAvpFactory.createSupportedFeatures();
+    
+    // Verify that no values have been set
+    AvpAssistant.testHassers(sfAvp3, false);
+
+    // Set all previous values
+    sfAvp3.setExtensionAvps(sfAvp2.getExtensionAvps());
+    
+    // Verify if values have been set
+    AvpAssistant.testHassers(sfAvp3, true);
+    
+    // Verify if values have been correctly set
+    AvpAssistant.testGetters(sfAvp3);
+    
+    // Make sure they match!
+    Assert.assertEquals("Created " + avpName + " AVP from default constructor + setExtensionAvps should be equal to original.", sfAvp2, sfAvp3);
+  }
+
+  @Test
+  public void testAvpFactoryCreateUserIdentity() throws Exception
+  {
+    String avpName = "User-Identity";
+    
+    // Create AVP with mandatory values
+    UserIdentityAvp uiAvp1 = shAvpFactory.createUserIdentity();
+    
+    // Make sure it's not null
+    Assert.assertNotNull("Created " + avpName + " AVP from objects should not be null.", uiAvp1);
+
+    // Create AVP with default constructor
+    UserIdentityAvp uiAvp2 = shAvpFactory.createUserIdentity();
+    
+    // Should not contain mandatory values
+    
+    // Set mandatory values
+    
+    // Make sure it's equal to the one created with mandatory values constructor
+    Assert.assertEquals("Created " + avpName + " AVP from default constructor + set<Mandatory-AVPs> should be equal to original.", uiAvp1, uiAvp2);
+    
+    // Make new copy
+    uiAvp2 = shAvpFactory.createUserIdentity();
+    
+    // And set all values using setters
+    AvpAssistant.testSetters(uiAvp2);
+    
+    // Create empty...
+    UserIdentityAvp uiAvp3 = shAvpFactory.createUserIdentity();
+    
+    // Verify that no values have been set
+    AvpAssistant.testHassers(uiAvp3, false);
+
+    // Set all previous values
+    uiAvp3.setExtensionAvps(uiAvp2.getExtensionAvps());
+    
+    // Verify if values have been set
+    AvpAssistant.testHassers(uiAvp3, true);
+    
+    // Verify if values have been correctly set
+    AvpAssistant.testGetters(uiAvp3);
+    
+    // Make sure they match!
+    Assert.assertEquals("Created " + avpName + " AVP from default constructor + setExtensionAvps should be equal to original.", uiAvp2, uiAvp3);
+  }
+  
   /**
    * Class representing the Diameter Configuration  
    */

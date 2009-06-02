@@ -3087,7 +3087,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
               </grouped>
 		</avp>
 		<avp name="Redirect-Server-Address" code="435" mandatory="must" vendor-bit="mustnot" vendor-id="None" may-encrypt="yes" protected="may">
-			<type type-name="UTF8String "/>
+			<type type-name="UTF8String"/>
 		</avp>
 		<avp name="Requested-Action" code="436" mandatory="must" vendor-bit="mustnot" vendor-id="None" may-encrypt="yes" protected="may">
 			<type type-name="Unsigned32"/>
@@ -3107,7 +3107,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
               </grouped>
 		</avp>
 		<avp name="Restriction-Filter-Rule" code="438" mandatory="must" vendor-bit="mustnot" vendor-id="None" may-encrypt="yes" protected="may">
-			<type type-name="IPFiltrRule"/>
+			<type type-name="IPFilterRule"/>
 		</avp>
 		<avp name="Service-Context-Id" code="461" mandatory="must" vendor-bit="mustnot" vendor-id="None" may-encrypt="yes" protected="may">
 			<type type-name="UTF8String"/>
