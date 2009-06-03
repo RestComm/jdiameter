@@ -189,7 +189,7 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 				
 				logger.info("Diameter Base Example :: Initialized in " + (actAsServer ? "SERVER" : "CLIENT") + " mode.");
 
-				if (actAsServer) {
+				if (!actAsServer) {
 					TimerOptions options = new TimerOptions();
 					timerFacility.setTimer(aci, null, System.currentTimeMillis() + 30000, options);
 				}
