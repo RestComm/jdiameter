@@ -11,13 +11,22 @@
 				<sbb-abstract-class-name>
 					org.mobicents.slee.examples.diameter.cca.CCAExampleSBB
 				</sbb-abstract-class-name>
+				<cmp-field>
+					<cmp-field-name>sentInitialAnswer</cmp-field-name>
+				</cmp-field>
+				<cmp-field>
+					<cmp-field-name>sentUpdateAnswer</cmp-field-name>
+				</cmp-field>
+				<cmp-field>
+					<cmp-field-name>sentTerminationAnswer</cmp-field-name>
+				</cmp-field>
 			</sbb-abstract-class>
+
 		</sbb-classes>
 
 		<!-- EVENTS  -->
-	
-		<event event-direction="Receive" initial-event="True"
-			mask-on-attach="False">
+
+		<event event-direction="Receive" initial-event="True" mask-on-attach="False">
 			<event-name>ServiceStartedEvent</event-name>
 			<event-type-ref>
 				<event-type-name>javax.slee.serviceactivity.ServiceStartedEvent
@@ -43,24 +52,24 @@
 			</event-name>
 			<event-type-ref>
 				<event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlRequest</event-type-name>
-        <event-type-vendor>java.net</event-type-vendor>
-        <event-type-version>0.8</event-type-version>
-			</event-type-ref>
-			<initial-event-select variable="ActivityContext" />
-		</event>
-			
-			
-		<event event-direction="Receive" initial-event="False">
-			<event-name>CreditControlAnswer</event-name>
-			<event-type-ref>
-				<event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlAnswer</event-type-name>
-        		<event-type-vendor>java.net</event-type-vendor>
-       			 <event-type-version>0.8</event-type-version>
+				<event-type-vendor>java.net</event-type-vendor>
+				<event-type-version>0.8</event-type-version>
 			</event-type-ref>
 			<initial-event-select variable="ActivityContext" />
 		</event>
 
-	
+
+		<event event-direction="Receive" initial-event="False">
+			<event-name>CreditControlAnswer</event-name>
+			<event-type-ref>
+				<event-type-name>net.java.slee.resource.diameter.cca.events.CreditControlAnswer</event-type-name>
+				<event-type-vendor>java.net</event-type-vendor>
+				<event-type-version>0.8</event-type-version>
+			</event-type-ref>
+			<initial-event-select variable="ActivityContext" />
+		</event>
+
+
 		<!-- RESOURCE ADAPTORS  -->
 
 		<resource-adaptor-type-binding>
