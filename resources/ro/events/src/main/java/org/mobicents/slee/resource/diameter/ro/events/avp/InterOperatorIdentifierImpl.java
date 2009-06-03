@@ -1,12 +1,32 @@
+/*
+ * Mobicents, Communications Middleware
+ * 
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package org.mobicents.slee.resource.diameter.ro.events.avp;
 
 import net.java.slee.resource.diameter.ro.events.avp.InterOperatorIdentifier;
 
-import org.apache.log4j.Logger;
-import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
-import org.mobicents.diameter.dictionary.AvpDictionary;
-import org.mobicents.diameter.dictionary.AvpRepresentation;
 import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
 
 /**
@@ -19,8 +39,6 @@ import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class InterOperatorIdentifierImpl extends GroupedAvpImpl implements InterOperatorIdentifier {
-
-  private static final Logger logger = Logger.getLogger( InterOperatorIdentifierImpl.class );
 
   /**
    * @param code
@@ -38,101 +56,43 @@ public class InterOperatorIdentifierImpl extends GroupedAvpImpl implements Inter
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.InterOperatorIdentifier#getOriginatingIoi()
    */
-  public String getOriginatingIoi()
-  {
-    if(hasOriginatingIoi())
-    {
-      Avp rawAvp = super.avpSet.getAvp(DiameterRoAvpCodes.ORIGINATING_IOI, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-      try
-      {
-        return rawAvp.getUTF8String();
-      }
-      catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), DiameterRoAvpCodes.ORIGINATING_IOI);
-        logger.error( "Failure while trying to obtain Originating-IOI AVP.", e );
-      }
-    }
-
-    return null;
+  public String getOriginatingIoi() {
+    return getAvpAsUTF8String(DiameterRoAvpCodes.ORIGINATING_IOI, DiameterRoAvpCodes.TGPP_VENDOR_ID);
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.InterOperatorIdentifier#getTerminatingIoi()
    */
-  public String getTerminatingIoi()
-  {
-    if(hasTerminatingIoi())
-    {
-      Avp rawAvp = super.avpSet.getAvp(DiameterRoAvpCodes.TERMINATING_IOI, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-      try
-      {
-        return rawAvp.getUTF8String();
-      }
-      catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), DiameterRoAvpCodes.TERMINATING_IOI);
-        logger.error( "Failure while trying to obtain Terminating-IOI AVP.", e );
-      }
-    }
-
-    return null;
+  public String getTerminatingIoi() {
+    return getAvpAsUTF8String(DiameterRoAvpCodes.TERMINATING_IOI, DiameterRoAvpCodes.TGPP_VENDOR_ID);
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.InterOperatorIdentifier#hasOriginatingIoi()
    */
-  public boolean hasOriginatingIoi()
-  {
+  public boolean hasOriginatingIoi() {
     return hasAvp(DiameterRoAvpCodes.ORIGINATING_IOI, DiameterRoAvpCodes.TGPP_VENDOR_ID);
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.InterOperatorIdentifier#hasTerminatingIoi()
    */
-  public boolean hasTerminatingIoi()
-  {
+  public boolean hasTerminatingIoi() {
     return hasAvp(DiameterRoAvpCodes.TERMINATING_IOI, DiameterRoAvpCodes.TGPP_VENDOR_ID);
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.InterOperatorIdentifier#setOriginatingIoi(java.lang.String)
    */
-  public void setOriginatingIoi( String originatingIoi )
-  {
-    if(hasOriginatingIoi())
-    {
-      throw new IllegalStateException("AVP Originating-IOI is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterRoAvpCodes.ORIGINATING_IOI, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      //super.avpSet.removeAvp(DiameterRoAvpCodes.ORIGINATING_IOI);
-      super.avpSet.addAvp(DiameterRoAvpCodes.ORIGINATING_IOI, originatingIoi, DiameterRoAvpCodes.TGPP_VENDOR_ID, mandatoryAvp == 1, protectedAvp == 1, false);
-    }
+  public void setOriginatingIoi( String originatingIoi ) {
+    addAvp(DiameterRoAvpCodes.ORIGINATING_IOI, DiameterRoAvpCodes.TGPP_VENDOR_ID, originatingIoi);
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.InterOperatorIdentifier#setTerminatingIoi(java.lang.String)
    */
-  public void setTerminatingIoi( String terminatingIoi )
-  {
-    if(hasTerminatingIoi())
-    {
-      throw new IllegalStateException("AVP Terminating-IOI is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterRoAvpCodes.TERMINATING_IOI, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      //super.avpSet.removeAvp(DiameterRoAvpCodes.TERMINATING_IOI);
-      super.avpSet.addAvp(DiameterRoAvpCodes.TERMINATING_IOI, terminatingIoi, DiameterRoAvpCodes.TGPP_VENDOR_ID, mandatoryAvp == 1, protectedAvp == 1, false);
-    }
+  public void setTerminatingIoi( String terminatingIoi ) {
+    addAvp(DiameterRoAvpCodes.TERMINATING_IOI, DiameterRoAvpCodes.TGPP_VENDOR_ID, terminatingIoi);
   }
 
 }

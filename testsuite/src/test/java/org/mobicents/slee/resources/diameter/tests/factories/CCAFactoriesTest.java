@@ -111,7 +111,7 @@ public class CCAFactoriesTest {
     DiameterMessageFactoryImpl baseFactory = new DiameterMessageFactoryImpl(stack);
     DiameterAvpFactoryImpl baseAvpFactory = new DiameterAvpFactoryImpl();
     
-    ccaAvpFactory = new CreditControlAVPFactoryImpl(baseAvpFactory, stack);
+    ccaAvpFactory = new CreditControlAVPFactoryImpl(baseAvpFactory);
     ccaMessageFactory = new CreditControlMessageFactoryImpl(baseFactory, null, stack, ccaAvpFactory);
     
     try

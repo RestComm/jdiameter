@@ -690,7 +690,7 @@ public class RoResourceAdaptor implements ResourceAdaptor, DiameterListener, CCA
     this.messageTimeout = this.stack.getMetaData().getConfiguration().getLongValue(MessageTimeOut.ordinal(), (Long) MessageTimeOut.defValue());
 
     // Initialize CCA AVP Factory
-    this.roAvpFactory = new RoAvpFactoryImpl(this.baseAvpFactory, this.stack);
+    this.roAvpFactory = new RoAvpFactoryImpl(this.baseAvpFactory);
 
     logger.info("Diameter Ro RA :: Successfully initialized stack.");
   }

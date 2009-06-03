@@ -1,3 +1,28 @@
+/*
+ * Mobicents, Communications Middleware
+ * 
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package net.java.slee.resource.diameter.ro;
 
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
@@ -13,6 +38,7 @@ import net.java.slee.resource.diameter.ro.events.avp.LcsInformation;
 import net.java.slee.resource.diameter.ro.events.avp.LcsRequestorId;
 import net.java.slee.resource.diameter.ro.events.avp.LocationType;
 import net.java.slee.resource.diameter.ro.events.avp.MbmsInformation;
+import net.java.slee.resource.diameter.ro.events.avp.MbmsServiceType;
 import net.java.slee.resource.diameter.ro.events.avp.MbmsUserServiceType;
 import net.java.slee.resource.diameter.ro.events.avp.MessageBody;
 import net.java.slee.resource.diameter.ro.events.avp.MessageClass;
@@ -145,7 +171,7 @@ public interface RoAvpFactory extends CreditControlAVPFactory {
 	 * @param mbmsUserServiceType
 	 * @return
 	 */
-	public MbmsInformation createMbmsInformation(byte[] tmgi, byte[] mbmsServiceType, MbmsUserServiceType mbmsUserServiceType);
+	public MbmsInformation createMbmsInformation(String tmgi, MbmsServiceType mbmsServiceType, MbmsUserServiceType mbmsUserServiceType);
 
 	/**
 	 * Create an empty MessageBody (Grouped AVP) instance.
@@ -204,7 +230,7 @@ public interface RoAvpFactory extends CreditControlAVPFactory {
 	 * @param psFreeFormatData
 	 * @return
 	 */
-	public PsFurnishChargingInformation createPsFurnishChargingInformation(byte[] tgppChargingId, byte[] psFreeFormatData);
+	public PsFurnishChargingInformation createPsFurnishChargingInformation(String tgppChargingId, String psFreeFormatData);
 
 	/**
 	 * Create an empty PsInformation (Grouped AVP) instance.

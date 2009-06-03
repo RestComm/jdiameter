@@ -243,7 +243,7 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
       this.rfMessageFactory = new RfMessageFactoryImpl(this.baseMessageFactory, stack);
 
       this.baseAvpFactory = new DiameterAvpFactoryImpl();
-      this.rfAvpFactory = new RoAvpFactoryImpl(this.baseAvpFactory, stack);
+      this.rfAvpFactory = new RoAvpFactoryImpl(this.baseAvpFactory);
 
       //      this.proxySessionFactory = new SessionFactory() {
       //

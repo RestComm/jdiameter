@@ -1,6 +1,32 @@
+/*
+ * Mobicents, Communications Middleware
+ * 
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package org.mobicents.slee.resource.diameter.ro;
 
 import net.java.slee.resource.diameter.base.DiameterAvpFactory;
+import net.java.slee.resource.diameter.base.events.avp.AvpUtilities;
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
 import net.java.slee.resource.diameter.ro.RoAvpFactory;
 import net.java.slee.resource.diameter.ro.events.avp.AdditionalContentInformation;
@@ -15,6 +41,7 @@ import net.java.slee.resource.diameter.ro.events.avp.LcsInformation;
 import net.java.slee.resource.diameter.ro.events.avp.LcsRequestorId;
 import net.java.slee.resource.diameter.ro.events.avp.LocationType;
 import net.java.slee.resource.diameter.ro.events.avp.MbmsInformation;
+import net.java.slee.resource.diameter.ro.events.avp.MbmsServiceType;
 import net.java.slee.resource.diameter.ro.events.avp.MbmsUserServiceType;
 import net.java.slee.resource.diameter.ro.events.avp.MessageBody;
 import net.java.slee.resource.diameter.ro.events.avp.MessageClass;
@@ -34,9 +61,6 @@ import net.java.slee.resource.diameter.ro.events.avp.TrunkGroupId;
 import net.java.slee.resource.diameter.ro.events.avp.WlanInformation;
 import net.java.slee.resource.diameter.ro.events.avp.WlanRadioContainer;
 
-import org.jdiameter.api.Stack;
-import org.mobicents.diameter.dictionary.AvpDictionary;
-import org.mobicents.diameter.dictionary.AvpRepresentation;
 import org.mobicents.slee.resource.diameter.cca.CreditControlAVPFactoryImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.AdditionalContentInformationImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.AddressDomainImpl;
@@ -79,367 +103,187 @@ import org.mobicents.slee.resource.diameter.ro.events.avp.WlanRadioContainerImpl
  */
 public class RoAvpFactoryImpl extends CreditControlAVPFactoryImpl implements RoAvpFactory {
 
-  private AvpDictionary avpDictionary = AvpDictionary.INSTANCE;
-
-  public RoAvpFactoryImpl(DiameterAvpFactory baseAvpFactory, Stack stack)
+  public RoAvpFactoryImpl(DiameterAvpFactory baseAvpFactory)
   {
-    super(baseAvpFactory, stack);
+    super(baseAvpFactory);
 
     this.baseAvpFactory = baseAvpFactory;
-    this.stack = stack;
   }
   
   public AdditionalContentInformation createAdditionalContentInformation()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.ADDITIONAL_CONTENT_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    AdditionalContentInformation avp = new AdditionalContentInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-
-    return avp;
+    return (AdditionalContentInformation) AvpUtilities.createAvp(DiameterRoAvpCodes.ADDITIONAL_CONTENT_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, AdditionalContentInformationImpl.class);
   }
 
   public AddressDomain createAddressDomain()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.ADDRESS_DOMAIN, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    AddressDomain avp = new AddressDomainImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-
-    return avp;
+    return (AddressDomain) AvpUtilities.createAvp(DiameterRoAvpCodes.ADDRESS_DOMAIN, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, AddressDomainImpl.class);
   }
 
   public ApplicationServerInformation createApplicationServerInformation()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.APPLICATION_SERVER_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    ApplicationServerInformation avp = new ApplicationServerInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-
-    return avp;
+    return (ApplicationServerInformation) AvpUtilities.createAvp(DiameterRoAvpCodes.APPLICATION_SERVER_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, ApplicationServerInformationImpl.class);
   }
 
   public EventType createEventType()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.EVENT_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    EventType avp = new EventTypeImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (EventType) AvpUtilities.createAvp(DiameterRoAvpCodes.EVENT_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, EventTypeImpl.class);
   }
 
   public ImsInformation createImsInformation()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.IMS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    ImsInformation avp = new ImsInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (ImsInformation) AvpUtilities.createAvp(DiameterRoAvpCodes.IMS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, ImsInformationImpl.class);
   }
 
   public ImsInformation createImsInformation( NodeFunctionality nodeFunctionality )
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.IMS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    ImsInformation avp = new ImsInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
+    // Create the empty AVP
+    ImsInformation imsInformationAvp = createImsInformation();
     
-    // Add the provided data
-    avp.setNodeFunctionality( nodeFunctionality );
+    // Set the provided AVP values
+    imsInformationAvp.setNodeFunctionality(nodeFunctionality);
     
-    return avp;
+    return imsInformationAvp;
   }
 
   public InterOperatorIdentifier createInterOperatorIdentifier()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.INTER_OPERATOR_IDENTIFIER, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    InterOperatorIdentifier avp = new InterOperatorIdentifierImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (InterOperatorIdentifier) AvpUtilities.createAvp(DiameterRoAvpCodes.INTER_OPERATOR_IDENTIFIER, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, InterOperatorIdentifierImpl.class);
   }
 
   public LcsClientId createLcsClientId()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.LCS_CLIENT_ID, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    LcsClientId avp = new LcsClientIdImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (LcsClientId) AvpUtilities.createAvp(DiameterRoAvpCodes.LCS_CLIENT_ID, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, LcsClientIdImpl.class);
   }
 
   public LcsClientName createLcsClientName()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.LCS_CLIENT_NAME, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    LcsClientName avp = new LcsClientNameImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (LcsClientName) AvpUtilities.createAvp(DiameterRoAvpCodes.LCS_CLIENT_NAME, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, LcsClientNameImpl.class);
   }
 
   public LcsInformation createLcsInformation()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.LCS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    LcsInformation avp = new LcsInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (LcsInformation) AvpUtilities.createAvp(DiameterRoAvpCodes.LCS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, LcsInformationImpl.class);
   }
 
   public LcsRequestorId createLcsRequestorId()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.LCS_REQUESTOR_ID, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    LcsRequestorId avp = new LcsRequestorIdImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (LcsRequestorId) AvpUtilities.createAvp(DiameterRoAvpCodes.LCS_REQUESTOR_ID, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, LcsRequestorIdImpl.class);
   }
 
   public LocationType createLocationType()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.LOCATION_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    LocationType avp = new LocationTypeImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (LocationType) AvpUtilities.createAvp(DiameterRoAvpCodes.LOCATION_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, LocationTypeImpl.class);
   }
 
   public MbmsInformation createMbmsInformation()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.MBMS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    MbmsInformation avp = new MbmsInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (MbmsInformation) AvpUtilities.createAvp(DiameterRoAvpCodes.MBMS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, MbmsInformationImpl.class);
   }
 
-  public MbmsInformation createMbmsInformation( byte[] tmgi, byte[] mbmsServiceType, MbmsUserServiceType mbmsUserServiceType )
+  public MbmsInformation createMbmsInformation( String tmgi, MbmsServiceType mbmsServiceType, MbmsUserServiceType mbmsUserServiceType )
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.MBMS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    MbmsInformation avp = new MbmsInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
+    // Create the empty AVP
+    MbmsInformation mbmsInformationAvp = createMbmsInformation();
     
-    // Add the provided data
-    avp.setTmgi( tmgi );
-    avp.setMbmsServiceType( mbmsServiceType );
-    avp.setMbmsUserServiceType( mbmsUserServiceType );
+    // Set the provided AVP values
+    mbmsInformationAvp.setTmgi(tmgi);
+    mbmsInformationAvp.setMbmsServiceType( mbmsServiceType );
+    mbmsInformationAvp.setMbmsUserServiceType( mbmsUserServiceType );
     
-    return avp;
+    return mbmsInformationAvp;
   }
 
   public MessageBody createMessageBody()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.MESSAGE_BODY, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    MessageBody avp = new MessageBodyImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (MessageBody) AvpUtilities.createAvp(DiameterRoAvpCodes.MESSAGE_BODY, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, MessageBodyImpl.class);
   }
 
   public MessageClass createMessageClass()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.MESSAGE_CLASS, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    MessageClass avp = new MessageClassImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (MessageClass) AvpUtilities.createAvp(DiameterRoAvpCodes.MESSAGE_CLASS, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, MessageClassImpl.class);
   }
 
   public MmContentType createMmContentType()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.MM_CONTENT_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    MmContentType avp = new MmContentTypeImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (MmContentType) AvpUtilities.createAvp(DiameterRoAvpCodes.MM_CONTENT_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, MmContentTypeImpl.class);
   }
 
   public MmsInformation createMmsInformation()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.MMS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    MmsInformation avp = new MmsInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (MmsInformation) AvpUtilities.createAvp(DiameterRoAvpCodes.MMS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, MmsInformationImpl.class);
   }
 
   public OriginatorAddress createOriginatorAddress()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.ORIGINATOR_ADDRESS, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    OriginatorAddress avp = new OriginatorAddressImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (OriginatorAddress) AvpUtilities.createAvp(DiameterRoAvpCodes.ORIGINATOR_ADDRESS, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, OriginatorAddressImpl.class);
   }
 
   public PocInformation createPocInformation()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.POC_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    PocInformation avp = new PocInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (PocInformation) AvpUtilities.createAvp(DiameterRoAvpCodes.POC_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, PocInformationImpl.class);
   }
 
   public PsFurnishChargingInformation createPsFurnishChargingInformation()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.PS_FURNISH_CHARGING_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    PsFurnishChargingInformation avp = new PsFurnishChargingInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (PsFurnishChargingInformation) AvpUtilities.createAvp(DiameterRoAvpCodes.PS_FURNISH_CHARGING_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, PsFurnishChargingInformationImpl.class);
   }
 
-  public PsFurnishChargingInformation createPsFurnishChargingInformation( byte[] tgppChargingId, byte[] psFreeFormatData )
+  public PsFurnishChargingInformation createPsFurnishChargingInformation( String tgppChargingId, String psFreeFormatData )
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.PS_FURNISH_CHARGING_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    PsFurnishChargingInformation avp = new PsFurnishChargingInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
+    // Create the empty AVP
+    PsFurnishChargingInformation psFurnishChargingInformationAvp = createPsFurnishChargingInformation();
     
-    // Add the provided data
-    avp.setTgppChargingId( tgppChargingId );
-    avp.setPsFreeFormatData( psFreeFormatData );
-
-    return avp;
+    // Set the provided AVP values
+    psFurnishChargingInformationAvp.setTgppChargingId(tgppChargingId);
+    psFurnishChargingInformationAvp.setPsFreeFormatData(psFreeFormatData);
+    
+    return psFurnishChargingInformationAvp;
   }
 
   public PsInformation createPsInformation()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.PS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    PsInformation avp = new PsInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (PsInformation) AvpUtilities.createAvp(DiameterRoAvpCodes.PS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, PsInformationImpl.class);
   }
 
   public RecipientAddress createRecipientAddress()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.RECIPIENT_ADDRESS, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    RecipientAddress avp = new RecipientAddressImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (RecipientAddress) AvpUtilities.createAvp(DiameterRoAvpCodes.RECIPIENT_ADDRESS, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, RecipientAddressImpl.class);
   }
 
   public SdpMediaComponent createSdpMediaComponent()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.SDP_MEDIA_COMPONENT, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    SdpMediaComponent avp = new SdpMediaComponentImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (SdpMediaComponent) AvpUtilities.createAvp(DiameterRoAvpCodes.SDP_MEDIA_COMPONENT, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, SdpMediaComponentImpl.class);
   }
 
   public ServiceInformation createServiceInformation()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.SERVICE_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    ServiceInformation avp = new ServiceInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (ServiceInformation) AvpUtilities.createAvp(DiameterRoAvpCodes.SERVICE_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, ServiceInformationImpl.class);
   }
 
   public TalkBurstExchange createTalkBurstExchange()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.TALK_BURST_EXCHANGE, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    TalkBurstExchange avp = new TalkBurstExchangeImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (TalkBurstExchange) AvpUtilities.createAvp(DiameterRoAvpCodes.TALK_BURST_EXCHANGE, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, TalkBurstExchangeImpl.class);
   }
 
   public TimeStamps createTimeStamps()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.TIME_STAMPS, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    TimeStamps avp = new TimeStampsImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (TimeStamps) AvpUtilities.createAvp(DiameterRoAvpCodes.TIME_STAMPS, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, TimeStampsImpl.class);
   }
 
   public TrunkGroupId createTrunkGroupId()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.TRUNK_GROUP_ID, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    TrunkGroupId avp = new TrunkGroupIdImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (TrunkGroupId) AvpUtilities.createAvp(DiameterRoAvpCodes.TRUNK_GROUP_ID, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, TrunkGroupIdImpl.class);
   }
 
   public WlanInformation createWlanInformation()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.WLAN_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    WlanInformation avp = new WlanInformationImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (WlanInformation) AvpUtilities.createAvp(DiameterRoAvpCodes.WLAN_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, WlanInformationImpl.class);
   }
 
   public WlanRadioContainer createWlanRadioContainer()
   {
-    // Get the dictionary representation for the AVP
-    AvpRepresentation avpRep = avpDictionary.getAvp(DiameterRoAvpCodes.WLAN_RADIO_CONTAINER, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    // Create the AVP with no data
-    WlanRadioContainer avp = new WlanRadioContainerImpl(avpRep.getCode(), avpRep.getVendorId(), avpRep.isMandatory() ? 1 : 0, avpRep.isProtected() ? 1 : 0, new byte[]{});
-    
-    return avp;
+    return (WlanRadioContainer) AvpUtilities.createAvp(DiameterRoAvpCodes.WLAN_RADIO_CONTAINER, DiameterRoAvpCodes.TGPP_VENDOR_ID, null, WlanRadioContainerImpl.class);
   }
 
   public CreditControlAVPFactory getCreditControlAVPFactory()

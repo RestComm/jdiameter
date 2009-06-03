@@ -1,17 +1,37 @@
+/*
+ * Mobicents, Communications Middleware
+ * 
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package org.mobicents.slee.resource.diameter.ro.events.avp;
 
 import net.java.slee.resource.diameter.ro.events.avp.FileRepairSupported;
+import net.java.slee.resource.diameter.ro.events.avp.Mbms2g3gIndicator;
 import net.java.slee.resource.diameter.ro.events.avp.MbmsInformation;
+import net.java.slee.resource.diameter.ro.events.avp.MbmsServiceType;
 import net.java.slee.resource.diameter.ro.events.avp.MbmsUserServiceType;
 
-import org.apache.log4j.Logger;
-import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
-import org.jdiameter.api.AvpSet;
-import org.mobicents.diameter.dictionary.AvpDictionary;
-import org.mobicents.diameter.dictionary.AvpRepresentation;
 import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
-
 
 /**
  * MbmsInformationImpl.java
@@ -23,8 +43,6 @@ import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
  */ 
 public class MbmsInformationImpl extends GroupedAvpImpl implements MbmsInformation {
 
-  private static final Logger logger = Logger.getLogger( MbmsInformationImpl.class );
-
   /**
    * @param code
    * @param vendorId
@@ -32,467 +50,199 @@ public class MbmsInformationImpl extends GroupedAvpImpl implements MbmsInformati
    * @param prt
    * @param value
    */
-  public MbmsInformationImpl( int code, long vendorId, int mnd, int prt, byte[] value )
-  {
+  public MbmsInformationImpl( int code, long vendorId, int mnd, int prt, byte[] value ) {
     super( code, vendorId, mnd, prt, value );
-    // TODO Auto-generated constructor stub
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#getFileRepairSupported()
    */
-  public FileRepairSupported getFileRepairSupported()
-  {
-    if(hasFileRepairSupported())
-    {
-      Avp rawAvp = super.avpSet.getAvp(DiameterRoAvpCodes.FILE_REPAIR_SUPPORTED, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-      try
-      {
-        return FileRepairSupported.fromInt( rawAvp.getInteger32() );
-      }
-      catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), DiameterRoAvpCodes.FILE_REPAIR_SUPPORTED);
-        logger.error( "Failure while trying to obtain File-Repair-Supported AVP.", e );
-      }
-    }
-
-    return null;
+  public FileRepairSupported getFileRepairSupported() {
+    return (FileRepairSupported) getAvpAsEnumerated(DiameterRoAvpCodes.FILE_REPAIR_SUPPORTED, DiameterRoAvpCodes.TGPP_VENDOR_ID, FileRepairSupported.class);
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#getMbms2g3gIndicator()
    */
-  public byte[] getMbms2g3gIndicator()
-  {
-    if(hasMbms2g3gIndicator())
-    {
-      Avp rawAvp = super.avpSet.getAvp(DiameterRoAvpCodes.MBMS_2G_3G_INDICATOR, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-      try
-      {
-        return rawAvp.getRaw();
-      }
-      catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), DiameterRoAvpCodes.MBMS_2G_3G_INDICATOR);
-        logger.error( "Failure while trying to obtain MBMS-2G-3G-Indicator AVP.", e );
-      }
-    }
-
-    return null;
+  public Mbms2g3gIndicator getMbms2g3gIndicator() {
+    return (Mbms2g3gIndicator) getAvpAsEnumerated(DiameterRoAvpCodes.MBMS_2G_3G_INDICATOR, DiameterRoAvpCodes.TGPP_VENDOR_ID, Mbms2g3gIndicator.class);
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#getMbmsServiceAreas()
    */
-  public byte[][] getMbmsServiceAreas()
-  {
-    byte[][] mbmsServiceAreas = null;
-    
-    AvpSet rawAvps = super.avpSet.getAvps(DiameterRoAvpCodes.MBMS_SERVICE_AREA, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-    mbmsServiceAreas = new byte[rawAvps.size()][];
-    
-    int i = 0;      
-    
-    try
-    {
-      for(Avp rawAvp : rawAvps)
-      {
-        mbmsServiceAreas[i++] = rawAvp.getRaw();
-      }
-    }
-    catch (AvpDataException e) {
-      reportAvpFetchError(e.getMessage(), DiameterRoAvpCodes.MBMS_SERVICE_AREA);
-      logger.error( "Failure while trying to obtain MBMS-Service-Area AVP.", e );
-    }
-
-    return null;
+  public String[] getMbmsServiceAreas() {
+    return getAvpsAsOctetString(DiameterRoAvpCodes.MBMS_SERVICE_AREA, DiameterRoAvpCodes.TGPP_VENDOR_ID);
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#getMbmsServiceType()
    */
-  public byte[] getMbmsServiceType()
-  {
-    if(hasMbmsServiceType())
-    {
-      Avp rawAvp = super.avpSet.getAvp(DiameterRoAvpCodes.MBMS_SERVICE_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-      try
-      {
-        return rawAvp.getRaw();
-      }
-      catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), DiameterRoAvpCodes.MBMS_SERVICE_TYPE);
-        logger.error( "Failure while trying to obtain MBMS-Service-Type AVP.", e );
-      }
-    }
-
-    return null;
+  public MbmsServiceType getMbmsServiceType() {
+    return (MbmsServiceType) getAvpAsEnumerated(DiameterRoAvpCodes.MBMS_SERVICE_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID, MbmsServiceType.class);
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#getMbmsSessionIdentity()
    */
-  public byte[] getMbmsSessionIdentity()
-  {
-    if(hasMbmsSessionIdentity())
-    {
-      Avp rawAvp = super.avpSet.getAvp(DiameterRoAvpCodes.MBMS_SESSION_IDENTITY, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-      try
-      {
-        return rawAvp.getRaw();
-      }
-      catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), DiameterRoAvpCodes.MBMS_SESSION_IDENTITY);
-        logger.error( "Failure while trying to obtain MBMS-Session-Identity AVP.", e );
-      }
-    }
-
-    return null;
+  public String getMbmsSessionIdentity() {
+    return getAvpAsOctetString(DiameterRoAvpCodes.MBMS_SESSION_IDENTITY, DiameterRoAvpCodes.TGPP_VENDOR_ID);
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#getMbmsUserServiceType()
    */
-  public MbmsUserServiceType getMbmsUserServiceType()
-  {
-    if(hasMbmsUserServiceType())
-    {
-      Avp rawAvp = super.avpSet.getAvp(DiameterRoAvpCodes.MBMS_USER_SERVICE_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-      try
-      {
-        return MbmsUserServiceType.fromInt( rawAvp.getInteger32() );
-      }
-      catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), DiameterRoAvpCodes.MBMS_USER_SERVICE_TYPE);
-        logger.error( "Failure while trying to obtain MBMS-User-Service-Type AVP.", e );
-      }
-    }
-
-    return null;
+  public MbmsUserServiceType getMbmsUserServiceType() {
+    return (MbmsUserServiceType) getAvpAsEnumerated(DiameterRoAvpCodes.MBMS_USER_SERVICE_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID, MbmsUserServiceType.class);
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#getRai()
    */
-  public byte[] getRai()
-  {
-    if(hasRai())
-    {
-      Avp rawAvp = super.avpSet.getAvp(DiameterRoAvpCodes.RAI, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-      try
-      {
-        return rawAvp.getRaw();
-      }
-      catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), DiameterRoAvpCodes.RAI);
-        logger.error( "Failure while trying to obtain RAI AVP.", e );
-      }
-    }
-
-    return null;
+  public String getRai() {
+    return getAvpAsOctetString(DiameterRoAvpCodes.RAI, DiameterRoAvpCodes.TGPP_VENDOR_ID);
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#getRequiredMbmsBearerCapabilities()
    */
-  public byte[] getRequiredMbmsBearerCapabilities()
-  {
-    if(hasRequiredMbmsBearerCapabilities())
-    {
-      Avp rawAvp = super.avpSet.getAvp(DiameterRoAvpCodes.REQUIRED_MBMS_BEARER_CAPABILITIES, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-      try
-      {
-        return rawAvp.getRaw();
-      }
-      catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), DiameterRoAvpCodes.REQUIRED_MBMS_BEARER_CAPABILITIES);
-        logger.error( "Failure while trying to obtain Required-MBMS-Bearer-Capabilities AVP.", e );
-      }
-    }
-
-    return null;
+  public String getRequiredMbmsBearerCapabilities() {
+    return getAvpAsOctetString(DiameterRoAvpCodes.REQUIRED_MBMS_BEARER_CAPABILITIES, DiameterRoAvpCodes.TGPP_VENDOR_ID);
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#getTmgi()
    */
-  public byte[] getTmgi()
-  {
-    if(hasTmgi())
-    {
-      Avp rawAvp = super.avpSet.getAvp(DiameterRoAvpCodes.TMGI, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-
-      try
-      {
-        return rawAvp.getRaw();
-      }
-      catch (AvpDataException e) {
-        reportAvpFetchError(e.getMessage(), DiameterRoAvpCodes.TMGI);
-        logger.error( "Failure while trying to obtain TMGI AVP.", e );
-      }
-    }
-
-    return null;
+  public String getTmgi() {
+    return getAvpAsOctetString(DiameterRoAvpCodes.TMGI, DiameterRoAvpCodes.TGPP_VENDOR_ID);
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#hasFileRepairSupported()
    */
-  public boolean hasFileRepairSupported()
-  {
+  public boolean hasFileRepairSupported() {
     return hasAvp( DiameterRoAvpCodes.FILE_REPAIR_SUPPORTED, DiameterRoAvpCodes.TGPP_VENDOR_ID );
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#hasMbms2g3gIndicator()
    */
-  public boolean hasMbms2g3gIndicator()
-  {
+  public boolean hasMbms2g3gIndicator() {
     return hasAvp( DiameterRoAvpCodes.MBMS_2G_3G_INDICATOR, DiameterRoAvpCodes.TGPP_VENDOR_ID );
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#hasMbmsServiceType()
    */
-  public boolean hasMbmsServiceType()
-  {
+  public boolean hasMbmsServiceType() {
     return hasAvp( DiameterRoAvpCodes.MBMS_SERVICE_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID );
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#hasMbmsSessionIdentity()
    */
-  public boolean hasMbmsSessionIdentity()
-  {
+  public boolean hasMbmsSessionIdentity() {
     return hasAvp( DiameterRoAvpCodes.MBMS_SESSION_IDENTITY, DiameterRoAvpCodes.TGPP_VENDOR_ID );
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#hasMbmsUserServiceType()
    */
-  public boolean hasMbmsUserServiceType()
-  {
+  public boolean hasMbmsUserServiceType() {
     return hasAvp( DiameterRoAvpCodes.MBMS_USER_SERVICE_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID );
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#hasRai()
    */
-  public boolean hasRai()
-  {
+  public boolean hasRai() {
     return hasAvp( DiameterRoAvpCodes.RAI, DiameterRoAvpCodes.TGPP_VENDOR_ID );
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#hasRequiredMbmsBearerCapabilities()
    */
-  public boolean hasRequiredMbmsBearerCapabilities()
-  {
+  public boolean hasRequiredMbmsBearerCapabilities() {
     return hasAvp( DiameterRoAvpCodes.REQUIRED_MBMS_BEARER_CAPABILITIES, DiameterRoAvpCodes.TGPP_VENDOR_ID );
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#hasTmgi()
    */
-  public boolean hasTmgi()
-  {
+  public boolean hasTmgi() {
     return hasAvp( DiameterRoAvpCodes.TMGI, DiameterRoAvpCodes.TGPP_VENDOR_ID );
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#setFileRepairSupported(net.java.slee.resource.diameter.ro.events.avp.FileRepairSupported)
    */
-  public void setFileRepairSupported( FileRepairSupported fileRepairSupported )
-  {
-    if(hasFileRepairSupported())
-    {
-      throw new IllegalStateException("AVP File-Repair-Supported is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterRoAvpCodes.FILE_REPAIR_SUPPORTED, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
+  public void setFileRepairSupported( FileRepairSupported fileRepairSupported ) {
+    addAvp(DiameterRoAvpCodes.FILE_REPAIR_SUPPORTED, DiameterRoAvpCodes.TGPP_VENDOR_ID, fileRepairSupported.getValue());
+  }
 
-      //super.avpSet.removeAvp(DiameterRoAvpCodes.);
-      super.avpSet.addAvp(DiameterRoAvpCodes.FILE_REPAIR_SUPPORTED, fileRepairSupported.getValue(), DiameterRoAvpCodes.TGPP_VENDOR_ID, mandatoryAvp == 1, protectedAvp == 1);
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#setMbms2g3gIndicator(java.lang.String)
+   */
+  public void setMbms2g3gIndicator( Mbms2g3gIndicator mbms2g3gIndicator ) {
+    addAvp(DiameterRoAvpCodes.MBMS_2G_3G_INDICATOR, DiameterRoAvpCodes.TGPP_VENDOR_ID, mbms2g3gIndicator.getValue());
+  }
+
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#setMbmsServiceArea(java.lang.String)
+   */
+  public void setMbmsServiceArea( String mbmsServiceArea ) {
+    addAvp(DiameterRoAvpCodes.MBMS_SERVICE_AREA, DiameterRoAvpCodes.TGPP_VENDOR_ID, mbmsServiceArea);
+  }
+
+  /* (non-Javadoc)
+   * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#setMbmsServiceAreas(String[])
+   */
+  public void setMbmsServiceAreas( String[] mbmsServiceAreas ) {
+    for(String mbmsServiceArea : mbmsServiceAreas) {
+      setMbmsServiceArea(mbmsServiceArea);
     }
   }
 
   /* (non-Javadoc)
-   * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#setMbms2g3gIndicator(byte[])
+   * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#setMbmsServiceType(java.lang.String)
    */
-  public void setMbms2g3gIndicator( byte[] mbms2g3gIndicator )
-  {
-    if(hasMbms2g3gIndicator())
-    {
-      throw new IllegalStateException("AVP MBMS-2G-3G-Indicator is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterRoAvpCodes.MBMS_2G_3G_INDICATOR, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      //super.avpSet.removeAvp(DiameterRoAvpCodes.);
-      super.avpSet.addAvp(DiameterRoAvpCodes.MBMS_2G_3G_INDICATOR, mbms2g3gIndicator, DiameterRoAvpCodes.TGPP_VENDOR_ID, mandatoryAvp == 1, protectedAvp == 1);
-    }
+  public void setMbmsServiceType( MbmsServiceType mbmsServiceType ) {
+    addAvp(DiameterRoAvpCodes.MBMS_SERVICE_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID, mbmsServiceType.getValue());
   }
 
   /* (non-Javadoc)
-   * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#setMbmsServiceArea(byte[])
+   * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#setMbmsSessionIdentity(java.lang.String)
    */
-  public void setMbmsServiceArea( byte[] mbmsServiceArea )
-  {
-    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterRoAvpCodes.MBMS_SERVICE_AREA, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-    int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-    int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-    //super.avpSet.removeAvp(DiameterRoAvpCodes.);
-    super.avpSet.addAvp(DiameterRoAvpCodes.MBMS_SERVICE_AREA, mbmsServiceArea, DiameterRoAvpCodes.TGPP_VENDOR_ID, mandatoryAvp == 1, protectedAvp == 1);
-  }
-
-  /* (non-Javadoc)
-   * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#setMbmsServiceAreas(byte[][])
-   */
-  public void setMbmsServiceAreas( byte[][] mbmsServiceAreas )
-  {
-    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterRoAvpCodes.MBMS_SERVICE_AREA, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-    int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-    int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-    //super.avpSet.removeAvp(DiameterRoAvpCodes.);
-    for(byte[] mbmsServiceArea : mbmsServiceAreas)
-    {
-      super.avpSet.addAvp(DiameterRoAvpCodes.MBMS_SERVICE_AREA, mbmsServiceArea, DiameterRoAvpCodes.TGPP_VENDOR_ID, mandatoryAvp == 1, protectedAvp == 1);
-    }
-  }
-
-  /* (non-Javadoc)
-   * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#setMbmsServiceType(byte[])
-   */
-  public void setMbmsServiceType( byte[] mbmsServiceType )
-  {
-    if(hasMbmsServiceType())
-    {
-      throw new IllegalStateException("AVP MBMS-Service-Type is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterRoAvpCodes.MBMS_SERVICE_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      //super.avpSet.removeAvp(DiameterRoAvpCodes.);
-      super.avpSet.addAvp(DiameterRoAvpCodes.MBMS_SERVICE_TYPE, mbmsServiceType, DiameterRoAvpCodes.TGPP_VENDOR_ID, mandatoryAvp == 1, protectedAvp == 1);
-    }
-  }
-
-  /* (non-Javadoc)
-   * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#setMbmsSessionIdentity(byte[])
-   */
-  public void setMbmsSessionIdentity( byte[] mbmsSessionIdentity )
-  {
-    if(hasMbmsSessionIdentity())
-    {
-      throw new IllegalStateException("AVP MBMS-Session-Identity is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterRoAvpCodes.MBMS_SESSION_IDENTITY, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      //super.avpSet.removeAvp(DiameterRoAvpCodes.);
-      super.avpSet.addAvp(DiameterRoAvpCodes.MBMS_SESSION_IDENTITY, mbmsSessionIdentity, DiameterRoAvpCodes.TGPP_VENDOR_ID, mandatoryAvp == 1, protectedAvp == 1);
-    }
+  public void setMbmsSessionIdentity( String mbmsSessionIdentity ) {
+    addAvp(DiameterRoAvpCodes.MBMS_SESSION_IDENTITY, DiameterRoAvpCodes.TGPP_VENDOR_ID, mbmsSessionIdentity);
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#setMbmsUserServiceType(net.java.slee.resource.diameter.ro.events.avp.MbmsUserServiceType)
    */
-  public void setMbmsUserServiceType( MbmsUserServiceType mbmsUserServiceType )
-  {
-    if(hasMbmsUserServiceType())
-    {
-      throw new IllegalStateException("AVP MBMS-User-Service-Type is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterRoAvpCodes.MBMS_USER_SERVICE_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      //super.avpSet.removeAvp(DiameterRoAvpCodes.);
-      super.avpSet.addAvp(DiameterRoAvpCodes.MBMS_USER_SERVICE_TYPE, mbmsUserServiceType.getValue(), DiameterRoAvpCodes.TGPP_VENDOR_ID, mandatoryAvp == 1, protectedAvp == 1);
-    }
+  public void setMbmsUserServiceType( MbmsUserServiceType mbmsUserServiceType ) {
+    addAvp(DiameterRoAvpCodes.MBMS_USER_SERVICE_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID, mbmsUserServiceType.getValue());
   }
 
   /* (non-Javadoc)
-   * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#setRai(byte[])
+   * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#setRai(java.lang.String)
    */
-  public void setRai( byte[] rai )
-  {
-    if(hasRai())
-    {
-      throw new IllegalStateException("AVP RAI is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterRoAvpCodes.RAI, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      //super.avpSet.removeAvp(DiameterRoAvpCodes.);
-      super.avpSet.addAvp(DiameterRoAvpCodes.RAI, rai, DiameterRoAvpCodes.TGPP_VENDOR_ID, mandatoryAvp == 1, protectedAvp == 1);
-    }
+  public void setRai( String rai ) {
+    addAvp(DiameterRoAvpCodes.RAI, DiameterRoAvpCodes.TGPP_VENDOR_ID, rai);
   }
 
   /* (non-Javadoc)
-   * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#setRequiredMbmsBearerCapabilities(byte[])
+   * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#setRequiredMbmsBearerCapabilities(java.lang.String)
    */
-  public void setRequiredMbmsBearerCapabilities( byte[] requiredMbmsBearerCapabilities )
-  {
-    if(hasRequiredMbmsBearerCapabilities())
-    {
-      throw new IllegalStateException("AVP Required-MBMS-Bearer-Capabilities is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterRoAvpCodes.REQUIRED_MBMS_BEARER_CAPABILITIES, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      //super.avpSet.removeAvp(DiameterRoAvpCodes.);
-      super.avpSet.addAvp(DiameterRoAvpCodes.REQUIRED_MBMS_BEARER_CAPABILITIES, requiredMbmsBearerCapabilities, DiameterRoAvpCodes.TGPP_VENDOR_ID, mandatoryAvp == 1, protectedAvp == 1);
-    }
+  public void setRequiredMbmsBearerCapabilities( String requiredMbmsBearerCapabilities ) {
+    addAvp(DiameterRoAvpCodes.REQUIRED_MBMS_BEARER_CAPABILITIES, DiameterRoAvpCodes.TGPP_VENDOR_ID, requiredMbmsBearerCapabilities);
   }
 
   /* (non-Javadoc)
-   * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#setTmgi(byte[])
+   * @see net.java.slee.resource.diameter.ro.events.avp.MbmsInformation#setTmgi(java.lang.String)
    */
-  public void setTmgi( byte[] tmgi )
-  {
-    if(hasTmgi())
-    {
-      throw new IllegalStateException("AVP TMGI is already present in message and cannot be overwritten.");
-    }
-    else
-    {
-      AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterRoAvpCodes.TMGI, DiameterRoAvpCodes.TGPP_VENDOR_ID);
-      int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-      int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-      //super.avpSet.removeAvp(DiameterRoAvpCodes.);
-      super.avpSet.addAvp(DiameterRoAvpCodes.TMGI, tmgi, DiameterRoAvpCodes.TGPP_VENDOR_ID, mandatoryAvp == 1, protectedAvp == 1);
-    }
+  public void setTmgi( String tmgi ) {
+    addAvp(DiameterRoAvpCodes.TMGI, DiameterRoAvpCodes.TGPP_VENDOR_ID, tmgi);
   }
 
 }

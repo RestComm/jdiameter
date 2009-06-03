@@ -27,9 +27,9 @@ public interface LcsClientId extends GroupedAvp{
     abstract net.java.slee.resource.diameter.ro.events.avp.LcsClientName getLcsClientName();
 
     /**
-     * Returns the value of the LCS-Client-Type AVP, of type UTF8String. A return value of null implies that the AVP has not been set.
+     * Returns the value of the LCS-Client-Type AVP, of type Enumerated. A return value of null implies that the AVP has not been set.
      */
-    abstract java.lang.String getLcsClientType();
+    abstract net.java.slee.resource.diameter.ro.events.avp.LcsClientType getLcsClientType();
 
     /**
      * Returns the value of the LCS-Requestor-ID AVP, of type Grouped. A return value of null implies that the AVP has not been set.
@@ -87,9 +87,9 @@ public interface LcsClientId extends GroupedAvp{
     abstract void setLcsClientName(net.java.slee.resource.diameter.ro.events.avp.LcsClientName lcsClientName);
 
     /**
-     * Sets the value of the LCS-Client-Type AVP, of type UTF8String.
+     * Sets the value of the LCS-Client-Type AVP, of type Enumerated.
      */
-    abstract void setLcsClientType(java.lang.String lcsClientType);
+    abstract void setLcsClientType(net.java.slee.resource.diameter.ro.events.avp.LcsClientType lcsClientType);
 
     /**
      * Sets the value of the LCS-Requestor-ID AVP, of type Grouped.

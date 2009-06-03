@@ -704,7 +704,7 @@ public class CCAResourceAdaptor implements ResourceAdaptor, DiameterListener, CC
     this.messageTimeout = this.stack.getMetaData().getConfiguration().getLongValue(MessageTimeOut.ordinal(), (Long) MessageTimeOut.defValue());
 
     // Initialize CCA AVP Factory
-    this.localFactory = new CreditControlAVPFactoryImpl(this.diameterAvpFactory,this.stack);
+    this.localFactory = new CreditControlAVPFactoryImpl(this.diameterAvpFactory);
 
     logger.info("Diameter CCA RA :: Successfully initialized stack.");
   }

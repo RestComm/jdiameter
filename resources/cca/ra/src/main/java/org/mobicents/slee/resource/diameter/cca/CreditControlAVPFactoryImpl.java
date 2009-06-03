@@ -23,7 +23,6 @@ import net.java.slee.resource.diameter.cca.events.avp.UsedServiceUnitAvp;
 import net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvp;
 import net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoType;
 
-import org.jdiameter.api.Stack;
 import org.mobicents.slee.resource.diameter.cca.events.avp.CcMoneyAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.CostInformationAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.FinalUnitIndicationAvpImpl;
@@ -49,14 +48,11 @@ public class CreditControlAVPFactoryImpl implements CreditControlAVPFactory {
 
   protected DiameterAvpFactory baseAvpFactory = null;
 
-  protected Stack stack = null;
-
-  public CreditControlAVPFactoryImpl(DiameterAvpFactory baseAvpFactory, Stack stack)
+  public CreditControlAVPFactoryImpl(DiameterAvpFactory baseAvpFactory)
   {
     super();
 
     this.baseAvpFactory = baseAvpFactory;
-    this.stack = stack;
   }
 
   /* (non-Javadoc)

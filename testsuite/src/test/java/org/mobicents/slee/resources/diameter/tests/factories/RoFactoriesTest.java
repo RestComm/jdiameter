@@ -100,7 +100,7 @@ public class RoFactoriesTest implements ICCAMessageFactory, ServerCCASessionList
     DiameterAvpFactoryImpl baseAvpFactory = new DiameterAvpFactoryImpl();
     
     roMessageFactory = new RoMessageFactoryImpl(baseFactory, null, stack, roAvpFactory);
-    roAvpFactory = new RoAvpFactoryImpl(baseAvpFactory, stack);
+    roAvpFactory = new RoAvpFactoryImpl(baseAvpFactory);
     
     try
     {
