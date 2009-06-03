@@ -30,6 +30,8 @@ import java.util.logging.Level;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import junit.framework.Assert;
+
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
@@ -85,7 +87,7 @@ public class TestingFramework
   
   protected MessageParser parser = new MessageParser(null);
   
-  private boolean printAVPs = false;
+  private boolean printAVPs = true;
   
   static 
   {
@@ -209,6 +211,7 @@ public class TestingFramework
     catch (Exception e)
     {
       e.printStackTrace();
+      Assert.fail(e.getMessage());
     }
     finally
     {
@@ -344,6 +347,9 @@ public class TestingFramework
         {
           log("Checking received Message...");
           Message receivedMessage = receivedMessages.remove(0);
+          
+          if(printAVPs)
+            printAvps( receivedMessage.getAvps() );
           
           AvpSet receivedAvps = receivedMessage.getAvps();
           

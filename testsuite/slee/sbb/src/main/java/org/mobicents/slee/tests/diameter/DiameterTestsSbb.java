@@ -20,7 +20,6 @@ import net.java.slee.resource.diameter.base.DiameterProvider;
 import net.java.slee.resource.diameter.base.events.AccountingAnswer;
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
-import net.java.slee.resource.diameter.base.events.avp.FailedAvp;
 import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
 
 import org.apache.log4j.Logger;
@@ -479,10 +478,10 @@ public abstract class DiameterTestsSbb implements javax.slee.Sbb {
                 avps.add( avpFactory.createAvp( 193, 553, new DiameterAvp[]{subscriptionIdTypeAvp, subscriptionIdDataAvp} ) );
   
                 // Granted Service Unit
-                DiameterAvp unitTypeAvp = avpFactory.createAvp( 193, 602, unitType );
+                DiameterAvp unitTypeAvp = avpFactory.createAvp( 193, 611, unitType );
                 DiameterAvp valueDigitsAvp = avpFactory.createAvp( 193, 617, valueDigits );
                 DiameterAvp unitValueAvp = avpFactory.createAvp( 193, 612, new DiameterAvp[]{valueDigitsAvp} );
-                avps.add( avpFactory.createAvp( 193, 606, new DiameterAvp[]{unitTypeAvp, unitValueAvp} ) );
+                avps.add( avpFactory.createAvp( 193, 602, new DiameterAvp[]{unitTypeAvp, unitValueAvp} ) );
                 
                 // Cost Information
                 DiameterAvp costAvp = avpFactory.createAvp( 193, 603, chargingValue );
