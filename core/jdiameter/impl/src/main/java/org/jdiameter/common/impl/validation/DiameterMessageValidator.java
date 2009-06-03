@@ -138,14 +138,37 @@ public class DiameterMessageValidator {
 
 	}
 
+	/**
+	 * Retrieves singleton instance of DiameterMessageValidator
+	 * 
+	 * @return
+	 */
 	public static final DiameterMessageValidator getInstance() {
 		return DiameterMessageValidator.instance;
 	}
 
+	/**
+	 * Determines if validator is enabled.
+	 * 
+	 * @return <ul>
+	 *         <li><b>true</b> if validator is enabled</li>
+	 *         <li><b>false</b> if validator is disabled</li>
+	 *         </ul>
+	 */
 	public boolean isOn() {
 		return on;
 	}
 
+	/**
+	 * Valdiates message against XML configuration file. If there is no
+	 * representation it does nothing. If
+	 * {@link DiameterMessageValidator#hasRepresentation(int, long, boolean, int, long)}
+	 * returns false this method returns always without exception.
+	 * 
+	 * @param msg
+	 * @throws JAvpNotAllowedException
+	 *             - thrown when validation fails.
+	 */
 	public void validate(Message msg) throws JAvpNotAllowedException {
 		if (!on)
 			throw new IllegalStateException("validation is of.");
@@ -154,13 +177,30 @@ public class DiameterMessageValidator {
 		rep = this.configuredMessageTypes.get(rep);
 		if (rep == null) {
 			// no notion, lets leave it.
-			
+
 			return;
 		}
 
 		rep.validate(msg);
 	}
 
+	/**
+	 * Validate if avp can be added/present in message - meaning it checks if
+	 * there is place for passed avp. If
+	 * {@link DiameterMessageValidator#hasRepresentation(int, long, boolean, int, long)}
+	 * returns false this method returns always without exception.
+	 * 
+	 * @param commandCode
+	 *            - message command code
+	 * @param appId
+	 *            - application id of message
+	 * @param isRequest
+	 *            - true if message is request.
+	 * @param destination
+	 *            - AvpSet of message
+	 * @param avp
+	 *            - avp to be checked.
+	 */
 	public void validate(int commandCode, long appId, boolean isRequest, AvpSet destination, Avp avp) {
 		if (!on)
 			throw new IllegalStateException("validation is of.");
@@ -174,6 +214,27 @@ public class DiameterMessageValidator {
 		rep.validate(destination, avp);
 	}
 
+	/**
+	 * Determines if avp identified by code and vendor has correct multiplicity
+	 * in passed set. If
+	 * {@link DiameterMessageValidator#hasRepresentation(int, long, boolean, int, long)}
+	 * returns false this method returns always true.
+	 * 
+	 * @param commandCode
+	 *            - message code
+	 * @param appId
+	 *            - message application id.
+	 * @param isRequest
+	 *            - true if message is request.
+	 * @param destination
+	 *            - message AvpSet
+	 * @param avpCode
+	 *            - avp code
+	 * @param avpVendor
+	 *            - avp vendor - zero if there is none
+	 * @return<ul> <li><b>true</b> if multiplicity is correct</li> <li>
+	 *             <b>false</b> if multiplicity is incorrect</li> </ul>
+	 */
 	public boolean isCountValidForMultiplicity(int commandCode, long appId, boolean isRequest, AvpSet destination, int avpCode, long avpVendor) {
 		if (!on)
 			throw new IllegalStateException("validation is of.");
@@ -193,6 +254,23 @@ public class DiameterMessageValidator {
 		return rep.isCountValidForMultiplicity(avpCode, avpVendor, count);
 	}
 
+	/**
+	 * Determines if avp is allowed in message. If
+	 * {@link DiameterMessageValidator#hasRepresentation(int, long, boolean, int, long)}
+	 * returns false this method returns always true.
+	 * 
+	 * @param commandCode
+	 *            - message command code
+	 * @param appId
+	 *            - message application id
+	 * @param isRequest
+	 *            - true if message is request.
+	 * @param avpCode
+	 *            - avp code.
+	 * @param avpVendor
+	 *            - avp vendor, zero if none.
+	 * @return
+	 */
 	public boolean isAllowed(int commandCode, long appId, boolean isRequest, int avpCode, long avpVendor) {
 		if (!on)
 			throw new IllegalStateException("validation is of.");
@@ -206,6 +284,24 @@ public class DiameterMessageValidator {
 		return rep.isAllowed(avpCode, avpVendor);
 	}
 
+	/**
+	 * Return values is computed as follows:<br>
+	 * return messages.get(commandCode,appId,isRequest)!=null &&
+	 * messages.get(commandCode
+	 * ,appId,isRequest).getAvp(avpCode,avpVendor)!=null;
+	 * 
+	 * @param commandCode
+	 *            - message command code
+	 * @param appId
+	 *            - message application id
+	 * @param isRequest
+	 *            - true if message is request.
+	 * @param avpCode
+	 *            - avp code.
+	 * @param avpVendor
+	 *            - avp vendor, zero if none.
+	 * @return
+	 */
 	public boolean hasRepresentation(int commandCode, long appId, boolean isRequest, int avpCode, long avpVendor) {
 		MessageRepresentation rep = new MessageRepresentation(commandCode, appId, isRequest);
 		rep = this.configuredMessageTypes.get(rep);
