@@ -124,9 +124,13 @@ public class RouterImpl implements IRouter {
         AnswerEntry ans = requestEntryTable.get( hopByHopIdentifier );
         requestLock.writeLock().unlock();
         if (ans != null)
-            return new String[] {ans.getHost(), ans.getRealm()};
+        {
+        	return new String[] {ans.getHost(), ans.getRealm()};
+        }
         else
-            return null;       
+        {
+            return null;
+        }
     }
 
     public void updateRedirectInformation(IMessage answer) throws InternalException, RouteException {
@@ -211,15 +215,18 @@ public class RouterImpl implements IRouter {
 
     public IPeer getPeer(IMessage message, IPeerTable manager) throws RouteException, AvpDataException {
 
-        String destRealm, destHost = null;
+        String destRealm = null;
+        String destHost = null;
         // Get destination information
         String[] info = null;
         if ( !message.isRequest() )
+        {
             info = getRequestRouteInfo(message.getHopByHopIdentifier());
-        if (info != null) {
-            destHost = info[0];
-            destRealm = info[1];
-        } else {
+            if (info != null) {
+            	destHost = info[0];
+            	destRealm = info[1];
+        	}
+        }else {
             Avp avpRealm = message.getAvps().getAvp(Avp.DESTINATION_REALM);
             if (avpRealm == null)
                 throw new RouteException("Destination realm avp is empty");
@@ -229,8 +236,9 @@ public class RouterImpl implements IRouter {
             if (avpHost != null)
                 destHost = avpHost.getOctetString();
         }
-
+        
         IPeer peer = getPeerPredProcessing(message, destRealm, destHost);
+
         if (peer != null) return peer;
 
 
@@ -240,7 +248,6 @@ public class RouterImpl implements IRouter {
 
         // Redirect processing
         redirectProcessing(message, destRealm, destHost);
-
         // Check previous context information
         if (message.getPeer() != null && destHost != null && destHost.equals(message.getPeer().getUri()) &&
                 message.getPeer().hasValidConnection()) {
