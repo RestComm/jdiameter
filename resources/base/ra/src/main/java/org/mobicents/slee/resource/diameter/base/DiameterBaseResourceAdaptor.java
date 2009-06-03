@@ -69,7 +69,6 @@ import net.java.slee.resource.diameter.base.events.DeviceWatchdogAnswer;
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.DisconnectPeerAnswer;
 import net.java.slee.resource.diameter.base.events.ErrorAnswer;
-import net.java.slee.resource.diameter.base.events.ExtensionDiameterMessage;
 import net.java.slee.resource.diameter.base.events.ReAuthAnswer;
 import net.java.slee.resource.diameter.base.events.SessionTerminationAnswer;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
@@ -1225,7 +1224,7 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
       try 
       {
         // FIXME: alexandre: This must be fixed, we need way to get Application-Id!
-        ClientAuthSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAuthAppId(193L, 19301L), ClientAuthSession.class, null);
+        ClientAuthSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAuthAppId(193L, 19301L), ClientAuthSession.class);
 
         return (AuthClientSessionActivity) activities.get(getActivityHandle(session.getSessions().get(0).getSessionId()));
       }
@@ -1237,14 +1236,14 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
       }
     }
 
-    public AuthServerSessionActivity createAuthenticationServerActivity(DiameterIdentity destinationHost, DiameterIdentity destinationRealm) throws CreateActivityException
+    public AuthServerSessionActivity createAuthenticationServerActivity(Request request) throws CreateActivityException
     {
       ServerAuthSession session = null;
 
       try
       {
         // FIXME: alexandre: This must be fixed, we need way to get Application-Id!
-        session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAuthAppId(193L, 19301L), ServerAuthSession.class, null);
+        session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAuthAppId(193L, 19301L), ServerAuthSession.class, new Object[]{request});
          
         return (AuthServerSessionActivity) activities.get(getActivityHandle(session.getSessions().get(0).getSessionId()));
       }
@@ -1278,7 +1277,7 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
       try
       {
         // FIXME: alexandre: This must be fixed, we need way to get Application-Id!
-        ClientAccSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAccAppId(193L, 19302L), ClientAccSession.class, null);;
+        ClientAccSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAccAppId(193L, 19302L), ClientAccSession.class);
 
         return (AccountingClientSessionActivity) activities.get(getActivityHandle(session.getSessions().get(0).getSessionId()));
       }
@@ -1311,51 +1310,10 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
         throw new CreateActivityException("Illegal Diameter State exception while creating Server Accounting Activity", e);
       }
       
-      // XXX: REMOVE THIS
-      //DiameterIdentity destinationHost = null;
-      //DiameterIdentity destinationRealm = null;
-      //
-      //AvpSet avps = req.getAvps();
-      //
-      //Avp avp = null;
-      //
-      //if ((avp = avps.getAvp(Avp.DESTINATION_HOST)) != null)
-      //{
-      //  try
-      //  {
-      //    destinationHost = new DiameterIdentityAvpImpl(Avp.DESTINATION_HOST, avp.getVendorId(), 0, 0, avp.getRaw());
-      //  }
-      //  catch (AvpDataException e)
-      //  {
-      //    logger.error("", e);
-      //  }
-      //}
-      //
-      //if ((avp = avps.getAvp(Avp.DESTINATION_REALM)) != null)
-      //{
-      //  try
-      //  {
-      //    destinationRealm = new DiameterIdentityAvpImpl(Avp.DESTINATION_REALM, 0, 0, 0, avp.getRaw());
-      //  }
-      //  catch (AvpDataException e)
-      //  {
-      //    logger.error("", e);
-      //  }
-      //}
-      //
-      //DiameterMessageFactoryImpl msgFactory = new DiameterMessageFactoryImpl(stack);
-      //AccountingServerSessionActivityImpl activity = new AccountingServerSessionActivityImpl(msgFactory, diameterAvpFactory, session, ra, messageTimeout,
-      //    destinationHost, destinationRealm, sleeEndpoint, stack);
-      //activityCreated(activity);
-
       return (AccountingServerSessionActivity) activities.get(getActivityHandle(session.getSessions().get(0).getSessionId()));
     }
 
-    // XXX: Remove this!
-    //AuthServerSessionActivity createAuthenticationServerActivity() throws CreateActivityException
-    //{
-    //  return this.createAuthenticationServerActivity(null, null);
-    //}
+
 
     /**
      * This method is for internal use only, it creates activities for
@@ -1412,7 +1370,7 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
 
         if (isMessageOfType(message, DiameterAvpCodes.AUTH_APPLICATION_ID))
         {
-          return createAuthenticationServerActivity(destinationHost, destinationRealm);
+          return createAuthenticationServerActivity((Request) message);
         }
         else if (isMessageOfType(message, DiameterAvpCodes.ACCT_APPLICATION_ID))
         {
@@ -1424,8 +1382,9 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
         }
       }
     }
-    
-    private boolean isMessageOfType(Message message, int type)
+
+
+	private boolean isMessageOfType(Message message, int type)
     {
       try
       {
