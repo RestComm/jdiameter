@@ -26,10 +26,6 @@
  */
 package net.java.slee.resource.diameter.sh.client.events.avp;
 
-
-
-import java.util.Iterator;
-
 import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
 
 /**
@@ -51,40 +47,38 @@ import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
  */
 public interface UserIdentityAvp extends GroupedAvp {
 
-    /**
-     * Returns true if the Public-Identity AVP is present in the message.
-     */
-    public boolean hasPublicIdentity();
+  /**
+   * Returns true if the Public-Identity AVP is present in the message.
+   */
+  public boolean hasPublicIdentity();
 
-    /**
-     * Returns the value of the Public-Identity AVP, of type UTF8String.
-     * A return value of null implies that the AVP has not been set.
-     */
-    public String getPublicIdentity();
+  /**
+   * Returns the value of the Public-Identity AVP, of type UTF8String.
+   * A return value of null implies that the AVP has not been set.
+   */
+  public String getPublicIdentity();
 
-    /**
-     * Sets the value of the Public-Identity AVP, of type UTF8String.
-     * @throws IllegalStateException if setPublicIdentity has already been called
-     */
-    public void setPublicIdentity(String publicIdentity);
+  /**
+   * Sets the value of the Public-Identity AVP, of type UTF8String.
+   * @throws IllegalStateException if setPublicIdentity has already been called
+   */
+  public void setPublicIdentity(String publicIdentity);
 
-    /**
-     * Returns true if the MSISDN AVP is present in the message.
-     */
-    public boolean hasMsisdn();
+  /**
+   * Returns true if the MSISDN AVP is present in the message.
+   */
+  public boolean hasMsisdn();
 
-    /**
-     * Returns the value of the MSISDN AVP, of type OctetString.
-     * A return value of null implies that the AVP has not been set.
-     */
-    public byte[] getMsisdn();
+  /**
+   * Returns the value of the MSISDN AVP, of type OctetString.
+   * A return value of null implies that the AVP has not been set.
+   */
+  public String getMsisdn();
 
-    /**
-     * Sets the value of the MSISDN AVP, of type OctetString.
-     * @throws IllegalStateException if setMsisdn has already been called
-     */
-    public void setMsisdn(byte[] msisdn);
-
-    
+  /**
+   * Sets the value of the MSISDN AVP, of type OctetString.
+   * @throws IllegalStateException if setMsisdn has already been called
+   */
+  public void setMsisdn(String msisdn);
 
 }

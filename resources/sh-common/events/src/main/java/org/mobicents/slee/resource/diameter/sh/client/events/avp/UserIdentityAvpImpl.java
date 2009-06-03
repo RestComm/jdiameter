@@ -27,83 +27,45 @@
 package org.mobicents.slee.resource.diameter.sh.client.events.avp;
 
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
-import net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp;
 import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
 
-import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
-import org.mobicents.diameter.dictionary.AvpDictionary;
-import org.mobicents.diameter.dictionary.AvpRepresentation;
 import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
 
 /**
  * 
- * Implementation of AVP: {@link SupportedFeaturesAvp} UserIdentityAvp.
+ * Implementation of AVP: {@link UserIdentityAvp} UserIdentityAvp.
  * 
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class UserIdentityAvpImpl extends GroupedAvpImpl implements UserIdentityAvp {
 
-	public UserIdentityAvpImpl(int code, long vendorId, int mnd, int prt, byte[] value) {
-		super(code, vendorId, mnd, prt, value);
-	}
+  public UserIdentityAvpImpl(int code, long vendorId, int mnd, int prt, byte[] value) {
+    super(code, vendorId, mnd, prt, value);
+  }
 
-	public byte[] getMsisdn() {
-		if (hasMsisdn()) {
-			Avp rawAvp = super.avpSet.getAvp(DiameterShAvpCodes.MSISDN, 10415L);
+  public String getMsisdn() {
+    return getAvpAsUTF8String(DiameterShAvpCodes.MSISDN, DiameterShAvpCodes.SH_VENDOR_ID);
+  }
 
-			try {
-				return rawAvp.getRaw();
-			} catch (AvpDataException e) {
-				reportAvpFetchError(e.getMessage(), DiameterShAvpCodes.MSISDN);
-				// logger.error( "Failure while trying to obtain MSISDN AVP.", e
-				// );
-			}
-		}
+  public String getPublicIdentity() {
+    return getAvpAsUTF8String(DiameterShAvpCodes.PUBLIC_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID);
+  }
 
-		return null;
-	}
+  public boolean hasMsisdn() {
+    return hasAvp(DiameterShAvpCodes.MSISDN, DiameterShAvpCodes.SH_VENDOR_ID);
+  }
 
-	public String getPublicIdentity() {
-		if (hasPublicIdentity()) {
-			Avp rawAvp = super.avpSet.getAvp(DiameterShAvpCodes.PUBLIC_IDENTITY, 10415L);
+  public boolean hasPublicIdentity() {
+    return hasAvp(DiameterShAvpCodes.PUBLIC_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID);
+  }
 
-			try {
-				return rawAvp.getUTF8String();
-			} catch (AvpDataException e) {
-				reportAvpFetchError(e.getMessage(), DiameterShAvpCodes.PUBLIC_IDENTITY);
-				// logger.error( "Failure while trying to obtain MSISDN AVP.", e
-				// );
-			}
-		}
+  public void setMsisdn(String msisdn) {
+    addAvp(DiameterShAvpCodes.MSISDN, DiameterShAvpCodes.SH_VENDOR_ID, msisdn);
+  }
 
-		return null;
-	}
-
-	public boolean hasMsisdn() {
-		return super.avpSet.getAvp(DiameterShAvpCodes.MSISDN, 10415L) != null;
-	}
-
-	public boolean hasPublicIdentity() {
-		return super.avpSet.getAvp(DiameterShAvpCodes.PUBLIC_IDENTITY, 10415L) != null;
-	}
-
-	public void setMsisdn(byte[] msisdn) {
-		if (hasMsisdn()) {
-			throw new IllegalStateException("AVP MSISDN is already present in message and cannot be overwritten.");
-		} else {
-			AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(DiameterShAvpCodes.MSISDN, 10415L);
-			int mandatoryAvp = avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot") ? 0 : 1;
-			int protectedAvp = avpRep.getRuleProtected().equals("must") ? 1 : 0;
-
-			// super.avpSet.removeAvp(DiameterShAvpCodes.MSISDN);
-			super.avpSet.addAvp(DiameterShAvpCodes.MSISDN, msisdn, 10415L, mandatoryAvp == 1, protectedAvp == 1);
-		}
-	}
-
-	public void setPublicIdentity(String publicIdentity) {
-	  addAvp(DiameterShAvpCodes.PUBLIC_IDENTITY, 10415L, publicIdentity);
-	}
+  public void setPublicIdentity(String publicIdentity) {
+    addAvp(DiameterShAvpCodes.PUBLIC_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID, publicIdentity);
+  }
 
 }
