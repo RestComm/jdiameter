@@ -24,6 +24,8 @@ public abstract class AppSessionImpl implements AppSession {
     }
 
     public boolean isValid() {
+    	if(session==null)
+    		return false;
         return session.isValid();
     }
 

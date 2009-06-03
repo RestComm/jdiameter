@@ -408,9 +408,19 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
 			if (state != ShSessionState.TERMINATED) {
 				setState(ShSessionState.TERMINATED, false);
 				//session.release();
-				super.release();
+				
 			}
 			
+			if(super.isValid())
+				super.release();
+			
+			if(super.session!=null)
+				super.session.setRequestListener(null);
+			this.session = null;
+			if(listener!=null)
+				this.removeStateChangeNotification((StateChangeListener) listener);
+			this.listener = null;
+			this.factory = null;
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.debug(e);

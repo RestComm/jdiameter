@@ -471,7 +471,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements
 	{
 		if(tccFuture!=null)
 		{
-			tccFuture.cancel(true);
+			tccFuture.cancel(false);
 			ScheduledFuture f=tccFuture;
 			tccFuture=null;
 			if(!willRestart)
@@ -520,8 +520,18 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements
 	
 	@Override
 	public void release() {
-		super.release();
+		
 		this.stopTcc(false);
+		if(super.isValid())
+			super.release();
+		if(super.session!=null)
+			super.session.setRequestListener(null);
+		
+		this.session = null;
+		if(listener!=null)
+			this.removeStateChangeNotification((StateChangeListener) listener);
+		this.listener = null;
+		this.factory = null;
 	}
 
 

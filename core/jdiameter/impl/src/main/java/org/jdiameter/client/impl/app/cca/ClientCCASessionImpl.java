@@ -771,8 +771,16 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements
 	@Override
 	public void release() {
 		
-		super.release();
 		this.stopTx();
+		if(super.isValid())
+			super.release();
+		if(super.session!=null)
+			super.session.setRequestListener(null);
+		super.session = null;
+		if(listener!=null)
+			this.removeStateChangeNotification((StateChangeListener) listener);
+		this.listener = null;
+		this.factory = null;
 	}
 	protected void handleSendFailure(Exception e, Event.Type type,
 			Message request) throws Exception {

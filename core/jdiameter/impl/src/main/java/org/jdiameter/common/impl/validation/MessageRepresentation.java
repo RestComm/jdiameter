@@ -190,8 +190,13 @@ public class MessageRepresentation implements Comparable<MessageRepresentation>{
 		AvpRepresentation avpRep= new AvpRepresentation(avpCode,avpVendor);
 		avpRep  = this.messageAvps.get(avpRep);
 		if(avpRep == null)
+		{
+			
 			return false;
+		}
 		else
+		{
 			return true;
+		}
 	}
 }

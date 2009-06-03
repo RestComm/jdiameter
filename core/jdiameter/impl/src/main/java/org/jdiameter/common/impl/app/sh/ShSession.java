@@ -6,6 +6,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.log4j.Logger;
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.Request;
@@ -20,7 +21,7 @@ import org.jdiameter.common.impl.app.acc.AccountRequestImpl;
 public abstract class ShSession extends AppSessionImpl implements NetworkReqListener, StateMachine {
 
 	protected Lock sendAndStateLock = new ReentrantLock();
-	protected ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(4);
+	protected static final ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(4);
 	protected List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
 
 	public void addStateChangeNotification(StateChangeListener listener) {
@@ -41,7 +42,7 @@ public abstract class ShSession extends AppSessionImpl implements NetworkReqList
 	}
 
 	public void release() {
-		scheduler.shutdown();
+		//scheduler.shutdown();
 		super.release();
 	}
 

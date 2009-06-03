@@ -48,10 +48,7 @@ public abstract class BaseSessionImpl implements BaseSession {
 
     protected void genericSend(Message message, EventListener listener) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
         if (isValid) {
-        	if(BaseSessionImpl.messageValidator.isOn())
-        	{
-        		BaseSessionImpl.messageValidator.validate(message);
-        	}
+
             long timeOut = container.getConfiguration().getLongValue(
                     MessageTimeOut.ordinal(), (Long) MessageTimeOut.defValue()
             );

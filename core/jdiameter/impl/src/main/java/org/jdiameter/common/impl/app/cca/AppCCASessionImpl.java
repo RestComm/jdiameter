@@ -26,7 +26,7 @@ public abstract class AppCCASessionImpl extends AppSessionImpl implements Networ
 
   protected Lock sendAndStateLock = new ReentrantLock();
 
-  protected ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(4);
+  protected static final ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(4);
   
   protected List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
   
@@ -45,7 +45,7 @@ public abstract class AppCCASessionImpl extends AppSessionImpl implements Networ
 
   public void release()
   {
-    scheduler.shutdown();
+    //scheduler.shutdown();
     super.release();
   }
 

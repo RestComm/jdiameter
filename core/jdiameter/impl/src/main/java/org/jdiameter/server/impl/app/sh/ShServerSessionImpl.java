@@ -1,6 +1,5 @@
 package org.jdiameter.server.impl.app.sh;
 
-import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -9,7 +8,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.IllegalDiameterStateException;
@@ -37,7 +35,6 @@ import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.sh.IShMessageFactory;
 import org.jdiameter.common.api.app.sh.ShSessionState;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
-import org.jdiameter.common.impl.app.AppEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.jdiameter.common.impl.app.sh.ProfileUpdateRequestImpl;
 import org.jdiameter.common.impl.app.sh.PushNotificationRequestImpl;
@@ -262,9 +259,11 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 					{
 						
 						newState=doSNX(localEvent.getAnswer());
+						stopTxTimer();
 					}else if(event.getType() == Event.Type.RECEIVE_SUBSCRIBE_NOTIFICATIONS_REQUEST)
 					{
 						newState=doSNX(request);
+						//startTxTimer(request);
 					}
 					//FIXME: Any change here - even on timeout?
 					break;
@@ -291,15 +290,18 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 						break;
 					case SEND_PROFILE_UPDATE_ANSWER:
 						dispatchEvent(localEvent.getAnswer());
+						stopTxTimer();
 						break;
 					case SEND_PUSH_NOTIFICATION_REQUEST:
 						dispatchEvent(localEvent.getRequest());
 						break;
 					case SEND_SUBSCRIBE_NOTIFICATIONS_ANSWER:
 						dispatchEvent(localEvent.getAnswer());
+						stopTxTimer();
 						break;
 					case SEND_USER_DATA_ANSWER:
 						dispatchEvent(localEvent.getAnswer());
+						stopTxTimer();
 						break;
 					case TIMEOUT_EXPIRES:
 						break;
@@ -374,10 +376,8 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 		if (newState == ShSessionState.TERMINATED) {
 			if (release)
 				this.release();
-			if (sft != null) {
-				sft.cancel(true);
-				sft = null;
-			}
+			stopSubscriptionTimer();
+			stopTxTimer();
 		}
 	}
 
@@ -387,10 +387,18 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 			sendAndStateLock.lock();
 			if (state != ShSessionState.TERMINATED) {
 				setState(ShSessionState.TERMINATED, false);
-				session.release();
-				super.release();
+				//session.release();
+				
 			}
-			
+			if(super.isValid())
+				super.release();
+			if(super.session!=null)
+				super.session.setRequestListener(null);			
+			this.session = null;
+			if(listener!=null)
+				this.removeStateChangeNotification((StateChangeListener) listener);
+			this.listener = null;
+			this.factory = null;
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.debug(e);
@@ -499,7 +507,7 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 	{
 		if(this.sft!=null)
 		{
-			this.sft.cancel(true);
+			this.sft.cancel(false);
 			this.sft=null;
 		}
 	}
@@ -510,13 +518,7 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 			
 			//FIXME: isnt this bad? Shouldnt send be before state change?
 			sendAndStateLock.lock();
-			if (this.txTimerTask != null)
-				{
-					this.txSft.cancel(true);
-					this.txSft=null;
-					this.txTimerTask=null;
-				}
-			
+			this.stopTxTimer();
 			this.txTimerTask=new TxTimerTask(request);
 			this.txSft=super.scheduler.schedule(this.txTimerTask, this.factory.getMessageTimeout(), TimeUnit.MILLISECONDS);
 		} catch (Exception exc) {
@@ -528,15 +530,19 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 	
 	private void stopTxTimer()
 	{
+		
 		try {
 			
 			//FIXME: isnt this bad? Shouldnt send be before state change?
 			sendAndStateLock.lock();
 			if (this.txTimerTask != null)
 				{
-					this.txSft.cancel(true);
-					this.txSft=null;
+				
+					this.txSft.cancel(false);
+					this.txSft = null;
+					this.txTimerTask.cancel();
 					this.txTimerTask=null;
+					
 				}
 			
 		} catch (Exception exc) {
@@ -559,6 +565,13 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 
 
 		@Override
+		public boolean cancel() {
+			this.request = null;
+			return super.cancel();
+		}
+
+
+		@Override
 		public void run() {
 		try {
 			
@@ -572,6 +585,7 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
+			this.request = null;
 			sendAndStateLock.unlock();
 		}
 	}
