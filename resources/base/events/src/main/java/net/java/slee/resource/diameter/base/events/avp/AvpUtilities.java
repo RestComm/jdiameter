@@ -2308,6 +2308,11 @@ public class AvpUtilities {
   
   public static DiameterAvp createAvp(int avpCode, long vendorId, DiameterAvp[] childAVPs, Class avpImplClass)
   {
+    return createAvp(avpCode, vendorId, null, childAVPs, avpImplClass);
+  }
+  
+  public static DiameterAvp createAvp(int avpCode, long vendorId, byte[] value, DiameterAvp[] childAVPs, Class avpImplClass)
+  {
     try
     {
       AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
@@ -2317,11 +2322,11 @@ public class AvpUtilities {
   
       if(avpImplClass == DiameterAvpImpl.class) {
         Constructor avpConstructor = avpImplClass.getConstructor(int.class, long.class, int.class, int.class, byte[].class, DiameterAvpType.class);
-        return (DiameterAvp) avpConstructor.newInstance(avpCode, vendorId, mandatoryAvp, protectedAvp, new byte[]{}, DiameterAvpType.fromString(avpRep.getType()));
+        return (DiameterAvp) avpConstructor.newInstance(avpCode, vendorId, mandatoryAvp, protectedAvp, value != null ? value : new byte[]{}, DiameterAvpType.fromString(avpRep.getType()));
       }
       else {
         Constructor avpConstructor = avpImplClass.getConstructor(int.class, long.class, int.class, int.class, byte[].class);
-        GroupedAvp returnAvp = (GroupedAvp) avpConstructor.newInstance(avpCode, vendorId, mandatoryAvp, protectedAvp, new byte[]{});
+        GroupedAvp returnAvp = (GroupedAvp) avpConstructor.newInstance(avpCode, vendorId, mandatoryAvp, protectedAvp, value != null ? value : new byte[]{});
         
         returnAvp.setExtensionAvps(childAVPs);
         
@@ -2337,7 +2342,7 @@ public class AvpUtilities {
   
   private static DiameterAvp createAvpInternal(long vendorID, int avpCode, byte[] value)
   {
-    return createAvp( avpCode, vendorID, null, DiameterAvpImpl.class );
+    return createAvp( avpCode, vendorID, value, null, DiameterAvpImpl.class );
   }
 
   
