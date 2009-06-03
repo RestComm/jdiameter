@@ -187,7 +187,7 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 				this.destinationRealm = props.getProperty("destination.realm") == null ? this.destinationRealm : props.getProperty("destination.realm");
 				
 				
-				logger.info("Diameter CCA Example :: Initialized in " + (actAsServer ? "SERVER" : "CLIENT") + " mode.");
+				logger.info("Diameter Base Example :: Initialized in " + (actAsServer ? "SERVER" : "CLIENT") + " mode.");
 
 				if (actAsServer) {
 					TimerOptions options = new TimerOptions();
