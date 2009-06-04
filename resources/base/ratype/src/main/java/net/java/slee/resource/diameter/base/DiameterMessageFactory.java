@@ -104,7 +104,7 @@ public interface DiameterMessageFactory {
      * @return an implementation of DiameterMessage to be passed to
      *         {@link DiameterActivity#sendMessage(DiameterMessage)}.
      */
-    AbortSessionAnswer createAbortSessionAnswer(DiameterAvp[] avps) throws AvpNotAllowedException;
+    AbortSessionAnswer createAbortSessionAnswer(AbortSessionRequest request,DiameterAvp[] avps) throws AvpNotAllowedException;
 
     /**
      * Create an empty AbortSessionAnswer DiameterMessage for a ASA command.
@@ -112,7 +112,7 @@ public interface DiameterMessageFactory {
      * @return an implementation of DiameterMessage to be passed to
      *         {@link DiameterActivity#sendMessage(DiameterMessage)}.
      */
-    AbortSessionAnswer createAbortSessionAnswer();
+    AbortSessionAnswer createAbortSessionAnswer(AbortSessionRequest request);
 
     /**
      * Create a AccountingRequest DiameterMessage for a ACR command containing the given AVPs.
@@ -140,7 +140,7 @@ public interface DiameterMessageFactory {
      * @return an implementation of DiameterMessage to be passed to
      *         {@link DiameterActivity#sendMessage(DiameterMessage)}.
      */
-    AccountingAnswer createAccountingAnswer(DiameterAvp[] avps) throws AvpNotAllowedException;
+    AccountingAnswer createAccountingAnswer(AccountingRequest request,DiameterAvp[] avps) throws AvpNotAllowedException;
 
     /**
      * Create an empty AccountingAnswer DiameterMessage for a ACA command.
@@ -148,7 +148,7 @@ public interface DiameterMessageFactory {
      * @return an implementation of DiameterMessage to be passed to
      *         {@link DiameterActivity#sendMessage(DiameterMessage)}.
      */
-    AccountingAnswer createAccountingAnswer();
+    AccountingAnswer createAccountingAnswer(AccountingRequest request);
 
     /**
      * Create a CapabilitiesExchangeRequest DiameterMessage for a CER command containing the given AVPs.
@@ -176,7 +176,7 @@ public interface DiameterMessageFactory {
      * @return an implementation of DiameterMessage to be passed to
      *         {@link DiameterActivity#sendMessage(DiameterMessage)}.
      */
-    CapabilitiesExchangeAnswer createCapabilitiesExchangeAnswer(DiameterAvp[] avps) throws AvpNotAllowedException;
+    CapabilitiesExchangeAnswer createCapabilitiesExchangeAnswer(CapabilitiesExchangeRequest request,DiameterAvp[] avps) throws AvpNotAllowedException;
 
     /**
      * Create an empty CapabilitiesExchangeAnswer DiameterMessage for a CEA command.
@@ -184,7 +184,7 @@ public interface DiameterMessageFactory {
      * @return an implementation of DiameterMessage to be passed to
      *         {@link DiameterActivity#sendMessage(DiameterMessage)}.
      */
-    CapabilitiesExchangeAnswer createCapabilitiesExchangeAnswer();
+    CapabilitiesExchangeAnswer createCapabilitiesExchangeAnswer(CapabilitiesExchangeRequest request);
 
     /**
      * Create a DeviceWatchdogRequest DiameterMessage for a DWR command containing the given AVPs.
@@ -212,7 +212,7 @@ public interface DiameterMessageFactory {
      * @return an implementation of DiameterMessage to be passed to
      *         {@link DiameterActivity#sendMessage(DiameterMessage)}.
      */
-    DeviceWatchdogAnswer createDeviceWatchdogAnswer(DiameterAvp[] avps) throws AvpNotAllowedException;
+    DeviceWatchdogAnswer createDeviceWatchdogAnswer(DeviceWatchdogRequest request,DiameterAvp[] avps) throws AvpNotAllowedException;
 
     /**
      * Create an empty DeviceWatchdogAnswer DiameterMessage for a DWA command.
@@ -220,7 +220,7 @@ public interface DiameterMessageFactory {
      * @return an implementation of DiameterMessage to be passed to
      *         {@link DiameterActivity#sendMessage(DiameterMessage)}.
      */
-    DeviceWatchdogAnswer createDeviceWatchdogAnswer();
+    DeviceWatchdogAnswer createDeviceWatchdogAnswer(DeviceWatchdogRequest request);
 
     /**
      * Create a DisconnectPeerRequest DiameterMessage for a DPR command containing the given AVPs.
@@ -248,7 +248,7 @@ public interface DiameterMessageFactory {
      * @return an implementation of DiameterMessage to be passed to
      *         {@link DiameterActivity#sendMessage(DiameterMessage)}.
      */
-    DisconnectPeerAnswer createDisconnectPeerAnswer(DiameterAvp[] avps) throws AvpNotAllowedException;
+    DisconnectPeerAnswer createDisconnectPeerAnswer(DisconnectPeerRequest request,DiameterAvp[] avps) throws AvpNotAllowedException;
 
     /**
      * Create an empty DisconnectPeerAnswer DiameterMessage for a DPA command.
@@ -256,7 +256,7 @@ public interface DiameterMessageFactory {
      * @return an implementation of DiameterMessage to be passed to
      *         {@link DiameterActivity#sendMessage(DiameterMessage)}.
      */
-    DisconnectPeerAnswer createDisconnectPeerAnswer();
+    DisconnectPeerAnswer createDisconnectPeerAnswer(DisconnectPeerRequest request);
 
     /**
      * Create a ReAuthRequest DiameterMessage for a RAR command containing the given AVPs.
@@ -284,7 +284,7 @@ public interface DiameterMessageFactory {
      * @return an implementation of DiameterMessage to be passed to
      *         {@link DiameterActivity#sendMessage(DiameterMessage)}.
      */
-    ReAuthAnswer createReAuthAnswer(DiameterAvp[] avps) throws AvpNotAllowedException;
+    ReAuthAnswer createReAuthAnswer(ReAuthRequest request,DiameterAvp[] avps) throws AvpNotAllowedException;
 
     /**
      * Create an empty ReAuthAnswer DiameterMessage for a RAA command.
@@ -292,7 +292,7 @@ public interface DiameterMessageFactory {
      * @return an implementation of DiameterMessage to be passed to
      *         {@link DiameterActivity#sendMessage(DiameterMessage)}.
      */
-    ReAuthAnswer createReAuthAnswer();
+    ReAuthAnswer createReAuthAnswer(ReAuthRequest request);
 
     /**
      * Create a SessionTerminationRequest DiameterMessage for a STR command containing the given AVPs.
@@ -320,7 +320,7 @@ public interface DiameterMessageFactory {
      * @return an implementation of DiameterMessage to be passed to
      *         {@link DiameterActivity#sendMessage(DiameterMessage)}.
      */
-    SessionTerminationAnswer createSessionTerminationAnswer(DiameterAvp[] avps) throws AvpNotAllowedException;
+    SessionTerminationAnswer createSessionTerminationAnswer(SessionTerminationRequest request,DiameterAvp[] avps) throws AvpNotAllowedException;
 
     /**
      * Create an empty SessionTerminationAnswer DiameterMessage for a STA command.
@@ -328,7 +328,7 @@ public interface DiameterMessageFactory {
      * @return an implementation of DiameterMessage to be passed to
      *         {@link DiameterActivity#sendMessage(DiameterMessage)}.
      */
-    SessionTerminationAnswer createSessionTerminationAnswer();
+    SessionTerminationAnswer createSessionTerminationAnswer(SessionTerminationRequest request);
     
     
 }
