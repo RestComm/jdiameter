@@ -817,7 +817,13 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
       int eventID = eventLookup.getEventID(name, "java.net", "0.8");
 
       DiameterMessage event = (DiameterMessage) createEvent(request, answer);
-
+      //perf looser, bu we need it.
+      Object _activity = this.activities.get(handle);
+      if(_activity!=null && _activity instanceof RfServerSessionImpl)
+      {
+    	  RfServerSessionImpl assai = (RfServerSessionImpl)_activity;
+    	  assai.fetchSessionData(event, true);
+      }
       sleeEndpoint.fireEvent(handle, event, eventID, null);
     }
     catch (Exception e)
