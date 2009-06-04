@@ -986,7 +986,7 @@ public class DiameterShClientResourceAdaptor implements ResourceAdaptor, Diamete
 
       DiameterMessageFactoryImpl msgFactory = new DiameterMessageFactoryImpl(session.getSessions().get(0), stack, null, null);
 
-      ShClientSubscriptionActivityImpl activity = new ShClientSubscriptionActivityImpl(msgFactory, new ShClientMessageFactoryImpl(session.getSessions().get(0), stack), diameterAvpFactory, new DiameterShAvpFactoryImpl(diameterAvpFactory,stack), session, messageTimeout, null, null, sleeEndpoint);
+      ShClientSubscriptionActivityImpl activity = new ShClientSubscriptionActivityImpl(msgFactory, new ShClientMessageFactoryImpl(session.getSessions().get(0), stack), diameterAvpFactory, new DiameterShAvpFactoryImpl(diameterAvpFactory), session, messageTimeout, null, null, sleeEndpoint);
       activity.fetchSessionData(pushNotificationRequest,true);
       activity.setSessionListener(ra);
       activityCreated(activity);
@@ -1123,7 +1123,7 @@ public class DiameterShClientResourceAdaptor implements ResourceAdaptor, Diamete
 
       DiameterMessageFactoryImpl msgFactory = new DiameterMessageFactoryImpl(session.getSessions().get(0), stack, null, null);
 
-      ShClientSubscriptionActivityImpl activity = new ShClientSubscriptionActivityImpl(msgFactory, new ShClientMessageFactoryImpl(session.getSessions().get(0), stack), diameterAvpFactory, new DiameterShAvpFactoryImpl(diameterAvpFactory,stack), session, messageTimeout, null, null, sleeEndpoint);
+      ShClientSubscriptionActivityImpl activity = new ShClientSubscriptionActivityImpl(msgFactory, new ShClientMessageFactoryImpl(session.getSessions().get(0), stack), diameterAvpFactory, new DiameterShAvpFactoryImpl(diameterAvpFactory), session, messageTimeout, null, null, sleeEndpoint);
       activity.setSessionListener(ra);
       activityCreated(activity);
 
@@ -1132,7 +1132,7 @@ public class DiameterShClientResourceAdaptor implements ResourceAdaptor, Diamete
 
     public DiameterShAvpFactory getClientAvpFactory()
     {
-      return new DiameterShAvpFactoryImpl(diameterAvpFactory,stack);
+      return new DiameterShAvpFactoryImpl(diameterAvpFactory);
     }
 
     public DiameterIdentity[] getConnectedPeers()

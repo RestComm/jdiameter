@@ -498,7 +498,7 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
     this.stack = this.diameterMux.getStack();
     this.messageTimeout = stack.getMetaData().getConfiguration().getLongValue(MessageTimeOut.ordinal(), (Long) MessageTimeOut.defValue());
     this.serverProvider = new ShServerProviderImpl(this);
-    this.localFactory = new DiameterShAvpFactoryImpl(this.diameterAvpFactory, this.stack);
+    this.localFactory = new DiameterShAvpFactoryImpl(this.diameterAvpFactory);
 
     logger.info("Diameter ShServer RA :: Successfully initialized stack.");
   }
@@ -964,4 +964,4 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
     //FIXME: alexandre: do we need this? confusing...
     this.fireEvent(getActivityHandle(sessionId), name, request, answer);
   }
-
+}
