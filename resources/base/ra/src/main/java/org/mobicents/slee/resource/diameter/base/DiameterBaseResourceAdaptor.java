@@ -28,6 +28,7 @@ package org.mobicents.slee.resource.diameter.base;
 import static org.jdiameter.client.impl.helpers.Parameters.MessageTimeOut;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -847,7 +848,23 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
       Integer ii=it.next();
       command[i]=ii.longValue();
     }
-    this.diameterMux.registerListener( this, new ApplicationId[]{ApplicationId.createByAccAppId(193L, 19302L),ApplicationId.createByAuthAppId(193L, 19301L)});
+    
+    
+    //this.diameterMux.registerListener( this, new ApplicationId[]{ApplicationId.createByAccAppId(193L, 19302L),ApplicationId.createByAuthAppId(193L, 19301L)});
+    List<ApplicationId> appIds = new ArrayList<ApplicationId>();
+    for(int index = 0;index<acctAppIds.length;index++)
+    {
+    	appIds.add(ApplicationId.createByAccAppId(vendorIds[index], acctAppIds[index]));
+    	
+    }
+    for(int index = 0;index<authAppIds.length;index++)
+    {
+    	appIds.add(ApplicationId.createByAuthAppId(vendorIds[index], authAppIds[index]));
+    	
+    }
+    
+    
+    this.diameterMux.registerListener( this, appIds.toArray(new ApplicationId[appIds.size()]));
     this.stack=this.diameterMux.getStack();
     this.messageTimeout = stack.getMetaData().getConfiguration().getLongValue(MessageTimeOut.ordinal(), (Long) MessageTimeOut.defValue());
     logger.info("Diameter Base RA :: Successfully initialized stack.");
@@ -1223,8 +1240,9 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
     {
       try 
       {
-        // FIXME: alexandre: This must be fixed, we need way to get Application-Id!
-        ClientAuthSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAuthAppId(193L, 19301L), ClientAuthSession.class);
+
+    	  //we take first
+        ClientAuthSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAuthAppId(vendorIds[0], authAppIds[0]), ClientAuthSession.class);
 
         return (AuthClientSessionActivity) activities.get(getActivityHandle(session.getSessions().get(0).getSessionId()));
       }
@@ -1242,8 +1260,8 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
 
       try
       {
-        // FIXME: alexandre: This must be fixed, we need way to get Application-Id!
-        session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAuthAppId(193L, 19301L), ServerAuthSession.class, new Object[]{request});
+    	  //we take first
+        session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAuthAppId(vendorIds[0], authAppIds[0]), ServerAuthSession.class, new Object[]{request});
          
         return (AuthServerSessionActivity) activities.get(getActivityHandle(session.getSessions().get(0).getSessionId()));
       }
@@ -1277,7 +1295,7 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
       try
       {
         // FIXME: alexandre: This must be fixed, we need way to get Application-Id!
-        ClientAccSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAccAppId(193L, 19302L), ClientAccSession.class);
+        ClientAccSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAccAppId(vendorIds[0], acctAppIds[0]), ClientAccSession.class);
 
         return (AccountingClientSessionActivity) activities.get(getActivityHandle(session.getSessions().get(0).getSessionId()));
       }
@@ -1583,9 +1601,75 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
    * (non-Javadoc)
    * @see org.mobicents.slee.resource.diameter.base.handlers.BaseSessionCreationListener#getSupportedApplications()
    */
-  public ApplicationId[] getSupportedApplications()
-  {
-    return new ApplicationId[]{ApplicationId.createByAccAppId(0), ApplicationId.createByAuthAppId(0), ApplicationId.createByAccAppId(193, 19302)};
-  }
+  public ApplicationId[] getSupportedApplications() {
 
+		List<ApplicationId> appIds = new ArrayList<ApplicationId>();
+		for (int index = 0; index < acctAppIds.length; index++) {
+			appIds.add(ApplicationId.createByAccAppId(vendorIds[index], acctAppIds[index]));
+
+		}
+		for (int index = 0; index < authAppIds.length; index++) {
+			appIds.add(ApplicationId.createByAuthAppId(vendorIds[index], authAppIds[index]));
+
+		}
+
+		return appIds.toArray(new ApplicationId[appIds.size()]);
+	}
+
+  
+  
+	private long[] vendorIds;
+	private long[] acctAppIds;
+	private long[] authAppIds;
+
+	public String getVendorIds() {
+		
+		
+		return convertToString(vendorIds);
+	}
+
+	public void setVendorIds(String vendorIds) {
+		this.vendorIds = convertToLong(vendorIds);
+	}
+
+	public String getAcctAppIds() {
+		return convertToString(acctAppIds);
+	}
+
+	public void setAcctAppIds(String acctAppId) {
+		this.acctAppIds = convertToLong(acctAppId);
+	}
+
+	public String getAuthAppIds() {
+		return convertToString(authAppIds);
+	}
+
+	public void setAuthAppIds(String authAppId) {
+		this.authAppIds = convertToLong(authAppId);
+	}
+	
+  protected String convertToString(long[] l)
+  {
+	  String s="";
+		for(int index = 0;index<l.length;index++)
+		{
+			s+=l[index];
+			if(l.length-1 != index)
+			{
+				s+=",";
+			}
+		}
+		return s;
+	  
+  }
+  protected long[] convertToLong(String s)
+  {
+	  String[] ss=s.split(",");
+	  long[] l  = new long[ss.length];
+	  for(int index = 0;index<ss.length;index++)
+	  {
+		l[index] =  Long.valueOf(ss[index]); 
+	  }
+	  return l;
+  }
 }

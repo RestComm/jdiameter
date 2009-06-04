@@ -23,5 +23,26 @@
 			</resource-adaptor-class>
 		</resource-adaptor-classes>
 
+
+
+		<config-property>
+        	<description>List vendor ids, separated by ",", each entry in acc or auth must have entry in this list, matching by index</description>
+            <config-property-name>vendorIds</config-property-name>
+            <config-property-type>java.lang.String</config-property-type>
+            <config-property-value>193</config-property-value>
+        </config-property>
+        <config-property>
+        	<description>List acctApp ids, separated by ",", each entry in this list must have matching entry in vendor ids, if no venfor, its 0</description>
+            <config-property-name>acctAppIds</config-property-name>
+            <config-property-type>java.lang.String</config-property-type>
+            <config-property-value>19302</config-property-value>
+        </config-property>
+        <config-property>
+        	<description>List authApp ids, separated by ",", each entry in acc or auth must have entry in this list, matching by index</description>
+            <config-property-name>authAppIds</config-property-name>
+            <config-property-type>java.lang.String</config-property-type>
+            <config-property-value>19302</config-property-value>
+        </config-property>
 	</resource-adaptor>
 </resource-adaptor-jar>
+
