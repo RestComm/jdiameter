@@ -5,6 +5,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.MessageTimeOut;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -51,6 +52,8 @@ import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Message;
+import org.jdiameter.api.Peer;
+import org.jdiameter.api.PeerTable;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.Stack;
@@ -74,6 +77,7 @@ import org.mobicents.slee.resource.diameter.base.events.AccountingAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.events.AccountingRequestImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.base.events.ErrorAnswerImpl;
+import org.mobicents.slee.resource.diameter.base.events.ExtensionDiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.base.events.ReAuthAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.events.ReAuthRequestImpl;
 import org.mobicents.slee.resource.diameter.base.events.SessionTerminationAnswerImpl;
@@ -152,10 +156,8 @@ public class RoResourceAdaptor implements ResourceAdaptor, DiameterListener, CCA
     eventsTemp.put(ReAuthAnswer.commandCode, "ReAuth");
     eventsTemp.put(AbortSessionAnswer.commandCode, "AbortSession");
     eventsTemp.put(AccountingAnswer.commandCode, "Accounting");
-    eventsTemp.put(ErrorAnswer.commandCode, "Error");
     eventsTemp.put(SessionTerminationAnswer.commandCode, "SessionTermination");
-    // FIXME: baranowb - make sure its compilant with xml
-    eventsTemp.put(ExtensionDiameterMessage.commandCode, "ExtensionDiameterMessage");
+
 
     events = Collections.unmodifiableMap(eventsTemp);
   }
@@ -980,6 +982,16 @@ public class RoResourceAdaptor implements ResourceAdaptor, DiameterListener, CCA
         throw new CreateActivityException(e);
       }
     }
+
+    public DiameterIdentity[] getConnectedPeers()
+    {
+      return ra.getConnectedPeers();
+    }
+
+    public int getPeerCount()
+    {
+      return ra.getConnectedPeers().length;
+    }
     
   }
 
@@ -1035,7 +1047,36 @@ public class RoResourceAdaptor implements ResourceAdaptor, DiameterListener, CCA
   }
   
 
-  public void receivedSuccessMessage( Request request, Answer answer )
+  /**
+ * @return
+ */
+	public DiameterIdentity[] getConnectedPeers() {
+		if (this.stack != null) {
+			try {
+				// Get the list of peers from the stack
+				List<Peer> peers = stack.unwrap(PeerTable.class).getPeerTable();
+
+				DiameterIdentity[] result = new DiameterIdentity[peers.size()];
+
+				int i = 0;
+
+				// Get each peer from the list and make a DiameterIdentity
+				for (Peer peer : peers) {
+					DiameterIdentity identity = new DiameterIdentity(peer.getUri().toString());
+
+					result[i++] = identity;
+				}
+
+				return result;
+			} catch (Exception e) {
+				logger.error("Failure getting peer list.", e);
+			}
+		}
+
+		return new DiameterIdentity[0];
+	}
+
+public void receivedSuccessMessage( Request request, Answer answer )
   {
     // No answer should make it here, session should exist. It's an error, report it. 
     logger.error("Diameter Ro RA :: Received unexpected Answer - RA should not get this, session should exist to handle it. Command-Code: "+answer.getCommandCode()+", Session-Id: "+answer.getSessionId());
@@ -1083,7 +1124,7 @@ public class RoResourceAdaptor implements ResourceAdaptor, DiameterListener, CCA
 
       if(commandCode == CreditControlMessage.commandCode)
       {
-        eventID = eventLookup.getEventID("net.java.slee.resource.diameter.cca.events." + name, "java.net", "0.8");
+        eventID = eventLookup.getEventID(name, "java.net", "0.8");
 
         Object activity = this.activities.get(handle);
 
@@ -1095,7 +1136,7 @@ public class RoResourceAdaptor implements ResourceAdaptor, DiameterListener, CCA
       else
       {
         //its a base
-        eventID = eventLookup.getEventID("net.java.slee.resource.diameter.base.events." + name, "java.net", "0.8");
+        eventID = eventLookup.getEventID( name, "java.net", "0.8");
       }
 
       logger.info("Diameter Ro RA :: fireEvent :: Command-Code[" + commandCode + "] Event-Id: " + eventID + " Handle[" + handle + "]");
@@ -1172,43 +1213,37 @@ public class RoResourceAdaptor implements ResourceAdaptor, DiameterListener, CCA
   // Helper Methods //
   ////////////////////
   
-  public DiameterMessage createEvent(Request request, Answer answer) throws OperationNotSupportedException
-  {
-    if (request == null && answer == null)
-    {
-      logger.warn( "Trying to create Event from neither Request nor Answer. Returning null." );
-      return null;
-    }
+  public DiameterMessage createEvent(Request request, Answer answer) throws OperationNotSupportedException {
+		if (request == null && answer == null) {
+			logger.warn("Trying to create Event from neither Request nor Answer. Returning null.");
+			return null;
+		}
 
-    int commandCode = (request != null ? request.getCommandCode() : answer.getCommandCode());
+		int commandCode = (request != null ? request.getCommandCode() : answer.getCommandCode());
+		if (answer != null && answer.isError()) {
+			return new ErrorAnswerImpl(answer);
+		}
 
-    switch (commandCode)
-    {
-    case CreditControlMessage.commandCode: // CCR/CCA
-      return request != null ? new CreditControlRequestImpl(request) : new CreditControlAnswerImpl(answer);
-    case AbortSessionAnswer.commandCode: // ASR/ASA
-      return request != null ? new AbortSessionRequestImpl(request) : new AbortSessionAnswerImpl(answer);
-    case SessionTerminationAnswer.commandCode: // STR/STA
-      return request != null ? new SessionTerminationRequestImpl(request) : new SessionTerminationAnswerImpl(answer);
-    case ReAuthAnswer.commandCode: // RAR/RAA
-      return request != null ? new ReAuthRequestImpl(request) : new ReAuthAnswerImpl(answer);
-    case AccountingAnswer.commandCode: // ACR/ACA
-      return request != null ? new AccountingRequestImpl(request) : new AccountingAnswerImpl(answer);
-    case ErrorAnswer.commandCode:
-      if (answer != null)
-      {
-        return new ErrorAnswerImpl(answer);
-      }
-      else
-      {
-        throw new IllegalArgumentException("ErrorAnswer code set on request: " + request);
-      }
-      // FIXME: baranowb : should extension fall in here?
-      // FIXME: baranowb: what about Error
-    default:
-      throw new OperationNotSupportedException("Not supported message code:" + commandCode + "\n" + (request != null ? request : answer));
-    }
-  }
+		switch (commandCode) {
+		case CreditControlMessage.commandCode: // CCR/CCA
+			return request != null ? new CreditControlRequestImpl(request) : new CreditControlAnswerImpl(answer);
+		case AbortSessionAnswer.commandCode: // ASR/ASA
+			return request != null ? new AbortSessionRequestImpl(request) : new AbortSessionAnswerImpl(answer);
+		case SessionTerminationAnswer.commandCode: // STR/STA
+			return request != null ? new SessionTerminationRequestImpl(request) : new SessionTerminationAnswerImpl(answer);
+		case ReAuthAnswer.commandCode: // RAR/RAA
+			return request != null ? new ReAuthRequestImpl(request) : new ReAuthAnswerImpl(answer);
+		case AccountingAnswer.commandCode: // ACR/ACA
+			return request != null ? new AccountingRequestImpl(request) : new AccountingAnswerImpl(answer);
+		case ErrorAnswer.commandCode:
+
+		default:
+			// throw new
+			// OperationNotSupportedException("Not supported message code:" +
+			// commandCode + "\n" + (request != null ? request : answer));
+			return new ExtensionDiameterMessageImpl(request != null ? request : answer);
+		}
+	}
 
 
 }
