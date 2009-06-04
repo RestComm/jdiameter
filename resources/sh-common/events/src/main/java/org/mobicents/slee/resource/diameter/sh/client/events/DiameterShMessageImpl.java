@@ -103,6 +103,14 @@ public class DiameterShMessageImpl extends DiameterMessageImpl implements Diamet
     return (SupportedFeaturesAvp) getAvpAsCustom(DiameterShAvpCodes.SUPPORTED_FEATURES, DiameterShAvpCodes.SH_VENDOR_ID, SupportedFeaturesAvpImpl.class);
   }
 
+  /* (non-Javadoc)
+	 * @see net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest#hasDataReferenceType()
+	 */
+  	//FIXME: add more methods
+	public boolean hasDataReferenceType() {
+		return super.hasAvp(DiameterShAvpCodes.DATA_REFERENCE, 10415);
+	}
+  
   
   //some hack
 	private transient Object data = null;

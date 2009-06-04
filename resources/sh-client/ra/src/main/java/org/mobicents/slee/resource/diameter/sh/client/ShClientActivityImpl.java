@@ -27,17 +27,23 @@
 package org.mobicents.slee.resource.diameter.sh.client;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.slee.resource.SleeEndpoint;
 
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
+import net.java.slee.resource.diameter.base.events.avp.AuthSessionStateType;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
+import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.ShClientActivity;
 import net.java.slee.resource.diameter.sh.client.ShClientMessageFactory;
 import net.java.slee.resource.diameter.sh.client.ShSessionState;
+import net.java.slee.resource.diameter.sh.client.events.avp.DataReferenceType;
+import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
 import net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest;
+import net.java.slee.resource.diameter.sh.server.events.PushNotificationAnswer;
 import net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest;
 import net.java.slee.resource.diameter.sh.server.events.UserDataRequest;
 
@@ -74,6 +80,10 @@ public class ShClientActivityImpl extends DiameterActivityImpl implements ShClie
   protected DiameterShAvpFactory shAvpFactory = null;
   protected ShClientMessageFactory messageFactory = null;
 
+
+  //Is there any way to add
+	
+  
   public ShClientActivityImpl(DiameterMessageFactoryImpl messageFactory, ShClientMessageFactory shClientMessageFactory, DiameterAvpFactoryImpl avpFactory, DiameterShAvpFactory diameterShAvpFactory, ClientShSession session,
       long timeout, DiameterIdentity destinationHost, DiameterIdentity destinationRealm, SleeEndpoint endpoint)
   {
@@ -87,6 +97,8 @@ public class ShClientActivityImpl extends DiameterActivityImpl implements ShClie
 
   }
 
+  
+  
   public void sendProfileUpdateRequest(ProfileUpdateRequest message) throws IOException {
 		try {
 			DiameterMessageImpl msg = (DiameterMessageImpl) message;
@@ -102,6 +114,7 @@ public class ShClientActivityImpl extends DiameterActivityImpl implements ShClie
 	}
 
 	public void sendSubscribeNotificationsRequest(SubscribeNotificationsRequest message) throws IOException {
+		//FIXME: IMHO this should not be here.
 		try {
 			DiameterMessageImpl msg = (DiameterMessageImpl) message;
 			this.clientSession.sendSubscribeNotificationsRequest(new SubscribeNotificationsRequestImpl((Request) msg.getGenericData()));

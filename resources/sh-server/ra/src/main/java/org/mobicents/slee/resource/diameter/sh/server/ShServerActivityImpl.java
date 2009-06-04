@@ -36,13 +36,14 @@ import net.java.slee.resource.diameter.base.events.avp.AuthSessionStateType;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.AvpUtilities;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
-import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.ShSessionState;
 import net.java.slee.resource.diameter.sh.client.events.ProfileUpdateAnswer;
 import net.java.slee.resource.diameter.sh.client.events.SubscribeNotificationsAnswer;
 import net.java.slee.resource.diameter.sh.client.events.UserDataAnswer;
+import net.java.slee.resource.diameter.sh.client.events.avp.DataReferenceType;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
+import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
 import net.java.slee.resource.diameter.sh.server.ShServerActivity;
 import net.java.slee.resource.diameter.sh.server.ShServerMessageFactory;
 import net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest;
@@ -85,9 +86,13 @@ public class ShServerActivityImpl extends DiameterActivityImpl implements ShServ
 	protected ShServerMessageFactoryImpl messageFactory = null;
 
 	
-	protected DiameterIdentity clientOriginRealm = null;
-	protected GroupedAvp userIdentity;
-	protected AuthSessionStateType authSessionState = null;
+	//FIXME: add more
+	protected UserIdentityAvp userIdentity;
+	protected DataReferenceType[] dataReferenceType;
+	protected AuthSessionStateType authSessionState;
+	protected DiameterIdentity remoteRealm;
+	protected DiameterIdentity remoteHost;
+
 
 	// THIS IS BAD, we need to come up with something.
 	/**
@@ -152,6 +157,7 @@ public class ShServerActivityImpl extends DiameterActivityImpl implements ShServ
 		    		    }
 		    		 ((DiameterShMessageImpl)answer).setData(msg);
 		    		 break;
+		    		 
 		    	}
 		    }
 		  
@@ -408,7 +414,11 @@ public class ShServerActivityImpl extends DiameterActivityImpl implements ShServ
 	      //Well it should always be getting this on request and only once ?
 	      if(incoming)
 	      {
-	       
+	        if(remoteRealm == null )
+	        	remoteRealm = msg.getOriginRealm();
+	        if(remoteHost == null)
+	        	remoteHost = msg.getOriginHost();
+	    	  
 	        if(this.userIdentity == null)
 	        {
 	        	try{

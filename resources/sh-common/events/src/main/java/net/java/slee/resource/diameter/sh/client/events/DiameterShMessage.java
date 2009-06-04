@@ -179,4 +179,6 @@ public interface DiameterShMessage extends DiameterMessage {
 	 */
 	SupportedFeaturesAvp getSupportedFeatures();
 
+	
+	
 }

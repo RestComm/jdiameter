@@ -36,12 +36,10 @@ import net.java.slee.resource.diameter.base.events.avp.AuthSessionStateType;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.AvpUtilities;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
-import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.ShClientMessageFactory;
 import net.java.slee.resource.diameter.sh.client.ShClientSubscriptionActivity;
 import net.java.slee.resource.diameter.sh.client.ShSessionState;
-import net.java.slee.resource.diameter.sh.client.events.ProfileUpdateAnswer;
 import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
 import net.java.slee.resource.diameter.sh.client.events.avp.DataReferenceType;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
@@ -50,14 +48,17 @@ import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
 import net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest;
 import net.java.slee.resource.diameter.sh.server.events.PushNotificationAnswer;
 import net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest;
+import net.java.slee.resource.diameter.sh.server.events.UserDataRequest;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.sh.ClientShSession;
+import org.jdiameter.common.impl.app.sh.ProfileUpdateRequestImpl;
 import org.jdiameter.common.impl.app.sh.PushNotificationAnswerImpl;
 import org.jdiameter.common.impl.app.sh.SubscribeNotificationsRequestImpl;
+import org.jdiameter.common.impl.app.sh.UserDataRequestImpl;
 import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.diameter.dictionary.AvpRepresentation;
@@ -85,9 +86,11 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl imple
 	protected DiameterShAvpFactory shAvpFactory = null;
 	protected ShClientMessageFactory messageFactory = null;
 
-	
-	protected UserIdentityAvpImpl userIdentity;
-	  protected AuthSessionStateType authSessionState = null;
+	//FIXME: add more
+	protected UserIdentityAvp userIdentity;
+	protected DataReferenceType[] dataReferenceType;
+	protected AuthSessionStateType authSessionState;
+	protected DiameterIdentity remoteRealm;
 	 // Last received message
 	protected ArrayList<DiameterMessageImpl> stateMessages = new ArrayList<DiameterMessageImpl>();
 	
@@ -108,7 +111,121 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl imple
 	 */
 	public UserIdentityAvp getSubscribedUserIdendity()
 	{
-		return (UserIdentityAvp) this.userIdentity;
+		return this.userIdentity;
+	}
+
+	public PushNotificationAnswer createPushNotificationAnswer() {
+
+		PushNotificationAnswer answer = null;
+		for (int index = 0; index < stateMessages.size(); index++) {
+			if (stateMessages.get(index).getCommand().getCode() == ProfileUpdateRequest.commandCode) {
+				PushNotificationRequest msg = (PushNotificationRequest) stateMessages.get(index);
+
+				answer = this.messageFactory.createPushNotificationAnswer(msg);
+				if (answer.getAuthSessionState() == null && this.authSessionState != null) {
+					answer.setAuthSessionState(this.authSessionState);
+				}
+				if (answer.getDestinationRealm() == null && remoteRealm != null) {
+					// FIXME:
+					answer.setDestinationRealm(remoteRealm);
+
+				}
+				
+
+				((DiameterShMessageImpl) answer).setData(msg);
+				break;
+			}
+		}
+
+		return answer;
+	}
+	public PushNotificationAnswer createPushNotificationAnswer(long resultCode, boolean isExperimaental)
+	{
+		PushNotificationAnswer answer = null;
+		  for(int index =0 ;index<stateMessages.size();index++)
+		    {
+		    	if(stateMessages.get(index).getCommand().getCode() == ProfileUpdateRequest.commandCode)
+		    	{
+		    		PushNotificationRequest msg = (PushNotificationRequest) stateMessages.get(index);
+		    	
+		    		answer = this.messageFactory.createPushNotificationAnswer(msg, resultCode, isExperimaental);
+		    		 if(answer.getAuthSessionState() == null && this.authSessionState!=null)
+		    		    {
+		    		    	answer.setAuthSessionState(this.authSessionState);
+		    		    }
+		    		 if(answer.getDestinationRealm()== null && remoteRealm!=null)
+		    		 {
+		    			 //FIXME:
+		    			 answer.setDestinationRealm(remoteRealm);
+		    			 
+		    		 }
+		    		 
+		    		 
+		    		 ((DiameterShMessageImpl)answer).setData(msg);
+		    		 break;
+		    	}
+		    }
+		  return answer;
+		  
+		 
+	}
+//	public UserDataRequest createUserDataRequest()
+//	{
+//		UserDataRequest uda = this.messageFactory.createUserDataRequest();
+//		if(userIdentity!=null)
+//			uda.setUserIdentity(this.userIdentity);
+//		if(dataReferenceType!=null)
+//			uda.setDataReferences(dataReferenceType);
+//		if(remoteRealm!=null)
+//			uda.setDestinationRealm(remoteRealm);
+//		if(authSessionState!=null)
+//			uda.setAuthSessionState(authSessionState);
+//		return uda;
+//		
+//	}
+//	
+//	public ProfileUpdateRequest createProfileUpdateRequest()
+//	{
+//		ProfileUpdateRequest pur = this.messageFactory.createProfileUpdateRequest();
+//		if(userIdentity!=null)
+//			pur.setUserIdentity(this.userIdentity);
+//		if(authSessionState!=null)
+//			pur.setAuthSessionState(authSessionState);
+//		if(remoteRealm!=null)
+//			pur.setDestinationRealm(remoteRealm);
+//		
+//		
+//		return pur;
+//	}
+	
+	
+	public void sendUserDataRequest(UserDataRequest message) throws IOException {
+		try {
+			DiameterMessageImpl msg = (DiameterMessageImpl) message;
+			this.clientSession.sendUserDataRequest(new UserDataRequestImpl((Request) msg.getGenericData()));
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
+		} catch (Exception e) {
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
+		}
+	}
+	
+	
+	public void sendProfileUpdateRequest(ProfileUpdateRequest message) throws IOException {
+		try {
+			DiameterMessageImpl msg = (DiameterMessageImpl) message;
+			clientSession.sendProfileUpdateRequest(new ProfileUpdateRequestImpl((Request) msg.getGenericData()));
+		} catch (JAvpNotAllowedException e) {
+			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+			throw anae;
+		} catch (Exception e) {
+			e.printStackTrace();
+			IOException ioe = new IOException("Failed to send message, due to: " + e);
+			throw ioe;
+		}
 	}
 
 	/*
@@ -120,7 +237,9 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl imple
 			DiameterMessageImpl msg = (DiameterMessageImpl) answer;
 
 			this.clientSession.sendPushNotificationAnswer(new PushNotificationAnswerImpl((Answer) msg.getGenericData()));
+			
 			clean((DiameterShMessageImpl)answer);
+			fetchSessionData(answer, false);
 		} catch (JAvpNotAllowedException e) {
 			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
 			throw anae;
@@ -139,29 +258,15 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl imple
 	 * #sendPushNotificationAnswer(long, boolean)
 	 */
 	public void sendPushNotificationAnswer(long resultCode, boolean isExperimentalResultCode) throws IOException {
-		 PushNotificationAnswer answer = null;
-		  for(int index =0 ;index<stateMessages.size();index++)
-		    {
-		    	if(stateMessages.get(index).getCommand().getCode() == ProfileUpdateRequest.commandCode)
-		    	{
-		    		PushNotificationRequest msg = (PushNotificationRequest) stateMessages.get(index);
-		    	
-		    		answer = this.messageFactory.createPushNotificationAnswer(msg, resultCode, isExperimentalResultCode);
-		    		 if(answer.getAuthSessionState() == null && this.authSessionState!=null)
-		    		    {
-		    		    	answer.setAuthSessionState(this.authSessionState);
-		    		    }
-		    		 ((DiameterShMessageImpl)answer).setData(msg);
-		    		 break;
-		    	}
-		    }
-		  
-		  
-		  //answer.setSessionId(super.session.getSessionId());
-		   if(answer!=null)
-		   {
-			   this.sendPushNotificationAnswer(answer);
-		   }
+		 PushNotificationAnswer answer= this.createPushNotificationAnswer(resultCode, isExperimentalResultCode);
+		 if(answer!=null)
+		 {
+			 this.sendPushNotificationAnswer(answer);
+			 
+		 }else
+		 {
+			 throw new IOException("Could not create PNA, there is no PNR?");
+		 }
 	}
 
 	/*
@@ -176,8 +281,9 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl imple
 	public void sendSubscriptionNotificationRequest(SubscribeNotificationsRequest request) throws IOException {
 		try {
 			DiameterMessageImpl msg = (DiameterMessageImpl) request;
-
+			
 			this.clientSession.sendSubscribeNotificationsRequest(new SubscribeNotificationsRequestImpl((Request) msg.getGenericData()));
+			fetchSessionData(msg, false);
 		} catch (JAvpNotAllowedException e) {
 			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
 			throw anae;
@@ -200,6 +306,9 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl imple
 			// FIXME: Alexandre: How do we know DataReferenceType?
 			SubscribeNotificationsRequest snr = this.messageFactory.createSubscribeNotificationsRequest(getSubscribedUserIdendity(), DataReferenceType.REPOSITORY_DATA, SubsReqType.UNSUBSCRIBE);
 
+			snr.setDataReferences(this.dataReferenceType);
+			snr.setDestinationRealm(remoteRealm);
+			snr.setAuthSessionState(authSessionState);
 			DiameterMessageImpl msg = (DiameterMessageImpl) snr;
 
 			this.clientSession.sendSubscribeNotificationsRequest(new SubscribeNotificationsRequestImpl((Request) msg.getGenericData()));
@@ -312,6 +421,7 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl imple
 	        if(this.userIdentity == null)
 	        {
 	        	try{
+	        		//FIXME: make this diff.
 	        		AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(DiameterShAvpCodes.USER_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID);
 	        		this.userIdentity = new UserIdentityAvpImpl(DiameterShAvpCodes.USER_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID,rep.getRuleMandatoryAsInt(),rep.getRuleProtectedAsInt(),AvpUtilities.getAvpAsGrouped(DiameterShAvpCodes.USER_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID, ((DiameterMessageImpl)msg).getGenericData().getAvps()));
 	        	}catch(Exception e)
@@ -337,7 +447,28 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl imple
 	      }
 	      else
 	      {
+	    	  if(destinationRealm == null)
+	    	  {
+	    		  this.remoteRealm = msg.getDestinationRealm();
+	    	  }
 	        //FIXME, do more :)
+	    	if(msg instanceof SubscribeNotificationsRequest)
+	    	{
+	    		SubscribeNotificationsRequest snr = (SubscribeNotificationsRequest) msg;
+	    		if(dataReferenceType==null && snr.hasDataReferenceType())
+	    		{
+	    			dataReferenceType = snr.getDataReferences();
+	    		}
+	    		if(authSessionState==null && snr.hasAuthSessionState())
+	    		{
+	    			authSessionState = snr.getAuthSessionState();
+	    		}
+	    		if(userIdentity == null && snr.hasUserIdentity())
+	    		{
+	    			userIdentity  = snr.getUserIdentity();
+	    		}
+	    		
+	    	}
 	      }
 	    }
 	  }

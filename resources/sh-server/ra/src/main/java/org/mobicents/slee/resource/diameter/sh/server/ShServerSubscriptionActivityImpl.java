@@ -34,16 +34,15 @@ import javax.slee.resource.SleeEndpoint;
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.avp.AuthSessionStateType;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
-import net.java.slee.resource.diameter.base.events.avp.AvpUtilities;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
-import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.ShSessionState;
 import net.java.slee.resource.diameter.sh.client.events.ProfileUpdateAnswer;
 import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
 import net.java.slee.resource.diameter.sh.client.events.SubscribeNotificationsAnswer;
 import net.java.slee.resource.diameter.sh.client.events.UserDataAnswer;
-import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
+import net.java.slee.resource.diameter.sh.client.events.avp.DataReferenceType;
+import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
 import net.java.slee.resource.diameter.sh.server.ShServerMessageFactory;
 import net.java.slee.resource.diameter.sh.server.ShServerSubscriptionActivity;
 import net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest;
@@ -55,18 +54,15 @@ import org.jdiameter.api.EventListener;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.sh.ServerShSession;
-import org.jdiameter.client.impl.parser.MessageImpl;
 import org.jdiameter.common.impl.app.sh.ProfileUpdateAnswerImpl;
 import org.jdiameter.common.impl.app.sh.PushNotificationRequestImpl;
 import org.jdiameter.common.impl.app.sh.SubscribeNotificationsAnswerImpl;
 import org.jdiameter.common.impl.app.sh.UserDataAnswerImpl;
 import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
-import org.mobicents.diameter.dictionary.AvpDictionary;
-import org.mobicents.diameter.dictionary.AvpRepresentation;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.DiameterShMessageImpl;
-import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvpImpl;
+import org.mobicents.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequestImpl;
 import org.mobicents.slee.resource.diameter.sh.server.handlers.ShServerSessionListener;
 
 /**
@@ -85,17 +81,17 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl imple
   protected DiameterShAvpFactory shAvpFactory = null;
   protected ShServerMessageFactoryImpl messageFactory = null;
 
-  protected DiameterIdentity clientOriginHost=null;
-  protected DiameterIdentity clientOriginRealm=null;
-  protected GroupedAvp userIdentity;
-  protected AuthSessionStateType authSessionState = null;
-  
-  
-  //THIS IS BAD, we need to come up with something.
-  /**
+//FIXME: add more
+	protected UserIdentityAvp userIdentity;
+	protected DataReferenceType[] dataReferenceType;
+	protected AuthSessionStateType authSessionState;
+	protected DiameterIdentity remoteRealm;
+	protected DiameterIdentity remoteHost;
+	/**
    * Should contina requests, so we can create answer.
    */
   protected ArrayList<DiameterMessageImpl> stateMessages = new ArrayList<DiameterMessageImpl>();
+	
   public ShServerSubscriptionActivityImpl(ShServerMessageFactory shServerMessageFactory, DiameterShAvpFactory diameterShAvpFactory, ServerShSession session,
       long timeout, DiameterIdentity destinationHost, DiameterIdentity destinationRealm, SleeEndpoint endpoint)
   {
@@ -116,13 +112,13 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl imple
   {
     PushNotificationRequest request = this.messageFactory.createPushNotificationRequest();
 
-    if(request.getDestinationHost() == null && clientOriginHost != null)
+    if(request.getDestinationHost() == null && remoteHost != null)
     {
-      request.setDestinationHost(clientOriginHost);
+      request.setDestinationHost(remoteHost);
     }
-    if(request.getDestinationRealm() == null && clientOriginRealm != null)
+    if(request.getDestinationRealm() == null && remoteRealm != null)
     {
-      request.setDestinationRealm(clientOriginRealm);
+      request.setDestinationRealm(remoteRealm);
     }
 
     if(request.getUserIdentity() == null && this.userIdentity!=null)
@@ -151,7 +147,12 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl imple
 	    		SubscribeNotificationsRequest msg = (SubscribeNotificationsRequest) stateMessages.get(index);
 	    	
 	    		answer = this.messageFactory.createSubscribeNotificationsAnswer(msg, resultCode, isExperimentalResult);
-	    		 if(answer.getAuthSessionState() == null && this.authSessionState!=null)
+	    		//FIXME:
+	    		 //if(answer.getDestinationRealm() == null && remoteRealm != null)
+	    		 //   {
+	    		//	 answer.setDestinationRealm(remoteRealm);
+	    		 //   }
+	    		    if(answer.getAuthSessionState() == null && this.authSessionState!=null)
 	    		    {
 	    		    	answer.setAuthSessionState(this.authSessionState);
 	    		    }
@@ -184,6 +185,7 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl imple
 	    		    {
 	    		    	answer.setAuthSessionState(this.authSessionState);
 	    		    }
+	    		 
 	    		 ((DiameterShMessageImpl)answer).setData(msg);
 	    		 break;
 	    	}
@@ -238,6 +240,7 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl imple
 		    		    {
 		    		    	answer.setAuthSessionState(this.authSessionState);
 		    		    }
+		    		 
 		    		 ((DiameterShMessageImpl)answer).setData(msg);
 		    		 break;
 		    	}
@@ -437,36 +440,27 @@ public class ShServerSubscriptionActivityImpl extends DiameterActivityImpl imple
       //Well it should always be getting this on request and only once ?
       if(incoming)
       {
-        if(this.clientOriginHost == null)
+       //FIXME: add more ?
+        if(this.remoteRealm == null)
         {
-          this.clientOriginHost = msg.getOriginHost();
+          this.remoteRealm = msg.getOriginRealm();
         }
-        if(this.clientOriginRealm == null)
+        if(this.remoteHost == null)
         {
-          this.clientOriginRealm = msg.getOriginRealm();
+        	this.remoteHost = msg.getOriginHost();
         }
-        if(this.userIdentity == null)
+        if(msg instanceof SubscribeNotificationsRequest)
         {
-        	try{
-        		AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(DiameterShAvpCodes.USER_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID);
-        		this.userIdentity = new UserIdentityAvpImpl(DiameterShAvpCodes.USER_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID,rep.getRuleMandatoryAsInt(),rep.getRuleProtectedAsInt(),AvpUtilities.getAvpAsGrouped(DiameterShAvpCodes.USER_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID, ((DiameterMessageImpl)msg).getGenericData().getAvps()));
-        	}catch(Exception e)
+        	SubscribeNotificationsRequestImpl msgImpl = (SubscribeNotificationsRequestImpl) msg;
+        	if(authSessionState == null && msgImpl.hasAuthSessionState())
         	{
-        		e.printStackTrace();
+        		this.authSessionState = msgImpl.getAuthSessionState();
+        	}
+        	if(dataReferenceType == null && msgImpl.hasDataReferenceType())
+        	{
+        		this.dataReferenceType = msgImpl.getDataReferences();
         	}
         }
-        
-        if(this.authSessionState == null)
-        {
-        	try{
-
-        		this.authSessionState = AuthSessionStateType.fromInt(AvpUtilities.getAvpAsInteger32(277, ((DiameterMessageImpl)msg).getGenericData().getAvps()));
-        	}catch(Exception e)
-        	{
-        		e.printStackTrace();
-        	}
-        }
-        
         
         stateMessages.add((DiameterMessageImpl) msg);
         

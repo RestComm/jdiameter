@@ -255,4 +255,10 @@ public interface SubscribeNotificationsRequest extends DiameterShMessage {
 	 */
 	void setSendDataIndication(SendDataIndicationType sendDataIndication);
 
+	/**
+	 * Returns true if msg has Data-Reference-Type AVP
+	 * @return
+	 */
+	boolean hasDataReferenceType();
+
 }

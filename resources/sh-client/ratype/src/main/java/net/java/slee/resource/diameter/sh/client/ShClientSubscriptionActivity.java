@@ -4,8 +4,10 @@ import java.io.IOException;
 
 import net.java.slee.resource.diameter.base.DiameterActivity;
 import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
+import net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest;
 import net.java.slee.resource.diameter.sh.server.events.PushNotificationAnswer;
 import net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest;
+import net.java.slee.resource.diameter.sh.server.events.UserDataRequest;
 
 /**
  * Activity used by a Diameter Sh client to represent a subscription to changes in user data in an HSS.
@@ -58,4 +60,30 @@ public interface ShClientSubscriptionActivity extends DiameterActivity {
 	 * @throws IOException if the request message could not be sent
 	 */
 	void 	sendUnsubscribeRequest() throws IOException;
+	
+	/**
+	 * Creates PUA for receive PNR. It returns null if there is not PNR received.
+	 * @return
+	 */
+	public PushNotificationAnswer createPushNotificationAnswer();
+	/**
+	 * Creates PUA for receive PNR. It returns null if there is not PNR received.
+	 * @param resultCode - result code to be added
+	 * @param isExperimaental - true if result code is experimetnal result code 
+	 * @return
+	 */
+	public PushNotificationAnswer createPushNotificationAnswer(long resultCode, boolean isExperimaental);
+	
+//	public ProfileUpdateRequest createProfileUpdateRequest();
+//	public UserDataRequest createUserDataRequest();
+	/**
+	 * Send user data request.
+	 */
+	public void sendUserDataRequest(UserDataRequest message) throws IOException;
+	/**
+	 * Send profile update request.
+	 * @param message
+	 * @throws IOException
+	 */
+	public void sendProfileUpdateRequest(ProfileUpdateRequest message) throws IOException;
 }
