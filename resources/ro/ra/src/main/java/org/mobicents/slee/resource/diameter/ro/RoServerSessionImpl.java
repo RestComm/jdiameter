@@ -47,7 +47,9 @@ public class RoServerSessionImpl extends CreditControlServerSessionImpl implemen
    */
   public CreditControlAnswer createRoCreditControlAnswer()
   {
-    return this.ccaMessageFactory.createCreditControlAnswer((String)null);
+	  //FIXME: we use super?
+    //return this.ccaMessageFactory.createCreditControlAnswer(super.lastRequest);
+	  return this.createCreditControlAnswer();
   }
 
   /* (non-Javadoc)
