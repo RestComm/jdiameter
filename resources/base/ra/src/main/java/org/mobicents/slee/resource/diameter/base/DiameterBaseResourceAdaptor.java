@@ -854,12 +854,12 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
     List<ApplicationId> appIds = new ArrayList<ApplicationId>();
     for(int index = 0;index<acctAppIds.length;index++)
     {
-    	appIds.add(ApplicationId.createByAccAppId(vendorIds[index], acctAppIds[index]));
+    	appIds.add(ApplicationId.createByAccAppId(acctVendorIds[index], acctAppIds[index]));
     	
     }
     for(int index = 0;index<authAppIds.length;index++)
     {
-    	appIds.add(ApplicationId.createByAuthAppId(vendorIds[index], authAppIds[index]));
+    	appIds.add(ApplicationId.createByAuthAppId(authVendorIds[index], authAppIds[index]));
     	
     }
     
@@ -1242,7 +1242,7 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
       {
 
     	  //we take first
-        ClientAuthSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAuthAppId(vendorIds[0], authAppIds[0]), ClientAuthSession.class);
+        ClientAuthSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAuthAppId(authVendorIds[0], authAppIds[0]), ClientAuthSession.class);
 
         return (AuthClientSessionActivity) activities.get(getActivityHandle(session.getSessions().get(0).getSessionId()));
       }
@@ -1261,7 +1261,7 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
       try
       {
     	  //we take first
-        session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAuthAppId(vendorIds[0], authAppIds[0]), ServerAuthSession.class, new Object[]{request});
+        session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAuthAppId(authVendorIds[0], authAppIds[0]), ServerAuthSession.class, new Object[]{request});
          
         return (AuthServerSessionActivity) activities.get(getActivityHandle(session.getSessions().get(0).getSessionId()));
       }
@@ -1295,7 +1295,7 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
       try
       {
         // FIXME: alexandre: This must be fixed, we need way to get Application-Id!
-        ClientAccSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAccAppId(vendorIds[0], acctAppIds[0]), ClientAccSession.class);
+        ClientAccSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAccAppId(acctVendorIds[0], acctAppIds[0]), ClientAccSession.class);
 
         return (AccountingClientSessionActivity) activities.get(getActivityHandle(session.getSessions().get(0).getSessionId()));
       }
@@ -1605,11 +1605,11 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
 
 		List<ApplicationId> appIds = new ArrayList<ApplicationId>();
 		for (int index = 0; index < acctAppIds.length; index++) {
-			appIds.add(ApplicationId.createByAccAppId(vendorIds[index], acctAppIds[index]));
+			appIds.add(ApplicationId.createByAccAppId(acctVendorIds[index], acctAppIds[index]));
 
 		}
 		for (int index = 0; index < authAppIds.length; index++) {
-			appIds.add(ApplicationId.createByAuthAppId(vendorIds[index], authAppIds[index]));
+			appIds.add(ApplicationId.createByAuthAppId(authVendorIds[index], authAppIds[index]));
 
 		}
 
@@ -1618,18 +1618,27 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
 
   
   
-	private long[] vendorIds;
+  private long[] acctVendorIds;
+	private long[] authVendorIds;
 	private long[] acctAppIds;
 	private long[] authAppIds;
 
-	public String getVendorIds() {
-		
-		
-		return convertToString(vendorIds);
+	public String getAcctVendorIds() {
+
+		return convertToString(acctVendorIds);
 	}
 
-	public void setVendorIds(String vendorIds) {
-		this.vendorIds = convertToLong(vendorIds);
+	public void setAcctVendorIds(String vendorIds) {
+		this.acctVendorIds = convertToLong(vendorIds);
+	}
+
+	public String getAuthVendorIds() {
+
+		return convertToString(authVendorIds);
+	}
+
+	public void setAuthVendorIds(String vendorIds) {
+		this.authVendorIds = convertToLong(vendorIds);
 	}
 
 	public String getAcctAppIds() {
@@ -1647,29 +1656,25 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
 	public void setAuthAppIds(String authAppId) {
 		this.authAppIds = convertToLong(authAppId);
 	}
-	
-  protected String convertToString(long[] l)
-  {
-	  String s="";
-		for(int index = 0;index<l.length;index++)
-		{
-			s+=l[index];
-			if(l.length-1 != index)
-			{
-				s+=",";
+
+	protected String convertToString(long[] l) {
+		String s = "";
+		for (int index = 0; index < l.length; index++) {
+			s += l[index];
+			if (l.length - 1 != index) {
+				s += ",";
 			}
 		}
 		return s;
-	  
-  }
-  protected long[] convertToLong(String s)
-  {
-	  String[] ss=s.split(",");
-	  long[] l  = new long[ss.length];
-	  for(int index = 0;index<ss.length;index++)
-	  {
-		l[index] =  Long.valueOf(ss[index]); 
-	  }
-	  return l;
-  }
+
+	}
+
+	protected long[] convertToLong(String s) {
+		String[] ss = s.split(",");
+		long[] l = new long[ss.length];
+		for (int index = 0; index < ss.length; index++) {
+			l[index] = Long.valueOf(ss[index]);
+		}
+		return l;
+	}
 }
