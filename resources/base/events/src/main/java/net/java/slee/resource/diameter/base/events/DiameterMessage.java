@@ -185,4 +185,9 @@ public interface DiameterMessage extends Cloneable {
 	 */
 	void setExtensionAvps(DiameterAvp... avps) throws AvpNotAllowedException;
 
+	/**
+	 *  Returns true if the Route-Record AVP is present in the message.
+	 * @return
+	 */
+	 public boolean hasRouteRecords();
 }
