@@ -152,8 +152,7 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
 				}
 			}
 		}
-		msg.setOriginRealm(request.getDestinationRealm());
-		msg.setOriginHost(new DiameterIdentity(stack.getMetaData().getLocalPeer().getUri().getFQDN().toString()));
+		addOrigin(msg);
 		return msg;
 	}
 
@@ -183,8 +182,7 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
 			DiameterAvp sessionIdAvp;
 			sessionIdAvp = localFactory.getBaseFactory().createAvp(0, DiameterAvpCodes.SESSION_ID, sessionId);
 			CreditControlRequest req = (CreditControlRequest) (CreditControlRequest) createCreditControlMessage(null, new DiameterAvp[] { sessionIdAvp });
-			req.setOriginRealm(new DiameterIdentity(stack.getMetaData().getLocalPeer().getRealmName()));
-			req.setOriginHost(new DiameterIdentity(stack.getMetaData().getLocalPeer().getUri().getFQDN().toString()));
+			addOrigin(req);
 			return req;
 		} catch (NoSuchAvpException e) {
 			throw new IllegalArgumentException(e);
@@ -327,5 +325,13 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
 			}
 		} else if (avp != null)
 			set.addAvp(avp.getCode(), avp.byteArrayValue(), avp.getVendorId(), avp.getMandatoryRule() == 1, avp.getProtectedRule() == 1);
+	}
+  
+  private void addOrigin(DiameterMessage msg)
+	{
+		if(!msg.hasOriginHost())
+			msg.setOriginHost(new DiameterIdentity(stack.getMetaData().getLocalPeer().getUri().getFQDN().toString()));
+		if(!msg.hasOriginRealm())
+			msg.setOriginRealm(new DiameterIdentity(stack.getMetaData().getLocalPeer().getRealmName()));
 	}
 }
