@@ -59,4 +59,20 @@ public interface RfProvider {
    */
   public AccountingAnswer sendAccountingRequest(AccountingRequest accountingRequest) throws IllegalArgumentException, IOException;
 
+  
+  /**
+	 * Return the number of peers this Diameter resource adaptor is connected
+	 * to.
+	 * 
+	 * @return connected peer count
+	 */
+	int getPeerCount();
+
+	/**
+	 * Returns array containing identities of connected peers FIXME: baranowb; -
+	 * should it be InetAddres, Port pair?
+	 * 
+	 * @return
+	 */
+	DiameterIdentity[] getConnectedPeers();
 }

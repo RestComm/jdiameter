@@ -2,6 +2,7 @@ package org.mobicents.slee.resource.diameter.rf;
 
 import static org.jdiameter.client.impl.helpers.Parameters.MessageTimeOut;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,6 +44,8 @@ import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.Message;
+import org.jdiameter.api.Peer;
+import org.jdiameter.api.PeerTable;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.SessionFactory;
@@ -68,6 +71,7 @@ import org.mobicents.slee.resource.diameter.base.events.AccountingAnswerImpl;
 import org.mobicents.slee.resource.diameter.base.events.AccountingRequestImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.base.events.ErrorAnswerImpl;
+import org.mobicents.slee.resource.diameter.base.events.ExtensionDiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.base.handlers.AccountingSessionFactory;
 import org.mobicents.slee.resource.diameter.base.handlers.BaseSessionCreationListener;
 import org.mobicents.slee.resource.diameter.ro.RoAvpFactoryImpl;
@@ -772,31 +776,27 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
    * @return a DiameterMessage object wrapping the request/answer
    * @throws OperationNotSupportedException
    */
-  private DiameterMessage createEvent(Request request, Answer answer) throws OperationNotSupportedException
-  {
-    if (request == null && answer == null)
-      return null;
+  private DiameterMessage createEvent(Request request, Answer answer) throws OperationNotSupportedException {
+		if (request == null && answer == null)
+			return null;
 
-    int commandCode = (request != null ? request.getCommandCode() : answer.getCommandCode());
+		int commandCode = (request != null ? request.getCommandCode() : answer.getCommandCode());
+		if (answer != null && answer.isError()) {
+			return new ErrorAnswerImpl(answer);
+		}
 
-    // FIXME: Alexandre: Do we need all these in Rf?
-    switch (commandCode)
-    {
-    case AccountingAnswer.commandCode: // ACR/ACA
-      return request != null ? new AccountingRequestImpl(request) : new AccountingAnswerImpl(answer);
-    case ErrorAnswer.commandCode:
-      if (answer != null)
-      {
-        return new ErrorAnswerImpl(answer);
-      }
-      else
-      {
-        throw new IllegalArgumentException("ErrorAnswer code set on request: " + request);
-      }
-    default:
-      throw new OperationNotSupportedException("Not supported message code:" + commandCode + "\n" + (request != null ? request : answer));
-    }
-  }
+		// FIXME: baranowb: we might need here more.
+		switch (commandCode) {
+		case AccountingAnswer.commandCode: // ACR/ACA
+			return request != null ? new AccountingRequestImpl(request) : new AccountingAnswerImpl(answer);
+
+		default:
+			// throw new
+			// OperationNotSupportedException("Not supported message code:" +
+			// commandCode + "\n" + (request != null ? request : answer));
+			return new ExtensionDiameterMessageImpl(request != null ? request : answer);
+		}
+	}
 
   /**
    * Method for firing event to SLEE
@@ -814,7 +814,7 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
   {
     try
     {
-      int eventID = eventLookup.getEventID("net.java.slee.resource.diameter.base.events." + name, "java.net", "0.8");
+      int eventID = eventLookup.getEventID(name, "java.net", "0.8");
 
       DiameterMessage event = (DiameterMessage) createEvent(request, answer);
 
@@ -1058,8 +1058,47 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
       // FIXME Throw unknown message exception?
       return null;
     }
+    
+    public DiameterIdentity[] getConnectedPeers()
+    {
+      return ra.getConnectedPeers();
+    }
+
+    public int getPeerCount()
+    {
+      return ra.getConnectedPeers().length;
+    }
+    
   }
 
+  /**
+   * @return
+   */
+  	public DiameterIdentity[] getConnectedPeers() {
+  		if (this.stack != null) {
+  			try {
+  				// Get the list of peers from the stack
+  				List<Peer> peers = stack.unwrap(PeerTable.class).getPeerTable();
+
+  				DiameterIdentity[] result = new DiameterIdentity[peers.size()];
+
+  				int i = 0;
+
+  				// Get each peer from the list and make a DiameterIdentity
+  				for (Peer peer : peers) {
+  					DiameterIdentity identity = new DiameterIdentity(peer.getUri().toString());
+
+  					result[i++] = identity;
+  				}
+
+  				return result;
+  			} catch (Exception e) {
+  				logger.error("Failure getting peer list.", e);
+  			}
+  		}
+
+  		return new DiameterIdentity[0];
+  	}
   // #############################
   // ## BASE SESSION MANAGEMENT ##
   // #############################
