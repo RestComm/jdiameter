@@ -178,6 +178,7 @@ public class ShClientActivityImpl extends DiameterActivityImpl implements ShClie
       break;
     case TERMINATED:
       state=ShSessionState.TERMINATED;
+      this.clientSession.removeStateChangeNotification(this);
       listener.sessionDestroyed(getSessionId(),clientSession);
       break;
     }

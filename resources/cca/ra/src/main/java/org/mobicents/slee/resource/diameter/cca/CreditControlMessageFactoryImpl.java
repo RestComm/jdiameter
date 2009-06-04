@@ -9,8 +9,13 @@ import java.util.Set;
 
 import net.java.slee.resource.diameter.base.DiameterMessageFactory;
 import net.java.slee.resource.diameter.base.NoSuchAvpException;
+import net.java.slee.resource.diameter.base.events.AccountingRequest;
+import net.java.slee.resource.diameter.base.events.DiameterHeader;
+import net.java.slee.resource.diameter.base.events.DiameterMessage;
+import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodes;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
 import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
@@ -23,12 +28,16 @@ import org.apache.log4j.Logger;
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpSet;
+import org.jdiameter.api.IllegalDiameterStateException;
+import org.jdiameter.api.InternalException;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.Stack;
 import org.jdiameter.client.impl.parser.MessageImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
+import org.mobicents.slee.resource.diameter.base.events.DiameterHeaderImpl;
+import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.CreditControlAnswerImpl;
 import org.mobicents.slee.resource.diameter.cca.events.CreditControlRequestImpl;
 
@@ -74,10 +83,10 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
     //{ Origin-Realm }
    // _ids.add(Avp.ORIGIN_REALM);
     //{ Destination-Realm }
-    _ids.add(Avp.DESTINATION_REALM);
-    _ids.add(Avp.DESTINATION_HOST);
+   // _ids.add(Avp.DESTINATION_REALM);
+    //_ids.add(Avp.DESTINATION_HOST);
     //{ Auth-Application-Id }
-    //_ids.add(Avp.AUTH_APPLICATION_ID);
+    _ids.add(Avp.AUTH_APPLICATION_ID);
     //{ Service-Context-Id }
     _ids.add(CreditControlAVPCodes.Service_Context_Id);
     //{ CC-Request-Type }
@@ -102,69 +111,52 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
    * @see net.java.slee.resource.diameter.cca.CreditControlMessageFactory#createCreditControlAnswer
    * (net.java.slee.resource.diameter.cca.events.CreditControlRequest)
    */
-  public CreditControlAnswer createCreditControlAnswer(CreditControlRequest request)
-  {
-	  
-	  
-    // Create the answer from the request
-    CreditControlRequestImpl ccr = (CreditControlRequestImpl)request;
-    Request req = (Request)ccr.getGenericData(); 
+  public CreditControlAnswer createCreditControlAnswer(CreditControlRequest request) {
 
-    //Message msg = session.createRequest(req);
-    CreditControlAnswerImpl msg = (CreditControlAnswerImpl) createCreditControlMessage(req.getSessionId(),false);
-    //msg.setRequest(false);
-    ((MessageImpl)msg.getGenericData()).setEndToEndIdentifier(req.getEndToEndIdentifier());
-    ((MessageImpl)msg.getGenericData()).setHopByHopIdentifier(req.getHopByHopIdentifier());
-    
-    
-    msg.getGenericData().getAvps().removeAvp(DiameterAvpCodes.DESTINATION_HOST);
-    msg.getGenericData().getAvps().removeAvp(DiameterAvpCodes.DESTINATION_REALM);
-    msg.getGenericData().getAvps().removeAvp(DiameterAvpCodes.ORIGIN_HOST);
-    msg.getGenericData().getAvps().removeAvp(DiameterAvpCodes.ORIGIN_REALM);
-   
-    // Now copy the needed AVPs 
+		// Create the answer from the request
+		CreditControlRequestImpl ccr = (CreditControlRequestImpl) request;
+		Request req = (Request) ccr.getGenericData();
 
-    DiameterAvp[] messageAvps = request.getAvps();
-    if(messageAvps != null)
-    {
-      for(DiameterAvp a : messageAvps)
-      {
-        try
-        {
-          if(ids.contains(a.getCode()))
-          {
-            // Need to switch Destination-* for Origin-*
-            if(a.getCode() == DiameterAvpCodes.DESTINATION_HOST)
-            {
-            	msg.addAvp(localFactory.getBaseFactory().createAvp(DiameterAvpCodes.ORIGIN_HOST, a.byteArrayValue()));
-            }
-            else if(a.getCode() == DiameterAvpCodes.DESTINATION_REALM)
-            {
-            	msg.addAvp(localFactory.getBaseFactory().createAvp(DiameterAvpCodes.ORIGIN_REALM, a.byteArrayValue()));
-            }
-            else 
-            {
-            	msg.addAvp(a);
-            }
-          }
-        }
-        catch (Exception e) {
-          logger.error( "Failed to add AVP to answer. Code[" + a.getCode() + "]", e );
-        }
-      }
-    }
-    
-    return msg;
-  }
+		// Message msg = session.createRequest(req);
 
-  /*
-   * (non-Javadoc)
-   * @see net.java.slee.resource.diameter.cca.CreditControlMessageFactory#createCreditControlAnswer(java.lang.String)
-   */
-  public CreditControlAnswer createCreditControlAnswer(String sessionId) throws IllegalArgumentException
-  {
-    return (CreditControlAnswer) createCreditControlMessage( sessionId, false );
-  }
+		DiameterAvp sessionIdAvp = null;
+		try {
+			sessionIdAvp = localFactory.getBaseFactory().createAvp(0, DiameterAvpCodes.SESSION_ID, req.getSessionId());
+		} catch (NoSuchAvpException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		CreditControlAnswerImpl msg = (CreditControlAnswerImpl) createCreditControlMessage(ccr.getHeader(), new DiameterAvp[] { sessionIdAvp });
+		// msg.setRequest(false);
+		// ((MessageImpl)msg.getGenericData()).setEndToEndIdentifier(req.getEndToEndIdentifier());
+		// ((MessageImpl)msg.getGenericData()).setHopByHopIdentifier(req.getHopByHopIdentifier());
+
+		msg.getGenericData().getAvps().removeAvp(DiameterAvpCodes.DESTINATION_HOST);
+		msg.getGenericData().getAvps().removeAvp(DiameterAvpCodes.DESTINATION_REALM);
+		msg.getGenericData().getAvps().removeAvp(DiameterAvpCodes.ORIGIN_HOST);
+		msg.getGenericData().getAvps().removeAvp(DiameterAvpCodes.ORIGIN_REALM);
+
+		// Now copy the needed AVPs
+
+		DiameterAvp[] messageAvps = request.getAvps();
+		if (messageAvps != null) {
+			for (DiameterAvp a : messageAvps) {
+				try {
+					if (ids.contains(a.getCode())) {
+
+						msg.addAvp(a);
+
+					}
+				} catch (Exception e) {
+					logger.error("Failed to add AVP to answer. Code[" + a.getCode() + "]", e);
+				}
+			}
+		}
+		msg.setOriginRealm(request.getDestinationRealm());
+		msg.setOriginHost(new DiameterIdentity(stack.getMetaData().getLocalPeer().getUri().getFQDN().toString()));
+		return msg;
+	}
+
 
   /*
    * (non-Javadoc)
@@ -173,7 +165,11 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
    */
   public CreditControlRequest createCreditControlRequest()
   {
-    return (CreditControlRequest) createCreditControlMessage( null, true );
+	  
+	  CreditControlRequest req = (CreditControlRequest) createCreditControlMessage( null, null );
+	  req.setOriginRealm(new DiameterIdentity(stack.getMetaData().getLocalPeer().getRealmName()));
+	  req.setOriginHost(new DiameterIdentity(stack.getMetaData().getLocalPeer().getUri().getFQDN().toString()));
+    return req;
   }
 
   /*
@@ -181,10 +177,20 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
    * 
    * @see net.java.slee.resource.diameter.cca.CreditControlMessageFactory#createCreditControlRequest(java.lang.String)
    */
-  public CreditControlRequest createCreditControlRequest(String sessionId) throws IllegalArgumentException
-  {
-    return (CreditControlRequest) createCreditControlMessage( sessionId, true );
-  }
+  public CreditControlRequest createCreditControlRequest(String sessionId) throws IllegalArgumentException {
+
+		try {
+			DiameterAvp sessionIdAvp;
+			sessionIdAvp = localFactory.getBaseFactory().createAvp(0, DiameterAvpCodes.SESSION_ID, sessionId);
+			CreditControlRequest req = (CreditControlRequest) (CreditControlRequest) createCreditControlMessage(null, new DiameterAvp[] { sessionIdAvp });
+			req.setOriginRealm(new DiameterIdentity(stack.getMetaData().getLocalPeer().getRealmName()));
+			req.setOriginHost(new DiameterIdentity(stack.getMetaData().getLocalPeer().getUri().getFQDN().toString()));
+			return req;
+		} catch (NoSuchAvpException e) {
+			throw new IllegalArgumentException(e);
+		}
+
+	}
 
   /*
    * (non-Javadoc)
@@ -227,148 +233,99 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
   // ╗╗ PRIVATE METHODS лл
   // ллллллллллллллллллллл
 
-  protected Message createMessage(int commandCode, ApplicationId applicationId, DiameterAvp... avps)
+
+
+
+  private CreditControlMessage createCreditControlMessage(DiameterHeader diameterHeader, DiameterAvp[] avps) throws IllegalArgumentException
   {
-    Message msg = null;
-
-    DiameterAvp sessionIdAvp = null;
     
-    if(avps != null)
+	
+
+    //List<DiameterAvp> list = (List<DiameterAvp>) this.avpList.clone();
+    boolean isRequest = diameterHeader == null;
+    CreditControlMessage msg = null;
+    if(!isRequest)
     {
-      for (DiameterAvp avp : avps)
-      {
-        if(avp.getCode() == Avp.SESSION_ID)
-        {
-          sessionIdAvp = avp;
-          break;
-        }
-      }
-    }
-
-    if (session == null)
+    	Message raw=createMessage(diameterHeader,avps);
+    	raw.setProxiable(true);
+    	raw.setRequest(false);
+    	msg = new CreditControlAnswerImpl(raw);
+    	
+    }else
     {
-      try
-      {
-        msg = stack.getSessionFactory().getNewRawSession().createMessage(commandCode, applicationId);
-      }
-      catch (Exception e)
-      {
-        logger.error("Error creating message in new session.", e);
-      }
+
+    	Message raw=createMessage(null,avps);
+    	raw.setProxiable(true);
+    	raw.setRequest(true);
+    	msg = new CreditControlAnswerImpl(raw);
     }
-    else
-    {
-      String destRealm = null;
-      String destHost = null;
-
-      if(avps != null)
-      {
-        for (DiameterAvp avp : avps)
-        {
-          if (avp.getCode() == Avp.DESTINATION_REALM)
-          {
-            destRealm = avp.octetStringValue();
-          }
-          else if (avp.getCode() == Avp.DESTINATION_HOST)
-          {
-            destHost = avp.octetStringValue();
-          }
-        }
-      }
-
-      msg = destHost == null ? session.createRequest(commandCode, applicationId, destRealm) : session.createRequest(commandCode, applicationId, destRealm, destHost);
-    }
-
-    if(sessionIdAvp != null)
-    {
-      msg.getAvps().removeAvp(Avp.SESSION_ID);
-      addAvp(sessionIdAvp, msg.getAvps());
-    }
-    else if (msg.getAvps().getAvp(Avp.SESSION_ID) == null)
-    {
-      // Do we have a session-id already or shall we make one?
-      if(this.session != null)
-      {
-        msg.getAvps().addAvp(Avp.SESSION_ID, this.session.getSessionId(), true, false, false);
-      }
-      else
-      {
-        msg.getAvps().addAvp(Avp.SESSION_ID, this.baseFactory.generateSessionId(), true, false, false);
-      }
-    }
-
-    if (avps != null)
-    {
-      for (DiameterAvp avp : avps)
-      {
-        if(avp.getCode() == Avp.SESSION_ID)
-        {
-          continue;
-        }
-        addAvp(avp, msg.getAvps());
-      }
-    }
-
-    msg.setProxiable( true );
-
+    
+    
     return msg;
   }
+  
+  public Message createMessage(DiameterHeader header, DiameterAvp[] avps) throws AvpNotAllowedException {
+		
+	
 
-  private void addAvp(DiameterAvp avp, AvpSet set)
-  {
-    if (avp instanceof GroupedAvp)
-    {
-      AvpSet avpSet = set.addGroupedAvp(avp.getCode(), avp.getVendorId(), avp.getMandatoryRule() == 1, avp.getProtectedRule() == 1);
+		try {
+			Message msg =createRawMessage(header);
 
-      DiameterAvp[] groupedAVPs = ((GroupedAvp) avp).getExtensionAvps();
-      for (DiameterAvp avpFromGroup : groupedAVPs)
-      {
-        addAvp(avpFromGroup, avpSet);
-      }
-    }
-    else if (avp != null)
-    {
-      set.addAvp(avp.getCode(), avp.byteArrayValue(), avp.getVendorId(), avp.getMandatoryRule() == 1, avp.getProtectedRule() == 1);
-    }
+			AvpSet set = msg.getAvps();
+			for (DiameterAvp avp : avps)
+				addAvp(avp, set);
+			
+			return msg;
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
   }
+  
+  protected Message createRawMessage(DiameterHeader header)
+	{
+	  
+	  	int commandCode = 0;
+		long endToEndId = 0;
+		long hopByHopId = 0;
+		ApplicationId aid = null;
+	  	if(header !=null)
+	  	{
+	  		 commandCode = header.getCommandCode();
+			 endToEndId = header.getEndToEndId();
+			 hopByHopId = header.getHopByHopId();
+			 aid = ApplicationId.createByAccAppId(header.getApplicationId());
+	  	}else
+	  	{
+	  		commandCode = AccountingRequest.commandCode;
+	  		endToEndId = (long) (Math.random()*1000000);
+			hopByHopId = (long) (Math.random()*1000000)+1;
+	  		aid = ApplicationId.createByAccAppId(_CCA_VENDOR, _CCA_AUTH_APP_ID);
+	  	}
+		try {
+			Message msg = stack.getSessionFactory().getNewRawSession().createMessage(commandCode, aid, hopByHopId, endToEndId);
+			return msg;
+		} catch (InternalException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalDiameterStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+  protected void addAvp(DiameterAvp avp, AvpSet set) {
+		// FIXME: alexandre: Should we look at the types and add them with
+		// proper function?
+		if (avp instanceof GroupedAvp) {
+			AvpSet avpSet = set.addGroupedAvp(avp.getCode(), avp.getVendorId(), avp.getMandatoryRule() == 1, avp.getProtectedRule() == 1);
 
-  private CreditControlMessage createCreditControlMessage(String sessionId, boolean isRequest ) throws IllegalArgumentException
-  {
-    ApplicationId applicationId = ApplicationId.createByAuthAppId(_CCA_VENDOR, _CCA_AUTH_APP_ID);
-
-    List<DiameterAvp> list = (List<DiameterAvp>) this.avpList.clone();
-
-    if(sessionId != null)
-    {
-      DiameterAvp sessionIdAvp;
-
-      try
-      {
-        sessionIdAvp = this.localFactory.getBaseFactory().createAvp(Avp.SESSION_ID, sessionId);
-
-        // Clean any present Session-Id AVP
-        for(DiameterAvp avp : list)
-        {
-          if(avp.getCode() == Avp.SESSION_ID)
-          {
-            list.remove( avp );
-          }
-        }
-
-        // And add this to as close as possible to the header
-        list.add(0, sessionIdAvp);
-      }
-      catch (NoSuchAvpException e)
-      {
-        throw new IllegalArgumentException(e);
-      }
-    }
-    
-    Message msg = createMessage(CreditControlAnswer.commandCode, applicationId, list.size() > 0 ? list.toArray(new DiameterAvp[list.size()]) : null);
-    msg.setRequest( isRequest );
-
-    return isRequest ? new CreditControlRequestImpl(msg) : new CreditControlAnswerImpl(msg);
-  }
-
-
+			DiameterAvp[] groupedAVPs = ((GroupedAvp) avp).getExtensionAvps();
+			for (DiameterAvp avpFromGroup : groupedAVPs) {
+				addAvp(avpFromGroup, avpSet);
+			}
+		} else if (avp != null)
+			set.addAvp(avp.getCode(), avp.byteArrayValue(), avp.getVendorId(), avp.getMandatoryRule() == 1, avp.getProtectedRule() == 1);
+	}
 }

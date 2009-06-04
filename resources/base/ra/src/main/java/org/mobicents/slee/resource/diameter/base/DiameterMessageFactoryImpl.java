@@ -28,6 +28,8 @@ import org.apache.log4j.Logger;
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpSet;
+import org.jdiameter.api.IllegalDiameterStateException;
+import org.jdiameter.api.InternalException;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.Stack;
@@ -297,14 +299,31 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 		return new ExtensionDiameterMessageImpl(this.createMessage(command.getCode(), null));
 	}
 
-	public DiameterMessage createMessage(DiameterHeader header, DiameterAvp[] avps) throws AvpNotAllowedException {
+	protected Message createRawMessage(DiameterHeader header)
+	{
 		int commandCode = header.getCommandCode();
 		long endToEndId = header.getEndToEndId();
 		long hopByHopId = header.getHopByHopId();
 		ApplicationId aid = ApplicationId.createByAccAppId(header.getApplicationId());
-
 		try {
 			Message msg = stack.getSessionFactory().getNewRawSession().createMessage(commandCode, aid, hopByHopId, endToEndId);
+			return msg;
+		} catch (InternalException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalDiameterStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public DiameterMessage createMessage(DiameterHeader header, DiameterAvp[] avps) throws AvpNotAllowedException {
+		int commandCode = header.getCommandCode();
+	
+
+		try {
+			Message msg =createRawMessage(header);
 
 			for (DiameterAvp avp : avps)
 				msg.getAvps().addAvp(avp.getCode(), avp.byteArrayValue());
@@ -467,7 +486,7 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 
 		if (session == null) {
 			try { // FIXME: baranowb: This should create activity, shouldnt it?
-					// Alex this has to be cleared
+				// Alex this has to be cleared
 				msg = stack.getSessionFactory().getNewRawSession().createMessage(commandCode, applicationId);
 			} catch (Exception e) {
 				logger.error("Failure creating jDiameter message.", e);
@@ -512,6 +531,14 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 			}
 		} else if (avp != null)
 			set.addAvp(avp.getCode(), avp.byteArrayValue(), avp.getVendorId(), avp.getMandatoryRule() == 1, avp.getProtectedRule() == 1);
+	}
+
+	/**
+	 * 
+	 */
+	public void clean() {
+		this.session = null;
+
 	}
 
 	// ################

@@ -104,19 +104,19 @@ public abstract class CreditControlSessionImpl extends DiameterActivityImpl impl
   {
     super.destinationHost = destinationHost;
 
-    DiameterAvp avp = new DiameterAvpImpl(DiameterAvpCodes.DESTINATION_HOST, 0L, 0, 0, destinationHost.toString().getBytes(), DiameterAvpType.DIAMETER_IDENTITY);
+    //DiameterAvp avp = new DiameterAvpImpl(DiameterAvpCodes.DESTINATION_HOST, 0L, 0, 0, destinationHost.toString().getBytes(), DiameterAvpType.DIAMETER_IDENTITY);
     
     //((CreditControlMessageFactoryImpl)ccaMessageFactory).removeAvpFromInnerList(avp);
-    ((CreditControlMessageFactoryImpl)ccaMessageFactory).addAvpToInnerList(avp);
+    //((CreditControlMessageFactoryImpl)ccaMessageFactory).addAvpToInnerList(avp);
   }
 
   public void setDestinationRealm(DiameterIdentity destinationRealm)
   {
     super.destinationRealm=destinationRealm;
 
-    DiameterAvp avp = new DiameterAvpImpl(DiameterAvpCodes.DESTINATION_REALM, 0L, 0, 0, destinationHost.toString().getBytes(), DiameterAvpType.DIAMETER_IDENTITY);
+    //DiameterAvp avp = new DiameterAvpImpl(DiameterAvpCodes.DESTINATION_REALM, 0L, 0, 0, destinationHost.toString().getBytes(), DiameterAvpType.DIAMETER_IDENTITY);
 
     //((CreditControlMessageFactoryImpl)ccaMessageFactory).removeAvpFromInnerList(avp);
-    ((CreditControlMessageFactoryImpl)ccaMessageFactory).addAvpToInnerList(avp);
+    //((CreditControlMessageFactoryImpl)ccaMessageFactory).addAvpToInnerList(avp);
   }
 }

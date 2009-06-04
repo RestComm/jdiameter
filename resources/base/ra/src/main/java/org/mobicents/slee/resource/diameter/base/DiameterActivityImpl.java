@@ -170,5 +170,13 @@ public class DiameterActivityImpl implements DiameterActivity {
 	public void setSessionListener(Object ra) {
 		this.baseListener = (BaseSessionCreationListener) ra;
 	}
-	
+	protected void clean()
+	{
+	  	this.session = null;
+	  	this.handle = null;
+	  	this.avpFactory = null;
+	  	this.raEventListener = null;
+	 	this.avpFactory = null;
+	 	this.handle = null;
+	}
 }

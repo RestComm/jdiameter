@@ -59,18 +59,18 @@ public interface CreditControlMessageFactory {
    */
   CreditControlAnswer createCreditControlAnswer(CreditControlRequest request);
 
-  /**
-   * Create a CreditControlAnswer instance, populating it with the internal
-   * AVPs not known or needed by the application. Use the session ID provided
-   * to find the Diameter session. This should be used when the requests are
-   * being made synchronously and there's no CreditControlClientSessionActivity
-   * available.
-   * 
-   * @param sessionId the Session-Id AVP returned in the Answer to a previous sync call
-   * @return a new CreditControlRequest
-   * @throws IllegalArgumentException if sessionId is not a SessionID AVP
-   */
-  CreditControlAnswer createCreditControlAnswer(String sessionId) throws IllegalArgumentException;
+//  /**
+//   * Create a CreditControlAnswer instance, populating it with the internal
+//   * AVPs not known or needed by the application. Use the session ID provided
+//   * to find the Diameter session. This should be used when the requests are
+//   * being made synchronously and there's no CreditControlClientSessionActivity
+//   * available.
+//   * 
+//   * @param sessionId the Session-Id AVP returned in the Answer to a previous sync call
+//   * @return a new CreditControlRequest
+//   * @throws IllegalArgumentException if sessionId is not a SessionID AVP
+//   */
+//  CreditControlAnswer createCreditControlAnswer(String sessionId) throws IllegalArgumentException;
 
 
 

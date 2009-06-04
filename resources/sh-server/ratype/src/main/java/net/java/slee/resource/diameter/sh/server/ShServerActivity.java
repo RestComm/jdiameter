@@ -34,7 +34,8 @@ import net.java.slee.resource.diameter.sh.client.events.SubscribeNotificationsAn
 import net.java.slee.resource.diameter.sh.client.events.UserDataAnswer;
 
 /**
- * Activity used by a Diameter Sh Server.  The following request messages can be fired as events:
+ * Activity used by a Diameter Sh Server. The following request messages can be
+ * fired as events:
  * <UL>
  * <LI>UserDataRequest
  * <LI>ProfileUpdateRequest
@@ -49,75 +50,107 @@ import net.java.slee.resource.diameter.sh.client.events.UserDataAnswer;
  * </UL>
  * 
  * These are stateless requests so the activity ends when the answer is sent.
- *
+ * 
  */
-public interface ShServerActivity  extends DiameterActivity{
+public interface ShServerActivity extends DiameterActivity {
 
+	/**
+	 * Create a UserDataAnswer using the given parameter to populate the
+	 * User-Data AVP. The Result-Code AVP is automatically set to
+	 * {@link org.mobicents.slee.resource.diameter.base.DiameterResultCode#DIAMETER_SUCCESS}
+	 * .If there is no request of this type received, this method returns null;
+	 * 
+	 * @return a UserDataAnswer object that can be sent using
+	 *         {@link ShServerActivity#sendUserDataAnswer(net.java.slee.resource.diameter.sh.types.UserDataAnswer)}
+	 */
+	UserDataAnswer createUserDataAnswer(byte[] userData);
 
-  /**
-   * Create a UserDataAnswer using the given parameter to populate the User-Data AVP.  The Result-Code AVP is 
-   * automatically set to {@link org.mobicents.slee.resource.diameter.base.DiameterResultCode#DIAMETER_SUCCESS}. 
-   * @return a UserDataAnswer object that can be sent using {@link ShServerActivity#sendUserDataAnswer(net.java.slee.resource.diameter.sh.types.UserDataAnswer)} 
-   */
-  UserDataAnswer createUserDataAnswer(byte[] userData);
+	/**
+	 * Create a UserDataAnswer containing a Result-Code or Experimental-Result
+	 * AVP populated with the given value. If
+	 * <code>isExperimentalResultCode</code> is <code>true</code>, the
+	 * <code>resultCode</code> parameter will be set in a
+	 * {@link org.mobicents.slee.resource.diameter.base.types.ExperimentalResultAvp}
+	 * AVP, if it is <code>false</code> the result code will be set in a
+	 * Result-Code AVP.If there is no request of this type received, this method
+	 * returns null;
+	 * 
+	 * @return a UserDataAnswer object that can be sent using
+	 *         {@link ShServerActivity#sendUserDataAnswer(net.java.slee.resource.diameter.sh.types.UserDataAnswer)}
+	 */
+	UserDataAnswer createUserDataAnswer(long resultCode, boolean isExperimentalResult);
 
-  /**
-   * Create a UserDataAnswer containing a Result-Code or Experimental-Result AVP populated with the given value.
-   * If <code>isExperimentalResultCode</code> is <code>true</code>, the <code>resultCode</code> parameter will be set
-   * in a {@link org.mobicents.slee.resource.diameter.base.types.ExperimentalResultAvp} AVP, if it is <code>false</code> the
-   * result code will be set in a Result-Code AVP. 
-   * @return a UserDataAnswer object that can be sent using {@link ShServerActivity#sendUserDataAnswer(net.java.slee.resource.diameter.sh.types.UserDataAnswer)}
-   */
-  UserDataAnswer createUserDataAnswer(long resultCode, boolean isExperimentalResult);
+	/**
+	 * Create an empty UserDataAnswer that will need to have AVPs set on it
+	 * before being sent.If there is no request of this type received, this
+	 * method returns null;
+	 * 
+	 * @return a UserDataAnswer object that can be sent using
+	 *         {@link ShServerActivity#sendUserDataAnswer(net.java.slee.resource.diameter.sh.types.UserDataAnswer)}
+	 */
+	UserDataAnswer createUserDataAnswer();
 
-  /**
-   * Create an empty UserDataAnswer that will need to have AVPs set on it before being sent.
-   * @return a UserDataAnswer object that can be sent using {@link ShServerActivity#sendUserDataAnswer(net.java.slee.resource.diameter.sh.types.UserDataAnswer)}
-   */
-  UserDataAnswer createUserDataAnswer();
+	/**
+	 * Create a ProfileUpdateAnswer containing a Result-Code or
+	 * Experimental-Result AVP populated with the given value. If
+	 * <code>isExperimentalResultCode</code> is <code>true</code>, the
+	 * <code>resultCode</code> parameter will be set in a
+	 * {@link org.mobicents.slee.resource.diameter.base.types.ExperimentalResultAvp}
+	 * AVP, if it is <code>false</code> the result code will be set in a
+	 * Result-Code AVP.If there is no request of this type received, this method
+	 * returns null;
+	 * 
+	 * @return a ProfileUpdateAnswer object that can be sent using
+	 *         {@link ShServerActivity#sendProfileUpdateAnswer(net.java.slee.resource.diameter.sh.types.ProfileUpdateAnswer)}
+	 */
+	ProfileUpdateAnswer createProfileUpdateAnswer(long resultCode, boolean isExperimentalResult);
 
-  /**
-   * Create a ProfileUpdateAnswer containing a Result-Code or Experimental-Result AVP populated with the given value.
-   * If <code>isExperimentalResultCode</code> is <code>true</code>, the <code>resultCode</code> parameter will be set
-   * in a {@link org.mobicents.slee.resource.diameter.base.types.ExperimentalResultAvp} AVP, if it is <code>false</code> the
-   * result code will be set in a Result-Code AVP. 
-   * @return a ProfileUpdateAnswer object that can be sent using {@link ShServerActivity#sendProfileUpdateAnswer(net.java.slee.resource.diameter.sh.types.ProfileUpdateAnswer)}
-   */
-  ProfileUpdateAnswer createProfileUpdateAnswer(long resultCode, boolean isExperimentalResult);
+	/**
+	 * Create an empty ProfileUpdateAnswer that will need to have AVPs set on it
+	 * before being sent.If there is no request of this type received, this
+	 * method returns null;
+	 * 
+	 * @return a ProfileUpdateAnswer object that can be sent using
+	 *         {@link ShServerActivity#sendProfileUpdateAnswer(net.java.slee.resource.diameter.sh.types.ProfileUpdateAnswer)}
+	 */
+	ProfileUpdateAnswer createProfileUpdateAnswer();
 
-  /**
-   * Create an empty ProfileUpdateAnswer that will need to have AVPs set on it before being sent.
-   * @return a ProfileUpdateAnswer object that can be sent using {@link ShServerActivity#sendProfileUpdateAnswer(net.java.slee.resource.diameter.sh.types.ProfileUpdateAnswer)}
-   */
-  ProfileUpdateAnswer createProfileUpdateAnswer();
+	/**
+	 * Create an empty SubscribeNotificationsAnswer that will need to have AVPs
+	 * set on it before being sent.If there is no request of this type received,
+	 * this method returns null;
+	 * 
+	 * @return a SubscribeNotificationsAnswer object that can be sent using
+	 *         {@link ShServerActivity#sendSubscribeNotificationsAnswer(SubscribeNotificationsAnswer)}
+	 */
+	SubscribeNotificationsAnswer createSubscribeNotificationsAnswer();
 
-  /**
-   * Create an empty SubscribeNotificationsAnswer that will need to have AVPs set on it before being sent.
-   * @return a SubscribeNotificationsAnswer object that can be sent using {@link ShServerActivity#sendSubscribeNotificationsAnswer(SubscribeNotificationsAnswer)}
-   */
-  SubscribeNotificationsAnswer createSubscribeNotificationsAnswer();
+	/**
+	 * Create a SubscribeNotificationsAnswer containing a Result-Code or
+	 * Experimental-Result AVP populated with the given value. If there is no
+	 * request of this type received, this method returns null;
+	 * 
+	 * @param resultCode
+	 * @param isExperimentalResult
+	 * @return
+	 */
+	SubscribeNotificationsAnswer createSubscribeNotificationsAnswer(long resultCode, boolean isExperimentalResult);
 
-  /**
-   * Create a SubscribeNotificationsAnswer containing a Result-Code or Experimental-Result AVP populated with the given value.
-   * @param resultCode
-   * @param isExperimentalResult
-   * @return
-   */
-  SubscribeNotificationsAnswer createSubscribeNotificationsAnswer(long resultCode, boolean isExperimentalResult);
+	/**
+	 * Send the UserDataAnswer to the peer that sent the UserDataRequest.
+	 */
+	void sendUserDataAnswer(UserDataAnswer message) throws IOException;
 
-  /**
-   * Send the UserDataAnswer to the peer that sent the UserDataRequest.
-   */
-  void sendUserDataAnswer(UserDataAnswer message) throws IOException;
+	/**
+	 * Send the ProfileUpdateAnswer to the peer that sent the
+	 * ProfileUpdateRequest.
+	 */
+	void sendProfileUpdateAnswer(ProfileUpdateAnswer message) throws IOException;
 
-  /**
-   * Send the ProfileUpdateAnswer to the peer that sent the ProfileUpdateRequest.
-   */
-  void sendProfileUpdateAnswer(ProfileUpdateAnswer message) throws IOException;
-
-  /**
-   * Send the SubscribeNotificationsAnswer to the peer that sent the SubscribeNotificationsRequest.
-   */
-  void sendSubscribeNotificationsAnswer(SubscribeNotificationsAnswer message) throws IOException;
+	/**
+	 * Send the SubscribeNotificationsAnswer to the peer that sent the
+	 * SubscribeNotificationsRequest.
+	 */
+	void sendSubscribeNotificationsAnswer(SubscribeNotificationsAnswer message) throws IOException;
 
 }

@@ -27,20 +27,27 @@
 package org.mobicents.slee.resource.diameter.sh.client;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.slee.resource.SleeEndpoint;
 
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
+import net.java.slee.resource.diameter.base.events.avp.AuthSessionStateType;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
+import net.java.slee.resource.diameter.base.events.avp.AvpUtilities;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
+import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.ShClientMessageFactory;
 import net.java.slee.resource.diameter.sh.client.ShClientSubscriptionActivity;
 import net.java.slee.resource.diameter.sh.client.ShSessionState;
+import net.java.slee.resource.diameter.sh.client.events.ProfileUpdateAnswer;
 import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
 import net.java.slee.resource.diameter.sh.client.events.avp.DataReferenceType;
+import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
 import net.java.slee.resource.diameter.sh.client.events.avp.SubsReqType;
 import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
+import net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest;
 import net.java.slee.resource.diameter.sh.server.events.PushNotificationAnswer;
 import net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest;
 
@@ -52,10 +59,14 @@ import org.jdiameter.api.sh.ClientShSession;
 import org.jdiameter.common.impl.app.sh.PushNotificationAnswerImpl;
 import org.jdiameter.common.impl.app.sh.SubscribeNotificationsRequestImpl;
 import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
+import org.mobicents.diameter.dictionary.AvpDictionary;
+import org.mobicents.diameter.dictionary.AvpRepresentation;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
+import org.mobicents.slee.resource.diameter.sh.client.events.DiameterShMessageImpl;
+import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.client.handlers.ShClientSessionListener;
 
 /**
@@ -74,8 +85,11 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl imple
 	protected DiameterShAvpFactory shAvpFactory = null;
 	protected ShClientMessageFactory messageFactory = null;
 
+	
+	protected UserIdentityAvpImpl userIdentity;
+	  protected AuthSessionStateType authSessionState = null;
 	 // Last received message
-  protected PushNotificationRequest lastMessage = null;
+	protected ArrayList<DiameterMessageImpl> stateMessages = new ArrayList<DiameterMessageImpl>();
 	
 	public ShClientSubscriptionActivityImpl(DiameterMessageFactoryImpl messageFactory, ShClientMessageFactory shClientMessageFactory, DiameterAvpFactoryImpl avpFactory,
 			DiameterShAvpFactory diameterShAvpFactory, ClientShSession session, long timeout, DiameterIdentity destinationHost, DiameterIdentity destinationRealm, SleeEndpoint endpoint)
@@ -94,7 +108,7 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl imple
 	 */
 	public UserIdentityAvp getSubscribedUserIdendity()
 	{
-		return lastMessage != null ? lastMessage.getUserIdentity() : null;
+		return (UserIdentityAvp) this.userIdentity;
 	}
 
 	/*
@@ -106,6 +120,7 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl imple
 			DiameterMessageImpl msg = (DiameterMessageImpl) answer;
 
 			this.clientSession.sendPushNotificationAnswer(new PushNotificationAnswerImpl((Answer) msg.getGenericData()));
+			clean((DiameterShMessageImpl)answer);
 		} catch (JAvpNotAllowedException e) {
 			AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
 			throw anae;
@@ -124,11 +139,29 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl imple
 	 * #sendPushNotificationAnswer(long, boolean)
 	 */
 	public void sendPushNotificationAnswer(long resultCode, boolean isExperimentalResultCode) throws IOException {
-		PushNotificationAnswer pna = this.messageFactory.createPushNotificationAnswer(resultCode, isExperimentalResultCode);
-
-		setSessionData(pna);
-
-		this.sendPushNotificationAnswer(pna);
+		 PushNotificationAnswer answer = null;
+		  for(int index =0 ;index<stateMessages.size();index++)
+		    {
+		    	if(stateMessages.get(index).getCommand().getCode() == ProfileUpdateRequest.commandCode)
+		    	{
+		    		PushNotificationRequest msg = (PushNotificationRequest) stateMessages.get(index);
+		    	
+		    		answer = this.messageFactory.createPushNotificationAnswer(msg, resultCode, isExperimentalResultCode);
+		    		 if(answer.getAuthSessionState() == null && this.authSessionState!=null)
+		    		    {
+		    		    	answer.setAuthSessionState(this.authSessionState);
+		    		    }
+		    		 ((DiameterShMessageImpl)answer).setData(msg);
+		    		 break;
+		    	}
+		    }
+		  
+		  
+		  //answer.setSessionId(super.session.getSessionId());
+		   if(answer!=null)
+		   {
+			   this.sendPushNotificationAnswer(answer);
+		   }
 	}
 
 	/*
@@ -179,7 +212,13 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl imple
 			throw ioe;
 		}
 	}
-
+	private void clean(DiameterShMessageImpl msg)
+	  {
+		  if(msg.getData()!=null)
+		  {
+			  this.stateMessages.remove(msg.removeData());
+		  }
+	  }
 	/*
 	 * (non-Javadoc)
 	 * @see org.jdiameter.api.app.StateChangeListener#stateChanged(java.lang.Enum, java.lang.Enum)
@@ -199,6 +238,7 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl imple
 		case TERMINATED:
 			state = ShSessionState.TERMINATED;
 			listener.sessionDestroyed(getSessionId(), clientSession);
+			this.clientSession.removeStateChangeNotification(this);
 			break;
 		}
 	}
@@ -261,28 +301,45 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl imple
 	 * 
 	 * @param request
 	 */
-	void fetchSubscriptionData(PushNotificationRequest request)
-	{
-	  lastMessage = request;
-	}
+	public void fetchSessionData(DiameterMessage msg, boolean incoming)
+	  {
+	    if(msg.getHeader().isRequest())
+	    {
+	      //Well it should always be getting this on request and only once ?
+	      if(incoming)
+	      {
+	        
+	        if(this.userIdentity == null)
+	        {
+	        	try{
+	        		AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(DiameterShAvpCodes.USER_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID);
+	        		this.userIdentity = new UserIdentityAvpImpl(DiameterShAvpCodes.USER_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID,rep.getRuleMandatoryAsInt(),rep.getRuleProtectedAsInt(),AvpUtilities.getAvpAsGrouped(DiameterShAvpCodes.USER_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID, ((DiameterMessageImpl)msg).getGenericData().getAvps()));
+	        	}catch(Exception e)
+	        	{
+	        		e.printStackTrace();
+	        	}
+	        }
+	        
+	        if(this.authSessionState == null)
+	        {
+	        	try{
 
-	/**
-	 * Sets session data obtained from last received message into parameter message.
-	 * 
-	 * @param message the message to be changed with session data
-	 * @return true if changes were made, false otherwise
-	 */
-  private boolean setSessionData(DiameterMessage message)
-  {
-    // Just some sanity checks...
-    if(lastMessage != null && lastMessage.getCommand().getCode() == message.getCommand().getCode())
-    {
-      message.getHeader().setEndToEndId( lastMessage.getHeader().getEndToEndId() );
-      message.getHeader().setHopByHopId( lastMessage.getHeader().getHopByHopId() );
-      message.setSessionId( lastMessage.getSessionId() );
-      
-      return true;
-    }
-    return false;
-  }
+	        		this.authSessionState = AuthSessionStateType.fromInt(AvpUtilities.getAvpAsInteger32(277, ((DiameterMessageImpl)msg).getGenericData().getAvps()));
+	        	}catch(Exception e)
+	        	{
+	        		e.printStackTrace();
+	        	}
+	        }
+	        
+	        
+	        stateMessages.add((DiameterMessageImpl) msg);
+	        
+	      }
+	      else
+	      {
+	        //FIXME, do more :)
+	      }
+	    }
+	  }
+
 }

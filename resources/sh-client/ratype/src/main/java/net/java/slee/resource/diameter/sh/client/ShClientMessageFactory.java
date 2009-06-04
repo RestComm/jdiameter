@@ -25,6 +25,7 @@
  * Boston, MA  02110-1301  USA
  */package net.java.slee.resource.diameter.sh.client;
 
+import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
 import net.java.slee.resource.diameter.sh.client.events.avp.DataReferenceType;
 import net.java.slee.resource.diameter.sh.client.events.avp.SubsReqType;
 import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
@@ -87,11 +88,11 @@ public interface ShClientMessageFactory extends MessageFactory {
      * will be sent as a standard Result-Code AVP. 
      * @return a PushNotificationAnswer object that can be sent using {@link ShClientNotificationActivity#sendPushNotificationAnswer(net.java.slee.resource.diameter.sh.types.PushNotificationAnswer)} 
      */
-    PushNotificationAnswer createPushNotificationAnswer(long resultCode, boolean isExperimentalResultCode);
+    PushNotificationAnswer createPushNotificationAnswer(PushNotificationRequest request,long resultCode, boolean isExperimentalResultCode);
 
     /**
      * Create an empty PushNotificationAnswer that will need to have AVPs set on it before being sent.
      * @return a PushNotificationAnswer object that can be sent using {@link ShClientNotificationActivity#sendPushNotificationAnswer(net.java.slee.resource.diameter.sh.types.PushNotificationAnswer)}
      */
-    PushNotificationAnswer createPushNotificationAnswer();
+    PushNotificationAnswer createPushNotificationAnswer(PushNotificationRequest request);
 }

@@ -32,6 +32,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -193,13 +195,14 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
    */
   public void activityEnded(ActivityHandle handle)
   {
-    logger.info("Diameter ShServer RA :: activityEnded :: handle[" + handle + ".");
+	if(logger.isInfoEnabled())  
+	  logger.info("Diameter ShServer RA :: activityEnded :: handle[" + handle + ".");
 
     if (this.activities != null)
     {
       synchronized (this.activities)
       {
-        this.activities.remove(handle);
+       this.activities.remove(handle);
       }
     }
   }
@@ -214,6 +217,7 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
    */
   public void activityUnreferenced(ActivityHandle handle)
   {
+	  if(logger.isInfoEnabled())
     logger.info("Diameter ShServer RA :: activityUnreferenced :: handle[" + handle + "].");
 
     this.activityEnded(handle);
@@ -232,10 +236,12 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
    */
   public void entityActivated() throws ResourceException
   {
+	  if(logger.isInfoEnabled())
     logger.info("Diameter ShServer RA :: entityActivated.");
 
     try
     {
+    	if(logger.isInfoEnabled())
       logger.info("Activating Diameter ShServer RA Entity");
 
       initializeNamingContext();
@@ -273,6 +279,8 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
       this.sessionFactory = this.stack.getSessionFactory();
 
       ((ISessionFactory) sessionFactory).registerAppFacory(ServerShSession.class, new ShServerSessionFactory(this.sessionFactory, this, this.messageTimeout));
+      
+      
     }
     catch (Exception e) {
       logger.error("Error Activating Diameter ShServer RA Entity", e);
@@ -313,16 +321,18 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
    */
   public void entityDeactivated()
   {
+	  if(logger.isInfoEnabled()){
     logger.info("Diameter ShServer RA :: entityDeactivated.");
 
     logger.info("Diameter ShServer RA :: Cleaning RA Activities.");
-
+	  }
+    
     synchronized (this.activities)
     {
       activities.clear();
     }
     activities = null;
-
+    if(logger.isInfoEnabled())
     logger.info("Diameter ShServer RA :: Cleaning naming context.");
 
     try
@@ -332,7 +342,7 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
     catch (NamingException e) {
       logger.error("Diameter ShServer RA :: Cannot unbind naming context.");
     }
-
+    if(logger.isInfoEnabled())
     logger.info("Diameter ShServer RA :: RA Stopped.");
   }
 
@@ -345,7 +355,7 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
    * state "STOPPING".
    */
   public void entityDeactivating()
-  {
+  {if(logger.isInfoEnabled())
     logger.info("Diameter ShServer RA :: entityDeactivating.");
 
     this.state = ResourceAdaptorState.STOPPING;
@@ -488,7 +498,7 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
     this.stack = this.diameterMux.getStack();
     this.messageTimeout = stack.getMetaData().getConfiguration().getLongValue(MessageTimeOut.ordinal(), (Long) MessageTimeOut.defValue());
     this.serverProvider = new ShServerProviderImpl(this);
-    this.localFactory = new DiameterShAvpFactoryImpl(this.diameterAvpFactory);
+    this.localFactory = new DiameterShAvpFactoryImpl(this.diameterAvpFactory, this.stack);
 
     logger.info("Diameter ShServer RA :: Successfully initialized stack.");
   }
@@ -504,6 +514,7 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
    */
   public void eventProcessingFailed(ActivityHandle handle, Object event, int eventID, Address address, int flags, FailureReason reason)
   {
+	  if(logger.isInfoEnabled())
     logger.info("Diameter ShServer RA :: eventProcessingFailed :: handle[" + handle + "], event[" + event + "], eventID[" + eventID + "], address[" + address + "], flags["
         + flags + "], reason[" + reason + "].");
   }
@@ -518,6 +529,7 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
    */
   public void eventProcessingSuccessful(ActivityHandle handle, Object event, int eventID, Address address, int flags)
   {
+	  if(logger.isInfoEnabled())
     logger.info("Diameter ShServer RA :: eventProcessingSuccessful :: handle[" + handle + "], event[" + event + "], eventID[" + eventID + "], address[" + address + "], flags["
         + flags + "].");
   }
@@ -529,6 +541,7 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
 
   public ActivityHandle getActivityHandle(Object activity)
   {
+	  if(logger.isInfoEnabled())
     logger.info("Diameter ShServer RA :: getActivityHandle :: activity[" + activity + "].");
 
     if (!(activity instanceof DiameterActivity))
@@ -578,10 +591,12 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
 
   public void receivedSuccessMessage(Request req, Answer ans)
   {
+	  if(logger.isInfoEnabled())
     logger.info("Diameter ShServer RA :: receivedSuccessMessage :: " + "Request[" + req + "], Answer[" + ans + "].");
 
     try
     {
+    	if(logger.isInfoEnabled())
       logger.info("Received Message Result-Code: " + ans.getResultCode().getUnsigned32());
     }
     catch (AvpDataException ignore) {
@@ -591,6 +606,7 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
 
   public void timeoutExpired(Request req)
   {
+	  if(logger.isInfoEnabled())
     logger.info("Diameter Base RA :: timeoutExpired :: " + "Request[" + req + "].");
 
     // Message delivery timed out - we have to remove activity
@@ -730,7 +746,7 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
 
       // Put it into our activites map
       activities.put(activity.getActivityHandle(), activity);
-
+      if(logger.isInfoEnabled())
       logger.info("Activity started [" + activity.getActivityHandle() + "]");
     }
     catch (Exception e) {
@@ -949,4 +965,3 @@ public class DiameterShServerResourceAdaptor  implements ResourceAdaptor, Diamet
     this.fireEvent(getActivityHandle(sessionId), name, request, answer);
   }
 
-}

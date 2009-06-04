@@ -34,56 +34,63 @@ import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
 import net.java.slee.resource.diameter.sh.server.events.PushNotificationAnswer;
 
 /**
- * The ShServerProvider can be used by a SLEE service to provide HSS functions on an IMS network.
- *
+ * The ShServerProvider can be used by a SLEE service to provide HSS functions
+ * on an IMS network.
+ * 
  */
 public interface ShServerProvider {
 
-    /**
-     * Provides the ServerMessageFactory
-     *
-     * @return ServerMesageFactory
-     */
-    ShServerMessageFactory getServerMessageFactory();
-    
-    DiameterShAvpFactory getAvpFactory();
-    
-    /**
-     * Return the number of peers this Diameter resource adaptor is connected
-     * to.
-     * 
-     * @return connected peer count
-     */
-    int getPeerCount();
+	/**
+	 * Provides the ServerMessageFactory
+	 * 
+	 * @return ServerMesageFactory
+	 */
+	ShServerMessageFactory getServerMessageFactory();
 
-    /**
-     * Returns array containing identities of connected peers FIXME: baranowb; -
-     * should it be InetAddres, Port pair?
-     * 
-     * @return
-     */
-    DiameterIdentity[] getConnectedPeers();
+	DiameterShAvpFactory getAvpFactory();
 
-    /**
-     * Create a new Sh server activity to send and receive Diameter Sh messages.
-     * @return an ShServerSubscriptionActivity 
-     * @throws CreateActivityException if the RA could not create the activity for any reason
-     */
-    //ShServerSubscriptionActivity createShServerSubscriptionActivity() throws CreateActivityException;
-    
-    /**
-     * Create a new Sh server activity to send and receive Diameter Sh messages.
-     * @return an ShServerSubscriptionActivity 
-     * @throws CreateActivityException if the RA could not create the activity for any reason
-     */
-    //ShServerActivity createShServerActivity() throws CreateActivityException;
+	/**
+	 * Return the number of peers this Diameter resource adaptor is connected
+	 * to.
+	 * 
+	 * @return connected peer count
+	 */
+	int getPeerCount();
 
-    /**
-     * Sends a synchronous PushNotificationRequest which will block until an answer is received from the peer.
-     *
-     * @param message a PushNotificationRequest created by the ServerMessageFactory
-     * @return Push-Notification-Answer message from AS
-     * @throws IOException if there is an error sending the message
-     */
-    PushNotificationAnswer pushNotificationRequest(PushNotificationRequest message) throws IOException;
+	/**
+	 * Returns array containing identities of connected peers FIXME: baranowb; -
+	 * should it be InetAddres, Port pair?
+	 * 
+	 * @return
+	 */
+	DiameterIdentity[] getConnectedPeers();
+
+	/**
+	 * Create a new Sh server activity to send and receive Diameter Sh messages.
+	 * 
+	 * @return an ShServerSubscriptionActivity
+	 * @throws CreateActivityException
+	 *             if the RA could not create the activity for any reason
+	 */
+	// ShServerSubscriptionActivity createShServerSubscriptionActivity() throws
+	// CreateActivityException;
+	/**
+	 * Create a new Sh server activity to send and receive Diameter Sh messages.
+	 * 
+	 * @return an ShServerSubscriptionActivity
+	 * @throws CreateActivityException
+	 *             if the RA could not create the activity for any reason
+	 */
+	// ShServerActivity createShServerActivity() throws CreateActivityException;
+	/**
+	 * Sends a synchronous PushNotificationRequest which will block until an
+	 * answer is received from the peer.
+	 * 
+	 * @param message
+	 *            a PushNotificationRequest created by the ServerMessageFactory
+	 * @return Push-Notification-Answer message from AS
+	 * @throws IOException
+	 *             if there is an error sending the message
+	 */
+	PushNotificationAnswer pushNotificationRequest(PushNotificationRequest message) throws IOException;
 }

@@ -103,4 +103,26 @@ public class DiameterShMessageImpl extends DiameterMessageImpl implements Diamet
     return (SupportedFeaturesAvp) getAvpAsCustom(DiameterShAvpCodes.SUPPORTED_FEATURES, DiameterShAvpCodes.SH_VENDOR_ID, SupportedFeaturesAvpImpl.class);
   }
 
+  
+  //some hack
+	private transient Object data = null;
+
+	public void setData(Object d) {
+		this.data = d;
+	}
+
+	public Object removeData() {
+		Object o = this.data;
+		this.data = null;
+		return o;
+
+	}
+
+	public Object getData() {
+
+		return this.data;
+
+	}
+
+  
 }
