@@ -23,12 +23,9 @@ import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
-import net.java.slee.resource.diameter.sh.client.MessageFactory;
-import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
 
 import org.apache.log4j.Logger;
 import org.jdiameter.api.ApplicationId;
-import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
@@ -597,7 +594,7 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 		default:
 			diamMessage = new ExtensionDiameterMessageImpl(msg);
 		}
-
+		addOrigin(diamMessage);
 		return diamMessage;
 	}
 
@@ -680,7 +677,13 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 		return this.createDiameterMessage(header, avps, header.getCommandCode(), ApplicationId.createByAccAppId(0,header.getApplicationId()));
 	}
 
-	
+	private void addOrigin(DiameterMessage msg)
+	{
+		if(!msg.hasOriginHost())
+			msg.setOriginHost(new DiameterIdentity(stack.getMetaData().getLocalPeer().getUri().getFQDN().toString()));
+		if(!msg.hasOriginRealm())
+			msg.setOriginRealm(new DiameterIdentity(stack.getMetaData().getLocalPeer().getRealmName()));
+	}
 
 	// ################
 	// # PROVISIONING #

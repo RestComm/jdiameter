@@ -32,6 +32,7 @@ import java.util.List;
 import net.java.slee.resource.diameter.base.DiameterMessageFactory;
 import net.java.slee.resource.diameter.base.NoSuchAvpException;
 import net.java.slee.resource.diameter.base.events.DiameterHeader;
+import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodes;
@@ -141,8 +142,7 @@ public class ShServerMessageFactoryImpl implements ShServerMessageFactory {
 		// add more :) ?
 
 		//answer.setOriginHost(request.getOriginHost());
-		answer.setOriginRealm(request.getDestinationRealm());
-		answer.setOriginHost(new DiameterIdentity(stack.getMetaData().getLocalPeer().getUri().getFQDN().toString()));
+		addOrigin(answer);
 
 		return answer;
 	}
@@ -171,7 +171,8 @@ public class ShServerMessageFactoryImpl implements ShServerMessageFactory {
 
 		Message msg = createShMessage(null, avps.toArray(new DiameterAvp[avps.size()]));
 		PushNotificationRequestImpl request = new PushNotificationRequestImpl(msg);
-
+		addOrigin(request);
+		
 		return request;
 	}
 
@@ -212,9 +213,8 @@ public class ShServerMessageFactoryImpl implements ShServerMessageFactory {
 			answer.setRouteRecords(request.getRouteRecords());
 		// add more :) ?
 
-		answer.setOriginRealm(request.getDestinationRealm());
-		answer.setOriginHost(new DiameterIdentity(stack.getMetaData().getLocalPeer().getUri().getFQDN().toString()));
-
+		
+		addOrigin(answer);
 		return answer;
 	}
 
@@ -263,8 +263,7 @@ public class ShServerMessageFactoryImpl implements ShServerMessageFactory {
 			answer.setRouteRecords(request.getRouteRecords());
 		// add more :) ?
 
-		answer.setOriginRealm(request.getDestinationRealm());
-		answer.setOriginHost(new DiameterIdentity(stack.getMetaData().getLocalPeer().getUri().getFQDN().toString()));
+		addOrigin(answer);
 		return answer;
 	}
 
@@ -438,7 +437,7 @@ public class ShServerMessageFactoryImpl implements ShServerMessageFactory {
 		return msg;
 	}
 
-	public Message createMessage(DiameterHeader header, DiameterAvp[] avps) throws AvpNotAllowedException {
+	protected Message createMessage(DiameterHeader header, DiameterAvp[] avps) throws AvpNotAllowedException {
 
 		try {
 			Message msg = createRawMessage(header);
@@ -510,5 +509,11 @@ public class ShServerMessageFactoryImpl implements ShServerMessageFactory {
 		if (this.baseFactory != null)
 			this.baseFactory.clean();
 	}
-
+	private void addOrigin(DiameterMessage msg)
+	{
+		if(!msg.hasOriginHost())
+			msg.setOriginHost(new DiameterIdentity(stack.getMetaData().getLocalPeer().getUri().getFQDN().toString()));
+		if(!msg.hasOriginRealm())
+			msg.setOriginRealm(new DiameterIdentity(stack.getMetaData().getLocalPeer().getRealmName()));
+	}
 }

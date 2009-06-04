@@ -28,11 +28,12 @@ package org.mobicents.slee.resource.diameter.sh.client;
 
 import net.java.slee.resource.diameter.base.DiameterAvpFactory;
 import net.java.slee.resource.diameter.base.NoSuchAvpException;
-import net.java.slee.resource.diameter.base.events.AccountingRequest;
 import net.java.slee.resource.diameter.base.events.DiameterHeader;
+import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodes;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
 import net.java.slee.resource.diameter.sh.client.MessageFactory;
 import net.java.slee.resource.diameter.sh.client.ShClientMessageFactory;
@@ -125,6 +126,7 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 
 		Message msg = createShMessage(null, avps, ProfileUpdateRequest.commandCode);
 		ProfileUpdateRequestImpl pur = new ProfileUpdateRequestImpl(msg);
+		addOrigin(pur);
 		
 		return pur;
 	}
@@ -190,6 +192,7 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 
 		Message msg = createShMessage(null, avps, SubscribeNotificationsRequest.commandCode);
 		SubscribeNotificationsRequestImpl snr = new SubscribeNotificationsRequestImpl(msg);
+		addOrigin(snr);
 		return snr;
 	}
 
@@ -218,6 +221,7 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 
 		Message msg = createShMessage(null, avps, UserDataRequest.commandCode);
 		UserDataRequestImpl udr = new UserDataRequestImpl(msg);
+		addOrigin(udr);
 		return udr;
 	}
 
@@ -289,7 +293,7 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 		return msg;
 	}
 
-	public Message createMessage(DiameterHeader header, DiameterAvp[] avps, int commandCode) throws AvpNotAllowedException {
+	protected Message createMessage(DiameterHeader header, DiameterAvp[] avps, int commandCode) throws AvpNotAllowedException {
 
 		try {
 			Message msg = createRawMessage(header,commandCode);
@@ -305,6 +309,7 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 				msg.getAvps().addAvp(vendorSpecific.getCode(), vendorSpecific.byteArrayValue());
 
 			}
+			
 			return msg;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -359,4 +364,11 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 	//public DiameterMessageFactory getBaseMessageFactory() {
 	//	return this.baseFactory;
 	//}
+	private void addOrigin(DiameterMessage msg)
+	{
+		if(!msg.hasOriginHost())
+			msg.setOriginHost(new DiameterIdentity(stack.getMetaData().getLocalPeer().getUri().getFQDN().toString()));
+		if(!msg.hasOriginRealm())
+			msg.setOriginRealm(new DiameterIdentity(stack.getMetaData().getLocalPeer().getRealmName()));
+	}
 }
