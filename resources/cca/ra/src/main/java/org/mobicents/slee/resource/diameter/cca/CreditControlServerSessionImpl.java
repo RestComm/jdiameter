@@ -122,7 +122,7 @@ public class CreditControlServerSessionImpl extends CreditControlSessionImpl imp
     {
       session.sendCreditControlAnswer(new JCreditControlAnswerImpl((Answer) msg.getGenericData()));
 	} catch (JAvpNotAllowedException e) {
-		System.err.println("_+_+_+_+_+_GOT JAVP EXCEPTION");
+	
 		AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
 		throw anae;
 	} catch (Exception e) {
