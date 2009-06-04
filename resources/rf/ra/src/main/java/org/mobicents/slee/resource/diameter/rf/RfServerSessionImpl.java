@@ -18,7 +18,7 @@ import org.mobicents.slee.resource.diameter.base.AccountingServerSessionActivity
 import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
-import org.mobicents.slee.resource.diameter.sh.client.events.DiameterShMessageImpl;
+
 
 
 /**
@@ -82,7 +82,7 @@ protected ArrayList<DiameterMessageImpl> stateMessages = new ArrayList<DiameterM
 	    		 answer.setAcctApplicationId( 3L );
 	    		 //FIXME: add destiantion realm?
 	    		 
-	    		 ((DiameterShMessageImpl)answer).setData(msg);
+	    		 ((DiameterMessageImpl)answer).setData(msg);
 	    		 break;
 	    	}
 	    }
@@ -142,7 +142,7 @@ protected ArrayList<DiameterMessageImpl> stateMessages = new ArrayList<DiameterM
     }
   }
   
-  private void clean(DiameterShMessageImpl msg)
+  private void clean(DiameterMessageImpl msg)
   {
 	  if(msg.getData()!=null)
 	  {
