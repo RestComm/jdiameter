@@ -131,14 +131,14 @@ public class BaseFactoriesTest {
   @Test
   public void isAnswerASA() throws Exception
   {
-    AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer();
+    AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer(messageFactory.createAbortSessionRequest());
     assertFalse("Request Flag in Abort-Session-Answer is set.", asa.getHeader().isRequest());
   }
   
   @Test
   public void testGettersAndSettersASA() throws Exception
   {
-    AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer();
+    AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer(messageFactory.createAbortSessionRequest());
     
     int nFailures = AvpAssistant.testMethods(asa, AbortSessionAnswer.class);
     
@@ -148,14 +148,14 @@ public class BaseFactoriesTest {
   @Test
   public void hasDestinationHostASA() throws Exception
   {
-    AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer();
+    AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer(messageFactory.createAbortSessionRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", asa.getDestinationHost());    
   }
 
   @Test
   public void hasDestinationRealmASA() throws Exception
   {
-    AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer();
+    AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer(messageFactory.createAbortSessionRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", asa.getDestinationRealm());    
   }
   
@@ -179,14 +179,14 @@ public class BaseFactoriesTest {
   @Test
   public void isAnswerACA() throws Exception
   {
-    AccountingAnswer aca = messageFactory.createAccountingAnswer();
+    AccountingAnswer aca = messageFactory.createAccountingAnswer(messageFactory.createAccountingRequest());
     assertFalse("Request Flag in Abort-Session-Answer is set.", aca.getHeader().isRequest());
   }
 
   @Test
   public void testGettersAndSettersACA() throws Exception
   {
-    AccountingAnswer aca = messageFactory.createAccountingAnswer();
+    AccountingAnswer aca = messageFactory.createAccountingAnswer(messageFactory.createAccountingRequest());
     
     int nFailures = AvpAssistant.testMethods(aca, AccountingAnswer.class);
     
@@ -196,14 +196,14 @@ public class BaseFactoriesTest {
   @Test
   public void hasDestinationHostACA() throws Exception
   {
-    AccountingAnswer aca = messageFactory.createAccountingAnswer();
+    AccountingAnswer aca = messageFactory.createAccountingAnswer(messageFactory.createAccountingRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", aca.getDestinationHost());    
   }
 
   @Test
   public void hasDestinationRealmACA() throws Exception
   {
-    AccountingAnswer aca = messageFactory.createAccountingAnswer();
+    AccountingAnswer aca = messageFactory.createAccountingAnswer(messageFactory.createAccountingRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", aca.getDestinationRealm());    
   }
   
@@ -227,14 +227,14 @@ public class BaseFactoriesTest {
   @Test
   public void isAnswerCEA() throws Exception
   {
-    CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer();
+    CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer(messageFactory.createCapabilitiesExchangeRequest());
     assertFalse("Request Flag in Capabilities-Exchange-Answer is set.", cea.getHeader().isRequest());
   }
   
   @Test
   public void testGettersAndSettersCEA() throws Exception
   {
-    CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer();
+    CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer(messageFactory.createCapabilitiesExchangeRequest());
     
     int nFailures = AvpAssistant.testMethods(cea, CapabilitiesExchangeAnswer.class);
     
@@ -244,14 +244,14 @@ public class BaseFactoriesTest {
   @Test
   public void hasDestinationHostCEA() throws Exception
   {
-    CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer();
+    CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer(messageFactory.createCapabilitiesExchangeRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", cea.getDestinationHost());    
   }
 
   @Test
   public void hasDestinationRealmCEA() throws Exception
   {
-    CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer();
+    CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer(messageFactory.createCapabilitiesExchangeRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", cea.getDestinationRealm());    
   }
 
@@ -275,14 +275,14 @@ public class BaseFactoriesTest {
   @Test
   public void isAnswerDWA() throws Exception
   {
-    DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer();
+    DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer(messageFactory.createDeviceWatchdogRequest());
     assertFalse("Request Flag in Device-Watchdog-Answer is set.", dwa.getHeader().isRequest());
   }
   
   @Test
   public void testGettersAndSettersDWA() throws Exception
   {
-    DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer();
+    DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer(messageFactory.createDeviceWatchdogRequest());
     
     int nFailures = AvpAssistant.testMethods(dwa, DeviceWatchdogAnswer.class);
     
@@ -292,14 +292,14 @@ public class BaseFactoriesTest {
   @Test
   public void hasDestinationHostDWA() throws Exception
   {
-    DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer();
+    DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer(messageFactory.createDeviceWatchdogRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", dwa.getDestinationHost());    
   }
 
   @Test
   public void hasDestinationRealmDWA() throws Exception
   {
-    DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer();
+    DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer(messageFactory.createDeviceWatchdogRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", dwa.getDestinationRealm());    
   }
 
@@ -323,14 +323,14 @@ public class BaseFactoriesTest {
   @Test
   public void isAnswerDPA() throws Exception
   {
-    DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer();
+    DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer(messageFactory.createDisconnectPeerRequest());
     assertFalse("Request Flag in Disconnect-Peer-Answer is set.", dpa.getHeader().isRequest());
   }
   
   @Test
   public void testGettersAndSettersDPA() throws Exception
   {
-    DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer();
+    DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer(messageFactory.createDisconnectPeerRequest());
     
     int nFailures = AvpAssistant.testMethods(dpa, DisconnectPeerAnswer.class);
     
@@ -340,14 +340,14 @@ public class BaseFactoriesTest {
   @Test
   public void hasDestinationHostDPA() throws Exception
   {
-    DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer();
+    DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer(messageFactory.createDisconnectPeerRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", dpa.getDestinationHost());    
   }
 
   @Test
   public void hasDestinationRealmDPA() throws Exception
   {
-    DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer();
+    DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer(messageFactory.createDisconnectPeerRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", dpa.getDestinationRealm());    
   }
 
@@ -371,14 +371,14 @@ public class BaseFactoriesTest {
   @Test
   public void isAnswerRAA() throws Exception
   {
-    ReAuthAnswer raa = messageFactory.createReAuthAnswer();
+    ReAuthAnswer raa = messageFactory.createReAuthAnswer(messageFactory.createReAuthRequest());
     assertFalse("Request Flag in Disconnect-Peer-Answer is set.", raa.getHeader().isRequest());
   }
   
   @Test
   public void testGettersAndSettersRAA() throws Exception
   {
-    ReAuthAnswer raa = messageFactory.createReAuthAnswer();
+    ReAuthAnswer raa = messageFactory.createReAuthAnswer(messageFactory.createReAuthRequest());
     
     int nFailures = AvpAssistant.testMethods(raa, ReAuthAnswer.class);
     
@@ -388,14 +388,14 @@ public class BaseFactoriesTest {
   @Test
   public void hasDestinationHostRAA() throws Exception
   {
-    ReAuthAnswer raa = messageFactory.createReAuthAnswer();
+    ReAuthAnswer raa = messageFactory.createReAuthAnswer(messageFactory.createReAuthRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", raa.getDestinationHost());    
   }
 
   @Test
   public void hasDestinationRealmRAA() throws Exception
   {
-    ReAuthAnswer raa = messageFactory.createReAuthAnswer();
+    ReAuthAnswer raa = messageFactory.createReAuthAnswer(messageFactory.createReAuthRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", raa.getDestinationRealm());    
   }
   
@@ -419,14 +419,14 @@ public class BaseFactoriesTest {
   @Test
   public void isAnswerSTA() throws Exception
   {
-    SessionTerminationAnswer sta = messageFactory.createSessionTerminationAnswer();
+    SessionTerminationAnswer sta = messageFactory.createSessionTerminationAnswer(messageFactory.createSessionTerminationRequest());
     assertFalse("Request Flag in Disconnect-Peer-Answer is set.", sta.getHeader().isRequest());
   }
   
   @Test
   public void testGettersAndSettersSTA() throws Exception
   {
-    SessionTerminationAnswer str = messageFactory.createSessionTerminationAnswer();
+    SessionTerminationAnswer str = messageFactory.createSessionTerminationAnswer(messageFactory.createSessionTerminationRequest());
     
     int nFailures = AvpAssistant.testMethods(str, SessionTerminationAnswer.class);
     
@@ -436,14 +436,14 @@ public class BaseFactoriesTest {
   @Test
   public void hasDestinationHostSTA() throws Exception
   {
-    SessionTerminationAnswer sta = messageFactory.createSessionTerminationAnswer();
+    SessionTerminationAnswer sta = messageFactory.createSessionTerminationAnswer(messageFactory.createSessionTerminationRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", sta.getDestinationHost());    
   }
 
   @Test
   public void hasDestinationRealmSTA() throws Exception
   {
-    SessionTerminationAnswer sta = messageFactory.createSessionTerminationAnswer();
+    SessionTerminationAnswer sta = messageFactory.createSessionTerminationAnswer(messageFactory.createSessionTerminationRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", sta.getDestinationRealm());    
   }
   

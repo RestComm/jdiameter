@@ -95,11 +95,13 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 
 	public AbortSessionAnswer createAbortSessionAnswer(AbortSessionRequest request) {
 		try {
-			return createAbortSessionAnswer(request);
-		} catch (AvpNotAllowedException e) {
-			logger.error(e);
-			return null;
+			return createAbortSessionAnswer(request, new DiameterAvp[0]);
 		}
+		catch (AvpNotAllowedException e) {
+			logger.error("Unexpected failure while trying to create ASA message.", e);
+		}
+		
+    return null;
 	}
 
 	public AbortSessionRequest createAbortSessionRequest(DiameterAvp[] avps) throws AvpNotAllowedException {
@@ -117,11 +119,13 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 
 	public AbortSessionRequest createAbortSessionRequest() {
 		try {
-			return createAbortSessionRequest(null);
-		} catch (AvpNotAllowedException e) {
-			logger.error(e);
-			return null;
+			return createAbortSessionRequest(new DiameterAvp[0]);
 		}
+		catch (AvpNotAllowedException e) {
+      logger.error("Unexpected failure while trying to create ASR message.", e);
+		}
+		
+    return null;
 	}
 
 	public AccountingAnswer createAccountingAnswer(AccountingRequest request,DiameterAvp[] avps) throws AvpNotAllowedException {
@@ -141,11 +145,13 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 
 	public AccountingAnswer createAccountingAnswer(AccountingRequest request) {
 		try {
-			return createAccountingAnswer(request);
-		} catch (AvpNotAllowedException e) {
-			logger.error("", e);
-			return null;
+			return createAccountingAnswer(request, new DiameterAvp[0]);
 		}
+		catch (AvpNotAllowedException e) {
+      logger.error("Unexpected failure while trying to create ACA message.", e);
+		}
+		
+    return null;
 	}
 
 	public AccountingRequest createAccountingRequest(DiameterAvp[] avps) throws AvpNotAllowedException {
@@ -159,18 +165,18 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 			msg.setSessionId(session.getSessionId());
 		}
 
-		
-
 		return msg;
 	}
 
 	public AccountingRequest createAccountingRequest() {
 		try {
-			return createAccountingRequest(null);
-		} catch (AvpNotAllowedException e) {
-			logger.error("", e);
-			return null;
+			return createAccountingRequest(new DiameterAvp[0]);
 		}
+		catch (AvpNotAllowedException e) {
+      logger.error("Unexpected failure while trying to create ACR message.", e);
+		}
+
+		return null;
 	}
 
 	public CapabilitiesExchangeAnswer createCapabilitiesExchangeAnswer(CapabilitiesExchangeRequest request,DiameterAvp[] avps) throws AvpNotAllowedException {
@@ -190,16 +196,16 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 
 	public CapabilitiesExchangeAnswer createCapabilitiesExchangeAnswer(CapabilitiesExchangeRequest request) {
 		try {
-			return createCapabilitiesExchangeAnswer(request);
-		} catch (AvpNotAllowedException e) {
-			logger.error("", e);
-			return null;
+			return createCapabilitiesExchangeAnswer(request, new DiameterAvp[0]);
 		}
+		catch (AvpNotAllowedException e) {
+      logger.error("Unexpected failure while trying to create CEA message.", e);
+		}
+		
+    return null;
 	}
 
 	public CapabilitiesExchangeRequest createCapabilitiesExchangeRequest(DiameterAvp[] avps) throws AvpNotAllowedException {
-
-		
 
 		CapabilitiesExchangeRequest msg = (CapabilitiesExchangeRequest) this.createDiameterMessage(null, avps, Message.CAPABILITIES_EXCHANGE_REQUEST, ApplicationId.createByAccAppId(0, 0));
 
@@ -208,16 +214,17 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 		}
 
 		return msg;
-
 	}
 
 	public CapabilitiesExchangeRequest createCapabilitiesExchangeRequest() {
 		try {
-			return createCapabilitiesExchangeRequest(null);
-		} catch (AvpNotAllowedException e) {
-			logger.error("", e);
-			return null;
+			return createCapabilitiesExchangeRequest(new DiameterAvp[0]);
 		}
+		catch (AvpNotAllowedException e) {
+      logger.error("Unexpected failure while trying to create CER message.", e);
+		}
+		
+    return null;
 	}
 
 	public DeviceWatchdogAnswer createDeviceWatchdogAnswer(DeviceWatchdogRequest request,DiameterAvp[] avps) throws AvpNotAllowedException {
@@ -236,9 +243,10 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 
 	public DeviceWatchdogAnswer createDeviceWatchdogAnswer(DeviceWatchdogRequest request) {
 		try {
-			return createDeviceWatchdogAnswer(request);
-		} catch (AvpNotAllowedException e) {
-			logger.error("", e);
+			return createDeviceWatchdogAnswer(request, new DiameterAvp[0]);
+		}
+		catch (AvpNotAllowedException e) {
+      logger.error("Unexpected failure while trying to create DWA message.", e);
 			return null;
 		}
 	}
@@ -255,11 +263,13 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 
 	public DeviceWatchdogRequest createDeviceWatchdogRequest() {
 		try {
-			return createDeviceWatchdogRequest(null);
-		} catch (AvpNotAllowedException e) {
-			logger.error("", e);
-			return null;
+			return createDeviceWatchdogRequest(new DiameterAvp[0]);
 		}
+		catch (AvpNotAllowedException e) {
+      logger.error("Unexpected failure while trying to create DWR message.", e);
+		}
+		
+    return null;
 	}
 
 	public DisconnectPeerAnswer createDisconnectPeerAnswer(DisconnectPeerRequest request,DiameterAvp[] avps) throws AvpNotAllowedException {
@@ -278,9 +288,10 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 
 	public DisconnectPeerAnswer createDisconnectPeerAnswer(DisconnectPeerRequest request) {
 		try {
-			return createDisconnectPeerAnswer(request);
-		} catch (AvpNotAllowedException e) {
-			logger.error("", e);
+			return createDisconnectPeerAnswer(request, new DiameterAvp[0]);
+		}
+		catch (AvpNotAllowedException e) {
+      logger.error("Unexpected failure while trying to create DPA message.", e);
 			return null;
 		}
 	}
@@ -297,11 +308,12 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 
 	public DisconnectPeerRequest createDisconnectPeerRequest() {
 		try {
-			return createDisconnectPeerRequest(null);
-		} catch (AvpNotAllowedException e) {
-			logger.error("", e);
-			return null;
+			return createDisconnectPeerRequest(new DiameterAvp[0]);
 		}
+		catch (AvpNotAllowedException e) {
+      logger.error("Unexpected failure while trying to create DPR message.", e);
+		}
+    return null;
 	}
 
 	public ExtensionDiameterMessage createMessage(DiameterCommand command, DiameterAvp[] avps) throws AvpNotAllowedException {
@@ -315,71 +327,6 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 		
 		return msg;
 	}
-
-//	protected Message createRawMessage(DiameterHeader header)
-//	{
-//		int commandCode = header.getCommandCode();
-//		long endToEndId = header.getEndToEndId();
-//		long hopByHopId = header.getHopByHopId();
-//		ApplicationId aid = ApplicationId.createByAccAppId(header.getApplicationId());
-//		try {
-//			Message msg = stack.getSessionFactory().getNewRawSession().createMessage(commandCode, aid, hopByHopId, endToEndId);
-//			return msg;
-//		} catch (InternalException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IllegalDiameterStateException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return null;
-//	}
-//	
-//	public DiameterMessage createMessage(DiameterHeader header, DiameterAvp[] avps) throws AvpNotAllowedException {
-//		int commandCode = header.getCommandCode();
-//	
-//
-//		try {
-//			Message msg =createRawMessage(header);
-//
-//			for (DiameterAvp avp : avps)
-//				msg.getAvps().addAvp(avp.getCode(), avp.byteArrayValue());
-//
-//			DiameterMessage diamMessage = null;
-//
-//			switch (commandCode) {
-//			case Message.ABORT_SESSION_REQUEST:
-//				diamMessage = header.isRequest() ? new AbortSessionRequestImpl(msg) : new AbortSessionAnswerImpl(msg);
-//				break;
-//			case Message.ACCOUNTING_REQUEST:
-//				diamMessage = header.isRequest() ? new AccountingRequestImpl(msg) : new AccountingAnswerImpl(msg);
-//				break;
-//			case Message.CAPABILITIES_EXCHANGE_REQUEST:
-//				diamMessage = header.isRequest() ? new CapabilitiesExchangeRequestImpl(msg) : new CapabilitiesExchangeAnswerImpl(msg);
-//				break;
-//			case Message.DEVICE_WATCHDOG_REQUEST:
-//				diamMessage = header.isRequest() ? new DeviceWatchdogRequestImpl(msg) : new DeviceWatchdogAnswerImpl(msg);
-//				break;
-//			case Message.DISCONNECT_PEER_REQUEST:
-//				diamMessage = header.isRequest() ? new DisconnectPeerRequestImpl(msg) : new DisconnectPeerAnswerImpl(msg);
-//				break;
-//			case Message.RE_AUTH_REQUEST:
-//				diamMessage = header.isRequest() ? new ReAuthRequestImpl(msg) : new ReAuthAnswerImpl(msg);
-//				break;
-//			case Message.SESSION_TERMINATION_REQUEST:
-//				diamMessage = header.isRequest() ? new SessionTerminationRequestImpl(msg) : new SessionTerminationAnswerImpl(msg);
-//				break;
-//			default:
-//				diamMessage = new ExtensionDiameterMessageImpl(msg);
-//			}
-//
-//			return diamMessage;
-//		} catch (Exception e) {
-//			logger.error("", e);
-//		}
-//
-//		return null;
-//	}
 
 	public ReAuthAnswer createReAuthAnswer(ReAuthRequest request,DiameterAvp[] avps) throws AvpNotAllowedException {
 		// FIXME: alexandre: What should be used here?
@@ -397,11 +344,13 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 
 	public ReAuthAnswer createReAuthAnswer(ReAuthRequest request) {
 		try {
-			return createReAuthAnswer(request);
-		} catch (AvpNotAllowedException e) {
-			logger.error("", e);
-			return null;
+			return createReAuthAnswer(request, new DiameterAvp[0]);
 		}
+		catch (AvpNotAllowedException e) {
+      logger.error("Unexpected failure while trying to create RAA message.", e);
+		}
+		
+    return null;
 	}
 
 	public ReAuthRequest createReAuthRequest(DiameterAvp[] avps) throws AvpNotAllowedException {
@@ -416,11 +365,13 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 
 	public ReAuthRequest createReAuthRequest() {
 		try {
-			return createReAuthRequest(null);
-		} catch (AvpNotAllowedException e) {
-			logger.error("", e);
-			return null;
+			return createReAuthRequest(new DiameterAvp[0]);
 		}
+		catch (AvpNotAllowedException e) {
+      logger.error("Unexpected failure while trying to create RAR message.", e);
+		}
+
+		return null;
 	}
 
 	public SessionTerminationAnswer createSessionTerminationAnswer(SessionTerminationRequest request,DiameterAvp[] avps) throws AvpNotAllowedException {
@@ -435,11 +386,13 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 
 	public SessionTerminationAnswer createSessionTerminationAnswer(SessionTerminationRequest request) {
 		try {
-			return createSessionTerminationAnswer(request);
-		} catch (AvpNotAllowedException e) {
-			logger.error("", e);
-			return null;
+			return createSessionTerminationAnswer(request, new DiameterAvp[0]);
 		}
+		catch (AvpNotAllowedException e) {
+      logger.error("Unexpected failure while trying to create STA message.", e);
+		}
+		
+    return null;
 	}
 
 	public SessionTerminationRequest createSessionTerminationRequest(DiameterAvp[] avps) throws AvpNotAllowedException {
@@ -454,9 +407,10 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 
 	public SessionTerminationRequest createSessionTerminationRequest() {
 		try {
-			return createSessionTerminationRequest(null);
-		} catch (AvpNotAllowedException e) {
-			logger.error("", e);
+			return createSessionTerminationRequest(new DiameterAvp[0]);
+		}
+		catch (AvpNotAllowedException e) {
+      logger.error("Unexpected failure while trying to create STR message.", e);
 			return null;
 		}
 	}
@@ -544,29 +498,95 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 //			set.addAvp(avp.getCode(), avp.byteArrayValue(), avp.getVendorId(), avp.getMandatoryRule() == 1, avp.getProtectedRule() == 1);
 //	}
 //	
+
+//protected Message createRawMessage(DiameterHeader header)
+//{
+//  int commandCode = header.getCommandCode();
+//  long endToEndId = header.getEndToEndId();
+//  long hopByHopId = header.getHopByHopId();
+//  ApplicationId aid = ApplicationId.createByAccAppId(header.getApplicationId());
+//  try {
+//    Message msg = stack.getSessionFactory().getNewRawSession().createMessage(commandCode, aid, hopByHopId, endToEndId);
+//    return msg;
+//  } catch (InternalException e) {
+//    // TODO Auto-generated catch block
+//    e.printStackTrace();
+//  } catch (IllegalDiameterStateException e) {
+//    // TODO Auto-generated catch block
+//    e.printStackTrace();
+//  }
+//  return null;
+//}
+//
+//public DiameterMessage createMessage(DiameterHeader header, DiameterAvp[] avps) throws AvpNotAllowedException {
+//  int commandCode = header.getCommandCode();
+//
+//
+//  try {
+//    Message msg =createRawMessage(header);
+//
+//    for (DiameterAvp avp : avps)
+//      msg.getAvps().addAvp(avp.getCode(), avp.byteArrayValue());
+//
+//    DiameterMessage diamMessage = null;
+//
+//    switch (commandCode) {
+//    case Message.ABORT_SESSION_REQUEST:
+//      diamMessage = header.isRequest() ? new AbortSessionRequestImpl(msg) : new AbortSessionAnswerImpl(msg);
+//      break;
+//    case Message.ACCOUNTING_REQUEST:
+//      diamMessage = header.isRequest() ? new AccountingRequestImpl(msg) : new AccountingAnswerImpl(msg);
+//      break;
+//    case Message.CAPABILITIES_EXCHANGE_REQUEST:
+//      diamMessage = header.isRequest() ? new CapabilitiesExchangeRequestImpl(msg) : new CapabilitiesExchangeAnswerImpl(msg);
+//      break;
+//    case Message.DEVICE_WATCHDOG_REQUEST:
+//      diamMessage = header.isRequest() ? new DeviceWatchdogRequestImpl(msg) : new DeviceWatchdogAnswerImpl(msg);
+//      break;
+//    case Message.DISCONNECT_PEER_REQUEST:
+//      diamMessage = header.isRequest() ? new DisconnectPeerRequestImpl(msg) : new DisconnectPeerAnswerImpl(msg);
+//      break;
+//    case Message.RE_AUTH_REQUEST:
+//      diamMessage = header.isRequest() ? new ReAuthRequestImpl(msg) : new ReAuthAnswerImpl(msg);
+//      break;
+//    case Message.SESSION_TERMINATION_REQUEST:
+//      diamMessage = header.isRequest() ? new SessionTerminationRequestImpl(msg) : new SessionTerminationAnswerImpl(msg);
+//      break;
+//    default:
+//      diamMessage = new ExtensionDiameterMessageImpl(msg);
+//    }
+//
+//    return diamMessage;
+//  } catch (Exception e) {
+//    logger.error("", e);
+//  }
+//
+//  return null;
+//}
+
 	
 	
 	
 	protected DiameterMessage createDiameterMessage(DiameterHeader diameterHeader, DiameterAvp[] avps, int _commandCode, ApplicationId appId) throws IllegalArgumentException {
 
 		// List<DiameterAvp> list = (List<DiameterAvp>) this.avpList.clone();
-		boolean isRequest = diameterHeader == null || diameterHeader.isRequest();
+		boolean isRequest = diameterHeader == null;
 		Message msg = null;
+
 		if (!isRequest) {
 			Message raw = createMessage(diameterHeader, avps, 0, null);
 			raw.setProxiable(true);
 			raw.setRequest(false);
 			msg = raw;
-
-		} else {
-
+		}
+		else {
 			Message raw = createMessage(diameterHeader, avps, _commandCode, appId);
 			raw.setProxiable(true);
 			raw.setRequest(true);
 			msg = raw;
 		}
 		// now now we msut add VendorSpecific?
-		int commandCode = isRequest ? diameterHeader.getCommandCode() : _commandCode;
+		int commandCode = isRequest ? _commandCode : diameterHeader.getCommandCode();
 		DiameterMessage diamMessage = null;
 
 		switch (commandCode) {
@@ -598,21 +618,25 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 		return diamMessage;
 	}
 
-	protected Message createMessage(DiameterHeader header, DiameterAvp[] avps,int _commandCode,ApplicationId appId) throws AvpNotAllowedException {
+	protected Message createMessage(DiameterHeader header, DiameterAvp[] avps,int _commandCode,ApplicationId appId) throws AvpNotAllowedException
+	{
+	  try {
+	    Message msg = createRawMessage(header, _commandCode, appId);
 
-		try {
-			Message msg = createRawMessage(header,  _commandCode,appId);
-			AvpSet set = msg.getAvps();
-			for (DiameterAvp avp : avps)
-				addAvp(avp, set);
-				
+	    if(avps != null && avps.length > 0) {
+	      AvpSet set = msg.getAvps();
+	      for (DiameterAvp avp : avps) {
+	        addAvp(avp, set);
+	      }
+	    }
 
-		
-			return msg;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+	    return msg;
+	  }
+	  catch (Exception e) {
+	    logger.error("Failure trying to create Diameter message.", e);
+	  }
+	  
+	  return null;
 	}
 
 	protected Message createRawMessage(DiameterHeader header, int _commandCode,ApplicationId appId) {
