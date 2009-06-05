@@ -107,7 +107,9 @@ protected ArrayList<DiameterMessageImpl> stateMessages = new ArrayList<DiameterM
    */
   public void sendAccountingAnswer( AccountingAnswer accountingAnswer ) throws IOException, IllegalArgumentException
   {
+	  
     super.sendAccountAnswer( accountingAnswer );
+    clean((DiameterMessageImpl)accountingAnswer);
   }
 
   /*
