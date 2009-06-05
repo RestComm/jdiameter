@@ -289,24 +289,28 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
 	  	int commandCode = 0;
 		long endToEndId = 0;
 		long hopByHopId = 0;
-		ApplicationId aid = null;
+		
+		ApplicationId  aid = ApplicationId.createByAuthAppId(_CCA_VENDOR, _CCA_AUTH_APP_ID);
 	  	if(header !=null)
 	  	{
+	  		//Answer
 	  		 commandCode = header.getCommandCode();
 			 endToEndId = header.getEndToEndId();
 			 hopByHopId = header.getHopByHopId();
-			 aid = ApplicationId.createByAccAppId(header.getApplicationId());
+			 //aid = ApplicationId.createByAuthAppId(header.getApplicationId());
 	  	}else
 	  	{
-	  		commandCode = AccountingRequest.commandCode;
-	  		endToEndId = (long) (Math.random()*1000000);
-			hopByHopId = (long) (Math.random()*1000000)+1;
-			//FIXME?
-	  		aid = ApplicationId.createByAccAppId(0, 0);
+	  		commandCode = CreditControlRequest.commandCode;
+	  		//endToEndId = (long) (Math.random()*1000000);
+			//hopByHopId = (long) (Math.random()*1000000)+1;
+			
 	  	}
 		try {
-			Message msg = stack.getSessionFactory().getNewRawSession().createMessage(commandCode, aid, hopByHopId, endToEndId);
-			return msg;
+			if(header!=null)
+				return stack.getSessionFactory().getNewRawSession().createMessage(commandCode, aid, hopByHopId, endToEndId);
+			else
+				return stack.getSessionFactory().getNewRawSession().createMessage(commandCode, aid);
+			
 		} catch (InternalException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
