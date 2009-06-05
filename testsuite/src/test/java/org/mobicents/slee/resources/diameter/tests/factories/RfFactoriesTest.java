@@ -171,8 +171,12 @@ public class RfFactoriesTest implements BaseSessionCreationListener {
 
       AccountingRequest acr = rfMessageFactory.createRfAccountingRequest( AccountingRecordType.EVENT_RECORD );
       
+      acr.setAccountingRecordNumber( 5L );
+      
       session = ((ISessionFactory) sf).getNewAppSession(null, null, ServerAccSession.class, ((DiameterMessageImpl)acr).getGenericData());
       rfServerSession = new RfServerSessionImpl((DiameterMessageFactoryImpl)rfMessageFactory.getBaseMessageFactory(), (DiameterAvpFactoryImpl)rfAvpFactory.getBaseFactory(), session, 5000L, null, null, null, stack);
+      
+      ((RfServerSessionImpl)rfServerSession).fetchSessionData( acr, true );
     }
     catch ( Exception e ) {
       e.printStackTrace();

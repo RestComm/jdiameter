@@ -112,7 +112,13 @@ public class CCAFactoriesTest {
     DiameterAvpFactoryImpl baseAvpFactory = new DiameterAvpFactoryImpl();
     
     ccaAvpFactory = new CreditControlAVPFactoryImpl(baseAvpFactory);
-    ccaMessageFactory = new CreditControlMessageFactoryImpl(baseFactory, null, stack, ccaAvpFactory);
+    try
+    {
+      ccaMessageFactory = new CreditControlMessageFactoryImpl(baseFactory, stack.getSessionFactory().getNewSession(), stack, ccaAvpFactory);
+    }
+    catch ( Exception e ) {
+      e.printStackTrace();
+    }
     
     try
     {
@@ -143,14 +149,15 @@ public class CCAFactoriesTest {
   @Test
   public void isAnswerCCA() throws Exception
   {
-    CreditControlAnswer cca = ccaMessageFactory.createCreditControlAnswer( "582364567346578348" );
+    CreditControlRequest ccr = ccaMessageFactory.createCreditControlRequest();
+    CreditControlAnswer cca = ccaMessageFactory.createCreditControlAnswer(ccr);
     assertFalse("Request Flag in Credit-Control-Answer is set.", cca.getHeader().isRequest());
   }
 
   @Test
   public void testGettersAndSettersCCA() throws Exception
   {
-    CreditControlAnswer cca = ccaMessageFactory.createCreditControlAnswer("3242342");
+    CreditControlAnswer cca = ccaMessageFactory.createCreditControlAnswer(ccaMessageFactory.createCreditControlRequest("582364567346578348"));
     
     int nFailures = AvpAssistant.testMethods(cca, CreditControlAnswer.class);
     
@@ -160,14 +167,14 @@ public class CCAFactoriesTest {
   @Test
   public void hasDestinationHostCCA() throws Exception
   {
-    CreditControlAnswer cca = ccaMessageFactory.createCreditControlAnswer( "582364567346578348" );
+    CreditControlAnswer cca = ccaMessageFactory.createCreditControlAnswer(ccaMessageFactory.createCreditControlRequest("582364567346578348"));
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", cca.getDestinationHost());    
   }
 
   @Test
   public void hasDestinationRealmCCA() throws Exception
   {
-    CreditControlAnswer cca = ccaMessageFactory.createCreditControlAnswer( "582364567346578348" );
+    CreditControlAnswer cca = ccaMessageFactory.createCreditControlAnswer(ccaMessageFactory.createCreditControlRequest("582364567346578348"));
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", cca.getDestinationRealm());    
   }
 

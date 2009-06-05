@@ -236,14 +236,14 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 	  try {
 			ShClientActivity basicClientActivity=this.provider.createShClientActivity();
 			logger.info(" On TimerEvent: activity created");
-			DiameterMessage msg=((ShClientMessageFactory)basicClientActivity.getDiameterMessageFactory()).createProfileUpdateRequest();
-			logger.info(" On TimerEvent: PUR created.\n"+msg);
-			msg=((ShClientMessageFactory)basicClientActivity.getDiameterMessageFactory()).createUserDataRequest();
-			logger.info(" On TimerEvent: UDR created.\n"+msg);
-			msg=((ShClientMessageFactory)basicClientActivity.getDiameterMessageFactory()).createPushNotificationAnswer();
-			logger.info(" On TimerEvent: PUA created.\n"+msg);
-			msg=((ShClientMessageFactory)basicClientActivity.getDiameterMessageFactory()).createSubscribeNotificationsRequest();
-			logger.info(" On TimerEvent: SNR created.\n"+msg);
+			//DiameterMessage msg=((ShClientMessageFactory)basicClientActivity.getDiameterMessageFactory()).createProfileUpdateRequest();
+			//logger.info(" On TimerEvent: PUR created.\n"+msg);
+			//msg=((ShClientMessageFactory)basicClientActivity.getDiameterMessageFactory()).createUserDataRequest();
+			//logger.info(" On TimerEvent: UDR created.\n"+msg);
+			//msg=((ShClientMessageFactory)basicClientActivity.getDiameterMessageFactory()).createPushNotificationAnswer();
+			//logger.info(" On TimerEvent: PUA created.\n"+msg);
+			//msg=((ShClientMessageFactory)basicClientActivity.getDiameterMessageFactory()).createSubscribeNotificationsRequest();
+			//logger.info(" On TimerEvent: SNR created.\n"+msg);
 			ActivityContextInterface localACI=acif.getActivityContextInterface(basicClientActivity);
 			logger.info(" On TimerEvent: ACI created for basicClientActivity");
 			

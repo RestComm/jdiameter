@@ -30,6 +30,7 @@ import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.client.DiameterShAvpFactoryImpl;
+import org.mobicents.slee.resource.diameter.sh.client.ShClientMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.server.ShServerMessageFactoryImpl;
 
@@ -56,6 +57,7 @@ public class ShServerFactoriesTest {
   private static String realmName = "mobicents.org";
 
   private static ShServerMessageFactoryImpl shServerFactory;
+  private static ShClientMessageFactoryImpl shClientFactory;
   private static DiameterShAvpFactory shAvpFactory;
   
   static
@@ -73,19 +75,20 @@ public class ShServerFactoriesTest {
     DiameterMessageFactoryImpl baseMessageFactory = new DiameterMessageFactoryImpl(stack);
     shAvpFactory = new DiameterShAvpFactoryImpl(new DiameterAvpFactoryImpl());
     shServerFactory = new ShServerMessageFactoryImpl(baseMessageFactory, null, stack, shAvpFactory);
+    shClientFactory = new ShClientMessageFactoryImpl(stack);
   }
   
   @Test
   public void isAnswerPUA() throws Exception
   {
-    ProfileUpdateAnswer pua = shServerFactory.createProfileUpdateAnswer();
+    ProfileUpdateAnswer pua = shServerFactory.createProfileUpdateAnswer(shClientFactory.createProfileUpdateRequest());
     assertFalse("Request Flag in Profile-Update-Answer is set.", pua.getHeader().isRequest());
   }
   
   @Test
   public void testGettersAndSettersPUA() throws Exception
   {
-    ProfileUpdateAnswer pua = shServerFactory.createProfileUpdateAnswer();
+    ProfileUpdateAnswer pua = shServerFactory.createProfileUpdateAnswer(shClientFactory.createProfileUpdateRequest());
     
     int nFailures = AvpAssistant.testMethods(pua, ProfileUpdateAnswer.class);
     
@@ -95,14 +98,14 @@ public class ShServerFactoriesTest {
   @Test
   public void hasDestinationHostPUA() throws Exception
   {
-    ProfileUpdateAnswer pua = shServerFactory.createProfileUpdateAnswer();
+    ProfileUpdateAnswer pua = shServerFactory.createProfileUpdateAnswer(shClientFactory.createProfileUpdateRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", pua.getDestinationHost());    
   }
 
   @Test
   public void hasDestinationRealmPUA() throws Exception
   {
-    ProfileUpdateAnswer pua = shServerFactory.createProfileUpdateAnswer();
+    ProfileUpdateAnswer pua = shServerFactory.createProfileUpdateAnswer(shClientFactory.createProfileUpdateRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", pua.getDestinationRealm());    
   }
   
@@ -117,7 +120,7 @@ public class ShServerFactoriesTest {
   {
     long originalValue = 5001;
 
-    ProfileUpdateAnswer pua = shServerFactory.createProfileUpdateAnswer( originalValue, true );
+    ProfileUpdateAnswer pua = shServerFactory.createProfileUpdateAnswer(shClientFactory.createProfileUpdateRequest(), originalValue, true );
     
     long obtainedValue = pua.getExperimentalResult().getExperimentalResultCode();
     
@@ -161,14 +164,14 @@ public class ShServerFactoriesTest {
   @Test
   public void isAnswerSNA() throws Exception
   {
-    SubscribeNotificationsAnswer sna = shServerFactory.createSubscribeNotificationsAnswer();
+    SubscribeNotificationsAnswer sna = shServerFactory.createSubscribeNotificationsAnswer(shClientFactory.createSubscribeNotificationsRequest());
     assertFalse("Request Flag in Subscribe-Notifications-Answer is set.", sna.getHeader().isRequest());
   }
   
   @Test
   public void testGettersAndSettersSNA() throws Exception
   {
-    SubscribeNotificationsAnswer sna = shServerFactory.createSubscribeNotificationsAnswer();
+    SubscribeNotificationsAnswer sna = shServerFactory.createSubscribeNotificationsAnswer(shClientFactory.createSubscribeNotificationsRequest());
     
     int nFailures = AvpAssistant.testMethods(sna, SubscribeNotificationsAnswer.class);
     
@@ -178,14 +181,14 @@ public class ShServerFactoriesTest {
   @Test
   public void hasDestinationHostSNA() throws Exception
   {
-    SubscribeNotificationsAnswer sna = shServerFactory.createSubscribeNotificationsAnswer();
+    SubscribeNotificationsAnswer sna = shServerFactory.createSubscribeNotificationsAnswer(shClientFactory.createSubscribeNotificationsRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", sna.getDestinationHost());    
   }
 
   @Test
   public void hasDestinationRealmSNA() throws Exception
   {
-    SubscribeNotificationsAnswer sna = shServerFactory.createSubscribeNotificationsAnswer();
+    SubscribeNotificationsAnswer sna = shServerFactory.createSubscribeNotificationsAnswer(shClientFactory.createSubscribeNotificationsRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", sna.getDestinationRealm());    
   }
 
@@ -201,7 +204,7 @@ public class ShServerFactoriesTest {
   {
     long originalValue = 5001;
 
-    SubscribeNotificationsAnswer sna = shServerFactory.createSubscribeNotificationsAnswer( originalValue, true );
+    SubscribeNotificationsAnswer sna = shServerFactory.createSubscribeNotificationsAnswer( shClientFactory.createSubscribeNotificationsRequest(), originalValue, true );
     
     long obtainedValue = sna.getExperimentalResult().getExperimentalResultCode();
     
@@ -211,14 +214,14 @@ public class ShServerFactoriesTest {
   @Test
   public void isAnswerUDA() throws Exception
   {
-    UserDataAnswer uda = shServerFactory.createUserDataAnswer();
+    UserDataAnswer uda = shServerFactory.createUserDataAnswer(shClientFactory.createUserDataRequest());
     assertFalse("Request Flag in User-Data-Answer is set.", uda.getHeader().isRequest());
   }
 
   @Test
   public void testGettersAndSettersUDA() throws Exception
   {
-    UserDataAnswer uda = shServerFactory.createUserDataAnswer();
+    UserDataAnswer uda = shServerFactory.createUserDataAnswer(shClientFactory.createUserDataRequest());
     
     int nFailures = AvpAssistant.testMethods(uda, UserDataAnswer.class);
     
@@ -228,14 +231,14 @@ public class ShServerFactoriesTest {
   @Test
   public void hasDestinationHostUDA() throws Exception
   {
-    UserDataAnswer uda = shServerFactory.createUserDataAnswer();
+    UserDataAnswer uda = shServerFactory.createUserDataAnswer(shClientFactory.createUserDataRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", uda.getDestinationHost());    
   }
 
   @Test
   public void hasDestinationRealmUDA() throws Exception
   {
-    UserDataAnswer uda = shServerFactory.createUserDataAnswer();
+    UserDataAnswer uda = shServerFactory.createUserDataAnswer(shClientFactory.createUserDataRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", uda.getDestinationRealm());    
   }
 
@@ -250,7 +253,7 @@ public class ShServerFactoriesTest {
   {
     long originalValue = 5001;
 
-    UserDataAnswer uda = shServerFactory.createUserDataAnswer( originalValue, true );
+    UserDataAnswer uda = shServerFactory.createUserDataAnswer( shClientFactory.createUserDataRequest(), originalValue, true );
     
     long obtainedValue = uda.getExperimentalResult().getExperimentalResultCode();
     

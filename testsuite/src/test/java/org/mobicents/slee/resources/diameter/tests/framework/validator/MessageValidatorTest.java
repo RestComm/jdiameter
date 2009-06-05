@@ -79,7 +79,7 @@ public class MessageValidatorTest {
 	  public void testBasicOperations()
 	  {
 		//Yeah, its akward :) - it laready shoudl have session id.  
-		  AccountingAnswerImpl answer = (AccountingAnswerImpl) baseFactory.createAccountingAnswer();
+		  AccountingAnswerImpl answer = (AccountingAnswerImpl) baseFactory.createAccountingAnswer(baseFactory.createAccountingRequest());
 		  
 		  AvpSet set  = answer.getGenericData().getAvps();
 		  

@@ -100,7 +100,7 @@ public class RouterImpl extends org.jdiameter.client.impl.router.RouterImpl impl
     }
 
     protected boolean checkRealm(String name) {
-        return network.containsKey(name);
+        return name == null ? false : network.containsKey(name);
     }
 
     protected Set<String> getRealmsName() {

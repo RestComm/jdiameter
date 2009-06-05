@@ -403,7 +403,7 @@
 	<avp name="Inband-Security-Id" code="299" vendor="0" multiplicity="0" index="-1" />
 	<avp name="Multi-Round-Time-Out" code="272" vendor="0" multiplicity="0" index="-1" />
 	<avp name="Product-Name" code="269" vendor="0" multiplicity="0" index="-1" />
-	<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
+	<avp name="Result-Code" code="268" vendor="0" multiplicity="1" index="-1" />
 	<avp name="Re-Auth-Request-Type" code="285" vendor="0" multiplicity="0" index="-1" />
 	<avp name="Route-Record" code="282" vendor="0" multiplicity="0" index="-1" />
 	<avp name="Session-Binding" code="270" vendor="0" multiplicity="0" index="-1" />

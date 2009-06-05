@@ -100,7 +100,6 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 	}
 
 	public ProfileUpdateRequest createProfileUpdateRequest(UserIdentityAvp userIdentity, DataReferenceType reference, byte[] userData) {
-		// FIXME: baranowb: What should be used here?
 		ProfileUpdateRequest pur = this.createProfileUpdateRequest();
 
 		pur.setUserIdentity(userIdentity);
@@ -113,17 +112,19 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 		//ApplicationId applicationId = ApplicationId.createByAuthAppId(_SH_VENDOR_ID, _SH_APP_ID);
 		//Message msg = createMessage(ProfileUpdateRequest.commandCode, applicationId, null);
 		//msg.setRequest(true);
-		DiameterAvp[] avps = null;
-		if(session!=null)
-		try {
-			DiameterAvp sessionIdAvp = null;
-			sessionIdAvp = baseAvpFactory.createAvp(0, DiameterAvpCodes.SESSION_ID, session.getSessionId());
-			avps=new DiameterAvp[]{sessionIdAvp};
-		} catch (NoSuchAvpException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		DiameterAvp[] avps = new DiameterAvp[0];
+		
+		if(session != null) {
+  		try {
+  			DiameterAvp sessionIdAvp = null;
+  			sessionIdAvp = baseAvpFactory.createAvp(0, DiameterAvpCodes.SESSION_ID, session.getSessionId());
+  			avps = new DiameterAvp[]{sessionIdAvp};
+  		}
+  		catch (NoSuchAvpException e) {
+  		  logger.error( "Unexpected failure trying to create Session-Id AVP.", e );
+  		}
 		}
-
+		
 		Message msg = createShMessage(null, avps, ProfileUpdateRequest.commandCode);
 		ProfileUpdateRequestImpl pur = new ProfileUpdateRequestImpl(msg);
 		addOrigin(pur);
@@ -135,12 +136,10 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 
 	  PushNotificationAnswer pna = this.createPushNotificationAnswer(request);
 
-    if (isExperimentalResultCode)
-    {
+    if (isExperimentalResultCode) {
       pna.setExperimentalResult(this.baseAvpFactory.createExperimentalResult(0, resultCode));
     }
-    else
-    {
+    else {
       pna.setResultCode(resultCode);
     }
 
@@ -151,20 +150,20 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 		//ApplicationId applicationId = ApplicationId.createByAuthAppId(_SH_VENDOR_ID, _SH_APP_ID);
 		//Message msg = createMessage(PushNotificationAnswer.commandCode, applicationId, null);
 		//msg.setRequest(false);
-		DiameterAvp[] avps = null;
+		DiameterAvp[] avps = new DiameterAvp[0];
 		
 		try {
 			DiameterAvp sessionIdAvp = null;
 			sessionIdAvp = baseAvpFactory.createAvp(0, DiameterAvpCodes.SESSION_ID, request.getSessionId());
-			avps=new DiameterAvp[]{sessionIdAvp};
-		} catch (NoSuchAvpException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			avps = new DiameterAvp[]{sessionIdAvp};
+		}
+		catch (NoSuchAvpException e) {
+      logger.error( "Unexpected failure trying to create Session-Id AVP.", e );
 		}
 
-		Message msg = createShMessage(request.getHeader(), avps, request.commandCode);
-		PushNotificationAnswerImpl pns = new PushNotificationAnswerImpl(msg);
-		return pns;
+		Message msg = createShMessage(request.getHeader(), avps, PushNotificationAnswer.commandCode);
+		PushNotificationAnswerImpl pna = new PushNotificationAnswerImpl(msg);
+		return pna;
 	}
 
 	public SubscribeNotificationsRequest createSubscribeNotificationsRequest(UserIdentityAvp userIdentity, DataReferenceType reference, SubsReqType subscriptionType) {
@@ -179,15 +178,16 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 		//ApplicationId applicationId = ApplicationId.createByAuthAppId(_SH_VENDOR_ID, _SH_APP_ID);
 		//Message msg = createMessage(SubscribeNotificationsRequest.commandCode, applicationId, null);
 		//msg.setRequest(true);
-		DiameterAvp[] avps = null;
-		if(session!=null)
-		try {
-			DiameterAvp sessionIdAvp = null;
-			sessionIdAvp = baseAvpFactory.createAvp(0, DiameterAvpCodes.SESSION_ID, session.getSessionId());
-			avps=new DiameterAvp[]{sessionIdAvp};
-		} catch (NoSuchAvpException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		DiameterAvp[] avps = new DiameterAvp[0];
+		if(session != null) {
+  		try {
+  			DiameterAvp sessionIdAvp = null;
+  			sessionIdAvp = baseAvpFactory.createAvp(0, DiameterAvpCodes.SESSION_ID, session.getSessionId());
+  			avps = new DiameterAvp[]{sessionIdAvp};
+  		}
+  		catch (NoSuchAvpException e) {
+        logger.error( "Unexpected failure trying to create Session-Id AVP.", e );
+  		}
 		}
 
 		Message msg = createShMessage(null, avps, SubscribeNotificationsRequest.commandCode);
@@ -208,17 +208,19 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 //		Message msg = createMessage(UserDataRequest.commandCode, applicationId, null);
 //		msg.setRequest(true);
 		
-		DiameterAvp[] avps = null;
-		if(session!=null)
-		try {
-			DiameterAvp sessionIdAvp = null;
-			sessionIdAvp = baseAvpFactory.createAvp(0, DiameterAvpCodes.SESSION_ID, session.getSessionId());
-			avps=new DiameterAvp[]{sessionIdAvp};
-		} catch (NoSuchAvpException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		DiameterAvp[] avps = new DiameterAvp[0];
+		
+		if(session!=null) {
+  		try {
+  			DiameterAvp sessionIdAvp = null;
+  			sessionIdAvp = baseAvpFactory.createAvp(0, DiameterAvpCodes.SESSION_ID, session.getSessionId());
+  			avps = new DiameterAvp[]{sessionIdAvp};
+  		}
+  		catch (NoSuchAvpException e) {
+        logger.error( "Unexpected failure trying to create Session-Id AVP.", e );
+  		}
 		}
-
+		
 		Message msg = createShMessage(null, avps, UserDataRequest.commandCode);
 		UserDataRequestImpl udr = new UserDataRequestImpl(msg);
 		addOrigin(udr);
@@ -275,14 +277,14 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 		// List<DiameterAvp> list = (List<DiameterAvp>) this.avpList.clone();
 		boolean isRequest = diameterHeader == null;
 		Message msg = null;
+		
 		if (!isRequest) {
 			Message raw = createMessage(diameterHeader, avps,0);
 			raw.setProxiable(true);
 			raw.setRequest(false);
 			msg = raw;
-
-		} else {
-
+		}
+		else {
 			Message raw = createMessage(null, avps,_commandCode);
 			raw.setProxiable(true);
 			raw.setRequest(true);
@@ -300,7 +302,6 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 			AvpSet set = msg.getAvps();
 			for (DiameterAvp avp : avps)
 				addAvp(avp, set);
-				
 
 			if (msg.getAvps().getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
 				DiameterAvp avpVendorId = this.baseAvpFactory.createAvp(Avp.VENDOR_ID, MessageFactory._SH_VENDOR_ID);

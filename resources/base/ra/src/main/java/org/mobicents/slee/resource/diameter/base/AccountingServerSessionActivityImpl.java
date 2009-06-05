@@ -71,7 +71,7 @@ public class AccountingServerSessionActivityImpl extends AccountingSessionActivi
 			DiameterAvp originHost = avpFactory.createAvp(Avp.ORIGIN_HOST, this.originHost.getBytes());
 			DiameterAvp originRealm = avpFactory.createAvp(Avp.ORIGIN_REALM, this.originRealm.getBytes());
 
-			DiameterAvp sessionId = avpFactory.createAvp(Avp.SESSION_ID, rawMessage.getAvps().getAvp(Avp.SESSION_ID).getRaw());
+			DiameterAvp sessionId = avpFactory.createAvp(Avp.SESSION_ID, serverSession.getSessions().get(0).getSessionId());
 
 			DiameterMessageImpl answer = (DiameterMessageImpl) messageFactory.createMessage(implRequest.getHeader(), new DiameterAvp[] { accRecordNumber, accRecordType, originHost, originRealm,
 					sessionId });

@@ -9,7 +9,6 @@ import java.util.Set;
 
 import net.java.slee.resource.diameter.base.DiameterMessageFactory;
 import net.java.slee.resource.diameter.base.NoSuchAvpException;
-import net.java.slee.resource.diameter.base.events.AccountingRequest;
 import net.java.slee.resource.diameter.base.events.DiameterHeader;
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
@@ -34,10 +33,7 @@ import org.jdiameter.api.Message;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.Stack;
-import org.jdiameter.client.impl.parser.MessageImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
-import org.mobicents.slee.resource.diameter.base.events.DiameterHeaderImpl;
-import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.CreditControlAnswerImpl;
 import org.mobicents.slee.resource.diameter.cca.events.CreditControlRequestImpl;
 
@@ -121,7 +117,7 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
 
 		DiameterAvp sessionIdAvp = null;
 		try {
-			sessionIdAvp = localFactory.getBaseFactory().createAvp(0, DiameterAvpCodes.SESSION_ID, req.getSessionId());
+			sessionIdAvp = localFactory.getBaseFactory().createAvp(0, DiameterAvpCodes.SESSION_ID, this.session.getSessionId());
 		} catch (NoSuchAvpException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

@@ -16,6 +16,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
 import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
 import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
@@ -99,8 +100,13 @@ public class RoFactoriesTest implements ICCAMessageFactory, ServerCCASessionList
     DiameterMessageFactoryImpl baseFactory = new DiameterMessageFactoryImpl(stack);
     DiameterAvpFactoryImpl baseAvpFactory = new DiameterAvpFactoryImpl();
     
-    roMessageFactory = new RoMessageFactoryImpl(baseFactory, null, stack, roAvpFactory);
     roAvpFactory = new RoAvpFactoryImpl(baseAvpFactory);
+    try {
+      roMessageFactory = new RoMessageFactoryImpl(baseFactory, stack.getSessionFactory().getNewSession(), stack, roAvpFactory);
+    }
+    catch ( Exception e ) {
+      e.printStackTrace();
+    }
     
     try
     {
@@ -118,7 +124,8 @@ public class RoFactoriesTest implements ICCAMessageFactory, ServerCCASessionList
     try
     {
       session = new ServerCCASessionImpl(null, this, stack.getSessionFactory(), this);
-      roServerSession = new RoServerSessionImpl((CreditControlMessageFactory) roMessageFactory, roAvpFactory, session, 5000, null, null, null, stack);
+      roServerSession = new RoServerSessionImpl((CreditControlMessageFactory) roMessageFactory, roAvpFactory, session, 5000, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), null, stack);
+      ((RoServerSessionImpl)roServerSession).fetchCurrentState(roMessageFactory.createRoCreditControlRequest());
     }
     catch ( IllegalDiameterStateException e ) {
       e.printStackTrace();
@@ -133,7 +140,7 @@ public class RoFactoriesTest implements ICCAMessageFactory, ServerCCASessionList
   }
   
   @Test
-  public void testGettersAndSettersACA() throws Exception
+  public void testGettersAndSettersCCR() throws Exception
   {
     CreditControlRequest ccr = roMessageFactory.createRoCreditControlRequest();
     

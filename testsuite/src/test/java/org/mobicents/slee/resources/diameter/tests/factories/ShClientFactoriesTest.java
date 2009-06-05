@@ -32,9 +32,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
+import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.client.DiameterShAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.client.ShClientMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvpImpl;
+import org.mobicents.slee.resource.diameter.sh.server.ShServerMessageFactoryImpl;
 
 /**
  * 
@@ -59,6 +61,7 @@ public class ShClientFactoriesTest {
   private static String realmName = "mobicents.org";
 
   private static ShClientMessageFactoryImpl shClientFactory;
+  private static ShServerMessageFactoryImpl shServerFactory;
   private static DiameterShAvpFactoryImpl shAvpFactory;
   private static Stack stack;
 
@@ -74,7 +77,10 @@ public class ShClientFactoriesTest {
       throw new RuntimeException("Failed to initialize the stack.");
     }
 
+    DiameterMessageFactoryImpl baseMessageFactory = new DiameterMessageFactoryImpl(stack);
+    
     shClientFactory = new ShClientMessageFactoryImpl(stack);
+    shServerFactory = new ShServerMessageFactoryImpl(baseMessageFactory, null, stack, shAvpFactory);
     shAvpFactory = new DiameterShAvpFactoryImpl(new DiameterAvpFactoryImpl());
   }
 
@@ -98,14 +104,14 @@ public class ShClientFactoriesTest {
   @Test
   public void isAnswerPNA() throws Exception
   {
-    PushNotificationAnswer pna = shClientFactory.createPushNotificationAnswer();
+    PushNotificationAnswer pna = shClientFactory.createPushNotificationAnswer(shServerFactory.createPushNotificationRequest());
     assertFalse("Request Flag in Push-Notification-Answer is set.", pna.getHeader().isRequest());
   }
 
   @Test
   public void testGettersAndSettersPNA() throws Exception
   {
-    PushNotificationAnswer pna = shClientFactory.createPushNotificationAnswer();
+    PushNotificationAnswer pna = shClientFactory.createPushNotificationAnswer(shServerFactory.createPushNotificationRequest());
     
     int nFailures = AvpAssistant.testMethods(pna, PushNotificationAnswer.class);
     
@@ -115,14 +121,14 @@ public class ShClientFactoriesTest {
   @Test
   public void hasDestinationHostPNA() throws Exception
   {
-    PushNotificationAnswer pna = shClientFactory.createPushNotificationAnswer();
+    PushNotificationAnswer pna = shClientFactory.createPushNotificationAnswer(shServerFactory.createPushNotificationRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", pna.getDestinationHost());    
   }
 
   @Test
   public void hasDestinationRealmPNA() throws Exception
   {
-    PushNotificationAnswer pna = shClientFactory.createPushNotificationAnswer();
+    PushNotificationAnswer pna = shClientFactory.createPushNotificationAnswer(shServerFactory.createPushNotificationRequest());
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", pna.getDestinationRealm());    
   }
 
@@ -137,7 +143,7 @@ public class ShClientFactoriesTest {
   {
     long originalValue = 5001;
 
-    PushNotificationAnswer pna = shClientFactory.createPushNotificationAnswer(originalValue, true );
+    PushNotificationAnswer pna = shClientFactory.createPushNotificationAnswer(shServerFactory.createPushNotificationRequest(), originalValue, true );
 
     long obtainedValue = pna.getExperimentalResult().getExperimentalResultCode();
 

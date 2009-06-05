@@ -490,6 +490,11 @@ public class AvpAssistant {
 
       else if(m.getName().startsWith( "get" ))
       {
+        // Exception for Result-Code in REQUESTs
+        if(message.getCommand().isRequest() && m.getName().equals("getResultCode")) {
+          continue;
+        }
+        
         Class avpType = m.getReturnType();
 
         Object toGo = AvpAssistant.getValueFromEnumerated(avpType);
