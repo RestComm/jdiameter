@@ -77,10 +77,8 @@ public class AccountingServerSessionActivityImpl extends AccountingSessionActivi
 					sessionId });
 
 			// RFC3588, Page 119-120
-			// One of Acct-Application-Id and Vendor-Specific-Application-Id
-			// AVPs
-			// MUST be present. If the Vendor-Specific-Application-Id grouped
-			// AVP
+			// One of Acct-Application-Id and Vendor-Specific-Application-Id AVPs
+			// MUST be present. If the Vendor-Specific-Application-Id grouped AVP
 			// is present, it must have an Acct-Application-Id inside.
 
 			if (request.hasAcctApplicationId()) {

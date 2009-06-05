@@ -48,7 +48,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 
+import net.java.slee.resource.diameter.base.events.CapabilitiesExchangeRequest;
+import net.java.slee.resource.diameter.base.events.DeviceWatchdogRequest;
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
+import net.java.slee.resource.diameter.base.events.DisconnectPeerRequest;
 import net.java.slee.resource.diameter.base.events.avp.Address;
 import net.java.slee.resource.diameter.base.events.avp.AddressType;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
@@ -94,7 +97,6 @@ import net.java.slee.resource.diameter.ro.events.avp.OriginatorAddress;
 import net.java.slee.resource.diameter.ro.events.avp.PocInformation;
 import net.java.slee.resource.diameter.ro.events.avp.PsFurnishChargingInformation;
 import net.java.slee.resource.diameter.ro.events.avp.PsInformation;
-import net.java.slee.resource.diameter.ro.events.avp.ReadReplyReportRequested;
 import net.java.slee.resource.diameter.ro.events.avp.RecipientAddress;
 import net.java.slee.resource.diameter.ro.events.avp.SdpMediaComponent;
 import net.java.slee.resource.diameter.ro.events.avp.ServerCapabilities;
@@ -182,6 +184,13 @@ public class AvpAssistant {
 
   public static Collection methodsToIgnoreInAnswer = new ArrayList<String>();
 
+  public static Collection methodsToIgnoreInCEX = new ArrayList<String>();
+
+  public static Collection methodsToIgnoreInDPX = new ArrayList<String>();
+
+  public static Collection methodsToIgnoreInDWX = new ArrayList<String>();
+
+
   public static AvpAssistant INSTANCE;
 
   static {
@@ -212,9 +221,23 @@ public class AvpAssistant {
     methodsToIgnore.add("hasExtensionAvps");
     methodsToIgnore.add("hashCode");
     
+    methodsToIgnoreInRequest.add("getResultCode");
+
     methodsToIgnoreInAnswer.add("getDestinationHost");
     methodsToIgnoreInAnswer.add("getDestinationRealm");
 
+    methodsToIgnoreInCEX.add("getDestinationHost");
+    methodsToIgnoreInCEX.add("getDestinationRealm");
+    methodsToIgnoreInCEX.add("getSessionId");
+    
+    methodsToIgnoreInDPX.add("getDestinationHost");
+    methodsToIgnoreInDPX.add("getDestinationRealm");
+    methodsToIgnoreInDPX.add("getSessionId");
+    
+    methodsToIgnoreInDWX.add("getDestinationHost");
+    methodsToIgnoreInDWX.add("getDestinationRealm");
+    methodsToIgnoreInDWX.add("getSessionId");
+    
     Stack stack = new org.jdiameter.client.impl.StackImpl();
     stack.init( new MyConfiguration() );
     Message createMessage = stack.getSessionFactory().getNewRawSession().createMessage( 0, ApplicationId.createByAccAppId( 0 ));
@@ -478,23 +501,30 @@ public class AvpAssistant {
     {
       clearAVPsInMessage(message);
 
-      if(AvpAssistant.methodsToIgnore.contains( m.getName() )) {
-        continue;
-      }
-      else if(message.getHeader().isRequest() && AvpAssistant.methodsToIgnoreInRequest.contains( m.getName() )) {
-        continue;
-      }
-      else if(!message.getHeader().isRequest() && AvpAssistant.methodsToIgnoreInAnswer.contains( m.getName() )) {
-        continue;
-      }
+      int commandCode = message.getCommand().getCode();
 
-      else if(m.getName().startsWith( "get" ))
+      String methodName = m.getName();
+      
+      if(AvpAssistant.methodsToIgnore.contains( methodName )) {
+        continue;
+      }
+      else if(message.getHeader().isRequest() && AvpAssistant.methodsToIgnoreInRequest.contains( methodName )) {
+        continue;
+      }
+      else if(!message.getHeader().isRequest() && AvpAssistant.methodsToIgnoreInAnswer.contains( methodName )) {
+        continue;
+      }
+      else if(commandCode == CapabilitiesExchangeRequest.commandCode && AvpAssistant.methodsToIgnoreInCEX.contains( methodName )) {
+        continue;
+      }
+      else if(commandCode == DeviceWatchdogRequest.commandCode && AvpAssistant.methodsToIgnoreInDWX.contains( methodName )) {
+        continue;
+      }
+      else if(commandCode == DisconnectPeerRequest.commandCode && AvpAssistant.methodsToIgnoreInDPX.contains( methodName )) {
+        continue;
+      }
+      else if(methodName.startsWith( "get" ))
       {
-        // Exception for Result-Code in REQUESTs
-        if(message.getCommand().isRequest() && m.getName().equals("getResultCode")) {
-          continue;
-        }
-        
         Class avpType = m.getReturnType();
 
         Object toGo = AvpAssistant.getValueFromEnumerated(avpType);
@@ -507,17 +537,17 @@ public class AvpAssistant {
           Method hasser = null;
 
           try {
-            hasser = interfaze.getMethod( getSingularMethodName(m.getName().replaceFirst("get", "has")) );
+            hasser = interfaze.getMethod( getSingularMethodName(methodName.replaceFirst("get", "has")) );
 
             Object hasAvpBeforeSet = hasser.invoke(message);
 
-            Assert.assertFalse( "Message already has value before setting for " + m.getName().replaceAll("get","") + "... aborting", (Boolean)hasAvpBeforeSet);
+            Assert.assertFalse( "Message already has value before setting for " + methodName.replaceAll("get","") + "... aborting", (Boolean)hasAvpBeforeSet);
           }
           catch (NoSuchMethodException e) {
             // skip it...
           }
 
-          Method setter = interfaze.getMethod( m.getName().replaceFirst("g", "s"), avpType );
+          Method setter = interfaze.getMethod( methodName.replaceFirst("g", "s"), avpType );
 
           //System.out.println("Setting value " + setter.getName() +"(" + toGo.toString() +")");
 
@@ -526,7 +556,7 @@ public class AvpAssistant {
           if(hasser != null) {
             Object hasAvpAfterSet = hasser.invoke(message);
 
-            Assert.assertTrue( "Message does not has value after setting for " + m.getName().replaceAll("get","") + "... aborting", (Boolean)hasAvpAfterSet);
+            Assert.assertTrue( "Message does not has value after setting for " + methodName.replaceAll("get","") + "... aborting", (Boolean)hasAvpAfterSet);
           }
 
           //System.out.println("Current message: \r\n" + snr);
@@ -551,11 +581,11 @@ public class AvpAssistant {
           }
 
           nFailures = passed ? nFailures : nFailures+1;
-          System.out.println("[" + (passed ? "PASSED" : "FAILED") + "] " + m.getName().replace("get", "") + " with param of type '"+ avpType.getName() + "' " + (hasser != null ? " WITH has" : " WITHOUT has"));
+          System.out.println("[" + (passed ? "PASSED" : "FAILED") + "] " + methodName.replace("get", "") + " with param of type '"+ avpType.getName() + "' " + (hasser != null ? " WITH has" : " WITHOUT has"));
         }
         else {
-          System.out.println("[??????] Unable to test " + m.getName().replace("get", "") + " with param of type '"+ avpType.getName() + "'.");
-          Assert.fail("Missing AVP Implementation class to test " + m.getName());
+          System.out.println("[??????] Unable to test " + methodName.replace("get", "") + " with param of type '"+ avpType.getName() + "'.");
+          Assert.fail("Missing AVP Implementation class to test " + methodName);
         }
       }
     }
@@ -640,6 +670,8 @@ public class AvpAssistant {
     }
   }
 
+  
+  /*
   private static Object[] getSingleObjectAndArrauObject(Method m) throws Exception
   {
     Class rType = m.getReturnType();
@@ -678,6 +710,8 @@ public class AvpAssistant {
     
     return (Object[]) newArray;
   }
+  */
+  
   
   public static void testHassers(Object object, boolean expected) throws Exception
   {

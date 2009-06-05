@@ -273,7 +273,7 @@ public class DiameterMessageValidator {
 	 */
 	public boolean isAllowed(int commandCode, long appId, boolean isRequest, int avpCode, long avpVendor) {
 		if (!on)
-			throw new IllegalStateException("validation is of.");
+			throw new IllegalStateException("Message validation is disabled.");
 		MessageRepresentation rep = new MessageRepresentation(commandCode, appId, isRequest);
 		rep = this.configuredMessageTypes.get(rep);
 		if (rep == null) {

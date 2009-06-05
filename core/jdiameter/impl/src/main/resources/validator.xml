@@ -233,7 +233,6 @@
 	
 	
 	<!-- FORBBIDEN -->
-	<avp name="Auth-Application-Id" 	code="258" 	vendor="0" multiplicity="0"  index="-1"/>
 	<avp name="Error-Reporting-Host" 	code="294" 	vendor="0" multiplicity="0"  index="-1"/>
 	<avp name="Experimental-Result" 	code="297" 	vendor="0" multiplicity="0"  index="-1"/>
 	<avp name="Result-Code" 			code="268" 	vendor="0" multiplicity="0"  index="-1"/>

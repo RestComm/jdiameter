@@ -27,6 +27,7 @@ import java.util.Map;
 
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.AvpUtilities;
+import net.java.slee.resource.diameter.base.events.avp.DiameterAvpType;
 
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpSet;
@@ -41,6 +42,7 @@ import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.events.AccountingRequestImpl;
+import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
 
 /**
  * Start time:14:15:19 2009-05-27<br>
@@ -215,7 +217,7 @@ public class AvpUtilitiesTest {
 		AvpUtilities.allowRemove(false);
 		instance.parseConfiguration(this.getClass().getClassLoader().getResourceAsStream(validatorOnFile));
 		// It has session id
-		AccountingRequestImpl request = (AccountingRequestImpl) baseFactory.createAccountingRequest();
+		AccountingRequestImpl request = (AccountingRequestImpl) baseFactory.createAccountingRequest(new DiameterAvpImpl[]{new DiameterAvpImpl(263, 0L, 0, 1, "xxx".getBytes(), DiameterAvpType.UTF8_STRING)});
 
 		// <avp name="Session-Id" code="263" vendor="0" multiplicity="1"
 		// index="0"/>
@@ -233,10 +235,12 @@ public class AvpUtilitiesTest {
 		}
 		// <avp name="Origin-Host" code="264" vendor="0" multiplicity="1"
 		// index="-1"/>
-		AvpUtilities.setAvpAsOctetString(request.getGenericData(), 264, request.getGenericData().getAvps(), clientURI);
+		if(!request.hasOriginHost())
+		  AvpUtilities.setAvpAsOctetString(request.getGenericData(), 264, request.getGenericData().getAvps(), clientURI);
 		// <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1"
 		// index="-1"/>
-		AvpUtilities.setAvpAsOctetString(request.getGenericData(), 296, request.getGenericData().getAvps(), realmName);
+    if(!request.hasOriginRealm())
+      AvpUtilities.setAvpAsOctetString(request.getGenericData(), 296, request.getGenericData().getAvps(), realmName);
 		// <avp name="Destination-Realm" code="283" vendor="0" multiplicity="1"
 		// index="-1"/>
 		AvpUtilities.setAvpAsOctetString(request.getGenericData(), 283, request.getGenericData().getAvps(), realmName);
@@ -358,7 +362,7 @@ public class AvpUtilitiesTest {
 		instance.parseConfiguration(this.getClass().getClassLoader().getResourceAsStream(validatorOffFile));
 		
 		// It has session id
-		AccountingRequestImpl request = (AccountingRequestImpl) baseFactory.createAccountingRequest();
+		AccountingRequestImpl request = (AccountingRequestImpl) baseFactory.createAccountingRequest(new DiameterAvpImpl[]{new DiameterAvpImpl(263, 0L, 0, 1, "xxx".getBytes(), DiameterAvpType.UTF8_STRING)});
 
 		// <avp name="Session-Id" code="263" vendor="0" multiplicity="1"
 		// index="0"/>
@@ -453,12 +457,12 @@ public class AvpUtilitiesTest {
 		expectedAvps.put(a, a);
 		a = new ExpectedAvp();
 		a.code = 264;
-		a.count = 1;
+		a.count = 2; // was 1 but request comes with one already...
 		expectedAvps.put(a, a);
 		a = new ExpectedAvp();
 		a.code = 296;
 		//cause its legal in this case.
-		a.count = 2;
+		a.count = 3; // was 2 but request comes with one already...
 		expectedAvps.put(a, a);
 		a = new ExpectedAvp();
 		a.code = 283;

@@ -1,3 +1,28 @@
+/*
+ * Mobicents, Communications Middleware
+ * 
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package org.mobicents.slee.examples.diameter;
 
 import java.util.ArrayList;
@@ -407,11 +432,11 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 
 			avps.add(avpFactory.createAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, new DiameterAvp[] { avpVendorId, avpAcctApplicationId }));
 
-			avps.add(avpFactory.createAvp(Avp.ORIGIN_HOST, "aaa://127.0.0.1:1812".getBytes()));
-			avps.add(avpFactory.createAvp(Avp.ORIGIN_REALM, "mobicents.org".getBytes()));
+			avps.add(avpFactory.createAvp(Avp.ORIGIN_HOST, this.originIP.getBytes()));
+			avps.add(avpFactory.createAvp(Avp.ORIGIN_REALM, this.originRealm.getBytes()));
 
-			avps.add(avpFactory.createAvp(Avp.DESTINATION_HOST, "aaa://127.0.0.1:21812".getBytes()));
-			avps.add(avpFactory.createAvp(Avp.DESTINATION_REALM, "mobicents.org".getBytes()));
+			avps.add(avpFactory.createAvp(Avp.DESTINATION_HOST, (this.destinationIP + ":" + this.destinationPort).getBytes()));
+			avps.add(avpFactory.createAvp(Avp.DESTINATION_REALM, this.destinationRealm.getBytes()));
 
 			// Subscription ID
 			DiameterAvp subscriptionIdType = avpFactory.createAvp(193, 555, 0);
@@ -443,12 +468,14 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 
 			DiameterAvp[] avpArray = new DiameterAvp[avps.size()];
 			avpArray = avps.toArray(avpArray);
+			
 			if (logger.isInfoEnabled())
 				logger.info("Creating Custom Message...");
+			
 			DiameterMessage ms = messageFactory.createAccountingRequest(avpArray);
+			
 			if (logger.isInfoEnabled()) {
 				logger.info("Created Custom Message[" + ms + "]");
-
 				logger.info("Sending Custom Message...");
 			}
 			activity.sendMessage(ms);
