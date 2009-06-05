@@ -27,9 +27,6 @@ package org.mobicents.slee.resource.diameter.cca;
 
 import javax.slee.resource.SleeEndpoint;
 
-import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
-import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodes;
-import net.java.slee.resource.diameter.base.events.avp.DiameterAvpType;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
 import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
@@ -42,7 +39,6 @@ import org.jdiameter.api.Request;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.app.StateChangeListener;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
-import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.handlers.CCASessionCreationListener;
 
 /**
@@ -76,18 +72,17 @@ public abstract class CreditControlSessionImpl extends DiameterActivityImpl impl
     return state;
   }
 
-  @Override
-  public Object getDiameterAvpFactory()
+
+
+  public CreditControlAVPFactory getCCAAvpFactory()
   {
-    return this.ccaAvpFactory;
+	  return this.ccaAvpFactory;
   }
 
-  @Override
-  public Object getDiameterMessageFactory()
+  public CreditControlMessageFactory getCCAMessageFactory()
   {
-    return this.ccaMessageFactory;
+	  return this.ccaMessageFactory;
   }
-
   @Override
   public Object getSessionListener()
   {

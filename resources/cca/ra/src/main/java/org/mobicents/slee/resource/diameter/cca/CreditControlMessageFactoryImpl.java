@@ -165,9 +165,11 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
   public CreditControlRequest createCreditControlRequest()
   {
 	  
-	  CreditControlRequest req = (CreditControlRequest) createCreditControlMessage( null, null );
+	  CreditControlRequest req = (CreditControlRequest) createCreditControlMessage( null, new DiameterAvp[0] );
 	  req.setOriginRealm(new DiameterIdentity(stack.getMetaData().getLocalPeer().getRealmName()));
 	  req.setOriginHost(new DiameterIdentity(stack.getMetaData().getLocalPeer().getUri().getFQDN().toString()));
+	  if(session!=null)
+		  req.setSessionId(session.getSessionId());
     return req;
   }
 
@@ -181,7 +183,7 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
 		try {
 			DiameterAvp sessionIdAvp;
 			sessionIdAvp = localFactory.getBaseFactory().createAvp(0, DiameterAvpCodes.SESSION_ID, sessionId);
-			CreditControlRequest req = (CreditControlRequest) (CreditControlRequest) createCreditControlMessage(null, new DiameterAvp[] { sessionIdAvp });
+			CreditControlRequest req = (CreditControlRequest) createCreditControlMessage(null, new DiameterAvp[] { sessionIdAvp });
 			addOrigin(req);
 			return req;
 		} catch (NoSuchAvpException e) {
@@ -255,7 +257,7 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
     	Message raw=createMessage(null,avps);
     	raw.setProxiable(true);
     	raw.setRequest(true);
-    	msg = new CreditControlAnswerImpl(raw);
+    	msg = new CreditControlRequestImpl(raw);
     }
     
     
@@ -299,7 +301,8 @@ public class CreditControlMessageFactoryImpl implements CreditControlMessageFact
 	  		commandCode = AccountingRequest.commandCode;
 	  		endToEndId = (long) (Math.random()*1000000);
 			hopByHopId = (long) (Math.random()*1000000)+1;
-	  		aid = ApplicationId.createByAccAppId(_CCA_VENDOR, _CCA_AUTH_APP_ID);
+			//FIXME?
+	  		aid = ApplicationId.createByAccAppId(0, 0);
 	  	}
 		try {
 			Message msg = stack.getSessionFactory().getNewRawSession().createMessage(commandCode, aid, hopByHopId, endToEndId);

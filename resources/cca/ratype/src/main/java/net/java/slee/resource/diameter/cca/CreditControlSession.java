@@ -27,4 +27,8 @@ public interface CreditControlSession {
    * @return 
    */
   public String getSessionId();
+
+  public CreditControlAVPFactory getCCAAvpFactory();
+
+  public CreditControlMessageFactory getCCAMessageFactory();
 }

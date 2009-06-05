@@ -2,7 +2,6 @@ package org.mobicents.slee.resource.diameter.cca;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import javax.slee.resource.SleeEndpoint;
 
