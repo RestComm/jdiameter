@@ -11,7 +11,7 @@
 
 	<groupId>org.mobicents.servers.diameter.resources</groupId>
 	<artifactId>ro-parent</artifactId>
-	<version>1.0.0.GA</version>
+	<version>1.1.0.BETA1-SNAPSHOT</version>
 
 	<name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
 
@@ -97,8 +97,8 @@
 		</profile>
 	</profiles>
 	<scm>
-		<connection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/resources/ro/ro-1.0.0.GA</connection>
-		<developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/resources/ro/ro-1.0.0.GA</developerConnection>
-		<url>http://mobicents.googlecode.com/svn/tags/servers/diameter/resources/ro/ro-1.0.0.GA</url>
+		<connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/resources/ro</connection>
+		<developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/resources/ro</developerConnection>
+		<url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/resources/ro</url>
 	</scm>
 </project>
