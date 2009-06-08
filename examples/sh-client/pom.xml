@@ -12,7 +12,7 @@
 
   <groupId>org.mobicents.servers.diameter.examples</groupId>
 	<artifactId>sh-client-parent</artifactId>
-	<version>1.0.0.GA</version>
+	<version>1.1.0.BETA1-SNAPSHOT</version>
 
 	<name>Mobicents :: Diameter Examples :: ${pom.artifactId}</name>
 				
@@ -94,9 +94,9 @@
 	</profiles>
 
   <scm>
-    <connection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/examples/sh-client/sh-client-1.0.0.GA</connection>
-    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/examples/sh-client/sh-client-1.0.0.GA</developerConnection>
-    <url>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/examples/sh-client/sh-client-1.0.0.GA</url>
+    <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/examples/sh-client</connection>
+    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/examples/sh-client</developerConnection>
+    <url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/examples/sh-client</url>
   </scm>
 
 </project>
