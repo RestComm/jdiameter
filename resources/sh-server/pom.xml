@@ -11,7 +11,7 @@
 
   <groupId>org.mobicents.servers.diameter.resources</groupId>
   <artifactId>sh-server-parent</artifactId>
-  <version>1.0.0.GA</version>
+  <version>1.1.0.BETA1-SNAPSHOT</version>
 
   <name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
 
@@ -95,9 +95,9 @@
   </profiles>
   
   <scm>
-    <connection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/resources/sh-server/sh-server-1.0.0.GA</connection>
-    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/resources/sh-server/sh-server-1.0.0.GA</developerConnection>
-    <url>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/resources/sh-server/sh-server-1.0.0.GA</url>
+    <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/resources/sh-server</connection>
+    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/resources/sh-server</developerConnection>
+    <url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/resources/sh-server</url>
   </scm>
 
 </project>
