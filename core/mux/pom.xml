@@ -10,7 +10,7 @@
 
   <groupId>org.mobicents.servers.diameter</groupId>
   <artifactId>mobicents-diameter-mux-parent</artifactId>
-  <version>1.0.0.BETA5-SNAPSHOT</version>
+  <version>1.0.0.GA</version>
 
   <name>Mobicents :: Diameter Multiplexer :: ${pom.artifactId}</name>
   
@@ -52,9 +52,9 @@
   </profiles>
 
   <scm>
-    <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/mux</connection>
-    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/mux</developerConnection>
-    <url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/mux</url>
+    <connection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/core/mux/mobicents-diameter-mux-1.0.0.GA</connection>
+    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/core/mux/mobicents-diameter-mux-1.0.0.GA</developerConnection>
+    <url>http://mobicents.googlecode.com/svn/tags/servers/diameter/core/mux/mobicents-diameter-mux-1.0.0.GA</url>
   </scm>
   
 </project>
