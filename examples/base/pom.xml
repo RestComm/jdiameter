@@ -12,7 +12,7 @@
 
   <groupId>org.mobicents.servers.diameter.examples</groupId>
 	<artifactId>base-parent</artifactId>
-	<version>1.0.0.BETA4-SNAPSHOT</version>
+	<version>1.0.0.GA</version>
 
 	<name>Mobicents :: Diameter Examples :: ${pom.artifactId}</name>
 				
@@ -94,9 +94,9 @@
 	</profiles>
 
   <scm>
-    <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/examples/base</connection>
-    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/examples/base</developerConnection>
-    <url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/examples/base</url>
+    <connection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/examples/base/base-1.0.0.GA</connection>
+    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/examples/base/base-1.0.0.GA</developerConnection>
+    <url>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/examples/base/base-1.0.0.GA</url>
   </scm>
 
 </project>
