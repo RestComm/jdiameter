@@ -11,7 +11,7 @@
 
 	<groupId>org.mobicents.servers.diameter.resources</groupId>
 	<artifactId>rf-parent</artifactId>
-	<version>1.0.0.BETA2</version>
+	<version>1.0.1.BETA2-SNAPSHOT</version>
 
 	<name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
 
@@ -98,8 +98,8 @@
 		</profile>
 	</profiles>
 	<scm>
-		<connection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/resources/rf/rf-parent-1.0.0.BETA2</connection>
-		<developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/resources/rf/rf-parent-1.0.0.BETA2</developerConnection>
-		<url>http://mobicents.googlecode.com/svn/tags/servers/diameter/resources/rf/rf-parent-1.0.0.BETA2</url>
+		<connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/resources/rf</connection>
+		<developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/resources/rf</developerConnection>
+		<url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/resources/rf</url>
 	</scm>
 </project>
