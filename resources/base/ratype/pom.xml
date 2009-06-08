@@ -4,7 +4,7 @@
 	<parent>
     <groupId>org.mobicents.servers.diameter.resources</groupId>
   	<artifactId>base-parent</artifactId>
-  	<version>1.0.0.BETA6-SNAPSHOT</version>
+  	<version>1.0.0.GA</version>
 	</parent>
 
 	<artifactId>base-ratype</artifactId>
