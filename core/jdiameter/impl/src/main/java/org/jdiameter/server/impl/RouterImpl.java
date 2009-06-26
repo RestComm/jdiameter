@@ -39,6 +39,7 @@ public class RouterImpl extends org.jdiameter.client.impl.router.RouterImpl impl
                             Configuration[] apps = c.getChildren(ApplicationId.ordinal());
                             if (apps != null)
                                 for (Configuration a : apps) {
+                                  if (a != null) {
                                     long vnd = a.getLongValue(VendorId.ordinal(),   0);
                                     long auth = a.getLongValue(AuthApplId.ordinal(), 0);
                                     long acc = a.getLongValue(AcctApplId.ordinal(), 0);
@@ -47,6 +48,7 @@ public class RouterImpl extends org.jdiameter.client.impl.router.RouterImpl impl
                                     else
                                         appId = org.jdiameter.api.ApplicationId.createByAccAppId(vnd, acc);
                                         break;
+                                  }
                                 }
                         }
                         String[] hosts = c.getStringValue(RealmHosts.ordinal(), (String) RealmHosts.defValue()).split(",");
@@ -55,7 +57,10 @@ public class RouterImpl extends org.jdiameter.client.impl.router.RouterImpl impl
                         long expirationTime = c.getLongValue(RealmEntryExpTime.ordinal(), 0);
                         addRealm(name, appId, locAction, isDynamic, expirationTime, hosts);
                     } catch (Exception e) {
-                        logger.log(Level.WARNING, "Can not append realm entry", e);
+                    	if(logger.isLoggable(Level.SEVERE))
+                    	{
+                    		logger.log(Level.SEVERE, "Can not append realm entry", e);
+                    	}
                     }
                 }
             }

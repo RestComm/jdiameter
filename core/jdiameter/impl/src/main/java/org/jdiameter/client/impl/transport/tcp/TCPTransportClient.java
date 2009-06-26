@@ -7,6 +7,7 @@ import org.jdiameter.client.impl.helpers.Loggers;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ClosedByInterruptException;
@@ -31,6 +32,7 @@ class TCPTransportClient implements Runnable {
     protected ByteBuffer buffer = ByteBuffer.allocate(this.bufferSize);
 
     protected InetSocketAddress destAddress;
+    protected InetSocketAddress origAddress;
 
     protected SocketChannel socketChannel;
     protected Lock lock = new ReentrantLock();
@@ -53,9 +55,13 @@ class TCPTransportClient implements Runnable {
     }
 
     public void initialize() throws IOException, NotInitializedException {
-        if (destAddress == null)
+        if (destAddress == null) {
             throw new NotInitializedException("Destination address is not set");
+        }
         socketChannel = SelectorProvider.provider().openSocketChannel();
+        if (origAddress != null) {
+            socketChannel.socket().bind(origAddress);
+        }
         socketChannel.connect(destAddress);
         socketChannel.configureBlocking(true);
         getParent().onConnected();
@@ -72,7 +78,10 @@ class TCPTransportClient implements Runnable {
     }
 
     public void start() throws Exception {
+     if(logger.isLoggable(Level.FINEST))
+     {
         logger.log(Level.FINEST, "Starting transport");
+     }
         if (socketChannel == null)
             throw new NotInitializedException("Transport is not initialized");
         if (!socketChannel.isConnected())
@@ -88,7 +97,7 @@ class TCPTransportClient implements Runnable {
     public void run() {
         logger.log(Level.FINEST, "Transport is started");
         try {
-            while ( !stop ) {
+            while (!stop) {
                 int dataLength = socketChannel.read(buffer);
                 if (dataLength == -1) {
                     if (socketChannel.isConnected()) {
@@ -104,21 +113,39 @@ class TCPTransportClient implements Runnable {
                 append(data);
                 buffer.clear();
             }
-        } catch(ClosedByInterruptException exc) {
-        } catch(InterruptedException exc) {
-        } catch(AsynchronousCloseException exc) {
+        } catch (ClosedByInterruptException e) {
+        	if(logger.isLoggable(Level.SEVERE))
+     		{
+            	logger.log(Level.SEVERE, "Transport exception ", e);
+            }
+        } catch (InterruptedException e) {
+	        if(logger.isLoggable(Level.SEVERE))
+    	 	{
+        	  	logger.log(Level.SEVERE, "Transport exception ", e);
+            }
+        } catch (AsynchronousCloseException e) {
+	        if(logger.isLoggable(Level.SEVERE))
+    		 {
+        	    logger.log(Level.SEVERE, "Transport exception ", e);
+        	 }
         } catch (Throwable e) {
-            logger.log(Level.INFO, "Transport exception ", e);
+        	if(logger.isLoggable(Level.SEVERE))
+    	 	{
+            	logger.log(Level.SEVERE, "Transport exception ", e);
+            }
         } finally {
             //
-            if ( !stop ) {
+            if (!stop) {
                 try {
                     clearBuffer();
                     if (socketChannel != null && socketChannel.isOpen())
                         socketChannel.close();                     
                     getParent().onDisconnect();
-                } catch(Exception e) {
-                    logger.log(Level.FINEST, "Error", e);                    
+                } catch (Exception e) {
+                	if(logger.isLoggable(Level.SEVERE))
+		    	 	{
+        	            logger.log(Level.SEVERE, "Error", e);                    
+        	        }
                 }
             }
             stop = false;
@@ -164,7 +191,14 @@ class TCPTransportClient implements Runnable {
 
     public void setDestAddress(InetSocketAddress address) {
         destAddress = address;
-        logger.log(Level.FINEST, "Destination address is set to " + destAddress.getHostName() + ":" + destAddress.getPort());
+        if(logger.isLoggable(Level.FINEST))
+       	{
+        	logger.log(Level.FINEST, "Destination address is set to " + destAddress.getHostName() + ":" + destAddress.getPort());
+        }
+    }
+
+    public void setOrigAddress(InetSocketAddress address) {
+        origAddress = address;
     }
 
     public void sendMessage(ByteBuffer bytes) throws IOException {
@@ -175,7 +209,7 @@ class TCPTransportClient implements Runnable {
         } catch (Exception e) {
             logger.log(Level.INFO, "Can not send message", e);
             throw new IOException("Error while sending message: " + e);
-        } finally{
+        } finally {
             lock.unlock();
         }
         if (rc == -1)
@@ -202,15 +236,25 @@ class TCPTransportClient implements Runnable {
     }
 
     void append(byte[] data) {
-        if (storage.position() + data.length > storage.capacity()) {
+        if (storage.position() + data.length >= storage.capacity()) {
             ByteBuffer tmp = ByteBuffer.allocate(storage.limit() + data.length * 2);
-            tmp.put(this.storage.array());
-            tmp.put(data);
+            byte[] tmpData = new byte[storage.position()];
+            storage.flip();
+            storage.get(tmpData);
+            tmp.put(tmpData);
             storage = tmp;
-            logger.log(Level.FINEST, "Increase storage size.");
+            if(logger.isLoggable(Level.FINE))
+            {
+            	logger.log(Level.FINE, "Increase storage size. Current size is", storage.array().length);
+            }
         }
 
-        storage.put(data);
+        try {
+          storage.put(data);
+        }
+        catch (BufferOverflowException boe) {
+          logger.log(Level.WARNING, "Buffer overflow occured", boe);
+        }
         boolean messageReseived;
         do {
             messageReseived = seekMessage(storage);

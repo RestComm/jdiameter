@@ -87,14 +87,13 @@ public class XMLConfiguration extends EmptyConfiguration {
                 factory.setFeature(key, features.get(key));
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document;
-        if (in instanceof InputStream)
+        if (in instanceof InputStream) {
             document = builder.parse((InputStream)in);
-        else if (in instanceof String)
-        {
+        }
+        else if (in instanceof String) {
             document = builder.parse(new File((String)in));
         }
-        else
-        {
+        else {
             throw  new Exception("Unknown type of input data");
         }
         validate(document);
@@ -282,20 +281,20 @@ public class XMLConfiguration extends EmptyConfiguration {
     }
 
     protected Configuration addPeer(Node node) {
-        AppConfiguration peerConfig = getInstance().
-            add(
-                PeerRating,
-                new Integer(node.getAttributes().getNamedItem("rating").getNodeValue())
-            ).add(
-               PeerName,
-               node.getAttributes().getNamedItem("name").getNodeValue()
-            );
-        if ( node.getAttributes().getNamedItem("security_ref") != null)
-            peerConfig.add(
-                SecurityRef,
-                node.getAttributes().getNamedItem("security_ref").getNodeValue()
-            );
-        return peerConfig;
+      AppConfiguration peerConfig = getInstance()
+          .add( PeerRating, new Integer(node.getAttributes().getNamedItem("rating").getNodeValue()) )
+          .add( PeerName, node.getAttributes().getNamedItem("name").getNodeValue() );
+      if ( node.getAttributes().getNamedItem("ip") != null) {
+          peerConfig.add( PeerIp, node.getAttributes().getNamedItem("ip").getNodeValue() );
+      }
+      if ( node.getAttributes().getNamedItem("portRange") != null) {
+          peerConfig.add( PeerLocalPortRange, node.getAttributes().getNamedItem("portRange").getNodeValue() );
+      }
+      if ( node.getAttributes().getNamedItem("security_ref") != null) {
+          peerConfig.add( SecurityRef, node.getAttributes().getNamedItem("security_ref").getNodeValue() );
+      }
+      
+      return peerConfig;
     }
 
     protected Configuration addRealm(Node node) {

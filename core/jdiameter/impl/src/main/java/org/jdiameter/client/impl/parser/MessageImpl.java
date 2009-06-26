@@ -383,9 +383,7 @@ public class MessageImpl implements IMessage {
         if (applicationId != message.applicationId) return false;
         if (commandCode != message.commandCode) return false;
         if (endToEndId != message.endToEndId) return false;
-        if (hopByHopId != message.hopByHopId) return false;
-
-        return true;
+        return hopByHopId == message.hopByHopId;
     }
 
     public int hashCode() {

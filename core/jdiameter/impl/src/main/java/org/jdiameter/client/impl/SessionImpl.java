@@ -94,6 +94,7 @@ public class SessionImpl extends BaseSessionImpl implements ISession{
         if ( isValid ) {
             lastAccessedTime = System.currentTimeMillis();
             IRequest request = parser.createEmptyMessage(Request.class, (IMessage) prevRequest);
+            request.setRequest(true);
             request.setNetworkRequest(false);
             return request;
         } else {

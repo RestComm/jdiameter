@@ -208,13 +208,19 @@ public class XMLConfiguration extends EmptyConfiguration {
     }
 
     protected Configuration addPeer(Node node) {
-        String s1 = node.getAttributes().getNamedItem("rating").getNodeValue();
-        String s2 = node.getAttributes().getNamedItem("attempt_connect").getNodeValue();
-        String s3 = node.getAttributes().getNamedItem("name").getNodeValue();
+        String rating = node.getAttributes().getNamedItem("rating").getNodeValue();
+        String connecting = node.getAttributes().getNamedItem("attempt_connect").getNodeValue();
+        String name = node.getAttributes().getNamedItem("name").getNodeValue();
         AppConfiguration c = getInstance();
-        c.add( PeerRating, Integer.parseInt(s1));
-        c.add( PeerAttemptConnection, Boolean.valueOf(s2) );
-        c.add( PeerName, s3 );
+        c.add( PeerRating, Integer.parseInt(rating));
+        c.add( PeerAttemptConnection, Boolean.valueOf(connecting) );
+        c.add( PeerName, name );
+        if ( node.getAttributes().getNamedItem("ip") != null) {
+            c.add( PeerIp, node.getAttributes().getNamedItem("ip").getNodeValue() );
+        }
+        if ( node.getAttributes().getNamedItem("portRange") != null) {
+            c.add( PeerLocalPortRange, node.getAttributes().getNamedItem("portRange").getNodeValue() );
+        }
         return c;
     }
 

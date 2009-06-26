@@ -5,7 +5,6 @@ import static org.jdiameter.api.PeerState.DOWN;
 import static org.jdiameter.api.PeerState.INITIAL;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IMetaData;
-import org.jdiameter.client.api.ISession;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.api.fsm.IContext;
 import org.jdiameter.client.api.fsm.IFsmFactory;
@@ -20,7 +19,7 @@ import static org.jdiameter.server.impl.helpers.StatisticTypes.RESP_MESS_COUNTER
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl implements IPeer {
@@ -35,7 +34,7 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
     protected boolean isDuplicateProtection;
     protected boolean isAttemptConnection;
     protected boolean isElection = true;
-    protected ConcurrentHashMap<String, PeerImpl.Entry> incConnections;
+    protected Map<String, IConnection> incConnections;
     // Statistics
     protected IStatisticRecord reqStat = new StatisticRecordImpl("ReqCounter", "Request message counter", REQ_MESS_COUNTER);
     protected IStatisticRecord respStat = new StatisticRecordImpl("RespCounter", "Response message counter", RESP_MESS_COUNTER);
@@ -45,10 +44,10 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
      *  Create instance of class
      *
      */
-    public PeerImpl(MutablePeerTableImpl mgr, int rating, URI remotePeer, IMetaData metaData, Configuration config,
+    public PeerImpl(MutablePeerTableImpl mgr, int rating, URI remotePeer, String ip, String portRange, IMetaData metaData, Configuration config,
                      Configuration peerConfig, ISessionFactory sessionFactory, IFsmFactory fsmFactory, ITransportLayerFactory trFactory,
                     IMessageParser parser, INetwork nWork, IOverloadManager oManager, boolean attCnn, IConnection connection) throws InternalException, TransportException {
-        super(mgr, rating, remotePeer, metaData, config, peerConfig, fsmFactory, trFactory, parser, connection);
+        super(mgr, rating, remotePeer, ip, portRange, metaData, config, peerConfig, fsmFactory, trFactory, parser, connection);
         // Create specific action context
         manager = mgr;
         isDuplicateProtection = manager.isDuplicateProtection();
@@ -87,19 +86,23 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
     public void addIncomingConnection(IConnection conn) {
         PeerState state = fsm.getState(PeerState.class);
         if (DOWN  ==  state || INITIAL == state) {
-            // append
-            Entry e = new Entry(conn);
-            incConnections.put(conn.getKey(), e);
             conn.addConnectionListener(connListener);
-            logger.log(Level.FINE, "Append external connection " + conn.getKey());
+            logger.log(Level.FINE,"Append external connection {}", conn.getKey());
         } else {
+            logger.log(Level.FINE, "Releasing connection {}", conn.getKey());
+            incConnections.remove(conn.getKey());
             try {
-                logger.log(Level.FINE, "Releasing connection " + conn.getKey());
                 conn.release();
             } catch (IOException e) {
-                logger.log(Level.INFO, "Can not close external connection", e);
+            	if(logger.isLoggable(Level.SEVERE))
+            	{
+            		logger.log(Level.SEVERE, "Can not close external connection", e);
+            	}
             } finally {
-                logger.log(Level.INFO, "Close external connection");
+            	if(logger.isLoggable(Level.INFO))
+            	{
+            		logger.log(Level.INFO, "Close external connection");
+            	}
             }
         }
     }
@@ -114,15 +117,16 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
 
     public String toString() {
         return "Peer{" +
-                "Uri=" + uri + "; State="+fsm.getState(PeerState.class).toString() +
-                "; Statistic=" + getStatistic() +
-                "}\n";
+                "Uri=" + uri + "; State="+fsm.getState(PeerState.class).toString() + "}";
     }
 
     protected class LocalActionConext extends ActionContext {
 
         public void sendCeaMessage(int resultCode, Message cer,  String errMessage) throws TransportException, OverloadException {
-            logger.log(Level.FINEST, "Send CEA message");
+        	if(logger.isLoggable(Level.FINEST))
+        	{
+        		logger.log(Level.FINEST, "Send CEA message");
+        	}
             IMessage message = parser.createEmptyMessage( Message.CAPABILITIES_EXCHANGE_ANSWER, 0 );
             message.setRequest(false);
             message.setHopByHopIdentifier(cer.getHopByHopIdentifier());
@@ -144,21 +148,30 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
         }
 
         public int processCerMessage(String key, IMessage message) {
-            logger.fine("Processing CER");
+        	if(logger.isLoggable(Level.FINE))
+        	{
+        		logger.fine("Processing CER");
+        	}
             int resultCode = ResultCode.SUCCESS;
             try {
                 if (conn == null || !conn.isConnected()) {
-                    conn = incConnections.get(key).getConnection();
+                    conn = incConnections.get(key);
                 }
                 // Process cer
                 Set<ApplicationId> newAppId = getCommonApplicationIds(message);
                 if (newAppId.isEmpty()) {
-                    logger.fine("Processing CER failed... no common application");
+                	if(logger.isLoggable(Level.FINE))
+                	{
+                		logger.fine("Processing CER failed... no common application, message AppIps:" + message.getApplicationIdAvps());
+                	}
                     return ResultCode.NO_COMMON_APPLICATION;
                 }              
                 // Handshake
                 if ( !conn.getKey().equals(key) ) { // received cer by other connection
-                    logger.fine("CER received by other connection " + key);
+                	if(logger.isLoggable(Level.FINE))
+                	{
+                		logger.fine("CER received by other connection " + key);
+                	}
                     switch( fsm.getState(PeerState.class) ) {
                         case DOWN:
                             resultCode = ResultCode.SUCCESS;
@@ -173,23 +186,29 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                                 } catch(Exception exc) {
                                     isLocalWin = true;
                                 }
-                            logger.log(Level.FINE, "local peer is win - " + isLocalWin);
+                                if(logger.isLoggable(Level.FINE))
+                            	{
+                                	logger.log(Level.FINE, "local peer is win - " + isLocalWin);
+                            	}
                             resultCode = 0;
                             if ( isLocalWin ) {
-                                IConnection c = incConnections.get(key).getConnection();
+                                IConnection c = incConnections.get(key);
                                 c.remConnectionListener(connListener);
                                 c.disconnect();
                                 incConnections.remove(key);
                             } else {
                                 conn.disconnect();  // close current connection and work with other connection
                                 conn.remConnectionListener(connListener);
-                                conn = incConnections.get(key).getConnection();
+                                conn = incConnections.remove(key);
                                 resultCode = ResultCode.SUCCESS;
                             }
                             break;
                     }
                 } else {
-                    logger.fine("CER received by current connection");
+                	if(logger.isLoggable(Level.FINE))
+                	{
+                		logger.fine("CER received by current connection");
+                	}
                     if ( fsm.getState(PeerState.class).equals(INITIAL)) // received cer by current connection
                         resultCode = 0; // NOP
                     incConnections.remove(key);
@@ -199,21 +218,16 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                     commonApplications.addAll(newAppId);
                     fillIPAddressTable(message);
                 }
-                // Update URI if need
-                URI conURI = new URI(key);
-                String conHost = conURI.getFQDN();
-                String msgHost = message.getAvps().getAvp(Avp.ORIGIN_HOST).getOctetString();
-                if (msgHost.startsWith("aaa://")) msgHost = new URI(msgHost).getFQDN();
-                URI msgURI = new URI((key + "").replace(conHost, msgHost));
-                if ( !conHost.equalsIgnoreCase( msgHost ) ) {
-                    logger.info("Connection host name not equals message origination host name: "+conHost+" conURI:"+conURI+" msgHost: "+msgHost+" msgURI:"+msgURI);
-                    manager.updatePeerTableEntry(conHost, conURI, msgHost, msgURI);
-                    uri = msgURI;
-                }
             } catch(Exception exc) {
-                logger.log(Level.INFO, "Can not process CER",exc);                
+            	if(logger.isLoggable(Level.SEVERE))
+            	{
+            		logger.log(Level.SEVERE, "Can not process CER",exc);
+            	}
             }
-            logger.fine("CER result " + resultCode);
+            if(logger.isLoggable(Level.FINE))
+        	{
+            	logger.fine("CER result " + resultCode);
+        	}
             return resultCode;
         }
 
@@ -247,7 +261,10 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                             answer.setHopByHopIdentifier(request.getHopByHopIdentifier());
                         } else {
                             if (ovrManager != null && ovrManager.isParenAppOverload(request.getSingleApplicationId())) {
-                                logger.log(Level.INFO, "Request " + request + " skipped, because server application has overload");
+                            	if(logger.isLoggable(Level.INFO))
+                            	{
+                            		logger.log(Level.INFO, "Request " + request + " skipped, because server application has overload");
+                            	}
                                 answer = (IMessage)request.createAnswer(ResultCode.TOO_BUSY);
                             } else {
                                 try {
@@ -258,7 +275,10 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                                     isProcessed = true;
                                 } catch (Exception exc) {
                                     resultCode = ResultCode.APPLICATION_UNSUPPORTED;
-                                    logger.log(Level.WARNING, "Error during processing message by listener", exc);
+                                    if(logger.isLoggable(Level.SEVERE))
+                                	{
+                                    	logger.log(Level.SEVERE, "Error during processing message by listener", exc);
+                                	}
                                 }
                             }
                         }
@@ -266,10 +286,16 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                             if (answer != null)
                                 sendMessage(answer);
                         } catch (Exception e) {
-                            logger.log(Level.WARNING, "Can not send answer", e);
+                        	if(logger.isLoggable(Level.SEVERE))
+                        	{
+                        		logger.log(Level.SEVERE, "Can not send answer", e);
+                        	}
                         }
                     } else {
-                        logger.log(Level.WARNING, "Received message for unsupported Application-Id: " + appId);
+                    	if(logger.isLoggable(Level.WARNING))
+                    	{
+                    		logger.log(Level.WARNING, "Received message for unsupported Application-Id: " + appId);
+                    	}
                         resultCode = ResultCode.APPLICATION_UNSUPPORTED;
                     }
                 }
@@ -283,7 +309,10 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                 try {
                     sendMessage(request);
                 } catch (Exception e) {
-                    logger.log(Level.WARNING, "Can not send answer", e);
+                	if(logger.isLoggable(Level.SEVERE))
+                	{
+                		logger.log(Level.SEVERE, "Can not send answer", e);
+                	}
                 }
             }
             return isProcessed;
@@ -309,29 +338,4 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
         }
     }
 
-    public static class Entry {
-        private IConnection conn;
-        private long createdTime;
-
-        public Entry(IConnection conn) {
-            this.conn = conn;
-            this.createdTime = System.currentTimeMillis();
-        }
-
-        public IConnection getConnection() {
-            return conn;
-        }
-
-        public long getCreatedTime() {
-            return createdTime;
-        }
-
-        public int hashCode() {
-            return conn.hashCode();
-        }
-
-        public boolean equals(Object obj) {
-            return conn.equals(obj); 
-        }
-    }
 }

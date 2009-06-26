@@ -16,9 +16,12 @@ import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IMetaData;
 import org.jdiameter.client.api.controller.IPeer;
+import org.jdiameter.client.api.fsm.EventTypes;
 import org.jdiameter.client.api.io.IConnectionListener;
 import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.impl.helpers.IPConverter;
+import org.jdiameter.client.impl.helpers.Loggers;
+
 import static org.jdiameter.client.impl.helpers.Parameters.*;
 
 import java.net.InetAddress;
@@ -28,12 +31,15 @@ import java.net.UnknownServiceException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Use stack extension point
  */
 public class MetaDataImpl implements IMetaData {
 
+    protected Logger logger = Loggers.PeerTable.logger();
+    
     protected IContainer stack;
     protected int state;
     protected LocalPeer peer;
@@ -229,6 +235,10 @@ public class MetaDataImpl implements IMetaData {
 
         public IMessage[] remAllMessage() {
             return new IMessage[0];
+        }
+
+        public boolean handleMessage(EventTypes type, IMessage message, String key) throws TransportException, OverloadException, InternalException {
+            return false;  
         }
 
         public boolean sendMessage(IMessage message) throws TransportException, OverloadException {

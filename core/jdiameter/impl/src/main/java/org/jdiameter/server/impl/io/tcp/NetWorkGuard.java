@@ -14,7 +14,6 @@ import java.net.Socket;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -40,12 +39,11 @@ public class NetWorkGuard implements INetWorkGuard, Runnable {
             ServerSocketChannel ssc = ServerSocketChannel.open();
             ssc.configureBlocking(false);
             serverSocket = ssc.socket();
-            InetSocketAddress isa = new InetSocketAddress( port );
-            serverSocket.bind( isa );
+            serverSocket.bind( new InetSocketAddress( inetAddress, port ) );
             selector = Selector.open();
             ssc.register(selector, SelectionKey.OP_ACCEPT);
             isWork = true;
-            logger.info("Open server socket on port " + port);
+            logger.info("Open server socket: " + serverSocket);
             thread.start();
         } catch(Exception exc) {
             destroy();
@@ -59,25 +57,34 @@ public class NetWorkGuard implements INetWorkGuard, Runnable {
                 int num = selector.select();
                 if (num == 0) continue;
                 Set keys = selector.selectedKeys();
-                Iterator it = keys.iterator();
-                while (it.hasNext()) {
-                    SelectionKey key = (SelectionKey) it.next();
+                for (Object key1 : keys) {
+                    SelectionKey key = (SelectionKey) key1;
                     if ((key.readyOps() & SelectionKey.OP_ACCEPT) == SelectionKey.OP_ACCEPT) {
                         try {
                             Socket s = serverSocket.accept();
-                            logger.info("Open incomming connection " + s.toString());
+                            if(logger.isLoggable(Level.INFO))
+                        	{
+                        		logger.info("Open incomming connection " + s.toString());
+                        	}
                             TCPClientConnection client = new TCPClientConnection(null, s, parser, null);
-                            for (INetWorkConnectionListener l : listeners)
-                                l.newNetWorkConnection(client);
+                            for (INetWorkConnectionListener listener : listeners) {
+                                listener.newNetWorkConnection(client);
+                            }
                         } catch (Exception e) {
-                            logger.log(Level.WARNING, "Can not cteate incoming connection", e);
+                        	if(logger.isLoggable(Level.SEVERE))
+                        	{
+                        		logger.log(Level.SEVERE, "Can not cteate incoming connection", e);
+                        	}
                         }
                     }
                 }
                 keys.clear();
             }
         } catch(Exception exc) {
-            logger.log(Level.WARNING, "Server socket stopped", exc);
+        	if(logger.isLoggable(Level.SEVERE))
+        	{
+        		logger.log(Level.SEVERE, "Server socket stopped", exc);
+        	}
         }
     }
 
@@ -89,6 +96,11 @@ public class NetWorkGuard implements INetWorkGuard, Runnable {
 
     public void remListener(INetWorkConnectionListener listener) {
         listeners.remove(listener);
+    }
+
+    @Override
+    public String toString() {
+        return "NetworkGuard:" + (serverSocket != null ? serverSocket.toString() : "closed");
     }
 
     public void destroy() {

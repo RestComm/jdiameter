@@ -185,7 +185,7 @@ public class PeerFSMImpl implements IStateMachine {
     }
 
     private long setInActiveTimer() {
-        return IAC_TIMEOUT - 2 + random.nextInt(5) + System.currentTimeMillis();
+      return IAC_TIMEOUT - 2 * 1000 + random.nextInt(5) * 1000 + System.currentTimeMillis();
     }
 
     public String toString() {
@@ -437,6 +437,7 @@ public class PeerFSMImpl implements IStateMachine {
                                 try {
                                     context.connect();
                                 } catch (Exception exc) {
+                                    logger.log(Level.FINE, "Can not create connection", exc);
                                     timer = REC_TIMEOUT + System.currentTimeMillis();
                                 }
                                 break;
@@ -522,6 +523,11 @@ public class PeerFSMImpl implements IStateMachine {
                         switch (event.encodeType(EventTypes.class)) {
                             case TIMEOUT_EVENT:
                             case DPA_EVENT:
+                                try {
+                                  context.disconnect();
+                                } catch (Exception e) {
+                                  logger.log(Level.FINE, "Can not stop network client", e);
+                                }
                                 swithToNextState(CIntState.DOWN);
                                 break;
                             case RECEIVE_MSG_EVENT:
@@ -531,6 +537,11 @@ public class PeerFSMImpl implements IStateMachine {
                                 throw new RuntimeException("Stack now is stopping");
                             case STOP_EVENT:
                             case DISCONNECT_EVENT:
+                                try {
+                                  context.disconnect();
+                                } catch (Exception e) {
+                                  logger.log(Level.FINE, "Can not stop network client", e);
+                                }
                                 break;
                             default:
                                 logger.finest("Unknown event type:" + event.encodeType(EventTypes.class) + " in state " + state);

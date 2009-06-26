@@ -4,8 +4,10 @@ import org.jdiameter.api.*;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IMetaData;
 import org.jdiameter.client.api.ISessionFactory;
+import org.jdiameter.client.api.fsm.EventTypes;
 import org.jdiameter.client.api.fsm.IFsmFactory;
 import org.jdiameter.client.api.io.IConnection;
+import org.jdiameter.client.api.io.IConnectionListener;
 import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.impl.controller.PeerTableImpl;
@@ -22,6 +24,8 @@ import static org.jdiameter.server.impl.helpers.Parameters.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.UnknownServiceException;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.*;
 import java.util.logging.Level;
@@ -48,7 +52,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
 
     protected boolean isAcceptUndefinedPeer  = false;
 
-    protected ConcurrentHashMap<String, PeerImpl.Entry> incConnections = new ConcurrentHashMap<String, PeerImpl.Entry>();
+    private ConcurrentHashMap<String, IConnection> incConnections;
     private ScheduledExecutorService connScheduler;
     private ScheduledFuture connHandler;
 
@@ -59,8 +63,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     protected IOverloadManager ovrManager;
     protected ScheduledExecutorService overloadScheduler = null;
     protected ScheduledFuture overloadHandler = null;
-
-
+    protected PeerTableListener peerTableListener = null;
 
     protected class StorageEntry {
 
@@ -112,22 +115,23 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
         init(router, config, metaData, fsmFactory, transportFactory, parser);
     }
 
-    protected Peer createPeer(int rating, String uri, MetaData metaData, Configuration globalConfig, Configuration peerConfig, IFsmFactory fsmFactory,
+    protected Peer createPeer(int rating, String uri, String ip, String portRange, MetaData metaData, Configuration globalConfig, Configuration peerConfig, IFsmFactory fsmFactory,
                               org.jdiameter.client.api.io.ITransportLayerFactory transportFactory, IMessageParser parser) throws InternalException, TransportException, URISyntaxException, UnknownServiceException {
-        if (predefinedPeerTable == null)
+        if (predefinedPeerTable == null) {
             predefinedPeerTable = new CopyOnWriteArraySet<URI>();
+        }
         predefinedPeerTable.add(new URI(uri));
-        if (peerConfig.getBooleanValue(PeerAttemptConnection.ordinal(), false))
-            return new org.jdiameter.server.impl.PeerImpl(
-                this, rating, new URI(uri), metaData.unwrap(IMetaData.class),
+        if (peerConfig.getBooleanValue(PeerAttemptConnection.ordinal(), false)) {
+            return new org.jdiameter.server.impl.PeerImpl(this, rating, new URI(uri), ip, portRange, metaData.unwrap(IMetaData.class),
                 globalConfig, peerConfig, sessionFactory, fsmFactory, transportFactory, parser, network, ovrManager, true, null
             );
-        else
+        } else {
             return null;
+        }
     }
 
     public void setPeerTableListener(PeerTableListener peerTableListener) {
-        //To do
+      this.peerTableListener = peerTableListener;
     }
 
     public boolean elementChanged(int i, Object data) {
@@ -173,11 +177,20 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
         connScheduler = Executors.newScheduledThreadPool(1);
         Runnable task = new Runnable() {
             public void run() {
-                for (PeerImpl.Entry cEntry :incConnections.values()) {
-                    if (cEntry != null && (System.currentTimeMillis() - cEntry.getCreatedTime() <= CONN_INVALIDATE_PERIOD)) {
-                        logger.log(Level.FINE, "External connection released " + cEntry.getConnection());
-                        cEntry.getConnection().disconnect();
-                        incConnections.remove(cEntry.getConnection().getKey());
+              Map<String, IConnection> connections = getIncConnections();
+              for (IConnection connection : connections.values()) {
+                  if (System.currentTimeMillis() - connection.getCreatedTime() <= CONN_INVALIDATE_PERIOD) {
+                  	  if(logger.isLoggable(Level.FINE))
+                  	  {
+                  		  logger.log(Level.FINE,"External connection released by timeout {}", connection);
+                  	  }
+                      try {
+                          connection.remAllConnectionListener();
+                          connection.release();
+                      } catch (IOException e) {
+                          logger.log(Level.FINE, "Can not release connection", e);
+                      }
+                      connections.remove(connection.getKey());
                     }
                 }
             }
@@ -187,14 +200,20 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
         try {
             networkGuard = createNetWorkGuard(transportFactory);
         } catch (TransportException e) {
-            logger.log(Level.WARNING, "Can not create server socket", e);
+        	if(logger.isLoggable(Level.WARNING))
+        	  {
+        		logger.log(Level.WARNING, "Can not create server socket", e);
+        	  }
         }
         // Connect to predefined peers
         for (Peer p : peerTable.values())
             try {
                 p.connect();
             } catch (Exception e) {
-                logger.log(Level.WARNING, "Can not start connect procedure for peer" + p, e);
+            	if(logger.isLoggable(Level.WARNING))
+          	  	{
+            		logger.log(Level.WARNING, "Can not start connect procedure for peer" + p, e);
+          	  	}
             }
         isStarted = true;
     }
@@ -203,79 +222,155 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
         return predefinedPeerTable;
     }
 
-    public ConcurrentHashMap<String, PeerImpl.Entry> getIncConnections() {
-        if (incConnections == null)
-            incConnections = new ConcurrentHashMap<String, PeerImpl.Entry>();
-        return incConnections;
+    public ConcurrentHashMap<String, IConnection> getIncConnections() {
+      if (incConnections == null) {
+        incConnections = new ConcurrentHashMap<String, IConnection>();
+      }
+      
+      return incConnections;
     }
-
-    protected ConcurrentHashMap<String, String> alias = new ConcurrentHashMap<String, String>();
 
     private final Object regLock = new Object();
-    // todo change (hack method)
-    public void updatePeerTableEntry(String oldName, URI oldUri, String newName, URI newUri) {
-        synchronized( regLock ) {
-            alias.replace(oldName, newName);
-            if(!peerTable.containsKey(newUri) && peerTable.containsKey(oldUri)) {
-              peerTable.put(newUri, peerTable.remove(oldUri));
-            }
-        }
-    }
 
     private INetWorkGuard createNetWorkGuard(final ITransportLayerFactory transportFactory) throws TransportException {
         return transportFactory.createNetWorkGuard(
             metaData.getLocalPeer().getIPAddresses()[0],
             metaData.getLocalPeer().getUri().getPort(),
             new INetWorkConnectionListener() {
-                public void newNetWorkConnection(IConnection connection) {
-                    synchronized( regLock ) {
-                        IPeer p = null;
-                        String host = connection.getRemoteAddress().getHostName();
-                        if (alias.containsKey(host))
-                            host = alias.get(host);
+                public void newNetWorkConnection(final IConnection connection) {
+                    synchronized (regLock) {
+                        final IConnectionListener listener = new IConnectionListener() {
+
+                            public void connectionOpened(String connKey) {
+                            	if(logger.isLoggable(Level.FINE))
+                            	{
+                            		logger.log(Level.FINE, "Connection {} opened", connKey);
+                          	  	}
+                            }
+
+                            public void connectionClosed(String connKey, List notSended) {
+                            	if(logger.isLoggable(Level.FINE))
+                            	{
+                                 logger.log(Level.FINE,"Connection {} close", connKey);
+                            	}
+                                unregister(true);
+                            }
+
+                            public void messageReceived(String connKey, IMessage message) {
+                                if (message.isRequest() && message.getCommandCode() == Message.CAPABILITIES_EXCHANGE_REQUEST) {
+                                    connection.remConnectionListener(this);
+                                    IPeer peer = null;
+                                    String host;
+                                    try {
+                                        host = message.getAvps().getAvp(Avp.ORIGIN_HOST).getOctetString();
+                                    } catch (AvpDataException e) {
+                                    	if(logger.isLoggable(Level.WARNING))
+                                    	{
+                                         logger.log(Level.WARNING, "Can not find ORIG_HOST avp in CER", e);
+                                    	}
+                                        unregister(true);
+                                        return;
+                                    }
+                                    boolean foundInpredefinedTable = false;
                         // find into predefined table
-                        for (URI u : predefinedPeerTable) {
-                            if (u.getFQDN().equals(host)) {
-                                p = (IPeer) peerTable.get(u);
+                        for (URI uri : predefinedPeerTable) {
+                            if (uri.getFQDN().equals(host)) {
+                                peer = (IPeer) peerTable.get(uri);
+                                foundInpredefinedTable = true; // found but not init
                                 break;
                             }
                         }
                         // find in peertable for peer already connected to server but not removed
-                        if (p == null)
-                            for (URI u : peerTable.keySet()) {
-                                if (u.getFQDN().equals(host)) {
-                                    p = (IPeer) peerTable.get(u);
+                        if (peer == null) {
+                            for (URI uri : peerTable.keySet()) {
+                                if (uri.getFQDN().equals(host)) {
+                                    peer = (IPeer) peerTable.get(uri);
                                     break;
                                 }
                             }
-                        if (p != null) {
-                            p.addIncomingConnection(connection);
+                        }
+
+                        if (peer != null) {
+                            peer.addIncomingConnection(connection);
+                            try {
+                                peer.handleMessage(message.isRequest() ? EventTypes.CER_EVENT : EventTypes.CER_EVENT, message, connKey);
+                            } catch (Exception e) {
+                            	if(logger.isLoggable(Level.SEVERE))
+                            	{
+                            		logger.log(Level.SEVERE, "Can not process CER message", e);
+                            	}
+                            }
                         } else {
-                            if (isAcceptUndefinedPeer) {
-                                alias.put(host, host);
+                            if (isAcceptUndefinedPeer || foundInpredefinedTable) {
                                 try {
                                     int port = connection.getRemotePort();
-                                    p = new org.jdiameter.server.impl.PeerImpl(
-                                        MutablePeerTableImpl.this, 0, new URI("aaa://"+host+":"+port), metaData.unwrap(IMetaData.class),
+                                    peer = new org.jdiameter.server.impl.PeerImpl(
+                                        MutablePeerTableImpl.this, 0, new URI("aaa://" + host + ":" + port), connection.getRemoteAddress().getHostAddress(), null, metaData.unwrap(IMetaData.class),
                                         config, null, sessionFactory, fsmFactory, transportFactory, parser, network, ovrManager, false, connection
                                     );
-                                    peerTable.put(p.getUri(), p);
+                                    appendPeerToPeerTable(peer);
+                                    peer.handleMessage(message.isRequest() ? EventTypes.CER_EVENT : EventTypes.CER_EVENT, message, connKey);
                                 } catch (Exception e) {
-                                    logger.log(Level.WARNING, "Can not create peer", e);
+                                	if(logger.isLoggable(Level.WARNING))
+                                	{
+                                		logger.log(Level.WARNING ,"Can not create peer", e);
+                                	}
+                                    unregister(true);
                                 }
                             } else {
-                                logger.info("Skip anonymous connection " + connection.toString());
+                            	//FIXME: This code just asks for ^+shift+L !!!!!!!!!!!!!!!
+                            	if(logger.isLoggable(Level.FINE))
+                            	{
+                                   logger.log(Level.FINE,"Skip anonymous connection " + connection.toString());
+                            	}
+                                              unregister(true);
+                                          }
+                                      }
+                                  } else {
+                                	  	if(logger.isLoggable(Level.FINE))
+                                  		{
+                                	  		logger.log(Level.FINE,"Unknown message {} by connection {}", new Object[]{message, connKey});
+                                  		}
+                                      unregister(true);
+                                  }
+                              }
+
+                              public void internalError(String connKey, IMessage message, TransportException cause) {
+                            	  	if(logger.isLoggable(Level.FINE))
+                              		{
+                            		  logger.log(Level.FINE,"Connection {} internalError {}", new Object[]{connKey, cause});
+                              		}
+                                  unregister(true);
+                              }
+
+                              public void unregister(boolean release) {
+                                  getIncConnections().remove(connection.getKey());
+                                  connection.remConnectionListener(this);
+                                  if (release && connection.isConnected()) {
                                 try {
-                                    connection.disconnect();
                                     connection.release();
-                                } catch (Exception e) {
+                                } catch (IOException e) {
+                                	if(logger.isLoggable(Level.WARNING))
+                                	{
+                                		logger.log(Level.WARNING,"Can not release connection {}", connection);
+                                	}
                                 }
                             }
                         }
+                      };
+                      getIncConnections().put(connection.getKey(), connection);
+                      connection.addConnectionListener(listener);
                     }
                 }
             }
         );
+    }
+
+    private void appendPeerToPeerTable(IPeer peer) {
+        peerTable.put(peer.getUri(), peer);
+        if (peerTableListener != null) {
+            peerTableListener.peerAccepted(peer);
+        }
     }
 
     public void stopping() {
@@ -313,8 +408,6 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
         storageAnswers.clear();
     }
 
-
-
     public Peer addPeer(URI peerURI, String realm, boolean connecting) {
         try {
             Configuration peerConfig = null;
@@ -328,10 +421,10 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
             if (peerConfig == null) {
                 peerConfig = new EmptyConfiguration(false).add(PeerAttemptConnection, connecting);
             }
-            IPeer peer = (IPeer) createPeer(0, peerURI.getFQDN(), metaData, config, peerConfig, fsmFactory, transportFactory, parser);
+            IPeer peer = (IPeer) createPeer(0, peerURI.getFQDN(), null, null, metaData, config, peerConfig, fsmFactory, transportFactory, parser);
             if (peer == null) return null;
             peer.setRealm(realm);
-            peerTable.put(peer.getUri(), peer);
+            appendPeerToPeerTable(peer);
             boolean found = false;
             for (Realm r : router.getRealms()) {
                 if (r.getName().equals(realm)) {
@@ -346,7 +439,10 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                 peer.connect();
             return peer;
         } catch(Exception e) {
-            logger.log(Level.INFO, "Can not add peer", e);
+        	if(logger.isLoggable(Level.WARNING))
+        	{
+        		logger.log(Level.WARNING, "Can not add peer", e);
+        	}
             return null;
         }
     }
@@ -355,21 +451,35 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
         return router.getRealms();
     }
 
-    public Peer removePeer(String uri) {
+    public Peer removePeer(String host) {
         try {
-            URI peerUri = new URI(uri);
-            if (peerTable.containsKey(peerUri)) {
-                peerTable.get(peerUri).disconnect();
+          URI peerUri = null;
+          for (URI u : peerTable.keySet()) {
+            if (u.getFQDN().equals(host)) {
+              peerUri = u;
+              peerTable.get(u).disconnect();
             }
+          }
+          if (peerUri != null) {
             predefinedPeerTable.remove(peerUri);
-            return peerTable.remove(peerUri);
+            Peer removedPeer = peerTable.remove(peerUri);
+            if (peerTableListener != null) {
+              peerTableListener.peerRemoved(removedPeer);
+            }
+            
+            return removedPeer;
+          }
+          else {
+            return null;
+          }       
         } catch (Exception e) {
-            logger.log(Level.INFO, "Can not remove peer", e);
+        	if(logger.isLoggable(Level.WARNING))
+        	{
+        		logger.log(Level.WARNING, "Can not remove peer", e);
+        	}
             return null;
         }
     }
-
-
 
     public Statistic getStatistic(String name) {
         for (Peer p : peerTable.values()) {
@@ -402,12 +512,8 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
 
     public boolean isWrapperFor(Class<?> aClass) throws InternalException {
         boolean isWrapp = super.isWrapperFor(aClass);
-        if (aClass == MutablePeerTable.class)
-            return true;
-        else if (aClass == Network.class)
-            return true;
-        else
-            return isWrapp;
+        
+        return aClass == MutablePeerTable.class || aClass == Network.class || isWrapp;
     }
 
     public <T> T unwrap(Class<T> aClass) throws InternalException {

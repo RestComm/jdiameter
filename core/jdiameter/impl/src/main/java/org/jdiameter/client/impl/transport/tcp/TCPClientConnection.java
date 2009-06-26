@@ -21,33 +21,42 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class TCPClientConnection implements IConnection {
 
+    private final long createdTime;
     private TCPTransportClient client;
     protected IMessageParser parser;
     protected final Object zero = new Object();
     protected ConcurrentLinkedQueue<IConnectionListener> listeners = new ConcurrentLinkedQueue<IConnectionListener>();
 
     protected TCPClientConnection (IMessageParser parser) {
+        this.createdTime = System.currentTimeMillis();
         this.parser = parser;
+        client = new TCPTransportClient(this);
     }
 
-    public TCPClientConnection(Configuration config, Socket socket, IMessageParser p, String ref) throws Exception {
+    public TCPClientConnection(Configuration config, Socket socket, IMessageParser parser, String ref) throws Exception {
+        this(parser);
         client = new TCPTransportClient(this);
         client.initialize(socket);
         client.start();
-        parser = p;
     }
 
-    public TCPClientConnection(Configuration config, InetAddress address, int port, IMessageParser parser, String ref) {
-        client = new TCPTransportClient(this);
-        client.setDestAddress(new InetSocketAddress(address, port));
+    public TCPClientConnection(Configuration config, InetAddress remoteAddress, int remotePort, InetAddress localAddress, int localPort, IMessageParser parser, String ref) {
+        this(parser);
+        client.setDestAddress(new InetSocketAddress(remoteAddress, remotePort));
+        client.setOrigAddress(new InetSocketAddress(localAddress, localPort));
         this.parser = parser;
     }
 
-    public TCPClientConnection(Configuration config, InetAddress address, int port, IConnectionListener listener, IMessageParser parser, String ref) {
-        client = new TCPTransportClient(this);
-        client.setDestAddress(new InetSocketAddress(address, port));
+    public TCPClientConnection(Configuration config, InetAddress remoteAddress, int remotePort, InetAddress localAddress, int localPort, IConnectionListener listener, IMessageParser parser, String ref) {
+        this(parser);
+        client.setDestAddress(new InetSocketAddress(remoteAddress, remotePort));
+        client.setOrigAddress(new InetSocketAddress(localAddress, localPort));
         listeners.add(listener);
         this.parser = parser;
+    }
+
+    public long getCreatedTime() {
+        return createdTime;
     }
 
     public void connect() throws TransportException {
@@ -63,26 +72,33 @@ public class TCPClientConnection implements IConnection {
 
     public void disconnect() throws InternalError {
         try {
+          if(getClient() != null) {
             getClient().stop();
+          }
         } catch (Exception e) {
             throw new InternalError("Error while stopping transport: " + e.getMessage());
         }
     }
 
     public void release() throws IOException {
-        if (getClient() != null)
-            try {
-                getClient().release();
-            } catch (Exception e) {
-                throw new IOException(e.getMessage());
-            }
-        parser = null;
-        listeners = null;
+        try {
+          if (getClient() != null) {
+            getClient().release();
+          }
+        } catch (Exception e) {
+            throw new IOException(e.getMessage());
+        }
+        finally {
+          parser = null;
+          listeners = null;
+        }
     }
 
     public void sendMessage(IMessage message) throws TransportException, OverloadException {
         try {
+          if (getClient() != null) {
             getClient().sendMessage(parser.encodeMessage(message));
+          }
         } catch (Exception e) {
             throw new TransportException("Cannot send message: ", TransportError.FailedSendMessage, e);
         }
@@ -119,6 +135,10 @@ public class TCPClientConnection implements IConnection {
         if (listeners != null) {
             listeners.remove(connectionListener);
         }
+    }
+
+    public void remAllConnectionListener() {
+        listeners.clear();
     }
 
     public boolean isWrapperFor(Class<?> aClass) throws InternalException {

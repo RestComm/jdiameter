@@ -245,6 +245,8 @@
                 <xsi:complexType>
                    <xsi:attribute name="name" type="xsi:string" use="required"/>
                    <xsi:attribute name="rating" type="xsi:integer" use="required"/>
+                   <xsi:attribute name="ip" type="xsi:string" use="optional"/>
+                   <xsi:attribute name="portRange" type="xsi:string" use="optional"/>
                    <xsi:attribute name="security_ref" type="xsi:string" use="optional"/>
                </xsi:complexType>
             </xsi:element>

@@ -5,11 +5,15 @@ import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.api.io.TransportException;
+import org.jdiameter.client.impl.helpers.IPConverter;
 import org.jdiameter.server.api.IMetaData;
 import org.jdiameter.server.api.IMutablePeerTable;
 import org.jdiameter.server.api.INetwork;
+import org.jdiameter.server.impl.helpers.Parameters;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -73,12 +77,86 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
             return  set;
         }
 
-        public InetAddress[] getIPAdresses() {
-            InetAddress[] addr;
-            synchronized (lock) {
-                addr = super.getIPAddresses();
+        @Override
+        public InetAddress[] getIPAddresses() {
+            if (addresses.length == 0) {
+                Configuration[] ipAddressed = stack.getConfiguration().getChildren(Parameters.OwnIPAddresses.ordinal());
+                List<InetAddress> list = new ArrayList<InetAddress>();
+                if (ipAddressed != null) {
+                    for (Configuration anIpAddressed : ipAddressed) {
+                        InetAddress a = getAddress(anIpAddressed);
+                        if (a != null) {
+                            list.add(a);
+                        }
+                    }
+                } else {
+                    try {
+                        list.add(InetAddress.getByName( getLocalPeer().getUri().getFQDN() ));
+                    } catch (Exception e1) {
+                    	if(logger.isLoggable(Level.SEVERE))
+    	 				{
+                        	logger.log(Level.SEVERE, "Can not get ip by uri", e1);
+                        }
+                        try {
+                            list.add(InetAddress.getLocalHost());
+                        } catch (Exception e2) {
+               		         if(logger.isLoggable(Level.SEVERE))
+    	 					{
+                            	logger.log(Level.SEVERE, "Can not get ip localhost", e1);
+                            }
+                        }
+                    }
+                }
+                addresses = list.toArray(new InetAddress[0]);
             }
-            return addr;
+            return addresses;
+        }
+
+        private InetAddress getAddress(Configuration configuration) {
+            InetAddress rc = null;
+            String address = configuration.getStringValue(Parameters.OwnIPAddress.ordinal(), null);
+            if (address == null || address.length() == 0) {
+                try {
+                    rc = InetAddress.getByName(getUri().getFQDN());
+                } catch (Exception e1) {
+                	if(logger.isLoggable(Level.SEVERE))
+    	 			{
+                     	logger.log(Level.SEVERE, "Can not get ip by uri", e1);
+                     }
+                    try {
+                        rc = InetAddress.getLocalHost();
+                    } catch (Exception e2) {
+                    	if(logger.isLoggable(Level.SEVERE))
+    	 				{
+                        	logger.log(Level.SEVERE, "Can not get ip localhost", e2);
+                        }
+                    }
+                }
+            } else {
+                try {
+                    rc = InetAddress.getByName(address);
+                } catch (Exception e1) {
+                	if(logger.isLoggable(Level.SEVERE))
+    	 			{
+                    	logger.log(Level.SEVERE, "Can not get ip by address " + address, e1);
+                    }
+                    rc = IPConverter.InetAddressByIPv4(address);
+                    if (rc == null) {
+                        rc = IPConverter.InetAddressByIPv6(address);
+                    }
+                    if (rc == null) {
+                        try {
+                            rc = InetAddress.getLocalHost();
+                        } catch (Exception e2) {
+                        	if(logger.isLoggable(Level.SEVERE))
+    	 					{
+            	                logger.log(Level.SEVERE, "Can not get ip by localhost ", e1);
+            	            }
+                        }
+                    }
+                }
+            }
+            return rc;
         }
 
         // Local processing message
@@ -91,7 +169,11 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
                         factory = manager.getSessionFactory();
                         slc = manager.getSessionReqListeners();
                     } catch (Exception exc) {
-                        stack.getLogger().log(Level.WARNING, "Error initialise", exc);
+	                    if(logger.isLoggable(Level.SEVERE))
+    	 				{
+                        	//stack.getLogger().log(Level.SEVERE, "Error initialise", exc);
+                        	logger.log(Level.SEVERE, "Error initialise", exc);
+                        }
                     }
                 }
 
@@ -121,14 +203,22 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
                                         if (answer != null)
                                             manager.saveToDuplicate(message.getDuplicationKey(), answer);
                                     } catch (Exception exc) {
-                                        stack.getLogger().log(Level.WARNING, "Error during processing message by listener", exc);
+                          	            if(logger.isLoggable(Level.SEVERE))
+    	 								{
+                                        	//stack.getLogger().log(Level.WARNING, "Error during processing message by listener", exc);
+                                        	logger.log(Level.WARNING, "Error during processing message by listener", exc);
+                                        }
                                     }
                                 }
                             }
                         }
 
                     } else {
-                        stack.getLogger().log(Level.WARNING, "Can not find handler " + message.getSingleApplicationId() + " for message " + message);
+	                    if(logger.isLoggable(Level.WARNING))
+    					{
+	                        //stack.getLogger().log(Level.WARNING, "Can not find handler " + message.getSingleApplicationId() + " for message " + message);
+	                        logger.log(Level.WARNING, "Can not find handler " + message.getSingleApplicationId() + " for message " + message);
+	                    }
                     }
                     if (answer != null)
                         peerRequests.remove( message.getHopByHopIdentifier() );
@@ -144,7 +234,11 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
                 }
                 return true;
             } catch (Exception e) {
-                stack.getLogger().log(Level.WARNING, "Can not processed message " + message, e);
+ 	           if(logger.isLoggable(Level.WARNING))
+         		{
+                	//stack.getLogger().log(Level.WARNING, "Can not processed message " + message, e);
+                	logger.log(Level.WARNING, "Can not processed message " + message, e);
+                }
             }
             return false;
         }

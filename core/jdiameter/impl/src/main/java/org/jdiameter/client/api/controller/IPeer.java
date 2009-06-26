@@ -14,6 +14,7 @@ import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Peer;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.client.api.IMessage;
+import org.jdiameter.client.api.fsm.EventTypes;
 import org.jdiameter.client.api.io.IConnectionListener;
 import org.jdiameter.client.api.io.TransportException;
 
@@ -51,6 +52,15 @@ public interface IPeer extends Peer {
      */
     IMessage[] remAllMessage();
 
+    /**
+     * Put message to peer fsm
+     * @param message request instance
+     * @return true if message will be set to FSM
+     * @throws TransportException
+     * @throws OverloadException
+     */
+    public boolean handleMessage(EventTypes type, IMessage message, String key) throws TransportException, OverloadException, InternalException;
+    
     /**
      * Send message to diameter network
      * @param message request instance

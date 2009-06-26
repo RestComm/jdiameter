@@ -74,16 +74,25 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
     protected IConnectionListener connListener = new IConnectionListener() {
         
         public void connectionOpened(String connKey) {
-            logger.log(FINEST, "Connection to " + uri + " is opened");
+        	if(logger.isLoggable(FINEST))
+        	{
+        		logger.log(FINEST, "Connection to " + uri + " is opened");
+        	}
             try {
                 fsm.handleEvent( new FsmEvent(CONNECT_EVENT, connKey) );
             } catch (Exception e) {
-                logger.log(WARNING, "Can not run start procedure", e);
+            	if(logger.isLoggable(SEVERE))
+            	{
+            		logger.log(SEVERE, "Can not run start procedure", e);
+            	}
             }
         }
 
         public void connectionClosed(String connKey, List notSended) {
-            logger.log(FINEST, "Connection from " + uri + " is close");
+        	if(logger.isLoggable(FINEST))
+        	{
+        		logger.log(FINEST, "Connection from " + uri + " is close");
+        	}
             for (IMessage request: peerRequests.values()) {
                 if (request.getState() == IMessage.STATE_SENT) {
                     request.setReTransmitted(true);
@@ -99,7 +108,10 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
             try {
                 fsm.handleEvent( new FsmEvent(DISCONNECT_EVENT, connKey) );
             } catch (Exception e) {
-                logger.log(WARNING, "Can not run stopping procedure", e);
+            	if(logger.isLoggable(SEVERE))
+            	{
+            		logger.log(SEVERE, "Can not run stopping procedure", e);
+            	}
             }
         }
 
@@ -107,7 +119,10 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
             boolean req = message.isRequest();
             try {
                 int type = message.getCommandCode();
-                logger.log(FINEST, "Receive message type:" + type);
+            	if(logger.isLoggable(FINEST))
+            	{
+            		logger.log(FINEST, "Receive message type:" + type);
+            	}
                 switch(type) {
                     case CAPABILITIES_EXCHANGE_REQUEST:
                         fsm.handleEvent( new FsmEvent(req ? CER_EVENT : CEA_EVENT, message, connKey) );
@@ -122,7 +137,10 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
                         fsm.handleEvent( new FsmEvent(RECEIVE_MSG_EVENT, message) );
                 }
             } catch (Exception e) {
-                logger.log(INFO, "Error during processing incomming message", e);
+            	if(logger.isLoggable(SEVERE))
+            	{
+            		logger.log(SEVERE, "Error during processing incomming message", e);
+            	}
                 if (req) {
                     try {
                         message.setRequest(false);
@@ -130,7 +148,10 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
                         message.getAvps().addAvp(Avp.RESULT_CODE, ResultCode.TOO_BUSY, true); 
                         conn.sendMessage(message);
                     } catch (Exception exc) {
-                        logger.log(INFO, "Can not send error answer", exc);
+                    	if(logger.isLoggable(SEVERE))
+                    	{
+                    		logger.log(SEVERE, "Can not send error answer", exc);
+                    	}
                     }
                 }
             }
@@ -138,20 +159,26 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
 
         public void internalError(String connKey, IMessage message, TransportException cause) {
             try {
-                logger.log(INFO, "internalError ", cause);
+            	if(logger.isLoggable(SEVERE))
+            	{
+            		logger.log(SEVERE, "internalError ", cause);
+            	}
                 fsm.handleEvent( new FsmEvent(INTERNAL_ERROR, message));
             } catch (Exception e) {
-                logger.log(INFO, "Can not run internalError procedure", e);
+            	if(logger.isLoggable(SEVERE))
+            	{
+            		logger.log(SEVERE, "Can not run internalError procedure", e);
+            	}
             }
         }
     };
 
-    public PeerImpl(PeerTableImpl table, int rating, URI remotePeer, IMetaData metaData, Configuration config,
+    public PeerImpl(PeerTableImpl table, int rating, URI remotePeer, String ip,  String portRange, IMetaData metaData, Configuration config,
                     Configuration peerConfig, IFsmFactory fsmFactory, ITransportLayerFactory trFactory, IMessageParser parser) throws InternalException, TransportException {
-        this(table, rating, remotePeer, metaData, config, peerConfig, fsmFactory, trFactory, parser, null);
+      this(table, rating, remotePeer, ip,  portRange, metaData, config, peerConfig, fsmFactory, trFactory, parser, null);
     }
 
-    protected PeerImpl(PeerTableImpl table, int rating, URI remotePeer, IMetaData metaData, Configuration config,
+    protected PeerImpl(PeerTableImpl table, int rating, URI remotePeer, String ip, String portRange, IMetaData metaData, Configuration config,
                     Configuration peerConfig, IFsmFactory fsmFactory, ITransportLayerFactory trFactory, IMessageParser parser,
                     IConnection connection) throws InternalException, TransportException {
         this.table = table;
@@ -163,9 +190,7 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
         int port = remotePeer.getPort();
         InetAddress remoteAddress;
         try {
-            remoteAddress = InetAddress.getByName(
-                remotePeer.getFQDN()
-            );
+            remoteAddress = InetAddress.getByName( ip != null ? ip : remotePeer.getFQDN());
         } catch (UnknownHostException e) {
            throw new TransportException("Can not found host", TransportError.Internal, e);
         }
@@ -182,7 +207,36 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
         );
         if (connection == null) {
             String ref = peerConfig.getStringValue(SecurityRef.ordinal(), null);
-            this.conn = trFactory.createConnection(remoteAddress, port, connListener, ref);
+            InetAddress localAddress = null;
+            int localPort = 0;
+            if (portRange != null) {
+                try {
+                  Peer local = metaData.getLocalPeer();
+                  if (local.getIPAddresses() != null && local.getIPAddresses().length > 0) {
+                      localAddress = local.getIPAddresses()[0];
+                  } else {
+                      localAddress = InetAddress.getByName(metaData.getLocalPeer().getUri().getFQDN());
+                  }
+                } catch (Exception exc) {
+                	if(logger.isLoggable(WARNING))
+                	{
+                		logger.log(Level.WARNING, "Can not get local address", exc);
+                	}
+                }
+                try {
+                    String[] rng = portRange.trim().split("-");
+                    int strRange = Integer.parseInt(rng[0]);
+                    int endRange = Integer.parseInt(rng[1]);
+                    localPort = strRange + new Random().nextInt(endRange - strRange + 1);
+                } catch (Exception exc) {
+                	if(logger.isLoggable(WARNING))
+                	{
+                		logger.log(Level.WARNING, "Can not get local port", exc);
+                	}
+                }
+            }
+            this.conn = trFactory.createConnection(remoteAddress, port, localAddress, localPort,  connListener, ref);
+
         } else {
             this.conn = connection;
             this.conn.addConnectionListener(connListener);
@@ -259,6 +313,11 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
                 table.sendMessage(answer);
                 answer = null;
             } catch (Exception e) {
+            	if(logger.isLoggable(WARNING))
+            	{
+            		logger.log(WARNING,"Unable to deliver due to some error: ",e);
+            		
+            	}
                 resultCode = ResultCode.UNABLE_TO_DELIVER;
             }
         }
@@ -289,7 +348,10 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
             fsm.handleEvent( new FsmEvent(STOP_EVENT) );
         } catch (OverloadException e) {
             stopping = false;
-            logger.log(WARNING, "Error during stopping procedure", e);
+            if(logger.isLoggable(WARNING))
+        	{
+            	logger.log(WARNING, "Error during stopping procedure", e);
+        	}
         }
     }
 
@@ -343,6 +405,10 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
         return m;
     }
 
+    public boolean handleMessage(EventTypes type, IMessage message, String key) throws TransportException, OverloadException, InternalException {
+        return !stopping && fsm.handleEvent( new FsmEvent(type, message, key) );
+    }
+    
     public boolean sendMessage(IMessage message) throws TransportException, OverloadException, InternalException {
         return !stopping && fsm.handleEvent( new FsmEvent(EventTypes.SEND_MSG_EVENT, message) );
     }
@@ -395,7 +461,10 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
                 try {
                     t.add( avps.getAvpByIndex(i).getAddress() );
                 } catch (AvpDataException e) {
-                    logger.log(FINEST, "Can not get ip address from HOST_IP_ADDRESS avp");
+                	if(logger.isLoggable(FINEST))
+                	{
+                		logger.log(FINEST, "Can not get ip address from HOST_IP_ADDRESS avp");
+                	}
                 }
             addresses = t.toArray(new InetAddress[t.size()]);
         }
@@ -428,6 +497,9 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
         public void connect() throws InternalException, IOException, IllegalDiameterStateException {
             try {            
                 conn.connect();
+                if (logger.isLoggable(Level.FINE)) {
+                  logger.fine("Connected to peer " + PeerImpl.this.getUri());
+                }
             } catch (TransportException e) {
                 switch(e.getCode()) {
                     case NetWorkError:
@@ -441,8 +513,12 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
         }
 
         public void disconnect() throws InternalException, IllegalDiameterStateException {
-            if (conn != null)
+            if (conn != null) {
                 conn.disconnect();
+                if (logger.isLoggable(Level.FINE)) {
+                  logger.fine("Disconnected from peer " + PeerImpl.this.getUri());
+                }
+            }
         }
 
         public String getPeerDescription() {
@@ -456,11 +532,17 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
         public boolean sendMessage(IMessage message) throws TransportException, OverloadException {
             // Check message
             if (message.isTimeOut()) {
-                logger.log(INFO, "Message: " + message + " skipped (timeout)");
+            	if(logger.isLoggable(INFO))
+            	{
+            		logger.log(INFO, "Message: " + message + " skipped (timeout)");
+            	}
                 return false;
             }
             if (message.getState() == IMessage.STATE_SENT) {
-                logger.log(Level.FINE, "Message: " + message + " already send");
+            	if(logger.isLoggable(FINE))
+            	{
+            		logger.log(Level.FINE, "Message: " + message + " already send");
+            	}
                 return false;
             }
             // Remove destionation information from answer messages
@@ -471,11 +553,17 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
             // Send to network
             message.setState(IMessage.STATE_SENT);
             conn.sendMessage(message);
+            if (logger.isLoggable(Level.FINE)) {
+              logger.fine("Send message " + message + " to peer " + PeerImpl.this.getUri());
+            }
             return true;
         }
 
         public void sendCerMessage() throws TransportException, OverloadException {
-            logger.log(FINEST, "Send CER message");
+        	if(logger.isLoggable(FINEST))
+        	{
+        		logger.log(FINEST, "Send CER message");
+        	}
             IMessage message = parser.createEmptyMessage( CAPABILITIES_EXCHANGE_REQUEST, 0 );
             message.setRequest(true);
             message.setHopByHopIdentifier(getHopByHopIdentifier());
@@ -501,7 +589,10 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
         }
 
         public void sendDwrMessage() throws TransportException, OverloadException {
-            logger.log(FINEST, "Send DWR message");
+        	if(logger.isLoggable(FINEST))
+        	{
+        		logger.log(FINEST, "Send DWR message");
+        	}
             IMessage message = parser.createEmptyMessage( DEVICE_WATCHDOG_REQUEST, 0 );
             message.setRequest(true);
             message.setHopByHopIdentifier(getHopByHopIdentifier());
@@ -517,7 +608,10 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
         }
 
         public void sendDwaMessage(IMessage dwr, int resultCode, String errorMessage) throws TransportException, OverloadException {
-            logger.log(FINEST, "Send DWA message");
+        	if(logger.isLoggable(FINEST))
+        	{
+        		logger.log(FINEST, "Send DWA message");
+        	}
             IMessage message = parser.createEmptyMessage(dwr);
             message.setRequest(false);
             message.setHopByHopIdentifier(dwr.getHopByHopIdentifier());
@@ -538,7 +632,10 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
         }
 
         public void sendDprMessage(int disconnectCause) throws TransportException, OverloadException {
-            logger.log(INFO, "Send DPR message");
+        	if(logger.isLoggable(FINEST))
+        	{
+        		logger.log(FINEST, "Send DPR message");
+        	}
             IMessage message = parser.createEmptyMessage( DISCONNECT_PEER_REQUEST, 0 );
             message.setRequest(true);
             message.setHopByHopIdentifier(getHopByHopIdentifier());
@@ -549,7 +646,10 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
         }
 
         public void sendDpaMessage(IMessage dpr, int resultCode, String errorMessage) throws TransportException, OverloadException {
-            logger.log(FINEST, "Send DPA message");
+        	if(logger.isLoggable(FINEST))
+        	{
+        		logger.log(FINEST, "Send DPA message");
+        	}
             IMessage message = parser.createEmptyMessage(dpr);
             message.setRequest(false);
             message.setHopByHopIdentifier(dpr.getHopByHopIdentifier());
@@ -574,7 +674,10 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
                 Avp resCode = message.getAvps().getAvp(RESULT_CODE);
                 Avp frmId     = message.getAvps().getAvp(FIRMWARE_REVISION);
                 if (origHost == null || origRealm == null || vendorId == null) {
-                    logger.log(WARNING, "Incorrect CEA message ( please set all mandatory Avps )");
+                	if(logger.isLoggable(SEVERE))
+                	{
+                		logger.log(SEVERE, "Incorrect CEA message ( please set all mandatory Avps )");
+                	}
                 } else {
                     if (realmName == null)
                         realmName = origRealm.getOctetString();
@@ -595,7 +698,10 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
                         commonApplications.clear();
                         commonApplications.addAll(cai);
                     } else {
-                        logger.log(INFO, "CEA did not containe appId, therefore  set local appids to common-appid field");
+                    	if(logger.isLoggable(WARNING))
+                    	{
+                    		logger.log(WARNING, "CEA did not containe appId, therefore  set local appids to common-appid field");
+                    	}
                         commonApplications.clear();
                         commonApplications.addAll(metaData.getLocalPeer().getCommonApplications());
                     }
@@ -604,7 +710,10 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
                         firmWare = frmId.getInteger32();
                 }
             } catch(Exception exc) {
-                logger.log(WARNING, "Incorrect CEA message", exc);
+            	if(logger.isLoggable(SEVERE))
+            	{
+            		logger.log(SEVERE, "Incorrect CEA message", exc);
+            	}
                 rc = false;
             }
             return rc;
@@ -642,7 +751,10 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
                             try {
                                 sendMessage(answer);
                             } catch (Exception e) {
-                                logger.warning("Can not send immediate answer " + answer);
+                            	if(logger.isLoggable(SEVERE))
+                            	{
+                            		logger.severe("Can not send immediate answer " + answer);
+                            	}
                             }
                         isProcessed = true;
                     }

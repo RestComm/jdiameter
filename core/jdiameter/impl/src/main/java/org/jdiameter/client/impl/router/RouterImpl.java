@@ -112,7 +112,7 @@ public class RouterImpl implements IRouter {
                 for (int i = 0; i < REQUEST_TABLE_CLEAR_SIZE; i++)
                     requestEntryTable.remove( requestSortedEntryTable.remove( requestSortedEntryTable.lastKey() ) );
             }
-        } catch (AvpDataException e) {
+        } catch (Exception e) {
             logger.log(Level.FINE, "Can not store route info", e);
         } finally{
             requestLock.readLock().unlock();
@@ -302,8 +302,10 @@ public class RouterImpl implements IRouter {
             redirectEntryHandler.cancel(true);
         redirectEntryHandler = null;
 
-        if (redirectScheduler != null)
+        if (redirectScheduler != null) {
+            redirectScheduler.shutdownNow();
             Executors.unconfigurableScheduledExecutorService(redirectScheduler);
+        }
         redirectScheduler = null;
 
         if (redirectTable != null)

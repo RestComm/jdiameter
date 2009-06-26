@@ -22,6 +22,12 @@ import java.net.InetAddress;
 public interface IConnection extends Wrapper {
 
     /**
+     * Return created time
+     * @return created time
+     */
+    public long getCreatedTime();
+    
+    /**
      * Return identifier of connection. For example:
      *  "[remote_host_name]:[remote_port]"
      * @return identifier of connection.
@@ -84,6 +90,11 @@ public interface IConnection extends Wrapper {
      */
     void addConnectionListener(IConnectionListener connectionListener);
 
+    /**
+     * Remove all connection listeners
+     */
+    void remAllConnectionListener();
+    
     /**
      * Remove connection listener
      * @param connectionListener listener instance

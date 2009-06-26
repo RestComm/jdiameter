@@ -50,27 +50,31 @@ public class StackImpl implements IContainer, StackImplMBean {
 
     public SessionFactory init(Configuration config) throws IllegalDiameterStateException, InternalException {
         lock.lock();
-        if (state != StackState.IDLE)
-            throw new IllegalDiameterStateException();
-
         try {
-            Class assemblerClass = Class.forName(
-                config.getStringValue(Assembler.ordinal(), (String) Assembler.defValue())
-            );
-            assembler = (IAssembler) assemblerClass.
-                    getConstructor(Configuration.class).newInstance(config);
-            // register common instances
-            assembler.registerComponentInstance(this);
-            assembler.registerComponentInstance(config);
-        } catch(Exception exc) {
-            throw new InternalException(exc);
+          if (state != StackState.IDLE)
+              throw new IllegalDiameterStateException();
+  
+          try {
+              Class assemblerClass = Class.forName(
+                  config.getStringValue(Assembler.ordinal(), (String) Assembler.defValue())
+              );
+              assembler = (IAssembler) assemblerClass.
+                      getConstructor(Configuration.class).newInstance(config);
+              // register common instances
+              assembler.registerComponentInstance(this);
+              assembler.registerComponentInstance(config);
+          } catch(Exception exc) {
+              throw new InternalException(exc);
+          }
+          this.config = config;
+          // created manager
+          this.peerManager = (IPeerTable) assembler.getComponentInstance(IPeerTable.class);
+          this.peerManager.setAssempler(assembler);
+          this.state = StackState.CONFIGURED;
         }
-        this.config = config;
-        // created manager
-        this.peerManager = (IPeerTable) assembler.getComponentInstance(IPeerTable.class);
-        this.peerManager.setAssempler(assembler);
-        this.state = StackState.CONFIGURED;
-        lock.unlock();
+        finally {
+          lock.unlock();
+        }
         return (SessionFactory) assembler.getComponentInstance(SessionFactory.class);
     }
 
@@ -84,48 +88,56 @@ public class StackImpl implements IContainer, StackImplMBean {
 
     public void start() throws IllegalDiameterStateException, InternalException {
         lock.lock();
-        if (state != StackState.STOPPED && state != StackState.CONFIGURED)
-            throw new IllegalDiameterStateException();
-        scheduledFacility = Executors.newScheduledThreadPool(4); // todo must configured
-        startPeerManager();
-        state = StackState.STARTED;
-        lock.unlock();
+        try {
+          if (state != StackState.STOPPED && state != StackState.CONFIGURED)
+              throw new IllegalDiameterStateException();
+          scheduledFacility = Executors.newScheduledThreadPool(4); // todo must configured
+          startPeerManager();
+          state = StackState.STARTED;
+        }
+        finally {
+          lock.unlock();
+        }
     }
 
     public void start(final Mode mode, long timeOut, TimeUnit timeUnit) throws IllegalDiameterStateException, InternalException {
         lock.lock();
-        if (state != StackState.STOPPED && state != StackState.CONFIGURED)
-            throw new IllegalDiameterStateException();
-        scheduledFacility = Executors.newScheduledThreadPool(4); // todo must configured
-        final Condition notStarted  = lock.newCondition();
-        List<Peer> peerTable = peerManager.getPeerTable();
-        final int[] count = new int[] {peerTable.size()};
-        StateChangeListener listener = new StateChangeListener() {
-            public void stateChanged(Enum oldState, Enum newState) {
-                PeerState ps = (PeerState) newState;
-                if (PeerState.OKAY.equals(ps)) {
-                    if (Mode.ANY_PEER.equals(mode))
-                       count[0] = 0; 
-                    else
-                       if (count[0] > 0) count[0]--;
-                }
-            }
-        };
-        for (Peer p:peerTable) ((IPeer)p).addStateChangeListener(listener);
-        startPeerManager();
-        long tvalue = 0;
-        while (count[0] != 0)
-            try {
-                notStarted.await(100, TimeUnit.MILLISECONDS);
-                tvalue += 100;
-                if (tvalue > timeUnit.toMillis(timeOut)) {
-                    for (Peer p:peerTable) ((IPeer)p).remStateChangeListener(listener);
-                    throw new InternalError("TimeOut");
-                }
-            } catch (InterruptedException e) {}
-        for (Peer p:peerTable) ((IPeer)p).remStateChangeListener(listener);
-        state = StackState.STARTED;
-        lock.unlock();
+        try {
+          if (state != StackState.STOPPED && state != StackState.CONFIGURED)
+              throw new IllegalDiameterStateException();
+          scheduledFacility = Executors.newScheduledThreadPool(4); // todo must configured
+          final Condition notStarted  = lock.newCondition();
+          List<Peer> peerTable = peerManager.getPeerTable();
+          final int[] count = new int[] {peerTable.size()};
+          StateChangeListener listener = new StateChangeListener() {
+              public void stateChanged(Enum oldState, Enum newState) {
+                  PeerState ps = (PeerState) newState;
+                  if (PeerState.OKAY.equals(ps)) {
+                      if (Mode.ANY_PEER.equals(mode))
+                         count[0] = 0; 
+                      else
+                         if (count[0] > 0) count[0]--;
+                  }
+              }
+          };
+          for (Peer p:peerTable) ((IPeer)p).addStateChangeListener(listener);
+          startPeerManager();
+          long tvalue = 0;
+          while (count[0] != 0)
+              try {
+                  notStarted.await(100, TimeUnit.MILLISECONDS);
+                  tvalue += 100;
+                  if (tvalue > timeUnit.toMillis(timeOut)) {
+                      for (Peer p:peerTable) ((IPeer)p).remStateChangeListener(listener);
+                      throw new InternalError("TimeOut");
+                  }
+              } catch (InterruptedException e) {}
+          for (Peer p:peerTable) ((IPeer)p).remStateChangeListener(listener);
+          state = StackState.STARTED;
+        }
+        finally {
+          lock.unlock();
+        }
     }
 
     private void startPeerManager() throws InternalException {
@@ -140,50 +152,54 @@ public class StackImpl implements IContainer, StackImplMBean {
 
     public void stop(long timeOut, TimeUnit timeUnit) throws IllegalDiameterStateException, InternalException {
         lock.lock();
-        if (state == StackState.STOPPED || state != StackState.STARTED) return;
-        final Condition notStopped  = lock.newCondition();
-        List<Peer> peerTable = peerManager.getPeerTable();
-        final int[] count = new int[1];
-        StateChangeListener listener = new StateChangeListener() {
-            public void stateChanged(Enum oldState, Enum newState) {
-                PeerState ps = (PeerState) newState;
-                if (PeerState.DOWN.equals(ps))
-                    if (count[0] > 0) count[0]--;
-            }
-        };
-        for (Peer p:peerTable) {
-            if (!p.getState(PeerState.class).equals(PeerState.DOWN)) count[0]++;
-            ((IPeer)p).addStateChangeListener(listener);
-        }
         try {
-            if (peerManager != null)
-                peerManager.stopping();
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "stopping()", e);
+          if (state == StackState.STOPPED || state != StackState.STARTED) return;
+          final Condition notStopped  = lock.newCondition();
+          List<Peer> peerTable = peerManager.getPeerTable();
+          final int[] count = new int[1];
+          StateChangeListener listener = new StateChangeListener() {
+              public void stateChanged(Enum oldState, Enum newState) {
+                  PeerState ps = (PeerState) newState;
+                  if (PeerState.DOWN.equals(ps))
+                      if (count[0] > 0) count[0]--;
+              }
+          };
+          for (Peer p:peerTable) {
+              if (!p.getState(PeerState.class).equals(PeerState.DOWN)) count[0]++;
+              ((IPeer)p).addStateChangeListener(listener);
+          }
+          try {
+              if (peerManager != null)
+                  peerManager.stopping();
+          } catch (Exception e) {
+              logger.log(Level.WARNING, "stopping()", e);
+          }
+          long tvalue = 0;
+          while (count[0] != 0)
+              try {
+                  notStopped.await(100, TimeUnit.MILLISECONDS);
+                  tvalue += 100;
+                  if (tvalue > timeUnit.toMillis(timeOut)) {
+                      for (Peer p:peerTable) ((IPeer)p).remStateChangeListener(listener);
+                      state = StackState.STOPPED;
+                      throw new InternalError("TimeOut");
+                  }
+              } catch (InterruptedException e) {}
+          for (Peer p:peerTable) ((IPeer)p).remStateChangeListener(listener);
+          try {
+              if (peerManager != null)
+                  peerManager.stopped();
+              // Clear all timeout tasks
+              if (scheduledFacility != null)
+                  scheduledFacility.shutdown();
+          } catch (Exception e) {
+              logger.log(Level.WARNING, "stopped()", e);
+          }
+          state = StackState.STOPPED;
         }
-        long tvalue = 0;
-        while (count[0] != 0)
-            try {
-                notStopped.await(100, TimeUnit.MILLISECONDS);
-                tvalue += 100;
-                if (tvalue > timeUnit.toMillis(timeOut)) {
-                    for (Peer p:peerTable) ((IPeer)p).remStateChangeListener(listener);
-                    state = StackState.STOPPED;
-                    throw new InternalError("TimeOut");
-                }
-            } catch (InterruptedException e) {}
-        for (Peer p:peerTable) ((IPeer)p).remStateChangeListener(listener);
-        try {
-            if (peerManager != null)
-                peerManager.stopped();
-            // Clear all timeout tasks
-            if (scheduledFacility != null)
-                scheduledFacility.shutdown();
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "stopped()", e);
+        finally {
+          lock.unlock();
         }
-        state = StackState.STOPPED;
-        lock.unlock();
     }
 
     public void destroy() {
@@ -198,8 +214,10 @@ public class StackImpl implements IContainer, StackImplMBean {
         } catch (Exception e) {
             logger.log(Level.WARNING, "destroy()", e);
         }
-        state = StackState.IDLE;
-        lock.unlock();
+        finally {
+          state = StackState.IDLE;
+          lock.unlock();
+        }
     }
 
     public boolean isActive() {
@@ -315,6 +333,8 @@ public class StackImpl implements IContainer, StackImplMBean {
     public void stop() {
         try {
             stop(10, TimeUnit.SECONDS);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+          logger.log(Level.FINE, "Exception", e);
+        }
     }    
 }

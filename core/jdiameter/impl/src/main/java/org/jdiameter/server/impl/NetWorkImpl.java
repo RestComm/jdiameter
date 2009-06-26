@@ -78,13 +78,6 @@ public class NetWorkImpl implements INetwork {
         return null;
     }
 
-    public Peer remPeer(String name) {
-        if (manager != null)
-            return manager.removePeer(name);
-        else
-            return null;
-    }
-
     public Realm addRealm(String name, ApplicationId applicationId, LocalAction localAction,  boolean dynamic, long expirationTime) {
         return router.addRealm(name,applicationId, localAction,dynamic,expirationTime);
     }

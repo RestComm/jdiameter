@@ -101,6 +101,6 @@ public class FsmEvent implements StateEvent {
      * @return string representation of instance
      */
     public String toString() {
-        return "Event{name:" + type.name() + "}";
+      return "Event{name:" + type.name() + ", key:" + key + ", object:" + value + "}";
     }
 }

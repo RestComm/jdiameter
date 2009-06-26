@@ -99,6 +99,17 @@ public class Parameters extends Ordinal {
      * Peer name property
      */
     public static final Parameters PeerName = new Parameters("PeerName",String.class, "");
+
+    /**
+     * Peer ip property
+     */
+    public static final Parameters PeerIp = new Parameters("PeerIp",String.class, "");
+
+    /**
+     * Peer local peer port range (format: 1345-1346) property
+     */
+    public static final Parameters PeerLocalPortRange = new Parameters("PeerLocalPortRange",String.class, "");
+    
     /**
      * Peer rating property
      */

@@ -3,7 +3,6 @@ package org.jdiameter.client.impl.transport.tcp;
 import org.jdiameter.api.Configuration;
 import org.jdiameter.client.api.io.IConnectionListener;
 import org.jdiameter.client.api.parser.IMessageParser;
-import org.jdiameter.client.impl.helpers.Loggers;
 import static org.jdiameter.client.impl.helpers.Parameters.*;
 
 import javax.net.ssl.*;
@@ -11,8 +10,6 @@ import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /*
  * Copyright (c) 2006 jDiameter.
@@ -28,12 +25,12 @@ public class TLSClientConnection extends TCPClientConnection {
     private TLSTransportClient client;
     private SSLSocketFactory factory;
     private Configuration sslConfig;
-//    private Logger logger = Logger.getLogger(Loggers.Transport.fullName());
 
-    public TLSClientConnection(Configuration config, InetAddress address, int port, IMessageParser parser, String ref) {
+    public TLSClientConnection(Configuration config, InetAddress remoteAddress, int remotePort, InetAddress localAddress, int localPort, IMessageParser parser, String ref) {
         super(parser);
         this.client = new TLSTransportClient(this);
-        this.client.setDestAddress(new InetSocketAddress(address, port));
+        client.setDestAddress(new InetSocketAddress(remoteAddress, remotePort));
+        client.setOrigAddress(new InetSocketAddress(localAddress, localPort));
         this.parser = parser;
         try {
             if (ref == null) throw new Exception("Can not create connection with out TLS parameters");
@@ -43,10 +40,11 @@ public class TLSClientConnection extends TCPClientConnection {
         }
     }
 
-    public TLSClientConnection(Configuration config, InetAddress address, int port, IConnectionListener listener, IMessageParser parser, String ref) {
+    public TLSClientConnection(Configuration config, InetAddress remoteAddress, int remotePort, InetAddress localAddress, int localPort, IConnectionListener listener, IMessageParser parser, String ref) {
         super(parser);
         this.client = new TLSTransportClient(this);
-        this.client.setDestAddress(new InetSocketAddress(address, port));
+        client.setDestAddress(new InetSocketAddress(remoteAddress, remotePort));
+        client.setOrigAddress(new InetSocketAddress(localAddress, localPort));
         this.listeners.add(listener);
         this.parser = parser;
         try {

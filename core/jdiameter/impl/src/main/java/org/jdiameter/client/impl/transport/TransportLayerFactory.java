@@ -47,10 +47,10 @@ public class TransportLayerFactory implements ITransportLayerFactory {
         }
         try {
             constructorIAiCL = connectionClass.getConstructor(
-                    Configuration.class, InetAddress.class, Integer.TYPE, IConnectionListener.class, IMessageParser.class, String.class
+                    Configuration.class, InetAddress.class, Integer.TYPE, InetAddress.class, Integer.TYPE, IConnectionListener.class, IMessageParser.class, String.class
             );
             constructorIAi = connectionClass.getConstructor(
-                    Configuration.class, InetAddress.class, Integer.TYPE, IMessageParser.class, String.class
+                    Configuration.class, InetAddress.class, Integer.TYPE, InetAddress.class, Integer.TYPE, IMessageParser.class, String.class
             );
         } catch (Exception e) {
             throw new TransportException("Cannot find required constructor", TransportError.Internal, e);
@@ -58,17 +58,17 @@ public class TransportLayerFactory implements ITransportLayerFactory {
         this.parser = parser;
     }
 
-    public IConnection createConnection(InetAddress inetAddress, int port, String ref) throws TransportException {
+    public IConnection createConnection(InetAddress remoteAddress, int remotePort, InetAddress localAddress, int localPort, String ref) throws TransportException {
         try {
-            return constructorIAi.newInstance(config, inetAddress, port, parser, ref);
+            return constructorIAi.newInstance(config, remoteAddress, remotePort, localAddress, localPort,  parser, ref);
         } catch (Exception e) {
             throw new TransportException("Cannot create an instance of " + connectionClass, TransportError.Internal, e);
         }
     }
 
-    public IConnection createConnection(InetAddress inetAddress, int port, IConnectionListener listener, String ref) throws TransportException {
+    public IConnection createConnection(InetAddress remoteAddress, int remotePort, InetAddress localAddress, int localPort, IConnectionListener listener, String ref) throws TransportException {
         try {
-            return constructorIAiCL.newInstance(config, inetAddress, port, listener, parser, ref);
+            return constructorIAiCL.newInstance(config, remoteAddress, remotePort, localAddress, localPort, listener, parser, ref);
         } catch (Exception e) {
             throw new TransportException("Cannot create an instance of " + connectionClass, TransportError.Internal, e);
         }

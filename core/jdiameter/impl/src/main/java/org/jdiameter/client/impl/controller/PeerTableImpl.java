@@ -21,6 +21,8 @@ import org.jdiameter.client.api.io.ITransportLayerFactory;
 import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.api.router.IRouter;
+
+import static java.util.logging.Level.FINEST;
 import static org.jdiameter.client.impl.helpers.Loggers.PeerTable;
 import org.jdiameter.client.impl.helpers.Parameters;
 import static org.jdiameter.client.impl.helpers.Parameters.*;
@@ -62,35 +64,44 @@ public class PeerTableImpl implements IPeerTable {
                         ITransportLayerFactory transportFactory, IMessageParser parser) {
         this.router = router;
         this.metaData = metaData;
-        stopTimeOut = globalConfig.getLongValue(StopTimeOut.ordinal(), (Long) StopTimeOut.defValue());
+        this.stopTimeOut = globalConfig.getLongValue(StopTimeOut.ordinal(), (Long) StopTimeOut.defValue());
+        this.peerTaskExecutor = Executors.newCachedThreadPool();
         Configuration[] peers = globalConfig.getChildren( Parameters.PeerTable.ordinal() );
-        peerTaskExecutor = Executors.newCachedThreadPool();
-        if (peers.length > 0) {
-            String uri;
+        if (peers != null && peers.length > 0) {
             for (Configuration peerConfig : peers) {
-                uri = peerConfig.getStringValue(PeerName.ordinal(), "");
+                if (peerConfig.isAttributeExist(PeerName.ordinal())) {
+                    String uri = peerConfig.getStringValue(PeerName.ordinal(), null);
                 int rating = peerConfig.getIntValue(PeerRating.ordinal(), 0);
-                if (uri != null)
+                String ip = peerConfig.getStringValue(PeerIp.ordinal(), null);
+                String portRange = peerConfig.getStringValue(PeerLocalPortRange.ordinal(), null);
                     try {
                         // create predefined peer
-                        IPeer peer = (IPeer) createPeer(rating, uri, metaData, globalConfig, peerConfig, fsmFactory, transportFactory, parser);
+                        IPeer peer = (IPeer) createPeer(rating, uri, ip, portRange, metaData, globalConfig, peerConfig, fsmFactory, transportFactory, parser);
                         if (peer != null) {
                             peer.setRealm(router.getRealmForPeer(peer.getUri().getFQDN()));
                             peerTable.put(peer.getUri(), peer);
+                            if(logger.isLoggable(Level.FINE))
+                        	{
+                            	logger.log(Level.FINE, "Append peer {} to peer table ", peer);
+                        	}
                         }
                     } catch (Exception e) {
-                        logger.log(Level.INFO, "Can not append peer " + uri + " to peer table", e);
+                    	if(logger.isLoggable(Level.SEVERE))
+                    	{
+                    		logger.log(Level.SEVERE, "Can not create peer" +uri, e);
+                    	}
                     }
+                }
             }
         }
     }
 
-    protected Peer createPeer(int rating, String uri, MetaData metaData, Configuration config, Configuration peerConfig, IFsmFactory fsmFactory,
+    protected Peer createPeer(int rating, String uri, String ip, String portRange, MetaData metaData, Configuration config, Configuration peerConfig, IFsmFactory fsmFactory,
                               ITransportLayerFactory transportFactory, IMessageParser parser)
             throws InternalException, TransportException, URISyntaxException, UnknownServiceException {
 
         return new PeerImpl(
-            this, rating, new URI(uri), metaData.unwrap(IMetaData.class), config, peerConfig, fsmFactory, transportFactory, parser
+            this, rating, new URI(uri), ip, portRange,  metaData.unwrap(IMetaData.class), config, peerConfig, fsmFactory, transportFactory, parser
         );
     }
 
@@ -115,7 +126,10 @@ public class PeerTableImpl implements IPeerTable {
             // Check local request
             peer = router.getPeer(message, this);
             if (peer == metaData.getLocalPeer()) {
-                logger.log(Level.INFO, "Request " + message + " will be processed by local service");
+            	if(logger.isLoggable(Level.INFO))
+            	{
+            		logger.log(Level.INFO, "Request " + message + " will be processed by local service");
+            	}
             } else {
                 message.setHopByHopIdentifier( peer.getHopByHopIdentifier() );
                 peer.addMessage(message);
@@ -184,7 +198,10 @@ public class PeerTableImpl implements IPeerTable {
             try {
                 peer.connect();
             } catch (Exception e) {
-               logger.log(Level.INFO, "Can not start connect procedure to peer:" + peer, e);
+            	if(logger.isLoggable(Level.SEVERE))
+            	{
+            		logger.log(Level.SEVERE, "Can not start connect procedure to peer:" + peer, e);
+            	}
             }
         router.start();
         isStarted = true;
@@ -201,9 +218,12 @@ public class PeerTableImpl implements IPeerTable {
         }
         if (peerTaskExecutor != null)
             try {
-                peerTaskExecutor.shutdown();
+                peerTaskExecutor.shutdownNow();
             } catch (Exception e) {
-                logger.log(Level.WARNING, "Can not stop executor");
+            	if(logger.isLoggable(Level.WARNING))
+            	{
+            		logger.log(Level.WARNING, "Can not stop executor");
+            	}
             }
         router.stop();
     }
@@ -214,7 +234,10 @@ public class PeerTableImpl implements IPeerTable {
             try {
                 peer.disconnect();
             } catch (Exception e) {
-               logger.log(Level.WARNING, "Can not stopping peer table", e);
+            	if(logger.isLoggable(Level.SEVERE))
+            	{
+            		logger.log(Level.SEVERE, "Can not stopping peer table", e);
+            	}
             }
         }
     }
