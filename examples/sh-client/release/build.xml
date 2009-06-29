@@ -21,7 +21,7 @@
 			<property name="jnpHost" value="${jnpHost}" />
 			<property name="jnpPort" value="${jnpPort}" />
 		</ant>
-		<ant antfile="${home}../../examples/diameter-sh-client/du-management.xml" target="deploy-jmx" inheritAll="false">
+		<ant antfile="${home}../../examples/sh-client/du-management.xml" target="deploy-jmx" inheritAll="false">
 			<property name="jboss.home" value="${jboss.home}" />
 			<property name="node" value="${jboss.config}" />
 			<property name="jnpHost" value="${jnpHost}" />
@@ -30,7 +30,7 @@
 	</target>
 
 	<target name="undeploy-all-jmx">
-		<ant antfile="${home}../../examples/diameter-sh-client/du-management.xml" target="undeploy-jmx" inheritAll="false">
+		<ant antfile="${home}../../examples/sh-client/du-management.xml" target="undeploy-jmx" inheritAll="false">
 			<property name="jboss.home" value="${jboss.home}" />
 			<property name="node" value="${jboss.config}" />
 			<property name="jnpHost" value="${jnpHost}" />
