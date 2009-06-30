@@ -15,7 +15,7 @@
 
 	<name>Mobicents :: Diameter Stack :: ${pom.artifactId}</name>
 
-	<version>1.5.0.1-build189-SNAPSHOT</version>
+	<version>1.5.0.1-build188-SNAPSHOT</version>
 
 	<modules>
 		<module>api</module>
@@ -52,7 +52,7 @@
 									<tasks>
 										
 
-										<copy overwrite="true" todir="${basedir}/../../releasezip/core/jdiameter" file="${basedir}/release/README.TXT">
+										<copy overwrite="true" todir="${basedir}/../../../../releasezip/core/jdiameter" file="${basedir}/release/README.TXT">
 											<filterchain>
 												<replacetokens>
 													<token key="VERSION" value="${pom.version}" />
@@ -60,7 +60,7 @@
 											</filterchain>
 										</copy>
 
-										<copy overwrite="true" todir="${basedir}/../../releasezip/" file="${basedir}/release/TOP_README.TXT">
+										<copy overwrite="true" todir="${basedir}/../../../../releasezip/" file="${basedir}/release/TOP_README.TXT">
 											<filterchain>
 												<replacetokens>
 													<token key="JDIAM_VERSION" value="${pom.version}" />
