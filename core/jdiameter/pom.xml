@@ -15,7 +15,7 @@
 
 	<name>Mobicents :: Diameter Stack :: ${pom.artifactId}</name>
 
-	<version>1.5.0.1-build189-SNAPSHOT</version>
+	<version>1.5.0.1-build188-SNAPSHOT</version>
 
 	<modules>
 		<module>api</module>
@@ -50,14 +50,7 @@
 								</goals>
 								<configuration>
 									<tasks>
-										<copy overwrite="true" todir="${basedir}/../../releasezip/core/jdiameter">
-											<fileset dir="${basedir}/api/target">
-												<include name="**.jar" />
-											</fileset>
-											<fileset dir="${basedir}/impl/target">
-												<include name="**.jar" />
-											</fileset>
-										</copy>
+										
 
 										<copy overwrite="true" todir="${basedir}/../../releasezip/core/jdiameter" file="${basedir}/release/README.TXT">
 											<filterchain>
@@ -75,13 +68,7 @@
 											</filterchain>
 										</copy>
 
-										<copy overwrite="true" file="${basedir}/du/target/build.xml" tofile="${basedir}/../../release/${release.name}/resources/sip11/du-management.xml" />
-										<copy overwrite="true" file="${basedir}/release/build.xml" todir="${basedir}/../../release/${release.name}/resources/sip11">
-											<filterset>
-												<filter token="JBOSS.PATH" value="${jboss.path}" />
-												<filter token="JBOSS.CONFIG" value="${node}" />
-											</filterset>
-										</copy>
+										
 									</tasks>
 								</configuration>
 							</execution>
