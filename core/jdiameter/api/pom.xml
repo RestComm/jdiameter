@@ -1,15 +1,58 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.mobicents.servers.diameter</groupId>
-    <artifactId>jdiameter-parent</artifactId>
-    <version>1.5.0.1-build189-SNAPSHOT</version> 
-  </parent>
+	<parent>
+		<groupId>org.mobicents.servers.diameter</groupId>
+		<artifactId>jdiameter-parent</artifactId>
+		<version>1.5.0.1-build188-SNAPSHOT</version>
+	</parent>
 
-  <artifactId>jdiameter-api</artifactId>
-  <name>Mobicents :: Diameter Stack :: ${pom.artifactId}</name>
+	<artifactId>jdiameter-api</artifactId>
+	<name>Mobicents :: Diameter Stack :: ${pom.artifactId}</name>
 
-  <dependencies />
-
+	<dependencies />
+	<profiles>
+		<profile>
+			<id>maven-release</id>
+			<modules>
+				<!-- any module not bound to default modules, such as the ones for test, release, etc... -->
+			</modules>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-release-plugin</artifactId>
+						<configuration>
+							<autoVersionSubmodules>true</autoVersionSubmodules>
+							<resume>false</resume>
+							<tagBase>https://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter</tagBase>
+						</configuration>
+					</plugin>
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<inherited>false</inherited>
+						<executions>
+							<execution>
+								<phase>deploy</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<echo>COPY to: ${basedir}/../../../releasezip/core/jdiameter</echo>
+										<copy overwrite="true" todir="${basedir}/../../../releasezip/core/jdiameter">
+											<fileset dir="${basedir}/api/target">
+												<include name="**.jar" />
+											</fileset>
+										
+										</copy>
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
