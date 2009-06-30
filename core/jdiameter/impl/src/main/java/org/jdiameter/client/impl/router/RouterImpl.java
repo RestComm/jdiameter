@@ -55,17 +55,10 @@ public class RouterImpl implements IRouter {
     protected ScheduledFuture redirectEntryHandler = redirectScheduler.scheduleAtFixedRate(redirectTask, 1, 1, TimeUnit.SECONDS);
     // Answer routing feature
     public static final int REQUEST_TABLE_SIZE = 10 * 1024;
-    public static final int REQUEST_TABLE_CLEAR_SIZE = 1024;
+    public static final int REQUEST_TABLE_CLEAR_SIZE = 5 * 1024;
     protected ReadWriteLock requestLock = new ReentrantReadWriteLock();
-    protected HashMap<Long, AnswerEntry> requestEntryTable = new HashMap<Long, AnswerEntry>(REQUEST_TABLE_SIZE);
-    protected SortedMap<Long, Long> requestSortedEntryTable = new TreeMap<Long, Long>(
-                    new Comparator<Long>() {
-                        public int compare(Long o1,Long o2) {
-                            return (int) (o2 - o1);
-                        }
-                    }
-              );
-
+    protected Map<Long, AnswerEntry> requestEntryTable = new ConcurrentHashMap<Long, AnswerEntry>(REQUEST_TABLE_SIZE);
+    protected List<Long> requestSortedEntryTable = new java.util.concurrent.CopyOnWriteArrayList<Long>();
 
     public RouterImpl(Configuration config, MetaData aMetaData) {
         metaData = aMetaData;
@@ -107,10 +100,12 @@ public class RouterImpl implements IRouter {
                             realmAvp != null ? realmAvp.getOctetString() : null
             );
             requestEntryTable.put(hopByHopId, entry);
-            requestSortedEntryTable.put(entry.getCreateTime(), hopByHopId);
+            requestSortedEntryTable.add(hopByHopId);
             if ( requestEntryTable.size() > REQUEST_TABLE_SIZE) {
-                for (int i = 0; i < REQUEST_TABLE_CLEAR_SIZE; i++)
-                    requestEntryTable.remove( requestSortedEntryTable.remove( requestSortedEntryTable.lastKey() ) );
+              for (int i = 0; i < REQUEST_TABLE_CLEAR_SIZE ; i++) {
+                Long lastKey = requestSortedEntryTable.remove(0);
+                requestEntryTable.remove( lastKey );
+              }
             }
         } catch (Exception e) {
             logger.log(Level.FINE, "Can not store route info", e);
@@ -398,7 +393,7 @@ public class RouterImpl implements IRouter {
     }
 
     protected boolean checkRealm(String name) {
-        return name == null ? false : network.containsKey(name);
+      return name != null && network.containsKey(name);
     }
 
     protected Set<String> getRealmsName() {

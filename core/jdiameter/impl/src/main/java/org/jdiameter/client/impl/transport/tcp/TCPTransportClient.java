@@ -91,8 +91,11 @@ class TCPTransportClient implements Runnable {
         if (selfThread == null || !selfThread.isAlive()) {
             selfThread = new Thread(this);
         }
-        selfThread.start();
-    }    
+        
+        if (!selfThread.isAlive()) {
+          selfThread.start();
+        }
+    }
 
     public void run() {
         logger.log(Level.FINEST, "Transport is started");
@@ -138,12 +141,13 @@ class TCPTransportClient implements Runnable {
             if (!stop) {
                 try {
                     clearBuffer();
-                    if (socketChannel != null && socketChannel.isOpen())
-                        socketChannel.close();                     
+                    if (socketChannel != null && socketChannel.isOpen()) {
+                        socketChannel.close();
+                    }
                     getParent().onDisconnect();
-                } catch (Exception e) {
-                	if(logger.isLoggable(Level.SEVERE))
-		    	 	{
+                }
+                catch (Exception e) {
+                	if(logger.isLoggable(Level.SEVERE)) {
         	            logger.log(Level.SEVERE, "Error", e);                    
         	        }
                 }
