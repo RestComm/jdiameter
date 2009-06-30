@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.mobicents.servers.diameter</groupId>
 		<artifactId>jdiameter-parent</artifactId>
-		<version>1.5.0.1-build189-SNAPSHOT</version>
+		<version>1.5.0.1-build188-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>jdiameter-api</artifactId>
@@ -39,9 +39,9 @@
 								</goals>
 								<configuration>
 									<tasks>
-										<echo>COPY to: ${basedir}/../../../releasezip/core/jdiameter</echo>
-										<copy overwrite="true" todir="${basedir}/../../../releasezip/core/jdiameter">
-											<fileset dir="${basedir}/api/target">
+										<echo>COPY to: ${basedir}/../../../../../releasezip/core/jdiameter</echo>
+										<copy overwrite="true" todir="${basedir}/../../../../../releasezip/core/jdiameter">
+											<fileset dir="${basedir}/target">
 												<include name="**.jar" />
 											</fileset>
 										
