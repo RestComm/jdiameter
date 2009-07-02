@@ -163,6 +163,7 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 
 		Message msg = createShMessage(request.getHeader(), avps, PushNotificationAnswer.commandCode);
 		PushNotificationAnswerImpl pna = new PushNotificationAnswerImpl(msg);
+		addOrigin(pna);
 		return pna;
 	}
 
@@ -331,13 +332,16 @@ public class ShClientMessageFactoryImpl implements ShClientMessageFactory {
 			aid = ApplicationId.createByAuthAppId(header.getApplicationId());
 		} else {
 			commandCode = _commandCode;
-			endToEndId = (long) (Math.random()*1000000);
-			hopByHopId = (long) (Math.random()*1000000)+1;
+			//endToEndId = (long) (Math.random()*1000000);
+			//hopByHopId = (long) (Math.random()*1000000)+1;
 			aid = ApplicationId.createByAuthAppId(_SH_VENDOR_ID, _SH_APP_ID);
 		}
 		try {
-			Message msg = stack.getSessionFactory().getNewRawSession().createMessage(commandCode, aid, hopByHopId, endToEndId);
-			return msg;
+			if(header!=null)
+				return stack.getSessionFactory().getNewRawSession().createMessage(commandCode, aid, hopByHopId, endToEndId);
+			else
+				return stack.getSessionFactory().getNewRawSession().createMessage(commandCode, aid);
+			
 		} catch (InternalException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

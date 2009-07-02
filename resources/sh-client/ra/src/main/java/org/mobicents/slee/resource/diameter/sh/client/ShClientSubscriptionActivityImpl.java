@@ -118,7 +118,7 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl imple
 
 		PushNotificationAnswer answer = null;
 		for (int index = 0; index < stateMessages.size(); index++) {
-			if (stateMessages.get(index).getCommand().getCode() == ProfileUpdateRequest.commandCode) {
+			if (stateMessages.get(index).getCommand().getCode() == PushNotificationAnswer.commandCode) {
 				PushNotificationRequest msg = (PushNotificationRequest) stateMessages.get(index);
 
 				answer = this.messageFactory.createPushNotificationAnswer(msg);
@@ -144,7 +144,7 @@ public class ShClientSubscriptionActivityImpl extends DiameterActivityImpl imple
 		PushNotificationAnswer answer = null;
 		  for(int index =0 ;index<stateMessages.size();index++)
 		    {
-		    	if(stateMessages.get(index).getCommand().getCode() == ProfileUpdateRequest.commandCode)
+		    	if(stateMessages.get(index).getCommand().getCode() == PushNotificationAnswer.commandCode)
 		    	{
 		    		PushNotificationRequest msg = (PushNotificationRequest) stateMessages.get(index);
 		    	

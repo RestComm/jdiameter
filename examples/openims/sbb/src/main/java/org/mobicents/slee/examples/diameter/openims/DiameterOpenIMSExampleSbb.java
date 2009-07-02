@@ -54,6 +54,7 @@ import net.java.slee.resource.diameter.sh.client.ShClientSubscriptionActivity;
 import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
 import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
+import net.java.slee.resource.diameter.sh.server.events.PushNotificationAnswer;
 import net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest;
 import net.java.slee.resource.sip.SleeSipProvider;
 
@@ -336,25 +337,19 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
       String userId = null;
       
       DiameterAvp[] avps = pnr.getAvps();
-      
-      for(DiameterAvp avp : avps)
+      UserIdentityAvp userIdentity = pnr.getUserIdentity();
+      if(userIdentity == null)
       {
-        if(avp.getCode() == 700)
-        {
-          if(avp instanceof GroupedAvp)
-          {
-            GroupedAvp userIdentity = (GroupedAvp)avp;
-            for(DiameterAvp subAvp : userIdentity.getExtensionAvps())
-            {
-              if(subAvp.getCode() == 601)
-              {
-                userId = subAvp.stringValue();
-              }
-            }
-          }
-        }
+    	  throw new IllegalStateException("No user identity in message: "+pnr);
       }
-      
+    
+
+     
+      userId = userIdentity.getPublicIdentity();
+      ShClientSubscriptionActivity activity = (ShClientSubscriptionActivity) aci.getActivity();
+      PushNotificationAnswer pna = activity.createPushNotificationAnswer(2001, false);
+      logger.info("About to send PNA: "+pna);
+      activity.sendPushNotificationAnswer(pna);
       Collection<MissedCall> mCs = missedCalls.get( userId );
 
       if(mCs != null && mCs.size() > 0)
@@ -381,6 +376,7 @@ public abstract class DiameterOpenIMSExampleSbb implements javax.slee.Sbb {
         }
       }
     }
+    
     catch (Exception e) {
       logger.error( "Error parsing User-Data AVP.", e );
     }
