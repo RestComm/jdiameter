@@ -23,9 +23,13 @@ public interface StatisticTypes {
      */
     int RESP_MESS_COUNTER = 0x04;
     /**
-     * Count of regestered network listeners (applications)
+     * Count of regestered network listeners (appId)
      */
-    int NET_LIST_COUNTER  = 0x08;
+    int NET_APPID_LIST_COUNTER  = 0x08;
+    /**
+     * Count of regestered network listeners (selector)
+     */
+    int NET_SELECTOR_LIST_COUNTER  = 0x10;    
     /**
      * Size of peer fsm queue
      */

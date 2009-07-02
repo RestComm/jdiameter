@@ -14,7 +14,7 @@ import org.jdiameter.common.api.app.IAppSessionState;
 
 public enum ServerAuthSessionState implements IAppSessionState<ServerAuthSessionState> {
 
-    IDLE(0), OPEN(1), DISCONNECTED(3);
+    IDLE(0), OPEN(1), DISCONNECTED(2);
 
     private final int value;
 

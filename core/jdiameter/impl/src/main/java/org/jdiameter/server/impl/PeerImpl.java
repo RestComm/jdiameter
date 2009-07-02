@@ -248,7 +248,7 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                 if (appId == null) {
                     resultCode = ResultCode.NO_COMMON_APPLICATION;
                 } else {
-                    NetworkReqListener listener = network.getListener(appId);
+                    NetworkReqListener listener = network.getListener(request);
                     if (listener != null) {
                         IMessage answer = null;
                         if (isDuplicateProtection)

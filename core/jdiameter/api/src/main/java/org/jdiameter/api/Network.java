@@ -40,9 +40,23 @@ public interface Network extends Wrapper {
     void addNetworkReqListener(NetworkReqListener listener, ApplicationId... applicationId) throws ApplicationAlreadyUseException;
 
     /**
+     * Register listener for processing network requests
+     * @param selector application selector
+     * @param listener request listener
+     */
+    void addNetworkReqListener(NetworkReqListener listener, Selector<Message, ApplicationId>... selector);
+    
+    /**
      * Remove request listener
      * @param applicationId application id of listener
      */
     void removeNetworkReqListener(ApplicationId... applicationId);
+
+    /**
+     * Remove request listener
+     * @param selector selector of application
+     */
+    void removeNetworkReqListener(Selector<Message, ApplicationId>... selector);
+
 }
 

@@ -181,7 +181,7 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
                 if (message.isRequest()) {
                     message.setHopByHopIdentifier( peer.getHopByHopIdentifier() );
                     peerRequests.put(message.getHopByHopIdentifier(), message);
-                    NetworkReqListener listener = net.getListener(message.getSingleApplicationId());
+                    NetworkReqListener listener = net.getListener(message);
                     if (listener != null) {
                         // This is duplicate code from PeerImpl
                         answer = manager.isDuplicate(message);

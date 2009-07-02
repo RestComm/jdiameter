@@ -70,11 +70,10 @@ public class RouterImpl extends org.jdiameter.client.impl.router.RouterImpl impl
     protected IPeer getPeerPredProcessing(IMessage message, String destRealm, String destHost) {
         String localHost = metaData.getLocalPeer().getUri().getFQDN();
         String localRealm = metaData.getLocalPeer().getRealmName();
-        ApplicationId id = message.getSingleApplicationId();
         // Check local host
-        if ( (destHost == null && destRealm == null && hasLocalApp(id))  ||
-             (destHost == null && destRealm != null && destRealm.equals(localRealm) && hasLocalApp(id))  ||
-             (destHost != null && destHost.equals(localHost) && destRealm != null && destRealm.equals(localRealm) && hasLocalApp(id)) ) {
+        if ( (destHost == null && destRealm == null && hasLocalApp(message))  ||
+             (destHost == null && destRealm != null && destRealm.equals(localRealm) && hasLocalApp(message))  ||
+             (destHost != null && destHost.equals(localHost) && destRealm != null && destRealm.equals(localRealm) && hasLocalApp(message)) ) {
 
             return (IPeer) metaData.getLocalPeer();
         } else {
@@ -100,8 +99,8 @@ public class RouterImpl extends org.jdiameter.client.impl.router.RouterImpl impl
         net = network;
     }
 
-    private boolean hasLocalApp(ApplicationId id) {
-        return id != null && net.getListener(id) != null;
+    private boolean hasLocalApp(IMessage message) {
+        return message != null && net.getListener(message) != null;
     }
 
     protected boolean checkRealm(String name) {

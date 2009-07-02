@@ -29,8 +29,8 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.net.UnknownServiceException;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Logger;
 
 /**
@@ -43,7 +43,7 @@ public class MetaDataImpl implements IMetaData {
     protected IContainer stack;
     protected int state;
     protected LocalPeer peer;
-    protected Set<ApplicationId> appIds = new LinkedHashSet<ApplicationId>();
+    protected Set<ApplicationId> appIds = new CopyOnWriteArraySet<ApplicationId>();
 
     public MetaDataImpl(IContainer s) {
         this.stack = s;

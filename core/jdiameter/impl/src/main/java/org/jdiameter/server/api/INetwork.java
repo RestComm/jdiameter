@@ -9,9 +9,9 @@
  */
 package org.jdiameter.server.api;
 
-import org.jdiameter.api.ApplicationId;
-import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.Network;
+import org.jdiameter.api.NetworkReqListener;
+import org.jdiameter.client.api.IMessage;
 
 /**
  * This interface append to base interface some
@@ -20,18 +20,18 @@ import org.jdiameter.api.Network;
 public interface INetwork extends Network {
 
 
-    /**
-     * Return NetworkListener instance for specified application-id
-     * @param appId application-id
-     * @return  NetworkListener instance for specified application-id
-     * @see org.jdiameter.api.NetworkReqListener
-     */
-    NetworkReqListener getListener(ApplicationId appId);
-    
-    /**
-     * This method set peer manager for addPeer/remPeer methods
-     * @param manager PeerTable instance
-     */
-    void setPeerManager(IMutablePeerTable manager);
+  /**
+   * Return NetworkListener instance for specified application-id
+   * @param message message
+   * @return  NetworkListener instance for specified selector
+   * @see org.jdiameter.api.NetworkReqListener
+   */
+  NetworkReqListener getListener(IMessage message);
+
+  /**
+   * This method set peer manager for addPeer/remPeer methods
+   * @param manager PeerTable instance
+   */
+  void setPeerManager(IMutablePeerTable manager);
 
 }
