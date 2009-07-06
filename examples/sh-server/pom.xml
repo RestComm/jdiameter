@@ -23,7 +23,7 @@
 	
   <properties>
     <!-- Mobicents Diameter Components Versions -->
-    <mobicents.diameter.jdiameter.version>1.5.0.1-build187-SNAPSHOT</mobicents.diameter.jdiameter.version>
+    <mobicents.diameter.jdiameter.version>1.5.2.2-build212-SNAPSHOT</mobicents.diameter.jdiameter.version>
     <mobicents.diameter.mux.version>1.0.0.BETA5-SNAPSHOT</mobicents.diameter.mux.version>
     <mobicents.diameter.resources.base.version>1.0.0.BETA6-SNAPSHOT</mobicents.diameter.resources.base.version>
     <mobicents.diameter.resources.sh-common.version>1.0.0.BETA5-SNAPSHOT</mobicents.diameter.resources.sh-common.version>
