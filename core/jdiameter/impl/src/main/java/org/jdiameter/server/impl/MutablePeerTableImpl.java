@@ -304,8 +304,12 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                             if (isAcceptUndefinedPeer || foundInpredefinedTable) {
                                 try {
                                     int port = connection.getRemotePort();
+                                    
+                                    // host should be acquired from message, but fails with Ericsson
+                                    host = connection.getRemoteAddress().getHostAddress();
+                                    
                                     peer = new org.jdiameter.server.impl.PeerImpl(
-                                        MutablePeerTableImpl.this, 0, new URI("aaa://" + host + ":" + port), connection.getRemoteAddress().getHostAddress(), null, metaData.unwrap(IMetaData.class),
+                                        MutablePeerTableImpl.this, 0, new URI("aaa://" + host + ":" + port), host, null, metaData.unwrap(IMetaData.class),
                                         config, null, sessionFactory, fsmFactory, transportFactory, parser, network, ovrManager, false, connection
                                     );
                                     appendPeerToPeerTable(peer);
@@ -317,15 +321,15 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                                 	}
                                     unregister(true);
                                 }
-                            } else {
-                            	//FIXME: This code just asks for ^+shift+L !!!!!!!!!!!!!!!
-                            	if(logger.isLoggable(Level.FINE))
-                            	{
-                                   logger.log(Level.FINE,"Skip anonymous connection " + connection.toString());
+                            }
+                            else {
+                            	if(logger.isLoggable(Level.FINE)) {
+                                logger.log(Level.FINE,"Skip anonymous connection " + connection.toString());
                             	}
-                                              unregister(true);
-                                          }
-                                      }
+                            	
+                            	unregister(true);
+                            }
+                        }
                                   } else {
                                 	  	if(logger.isLoggable(Level.FINE))
                                   		{
