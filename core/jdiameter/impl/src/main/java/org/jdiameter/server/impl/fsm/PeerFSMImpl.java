@@ -310,13 +310,19 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                                     context.sendCeaMessage(resultCode, message(event), null);
                                     swithToNextState(OKAY);
                                 } catch (Exception e) {
+                                    if(logger.isLoggable(Level.WARNING)) {
+                                        logger.log( Level.WARNING, "Failed to send CEA.", e );
+                                    }
                                     doDisconnect();  // !
                                     doEndConnection();
                                 }
                             } else {
                                 try {
                                     context.sendCeaMessage(resultCode, message(event),  null);
-                                } catch (Exception e) {                                    
+                                } catch (Exception e) {
+                                  if(logger.isLoggable(Level.FINEST)) {
+                                    logger.finest( "Failed to send CEA." );
+                                  }
                                 }
                                 doDisconnect(); // !
                                 doEndConnection();
