@@ -1,9 +1,9 @@
 ===========================
  Mobicents Diameter Bundle
 ===========================
-               v1.0.0.GA
+               v@VERSION@
 
- Welcome to the Mobicents Diameter Bundle v1.0.0.GA release!
+ Welcome to the Mobicents Diameter Bundle v@VERSION@ release!
 
 --------------
  Introduction
@@ -18,21 +18,21 @@
  Release Contents
 ------------------
 
-  » CORE
-    » jDiameter v@JDIAM_VERSION@
-    » MUX v1.0.0.GA
+  * CORE
+    * jDiameter v@JDIAM_VERSION@
+    * MUX v@MUX_VERSION@
 
-  » RESOURCES
-    » Base v1.0.0.GA
-    » CCA v1.0.0.GA
-    » Sh-Client v1.0.0.GA
-    » Sh-Server v1.0.0.GA
-    » ro v1.0.0.GA
-    » rf v1.0.0.GA
+  * RESOURCES
+    * Base v@base_VERSION@
+    * CCA v@cca_VERSION@
+    * Sh-Client v@sh-client_VERSION@
+    * Sh-Server v@sh-server_VERSION@
+    * ro v@ro_VERSION@
+    * rf v@rf_VERSION@
 
-  » EXAMPLES
-    » Base v1.0.0.GA
-    » OpenIMS v1.0.0.GA
+  * EXAMPLES
+    * Base v@base_EXAMPLE_VERSION@
+    * OpenIMS v@openims_EXAMPLE_VERSION@
 
 ----------------
  How to Use it?
@@ -46,10 +46,11 @@
 
  For more detailed information, please visit the following sites:
 
-  » Mobicents Diameter Page (http://groups.google.com/group/mobicents-public/web/mobicents-diameter)
+  * Mobicents Diameter Page (http://groups.google.com/group/mobicents-public/web/mobicents-diameter)
 
-  » jDiameter Homepage (http://jdiameter.dev.java.net)
+  * jDiameter Homepage (http://jdiameter.dev.java.net)
 
-  » Mobicents Google Group, for posting questions (http://groups.google.com/group/mobicents-public)
+  * Mobicents Google Group, for posting questions (http://groups.google.com/group/mobicents-public)
 
-  » Mobicents Homepage (http://www.mobicents.org)
+  * Mobicents Homepage (http://www.mobicents.org)
+

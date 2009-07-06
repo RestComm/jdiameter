@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="DUManagement" default="deploy">
+
+	<!-- SYSTEM RELATED -->
+	<property environment="system" />
+	<property name="jboss.home" value="${system.JBOSS_HOME}" />
+	<property name="node" value="default" />
+	<property name="jboss.deploy" value="${jboss.home}/server/${node}/deploy" />
+
+	<!-- CORE RELATED -->
+
+	<path id="project.classpath">
+		<fileset dir="${jboss.deploy}/mobicents.sar/lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${jboss.home}/client">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<property name="project.classpath" refid="project.classpath" />
+	
+	<!-- Server Connectivity Properties -->
+	<property name="jnpHost" value="127.0.0.1" />
+	<property name="jnpPort" value="1099" />
+
+	<condition property="file_url" value="file:/">
+		<os family="windows" />
+	</condition>
+	<!-- Property already set on windows platform -->
+	<property name="file_url" value="file://" />
+
+	<pathconvert targetos="unix" property="jboss.home.standard">
+		<path description="To use te same stile for every url file" path="${jboss.home}" />
+	</pathconvert>
+	<pathconvert targetos="unix" property="mobicents.home.standard">
+		<path description="To use te same stile for every url file" path="${mobicents.home}" />
+	</pathconvert>
+
+		<taskdef name="sbbjar" classname="org.mobicents.ant.SbbJar" classpath="${project.classpath}" />
+		<taskdef name="eventjar" classname="org.mobicents.ant.EventJar" classpath="${project.classpath}" />
+		<taskdef name="profilespecjar" classname="org.mobicents.ant.ProfileSpecJar" classpath="${project.classpath}" />
+		<taskdef name="deployablejar" classname="org.mobicents.ant.DeployableJar" classpath="${project.classpath}" />
+		<taskdef name="resourceadaptortypejar" classname="org.mobicents.ant.ResourceAdaptorTypeJar" classpath="${project.classpath}" />
+		<taskdef name="resourceadaptorjar" classname="org.mobicents.ant.ResourceAdaptorJar" classpath="${project.classpath}" />
+		<taskdef name="sbbconfigurator" classname="org.mobicents.ant.sbbconfigurator.Task" classpath="${project.classpath}" />
+		<taskdef name="slee-management" classname="org.mobicents.ant.MobicentsManagementAntTask" classpath="${project.classpath}" />
+	
+	<target name="create-deploy-urls">
+		<path id="url.to.deploy">
+			<pathelement location="${du.filename}" />
+		</path>
+		<property name="url.to.deploy" refid="url.to.deploy" />
+	</target>
+
+	<target name="install-DU" depends="create-deploy-urls">
+		<echo>Installing ${url.to.deploy}.</echo>
+		<slee-management jnpport="${jnpPort}" host="${jnpHost}">
+			<install url="${file_url}${url.to.deploy}" />
+		</slee-management>
+	</target>
+
+		<target name="activate-raentity-with-properties" depends="create-deploy-urls" if="ra.entity.properties.filename">
+		<path id="ra.entity.properties.path">
+			<pathelement location="${ra.entity.properties.filename}" />
+		</path>
+		<!-- Lets leave pathconvert - it cant hurt, windows swalows it, and besides we still need to define property to add URI identifier "file:/"-->
+		<!-- However net.java.URI class requires / not \ .... -->
+		<pathconvert property="ra.props" targetos="unix" refid="ra.entity.properties.path"/>
+		<property name="ra.entity.properties.url" value="${file_url}${ra.props}" />
+		<echo>Activating ${ra.entity} with properties: file=${ra.entity.properties.filename} fileURL=${ra.entity.properties.url}</echo>
+		<slee-management jnpport="${jnpPort}" host="${jnpHost}">
+			<createraentity resourceadaptorid="${ra.id}" entityname="${ra.entity}" properties="${ra.entity.properties.url}" />
+			<activateraentity entityname="${ra.entity}" />
+		</slee-management>
+
+	</target>
+
+	<target name="activate-raentity-without-properties" depends="create-deploy-urls" unless="ra.entity.properties.filename">
+		<echo>Activating ${ra.entity} without properties file.</echo>
+		<slee-management jnpport="${jnpPort}" host="${jnpHost}">
+			<createraentity resourceadaptorid="${ra.id}" entityname="${ra.entity}" />
+			<activateraentity entityname="${ra.entity}" />
+		</slee-management>
+	</target>
+
+	<target name="activate-raentity" depends="activate-raentity-without-properties,activate-raentity-with-properties" />
+	
+	<target name="bind-ralink">
+		<slee-management jnpport="${jnpPort}" host="${jnpHost}">
+			<bindralinkname entityname="${ra.entity}" linkname="${ra.link}" />
+		</slee-management>
+	</target>
+	
+	<target name="unbind-ralink">
+		<slee-management jnpport="${jnpPort}" host="${jnpHost}">
+			<unbindralinkname linkname="${ra.link}" />
+		</slee-management>
+	</target>
+		 	
+	<target name="uninstall-DU" depends="create-deploy-urls">
+		<echo>Uninstalling ${url.to.deploy}.</echo>
+		<slee-management jnpport="${jnpPort}" host="${jnpHost}">
+			<uninstall url="${file_url}${url.to.deploy}" />
+		</slee-management>
+	</target>
+
+	<target name="deactivate-raentity" depends="create-deploy-urls">
+		<echo>Deactivating ${ra.entity}.</echo>
+		<slee-management jnpport="${jnpPort}"  host="${jnpHost}">			
+			<deactivateraentity entityname="${ra.entity}" />
+			<removeraentity entityname="${ra.entity}" />
+		</slee-management>
+	</target>
+		
+	<target name="activate-service">		
+		<slee-management host="${jnpHost}" jnpport="${jnpPort}">
+			<activateservice serviceid="${service.id}"/>
+		</slee-management>
+    </target>
+	
+	<target name="deactivate-service">		
+		<slee-management host="${jnpHost}" jnpport="${jnpPort}">
+			<deactivateservice serviceid="${service.id}"/>
+		</slee-management>
+	</target>
+	
+	<!-- AUTO GENERATED BY MAVEN DU PLUGIN -->
+	
+
+	<property name="du.filename" value="sip-services-proxy-with-initial-invite-DU-1.2.4.GA.jar" />
+
+	<target name="deploy-jmx">
+
+		<antcall target="install-DU" />
+
+		<antcall target="activate-service">
+			<param name="service.id" value="JAIN SIP Proxy Service#mobicents#1.1" />
+		</antcall>
+
+		<antcall target="activate-service">
+			<param name="service.id" value="SIP Registrar Service#org.mobicents#1.2" />
+		</antcall>
+
+	</target>
+
+	<target name="undeploy-jmx">
+
+		<antcall target="deactivate-service">
+			<param name="service.id" value="SIP Registrar Service#org.mobicents#1.2" />
+		</antcall>
+
+		<antcall target="deactivate-service">
+			<param name="service.id" value="JAIN SIP Proxy Service#mobicents#1.1" />
+		</antcall>
+
+		<!-- UNINSTALL DU -->
+		<antcall target="uninstall-DU" />
+	
+	</target>
+
+	<target name="deploy">
+		<copy overwrite="true" 
+
+			file="${du.filename}"
+
+			todir="${jboss.deploy}" />
+	</target>
+
+	<target name="undeploy">
+		<delete file="${jboss.deploy}/${du.filename}" />
+	</target>
+
+</project>

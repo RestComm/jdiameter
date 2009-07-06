@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="Release_build" default="deploy">
+<project name="Release_build" default="deploy-all">
 
 	<property name="home" value="${ant.file.Release_build}/../" />
 
@@ -10,7 +10,7 @@
 	<property name="jnpPort" value="1099" />
 
 	<target name="deploy-jmx">
-		<ant antfile="${home}/du-management.xml" target="deploy-jmx" inheritAll="false">
+		<ant antfile="${home}/proxy-with-initial-invite-du-management.xml" target="deploy-jmx" inheritAll="false">
 			<property name="jboss.home" value="${jboss.home}" />
 			<property name="node" value="${jboss.config}" />
 			<property name="jnpHost" value="${jnpHost}" />
@@ -19,7 +19,7 @@
 	</target>
 
 	<target name="undeploy-jmx">
-		<ant antfile="${home}/du-management.xml" target="undeploy-jmx" inheritAll="false">
+		<ant antfile="${home}/proxy-with-initial-invite-du-management.xml" target="undeploy-jmx" inheritAll="false">
 			<property name="jboss.home" value="${jboss.home}" />
 			<property name="node" value="${jboss.config}" />
 			<property name="jnpHost" value="${jnpHost}" />
@@ -28,14 +28,14 @@
 	</target>
 
 	<target name="deploy">
-		<ant antfile="${home}/du-management.xml" target="deploy" inheritAll="false">
+		<ant antfile="${home}/proxy-with-initial-invite-du-management.xml" target="deploy" inheritAll="false">
 			<property name="jboss.home" value="${jboss.home}" />
 			<property name="node" value="${jboss.config}" />
 		</ant>
 	</target>
 
 	<target name="undeploy">
-		<ant antfile="${home}/du-management.xml" target="undeploy" inheritAll="false">
+		<ant antfile="${home}/proxy-with-initial-invite-du-management.xml" target="undeploy" inheritAll="false">
 			<property name="jboss.home" value="${jboss.home}" />
 			<property name="node" value="${jboss.config}" />
 		</ant>

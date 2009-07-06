@@ -39,6 +39,7 @@
 							<tagBase>https://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter</tagBase>
 						</configuration>
 					</plugin>
+					<!-- Deploy. Not used, moved to ANT.
 					<plugin>
 						<artifactId>maven-antrun-plugin</artifactId>
 						<inherited>false</inherited>
@@ -50,8 +51,6 @@
 								</goals>
 								<configuration>
 									<tasks>
-										
-
 										<copy overwrite="true" todir="${basedir}/../../../../releasezip/core/jdiameter" file="${basedir}/release/README.TXT">
 											<filterchain>
 												<replacetokens>
@@ -67,13 +66,12 @@
 												</replacetokens>
 											</filterchain>
 										</copy>
-
-										
 									</tasks>
 								</configuration>
 							</execution>
 						</executions>
 					</plugin>
+					-->
 				</plugins>
 			</build>
 		</profile>

@@ -1,30 +1,67 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.mobicents.servers.diameter</groupId>
-    <artifactId>jdiameter-parent</artifactId>
-    <version>1.5.0.1-build188-SNAPSHOT</version>  
-  </parent>
+	<parent>
+		<groupId>org.mobicents.servers.diameter</groupId>
+		<artifactId>jdiameter-parent</artifactId>
+		<version>1.5.0.1-build188-SNAPSHOT</version>
+	</parent>
 
-  <artifactId>jdiameter-impl</artifactId>
-  <name>Mobicents :: Diameter Stack :: ${pom.artifactId}</name>
+	<artifactId>jdiameter-impl</artifactId>
+	<name>Mobicents :: Diameter Stack :: ${pom.artifactId}</name>
 
-  <dependencies>
-    <dependency>
-      <groupId>${pom.groupId}</groupId>
-      <artifactId>jdiameter-api</artifactId>
-      <version>${pom.version}</version>
-    </dependency>
-    <dependency>
-      <artifactId>picocontainer</artifactId>
-      <groupId>picocontainer</groupId>
-      <version>${picocontainer.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-    </dependency>
-  </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>${pom.groupId}</groupId>
+			<artifactId>jdiameter-api</artifactId>
+			<version>${pom.version}</version>
+		</dependency>
+		<dependency>
+			<artifactId>picocontainer</artifactId>
+			<groupId>picocontainer</groupId>
+			<version>${picocontainer.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
+	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>maven-release</id>
+			<modules>
+				<!-- any module not bound to default modules, such as the ones for test, release, etc... -->
+			</modules>
+			<build>
+				<plugins>
+				<!-- Deploy. Not used, moved to ANT.
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<inherited>false</inherited>
+						<executions>
+							<execution>
+								<phase>deploy</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<copy overwrite="true" todir="${basedir}/../../../../../releasezip/core/jdiameter">
+											<fileset dir="${basedir}/target">
+												
+												<include name="**.jar" />
+											</fileset>
+										</copy>
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					-->
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>

@@ -1,27 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="Release_build" default="deploy-all">
+<project name="Release_build" default="deploy">
 
 	<property name="home" value="${ant.file.Release_build}/../" />
 
-	<property name="jboss.home" value="${home}/@JBOSS.PATH@/" />
-	<property name="jboss.config" value="@JBOSS.CONFIG@" />
+  <property environment="system" />
+	<property name="jboss.home" value="${system.JBOSS_HOME}/" />
+	<property name="jboss.config" value="default" />
 	<property name="jnpHost" value="127.0.0.1" />
 	<property name="jnpPort" value="1099" />
 
-	<target name="deploy-all-jmx">
-		<ant antfile="${home}../../resources/diameter-base/build.xml" target="deploy-jmx" inheritAll="false">
-			<property name="jboss.home" value="${jboss.home}" />
-			<property name="node" value="${jboss.config}" />
-			<property name="jnpHost" value="${jnpHost}" />
-			<property name="jnpPort" value="${jnpPort}" />
-		</ant>
-		<ant antfile="${home}../../resources/sh-client/build.xml" target="deploy-jmx" inheritAll="false">
-			<property name="jboss.home" value="${jboss.home}" />
-			<property name="node" value="${jboss.config}" />
-			<property name="jnpHost" value="${jnpHost}" />
-			<property name="jnpPort" value="${jnpPort}" />
-		</ant>
-		<ant antfile="${home}../../examples/openims/du-management.xml" target="deploy-jmx" inheritAll="false">
+	<target name="deploy-jmx">
+	  <ant antfile="${home}/thirdparty/sip11/build.xml" target="deploy-jmx" inheritAll="false" />
+	  <ant antfile="${home}/thirdparty/sip-services-proxy-with-initial-invite/build.xml" target="deploy-jmx" inheritAll="false" />
+		<ant antfile="${home}/du-management.xml" target="deploy-jmx" inheritAll="false">
 			<property name="jboss.home" value="${jboss.home}" />
 			<property name="node" value="${jboss.config}" />
 			<property name="jnpHost" value="${jnpHost}" />
@@ -29,55 +20,33 @@
 		</ant>
 	</target>
 
-	<target name="undeploy-all-jmx">
-		<ant antfile="${home}../../examples/openims/du-management.xml" target="undeploy-jmx" inheritAll="false">
+	<target name="undeploy-jmx">
+		<ant antfile="${home}/du-management.xml" target="undeploy-jmx" inheritAll="false">
 			<property name="jboss.home" value="${jboss.home}" />
 			<property name="node" value="${jboss.config}" />
 			<property name="jnpHost" value="${jnpHost}" />
 			<property name="jnpPort" value="${jnpPort}" />
 		</ant>
-		<ant antfile="${home}../../resources/sh-client/build.xml" target="undeploy-jmx" inheritAll="false">
-			<property name="jboss.home" value="${jboss.home}" />
-			<property name="node" value="${jboss.config}" />
-			<property name="jnpHost" value="${jnpHost}" />
-			<property name="jnpPort" value="${jnpPort}" />
-		</ant>
-		<ant antfile="${home}../../resources/diameter-base/build.xml" target="undeploy-jmx" inheritAll="false">
-			<property name="jboss.home" value="${jboss.home}" />
-			<property name="node" value="${jboss.config}" />
-			<property name="jnpHost" value="${jnpHost}" />
-			<property name="jnpPort" value="${jnpPort}" />
-		</ant>
+	  <ant antfile="${home}/thirdparty/sip-services-proxy-with-initial-invite/build.xml" target="undeploy-jmx" inheritAll="false" />
+	  <ant antfile="${home}/thirdparty/sip11/build.xml" target="undeploy-jmx" inheritAll="false" />
 	</target>
 
-	<target name="deploy-all">
-		<ant antfile="${home}../../resources/diameter-base/build.xml" target="deploy" inheritAll="false">
-			<property name="jboss.home" value="${jboss.home}" />
-			<property name="node" value="${jboss.config}" />
-		</ant>
-		<ant antfile="${home}../../resources/sh-client/build.xml" target="deploy" inheritAll="false">
-			<property name="jboss.home" value="${jboss.home}" />
-			<property name="node" value="${jboss.config}" />
-		</ant>
-		<ant antfile="${home}../../examples/diameter-sh-client/du-management.xml" target="deploy" inheritAll="false">
+	<target name="deploy">
+	  <ant antfile="${home}/thirdparty/sip11/build.xml" target="deploy" inheritAll="false" />
+	  <ant antfile="${home}/thirdparty/sip-services-proxy-with-initial-invite/build.xml" target="deploy" inheritAll="false" />
+		<ant antfile="${home}/du-management.xml" target="deploy" inheritAll="false">
 			<property name="jboss.home" value="${jboss.home}" />
 			<property name="node" value="${jboss.config}" />
 		</ant>
 	</target>
 
-	<target name="undeploy-all">
-		<ant antfile="${home}../../examples/diameter-sh-client/du-management.xml" target="undeploy" inheritAll="false">
+	<target name="undeploy">
+		<ant antfile="${home}/du-management.xml" target="undeploy" inheritAll="false">
 			<property name="jboss.home" value="${jboss.home}" />
 			<property name="node" value="${jboss.config}" />
 		</ant>
-		<ant antfile="${home}../../resources/sh-client/build.xml" target="undeploy" inheritAll="false">
-			<property name="jboss.home" value="${jboss.home}" />
-			<property name="node" value="${jboss.config}" />
-		</ant>
-		<ant antfile="${home}../../resources/diameter-base/build.xml" target="undeploy" inheritAll="false">
-			<property name="jboss.home" value="${jboss.home}" />
-			<property name="node" value="${jboss.config}" />
-		</ant>
+	  <ant antfile="${home}/thirdparty/sip-services-proxy-with-initial-invite/build.xml" target="undeploy" inheritAll="false" />
+	  <ant antfile="${home}/thirdparty/sip11/build.xml" target="undeploy" inheritAll="false" />
 	</target>
 
 </project>

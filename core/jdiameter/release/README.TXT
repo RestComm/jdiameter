@@ -1,9 +1,9 @@
 ============================
  Mobicents Diameter : Stack
 ============================
-           v@VERSION@
+           v@JDIAM_VERSION@
 
- Welcome to the Mobicents Diameter Stack v@VERSION@ release!
+ Welcome to the Mobicents Diameter Stack v@JDIAM_VERSION@ release!
 
 --------------
  Introduction
@@ -22,9 +22,9 @@
  Release Contents
 ------------------
 
-  jdiameter-api-@VERSION@.jar (contains the compiled classes for the API)
+  jdiameter-api-@JDIAM_VERSION@.jar (contains the compiled classes for the API)
 
-  jdiameter-impl-@VERSION@.jar (contains the compiled classes for the Implementation)
+  jdiameter-impl-@JDIAM_VERSION@.jar (contains the compiled classes for the Implementation)
 
 
 ----------------
