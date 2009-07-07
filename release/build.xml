@@ -216,11 +216,23 @@
 	</target>
 	<target name="copy-jars-additional-resources">
 	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${mobicents.folder.path}/resources/sip11/sip11-ra-DU-${JAINSLEE_VERSION}.jar" failonerror="${failoncopy}" />
-	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${mobicents.folder.path}/resources/sip11/du-management.xml" failonerror="${failoncopy}" />
+	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${mobicents.folder.path}/resources/sip11/du-management.xml" failonerror="${failoncopy}">
+			<filterchain>
+				<replacetokens>
+					<token key="JAINSLEE_VERSION" value="${JAINSLEE_VERSION}" />
+				</replacetokens>
+			</filterchain>
+	  </copy>
 	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${checkout_base_dir}/examples/openims/release/thirdparty/sip11/build.xml" failonerror="${failoncopy}" />
 
 	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip-services-proxy-with-initial-invite" file="${mobicents.folder.path}/examples/sip-services/sip-services-proxy-with-initial-invite-DU-${JAINSLEE_VERSION}.jar" failonerror="${failoncopy}" />
-	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip-services-proxy-with-initial-invite" file="${mobicents.folder.path}/examples/sip-services/proxy-with-initial-invite-du-management.xml" failonerror="${failoncopy}" />
+	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip-services-proxy-with-initial-invite" file="${mobicents.folder.path}/examples/sip-services/proxy-with-initial-invite-du-management.xml" failonerror="${failoncopy}">
+			<filterchain>
+				<replacetokens>
+					<token key="JAINSLEE_VERSION" value="${JAINSLEE_VERSION}" />
+				</replacetokens>
+			</filterchain>
+	  </copy>
 	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip-services-proxy-with-initial-invite" file="${checkout_base_dir}/examples/openims/release/thirdparty/sip-services-proxy-with-initial-invite/build.xml" failonerror="${failoncopy}" />
 	</target>
 
