@@ -6,13 +6,13 @@
   <parent>
 		<groupId>org.mobicents</groupId>
 		<artifactId>mobicents</artifactId>
-		<version>11</version>
+		<version>12</version>
 		<relativePath>../../../../parent/pom.xml</relativePath>
 	</parent>
 
   <groupId>org.mobicents.servers.diameter.examples</groupId>
 	<artifactId>openims-parent</artifactId>
-	<version>1.1.0.BETA1-SNAPSHOT</version>
+	<version>1.0.1.GA-SNAPSHOT</version>
 
 	<name>Mobicents :: Diameter Examples :: ${pom.artifactId}</name>
 				
@@ -24,12 +24,12 @@
   <properties>
     <!-- Mobicents Diameter Components Versions -->
     <mobicents.diameter.jdiameter.version>1.5.2.2-build212-SNAPSHOT</mobicents.diameter.jdiameter.version>
-    <mobicents.diameter.mux.version>1.0.0.GA</mobicents.diameter.mux.version>
-    <mobicents.diameter.resources.sh-client.version>1.0.0.GA</mobicents.diameter.resources.sh-client.version>
+    <mobicents.diameter.mux.version>1.0.1.GA-SNAPSHOT</mobicents.diameter.mux.version>
+    <mobicents.diameter.resources.sh-client.version>1.0.1.GA-SNAPSHOT</mobicents.diameter.resources.sh-client.version>
     
     <!-- Other Mobicents Components Versions -->
-    <mobicents.servers.jainslee.version>1.2.4.GA</mobicents.servers.jainslee.version>
-    <mobicents.servers.jainslee.resources.sip11.version>1.2.4.GA</mobicents.servers.jainslee.resources.sip11.version>
+    <mobicents.servers.jainslee.version>1.2.6.GA</mobicents.servers.jainslee.version>
+    <mobicents.servers.jainslee.resources.sip11.version>1.2.6.GA</mobicents.servers.jainslee.resources.sip11.version>
     <mobicents.tools.mavenplugin.du.version>1.0.0.BETA2</mobicents.tools.mavenplugin.du.version>
     <mobicents.tools.mavenplugin.eclipse.version>1.0.0.BETA2</mobicents.tools.mavenplugin.eclipse.version>
   </properties>

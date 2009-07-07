@@ -8,13 +8,13 @@
   <parent>
     <groupId>org.mobicents</groupId>
     <artifactId>mobicents</artifactId>
-    <version>11</version>
+    <version>12</version>
     <relativePath>../../parent/pom.xml</relativePath>
   </parent>
 
   <groupId>org.mobicents.servers.diameter</groupId>
   <artifactId>diameter-parent</artifactId>
-  <version>1.0.0.BETA1-SNAPSHOT</version>
+  <version>1.0.1.GA-SNAPSHOT</version>
 
   <name>Mobicents :: Diameter :: ${pom.artifactId}</name>
 
@@ -32,7 +32,7 @@
 	<properties>
 		<!-- DIAMETER SERVER CONFIGURATION -->
 		<!-- OTHER MOBICENTS COMPONENTS VERSIONS -->
-		<mobicents.servers.jainslee.version>1.2.4.GA</mobicents.servers.jainslee.version>
+		<mobicents.servers.jainslee.version>1.2.6.GA</mobicents.servers.jainslee.version>
 		<mobicents.tools.mavenplugin.du.version>1.0.0.BETA2</mobicents.tools.mavenplugin.du.version>
 		<mobicents.tools.mavenplugin.eclipse.version>1.0.0.BETA2</mobicents.tools.mavenplugin.eclipse.version>
 	</properties>	
@@ -72,6 +72,28 @@
         </build>       
       </profile>
     </profiles>
+
+	<repositories>
+		<repository>
+			<id>jboss</id>
+			<name>JBoss Repository</name>
+			<url>http://repository.jboss.org/maven2</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>jboss-snapshots</id>
+			<name>JBoss Snapshot Repository</name>
+			<url>http://snapshots.jboss.org/maven2</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
   <scm>
     <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter</connection>
