@@ -5,6 +5,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.ApplicationId;
 import static org.jdiameter.client.impl.helpers.Parameters.Assembler;
 import static org.jdiameter.client.impl.helpers.Parameters.AuthApplId;
 import static org.jdiameter.client.impl.helpers.Parameters.OwnDiameterURI;
+import static org.jdiameter.client.impl.helpers.Parameters.OwnIPAddress;
 import static org.jdiameter.client.impl.helpers.Parameters.OwnRealm;
 import static org.jdiameter.client.impl.helpers.Parameters.OwnVendorID;
 import static org.jdiameter.client.impl.helpers.Parameters.PeerName;
@@ -17,8 +18,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,7 +68,7 @@ public class TestingFramework
   private static String clientPort = "21812";
   private static String clientURI  = "aaa://" + clientHost + ":" + clientPort;
   
-  private static String serverHost = "localhost";
+  private static String serverHost = "127.0.0.1";
   private static String serverPort = "1812";
   private static String serverURI = "aaa://" + serverHost + ":" + serverPort;
   
@@ -91,19 +90,19 @@ public class TestingFramework
   
   static 
   {
-    String name = "localhost";
-    
-    try
-    {
-      name = InetAddress.getLocalHost().getHostName();
-    }
-    catch (UnknownHostException ignore)
-    {
-      // ignore this... use localhost
-    }
-    
-    serverHost = name;
-    serverURI = "aaa://" + serverHost + ":" + serverPort;
+//    String name = "localhost";
+//    
+//    try
+//    {
+//      name = InetAddress.getLocalHost().getHostName();
+//    }
+//    catch (UnknownHostException ignore)
+//    {
+//      // ignore this... use localhost
+//    }
+//    
+//    serverHost = name;
+//    serverURI = "aaa://" + serverHost + ":" + serverPort;
   } 
 
   private void initStack()
@@ -618,6 +617,7 @@ public class TestingFramework
       
       add(Assembler, Assembler.defValue());
       add(OwnDiameterURI, clientURI);
+      add(OwnIPAddress, "127.0.0.1");
       add(OwnRealm, realmName);
       add(OwnVendorID, 193L);
       // Set Ericsson SDK feature
