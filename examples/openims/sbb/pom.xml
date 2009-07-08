@@ -5,7 +5,7 @@
 	<parent>
     <groupId>org.mobicents.servers.diameter.examples</groupId>
   	<artifactId>openims-parent</artifactId>
-  	<version>1.0.1.GA-SNAPSHOT</version>
+  	<version>1.0.1.GA</version>
 	</parent>
 	
 	<artifactId>openims-example-sbb</artifactId>
