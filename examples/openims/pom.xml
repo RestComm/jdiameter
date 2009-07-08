@@ -23,9 +23,9 @@
 	
   <properties>
     <!-- Mobicents Diameter Components Versions -->
-    <mobicents.diameter.jdiameter.version>1.5.2.2-build212-SNAPSHOT</mobicents.diameter.jdiameter.version>
-    <mobicents.diameter.mux.version>1.0.1.GA-SNAPSHOT</mobicents.diameter.mux.version>
-    <mobicents.diameter.resources.sh-client.version>1.0.1.GA-SNAPSHOT</mobicents.diameter.resources.sh-client.version>
+    <mobicents.diameter.jdiameter.version>1.5.2.2-build212</mobicents.diameter.jdiameter.version>
+    <mobicents.diameter.mux.version>1.0.1.GA</mobicents.diameter.mux.version>
+    <mobicents.diameter.resources.sh-client.version>1.0.1.GA</mobicents.diameter.resources.sh-client.version>
     
     <!-- Other Mobicents Components Versions -->
     <mobicents.servers.jainslee.version>1.2.6.GA</mobicents.servers.jainslee.version>
