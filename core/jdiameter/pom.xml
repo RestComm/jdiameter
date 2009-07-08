@@ -15,7 +15,7 @@
 
 	<name>Mobicents :: Diameter Stack :: ${pom.artifactId}</name>
 
-	<version>1.5.2.2-build212-SNAPSHOT</version>
+	<version>1.5.2.2-build212</version>
 
 	<modules>
 		<module>api</module>
@@ -78,9 +78,9 @@
 	</profiles>
 
 	<scm>
-		<connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/jdiameter</connection>
-		<developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/jdiameter</developerConnection>
-		<url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/jdiameter</url>
+		<connection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter/jdiameter-1.5.2.2-build212</connection>
+		<developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter/jdiameter-1.5.2.2-build212</developerConnection>
+		<url>http://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter/jdiameter-1.5.2.2-build212</url>
 	</scm>
 
 </project>
