@@ -5,7 +5,7 @@
 	<parent>
     <groupId>org.mobicents.servers.diameter.resources</groupId>
   	<artifactId>rf-parent</artifactId>
-  	<version>1.0.1.GA-SNAPSHOT</version>
+  	<version>1.0.1.GA</version>
 	</parent>
 
 	<artifactId>rf-ra-DU</artifactId>
