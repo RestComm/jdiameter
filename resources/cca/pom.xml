@@ -11,7 +11,7 @@
 
   <groupId>org.mobicents.servers.diameter.resources</groupId>
   <artifactId>cca-parent</artifactId>
-  <version>1.0.1.GA</version>
+  <version>1.0.2.GA-SNAPSHOT</version>
 
   <name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
 
@@ -95,9 +95,9 @@
   </profiles>
 
   <scm>
-    <connection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/resources/cca/cca-1.0.1.GA</connection>
-    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/resources/cca/cca-1.0.1.GA</developerConnection>
-    <url>http://mobicents.googlecode.com/svn/tags/servers/diameter/resources/cca/cca-1.0.1.GA</url>
+    <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/resources/cca</connection>
+    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/resources/cca</developerConnection>
+    <url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/resources/cca</url>
   </scm>
 
 </project>
