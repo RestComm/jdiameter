@@ -4,7 +4,7 @@
 	<parent>
     <groupId>org.mobicents.servers.diameter.resources</groupId>
   	<artifactId>sh-server-parent</artifactId>
-  	<version>1.0.1.GA</version>
+  	<version>1.0.2.GA-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>sh-server-ratype</artifactId>
