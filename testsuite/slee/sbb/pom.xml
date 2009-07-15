@@ -5,7 +5,7 @@
 	<parent>
     <groupId>org.mobicents.servers.diameter.testsuite</groupId>
 	  <artifactId>testsuite-slee-parent</artifactId>
-		<version>1.0.1.GA-SNAPSHOT</version>
+		<version>1.0.2.GA-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>testsuite-slee-sbb</artifactId>

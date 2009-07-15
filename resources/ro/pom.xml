@@ -24,10 +24,10 @@
 
 	<properties>
 		<!-- Mobicents Diameter Components Versions -->
-		<mobicents.diameter.jdiameter.version>1.5.2.2-build212</mobicents.diameter.jdiameter.version>
-		<mobicents.diameter.mux.version>1.0.1.GA</mobicents.diameter.mux.version>
-		<mobicents.diameter.resources.base.version>1.0.1.GA</mobicents.diameter.resources.base.version>
-		<mobicents.diameter.resources.cca.version>1.0.1.GA</mobicents.diameter.resources.cca.version>
+		<mobicents.diameter.jdiameter.version>1.5.2.2-build213-SNAPSHOT</mobicents.diameter.jdiameter.version>
+		<mobicents.diameter.mux.version>1.0.2.GA-SNAPSHOT</mobicents.diameter.mux.version>
+		<mobicents.diameter.resources.base.version>1.0.2.GA-SNAPSHOT</mobicents.diameter.resources.base.version>
+		<mobicents.diameter.resources.cca.version>1.0.2.GA-SNAPSHOT</mobicents.diameter.resources.cca.version>
 
 		<!-- Other Mobicents Components Versions -->
 		<mobicents.servers.jainslee.version>1.2.6.GA</mobicents.servers.jainslee.version>
