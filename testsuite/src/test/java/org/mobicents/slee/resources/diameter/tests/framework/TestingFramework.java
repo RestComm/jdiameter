@@ -51,6 +51,7 @@ import org.jdiameter.api.StackType;
 import org.jdiameter.client.api.parser.DecodeException;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
 import org.jdiameter.client.impl.helpers.Loggers;
+import org.jdiameter.client.impl.parser.MessageImpl;
 import org.jdiameter.client.impl.parser.MessageParser;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.diameter.dictionary.AvpRepresentation;
@@ -299,6 +300,20 @@ public class TestingFramework
           msg.setReTransmitted( messageFlags.contains("retransmitted") );
         }
         
+        // Set hop-by-hop and end-to-end if present
+        String h2h = command.getAttribute("hop-by-hop");
+        
+        if(h2h != null && h2h.length() > 0) {
+          // Adding as negative so it becomes immutable...
+          ((MessageImpl)msg).setHopByHopIdentifier(-Long.valueOf(h2h));
+        }
+        
+        String e2e = command.getAttribute("end-to-end");
+        
+        if(e2e != null && e2e.length() > 0) {
+          ((MessageImpl)msg).setEndToEndIdentifier(Long.valueOf(e2e));
+        }
+        
         AvpSet msgAVPs = msg.getAvps();
         
         // In case we want to override pre-filled AVPs
@@ -357,6 +372,21 @@ public class TestingFramework
           assertTrue( "Unexpected type of Message: Received[" + receivedMessage.getCommandCode() + "] Expected[" + expectedCommandCode + "]",
               receivedMessage.getCommandCode() == expectedCommandCode );
           
+          // Verify hop-by-hop and end-to-end if present
+          String h2h = command.getAttribute("hop-by-hop");
+          
+          if(h2h != null && h2h.length() > 0) {
+            assertTrue( "Unexpected Hop-By-Hop Identifier: Received[" + receivedMessage.getHopByHopIdentifier() + "] Expected[" + Long.valueOf(h2h) + "]",
+                receivedMessage.getHopByHopIdentifier() == Long.valueOf(h2h));
+          }
+          
+          String e2e = command.getAttribute("end-to-end");
+          
+          if(e2e != null && e2e.length() > 0) {
+            assertTrue( "Unexpected End-To-End Identifier: Received[" + receivedMessage.getEndToEndIdentifier() + "] Expected[" + Long.valueOf(e2e) + "]",
+                receivedMessage.getEndToEndIdentifier() == Long.valueOf(e2e));
+          }
+          
           for(Avp expectedAvp : avps)
           {
             Avp receivedAvp = null;
@@ -371,6 +401,7 @@ public class TestingFramework
         }
         else
         {
+          log("No message was received... FAILED!");
           assertTrue( "No Message was received. Failing.", false);
         }
       }

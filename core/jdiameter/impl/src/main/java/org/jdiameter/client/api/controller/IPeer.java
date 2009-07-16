@@ -33,7 +33,7 @@ public interface IPeer extends Peer {
      * Return new hop by hop id for new message
      * @return new hop by hop id
      */
-    int getHopByHopIdentifier();
+    long getHopByHopIdentifier();
 
     /**
      * Append request to peer request storage map

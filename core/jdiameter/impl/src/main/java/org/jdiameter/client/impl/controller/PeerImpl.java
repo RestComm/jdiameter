@@ -52,7 +52,7 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
     protected String productName;
     protected int firmWare;
     protected Set<ApplicationId> commonApplications = new HashSet<ApplicationId>();
-    protected int hopByHopId = uid.nextInt();
+    protected long hopByHopId = uid.nextInt();
     protected int rating;
     protected boolean stopping = false;
     // Members
@@ -395,7 +395,7 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
         return commonApplications;
     }
 
-    public int getHopByHopIdentifier() {
+    public long getHopByHopIdentifier() {
         return hopByHopId++;
     }
 

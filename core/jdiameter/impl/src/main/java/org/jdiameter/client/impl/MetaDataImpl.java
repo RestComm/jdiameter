@@ -93,7 +93,7 @@ public class MetaDataImpl implements IMetaData {
 
     protected class LocalPeer implements IPeer {
 
-        protected int hopByHopId;
+        protected long hopByHopId;
         protected InetAddress[] addresses = new InetAddress[0];
 
         public void resetAddresses() {
@@ -223,7 +223,7 @@ public class MetaDataImpl implements IMetaData {
         public void removePeerStateListener(PeerStateListener peerStateListener) {
         }
 
-        public int getHopByHopIdentifier() {
+        public long getHopByHopIdentifier() {
             return hopByHopId++;
         }
 

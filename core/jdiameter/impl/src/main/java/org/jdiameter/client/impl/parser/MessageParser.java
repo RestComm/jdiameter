@@ -51,9 +51,9 @@ public class MessageParser extends ElementParser implements IMessageParser {
             tmp = in.readInt();
             short flags   = (short) ( (tmp >> 24) & 0xFF );
             int commandCode = (int) (tmp & 0xFFFFFF);
-            int applicationId = in.readInt();
-            int hopByHopId = in.readInt();
-            int endToEndId = in.readInt();
+            long applicationId = ((long)in.readInt() << 32) >>> 32;
+            long hopByHopId = ((long)in.readInt() << 32) >>> 32;
+            long endToEndId = ((long)in.readInt() << 32) >>> 32;
             // Read body
             byte[] body = new byte[message.length - 20];
             System.arraycopy(message, 20, body, 0, body.length);
