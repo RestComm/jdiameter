@@ -15,15 +15,13 @@ import org.jdiameter.api.InternalException;
 import org.jdiameter.client.api.fsm.IContext;
 import org.jdiameter.client.api.fsm.IFsmFactory;
 import org.jdiameter.client.api.fsm.IStateMachine;
+import org.jdiameter.client.api.fsm.ExecutorFactory;
 
 import java.util.concurrent.Executor;
 
 public class FsmFactoryImpl implements IFsmFactory {
 
-    public FsmFactoryImpl() {
-    }
-
-    public IStateMachine createInstanceFsm(IContext context, Executor executor, Configuration config) throws InternalException {
+    public IStateMachine createInstanceFsm(IContext context, ExecutorFactory executor, Configuration config) throws InternalException {
         return new PeerFSMImpl(context, executor, config);
     }
 }

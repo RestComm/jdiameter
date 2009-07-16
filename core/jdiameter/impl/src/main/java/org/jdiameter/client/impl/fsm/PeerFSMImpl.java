@@ -10,24 +10,20 @@ package org.jdiameter.client.impl.fsm;
  *
  */
 
-import org.jdiameter.api.Configuration;
-import org.jdiameter.api.OverloadException;
-import org.jdiameter.api.PeerState;
-import org.jdiameter.api.ResultCode;
+import org.jdiameter.api.*;
 import org.jdiameter.api.app.State;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.client.api.IMessage;
-import org.jdiameter.client.api.fsm.EventTypes;
-import org.jdiameter.client.api.fsm.FsmEvent;
-import org.jdiameter.client.api.fsm.IContext;
-import org.jdiameter.client.api.fsm.IStateMachine;
+import org.jdiameter.client.api.fsm.*;
 import org.jdiameter.client.impl.helpers.Loggers;
 import static org.jdiameter.client.impl.helpers.Parameters.*;
+import static org.jdiameter.client.impl.fsm.PeerFSMImpl.CIntState.REOPEN;
+import static org.jdiameter.client.impl.fsm.PeerFSMImpl.CIntState.DOWN;
 
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -46,10 +42,12 @@ public class PeerFSMImpl implements IStateMachine {
     protected final StateEvent timeOutEvent = new FsmEvent(EventTypes.TIMEOUT_EVENT);
     protected Random random = new Random();
     
+    protected ExecutorFactory executorFactory;
+    protected ExecutorService executor;
+    
     protected IContext context;
-    private State[] states;
-    private int predefSize;
-
+    protected State[] states;
+    protected int predefSize;
 
     public static class CIntState {
 
@@ -107,39 +105,50 @@ public class PeerFSMImpl implements IStateMachine {
         listeners.remove(stateChangeListener);
     }
 
-    public PeerFSMImpl(IContext aContext, Executor executor, Configuration config) {
+    public PeerFSMImpl(IContext aContext, ExecutorFactory executorFactory, Configuration config) {
         context = aContext;
         predefSize = config.getIntValue( QueueSize.ordinal(), (Integer) QueueSize.defValue() );
         eventQueue = new LinkedBlockingQueue<StateEvent>(predefSize);
         listeners = new ConcurrentLinkedQueue<StateChangeListener>();
         loadTimeOuts(config);
-        executor.execute(
+        this.executorFactory = executorFactory;
+        runQueueProcessing(executorFactory);
+    }
+
+    private void runQueueProcessing(ExecutorFactory executorFactory) {
+        executorFactory.getExecutor().execute(
             new Runnable() {
                 public void run() {
                     while (true) {
                         StateEvent event;
                         try {
                             event = eventQueue.poll(100, TimeUnit.MILLISECONDS);
-                        } catch (InterruptedException e) {
-                            logger.finest("Peer fsm stopped");
-                            break;
+                        }
+                        catch (InterruptedException e) {
+                          if(logger.isLoggable(Level.FINE)) {
+                            logger.log(Level.FINE, "Peer fsm stopped");
+                          }
+                          break;
                         }
                         try {
-                            if (event != null)
-                                getStates()[state.ordinal()].processEvent(event);
+                            if (event != null) {
+                              logger.log(Level.FINE, "Process event " + event);
+                              getStates()[state.ordinal()].processEvent(event);
+                            }
                             if (timer != 0 && timer < System.currentTimeMillis()) {
                                 timer  = 0;
                                 handleEvent( timeOutEvent );
                             }
                         } catch (Exception e) {
-                            logger.log(Level.INFO, "Error during processing fsm event", e);
+                          if(logger.isLoggable(Level.FINE)) {
+                            logger.log(Level.FINE, "Error during processing fsm event", e);
+                          }
                         }
                     }
                 }
             }
         );
     }
-
 
     public double getQueueInfo() {
         return eventQueue.size() * 1.0 / predefSize;
@@ -173,6 +182,9 @@ public class PeerFSMImpl implements IStateMachine {
     }
 
     public boolean handleEvent(StateEvent event) throws InternalError, OverloadException {
+        if (state.getPublicState() == PeerState.DOWN && event.encodeType(EventTypes.class) == EventTypes.START_EVENT) {
+          runQueueProcessing(executorFactory);
+        }
         boolean rc;
         try {
              rc = eventQueue.offer(event, IAC_TIMEOUT, TimeUnit.MILLISECONDS);
@@ -184,15 +196,12 @@ public class PeerFSMImpl implements IStateMachine {
         return true;
     }
 
-    private long setInActiveTimer() {
-      return IAC_TIMEOUT - 2 * 1000 + random.nextInt(5) * 1000 + System.currentTimeMillis();
+    protected void setInActiveTimer() {
+      timer = IAC_TIMEOUT - 2 * 1000 + random.nextInt(5) * 1000 + System.currentTimeMillis();
     }
 
     public String toString() {
-        return "PeerFSM{" +
-                "context=" + context +
-                ", state=" + state +
-                '}';
+      return "PeerFSM{" + "context=" + context + ", state=" + state + '}';
     }
 
     public <E> E getState(Class<E> a) {
@@ -202,17 +211,56 @@ public class PeerFSMImpl implements IStateMachine {
             return null;
     }
 
+    protected abstract class MyState implements State {
+
+        public void entryAction() {}
+
+        public void exitAction() {}
+
+        protected void doEndConnection() {
+            if ( context.isRestoreConnection() ) {
+                timer = REC_TIMEOUT + System.currentTimeMillis();
+                swithToNextState(REOPEN);
+            } else {
+                swithToNextState(DOWN);
+            }
+        }
+
+        protected void doDisconnect() {
+            try {
+                context.disconnect();
+            } catch (Throwable e) {}
+        }
+
+        protected void setTimer(long value) {
+            timer = value + System.currentTimeMillis();
+        }
+
+        protected String key(StateEvent event) {
+            return ((FsmEvent)event).getKey();
+        }
+
+        protected IMessage message(StateEvent event) {
+            return ((FsmEvent)event).getMessage();
+        }
+
+        protected EventTypes type(StateEvent event) {
+            return (EventTypes) event.getType();
+        }
+
+        protected void clearTimer() {
+            timer = 0;
+        }
+    }
+    
     protected State[] getStates() {
-        if (states == null)
-            states = new State[] {
-                new State() // OKEY
+        if (states == null) {
+            states = new State[] { // todo merge and redesign with server fsm
+                new MyState() // OKEY
                 {
                     public void entryAction() {
-                        timer = setInActiveTimer();
+                        setInActiveTimer();
                         watchdogSent = false;
-                    }
-
-                    public void exitAction() {
                     }
 
                     public boolean processEvent(StateEvent event) {
@@ -224,75 +272,65 @@ public class PeerFSMImpl implements IStateMachine {
                             case TIMEOUT_EVENT:
                                 try {
                                     context.sendDwrMessage();
-                                    timer = DWA_TIMEOUT + System.currentTimeMillis();
+                                    setTimer(DWA_TIMEOUT);
                                     if (watchdogSent)
                                         swithToNextState(CIntState.SUSPECT);
                                     else
                                         watchdogSent = true;
                                 } catch (Throwable exc) {
                                     logger.log(Level.INFO, "Can not send DWR", exc);
-                                    try {
-                                        context.disconnect();
-                                    } catch (Throwable e) {
-                                    }
-                                    timer = REC_TIMEOUT + System.currentTimeMillis();
+                                    doDisconnect();
+                                    setTimer(REC_TIMEOUT);
                                     swithToNextState(CIntState.REOPEN);
                                 }
                                 break;
                             case STOP_EVENT:
                                 try {
                                     context.sendDprMessage(ResultCode.SUCCESS);
-                                    timer = DPA_TIMEOUT + System.currentTimeMillis();
+                                    setTimer(DPA_TIMEOUT);
                                     swithToNextState(CIntState.STOPPING);
                                 } catch (Throwable exc) {
                                     logger.log(Level.INFO, "Can not send DPR", exc);
-                                    try {
-                                        context.disconnect();
-                                    } catch (Throwable e) {
-                                    }
+                                    doDisconnect();
                                     swithToNextState(CIntState.DOWN);
                                 }
                                 break;
                             case RECEIVE_MSG_EVENT:
-                                timer = setInActiveTimer();
-                                context.receiveMessage((IMessage) event.getData());
+                                setInActiveTimer();
+                                context.receiveMessage(message(event));
                                 break;
                             case DPR_EVENT:
                                 try {
-                                    context.sendDpaMessage((IMessage) event.getData(),ResultCode.SUCCESS, null );
-                                    context.disconnect();
+                                  int code = context.processDprMessage(message(event));
+                                  context.sendDpaMessage(message(event), code, null);
                                 } catch (Throwable e) {
-                                    logger.log(Level.INFO, "Can not send DWR", e);
+                                    logger.log(Level.INFO, "Can not send DPA", e);
                                 }
+                                doDisconnect();
                                 swithToNextState(CIntState.DOWN);
                                 break;
                             case DWR_EVENT:
-                                timer = setInActiveTimer();
+                                setInActiveTimer();
                                 try {
-                                    context.sendDwaMessage((IMessage) event.getData(), ResultCode.SUCCESS, null);
+                                  int code = context.processDwrMessage(message(event));
+                                  context.sendDwaMessage(message(event), code, null);
                                 } catch (Throwable exc) {
                                     logger.log(Level.INFO, "Can not send DWA", exc);
-                                    try {
-                                        context.disconnect();
-                                    } catch (Throwable e) {
-                                    }
+                                    doDisconnect();
                                     swithToNextState(CIntState.DOWN);
                                 }
                                 break;
                             case DWA_EVENT:
-                                timer = setInActiveTimer();
+                                setInActiveTimer();
                                 watchdogSent = false;
                                 break;
                             case SEND_MSG_EVENT:
                                 try {
-                                    context.sendMessage((IMessage) event.getData());
+                                  context.sendMessage(message(event));
                                 } catch (Throwable exc) {
                                     logger.log(Level.INFO, "Can not send message", exc);
-                                    try {
-                                        context.disconnect();
-                                    } catch (Throwable e) {
-                                    }
-                                    timer = REC_TIMEOUT + System.currentTimeMillis();
+                                    doDisconnect();
+                                    setTimer(REC_TIMEOUT);
                                     swithToNextState(CIntState.REOPEN);
                                 }
                                 break;
@@ -304,49 +342,38 @@ public class PeerFSMImpl implements IStateMachine {
 
                     }
                 },
-                new State() // SUSPECT
+                new MyState() // SUSPECT
                 {
-                    public void entryAction() {
-                    }
-
-                    public void exitAction() {
-                    }
-
                     public boolean processEvent(StateEvent event) {
                         switch (event.encodeType(EventTypes.class)) {
                             case DISCONNECT_EVENT:
-                                timer = REC_TIMEOUT + System.currentTimeMillis();
+                                setTimer(REC_TIMEOUT);
                                 swithToNextState(CIntState.REOPEN);
                                 break;
                             case TIMEOUT_EVENT:
-                                try {
-                                    context.disconnect();
-                                } catch (Throwable e) {
-                                }
-                                timer = REC_TIMEOUT + System.currentTimeMillis();
+                                doDisconnect();
+                                setTimer(REC_TIMEOUT);
                                 swithToNextState(CIntState.REOPEN);
                                 break;
                             case STOP_EVENT:
                                 try {
                                     context.sendDprMessage(ResultCode.SUCCESS);
-                                    timer = setInActiveTimer();
+                                    setInActiveTimer();
                                     swithToNextState(CIntState.STOPPING);
                                 } catch (Throwable exc) {
                                     logger.log(Level.INFO, "Can not send DPR", exc);
-                                    try {
-                                        context.disconnect();
-                                    } catch (Throwable e) {
-                                    }
+                                    doDisconnect();
                                     swithToNextState(CIntState.DOWN);
                                 }
                                 break;
                             case DPR_EVENT:
                                 try {
-                                    context.sendDpaMessage( (IMessage) event.getData(), ResultCode.SUCCESS, null);
-                                    context.disconnect();
+                                  int code = context.processDprMessage(message(event));
+                                  context.sendDpaMessage(message(event), code, null);
                                 } catch (Throwable e) {
                                     logger.log(Level.INFO, "Can not send DPA", e);
                                 }
+                                doDisconnect();
                                 swithToNextState(CIntState.DOWN);
                                 break;
                             case DWA_EVENT:
@@ -354,19 +381,17 @@ public class PeerFSMImpl implements IStateMachine {
                                 break;
                             case DWR_EVENT:
                                 try {
-                                    context.sendDwaMessage((IMessage) event.getData(), ResultCode.SUCCESS, null);
-                                    swithToNextState(CIntState.OKAY);
+                                  int code = context.processDwrMessage(message(event));
+                                  context.sendDwaMessage(message(event), code, null);
+                                  swithToNextState(CIntState.OKAY);
                                 } catch (Throwable exc) {
-                                    logger.log(Level.INFO, "Can not send DWR", exc);
-                                    try {
-                                        context.disconnect();
-                                    } catch (Throwable e) {
-                                    }
+                                    logger.log(Level.INFO, "Can not send DWA", exc);
+                                    doDisconnect();
                                     swithToNextState(CIntState.DOWN);
                                 }
                                 break;
                             case RECEIVE_MSG_EVENT:
-                                context.receiveMessage((IMessage) event.getData());
+                                context.receiveMessage(message(event));
                                 swithToNextState(CIntState.OKAY);
                                 break;
                             case SEND_MSG_EVENT:
@@ -378,13 +403,10 @@ public class PeerFSMImpl implements IStateMachine {
                         return true;
                     }
                 },
-                new State() // DOWN
+                new MyState() // DOWN
                 {
                     public void entryAction() {
-                        timer = 0;
-                    }
-
-                    public void exitAction() {
+                      clearTimer();
                     }
 
                     public boolean processEvent(StateEvent event) {
@@ -393,11 +415,11 @@ public class PeerFSMImpl implements IStateMachine {
                                 try {
                                     context.connect();
                                     context.sendCerMessage();
-                                    timer = CEA_TIMEOUT + System.currentTimeMillis();
+                                    setTimer(CEA_TIMEOUT);
                                     swithToNextState(CIntState.INITIAL);
                                 } catch (Throwable exc) {
                                     logger.log(Level.FINEST, "Connect error", exc);
-                                    timer = REC_TIMEOUT + System.currentTimeMillis();
+                                    setTimer(REC_TIMEOUT);
                                     swithToNextState(CIntState.REOPEN);
                                 }
                                 break;
@@ -413,24 +435,18 @@ public class PeerFSMImpl implements IStateMachine {
                         return true;
                     }
                 },
-                new State() // REOPEN
+                new MyState() // REOPEN
                 {
-                    public void entryAction() {
-                    }
-
-                    public void exitAction() {
-                    }
-
                     public boolean processEvent(StateEvent event) {
                         switch (event.encodeType(EventTypes.class)) {
                             case CONNECT_EVENT:
                                 try {
                                     context.sendCerMessage();
-                                    timer = CEA_TIMEOUT + System.currentTimeMillis();
+                                    setTimer(CEA_TIMEOUT);
                                     swithToNextState(CIntState.INITIAL);
                                 } catch(Throwable exc) {
                                     logger.log(Level.INFO, "Can not send CER", exc);
-                                    timer = REC_TIMEOUT + System.currentTimeMillis();
+                                    setTimer(REC_TIMEOUT);
                                 }
                                 break;
                             case TIMEOUT_EVENT:
@@ -438,21 +454,18 @@ public class PeerFSMImpl implements IStateMachine {
                                     context.connect();
                                 } catch (Exception exc) {
                                     logger.log(Level.FINE, "Can not create connection", exc);
-                                    timer = REC_TIMEOUT + System.currentTimeMillis();
+                                    setTimer(REC_TIMEOUT);
                                 }
                                 break;
                             case STOP_EVENT:
-                                timer = 0;
-                                try {
-                                    context.disconnect();
-                                } catch (Throwable e) {
-                                }
+                                clearTimer();
+                                doDisconnect();
                                 swithToNextState(CIntState.DOWN);
                                 break;
                             case DISCONNECT_EVENT:
                                 break;
                             case SEND_MSG_EVENT:
-                                throw new RuntimeException("Connection is down");
+                              throw new IllegalStateException("Connection is down");
                             default:
                                 logger.finest("Unknown event type:" + event.encodeType(EventTypes.class) + " in state " + state);
                                 return false;
@@ -460,45 +473,36 @@ public class PeerFSMImpl implements IStateMachine {
                         return true;
                     }
                 },
-                new State() // INITIAL
+                new MyState() // INITIAL
                 {
 
                     public void entryAction() {
-                        timer = CEA_TIMEOUT + System.currentTimeMillis();
-                    }
-
-                    public void exitAction() {
+                      setTimer(CEA_TIMEOUT);
                     }
 
                     public boolean processEvent(StateEvent event) {
                         switch (event.encodeType(EventTypes.class)) {
                             case DISCONNECT_EVENT:
-                                timer = REC_TIMEOUT + System.currentTimeMillis();
+                                setTimer(REC_TIMEOUT);
                                 swithToNextState(CIntState.REOPEN);
                                 break;
                             case TIMEOUT_EVENT:
-                                try {
-                                    context.disconnect();
-                                } catch (Throwable e) {}
-                                timer = REC_TIMEOUT + System.currentTimeMillis();
+                                doDisconnect();
+                                setTimer(REC_TIMEOUT);
                                 swithToNextState(CIntState.REOPEN);
                                 break;
                             case STOP_EVENT:
-                                timer = 0;
-                                try {
-                                    context.disconnect();
-                                } catch (Throwable e) {}
+                                clearTimer();
+                                doDisconnect();
                                 swithToNextState(CIntState.DOWN);
                                 break;
                             case CEA_EVENT:
-                                timer = 0;
-                                if ( context.processCeaMessage( ((FsmEvent)event).getKey(), ((FsmEvent)event).getMessage() ) ) {
+                                clearTimer();
+                                if (context.processCeaMessage(((FsmEvent) event).getKey(), ((FsmEvent) event).getMessage())) {
                                     swithToNextState(CIntState.OKAY);
                                 } else {
-                                    try {
-                                        context.disconnect();
-                                    } catch (Throwable e) {}
-                                    timer = REC_TIMEOUT + System.currentTimeMillis();
+                                    doDisconnect();
+                                    setTimer(REC_TIMEOUT);
                                     swithToNextState(CIntState.REOPEN);
                                 }
                                 break;
@@ -511,37 +515,23 @@ public class PeerFSMImpl implements IStateMachine {
                         return true;
                     }
                 },
-                new State() // STOPPING
+                new MyState() // STOPPING
                 {
-                    public void entryAction() {
-                    }
-
-                    public void exitAction() {
-                    }
-
                     public boolean processEvent(StateEvent event) {
                         switch (event.encodeType(EventTypes.class)) {
                             case TIMEOUT_EVENT:
                             case DPA_EVENT:
-                                try {
-                                  context.disconnect();
-                                } catch (Exception e) {
-                                  logger.log(Level.FINE, "Can not stop network client", e);
-                                }
+                                doDisconnect();
                                 swithToNextState(CIntState.DOWN);
                                 break;
                             case RECEIVE_MSG_EVENT:
-                                context.receiveMessage((IMessage) event.getData());
+                                context.receiveMessage(message(event));
                                 break;
                             case SEND_MSG_EVENT:
                                 throw new RuntimeException("Stack now is stopping");
                             case STOP_EVENT:
                             case DISCONNECT_EVENT:
-                                try {
-                                  context.disconnect();
-                                } catch (Exception e) {
-                                  logger.log(Level.FINE, "Can not stop network client", e);
-                                }
+                                doDisconnect();
                                 break;
                             default:
                                 logger.finest("Unknown event type:" + event.encodeType(EventTypes.class) + " in state " + state);
@@ -550,8 +540,8 @@ public class PeerFSMImpl implements IStateMachine {
                         return true;
                     }
                 },
-
         };
+        }
         return states;
     }
 

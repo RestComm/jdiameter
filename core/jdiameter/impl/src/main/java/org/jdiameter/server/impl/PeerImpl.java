@@ -87,9 +87,13 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
         PeerState state = fsm.getState(PeerState.class);
         if (DOWN  ==  state || INITIAL == state) {
             conn.addConnectionListener(connListener);
-            logger.log(Level.FINE,"Append external connection {}", conn.getKey());
+            if(logger.isLoggable(Level.FINE)) {
+              logger.log(Level.FINE,"Append external connection " + conn.getKey());
+            }
         } else {
-            logger.log(Level.FINE, "Releasing connection {}", conn.getKey());
+            if(logger.isLoggable(Level.FINE)) {
+              logger.log(Level.FINE, "Releasing connection " + conn.getKey());
+            }
             incConnections.remove(conn.getKey());
             try {
                 conn.release();

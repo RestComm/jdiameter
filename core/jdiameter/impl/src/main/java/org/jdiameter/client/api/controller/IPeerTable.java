@@ -15,6 +15,7 @@ import org.jdiameter.client.api.IMessage;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 /**
  *  This interface provide additional methods for PeerTable interface
@@ -91,4 +92,10 @@ public interface IPeerTable extends PeerTable {
      * @param assembler assembler instance
      */
     void setAssempler(IAssembler assembler);
+    
+    /**
+     * Return peer common executor
+     * @return  peer common executor
+     */
+    ExecutorService getPeerTaskExecutor();    
 }

@@ -106,6 +106,20 @@ public interface IContext {
     boolean receiveMessage(IMessage iMessage);
 
     /**
+     * This method call when peer instance receive DWR event
+     * @param iMessage message
+     * @return result code With this code stack will be send DWA message
+     */
+    int processDwrMessage(IMessage iMessage);
+
+    /**
+     * This method call when peer instance receive DPR event
+     * @param iMessage message
+     * @return result code With this code stack will be send DPA message
+     */
+    int processDprMessage(IMessage iMessage);    
+    
+    /**
      * This method allow sent CEA command to remote peer
      * @param key connection key (host + ":" + port)
      * @param message

@@ -142,9 +142,10 @@ public class StackImpl implements IContainer, StackImplMBean {
 
     private void startPeerManager() throws InternalException {
         try {
-            if (peerManager != null)
+            if (peerManager != null) {
                 peerManager.start();
-            ( (IMetaData)getMetaData().unwrap(IMetaData.class) ).updateLocalHostStateId();
+            }
+            getMetaData().unwrap(IMetaData.class).updateLocalHostStateId();
         } catch (Exception e) {
             throw new InternalException(e);
         }
@@ -190,8 +191,9 @@ public class StackImpl implements IContainer, StackImplMBean {
               if (peerManager != null)
                   peerManager.stopped();
               // Clear all timeout tasks
-              if (scheduledFacility != null)
-                  scheduledFacility.shutdown();
+              if (scheduledFacility != null) {
+                  scheduledFacility.shutdownNow();
+              }
           } catch (Exception e) {
               logger.log(Level.WARNING, "stopped()", e);
           }

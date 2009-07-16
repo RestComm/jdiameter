@@ -12,7 +12,6 @@ package org.jdiameter.client.impl.controller;
 
 import org.jdiameter.api.*;
 import static org.jdiameter.api.Avp.*;
-import static org.jdiameter.api.Avp.SUPPORTED_VENDOR_ID;
 import static org.jdiameter.api.Message.*;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.client.api.IMessage;
@@ -33,6 +32,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import static java.util.logging.Level.*;
 import java.util.logging.Logger;
@@ -178,7 +178,7 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
       this(table, rating, remotePeer, ip,  portRange, metaData, config, peerConfig, fsmFactory, trFactory, parser, null);
     }
 
-    protected PeerImpl(PeerTableImpl table, int rating, URI remotePeer, String ip, String portRange, IMetaData metaData, Configuration config,
+    protected PeerImpl(final PeerTableImpl table, int rating, URI remotePeer, String ip, String portRange, IMetaData metaData, Configuration config,
                     Configuration peerConfig, IFsmFactory fsmFactory, ITransportLayerFactory trFactory, IMessageParser parser,
                     IConnection connection) throws InternalException, TransportException {
         this.table = table;
@@ -195,7 +195,11 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
            throw new TransportException("Can not found host", TransportError.Internal, e);
         }
         IContext actionContext = getContext();
-        this.fsm = fsmFactory.createInstanceFsm(actionContext, table.peerTaskExecutor, config);
+        this.fsm = fsmFactory.createInstanceFsm(actionContext, new ExecutorFactory() {
+          public ExecutorService getExecutor() {
+            return table.getPeerTaskExecutor();
+          }
+        }, config);
         this.fsm.addStateChangeNotification(
             new StateChangeListener() {
                 public void stateChanged(Enum oldState, Enum newState) {
@@ -275,6 +279,7 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
     }
 
     public void removePeerStateListener(final PeerStateListener listener) {
+      if (listener != null) {
         fsm.remStateChangeNotification(new StateChangeListener() {
             public void stateChanged(Enum oldState, Enum newState) {
                 listener.stateChanged((PeerState) oldState, (PeerState) newState);
@@ -288,6 +293,7 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
                 return listener.equals(obj);
             }
         });
+      }
     }
 
     private IMessage processRedirectAnswer(IMessage answer) {
@@ -332,8 +338,9 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
     }    
 
     public void connect() throws InternalException, IOException, IllegalDiameterStateException {
-        if (getState(PeerState.class) != PeerState.DOWN)
+        if (getState(PeerState.class) != PeerState.DOWN) {
             throw new IllegalDiameterStateException("Invalid state:" + getState(PeerState.class));
+        }
         try {
             fsm.handleEvent( new FsmEvent(EventTypes.START_EVENT) );
         } catch (Exception e) {
@@ -342,7 +349,7 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
     }
 
     public void disconnect() throws InternalException, IllegalDiameterStateException {
-        if (getState(PeerState.class) == PeerState.DOWN) return;
+      if (getState(PeerState.class) != PeerState.DOWN) {
         stopping = true;
         try {
             fsm.handleEvent( new FsmEvent(STOP_EVENT) );
@@ -353,6 +360,7 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
             	logger.log(WARNING, "Error during stopping procedure", e);
         	}
         }
+      }
     }
 
     public <E> E getState(Class<E> enumc) {
@@ -568,14 +576,17 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
             message.setRequest(true);
             message.setHopByHopIdentifier(getHopByHopIdentifier());
 
-            if (useUriAsFQDN)
+            if (useUriAsFQDN) {
                 message.getAvps().addAvp( ORIGIN_HOST, metaData.getLocalPeer().getUri().toString(), true, false, true);
-            else
+            }
+            else {
                 message.getAvps().addAvp( ORIGIN_HOST, metaData.getLocalPeer().getUri().getFQDN(), true, false, true);
+            }
 
             message.getAvps().addAvp( ORIGIN_REALM, metaData.getLocalPeer().getRealmName(), true, false, true);
-            for (InetAddress ia : metaData.getLocalPeer().getIPAddresses())
+            for (InetAddress ia : metaData.getLocalPeer().getIPAddresses()) {
                 message.getAvps().addAvp( HOST_IP_ADDRESS, ia, true, false);
+            }
             message.getAvps().addAvp( VENDOR_ID, metaData.getLocalPeer().getVendorId(), true, false, true);
             message.getAvps().addAvp( PRODUCT_NAME,  metaData.getLocalPeer().getProductName(), false);
             for (ApplicationId appId: metaData.getLocalPeer().getCommonApplications()) addAppId(appId, message);
@@ -761,6 +772,14 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
                 }
             }
             return isProcessed;
+        }
+        
+        public int processDwrMessage(IMessage iMessage) {
+          return ResultCode.SUCCESS;
+        }
+
+        public int processDprMessage(IMessage iMessage) {
+          return ResultCode.SUCCESS;
         }
 
         protected void addAppId(ApplicationId appId, IMessage message) { // todo duplicate code look SessionImpl 225 line

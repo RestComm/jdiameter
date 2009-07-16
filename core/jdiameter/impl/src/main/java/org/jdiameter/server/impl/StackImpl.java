@@ -2,7 +2,6 @@ package org.jdiameter.server.impl;
 
 import org.jdiameter.api.*;
 import org.jdiameter.client.api.StackState;
-import org.jdiameter.api.Network;
 
 public class StackImpl extends org.jdiameter.client.impl.StackImpl implements StackImplMBean{
 

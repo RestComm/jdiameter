@@ -103,12 +103,7 @@ class TCPTransportClient implements Runnable {
             while (!stop) {
                 int dataLength = socketChannel.read(buffer);
                 if (dataLength == -1) {
-                    if (socketChannel.isConnected()) {
-                        Thread.sleep(10);
-                        continue;
-                    } else {
-                        break;
-                    }
+                  break;
                 }
                 buffer.flip();
                 byte[] data = new byte[buffer.limit()];
@@ -121,11 +116,6 @@ class TCPTransportClient implements Runnable {
      		{
             	logger.log(Level.SEVERE, "Transport exception ", e);
             }
-        } catch (InterruptedException e) {
-	        if(logger.isLoggable(Level.SEVERE))
-    	 	{
-        	  	logger.log(Level.SEVERE, "Transport exception ", e);
-            }
         } catch (AsynchronousCloseException e) {
 	        if(logger.isLoggable(Level.SEVERE))
     		 {
@@ -137,8 +127,6 @@ class TCPTransportClient implements Runnable {
             	logger.log(Level.SEVERE, "Transport exception ", e);
             }
         } finally {
-            //
-            if (!stop) {
                 try {
                     clearBuffer();
                     if (socketChannel != null && socketChannel.isOpen()) {
@@ -151,9 +139,7 @@ class TCPTransportClient implements Runnable {
         	            logger.log(Level.SEVERE, "Error", e);                    
         	        }
                 }
-            }
             stop = false;
-            //
             logger.log(Level.INFO, "Read thread is stopped");
         }
     }

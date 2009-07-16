@@ -393,7 +393,7 @@ public class RouterImpl implements IRouter {
     }
 
     protected boolean checkRealm(String name) {
-      return name != null && network.containsKey(name);
+      return name == null ? false : network.containsKey(name);
     }
 
     protected Set<String> getRealmsName() {

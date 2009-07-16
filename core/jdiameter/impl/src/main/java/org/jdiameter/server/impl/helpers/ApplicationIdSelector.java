@@ -1,8 +1,8 @@
 package org.jdiameter.server.impl.helpers;
 
-import org.jdiameter.api.Selector;
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Message;
+import org.jdiameter.api.Selector;
 import org.jdiameter.client.api.IMessage;
 
 /*

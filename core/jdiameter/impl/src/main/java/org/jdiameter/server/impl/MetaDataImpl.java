@@ -9,9 +9,11 @@ import org.jdiameter.client.impl.helpers.IPConverter;
 import org.jdiameter.server.api.IMetaData;
 import org.jdiameter.server.api.IMutablePeerTable;
 import org.jdiameter.server.api.INetwork;
-import org.jdiameter.server.impl.helpers.Parameters;
+import static org.jdiameter.client.impl.helpers.Parameters.OwnIPAddress;
+import static org.jdiameter.server.impl.helpers.Parameters.OwnIPAddresses;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -80,85 +82,63 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
         @Override
         public InetAddress[] getIPAddresses() {
             if (addresses.length == 0) {
-                Configuration[] ipAddressed = stack.getConfiguration().getChildren(Parameters.OwnIPAddresses.ordinal());
+                Configuration[] ipAddresses = stack.getConfiguration().getChildren(OwnIPAddresses.ordinal());
                 List<InetAddress> list = new ArrayList<InetAddress>();
-                if (ipAddressed != null) {
-                    for (Configuration anIpAddressed : ipAddressed) {
-                        InetAddress a = getAddress(anIpAddressed);
-                        if (a != null) {
-                            list.add(a);
-                        }
+                if (ipAddresses != null) {
+                  for (Configuration address : ipAddresses) {
+                    if (address != null) {
+                      InetAddress iaddress = getAddress(address);
+                      if (iaddress != null) {
+                        list.add(iaddress);
+                      }
                     }
-                } else {
-                    try {
-                        list.add(InetAddress.getByName( getLocalPeer().getUri().getFQDN() ));
-                    } catch (Exception e1) {
-                    	if(logger.isLoggable(Level.SEVERE))
-    	 				{
-                        	logger.log(Level.SEVERE, "Can not get ip by uri", e1);
-                        }
-                        try {
-                            list.add(InetAddress.getLocalHost());
-                        } catch (Exception e2) {
-               		         if(logger.isLoggable(Level.SEVERE))
-    	 					{
-                            	logger.log(Level.SEVERE, "Can not get ip localhost", e1);
-                            }
-                        }
-                    }
+                  }
                 }
-                addresses = list.toArray(new InetAddress[0]);
+                else {
+                  InetAddress address = getDefaultIpAddress();
+                  if (address != null) {
+                    list.add(address);
+                  }
+                }
+                addresses = list.toArray(new InetAddress[list.size()]);
             }
             return addresses;
         }
 
         private InetAddress getAddress(Configuration configuration) {
-            InetAddress rc = null;
-            String address = configuration.getStringValue(Parameters.OwnIPAddress.ordinal(), null);
+            InetAddress rc;
+            String address = configuration.getStringValue(OwnIPAddress.ordinal(), null);
             if (address == null || address.length() == 0) {
-                try {
-                    rc = InetAddress.getByName(getUri().getFQDN());
-                } catch (Exception e1) {
-                	if(logger.isLoggable(Level.SEVERE))
-    	 			{
-                     	logger.log(Level.SEVERE, "Can not get ip by uri", e1);
-                     }
-                    try {
-                        rc = InetAddress.getLocalHost();
-                    } catch (Exception e2) {
-                    	if(logger.isLoggable(Level.SEVERE))
-    	 				{
-                        	logger.log(Level.SEVERE, "Can not get ip localhost", e2);
-                        }
-                    }
-                }
-            } else {
+              rc = getDefaultIpAddress();
+            }
+            else {
                 try {
                     rc = InetAddress.getByName(address);
-                } catch (Exception e1) {
-                	if(logger.isLoggable(Level.SEVERE))
-    	 			{
-                    	logger.log(Level.SEVERE, "Can not get ip by address " + address, e1);
-                    }
+                } catch (UnknownHostException e1) {
                     rc = IPConverter.InetAddressByIPv4(address);
                     if (rc == null) {
                         rc = IPConverter.InetAddressByIPv6(address);
                     }
                     if (rc == null) {
-                        try {
-                            rc = InetAddress.getLocalHost();
-                        } catch (Exception e2) {
-                        	if(logger.isLoggable(Level.SEVERE))
-    	 					{
-            	                logger.log(Level.SEVERE, "Can not get ip by localhost ", e1);
-            	            }
-                        }
+                      rc = getDefaultIpAddress();
                     }
                 }
             }
             return rc;
         }
 
+        private InetAddress getDefaultIpAddress() {
+            try {
+                return InetAddress.getByName( getLocalPeer().getUri().getFQDN() );
+            } catch (Exception e1) {
+                try {
+                    return InetAddress.getLocalHost();
+                } catch (Exception e2) {
+                }
+            }
+            return null;
+        }
+         
         // Local processing message
         public boolean sendMessage(IMessage message) throws TransportException, OverloadException {
             try {

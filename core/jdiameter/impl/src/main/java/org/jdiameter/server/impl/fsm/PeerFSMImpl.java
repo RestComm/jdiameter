@@ -5,6 +5,7 @@ import org.jdiameter.api.app.State;
 import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.fsm.EventTypes;
+import org.jdiameter.client.api.fsm.ExecutorFactory;
 import org.jdiameter.client.api.fsm.FsmEvent;
 import org.jdiameter.client.api.fsm.IContext;
 import org.jdiameter.client.api.fsm.IStateMachine;
@@ -18,7 +19,7 @@ import static org.jdiameter.server.impl.helpers.StatisticTypes.PEER_QUEUE_SIZE;
 import java.util.concurrent.Executor;
 import java.util.logging.Level;
 
-public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl implements IStateMachine, ConfigurationListener {
+public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl implements ConfigurationListener {
 
     protected IStatisticRecord queueSize = new StatisticRecordImpl("FsmQueue", "Peer FSM queue size", PEER_QUEUE_SIZE,
             new StatisticRecordImpl.Counter() {
@@ -33,7 +34,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
         return queueStat;
     }
 
-    public PeerFSMImpl(IContext context, Executor executor, Configuration config) {
+    public PeerFSMImpl(IContext context, ExecutorFactory executor, Configuration config) {
         super(context, executor, config);
     }
 
@@ -49,60 +50,12 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
         return true;
     }
 
-    protected abstract class MyState implements State {
-
-        public void entryAction() {}
-
-        public void exitAction() {}
-
-        protected void doEndConnection() {
-            if ( context.isRestoreConnection() ) {
-                timer = REC_TIMEOUT + System.currentTimeMillis();
-                swithToNextState(REOPEN);
-            } else {
-                swithToNextState(DOWN);
-            }
-        }
-
-        protected void doDisconnect() {
-            try {
-                context.disconnect();
-            } catch (Throwable e) {}
-        }
-
-        protected void setInActiveTimer() {
-            timer = IAC_TIMEOUT - 2 + random.nextInt(5) + System.currentTimeMillis();
-        }
-
-        protected void setTimer(long value) {
-            timer = value + System.currentTimeMillis();
-        }
-
-        protected String key(StateEvent event) {
-            return ((FsmEvent)event).getKey();
-        }
-
-        protected IMessage message(StateEvent event) {
-            return ((FsmEvent)event).getMessage();
-        }
-
-        protected EventTypes type(StateEvent event) {
-            return (EventTypes) event.getType();
-        }
-
-        protected void clearTimer() {
-            timer = 0;
-        }
-    }
-
-    private State[] states;
     protected State[] getStates() {
         if (states == null)
             states = new State[] {
             new MyState() // OKEY
             {
-                public void entryAction() {
-                    // todo send buffered messages
+                public void entryAction() { // todo send buffered messages
                     setInActiveTimer();
                     watchdogSent = false;
                 }
@@ -161,7 +114,8 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                             break;
                         case DPR_EVENT:
                             try {
-                                context.sendDpaMessage( message(event),ResultCode.SUCCESS, null );
+                              int code = context.processDprMessage((IMessage) event.getData());
+                              context.sendDpaMessage( message(event), code, null );
                             } catch (Throwable e) {
                             	if(logger.isLoggable(Level.SEVERE))
                             	{
@@ -240,7 +194,8 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                             break;
                         case DPR_EVENT:
                             try {
-                                context.sendDpaMessage( message(event), ResultCode.SUCCESS, null);
+                              int code = context.processDprMessage((IMessage) event.getData());
+                              context.sendDpaMessage( message(event), code, null);
                             } catch (Throwable e) {
                             	if(logger.isLoggable(Level.SEVERE))
                             	{
@@ -252,7 +207,8 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                             break;
                         case DWR_EVENT:
                             try {
-                                context.sendDwaMessage( message(event), ResultCode.SUCCESS, null);
+                                int code = context.processDwrMessage((IMessage) event.getData());
+                                context.sendDwaMessage( message(event),code, null);
                                 swithToNextState(OKAY);
                             } catch (Throwable exc) {
                             	if(logger.isLoggable(Level.SEVERE))
@@ -268,8 +224,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                             context.receiveMessage( message(event) );
                             swithToNextState(OKAY);
                             break;
-                        case SEND_MSG_EVENT:
-                            // todo buffering
+                        case SEND_MSG_EVENT: // todo buffering
                             throw new IllegalStateException("Connection is down");
                         default:
                         	if(logger.isLoggable(Level.FINEST))
@@ -291,7 +246,9 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                     switch (type(event)) {
                         case START_EVENT:
                             try {
-                                if ( !context.isConnected() ) context.connect();                              
+                                if ( !context.isConnected() ) {
+                                  context.connect();                              
+                                }
                                 context.sendCerMessage();
                                 setTimer(CEA_TIMEOUT);
                                 swithToNextState(INITIAL);

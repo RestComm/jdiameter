@@ -82,7 +82,7 @@ public class PeerTableImpl implements IPeerTable {
                             peerTable.put(peer.getUri(), peer);
                             if(logger.isLoggable(Level.FINE))
                         	{
-                            	logger.log(Level.FINE, "Append peer {} to peer table ", peer);
+                            	logger.log(Level.FINE, "Append peer to peer table " + peer);
                         	}
                         }
                     } catch (Exception e) {
@@ -194,7 +194,10 @@ public class PeerTableImpl implements IPeerTable {
 
     // Life cycle
     public void start() throws IllegalDiameterStateException, IOException {
-        for(Peer peer: peerTable.values())
+      if (peerTaskExecutor.isShutdown()) {
+        peerTaskExecutor = Executors.newCachedThreadPool();
+      }
+      for(Peer peer: peerTable.values()) {
             try {
                 peer.connect();
             } catch (Exception e) {
@@ -203,10 +206,15 @@ public class PeerTableImpl implements IPeerTable {
             		logger.log(Level.SEVERE, "Can not start connect procedure to peer:" + peer, e);
             	}
             }
+      }
         router.start();
         isStarted = true;
     }
 
+    public ExecutorService getPeerTaskExecutor() {
+      return peerTaskExecutor;
+    }
+    
     public void stopped() {
         if (sessionReqListeners != null)
             sessionReqListeners.clear();
@@ -244,8 +252,9 @@ public class PeerTableImpl implements IPeerTable {
 
     public void destroy() {
         Executors.unconfigurableExecutorService(peerTaskExecutor);
-        if (router != null)
-            router.destroy();
+        if (router != null) {
+          router.destroy();
+        }
         router    = null;
         peerTable = null;
         assembler = null;

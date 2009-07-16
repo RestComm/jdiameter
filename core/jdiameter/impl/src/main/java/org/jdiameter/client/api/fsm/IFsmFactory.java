@@ -27,6 +27,6 @@ public interface IFsmFactory {
      * @return State machine instance
      * @throws InternalException
      */
-    IStateMachine createInstanceFsm(IContext context, Executor executor, Configuration config) throws InternalException;
+    IStateMachine createInstanceFsm(IContext context, ExecutorFactory executor, Configuration config) throws InternalException;
     
 }
