@@ -7,17 +7,17 @@
 		 NOTE#2: ./README.txt is used for / readme of zip
 	
 	 -->
-	<property name="VERSION" value="1.0.0.GA" />
-	<property name="JDIAM_VERSION" value="1.5.0.1-build187" />
-	<property name="MUX_VERSION" value="1.0.0.GA" />
-	<property name="base_VERSION" value="1.0.0.GA" />
-	<property name="cca_VERSION" value="1.0.0.GA" />
-	<property name="sh-client_VERSION" value="1.0.0.GA" />
-	<property name="sh-server_VERSION" value="1.0.0.GA" />
-	<property name="ro_VERSION" value="1.0.0.GA" />
-	<property name="rf_VERSION" value="1.0.0.GA" />
-	<property name="base_EXAMPLE_VERSION" value="1.0.0.GA" />
-	<property name="openims_EXAMPLE_VERSION" value="1.0.0.GA" />
+	<property name="VERSION" value="1.0.1.GA" />
+	<property name="JDIAM_VERSION" value="1.5.2.2-build212" />
+	<property name="MUX_VERSION" value="1.0.1.GA" />
+	<property name="base_VERSION" value="1.0.1.GA" />
+	<property name="cca_VERSION" value="1.0.1.GA" />
+	<property name="sh-client_VERSION" value="1.0.1.GA" />
+	<property name="sh-server_VERSION" value="1.0.1.GA" />
+	<property name="ro_VERSION" value="1.0.1.GA" />
+	<property name="rf_VERSION" value="1.0.1.GA" />
+	<property name="base_EXAMPLE_VERSION" value="1.0.1.GA" />
+	<property name="openims_EXAMPLE_VERSION" value="1.0.1.GA" />
 
 	<property name="JAINSLEE_VERSION" value="1.2.6.GA" />
 	<property name="JBOSS_VERSION" value="4.2.3.GA" />
@@ -29,7 +29,7 @@
 
 	<property name="zip_file_name" value="mobicents-diameter-${VERSION}" />
 
-	<property name="failoncopy" value="false" />
+	<property name="failoncopy" value="true" />
 	
 	<!-- Definition -->
 	<property environment="sys">
@@ -55,6 +55,11 @@
 
 	<target name="package" description="Create zip file: ${checkout_base_dir}/${zip_file_name}.zip" depends="build-src-zip,build-src,copy-jars,prepare-text-content">
 		<zip destfile="${checkout_base_dir}/${zip_file_name}.zip" basedir="${zip_dir}"/>
+
+		<antcall target="checksum">
+      <param name="source.file" value="${checkout_base_dir}/${zip_file_name}.zip" />
+      <param name="algorithm" value="sha1" />
+    </antcall>
 	</target>
 
 	
@@ -70,6 +75,11 @@
 			<zipfileset dir="${checkout_base_dir}/resources" prefix="resources" excludes="release"></zipfileset>
 			<zipfileset dir="${checkout_base_dir}/examples" prefix="examples" excludes="release"></zipfileset>
 		</zip>
+
+		<antcall target="checksum">
+      <param name="source.file" value="${checkout_base_dir}/${zip_file_name}-src.zip" />
+      <param name="algorithm" value="sha1" />
+    </antcall>
 	</target>
 
 	<!--
@@ -282,7 +292,7 @@
 				<echo>Copy Diameter Resource: @{ra.name}</echo>
 
 				<copy tofile="${zip_dir}/resources/@{ra.name}/du-management.xml" file="${checkout_base_dir}/resources/@{ra.name}/du/target/build.xml" failonerror="${failoncopy}" />
-				<copy todir="${zip_dir}/resources/@{ra.name}" file="${checkout_base_dir}/resources/@{ra.name}/release/build.xml" failonerror="${failoncopy}" />
+				<copy tofile="${zip_dir}/resources/@{ra.name}/build.xml" file="${checkout_base_dir}/release/template-build.xml" failonerror="${failoncopy}" />
 				<copy todir="${zip_dir}/resources/@{ra.name}" file="${checkout_base_dir}/resources/@{ra.name}/release/README.txt" failonerror="${failoncopy}">
 					<filterchain>
 						<replacetokens>
@@ -297,10 +307,10 @@
 	<target name="prepare-text-content-examples">
 		<for delimiter="," param="example.name" list="${example_list}">
 			<sequential>
-				<echo>Copy Diameter Resource: @{example.name}</echo>
+				<echo>Copy Diameter Example: @{example.name}</echo>
 
 				<copy tofile="${zip_dir}/examples/@{example.name}/du-management.xml" file="${checkout_base_dir}/examples/@{example.name}/du/target/build.xml" failonerror="${failoncopy}" />
-				<copy todir="${zip_dir}/examples/@{example.name}" file="${checkout_base_dir}/examples/@{example.name}/release/build.xml" failonerror="${failoncopy}" />
+				<copy tofile="${zip_dir}/examples/@{example.name}/build.xml" file="${checkout_base_dir}/release/template-build.xml" failonerror="${failoncopy}" />
 				<copy todir="${zip_dir}/examples/@{example.name}" file="${checkout_base_dir}/examples/@{example.name}/release/README.txt" failonerror="${failoncopy}">
 					<filterchain>
 						<replacetokens>
@@ -325,5 +335,10 @@
 		<echo>Downloading Mobicents JAIN SLEE Server v${JAINSLEE_VERSION}</echo>
 		<get verbose="true" dest="${checkout_base_dir}/${mobicents.distro.zip.path}" src="http://downloads.sourceforge.net/mobicents/mobicents-jainslee-server-${JAINSLEE_VERSION}-jboss-${JBOSS_VERSION}.zip" />
 	</target>
+	
+	<target name="checksum">
+	  <checksum file="${source.file}" algorithm="${algorithm}" fileext=".${algorithm}.asc" forceOverwrite="yes"/>
+	</target>
+
 
 </project>
