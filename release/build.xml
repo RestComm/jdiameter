@@ -292,7 +292,7 @@
 				<echo>Copy Diameter Resource: @{ra.name}</echo>
 
 				<copy tofile="${zip_dir}/resources/@{ra.name}/du-management.xml" file="${checkout_base_dir}/resources/@{ra.name}/du/target/build.xml" failonerror="${failoncopy}" />
-				<copy tofile="${zip_dir}/resources/@{ra.name}/build.xml" file="${checkout_base_dir}/release/template-build.xml" failonerror="${failoncopy}" />
+				<copy tofile="${zip_dir}/resources/@{ra.name}/build.xml" file="template-build.xml" failonerror="${failoncopy}" />
 				<copy todir="${zip_dir}/resources/@{ra.name}" file="${checkout_base_dir}/resources/@{ra.name}/release/README.txt" failonerror="${failoncopy}">
 					<filterchain>
 						<replacetokens>
@@ -310,7 +310,7 @@
 				<echo>Copy Diameter Example: @{example.name}</echo>
 
 				<copy tofile="${zip_dir}/examples/@{example.name}/du-management.xml" file="${checkout_base_dir}/examples/@{example.name}/du/target/build.xml" failonerror="${failoncopy}" />
-				<copy tofile="${zip_dir}/examples/@{example.name}/build.xml" file="${checkout_base_dir}/release/template-build.xml" failonerror="${failoncopy}" />
+				<copy tofile="${zip_dir}/examples/@{example.name}/build.xml" file="template-build.xml" failonerror="${failoncopy}" />
 				<copy todir="${zip_dir}/examples/@{example.name}" file="${checkout_base_dir}/examples/@{example.name}/release/README.txt" failonerror="${failoncopy}">
 					<filterchain>
 						<replacetokens>
