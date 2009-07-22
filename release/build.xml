@@ -1,344 +1,212 @@
 <?xml version="1.0"?>
-<project name="diameter.release.sf" default="package" basedir=".">
-
-
-	<!-- NOTE#1: THIS WILL WORK ONLY FOR 1.0.1GA+, since before resource did not exist
-		 		 Put proper versions, and run "ant", after sip is created and upload is finished, to "ant clean"
-		 NOTE#2: ./README.txt is used for / readme of zip
+<project name="diameter.release" default="release" basedir=".">
 	
-	 -->
-	<property name="VERSION" value="1.0.1.GA" />
-	<property name="JDIAM_VERSION" value="1.5.2.2-build212" />
-	<property name="MUX_VERSION" value="1.0.1.GA" />
-	<property name="base_VERSION" value="1.0.1.GA" />
-	<property name="cca_VERSION" value="1.0.1.GA" />
-	<property name="sh-client_VERSION" value="1.0.1.GA" />
-	<property name="sh-server_VERSION" value="1.0.1.GA" />
-	<property name="ro_VERSION" value="1.0.1.GA" />
-	<property name="rf_VERSION" value="1.0.1.GA" />
-	<property name="base_EXAMPLE_VERSION" value="1.0.1.GA" />
-	<property name="openims_EXAMPLE_VERSION" value="1.0.1.GA" />
-
-	<property name="JAINSLEE_VERSION" value="1.2.6.GA" />
-	<property name="JBOSS_VERSION" value="4.2.3.GA" />
-
-	<property name="ra_list" value="base,cca,sh-client,sh-server,ro,rf" />
-	<property name="example_list" value="base,openims" />
-	<property name="checkout_base_dir" value="${basedir}/diameter" />
-	<property name="zip_dir" value="${basedir}/diameter/zip" />
-
-	<property name="zip_file_name" value="mobicents-diameter-${VERSION}" />
-
-	<property name="failoncopy" value="true" />
+	<property name="release.version" value="1.0.0.BETA1-SNAPSHOT" />
+	<property name="release.configurations" value="default"/>
+	<property name="release.dir" location="${ant.file.media.server.release}/../target/" />
 	
-	<!-- Definition -->
-	<property environment="sys">
-	</property>
-	<condition property="mvn.executable" value="${sys.M2_HOME}\bin\mvn.bat" else="mvn">
-		<os family="windows" />
-	</condition>
-
+	<property name="jboss.version" value="4.2.3.GA" />
+	<property name="jboss.config" value="default" />
+	<property name="jboss.config.default" value="default" />
+	<property name="jboss.home.relative.path" value="jboss-${jboss.version}/"/>
+	<property name="jboss.home" value="${release.dir}/${jboss.home.relative.path}/"/>
+	<property name="jboss.distro.zip.path" value="jboss-${jboss.version}.zip" />
+	<property name="jboss.download.url" value="http://downloads.sourceforge.net/jboss/jboss-${jboss.version}.zip" />
+	
+	<property name="ra.dirs" value="base,cca,sh-client,sh-server,ro,rf"/>
+	<property name="examples.dirs" value="base,openims"/>
+	
+	<property name="core.jdiameter.location" location="${ant.file.diameter.release}/../../core/jdiameter" />
+	<property name="core.mux.location" location="${ant.file.diameter.release}/../../core/mux" />
+	<property name="resources.location" location="${ant.file.diameter.release}/../../resources" />
+	<property name="examples.location" value="${ant.file.diameter.release}/../../examples" />
+	
 	<taskdef onerror="fail" resource="net/sf/antcontrib/antlib.xml">
 		<classpath>
-			<pathelement location="${diameter.release.sf}/../ant-contrib-1.0b3.jar" />
+			<pathelement location="${ant.file.diameter.release}/../ant-contrib-1.0b3.jar" />
 		</classpath>
 	</taskdef>
-
-
-	<target name="init">
-	</target>
-
-
-	<target name="clean" description="Remove everything that we created.">
-		<delete dir="${checkout_base_dir}" verbose="false" />
-	</target>
-
-	<target name="package" description="Create zip file: ${checkout_base_dir}/${zip_file_name}.zip" depends="build-src-zip,build-src,copy-jars,prepare-text-content">
-		<zip destfile="${checkout_base_dir}/${zip_file_name}.zip" basedir="${zip_dir}"/>
-
-		<antcall target="checksum">
-      <param name="source.file" value="${checkout_base_dir}/${zip_file_name}.zip" />
-      <param name="algorithm" value="sha1" />
-    </antcall>
-	</target>
-
 	
-	<target name="checkout" depends="init,checkout-core,checkout-resources,checkout-examples,checkout-jainslee" />
-	<target name="build-src" depends="build-src-core,build-src-resources,build-src-examples,build-jainslee" />
-	<target name="prepare-text-content" depends="prepare-text-content-core,prepare-text-content-resources,prepare-text-content-examples" />
-	<target name="copy-jars" depends="copy-jars-core,copy-jars-resources,copy-jars-examples,copy-jars-additional-resources" />
-
+	<condition property="mvn.executable" value="${sys.M2_HOME}\bin\mvn.bat" else="mvn">
+		<os family="windows"/>
+	</condition>
 	
-	<target name="build-src-zip" depends="clean,checkout">
-		<zip destfile="${checkout_base_dir}/${zip_file_name}-src.zip">
-			<zipfileset dir="${checkout_base_dir}/core" prefix="core" excludes="release"></zipfileset>
-			<zipfileset dir="${checkout_base_dir}/resources" prefix="resources" excludes="release"></zipfileset>
-			<zipfileset dir="${checkout_base_dir}/examples" prefix="examples" excludes="release"></zipfileset>
+	<!-- ################################################################### -->
+		
+	<available file="${ant.file.diameter.release}/../${jboss.distro.zip.path}" property="got.jboss" />
+	<target name="get-jboss" unless="got.jboss">
+		<echo>Downloading JBoss AS</echo>
+		<get dest="${ant.file.diameter.release}/../${jboss.distro.zip.path}" src="${jboss.download.url}" />
+	</target>
+	
+	<target name="unzip-jboss">
+		<delete dir="${jboss.home}" failonerror="true" />
+		<mkdir dir="${jboss.home}" />
+		<unzip src="${jboss.distro.zip.path}" dest="${release.dir}" />
+		
+		<propertyregex input="${release.configurations}" regexp="(\w+)" global="true" replace="**/\1/**" property="used.configurations" />
+		<echo>Included configurations: ${release.configurations} -&gt; Excludes list: ${used.configurations}</echo>
+		
+		<delete includeemptydirs="true" failonerror="false" verbose="false">
+			<fileset dir="${jboss.home}/server" excludes="${used.configurations}" />
+		</delete>
+	</target>
+	
+	<!-- ################################################################### -->
+	
+	<condition property="mobicents.jain.slee.checked.out">
+		<available file="${ant.file.diameter.release}/../servers/jain-slee/.svn/entries" />
+	</condition>
+	<target name="get-mobicents-jain-slee" depends="checkout-jain-slee-server,update-jain-slee-server" />
+	
+	<target name="checkout-jain-slee-server" unless="mobicents.jain.slee.checked.out">
+		<echo>Checking out Mobicents JAIN-SLEE</echo>
+		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
+			<arg line="-f external-components-checkout.xml validate -P checkout" />
+		</exec>
+	</target>
+	
+	<target name="update-jain-slee-server">
+		<echo>Updating Mobicents JAIN-SLEE</echo>
+		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
+			<arg line="-f external-components-checkout.xml validate -P update" />
+		</exec>
+	</target>
+	
+	<target name="build-mobicents-jain-slee" depends="get-mobicents-jain-slee">
+		<echo>Building Mobicents JAIN-SLEE</echo>
+		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../servers/jain-slee">
+			<arg line="clean install -Djboss.home=${jboss.home} -Dnode=${jboss.config} -P set-svn-revision" />
+		</exec>
+		
+		<copy failonerror="true" file="${ant.file.diameter.release}/../servers/jain-slee/release/jbossjta-properties.xml" tofile="${jboss.home}/server/${jboss.config}/conf/jbossjta-properties.xml" overwrite="true" />
+		
+		<!-- If any resources/examples from jain-slee are needed, please see how it's done in media server release script -->
+	</target>
+	
+	<!-- ################################################################### -->
+	
+	<condition property="mobicents.diameter.server.checked.out">
+		<and>
+			<available file="${ant.file.diameter.release}/../servers/diamter/core/jdiameter/.svn/entries" />
+			<available file="${ant.file.diameter.release}/../servers/diamter/core/mux/.svn/entries" />
+		</and>
+	</condition>
+	<target name="get-custom-diameter-server" depends="checkout-diameter-server,update-diameter-server" />
+
+	<target name="checkout-diameter-server" unless="mobicents.diamter.server.checked.out">
+		<echo>Checking out diameter ...</echo>
+		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
+			<arg line="-f internal-components-checkout.xml validate -P checkout" />
+		</exec>
+	</target>
+
+	<target name="update-diameter-server">
+		<echo>Updating diameter ...</echo>
+		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
+			<arg line="-f internal-components-checkout.xml validate -P update" />
+		</exec>
+	</target>
+	
+	<!-- ################################################################### -->
+	
+	<target name="build-ras">
+		<for delimiter="," param="dir.name" list="${ra.dirs}">
+			<sequential>
+				<echo>Packaging RA for release from DIR[${resources.location}/@{dir.name}]</echo>
+				<exec executable="${mvn.executable}" dir="${resources.location}/@{dir.name}">
+					<arg line="clean install -Djboss.home=${release.dir}/tmp -Dnode=${jboss.config} -P set-svn-revision" />
+				</exec>
+				<exec executable="${mvn.executable}" dir="${resources.location}/@{dir.name}">
+					<arg line="-o install -P release,set-svn-revision -Drelease.name=target -Djboss.home=${release.dir}/tmp -Djboss.path=../../${jboss.home.relative.path} -Dnode=${jboss.config.default}" />
+				</exec>
+			</sequential>
+		</for>
+		<!--move file="${resources.location}/../release/target/resources" tofile="${release.dir}/resources" /-->
+		<delete dir="${release.dir}/tmp"/>
+	</target>
+	
+	<target name="build-examples">
+		<for delimiter="," param="dir.name" list="${examples.dirs}">
+			<sequential>
+				<echo>Packaging example for release from DIR[${examples.location}/@{dir.name}]</echo>
+				<exec executable="${mvn.executable}" dir="${examples.location}/@{dir.name}">
+					<arg line="clean install -Djboss.home=${release.dir}/tmp -Dnode=${jboss.config} -P set-svn-revision" />
+				</exec>
+				<exec executable="${mvn.executable}" dir="${examples.location}/@{dir.name}">
+					<arg line="-o install -P release,set-svn-revision -Drelease.name=target -Djboss.home=${release.dir}/tmp -Djboss.path=../../${jboss.home.relative.path} -Dnode=${jboss.config.default}" />
+				</exec>
+			</sequential>
+		</for>
+		<!--move file="${examples.location}/../release/target/examples" tofile="${release.dir}/examples" /-->
+		<delete dir="${release.dir}/tmp"/>
+	</target>
+	
+	<!-- ################################################################### -->
+	
+	<target name="zip-jboss" description="">
+		<fixcrlf srcdir="${jboss.home}/bin" includes="*.sh" eol="lf" eof="remove" />
+		<zip destfile="${ant.file.diameter.release}/../${zip.filename}" filesonly="false">
+			<zipfileset dir="${jboss.home}/bin" filemode="755" prefix="jboss-${jboss.version}/bin">
+				<include name="*.sh" />
+			</zipfileset>
+			<zipfileset dir="${jboss.home}/bin" prefix="jboss-${jboss.version}/bin">
+				<exclude name="*.sh" />
+			</zipfileset>
+			<zipfileset dir="${release.dir}" prefix="" excludes="**/bin/** **/server/*/data/** **/server/*/log/** **/server/*/tmp/** **/server/*/work/** **/server/tmp/**"/>
 		</zip>
-
-		<antcall target="checksum">
-      <param name="source.file" value="${checkout_base_dir}/${zip_file_name}-src.zip" />
-      <param name="algorithm" value="sha1" />
-    </antcall>
-	</target>
-
-	<!--
-		######################
-		#  checkout section  #
-		######################
-		-->
-
-	<target name="checkout-core">
-		<echo>Checkout Diameter Core (jDiameter v${JDIAM_VERSION}, MUX v${MUX_VERSION})</echo>
-		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
-			<arg line="-f internal-components-checkout.xml validate -P checkout -Djdiam_version=${JDIAM_VERSION} -Dmux_version=${MUX_VERSION}" />
-		</exec>
-	</target>
-	<target name="checkout-resources">
-
-		<for delimiter="," param="ra.name" list="${ra_list}">
-			<sequential>
-				<echo>Checkout Diameter @{ra.name} Resource Adaptor v${@{ra.name}_VERSION}</echo>
-				<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
-					<arg line="-f internal-components-checkout.xml validate -P checkout-resource -Dresource_name=@{ra.name} -Dresource_version=${@{ra.name}_VERSION}" />
-				</exec>
-
-			</sequential>
-		</for>
-
-	</target>
-	<target name="checkout-examples">
-
-		<for delimiter="," param="example.name" list="${example_list}">
-			<sequential>
-				<echo>Checkout Diameter Example @{example.name} v${@{example.name}_EXAMPLE_VERSION}</echo>
-				<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
-					<arg line="-f internal-components-checkout.xml validate -P checkout-example -Dexample_name=@{example.name} -Dexample_version=${@{example.name}_EXAMPLE_VERSION}" />
-				</exec>
-
-			</sequential>
-		</for>
-	</target>
-
-	<!--target name="checkout-jainslee">
-		<echo>Checkout JAIN SLEE SIP11 Resource Adaptor v${JAINSLEE_VERSION}</echo>
-		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
-			<arg line="-f ${external.checkout.build} validate -P checkout -Djainslee_version=${JAINSLEE_VERSION} -Dcomponent=resources/sip11" />
-		</exec>
-
-		<echo>Checkout JAIN SLEE SIP-Services v${JAINSLEE_VERSION}</echo>
-		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
-			<arg line="-f ${external.checkout.build} validate -P checkout -Djainslee_version=${JAINSLEE_VERSION} -Dcomponent=examples/sip-services" />
-		</exec>
-	</target-->
-
-	<!--
-	#####################
-	#  compile section  #
-	#####################
-	-->
-	<target name="build-src-core">
-		<exec executable="${mvn.executable}" dir="${checkout_base_dir}/core/jdiameter">
-			<arg line="-f pom.xml install" />
-		</exec>
-		<exec executable="${mvn.executable}" dir="${checkout_base_dir}/core/mux">
-			<arg line="-f pom.xml install" />
-		</exec>
-	</target>
-	<target name="build-src-resources">
-		<for delimiter="," param="ra.name" list="${ra_list}">
-			<sequential>
-				<echo>Build Diameter @{ra.name} Resource Adaptor</echo>
-				<exec executable="${mvn.executable}" dir="${checkout_base_dir}/resources/@{ra.name}">
-					<arg line="-f pom.xml install" />
-				</exec>
-			</sequential>
-		</for>
-	</target>
-	<target name="build-src-examples">
-		<for delimiter="," param="example.name" list="${example_list}">
-			<sequential>
-				<echo>Build Diameter @{example.name} Example</echo>
-				<exec executable="${mvn.executable}" dir="${checkout_base_dir}/examples/@{example.name}">
-					<arg line="-f pom.xml install" />
-				</exec>
-			</sequential>
-		</for>
-	</target>
-	<!--target name="build-jainslee">
-		<exec executable="${mvn.executable}" dir="${checkout_base_dir}/thirdparty/jain-slee/resources/sip11/du">
-			<arg line="-f pom.xml install" />
-		</exec>
-		<exec executable="${mvn.executable}" dir="${checkout_base_dir}/thirdparty/jain-slee/examples/sip-services/proxy-with-initial-invite-services-DU">
-			<arg line="-f pom.xml install" />
-		</exec>
-	</target-->
-
-
-	<!--
-			#######################
-			#  copy jars section  #
-			#######################
-		-->
-
-	<target name="copy-jars-core">
-		<copy todir="${zip_dir}/core/jdiameter">
-			<fileset dir="${checkout_base_dir}/core/jdiameter/api/target">
-				<include name="jdiameter-api-${JDIAM_VERSION}.jar" />
-			</fileset>
-			<fileset dir="${checkout_base_dir}/core/jdiameter/impl/target">
-				<include name="jdiameter-impl-${JDIAM_VERSION}.jar" />
-			</fileset>
-		</copy>
-
-		<copy todir="${zip_dir}/core/mux">
-			<fileset dir="${checkout_base_dir}/core/mux/jar/target">
-				<include name="mobicents-diameter-mux-${MUX_VERSION}.jar" />
-			</fileset>
-		</copy>
-		<unzip src="${checkout_base_dir}/core/mux/sar/target/mobicents-diameter-mux-${MUX_VERSION}.sar" dest="${zip_dir}/core/mux/mobicents-diameter-mux-${MUX_VERSION}.sar/"/>
-	</target>
-	<target name="copy-jars-resources">
-		<for delimiter="," param="ra.name" list="${ra_list}">
-			<sequential>
-				<echo>Copy Diameter Resource: @{ra.name}</echo>
-
-				<copy todir="${zip_dir}/resources/@{ra.name}">
-					<fileset dir="${checkout_base_dir}/resources/@{ra.name}/du/target">
-						<include name="diameter-@{ra.name}-ra-DU-${@{ra.name}_VERSION}.jar" />
-					</fileset>
-				</copy>
-			</sequential>
-		</for>
-	</target>
-	<target name="copy-jars-examples">
-		<for delimiter="," param="example.name" list="${example_list}">
-			<sequential>
-				<echo>Copy Diameter Exampe: @{example.name} Version: ${@{example.name}_EXAMPLE_VERSION}</echo>
-
-				<copy todir="${zip_dir}/examples/@{example.name}">
-					<fileset dir="${checkout_base_dir}/examples/@{example.name}/du/target">
-						<include name="diameter-@{example.name}-example-DU-${@{example.name}_EXAMPLE_VERSION}.jar" />
-					</fileset>
-				</copy>
-			</sequential>
-		</for>
-	</target>
-	<target name="copy-jars-additional-resources">
-	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${mobicents.folder.path}/resources/sip11/sip11-ra-DU-${JAINSLEE_VERSION}.jar" failonerror="${failoncopy}" />
-	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${mobicents.folder.path}/resources/sip11/du-management.xml" failonerror="${failoncopy}">
-			<filterchain>
-				<replacetokens>
-					<token key="JAINSLEE_VERSION" value="${JAINSLEE_VERSION}" />
-				</replacetokens>
-			</filterchain>
-	  </copy>
-	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${checkout_base_dir}/examples/openims/release/thirdparty/sip11/build.xml" failonerror="${failoncopy}" />
-
-	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip-services-proxy-with-initial-invite" file="${mobicents.folder.path}/examples/sip-services/sip-services-proxy-with-initial-invite-DU-${JAINSLEE_VERSION}.jar" failonerror="${failoncopy}" />
-	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip-services-proxy-with-initial-invite" file="${mobicents.folder.path}/examples/sip-services/proxy-with-initial-invite-du-management.xml" failonerror="${failoncopy}">
-			<filterchain>
-				<replacetokens>
-					<token key="JAINSLEE_VERSION" value="${JAINSLEE_VERSION}" />
-				</replacetokens>
-			</filterchain>
-	  </copy>
-	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip-services-proxy-with-initial-invite" file="${checkout_base_dir}/examples/openims/release/thirdparty/sip-services-proxy-with-initial-invite/build.xml" failonerror="${failoncopy}" />
-	</target>
-
-	<!--
-				##################################
-				#  prepare text content section  #
-				##################################
-			-->
-
-
-	<target name="prepare-text-content-core">
-		<copy todir="${zip_dir}" file="${basedir}/README.txt" failonerror="${failoncopy}">
-			<filterchain>
-				<replacetokens>
-					<token key="VERSION" value="${VERSION}" />
-					<token key="JDIAM_VERSION" value="${JDIAM_VERSION}" />
-					<token key="MUX_VERSION" value="${MUX_VERSION}" />
-					<token key="base_VERSION" value="${base_VERSION}" />
-					<token key="cca_VERSION" value="${cca_VERSION}" />
-					<token key="sh-client_VERSION" value="${sh-client_VERSION}" />
-					<token key="sh-server_VERSION" value="${sh-server_VERSION}" />
-					<token key="ro_VERSION" value="${ro_VERSION}" />
-					<token key="rf_VERSION" value="${rf_VERSION}" />
-					<token key="base_EXAMPLE_VERSION" value="${base_EXAMPLE_VERSION}" />
-					<token key="openims_EXAMPLE_VERSION" value="${openims_EXAMPLE_VERSION}" />
-				</replacetokens>
-			</filterchain>
-		</copy>
-		<copy todir="${zip_dir}/core/jdiameter" file="${checkout_base_dir}/core/jdiameter/release/README.txt" failonerror="${failoncopy}">
-			<filterchain>
-				<replacetokens>
-					<token key="JDIAM_VERSION" value="${JDIAM_VERSION}" />
-				</replacetokens>
-			</filterchain>
-		</copy>
-		<copy todir="${zip_dir}/core/mux" file="${checkout_base_dir}/core/mux/release/README.txt" failonerror="${failoncopy}">
-			<filterchain>
-				<replacetokens>
-					<token key="MUX_VERSION" value="${MUX_VERSION}" />
-				</replacetokens>
-			</filterchain>
-		</copy>
-	</target>
-	<target name="prepare-text-content-resources">
-		<for delimiter="," param="ra.name" list="${ra_list}">
-			<sequential>
-				<echo>Copy Diameter Resource: @{ra.name}</echo>
-
-				<copy tofile="${zip_dir}/resources/@{ra.name}/du-management.xml" file="${checkout_base_dir}/resources/@{ra.name}/du/target/build.xml" failonerror="${failoncopy}" />
-				<copy tofile="${zip_dir}/resources/@{ra.name}/build.xml" file="template-build.xml" failonerror="${failoncopy}" />
-				<copy todir="${zip_dir}/resources/@{ra.name}" file="${checkout_base_dir}/resources/@{ra.name}/release/README.txt" failonerror="${failoncopy}">
-					<filterchain>
-						<replacetokens>
-							<token key="@{ra.name}_VERSION" value="${@{ra.name}_VERSION}" />
-						</replacetokens>
-					</filterchain>
-				</copy>
-			</sequential>
-		</for>
-	</target>
-
-	<target name="prepare-text-content-examples">
-		<for delimiter="," param="example.name" list="${example_list}">
-			<sequential>
-				<echo>Copy Diameter Example: @{example.name}</echo>
-
-				<copy tofile="${zip_dir}/examples/@{example.name}/du-management.xml" file="${checkout_base_dir}/examples/@{example.name}/du/target/build.xml" failonerror="${failoncopy}" />
-				<copy tofile="${zip_dir}/examples/@{example.name}/build.xml" file="template-build.xml" failonerror="${failoncopy}" />
-				<copy todir="${zip_dir}/examples/@{example.name}" file="${checkout_base_dir}/examples/@{example.name}/release/README.txt" failonerror="${failoncopy}">
-					<filterchain>
-						<replacetokens>
-							<token key="@{example.name}_EXAMPLE_VERSION" value="${@{example.name}_EXAMPLE_VERSION}" />
-						</replacetokens>
-					</filterchain>
-				</copy>
-			</sequential>
-		</for>
-	</target>
-
-  <!-- JAIN SLEE -->
-  
-	<property name="mobicents.distro.zip.path" value="mobicents-jainslee-server-${JAINSLEE_VERSION}.zip" />
-	<property name="mobicents.folder.path" value="${checkout_base_dir}/mobicents-jainslee-server-${JAINSLEE_VERSION}" />
-
-	<target name="build-jainslee">
-		<unzip src="${checkout_base_dir}/${mobicents.distro.zip.path}" dest="${mobicents.folder.path}" />
-	</target>
-  
-  <target name="checkout-jainslee">
-		<echo>Downloading Mobicents JAIN SLEE Server v${JAINSLEE_VERSION}</echo>
-		<get verbose="true" dest="${checkout_base_dir}/${mobicents.distro.zip.path}" src="http://downloads.sourceforge.net/mobicents/mobicents-jainslee-server-${JAINSLEE_VERSION}-jboss-${JBOSS_VERSION}.zip" />
+		
+		<checksum file="${ant.file.diameter.release}/../${zip.filename}" algorithm="sha1" fileext=".sha1.asc" forceOverwrite="yes" />
 	</target>
 	
-	<target name="checksum">
-	  <checksum file="${source.file}" algorithm="${algorithm}" fileext=".${algorithm}.asc" forceOverwrite="yes"/>
+	<!-- ################################################################### -->
+	
+	<target name="clean">
+		<!--delete dir="${release.dir}" /-->
 	</target>
-
-
+	
+	<!-- ################################################################### -->
+	
+	<target name="release-custom" depends="get-custom-diameter-server">
+		<antcall target="release">
+			<param name="release.dir" location="${ant.file.diameter.release}/../servers/diameter/release/target"/>
+			<param name="jboss.home" location="${ant.file.diameter.release}/../servers/diameter/release/target/${jboss.home.relative.path}/"/>
+			
+			<param name="core.jdiameter.location" location="${ant.file.diameter.release}/../servers/diameter/core/jdiameter" />
+			<param name="core.mux.location" location="${ant.file.diameter.release}/../servers/diameter/core/mux" />
+			<param name="resources.location" location="${ant.file.diameter.release}/../servers/diameter/resources" />
+			<param name="examples.location" value="${ant.file.diameter.release}/../servers/diameter/examples" />
+		</antcall>
+	</target>
+	
+	<target name="release" depends="unzip-jboss,build-mobicents-jain-slee">
+		<for delimiter="," param="config.name" list="${jboss.config}">
+			<sequential>
+				<echo>Installing diameter core in '@{config.name}' configuration</echo>
+				<exec executable="${mvn.executable}" dir="${core.jdiameter.location}">
+					<arg line="clean install -P set-svn-revision -Djboss.home=${jboss.home} -Dnode=@{config.name}"/>
+				</exec>
+				<exec executable="${mvn.executable}" dir="${core.mux.location}">
+					<arg line="clean install -P set-svn-revision -Djboss.home=${jboss.home} -Dnode=@{config.name}"/>
+				</exec>
+			</sequential>
+		</for>
+		
+		<antcall target="build-ras"/>
+		<antcall target="build-examples"/>
+		
+		<tstamp>
+			<format property="time.stamp" pattern="yyyyMMdd-HHmm" />
+		</tstamp>
+		<antcall target="zip-jboss">
+			<param name="zip.filename" value="mobicents-diameter-all-${release.version}-jboss-${jboss.version}-${time.stamp}.zip" />
+			<param name="jboss.home" value="${jboss.home}" />
+		</antcall>
+		<!--antcall target="build-src-zip">
+			<param name="zip.filename" value="mobicents-jainslee-server-${release.version}-${time.stamp}-src.zip" />
+		</antcall-->
+		
+		<antcall target="clean"/>
+	</target>
+	
 </project>
