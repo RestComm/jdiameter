@@ -17,15 +17,16 @@ import org.jdiameter.common.api.app.IAppSessionFactory;
 
 /**
  * This interface describe extends methods of base class
- * Data: $Date: 2009/07/12 18:35:35 $
- * Revision: $Revision: 1.2 $ * @version 1.5.0.1
+ * Data: $Date: 2009/07/27 18:05:03 $
+ * Revision: $Revision: 1.3 $
+ * @version 1.5.0.1
  */
 public interface ISessionFactory extends SessionFactory {
 
-    <T extends AppSession> T getNewAppSession(String sessionId, ApplicationId applicationId, java.lang.Class<? extends AppSession> aClass, Object... args) throws InternalException;
+  <T extends AppSession> T getNewAppSession(String sessionId, ApplicationId applicationId, java.lang.Class<? extends AppSession> aClass, Object... args) throws InternalException;
 
-    void registerAppFacory(Class<? extends AppSession> sessionClass, IAppSessionFactory factory);
+  void registerAppFacory(Class<? extends AppSession> sessionClass, IAppSessionFactory factory);
 
-    void unRegisterAppFacory(Class<? extends AppSession> sessionClass);    
+  void unRegisterAppFacory(Class<? extends AppSession> sessionClass);    
 
 }

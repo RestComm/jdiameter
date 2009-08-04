@@ -5,6 +5,8 @@ import org.jdiameter.api.Request;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.cca.events.JCreditControlRequest;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -19,58 +21,52 @@ import org.jdiameter.common.impl.app.AppRequestEventImpl;
  */
 public class JCreditControlRequestImpl extends AppRequestEventImpl implements JCreditControlRequest {
 
-  public JCreditControlRequestImpl(AppSession session, String destRealm, String destHost)
-  {
+  private static final long serialVersionUID = 1L;
+
+  protected Logger logger = LoggerFactory.getLogger(JCreditControlRequestImpl.class);
+
+  private static final int REQUESTED_ACTION_AVP_CODE = 436;
+  private static final int CC_REQUEST_TYPE_AVP_CODE = 416;
+
+  public JCreditControlRequestImpl(AppSession session, String destRealm, String destHost) {
     super(session.getSessions().get(0).createRequest(code, session.getSessionAppId(), destRealm, destHost));
   }
 
-  public JCreditControlRequestImpl(Request request)
-  {
+  public JCreditControlRequestImpl(Request request) {
     super(request);
   }
 
-  public int getRequestedActionAVPValue()
-  {
-    if(isRequestedActionAVPPresent())
-    {
-      try 
-      {
-        return super.message.getAvps().getAvp(436).getInteger32();
+  public int getRequestedActionAVPValue() {
+    if(isRequestedActionAVPPresent()) {
+      try {
+        return super.message.getAvps().getAvp(REQUESTED_ACTION_AVP_CODE).getInteger32();
       }
       catch (AvpDataException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        logger.debug("Failure trying to obtain Requested-Action AVP value", e);
       }
     }
-    
+
     return -1;
   }
 
-  public boolean isRequestedActionAVPPresent()
-  {
-    return super.message.getAvps().getAvp(436)!=null;
+  public boolean isRequestedActionAVPPresent() {
+    return super.message.getAvps().getAvp(REQUESTED_ACTION_AVP_CODE) != null;
   }
 
-  public int getRequestTypeAVPValue()
-  {
-    if(isRequestTypeAVPPresent())
-    {
-      try
-      {
-        return super.message.getAvps().getAvp(416).getInteger32();
+  public int getRequestTypeAVPValue() {
+    if(isRequestTypeAVPPresent()) {
+      try {
+        return super.message.getAvps().getAvp(CC_REQUEST_TYPE_AVP_CODE).getInteger32();
       }
       catch (AvpDataException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        logger.debug("Failure trying to obtain CC-Request-Type AVP value", e);
       }
     }
-    
+
     return -1;
   }
 
-  public boolean isRequestTypeAVPPresent()
-  {
-    return super.message.getAvps().getAvp(416)!=null;
+  public boolean isRequestTypeAVPPresent() {
+    return super.message.getAvps().getAvp(CC_REQUEST_TYPE_AVP_CODE) != null;
   }
-
 }

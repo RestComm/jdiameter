@@ -6,10 +6,10 @@ import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 
 public class ReAuthAnswerImpl extends AppAnswerEventImpl implements ReAuthAnswer {
 
- 
+  private static final long serialVersionUID = 1L;
 
-    public ReAuthAnswerImpl(Message message) {
-        super(message);
-    }
+  public ReAuthAnswerImpl(Message message) {
+    super(message);
+  }
 
 }

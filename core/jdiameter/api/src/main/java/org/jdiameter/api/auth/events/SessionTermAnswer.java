@@ -17,9 +17,10 @@ import org.jdiameter.api.app.AppAnswerEvent;
  */
 
 public interface SessionTermAnswer extends AppAnswerEvent {
-	
-	public static final String _SHORT_NAME = "STA";
-	public static final String _LONG_NAME = "Session-Termination-Answer";
-	
-	public static final int code = 275;
+
+  public static final String _SHORT_NAME = "STA";
+  public static final String _LONG_NAME = "Session-Termination-Answer";
+
+  public static final int code = 275;
+
 }

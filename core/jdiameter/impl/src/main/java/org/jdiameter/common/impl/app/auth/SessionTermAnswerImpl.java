@@ -6,9 +6,9 @@ import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 
 public class SessionTermAnswerImpl extends AppAnswerEventImpl implements SessionTermAnswer {
 
-    
+  private static final long serialVersionUID = 1L;
 
-    public SessionTermAnswerImpl(Message message) {
-        super(message);
-    }
+  public SessionTermAnswerImpl(Message message) {
+    super(message);
+  }
 }

@@ -22,6 +22,10 @@
 		<module>impl</module>
 	</modules>
 
+	<properties>
+		<slf4j.version>1.5.8</slf4j.version>
+	</properties>	
+
 	<profiles>
 		<profile>
 			<id>maven-release</id>

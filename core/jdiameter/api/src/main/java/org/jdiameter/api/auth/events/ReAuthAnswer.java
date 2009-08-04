@@ -10,7 +10,6 @@
 package org.jdiameter.api.auth.events;
 
 import org.jdiameter.api.app.AppAnswerEvent;
-import org.jdiameter.api.AvpDataException;
 
 /**
  * A Answer message is sent by a recipient of Request once it has received and interpreted the Request.
@@ -18,10 +17,10 @@ import org.jdiameter.api.AvpDataException;
  */
 
 public interface ReAuthAnswer extends AppAnswerEvent {
-	
-	public static final String _SHORT_NAME = "RAA";
-	public static final String _LONG_NAME = "Re-Auth-Answer";
-	
-	public static final int code = 258;
-	
+
+  public static final String _SHORT_NAME = "RAA";
+  public static final String _LONG_NAME = "Re-Auth-Answer";
+
+  public static final int code = 258;
+
 }

@@ -87,6 +87,7 @@ public class XMLConfiguration extends EmptyConfiguration {
                 factory.setFeature(key, features.get(key));
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document;
+
         if (in instanceof InputStream) {
             document = builder.parse((InputStream)in);
         }

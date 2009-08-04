@@ -19,21 +19,21 @@ import org.jdiameter.api.app.AppRequestEvent;
 
 public interface SessionTermRequest extends AppRequestEvent {
 
-	
-	public static final String _SHORT_NAME = "STR";
-	public static final String _LONG_NAME = "Session-Termination-Request";
-	
-	public static final int code = 275;
-	
-    /**
-     * @return Auth-Application-Id value of request
-     * @throws AvpDataException if result code avp is not integer
-     */
-    long getAuthApplicationId() throws AvpDataException;
 
-    /**
-     * @return termination cause
-     * @throws AvpDataException if result code avp is not integer
-     */
-    int getTerminationCause() throws AvpDataException;
+  public static final String _SHORT_NAME = "STR";
+  public static final String _LONG_NAME = "Session-Termination-Request";
+
+  public static final int code = 275;
+
+  /**
+   * @return Auth-Application-Id value of request
+   * @throws AvpDataException if result code avp is not integer
+   */
+  long getAuthApplicationId() throws AvpDataException;
+
+  /**
+   * @return termination cause
+   * @throws AvpDataException if result code avp is not integer
+   */
+  int getTerminationCause() throws AvpDataException;
 }

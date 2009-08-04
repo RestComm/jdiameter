@@ -9,9 +9,10 @@
  */
 package org.jdiameter.common.impl.app.acc;
 
+import static org.jdiameter.api.Avp.ACC_RECORD_NUMBER;
+
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.Avp;
-import static org.jdiameter.api.Avp.ACC_RECORD_NUMBER;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.acc.events.AccountAnswer;
@@ -20,32 +21,38 @@ import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 
 public class AccountAnswerImpl extends AppAnswerEventImpl implements AccountAnswer {
 
+  private static final long serialVersionUID = 1L;
 
-    public AccountAnswerImpl(Request request, int accountRecordType, int accReqNumber, long resultCode) {
-        super(request.createAnswer(resultCode));
-        try {
-            getMessage().getAvps().addAvp(Avp.ACC_RECORD_TYPE, accountRecordType);
-            getMessage().getAvps().addAvp(Avp.ACC_RECORD_NUMBER, accReqNumber);
-        } catch (Exception exc) {
-            throw new IllegalArgumentException(exc);
-        }
+  public AccountAnswerImpl(Request request, int accountRecordType, int accReqNumber, long resultCode) {
+    super(request.createAnswer(resultCode));
+    try {
+      getMessage().getAvps().addAvp(Avp.ACC_RECORD_TYPE, accountRecordType);
+      getMessage().getAvps().addAvp(Avp.ACC_RECORD_NUMBER, accReqNumber);
     }
+    catch (Exception e) {
+      throw new IllegalArgumentException(e);
+    }
+  }
 
-    public AccountAnswerImpl(Answer answer) {
-        super(answer);
-    }
+  public AccountAnswerImpl(Answer answer) {
+    super(answer);
+  }
 
-    public int getAccountingRecordType() throws AvpDataException {
-        if ( message.getAvps().getAvp(Avp.ACC_RECORD_NUMBER) != null )
-            return message.getAvps().getAvp(ACC_RECORD_NUMBER).getInteger32();
-        else
-            throw new AvpDataException("Avp ACC_RECORD_NUMBER not found");
+  public int getAccountingRecordType() throws AvpDataException {
+    if ( message.getAvps().getAvp(Avp.ACC_RECORD_NUMBER) != null ) {
+      return message.getAvps().getAvp(ACC_RECORD_NUMBER).getInteger32();
     }
+    else {
+      throw new AvpDataException("Avp ACC_RECORD_NUMBER not found");
+    }
+  }
 
-    public long getAccountingRecordNumber() throws AvpDataException {
-        if ( message.getAvps().getAvp(ACC_RECORD_NUMBER) != null )
-            return message.getAvps().getAvp(ACC_RECORD_NUMBER).getUnsigned32();
-        else
-            throw new AvpDataException("Avp ACC_RECORD_NUMBER not found");
+  public long getAccountingRecordNumber() throws AvpDataException {
+    if ( message.getAvps().getAvp(ACC_RECORD_NUMBER) != null ) {
+      return message.getAvps().getAvp(ACC_RECORD_NUMBER).getUnsigned32();
     }
+    else {
+      throw new AvpDataException("Avp ACC_RECORD_NUMBER not found");
+    }
+  }
 }

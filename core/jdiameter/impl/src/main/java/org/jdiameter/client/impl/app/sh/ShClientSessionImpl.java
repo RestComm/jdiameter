@@ -59,373 +59,366 @@ import org.jdiameter.common.impl.app.sh.UserDataRequestImpl;
 public class ShClientSessionImpl extends ShSession implements ClientShSession, EventListener<Request, Answer>, NetworkReqListener {
 
   private static final long serialVersionUID = 1L;
-  
+
   protected ShSessionState state = ShSessionState.NOTSUBSCRIBED;
-	protected boolean stateless = false;
-	protected IShMessageFactory factory = null;
-	protected String destHost, destRealm;
-	protected Lock sendAndStateLock = new ReentrantLock();
-	protected ClientShSessionListener listener;
-	protected long appId = -1;
-	protected ScheduledFuture sft = null;
+  protected boolean stateless = false;
+  protected IShMessageFactory factory = null;
+  protected String destHost, destRealm;
+  protected Lock sendAndStateLock = new ReentrantLock();
+  protected ClientShSessionListener listener;
+  protected long appId = -1;
+  protected ScheduledFuture sft = null;
 
-	public ShClientSessionImpl(IShMessageFactory fct, SessionFactory sf, ClientShSessionListener lst) {
-		this(null, fct, sf, lst);
-	}
+  public ShClientSessionImpl(IShMessageFactory fct, SessionFactory sf, ClientShSessionListener lst) {
+    this(null, fct, sf, lst);
+  }
 
-	public ShClientSessionImpl(String sessionId, IShMessageFactory fct, SessionFactory sf, ClientShSessionListener lst) {
+  public ShClientSessionImpl(String sessionId, IShMessageFactory fct, SessionFactory sf, ClientShSessionListener lst) {
 
-		if (lst == null)
-			throw new IllegalArgumentException("Listener can not be null");
-		if (fct.getApplicationId() < 0)
-			throw new IllegalArgumentException("ApplicationId can not be less than zer0");
-		appId = fct.getApplicationId();
-		listener = lst;
-		factory = fct;
-		try {
-			if (sessionId == null) {
-				session = sf.getNewSession();
-			} else {
-				session = sf.getNewSession(sessionId);
-			}
-			session.setRequestListener(this);
-		} catch (InternalException e) {
-			throw new IllegalArgumentException(e);
-		}
+    if (lst == null) {
+      throw new IllegalArgumentException("Listener can not be null");
+    }
+    if (fct.getApplicationId() < 0) {
+      throw new IllegalArgumentException("ApplicationId can not be less than zero");
+    }
+    appId = fct.getApplicationId();
+    listener = lst;
+    factory = fct;
+    try {
+      if (sessionId == null) {
+        session = sf.getNewSession();
+      }
+      else {
+        session = sf.getNewSession(sessionId);
+      }
+      session.setRequestListener(this);
+    }
+    catch (InternalException e) {
+      throw new IllegalArgumentException(e);
+    }
+  }
 
-	}
+  public Answer processRequest(Request request) {
+    try {
+      if (request.getApplicationId() == factory.getApplicationId()) {
+        if (request.getCommandCode() == org.jdiameter.common.impl.app.sh.PushNotificationRequestImpl.code) {
+          handleEvent(new Event(Event.Type.RECEIVE_PUSH_NOTIFICATION_REQUEST, factory.createPushNotificationRequest(request), null));
+          return null;
+        }
+      }
 
-	public Answer processRequest(Request request) {
-		try {
-			if (request.getApplicationId() == factory.getApplicationId()) {
-				if (request.getCommandCode() == org.jdiameter.common.impl.app.sh.PushNotificationRequestImpl.code) {
-					handleEvent(new Event(Event.Type.RECEIVE_PUSH_NOTIFICATION_REQUEST, factory.createPushNotificationRequest(request), null));
-					return null;
-				}
+      listener.doOtherEvent(this, new AppRequestEventImpl(request), null);
+    }
+    catch (Exception e) {
+      logger.debug("Failed to process request {}", request, e);
+    }
+    return null;
+  }
 
-			}
+  public <E> E getState(Class<E> stateType) {
+    return stateType == ShSessionState.class ? (E) state : null;
+  }
 
-			listener.doOtherEvent(this, new AppRequestEventImpl(request), null);
+  public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
+    try {
+      sendAndStateLock.lock();
+      ShSessionState oldState = this.state;
+      ShSessionState newState = this.state;
+      try {
+        Event localEvent = (Event) event;
+        AppEvent answer = localEvent.getAnswer();
+        switch (state) {
+        case NOTSUBSCRIBED:
+          if (event.getType() == Event.Type.RECEIVE_SUBSCRIBE_NOTIFICATIONS_ANSWER) {
+            newState = doSNX(answer);
+          }
+          else if (event.getType() == Event.Type.RECEIVE_PUSH_NOTIFICATION_REQUEST) {
+            newState = ShSessionState.SUBSCRIBED;
+          }
+          else if (event.getType() == Event.Type.TIMEOUT_EXPIRES) {
+            newState = ShSessionState.TERMINATED;
+          }
+          else if(event.getType() != Event.Type.SEND_USER_DATA_REQUEST && event.getType() != Event.Type.SEND_PROFILE_UPDATE_REQUEST && event.getType() != Event.Type.SEND_SUBSCRIBE_NOTIFICATIONS_REQUEST ){
+            // Other messages just make it go into terminated state and release
+            newState = ShSessionState.TERMINATED;
+          }
+          break;
+        case SUBSCRIBED:
+          if (event.getType() == Event.Type.RECEIVE_SUBSCRIBE_NOTIFICATIONS_ANSWER) {
+            newState = doSNX(answer);
+          }
+          else if (event.getType() == Event.Type.TIMEOUT_EXPIRES) {
+            if (localEvent.getRequest().getCommandCode() == SubscribeNotificationsRequestImpl.code) {
+              newState = ShSessionState.TERMINATED;
+            }
+          }
+          else {
+            // FIXME: What about timeout here?
+          }
+          break;
+        case TERMINATED:
+          // We shouldnt receive anything here
+          break;
+        }
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.debug(e);
-		}
-		return null;
-	}
+        // Do the delivery
+        // FIXME: Should we look if we are in terminated state?
+        try {
+          switch ((Event.Type) localEvent.getType()) {
+          case RECEIVE_PUSH_NOTIFICATION_REQUEST:
+            listener.doPushNotificationRequestEvent(this, new PushNotificationRequestImpl( (Request) localEvent.getRequest().getMessage() ));
+            break;
+          case RECEIVE_PROFILE_UPDATE_ANSWER:
+            listener.doProfileUpdateAnswerEvent(this, null, new ProfileUpdateAnswerImpl( (Answer) localEvent.getAnswer().getMessage()));
+            break;
+          case RECEIVE_USER_DATA_ANSWER:
+            listener.doUserDataAnswerEvent(this, null, new UserDataAnswerImpl((Answer) localEvent.getAnswer().getMessage()));
+            break;
+          case RECEIVE_SUBSCRIBE_NOTIFICATIONS_ANSWER:
+            listener.doSubscribeNotificationsAnswerEvent(this, null, new SubscribeNotificationsAnswerImpl( (Answer) localEvent.getAnswer().getMessage()));
+            break;
+          case SEND_PROFILE_UPDATE_REQUEST:
+          case SEND_PUSH_NOTIFICATION_ANSWER:
+          case SEND_SUBSCRIBE_NOTIFICATIONS_REQUEST:
+          case SEND_USER_DATA_REQUEST:
+          case TIMEOUT_EXPIRES:
+            // TODO Anything here?
+            break;
+          default:
+            logger.error("Wrong message type={} req={} ans={}", new Object[]{localEvent.getType(), localEvent.getRequest(), localEvent.getAnswer()});
+          }
+        }
+        catch (IllegalDiameterStateException idse) {
+          throw new InternalException(idse);
+        }
+        catch (RouteException re) {
+          throw new InternalException(re);
+        }
+      }
+      finally {
+        if (newState != oldState) {
+          setState(newState);
+        }
+      }
+    }
+    finally {
+      sendAndStateLock.unlock();
+    }
 
-	public <E> E getState(Class<E> stateType) {
-		return stateType == ShSessionState.class ? (E) state : null;
-	}
+    return true;
+  }
 
-	public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
+  protected ShSessionState doSNX(AppEvent answer) throws InternalException {
+    ShSessionState newState = state;
+    AvpSet set = answer.getMessage().getAvps();
+    long resultCode = -1;
 
-		try {
-			sendAndStateLock.lock();
-			ShSessionState oldState = this.state;
-			ShSessionState newState = this.state;
-			try {
+    try {
+      Avp avp = set.getAvp(Avp.EXPERIMENTAL_RESULT) != null ? 
+          set.getAvp(Avp.EXPERIMENTAL_RESULT).getGrouped().getAvp(Avp.EXPERIMENTAL_RESULT_CODE) : 
+            set.getAvp(Avp.RESULT_CODE);
 
-				Event localEvent = (Event) event;
-				AppEvent answer = localEvent.getAnswer();
-				switch (state) {
-				case NOTSUBSCRIBED:
+          resultCode = avp.getUnsigned32();
+          if (resultCode >= 2000 && resultCode < 3000) {
+            long expiryTime = extractExpirationTime(answer.getMessage());
+            if (expiryTime >= 0) {
+              if (this.sft != null) {
+                this.sft.cancel(true);
+              }
+              this.sft = scheduler.schedule(new Runnable() {
+                public void run() {
+                  try {
+                    sendAndStateLock.lock();
+                    if (state != ShSessionState.TERMINATED) {
+                      setState(ShSessionState.TERMINATED);
+                    }
+                  }
+                  finally {
+                    sendAndStateLock.unlock();
+                  }
+                }
+              }, expiryTime, TimeUnit.SECONDS);
+            }
+            else {
+              // FIXME: We relly on user?
+            }
+            newState = ShSessionState.SUBSCRIBED;
+          }
+          else {
+            // its a failure?
+            newState = ShSessionState.TERMINATED;
+          }
+    }
+    catch (AvpDataException e) {
+      logger.debug("Could not retrieve Result-Code from Message", e);
+    }
 
-					if (event.getType() == Event.Type.RECEIVE_SUBSCRIBE_NOTIFICATIONS_ANSWER) {
+    return newState;
+  }
 
-						newState = doSNX(answer);
+  public boolean isStateless() {
+    return stateless;
+  }
 
-					} else if (event.getType() == Event.Type.RECEIVE_PUSH_NOTIFICATION_REQUEST) {
-						//throw new InternalException("ShClientSession is not connected yet, but it received PNR from HSS!!!");
-						newState = ShSessionState.SUBSCRIBED;
-					} else if (event.getType() == Event.Type.TIMEOUT_EXPIRES) {
-						newState = ShSessionState.TERMINATED;
-					} else if(event.getType() != Event.Type.SEND_USER_DATA_REQUEST && event.getType() != Event.Type.SEND_PROFILE_UPDATE_REQUEST && event.getType() != Event.Type.SEND_SUBSCRIBE_NOTIFICATIONS_REQUEST ){
-						// Other messages just make it go into terminated state
-						// and release
-						newState = ShSessionState.TERMINATED;
+  public void sendProfileUpdateRequest(ProfileUpdateRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+    send(Event.Type.SEND_PROFILE_UPDATE_REQUEST, request, null);
+  }
 
-					}
+  public void sendPushNotificationAnswer(PushNotificationAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+    send(Event.Type.SEND_PUSH_NOTIFICATION_ANSWER, null, answer);
+  }
 
-					break;
-				case SUBSCRIBED:
+  public void sendSubscribeNotificationsRequest(SubscribeNotificationsRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+    send(Event.Type.SEND_SUBSCRIBE_NOTIFICATIONS_REQUEST, request, null);
+  }
 
-					if (event.getType() == Event.Type.RECEIVE_SUBSCRIBE_NOTIFICATIONS_ANSWER) {
+  public void sendUserDataRequest(UserDataRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+    send(Event.Type.SEND_USER_DATA_REQUEST, request, null);
+  }
 
-						newState = doSNX(answer);
+  protected void send(Event.Type type, AppEvent request, AppEvent answer) throws InternalException {
+    try {
+      sendAndStateLock.lock();
+      if (type != null) {
+        handleEvent(new Event(type, request, answer));
+      }
+      AppEvent event = null;
+      if (request != null) {
+        event = request;
+      }
+      else {
+        event = answer;
+      }
+      session.send(event.getMessage(), this);
 
-					} else if (event.getType() == Event.Type.TIMEOUT_EXPIRES) {
-						if (localEvent.getRequest().getCommandCode() == SubscribeNotificationsRequestImpl.code)
-							newState = ShSessionState.TERMINATED;
-					} else {
-					
-						// FIXME: What about timeout here?
-					}
-					break;
-				case TERMINATED:
-					// We shouldnt receive anything here!!!
-					break;
-				}
-
-				// Now lets deliver
-				// FIXME: Should we look if we are in terminated state?
-				try {
-					switch ((Event.Type) localEvent.getType()) {
-					case RECEIVE_PUSH_NOTIFICATION_REQUEST:
-						
-					
-						
-						listener.doPushNotificationRequestEvent(this, new PushNotificationRequestImpl( (Request) localEvent.getRequest().getMessage() ));
-						break;
-					case RECEIVE_PROFILE_UPDATE_ANSWER:
-			
-						listener.doProfileUpdateAnswerEvent(this, null, new ProfileUpdateAnswerImpl( (Answer) localEvent.getAnswer().getMessage()));
-						break;
-					case RECEIVE_USER_DATA_ANSWER:
-						
-						
-						listener.doUserDataAnswerEvent(this, null, new UserDataAnswerImpl((Answer) localEvent.getAnswer().getMessage()));
-						break;
-					case RECEIVE_SUBSCRIBE_NOTIFICATIONS_ANSWER:
-						listener.doSubscribeNotificationsAnswerEvent(this, null, new SubscribeNotificationsAnswerImpl( (Answer) localEvent.getAnswer().getMessage()));
-						break;
-					case SEND_PROFILE_UPDATE_REQUEST:
-					case SEND_PUSH_NOTIFICATION_ANSWER:
-					case SEND_SUBSCRIBE_NOTIFICATIONS_REQUEST:
-					case SEND_USER_DATA_REQUEST:
-					case TIMEOUT_EXPIRES:
-						//FIXME: baranowb
-						break;
-
-					default:
-						logger.error("Wrong messageT[" + localEvent.getType() + "] R[" + localEvent.getRequest() + "] A[" + localEvent.getAnswer() + "]");
-					}
-				} catch (IllegalDiameterStateException idse) {
-					throw new InternalException(idse);
-				} catch (RouteException re) {
-
-					throw new InternalException(re);
-				}
-			} finally {
-				if (newState != oldState) {
-					setState(newState);
-
-				}
-			}
-		} finally {
-			sendAndStateLock.unlock();
-		}
-
-		return true;
-	}
-
-	protected ShSessionState doSNX(AppEvent answer) throws InternalException {
-		ShSessionState newState = state;
-		AvpSet set = answer.getMessage().getAvps();
-		long resultCode = -1;
-
-		try {
-	    // Experimental-Result-Code:297, Result-Code:268
-	    Avp avp = set.getAvp(297) != null ? set.getAvp(297).getGrouped().getAvp(298) : set.getAvp(268);
-	    
-			resultCode = avp.getUnsigned32();
-			if (resultCode > 2000 && resultCode < 2005) {
-				long expiryTime = extractExpirationTime(answer.getMessage());
-				if (expiryTime >= 0) {
-					if (this.sft != null) {
-						this.sft.cancel(true);
-					}
-					this.sft = scheduler.schedule(new Runnable() {
-
-						public void run() {
-							try {
-								sendAndStateLock.lock();
-								if (state != ShSessionState.TERMINATED)
-									setState(ShSessionState.TERMINATED);
-
-							} finally {
-								sendAndStateLock.unlock();
-							}
-						}
-					}, expiryTime, TimeUnit.SECONDS);
-				} else {
-					// FIXME:we relly on user?
-				}
-				newState = ShSessionState.SUBSCRIBED;
-			} else {
-				// its a failure?
-				newState = ShSessionState.TERMINATED;
-			}
-		} catch (AvpDataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-			
-		return newState;
-	}
-
-	public boolean isStateless() {
-
-		return stateless;
-	}
-
-	public void sendProfileUpdateRequest(ProfileUpdateRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-		send(Event.Type.SEND_PROFILE_UPDATE_REQUEST, request, null);
-
-	}
-
-	public void sendPushNotificationAnswer(PushNotificationAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-		send(Event.Type.SEND_PUSH_NOTIFICATION_ANSWER, null, answer);
-
-	}
-
-	public void sendSubscribeNotificationsRequest(SubscribeNotificationsRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-		send(Event.Type.SEND_SUBSCRIBE_NOTIFICATIONS_REQUEST, request, null);
-
-	}
-
-	public void sendUserDataRequest(UserDataRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-		send(Event.Type.SEND_USER_DATA_REQUEST, request, null);
-
-	}
-
-	protected void send(Event.Type type, AppEvent request, AppEvent answer) throws InternalException {
-		try {
-			sendAndStateLock.lock();
-			if (type != null)
-				handleEvent(new Event(type, request, answer));
-			AppEvent event = null;
-			if (request != null) {
-				event = request;
-			} else {
-				event = answer;
-			}
-			session.send(event.getMessage(), this);
-			
-			if(request != null)
-			{
-			  AvpSet avps = request.getMessage().getAvps();
-			  Avp a = null;
-  			// Store last destinmation information
-        if((a = avps.getAvp(Avp.DESTINATION_REALM)) != null)
-        {
+      if(request != null)
+      {
+        AvpSet avps = request.getMessage().getAvps();
+        Avp a = null;
+        // Store last destinmation information
+        if((a = avps.getAvp(Avp.DESTINATION_REALM)) != null) {
           destRealm = a.getOctetString();         
         }
-        if((a = avps.getAvp(Avp.DESTINATION_HOST)) != null)
-        {
+        if((a = avps.getAvp(Avp.DESTINATION_HOST)) != null) {
           destHost = a.getOctetString();         
         }
-			}
-		} catch (Exception exc) {
-			throw new InternalException(exc);
-		} finally {
-			sendAndStateLock.unlock();
-		}
-	}
+      }
+    }
+    catch (Exception e) {
+      throw new InternalException(e);
+    }
+    finally {
+      sendAndStateLock.unlock();
+    }
+  }
 
-	public void receivedSuccessMessage(Request request, Answer answer) {
+  public void receivedSuccessMessage(Request request, Answer answer) {
+    try {
+      sendAndStateLock.lock();
+      if (request.getApplicationId() == factory.getApplicationId()) {
+        if (request.getCommandCode() == ProfileUpdateRequestImpl.code) {
+          handleEvent(new Event(Event.Type.RECEIVE_PROFILE_UPDATE_ANSWER, factory.createProfileUpdateRequest(request), factory.createProfileUpdateAnswer(answer)));
+          return;
+        }
+        else if (request.getCommandCode() == UserDataRequestImpl.code) {
+          handleEvent(new Event(Event.Type.RECEIVE_USER_DATA_ANSWER, factory.createUserDataRequest(request), factory.createUserDataAnswer(answer)));
+          return;
+        }
+        else if (request.getCommandCode() == SubscribeNotificationsRequestImpl.code) {
+          handleEvent(new Event(Event.Type.RECEIVE_SUBSCRIBE_NOTIFICATIONS_ANSWER, factory.createSubscribeNotificationsRequest(request), factory
+              .createSubscribeNotificationsAnswer(answer)));
+          return;
+        }
+      }
+      listener.doOtherEvent(this, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
+    }
+    catch (Exception e) {
+      logger.debug("Failed to process success message", e);
+    }
+    finally {
+      sendAndStateLock.unlock();
+    }
+  }
 
-		try {
-			sendAndStateLock.lock();
-			if (request.getApplicationId() == factory.getApplicationId()) {
+  public void timeoutExpired(Request request) {
+    try {
+      sendAndStateLock.lock();
+      if (request.getApplicationId() == factory.getApplicationId()) {
+        if (request.getCommandCode() == ProfileUpdateRequestImpl.code) {
+          handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, factory.createProfileUpdateRequest(request), null));
+          return;
+        }
+        else if (request.getCommandCode() == UserDataRequestImpl.code) {
+          handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, factory.createUserDataRequest(request), null));
+          return;
+        }
+        else if (request.getCommandCode() == SubscribeNotificationsRequestImpl.code) {
+          handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, factory.createSubscribeNotificationsRequest(request), null));
+          return;
+        }
+      }
+      // FIXME: Anything else todo?
+    }
+    catch (Exception e) {
+      logger.debug("Failed to process timeout message", e);
+    }
+    finally {
+      sendAndStateLock.unlock();
+    }
+  }
 
-				if (request.getCommandCode() == ProfileUpdateRequestImpl.code) {
-					handleEvent(new Event(Event.Type.RECEIVE_PROFILE_UPDATE_ANSWER, factory.createProfileUpdateRequest(request), factory.createProfileUpdateAnswer(answer)));
-					return;
-				} else if (request.getCommandCode() == UserDataRequestImpl.code) {
-					handleEvent(new Event(Event.Type.RECEIVE_USER_DATA_ANSWER, factory.createUserDataRequest(request), factory.createUserDataAnswer(answer)));
-					return;
-				} else if (request.getCommandCode() == SubscribeNotificationsRequestImpl.code) {
-					handleEvent(new Event(Event.Type.RECEIVE_SUBSCRIBE_NOTIFICATIONS_ANSWER, factory.createSubscribeNotificationsRequest(request), factory
-							.createSubscribeNotificationsAnswer(answer)));
-					return;
-				}
-			}
+  protected void setState(ShSessionState newState) {
+    setState(newState, true);
+  }
 
-			listener.doOtherEvent(this, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.debug(e);
-		} finally {
-			sendAndStateLock.unlock();
-		}
+  protected void setState(ShSessionState newState, boolean release) {
+    IAppSessionState oldState = state;
+    state = newState;
+    for (StateChangeListener i : stateListeners) {
+      i.stateChanged((Enum) oldState, (Enum) newState);
+    }
+    if (newState == ShSessionState.TERMINATED) {
+      if (release) {
+        this.release();
+      }
+      if (sft != null) {
+        sft.cancel(true);
+        sft = null;
+      }
+    }
+  }
 
-	}
+  protected long extractExpirationTime(Message answer) {
+    return -1;
+  }
 
-	public void timeoutExpired(Request request) {
-		try {
-			sendAndStateLock.lock();
-			if (request.getApplicationId() == factory.getApplicationId()) {
+  public void release() {
+    try {
+      sendAndStateLock.lock();
+      if (state != ShSessionState.TERMINATED) {
+        setState(ShSessionState.TERMINATED, false);
+        //session.release();
+      }
 
-				if (request.getCommandCode() == ProfileUpdateRequestImpl.code) {
-					handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, factory.createProfileUpdateRequest(request), null));
-					return;
-				} else if (request.getCommandCode() == UserDataRequestImpl.code) {
-					handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, factory.createUserDataRequest(request), null));
-					return;
-				} else if (request.getCommandCode() == SubscribeNotificationsRequestImpl.code) {
-					handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, factory.createSubscribeNotificationsRequest(request), null));
-					return;
-				}
-			}
+      if(super.isValid()) {
+        super.release();
+      }
 
-			// FIXME: baranowb - what now?
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.debug(e);
-		} finally {
-			sendAndStateLock.unlock();
-		}
-
-	}
-
-	protected void setState(ShSessionState newState) {
-		setState(newState, true);
-	}
-
-	protected void setState(ShSessionState newState, boolean release) {
-		IAppSessionState oldState = state;
-		state = newState;
-		for (StateChangeListener i : stateListeners)
-			i.stateChanged((Enum) oldState, (Enum) newState);
-		if (newState == ShSessionState.TERMINATED) {
-			if (release)
-				this.release();
-			if (sft != null) {
-				sft.cancel(true);
-				sft = null;
-			}
-		}
-	}
-
-	protected long extractExpirationTime(Message answer) {
-		return -1;
-	}
-
-	public void release() {
-		try {
-			sendAndStateLock.lock();
-			if (state != ShSessionState.TERMINATED) {
-				setState(ShSessionState.TERMINATED, false);
-				//session.release();
-				
-			}
-			
-			if(super.isValid())
-				super.release();
-			
-			if(super.session!=null)
-				super.session.setRequestListener(null);
-			this.session = null;
-			if(listener!=null)
-				this.removeStateChangeNotification((StateChangeListener) listener);
-			this.listener = null;
-			this.factory = null;
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.debug(e);
-		} finally {
-			sendAndStateLock.unlock();
-		}
-	}
+      if(super.session != null) { 
+        super.session.setRequestListener(null);
+      }
+      this.session = null;
+      if(listener != null) { 
+        this.removeStateChangeNotification((StateChangeListener) listener);
+      }
+      this.listener = null;
+      this.factory = null;
+    }
+    catch (Exception e) {
+      logger.debug("Failed to release session", e);
+    }
+    finally {
+      sendAndStateLock.unlock();
+    }
+  }
 }

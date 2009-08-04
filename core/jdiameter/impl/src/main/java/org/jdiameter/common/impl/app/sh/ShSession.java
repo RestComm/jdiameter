@@ -6,7 +6,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.log4j.Logger;
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.Request;
@@ -20,30 +19,33 @@ import org.jdiameter.common.impl.app.acc.AccountRequestImpl;
 
 public abstract class ShSession extends AppSessionImpl implements NetworkReqListener, StateMachine {
 
-	protected Lock sendAndStateLock = new ReentrantLock();
-	protected static final ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(4);
-	protected List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
+  private static final long serialVersionUID = 1L;
 
-	public void addStateChangeNotification(StateChangeListener listener) {
-		if (!stateListeners.contains(listener))
-			stateListeners.add(listener);
-	}
+  protected Lock sendAndStateLock = new ReentrantLock();
+  protected static final ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(4);
+  protected List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
 
-	public void removeStateChangeNotification(StateChangeListener listener) {
-		stateListeners.remove(listener);
-	}
+  public void addStateChangeNotification(StateChangeListener listener) {
+    if (!stateListeners.contains(listener)) {
+      stateListeners.add(listener);
+    }
+  }
 
-	protected AccountRequest createAccountRequest(Request request) {
-		return new AccountRequestImpl(request);
-	}
+  public void removeStateChangeNotification(StateChangeListener listener) {
+    stateListeners.remove(listener);
+  }
 
-	protected AccountAnswer createAccountAnswer(Answer answer) {
-		return new AccountAnswerImpl(answer);
-	}
+  protected AccountRequest createAccountRequest(Request request) {
+    return new AccountRequestImpl(request);
+  }
 
-	public void release() {
-		//scheduler.shutdown();
-		super.release();
-	}
+  protected AccountAnswer createAccountAnswer(Answer answer) {
+    return new AccountAnswerImpl(answer);
+  }
+
+  public void release() {
+    //scheduler.shutdown();
+    super.release();
+  }
 
 }

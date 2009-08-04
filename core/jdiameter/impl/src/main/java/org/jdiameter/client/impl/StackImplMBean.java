@@ -7,59 +7,47 @@ import org.jdiameter.api.InternalException;
  */
 public interface StackImplMBean {
 
-    /**
-     * Return root(Stack) log level value
-     * @return  root(Stack) log level value
-     */
-    String getRootLogLevel();
+  /**
+   * Return string representation of stack instanceconfiguration
+   * @return string representation of stack instance configuration
+   */
+  String configuration();
 
-    /**
-     * Set log level on root(Stack) logger
-     * @param level llevel name
-     */
-    void setRootLogLevel(String level);
+  /**
+   * Return string representation of stack instance metadata
+   * @return string representation of stack instance metadata
+   */
+  String metaData();
 
-    /**
-     * Return string representation of stack instanceconfiguration
-     * @return string representation of stack instance configuration
-     */
-    String configuration();
+  /**
+   * Reurn description (include state) of defined peer
+   * @param name peer host name
+   * @return description of defined peer
+   */
+  String peerDescription(String name);
 
-    /**
-     * Return string representation of stack instance metadata
-     * @return string representation of stack instance metadata
-     */
-    String metaData();
+  /**
+   * Return list of peer
+   * @return list of peer
+   */
+  String peerList();
 
-    /**
-     * Reurn description (include state) of defined peer
-     * @param name peer host name
-     * @return description of defined peer
-     */
-    String peerDescription(String name);
+  /**
+   * Return true if stack is started
+   * @return true if stack is started
+   */
+  boolean isActive();
 
-    /**
-     * Return list of peer
-     * @return list of peer
-     */
-    String peerList();
+  /**
+   * Run stop procedure
+   */
+  void stop();
 
-    /**
-     * Return true if stack is started
-     * @return true if stack is started
-     */
-    boolean isActive();
+  /**
+   * Run startd procedure
+   * @throws org.jdiameter.api.IllegalDiameterStateException
+   * @throws InternalException
+   */
+  void start()  throws org.jdiameter.api.IllegalDiameterStateException, InternalException;
 
-    /**
-     * Run stop procedure
-     */
-    void stop();
-
-    /**
-     * Run startd procedure
-     * @throws org.jdiameter.api.IllegalDiameterStateException
-     * @throws InternalException
-     */
-    void start()  throws org.jdiameter.api.IllegalDiameterStateException, InternalException;
-    
 }

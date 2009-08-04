@@ -9,25 +9,34 @@
  */
 package org.jdiameter.server.impl.app.acc;
 
-import org.jdiameter.api.*;
+import static org.jdiameter.common.api.app.acc.ServerAccSessionState.IDLE;
+import static org.jdiameter.common.api.app.acc.ServerAccSessionState.OPEN;
+
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import org.jdiameter.api.Answer;
+import org.jdiameter.api.Avp;
+import org.jdiameter.api.EventListener;
+import org.jdiameter.api.IllegalDiameterStateException;
+import org.jdiameter.api.InternalException;
+import org.jdiameter.api.NetworkReqListener;
+import org.jdiameter.api.OverloadException;
+import org.jdiameter.api.Request;
+import org.jdiameter.api.ResultCode;
+import org.jdiameter.api.RouteException;
+import org.jdiameter.api.Session;
 import org.jdiameter.api.acc.ServerAccSession;
 import org.jdiameter.api.acc.ServerAccSessionListener;
 import org.jdiameter.api.acc.events.AccountAnswer;
 import org.jdiameter.api.acc.events.AccountRequest;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
-import org.jdiameter.server.impl.app.acc.Event;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.acc.IServerAccActionContext;
 import org.jdiameter.common.api.app.acc.ServerAccSessionState;
-import static org.jdiameter.common.api.app.acc.ServerAccSessionState.IDLE;
-import static org.jdiameter.common.api.app.acc.ServerAccSessionState.OPEN;
 import org.jdiameter.common.impl.app.acc.AccountRequestImpl;
 import org.jdiameter.common.impl.app.acc.AppAccSessionImpl;
-
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 
 public class ServerAccSessionImpl extends AppAccSessionImpl implements EventListener<Request, Answer>, ServerAccSession, NetworkReqListener {
@@ -74,8 +83,9 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
     protected void setState(IAppSessionState newState) {
         IAppSessionState oldState = state;
         state = (ServerAccSessionState) newState;
-        for (StateChangeListener i : stateListeners)
-            i.stateChanged( (Enum) oldState, (Enum) newState);
+        for (StateChangeListener i : stateListeners) {
+            i.stateChanged((Enum) oldState, (Enum) newState);
+        }
     }
 
     public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
@@ -88,39 +98,39 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
                 // Idle ==========
                 case IDLE: {
                     switch ((Event.Type) event.getType()) {
-                        case RECIVED_START_RECORD :
+                        case RECIVED_START_RECORD:
                             if (listener != null)
                                 try {
-                                    listener.doAccRequestEvent(this, (AccountRequest)event.getData());
-                                } catch (Exception exc) {
-                                    logger.debug(exc);
+                                    listener.doAccRequestEvent(this, (AccountRequest) event.getData());
+                                } catch (Exception e) {
+                                  logger.debug(e.getMessage(), e);
                                 }
                             setState(IDLE);
                             break;
-                        case RECIVED_EVENT_RECORD :
+                        case RECIVED_EVENT_RECORD:
                             if (listener != null)
                                 try {
-                                    listener.doAccRequestEvent(this, (AccountRequest)event.getData());
-                                } catch (Exception exc) {
-                                    logger.debug(exc);
+                                    listener.doAccRequestEvent(this, (AccountRequest) event.getData());
+                                } catch (Exception e) {
+                                  logger.debug(e.getMessage(), e);
                                 }
                             setState(IDLE);
                             break;
-                        case RECIVED_INTERIM_RECORD :
+                        case RECIVED_INTERIM_RECORD:
                             if (listener != null)
                                 try {
-                                    listener.doAccRequestEvent(this, (AccountRequest)event.getData());
-                                } catch (Exception exc) {
-                                    logger.debug(exc);
+                                    listener.doAccRequestEvent(this, (AccountRequest) event.getData());
+                                } catch (Exception e) {
+                                  logger.debug(e.getMessage(), e);
                                 }
                             setState(IDLE);
                             break;
-                        case RECIVED_STOP_RECORD :
+                        case RECIVED_STOP_RECORD:
                             if (listener != null)
                                 try {
-                                    listener.doAccRequestEvent(this, (AccountRequest)event.getData());
-                                } catch (Exception exc) {
-                                    logger.debug(exc);
+                                    listener.doAccRequestEvent(this, (AccountRequest) event.getData());
+                                } catch (Exception e) {
+                                  logger.debug(e.getMessage(), e);
                                 }
                             setState(IDLE);
                             break;
@@ -129,8 +139,8 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
                     }
                 }
             }
-        } catch (Exception exc) {
-            logger.debug(exc);
+        } catch (Exception e) {
+            logger.debug(e.getMessage(), e);
             return false;
         }
         return true;
@@ -142,54 +152,54 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
                 // Idle ==========
                 case IDLE: {
                     switch ((Event.Type) event.getType()) {
-                        case RECIVED_START_RECORD :
+                        case RECIVED_START_RECORD:
                             if (listener != null) {
                                 try {
-                                    listener.doAccRequestEvent(this, (AccountRequest)event.getData());
+                                    listener.doAccRequestEvent(this, (AccountRequest) event.getData());
                                     tsTask = runTsTimer();
                                     if (context != null)
                                         context.sessionTimerStarted(this, tsTask);
                                     setState(OPEN);
-                                } catch (Exception exc) {
-                                    logger.debug(exc);
+                                } catch (Exception e) {
+                                    logger.debug(e.getMessage(), e);
                                     setState(IDLE);
                                 }
                             }
                             break;
-                        case RECIVED_EVENT_RECORD :
+                        case RECIVED_EVENT_RECORD:
                             if (listener != null) {
                                 try {
-                                    listener.doAccRequestEvent(this, (AccountRequest)event.getData());
-                                } catch (Exception exc) {
-                                    logger.debug(exc);
+                                    listener.doAccRequestEvent(this, (AccountRequest) event.getData());
+                                } catch (Exception e) {
+                                  logger.debug(e.getMessage(), e);
                                 }
                             }                            
                             break;
                     }
                     break;
                 }
-                case OPEN : {
+                case OPEN: {
                     switch ((Event.Type) event.getType()) {
-                        case RECIVED_INTERIM_RECORD :
+                        case RECIVED_INTERIM_RECORD:
                             try {
                                 listener.doAccRequestEvent(this, (AccountRequest) event.getData());
                                 tsTask = runTsTimer();
                                 if (context != null)
                                     context.sessionTimerStarted(this, tsTask);
-                            } catch (Exception exc) {
-                                logger.debug(exc);
+                            } catch (Exception e) {
+                                logger.debug(e.getMessage(), e);
                                 setState(IDLE);
                             }
                             break;
-                        case RECIVED_STOP_RECORD :
+                        case RECIVED_STOP_RECORD:
                             try {
                                 listener.doAccRequestEvent(this, (AccountRequest) event.getData());
                                 tsTask.cancel(true);
                                 if (context != null)
                                     context.srssionTimerCanceled(this, tsTask);
                                 setState(IDLE);
-                            } catch (Exception exc) {
-                                logger.debug(exc);
+                            } catch (Exception e) {
+                                logger.debug(e.getMessage(), e);
                                 setState(IDLE);
                             }
                             break;
@@ -197,8 +207,8 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
                     break;
                 }
             }
-        } catch (Exception exc) {
-            logger.debug(exc);
+        } catch (Exception e) {
+            logger.debug(e.getMessage(), e);
             return false;
         }
         return true;
@@ -212,7 +222,7 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
                     try {
                         context.sessionTimeoutElapses(ServerAccSessionImpl.this);
                     } catch (InternalException e) {
-                        logger.debug(e);
+                      logger.debug(e.getMessage(), e);
                     }
                 setState(IDLE);
             }
@@ -257,7 +267,7 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
                 sendAndStateLock.lock();
                 handleEvent(new Event(createAccountRequest(request)));
             } catch (Exception e) {
-                logger.debug(e);
+              logger.debug(e.getMessage(), e);
             } finally {
                 sendAndStateLock.unlock();
             }
@@ -265,7 +275,7 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
             try {
                 listener.doOtherEvent(this, createAccountRequest(request), null); 
             } catch (Exception e) {
-                logger.debug(e);
+              logger.debug(e.getMessage(), e);
             }
         }
         return null;
@@ -274,43 +284,38 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
 
     public void receivedSuccessMessage( Request request, Answer answer )
     {
-      if( request.getCommandCode() == AccountRequestImpl.code )
+      if(request.getCommandCode() == AccountRequestImpl.code)
       {
-        try
-        {
+        try {
           sendAndStateLock.lock();
           handleEvent( new Event(createAccountRequest(request)) );
         }
-        catch ( Exception e ) {
-          logger.debug( e );
+        catch (Exception e) {
+          logger.debug(e.getMessage(), e);
         }
-        finally
-        {
+        finally {
           sendAndStateLock.unlock();
         }
         
-        try
-        {
-          listener.doAccRequestEvent( this, createAccountRequest(request) );
+        try {
+          listener.doAccRequestEvent(this, createAccountRequest(request));
         }
-        catch ( Exception e ) {
-          logger.debug( e );
+        catch (Exception e) {
+          logger.debug(e.getMessage(), e);
         }
       }
       else
       {
-        try
-        {
-          listener.doOtherEvent( this, createAccountRequest( request ), createAccountAnswer( answer ) );
+        try {
+          listener.doOtherEvent(this, createAccountRequest(request), createAccountAnswer(answer));
         }
-        catch ( Exception e ) {
-          logger.debug( e );
+        catch (Exception e) {
+          logger.debug(e.getMessage(), e);
         }
       }      
     }
 
-    public void timeoutExpired( Request request )
-    {
+    public void timeoutExpired(Request request) {
       // FIXME: alexandre: We don't do anything here... are we even getting this on server?      
     }
 

@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Set;
 import java.util.Map;
-import java.util.logging.Level;
 
 public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl implements IPeer {
 
@@ -80,33 +79,23 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
     }
 
     public IConnection getConnection() {
-        return conn;
+        return connection;
     }
 
     public void addIncomingConnection(IConnection conn) {
         PeerState state = fsm.getState(PeerState.class);
         if (DOWN  ==  state || INITIAL == state) {
             conn.addConnectionListener(connListener);
-            if(logger.isLoggable(Level.FINE)) {
-              logger.log(Level.FINE,"Append external connection " + conn.getKey());
-            }
+            logger.debug("Append external connection {}", conn.getKey());
         } else {
-            if(logger.isLoggable(Level.FINE)) {
-              logger.log(Level.FINE, "Releasing connection " + conn.getKey());
-            }
+            logger.debug("Releasing connection {}", conn.getKey());
             incConnections.remove(conn.getKey());
             try {
                 conn.release();
             } catch (IOException e) {
-            	if(logger.isLoggable(Level.SEVERE))
-            	{
-            		logger.log(Level.SEVERE, "Can not close external connection", e);
-            	}
+              logger.debug("Can not close external connection", e);
             } finally {
-            	if(logger.isLoggable(Level.INFO))
-            	{
-            		logger.log(Level.INFO, "Close external connection");
-            	}
+              logger.debug("Close external connection");
             }
         }
     }
@@ -127,10 +116,8 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
     protected class LocalActionConext extends ActionContext {
 
         public void sendCeaMessage(int resultCode, Message cer,  String errMessage) throws TransportException, OverloadException {
-        	if(logger.isLoggable(Level.FINEST))
-        	{
-        		logger.log(Level.FINEST, "Send CEA message");
-        	}
+            logger.debug("Send CEA message");
+
             IMessage message = parser.createEmptyMessage( Message.CAPABILITIES_EXCHANGE_ANSWER, 0 );
             message.setRequest(false);
             message.setHopByHopIdentifier(cer.getHopByHopIdentifier());
@@ -152,30 +139,23 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
         }
 
         public int processCerMessage(String key, IMessage message) {
-        	if(logger.isLoggable(Level.FINE))
-        	{
-        		logger.fine("Processing CER");
-        	}
+          logger.debug("Processing CER");
+          
             int resultCode = ResultCode.SUCCESS;
             try {
-                if (conn == null || !conn.isConnected()) {
-                    conn = incConnections.get(key);
+                if (connection == null || !connection.isConnected()) {
+                  connection = incConnections.get(key);
                 }
                 // Process cer
                 Set<ApplicationId> newAppId = getCommonApplicationIds(message);
                 if (newAppId.isEmpty()) {
-                	if(logger.isLoggable(Level.FINE))
-                	{
-                		logger.fine("Processing CER failed... no common application, message AppIps:" + message.getApplicationIdAvps());
-                	}
+                    logger.debug("Processing CER failed... no common application, message AppIps {}", message.getApplicationIdAvps());
                     return ResultCode.NO_COMMON_APPLICATION;
                 }              
                 // Handshake
-                if ( !conn.getKey().equals(key) ) { // received cer by other connection
-                	if(logger.isLoggable(Level.FINE))
-                	{
-                		logger.fine("CER received by other connection " + key);
-                	}
+                if ( !connection.getKey().equals(key) ) { // received cer by other connection
+                    logger.debug("CER received by other connection {}", key);
+                    
                     switch( fsm.getState(PeerState.class) ) {
                         case DOWN:
                             resultCode = ResultCode.SUCCESS;
@@ -190,10 +170,9 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                                 } catch(Exception exc) {
                                     isLocalWin = true;
                                 }
-                                if(logger.isLoggable(Level.FINE))
-                            	{
-                                	logger.log(Level.FINE, "local peer is win - " + isLocalWin);
-                            	}
+                                
+                                logger.debug("local peer is win - {}", isLocalWin);
+                                
                             resultCode = 0;
                             if ( isLocalWin ) {
                                 IConnection c = incConnections.get(key);
@@ -201,18 +180,15 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                                 c.disconnect();
                                 incConnections.remove(key);
                             } else {
-                                conn.disconnect();  // close current connection and work with other connection
-                                conn.remConnectionListener(connListener);
-                                conn = incConnections.remove(key);
+                                connection.disconnect();  // close current connection and work with other connection
+                                connection.remConnectionListener(connListener);
+                                connection = incConnections.remove(key);
                                 resultCode = ResultCode.SUCCESS;
                             }
                             break;
                     }
                 } else {
-                	if(logger.isLoggable(Level.FINE))
-                	{
-                		logger.fine("CER received by current connection");
-                	}
+                  logger.debug("CER received by current connection");
                     if ( fsm.getState(PeerState.class).equals(INITIAL)) // received cer by current connection
                         resultCode = 0; // NOP
                     incConnections.remove(key);
@@ -223,15 +199,10 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                     fillIPAddressTable(message);
                 }
             } catch(Exception exc) {
-            	if(logger.isLoggable(Level.SEVERE))
-            	{
-            		logger.log(Level.SEVERE, "Can not process CER",exc);
-            	}
+              logger.debug("Can not process CER", exc);
             }
-            if(logger.isLoggable(Level.FINE))
-        	{
-            	logger.fine("CER result " + resultCode);
-        	}
+            logger.debug("CER result {}", resultCode);
+            
             return resultCode;
         }
 
@@ -265,10 +236,7 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                             answer.setHopByHopIdentifier(request.getHopByHopIdentifier());
                         } else {
                             if (ovrManager != null && ovrManager.isParenAppOverload(request.getSingleApplicationId())) {
-                            	if(logger.isLoggable(Level.INFO))
-                            	{
-                            		logger.log(Level.INFO, "Request " + request + " skipped, because server application has overload");
-                            	}
+                            	  logger.debug("Request{} skipped, because server application has overload ", request);
                                 answer = (IMessage)request.createAnswer(ResultCode.TOO_BUSY);
                             } else {
                                 try {
@@ -279,10 +247,7 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                                     isProcessed = true;
                                 } catch (Exception exc) {
                                     resultCode = ResultCode.APPLICATION_UNSUPPORTED;
-                                    if(logger.isLoggable(Level.SEVERE))
-                                	{
-                                    	logger.log(Level.SEVERE, "Error during processing message by listener", exc);
-                                	}
+                                    logger.warn("Error during processing message by listener", exc);
                                 }
                             }
                         }
@@ -290,16 +255,10 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                             if (answer != null)
                                 sendMessage(answer);
                         } catch (Exception e) {
-                        	if(logger.isLoggable(Level.SEVERE))
-                        	{
-                        		logger.log(Level.SEVERE, "Can not send answer", e);
-                        	}
+                          logger.warn("Can not send answer", e);
                         }
                     } else {
-                    	if(logger.isLoggable(Level.WARNING))
-                    	{
-                    		logger.log(Level.WARNING, "Received message for unsupported Application-Id: " + appId);
-                    	}
+                        logger.warn( "Received message for unsupported Application-Id {}", appId);
                         resultCode = ResultCode.APPLICATION_UNSUPPORTED;
                     }
                 }
@@ -313,10 +272,7 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                 try {
                     sendMessage(request);
                 } catch (Exception e) {
-                	if(logger.isLoggable(Level.SEVERE))
-                	{
-                		logger.log(Level.SEVERE, "Can not send answer", e);
-                	}
+                  logger.debug("Can not send answer", e);
                 }
             }
             return isProcessed;

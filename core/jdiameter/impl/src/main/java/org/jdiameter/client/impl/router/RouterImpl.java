@@ -15,7 +15,9 @@ import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.controller.IPeerTable;
 import org.jdiameter.client.api.router.IRouter;
-import org.jdiameter.client.impl.helpers.Loggers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 
@@ -23,8 +25,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class RouterImpl implements IRouter {
 
@@ -36,7 +36,7 @@ public class RouterImpl implements IRouter {
     public static final int ALL_HOST = 5;
     public static final int ALL_USER = 6;
     //
-    protected Logger logger = Logger.getLogger(Loggers.Router.fullName());
+    protected Logger logger = LoggerFactory.getLogger(RouterImpl.class);
     protected MetaData metaData;
     //
     private ConcurrentHashMap<String, String[]> network = new ConcurrentHashMap<String, String[]>();
@@ -76,15 +76,17 @@ public class RouterImpl implements IRouter {
             String entry;
             for (Configuration c:items) {
                 entry = c.getStringValue(RealmEntry.ordinal(), null);
-                if (entry != null)
+                if (entry != null) {
                     try {
                         int pos = entry.indexOf(':');
                         String realm = entry.substring(0, pos).trim();
                         String[] hosts = entry.substring(pos + 1).split(",");
                         network.put(realm, hosts);
-                    } catch (Exception e) {
-                       logger.log(Level.WARNING, "Can not append realm entry", e);
                     }
+                    catch (Exception e) {
+                      logger.warn("Can not append realm entry", e);
+                    }
+                }
             }
         }
     }
@@ -97,8 +99,7 @@ public class RouterImpl implements IRouter {
             Avp realmAvp = request.getAvps().getAvp(Avp.ORIGIN_REALM);
             AnswerEntry entry = new AnswerEntry(
                             hopByHopId, hostAvp != null ? hostAvp.getOctetString() : null,
-                            realmAvp != null ? realmAvp.getOctetString() : null
-            );
+                            realmAvp != null ? realmAvp.getOctetString() : null);
             requestEntryTable.put(hopByHopId, entry);
             requestSortedEntryTable.add(hopByHopId);
             if ( requestEntryTable.size() > REQUEST_TABLE_SIZE) {
@@ -107,8 +108,9 @@ public class RouterImpl implements IRouter {
                 requestEntryTable.remove( lastKey );
               }
             }
-        } catch (Exception e) {
-            logger.log(Level.FINE, "Can not store route info", e);
+        }
+        catch (Exception e) {
+          logger.warn("Can not store route info", e);
         } finally{
             requestLock.readLock().unlock();
         }
@@ -118,12 +120,10 @@ public class RouterImpl implements IRouter {
         requestLock.writeLock().lock();
         AnswerEntry ans = requestEntryTable.get( hopByHopIdentifier );
         requestLock.writeLock().unlock();
-        if (ans != null)
-        {
+        if (ans != null) {
         	return new String[] {ans.getHost(), ans.getRealm()};
         }
-        else
-        {
+        else {
             return null;
         }
     }
@@ -223,19 +223,24 @@ public class RouterImpl implements IRouter {
         	}
         }else {
             Avp avpRealm = message.getAvps().getAvp(Avp.DESTINATION_REALM);
-            if (avpRealm == null)
+            if (avpRealm == null) {
                 throw new RouteException("Destination realm avp is empty");
+            }
             destRealm = avpRealm.getOctetString();
 
             Avp avpHost = message.getAvps().getAvp(Avp.DESTINATION_HOST);
-            if (avpHost != null)
+            if (avpHost != null) {
                 destHost = avpHost.getOctetString();
+            }
+            logger.debug("DestHost={}, DestRealm={}", new Object[] {destHost, destRealm});
         }
         
         IPeer peer = getPeerPredProcessing(message, destRealm, destHost);
 
-        if (peer != null) return peer;
-
+        if (peer != null) {
+          logger.debug("Found during preprocessing...{}", peer);
+          return peer;
+        }
 
         // Check realm name
         if ( !checkRealm(destRealm) )
@@ -244,17 +249,21 @@ public class RouterImpl implements IRouter {
         // Redirect processing
         redirectProcessing(message, destRealm, destHost);
         // Check previous context information
-        if (message.getPeer() != null && destHost != null && destHost.equals(message.getPeer().getUri()) &&
+        if (message.getPeer() != null && destHost != null && destHost.equals(message.getPeer().getUri().getFQDN()) &&
                 message.getPeer().hasValidConnection()) {
 
+            logger.debug("Select previous message usage peer {}", message.getPeer());
             return message.getPeer();
         }
 
         // Balansing procedure
         IPeer c = destHost != null ? manager.getPeerByName(destHost) : null;
         if (c != null && c.hasValidConnection() ) {
+            logger.debug("Select peer by destination host avp [{}] peer {}", new Object[] {destHost, message.getPeer()});
             return c;
-        } else {
+        }
+        else {
+            logger.debug("Peer by destination host avp [host={},peer={}] has no valid connection ", destHost, c);
             String peers[] = getRealmPeers(destRealm);
             if (peers == null || peers.length == 0)
                 throw new RouteException("Can not find context by route information [" + destRealm + " ," + destHost + "]");
@@ -265,6 +274,8 @@ public class RouterImpl implements IRouter {
                 if (localPeer != null && localPeer.hasValidConnection())
                     avaliblePeers.add(localPeer);
             }
+            logger.debug("Realm {} has avaliable following peers {} from list {}", new Object[] {destRealm  , avaliblePeers, Arrays.asList(peers)});
+            
             // Balansing
             peer = selectPeer(avaliblePeers);
             if (peer == null)
@@ -324,7 +335,7 @@ public class RouterImpl implements IRouter {
         return p;
     }
 
-    protected void redirectProcessing(IMessage message, String destRealm, String destHost) throws AvpDataException {
+    protected void redirectProcessing(IMessage message, final String destRealm, final String destHost) throws AvpDataException {
         String userName = null;
         // get Session id
         String sessionId = message.getSessionId();
@@ -366,9 +377,12 @@ public class RouterImpl implements IRouter {
             }
             // Update message redirect information
             if (isContinue) {
-                destHost  = e.getRedirectHost();
-                destRealm = getRealmForPeer(destHost);
-                setRouteInfo(message, destRealm, destHost);
+              String newDestHost  = e.getRedirectHost();
+              // FIXME: Alexandre: Should use newDestHost? 
+              String newDestRealm = getRealmForPeer(destHost);
+              setRouteInfo(message, destRealm, newDestHost);
+              logger.debug("Redirect message from host={}; realm={} to new-host={}; new-realm={}",
+              new Object[] {destHost, destRealm, newDestHost, newDestRealm});
             }
         }
     }
@@ -455,15 +469,17 @@ public class RouterImpl implements IRouter {
 
         public boolean equals(Object other) {
 
-            if (other == this)
+            if (other == this) {
                 return true;
+            }
 
             if (other instanceof RedirectEntry) {
                 RedirectEntry that = (RedirectEntry) other;
                 return liveTime == that.liveTime && usageType == that.usageType &&
                         Arrays.equals(hosts, that.hosts) && !(primaryKey != null ? !primaryKey.equals(that.primaryKey) : that.primaryKey != null) &&
                         !(secondaryKey != null ? !secondaryKey.equals(that.secondaryKey) : that.secondaryKey != null);
-            } else {
+            }
+            else {
                 return false;
             }
         }
@@ -505,18 +521,19 @@ public class RouterImpl implements IRouter {
 
 
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+              return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+              return false;
+            }
             AnswerEntry that = (AnswerEntry) o;
             return hopByHopId == that.hopByHopId;
         }
 
 
         public String toString() {
-            return "AnswerEntry{" +
-                    "createTime=" + createTime +
-                    ", hopByHopId=" + hopByHopId +
-                    '}';
+            return "AnswerEntry{" + "createTime=" + createTime + ", hopByHopId=" + hopByHopId + '}';
         }
     }
 }

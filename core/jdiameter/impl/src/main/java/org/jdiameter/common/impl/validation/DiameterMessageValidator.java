@@ -36,6 +36,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -50,6 +52,8 @@ import org.w3c.dom.NodeList;
  */
 public class DiameterMessageValidator {
 
+  private Logger logger = LoggerFactory.getLogger(DiameterMessageValidator.class);
+  
 	private static final DiameterMessageValidator instance = new DiameterMessageValidator();
 	private static final String fileName = "validator.xml";
 	private Map<MessageRepresentation, MessageRepresentation> configuredMessageTypes = new TreeMap<MessageRepresentation, MessageRepresentation>();
@@ -122,18 +126,17 @@ public class DiameterMessageValidator {
 									avpList.put(ap, ap);
 								}
 							} catch (Exception e) {
-								e.printStackTrace();
+								logger.warn("Failed to parse AVP values.", e);
 							}
 						}
 
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+          logger.warn("Failed to parse Message values.", e);
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+      logger.warn("Failed to parse InputStream.", e);
 		}
 
 	}

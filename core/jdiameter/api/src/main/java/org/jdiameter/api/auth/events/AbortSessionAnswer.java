@@ -17,10 +17,10 @@ import org.jdiameter.api.app.AppAnswerEvent;
  */
 
 public interface AbortSessionAnswer extends AppAnswerEvent {
-	
-	public static final String _SHORT_NAME = "ASA";
-	public static final String _LONG_NAME = "Abort-Session-Answer";
-	
-	public static final int code = 274;
-	
+
+  public static final String _SHORT_NAME = "ASA";
+  public static final String _LONG_NAME = "Abort-Session-Answer";
+
+  public static final int code = 274;
+
 }

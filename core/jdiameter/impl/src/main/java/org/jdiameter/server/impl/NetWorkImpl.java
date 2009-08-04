@@ -1,20 +1,33 @@
 package org.jdiameter.server.impl;
 
-import org.jdiameter.api.*;
+import static org.jdiameter.server.impl.helpers.StatisticTypes.NET_APPID_LIST_COUNTER;
+import static org.jdiameter.server.impl.helpers.StatisticTypes.NET_SELECTOR_LIST_COUNTER;
+
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.jdiameter.api.ApplicationAlreadyUseException;
+import org.jdiameter.api.ApplicationId;
+import org.jdiameter.api.InternalException;
+import org.jdiameter.api.LocalAction;
+import org.jdiameter.api.Message;
+import org.jdiameter.api.NetworkReqListener;
+import org.jdiameter.api.Peer;
+import org.jdiameter.api.Realm;
+import org.jdiameter.api.Selector;
+import org.jdiameter.api.Statistic;
+import org.jdiameter.api.StatisticRecord;
+import org.jdiameter.api.URI;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.server.api.IMetaData;
 import org.jdiameter.server.api.IMutablePeerTable;
 import org.jdiameter.server.api.INetwork;
 import org.jdiameter.server.api.IRouter;
-import org.jdiameter.server.impl.helpers.Loggers;
-import static org.jdiameter.server.impl.helpers.StatisticTypes.*;
-
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NetWorkImpl implements INetwork {
 
-    protected Logger logger = Logger.getLogger(Loggers.NetWork.fullName());
+  protected Logger logger = LoggerFactory.getLogger(NetWorkImpl.class);
 
     protected IMutablePeerTable manager;
     protected IRouter router;

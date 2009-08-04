@@ -9,15 +9,15 @@
  */
 package org.jdiameter.client.api;
 
-import org.jdiameter.api.Session;
 import org.jdiameter.api.NetworkReqListener;
+import org.jdiameter.api.Session;
 
 /**
  * This interface describe extends methods of base class
- * Data: $Date: 2009/07/12 18:35:35 $
- * Revision: $Revision: 1.2 $
+ * Data: $Date: 2009/07/27 18:05:03 $
+ * Revision: $Revision: 1.3 $
  * @version 1.5.0.1
  */
 public interface ISession extends Session {
-    NetworkReqListener getReqListener();    
+  NetworkReqListener getReqListener();    
 }
