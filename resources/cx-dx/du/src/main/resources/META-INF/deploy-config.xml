@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deploy-config>
+  <ra-entity resource-adaptor-id="DiameterCxDxResourceAdaptor#net.java#0.8.1" entity-name="DiameterCxDx">
+    <properties file="" />
+    <ra-link name="DiameterCxDx" />
+  </ra-entity>
+</deploy-config>

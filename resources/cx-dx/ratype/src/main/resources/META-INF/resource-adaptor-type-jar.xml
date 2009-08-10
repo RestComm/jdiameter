@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE resource-adaptor-type-jar PUBLIC "-//Sun Microsystems, Inc.//DTD JAIN SLEE Resource Adaptor Type 1.0//EN" "http://java.sun.com/dtd/slee-resource-adaptor-type-jar_1_0.dtd">
+
+<resource-adaptor-type-jar>
+
+  <resource-adaptor-type>
+    <description>Diameter Cx/Dx RA Type</description>
+    <resource-adaptor-type-name>DiameterCxDx</resource-adaptor-type-name>
+    <resource-adaptor-type-vendor>java.net</resource-adaptor-type-vendor>
+    <resource-adaptor-type-version>0.8.1</resource-adaptor-type-version>
+
+    <resource-adaptor-type-classes>
+      <activity-type>
+        <activity-type-name>java.lang.Object</activity-type-name>
+      </activity-type>
+
+      <activity-context-interface-factory-interface>
+        <activity-context-interface-factory-interface-name>
+          net.java.slee.resource.diameter.cxdx.CxDxActivityContextInterfaceFactory
+        </activity-context-interface-factory-interface-name>
+      </activity-context-interface-factory-interface>
+
+      <resource-adaptor-interface>
+        <resource-adaptor-interface-name>net.java.slee.resource.diameter.cxdx.CxDxProvider</resource-adaptor-interface-name>
+      </resource-adaptor-interface>
+    </resource-adaptor-type-classes>
+
+  <event-type-ref>
+    <event-type-name>net.java.slee.resource.diameter.cxdx.events.UserAuthorizationRequest</event-type-name>
+    <event-type-vendor>java.net</event-type-vendor>
+    <event-type-version>0.8</event-type-version>
+  </event-type-ref>
+
+  <event-type-ref>
+    <event-type-name>net.java.slee.resource.diameter.cxdx.events.UserAuthorizationAnswer</event-type-name>
+    <event-type-vendor>java.net</event-type-vendor>
+    <event-type-version>0.8</event-type-version>
+  </event-type-ref>
+
+  <event-type-ref>
+    <event-type-name>net.java.slee.resource.diameter.cxdx.events.ServerAssignmentRequest</event-type-name>
+    <event-type-vendor>java.net</event-type-vendor>
+    <event-type-version>0.8</event-type-version>
+  </event-type-ref>
+
+  <event-type-ref>
+    <event-type-name>net.java.slee.resource.diameter.cxdx.events.ServerAssignmentAnswer</event-type-name>
+    <event-type-vendor>java.net</event-type-vendor>
+    <event-type-version>0.8</event-type-version>
+  </event-type-ref>
+
+  <event-type-ref>
+    <event-type-name>net.java.slee.resource.diameter.cxdx.events.LocationInfoRequest</event-type-name>
+    <event-type-vendor>java.net</event-type-vendor>
+    <event-type-version>0.8</event-type-version>
+  </event-type-ref>
+
+  <event-type-ref>
+    <event-type-name>net.java.slee.resource.diameter.cxdx.events.LocationInfoAnswer</event-type-name>
+    <event-type-vendor>java.net</event-type-vendor>
+    <event-type-version>0.8</event-type-version>
+  </event-type-ref>
+
+  <event-type-ref>
+    <event-type-name>net.java.slee.resource.diameter.cxdx.events.MultimediaAuthenticationRequest</event-type-name>
+    <event-type-vendor>java.net</event-type-vendor>
+    <event-type-version>0.8</event-type-version>
+  </event-type-ref>
+
+  <event-type-ref>
+    <event-type-name>net.java.slee.resource.diameter.cxdx.events.MultimediaAuthenticationAnswer</event-type-name>
+    <event-type-vendor>java.net</event-type-vendor>
+    <event-type-version>0.8</event-type-version>
+  </event-type-ref>
+
+  <event-type-ref>
+    <event-type-name>net.java.slee.resource.diameter.cxdx.events.RegistrationTerminationRequest</event-type-name>
+    <event-type-vendor>java.net</event-type-vendor>
+    <event-type-version>0.8</event-type-version>
+  </event-type-ref>
+
+  <event-type-ref>
+    <event-type-name>net.java.slee.resource.diameter.cxdx.events.RegistrationTerminationAnswer</event-type-name>
+    <event-type-vendor>java.net</event-type-vendor>
+    <event-type-version>0.8</event-type-version>
+  </event-type-ref>
+
+  <event-type-ref>
+    <event-type-name>net.java.slee.resource.diameter.cxdx.events.PushProfileRequest</event-type-name>
+    <event-type-vendor>java.net</event-type-vendor>
+    <event-type-version>0.8</event-type-version>
+  </event-type-ref>
+
+  <event-type-ref>
+    <event-type-name>net.java.slee.resource.diameter.cxdx.events.PushProfileAnswer</event-type-name>
+    <event-type-vendor>java.net</event-type-vendor>
+    <event-type-version>0.8</event-type-version>
+  </event-type-ref>
+
+  </resource-adaptor-type>
+
+</resource-adaptor-type-jar>
