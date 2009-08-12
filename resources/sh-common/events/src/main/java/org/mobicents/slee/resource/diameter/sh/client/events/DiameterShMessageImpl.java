@@ -98,11 +98,6 @@ public class DiameterShMessageImpl extends DiameterMessageImpl implements Diamet
     }
   }
 
-  public SupportedFeaturesAvp getSupportedFeatures()
-  {
-    return (SupportedFeaturesAvp) getAvpAsCustom(DiameterShAvpCodes.SUPPORTED_FEATURES, DiameterShAvpCodes.SH_VENDOR_ID, SupportedFeaturesAvpImpl.class);
-  }
-
   /* (non-Javadoc)
 	 * @see net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest#hasDataReferenceType()
 	 */

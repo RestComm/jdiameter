@@ -1,7 +1,6 @@
 package net.java.slee.resource.diameter.cca;
 
 import net.java.slee.resource.diameter.base.DiameterMessageFactory;
-import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
 import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
 

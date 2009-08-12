@@ -176,7 +176,7 @@ public interface MultimediaAuthenticationRequest extends DiameterMessage {
    * Returns the value of the SIP-Number-Auth-Items AVP, of type Unsigned32.
    * A return value of null implies that the AVP has not been set.
    */
-  SIPAuthDataItem getSIPNumberAuthItems();
+  long getSIPNumberAuthItems();
 
   /**
    * Sets the value of the SIP-Number-Auth-Items AVP, of type Unsigned32.

@@ -27,8 +27,6 @@
 package net.java.slee.resource.diameter.sh.client.events.avp;
 
 
-import java.util.Iterator;
-
 import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
 
 /**
@@ -56,7 +54,7 @@ import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
  * of the Feature-List-ID AVP to identify the feature list. 
  * 
  * AVP format
- * Supported-Features ::=  &lt; AVP Header: 628 10415 &gt;
+ * Supported-Features ::=  < AVP Header: 628 10415 >
  *                         { Vendor-Id }
  *                         { Feature-List-ID }
  *                         { Feature-List }
@@ -65,56 +63,56 @@ import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
  */
 public interface SupportedFeaturesAvp extends GroupedAvp {
 
-    /**
-     * Returns true if the Vendor-Id AVP is present in the message.
-     */
-    public boolean hasVendorId();
+  /**
+   * Returns true if the Vendor-Id AVP is present in the message.
+   */
+  public boolean hasVendorId();
 
-    /**
-     * Returns the value of the Vendor-Id AVP, of type Unsigned32.
-     * A return value of null implies that the AVP has not been set.
-     */
-    public long getVendorId();
+  /**
+   * Returns the value of the Vendor-Id AVP, of type Unsigned32.
+   * A return value of null implies that the AVP has not been set.
+   */
+  public long getVendorId();
 
-    /**
-     * Sets the value of the Vendor-Id AVP, of type Unsigned32.
-     * @throws IllegalStateException if setVendorId has already been called
-     */
-    public void setVendorId(long vendorId);
+  /**
+   * Sets the value of the Vendor-Id AVP, of type Unsigned32.
+   * @throws IllegalStateException if setVendorId has already been called
+   */
+  public void setVendorId(long vendorId);
 
-    /**
-     * Returns true if the Feature-List-ID AVP is present in the message.
-     */
-    public boolean hasFeatureListId();
+  /**
+   * Returns true if the Feature-List-ID AVP is present in the message.
+   */
+  public boolean hasFeatureListId();
 
-    /**
-     * Returns the value of the Feature-List-ID AVP, of type Unsigned32.
-     * A return value of null implies that the AVP has not been set.
-     */
-    public long getFeatureListId();
+  /**
+   * Returns the value of the Feature-List-ID AVP, of type Unsigned32.
+   * A return value of null implies that the AVP has not been set.
+   */
+  public long getFeatureListId();
 
-    /**
-     * Sets the value of the Feature-List-ID AVP, of type Unsigned32.
-     * @throws IllegalStateException if setFeatureListId has already been called
-     */
-    public void setFeatureListId(long featureListId);
+  /**
+   * Sets the value of the Feature-List-ID AVP, of type Unsigned32.
+   * @throws IllegalStateException if setFeatureListId has already been called
+   */
+  public void setFeatureListId(long featureListId);
 
-    /**
-     * Returns true if the Feature-List AVP is present in the message.
-     */
-    public boolean hasFeatureList();
+  /**
+   * Returns true if the Feature-List AVP is present in the message.
+   */
+  public boolean hasFeatureList();
 
-    /**
-     * Returns the value of the Feature-List AVP, of type Unsigned32.
-     * A return value of null implies that the AVP has not been set.
-     */
-    public long getFeatureList();
+  /**
+   * Returns the value of the Feature-List AVP, of type Unsigned32.
+   * A return value of null implies that the AVP has not been set.
+   */
+  public long getFeatureList();
 
-    /**
-     * Sets the value of the Feature-List AVP, of type Unsigned32.
-     * @throws IllegalStateException if setFeatureList has already been called
-     */
-    public void setFeatureList(long featureList);
+  /**
+   * Sets the value of the Feature-List AVP, of type Unsigned32.
+   * @throws IllegalStateException if setFeatureList has already been called
+   */
+  public void setFeatureList(long featureList);
 
 
 }

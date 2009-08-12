@@ -101,7 +101,7 @@ public interface LocationInfoRequest extends DiameterMessage {
    * @throws IllegalStateException
    *             if setOriginatingRequest has already been called
    */
-  void setOriginatingRequest(OriginatingRequest authSessionState);
+  void setOriginatingRequest(OriginatingRequest originatingRequest);
 
   /**
    * Returns the set of Supported-Features AVPs. The returned array contains

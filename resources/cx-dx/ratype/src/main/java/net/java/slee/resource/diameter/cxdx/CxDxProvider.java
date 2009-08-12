@@ -9,7 +9,6 @@ import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
  *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
- * @author <a href="mailto:emmartins@gmail.com"> Eduardo Martins </a>
  */
 public interface CxDxProvider {
 
@@ -19,7 +18,7 @@ public interface CxDxProvider {
    * routing AVPs (one or both of Destination-Realm and Destination-Host as
    * defined by RFC3588).
    * 
-   * @return a instance of a CreditControlClientSession to send credit control messages
+   * @return a instance of a CxDxClientSession to send credit control messages
    */
   CxDxClientSession createClientSession()throws CreateActivityException;
 
@@ -31,7 +30,7 @@ public interface CxDxProvider {
    * 
    * @param destinationHost a destination host to automatically put in all messages, may be null if not needed
    * @param destinationRealm a destination realm to automatically put in all messages
-   * @return a instance of a CreditControlClientSession to send credit control messages
+   * @return a instance of a CxDxClientSession to send credit control messages
    * @throws CreateActivityException 
    */
   CxDxClientSession createClientSession(DiameterIdentity destinationHost, DiameterIdentity destinationRealm) throws CreateActivityException;
@@ -42,7 +41,7 @@ public interface CxDxProvider {
    * routing AVPs (one or both of Destination-Realm and Destination-Host as
    * defined by RFC3588).
    * 
-   * @return a instance of a CreditControlClientSession to send credit control messages
+   * @return a instance of a CxDxServerSession to send credit control messages
    */
   CxDxServerSession createServerSession()throws CreateActivityException;
 
@@ -54,36 +53,34 @@ public interface CxDxProvider {
    * 
    * @param destinationHost a destination host to automatically put in all messages, may be null if not needed
    * @param destinationRealm a destination realm to automatically put in all messages
-   * @return a instance of a CreditControlClientSession to send credit control messages
+   * @return a instance of a CxDxServerSession to send credit control messages
    * @throws CreateActivityException 
    */
   CxDxServerSession createServerSession(DiameterIdentity destinationHost, DiameterIdentity destinationRealm) throws CreateActivityException;
 
   /**
-   * Return a message factory to be used to create credit control messages
+   * Return a message factory to be used to create Cx/Dx messages
    * 
-   * @return a CreditControlMessageFactory implementation
+   * @return a CxDxMessageFactory implementation
    */
   CxDxMessageFactory getCxDxMessageFactory();
 
   /**
-   * Return a AVP factory to be used to create credit control AVPs
+   * Return a AVP factory to be used to create Cx/Dx AVPs
    * 
-   * @return a CreditControlAVPFactory implementation
+   * @return a CxDxAVPFactory implementation
    */
   CxDxAVPFactory getCxDxAVPFactory();
 
   /**
-   * Return the number of peers this Diameter resource adaptor is connected
-   * to.
+   * Return the number of peers this Diameter resource adaptor is connected to.
    * 
    * @return connected peer count
    */
   int getPeerCount();
 
   /**
-   * Returns array containing identities of connected peers FIXME: baranowb; -
-   * should it be InetAddres, Port pair?
+   * Returns array containing identities of connected peers.
    * 
    * @return
    */

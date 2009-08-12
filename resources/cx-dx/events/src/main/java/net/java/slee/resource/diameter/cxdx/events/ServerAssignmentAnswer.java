@@ -260,21 +260,21 @@ public interface ServerAssignmentAnswer extends DiameterMessage {
   void setLooseRouteIndication(LooseRouteIndication looseRouteIndication);
 
   /**
-   * Returns the value of the SCSCF-Restoration-Info AVP, of type Enumerated.
+   * Returns the value of the SCSCF-Restoration-Info AVP, of type Grouped.
    * 
    * @return the value of the SCSCF-Restoration-Info AVP or null if it has not been set on this message
    */
   SCSCFRestorationInfo[] getSCSCFRestorationInfos();
 
   /**
-   * Sets the value of the SCSCF-Restoration-Info AVP, of type Enumerated.
+   * Sets the value of the SCSCF-Restoration-Info AVP, of type Grouped.
    * 
    * @throws IllegalStateException if setSCSCFRestorationInfo has already been called
    */
   void setSCSCFRestorationInfo(SCSCFRestorationInfo scscfRestorationInfo);
 
   /**
-   * Sets the value of the SCSCF-Restoration-Info AVP, of type Enumerated.
+   * Sets the value of the SCSCF-Restoration-Info AVP, of type Grouped.
    * 
    * @throws IllegalStateException if setSCSCFRestorationInfo has already been called
    */

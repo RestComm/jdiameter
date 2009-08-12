@@ -171,14 +171,4 @@ public interface DiameterShMessage extends DiameterMessage {
 	 */
 	void setSupportedFeatureses(SupportedFeaturesAvp[] supportedFeatureses);
 
-	/**
-	 * Returns the set of Supported-Features AVPs. The returned array contains
-	 * the AVPs in the order they appear in the message. A return value of null
-	 * implies that no Supported-Features AVPs have been set. The elements in
-	 * the given array are SupportedFeatures objects.
-	 */
-	SupportedFeaturesAvp getSupportedFeatures();
-
-	
-	
 }
