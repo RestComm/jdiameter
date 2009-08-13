@@ -54,6 +54,8 @@ import net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp
  */
 public interface ServerAssignmentAnswer extends DiameterMessage {
 
+  public static final int COMMAND_CODE = 301;
+
   /**
    * Returns true if the Vendor-Specific-Application-Id AVP is present in the
    * message.

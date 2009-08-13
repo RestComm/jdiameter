@@ -81,7 +81,7 @@ public class ServerAssignmentRequestImpl extends DiameterMessageImpl implements 
    * @see net.java.slee.resource.diameter.cxdx.events.ServerAssignmentRequest#getServerAssignmentType()
    */
   public ServerAssignmentType getServerAssignmentType() {
-    return (ServerAssignmentType) getAvpAsEnumerated(SERVER_ASSIGNMENT_TYPE, ServerAssignmentType.class);
+    return (ServerAssignmentType) getAvpAsEnumerated(SERVER_ASSIGNMENT_TYPE, CXDX_VENDOR_ID, ServerAssignmentType.class);
   }
 
   /* (non-Javadoc)
@@ -216,7 +216,7 @@ public class ServerAssignmentRequestImpl extends DiameterMessageImpl implements 
    * @see net.java.slee.resource.diameter.cxdx.events.ServerAssignmentRequest#setServerAssignmentType(net.java.slee.resource.diameter.cxdx.events.avp.ServerAssignmentType)
    */
   public void setServerAssignmentType(ServerAssignmentType serverAssignmentType) {
-    addAvp(SCSCF_RESTORATION_INFO, CXDX_VENDOR_ID, (long)serverAssignmentType.getValue());
+    addAvp(SERVER_ASSIGNMENT_TYPE, CXDX_VENDOR_ID, (long)serverAssignmentType.getValue());
   }
 
   /* (non-Javadoc)

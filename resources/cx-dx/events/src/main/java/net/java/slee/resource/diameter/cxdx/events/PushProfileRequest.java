@@ -44,6 +44,8 @@ import net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp
  */
 public interface PushProfileRequest extends DiameterMessage {
 
+  public static final int COMMAND_CODE = 305;
+
   /**
    * Returns true if the Vendor-Specific-Application-Id AVP is present in the
    * message.

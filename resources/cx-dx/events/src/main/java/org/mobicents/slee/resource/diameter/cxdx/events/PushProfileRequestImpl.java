@@ -122,14 +122,14 @@ public class PushProfileRequestImpl extends DiameterMessageImpl implements PushP
    * @see net.java.slee.resource.diameter.cxdx.events.PushProfileRequest#setChargingInformation(net.java.slee.resource.diameter.cxdx.events.avp.ChargingInformation)
    */
   public void setChargingInformation(ChargingInformation chargingInformation) {
-    addAvp(CHARGING_INFORMATION, chargingInformation.byteArrayValue());
+    addAvp(CHARGING_INFORMATION, CXDX_VENDOR_ID, chargingInformation.byteArrayValue());
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.cxdx.events.PushProfileRequest#setSIPAuthDataItem(net.java.slee.resource.diameter.cxdx.events.avp.SIPAuthDataItem)
    */
   public void setSIPAuthDataItem(SIPAuthDataItem sipAuthDataItem) {
-    addAvp(SIP_AUTH_DATA_ITEM, sipAuthDataItem.byteArrayValue());
+    addAvp(SIP_AUTH_DATA_ITEM, CXDX_VENDOR_ID, sipAuthDataItem.byteArrayValue());
   }
 
   /* (non-Javadoc)
@@ -152,7 +152,7 @@ public class PushProfileRequestImpl extends DiameterMessageImpl implements PushP
    * @see net.java.slee.resource.diameter.cxdx.events.PushProfileRequest#setUserData(java.lang.String)
    */
   public void setUserData(String userData) {
-    addAvp(USER_DATA, userData);
+    addAvp(USER_DATA, CXDX_VENDOR_ID, userData);
   }
 
 }

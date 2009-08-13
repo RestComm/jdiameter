@@ -121,7 +121,7 @@ public class RegistrationTerminationRequestImpl extends DiameterMessageImpl impl
    * @see net.java.slee.resource.diameter.cxdx.events.RegistrationTerminationRequest#setDeregistrationReason(net.java.slee.resource.diameter.cxdx.events.avp.DeregistrationReason)
    */
   public void setDeregistrationReason(DeregistrationReason publicIdentity) {
-    addAvp(DEREGISTRATION_REASON, publicIdentity.byteArrayValue());
+    addAvp(DEREGISTRATION_REASON, CXDX_VENDOR_ID, publicIdentity.byteArrayValue());
   }
 
   /* (non-Javadoc)
@@ -137,7 +137,7 @@ public class RegistrationTerminationRequestImpl extends DiameterMessageImpl impl
    * @see net.java.slee.resource.diameter.cxdx.events.RegistrationTerminationRequest#setPublicIdentity(java.lang.String)
    */
   public void setPublicIdentity(String publicIdentity) {
-    addAvp(PUBLIC_IDENTITY, publicIdentity);
+    addAvp(PUBLIC_IDENTITY, CXDX_VENDOR_ID, publicIdentity);
   }
 
   /* (non-Javadoc)

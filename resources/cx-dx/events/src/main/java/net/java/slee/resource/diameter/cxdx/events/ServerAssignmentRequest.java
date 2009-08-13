@@ -49,6 +49,8 @@ import net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp
  */
 public interface ServerAssignmentRequest extends DiameterMessage {
 
+  public static final int COMMAND_CODE = 301;
+
   /**
    * Returns true if the Vendor-Specific-Application-Id AVP is present in the
    * message.
@@ -265,14 +267,14 @@ public interface ServerAssignmentRequest extends DiameterMessage {
   boolean hasSCSCFRestorationInfo();
 
   /**
-   * Returns the value of the SCSCF-Restoration-Info AVP, of type Enumerated.
+   * Returns the value of the SCSCF-Restoration-Info AVP, of type Grouped.
    * 
    * @return the value of the SCSCF-Restoration-Info AVP or null if it has not been set on this message
    */
   SCSCFRestorationInfo getSCSCFRestorationInfo();
 
   /**
-   * Sets the value of the SCSCF-Restoration-Info AVP, of type Enumerated.
+   * Sets the value of the SCSCF-Restoration-Info AVP, of type Grouped.
    * 
    * @throws IllegalStateException if setSCSCFRestorationInfo has already been called
    */
