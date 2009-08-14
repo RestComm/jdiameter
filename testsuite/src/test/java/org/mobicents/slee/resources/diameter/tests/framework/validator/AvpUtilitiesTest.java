@@ -1,10 +1,3 @@
-/**
- * Start time:14:15:19 2009-05-27<br>
- * Project: diameter-parent<br>
- * 
- * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
- */
 package org.mobicents.slee.resources.diameter.tests.framework.validator;
 
 import static org.jdiameter.client.impl.helpers.Parameters.AcctApplId;
@@ -48,8 +41,7 @@ import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
  * Start time:14:15:19 2009-05-27<br>
  * Project: diameter-parent<br>
  * 
- * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
- *         </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class AvpUtilitiesTest {
@@ -85,7 +77,7 @@ public class AvpUtilitiesTest {
 	@Test
 	public void testOperationsAddWithValidatorOnAndRemovalAllowed() {
 		AvpUtilities.allowRemove(true);
-		instance.parseConfiguration(this.getClass().getClassLoader().getResourceAsStream(validatorOnFile));
+		instance.parseConfiguration(this.getClass().getClassLoader().getResourceAsStream(validatorOnFile),true);
 		// It has session id
 		AccountingRequestImpl request = (AccountingRequestImpl) baseFactory.createAccountingRequest();
 
@@ -215,7 +207,7 @@ public class AvpUtilitiesTest {
 	@Test
 	public void testOperationsAddWithValidatorOnAndRemovalNotAllowed() {
 		AvpUtilities.allowRemove(false);
-		instance.parseConfiguration(this.getClass().getClassLoader().getResourceAsStream(validatorOnFile));
+		instance.parseConfiguration(this.getClass().getClassLoader().getResourceAsStream(validatorOnFile),true);
 		// It has session id
 		AccountingRequestImpl request = (AccountingRequestImpl) baseFactory.createAccountingRequest(new DiameterAvpImpl[]{new DiameterAvpImpl(263, 0L, 0, 1, "xxx".getBytes(), DiameterAvpType.UTF8_STRING)});
 
@@ -359,7 +351,7 @@ public class AvpUtilitiesTest {
 	@Test
 	public void testOperationsAddWithValidatorOffAndRemovalAllowed() {
 		AvpUtilities.allowRemove(true);
-		instance.parseConfiguration(this.getClass().getClassLoader().getResourceAsStream(validatorOffFile));
+		instance.parseConfiguration(this.getClass().getClassLoader().getResourceAsStream(validatorOffFile),true);
 		
 		// It has session id
 		AccountingRequestImpl request = (AccountingRequestImpl) baseFactory.createAccountingRequest(new DiameterAvpImpl[]{new DiameterAvpImpl(263, 0L, 0, 1, "xxx".getBytes(), DiameterAvpType.UTF8_STRING)});

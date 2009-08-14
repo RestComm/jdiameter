@@ -1,10 +1,3 @@
-/**
- * Start time:11:31:29 2009-05-26<br>
- * Project: diameter-parent<br>
- * 
- * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
- */
 package org.jdiameter.common.impl.validation;
 
 import org.jdiameter.common.api.DiameterRuntimeException;
@@ -15,6 +8,7 @@ import org.jdiameter.common.api.DiameterRuntimeException;
  * 
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @since 1.5.189
  */
 public class DiameterMessageNotValidException extends DiameterRuntimeException {
 

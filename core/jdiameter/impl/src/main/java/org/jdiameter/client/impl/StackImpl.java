@@ -59,6 +59,7 @@ public class StackImpl implements IContainer, StackImplMBean {
   protected IPeerTable peerManager;
   protected StackState state = StackState.IDLE;
   protected Lock lock = new ReentrantLock();
+  //This will create validator with basic validator xml
   protected DiameterMessageValidator validator = DiameterMessageValidator.getInstance();
   /**
    * Use for processing request time-out tasks (for all active peers)

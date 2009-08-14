@@ -1,10 +1,3 @@
-/**
- * Start time:12:10:24 2009-05-26<br>
- * Project: diameter-parent<br>
- * 
- * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
- */
 package org.jdiameter.common.impl.validation;
 
 import org.jdiameter.common.api.DiameterRuntimeException;
@@ -15,10 +8,13 @@ import org.jdiameter.common.api.DiameterRuntimeException;
  * 
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @since 1.5.189
  */
 public class JAvpNotAllowedException extends DiameterRuntimeException {
 
-	private int avpCode = -1;
+  private static final long serialVersionUID = 1L;
+  
+  private int avpCode = -1;
 	private long vendorId = -1l;
 
 	/**
