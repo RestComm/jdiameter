@@ -2,6 +2,8 @@ package net.java.slee.resource.diameter.cxdx;
 
 import javax.slee.ActivityContextInterface;
 
+import org.mobicents.slee.resource.ResourceAdaptorActivityContextInterfaceFactory;
+
 /**
  * 
  * CxDxActivityContextInterfaceFactory.java
@@ -9,7 +11,7 @@ import javax.slee.ActivityContextInterface;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
-public interface CxDxActivityContextInterfaceFactory {
+public interface CxDxActivityContextInterfaceFactory extends ResourceAdaptorActivityContextInterfaceFactory {
 
   /**
    * Method for obtaining a ACI wrapping the given Cx/Dx Client Session.
