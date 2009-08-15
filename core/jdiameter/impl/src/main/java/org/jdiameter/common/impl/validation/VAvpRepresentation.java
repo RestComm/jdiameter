@@ -131,6 +131,7 @@ public class VAvpRepresentation implements Cloneable {
 	 */
 	public VAvpRepresentation(int code, long vendor) {
 		super();
+
 		this.code = code;
 		this.vendor = vendor;
 		if (this.multiplicityIndicator.equals(_MP_NOT_ALLOWED))
@@ -140,6 +141,7 @@ public class VAvpRepresentation implements Cloneable {
 	public VAvpRepresentation(int positionIndex, int code, long vendor, String multiplicityIndicator, String name) {
 		super();
 		this.positionIndex = positionIndex;
+		
 		this.code = code;
 		this.vendor = vendor;
 		this.multiplicityIndicator = multiplicityIndicator;
@@ -152,6 +154,7 @@ public class VAvpRepresentation implements Cloneable {
 		super();
 		this.positionIndex = -1;
 		this.code = code;
+	
 		this.vendor = vendor;
 		this.multiplicityIndicator = _MP_ZERO_OR_MORE;
 		this.name = name;
@@ -164,9 +167,7 @@ public class VAvpRepresentation implements Cloneable {
 
 		// zero and more, since its definition.
 		this(-1, code, vendorId, _MP_ZERO_OR_MORE, name);
-		if (code == -1) {
-			throw new IllegalStateException("xxx");
-		}
+	
 		this.description = description;
 
 		this.mayEncrypt = mayEncrypt;
@@ -395,9 +396,11 @@ public class VAvpRepresentation implements Cloneable {
 
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-		VAvpRepresentation clone = (VAvpRepresentation) super.clone();
+		//VAvpRepresentation clone = (VAvpRepresentation) super.clone();
+		VAvpRepresentation clone = new VAvpRepresentation();
 		clone.allowed = this.allowed;
 		clone.code = this.code;
+
 		clone.grouped = this.grouped;
 		clone.multiplicityIndicator = this.multiplicityIndicator;
 		clone.name = this.name;
