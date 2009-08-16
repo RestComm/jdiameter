@@ -2360,7 +2360,7 @@ Note: The AVP codes from 524 to 599 are reserved for TS 29.209 and TS 29.211
 		</avp>
 		<avp name="PS-Furnish-Charging-Information" code="865" mandatory="must" may-encrypt="no" protected="mustnot" vendor-bit="must" vendor-id="TGPP">
 			<grouped>
-				<gavp name="GPRS-Charging-Id" />
+				<gavp name="3GPP-Charging-Id" />
 				<gavp name="PS-Free-Format-Data" />
 				<gavp name="PS-Append-Free-Format-Data" />
 			</grouped>
