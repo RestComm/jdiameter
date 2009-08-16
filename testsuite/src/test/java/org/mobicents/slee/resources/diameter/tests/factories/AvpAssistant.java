@@ -77,13 +77,16 @@ import net.java.slee.resource.diameter.cca.events.avp.SubscriptionIdAvp;
 import net.java.slee.resource.diameter.cca.events.avp.UnitValueAvp;
 import net.java.slee.resource.diameter.cca.events.avp.UsedServiceUnitAvp;
 import net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvp;
-//import net.java.slee.resource.diameter.cxdx.events.avp.AssociatedIdentities;
-//import net.java.slee.resource.diameter.cxdx.events.avp.AssociatedRegisteredIdentities;
-//import net.java.slee.resource.diameter.cxdx.events.avp.ChargingInformation;
-//import net.java.slee.resource.diameter.cxdx.events.avp.DeregistrationReason;
-//import net.java.slee.resource.diameter.cxdx.events.avp.DiameterCxDxAvpCodes;
-//import net.java.slee.resource.diameter.cxdx.events.avp.SCSCFRestorationInfo;
-//import net.java.slee.resource.diameter.cxdx.events.avp.SIPAuthDataItem;
+import net.java.slee.resource.diameter.cxdx.events.avp.AssociatedIdentities;
+import net.java.slee.resource.diameter.cxdx.events.avp.AssociatedRegisteredIdentities;
+import net.java.slee.resource.diameter.cxdx.events.avp.ChargingInformation;
+import net.java.slee.resource.diameter.cxdx.events.avp.DeregistrationReason;
+import net.java.slee.resource.diameter.cxdx.events.avp.DiameterCxDxAvpCodes;
+import net.java.slee.resource.diameter.cxdx.events.avp.RestorationInfo;
+import net.java.slee.resource.diameter.cxdx.events.avp.SCSCFRestorationInfo;
+import net.java.slee.resource.diameter.cxdx.events.avp.SIPAuthDataItem;
+import net.java.slee.resource.diameter.cxdx.events.avp.SIPDigestAuthenticate;
+import net.java.slee.resource.diameter.cxdx.events.avp.SubscriptionInfo;
 import net.java.slee.resource.diameter.ro.events.avp.AdditionalContentInformation;
 import net.java.slee.resource.diameter.ro.events.avp.AddressDomain;
 import net.java.slee.resource.diameter.ro.events.avp.ApplicationServerInformation;
@@ -142,12 +145,15 @@ import org.mobicents.slee.resource.diameter.cca.events.avp.SubscriptionIdAvpImpl
 import org.mobicents.slee.resource.diameter.cca.events.avp.UnitValueAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.UsedServiceUnitAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvpImpl;
-//import org.mobicents.slee.resource.diameter.cxdx.events.avp.AssociatedIdentitiesImpl;
-//import org.mobicents.slee.resource.diameter.cxdx.events.avp.AssociatedRegisteredIdentitiesImpl;
-//import org.mobicents.slee.resource.diameter.cxdx.events.avp.ChargingInformationImpl;
-//import org.mobicents.slee.resource.diameter.cxdx.events.avp.DeregistrationReasonImpl;
-//import org.mobicents.slee.resource.diameter.cxdx.events.avp.SCSCFRestorationInfoImpl;
-//import org.mobicents.slee.resource.diameter.cxdx.events.avp.SIPAuthDataItemImpl;
+import org.mobicents.slee.resource.diameter.cxdx.events.avp.AssociatedIdentitiesImpl;
+import org.mobicents.slee.resource.diameter.cxdx.events.avp.AssociatedRegisteredIdentitiesImpl;
+import org.mobicents.slee.resource.diameter.cxdx.events.avp.ChargingInformationImpl;
+import org.mobicents.slee.resource.diameter.cxdx.events.avp.DeregistrationReasonImpl;
+import org.mobicents.slee.resource.diameter.cxdx.events.avp.RestorationInfoImpl;
+import org.mobicents.slee.resource.diameter.cxdx.events.avp.SCSCFRestorationInfoImpl;
+import org.mobicents.slee.resource.diameter.cxdx.events.avp.SIPAuthDataItemImpl;
+import org.mobicents.slee.resource.diameter.cxdx.events.avp.SIPDigestAuthenticateImpl;
+import org.mobicents.slee.resource.diameter.cxdx.events.avp.SubscriptionInfoImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.AdditionalContentInformationImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.AddressDomainImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.ApplicationServerInformationImpl;
@@ -460,24 +466,33 @@ public class AvpAssistant {
 
     // Cx/Dx AVP Factory
     
-//    typeValues.put( SIPAuthDataItem.class, new SIPAuthDataItemImpl(DiameterCxDxAvpCodes.SIP_AUTH_DATA_ITEM, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
-//    typeValues.put( SIPAuthDataItem[].class, new SIPAuthDataItemImpl[]{new SIPAuthDataItemImpl(DiameterCxDxAvpCodes.SIP_AUTH_DATA_ITEM, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
-//
-//    typeValues.put( ChargingInformation.class, new ChargingInformationImpl(DiameterCxDxAvpCodes.CHARGING_INFORMATION, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
-//    typeValues.put( ChargingInformation[].class, new ChargingInformationImpl[]{new ChargingInformationImpl(DiameterCxDxAvpCodes.CHARGING_INFORMATION, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
-//
-//    typeValues.put( AssociatedIdentities.class, new AssociatedIdentitiesImpl(DiameterCxDxAvpCodes.ASSOCIATED_IDENTITIES, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
-//    typeValues.put( AssociatedIdentities[].class, new AssociatedIdentitiesImpl[]{new AssociatedIdentitiesImpl(DiameterCxDxAvpCodes.ASSOCIATED_IDENTITIES, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
-//
-//    typeValues.put( AssociatedRegisteredIdentities.class, new AssociatedRegisteredIdentitiesImpl(DiameterCxDxAvpCodes.ASSOCIATED_REGISTERED_IDENTITIES, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
-//    typeValues.put( AssociatedRegisteredIdentities[].class, new AssociatedRegisteredIdentitiesImpl[]{new AssociatedRegisteredIdentitiesImpl(DiameterCxDxAvpCodes.ASSOCIATED_REGISTERED_IDENTITIES, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
-//
-//    typeValues.put( DeregistrationReason.class, new DeregistrationReasonImpl(DiameterCxDxAvpCodes.DEREGISTRATION_REASON, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
-//    typeValues.put( DeregistrationReason[].class, new DeregistrationReasonImpl[]{new DeregistrationReasonImpl(DiameterCxDxAvpCodes.DEREGISTRATION_REASON, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
-//
-//    typeValues.put( SCSCFRestorationInfo.class, new SCSCFRestorationInfoImpl(DiameterCxDxAvpCodes.SCSCF_RESTORATION_INFO, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
-//    typeValues.put( SCSCFRestorationInfo[].class, new SCSCFRestorationInfoImpl[]{new SCSCFRestorationInfoImpl(DiameterCxDxAvpCodes.SCSCF_RESTORATION_INFO, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
-//
+    typeValues.put( SIPAuthDataItem.class, new SIPAuthDataItemImpl(DiameterCxDxAvpCodes.SIP_AUTH_DATA_ITEM, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( SIPAuthDataItem[].class, new SIPAuthDataItemImpl[]{new SIPAuthDataItemImpl(DiameterCxDxAvpCodes.SIP_AUTH_DATA_ITEM, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( ChargingInformation.class, new ChargingInformationImpl(DiameterCxDxAvpCodes.CHARGING_INFORMATION, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( ChargingInformation[].class, new ChargingInformationImpl[]{new ChargingInformationImpl(DiameterCxDxAvpCodes.CHARGING_INFORMATION, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( AssociatedIdentities.class, new AssociatedIdentitiesImpl(DiameterCxDxAvpCodes.ASSOCIATED_IDENTITIES, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( AssociatedIdentities[].class, new AssociatedIdentitiesImpl[]{new AssociatedIdentitiesImpl(DiameterCxDxAvpCodes.ASSOCIATED_IDENTITIES, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( AssociatedRegisteredIdentities.class, new AssociatedRegisteredIdentitiesImpl(DiameterCxDxAvpCodes.ASSOCIATED_REGISTERED_IDENTITIES, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( AssociatedRegisteredIdentities[].class, new AssociatedRegisteredIdentitiesImpl[]{new AssociatedRegisteredIdentitiesImpl(DiameterCxDxAvpCodes.ASSOCIATED_REGISTERED_IDENTITIES, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( DeregistrationReason.class, new DeregistrationReasonImpl(DiameterCxDxAvpCodes.DEREGISTRATION_REASON, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( DeregistrationReason[].class, new DeregistrationReasonImpl[]{new DeregistrationReasonImpl(DiameterCxDxAvpCodes.DEREGISTRATION_REASON, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( SCSCFRestorationInfo.class, new SCSCFRestorationInfoImpl(DiameterCxDxAvpCodes.SCSCF_RESTORATION_INFO, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( SCSCFRestorationInfo[].class, new SCSCFRestorationInfoImpl[]{new SCSCFRestorationInfoImpl(DiameterCxDxAvpCodes.SCSCF_RESTORATION_INFO, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( SubscriptionInfo.class, new SubscriptionInfoImpl(DiameterCxDxAvpCodes.SUBSCRIPTION_INFO, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( SubscriptionInfo[].class, new SubscriptionInfoImpl[]{new SubscriptionInfoImpl(DiameterCxDxAvpCodes.SUBSCRIPTION_INFO, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( SIPDigestAuthenticate.class, new SIPDigestAuthenticateImpl(DiameterCxDxAvpCodes.SIP_DIGEST_AUTHENTICATE, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( SIPDigestAuthenticate[].class, new SIPDigestAuthenticateImpl[]{new SIPDigestAuthenticateImpl(DiameterCxDxAvpCodes.SIP_DIGEST_AUTHENTICATE, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( RestorationInfo.class, new RestorationInfoImpl(DiameterCxDxAvpCodes.RESTORATION_INFO, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( RestorationInfo[].class, new RestorationInfoImpl[]{new RestorationInfoImpl(DiameterCxDxAvpCodes.RESTORATION_INFO, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
     typeValues.put( DiameterAvp.class, new DiameterAvpImpl(0, 0, 0, 1, dummyAvpBytes, null) );
     typeValues.put( DiameterAvp[].class, new DiameterAvpImpl[]{new DiameterAvpImpl(0, 0, 0, 1, dummyAvpBytes, null)});
     

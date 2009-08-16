@@ -59,7 +59,7 @@ public class DeregistrationReasonImpl extends GroupedAvpImpl implements Deregist
    * @see net.java.slee.resource.diameter.cxdx.events.avp.DeregistrationReason#setReasonCode(net.java.slee.resource.diameter.cxdx.events.avp.ReasonCode)
    */
   public void setReasonCode(ReasonCode reasonCode) {
-    addAvp(REASON_CODE, CXDX_VENDOR_ID, reasonCode);
+    addAvp(REASON_CODE, CXDX_VENDOR_ID, (long)reasonCode.getValue());
   }
 
   /* (non-Javadoc)

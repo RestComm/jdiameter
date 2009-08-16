@@ -106,7 +106,7 @@ public class ChargingInformationImpl extends GroupedAvpImpl implements ChargingI
    * @see net.java.slee.resource.diameter.cxdx.events.avp.ChargingInformation#setPrimaryChargingCollectionFunctionName(net.java.slee.resource.diameter.base.events.avp.DiameterURI)
    */
   public void setPrimaryChargingCollectionFunctionName(DiameterURI primaryChargingCollectionFunctionName) {
-    addAvp(PRIMARY_CHARGING_COLLECTION_FUNCTION_NAME, CXDX_VENDOR_ID, primaryChargingCollectionFunctionName);
+    addAvp(PRIMARY_CHARGING_COLLECTION_FUNCTION_NAME, CXDX_VENDOR_ID, primaryChargingCollectionFunctionName.toString());
   }
 
   /*
@@ -115,7 +115,7 @@ public class ChargingInformationImpl extends GroupedAvpImpl implements ChargingI
    * @see net.java.slee.resource.diameter.cxdx.events.avp.ChargingInformation#setPrimaryEventChargingFunctionName(net.java.slee.resource.diameter.base.events.avp.DiameterURI)
    */
   public void setPrimaryEventChargingFunctionName(DiameterURI primaryEventChargingFunctionName) {
-    addAvp(PRIMARY_EVENT_CHARGING_FUNCTION_NAME, CXDX_VENDOR_ID, primaryEventChargingFunctionName);
+    addAvp(PRIMARY_EVENT_CHARGING_FUNCTION_NAME, CXDX_VENDOR_ID, primaryEventChargingFunctionName.toString());
   }
 
   /*
@@ -124,7 +124,7 @@ public class ChargingInformationImpl extends GroupedAvpImpl implements ChargingI
    * @see net.java.slee.resource.diameter.cxdx.events.avp.ChargingInformation#setSecondaryChargingCollectionFunctionName(net.java.slee.resource.diameter.base.events.avp.DiameterURI)
    */
   public void setSecondaryChargingCollectionFunctionName(DiameterURI secondaryChargingCollectionFunctionName) {
-    addAvp(SECONDARY_CHARGING_COLLECTION_FUNCTION_NAME, CXDX_VENDOR_ID, secondaryChargingCollectionFunctionName);
+    addAvp(SECONDARY_CHARGING_COLLECTION_FUNCTION_NAME, CXDX_VENDOR_ID, secondaryChargingCollectionFunctionName.toString());
   }
 
   /*
@@ -133,7 +133,7 @@ public class ChargingInformationImpl extends GroupedAvpImpl implements ChargingI
    * @see net.java.slee.resource.diameter.cxdx.events.avp.ChargingInformation#setSecondaryEventChargingFunctionName(net.java.slee.resource.diameter.base.events.avp.DiameterURI)
    */
   public void setSecondaryEventChargingFunctionName(DiameterURI secondaryEventChargingFunctionName) {
-    addAvp(SECONDARY_EVENT_CHARGING_FUNCTION_NAME, CXDX_VENDOR_ID, secondaryEventChargingFunctionName);
+    addAvp(SECONDARY_EVENT_CHARGING_FUNCTION_NAME, CXDX_VENDOR_ID, secondaryEventChargingFunctionName.toString());
   }
 
 }

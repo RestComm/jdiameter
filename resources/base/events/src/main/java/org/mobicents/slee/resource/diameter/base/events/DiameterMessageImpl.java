@@ -372,7 +372,7 @@ public abstract class DiameterMessageImpl implements DiameterMessage {
   }
 
   public void setRedirectHost(DiameterURI redirectHost) {
-    addAvp(Avp.REDIRECT_HOST, redirectHost);
+    addAvp(Avp.REDIRECT_HOST, redirectHost.toString());
   }
 
   public void setRedirectHosts(DiameterURI[] redirectHosts) {

@@ -46,28 +46,28 @@ public class CxDxAVPFactoryImpl extends DiameterAvpFactoryImpl implements CxDxAV
    * @see net.java.slee.resource.diameter.cxdx.CxDxAVPFactory#createAssociatedIdentities()
    */
   public AssociatedIdentities createAssociatedIdentities() {
-    return (AssociatedIdentities) AvpUtilities.createAvp(ASSOCIATED_IDENTITIES, null, AssociatedIdentitiesImpl.class);
+    return (AssociatedIdentities) AvpUtilities.createAvp(ASSOCIATED_IDENTITIES, CXDX_VENDOR_ID, null, AssociatedIdentitiesImpl.class);
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.cxdx.CxDxAVPFactory#createAssociatedRegisteredIdentities()
    */
   public AssociatedRegisteredIdentities createAssociatedRegisteredIdentities() {
-    return (AssociatedRegisteredIdentities) AvpUtilities.createAvp(ASSOCIATED_REGISTERED_IDENTITIES, null, AssociatedRegisteredIdentitiesImpl.class);
+    return (AssociatedRegisteredIdentities) AvpUtilities.createAvp(ASSOCIATED_REGISTERED_IDENTITIES, CXDX_VENDOR_ID, null, AssociatedRegisteredIdentitiesImpl.class);
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.cxdx.CxDxAVPFactory#createChargingInformation()
    */
   public ChargingInformation createChargingInformation() {
-    return (ChargingInformation) AvpUtilities.createAvp(CHARGING_INFORMATION, null, ChargingInformationImpl.class);
+    return (ChargingInformation) AvpUtilities.createAvp(CHARGING_INFORMATION, CXDX_VENDOR_ID, null, ChargingInformationImpl.class);
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.cxdx.CxDxAVPFactory#createDeregistrationReason()
    */
   public DeregistrationReason createDeregistrationReason() {
-    return (DeregistrationReason) AvpUtilities.createAvp(DEREGISTRATION_REASON, null, DeregistrationReasonImpl.class);
+    return (DeregistrationReason) AvpUtilities.createAvp(DEREGISTRATION_REASON, CXDX_VENDOR_ID, null, DeregistrationReasonImpl.class);
   }
 
   /* (non-Javadoc)
@@ -87,7 +87,7 @@ public class CxDxAVPFactoryImpl extends DiameterAvpFactoryImpl implements CxDxAV
    * @see net.java.slee.resource.diameter.cxdx.CxDxAVPFactory#createRestorationInfo()
    */
   public RestorationInfo createRestorationInfo() {
-    return (RestorationInfo) AvpUtilities.createAvp(RESTORATION_INFO, null, RestorationInfoImpl.class);
+    return (RestorationInfo) AvpUtilities.createAvp(RESTORATION_INFO, CXDX_VENDOR_ID, null, RestorationInfoImpl.class);
   }
 
   /* (non-Javadoc)
@@ -108,7 +108,7 @@ public class CxDxAVPFactoryImpl extends DiameterAvpFactoryImpl implements CxDxAV
    * @see net.java.slee.resource.diameter.cxdx.CxDxAVPFactory#createSCSCFRestorationInfo()
    */
   public SCSCFRestorationInfo createSCSCFRestorationInfo() {
-    return (SCSCFRestorationInfo) AvpUtilities.createAvp(SCSCF_RESTORATION_INFO, null, SCSCFRestorationInfoImpl.class);
+    return (SCSCFRestorationInfo) AvpUtilities.createAvp(SCSCF_RESTORATION_INFO, CXDX_VENDOR_ID, null, SCSCFRestorationInfoImpl.class);
   }
 
   /* (non-Javadoc)
@@ -129,14 +129,14 @@ public class CxDxAVPFactoryImpl extends DiameterAvpFactoryImpl implements CxDxAV
    * @see net.java.slee.resource.diameter.cxdx.CxDxAVPFactory#createSIPAuthDataItem()
    */
   public SIPAuthDataItem createSIPAuthDataItem() {
-    return (SIPAuthDataItem) AvpUtilities.createAvp(SIP_AUTH_DATA_ITEM, null, SIPAuthDataItemImpl.class);
+    return (SIPAuthDataItem) AvpUtilities.createAvp(SIP_AUTH_DATA_ITEM, CXDX_VENDOR_ID, null, SIPAuthDataItemImpl.class);
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.cxdx.CxDxAVPFactory#createSIPDigestAuthenticate()
    */
   public SIPDigestAuthenticate createSIPDigestAuthenticate() {
-    return (SIPDigestAuthenticate) AvpUtilities.createAvp(SIP_DIGEST_AUTHENTICATE, null, SIPDigestAuthenticateImpl.class);
+    return (SIPDigestAuthenticate) AvpUtilities.createAvp(SIP_DIGEST_AUTHENTICATE, CXDX_VENDOR_ID, null, SIPDigestAuthenticateImpl.class);
   }
 
   /* (non-Javadoc)
@@ -158,7 +158,7 @@ public class CxDxAVPFactoryImpl extends DiameterAvpFactoryImpl implements CxDxAV
    * @see net.java.slee.resource.diameter.cxdx.CxDxAVPFactory#createSubscriptionInfo()
    */
   public SubscriptionInfo createSubscriptionInfo() {
-    return (SubscriptionInfo) AvpUtilities.createAvp(SUBSCRIPTION_INFO, null, SubscriptionInfoImpl.class);
+    return (SubscriptionInfo) AvpUtilities.createAvp(SUBSCRIPTION_INFO, CXDX_VENDOR_ID, null, SubscriptionInfoImpl.class);
   }
 
   /* (non-Javadoc)
