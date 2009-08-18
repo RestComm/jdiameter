@@ -20,7 +20,7 @@ public interface CxDxProvider {
    * 
    * @return a instance of a CxDxClientSession to send credit control messages
    */
-  CxDxClientSession createClientSession()throws CreateActivityException;
+  CxDxClientSession createCxDxClientSessionActivity()throws CreateActivityException;
 
   /**
    * Create a new client session to send and receive Diameter messages.
@@ -33,7 +33,7 @@ public interface CxDxProvider {
    * @return a instance of a CxDxClientSession to send credit control messages
    * @throws CreateActivityException 
    */
-  CxDxClientSession createClientSession(DiameterIdentity destinationHost, DiameterIdentity destinationRealm) throws CreateActivityException;
+  CxDxClientSession createCxDxClientSessionActivity(DiameterIdentity destinationHost, DiameterIdentity destinationRealm) throws CreateActivityException;
 
   /**
    * Create a new server session to send and receive Diameter messages.
@@ -43,7 +43,7 @@ public interface CxDxProvider {
    * 
    * @return a instance of a CxDxServerSession to send credit control messages
    */
-  CxDxServerSession createServerSession()throws CreateActivityException;
+  CxDxServerSession createCxDxServerSessionActivity()throws CreateActivityException;
 
   /**
    * Create a new server session to send and receive Diameter messages.
@@ -56,7 +56,7 @@ public interface CxDxProvider {
    * @return a instance of a CxDxServerSession to send credit control messages
    * @throws CreateActivityException 
    */
-  CxDxServerSession createServerSession(DiameterIdentity destinationHost, DiameterIdentity destinationRealm) throws CreateActivityException;
+  CxDxServerSession createCxDxServerSessionActivity(DiameterIdentity destinationHost, DiameterIdentity destinationRealm) throws CreateActivityException;
 
   /**
    * Return a message factory to be used to create Cx/Dx messages

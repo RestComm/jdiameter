@@ -2,6 +2,7 @@ package org.mobicents.slee.resource.diameter.cxdx;
 
 import javax.slee.resource.SleeEndpoint;
 
+import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.cxdx.CxDxAVPFactory;
 import net.java.slee.resource.diameter.cxdx.CxDxMessageFactory;
@@ -25,6 +26,8 @@ public class CxDxSessionImpl extends DiameterActivityImpl implements CxDxSession
 
   protected CxDxMessageFactory cxdxMessageFactory = null;
   protected CxDxAVPFactory cxdxAvpFactory = null;
+
+  protected DiameterMessage lastRequest = null;
 
   public CxDxSessionImpl(CxDxMessageFactory messageFactory, CxDxAVPFactory avpFactory, Session session, EventListener<Request, Answer> raEventListener, long timeout, DiameterIdentity destinationHost, DiameterIdentity destinationRealm, SleeEndpoint endpoint) {
     super(null, null, session, raEventListener, timeout, destinationHost, destinationRealm, endpoint);
@@ -52,6 +55,10 @@ public class CxDxSessionImpl extends DiameterActivityImpl implements CxDxSession
    */
   public String getSessionId() {
     return session.getSessionId();
+  }
+
+  public void fetchSessionData(DiameterMessage cxdxRequest) {
+    this.lastRequest = cxdxRequest;
   }
 
 }

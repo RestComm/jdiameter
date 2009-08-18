@@ -1,9 +1,3 @@
-/**
- * Start time:15:18:44 2009-08-17<br>
- * Project: diameter-parent<br>
- * 
- * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
- */
 package org.jdiameter.common.impl.app.cxdx;
 
 import java.util.List;
@@ -13,13 +7,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.jdiameter.api.Answer;
-import org.jdiameter.api.InternalException;
 import org.jdiameter.api.NetworkReqListener;
-import org.jdiameter.api.OverloadException;
-import org.jdiameter.api.Request;
 import org.jdiameter.api.app.StateChangeListener;
-import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.api.app.StateMachine;
 import org.jdiameter.common.api.app.cxdx.CxDxSessionState;
 import org.jdiameter.common.api.app.cxdx.ICxDxMessageFactory;
@@ -30,6 +19,7 @@ import org.jdiameter.common.impl.app.AppSessionImpl;
  * Project: diameter-parent<br>
  * 
  * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public abstract class CxDxSession extends AppSessionImpl implements NetworkReqListener, StateMachine {
 
@@ -50,10 +40,6 @@ public abstract class CxDxSession extends AppSessionImpl implements NetworkReqLi
 	public void removeStateChangeNotification(StateChangeListener listener) {
 		stateListeners.remove(listener);
 	}
-
-	
-
-	
 
 	/*
 	 * (non-Javadoc)

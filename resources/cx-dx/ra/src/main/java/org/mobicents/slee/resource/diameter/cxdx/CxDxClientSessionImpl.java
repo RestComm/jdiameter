@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import javax.slee.resource.SleeEndpoint;
 
-import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
@@ -36,8 +35,6 @@ import org.mobicents.slee.resource.diameter.cxdx.events.PushProfileAnswerImpl;
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
 public class CxDxClientSessionImpl extends CxDxSessionImpl implements CxDxClientSession {
-
-  private DiameterMessage lastRequest = null;
 
   protected ArrayList<DiameterAvp> sessionAvps = new ArrayList<DiameterAvp>();
 
@@ -333,10 +330,6 @@ public class CxDxClientSessionImpl extends CxDxSessionImpl implements CxDxClient
       IOException ioe = new IOException("Failed to send message, due to: " + e);
       throw ioe;
     }
-  }
-
-  public void fetchCurrentState(DiameterMessage cxdxRequest) {
-    this.lastRequest = cxdxRequest;
   }
 
 }

@@ -1,22 +1,15 @@
-/**
- * Start time:19:52:21 2009-08-17<br>
- * Project: diameter-parent<br>
- * 
- * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
- */
 package org.jdiameter.server.impl.app.cxdx;
 
+import org.jdiameter.api.InternalException;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.StateEvent;
 
-
-
 /**
  * Start time:19:52:21 2009-08-17<br>
  * Project: diameter-parent<br>
  * 
- * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski
- *         </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class Event implements StateEvent{
 
@@ -63,9 +56,17 @@ public class Event implements StateEvent{
 	 * @see org.jdiameter.api.app.StateEvent#setData(java.lang.Object)
 	 */
 	public void setData(Object data) {
-		// TODO Auto-generated method stub
-		
+    try {
+      if( ((AppEvent) data).getMessage().isRequest() ) {
+        request = (AppEvent) data;
+      }
+      else {
+        answer = (AppEvent) data;
+      }
+    }
+    catch (InternalException e) {
+      throw new IllegalArgumentException(e);
+    }
 	}
-
 
 }

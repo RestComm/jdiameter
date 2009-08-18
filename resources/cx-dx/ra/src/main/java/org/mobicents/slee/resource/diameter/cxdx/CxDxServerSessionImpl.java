@@ -47,8 +47,6 @@ import org.mobicents.slee.resource.diameter.cxdx.events.UserAuthorizationAnswerI
  */
 public class CxDxServerSessionImpl extends CxDxSessionImpl implements CxDxServerSession {
 
-  private DiameterMessage lastRequest = null;
-
   protected ArrayList<DiameterAvp> sessionAvps = new ArrayList<DiameterAvp>();
 
   /**
