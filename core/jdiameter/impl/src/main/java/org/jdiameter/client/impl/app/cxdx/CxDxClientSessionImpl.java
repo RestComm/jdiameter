@@ -281,27 +281,27 @@ public class CxDxClientSessionImpl extends CxDxSession implements ClientCxDxSess
             super.timeoutTaskFuture.cancel(false);
             super.timeoutTaskFuture = null;
           }
-          super.session.send((Message) event.getData(), this);
+          super.session.send(((AppEvent) event.getData()).getMessage(), this);
           newState = CxDxSessionState.TERMINATED;
           break;
         case RECEIVE_LIA:
-          CxDxSession.scheduler.schedule(new TimeoutTimerTask((Request) event.getData()), CxDxSession._TX_TIMEOUT, TimeUnit.MILLISECONDS);
-          newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
+          //CxDxSession.scheduler.schedule(new TimeoutTimerTask((Request) event.getData()), CxDxSession._TX_TIMEOUT, TimeUnit.MILLISECONDS);
+          newState = CxDxSessionState.TERMINATED;
           listener.doLocationInformationAnswer(this, null, (JLocationInfoAnswer) event.getData());
           break;
         case RECEIVE_MAA:
-          CxDxSession.scheduler.schedule(new TimeoutTimerTask((Request) event.getData()), CxDxSession._TX_TIMEOUT, TimeUnit.MILLISECONDS);
-          newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
+         // CxDxSession.scheduler.schedule(new TimeoutTimerTask((Request) event.getData()), CxDxSession._TX_TIMEOUT, TimeUnit.MILLISECONDS);
+          newState = CxDxSessionState.TERMINATED;
           listener.doMultimediaAuthAnswer(this, null, (JMultimediaAuthAnswer) event.getData());
           break;
         case RECEIVE_SAA:
-          CxDxSession.scheduler.schedule(new TimeoutTimerTask((Request) event.getData()), CxDxSession._TX_TIMEOUT, TimeUnit.MILLISECONDS);
-          newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
+        //  CxDxSession.scheduler.schedule(new TimeoutTimerTask((Request) event.getData()), CxDxSession._TX_TIMEOUT, TimeUnit.MILLISECONDS);
+          newState = CxDxSessionState.TERMINATED;
           listener.doServerAssignmentAnswer(this, null, (JServerAssignmentAnswer) event.getData());
           break;
         case RECEIVE_UAA:
-          CxDxSession.scheduler.schedule(new TimeoutTimerTask((Request) event.getData()), CxDxSession._TX_TIMEOUT, TimeUnit.MILLISECONDS);
-          newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
+         // CxDxSession.scheduler.schedule(new TimeoutTimerTask((Request) event.getData()), CxDxSession._TX_TIMEOUT, TimeUnit.MILLISECONDS);
+          newState = CxDxSessionState.TERMINATED;
           listener.doUserAuthorizationAnswer(this, null, (JUserAuthorizationAnswer) event.getData());
           break;
         default:

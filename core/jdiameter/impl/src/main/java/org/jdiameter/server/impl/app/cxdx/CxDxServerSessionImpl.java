@@ -196,7 +196,7 @@ public class CxDxServerSessionImpl extends CxDxSession implements ServerCxDxSess
             super.timeoutTaskFuture.cancel(false);
             super.timeoutTaskFuture = null;
           }
-          super.session.send((Message) event.getData(), this);
+          super.session.send(((AppEvent) event.getData()).getMessage(), this);
           newState = CxDxSessionState.TERMINATED;
           break;
 

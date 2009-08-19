@@ -2,7 +2,7 @@
 <Configuration xmlns="http://www.jdiameter.org/jdiameter-server">
 
   <LocalPeer>
-    <URI value="aaa://127.0.0.1:1812" />
+    <URI value="aaa://127.0.0.1:3868" />
     <!-- URI value="aaa://mobicents.open-ims.test:1812" /-->
     <IPAddresses>
       <IPAddress value="127.0.0.1" />
@@ -49,7 +49,7 @@
       <!--Peer name="aaa://127.0.0.1:21812" attempt_connect="true" rating="1" /-->
       
       <!-- Sh / CCA/Cx-Dx -->
-      <Peer name="aaa://127.0.0.1.3868" attempt_connect="false" rating="1" />
+      <Peer name="aaa://127.0.0.1:1812" attempt_connect="true" rating="1" />
      
       
       <!-- Sh (OpenIMS) -->
@@ -57,7 +57,7 @@
     </Peers>
     <Realms>
       <!-- Ericsson SDK Client/Emulator and Testsuite -->
-  
+     
 
       <!-- Sh -->
       <!-- Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">

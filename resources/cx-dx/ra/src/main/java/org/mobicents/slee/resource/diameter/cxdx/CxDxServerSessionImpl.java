@@ -98,6 +98,7 @@ public class CxDxServerSessionImpl extends CxDxSessionImpl implements CxDxServer
 		}
 
 		// Create Request from last received and set it as answer
+		//FIXME: Alex this is prob with ANSWER
 		Message msg = session.createRequest((Request) ((DiameterMessageImpl) lastRequest).getGenericData());
 		msg.setRequest(false);
 		LocationInfoAnswer lia = new LocationInfoAnswerImpl(msg);

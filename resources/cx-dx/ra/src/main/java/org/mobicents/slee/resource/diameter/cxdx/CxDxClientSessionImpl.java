@@ -129,6 +129,7 @@ public class CxDxClientSessionImpl extends CxDxSessionImpl implements CxDxClient
   public PushProfileAnswer createPushProfileAnswer() {
     // Create Request from last received and set it as answer
     Message msg = session.createRequest((Request) ((DiameterMessageImpl)lastRequest).getGenericData());
+    //FIXME: Alex this is prob with ANSWER
     msg.setRequest(false);
     PushProfileAnswer ppa = new PushProfileAnswerImpl(msg);
 
@@ -154,7 +155,7 @@ public class CxDxClientSessionImpl extends CxDxSessionImpl implements CxDxClient
    * @see net.java.slee.resource.diameter.cxdx.CxDxClientSession#createRegistrationTerminationRequest()
    */
   public RegistrationTerminationAnswer createRegistrationTerminationAnswer() {
-    // Create the request
+	//FIXME: Alex this is prob with ANSWER
 	  Message msg = session.createRequest((Request) ((DiameterMessageImpl)lastRequest).getGenericData());
 	    msg.setRequest(false);
 	    RegistrationTerminationAnswer ppa = new RegistrationTerminationAnswerImpl(msg);
