@@ -15,6 +15,7 @@ import org.jdiameter.api.Session;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.common.api.app.cxdx.CxDxSessionState;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
+import org.mobicents.slee.resource.diameter.base.handlers.BaseSessionCreationListener;
 import org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationListener;
 
 
@@ -39,7 +40,7 @@ public abstract class CxDxSessionImpl extends DiameterActivityImpl implements Cx
 
     this.cxdxMessageFactory = messageFactory;
     this.cxdxAvpFactory = avpFactory;
-    this.cxdxSessionListener = (CxDxSessionCreationListener)raEventListener;
+    //this.cxdxSessionListener = (CxDxSessionCreationListener)raEventListener;
   }
 
   /* (non-Javadoc)
@@ -67,6 +68,12 @@ public abstract class CxDxSessionImpl extends DiameterActivityImpl implements Cx
     this.lastRequest = cxdxRequest;
   }
 
+  public Object getSessionListener() {
+		return cxdxSessionListener;
+	}
 
+	public void setSessionListener(Object ra) {
+		this.cxdxSessionListener = (CxDxSessionCreationListener) ra;
+	}
 
 }

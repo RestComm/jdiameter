@@ -14,6 +14,7 @@ import net.java.slee.resource.diameter.cxdx.CxDxMessageFactory;
 import net.java.slee.resource.diameter.cxdx.events.LocationInfoRequest;
 import net.java.slee.resource.diameter.cxdx.events.MultimediaAuthenticationRequest;
 import net.java.slee.resource.diameter.cxdx.events.PushProfileAnswer;
+import net.java.slee.resource.diameter.cxdx.events.RegistrationTerminationAnswer;
 import net.java.slee.resource.diameter.cxdx.events.RegistrationTerminationRequest;
 import net.java.slee.resource.diameter.cxdx.events.ServerAssignmentRequest;
 import net.java.slee.resource.diameter.cxdx.events.UserAuthorizationRequest;
@@ -24,9 +25,16 @@ import org.jdiameter.api.Message;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.cxdx.ClientCxDxSession;
 import org.jdiameter.common.api.app.cxdx.CxDxSessionState;
+import org.jdiameter.common.impl.app.cxdx.JLocationInfoRequestImpl;
+import org.jdiameter.common.impl.app.cxdx.JMultimediaAuthRequestImpl;
+import org.jdiameter.common.impl.app.cxdx.JPushProfileAnswerImpl;
+import org.jdiameter.common.impl.app.cxdx.JRegistrationTerminationAnswerImpl;
+import org.jdiameter.common.impl.app.cxdx.JServerAssignmentRequestImpl;
+import org.jdiameter.common.impl.app.cxdx.JUserAuthorizationRequestImpl;
 import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.cxdx.events.PushProfileAnswerImpl;
+import org.mobicents.slee.resource.diameter.cxdx.events.RegistrationTerminationAnswerImpl;
 
 /**
  *
@@ -52,6 +60,7 @@ public class CxDxClientSessionImpl extends CxDxSessionImpl implements CxDxClient
   public CxDxClientSessionImpl(CxDxMessageFactory messageFactory, CxDxAVPFactory avpFactory, ClientCxDxSession session, EventListener<Request, Answer> raEventListener, long timeout, DiameterIdentity destinationHost, DiameterIdentity destinationRealm, SleeEndpoint endpoint) {
     super(messageFactory, avpFactory, session.getSessions().get(0), raEventListener, timeout, destinationHost, destinationRealm, endpoint);
     this.appSession = session;
+    this.appSession.addStateChangeNotification(this);
   }
 
 
@@ -144,30 +153,28 @@ public class CxDxClientSessionImpl extends CxDxSessionImpl implements CxDxClient
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.cxdx.CxDxClientSession#createRegistrationTerminationRequest()
    */
-  public RegistrationTerminationRequest createRegistrationTerminationRequest() {
+  public RegistrationTerminationAnswer createRegistrationTerminationAnswer() {
     // Create the request
-    RegistrationTerminationRequest rtr = super.cxdxMessageFactory.createRegistrationTerminationRequest(super.getSessionId());
+	  Message msg = session.createRequest((Request) ((DiameterMessageImpl)lastRequest).getGenericData());
+	    msg.setRequest(false);
+	    RegistrationTerminationAnswer ppa = new RegistrationTerminationAnswerImpl(msg);
 
-    // If there's a Destination-Host, add the AVP
-    if (destinationHost != null) {
-      rtr.setDestinationHost(destinationHost);
-    }
+	    // Fill extension avps if present
+	    if (sessionAvps.size() > 0) {
+	      try {
+	        ppa.setExtensionAvps(sessionAvps.toArray(new DiameterAvp[sessionAvps.size()]));
+	      }
+	      catch (AvpNotAllowedException e) {
+	        logger.error("Failed to add Session AVPs to request.", e);
+	      }
+	    }
 
-    if (destinationRealm != null) {
-      rtr.setDestinationRealm(destinationRealm);
-    }
+	    // Guarantee session-id is present
+	    if(!ppa.hasSessionId()) {
+	      ppa.setSessionId(sessionId);
+	    }
 
-    // Fill extension avps if present
-    if (sessionAvps.size() > 0) {
-      try {
-        rtr.setExtensionAvps(sessionAvps.toArray(new DiameterAvp[sessionAvps.size()]));
-      }
-      catch (AvpNotAllowedException e) {
-        logger.error("Failed to add Session AVPs to request.", e);
-      }
-    }
-
-    return rtr;
+	    return ppa;
   }
 
   /* (non-Javadoc)
@@ -233,17 +240,26 @@ public class CxDxClientSessionImpl extends CxDxSessionImpl implements CxDxClient
    */
   public void sendLocationInfoRequest(LocationInfoRequest locationInfoRequest) throws IOException {
     DiameterMessageImpl msg = (DiameterMessageImpl) locationInfoRequest;
-    try {
-      session.send(msg.getGenericData());
-    }
-    catch (JAvpNotAllowedException e) {
-      AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
-      throw anae;
-    }
-    catch (Exception e) {
-      IOException ioe = new IOException("Failed to send message, due to: " + e);
-      throw ioe;
-    }
+    try{
+    	appSession.sendLocationInformationRequest(new JLocationInfoRequestImpl(msg.getGenericData()));
+    } catch(JAvpNotAllowedException anae)
+	{
+		throw new AvpNotAllowedException(anae.getMessage(),anae.getAvpCode(),anae.getVendorId());
+	}catch (Exception e) {
+		e.printStackTrace();
+		throw new IOException(e.getMessage());
+	} 
+//    try {
+//      session.send(msg.getGenericData());
+//    }
+//    catch (JAvpNotAllowedException e) {
+//      AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+//      throw anae;
+//    }
+//    catch (Exception e) {
+//      IOException ioe = new IOException("Failed to send message, due to: " + e);
+//      throw ioe;
+//    }
   }
 
   /* (non-Javadoc)
@@ -251,17 +267,26 @@ public class CxDxClientSessionImpl extends CxDxSessionImpl implements CxDxClient
    */
   public void sendMultimediaAuthenticationRequest(MultimediaAuthenticationRequest multimediaAuthenticationRequest) throws IOException {
     DiameterMessageImpl msg = (DiameterMessageImpl) multimediaAuthenticationRequest;
-    try {
-      session.send(msg.getGenericData());
-    }
-    catch (JAvpNotAllowedException e) {
-      AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
-      throw anae;
-    }
-    catch (Exception e) {
-      IOException ioe = new IOException("Failed to send message, due to: " + e);
-      throw ioe;
-    }
+    try{
+    	appSession.sendMultimediaAuthRequest(new JMultimediaAuthRequestImpl(msg.getGenericData()));
+    } catch(JAvpNotAllowedException anae)
+	{
+		throw new AvpNotAllowedException(anae.getMessage(),anae.getAvpCode(),anae.getVendorId());
+	}catch (Exception e) {
+		e.printStackTrace();
+		throw new IOException(e.getMessage());
+	} 
+//    try {
+//      session.send(msg.getGenericData());
+//    }
+//    catch (JAvpNotAllowedException e) {
+//      AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+//      throw anae;
+//    }
+//    catch (Exception e) {
+//      IOException ioe = new IOException("Failed to send message, due to: " + e);
+//      throw ioe;
+//    }
   }
 
   /* (non-Javadoc)
@@ -269,35 +294,53 @@ public class CxDxClientSessionImpl extends CxDxSessionImpl implements CxDxClient
    */
   public void sendPushProfileAnswer(PushProfileAnswer pushProfileAnswer) throws IOException {
     DiameterMessageImpl msg = (DiameterMessageImpl) pushProfileAnswer;
-    try {
-      session.send(msg.getGenericData());
-    }
-    catch (JAvpNotAllowedException e) {
-      AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
-      throw anae;
-    }
-    catch (Exception e) {
-      IOException ioe = new IOException("Failed to send message, due to: " + e);
-      throw ioe;
-    }
+    try{
+    	appSession.sendPushProfileAnswer(new JPushProfileAnswerImpl(msg.getGenericData()));
+    } catch(JAvpNotAllowedException anae)
+	{
+		throw new AvpNotAllowedException(anae.getMessage(),anae.getAvpCode(),anae.getVendorId());
+	}catch (Exception e) {
+		e.printStackTrace();
+		throw new IOException(e.getMessage());
+	} 
+//    try {
+//      session.send(msg.getGenericData());
+//    }
+//    catch (JAvpNotAllowedException e) {
+//      AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+//      throw anae;
+//    }
+//    catch (Exception e) {
+//      IOException ioe = new IOException("Failed to send message, due to: " + e);
+//      throw ioe;
+//    }
   }
 
   /* (non-Javadoc)
    * @see net.java.slee.resource.diameter.cxdx.CxDxClientSession#sendRegistrationTerminationRequest(net.java.slee.resource.diameter.cxdx.events.RegistrationTerminationRequest)
    */
-  public void sendRegistrationTerminationRequest(RegistrationTerminationRequest registrationTerminationRequest) throws IOException {
-    DiameterMessageImpl msg = (DiameterMessageImpl) registrationTerminationRequest;
-    try {
-      session.send(msg.getGenericData());
-    }
-    catch (JAvpNotAllowedException e) {
-      AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
-      throw anae;
-    }
-    catch (Exception e) {
-      IOException ioe = new IOException("Failed to send message, due to: " + e);
-      throw ioe;
-    }
+  public void sendRegistrationTerminationAnswer(RegistrationTerminationAnswer registrationTerminationAnswer) throws IOException {
+    DiameterMessageImpl msg = (DiameterMessageImpl) registrationTerminationAnswer;
+    try{
+    	appSession.sendRegistrationTerminationAnswer(new JRegistrationTerminationAnswerImpl(msg.getGenericData()));
+    } catch(JAvpNotAllowedException anae)
+	{
+		throw new AvpNotAllowedException(anae.getMessage(),anae.getAvpCode(),anae.getVendorId());
+	}catch (Exception e) {
+		e.printStackTrace();
+		throw new IOException(e.getMessage());
+	} 
+//    try {
+//      session.send(msg.getGenericData());
+//    }
+//    catch (JAvpNotAllowedException e) {
+//      AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+//      throw anae;
+//    }
+//    catch (Exception e) {
+//      IOException ioe = new IOException("Failed to send message, due to: " + e);
+//      throw ioe;
+//    }
   }
 
   /* (non-Javadoc)
@@ -305,17 +348,26 @@ public class CxDxClientSessionImpl extends CxDxSessionImpl implements CxDxClient
    */
   public void sendServerAssignmentRequest(ServerAssignmentRequest serverAssignmentRequest) throws IOException {
     DiameterMessageImpl msg = (DiameterMessageImpl) serverAssignmentRequest;
-    try {
-      session.send(msg.getGenericData());
-    }
-    catch (JAvpNotAllowedException e) {
-      AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
-      throw anae;
-    }
-    catch (Exception e) {
-      IOException ioe = new IOException("Failed to send message, due to: " + e);
-      throw ioe;
-    }
+    try{
+    	appSession.sendServerAssignmentRequest(new JServerAssignmentRequestImpl(msg.getGenericData()));
+    } catch(JAvpNotAllowedException anae)
+	{
+		throw new AvpNotAllowedException(anae.getMessage(),anae.getAvpCode(),anae.getVendorId());
+	}catch (Exception e) {
+		e.printStackTrace();
+		throw new IOException(e.getMessage());
+	} 
+//    try {
+//      session.send(msg.getGenericData());
+//    }
+//    catch (JAvpNotAllowedException e) {
+//      AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+//      throw anae;
+//    }
+//    catch (Exception e) {
+//      IOException ioe = new IOException("Failed to send message, due to: " + e);
+//      throw ioe;
+//    }
   }
 
   /* (non-Javadoc)
@@ -324,16 +376,24 @@ public class CxDxClientSessionImpl extends CxDxSessionImpl implements CxDxClient
   public void sendUserAuthorizationRequest(UserAuthorizationRequest userAuthorizationRequest) throws IOException {
     DiameterMessageImpl msg = (DiameterMessageImpl) userAuthorizationRequest;
     try {
-      session.send(msg.getGenericData());
-    }
-    catch (JAvpNotAllowedException e) {
-      AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
-      throw anae;
-    }
-    catch (Exception e) {
-      IOException ioe = new IOException("Failed to send message, due to: " + e);
-      throw ioe;
-    }
+			appSession.sendUserAuthorizationRequest(new JUserAuthorizationRequestImpl(msg.getGenericData()));
+		} catch (JAvpNotAllowedException anae) {
+			throw new AvpNotAllowedException(anae.getMessage(), anae.getAvpCode(), anae.getVendorId());
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new IOException(e.getMessage());
+		} 
+//    try {
+//      session.send(msg.getGenericData());
+//    }
+//    catch (JAvpNotAllowedException e) {
+//      AvpNotAllowedException anae = new AvpNotAllowedException("Message validation failed.", e, e.getAvpCode(), e.getVendorId());
+//      throw anae;
+//    }
+//    catch (Exception e) {
+//      IOException ioe = new IOException("Failed to send message, due to: " + e);
+//      throw ioe;
+//    }
   }
   public void stateChanged(Enum oldState, Enum newState) {
 		if (!terminated)

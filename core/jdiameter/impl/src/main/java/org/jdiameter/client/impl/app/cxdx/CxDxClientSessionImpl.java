@@ -6,6 +6,7 @@
  */
 package org.jdiameter.client.impl.app.cxdx;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import org.jdiameter.api.Answer;
@@ -107,7 +108,7 @@ public class CxDxClientSessionImpl extends CxDxSession implements ClientCxDxSess
       if (request.getCommandCode() == JRegistrationTerminationRequest.code) {
         this.handleEvent(new Event(Event.Type.RECEIVE_RTR, this.factory.createRegistrationTerminationRequest(request), null));
       }
-      else if (request.getCommandCode() == JRegistrationTerminationRequest.code) {
+      else if (request.getCommandCode() == JPushProfileRequest.code) {
         this.handleEvent(new Event(Event.Type.RECEIVE_PPR, this.factory.createPushProfileRequest(request), null));
       }
       else {
@@ -247,12 +248,12 @@ public class CxDxClientSessionImpl extends CxDxSession implements ClientCxDxSess
       case IDLE:
         switch (eventType) {
         case RECEIVE_PPR:
-          CxDxSession.scheduler.schedule(new TimeoutTimerTask((Request) event.getData()), CxDxSession._TX_TIMEOUT, TimeUnit.MILLISECONDS);
+          CxDxSession.scheduler.schedule(new TimeoutTimerTask((Request) ((AppEvent) event.getData()).getMessage()), CxDxSession._TX_TIMEOUT, TimeUnit.MILLISECONDS);
           newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
           listener.doPushProfileRequest(this, (JPushProfileRequest) event.getData(), null);
           break;
         case RECEIVE_RTR:
-          CxDxSession.scheduler.schedule(new TimeoutTimerTask((Request) event.getData()), CxDxSession._TX_TIMEOUT, TimeUnit.MILLISECONDS);
+          CxDxSession.scheduler.schedule(new TimeoutTimerTask((Request) ((AppEvent) event.getData()).getMessage()), CxDxSession._TX_TIMEOUT, TimeUnit.MILLISECONDS);
           newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
           listener.doRegistrationTerminationRequest(this, (JRegistrationTerminationRequest) event.getData(), null);
           break;
@@ -323,6 +324,7 @@ public class CxDxClientSessionImpl extends CxDxSession implements ClientCxDxSess
       }
     }
     catch (Exception e) {
+    	e.printStackTrace();
       throw new InternalException(e);
     }
     finally {

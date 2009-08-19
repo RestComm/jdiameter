@@ -595,8 +595,10 @@ public class CxDxResourceAdaptor implements ResourceAdaptor, DiameterListener , 
     logger.info( "Diameter Cx/Dx RA :: activityCreated :: activity[" + ac + "]" );
 
     try {
+    	
       // Inform SLEE that Activity Started
       DiameterActivityImpl activity = (DiameterActivityImpl) ac;
+      activity.setSessionListener(this);
       sleeEndpoint.activityStarted(activity.getActivityHandle());
 
       // Put it into our activites map
@@ -651,7 +653,13 @@ public class CxDxResourceAdaptor implements ResourceAdaptor, DiameterListener , 
       return new ExtensionDiameterMessageImpl(request != null ? request : answer);
     }
   }
-
+  /* (non-Javadoc)
+   * @see org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationListener#fireEvent(java.lang.String, java.lang.String, org.jdiameter.api.Request, org.jdiameter.api.Answer)
+   */
+  public void fireEvent(String sessionId, String name, Request request, Answer answer) {
+  	this.fireEvent(getActivityHandle(sessionId), name, request, answer);
+  	
+  }
   /**
    * Method for firing event to SLEE
    * 
@@ -820,8 +828,9 @@ public class CxDxResourceAdaptor implements ResourceAdaptor, DiameterListener , 
       ServerCxDxSession session = null;
 
       try {
+    	  String sessionId = request == null? null: request.getSessionId();
         ApplicationId appId = request.getApplicationIdAvps().isEmpty() ? null : request.getApplicationIdAvps().iterator().next(); 
-        session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(request.getSessionId(), appId, ServerCxDxSession.class, request);
+        session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(sessionId, appId, ServerCxDxSession.class, request);
 
         if (session == null) {
           throw new CreateActivityException("Got NULL Session while creating Server Accounting Activity");
@@ -833,8 +842,14 @@ public class CxDxResourceAdaptor implements ResourceAdaptor, DiameterListener , 
       catch (IllegalDiameterStateException e) {
         throw new CreateActivityException("Illegal Diameter State exception while creating Server Accounting Activity", e);
       }
-
-      return (CxDxServerSessionImpl) activities.get(getActivityHandle(session.getSessions().get(0).getSessionId()));
+      org.mobicents.slee.resource.diameter.cxdx.CxDxServerSessionImpl activity = new org.mobicents.slee.resource.diameter.cxdx.CxDxServerSessionImpl(ra.cxdxMessageFactory, ra.cxdxAvpFactory, session, (EventListener<Request, Answer>) session, ra.messageTimeout, (DiameterIdentity)null, (DiameterIdentity)null, ra.sleeEndpoint,stack);
+      
+      activityCreated(activity);
+      if(request!=null)
+      {
+      	((org.jdiameter.server.impl.app.cxdx.CxDxServerSessionImpl)session).processRequest(request);
+      }
+      return activity;
     }
 
     // Actual Provider Methods 
@@ -850,12 +865,16 @@ public class CxDxResourceAdaptor implements ResourceAdaptor, DiameterListener , 
     {
       try {
     	  String sessionId = req == null? null: req.getSessionId();
-        ClientCxDxSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(sessionId, ApplicationId.createByAccAppId(0L, 3L), ClientAccSession.class);
+        ClientCxDxSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(sessionId, ApplicationId.createByAuthAppId(10415L, 16777216L), ClientCxDxSession.class);
 
         //return new org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl(ra.cxdxMessageFactory, ra.cxdxAvpFactory, session, (EventListener<Request, Answer>) session, ra.messageTimeout, destinationHost, destinationRealm, ra.sleeEndpoint);
          
         org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl activity = new org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl(ra.cxdxMessageFactory, ra.cxdxAvpFactory, session, (EventListener<Request, Answer>) session, ra.messageTimeout, null, null, ra.sleeEndpoint);
         activityCreated(activity);
+        if(req!=null)
+        {
+        	((org.jdiameter.client.impl.app.cxdx.CxDxClientSessionImpl)session).processRequest(req);
+        }
         return activity;
       }
       catch (Exception e) {
@@ -868,7 +887,7 @@ public class CxDxResourceAdaptor implements ResourceAdaptor, DiameterListener , 
 	public CxDxClientSession createCxDxClientSessionActivity(DiameterIdentity destinationHost, DiameterIdentity destinationRealm) throws CreateActivityException {
 		 try {
 	    	 
-	        ClientCxDxSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAccAppId(0L, 3L), ClientAccSession.class);
+	        ClientCxDxSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAuthAppId(10415L, 16777216L), ClientCxDxSession.class);
 
 	        //return new org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl(ra.cxdxMessageFactory, ra.cxdxAvpFactory, session, (EventListener<Request, Answer>) session, ra.messageTimeout, destinationHost, destinationRealm, ra.sleeEndpoint);
 	        org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl activity = new org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl(ra.cxdxMessageFactory, ra.cxdxAvpFactory, session, (EventListener<Request, Answer>) session, ra.messageTimeout, destinationHost, destinationRealm, ra.sleeEndpoint);
@@ -901,7 +920,7 @@ public class CxDxResourceAdaptor implements ResourceAdaptor, DiameterListener , 
 
     public CxDxServerSession createCxDxServerSessionActivity(DiameterIdentity destinationHost, DiameterIdentity destinationRealm) throws CreateActivityException {
 			try {
-				ServerCxDxSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAccAppId(0L, 3L), ClientAccSession.class);
+				ServerCxDxSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAuthAppId(10415L, 16777216L), ServerCxDxSession.class);
 				org.mobicents.slee.resource.diameter.cxdx.CxDxServerSessionImpl activity = new org.mobicents.slee.resource.diameter.cxdx.CxDxServerSessionImpl(ra.cxdxMessageFactory,
 						ra.cxdxAvpFactory, session, (EventListener<Request, Answer>) session, ra.messageTimeout, destinationHost, destinationRealm, ra.sleeEndpoint, stack);
 
@@ -941,13 +960,7 @@ public class CxDxResourceAdaptor implements ResourceAdaptor, DiameterListener , 
     return new DiameterIdentity[0];
   }
 
-/* (non-Javadoc)
- * @see org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationListener#fireEvent(java.lang.String, java.lang.String, org.jdiameter.api.Request, org.jdiameter.api.Answer)
- */
-public void fireEvent(String sessionId, String name, Request request, Answer answer) {
-	// TODO Auto-generated method stub
-	
-}
+
 
 /* (non-Javadoc)
  * @see org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationListener#getSupportedApplications()

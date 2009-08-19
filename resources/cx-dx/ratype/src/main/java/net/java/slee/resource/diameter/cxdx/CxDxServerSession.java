@@ -6,6 +6,7 @@ import net.java.slee.resource.diameter.cxdx.events.LocationInfoAnswer;
 import net.java.slee.resource.diameter.cxdx.events.MultimediaAuthenticationAnswer;
 import net.java.slee.resource.diameter.cxdx.events.PushProfileRequest;
 import net.java.slee.resource.diameter.cxdx.events.RegistrationTerminationAnswer;
+import net.java.slee.resource.diameter.cxdx.events.RegistrationTerminationRequest;
 import net.java.slee.resource.diameter.cxdx.events.ServerAssignmentAnswer;
 import net.java.slee.resource.diameter.cxdx.events.UserAuthorizationAnswer;
 
@@ -83,7 +84,7 @@ public interface CxDxServerSession extends CxDxSession {
    * 
    * @return a new RegistrationTerminationAnswer
    */
-  RegistrationTerminationAnswer createRegistrationTerminationAnswer();
+  RegistrationTerminationRequest createRegistrationTerminationRequest();
 
   /**
    * Send an event Registration-Termination-Answer in response to a Registration-Termination-Request received on this activity.
@@ -91,7 +92,7 @@ public interface CxDxServerSession extends CxDxSession {
    * @param registrationTerminationAnswer the Registration-Termination-Answer message to send
    * @throws IOException
    */
-  void sendRegistrationTerminationAnswer(RegistrationTerminationAnswer registrationTerminationAnswer) throws IOException;
+  void sendRegistrationTerminationRequest(RegistrationTerminationRequest registrationTerminationRequest) throws IOException;
 
   /**
    * Create a Push-Profile-Request pre-populated with the AVPs appropriate for this session.

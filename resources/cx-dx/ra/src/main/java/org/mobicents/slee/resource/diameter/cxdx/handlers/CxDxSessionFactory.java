@@ -6,19 +6,7 @@
  */
 package org.mobicents.slee.resource.diameter.cxdx.handlers;
 
-import static org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationListener._ErrorAnswer;
-import static org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationListener._ExtensionDiameterMessage;
-import static org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationListener._LocationInfoAnswer;
-import static org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationListener._LocationInfoRequest;
-import static org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationListener._MultimediaAuthenticationAnswer;
-import static org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationListener._MultimediaAuthenticationRequest;
-import static org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationListener._PushProfileAnswer;
-import static org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationListener._PushProfileRequest;
-import static org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationListener._RegistrationTerminationRequest;
-import static org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationListener._ServerAssignmentAnswer;
-import static org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationListener._ServerAssignmentRequest;
-import static org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationListener._UserAuthorizationAnswer;
-import static org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationListener._UserAuthorizationRequest;
+import static org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationListener.*;
 
 import org.apache.log4j.Logger;
 import org.jdiameter.api.Answer;
@@ -110,13 +98,13 @@ public class CxDxSessionFactory implements IAppSessionFactory, ServerCxDxSession
 			appSession = clientSession;
 		}else if(appSessionClass == ServerCxDxSession.class)
 		{
-			CxDxServerSessionImpl serverSession = null;
+			org.jdiameter.server.impl.app.cxdx.CxDxServerSessionImpl serverSession = null;
 			if (args != null && args.length > 0 && args[0] instanceof Request) {
 				// This shouldnt happen but just in case
 				Request request = (Request) args[0];
-				serverSession = new CxDxServerSessionImpl(request.getSessionId(), this, sessionFactory, this);
+				serverSession = new org.jdiameter.server.impl.app.cxdx.CxDxServerSessionImpl(request.getSessionId(), this, sessionFactory, this);
 			} else {
-				serverSession = new CxDxServerSessionImpl(sessionId, this, sessionFactory, this);
+				serverSession = new org.jdiameter.server.impl.app.cxdx.CxDxServerSessionImpl(sessionId, this, sessionFactory, this);
 			}
 
 			serverSession.addStateChangeNotification(this);
@@ -181,7 +169,7 @@ public class CxDxSessionFactory implements IAppSessionFactory, ServerCxDxSession
 	 */
 	public void doRegistrationTerminationAnswer(ServerCxDxSession session, JRegistrationTerminationRequest request, JRegistrationTerminationAnswer answer) throws InternalException,
 			IllegalDiameterStateException, RouteException, OverloadException {
-		this.cxDxResourceAdaptor.fireEvent(session.getSessions().get(0).getSessionId(),_PushProfileAnswer , null, (Answer) answer.getMessage());
+		this.cxDxResourceAdaptor.fireEvent(session.getSessions().get(0).getSessionId(),_RegistrationTerminationAnswer , null, (Answer) answer.getMessage());
 		
 	}
 

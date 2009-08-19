@@ -28,9 +28,14 @@ public abstract class CxDxSession extends AppSessionImpl implements NetworkReqLi
 	protected Lock sendAndStateLock = new ReentrantLock();
 	protected static final ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(4);
 	protected List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
-	protected CxDxSessionState state;
+	protected CxDxSessionState state = CxDxSessionState.IDLE;
 	protected Future timeoutTaskFuture;
 	protected ICxDxMessageFactory messageFactory;
+
+	public CxDxSession() {
+		super();
+	}
+
 	public void addStateChangeNotification(StateChangeListener listener) {
 		if (!stateListeners.contains(listener)) {
 			stateListeners.add(listener);
