@@ -22,7 +22,8 @@ import org.jdiameter.api.Answer;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.Request;
-import org.jdiameter.api.Session;
+import org.jdiameter.api.cxdx.ClientCxDxSession;
+import org.jdiameter.common.api.app.cxdx.CxDxSessionState;
 import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.cxdx.events.PushProfileAnswerImpl;
@@ -37,7 +38,7 @@ import org.mobicents.slee.resource.diameter.cxdx.events.PushProfileAnswerImpl;
 public class CxDxClientSessionImpl extends CxDxSessionImpl implements CxDxClientSession {
 
   protected ArrayList<DiameterAvp> sessionAvps = new ArrayList<DiameterAvp>();
-
+  protected ClientCxDxSession appSession;
   /**
    * @param messageFactory
    * @param avpFactory
@@ -48,11 +49,14 @@ public class CxDxClientSessionImpl extends CxDxSessionImpl implements CxDxClient
    * @param destinationRealm
    * @param endpoint
    */
-  public CxDxClientSessionImpl(CxDxMessageFactory messageFactory, CxDxAVPFactory avpFactory, Session session, EventListener<Request, Answer> raEventListener, long timeout, DiameterIdentity destinationHost, DiameterIdentity destinationRealm, SleeEndpoint endpoint) {
-    super(messageFactory, avpFactory, session, raEventListener, timeout, destinationHost, destinationRealm, endpoint);
+  public CxDxClientSessionImpl(CxDxMessageFactory messageFactory, CxDxAVPFactory avpFactory, ClientCxDxSession session, EventListener<Request, Answer> raEventListener, long timeout, DiameterIdentity destinationHost, DiameterIdentity destinationRealm, SleeEndpoint endpoint) {
+    super(messageFactory, avpFactory, session.getSessions().get(0), raEventListener, timeout, destinationHost, destinationRealm, endpoint);
+    this.appSession = session;
   }
 
-  /* (non-Javadoc)
+
+
+/* (non-Javadoc)
    * @see net.java.slee.resource.diameter.cxdx.CxDxClientSession#createLocationInfoRequest()
    */
   public LocationInfoRequest createLocationInfoRequest() {
@@ -331,5 +335,12 @@ public class CxDxClientSessionImpl extends CxDxSessionImpl implements CxDxClient
       throw ioe;
     }
   }
+  public void stateChanged(Enum oldState, Enum newState) {
+		if (!terminated)
+			if (newState == CxDxSessionState.TERMINATED || newState == CxDxSessionState.TIMEDOUT) {
+				terminated = true;
+				super.cxdxSessionListener.sessionDestroyed(sessionId, this.appSession);
+			}
 
+	}
 }

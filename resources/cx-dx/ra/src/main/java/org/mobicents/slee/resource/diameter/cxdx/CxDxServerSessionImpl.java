@@ -29,6 +29,9 @@ import org.jdiameter.api.EventListener;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.Session;
+import org.jdiameter.api.Stack;
+import org.jdiameter.api.cxdx.ServerCxDxSession;
+import org.jdiameter.common.api.app.cxdx.CxDxSessionState;
 import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.cxdx.events.LocationInfoAnswerImpl;
@@ -48,22 +51,29 @@ import org.mobicents.slee.resource.diameter.cxdx.events.UserAuthorizationAnswerI
 public class CxDxServerSessionImpl extends CxDxSessionImpl implements CxDxServerSession {
 
   protected ArrayList<DiameterAvp> sessionAvps = new ArrayList<DiameterAvp>();
+  protected ServerCxDxSession appSession;
 
-  /**
-   * @param messageFactory
-   * @param avpFactory
-   * @param session
-   * @param raEventListener
-   * @param timeout
-   * @param destinationHost
-   * @param destinationRealm
-   * @param endpoint
-   */
-  public CxDxServerSessionImpl(CxDxMessageFactory messageFactory, CxDxAVPFactory avpFactory, Session session, EventListener<Request, Answer> raEventListener, long timeout, DiameterIdentity destinationHost, DiameterIdentity destinationRealm, SleeEndpoint endpoint) {
-    super(messageFactory, avpFactory, session, raEventListener, timeout, destinationHost, destinationRealm, endpoint);
-  }
 
-  /* (non-Javadoc)
+/**
+ * 	
+ * @param cxdxMessageFactory
+ * @param cxdxAvpFactory
+ * @param session
+ * @param session2
+ * @param messageTimeout
+ * @param destinationHost
+ * @param destinationRealm
+ * @param sleeEndpoint
+ * @param stack
+ */
+public CxDxServerSessionImpl(CxDxMessageFactory cxdxMessageFactory, CxDxAVPFactory cxdxAvpFactory, ServerCxDxSession session, EventListener<Request, Answer> raEventListener, long messageTimeout,
+		DiameterIdentity destinationHost, DiameterIdentity destinationRealm, SleeEndpoint sleeEndpoint, Stack stack) {
+	super(cxdxMessageFactory, cxdxAvpFactory, session.getSessions().get(0), raEventListener, messageTimeout, destinationHost, destinationRealm, sleeEndpoint);
+	//FIXME: why stack?
+	this.appSession = session;
+}
+
+/* (non-Javadoc)
    * @see net.java.slee.resource.diameter.cxdx.CxDxServerSession#createLocationInfoAnswer()
    */
   public LocationInfoAnswer createLocationInfoAnswer() {
@@ -313,4 +323,14 @@ public class CxDxServerSessionImpl extends CxDxSessionImpl implements CxDxServer
       throw ioe;
     }
   }
+  
+  public void stateChanged(Enum oldState, Enum newState) {
+		if(!terminated)
+			if(newState == CxDxSessionState.TERMINATED || newState == CxDxSessionState.TIMEDOUT)
+			{
+				terminated = true;
+				super.cxdxSessionListener.sessionDestroyed(sessionId, this.appSession);
+			}
+		
+	}
 }

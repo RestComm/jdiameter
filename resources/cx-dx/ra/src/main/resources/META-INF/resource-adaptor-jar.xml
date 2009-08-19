@@ -10,7 +10,7 @@
     <resource-adaptor-version>0.8.1</resource-adaptor-version>
 
     <resource-adaptor-type-ref>
-      <resource-adaptor-type-name>Diameter Cx/Dx Client</resource-adaptor-type-name>
+      <resource-adaptor-type-name>DiameterCxDx</resource-adaptor-type-name>
       <resource-adaptor-type-vendor>java.net</resource-adaptor-type-vendor>
       <resource-adaptor-type-version>0.8.1</resource-adaptor-type-version>
     </resource-adaptor-type-ref>

@@ -12,7 +12,10 @@ import org.jdiameter.api.Answer;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.Session;
+import org.jdiameter.api.app.StateChangeListener;
+import org.jdiameter.common.api.app.cxdx.CxDxSessionState;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
+import org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationListener;
 
 
 /**
@@ -22,18 +25,21 @@ import org.mobicents.slee.resource.diameter.base.DiameterActivityImpl;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
-public class CxDxSessionImpl extends DiameterActivityImpl implements CxDxSession {
+public abstract class CxDxSessionImpl extends DiameterActivityImpl implements CxDxSession ,StateChangeListener{
 
   protected CxDxMessageFactory cxdxMessageFactory = null;
   protected CxDxAVPFactory cxdxAvpFactory = null;
 
   protected DiameterMessage lastRequest = null;
-
+  protected boolean terminated = false;
+  //FIXME: missed this in last release, this has to be fixed in base....!!!!!!!!!!!!!!!!!!
+  protected CxDxSessionCreationListener cxdxSessionListener;
   public CxDxSessionImpl(CxDxMessageFactory messageFactory, CxDxAVPFactory avpFactory, Session session, EventListener<Request, Answer> raEventListener, long timeout, DiameterIdentity destinationHost, DiameterIdentity destinationRealm, SleeEndpoint endpoint) {
     super(null, null, session, raEventListener, timeout, destinationHost, destinationRealm, endpoint);
 
     this.cxdxMessageFactory = messageFactory;
     this.cxdxAvpFactory = avpFactory;
+    this.cxdxSessionListener = (CxDxSessionCreationListener)raEventListener;
   }
 
   /* (non-Javadoc)
@@ -60,5 +66,7 @@ public class CxDxSessionImpl extends DiameterActivityImpl implements CxDxSession
   public void fetchSessionData(DiameterMessage cxdxRequest) {
     this.lastRequest = cxdxRequest;
   }
+
+
 
 }

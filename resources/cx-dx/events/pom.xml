@@ -17,6 +17,16 @@
 			<artifactId>base-events</artifactId>
 			<version>${mobicents.diameter.resources.base.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>${pom.groupId}</groupId>
+			<artifactId>ro-events</artifactId>
+			<version>${mobicents.diameter.resources.ro.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${pom.groupId}</groupId>
+			<artifactId>sh-common-events</artifactId>
+			<version>${mobicents.diameter.resources.sh-client.version}</version>
+		</dependency>
 	</dependencies>
 
 </project>

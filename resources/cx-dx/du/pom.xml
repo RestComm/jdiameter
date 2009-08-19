@@ -8,7 +8,7 @@
   	<version>1.0.0.BETA1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>base-ra-DU</artifactId>
+	<artifactId>cx-dx-ra-DU</artifactId>
 
 	<name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
 
