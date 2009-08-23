@@ -27,7 +27,7 @@
     <module>resources/sh-server</module>
     <module>resources/ro</module>
     <module>resources/rf</module>
-    <module>resources/cxdx</module>
+    <module>resources/cx-dx</module>
   </modules>
 
 	<properties>
