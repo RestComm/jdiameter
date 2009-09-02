@@ -49,7 +49,7 @@
             <configuration>
               <autoVersionSubmodules>true</autoVersionSubmodules>
               <resume>false</resume>
-              <tagBase>https://mobicents.googlecode.com/svn/tags/servers/diameter/resources/cxdx</tagBase>
+              <tagBase>https://mobicents.googlecode.com/svn/tags/servers/diameter/resources/cx-dx</tagBase>
             </configuration>
           </plugin>
         </plugins>
