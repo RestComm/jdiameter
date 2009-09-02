@@ -5,7 +5,7 @@
 	<parent>
     <groupId>org.mobicents.servers.diameter.resources</groupId>
   	<artifactId>cxdx-parent</artifactId>
-  	<version>1.0.0.BETA1-SNAPSHOT</version>
+  	<version>1.0.0.BETA1</version>
 	</parent>
 
 	<artifactId>cx-dx-ra-DU</artifactId>
