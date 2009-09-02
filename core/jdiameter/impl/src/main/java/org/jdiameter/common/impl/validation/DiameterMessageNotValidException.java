@@ -12,7 +12,9 @@ import org.jdiameter.common.api.DiameterRuntimeException;
  */
 public class DiameterMessageNotValidException extends DiameterRuntimeException {
 
-	/**
+  private static final long serialVersionUID = 1L;
+
+  /**
 	 * 	
 	 */
 	public DiameterMessageNotValidException() {
