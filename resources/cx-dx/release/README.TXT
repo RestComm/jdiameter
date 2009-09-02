@@ -11,7 +11,11 @@
 
  This is the Cx/Dx RA release of Mobicents Diameter solution.
 
- This RA provides Cx/Dx interface application ...
+ This RA provides Cx/Dx interface application implementation of Diameter for JAIN SLEE and depends on 
+ the Mobicents Diameter Mux and Base RA to be deployed before using it.
+
+ This interface allows the communication between CSCF and HSS (Cx) and CSCF and SLF (Dx) and it is defined
+ in 3GPP TS 29.228 & TS 29.229.
 
 ------------------
  Release Contents
