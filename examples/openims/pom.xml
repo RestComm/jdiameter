@@ -12,7 +12,7 @@
 
   <groupId>org.mobicents.servers.diameter.examples</groupId>
 	<artifactId>openims-parent</artifactId>
-	<version>1.0.2.GA-SNAPSHOT</version>
+	<version>1.0.2.GA</version>
 
 	<name>Mobicents :: Diameter Examples :: ${pom.artifactId}</name>
 				
@@ -95,9 +95,9 @@
 	</profiles>
 
   <scm>
-    <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/examples/openims</connection>
-    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/examples/openims</developerConnection>
-    <url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/examples/openims</url>
+    <connection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/examples/openims/openims-1.0.2.GA</connection>
+    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/examples/openims/openims-1.0.2.GA</developerConnection>
+    <url>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/examples/openims/openims-1.0.2.GA</url>
   </scm>
 
 </project>
