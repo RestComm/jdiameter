@@ -10,7 +10,7 @@
   </parent>
 
   <groupId>org.mobicents.servers.diameter.resources</groupId>
-  <artifactId>cxdx-parent</artifactId>
+  <artifactId>cx-dx-parent</artifactId>
   <version>1.0.0.BETA2</version>
 
   <name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
@@ -71,15 +71,15 @@
                 </goals>
                 <configuration>
                   <tasks>
-                    <copy overwrite="true" todir="${basedir}/../../release/${release.name}/resources/diameter-cxdx">
+                    <copy overwrite="true" todir="${basedir}/../../release/${release.name}/resources/diameter-cx-dx">
                       <fileset dir="${basedir}/du/target">
                         <include name="**.jar" />
                         <include name="*.xml" />
                         <include name="*.properties" />
                       </fileset>
                     </copy>
-                    <copy overwrite="true" file="${basedir}/du/target/build.xml" tofile="${basedir}/../../release/${release.name}/resources/diameter-cxdx/du-management.xml" />
-                    <copy overwrite="true" file="${basedir}/release/build.xml" todir="${basedir}/../../release/${release.name}/resources/diameter-cxdx">
+                    <copy overwrite="true" file="${basedir}/du/target/build.xml" tofile="${basedir}/../../release/${release.name}/resources/diameter-cx-dx/du-management.xml" />
+                    <copy overwrite="true" file="${basedir}/release/build.xml" todir="${basedir}/../../release/${release.name}/resources/diameter-cx-dx">
                       <filterset>
                         <filter token="JBOSS.PATH" value="${jboss.path}" />
                         <filter token="JBOSS.CONFIG" value="${node}" />

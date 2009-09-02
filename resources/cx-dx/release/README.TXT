@@ -1,9 +1,9 @@
 =============================================
  Mobicents Diameter : Cx/Dx Resource Adaptor
 =============================================
-                              v@cxdx_VERSION@
+                              v@cx-dx_VERSION@
 
- Welcome to the Mobicents Diameter Cx/Dx Resource Adaptor v@cxdx_VERSION@ release!
+ Welcome to the Mobicents Diameter Cx/Dx Resource Adaptor v@cx-dx_VERSION@ release!
 
 --------------
  Introduction
@@ -21,7 +21,7 @@
  Release Contents
 ------------------
 
-  diameter-cxdx-ra-DU-@cxdx_VERSION@.jar (the JAIN SLEE Deployable Unit to be installed in Mobicents)
+  diameter-cxdx-ra-DU-@cx-dx_VERSION@.jar (the JAIN SLEE Deployable Unit to be installed in Mobicents)
 
   du-management.xml (the auxiliar build file for managing deployment/undeployment)
 

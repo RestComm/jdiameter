@@ -3,18 +3,18 @@
 
 	<parent>
     <groupId>org.mobicents.servers.diameter.resources</groupId>
-  	<artifactId>cxdx-parent</artifactId>
+  	<artifactId>cx-dx-parent</artifactId>
   	<version>1.0.0.BETA2</version>
 	</parent>
 
-	<artifactId>cxdx-ratype</artifactId>
+	<artifactId>cx-dx-ratype</artifactId>
 
 	<name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>cxdx-events</artifactId>
+			<artifactId>cx-dx-events</artifactId>
 			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
