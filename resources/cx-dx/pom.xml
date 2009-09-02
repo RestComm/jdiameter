@@ -11,7 +11,7 @@
 
   <groupId>org.mobicents.servers.diameter.resources</groupId>
   <artifactId>cxdx-parent</artifactId>
-  <version>1.0.0.BETA1</version>
+  <version>1.0.0.BETA2</version>
 
   <name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
 
@@ -96,9 +96,9 @@
   </profiles>
 
   <scm>
-    <connection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/resources/cx-dx/cxdx-1.0.0.BETA1</connection>
-    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/resources/cx-dx/cxdx-1.0.0.BETA1</developerConnection>
-    <url>http://mobicents.googlecode.com/svn/tags/servers/diameter/resources/cx-dx/cxdx-1.0.0.BETA1</url>
+    <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/resources/cx-dx</connection>
+    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/resources/cx-dx</developerConnection>
+    <url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/resources/cx-dx</url>
   </scm>
 
 </project>
