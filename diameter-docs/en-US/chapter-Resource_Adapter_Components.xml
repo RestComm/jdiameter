@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. -->
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<chapter>
+  <title>Resource Adapter Components</title>
+  <para>Diameter provides the following Resource Adapter (RA) components that are used to connect to the JAIN SLEE Server:</para>
+  <itemizedlist>
+    <listitem>
+      <para>Base</para>
+    </listitem>
+    <listitem>
+      <para>Mobicents Diameter Sh (Client)</para>
+    </listitem>
+    <listitem>
+      <para>Mobicents Diameter Sh (Server)</para>
+    </listitem>
+    <listitem>
+      <para>Mobicents Diameter Ro</para>
+    </listitem>
+    <listitem>
+      <para>Mobicents Diameter Rf</para>
+    </listitem>
+    <listitem>
+      <para>Mobicents Diameter CCA</para>
+    </listitem>
+  </itemizedlist>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Base.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Client.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Server.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Ro.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Rf.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_CCA.xml" encoding="UTF-8"/>
+</chapter>
