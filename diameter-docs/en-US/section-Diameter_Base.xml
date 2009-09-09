@@ -2,5 +2,298 @@
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
 <section>
   <title>Mobicents Diameter Base</title>
-  <para>Text</para>
+  <para>The Diameter Base application is responsible for managing the connection between peers and provides basic authentication, accounting, and session management. Diameter Base can be extended to function with other applications because its factories provide methods for creating  raw messages and AVPs.  In order for the application to be compliant with the specification, state machines should be implemented at some level within the implementation.</para>
+  <para>Diameter Base provides a number of message commands that can be used within the application.  </para>
+  <table frame="all" pgwide="1">
+    <title>Diameter Messages</title>
+    <tgroup cols="4" colsep="1">
+      <colspec colname="c1"/>
+      <colspec colname="c2"/>
+      <colspec colname="c3"/>
+      <colspec colname="c4"/>
+      <thead>
+        <row>
+          <entry>Command Name</entry>
+          <entry>Class</entry>
+          <entry>Abbreviation</entry>
+          <entry>Code</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry>Abort-Session-Request</entry>
+          <entry>Session Management</entry>
+          <entry>ASR</entry>
+          <entry>274</entry>
+        </row>
+        <row>
+          <entry>Abort-Session-Answer</entry>
+          <entry>Session Management</entry>
+          <entry>ASA</entry>
+          <entry>274</entry>
+        </row>
+        <row>
+          <entry>Accounting-Request</entry>
+          <entry>Accounting </entry>
+          <entry>ACR</entry>
+          <entry>271</entry>
+        </row>
+        <row>
+          <entry>Accounting-Answer</entry>
+          <entry>Accounting </entry>
+          <entry>ACA</entry>
+          <entry>271</entry>
+        </row>
+        <row>
+          <entry>Capabilities-Exchange-Request</entry>
+          <entry>Peer Management</entry>
+          <entry>CER</entry>
+          <entry>257</entry>
+        </row>
+        <row>
+          <entry>Capabilities-Exchange-Answer</entry>
+          <entry>Peer Management</entry>
+          <entry>CEA</entry>
+          <entry>257</entry>
+        </row>
+        <row>
+          <entry>Device-Watchdog-Request</entry>
+          <entry>Peer Management</entry>
+          <entry>DWR</entry>
+          <entry>280</entry>
+        </row>
+        <row>
+          <entry>Device-Watchdog-Answer</entry>
+          <entry>Peer Management</entry>
+          <entry>DWA</entry>
+          <entry>280</entry>
+        </row>
+        <row>
+          <entry>Disconnect-Peer-Request</entry>
+          <entry>Peer Management</entry>
+          <entry>DPR</entry>
+          <entry>282</entry>
+        </row>
+        <row>
+          <entry>Disconnect-Peer-Answer</entry>
+          <entry>Peer Management</entry>
+          <entry>DPA</entry>
+          <entry>282</entry>
+        </row>
+        <row>
+          <entry>Re-Auth-Request</entry>
+          <entry>Authentication</entry>
+          <entry>RAR</entry>
+          <entry>258</entry>
+        </row>
+        <row>
+          <entry>Re-Auth-Answer</entry>
+          <entry>Authentication</entry>
+          <entry>RAA</entry>
+          <entry>258</entry>
+        </row>
+        <row>
+          <entry>Session-Termination-Request</entry>
+          <entry>Session Management</entry>
+          <entry>STR</entry>
+          <entry>275</entry>
+        </row>
+        <row>
+          <entry>Session-Termination-Answer</entry>
+          <entry>Session Management</entry>
+          <entry>STA</entry>
+          <entry>275</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </table>
+  <section>
+    <title>Resource Adapter Type</title>
+    <para>The resource adapter  provides the following types:</para>
+    <itemizedlist>
+      <listitem>
+        <para>Activities</para>
+      </listitem>
+      <listitem>
+        <para>Provider</para>
+      </listitem>
+      <listitem>
+        <para>Message Factory</para>
+      </listitem>
+    </itemizedlist>
+    <formalpara>
+      <title>Activities</title>
+      <para>The following activities are available, with the API definition listed for reference.  The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.  </para>
+    </formalpara>
+    <para>The lifecycle of an activity depends on the type of received request and the application interaction.  In the case of a subscription activity, the activity  timeout is taken into consideration because the subscription may be time-based.</para>
+    <variablelist>
+      <title>Diameter Base Activities</title>
+      <varlistentry>
+        <term>AccountingClientSessionActivity</term>
+        <listitem>
+          <para>Client accounting activity, which is created for each ACR request.  The activity ends when an answer is received, or the request times out.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <programlisting role="JAVA">package net.java.slee.resource.diameter.base;
+
+import java.io.IOException;
+
+import net.java.slee.resource.diameter.base.events.AccountingRequest;
+
+public interface AccountingClientSessionActivity extends
+                AccountingSessionActivity {
+
+        /**
+         * Send Account Request to Server
+         * @param request
+         * @throws IOException 
+         */
+         void   sendAccountRequest(AccountingRequest request) throws IOException;        
+}
+</programlisting>
+    <variablelist>
+      <varlistentry>
+        <term>AuthClientSessionActivity</term>
+        <listitem>
+          <para>Client authorization activity, which is created for each RAR request.  The activity ends when an answer is received, or the request times out.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <programlisting role="JAVA">package net.java.slee.resource.diameter.base;
+
+import java.io.IOException;
+
+import net.java.slee.resource.diameter.base.events.AbortSessionAnswer;
+import net.java.slee.resource.diameter.base.events.DiameterMessage;
+import net.java.slee.resource.diameter.base.events.ReAuthAnswer;
+import net.java.slee.resource.diameter.base.events.SessionTerminationRequest;
+
+public interface AuthClientSessionActivity extends AuthSessionActivity{
+
+        /**
+         * Send abort session answer to server
+         *
+         * @param answer
+         * @throws IOException
+         */
+        void sendAbortSessionAnswer(AbortSessionAnswer answer) throws IOException;
+
+        /**
+         * Send authentication session request to server FIXME: baranowb; whats
+         * this?
+         *
+         * @param request
+         * @throws IOException
+         */
+        void sendAuthRequest(DiameterMessage request) throws IOException;
+
+        /**
+         * Send re-authentication session answer to server
+         *
+         * @param answer
+         * @throws IOException
+         */
+        void sendReAuthAnswer(ReAuthAnswer answer) throws IOException;
+
+        /**
+         * Send session termination request to server
+         *
+         * @param request
+         * @throws IOException
+         */
+        void sendSessionTerminationRequest(SessionTerminationRequest request) throws IOException;
+       
+}
+
+</programlisting>
+    <variablelist>
+      <varlistentry>
+        <term>AccountingServerSessionActivity</term>
+        <listitem>
+          <para>Server accounting activity, which is created for eash ACR request.  The activity ends when  an answer is sent, or the request times out.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <programlisting role="JAVA">package net.java.slee.resource.diameter.base;
+
+import java.io.IOException;
+
+import net.java.slee.resource.diameter.base.events.AccountingAnswer;
+
+public interface AccountingServerSessionActivity extends
+                AccountingSessionActivity {
+
+        /**
+         * Sends generated answer back to client
+         * @param answer
+         * @throws IOException
+         */
+        void sendAccountAnswer(AccountingAnswer answer) throws IOException;
+
+        
+}</programlisting>
+    <variablelist>
+      <varlistentry>
+        <term>AuthServerSessionActivity</term>
+        <listitem>
+          <para>Server authorization activity, which is created for each RAR request. The activity ends when  an answer is sent, or the request times out.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <programlisting role="JAVA">package net.java.slee.resource.diameter.base;
+
+import java.io.IOException;
+
+import net.java.slee.resource.diameter.base.events.AbortSessionRequest;
+import net.java.slee.resource.diameter.base.events.DiameterMessage;
+import net.java.slee.resource.diameter.base.events.ReAuthRequest;
+import net.java.slee.resource.diameter.base.events.SessionTerminationAnswer;
+
+public interface AuthServerSessionActivity extends AuthSessionActivity {
+
+        /**
+         * Send session abort session request to client
+         * 
+         * @param request
+         * @throws IOException 
+         */
+        void sendAbortSessionRequest(AbortSessionRequest request) throws IOException;
+
+        /**
+         * Send authenticate answer to client
+         * 
+         * @param answer
+         * @throws IOException 
+         */
+        void sendAuthAnswer(DiameterMessage answer) throws IOException;
+
+        /**
+         * Send re-authenticate request to client
+         * 
+         * @param request
+         * @throws IOException 
+         */
+        void sendReAuthRequest(ReAuthRequest request) throws IOException;
+
+        /**
+         * Send session termination answer to client
+         * 
+         * @param request
+         * @throws IOException 
+         */
+        void sendSessionTerminationAnswer(SessionTerminationAnswer request) throws IOException;
+
+}</programlisting>
+    <formalpara>
+      <title>Provider</title>
+      <para>Provider defines the basic features that must be supported by all other providers.   Service Building Blocks (SBBs)  create activities on demand and retrieve AVP and message factories.   The connection information is retrieved from the connected peers.</para>
+    </formalpara>
+<!--JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.  -->    <para>The API for the DiameterProvider is more than 100 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/base/ratype/src/main/java/net/java/slee/resource/diameter/base/DiameterProvider.java">DiameterProvider.java in the source code</ulink>.</para>
+    <formalpara>
+      <title>Message Factory</title>
+      <para>The Message Factory creates events  that can be executed within the JAIN SLEE Server.  Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.</para>
+    </formalpara>
+    <para>The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/base/ratype/src/main/java/net/java/slee/resource/diameter/base/DiameterMessageFactory.java">DiameterMessageFactory.java in the source code</ulink>.</para>
+  </section>
 </section>

@@ -1,0 +1,924 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">
+<!ENTITY PRODUCT "JBoss_Communications_Platform">
+<!ENTITY BOOKID "doc-Diameter_User_Guide">
+<!ENTITY YEAR "2009">
+<!ENTITY HOLDER "Red Hat Inc">
+]>
+<book lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><bookinfo id="dug-Diameter_User_Guide" lang="en-US">
+	<!--  chapter id nickname: sssug  --><title>Diameter User Guide</title>
+	<subtitle>The Guide to the Mobicents Diameter Adapter</subtitle>
+	<productname>Mobicents Platform</productname>
+	<productnumber>1.2.1</productnumber>
+	<edition>1.0</edition>
+	<pubsnumber>1</pubsnumber>
+	<abstract>
+		<para><application condition="mob">The Mobicents Platform</application> is the first and only open source <acronym>VoIP</acronym> platform certified for <acronym>JAIN SLEE</acronym> 1.0 and <acronym>SIP</acronym> Servlets 1.1 compliance. <application condition="mob">Mobicents</application> serves as a high-performance core for Service Delivery Platforms (<acronym>SDP</acronym>s) and <acronym>IP</acronym> Multimedia Subsystems (<acronym>IMS</acronym>s) by leveraging <acronym>J2EE</acronym> to enable the convergence of data and video in Next-Generation
+Intelligent Network (<acronym>NGIN</acronym>) applications.</para>
+			<para>The <application condition="mob">Mobicents Platform</application> enables the composition of predefined Service Building Blocks (<acronym>SBB</acronym>s) such as Call-Control, Billing, User-Provisioning, Administration
+and Presence-Sensing. Out-of-the-box monitoring and management of <application condition="mob">Mobicents</application> components is achieved through <acronym>JMX</acronym> Consoles. <acronym>JSLEE</acronym> allows popular protocol stacks such as <acronym>SIP</acronym> to be plugged in as Resource Adapters (<acronym>RA</acronym>s), and Service Building Blocks—which share many similarities with <acronym>EJB</acronym>s—allow the easy accommodation and integration of enterprise
+applications with end points such as the Web, Customer Relationship
+Management (<acronym>CRM</acronym>) systems and Service-Oriented Architectures (<acronym>SOA</acronym>s). The <application condition="mob">Mobicents Platform</application> is the natural choice for telecommunication Operations Support
+Systems (OSSs) and Network Management Systems (NMSs).</para>
+				<para>In addition to the telecommunication industry, the <application condition="mob">Mobicents Platform</application> is suitable for a variety of problem domains demanding an
+Event-Driven Architecture (<acronym>EDA</acronym>) for high-volume, low-latency signaling, such as financial
+trading, online gaming, (<acronym>RFID</acronym>) sensor network integration, and distributed control.</para></abstract>
+					<corpauthor>
+						<inlinemediaobject>
+							<imageobject>
+								<imagedata fileref="Common_Content/images/title_logo.svg" format="SVG"/>
+							</imageobject>
+							<textobject>
+								<phrase>Logo</phrase>
+							</textobject>
+						</inlinemediaobject>
+					</corpauthor>
+					<copyright>
+						<year>2009</year>
+						<holder>Red Hat Inc</holder>
+					</copyright>
+					<!-- ORIGINAL:
+ <xi:include
+  href="Common_Content/Legal_Notice.xml"
+  xmlns:xi="http://www.w3.org/2001/XInclude" /> --><!-- FOR JDOCBOOK: --><!-- <xi:include
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  href="Common_Content/Legal_Notice.xml">
+  <xi:fallback
+   xmlns:xi="http://www.w3.org/2001/XInclude">
+   <xi:include
+    href="fallback_content/Legal_Notice.xml"
+    xmlns:xi="http://www.w3.org/2001/XInclude"></xi:include>
+  </xi:fallback>
+ </xi:include> --> <authorgroup lang="en-US">
+	<author>
+		<firstname>Alexandre</firstname>
+		<surname>Mendonça</surname>
+		<affiliation>
+			<orgname>Red Hat, </orgname>
+			<orgdiv condition="mob">Mobicents</orgdiv>
+		</affiliation>
+		<email condition="mob">brainslog@gmail.com</email>
+	</author>
+	<author>
+		<firstname>Bartosz</firstname>
+		<surname>Baranowski</surname>
+		<affiliation>
+			<orgname>Red Hat, </orgname>
+			<orgdiv condition="mob">Mobicents</orgdiv>
+		</affiliation>
+		<email condition="mob">baranowb@gmail.com</email>
+	</author>
+	<author>
+		<firstname>Jared</firstname>
+		<surname>Morgan</surname>
+		<contrib>Technical Writer and Editor</contrib>
+		<affiliation>
+			<orgname>Red Hat, </orgname>
+			<orgdiv>Engineering Content Services</orgdiv>
+		</affiliation>
+		<email>jmorgan@redhat.com</email>
+	</author>
+</authorgroup>
+				</bookinfo>
+	<preface lang="en-US">
+	<title>Preface</title>
+	<para>
+		 
+	</para>
+	<section lang="en-US" xml:base="Common_Content/Conventions.xml">
+	<title>Document Conventions</title>
+	<para>
+		This manual uses several conventions to highlight certain words and phrases and draw attention to specific pieces of information.
+	</para>
+	<para>
+		In PDF and paper editions, this manual uses typefaces drawn from the <ulink url="https://fedorahosted.org/liberation-fonts/">Liberation Fonts</ulink> set. The Liberation Fonts set is also used in HTML editions if the set is installed on your system. If not, alternative but equivalent typefaces are displayed. Note: Red Hat Enterprise Linux 5 and later includes the Liberation Fonts set by default.
+	</para>
+	<section>
+		<title>Typographic Conventions</title>
+		<para>
+			Four typographic conventions are used to call attention to specific words and phrases. These conventions, and the circumstances they apply to, are as follows.
+		</para>
+		<para>
+			<literal>Mono-spaced Bold</literal>
+		</para>
+		<para>
+			Used to highlight system input, including shell commands, file names and paths. Also used to highlight key caps and key-combinations. For example:
+		</para>
+		<blockquote>
+			<para>
+				To see the contents of the file <filename>my_next_bestselling_novel</filename> in your current working directory, enter the <command>cat my_next_bestselling_novel</command> command at the shell prompt and press <keycap>Enter</keycap> to execute the command.
+			</para>
+		</blockquote>
+		<para>
+			The above includes a file name, a shell command and a key cap, all presented in Mono-spaced Bold and all distinguishable thanks to context.
+		</para>
+		<para>
+			Key-combinations can be distinguished from key caps by the hyphen connecting each part of a key-combination. For example:
+		</para>
+		<blockquote>
+			<para>
+				Press <keycap>Enter</keycap> to execute the command.
+			</para>
+			<para>
+				Press <keycombo><keycap>Ctrl</keycap><keycap>Alt</keycap><keycap>F1</keycap></keycombo> to switch to the first virtual terminal. Press <keycombo><keycap>Ctrl</keycap><keycap>Alt</keycap><keycap>F7</keycap></keycombo> to return to your X-Windows session.
+			</para>
+		</blockquote>
+		<para>
+			The first sentence highlights the particular key cap to press. The second highlights two sets of three key caps, each set pressed simultaneously.
+		</para>
+		<para>
+			If source code is discussed, class names, methods, functions, variable names and returned values mentioned within a paragraph will be presented as above, in <literal>Mono-spaced Bold</literal>. For example:
+		</para>
+		<blockquote>
+			<para>
+				File-related classes include <classname>filesystem</classname> for file systems, <classname>file</classname> for files, and <classname>dir</classname> for directories. Each class has its own associated set of permissions.
+			</para>
+		</blockquote>
+		<para>
+			<application>Proportional Bold</application>
+		</para>
+		<para>
+			This denotes words or phrases encountered on a system, including application names; dialogue box text; labelled buttons; check-box and radio button labels; menu titles and sub-menu titles. For example:
+		</para>
+		<blockquote>
+			<para>
+				Choose <guimenu>System &gt; Preferences &gt; Mouse</guimenu> from the main menu bar to launch <application>Mouse Preferences</application>. In the <guilabel>Buttons</guilabel> tab, click the <guilabel>Left-handed mouse</guilabel> check box and click <guibutton>Close</guibutton> to switch the primary mouse button from the left to the right (making the mouse suitable for use in the left hand).
+			</para>
+			<para>
+				To insert a special character into a <application>gedit</application> file, choose <guimenu>Applications &gt; Accessories &gt; Character Map</guimenu> from the main menu bar. Next, choose <guimenu>Search &gt; Find…</guimenu> from the <application>Character Map</application> menu bar, type the name of the character in the <guilabel>Search</guilabel> field and click <guibutton>Next</guibutton>. The character you sought will be highlighted in the <guilabel>Character Table</guilabel>. Double-click this highlighted character to place it in the <guilabel>Text to copy</guilabel> field and then click the <guibutton>Copy</guibutton> button. Now switch back to your document and choose <guimenu>Edit &gt; Paste</guimenu> from the <application>gedit</application> menu bar.
+			</para>
+		</blockquote>
+		<para>
+			The above text includes application names; system-wide menu names and items; application-specific menu names; and buttons and text found within a GUI interface, all presented in Proportional Bold and all distinguishable by context.
+		</para>
+		<para>
+			Note the <guimenu>&gt;</guimenu> shorthand used to indicate traversal through a menu and its sub-menus. This is to avoid the difficult-to-follow 'Select <guimenuitem>Mouse</guimenuitem> from the <guimenu>Preferences</guimenu> sub-menu in the <guimenu>System</guimenu> menu of the main menu bar' approach.
+		</para>
+		<para>
+			<command><replaceable>Mono-spaced Bold Italic</replaceable></command> or <application><replaceable>Proportional Bold Italic</replaceable></application>
+		</para>
+		<para>
+			Whether Mono-spaced Bold or Proportional Bold, the addition of Italics indicates replaceable or variable text. Italics denotes text you do not input literally or displayed text that changes depending on circumstance. For example:
+		</para>
+		<blockquote>
+			<para>
+				To connect to a remote machine using ssh, type <command>ssh <replaceable>username</replaceable>@<replaceable>domain.name</replaceable></command> at a shell prompt. If the remote machine is <filename>example.com</filename> and your username on that machine is john, type <command>ssh john@example.com</command>.
+			</para>
+			<para>
+				The <command>mount -o remount <replaceable>file-system</replaceable></command> command remounts the named file system. For example, to remount the <filename>/home</filename> file system, the command is <command>mount -o remount /home</command>.
+			</para>
+			<para>
+				To see the version of a currently installed package, use the <command>rpm -q <replaceable>package</replaceable></command> command. It will return a result as follows: <command><replaceable>package-version-release</replaceable></command>.
+			</para>
+		</blockquote>
+		<para>
+			Note the words in bold italics above — username, domain.name, file-system, package, version and release. Each word is a placeholder, either for text you enter when issuing a command or for text displayed by the system.
+		</para>
+		<para>
+			Aside from standard usage for presenting the title of a work, italics denotes the first use of a new and important term. For example:
+		</para>
+		<blockquote>
+			<para>
+				When the Apache HTTP Server accepts requests, it dispatches child processes or threads to handle them. This group of child processes or threads is known as a <firstterm>server-pool</firstterm>. Under Apache HTTP Server 2.0, the responsibility for creating and maintaining these server-pools has been abstracted to a group of modules called <firstterm>Multi-Processing Modules</firstterm> (<firstterm>MPMs</firstterm>). Unlike other modules, only one module from the MPM group can be loaded by the Apache HTTP Server.
+			</para>
+		</blockquote>
+	</section>
+	
+	<section>
+		<title>Pull-quote Conventions</title>
+		<para>
+			Two, commonly multi-line, data types are set off visually from the surrounding text.
+		</para>
+		<para>
+			Output sent to a terminal is set in <computeroutput>Mono-spaced Roman</computeroutput> and presented thus:
+		</para>
+		
+<screen>
+books        Desktop   documentation  drafts  mss    photos   stuff  svn
+books_tests  Desktop1  downloads      images  notes  scripts  svgs
+</screen>
+		<para>
+			Source-code listings are also set in <computeroutput>Mono-spaced Roman</computeroutput> but are presented and highlighted as follows:
+		</para>
+		
+<programlisting language="java">
+package org.jboss.book.jca.ex1;
+
+import javax.naming.InitialContext;
+
+public class ExClient
+{
+   public static void main(String args[]) 
+       throws Exception
+   {
+      InitialContext iniCtx = new InitialContext();
+      Object         ref    = iniCtx.lookup("EchoBean");
+      EchoHome       home   = (EchoHome) ref;
+      Echo           echo   = home.create();
+
+      System.out.println("Created Echo");
+
+      System.out.println("Echo.echo('Hello') = " + echo.echo("Hello"));
+   }
+   
+}
+</programlisting>
+	</section>
+	
+	<section>
+		<title>Notes and Warnings</title>
+		<para>
+			Finally, we use three visual styles to draw attention to information that might otherwise be overlooked.
+		</para>
+		<note>
+			<title>Note</title>
+			<para>
+				A note is a tip or shortcut or alternative approach to the task at hand. Ignoring a note should have no negative consequences, but you might miss out on a trick that makes your life easier.
+			</para>
+		</note>
+		<important>
+			<title>Important</title>
+			<para>
+				Important boxes detail things that are easily missed: configuration changes that only apply to the current session, or services that need restarting before an update will apply. Ignoring Important boxes won't cause data loss but may cause irritation and frustration.
+			</para>
+		</important>
+		<warning>
+			<title>Warning</title>
+			<para>
+				A Warning should not be ignored. Ignoring warnings will most likely cause data loss.
+			</para>
+		</warning>
+	</section>
+
+</section>
+	<section lang="en-US" xml:base="fallback_content/Feedback.xml">
+	<title>We Need Feedback!</title>
+	<para>
+		If you find a typographical error in this manual, or if you have thought of a way to make this manual better, we would love to hear from you! Please submit a report in Bugzilla: <ulink url="http://bugzilla.redhat.com/bugzilla/">http://bugzilla.redhat.com/bugzilla/</ulink> against the product <application>JBoss_Communications_Platform.</application>
+	</para>
+	<para>
+		When submitting a bug report, be sure to mention the manual's identifier: <citetitle>doc-Diameter_User_Guide</citetitle>
+	</para>
+	<para>
+		If you have a suggestion for improving the documentation, try to be as specific as possible when describing it. If you have found an error, please include the section number and some of the surrounding text so we can find it easily.
+	</para>
+</section>
+</preface>
+	<chapter lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Introduction</title>
+	<para>
+		Introduction content from google group
+	</para>
+</chapter>
+	<chapter lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Installation</title>
+	<para>
+		Text
+	</para>
+</chapter>
+	<chapter lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Architecture</title>
+	<para>
+		The Diameter architecture consists of the following main components:
+	</para>
+</chapter>
+	<chapter lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Resource Adapter Components</title>
+	<para>
+		Diameter provides the following Resource Adapter (RA) components that are used to connect to the JAIN SLEE Server:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				Base
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Mobicents Diameter Sh (Client)
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Mobicents Diameter Sh (Server)
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Mobicents Diameter Ro
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Mobicents Diameter Rf
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Mobicents Diameter CCA
+			</para>
+		</listitem>
+	</itemizedlist>
+	<section lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Base</title>
+	<para>
+		The Diameter Base application is responsible for managing the connection between peers and provides basic authentication, accounting, and session management. Diameter Base can be extended to function with other applications because its factories provide methods for creating raw messages and AVPs. In order for the application to be compliant with the specification, state machines should be implemented at some level within the implementation.
+	</para>
+	<para>
+		Diameter Base provides a number of message commands that can be used within the application.
+	</para>
+	<table frame="all" pgwide="1">
+		<title>Diameter Messages</title>
+		<tgroup cols="4" colsep="1">
+			<colspec colname="c1"/>
+			<colspec colname="c2"/>
+			<colspec colname="c3"/>
+			<colspec colname="c4"/>
+			<thead>
+				<row>
+					<entry>
+						Command Name
+					</entry>
+					<entry>
+						Class
+					</entry>
+					<entry>
+						Abbreviation
+					</entry>
+					<entry>
+						Code
+					</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry>
+						Abort-Session-Request
+					</entry>
+					<entry>
+						Session Management
+					</entry>
+					<entry>
+						ASR
+					</entry>
+					<entry>
+						274
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Abort-Session-Answer
+					</entry>
+					<entry>
+						Session Management
+					</entry>
+					<entry>
+						ASA
+					</entry>
+					<entry>
+						274
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Accounting-Request
+					</entry>
+					<entry>
+						Accounting
+					</entry>
+					<entry>
+						ACR
+					</entry>
+					<entry>
+						271
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Accounting-Answer
+					</entry>
+					<entry>
+						Accounting
+					</entry>
+					<entry>
+						ACA
+					</entry>
+					<entry>
+						271
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Capabilities-Exchange-Request
+					</entry>
+					<entry>
+						Peer Management
+					</entry>
+					<entry>
+						CER
+					</entry>
+					<entry>
+						257
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Capabilities-Exchange-Answer
+					</entry>
+					<entry>
+						Peer Management
+					</entry>
+					<entry>
+						CEA
+					</entry>
+					<entry>
+						257
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Device-Watchdog-Request
+					</entry>
+					<entry>
+						Peer Management
+					</entry>
+					<entry>
+						DWR
+					</entry>
+					<entry>
+						280
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Device-Watchdog-Answer
+					</entry>
+					<entry>
+						Peer Management
+					</entry>
+					<entry>
+						DWA
+					</entry>
+					<entry>
+						280
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Disconnect-Peer-Request
+					</entry>
+					<entry>
+						Peer Management
+					</entry>
+					<entry>
+						DPR
+					</entry>
+					<entry>
+						282
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Disconnect-Peer-Answer
+					</entry>
+					<entry>
+						Peer Management
+					</entry>
+					<entry>
+						DPA
+					</entry>
+					<entry>
+						282
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Re-Auth-Request
+					</entry>
+					<entry>
+						Authentication
+					</entry>
+					<entry>
+						RAR
+					</entry>
+					<entry>
+						258
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Re-Auth-Answer
+					</entry>
+					<entry>
+						Authentication
+					</entry>
+					<entry>
+						RAA
+					</entry>
+					<entry>
+						258
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Session-Termination-Request
+					</entry>
+					<entry>
+						Session Management
+					</entry>
+					<entry>
+						STR
+					</entry>
+					<entry>
+						275
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Session-Termination-Answer
+					</entry>
+					<entry>
+						Session Management
+					</entry>
+					<entry>
+						STA
+					</entry>
+					<entry>
+						275
+					</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</table>
+	<section>
+		<title>Resource Adapter Type</title>
+		<para>
+			The resource adapter provides the following types:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Activities
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Provider
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Message Factory
+				</para>
+			</listitem>
+		</itemizedlist>
+		<formalpara>
+			<title>Activities</title>
+			<para>
+				The following activities are available, with the API definition listed for reference. The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.
+			</para>
+		</formalpara>
+		<para>
+			The lifecycle of an activity depends on the type of received request and the application interaction. In the case of a subscription activity, the activity timeout is taken into consideration because the subscription may be time-based.
+		</para>
+		<variablelist>
+			<title>Diameter Base Activities</title>
+			<varlistentry>
+				<term>AccountingClientSessionActivity</term>
+				<listitem>
+					<para>
+						Client accounting activity, which is created for each ACR request. The activity ends when an answer is received, or the request times out.
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+		
+<programlisting role="JAVA">package net.java.slee.resource.diameter.base;
+
+import java.io.IOException;
+
+import net.java.slee.resource.diameter.base.events.AccountingRequest;
+
+public interface AccountingClientSessionActivity extends
+                AccountingSessionActivity {
+
+        /**
+         * Send Account Request to Server
+         * @param request
+         * @throws IOException 
+         */
+         void   sendAccountRequest(AccountingRequest request) throws IOException;        
+}
+</programlisting>
+		<variablelist>
+			<varlistentry>
+				<term>AuthClientSessionActivity</term>
+				<listitem>
+					<para>
+						Client authorization activity, which is created for each RAR request. The activity ends when an answer is received, or the request times out.
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+		
+<programlisting role="JAVA">package net.java.slee.resource.diameter.base;
+
+import java.io.IOException;
+
+import net.java.slee.resource.diameter.base.events.AbortSessionAnswer;
+import net.java.slee.resource.diameter.base.events.DiameterMessage;
+import net.java.slee.resource.diameter.base.events.ReAuthAnswer;
+import net.java.slee.resource.diameter.base.events.SessionTerminationRequest;
+
+public interface AuthClientSessionActivity extends AuthSessionActivity{
+
+        /**
+         * Send abort session answer to server
+         *
+         * @param answer
+         * @throws IOException
+         */
+        void sendAbortSessionAnswer(AbortSessionAnswer answer) throws IOException;
+
+        /**
+         * Send authentication session request to server FIXME: baranowb; whats
+         * this?
+         *
+         * @param request
+         * @throws IOException
+         */
+        void sendAuthRequest(DiameterMessage request) throws IOException;
+
+        /**
+         * Send re-authentication session answer to server
+         *
+         * @param answer
+         * @throws IOException
+         */
+        void sendReAuthAnswer(ReAuthAnswer answer) throws IOException;
+
+        /**
+         * Send session termination request to server
+         *
+         * @param request
+         * @throws IOException
+         */
+        void sendSessionTerminationRequest(SessionTerminationRequest request) throws IOException;
+       
+}
+</programlisting>
+		<variablelist>
+			<varlistentry>
+				<term>AccountingServerSessionActivity</term>
+				<listitem>
+					<para>
+						Server accounting activity, which is created for eash ACR request. The activity ends when an answer is sent, or the request times out.
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+		
+<programlisting role="JAVA">package net.java.slee.resource.diameter.base;
+
+import java.io.IOException;
+
+import net.java.slee.resource.diameter.base.events.AccountingAnswer;
+
+public interface AccountingServerSessionActivity extends
+                AccountingSessionActivity {
+
+        /**
+         * Sends generated answer back to client
+         * @param answer
+         * @throws IOException
+         */
+        void sendAccountAnswer(AccountingAnswer answer) throws IOException;
+
+        
+}
+</programlisting>
+		<variablelist>
+			<varlistentry>
+				<term>AuthServerSessionActivity</term>
+				<listitem>
+					<para>
+						Server authorization activity, which is created for each RAR request. The activity ends when an answer is sent, or the request times out.
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+		
+<programlisting role="JAVA">package net.java.slee.resource.diameter.base;
+
+import java.io.IOException;
+
+import net.java.slee.resource.diameter.base.events.AbortSessionRequest;
+import net.java.slee.resource.diameter.base.events.DiameterMessage;
+import net.java.slee.resource.diameter.base.events.ReAuthRequest;
+import net.java.slee.resource.diameter.base.events.SessionTerminationAnswer;
+
+public interface AuthServerSessionActivity extends AuthSessionActivity {
+
+        /**
+         * Send session abort session request to client
+         * 
+         * @param request
+         * @throws IOException 
+         */
+        void sendAbortSessionRequest(AbortSessionRequest request) throws IOException;
+
+        /**
+         * Send authenticate answer to client
+         * 
+         * @param answer
+         * @throws IOException 
+         */
+        void sendAuthAnswer(DiameterMessage answer) throws IOException;
+
+        /**
+         * Send re-authenticate request to client
+         * 
+         * @param request
+         * @throws IOException 
+         */
+        void sendReAuthRequest(ReAuthRequest request) throws IOException;
+
+        /**
+         * Send session termination answer to client
+         * 
+         * @param request
+         * @throws IOException 
+         */
+        void sendSessionTerminationAnswer(SessionTerminationAnswer request) throws IOException;
+
+}
+</programlisting>
+		<formalpara>
+			<title>Provider</title>
+			<para>
+				Provider defines the basic features that must be supported by all other providers. Service Building Blocks (SBBs) create activities on demand and retrieve AVP and message factories. The connection information is retrieved from the connected peers.
+			</para>
+		</formalpara>
+		<para>
+			The API for the DiameterProvider is included below for reference.
+		</para>
+		
+<programlisting>package net.java.slee.resource.diameter.base;
+
+import net.java.slee.resource.diameter.base.events.DiameterMessage;
+import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
+
+import java.io.IOException;
+
+/**
+ * The interface used by an SBB to interact with the Diameter RA.
+ * @author baranowb
+ * @author alexandrem
+ */
+public interface DiameterProvider {
+
+        /**
+         * Return a DiameterMessageFactory implementation to be used to create
+         * {@link org.mobicents.slee.resource.diameter.base.DiameterMessage} objects.
+         * 
+         * @return a DiameterMessageFactory implementation
+         */
+        DiameterMessageFactory getDiameterMessageFactory();
+
+        /**
+         * Returns avp factory for base avp types and common types, like UNSIGNED_32
+         * type and similar.
+         * 
+         * @return
+         */
+        DiameterAvpFactory getDiameterAvpFactory();
+
+        /**
+         * Create a new activity to send and receive Diameter messages.
+         * 
+         * @return a DiameterActivity
+         * @throws CreateActivityException
+         *             if the RA could not create the activity for any reason
+         */
+        DiameterActivity createActivity() throws CreateActivityException;
+
+        /**
+         * Create a new activity to send and receive Diameter messages.
+         * 
+         * @param destinationHost
+         *            a destination host to automatically put in all messages
+         * @param destinationRealm
+         *            a destination realm to automatically put in all messages
+         * @return a DiameterActivity
+         * @throws CreateActivityException
+         *             if the RA could not create the activity for any reason
+         */
+        DiameterActivity createActivity(DiameterIdentity destinationHost,
+                        DiameterIdentity destinationRealm)
+                        throws CreateActivityException;
+
+        AccountingClientSessionActivity createAccountingActivity(
+                        DiameterIdentity destinationHost,
+                        DiameterIdentity destinationRealm)throws CreateActivityException ;
+
+        AuthClientSessionActivity createAuthenticationActivity(
+                        DiameterIdentity destinationHost,
+                        DiameterIdentity destinationRealm)throws CreateActivityException ;
+
+        AccountingClientSessionActivity createAccountingActivity()throws CreateActivityException ;
+
+        AuthClientSessionActivity createAuthenticationActivity()throws CreateActivityException ;
+
+        /**
+         * Synchronously send a Diameter request and block until a response is
+         * received.
+         * 
+         * @param message
+         *            the Diameter message to send
+         * @return the Diameter message containing the response
+         */
+        DiameterMessage sendSyncRequest(DiameterMessage message) throws IOException;
+
+        /**
+         * Return the number of peers this Diameter resource adaptor is connected
+         * to.
+         * 
+         * @return connected peer count
+         */
+        int getPeerCount();
+
+        /**
+         * Returns array containing identities of connected peers 
+         * 
+         * @return
+         */
+        DiameterIdentity[] getConnectedPeers();
+}
+</programlisting>
+		<formalpara>
+			<title>Message Factory</title>
+			<para>
+				The Message Factory creates events that can be executed within the JAIN SLEE Server. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
+			</para>
+		</formalpara>
+		<!-- JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <para>
+			The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/base/ratype/src/main/java/net/java/slee/resource/diameter/base/DiameterMessageFactory.java">DiameterMessageFactory.java in the source code</ulink>.
+		</para>
+	</section>
+
+</section>
+	<section lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Sh (Client)</title>
+	<para>
+		Text
+	</para>
+</section>
+	<section lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Sh (Server)</title>
+	<para>
+		Text
+	</para>
+</section>
+	<section lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Ro</title>
+	<para>
+		Text
+	</para>
+</section>
+	<section lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Rf</title>
+	<para>
+		Text
+	</para>
+</section>
+	<section lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter CCA</title>
+	<para>
+		Text
+	</para>
+</section>
+</chapter>
+	<appendix lang="en-US">
+	<title>Revision History</title>
+	<simpara>
+		<revhistory>
+			<revision>
+				<revnumber>1.0</revnumber>
+				<date>Thu Jun 11 2009</date>
+				<author>
+					<firstname>Jared</firstname>
+					<surname>Morgan</surname>
+					<email>jmorgan@redhat.com</email>
+				</author>
+				<revdescription>
+					<simplelist>
+						<member>First release of the branded user guide.</member>
+					</simplelist>
+				</revdescription>
+			</revision>
+		</revhistory>
+	</simpara>
+</appendix>
+</book>

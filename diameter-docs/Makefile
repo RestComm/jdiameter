@@ -1,7 +1,7 @@
 #Makefile for Diameter_User_Guide
 
 XML_LANG	= en-US
-DOCNAME		= Diameter_User_Guide
+#DOCNAME	= Diameter_User_Guide
 #PRODUCT	= FIX_ME!
 BRAND		= JBoss
 

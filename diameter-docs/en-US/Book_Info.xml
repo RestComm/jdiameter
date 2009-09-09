@@ -1,7 +1,7 @@
 ﻿<?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE bookinfo PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
 ]>
-<!-- chapter id nickname: sssug --><bookinfo id="sssug-SIP_Servlets_Server_User_Guide">
+<!-- chapter id nickname: sssug --><bookinfo id="dug-Diameter_User_Guide">
   <title>Diameter User Guide</title>
   <subtitle>The Guide to the Mobicents Diameter Adapter</subtitle>
   <productname>Mobicents Platform</productname>
