@@ -87,7 +87,7 @@ trading, online gaming, (<acronym>RFID</acronym>) sensor network integration, an
 	<para>
 		 
 	</para>
-	<section lang="en-US" xml:base="Common_Content/Conventions.xml">
+	<section lang="en-US" xml:base="fallback_content/Conventions.xml">
 	<title>Document Conventions</title>
 	<para>
 		This manual uses several conventions to highlight certain words and phrases and draw attention to specific pieces of information.
@@ -203,7 +203,7 @@ books_tests  Desktop1  downloads      images  notes  scripts  svgs
 			Source-code listings are also set in <computeroutput>Mono-spaced Roman</computeroutput> but are presented and highlighted as follows:
 		</para>
 		
-<programlisting language="java">
+<programlisting language="JAVA">
 package org.jboss.book.jca.ex1;
 
 import javax.naming.InitialContext;
@@ -232,24 +232,24 @@ public class ExClient
 		<para>
 			Finally, we use three visual styles to draw attention to information that might otherwise be overlooked.
 		</para>
-		<note>
-			<title>Note</title>
-			<para>
-				A note is a tip or shortcut or alternative approach to the task at hand. Ignoring a note should have no negative consequences, but you might miss out on a trick that makes your life easier.
-			</para>
-		</note>
-		<important>
-			<title>Important</title>
-			<para>
-				Important boxes detail things that are easily missed: configuration changes that only apply to the current session, or services that need restarting before an update will apply. Ignoring Important boxes won't cause data loss but may cause irritation and frustration.
-			</para>
-		</important>
 		<warning>
 			<title>Warning</title>
 			<para>
 				A Warning should not be ignored. Ignoring warnings will most likely cause data loss.
 			</para>
 		</warning>
+		<important>
+			<title>Important</title>
+			<para>
+				Important boxes detail things that are easily missed: configuration changes that only apply to the current session, or services that need restarting before an update will apply. Ignoring Important boxes won't cause data loss but may cause irritation and frustration.
+			</para>
+		</important>
+		<note>
+			<title>Note</title>
+			<para>
+				A note is a tip or shortcut or alternative approach to the task at hand. Ignoring a note should have no negative consequences, but you might miss out on a trick that makes your life easier.
+			</para>
+		</note>
 	</section>
 
 </section>
@@ -324,7 +324,10 @@ public class ExClient
 	<section lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Base</title>
 	<para>
-		The Diameter Base application is responsible for managing the connection between peers and provides basic authentication, accounting, and session management. Diameter Base can be extended to function with other applications because its factories provide methods for creating raw messages and AVPs. In order for the application to be compliant with the specification, state machines should be implemented at some level within the implementation.
+		The Base RA provides the Base application layer to SLEE, and base factories to resource adaptors in other applications. Therefore Base is a dependency for any other Diameter resource adaptor.
+	</para>
+	<para>
+		The Base RA is responsible for managing the connection between peers and provides basic authentication, accounting, and session management. Diameter Base can be extended to function with other applications because its factories provide methods for creating raw messages and AVPs. In order for the application to be compliant with the specification, state machines should be implemented at some level within the implementation.
 	</para>
 	<para>
 		Diameter Base provides a number of message commands that can be used within the application.
@@ -553,6 +556,76 @@ public class ExClient
 		</tgroup>
 	</table>
 	<section>
+		<title>Configuration</title>
+		<para>
+			Base RA entity supports four configuration properties that must be correctly configured before the RA can fucntion correctly. Properties are grouped in pairs, and each property contains a comma separated list of values (of type long).
+		</para>
+		<para>
+			The following property pairs are available for the Base RA:
+		</para>
+		<para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<literal>authVendorIds</literal> and <literal>authAppIds</literal>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<literal>acctVendorIds</literal> and <literal>acctAppIds</literal>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</para>
+		<para>
+			The configuration property pairs can be configured using the following methods:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Using Java XML Mapping (JXM) operations, available through the Management Console.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Manually declaring the property pairs in the <filename>resource-adaptor-jar.xml</filename> file within the <filename>base-ra-<replaceable>[version]</replaceable>-DU.jar</filename>, <filename>base-ra-<replaceable>[version]</replaceable>.jar</filename>, or <filename>META-INF</filename> files.
+				</para>
+			</listitem>
+		</itemizedlist>
+		<para>
+			Regardless of the configuration method used, the length of the property pairs must be equal. For example, <literal>acctVendorIds.split(",).length == acctAppIds.split(",").length</literal>. The application vendor ID and application ID are matched based on index of occurance. For example, <literal>ApplicationId(acctVendorIds[index],acctAppIds[index])</literal>. If no vendor is specified, the value must be set to <literal>0</literal>.
+		</para>
+		<example>
+			<title>Configuring </title>
+			<para>
+				The following XML sample demonstrates how to configure an authentication application and two accounting applications in the <filename>resource-adaptor-jar.xml</filename>. Note that each configuration property pair contains an equal value pair length.
+			</para>
+			
+<programlisting role="XML">&lt;config-property&gt;
+    &lt;config-property-name&gt;authVendorIds&lt;/config-property-name&gt;
+    &lt;config-property-type&gt;java.lang.String&lt;/config-property-type&gt;
+    &lt;config-property-value&gt;0&lt;/config-property-value&gt;
+&lt;/config-property&gt;
+&lt;config-property&gt;
+    &lt;config-property-name&gt;authAppIds&lt;/config-property-name&gt;
+    &lt;config-property-type&gt;java.lang.String&lt;/config-property-type&gt;
+    &lt;config-property-value&gt;4&lt;/config-property-value&gt;
+&lt;/config-property&gt;
+&lt;config-property&gt;
+    &lt;config-property-name&gt;acctVendorIds&lt;/config-property-name&gt;
+    &lt;config-property-type&gt;java.lang.String&lt;/config-property-type&gt;
+    &lt;config-property-value&gt;193,14&lt;/config-property-value&gt;
+&lt;/config-property&gt;
+&lt;config-property&gt;
+    &lt;config-property-name&gt;acctAppIds&lt;/config-property-name&gt;
+    &lt;config-property-type&gt;java.lang.String&lt;/config-property-type&gt;
+    &lt;config-property-value&gt;19302,15&lt;/config-property-value&gt;
+&lt;/config-property&gt;
+</programlisting>
+		</example>
+	</section>
+	
+	<section>
 		<title>Resource Adapter Type</title>
 		<para>
 			The resource adapter provides the following types:
@@ -761,111 +834,151 @@ public interface AuthServerSessionActivity extends AuthSessionActivity {
 				Provider defines the basic features that must be supported by all other providers. Service Building Blocks (SBBs) create activities on demand and retrieve AVP and message factories. The connection information is retrieved from the connected peers.
 			</para>
 		</formalpara>
-		<para>
-			The API for the DiameterProvider is included below for reference.
+		<!-- JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <para>
+			The API for the DiameterProvider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/base/ratype/src/main/java/net/java/slee/resource/diameter/base/DiameterProvider.java">DiameterProvider.java in the source code</ulink>.
 		</para>
-		
-<programlisting>package net.java.slee.resource.diameter.base;
-
-import net.java.slee.resource.diameter.base.events.DiameterMessage;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
-
-import java.io.IOException;
-
-/**
- * The interface used by an SBB to interact with the Diameter RA.
- * @author baranowb
- * @author alexandrem
- */
-public interface DiameterProvider {
-
-        /**
-         * Return a DiameterMessageFactory implementation to be used to create
-         * {@link org.mobicents.slee.resource.diameter.base.DiameterMessage} objects.
-         * 
-         * @return a DiameterMessageFactory implementation
-         */
-        DiameterMessageFactory getDiameterMessageFactory();
-
-        /**
-         * Returns avp factory for base avp types and common types, like UNSIGNED_32
-         * type and similar.
-         * 
-         * @return
-         */
-        DiameterAvpFactory getDiameterAvpFactory();
-
-        /**
-         * Create a new activity to send and receive Diameter messages.
-         * 
-         * @return a DiameterActivity
-         * @throws CreateActivityException
-         *             if the RA could not create the activity for any reason
-         */
-        DiameterActivity createActivity() throws CreateActivityException;
-
-        /**
-         * Create a new activity to send and receive Diameter messages.
-         * 
-         * @param destinationHost
-         *            a destination host to automatically put in all messages
-         * @param destinationRealm
-         *            a destination realm to automatically put in all messages
-         * @return a DiameterActivity
-         * @throws CreateActivityException
-         *             if the RA could not create the activity for any reason
-         */
-        DiameterActivity createActivity(DiameterIdentity destinationHost,
-                        DiameterIdentity destinationRealm)
-                        throws CreateActivityException;
-
-        AccountingClientSessionActivity createAccountingActivity(
-                        DiameterIdentity destinationHost,
-                        DiameterIdentity destinationRealm)throws CreateActivityException ;
-
-        AuthClientSessionActivity createAuthenticationActivity(
-                        DiameterIdentity destinationHost,
-                        DiameterIdentity destinationRealm)throws CreateActivityException ;
-
-        AccountingClientSessionActivity createAccountingActivity()throws CreateActivityException ;
-
-        AuthClientSessionActivity createAuthenticationActivity()throws CreateActivityException ;
-
-        /**
-         * Synchronously send a Diameter request and block until a response is
-         * received.
-         * 
-         * @param message
-         *            the Diameter message to send
-         * @return the Diameter message containing the response
-         */
-        DiameterMessage sendSyncRequest(DiameterMessage message) throws IOException;
-
-        /**
-         * Return the number of peers this Diameter resource adaptor is connected
-         * to.
-         * 
-         * @return connected peer count
-         */
-        int getPeerCount();
-
-        /**
-         * Returns array containing identities of connected peers 
-         * 
-         * @return
-         */
-        DiameterIdentity[] getConnectedPeers();
-}
-</programlisting>
 		<formalpara>
 			<title>Message Factory</title>
 			<para>
 				The Message Factory creates events that can be executed within the JAIN SLEE Server. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
 			</para>
 		</formalpara>
-		<!-- JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <para>
+		<para>
 			The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/base/ratype/src/main/java/net/java/slee/resource/diameter/base/DiameterMessageFactory.java">DiameterMessageFactory.java in the source code</ulink>.
 		</para>
+	</section>
+	
+	<section>
+		<title>API Usage Examples</title>
+		<para>
+			The following examples demonstrate basic usage examples for the Resource Adapter (RA) API.
+		</para>
+		<example>
+			<title>Send ACR</title>
+			<para>
+				The following code demonstrates how to configure a Send ACR.
+			</para>
+			
+<programlisting role="JAVA">AccountingClientSessionActivity activity = 
+ provider.createAccountingActivity();
+
+List&lt;DiameterAvp&gt; avps = new ArrayList&lt;DiameterAvp&gt;();
+
+avps.add(avpFactory.createAvp(Avp.SESSION_ID,
+ activity.getSessionId().getBytes()));
+
+DiameterAvp avpVendorId = avpFactory.createAvp(Avp.VENDOR_ID, 193);
+
+DiameterAvp avpAcctApplicationId = avpFactory.createAvp(Avp.
+ ACCT_APPLICATION_ID, 19302);
+
+avps.add(avpFactory.createAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 
+ new DiameterAvp[] { avpVendorId, avpAcctApplicationId }));
+
+avps.add(avpFactory.createAvp(Avp.ORIGIN_HOST,
+ "aaa://127.0.0.1:1812".getBytes()));
+
+avps.add(avpFactory.createAvp(Avp.ORIGIN_REALM,
+ "mobicents.org".getBytes()));
+
+avps.add(avpFactory.createAvp(Avp.DESTINATION_HOST,
+ "aaa://127.0.0.1:21812".getBytes()));
+            
+avps.add(avpFactory.createAvp(Avp.DESTINATION_REALM,
+ "mobicents.org".getBytes()));
+
+// Subscription ID
+DiameterAvp subscriptionIdType = avpFactory.createAvp(193, 555, 0);
+ DiameterAvp subscriptionIdData = avpFactory.createAvp(193, 554, 
+ "00001000");
+            
+avps.add(avpFactory.createAvp(193, 553, new DiameterAvp[] {
+ subscriptionIdType, subscriptionIdData }));
+
+// Requested Service Unit
+DiameterAvp unitType = avpFactory.createAvp(193, 611, 2);
+
+DiameterAvp valueDigits = avpFactory.createAvp(193, 617, 10L);
+
+DiameterAvp unitValue = avpFactory.createAvp(193, 612, 
+ new DiameterAvp[] { valueDigits });
+            
+avps.add(avpFactory.createAvp(193, 606, new DiameterAvp[] { unitType, unitValue }));
+
+// Record Number and Type
+avps.add(avpFactory.createAvp(Avp.ACC_RECORD_NUMBER, 0));
+
+avps.add(avpFactory.createAvp(Avp.ACC_RECORD_TYPE, 1));
+
+// Requested action
+avps.add(avpFactory.createAvp(193, 615, 0));
+
+// Service Parameter Type
+DiameterAvp serviceParameterType = avpFactory.createAvp(193, 608, 0);
+
+DiameterAvp serviceParameterValue = avpFactory.createAvp(193, 609, "510");
+
+avps.add(avpFactory.createAvp(193, 607, new DiameterAvp[] {
+ serviceParameterType, serviceParameterValue }));
+
+// Service Parameter Type
+DiameterAvp serviceParameterType2 = avpFactory.createAvp(193, 608, 14);
+
+DiameterAvp serviceParameterValue2 = avpFactory.createAvp(193, 609, "20");
+
+avps.add(avpFactory.createAvp(193, 607, new DiameterAvp[] {
+ serviceParameterType2, serviceParameterValue2 }));
+
+DiameterAvp[] avpArray = new DiameterAvp[avps.size()];
+
+avpArray = avps.toArray(avpArray);
+   if (logger.isInfoEnabled())
+       logger.info("Creating Custom Message...");
+
+   AccountingRequest ms = messageFactory.createAccountingRequest
+    (avpArray);
+   if (logger.isInfoEnabled()) {
+       logger.info("Created Custom Message[" + ms + "]");
+       logger.info("Sending Custom Message...");
+       }
+           
+//setters examples
+ms.setUserName("sip:xxx@overrideusername.com");
+           
+activity.sendAccountRequest(ms);
+   if (logger.isInfoEnabled())
+       logger.info("Sent Custom Message[" + ms + "]");
+</programlisting>
+		</example>
+		<example>
+			<title>Receive ACR</title>
+			<para>
+				The following code demonstrates how to configure a Receive ACR.
+			</para>
+			
+<programlisting role="JAVA">public void onAccountingRequest(net.java.slee.resource.
+ diameter.base.events.AccountingRequest acr, 
+ ActivityContextInterface aci) {
+   long start = System.currentTimeMillis();
+    if (logger.isInfoEnabled())
+        logger.info("Accounting-Request received. [" + acr + "]");
+        if (aci.getActivity() instanceof 
+         AccountingServerSessionActivityImpl) {
+            AccountingServerSessionActivityImpl assa = 
+             (AccountingServerSessionActivityImpl) aci.getActivity();
+
+            AccountingAnswer ans = assa.createAccountAnswer(acr,
+             ResultCode.SUCCESS);
+               if (logger.isInfoEnabled())
+                   logger.info("Sending Accounting-Answer [" + ans + "]");
+
+            assa.sendAccountAnswer(ans);
+               if (logger.isInfoEnabled())
+        logger.info("Accounting-Answer sent.");
+    }
+}
+</programlisting>
+		</example>
 	</section>
 
 </section>

@@ -1,13 +1,9 @@
-﻿<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE preface PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
 ]>
 <preface>
   <title>Preface</title>
   <para>&nbsp;</para>
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Common_Content/Conventions.xml">
-     <xi:fallback xmlns:xi="http://www.w3.org/2001/XInclude">
-       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="fallback_content/Conventions.xml"/>
-     </xi:fallback>
-   </xi:include>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="fallback_content/Conventions.xml"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="fallback_content/Feedback.xml"/>
 </preface>

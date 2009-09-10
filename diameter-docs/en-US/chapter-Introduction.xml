@@ -1,7 +1,191 @@
-﻿<?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. -->
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
 <chapter>
   <title>Introduction</title>
-  <para>Introduction content from google group</para>
+  <para>Diameter is a computer networking protocol for AAA (Authentication, Authorization and Accounting) defined in RFC 3588. It is a successor to RADIUS (and its name is a reference to it, a diameter is twice the radius) offering the following advantages:</para>
+  <itemizedlist>
+    <listitem>
+      <para>Reliable transport protocols (TCP or SCTP, not UDP)</para>
+    </listitem>
+    <listitem>
+      <para>Network or transport level security (IPsec or TLS)</para>
+    </listitem>
+    <listitem>
+      <para>Transition support for RADIUS, although Diameter is not fully compatible with RADIUS</para>
+    </listitem>
+    <listitem>
+      <para>Larger address space for attribute-value pairs (AVPs) and identifiers (32 bits instead of 8 bits)</para>
+    </listitem>
+    <listitem>
+      <para>Client-server protocol, with exception of supporting some server-initiated messages as well</para>
+    </listitem>
+    <listitem>
+      <para>Both stateful and stateless models can be used</para>
+    </listitem>
+    <listitem>
+      <para>Dynamic discovery of peers (using DNS SRV and NAPTR)</para>
+    </listitem>
+    <listitem>
+      <para>Capability negotiation</para>
+    </listitem>
+    <listitem>
+      <para>Supports application layer acknowledgements, defines failover methods and state machines (RFC 3539)</para>
+    </listitem>
+    <listitem>
+      <para>Error notification</para>
+    </listitem>
+    <listitem>
+      <para>Better roaming support</para>
+    </listitem>
+    <listitem>
+      <para>More easily extended; new commands and attributes can be defined</para>
+    </listitem>
+    <listitem>
+      <para>Aligned on 32-bit boundaries</para>
+    </listitem>
+    <listitem>
+      <para>Basic support for user-sessions and accounting</para>
+    </listitem>
+  </itemizedlist>
+  <para>It was designed in a way to be compatible with RADIUS but also to be easily extended with new use cases within AAA scenario and other IMS scenarios. Extensions are called &quot;Applications&quot;.</para>
+  <para>Each application introduces new kind of messages, message and AVP codes (assigned by IANA) and state machines. Moreover each application has its own Application-Id and Vendor-Id which distinguishes its messages from messages of another application. In addition, application code gives means of telling other peers what operations are supported by connecting peer (Capabilities Exchange).</para>
+  <section>
+    <title>Message Format</title>
+    <para>Each message that is sent and received using Diameter is comprised according to  a consistent structure.  A Diameter message always contains message headers, and the message payload.   </para>
+    <figure>
+      <title>Diameter Message Structure</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata format="PNG" fileref="images/dia-Introduction-dia-DiameterPacketFormat.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>Within the message, several headers are present:</para>
+    <variablelist>
+      <title>Message Headers</title>
+      <varlistentry>
+        <term>Version</term>
+        <listitem>
+          <para>Indicates the Diameter protocol version.  This value is always set to <literal>1</literal>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Message Length</term>
+        <listitem>
+          <para>Indicates the Diameter message length, including the header fields.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Command Flags</term>
+        <listitem>
+          <para>Bits, which specify the type of message.  The first four bits are occupied with any one of the following values: </para>
+          <itemizedlist>
+            <listitem>
+              <para>R = Message is a request</para>
+            </listitem>
+            <listitem>
+              <para>P = Message is proxiable</para>
+            </listitem>
+            <listitem>
+              <para>E = Message is an error message</para>
+            </listitem>
+            <listitem>
+              <para>T = Message is potentially retransmitted</para>
+            </listitem>
+          </itemizedlist>
+          <para>The last four bits are reserved for future use, and should be set to <literal>0</literal></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Command Code</term>
+        <listitem>
+          <para>Indicates the command associated with the message, such as what type of message it is.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Application ID</term>
+        <listitem>
+          <para>Identifies which application the message is applicable to.  The application can be an authentication, accounting, or vendor-specific application.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Hop-by-Hop ID</term>
+        <listitem>
+          <para>Unique ID that is used to match requests and replies.  The Answer message must ensure this header  field contains the same value present in the  corresponding request.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>End-to-End ID</term>
+        <listitem>
+          <para>Time-limited unique ID that is used to to detect duplicate mesages.  The ID must be unique for at least four minutes.  The Answer message originator must ensure that this header contains the same value present in the corresponding request.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <para>The message contents (payload) is comprised of Attribute Value Pairs (AVPs), which also have their own header and data.</para>
+    <figure>
+      <title>Payload Structure</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata format="PNG" fileref="images/dia-Introduction-dia-DiameterAVPLayout.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <variablelist>
+      <title>Payload AVPs</title>
+      <varlistentry>
+        <term>AVP Code</term>
+        <listitem>
+          <para>Uniquely identifies the attribute, by combining the specified code with the value contained witing the Vendor-ID header field.  </para>
+          <para>AVP numbers 1 to 255 are reserved for RADIUS backwards compatibility, and do not require the Vendor-ID header field.  AVP numbers 256 and above are used exclusively for the Diameter protocol, and are allocated by <orgname>IANA</orgname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>AVP Flags</term>
+        <listitem>
+          <para>Flags, which specify how each attribute must be handled.  The first three  bits are occupied with any one of the following values: </para>
+          <itemizedlist>
+            <listitem>
+              <para>V = Message is an error message.</para>
+            </listitem>
+            <listitem>
+              <para>M = Message is proxiable.</para>
+            </listitem>
+            <listitem>
+              <para>P = Message is a request.</para>
+            </listitem>
+          </itemizedlist>
+          <para>The last 5 bits are reserved for future use, and should be set to <literal>0</literal></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>AVP Length</term>
+        <listitem>
+          <para>Indicates the number of octets in the AVP, including the following information:</para>
+          <itemizedlist>
+            <listitem>
+              <para>AVP Code</para>
+            </listitem>
+            <listitem>
+              <para>AVP Length</para>
+            </listitem>
+            <listitem>
+              <para>AVP Flags</para>
+            </listitem>
+            <listitem>
+              <para>Vendor-ID field (if present)</para>
+            </listitem>
+            <listitem>
+              <para>AVP Data</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Vendor-ID</term>
+        <listitem>
+          <para>Optional field that identifies which application the message is applicable to.  The application can be either an authentication, accounting, or vendor-specific application.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
 </chapter>
