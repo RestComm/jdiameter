@@ -269,8 +269,285 @@ public class ExClient
 	<chapter lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Introduction</title>
 	<para>
-		Introduction content from google group
+		Diameter is a computer networking protocol for AAA (Authentication, Authorization and Accounting) defined in RFC 3588. It is a successor to RADIUS (and its name is a reference to it, a diameter is twice the radius) offering the following advantages:
 	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				Reliable transport protocols (TCP or SCTP, not UDP)
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Network or transport level security (IPsec or TLS)
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Transition support for RADIUS, although Diameter is not fully compatible with RADIUS
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Larger address space for attribute-value pairs (AVPs) and identifiers (32 bits instead of 8 bits)
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Client-server protocol, with exception of supporting some server-initiated messages as well
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Both stateful and stateless models can be used
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Dynamic discovery of peers (using DNS SRV and NAPTR)
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Capability negotiation
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Supports application layer acknowledgements, defines failover methods and state machines (RFC 3539)
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Error notification
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Better roaming support
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				More easily extended; new commands and attributes can be defined
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Aligned on 32-bit boundaries
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Basic support for user-sessions and accounting
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>
+		It was designed in a way to be compatible with RADIUS but also to be easily extended with new use cases within AAA scenario and other IMS scenarios. Extensions are called "Applications".
+	</para>
+	<para>
+		Each application introduces new kind of messages, message and AVP codes (assigned by IANA) and state machines. Moreover each application has its own Application-Id and Vendor-Id which distinguishes its messages from messages of another application. In addition, application code gives means of telling other peers what operations are supported by connecting peer (Capabilities Exchange).
+	</para>
+	<section>
+		<title>Message Format</title>
+		<para>
+			Each message that is sent and received using Diameter is comprised according to a consistent structure. A Diameter message always contains message headers, and the message payload.
+		</para>
+		<figure>
+			<title>Diameter Message Structure</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/dia-Introduction-dia-DiameterPacketFormat.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+		<para>
+			Within the message, several headers are present:
+		</para>
+		<variablelist>
+			<title>Message Headers</title>
+			<varlistentry>
+				<term>Version</term>
+				<listitem>
+					<para>
+						Indicates the Diameter protocol version. This value is always set to <literal>1</literal>.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Message Length</term>
+				<listitem>
+					<para>
+						Indicates the Diameter message length, including the header fields.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Command Flags</term>
+				<listitem>
+					<para>
+						Bits, which specify the type of message. The first four bits are occupied with any one of the following values:
+					</para>
+					<itemizedlist>
+						<listitem>
+							<para>
+								R = Message is a request
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								P = Message is proxiable
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								E = Message is an error message
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								T = Message is potentially retransmitted
+							</para>
+						</listitem>
+					</itemizedlist>
+					<para>
+						The last four bits are reserved for future use, and should be set to <literal>0</literal>
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Command Code</term>
+				<listitem>
+					<para>
+						Indicates the command associated with the message, such as what type of message it is.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Application ID</term>
+				<listitem>
+					<para>
+						Identifies which application the message is applicable to. The application can be an authentication, accounting, or vendor-specific application.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Hop-by-Hop ID</term>
+				<listitem>
+					<para>
+						Unique ID that is used to match requests and replies. The Answer message must ensure this header field contains the same value present in the corresponding request.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>End-to-End ID</term>
+				<listitem>
+					<para>
+						Time-limited unique ID that is used to to detect duplicate mesages. The ID must be unique for at least four minutes. The Answer message originator must ensure that this header contains the same value present in the corresponding request.
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+		<para>
+			The message contents (payload) is comprised of Attribute Value Pairs (AVPs), which also have their own header and data.
+		</para>
+		<figure>
+			<title>Payload Structure</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/dia-Introduction-dia-DiameterAVPLayout.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+		<variablelist>
+			<title>Payload AVPs</title>
+			<varlistentry>
+				<term>AVP Code</term>
+				<listitem>
+					<para>
+						Uniquely identifies the attribute, by combining the specified code with the value contained witing the Vendor-ID header field.
+					</para>
+					<para>
+						AVP numbers 1 to 255 are reserved for RADIUS backwards compatibility, and do not require the Vendor-ID header field. AVP numbers 256 and above are used exclusively for the Diameter protocol, and are allocated by <orgname>IANA</orgname>
+						.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>AVP Flags</term>
+				<listitem>
+					<para>
+						Flags, which specify how each attribute must be handled. The first three bits are occupied with any one of the following values:
+					</para>
+					<itemizedlist>
+						<listitem>
+							<para>
+								V = Message is an error message.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								M = Message is proxiable.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								P = Message is a request.
+							</para>
+						</listitem>
+					</itemizedlist>
+					<para>
+						The last 5 bits are reserved for future use, and should be set to <literal>0</literal>
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>AVP Length</term>
+				<listitem>
+					<para>
+						Indicates the number of octets in the AVP, including the following information:
+					</para>
+					<itemizedlist>
+						<listitem>
+							<para>
+								AVP Code
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								AVP Length
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								AVP Flags
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								Vendor-ID field (if present)
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								AVP Data
+							</para>
+						</listitem>
+					</itemizedlist>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Vendor-ID</term>
+				<listitem>
+					<para>
+						Optional field that identifies which application the message is applicable to. The application can be either an authentication, accounting, or vendor-specific application.
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+	</section>
+
 </chapter>
 	<chapter lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Installation</title>
@@ -281,8 +558,338 @@ public class ExClient
 	<chapter lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Architecture</title>
 	<para>
-		The Diameter architecture consists of the following main components:
+		The Diameter architecture consists of the following core components:
 	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				Stack
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Multiplexer (MUX)
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Message Validator and Dictionary
+			</para>
+		</listitem>
+	</itemizedlist>
+	<section>
+		<title>Stack</title>
+		<para>
+			The Diameter Stack is the primary component of the Diameter solution. The Stack governs the mechanisms that control message sending and receiving, peer management, and session management. The stack manages these resources using State Machines.
+		</para>
+		<section>
+			<title>Configuring the Stack</title>
+			<para>
+				The stack is configured using an XML file that contains the options set during initialization. The top level structure of the file is described below. Further explanation of each child element, and the applicable attributes is provided later in this section.
+			</para>
+			
+<programlisting role="XML">&lt;Configuration xmlns="http://www.jdiameter.org/jdiameter-server"&gt;
+  &lt;LocalPeer&gt;&lt;/LocalPeer&gt;
+  &lt;Parameters&gt;&lt;/Parameters&gt;
+  &lt;Network&gt;&lt;/Network&gt;
+  &lt;Extensions&gt;&lt;/Extensions&gt;
+&lt;/Configuration&gt;
+</programlisting>
+			
+<programlisting role="XML">&lt;LocalPeer&gt;
+   &lt;URI value="aaa://127.0.0.1:1812"/&gt;
+   &lt;IPAddresses&gt;
+     &lt;IPAddress value="127.0.0.1"/&gt;
+   &lt;/IPAddresses&gt;
+   &lt;Realm value="mobicents.org"/&gt;
+   &lt;VendorID value="193"/&gt;
+   &lt;ProductName value="jDiameter"/&gt;
+   &lt;FirmwareRevision value="1"/&gt;
+   &lt;OverloadMonitor&gt;
+     &lt;Entry index="1" lowThreshold="0.5" highThreshold="0.6"&gt;
+       &lt;ApplicationID&gt;
+         &lt;VendorId value="193"/&gt;
+         &lt;AuthApplId value="0"/&gt;
+         &lt;AcctApplId value="19302"/&gt;
+       &lt;/ApplicationID&gt;
+     &lt;/Entry&gt;
+   &lt;/OverloadMonitor&gt;
+&lt;/LocalPeer&gt;
+</programlisting>
+			<para>
+				The &lt;LocalPeer&gt; element contains parameters that affect the local Diameter peer. The available elements and attributes are listed for reference.
+			</para>
+			<variablelist>
+				<title>&lt;LocalPeer&gt; Elements and Attributes</title>
+				<varlistentry>
+					<term>&lt;URI&gt;</term>
+					<listitem>
+						<para>
+							Specifies the URI for the local peer.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;IPAddresses&gt;</term>
+					<listitem>
+						<para>
+							Contains one or more child &lt;IPAddress&gt; elements that contain a single, valid IP address for the local peer.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;Realm&gt;</term>
+					<listitem>
+						<para>
+							Specifies the realm of the local peer, using the <literal>value</literal> attribute.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;VendorID&gt;</term>
+					<listitem>
+						<para>
+							Specifies a numeric identifier that corresponds to the vendor ID allocated by IANA.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;ProductName&gt;</term>
+					<listitem>
+						<para>
+							Specifies the name of the local peer product name.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;FirmwareRevision&gt;</term>
+					<listitem>
+						<para>
+							Specifies the version of the firmware.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;OverloadMonitor&gt;</term>
+					<listitem>
+						<para>
+							Optional parent element containing child elements that specify settings relating to the Overload Monitor.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;Entry&gt;</term>
+					<listitem>
+						<para>
+							Specifies three attributes that control the overload element index, overload low threshold and overload high threshold.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;ApplicationID&gt;</term>
+					<listitem>
+						<para>
+							Parent element containing child elements that specify information about the application
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;AuthAppId&gt;</term>
+					<listitem>
+						<para>
+							The Authentication Application ID.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;AcctAplId&gt;</term>
+					<listitem>
+						<para>
+							The Account Application ID
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+			
+<programlisting role="XML">&lt;Parameters&gt;
+   &lt;AcceptUndefinedPeer value="true"/&gt;
+   &lt;DuplicateProtection value="true"/&gt;
+   &lt;DuplicateTimer value="240000"/&gt;
+   &lt;UseUriAsFqdn value="true"/&gt; &lt;!-- Needed for Ericsson SDK Emulator --&gt;
+   &lt;QueueSize value="10000"/&gt;
+   &lt;MessageTimeOut value="60000"/&gt;
+   &lt;StopTimeOut value="10000"/&gt;
+   &lt;CeaTimeOut value="10000"/&gt;
+   &lt;IacTimeOut value="30000"/&gt;
+   &lt;DwaTimeOut value="10000"/&gt;
+   &lt;DpaTimeOut value="5000"/&gt;
+   &lt;RecTimeOut value="10000"/&gt;
+&lt;/Parameters&gt;
+</programlisting>
+			<para>
+				The &lt;Parameters&gt; element contains elements that specify parameters for the Diameter stack. The available elements and attributes are listed for reference.
+			</para>
+			<variablelist>
+				<title>&lt;Parameter&gt; Elements and Attributes</title>
+				<varlistentry>
+					<term>&lt;AcceptUndefinedPeer&gt;</term>
+					<listitem>
+						<para>
+							Specifies whether the stack will accept connections from unidentified peers. The defalut value is <literal>false</literal>.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;DuplicateProtection&gt;</term>
+					<listitem>
+						<para>
+							Specifies whether duplicate message protection is enabled. The defalut value is <literal>false</literal>.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;DuplicateTimer&gt;</term>
+					<listitem>
+						<para>
+							Specifies the time each duplicate message is valid for. The default, minimum value is <literal>240000</literal> (4 minutes in milliseconds)
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;UseUriAsFqdn&gt;</term>
+					<listitem>
+						<para>
+							Specifies whether the Ericcson SDK Emulator. The defalut value is <literal>true</literal>.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;QueueSize&gt;</term>
+					<listitem>
+						<para>
+							In milliseconds
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;MessageTimeOut&gt;</term>
+					<listitem>
+						<para>
+							In milliseconds
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;StopTimeOut&gt;</term>
+					<listitem>
+						<para>
+							In milliseconds
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;CeaTimeOut&gt;</term>
+					<listitem>
+						<para>
+							In milliseconds
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;IacTimeOut&gt;</term>
+					<listitem>
+						<para>
+							In milliseconds
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;DwaTimeOut&gt;</term>
+					<listitem>
+						<para>
+							In milliseconds
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;DpaTimeOut&gt;</term>
+					<listitem>
+						<para>
+							In milliseconds
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;RecTimeOut&gt;</term>
+					<listitem>
+						<para>
+							In milliseconds
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+			
+<programlisting role="XML">&lt;Network&gt;
+   &lt;Peers&gt;
+   &lt;!-- This peer is a server, if it's a client attempt_connect should be set to false --&gt;
+     &lt;Peer name="aaa://127.0.0.1:3868" attempt_connect="true" rating="1"/&gt;
+   &lt;/Peers&gt;
+   &lt;Realms&gt;
+     &lt;Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1"&gt;
+       &lt;ApplicationID&gt;
+         &lt;VendorId value="193"/&gt;
+         &lt;AuthApplId value="0"/&gt;
+         &lt;AcctApplId value="19302"/&gt;
+       &lt;/ApplicationID&gt;
+     &lt;/Realm&gt;
+   &lt;/Realms&gt;
+&lt;/Network&gt;
+</programlisting>
+			<para>
+				The &lt;Network&gt; element contains elements that specify parameters for external peers. The available elements and attributes are listed for reference.
+			</para>
+			<variablelist>
+				<title>&lt;Network&gt; Elements and Attributes</title>
+				<varlistentry>
+					<term>&lt;Peers&gt;</term>
+					<listitem>
+						<para>
+							Parent element containing child elements that specify external peers and the way they connect.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;Peer&gt;</term>
+					<listitem>
+						<para>
+							Specifies the name of the external peer, whether the peer should be treated as a server or client, and what rating the peer has externally.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;Realms&gt;</term>
+					<listitem>
+						<para>
+							Parent element containing child elements that specify all realms that connect into the Diameter network.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>&lt;Realm&gt;</term>
+					<listitem>
+						<para>
+							Child element containing attributes and elements that describe the different realms configured for the Core.
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+			
+<programlisting>&lt;Extensions/&gt;
+</programlisting>
+		</section>
+
+	</section>
+
 </chapter>
 	<chapter lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Resource Adapter Components</title>
