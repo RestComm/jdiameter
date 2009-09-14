@@ -1,4 +1,4 @@
-﻿<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE appendix PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
 ]>
 <appendix>
@@ -6,8 +6,8 @@
   <simpara>
     <revhistory>
       <revision>
-        <revnumber>1.0</revnumber>
-        <date>Thu Jun 11 2009</date>
+        <revnumber> 0.1</revnumber>
+        <date>Thu Sep 11 2009</date>
         <author>
           <firstname>Jared</firstname>
           <surname>Morgan</surname>
@@ -15,7 +15,7 @@
         </author>
         <revdescription>
           <simplelist>
-            <member>First release of the branded user guide.</member>
+            <member>Created structure of guide and progressively updating content.</member>
           </simplelist>
         </revdescription>
       </revision>

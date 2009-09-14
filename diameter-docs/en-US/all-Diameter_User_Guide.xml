@@ -1587,6 +1587,112 @@ activity.sendAccountRequest(ms);
 </programlisting>
 		</example>
 	</section>
+	
+	<section>
+		<title>Examples</title>
+		<para>
+			The sample application provided for Diameter Base is a simple application that interacts with the Ericsson Diameter Software Development Kit (SDK). The application provides both client and server interaction. The following use cases are provided as part of the example:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Application acting as a client
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Application acting as a server
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Application acting as a relay or proxy.
+				</para>
+			</listitem>
+		</itemizedlist>
+		<formalpara>
+			<title>Application acting as a client</title>
+			<para>
+				In this example, the application acts as a Diameter Accounting Client, which issues a Debit or Refund request to the Ericsson Diameter Server (EDS). If the message is correctly built, the server will send an answer back to the application stating that the operation was executed correctly. If the message is incorrectly built, the EDS sends an error message back to the application.
+			</para>
+		</formalpara>
+		<para>
+			The message flow for the client application is described in <xref linkend="figure-Client_Application_Message_Flow"/>
+		</para>
+		<figure id="figure-Client_Application_Message_Flow">
+			<title>Client Application Message Flow</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/dia-BaseExamples-dia-AppActingAsClient.jpg" format="JPG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+		<formalpara>
+			<title>Application acting as a server</title>
+			<para>
+				In this example, the Ericsson SDK acts as the client and the application Service Building Block (SBB) acts as the server. When the request is received from the client, the SBB checks a pre-loaded set of user data and verifies the user exists, and that there is sufficient credit to complete the debit request.
+			</para>
+		</formalpara>
+		<para>
+			If both requirements are met, the SBB sends a response with a 2001 (SUCCESS) Credit-Control-Answer message. If one or all conditions are not met, the appropriate error code is returned:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					No user name match: 5421 (USER_NOT_FOUND)
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Not enough credit to complete the transaction: 4241 (INSUFFICIENT_BALANCE).
+				</para>
+			</listitem>
+		</itemizedlist>
+		<para>
+			The message flow for the server application is described in <xref linkend="figure-Server_Application_Message_Flow"/>
+		</para>
+		<figure id="figure-Server_Application_Message_Flow">
+			<title>Server Application Message Flow</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/dia-BaseExamples-dia-AppActingAsServer.jpg" format="JPG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+		<formalpara>
+			<title>Application acting as a relay or proxy</title>
+			<para>
+				In this example, the application plays the role of a proxy or relay, and handles request and answer message proxying. Both the Ericsson Client and Server SDK are used in this example. The example requires the most configuration of all examples:
+			</para>
+		</formalpara>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Ericsson client SDK is connected as a client to Mobicents Diameter through the Diameter Base RA.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Ericsson server SDK is connected as a server to Mobicents Diameter through the Diameter SBB.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Diameter SBB is configured as a proxy.
+				</para>
+			</listitem>
+		</itemizedlist>
+		<para>
+			The Ericsson Client SDK is used to establish the connection to the Ericsson Server SDK behind the Diameter SBB. In the example, requests received by the SBB are forwarded to the Server SDK, and answers are routed back to the Client SDK.
+		</para>
+		<section>
+			<title>Configuration</title>
+			<para>
+				To configure the examples, changest must be made to the <filename>example.properties</filename> file in the <filename>/du/main/resources</filename> directory.
+			</para>
+		</section>
+
+	</section>
 
 </section>
 	<section lang="en-US">
@@ -1625,8 +1731,8 @@ activity.sendAccountRequest(ms);
 	<simpara>
 		<revhistory>
 			<revision>
-				<revnumber>1.0</revnumber>
-				<date>Thu Jun 11 2009</date>
+				<revnumber> 0.1</revnumber>
+				<date>Thu Sep 11 2009</date>
 				<author>
 					<firstname>Jared</firstname>
 					<surname>Morgan</surname>
@@ -1634,7 +1740,7 @@ activity.sendAccountRequest(ms);
 				</author>
 				<revdescription>
 					<simplelist>
-						<member>First release of the branded user guide.</member>
+						<member>Created structure of guide and progressively updating content.</member>
 					</simplelist>
 				</revdescription>
 			</revision>
