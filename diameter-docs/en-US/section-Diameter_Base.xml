@@ -129,7 +129,7 @@
         <para>Manually declaring the property pairs in the  <filename>resource-adaptor-jar.xml</filename> file within the <filename>base-ra-<replaceable>[version]</replaceable>-DU.jar</filename>, <filename>base-ra-<replaceable>[version]</replaceable>.jar</filename>, or <filename>META-INF</filename> files.</para>
       </listitem>
     </itemizedlist>
-    <para>Regardless of the configuration method used, the length of the property pairs must be equal.  For example, <literal>acctVendorIds.split(&quot;,).length == acctAppIds.split(&quot;,&quot;).length</literal>.  The application vendor ID and application ID are matched based on index of occurance.  For example, <literal>ApplicationId(acctVendorIds[index],acctAppIds[index])</literal>.  If no vendor is specified, the value must be set to <literal>0</literal>.</para>
+    <para>Regardless of the configuration method used, the length of the property pairs must be equal.  For example, <literal>acctVendorIds.split(&quot;,&quot;).length == acctAppIds.split(&quot;,&quot;).length</literal>.  The application vendor ID and application ID are matched based on index of occurance.  For example, <literal>ApplicationId(acctVendorIds[index],acctAppIds[index])</literal>.  If no vendor is specified, the value must be set to <literal>0</literal>.</para>
     <example>
       <title>Configuring </title>
       <para>The following XML sample demonstrates how to configure an authentication application and two accounting applications in the <filename>resource-adaptor-jar.xml</filename>.  Note that each configuration property pair contains an equal value pair length.</para>
@@ -489,7 +489,7 @@ activity.sendAccountRequest(ms);
       <title>Client Application Message Flow</title>
       <mediaobject>
         <imageobject>
-          <imagedata format="JPG" fileref="images/dia-BaseExamples-dia-AppActingAsClient.jpg"/>
+          <imagedata fileref="images/dia-BaseExamples-dia-AppActingAsClient.jpg" format="JPG"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -511,7 +511,7 @@ activity.sendAccountRequest(ms);
       <title>Server Application Message Flow</title>
       <mediaobject>
         <imageobject>
-          <imagedata format="JPG" fileref="images/dia-BaseExamples-dia-AppActingAsServer.jpg"/>
+          <imagedata fileref="images/dia-BaseExamples-dia-AppActingAsServer.jpg" format="JPG"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -534,6 +534,22 @@ activity.sendAccountRequest(ms);
     <section>
       <title>Configuration</title>
       <para>To configure the examples, changest must be made to the <filename>example.properties</filename> file in the <filename>/du/main/resources</filename> directory.</para>
+      <para>The following example configuration supports two modes: client, and server.  In client mode, the application sends an Accounting Request (ACR). To make the example act as a proxy, settings relating to ACR must be added in order for the application to handle Attribute Value Pairs (AVPs). </para>
+      <example>
+        <title>Setting origin and destination properties</title>
+        <programlisting># Act as &quot;client&quot; or &quot;server&quot; (default: server)
+example.mode=server
+
+# The AS IP Address, Port and Realm (default: 127.0.0.1 / 1812 / mobicents.org)
+origin.ip=127.0.0.1
+origin.port=1812
+origin.realm=mobicents.org
+
+# The Remote IP Address, Port and Realm (default: 127.0.0.1 / 21812 / mobicents.org)
+destination.ip=127.0.0.1
+destination.port=21812
+destination.realm=mobicents.org</programlisting>
+      </example>
     </section>
   </section>
 </section>

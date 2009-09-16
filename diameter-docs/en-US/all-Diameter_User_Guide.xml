@@ -554,6 +554,40 @@ public class ExClient
 	<para>
 		Text
 	</para>
+	<section>
+		<title>Installing Resource Adapters</title>
+		<para>
+			Two options are available for installing Resource Adapters (RAs) that are compatible with Mobicents Diameter:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Installing from the binary
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Building from source code.
+				</para>
+			</listitem>
+		</itemizedlist>
+		<para>
+			For new users, it is recommended that you install the Base RA from the binary. If you are an advanced user, who is comfortable with building from source, you can choose to build the RA from source code.
+		</para>
+		<formalpara>
+			<title>Install From The Binary</title>
+			<para>
+				The binary package is available from the Mobicents Diameter SourceForge page (<ulink url="http://sourceforge.net/projects/mobicents/files/Mobicents%20Diameter/">http://sourceforge.net/projects/mobicents/files/Mobicents%20Diameter/</ulink>)
+			</para>
+		</formalpara>
+		<para>
+			Select the Resource Adapter file that you want to install from the list, and download the archive.
+		</para>
+		<para>
+			Extract the files and deploy the diameter-base-ra-
+		</para>
+	</section>
+
 </chapter>
 	<chapter lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Architecture</title>
@@ -729,7 +763,7 @@ public class ExClient
 			<para>
 				The &lt;Parameters&gt; element contains elements that specify parameters for the Diameter stack. The available elements and attributes are listed for reference.
 			</para>
-			<variablelist>
+			<!-- TODO: 20090916 - Need to obtain better definitions for the Parameter Elements and Attributes.  information present at the moment is not that helpful to readers. --> <variablelist>
 				<title>&lt;Parameter&gt; Elements and Attributes</title>
 				<varlistentry>
 					<term>&lt;AcceptUndefinedPeer&gt;</term>
@@ -883,7 +917,7 @@ public class ExClient
 					</listitem>
 				</varlistentry>
 			</variablelist>
-			
+			<!-- TODO: Need more information about what might go into the extensions element. --> 
 <programlisting>&lt;Extensions/&gt;
 </programlisting>
 		</section>
@@ -1200,7 +1234,7 @@ public class ExClient
 			</listitem>
 		</itemizedlist>
 		<para>
-			Regardless of the configuration method used, the length of the property pairs must be equal. For example, <literal>acctVendorIds.split(",).length == acctAppIds.split(",").length</literal>. The application vendor ID and application ID are matched based on index of occurance. For example, <literal>ApplicationId(acctVendorIds[index],acctAppIds[index])</literal>. If no vendor is specified, the value must be set to <literal>0</literal>.
+			Regardless of the configuration method used, the length of the property pairs must be equal. For example, <literal>acctVendorIds.split(",").length == acctAppIds.split(",").length</literal>. The application vendor ID and application ID are matched based on index of occurance. For example, <literal>ApplicationId(acctVendorIds[index],acctAppIds[index])</literal>. If no vendor is specified, the value must be set to <literal>0</literal>.
 		</para>
 		<example>
 			<title>Configuring </title>
@@ -1690,6 +1724,26 @@ activity.sendAccountRequest(ms);
 			<para>
 				To configure the examples, changest must be made to the <filename>example.properties</filename> file in the <filename>/du/main/resources</filename> directory.
 			</para>
+			<para>
+				The following example configuration supports two modes: client, and server. In client mode, the application sends an Accounting Request (ACR). To make the example act as a proxy, settings relating to ACR must be added in order for the application to handle Attribute Value Pairs (AVPs).
+			</para>
+			<example>
+				<title>Setting origin and destination properties</title>
+				
+<programlisting># Act as "client" or "server" (default: server)
+example.mode=server
+
+# The AS IP Address, Port and Realm (default: 127.0.0.1 / 1812 / mobicents.org)
+origin.ip=127.0.0.1
+origin.port=1812
+origin.realm=mobicents.org
+
+# The Remote IP Address, Port and Realm (default: 127.0.0.1 / 21812 / mobicents.org)
+destination.ip=127.0.0.1
+destination.port=21812
+destination.realm=mobicents.org
+</programlisting>
+			</example>
 		</section>
 
 	</section>

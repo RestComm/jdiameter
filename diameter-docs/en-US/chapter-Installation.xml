@@ -1,7 +1,25 @@
-﻿<?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. -->
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
 <chapter>
   <title>Installation</title>
   <para>Text</para>
+  <section>
+    <title>Installing Resource Adapters</title>
+    <para>Two options are available for installing  Resource Adapters (RAs) that are compatible with Mobicents Diameter:</para>
+    <itemizedlist>
+      <listitem>
+        <para>Installing from the binary</para>
+      </listitem>
+      <listitem>
+        <para>Building from source code.</para>
+      </listitem>
+    </itemizedlist>
+    <para>For new users, it is recommended that you install the Base RA from the binary.  If you are an advanced user, who is comfortable with building from source, you can choose to build the RA from source code.</para>
+    <formalpara>
+      <title>Install From The Binary</title>
+      <para>The binary package is available from the Mobicents Diameter SourceForge page (<ulink url="http://sourceforge.net/projects/mobicents/files/Mobicents%20Diameter/">http://sourceforge.net/projects/mobicents/files/Mobicents%20Diameter/</ulink>)</para>
+    </formalpara>
+    <para>Select the Resource Adapter file that you want to install from the list, and download the archive.  </para>
+    <para>Extract the files and deploy the diameter-base-ra- </para>
+  </section>
 </chapter>

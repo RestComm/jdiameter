@@ -130,7 +130,7 @@
    &lt;RecTimeOut value=&quot;10000&quot;/&gt;
 &lt;/Parameters&gt;</programlisting>
       <para>The &lt;Parameters&gt; element contains elements that specify parameters for the Diameter stack.  The available elements and attributes are listed for reference.</para>
-      <variablelist>
+<!--TODO: 20090916 - Need to obtain better definitions for the Parameter Elements and Attributes.  information present at the moment is not that helpful to readers.-->      <variablelist>
         <title>&lt;Parameter&gt; Elements and Attributes</title>
         <varlistentry>
           <term>&lt;AcceptUndefinedPeer&gt;</term>
@@ -248,7 +248,7 @@
           </listitem>
         </varlistentry>
       </variablelist>
-      <programlisting>&lt;Extensions/&gt;</programlisting>
+<!--TODO: Need more information about what might go into the extensions element.-->      <programlisting>&lt;Extensions/&gt;</programlisting>
     </section>
   </section>
 </chapter>
