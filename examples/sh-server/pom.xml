@@ -23,11 +23,11 @@
 	
   <properties>
     <!-- Mobicents Diameter Components Versions -->
-    <mobicents.diameter.jdiameter.version>1.5.3.0-build306-SNAPSHOT</mobicents.diameter.jdiameter.version>
-    <mobicents.diameter.mux.version>1.0.2.GA-SNAPSHOT</mobicents.diameter.mux.version>
-    <mobicents.diameter.resources.base.version>1.0.2.GA-SNAPSHOT</mobicents.diameter.resources.base.version>
-    <mobicents.diameter.resources.sh-common.version>1.0.2.GA-SNAPSHOT</mobicents.diameter.resources.sh-common.version>
-    <mobicents.diameter.resources.sh-server.version>1.0.2.GA-SNAPSHOT</mobicents.diameter.resources.sh-server.version>
+    <mobicents.diameter.jdiameter.version>1.5.3.0-build307-SNAPSHOT</mobicents.diameter.jdiameter.version>
+    <mobicents.diameter.mux.version>1.1.0.GA-SNAPSHOT</mobicents.diameter.mux.version>
+    <mobicents.diameter.resources.base.version>1.1.0.GA-SNAPSHOT</mobicents.diameter.resources.base.version>
+    <mobicents.diameter.resources.sh-common.version>1.1.0.GA-SNAPSHOT</mobicents.diameter.resources.sh-common.version>
+    <mobicents.diameter.resources.sh-server.version>1.1.0.GA-SNAPSHOT</mobicents.diameter.resources.sh-server.version>
     
     <!-- Other Mobicents Components Versions -->
     <mobicents.servers.jainslee.version>1.2.6.GA</mobicents.servers.jainslee.version>

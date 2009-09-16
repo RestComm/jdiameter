@@ -11,7 +11,7 @@
 
 	<groupId>org.mobicents.servers.diameter.resources</groupId>
 	<artifactId>rf-parent</artifactId>
-	<version>1.0.3.GA-SNAPSHOT</version>
+	<version>1.1.0.GA-SNAPSHOT</version>
 
 	<name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
 
@@ -24,11 +24,11 @@
 
 	<properties>
 		<!-- Mobicents Diameter Components Versions -->
-		<mobicents.diameter.jdiameter.version>1.5.3.0-build306</mobicents.diameter.jdiameter.version>
-		<mobicents.diameter.mux.version>1.0.2.GA</mobicents.diameter.mux.version>
-		<mobicents.diameter.resources.base.version>1.0.2.GA</mobicents.diameter.resources.base.version>
-		<mobicents.diameter.resources.ro.version>1.0.2.GA</mobicents.diameter.resources.ro.version>
-		<mobicents.diameter.resources.cca.version>1.0.2.GA</mobicents.diameter.resources.cca.version>
+		<mobicents.diameter.jdiameter.version>1.5.3.0-build307-SNAPSHOT</mobicents.diameter.jdiameter.version>
+		<mobicents.diameter.mux.version>1.1.0.GA-SNAPSHOT</mobicents.diameter.mux.version>
+		<mobicents.diameter.resources.base.version>1.1.0.GA-SNAPSHOT</mobicents.diameter.resources.base.version>
+		<mobicents.diameter.resources.ro.version>1.1.0.GA-SNAPSHOT</mobicents.diameter.resources.ro.version>
+		<mobicents.diameter.resources.cca.version>1.1.0.GA-SNAPSHOT</mobicents.diameter.resources.cca.version>
 
 		<!-- Other Mobicents Components Versions -->
 		<mobicents.servers.jainslee.version>1.2.6.GA</mobicents.servers.jainslee.version>

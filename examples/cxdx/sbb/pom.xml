@@ -4,24 +4,24 @@
 	
 	<parent>
     <groupId>org.mobicents.servers.diameter.examples</groupId>
-  	<artifactId>cxdx-parent</artifactId>
-  	<version>1.0.0.BETA1-SNAPSHOT</version>
+  	<artifactId>cx-dx-parent</artifactId>
+  	<version>1.0.0.BETA2-SNAPSHOT</version>
 	</parent>
 	
-	<artifactId>cxdx-example-sbb</artifactId>
+	<artifactId>cx-dx-example-sbb</artifactId>
 
   <name>Mobicents :: Diameter Examples :: ${pom.artifactId}</name>
 		
 	<dependencies>
 		<dependency>
 			<groupId>org.mobicents.servers.diameter.resources</groupId>
-			<artifactId>cxdx-ratype</artifactId>
-			<version>${mobicents.diameter.resources.cxdx.version}</version>
+			<artifactId>cx-dx-ratype</artifactId>
+			<version>${mobicents.diameter.resources.cx-dx.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mobicents.servers.diameter.resources</groupId>
-			<artifactId>cxdx-ra</artifactId>
-			<version>${mobicents.diameter.resources.cxdx.version}</version>
+			<artifactId>cx-dx-ra</artifactId>
+			<version>${mobicents.diameter.resources.cx-dx.version}</version>
 		</dependency>
 	</dependencies>
 	

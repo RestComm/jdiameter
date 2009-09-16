@@ -11,8 +11,8 @@
 	</parent>
 
   <groupId>org.mobicents.servers.diameter.examples</groupId>
-	<artifactId>cxdx-parent</artifactId>
-	<version>1.0.0.BETA1-SNAPSHOT</version>
+	<artifactId>cx-dx-parent</artifactId>
+	<version>1.0.0.BETA2-SNAPSHOT</version>
 
 	<name>Mobicents :: Diameter Examples :: ${pom.artifactId}</name>
 				
@@ -23,10 +23,10 @@
 	
   <properties>
     <!-- Mobicents Diameter Components Versions -->
-    <mobicents.diameter.jdiameter.version>1.5.3.0-build306-SNAPSHOT</mobicents.diameter.jdiameter.version>
-    <mobicents.diameter.mux.version>1.0.2.GA-SNAPSHOT</mobicents.diameter.mux.version>
-    <mobicents.diameter.resources.base.version>1.0.2.GA-SNAPSHOT</mobicents.diameter.resources.base.version>
-    <mobicents.diameter.resources.cxdx.version>1.0.0.BETA1-SNAPSHOT</mobicents.diameter.resources.cxdx.version>
+    <mobicents.diameter.jdiameter.version>1.5.3.0-build307-SNAPSHOT</mobicents.diameter.jdiameter.version>
+    <mobicents.diameter.mux.version>1.1.0.GA-SNAPSHOT</mobicents.diameter.mux.version>
+    <mobicents.diameter.resources.base.version>1.1.0.GA-SNAPSHOT</mobicents.diameter.resources.base.version>
+    <mobicents.diameter.resources.cx-dx.version>1.0.0.BETA2-SNAPSHOT</mobicents.diameter.resources.cx-dx.version>
 
     
     <!-- Other Mobicents Components Versions -->
@@ -49,7 +49,7 @@
             <configuration>
               <autoVersionSubmodules>true</autoVersionSubmodules>
               <resume>false</resume>
-              <tagBase>https://mobicents.googlecode.com/svn/tags/servers/diameter/examples/sh-server</tagBase>
+              <tagBase>https://mobicents.googlecode.com/svn/tags/servers/diameter/examples/cx-dx</tagBase>
             </configuration>
           </plugin>
         </plugins>
@@ -71,15 +71,15 @@
 								</goals>
 								<configuration>
 									<tasks>
-    								<copy overwrite="true" todir="${basedir}/../../release/${release.name}/examples/diameter-sh-server">
+    								<copy overwrite="true" todir="${basedir}/../../release/${release.name}/examples/diameter-cx-dx">
     									<fileset dir="${basedir}/du/target">
     										<include name="**.jar" />
     										<include name="*.xml" />
     										<include name="*.properties" />										
     									</fileset>
     								</copy>
-    								<copy overwrite="true" file="${basedir}/du/target/build.xml" tofile="${basedir}/../../release/${release.name}/examples/diameter-sh-server/du-management.xml" />
-                    <copy overwrite="true" file="${basedir}/release/build.xml" todir="${basedir}/../../release/${release.name}/examples/diameter-sh-server">
+    								<copy overwrite="true" file="${basedir}/du/target/build.xml" tofile="${basedir}/../../release/${release.name}/examples/diameter-cx-dx/du-management.xml" />
+                    <copy overwrite="true" file="${basedir}/release/build.xml" todir="${basedir}/../../release/${release.name}/examples/diameter-cx-dx">
     									<filterset>
 												<filter token="JBOSS.PATH" value="${jboss.path}" />
 												<filter token="JBOSS.CONFIG" value="${node}" />
@@ -96,9 +96,9 @@
 	</profiles>
 
   <scm>
-    <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/examples/sh-server</connection>
-    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/examples/sh-server</developerConnection>
-    <url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/examples/sh-server</url>
+    <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/examples/cx-dx</connection>
+    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/examples/cx-dx</developerConnection>
+    <url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/examples/cx-dx</url>
   </scm>
 
 </project>

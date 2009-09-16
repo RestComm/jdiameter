@@ -5,18 +5,18 @@
 	
 	<parent>
     <groupId>org.mobicents.servers.diameter.examples</groupId>
-  	<artifactId>cxdx-parent</artifactId>
+  	<artifactId>cx-dx-parent</artifactId>
   	<version>1.0.0.BETA1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>cxdx-example-DU</artifactId>
+	<artifactId>cx-dx-example-DU</artifactId>
 
   <name>Mobicents :: Diameter Examples :: ${pom.artifactId}</name>
 	
 	<dependencies>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>cxdx-example-sbb</artifactId>
+			<artifactId>cx-dx-example-sbb</artifactId>
 			<version>${pom.version}</version>
 		</dependency>
 	</dependencies>
