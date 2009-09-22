@@ -11,7 +11,7 @@
 
 <server>
 
-	<!-- Media Server Management MBean -->
+	<!-- MUX Bean definition -->
 	<mbean
 		code="org.mobicents.diameter.stack.DiameterStackMultiplexer"
 		name="diameter.mobicents:service=DiameterStackMultiplexer"
