@@ -1,6 +1,8 @@
-﻿<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
 <section>
   <title>Multiplexer</title>
-  <para>Text</para>
+  <para>The Multiplexer (MUX) is designed to provide a wrapper to the stack, which includes a simplified API.   The Multiplexer provides the ability to register  listeners to  applications, making it  possible to have more than one application sharing the same stack instance. </para>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Configuring_The_Multiplexer.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Using_The_Multiplexer.xml" encoding="UTF-8"/>
 </section>

@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<section>
+  <title>Configuring the Multiplexer</title>
+  <para>Configuring the Multiplexer requires configuration changes to the <filename>diameter-config.xml</filename> file.</para>
+<!--TODO: So what changes specifically are required in the diameter-config.xml file.-->  <para>By default,  <filename>diameter-config.xml</filename> is located in the <filename>\default\deploy\mobicents-diameter-mux-<replaceable>[version_number]</replaceable>.sar\config\</filename> directory.</para>
+  <para>It is not yet possible to change configuration in runtime, however this feature is planned for subsequent versions of the Multiplexer.</para>
+</section>

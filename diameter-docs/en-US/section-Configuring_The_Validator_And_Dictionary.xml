@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<section>
+  <title>Configuring the Validator and Dictionary</title>
+  <para>The <filename>dictionary.xml</filename>  file contains the configuration data for both the Validator and Dictionary components.  The file is located in the <filename>META-INF</filename> directory of the MUX.</para>
+  <para>When the MUX component creates the stack, the validator and dictionary are both started and configured, based on the <filename>dictionary.xml</filename> file present in the MUX classpath.  The advantage of using the same file for the validator and dictionary is that there is no way to introduce configuration mistakes between  components.  If the dictionary.xml contains incorrect settings however, these settings may affect both components.  Therefore, be careful when setting the parameters, which are explained below for reference.</para>
+</section>
