@@ -3,5 +3,206 @@
 <section>
   <title>Configuring the Validator and Dictionary</title>
   <para>The <filename>dictionary.xml</filename>  file contains the configuration data for both the Validator and Dictionary components.  The file is located in the <filename>META-INF</filename> directory of the MUX.</para>
-  <para>When the MUX component creates the stack, the validator and dictionary are both started and configured, based on the <filename>dictionary.xml</filename> file present in the MUX classpath.  The advantage of using the same file for the validator and dictionary is that there is no way to introduce configuration mistakes between  components.  If the dictionary.xml contains incorrect settings however, these settings may affect both components.  Therefore, be careful when setting the parameters, which are explained below for reference.</para>
+  <para>When the MUX component creates the stack, the validator and dictionary are both started and configured, based on the <filename>dictionary.xml</filename> file present in the MUX classpath.  The advantage of using the same file for the validator and dictionary is that there is no way to introduce configuration mistakes between  components.  If the <filename>dictionary.xml</filename> file contains incorrect settings, these settings may affect both components.  Therefore, be careful when setting the parameters, which are explained below for reference.</para>
+  <para>The basic XML structure of the <filename>dictionary.xml</filename> file is described below.  All elements are mandatory, and contain a number of attributes that set the parameters for the Validator and Dictionary.  </para>
+  <programlisting role="XML">&lt;dictonary&gt;
+  &lt;validator enabled=&quot;true|false&quot;/&gt;
+  &lt;vendor name=&quot;&quot; vendor-id=&quot;&quot; code=&quot;&quot;/&gt;
+  &lt;typedefn type-name=&quot;&quot; type-parent=&quot;&quot;/&gt;
+  &lt;application id=&quot;&quot; name=&quot;&quot;&gt;
+    &lt;avp&gt;
+      &lt;type/&gt;
+      &lt;enum/&gt;
+      &lt;grouped/&gt;
+    &lt;avp/&gt;
+    &lt;command/&gt;
+      &lt;avp&gt;
+        &lt;type/&gt;
+        &lt;enum/&gt;
+        &lt;grouped/&gt;
+      &lt;avp/&gt;
+  &lt;application&gt;
+&lt;dictionary/&gt;</programlisting>
+  <formalpara>
+    <title>&lt;dictionary&gt;</title>
+    <para>The root element,which  contains the child elements comprising the validator and dictionary components.  This element does not support any attributes.</para>
+  </formalpara>
+  <formalpara>
+    <title>&lt;validator/&gt;</title>
+    <para>Specifies whether message validation is activated for sent and received stack messages. The default value is <literal>false</literal> (deactivated).</para>
+  </formalpara>
+  <formalpara>
+    <title>&lt;vendor/&gt;</title>
+    <para>Specifies the mapping between the vendor name, vendor ID, and vendor code.  The element supports the following attributes:</para>
+  </formalpara>
+  <variablelist>
+    <varlistentry>
+      <term>name</term>
+      <listitem>
+        <para>Specifies the vendor name.  For example &quot;Hewlett Packard&quot;.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>vendor-id</term>
+      <listitem>
+        <para>Specifies the unique ID associated with this vendor.  For example, &quot;HP&quot;. </para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>code</term>
+      <listitem>
+        <para>Specifies the alpha-numeric code allocated to the vendor. For example &quot;11&quot;.</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+  <formalpara>
+    <title>&lt;typedefn/&gt;</title>
+    <para>Defines the simple Attribute Value Pair (AVP) types.  The element supports the following attributes:</para>
+  </formalpara>
+  <variablelist>
+    <varlistentry>
+      <term>type-name</term>
+      <listitem>
+        <para>Specifies the type name.  For example; &quot;Enumerated&quot;, &quot;OctetString&quot;, &quot;Integer32&quot;.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>type-parent</term>
+      <listitem>
+        <para>Specifies the parent type name.  For example; &quot;OctetString&quot;, &quot;UTF8String&quot;, &quot;IPAddress&quot;.</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+  <formalpara>
+    <title>&lt;application&gt;</title>
+    <para>Defines the specific applications used within the dictionary.  The element supports the following attributes:</para>
+  </formalpara>
+  <variablelist>
+    <varlistentry>
+      <term>id</term>
+      <listitem>
+        <para>Specifies the unique ID allocated to the application .  For example; &quot;16777216&quot;.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>name</term>
+      <listitem>
+        <para>Specifies the name of the application.  For example; &quot;3GPP Cx/Dx&quot;.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>uri</term>
+      <listitem>
+        <para>Specifies a link to further information about the application for configurers.  For example, http://www.ietf.org/rfc/rfc3588.txt?number=3588</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+  <formalpara>
+    <title>&lt;avp&gt;</title>
+    <para>Element containing information necessary to configure the Attribute Value Pairs.  In future releases, the &lt;avp&gt; element may change.  <xref linkend="table-avp_attributes"/> contains the complete list of supported attributes, and their available values (if applicable). </para>
+  </formalpara>
+  <table frame="all" pgwide="1" id="table-avp_attributes">
+    <title>&lt;avp&gt; Attributes</title>
+    <tgroup colsep="1" cols="3">
+      <colspec colname="c1"/>
+      <colspec colname="c2"/>
+      <colspec colname="c3"/>
+      <thead>
+        <row>
+          <entry>Attribute Name (optional in brackets)</entry>
+          <entry>Explicit Values (default in brackets)</entry>
+          <entry>Description</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry>name</entry>
+          <entry/>
+          <entry>Specifies the name of the AVP. This attribute is mandatory, because it is used to match the AVP definition to any grouped AVP references. For further information about grouped AVPs, refer to the element description in this section.</entry>
+        </row>
+        <row>
+          <entry>code</entry>
+          <entry/>
+          <entry>Specifies the integer code of the AVP.</entry>
+        </row>
+        <row>
+          <entry>(vendor-id)</entry>
+          <entry>(none)</entry>
+          <entry>Used to match the vendor ID reference to the value defined in the &lt;vendor&gt; element.</entry>
+        </row>
+        <row>
+          <entry>(multiplicity)</entry>
+          <entry/>
+          <entry>Specifies how many AVPs may (or must) be present in the message. </entry>
+        </row>
+        <row>
+          <entry/>
+          <entry>0</entry>
+          <entry>An AVP <emphasis>must not</emphasis> be present in the message.</entry>
+        </row>
+        <row>
+          <entry/>
+          <entry>(0+)</entry>
+          <entry>Zero or more instances of the AVP <emphasis>must be</emphasis> present in the message.</entry>
+        </row>
+        <row>
+          <entry/>
+          <entry>0-1</entry>
+          <entry>Zero, or one instance of the AVP <emphasis>may be</emphasis> present in the message. An error occurs if the message contains more than one instance of the AVP.</entry>
+        </row>
+        <row>
+          <entry/>
+          <entry>1</entry>
+          <entry>One instance of the AVP <emphasis>must be</emphasis> present in the message.</entry>
+        </row>
+        <row>
+          <entry/>
+          <entry>1+</entry>
+          <entry>At least one instance of the AVP <emphasis>must be</emphasis> present in the message.</entry>
+        </row>
+        <row>
+          <entry>index</entry>
+          <entry/>
+          <entry>Specifies the index in a message. Only the SessionId AVP supports a fixed index, which starts at 0. If the location is not important, -1 must be specified manually.</entry>
+        </row>
+        <row>
+          <entry>may-encrypt</entry>
+          <entry>Yes | (No)</entry>
+          <entry>Specifies whether the AVP can be encrypted.</entry>
+        </row>
+        <row>
+          <entry>protected</entry>
+          <entry>may | must | mustnot</entry>
+          <entry>Determines TODO.</entry>
+        </row>
+        <row>
+          <entry>vendor-bit</entry>
+          <entry>must | mustnot</entry>
+          <entry>Specifies whether the Vendor ID should be set.</entry>
+        </row>
+        <row>
+          <entry>mandatory</entry>
+          <entry>may | must | mustnot</entry>
+          <entry>Determines TODO.</entry>
+        </row>
+        <row>
+          <entry>vendor</entry>
+          <entry/>
+          <entry>Specifies the defined vendor code, which is used by the &lt;command&gt; child element.</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </table>
+  <formalpara>
+    <title>&lt;type&gt;</title>
+    <para>Child element of &lt;avp&gt;, which is used to match the AVP with the AVP type as defined in the &lt;typedefn&gt; element.  The element supports the following attribute:</para>
+  </formalpara>
+  <variablelist>
+    <varlistentry>
+      <term>type-name</term>
+      <listitem>
+        <para>Specifies the type name, which is used to match to the type-name value specified in the &lt;typedenf&gt; element.</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
 </section>
