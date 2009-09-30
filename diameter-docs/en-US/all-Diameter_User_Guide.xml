@@ -611,319 +611,503 @@ public class ExClient
 			</para>
 		</listitem>
 	</itemizedlist>
-	<section>
-		<title>Stack</title>
-		<para>
-			The Diameter Stack is the primary component of the Diameter solution. The Stack governs the mechanisms that control message sending and receiving, peer management, and session management. The stack manages these resources using State Machines.
-		</para>
-		<section>
-			<title>Configuring the Stack</title>
-			<para>
-				The stack is configured using an XML file that contains the options set during initialization. The top level structure of the file is described below. Further explanation of each child element, and the applicable attributes is provided later in this section.
-			</para>
-			
+	<section lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Stack</title>
+	<para>
+		The Diameter Stack is the primary component of the Diameter solution. The Stack governs the mechanisms that control message sending and receiving, peer management, and session management. The stack manages these resources using State Machines.
+	</para>
+	<section lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Configuring the Stack</title>
+	<para>
+		The stack is configured using an XML file that contains the options set during initialization. The top level structure of the file is described below. Further explanation of each child element, and the applicable attributes is provided later in this section.
+	</para>
+	
 <programlisting role="XML">&lt;Configuration xmlns="http://www.jdiameter.org/jdiameter-server"&gt;
-  &lt;LocalPeer&gt;&lt;/LocalPeer&gt;
-  &lt;Parameters&gt;&lt;/Parameters&gt;
-  &lt;Network&gt;&lt;/Network&gt;
-  &lt;Extensions&gt;&lt;/Extensions&gt;
-&lt;/Configuration&gt;
+      &lt;LocalPeer&gt;&lt;/LocalPeer&gt;
+      &lt;Parameters&gt;&lt;/Parameters&gt;
+      &lt;Network&gt;&lt;/Network&gt;
+      &lt;Extensions&gt;&lt;/Extensions&gt;
+      &lt;/Configuration&gt;
 </programlisting>
-			
+	
 <programlisting role="XML">&lt;LocalPeer&gt;
-   &lt;URI value="aaa://127.0.0.1:1812"/&gt;
-   &lt;IPAddresses&gt;
-     &lt;IPAddress value="127.0.0.1"/&gt;
-   &lt;/IPAddresses&gt;
-   &lt;Realm value="mobicents.org"/&gt;
-   &lt;VendorID value="193"/&gt;
-   &lt;ProductName value="jDiameter"/&gt;
-   &lt;FirmwareRevision value="1"/&gt;
-   &lt;OverloadMonitor&gt;
-     &lt;Entry index="1" lowThreshold="0.5" highThreshold="0.6"&gt;
-       &lt;ApplicationID&gt;
-         &lt;VendorId value="193"/&gt;
-         &lt;AuthApplId value="0"/&gt;
-         &lt;AcctApplId value="19302"/&gt;
-       &lt;/ApplicationID&gt;
-     &lt;/Entry&gt;
-   &lt;/OverloadMonitor&gt;
-&lt;/LocalPeer&gt;
+      &lt;URI value="aaa://127.0.0.1:1812"/&gt;
+      &lt;IPAddresses&gt;
+      &lt;IPAddress value="127.0.0.1"/&gt;
+      &lt;/IPAddresses&gt;
+      &lt;Realm value="mobicents.org"/&gt;
+      &lt;VendorID value="193"/&gt;
+      &lt;ProductName value="jDiameter"/&gt;
+      &lt;FirmwareRevision value="1"/&gt;
+      &lt;OverloadMonitor&gt;
+      &lt;Entry index="1" lowThreshold="0.5" highThreshold="0.6"&gt;
+      &lt;ApplicationID&gt;
+      &lt;VendorId value="193"/&gt;
+      &lt;AuthApplId value="0"/&gt;
+      &lt;AcctApplId value="19302"/&gt;
+      &lt;/ApplicationID&gt;
+      &lt;/Entry&gt;
+      &lt;/OverloadMonitor&gt;
+      &lt;/LocalPeer&gt;
 </programlisting>
-			<para>
-				The &lt;LocalPeer&gt; element contains parameters that affect the local Diameter peer. The available elements and attributes are listed for reference.
-			</para>
-			<variablelist>
-				<title>&lt;LocalPeer&gt; Elements and Attributes</title>
-				<varlistentry>
-					<term>&lt;URI&gt;</term>
-					<listitem>
-						<para>
-							Specifies the URI for the local peer.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;IPAddresses&gt;</term>
-					<listitem>
-						<para>
-							Contains one or more child &lt;IPAddress&gt; elements that contain a single, valid IP address for the local peer.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;Realm&gt;</term>
-					<listitem>
-						<para>
-							Specifies the realm of the local peer, using the <literal>value</literal> attribute.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;VendorID&gt;</term>
-					<listitem>
-						<para>
-							Specifies a numeric identifier that corresponds to the vendor ID allocated by IANA.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;ProductName&gt;</term>
-					<listitem>
-						<para>
-							Specifies the name of the local peer product name.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;FirmwareRevision&gt;</term>
-					<listitem>
-						<para>
-							Specifies the version of the firmware.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;OverloadMonitor&gt;</term>
-					<listitem>
-						<para>
-							Optional parent element containing child elements that specify settings relating to the Overload Monitor.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;Entry&gt;</term>
-					<listitem>
-						<para>
-							Specifies three attributes that control the overload element index, overload low threshold and overload high threshold.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;ApplicationID&gt;</term>
-					<listitem>
-						<para>
-							Parent element containing child elements that specify information about the application
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;AuthAppId&gt;</term>
-					<listitem>
-						<para>
-							The Authentication Application ID.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;AcctAplId&gt;</term>
-					<listitem>
-						<para>
-							The Account Application ID
-						</para>
-					</listitem>
-				</varlistentry>
-			</variablelist>
-			
+	<para>
+		The &lt;LocalPeer&gt; element contains parameters that affect the local Diameter peer. The available elements and attributes are listed for reference.
+	</para>
+	<variablelist>
+		<title>&lt;LocalPeer&gt; Elements and Attributes</title>
+		<varlistentry>
+			<term>&lt;URI&gt;</term>
+			<listitem>
+				<para>
+					Specifies the URI for the local peer.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;IPAddresses&gt;</term>
+			<listitem>
+				<para>
+					Contains one or more child &lt;IPAddress&gt; elements that contain a single, valid IP address for the local peer.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;Realm&gt;</term>
+			<listitem>
+				<para>
+					Specifies the realm of the local peer, using the <literal>value</literal> attribute.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;VendorID&gt;</term>
+			<listitem>
+				<para>
+					Specifies a numeric identifier that corresponds to the vendor ID allocated by IANA.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;ProductName&gt;</term>
+			<listitem>
+				<para>
+					Specifies the name of the local peer product name.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;FirmwareRevision&gt;</term>
+			<listitem>
+				<para>
+					Specifies the version of the firmware.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;OverloadMonitor&gt;</term>
+			<listitem>
+				<para>
+					Optional parent element containing child elements that specify settings relating to the Overload Monitor.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;Entry&gt;</term>
+			<listitem>
+				<para>
+					Specifies three attributes that control the overload element index, overload low threshold and overload high threshold.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;ApplicationID&gt;</term>
+			<listitem>
+				<para>
+					Parent element containing child elements that specify information about the application
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;AuthAppId&gt;</term>
+			<listitem>
+				<para>
+					The Authentication Application ID.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;AcctAplId&gt;</term>
+			<listitem>
+				<para>
+					The Account Application ID
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	
 <programlisting role="XML">&lt;Parameters&gt;
-   &lt;AcceptUndefinedPeer value="true"/&gt;
-   &lt;DuplicateProtection value="true"/&gt;
-   &lt;DuplicateTimer value="240000"/&gt;
-   &lt;UseUriAsFqdn value="true"/&gt; &lt;!-- Needed for Ericsson SDK Emulator --&gt;
-   &lt;QueueSize value="10000"/&gt;
-   &lt;MessageTimeOut value="60000"/&gt;
-   &lt;StopTimeOut value="10000"/&gt;
-   &lt;CeaTimeOut value="10000"/&gt;
-   &lt;IacTimeOut value="30000"/&gt;
-   &lt;DwaTimeOut value="10000"/&gt;
-   &lt;DpaTimeOut value="5000"/&gt;
-   &lt;RecTimeOut value="10000"/&gt;
-&lt;/Parameters&gt;
+      &lt;AcceptUndefinedPeer value="true"/&gt;
+      &lt;DuplicateProtection value="true"/&gt;
+      &lt;DuplicateTimer value="240000"/&gt;
+      &lt;UseUriAsFqdn value="true"/&gt; &lt;!-- Needed for Ericsson SDK Emulator --&gt;
+      &lt;QueueSize value="10000"/&gt;
+      &lt;MessageTimeOut value="60000"/&gt;
+      &lt;StopTimeOut value="10000"/&gt;
+      &lt;CeaTimeOut value="10000"/&gt;
+      &lt;IacTimeOut value="30000"/&gt;
+      &lt;DwaTimeOut value="10000"/&gt;
+      &lt;DpaTimeOut value="5000"/&gt;
+      &lt;RecTimeOut value="10000"/&gt;
+      &lt;/Parameters&gt;
 </programlisting>
-			<para>
-				The &lt;Parameters&gt; element contains elements that specify parameters for the Diameter stack. The available elements and attributes are listed for reference.
-			</para>
-			<!-- TODO: 20090916 - Need to obtain better definitions for the Parameter Elements and Attributes.  information present at the moment is not that helpful to readers. --> <variablelist>
-				<title>&lt;Parameter&gt; Elements and Attributes</title>
-				<varlistentry>
-					<term>&lt;AcceptUndefinedPeer&gt;</term>
-					<listitem>
-						<para>
-							Specifies whether the stack will accept connections from unidentified peers. The defalut value is <literal>false</literal>.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;DuplicateProtection&gt;</term>
-					<listitem>
-						<para>
-							Specifies whether duplicate message protection is enabled. The defalut value is <literal>false</literal>.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;DuplicateTimer&gt;</term>
-					<listitem>
-						<para>
-							Specifies the time each duplicate message is valid for. The default, minimum value is <literal>240000</literal> (4 minutes in milliseconds)
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;UseUriAsFqdn&gt;</term>
-					<listitem>
-						<para>
-							Specifies whether the Ericcson SDK Emulator. The defalut value is <literal>true</literal>.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;QueueSize&gt;</term>
-					<listitem>
-						<para>
-							In milliseconds
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;MessageTimeOut&gt;</term>
-					<listitem>
-						<para>
-							In milliseconds
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;StopTimeOut&gt;</term>
-					<listitem>
-						<para>
-							In milliseconds
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;CeaTimeOut&gt;</term>
-					<listitem>
-						<para>
-							In milliseconds
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;IacTimeOut&gt;</term>
-					<listitem>
-						<para>
-							In milliseconds
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;DwaTimeOut&gt;</term>
-					<listitem>
-						<para>
-							In milliseconds
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;DpaTimeOut&gt;</term>
-					<listitem>
-						<para>
-							In milliseconds
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;RecTimeOut&gt;</term>
-					<listitem>
-						<para>
-							In milliseconds
-						</para>
-					</listitem>
-				</varlistentry>
-			</variablelist>
-			
+	<para>
+		The &lt;Parameters&gt; element contains elements that specify parameters for the Diameter stack. The available elements and attributes are listed for reference.
+	</para>
+	<!-- TODO: 20090916 - Need to obtain better definitions for the Parameter Elements and Attributes.  information present at the moment is not that helpful to readers. -->
+	<variablelist>
+		<title>&lt;Parameter&gt; Elements and Attributes</title>
+		<varlistentry>
+			<term>&lt;AcceptUndefinedPeer&gt;</term>
+			<listitem>
+				<para>
+					Specifies whether the stack will accept connections from unidentified peers. The defalut value is <literal>false</literal>.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;DuplicateProtection&gt;</term>
+			<listitem>
+				<para>
+					Specifies whether duplicate message protection is enabled. The defalut value is <literal>false</literal>.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;DuplicateTimer&gt;</term>
+			<listitem>
+				<para>
+					Specifies the time each duplicate message is valid for. The default, minimum value is <literal>240000</literal> (4 minutes in milliseconds)
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;UseUriAsFqdn&gt;</term>
+			<listitem>
+				<para>
+					Specifies whether the Ericcson SDK Emulator. The defalut value is <literal>true</literal>.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;QueueSize&gt;</term>
+			<listitem>
+				<para>
+					In milliseconds
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;MessageTimeOut&gt;</term>
+			<listitem>
+				<para>
+					In milliseconds
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;StopTimeOut&gt;</term>
+			<listitem>
+				<para>
+					In milliseconds
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;CeaTimeOut&gt;</term>
+			<listitem>
+				<para>
+					In milliseconds
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;IacTimeOut&gt;</term>
+			<listitem>
+				<para>
+					In milliseconds
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;DwaTimeOut&gt;</term>
+			<listitem>
+				<para>
+					In milliseconds
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;DpaTimeOut&gt;</term>
+			<listitem>
+				<para>
+					In milliseconds
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;RecTimeOut&gt;</term>
+			<listitem>
+				<para>
+					In milliseconds
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	
 <programlisting role="XML">&lt;Network&gt;
-   &lt;Peers&gt;
-   &lt;!-- This peer is a server, if it's a client attempt_connect should be set to false --&gt;
-     &lt;Peer name="aaa://127.0.0.1:3868" attempt_connect="true" rating="1"/&gt;
-   &lt;/Peers&gt;
-   &lt;Realms&gt;
-     &lt;Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1"&gt;
-       &lt;ApplicationID&gt;
-         &lt;VendorId value="193"/&gt;
-         &lt;AuthApplId value="0"/&gt;
-         &lt;AcctApplId value="19302"/&gt;
-       &lt;/ApplicationID&gt;
-     &lt;/Realm&gt;
-   &lt;/Realms&gt;
-&lt;/Network&gt;
+      &lt;Peers&gt;
+      &lt;!-- This peer is a server, if it's a client attempt_connect should be set to false --&gt;
+      &lt;Peer name="aaa://127.0.0.1:3868" attempt_connect="true" rating="1"/&gt;
+      &lt;/Peers&gt;
+      &lt;Realms&gt;
+      &lt;Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1"&gt;
+      &lt;ApplicationID&gt;
+      &lt;VendorId value="193"/&gt;
+      &lt;AuthApplId value="0"/&gt;
+      &lt;AcctApplId value="19302"/&gt;
+      &lt;/ApplicationID&gt;
+      &lt;/Realm&gt;
+      &lt;/Realms&gt;
+      &lt;/Network&gt;
 </programlisting>
-			<para>
-				The &lt;Network&gt; element contains elements that specify parameters for external peers. The available elements and attributes are listed for reference.
-			</para>
-			<variablelist>
-				<title>&lt;Network&gt; Elements and Attributes</title>
-				<varlistentry>
-					<term>&lt;Peers&gt;</term>
-					<listitem>
-						<para>
-							Parent element containing child elements that specify external peers and the way they connect.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;Peer&gt;</term>
-					<listitem>
-						<para>
-							Specifies the name of the external peer, whether the peer should be treated as a server or client, and what rating the peer has externally.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;Realms&gt;</term>
-					<listitem>
-						<para>
-							Parent element containing child elements that specify all realms that connect into the Diameter network.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term>&lt;Realm&gt;</term>
-					<listitem>
-						<para>
-							Child element containing attributes and elements that describe the different realms configured for the Core.
-						</para>
-					</listitem>
-				</varlistentry>
-			</variablelist>
-			<!-- TODO: Need more information about what might go into the extensions element. --> 
+	<para>
+		The &lt;Network&gt; element contains elements that specify parameters for external peers. The available elements and attributes are listed for reference.
+	</para>
+	<variablelist>
+		<title>&lt;Network&gt; Elements and Attributes</title>
+		<varlistentry>
+			<term>&lt;Peers&gt;</term>
+			<listitem>
+				<para>
+					Parent element containing child elements that specify external peers and the way they connect.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;Peer&gt;</term>
+			<listitem>
+				<para>
+					Specifies the name of the external peer, whether the peer should be treated as a server or client, and what rating the peer has externally.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;Realms&gt;</term>
+			<listitem>
+				<para>
+					Parent element containing child elements that specify all realms that connect into the Diameter network.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>&lt;Realm&gt;</term>
+			<listitem>
+				<para>
+					Child element containing attributes and elements that describe the different realms configured for the Core.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	<!-- TODO: Need more information about what might go into the extensions element. -->
 <programlisting>&lt;Extensions/&gt;
 </programlisting>
-		</section>
+</section>
+</section>
+	<section lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Multiplexer</title>
+	<para>
+		The Multiplexer (MUX) is designed to provide a wrapper to the stack, which includes a simplified API. The Multiplexer provides the ability to register listeners to applications, making it possible to have more than one application sharing the same stack instance.
+	</para>
+	<section lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Configuring the Multiplexer</title>
+	<para>
+		Configuring the Multiplexer requires configuration changes to the <filename>diameter-config.xml</filename> file.
+	</para>
+	<!-- TODO: So what changes specifically are required in the diameter-config.xml file. --> <para>
+		By default, <filename>diameter-config.xml</filename> is located in the <filename>\default\deploy\mobicents-diameter-mux-<replaceable>[version_number]</replaceable>.sar\config\</filename> directory.
+	</para>
+	<para>
+		It is not yet possible to change configuration in runtime, however this feature is planned for subsequent versions of the Multiplexer.
+	</para>
+</section>
+	<section lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Using the Multiplexer</title>
+	<para>
+		To use the Diameter Multiplexer (MUX), deploy the SAR into the JBoss <filename>/deploy</filename> folder.
+	</para>
+	<para>
+		To register an application as a listener, use the code example described in <xref linkend="example-Base_Listener_Code"/>.
+	</para>
+	<example id="example-Base_Listener_Code">
+		<title>Base Listener Code</title>
+		
+<programlisting role="JAVA">package org.mobicents.slee.resource.diameter.base;
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
+import org.jboss.mx.util.MBeanServerLocator;
+import org.jdiameter.api.Answer;
+import org.jdiameter.api.ApplicationId;
+import org.jdiameter.api.Request;
+import org.mobicents.diameter.stack.DiameterListener;
+import org.mobicents.diameter.stack.DiameterStackMultiplexerMBean;
 
-	</section>
+public class MyDiameterApplication implements DiameterListener
+{
+  private DiameterStackMultiplexerMBean diameterMux = null;
+  
+  private DiameterStackMultiplexerMBean getMux() throws 
+   InstanceNotFoundException, MBeanException, ReflectionException, 
+   MalformedObjectNameException, NullPointerException
 
+  {
+    if(this.diameterMux == null)
+    {
+      MBeanServer server = MBeanServerLocator.locateJBoss();
+
+      ObjectName diameterMultiplexerObjectName = new 
+       ObjectName("diameter.mobicents:service=DiameterStackMultiplexer");
+
+      Object[] params = new Object[]{};
+
+      String[] signature = new String[]{};
+
+      String operation = "getMultiplexerMBean";
+
+      Object object = server.invoke(diameterMultiplexerObjectName, 
+       operation, params, signature);
+
+      if(object instanceof DiameterStackMultiplexerMBean)
+
+      {
+        this.diameterMux = (DiameterStackMultiplexerMBean) object;
+      }
+    }
+
+    return this.diameterMux;
+
+  }
+  private void registerInMux()
+
+  {
+
+    ApplicationId shAppId = ApplicationId.createByAuthAppId(10415L, 
+     16777217L);
+
+    if(this.diameterMux != null)
+
+    {
+      this.diameterMux.registerListener(this, new 
+       ApplicationId[]{shAppId});
+    }
+
+  }
+
+  public Answer processRequest( Request request )
+
+  {
+    // Application-specific processing code goes here...
+
+  }
+  public void receivedSuccessMessage( Request request, Answer answer )
+
+  {
+
+    // Your processing code goes here...
+
+  }
+
+  public void timeoutExpired( Request request )
+
+  {
+
+    // Your processing code goes here...
+
+  }
+
+}
+</programlisting>
+	</example>
+</section>
+</section>
+	<section lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Validator and Dictionary</title>
+	<para>
+		The Diameter Validator provides message validation in accordance with industry standards. The primary purpose of the Validator is to detect malformed messages, such as an Answer message that contains a Destination-Host Attribute Value Pair (AVP).
+	</para>
+	<para>
+		The Valdiator is capable of validating multi-leveled, grouped AVPs, excluding the following content types:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				URI, or Identifier types.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Enumerated types against defined values.
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>
+		The Validator API is designed to perform validation of whole messages with reference to AVP consistency. For future releases, user-initiated validation is planned. In addition, the validator is a JDiameter stack component, therefore it can be used at the application session level.
+	</para>
+	<formalpara>
+		<title>Dictionary</title>
+		<para>
+			The Dictionary is used by the MUX to create and retrieve correctly configured messages and Attribute Value Pairs (AVPs) such as bit flags and AVP types.
+		</para>
+	</formalpara>
+	<para>
+		Because the Diameter dictionary is responsible for setting the parameters and flags, an application does not need to control this information. This results in applications that are more efficient. The dictionary also provides information that can be used for validation purposes.
+	</para>
+	<para>
+		To implement the Diameter dictionary in your application, include the following code.
+	</para>
+	<example>
+		<title>Base Dictionary Code</title>
+		
+<programlisting>public static  void setAvpAsFloat32(Message msg, int avpCode, long
+ vendorId, AvpSet set, float value)
+  {
+    AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode,
+     vendorId);
+
+    if (rep != null) {
+        set.addAvp(avpCode, value, vendorId, isMandatory, isProtected);
+    }
+    else {
+       set.addAvp(avpCode, value, vendorId,  _DEFAULT_MANDATORY,
+        _DEFAULT_PROTECTED);
+   
+    }
+  }
+</programlisting>
+	</example>
+	<section lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Configuring the Validator and Dictionary</title>
+	<para>
+		The <filename>dictionary.xml</filename> file contains the configuration data for both the Validator and Dictionary components. The file is located in the <filename>META-INF</filename> directory of the MUX.
+	</para>
+	<para>
+		When the MUX component creates the stack, the validator and dictionary are both started and configured, based on the <filename>dictionary.xml</filename> file present in the MUX classpath. The advantage of using the same file for the validator and dictionary is that there is no way to introduce configuration mistakes between components. If the dictionary.xml contains incorrect settings however, these settings may affect both components. Therefore, be careful when setting the parameters, which are explained below for reference.
+	</para>
+</section>
+</section>
 </chapter>
 	<chapter lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Resource Adapter Components</title>
