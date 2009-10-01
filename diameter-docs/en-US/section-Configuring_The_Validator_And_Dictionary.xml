@@ -10,15 +10,19 @@
   &lt;vendor name=&quot;&quot; vendor-id=&quot;&quot; code=&quot;&quot;/&gt;
   &lt;typedefn type-name=&quot;&quot; type-parent=&quot;&quot;/&gt;
   &lt;application id=&quot;&quot; name=&quot;&quot;&gt;
-    &lt;avp&gt;
-      &lt;type/&gt;
-      &lt;enum/&gt;
+    &lt;avp ...&gt;
+      &lt;type type-name=&quot;&quot;/&gt;
+      &lt;enum name=&quot;&quot; code=&quot;&quot;/&gt;
+      &lt;grouped&gt;
+        &lt;gapd name=&quot;&quot;/&gt;
       &lt;grouped/&gt;
     &lt;avp/&gt;
-    &lt;command/&gt;
-      &lt;avp&gt;
-        &lt;type/&gt;
-        &lt;enum/&gt;
+    &lt;command name=&quot;&quot; code=&quot;&quot; request=&quot;true|false&quot;/&gt;
+      &lt;avp ...&gt;
+        &lt;type type-name=&quot;&quot;/&gt;
+        &lt;enum name=&quot;&quot; code=&quot;&quot;/&gt;
+        &lt;grouped&gt;
+          &lt;gapd name=&quot;&quot;/&gt;
         &lt;grouped/&gt;
       &lt;avp/&gt;
   &lt;application&gt;
@@ -55,6 +59,22 @@
       </listitem>
     </varlistentry>
   </variablelist>
+  <example id="example-Vendor_XML_Attributes">
+    <title>&lt;vendor&gt; XML Attributes</title>
+    <programlisting role="XML">...
+&lt;vendor vendor-id=&quot;None&quot; code=&quot;0&quot; name=&quot;None&quot; /&gt;
+&lt;vendor vendor-id=&quot;HP&quot; code=&quot;11&quot; name=&quot;Hewlett Packard&quot; /&gt;
+&lt;vendor vendor-id=&quot;Merit&quot; code=&quot;61&quot; name=&quot;Merit Networks&quot; /&gt;
+&lt;vendor vendor-id=&quot;Sun&quot; code=&quot;42&quot; name=&quot;Sun Microsystems, Inc.&quot; /&gt;
+&lt;vendor vendor-id=&quot;USR&quot; code=&quot;429&quot; name=&quot;US Robotics Corp.&quot; /&gt;
+&lt;vendor vendor-id=&quot;3GPP2&quot; code=&quot;5535&quot; name=&quot;3GPP2&quot; /&gt;
+&lt;vendor vendor-id=&quot;TGPP&quot; code=&quot;10415&quot; name=&quot;3GPP&quot; /&gt;
+&lt;vendor vendor-id=&quot;TGPPCX&quot; code=&quot;16777216&quot; name=&quot;3GPP CX/DX&quot; /&gt;
+&lt;vendor vendor-id=&quot;TGPPSH&quot; code=&quot;16777217&quot; name=&quot;3GPP SH&quot; /&gt;
+&lt;vendor vendor-id=&quot;Ericsson&quot; code=&quot;193&quot; name=&quot;Ericsson&quot; /&gt;
+&lt;vendor vendor-id=&quot;ETSI&quot; code=&quot;13019&quot; name=&quot;ETSI&quot; /&gt;
+&lt;vendor vendor-id=&quot;Vodafone&quot; code=&quot;12645&quot; name=&quot;Vodafone&quot; /&gt;</programlisting>
+  </example>
   <formalpara>
     <title>&lt;typedefn/&gt;</title>
     <para>Defines the simple Attribute Value Pair (AVP) types.  The element supports the following attributes:</para>
@@ -73,6 +93,22 @@
       </listitem>
     </varlistentry>
   </variablelist>
+  <example>
+    <title>&lt;typedefn&gt; XML Attributes</title>
+    <programlisting role="XML">&lt;typedefn type-name=&quot;OctetString&quot; /&gt;
+&lt;typedefn type-name=&quot;UTF8String&quot; type-parent=&quot;OctetString&quot; /&gt;
+&lt;typedefn type-name=&quot;IPAddress&quot; type-parent=&quot;OctetString&quot; /&gt;
+&lt;typedefn type-name=&quot;Integer32&quot; /&gt;
+&lt;typedefn type-name=&quot;Integer64&quot; /&gt;
+&lt;typedefn type-name=&quot;VendorId&quot; type-parent=&quot;Unsigned32&quot; /&gt;
+&lt;typedefn type-name=&quot;AppId&quot; type-parent=&quot;Unsigned32&quot; /&gt;
+&lt;typedefn type-name=&quot;Float64&quot; /&gt;
+&lt;typedefn type-name=&quot;Unsigned32&quot; /&gt;
+&lt;typedefn type-name=&quot;Unsigned64&quot; /&gt;
+&lt;typedefn type-name=&quot;Time&quot; /&gt;
+&lt;typedefn type-name=&quot;Enumerated&quot; type-parent=&quot;Integer32&quot; /&gt;
+&lt;typedefn type-name=&quot;DiameterURI&quot; type-parent=&quot;UTF8String&quot; /&gt;</programlisting>
+  </example>
   <formalpara>
     <title>&lt;application&gt;</title>
     <para>Defines the specific applications used within the dictionary.  The element supports the following attributes:</para>
@@ -81,29 +117,34 @@
     <varlistentry>
       <term>id</term>
       <listitem>
-        <para>Specifies the unique ID allocated to the application .  For example; &quot;16777216&quot;.</para>
+        <para>Specifies the unique ID allocated to the application.  </para>
       </listitem>
     </varlistentry>
     <varlistentry>
       <term>name</term>
       <listitem>
-        <para>Specifies the name of the application.  For example; &quot;3GPP Cx/Dx&quot;.</para>
+        <para>Specifies the name of the application.</para>
       </listitem>
     </varlistentry>
     <varlistentry>
       <term>uri</term>
       <listitem>
-        <para>Specifies a link to further information about the application for configurers.  For example, http://www.ietf.org/rfc/rfc3588.txt?number=3588</para>
+        <para>Specifies a link to further information about the application for configurers.</para>
       </listitem>
     </varlistentry>
   </variablelist>
+  <example>
+    <title>&lt;application&gt; XML Attributes</title>
+    <programlisting role="XML">&lt;application id=&quot;16777216&quot; name=&quot;3GPP Cx/Dx&quot;  
+ uri=&quot;http://www.ietf.org/rfc/rfc3588.txt?number=3588&quot;&gt;</programlisting>
+  </example>
   <formalpara>
     <title>&lt;avp&gt;</title>
     <para>Element containing information necessary to configure the Attribute Value Pairs.  In future releases, the &lt;avp&gt; element may change.  <xref linkend="table-avp_attributes"/> contains the complete list of supported attributes, and their available values (if applicable). </para>
   </formalpara>
   <table frame="all" pgwide="1" id="table-avp_attributes">
     <title>&lt;avp&gt; Attributes</title>
-    <tgroup colsep="1" cols="3">
+    <tgroup cols="3" colsep="1">
       <colspec colname="c1"/>
       <colspec colname="c2"/>
       <colspec colname="c3"/>
@@ -193,6 +234,24 @@
       </tbody>
     </tgroup>
   </table>
+  <example>
+    <title>&lt;avp&gt; XML Attributes</title>
+    <programlisting role="XML">&lt;!-- MUST --&gt;
+
+&lt;avp name=&quot;Session-Id&quot; code=&quot;263&quot; vendor=&quot;0&quot; multiplicity=&quot;1&quot; index=&quot;0&quot; /&gt;
+&lt;avp name=&quot;Auth-Session-State&quot; code=&quot;277&quot; vendor=&quot;0&quot; multiplicity=&quot;1&quot; index=&quot;-1&quot; /&gt;
+
+&lt;!-- MAY --&gt;
+
+&lt;avp name=&quot;Destination-Host&quot; code=&quot;293&quot; vendor=&quot;0&quot; multiplicity=&quot;0-1&quot; index=&quot;-1&quot; /&gt;
+&lt;avp name=&quot;Supported-Features&quot; code=&quot;628&quot; vendor=&quot;10415&quot; multiplicity=&quot;0+&quot; index=&quot;-1&quot; /&gt;
+
+&lt;!-- FORBBIDEN --&gt;
+
+&lt;avp name=&quot;Auth-Application-Id&quot; code=&quot;258&quot; vendor=&quot;0&quot; multiplicity=&quot;0&quot; index=&quot;-1&quot; /&gt;
+&lt;avp name=&quot;Error-Reporting-Host&quot; code=&quot;294&quot; vendor=&quot;0&quot; multiplicity=&quot;0&quot; index=&quot;-1&quot; /&gt;</programlisting>
+  </example>
+  <para>The &lt;avp&gt; element supports a number of child elements, which are used to set finer parameters for the individual AVP.  The supported elements are &lt;type&gt;, &lt;enum&gt;, and &lt;grouped&gt;.</para>
   <formalpara>
     <title>&lt;type&gt;</title>
     <para>Child element of &lt;avp&gt;, which is used to match the AVP with the AVP type as defined in the &lt;typedefn&gt; element.  The element supports the following attribute:</para>
@@ -205,4 +264,98 @@
       </listitem>
     </varlistentry>
   </variablelist>
+  <formalpara>
+    <title>&lt;enum&gt;</title>
+    <para>Child element of &lt;avp&gt;, which specifies the constants for a specified AVP. The element supports the following attributes:</para>
+  </formalpara>
+  <variablelist>
+    <varlistentry>
+      <term>name</term>
+      <listitem>
+        <para>Specifies the name of a constant value that applies to the AVP.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>code</term>
+      <listitem>
+        <para>Specifies the integer value associated with the name of the constant.  The value is passed as a a value of the AVP, and maps to the name attribute.</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+  <formalpara>
+    <title>&lt;grouped&gt;</title>
+    <para>Child element of &lt;avp&gt;, which specifies the AVP is a grouped type (where no &lt;typedefn&gt; element for the AVP  is present). The element does not support any attributes, however the &lt;gavp&gt; element is allowed as a child element.</para>
+  </formalpara>
+  <formalpara>
+    <title>&lt;gavp&gt;</title>
+    <para>Child element of &lt;grouped&gt;, which specifies the name of a grouped AVP.  The element supports one mandatory attribute:</para>
+  </formalpara>
+  <variablelist>
+    <varlistentry>
+      <term>name</term>
+      <listitem>
+        <para>Specifies the name of a grouped AVP.  The AVP name must match the name of the defined grouped AVP.</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+  <example>
+    <title>&lt;avp&gt; Child Elements and Attributes</title>
+    <programlisting role="XML">&lt;avp name=&quot;Server-Assignment-Type&quot; code=&quot;614&quot; mandatory=&quot;must&quot; vendor-bit=&quot;must&quot; 
+ vendor-id=&quot;TGPP&quot; may-encrypt=&quot;no&quot;&gt;
+   &lt;type type-name=&quot;Unsigned32&quot; /&gt;
+   &lt;enum name=&quot;NO_ASSIGMENT&quot; code=&quot;0&quot; /&gt;
+   &lt;enum name=&quot;REGISTRATION&quot; code=&quot;1&quot; /&gt;
+   &lt;enum name=&quot;RE_REGISTRATION&quot; code=&quot;2&quot; /&gt;
+   &lt;enum name=&quot;UNREGISTERED_USER&quot; code=&quot;3&quot; /&gt;
+   &lt;grouped&gt;
+     &lt;gavp name=&quot;SIP-Item-Number&quot; multiplicity=&quot;0-1&quot;/&gt;
+     &lt;gavp name=&quot;SIP-Authentication-Scheme&quot; multiplicity=&quot;0-1&quot;/&gt;
+     &lt;gavp name=&quot;SIP-Authenticate&quot; multiplicity=&quot;0-1&quot;/&gt;         
+     &lt;gavp name=&quot;Line-Identifier&quot; multiplicity=&quot;0+&quot;/&gt;
+   &lt;/grouped&gt;
+&lt;/avp&gt;</programlisting>
+  </example>
+  <formalpara>
+    <title>&lt;command&gt;</title>
+    <para>Specifies the command for the application.  The element supports the &lt;avp&gt; element, which specifies the structure of the command.  The element supports the following attributes:</para>
+  </formalpara>
+  <variablelist>
+    <varlistentry>
+      <term>name</term>
+      <listitem>
+        <para>Optional paramter, which specifies the message name for descriptive purposes.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>code</term>
+      <listitem>
+        <para>Mandatory parameter, which specifies the integer code of the message.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>request</term>
+      <listitem>
+        <para>Mandatory parameter, which specifies whether the declared command is a request or answer.  The available values are &quot;true&quot; (request)  or &quot;false&quot; (answer).</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+  <example>
+    <title>&lt;command&gt; Elements and Attributes</title>
+    <programlisting>&lt;command name=&quot;User-Authorization&quot; code=&quot;300&quot; vendor-id=&quot;TGPP&quot; request=&quot;true&quot;&gt;
+  &lt;avp name=&quot;Server-Assignment-Type&quot; code=&quot;614&quot; mandatory=&quot;must&quot; vendor-bit=&quot;must&quot; 
+   vendor-id=&quot;TGPP&quot; may-encrypt=&quot;no&quot;&gt;
+    &lt;type type-name=&quot;Unsigned32&quot; /&gt;
+    &lt;enum name=&quot;NO_ASSIGMENT&quot; code=&quot;0&quot; /&gt;
+    &lt;enum name=&quot;REGISTRATION&quot; code=&quot;1&quot; /&gt;
+    &lt;enum name=&quot;RE_REGISTRATION&quot; code=&quot;2&quot; /&gt;
+    &lt;enum name=&quot;UNREGISTERED_USER&quot; code=&quot;3&quot; /&gt;
+    &lt;grouped&gt;
+      &lt;gavp name=&quot;SIP-Item-Number&quot; multiplicity=&quot;0-1&quot;/&gt;
+      &lt;gavp name=&quot;SIP-Authentication-Scheme&quot; multiplicity=&quot;0-1&quot;/&gt;
+      &lt;gavp name=&quot;SIP-Authenticate&quot; multiplicity=&quot;0-1&quot;/&gt;         
+      &lt;gavp name=&quot;Line-Identifier&quot; multiplicity=&quot;0+&quot;/&gt;
+    &lt;/grouped&gt;
+  &lt;/avp&gt;    
+&lt;/command&gt;</programlisting>
+  </example>
 </section>

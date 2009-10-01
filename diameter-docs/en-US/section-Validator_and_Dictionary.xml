@@ -38,4 +38,5 @@
   }</programlisting>
   </example>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Configuring_The_Validator_And_Dictionary.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Using_the_Validator_and_Dictionary.xml" encoding="UTF-8"/>
 </section>

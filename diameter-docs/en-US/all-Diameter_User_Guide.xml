@@ -1115,15 +1115,19 @@ public class MyDiameterApplication implements DiameterListener
   &lt;vendor name="" vendor-id="" code=""/&gt;
   &lt;typedefn type-name="" type-parent=""/&gt;
   &lt;application id="" name=""&gt;
-    &lt;avp&gt;
-      &lt;type/&gt;
-      &lt;enum/&gt;
+    &lt;avp ...&gt;
+      &lt;type type-name=""/&gt;
+      &lt;enum name="" code=""/&gt;
+      &lt;grouped&gt;
+        &lt;gapd name=""/&gt;
       &lt;grouped/&gt;
     &lt;avp/&gt;
-    &lt;command/&gt;
-      &lt;avp&gt;
-        &lt;type/&gt;
-        &lt;enum/&gt;
+    &lt;command name="" code="" request="true|false"/&gt;
+      &lt;avp ...&gt;
+        &lt;type type-name=""/&gt;
+        &lt;enum name="" code=""/&gt;
+        &lt;grouped&gt;
+          &lt;gapd name=""/&gt;
         &lt;grouped/&gt;
       &lt;avp/&gt;
   &lt;application&gt;
@@ -1173,6 +1177,24 @@ public class MyDiameterApplication implements DiameterListener
 			</listitem>
 		</varlistentry>
 	</variablelist>
+	<example id="example-Vendor_XML_Attributes">
+		<title>&lt;vendor&gt; XML Attributes</title>
+		
+<programlisting role="XML">...
+&lt;vendor vendor-id="None" code="0" name="None" /&gt;
+&lt;vendor vendor-id="HP" code="11" name="Hewlett Packard" /&gt;
+&lt;vendor vendor-id="Merit" code="61" name="Merit Networks" /&gt;
+&lt;vendor vendor-id="Sun" code="42" name="Sun Microsystems, Inc." /&gt;
+&lt;vendor vendor-id="USR" code="429" name="US Robotics Corp." /&gt;
+&lt;vendor vendor-id="3GPP2" code="5535" name="3GPP2" /&gt;
+&lt;vendor vendor-id="TGPP" code="10415" name="3GPP" /&gt;
+&lt;vendor vendor-id="TGPPCX" code="16777216" name="3GPP CX/DX" /&gt;
+&lt;vendor vendor-id="TGPPSH" code="16777217" name="3GPP SH" /&gt;
+&lt;vendor vendor-id="Ericsson" code="193" name="Ericsson" /&gt;
+&lt;vendor vendor-id="ETSI" code="13019" name="ETSI" /&gt;
+&lt;vendor vendor-id="Vodafone" code="12645" name="Vodafone" /&gt;
+</programlisting>
+	</example>
 	<formalpara>
 		<title>&lt;typedefn/&gt;</title>
 		<para>
@@ -1197,6 +1219,24 @@ public class MyDiameterApplication implements DiameterListener
 			</listitem>
 		</varlistentry>
 	</variablelist>
+	<example>
+		<title>&lt;typedefn&gt; XML Attributes</title>
+		
+<programlisting role="XML">&lt;typedefn type-name="OctetString" /&gt;
+&lt;typedefn type-name="UTF8String" type-parent="OctetString" /&gt;
+&lt;typedefn type-name="IPAddress" type-parent="OctetString" /&gt;
+&lt;typedefn type-name="Integer32" /&gt;
+&lt;typedefn type-name="Integer64" /&gt;
+&lt;typedefn type-name="VendorId" type-parent="Unsigned32" /&gt;
+&lt;typedefn type-name="AppId" type-parent="Unsigned32" /&gt;
+&lt;typedefn type-name="Float64" /&gt;
+&lt;typedefn type-name="Unsigned32" /&gt;
+&lt;typedefn type-name="Unsigned64" /&gt;
+&lt;typedefn type-name="Time" /&gt;
+&lt;typedefn type-name="Enumerated" type-parent="Integer32" /&gt;
+&lt;typedefn type-name="DiameterURI" type-parent="UTF8String" /&gt;
+</programlisting>
+	</example>
 	<formalpara>
 		<title>&lt;application&gt;</title>
 		<para>
@@ -1208,7 +1248,7 @@ public class MyDiameterApplication implements DiameterListener
 			<term>id</term>
 			<listitem>
 				<para>
-					Specifies the unique ID allocated to the application . For example; "16777216".
+					Specifies the unique ID allocated to the application.
 				</para>
 			</listitem>
 		</varlistentry>
@@ -1216,7 +1256,7 @@ public class MyDiameterApplication implements DiameterListener
 			<term>name</term>
 			<listitem>
 				<para>
-					Specifies the name of the application. For example; "3GPP Cx/Dx".
+					Specifies the name of the application.
 				</para>
 			</listitem>
 		</varlistentry>
@@ -1224,11 +1264,18 @@ public class MyDiameterApplication implements DiameterListener
 			<term>uri</term>
 			<listitem>
 				<para>
-					Specifies a link to further information about the application for configurers. For example, http://www.ietf.org/rfc/rfc3588.txt?number=3588
+					Specifies a link to further information about the application for configurers.
 				</para>
 			</listitem>
 		</varlistentry>
 	</variablelist>
+	<example>
+		<title>&lt;application&gt; XML Attributes</title>
+		
+<programlisting role="XML">&lt;application id="16777216" name="3GPP Cx/Dx"  
+ uri="http://www.ietf.org/rfc/rfc3588.txt?number=3588"&gt;
+</programlisting>
+	</example>
 	<formalpara>
 		<title>&lt;avp&gt;</title>
 		<para>
@@ -1413,6 +1460,28 @@ public class MyDiameterApplication implements DiameterListener
 			</tbody>
 		</tgroup>
 	</table>
+	<example>
+		<title>&lt;avp&gt; XML Attributes</title>
+		
+<programlisting role="XML">&lt;!-- MUST --&gt;
+
+&lt;avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" /&gt;
+&lt;avp name="Auth-Session-State" code="277" vendor="0" multiplicity="1" index="-1" /&gt;
+
+&lt;!-- MAY --&gt;
+
+&lt;avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" /&gt;
+&lt;avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" /&gt;
+
+&lt;!-- FORBBIDEN --&gt;
+
+&lt;avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1" /&gt;
+&lt;avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" /&gt;
+</programlisting>
+	</example>
+	<para>
+		The &lt;avp&gt; element supports a number of child elements, which are used to set finer parameters for the individual AVP. The supported elements are &lt;type&gt;, &lt;enum&gt;, and &lt;grouped&gt;.
+	</para>
 	<formalpara>
 		<title>&lt;type&gt;</title>
 		<para>
@@ -1429,6 +1498,185 @@ public class MyDiameterApplication implements DiameterListener
 			</listitem>
 		</varlistentry>
 	</variablelist>
+	<formalpara>
+		<title>&lt;enum&gt;</title>
+		<para>
+			Child element of &lt;avp&gt;, which specifies the constants for a specified AVP. The element supports the following attributes:
+		</para>
+	</formalpara>
+	<variablelist>
+		<varlistentry>
+			<term>name</term>
+			<listitem>
+				<para>
+					Specifies the name of a constant value that applies to the AVP.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>code</term>
+			<listitem>
+				<para>
+					Specifies the integer value associated with the name of the constant. The value is passed as a a value of the AVP, and maps to the name attribute.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	<formalpara>
+		<title>&lt;grouped&gt;</title>
+		<para>
+			Child element of &lt;avp&gt;, which specifies the AVP is a grouped type (where no &lt;typedefn&gt; element for the AVP is present). The element does not support any attributes, however the &lt;gavp&gt; element is allowed as a child element.
+		</para>
+	</formalpara>
+	<formalpara>
+		<title>&lt;gavp&gt;</title>
+		<para>
+			Child element of &lt;grouped&gt;, which specifies the name of a grouped AVP. The element supports one mandatory attribute:
+		</para>
+	</formalpara>
+	<variablelist>
+		<varlistentry>
+			<term>name</term>
+			<listitem>
+				<para>
+					Specifies the name of a grouped AVP. The AVP name must match the name of the defined grouped AVP.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	<example>
+		<title>&lt;avp&gt; Child Elements and Attributes</title>
+		
+<programlisting role="XML">&lt;avp name="Server-Assignment-Type" code="614" mandatory="must" vendor-bit="must" 
+ vendor-id="TGPP" may-encrypt="no"&gt;
+   &lt;type type-name="Unsigned32" /&gt;
+   &lt;enum name="NO_ASSIGMENT" code="0" /&gt;
+   &lt;enum name="REGISTRATION" code="1" /&gt;
+   &lt;enum name="RE_REGISTRATION" code="2" /&gt;
+   &lt;enum name="UNREGISTERED_USER" code="3" /&gt;
+   &lt;grouped&gt;
+     &lt;gavp name="SIP-Item-Number" multiplicity="0-1"/&gt;
+     &lt;gavp name="SIP-Authentication-Scheme" multiplicity="0-1"/&gt;
+     &lt;gavp name="SIP-Authenticate" multiplicity="0-1"/&gt;         
+     &lt;gavp name="Line-Identifier" multiplicity="0+"/&gt;
+   &lt;/grouped&gt;
+&lt;/avp&gt;
+</programlisting>
+	</example>
+	<formalpara>
+		<title>&lt;command&gt;</title>
+		<para>
+			Specifies the command for the application. The element supports the &lt;avp&gt; element, which specifies the structure of the command. The element supports the following attributes:
+		</para>
+	</formalpara>
+	<variablelist>
+		<varlistentry>
+			<term>name</term>
+			<listitem>
+				<para>
+					Optional paramter, which specifies the message name for descriptive purposes.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>code</term>
+			<listitem>
+				<para>
+					Mandatory parameter, which specifies the integer code of the message.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>request</term>
+			<listitem>
+				<para>
+					Mandatory parameter, which specifies whether the declared command is a request or answer. The available values are "true" (request) or "false" (answer).
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	<example>
+		<title>&lt;command&gt; Elements and Attributes</title>
+		
+<programlisting>&lt;command name="User-Authorization" code="300" vendor-id="TGPP" request="true"&gt;
+  &lt;avp name="Server-Assignment-Type" code="614" mandatory="must" vendor-bit="must" 
+   vendor-id="TGPP" may-encrypt="no"&gt;
+    &lt;type type-name="Unsigned32" /&gt;
+    &lt;enum name="NO_ASSIGMENT" code="0" /&gt;
+    &lt;enum name="REGISTRATION" code="1" /&gt;
+    &lt;enum name="RE_REGISTRATION" code="2" /&gt;
+    &lt;enum name="UNREGISTERED_USER" code="3" /&gt;
+    &lt;grouped&gt;
+      &lt;gavp name="SIP-Item-Number" multiplicity="0-1"/&gt;
+      &lt;gavp name="SIP-Authentication-Scheme" multiplicity="0-1"/&gt;
+      &lt;gavp name="SIP-Authenticate" multiplicity="0-1"/&gt;         
+      &lt;gavp name="Line-Identifier" multiplicity="0+"/&gt;
+    &lt;/grouped&gt;
+  &lt;/avp&gt;    
+&lt;/command&gt;
+</programlisting>
+	</example>
+</section>
+	<section lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Using the Validator and Dictionary</title>
+	<para>
+		To use the Diameter Validator, and Dictionary, the following prerequisites are required:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				An instance of the Validator
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				A correctly configured <filename>dictionary.xml</filename> file.
+			</para>
+		</listitem>
+	</itemizedlist>
+	<note>
+		<para>
+			If the file is not the default <filename>dictionary.xml</filename> file, the changes to the validator and dictionary will be global for the Java Virtual Machine (JVM)
+		</para>
+	</note>
+	<example id="example-Base_Listener_Code_1">
+		<title>Validator and Dictionary Code Examples</title>
+		
+<programlisting role="JAVA">if (!validator.isOn())
+                return;
+
+if (!validator.isAllowed(msg.getCommandCode(), msg.getApplicationId(), msg.isRequest(), 
+    avpCode, vendorId)) {
+   throw new AvpNotAllowedException("Avp defined by code: " + avpCode + ",
+    vendorId: " + vendorId + " is not allowed in message - code: " + 
+    msg.getCommandCode() + ", appId: "
+         + msg.getApplicationId() + ", isRequest: " + msg.isRequest(), avpCode, 
+          vendorId);
+}
+
+if (validator.hasRepresentation(msg.getCommandCode(), msg.getApplicationId(), 
+    msg.isRequest(), avpCode, vendorId)) {
+         // we are allowed to add this to msg
+         if (validator.isCountValidForMultiplicity(msg.getCommandCode(),
+             msg.getApplicationId(), msg.isRequest(), msg.getAvps(), 
+             avpCode, vendorId)) {
+         // its ok.
+             return;
+} else if (isAvpRemoveAllowed()) {
+         // lets remove some avps.
+} else {
+      throw new AvpNotAllowedException("Avp not allowed, count exceeded.",
+       avpCode, vendorId);
+         }
+}else
+    {
+    //Default we dont do a thing.
+}
+</programlisting>
+	</example>
+	<para>
+		TEXT
+	</para>
 </section>
 </section>
 </chapter>

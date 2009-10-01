@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<section>
+  <title>Using the Validator and Dictionary</title>
+  <para>To use the Diameter Validator, and Dictionary, the following prerequisites are required:</para>
+  <itemizedlist>
+    <listitem>
+      <para>An instance of the Validator</para>
+    </listitem>
+    <listitem>
+      <para>A correctly configured <filename>dictionary.xml</filename> file.  </para>
+    </listitem>
+  </itemizedlist>
+  <note>
+    <para>If the file is not the default <filename>dictionary.xml</filename> file, the changes to the validator and dictionary will be global for the Java Virtual Machine (JVM)</para>
+  </note>
+  <example id="example-Base_Listener_Code_1">
+    <title>Validator and Dictionary Code Examples</title>
+    <programlisting role="JAVA">if (!validator.isOn())
+                return;
+
+if (!validator.isAllowed(msg.getCommandCode(), msg.getApplicationId(), msg.isRequest(), 
+    avpCode, vendorId)) {
+   throw new AvpNotAllowedException(&quot;Avp defined by code: &quot; + avpCode + &quot;,
+    vendorId: &quot; + vendorId + &quot; is not allowed in message - code: &quot; + 
+    msg.getCommandCode() + &quot;, appId: &quot;
+         + msg.getApplicationId() + &quot;, isRequest: &quot; + msg.isRequest(), avpCode, 
+          vendorId);
+}
+
+if (validator.hasRepresentation(msg.getCommandCode(), msg.getApplicationId(), 
+    msg.isRequest(), avpCode, vendorId)) {
+         // we are allowed to add this to msg
+         if (validator.isCountValidForMultiplicity(msg.getCommandCode(),
+             msg.getApplicationId(), msg.isRequest(), msg.getAvps(), 
+             avpCode, vendorId)) {
+         // its ok.
+             return;
+} else if (isAvpRemoveAllowed()) {
+         // lets remove some avps.
+} else {
+      throw new AvpNotAllowedException(&quot;Avp not allowed, count exceeded.&quot;,
+       avpCode, vendorId);
+         }
+} else
+    {
+    //Default we dont do a thing.
+}</programlisting>
+  </example>
+  <para>TEXT</para>
+</section>
