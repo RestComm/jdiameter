@@ -2,5 +2,336 @@
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
 <section>
   <title>Mobicents Diameter Sh (Client)</title>
-  <para>Text</para>
+  <para>The Sh interface is the reference for interactions between the following servers:</para>
+  <itemizedlist>
+    <listitem>
+      <para>Home Subscriber Server (HSS) and the SIP Application Server (AS)</para>
+    </listitem>
+    <listitem>
+      <para>HSS and the Open Service Access (OSA) Service Capability Server (SCS)  in the IP Multimedia Subsystem (IMS)</para>
+    </listitem>
+  </itemizedlist>
+  <para>The standard interface is described in the 3GPP Specifications  <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29328.htm">TS29.328</ulink> and <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29329.htm">TS29.329</ulink>.  </para>
+  <para>For the purposes of this user guide, the following information relates to HSS and AS interactions, and only within the parameters of client-mode.  Sh (Client)   provides a number of message commands that can be used within the application.</para>
+  <table frame="all" pgwide="1" id="table-Diameter_Sh_Client_Messages">
+    <title>Diameter Sh (Client) Messages</title>
+    <tgroup cols="5" colsep="1">
+      <colspec colname="c1"/>
+      <colspec colname="c2"/>
+      <colspec colname="c3"/>
+      <colspec colname="c4"/>
+      <colspec colname="c5"/>
+      <thead>
+        <row>
+          <entry>Command Name</entry>
+          <entry>Abbreviation</entry>
+          <entry>Code</entry>
+          <entry>Source</entry>
+          <entry>Destination</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry>User-Data-Request</entry>
+          <entry>UDR</entry>
+          <entry>306</entry>
+          <entry>AS</entry>
+          <entry>HSS</entry>
+        </row>
+        <row>
+          <entry>User-Data-Answer</entry>
+          <entry>UDA</entry>
+          <entry>306</entry>
+          <entry>HSS</entry>
+          <entry>AS</entry>
+        </row>
+        <row>
+          <entry>Profile-Update-Request</entry>
+          <entry>PUR </entry>
+          <entry>307</entry>
+          <entry>AS</entry>
+          <entry>HSS</entry>
+        </row>
+        <row>
+          <entry>Profile-Update-Answer</entry>
+          <entry>PUA </entry>
+          <entry>307</entry>
+          <entry>HSS</entry>
+          <entry>AS</entry>
+        </row>
+        <row>
+          <entry>Subscribe-Notifications-Request</entry>
+          <entry>SNR</entry>
+          <entry>308</entry>
+          <entry>AS</entry>
+          <entry>HSS</entry>
+        </row>
+        <row>
+          <entry>Subscribe-Notifications-Answer</entry>
+          <entry>SNA</entry>
+          <entry>308</entry>
+          <entry>HSS</entry>
+          <entry>AS</entry>
+        </row>
+        <row>
+          <entry>Push-Notification-Request</entry>
+          <entry>PNR</entry>
+          <entry>309</entry>
+          <entry>HSS</entry>
+          <entry>AS</entry>
+        </row>
+        <row>
+          <entry>Push-Notification-Answer</entry>
+          <entry>PNA</entry>
+          <entry>309</entry>
+          <entry>AS</entry>
+          <entry>HSS</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </table>
+<!--TODO: paragraphs need rework.  Copied directly from wiki.-->  <para>As can be seen from the Command Names, these are related to managing User Data in the HSS. UDR/UDA is used in order to request data from the User profile. Client (AS) sends the request indicating which data he wants (see below for possible kinds of data) and if it has permissions on the HSS, they will be received via UDA. </para>
+  <para>PUR is meant to be used to update the profile of the user, and the success (or not) of the action is reported back in PUA. SNR offers the possibility to request for changes made in the user profile. If SNR is successful a SNA will be received stating that the operation was successful and when there are profile changes, a PNR will be sent by the HSS to the AS (this is the only time HSS initiates conversation) and the AS should acknowledge with a PNA.</para>
+  <section>
+    <title>Configuration</title>
+    <para><!--TODO: Is this correct, or does this only relate to the example that uses SEAGULL?-->Configuration is made directly in the Sh (Client) code, by enabling or disabling (commenting or uncommenting)  the method calls.  In future releases, a property file will be available to better manage configuration.</para>
+    <example>
+      <title>Configuring </title>
+      <para>The following Java  sample shows a Subscribe-Notifications-Request method call, which has been commented out to disable it.</para>
+      <programlisting role="XML">public void onTimerEvent(TimerEvent event, ActivityContextInterface aci)
+
+  {
+   doSimpleTestsSendUDR();
+  //doSimpleTestSendSNR();
+  }</programlisting>
+    </example>
+  </section>
+  <section>
+    <title>Resource Adapter Type</title>
+    <para>The resource adapter  provides the following types:</para>
+    <itemizedlist>
+      <listitem>
+        <para>Activities</para>
+      </listitem>
+      <listitem>
+        <para>Provider</para>
+      </listitem>
+      <listitem>
+        <para>Message Factory</para>
+      </listitem>
+    </itemizedlist>
+    <formalpara>
+      <title>Activities</title>
+      <para>The following activities are available, with the API definition listed for reference.  The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.  </para>
+    </formalpara>
+    <para>The lifecycle of an activity depends on the type of received request and the application interaction.  In the case of a subscription activity, the activity  timeout is taken into consideration because the subscription may be time-based.  </para>
+    <para>The activitites allows the Sh (Client) application to retrieve message and AVP factories bound to the current session.  The functionality offered is limited only  by the implementation used. </para>
+    <variablelist>
+      <title>Diameter Sh (Client) Activities</title>
+      <varlistentry>
+        <term>Activity Name</term>
+        <listitem>
+          <para>Activity Description.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <programlisting role="JAVA">activity example
+</programlisting>
+    <variablelist>
+      <varlistentry>
+        <term>Activity Name</term>
+        <listitem>
+          <para>Activity Description.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <programlisting role="JAVA">activity example
+</programlisting>
+    <variablelist>
+      <varlistentry>
+        <term>Activity Name</term>
+        <listitem>
+          <para>Activity Description.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <programlisting role="JAVA">activity example
+</programlisting>
+<!--JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.  -->    <para>The API for the DiameterProvider is more than 100 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/base/ratype/src/main/java/net/java/slee/resource/diameter/base/DiameterProvider.java">DiameterProvider.java in the source code</ulink>.</para>
+    <formalpara>
+      <title>Message Factory</title>
+      <para>The Message Factory creates events  that can be executed within the JAIN SLEE Server.  Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.</para>
+    </formalpara>
+    <para>The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/base/ratype/src/main/java/net/java/slee/resource/diameter/base/DiameterMessageFactory.java">DiameterMessageFactory.java in the source code</ulink>.</para>
+  </section>
+  <section>
+    <title>API Usage Examples</title>
+    <para>The following examples demonstrate basic usage examples for the Resource Adapter (RA) API.  </para>
+    <example>
+      <title>Push-Notification-Request</title>
+      <para>The following code demonstrates how to configure a Push-Notification-Request.  This example utilizes the setExtensionAvps() methods, however it is also possible to utilize specific methods such as udr.setUserIdentity() to achieve the same goal.  This falls outside the scope of this example.</para>
+      <programlisting role="JAVA">public void onPushNotificationRequest(net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest pnr, ActivityContextInterface aci)
+                 {
+                     try
+                   {
+                       logger.info( &quot;Push-Notification-Request activity[&quot;+aci.getActivity()+&quot;] received.\n&quot;+pnr );
+       
+                       // Let&apos;s be nice and say OK :)
+                       ShClientSubscriptionActivityImpl shActivity = (ShClientSubscriptionActivityImpl) aci.getActivity();
+
+                       shActivity.sendPushNotificationAnswer( 2001, false );
+                   }
+                   catch ( IOException e ) {
+                     logger.error( &quot;Failure while creating/sending PNA.&quot;, e );
+                   }
+                 }</programlisting>
+    </example>
+    <example>
+      <title>User-Data-Request</title>
+      <para>The following code demonstrates how to configure a User-Data-Request (UDR).</para>
+      <programlisting role="JAVA">private void doSimpleTestsSendUDR()
+                   {
+                   
+                       try {
+                            ShClientActivity basicClientActivity=this.provider.createShClientActivity();
+                             logger.info(&quot; On TimerEvent: activity created&quot;);
+                          
+           
+                            localACI.attach(getSbbContext().getSbbLocalObject());
+           
+           
+                             DiameterIdentity[] peers=provider.getConnectedPeers();
+           
+                            for(DiameterIdentity peer: peers)
+                             {
+                                 logger.info(&quot; On TimerEvent: Connected Peer: &quot;+peer.toString());
+                            }
+           
+                            logger.info(&quot; On TimerEvent: creating UDR&quot;);
+           
+                            UserDataRequest udr=((ShClientMessageFactory)basicClientActivity.getDiameterMessageFactory()).createUserDataRequest();
+           
+                             List&lt;DiameterAvp&gt; avps = new ArrayList&lt;DiameterAvp&gt;();
+             
+                              avps.add(avpFactory.getBaseFactory().createAvp(Avp.SESSION_ID, basicClientActivity.getSessionId().getBytes() ));
+         
+                              DiameterAvp avpVendorId = avpFactory.getBaseFactory().createAvp( Avp.VENDOR_ID, MessageFactory._SH_VENDOR_ID );
+                              DiameterAvp avpAcctApplicationId = avpFactory.getBaseFactory().createAvp( Avp.ACCT_APPLICATION_ID, MessageFactory._SH_APP_ID );
+             
+                               avps.add( avpFactory.getBaseFactory().createAvp( Avp.VENDOR_SPECIFIC_APPLICATION_ID, new DiameterAvp[]{avpVendorId, avpAcctApplicationId} ) );
+             
+                               avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, (&quot;aaa://&quot; + originIP + &quot;:1812&quot;).getBytes() ));
+                              avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, &quot;mobicents.org&quot;.getBytes() ));
+             
+                               avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, (&quot;aaa://&quot; + destinationIP + &quot;:3868&quot;).getBytes() ));
+                               avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, &quot;mobicents.org&quot;.getBytes() ));
+                               UserIdentityAvp ui=avpFactory.createUserIdentity();
+                               ui.setPublicIdentity(&quot;sip:subscriber@mobicents.org&quot;);
+
+                               avps.add(ui);
+                               ui=avpFactory.createUserIdentity();
+                               ui.setPublicIdentity(&quot;TEL:+64216543210&quot;);
+
+                               avps.add(ui);
+                               udr.setExtensionAvps(avps.toArray(new DiameterAvp[avps.size()]));
+             
+                               logger.info(&quot; On TimerEvent: Sending message:\n&quot;+udr);
+                              basicClientActivity.sendUserDataRequest(udr);
+             
+                            logger.info(&quot; On TimerEvent: Message send&quot;);
+           
+           
+           
+                         } catch (Exception e) {
+                          logger.error( &quot;Failure trying to create/sen UDR.&quot;, e );
+                         }
+                   }</programlisting>
+    </example>
+  </section>
+  <section>
+    <title>Examples</title>
+    <para>The sample application provided for Diameter Sh (Client) sends Sh commands.............</para>
+    <itemizedlist>
+      <listitem>
+        <para>Application acting as a client</para>
+      </listitem>
+      <listitem>
+        <para>Application acting as a server</para>
+      </listitem>
+      <listitem>
+        <para>Application acting as a relay or proxy.</para>
+      </listitem>
+    </itemizedlist>
+    <formalpara>
+      <title>Application acting as a client</title>
+      <para>In this example, the application acts as a Diameter Accounting Client, which issues a Debit or Refund request to the Ericsson Diameter Server (EDS).  If the message is correctly built, the server will send an answer back to the application stating that the operation was executed correctly.  If the message is incorrectly built, the EDS sends an error message back to the application.</para>
+    </formalpara>
+    <para>The message flow for the client application is described in <xref linkend="figure-Client_Application_Message_Flow"/></para>
+    <figure id="figure-Client_Application_Message_Flow_1">
+      <title>Client Application Message Flow</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dia-BaseExamples-dia-AppActingAsClient.jpg" format="JPG"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <formalpara>
+      <title>Application acting as a server</title>
+      <para>In this example, the Ericsson SDK acts as the client and the application Service Building Block (SBB) acts as the server. When the request is received from the client, the SBB checks a pre-loaded set of user data and verifies the user exists, and that there is sufficient credit to complete the debit request.  </para>
+    </formalpara>
+    <para>If both requirements are met, the SBB sends a response with a  2001 (SUCCESS) Credit-Control-Answer message.  If one or all conditions are not met, the appropriate error code  is returned:</para>
+    <itemizedlist>
+      <listitem>
+        <para>No user name match: 5421 (USER_NOT_FOUND)</para>
+      </listitem>
+      <listitem>
+        <para>Not enough credit to complete the transaction: 4241 (INSUFFICIENT_BALANCE).</para>
+      </listitem>
+    </itemizedlist>
+    <para>The message flow for the server application is described in <xref linkend="figure-Server_Application_Message_Flow"/></para>
+    <figure id="figure-Server_Application_Message_Flow_1">
+      <title>Server Application Message Flow</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dia-BaseExamples-dia-AppActingAsServer.jpg" format="JPG"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <formalpara>
+      <title>Application acting as a relay or proxy</title>
+      <para>In this example, the application plays the role of a proxy or relay, and handles request and answer message proxying.  Both the Ericsson Client and Server SDK are used in this example.  The example requires the most configuration of all examples:</para>
+    </formalpara>
+    <itemizedlist>
+      <listitem>
+        <para>Ericsson client SDK is connected as a client to Mobicents Diameter through the Diameter Base RA.</para>
+      </listitem>
+      <listitem>
+        <para>Ericsson server SDK is connected as a server to Mobicents Diameter through the Diameter SBB.</para>
+      </listitem>
+      <listitem>
+        <para>Diameter SBB is configured as a proxy.</para>
+      </listitem>
+    </itemizedlist>
+    <para>The Ericsson Client SDK is used to establish the connection to the Ericsson Server SDK behind the Diameter SBB.  In the example, requests received by the SBB are forwarded to the Server SDK, and answers are routed back to the Client SDK.</para>
+    <section>
+      <title>Configuration</title>
+      <para>To configure the examples, changest must be made to the <filename>example.properties</filename> file in the <filename>/du/main/resources</filename> directory.</para>
+      <para>The following example configuration supports two modes: client, and server.  In client mode, the application sends an Accounting Request (ACR). To make the example act as a proxy, settings relating to ACR must be added in order for the application to handle Attribute Value Pairs (AVPs). </para>
+      <example>
+        <title>Setting origin and destination properties</title>
+        <programlisting># Act as &quot;client&quot; or &quot;server&quot; (default: server)
+example.mode=server
+
+# The AS IP Address, Port and Realm (default: 127.0.0.1 / 1812 / mobicents.org)
+origin.ip=127.0.0.1
+origin.port=1812
+origin.realm=mobicents.org
+
+# The Remote IP Address, Port and Realm (default: 127.0.0.1 / 21812 / mobicents.org)
+destination.ip=127.0.0.1
+destination.port=21812
+destination.realm=mobicents.org</programlisting>
+      </example>
+    </section>
+  </section>
 </section>

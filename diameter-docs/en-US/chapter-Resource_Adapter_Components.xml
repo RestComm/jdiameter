@@ -1,7 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. -->
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
-<chapter>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<chapter id="chapter-Resource_Adapter_Components">
   <title>Resource Adapter Components</title>
   <para>Diameter provides the following Resource Adapter (RA) components that are used to connect to the JAIN SLEE Server:</para>
   <itemizedlist>

@@ -1,8 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
-<section>
+<section id="section-Validator_and_Dictionary">
   <title>Validator and Dictionary</title>
-  <para>The Diameter Validator provides   message validation in accordance with industry standards.     The primary purpose of the Validator is  to detect malformed messages, such as an Answer message that contains a  Destination-Host Attribute Value Pair (AVP).  </para>
+  <para>The Validator and Dictionary are core elements of the Diameter MUX stack.  </para>
+  <formalpara>
+    <title>Validator</title>
+    <para>The Diameter Validator provides   message validation in accordance with industry standards.     The primary purpose of the Validator is  to detect malformed messages, such as an Answer message that contains a  Destination-Host Attribute Value Pair (AVP).  </para>
+  </formalpara>
   <para>The Valdiator is  capable of validating multi-leveled, grouped AVPs, excluding the following content types: </para>
   <itemizedlist>
     <listitem>
@@ -12,31 +16,14 @@
       <para>Enumerated types against defined values.</para>
     </listitem>
   </itemizedlist>
-  <para>The Validator API is designed to perform validation of whole messages with reference to AVP consistency.  For future releases, user-initiated validation is planned. In addition, the validator is a JDiameter stack component, therefore it can be used at the application session level.</para>
+  <para>The Validator API is designed to perform validation of whole messages with reference to AVP consistency.  Primarily, the Validator checks whether the AVP multiplicity is correct, and whether the position of the AVP is correct in a message. It does not verify enumerated content, or the AVP encoding type, with the provided definition.  </para>
+  <para>For future releases, user-initiated validation is planned. In addition, the validator is a JDiameter stack component, therefore it can be used at the application session level.</para>
   <formalpara>
     <title>Dictionary</title>
     <para>The Dictionary  is used by the MUX to  create and retrieve correctly configured messages and Attribute Value Pairs (AVPs) such as bit flags and AVP types.  </para>
   </formalpara>
   <para>Because the Diameter dictionary is responsible for setting the parameters and flags, an  application does not need to control this information.  This results in applications that are more efficient.  The dictionary also provides information that can be used for validation purposes.</para>
-  <para>To implement the Diameter dictionary in your application, include the following code.</para>
-  <example>
-    <title>Base Dictionary Code</title>
-    <programlisting>public static  void setAvpAsFloat32(Message msg, int avpCode, long
- vendorId, AvpSet set, float value)
-  {
-    AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode,
-     vendorId);
-
-    if (rep != null) {
-        set.addAvp(avpCode, value, vendorId, isMandatory, isProtected);
-    }
-    else {
-       set.addAvp(avpCode, value, vendorId,  _DEFAULT_MANDATORY,
-        _DEFAULT_PROTECTED);
-   
-    }
-  }</programlisting>
-  </example>
+  <para>During runtime, the Dictionary API provides developers and users the abiltiy to extract message information, and provides AVP definition flexibility.  The definition can be changed without the need for the project source to be recompiled.  </para>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Configuring_The_Validator_And_Dictionary.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Using_the_Validator_and_Dictionary.xml" encoding="UTF-8"/>
 </section>

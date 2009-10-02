@@ -19,7 +19,6 @@ import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Request;
 import org.mobicents.diameter.stack.DiameterListener;
 import org.mobicents.diameter.stack.DiameterStackMultiplexerMBean;
-
 public class MyDiameterApplication implements DiameterListener
 {
   private DiameterStackMultiplexerMBean diameterMux = null;

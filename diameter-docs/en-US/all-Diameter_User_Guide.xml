@@ -616,6 +616,14 @@ public class ExClient
 	<para>
 		The Diameter Stack is the primary component of the Diameter solution. The Stack governs the mechanisms that control message sending and receiving, peer management, and session management. The stack manages these resources using State Machines.
 	</para>
+	<para>
+		State Machines as defined in RFC 3588 are fully compatible with the Stack, while custom State Machines that handle different applications such as Sh, Ro, Rf, Cx, and Dx are also supported.
+	</para>
+	<note>
+		<para>
+			For more information about the different applications Diameter supports, refer to <xref linkend="chapter-Resource_Adapter_Components"/>.
+		</para>
+	</note>
 	<section lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Configuring the Stack</title>
 	<para>
@@ -922,16 +930,51 @@ public class ExClient
 <programlisting>&lt;Extensions/&gt;
 </programlisting>
 </section>
+	<section id="section-Stack_Example" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Stack Example</title>
+	<para>
+		Stack Example Under Development...
+	</para>
+</section>
+	<section id="section-Stack_API_Usage" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Stack API Usage</title>
+	<para>
+		Stack API Usage Under Development...
+	</para>
+</section>
 </section>
 	<section lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Multiplexer</title>
 	<para>
 		The Multiplexer (MUX) is designed to provide a wrapper to the stack, which includes a simplified API. The Multiplexer provides the ability to register listeners to applications, making it possible to have more than one application sharing the same stack instance.
 	</para>
+	<para>
+		Three components form the Multiplexer base architecture:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				Multiplexer bean
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Message Validator
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Dictionary
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>
+		For more information about the Message Validator and Dictionary, refer to <xref linkend="section-Validator_and_Dictionary"/>
+	</para>
 	<section lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Configuring the Multiplexer</title>
 	<para>
-		Configuring the Multiplexer requires configuration changes to the <filename>diameter-config.xml</filename> file.
+		Configuring the Multiplexer requires configuration changes to the <filename>diameter-config.xml</filename> file. The <filename>diameter-config.xml</filename> file is a standard JDiameter configuration file, and forms the base configuration for all MUX listener applications.
 	</para>
 	<!-- TODO: So what changes specifically are required in the diameter-config.xml file. --> <para>
 		By default, <filename>diameter-config.xml</filename> is located in the <filename>\default\deploy\mobicents-diameter-mux-<replaceable>[version_number]</replaceable>.sar\config\</filename> directory.
@@ -964,7 +1007,6 @@ import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Request;
 import org.mobicents.diameter.stack.DiameterListener;
 import org.mobicents.diameter.stack.DiameterStackMultiplexerMBean;
-
 public class MyDiameterApplication implements DiameterListener
 {
   private DiameterStackMultiplexerMBean diameterMux = null;
@@ -1043,11 +1085,17 @@ public class MyDiameterApplication implements DiameterListener
 	</example>
 </section>
 </section>
-	<section lang="en-US">
+	<section id="section-Validator_and_Dictionary" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Validator and Dictionary</title>
 	<para>
-		The Diameter Validator provides message validation in accordance with industry standards. The primary purpose of the Validator is to detect malformed messages, such as an Answer message that contains a Destination-Host Attribute Value Pair (AVP).
+		The Validator and Dictionary are core elements of the Diameter MUX stack.
 	</para>
+	<formalpara>
+		<title>Validator</title>
+		<para>
+			The Diameter Validator provides message validation in accordance with industry standards. The primary purpose of the Validator is to detect malformed messages, such as an Answer message that contains a Destination-Host Attribute Value Pair (AVP).
+		</para>
+	</formalpara>
 	<para>
 		The Valdiator is capable of validating multi-leveled, grouped AVPs, excluding the following content types:
 	</para>
@@ -1064,7 +1112,10 @@ public class MyDiameterApplication implements DiameterListener
 		</listitem>
 	</itemizedlist>
 	<para>
-		The Validator API is designed to perform validation of whole messages with reference to AVP consistency. For future releases, user-initiated validation is planned. In addition, the validator is a JDiameter stack component, therefore it can be used at the application session level.
+		The Validator API is designed to perform validation of whole messages with reference to AVP consistency. Primarily, the Validator checks whether the AVP multiplicity is correct, and whether the position of the AVP is correct in a message. It does not verify enumerated content, or the AVP encoding type, with the provided definition.
+	</para>
+	<para>
+		For future releases, user-initiated validation is planned. In addition, the validator is a JDiameter stack component, therefore it can be used at the application session level.
 	</para>
 	<formalpara>
 		<title>Dictionary</title>
@@ -1076,32 +1127,15 @@ public class MyDiameterApplication implements DiameterListener
 		Because the Diameter dictionary is responsible for setting the parameters and flags, an application does not need to control this information. This results in applications that are more efficient. The dictionary also provides information that can be used for validation purposes.
 	</para>
 	<para>
-		To implement the Diameter dictionary in your application, include the following code.
+		During runtime, the Dictionary API provides developers and users the abiltiy to extract message information, and provides AVP definition flexibility. The definition can be changed without the need for the project source to be recompiled.
 	</para>
-	<example>
-		<title>Base Dictionary Code</title>
-		
-<programlisting>public static  void setAvpAsFloat32(Message msg, int avpCode, long
- vendorId, AvpSet set, float value)
-  {
-    AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode,
-     vendorId);
-
-    if (rep != null) {
-        set.addAvp(avpCode, value, vendorId, isMandatory, isProtected);
-    }
-    else {
-       set.addAvp(avpCode, value, vendorId,  _DEFAULT_MANDATORY,
-        _DEFAULT_PROTECTED);
-   
-    }
-  }
-</programlisting>
-	</example>
 	<section lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Configuring the Validator and Dictionary</title>
 	<para>
-		The <filename>dictionary.xml</filename> file contains the configuration data for both the Validator and Dictionary components. The file is located in the <filename>META-INF</filename> directory of the MUX.
+		The <filename>dictionary.xml</filename> file contains the configuration data for both the Validator and Dictionary components. The file is located in the <filename>/dictionary</filename> directory of the MUX:
+	</para>
+	<para>
+		<filename>mobicents-diameter-mux-<replaceable>[version]</replaceable>.sar/lib/mobicents-diameter-mux-jar-<replaceable>[version]</replaceable>.jar/org/mobicents/diameter/dictionary/dictionary.xml</filename>
 	</para>
 	<para>
 		When the MUX component creates the stack, the validator and dictionary are both started and configured, based on the <filename>dictionary.xml</filename> file present in the MUX classpath. The advantage of using the same file for the validator and dictionary is that there is no way to introduce configuration mistakes between components. If the <filename>dictionary.xml</filename> file contains incorrect settings, these settings may affect both components. Therefore, be careful when setting the parameters, which are explained below for reference.
@@ -1142,13 +1176,23 @@ public class MyDiameterApplication implements DiameterListener
 	<formalpara>
 		<title>&lt;validator/&gt;</title>
 		<para>
-			Specifies whether message validation is activated for sent and received stack messages. The default value is <literal>false</literal> (deactivated).
+			Specifies whether message validation is activated for sent and received stack messages. The element supports the following optional attribute:
 		</para>
 	</formalpara>
+	<variablelist>
+		<varlistentry>
+			<term>enabled</term>
+			<listitem>
+				<para>
+					Specifies whether the validator is activated or deactivated. If not specified, the validator is deactivated.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
 	<formalpara>
 		<title>&lt;vendor/&gt;</title>
 		<para>
-			Specifies the mapping between the vendor name, vendor ID, and vendor code. The element supports the following attributes:
+			Optional element, which specifies the mapping between the vendor name, vendor ID, and vendor code. The element supports the following required attributes:
 		</para>
 	</formalpara>
 	<variablelist>
@@ -1172,7 +1216,7 @@ public class MyDiameterApplication implements DiameterListener
 			<term>code</term>
 			<listitem>
 				<para>
-					Specifies the alpha-numeric code allocated to the vendor. For example "11".
+					Specifies the alpha-numeric code allocated to the vendor. For example "11". The value must be unique for each &lt;vendor&gt; declaration.
 				</para>
 			</listitem>
 		</varlistentry>
@@ -1198,7 +1242,7 @@ public class MyDiameterApplication implements DiameterListener
 	<formalpara>
 		<title>&lt;typedefn/&gt;</title>
 		<para>
-			Defines the simple Attribute Value Pair (AVP) types. The element supports the following attributes:
+			Defines the simple Attribute Value Pair (AVP) types. The element supports the following required attributes:
 		</para>
 	</formalpara>
 	<variablelist>
@@ -1206,7 +1250,7 @@ public class MyDiameterApplication implements DiameterListener
 			<term>type-name</term>
 			<listitem>
 				<para>
-					Specifies the type name. For example; "Enumerated", "OctetString", "Integer32".
+					Specifies a type name in accordance with the acceptable base types defined in RFC 3588. For example; "Enumerated", "OctetString", "Integer32".
 				</para>
 			</listitem>
 		</varlistentry>
@@ -1214,7 +1258,7 @@ public class MyDiameterApplication implements DiameterListener
 			<term>type-parent</term>
 			<listitem>
 				<para>
-					Specifies the parent type name. For example; "OctetString", "UTF8String", "IPAddress".
+					Specifies the parent type name used to define the base characteristics of the type. The values are restricted to defined &lt;typedefn&gt; elements. For example; "OctetString", "UTF8String", "IPAddress".
 				</para>
 			</listitem>
 		</varlistentry>
@@ -1240,7 +1284,7 @@ public class MyDiameterApplication implements DiameterListener
 	<formalpara>
 		<title>&lt;application&gt;</title>
 		<para>
-			Defines the specific applications used within the dictionary. The element supports the following attributes:
+			Defines the specific applications used within the dictionary. Two child elements are supported by &lt;application&gt;: &lt;avp&gt;, and &lt;command&gt;. The &lt;application&gt; element supports the following attributes:
 		</para>
 	</formalpara>
 	<variablelist>
@@ -1248,7 +1292,7 @@ public class MyDiameterApplication implements DiameterListener
 			<term>id</term>
 			<listitem>
 				<para>
-					Specifies the unique ID allocated to the application.
+					Specifies the unique ID allocated to the application. The attribute is used in all messages and forms part of the message header.
 				</para>
 			</listitem>
 		</varlistentry>
@@ -1256,15 +1300,15 @@ public class MyDiameterApplication implements DiameterListener
 			<term>name</term>
 			<listitem>
 				<para>
-					Specifies the name of the application.
+					Optional attribute, which specifies the logical name of the application for configurers.
 				</para>
 			</listitem>
 		</varlistentry>
-		<varlistentry>
+		<!-- TODO: In the code examples on mobicents-public, there is the uri parameter.  While not mentioned in the attributes, is it still a valid addition to the <application> tag? --> <varlistentry>
 			<term>uri</term>
 			<listitem>
 				<para>
-					Specifies a link to further information about the application for configurers.
+					Optional attribute, which specifies a link to further information about the application for configurers.
 				</para>
 			</listitem>
 		</varlistentry>
@@ -1279,9 +1323,93 @@ public class MyDiameterApplication implements DiameterListener
 	<formalpara>
 		<title>&lt;avp&gt;</title>
 		<para>
-			Element containing information necessary to configure the Attribute Value Pairs. In future releases, the &lt;avp&gt; element may change. <xref linkend="table-avp_attributes"/> contains the complete list of supported attributes, and their available values (if applicable).
+			Element containing information necessary to configure the Attribute Value Pairs. <xref linkend="table-avp_attributes"/> contains the complete list of supported attributes, and their available values (if applicable).
 		</para>
 	</formalpara>
+	<para>
+		The &lt;avp&gt; element supports a number of child elements, which are used to set finer parameters for the individual AVP. The supported elements are &lt;type&gt;, &lt;enum&gt;, and &lt;grouped&gt;.
+	</para>
+	<example>
+		<title>&lt;avp&gt; Child Elements and Attributes</title>
+		
+<programlisting role="XML">&lt;avp name="Server-Assignment-Type" code="614" mandatory="must" vendor-bit="must" 
+ vendor-id="TGPP" may-encrypt="no"&gt;
+   &lt;type type-name="Unsigned32" /&gt;
+   &lt;enum name="NO_ASSIGMENT" code="0" /&gt;
+   &lt;enum name="REGISTRATION" code="1" /&gt;
+   &lt;enum name="RE_REGISTRATION" code="2" /&gt;
+   &lt;enum name="UNREGISTERED_USER" code="3" /&gt;
+   &lt;grouped&gt;
+     &lt;gavp name="SIP-Item-Number" multiplicity="0-1"/&gt;
+     &lt;gavp name="SIP-Authentication-Scheme" multiplicity="0-1"/&gt;
+     &lt;gavp name="SIP-Authenticate" multiplicity="0-1"/&gt;         
+     &lt;gavp name="Line-Identifier" multiplicity="0+"/&gt;
+   &lt;/grouped&gt;
+&lt;/avp&gt;
+</programlisting>
+	</example>
+	<formalpara>
+		<title>&lt;type&gt;</title>
+		<para>
+			Child element of &lt;avp&gt;, which is used to match the AVP with the AVP type as defined in the &lt;typedefn&gt; element. The element supports the following mandatory attribute:
+		</para>
+	</formalpara>
+	<variablelist>
+		<varlistentry>
+			<term>type-name</term>
+			<listitem>
+				<para>
+					Specifies the type name, which is used to match to the type-name value specified in the &lt;typedefn&gt; element.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	<formalpara>
+		<title>&lt;enum&gt;</title>
+		<para>
+			Child element of &lt;avp&gt;, which specifies the enumeration value for the specified AVP. &lt;enum&gt; is used only when the type-name attribute of &lt;type&gt; is specified. The element supports the following mandatory attributes:
+		</para>
+	</formalpara>
+	<variablelist>
+		<varlistentry>
+			<term>name</term>
+			<listitem>
+				<para>
+					Specifies the name of a constant value that applies to the AVP.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>code</term>
+			<listitem>
+				<para>
+					Specifies the integer value associated with the name of the constant. The value is passed as a a value of the AVP, and maps to the name attribute.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	<formalpara>
+		<title>&lt;grouped&gt;</title>
+		<para>
+			Child element of &lt;avp&gt;, which specifies the AVP is a grouped type. A grouped AVP is one that has no &lt;typedefn&gt; element present). The element does not support any attributes, however the &lt;gavp&gt; element is allowed as a child element.
+		</para>
+	</formalpara>
+	<formalpara>
+		<title>&lt;gavp&gt;</title>
+		<para>
+			Child element of &lt;grouped&gt;, which specifies a reference to a grouped AVP. The element supports one mandatory attribute:
+		</para>
+	</formalpara>
+	<variablelist>
+		<varlistentry>
+			<term>name</term>
+			<listitem>
+				<para>
+					Specifies the name of a grouped AVP. The AVP name must match the name of the defined grouped AVP.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
 	<table frame="all" id="table-avp_attributes" pgwide="1">
 		<title>&lt;avp&gt; Attributes</title>
 		<tgroup cols="3" colsep="1">
@@ -1309,7 +1437,7 @@ public class MyDiameterApplication implements DiameterListener
 					<entry>
 					</entry>
 					<entry>
-						Specifies the name of the AVP. This attribute is mandatory, because it is used to match the AVP definition to any grouped AVP references. For further information about grouped AVPs, refer to the element description in this section.
+						Specifies the name of the AVP, which is used to match the AVP definition to any grouped AVP references. For further information about grouped AVPs, refer to the element description in this section.
 					</entry>
 				</row>
 				<row>
@@ -1340,7 +1468,7 @@ public class MyDiameterApplication implements DiameterListener
 					<entry>
 					</entry>
 					<entry>
-						Specifies how many AVPs may (or must) be present in the message.
+						Specifies the number of acceptable AVPs in a message using an explicit value.
 					</entry>
 				</row>
 				<row>
@@ -1400,7 +1528,7 @@ public class MyDiameterApplication implements DiameterListener
 					<entry>
 					</entry>
 					<entry>
-						Specifies the index in a message. Only the SessionId AVP supports a fixed index, which starts at 0. If the location is not important, -1 must be specified manually.
+						Specifies the index in a message. Only the SessionId AVP supports a fixed index, which starts at 0. If the index location is not important, -1 must be specified manually.
 					</entry>
 				</row>
 				<row>
@@ -1479,90 +1607,6 @@ public class MyDiameterApplication implements DiameterListener
 &lt;avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" /&gt;
 </programlisting>
 	</example>
-	<para>
-		The &lt;avp&gt; element supports a number of child elements, which are used to set finer parameters for the individual AVP. The supported elements are &lt;type&gt;, &lt;enum&gt;, and &lt;grouped&gt;.
-	</para>
-	<formalpara>
-		<title>&lt;type&gt;</title>
-		<para>
-			Child element of &lt;avp&gt;, which is used to match the AVP with the AVP type as defined in the &lt;typedefn&gt; element. The element supports the following attribute:
-		</para>
-	</formalpara>
-	<variablelist>
-		<varlistentry>
-			<term>type-name</term>
-			<listitem>
-				<para>
-					Specifies the type name, which is used to match to the type-name value specified in the &lt;typedenf&gt; element.
-				</para>
-			</listitem>
-		</varlistentry>
-	</variablelist>
-	<formalpara>
-		<title>&lt;enum&gt;</title>
-		<para>
-			Child element of &lt;avp&gt;, which specifies the constants for a specified AVP. The element supports the following attributes:
-		</para>
-	</formalpara>
-	<variablelist>
-		<varlistentry>
-			<term>name</term>
-			<listitem>
-				<para>
-					Specifies the name of a constant value that applies to the AVP.
-				</para>
-			</listitem>
-		</varlistentry>
-		<varlistentry>
-			<term>code</term>
-			<listitem>
-				<para>
-					Specifies the integer value associated with the name of the constant. The value is passed as a a value of the AVP, and maps to the name attribute.
-				</para>
-			</listitem>
-		</varlistentry>
-	</variablelist>
-	<formalpara>
-		<title>&lt;grouped&gt;</title>
-		<para>
-			Child element of &lt;avp&gt;, which specifies the AVP is a grouped type (where no &lt;typedefn&gt; element for the AVP is present). The element does not support any attributes, however the &lt;gavp&gt; element is allowed as a child element.
-		</para>
-	</formalpara>
-	<formalpara>
-		<title>&lt;gavp&gt;</title>
-		<para>
-			Child element of &lt;grouped&gt;, which specifies the name of a grouped AVP. The element supports one mandatory attribute:
-		</para>
-	</formalpara>
-	<variablelist>
-		<varlistentry>
-			<term>name</term>
-			<listitem>
-				<para>
-					Specifies the name of a grouped AVP. The AVP name must match the name of the defined grouped AVP.
-				</para>
-			</listitem>
-		</varlistentry>
-	</variablelist>
-	<example>
-		<title>&lt;avp&gt; Child Elements and Attributes</title>
-		
-<programlisting role="XML">&lt;avp name="Server-Assignment-Type" code="614" mandatory="must" vendor-bit="must" 
- vendor-id="TGPP" may-encrypt="no"&gt;
-   &lt;type type-name="Unsigned32" /&gt;
-   &lt;enum name="NO_ASSIGMENT" code="0" /&gt;
-   &lt;enum name="REGISTRATION" code="1" /&gt;
-   &lt;enum name="RE_REGISTRATION" code="2" /&gt;
-   &lt;enum name="UNREGISTERED_USER" code="3" /&gt;
-   &lt;grouped&gt;
-     &lt;gavp name="SIP-Item-Number" multiplicity="0-1"/&gt;
-     &lt;gavp name="SIP-Authentication-Scheme" multiplicity="0-1"/&gt;
-     &lt;gavp name="SIP-Authenticate" multiplicity="0-1"/&gt;         
-     &lt;gavp name="Line-Identifier" multiplicity="0+"/&gt;
-   &lt;/grouped&gt;
-&lt;/avp&gt;
-</programlisting>
-	</example>
 	<formalpara>
 		<title>&lt;command&gt;</title>
 		<para>
@@ -1639,6 +1683,59 @@ public class MyDiameterApplication implements DiameterListener
 			If the file is not the default <filename>dictionary.xml</filename> file, the changes to the validator and dictionary will be global for the Java Virtual Machine (JVM)
 		</para>
 	</note>
+	<formalpara>
+		<title>API Methods</title>
+		<para>
+			Currently, the API for the Validator and Dictionary defines the following methods:
+		</para>
+	</formalpara>
+	<variablelist>
+		<varlistentry>
+			<term>public void validate(Message msg) </term>
+			<listitem>
+				<para>
+					If the validator is activated, the method attempts to perform the specified operation on the passed message. If validation fails, the method returns <literal>JAvpNotAllowedException</literal>.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>public void validate(int commandCode, long appId, boolean isRequest, AvpSet destination, Avp avp)</term>
+			<listitem>
+				<para>
+					If the validator is activated, the method performs validation against the passed AVP. The AvpSet parameter relates to the messages the specified AVP set.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>public boolean isCountValidForMultiplicity(int commandCode, long appId, boolean isRequest, AvpSet destination, int avpCode, long avpVendor)</term>
+			<listitem>
+				<para>
+					Determines if AVP count is valid in the passed set. The message is determined by <literal>commandCode</literal>, <literal>appId</literal> and <literal>isRequest</literal>.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>public boolean isAllowed(int commandCode, long appId, boolean isRequest, int avpCode, long avpVendor)</term>
+			<listitem>
+				<para>
+					Determines if AVP multiplicity count is not 0.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>public boolean hasRepresentation(int commandCode, long appId, boolean isRequest, int avpCode, long avpVendor)</term>
+			<listitem>
+				<para>
+					Determines whether there is a message present, and if the message contains the correct AVPs. Returns <literal>false</literal> if one or both of the requirements are not met.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	<note>
+		<para>
+			In addition to the API methods, <literal>public static final DiameterMessageValidator getInstance()</literal> and <literal>public boolean isOn()</literal>are compatible.
+		</para>
+	</note>
 	<example id="example-Base_Listener_Code_1">
 		<title>Validator and Dictionary Code Examples</title>
 		
@@ -1668,19 +1765,103 @@ if (validator.hasRepresentation(msg.getCommandCode(), msg.getApplicationId(),
       throw new AvpNotAllowedException("Avp not allowed, count exceeded.",
        avpCode, vendorId);
          }
-}else
+} else
     {
     //Default we dont do a thing.
 }
 </programlisting>
 	</example>
-	<para>
-		TEXT
-	</para>
+	<example id="example-Base_Listener_Code_2">
+		<title>Validator Message Check Example</title>
+		
+<programlisting role="JAVA">...
+DiameterMessageValidator messageValidator = 
+ DiameterMessageValidator.getInstance();
+Message message = createMessage(<replaceable>XXX</replaceable>.MESSAGE_CODE,isRequest, applicationId);
+        
+//add AVPs
+...
+try{
+   messageValidator.validate(message);
+}catch(JAvpNotAllowedException e)
+{
+    System.err.println("Failed to validate ...., avp code: "+e.getAvpCode()" avp vendor:"+
+     e.getVendorId()+", message:"+ e.getMessage();
+}
+</programlisting>
+	</example>
+	<example id="example-Base_Listener_Code_3">
+		<title>Validator Multiplicity Count Check Example</title>
+		
+<programlisting role="JAVA">...
+
+DiameterMessageValidator messageValidator = 
+ DiameterMessageValidator.getInstance();
+Message message = createMessage(<replaceable>XXX</replaceable>.MESSAGE_CODE,isRequest, applicationId);
+        
+//add AVPs
+
+...
+
+if (validator.isCountValidForMultiplicity(message.getCommandCode(), message.getApplicationId(), 
+ message.isRequest(), message.getAvps(), avpCode, vendorId)) {
+
+// its ok.
+       
+} else  {
+      
+  throw new Exception("Error");
+}
+</programlisting>
+	</example>
+	<example>
+		<title>Dictionary Base Code</title>
+		
+<programlisting role="JAVA">public static  void setAvpAsFloat32(Message msg, int avpCode, long
+ vendorId, AvpSet set, float value)
+  {
+    AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode,
+     vendorId);
+
+    if (rep != null) {
+        set.addAvp(avpCode, value, vendorId, isMandatory, isProtected);
+    }
+    else {
+       set.addAvp(avpCode, value, vendorId,  _DEFAULT_MANDATORY,
+        _DEFAULT_PROTECTED);
+   
+    }
+  }
+</programlisting>
+	</example>
+	<example>
+		<title>Dictionary AVP Encoding Example</title>
+		
+<programlisting role="JAVA">public static  void setAvp(Message msg, int avpCode, long vendorId, AvpSet set, float value)
+  {
+  AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
+        
+    if (rep != null) {
+        
+    if(rep.getType().equals("Enumerated"))
+      {
+      setAvpAsUnsigned32(avpCode, vendorId, set, rep.isMandatory(), rep.isProtected(), value);
+      }else if(rep.getType().equals("OctetString") || 
+       rep.getType().equals("IPAddress") || 
+       rep.getType().equals("DiameterIdentity"))
+      {
+      setAvpAsOctetString(avpCode, vendorId, set, rep.isMandatory(),
+rep.isProtected(), value);
+      }
+  }
+        
+}
+</programlisting>
+	</example>
 </section>
 </section>
 </chapter>
-	<chapter lang="en-US">
+	<chapter id="chapter-Resource_Adapter_Components" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Resource Adapter Components</title>
 	<para>
 		Diameter provides the following Resource Adapter (RA) components that are used to connect to the JAIN SLEE Server:
@@ -2507,8 +2688,529 @@ destination.realm=mobicents.org
 	<section lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Sh (Client)</title>
 	<para>
-		Text
+		The Sh interface is the reference for interactions between the following servers:
 	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				Home Subscriber Server (HSS) and the SIP Application Server (AS)
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				HSS and the Open Service Access (OSA) Service Capability Server (SCS) in the IP Multimedia Subsystem (IMS)
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>
+		The standard interface is described in the 3GPP Specifications <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29328.htm">TS29.328</ulink> and <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29329.htm">TS29.329</ulink>.
+	</para>
+	<para>
+		For the purposes of this user guide, the following information relates to HSS and AS interactions, and only within the parameters of client-mode. Sh (Client) provides a number of message commands that can be used within the application.
+	</para>
+	<table frame="all" id="table-Diameter_Sh_Client_Messages" pgwide="1">
+		<title>Diameter Sh (Client) Messages</title>
+		<tgroup cols="5" colsep="1">
+			<colspec colname="c1"/>
+			<colspec colname="c2"/>
+			<colspec colname="c3"/>
+			<colspec colname="c4"/>
+			<colspec colname="c5"/>
+			<thead>
+				<row>
+					<entry>
+						Command Name
+					</entry>
+					<entry>
+						Abbreviation
+					</entry>
+					<entry>
+						Code
+					</entry>
+					<entry>
+						Source
+					</entry>
+					<entry>
+						Destination
+					</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry>
+						User-Data-Request
+					</entry>
+					<entry>
+						UDR
+					</entry>
+					<entry>
+						306
+					</entry>
+					<entry>
+						AS
+					</entry>
+					<entry>
+						HSS
+					</entry>
+				</row>
+				<row>
+					<entry>
+						User-Data-Answer
+					</entry>
+					<entry>
+						UDA
+					</entry>
+					<entry>
+						306
+					</entry>
+					<entry>
+						HSS
+					</entry>
+					<entry>
+						AS
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Profile-Update-Request
+					</entry>
+					<entry>
+						PUR
+					</entry>
+					<entry>
+						307
+					</entry>
+					<entry>
+						AS
+					</entry>
+					<entry>
+						HSS
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Profile-Update-Answer
+					</entry>
+					<entry>
+						PUA
+					</entry>
+					<entry>
+						307
+					</entry>
+					<entry>
+						HSS
+					</entry>
+					<entry>
+						AS
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Subscribe-Notifications-Request
+					</entry>
+					<entry>
+						SNR
+					</entry>
+					<entry>
+						308
+					</entry>
+					<entry>
+						AS
+					</entry>
+					<entry>
+						HSS
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Subscribe-Notifications-Answer
+					</entry>
+					<entry>
+						SNA
+					</entry>
+					<entry>
+						308
+					</entry>
+					<entry>
+						HSS
+					</entry>
+					<entry>
+						AS
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Push-Notification-Request
+					</entry>
+					<entry>
+						PNR
+					</entry>
+					<entry>
+						309
+					</entry>
+					<entry>
+						HSS
+					</entry>
+					<entry>
+						AS
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Push-Notification-Answer
+					</entry>
+					<entry>
+						PNA
+					</entry>
+					<entry>
+						309
+					</entry>
+					<entry>
+						AS
+					</entry>
+					<entry>
+						HSS
+					</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</table>
+	<!-- TODO: paragraphs need rework.  Copied directly from wiki. --> <para>
+		As can be seen from the Command Names, these are related to managing User Data in the HSS. UDR/UDA is used in order to request data from the User profile. Client (AS) sends the request indicating which data he wants (see below for possible kinds of data) and if it has permissions on the HSS, they will be received via UDA.
+	</para>
+	<para>
+		PUR is meant to be used to update the profile of the user, and the success (or not) of the action is reported back in PUA. SNR offers the possibility to request for changes made in the user profile. If SNR is successful a SNA will be received stating that the operation was successful and when there are profile changes, a PNR will be sent by the HSS to the AS (this is the only time HSS initiates conversation) and the AS should acknowledge with a PNA.
+	</para>
+	<section>
+		<title>Configuration</title>
+		<para>
+			<!-- TODO: Is this correct, or does this only relate to the example that uses SEAGULL? -->Configuration is made directly in the Sh (Client) code, by enabling or disabling (commenting or uncommenting) the method calls. In future releases, a property file will be available to better manage configuration.
+		</para>
+		<example>
+			<title>Configuring </title>
+			<para>
+				The following Java sample shows a Subscribe-Notifications-Request method call, which has been commented out to disable it.
+			</para>
+			
+<programlisting role="XML">public void onTimerEvent(TimerEvent event, ActivityContextInterface aci)
+
+  {
+   doSimpleTestsSendUDR();
+  //doSimpleTestSendSNR();
+  }
+</programlisting>
+		</example>
+	</section>
+	
+	<section>
+		<title>Resource Adapter Type</title>
+		<para>
+			The resource adapter provides the following types:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Activities
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Provider
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Message Factory
+				</para>
+			</listitem>
+		</itemizedlist>
+		<formalpara>
+			<title>Activities</title>
+			<para>
+				The following activities are available, with the API definition listed for reference. The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.
+			</para>
+		</formalpara>
+		<para>
+			The lifecycle of an activity depends on the type of received request and the application interaction. In the case of a subscription activity, the activity timeout is taken into consideration because the subscription may be time-based.
+		</para>
+		<para>
+			The activitites allows the Sh (Client) application to retrieve message and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
+		</para>
+		<variablelist>
+			<title>Diameter Sh (Client) Activities</title>
+			<varlistentry>
+				<term>Activity Name</term>
+				<listitem>
+					<para>
+						Activity Description.
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+		
+<programlisting role="JAVA">activity example
+</programlisting>
+		<variablelist>
+			<varlistentry>
+				<term>Activity Name</term>
+				<listitem>
+					<para>
+						Activity Description.
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+		
+<programlisting role="JAVA">activity example
+</programlisting>
+		<variablelist>
+			<varlistentry>
+				<term>Activity Name</term>
+				<listitem>
+					<para>
+						Activity Description.
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+		
+<programlisting role="JAVA">activity example
+</programlisting>
+		<!-- JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <para>
+			The API for the DiameterProvider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/base/ratype/src/main/java/net/java/slee/resource/diameter/base/DiameterProvider.java">DiameterProvider.java in the source code</ulink>.
+		</para>
+		<formalpara>
+			<title>Message Factory</title>
+			<para>
+				The Message Factory creates events that can be executed within the JAIN SLEE Server. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
+			</para>
+		</formalpara>
+		<para>
+			The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/base/ratype/src/main/java/net/java/slee/resource/diameter/base/DiameterMessageFactory.java">DiameterMessageFactory.java in the source code</ulink>.
+		</para>
+	</section>
+	
+	<section>
+		<title>API Usage Examples</title>
+		<para>
+			The following examples demonstrate basic usage examples for the Resource Adapter (RA) API.
+		</para>
+		<example>
+			<title>Push-Notification-Request</title>
+			<para>
+				The following code demonstrates how to configure a Push-Notification-Request. This example utilizes the setExtensionAvps() methods, however it is also possible to utilize specific methods such as udr.setUserIdentity() to achieve the same goal. This falls outside the scope of this example.
+			</para>
+			
+<programlisting role="JAVA">public void onPushNotificationRequest(net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest pnr, ActivityContextInterface aci)
+                 {
+                     try
+                   {
+                       logger.info( "Push-Notification-Request activity["+aci.getActivity()+"] received.\n"+pnr );
+       
+                       // Let's be nice and say OK :)
+                       ShClientSubscriptionActivityImpl shActivity = (ShClientSubscriptionActivityImpl) aci.getActivity();
+
+                       shActivity.sendPushNotificationAnswer( 2001, false );
+                   }
+                   catch ( IOException e ) {
+                     logger.error( "Failure while creating/sending PNA.", e );
+                   }
+                 }
+</programlisting>
+		</example>
+		<example>
+			<title>User-Data-Request</title>
+			<para>
+				The following code demonstrates how to configure a User-Data-Request (UDR).
+			</para>
+			
+<programlisting role="JAVA">private void doSimpleTestsSendUDR()
+                   {
+                   
+                       try {
+                            ShClientActivity basicClientActivity=this.provider.createShClientActivity();
+                             logger.info(" On TimerEvent: activity created");
+                          
+           
+                            localACI.attach(getSbbContext().getSbbLocalObject());
+           
+           
+                             DiameterIdentity[] peers=provider.getConnectedPeers();
+           
+                            for(DiameterIdentity peer: peers)
+                             {
+                                 logger.info(" On TimerEvent: Connected Peer: "+peer.toString());
+                            }
+           
+                            logger.info(" On TimerEvent: creating UDR");
+           
+                            UserDataRequest udr=((ShClientMessageFactory)basicClientActivity.getDiameterMessageFactory()).createUserDataRequest();
+           
+                             List&lt;DiameterAvp&gt; avps = new ArrayList&lt;DiameterAvp&gt;();
+             
+                              avps.add(avpFactory.getBaseFactory().createAvp(Avp.SESSION_ID, basicClientActivity.getSessionId().getBytes() ));
+         
+                              DiameterAvp avpVendorId = avpFactory.getBaseFactory().createAvp( Avp.VENDOR_ID, MessageFactory._SH_VENDOR_ID );
+                              DiameterAvp avpAcctApplicationId = avpFactory.getBaseFactory().createAvp( Avp.ACCT_APPLICATION_ID, MessageFactory._SH_APP_ID );
+             
+                               avps.add( avpFactory.getBaseFactory().createAvp( Avp.VENDOR_SPECIFIC_APPLICATION_ID, new DiameterAvp[]{avpVendorId, avpAcctApplicationId} ) );
+             
+                               avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, ("aaa://" + originIP + ":1812").getBytes() ));
+                              avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, "mobicents.org".getBytes() ));
+             
+                               avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, ("aaa://" + destinationIP + ":3868").getBytes() ));
+                               avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, "mobicents.org".getBytes() ));
+                               UserIdentityAvp ui=avpFactory.createUserIdentity();
+                               ui.setPublicIdentity("sip:subscriber@mobicents.org");
+
+                               avps.add(ui);
+                               ui=avpFactory.createUserIdentity();
+                               ui.setPublicIdentity("TEL:+64216543210");
+
+                               avps.add(ui);
+                               udr.setExtensionAvps(avps.toArray(new DiameterAvp[avps.size()]));
+             
+                               logger.info(" On TimerEvent: Sending message:\n"+udr);
+                              basicClientActivity.sendUserDataRequest(udr);
+             
+                            logger.info(" On TimerEvent: Message send");
+           
+           
+           
+                         } catch (Exception e) {
+                          logger.error( "Failure trying to create/sen UDR.", e );
+                         }
+                   }
+</programlisting>
+		</example>
+	</section>
+	
+	<section>
+		<title>Examples</title>
+		<para>
+			The sample application provided for Diameter Sh (Client) sends Sh commands.............
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Application acting as a client
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Application acting as a server
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Application acting as a relay or proxy.
+				</para>
+			</listitem>
+		</itemizedlist>
+		<formalpara>
+			<title>Application acting as a client</title>
+			<para>
+				In this example, the application acts as a Diameter Accounting Client, which issues a Debit or Refund request to the Ericsson Diameter Server (EDS). If the message is correctly built, the server will send an answer back to the application stating that the operation was executed correctly. If the message is incorrectly built, the EDS sends an error message back to the application.
+			</para>
+		</formalpara>
+		<para>
+			The message flow for the client application is described in <xref linkend="figure-Client_Application_Message_Flow"/>
+		</para>
+		<figure id="figure-Client_Application_Message_Flow_1">
+			<title>Client Application Message Flow</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/dia-BaseExamples-dia-AppActingAsClient.jpg" format="JPG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+		<formalpara>
+			<title>Application acting as a server</title>
+			<para>
+				In this example, the Ericsson SDK acts as the client and the application Service Building Block (SBB) acts as the server. When the request is received from the client, the SBB checks a pre-loaded set of user data and verifies the user exists, and that there is sufficient credit to complete the debit request.
+			</para>
+		</formalpara>
+		<para>
+			If both requirements are met, the SBB sends a response with a 2001 (SUCCESS) Credit-Control-Answer message. If one or all conditions are not met, the appropriate error code is returned:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					No user name match: 5421 (USER_NOT_FOUND)
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Not enough credit to complete the transaction: 4241 (INSUFFICIENT_BALANCE).
+				</para>
+			</listitem>
+		</itemizedlist>
+		<para>
+			The message flow for the server application is described in <xref linkend="figure-Server_Application_Message_Flow"/>
+		</para>
+		<figure id="figure-Server_Application_Message_Flow_1">
+			<title>Server Application Message Flow</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/dia-BaseExamples-dia-AppActingAsServer.jpg" format="JPG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+		<formalpara>
+			<title>Application acting as a relay or proxy</title>
+			<para>
+				In this example, the application plays the role of a proxy or relay, and handles request and answer message proxying. Both the Ericsson Client and Server SDK are used in this example. The example requires the most configuration of all examples:
+			</para>
+		</formalpara>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Ericsson client SDK is connected as a client to Mobicents Diameter through the Diameter Base RA.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Ericsson server SDK is connected as a server to Mobicents Diameter through the Diameter SBB.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Diameter SBB is configured as a proxy.
+				</para>
+			</listitem>
+		</itemizedlist>
+		<para>
+			The Ericsson Client SDK is used to establish the connection to the Ericsson Server SDK behind the Diameter SBB. In the example, requests received by the SBB are forwarded to the Server SDK, and answers are routed back to the Client SDK.
+		</para>
+		<section>
+			<title>Configuration</title>
+			<para>
+				To configure the examples, changest must be made to the <filename>example.properties</filename> file in the <filename>/du/main/resources</filename> directory.
+			</para>
+			<para>
+				The following example configuration supports two modes: client, and server. In client mode, the application sends an Accounting Request (ACR). To make the example act as a proxy, settings relating to ACR must be added in order for the application to handle Attribute Value Pairs (AVPs).
+			</para>
+			<example>
+				<title>Setting origin and destination properties</title>
+				
+<programlisting># Act as "client" or "server" (default: server)
+example.mode=server
+
+# The AS IP Address, Port and Realm (default: 127.0.0.1 / 1812 / mobicents.org)
+origin.ip=127.0.0.1
+origin.port=1812
+origin.realm=mobicents.org
+
+# The Remote IP Address, Port and Realm (default: 127.0.0.1 / 21812 / mobicents.org)
+destination.ip=127.0.0.1
+destination.port=21812
+destination.realm=mobicents.org
+</programlisting>
+			</example>
+		</section>
+
+	</section>
+
 </section>
 	<section lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Sh (Server)</title>

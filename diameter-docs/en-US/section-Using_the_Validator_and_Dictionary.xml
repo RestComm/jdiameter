@@ -14,6 +14,45 @@
   <note>
     <para>If the file is not the default <filename>dictionary.xml</filename> file, the changes to the validator and dictionary will be global for the Java Virtual Machine (JVM)</para>
   </note>
+  <formalpara>
+    <title>API Methods</title>
+    <para>Currently, the API for the Validator and Dictionary defines the following methods:</para>
+  </formalpara>
+  <variablelist>
+    <varlistentry>
+      <term>public void validate(Message msg) </term>
+      <listitem>
+        <para>If the validator is activated, the method attempts  to perform the specified operation on the passed message.  If validation fails, the method returns  <literal>JAvpNotAllowedException</literal>.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>public void validate(int commandCode, long appId, boolean isRequest, AvpSet destination, Avp avp)</term>
+      <listitem>
+        <para>If the validator is activated, the method performs validation against the passed AVP.  The AvpSet parameter relates to the messages the specified AVP set.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>public boolean isCountValidForMultiplicity(int commandCode, long appId, boolean isRequest, AvpSet destination, int avpCode, long avpVendor)</term>
+      <listitem>
+        <para>Determines if AVP count is valid in the passed set.  The message is determined by <literal>commandCode</literal>, <literal>appId</literal> and <literal>isRequest</literal>.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>public boolean isAllowed(int commandCode, long appId, boolean isRequest, int avpCode, long avpVendor)</term>
+      <listitem>
+        <para>Determines if AVP multiplicity count is not 0. </para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>public boolean hasRepresentation(int commandCode, long appId, boolean isRequest, int avpCode, long avpVendor)</term>
+      <listitem>
+        <para>Determines whether there is a message present, and if the message contains  the correct AVPs.  Returns <literal>false</literal> if one or both of the requirements are not met.</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+  <note>
+    <para> In addition to the API methods, <literal>public static final DiameterMessageValidator getInstance()</literal> and <literal>public boolean isOn()</literal>are compatible.</para>
+  </note>
   <example id="example-Base_Listener_Code_1">
     <title>Validator and Dictionary Code Examples</title>
     <programlisting role="JAVA">if (!validator.isOn())
@@ -47,5 +86,83 @@ if (validator.hasRepresentation(msg.getCommandCode(), msg.getApplicationId(),
     //Default we dont do a thing.
 }</programlisting>
   </example>
-  <para>TEXT</para>
+  <example id="example-Base_Listener_Code_2">
+    <title>Validator Message Check Example</title>
+    <programlisting role="JAVA">...
+DiameterMessageValidator messageValidator = 
+ DiameterMessageValidator.getInstance();
+Message message = createMessage(<replaceable>XXX</replaceable>.MESSAGE_CODE,isRequest, applicationId);
+        
+//add AVPs
+...
+try{
+   messageValidator.validate(message);
+}catch(JAvpNotAllowedException e)
+{
+    System.err.println(&quot;Failed to validate ...., avp code: &quot;+e.getAvpCode()&quot; avp vendor:&quot;+
+     e.getVendorId()+&quot;, message:&quot;+ e.getMessage();
+}</programlisting>
+  </example>
+  <example id="example-Base_Listener_Code_3">
+    <title>Validator Multiplicity Count Check Example</title>
+    <programlisting role="JAVA">...
+
+DiameterMessageValidator messageValidator = 
+ DiameterMessageValidator.getInstance();
+Message message = createMessage(<replaceable>XXX</replaceable>.MESSAGE_CODE,isRequest, applicationId);
+        
+//add AVPs
+
+...
+
+if (validator.isCountValidForMultiplicity(message.getCommandCode(), message.getApplicationId(), 
+ message.isRequest(), message.getAvps(), avpCode, vendorId)) {
+
+// its ok.
+       
+} else  {
+      
+  throw new Exception(&quot;Error&quot;);
+}</programlisting>
+  </example>
+  <example>
+    <title>Dictionary Base Code</title>
+    <programlisting role="JAVA">public static  void setAvpAsFloat32(Message msg, int avpCode, long
+ vendorId, AvpSet set, float value)
+  {
+    AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode,
+     vendorId);
+
+    if (rep != null) {
+        set.addAvp(avpCode, value, vendorId, isMandatory, isProtected);
+    }
+    else {
+       set.addAvp(avpCode, value, vendorId,  _DEFAULT_MANDATORY,
+        _DEFAULT_PROTECTED);
+   
+    }
+  }</programlisting>
+  </example>
+  <example>
+    <title>Dictionary AVP Encoding Example</title>
+    <programlisting role="JAVA">public static  void setAvp(Message msg, int avpCode, long vendorId, AvpSet set, float value)
+  {
+  AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
+        
+    if (rep != null) {
+        
+    if(rep.getType().equals(&quot;Enumerated&quot;))
+      {
+      setAvpAsUnsigned32(avpCode, vendorId, set, rep.isMandatory(), rep.isProtected(), value);
+      }else if(rep.getType().equals(&quot;OctetString&quot;) || 
+       rep.getType().equals(&quot;IPAddress&quot;) || 
+       rep.getType().equals(&quot;DiameterIdentity&quot;))
+      {
+      setAvpAsOctetString(avpCode, vendorId, set, rep.isMandatory(),
+rep.isProtected(), value);
+      }
+  }
+        
+}</programlisting>
+  </example>
 </section>
