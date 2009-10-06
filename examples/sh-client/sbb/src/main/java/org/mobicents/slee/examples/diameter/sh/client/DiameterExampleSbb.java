@@ -28,6 +28,7 @@ import net.java.slee.resource.diameter.sh.client.ShClientMessageFactory;
 import net.java.slee.resource.diameter.sh.client.ShClientProvider;
 import net.java.slee.resource.diameter.sh.client.ShClientSubscriptionActivity;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
+import net.java.slee.resource.diameter.sh.client.events.avp.SubsReqType;
 import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
 import net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest;
 import net.java.slee.resource.diameter.sh.server.events.UserDataRequest;
@@ -370,6 +371,7 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 		//				[ Send-Data-Indication ]
 		//				[ Server-Name ]
 		//				{ Subs-Req-Type }
+	      snr.setSubsReqType(SubsReqType.SUBSCRIBE);
 		//				*{ Data-Reference }
 	      //Its enumerated: 0 == Whole data
 	      DiameterAvp avp=avpFactory.getBaseFactory().createAvp(MessageFactory._SH_VENDOR_ID,DiameterShAvpCodes.DATA_REFERENCE, 0);
@@ -378,9 +380,9 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 		//				[ Expiry-Time ]
 	      //We can user setters, but this is faster :)
 	      snr.setExtensionAvps(avps.toArray(avps.toArray(new DiameterAvp[avps.size()])));
-	      logger.info("---> Sending SNR");
+	      
 	      shClientSubscriptionActivity.sendSubscriptionNotificationRequest(snr);
-	      logger.info("---> Send SNR:\n"+snr);
+
 
 	  } catch (Exception e) {
 	    logger.error( "Failure creating/sending SNR.", e );
