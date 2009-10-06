@@ -2,5 +2,439 @@
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
 <section>
   <title>Mobicents Diameter CCA</title>
-  <para>Text</para>
+  <para>Credit Control Application provides common part for credit applications. It defines minimal set of primitives to allow credit session management and to convey enough information to perform charging.</para>
+  <para>It is defined in <ulink url="http://tools.ietf.org/html/rfc4006">rfc4006</ulink>. Declared state machines are based on following messsage:</para>
+  <table>
+    <title>CCA Messages<!--TODO: can someone add this? Serna dies when I perform some operation on table...--></title>
+  </table>
+  <para>RFC decalres only basic charging scenarios, which are event charing</para>
+  <section>
+    <title>Configuration</title>
+    <para/>
+  </section>
+  <section>
+    <title>Resource Adaptor Type</title>
+    <para>Resource Adaptor Type provides following elements:</para>
+    <itemizedlist>
+      <listitem>
+        <para>Activities</para>
+      </listitem>
+      <listitem>
+        <para>Provider</para>
+      </listitem>
+      <listitem>
+        <para>Message Factory</para>
+      </listitem>
+    </itemizedlist>
+    <formalpara>
+      <title>Activities</title>
+      <para>The following activities are available, with the API definition listed for reference.  The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.</para>
+    </formalpara>
+    <para>The lifecycle of an activity depends on the type of received request and the application interaction. Request type is defined by CC-Request-Type AVP. In case of session like interaction, the activity  timeout is taken into consideration.</para>
+    <para>The activitites allows the CCA application to retrieve message and AVP factories bound to the current session.  The functionality offered is limited only  by the implementation used. There are two types of actiovities: </para>
+    <itemizedlist>
+      <listitem>
+        <para>short living - when CC-Request-Type is equal to enum value of &quot;EVENT&quot;. Activities created for such request are terminated once answer is sent(server)/received(client) or when session termianted due to lack of answer.</para>
+      </listitem>
+      <listitem>
+        <para>ling living - activities are long lived when two conditions are met, first messages has CC-Request-Type is equal to enum value of &quot;INITIAL&quot;, last message has CC-Request-Type equal to enum value of &quot;TERMINATION&quot;. Between initial and termianting message there can be any number of &quot;UPDATE&quot; messages.</para>
+      </listitem>
+    </itemizedlist>
+    <variablelist>
+      <title>CCA Activities</title>
+      <varlistentry>
+        <term>CreditControlClientSession</term>
+        <listitem>
+          <para>Created on demand. Life cycle depends on request type. Request type is indicated by CC-Request-Type AVP. </para>
+          <programlisting role="JAVA">private String originIP = &quot;127.0.0.1&quot;;
+private String originPort = &quot;1812&quot;;
+private String originRealm = &quot;mobicents.org&quot;;
+
+private String destinationIP = &quot;127.0.0.1&quot;;
+private String destinationPort = &quot;3868&quot;;
+private String destinationRealm = &quot;mobicents.org&quot;;
+
+....
+
+try {
+CreditControlClientSession session = this.provider.createClientSession();
+ActivityContextInterface localACI = this.acif.getActivityContextInterface(session);
+localACI.attach(this.getSbbContext().getSbbLocalObject());
+
+CreditControlRequest request = session.createCreditControlRequest();
+
+....
+
+rsu.setCreditControlInputOctets(10);
+rsu.setCreditControlMoneyAvp(ccMoney);
+rsu.setCreditControlServiceSpecificUnits(1000);
+rsu.setCreditControlTime(100);
+rsu.setCreditControlTotalOctets(5000);
+
+session.sendCreditControlRequest(request);
+} catch (Exception e) {
+logger.error(&quot;Failed to create/send Credit-Control-Request.&quot;, e);
+}
+</programlisting>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>CreditControlServerSession</term>
+        <listitem>
+          <para>Created once request is received and there is no matching activity for it. Its life cycle is identical to client activity.</para>
+          <programlisting role="JAVA">public void onCreditControlRequest(CreditControlRequest request, ActivityContextInterface aci) {
+if (logger.isInfoEnabled())
+logger.info(&quot;Received Credit-Control-Request (Application-Id[&quot; + request.getHeader().getApplicationId() + &quot;].&quot;);
+
+// INITIAL_REQUEST(1), UPDATE_REQUEST(2), TERMINATION_REQUEST(3),
+// EVENT_REQUEST(4)
+CreditControlServerSession session = (CreditControlServerSession) aci.getActivity();
+CreditControlAnswer answer = null;
+
+switch (request.getCcRequestType().getValue()) {
+case 1:
+try {
+if (logger.isInfoEnabled())
+logger.info(&quot;Got INITIAL_REQUEST(1).&quot;);
+
+if (getSentInitialAnswer()) {
+logger.error(&quot;Error. Initial answer already sent! Aborting.&quot;);
+return;
+}
+
+answer = session.createCreditControlAnswer();
+answer.setResultCode(2001);
+if (logger.isInfoEnabled()) {
+logger.info(&quot;Processed Credit-Control-Request:\n&quot; + request);
+logger.info(&quot;Sending Credit-Control-Answer:\n&quot; + answer);
+}
+
+session.sendCreditControlAnswer(answer);
+this.setSentInitialAnswer(true);
+} catch (Exception e) {
+logger.error(&quot;Failed to create/send Credit-Control-Answer to reply INITIAL_REQUEST(1).&quot;, e);
+}
+break;
+case 2:
+try {
+if (logger.isInfoEnabled())
+logger.info(&quot;Got UPDATE_REQUEST(2).&quot;);
+
+if (getSentUpdateAnswer()) {
+logger.error(&quot;Error. Update answer already sent! Aborting.&quot;);
+return;
+}
+
+answer = session.createCreditControlAnswer();
+answer.setResultCode(2001);
+if (logger.isInfoEnabled()) {
+logger.info(&quot;Processed Credit-Control-Request:\n&quot; + request);
+logger.info(&quot;Sending Credit-Control-Answer:\n&quot; + answer);
+}
+session.sendCreditControlAnswer(answer);
+setSentUpdateAnswer(true);
+} catch (Exception e) {
+logger.error(&quot;Failed to create/send Credit-Control-Answer to reply UPDATE_REQUEST(2).&quot;, e);
+}
+break;
+case 3:
+try {
+if (logger.isInfoEnabled())
+logger.info(&quot;Got TERMINATION_REQUEST(3).&quot;);
+
+if (getSentTerminationAnswer()) {
+logger.error(&quot;Error. Termination answer already sent! Aborting.&quot;);
+return;
+}
+
+answer = session.createCreditControlAnswer();
+answer.setResultCode(2001);
+if (logger.isInfoEnabled()) {
+logger.info(&quot;Processed Credit-Control-Request:\n&quot; + request);
+logger.info(&quot;Sending Credit-Control-Answer:\n&quot; + answer);
+}
+session.sendCreditControlAnswer(answer);
+setSentTerminationAnswer(true);
+} catch (Exception e) {
+logger.error(&quot;Failed to create/send Credit-Control-Answer to reply TERMINATION_REQUEST(3).&quot;, e);
+}
+break;
+case 4:
+try {
+if (logger.isInfoEnabled())
+logger.info(&quot;Got EVENT_REQUEST(4).&quot;);
+
+answer = session.createCreditControlAnswer();
+answer.setResultCode(2001);
+if (logger.isInfoEnabled())
+logger.info(&quot;Sending Credit-Control-Answer:\n&quot; + answer);
+
+session.sendCreditControlAnswer(answer);
+} catch (Exception e) {
+logger.error(&quot;Failed to create/send Credit-Control-Answer to reply EVENT_REQUEST(4).&quot;, e);
+}
+break;
+
+default:
+logger.error(&quot;Unexpected CC-Request-Type in message: &quot; + request.getCcRequestType() + &quot;. Aborting...&quot;);
+}
+}</programlisting>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <formalpara>
+      <title>Provider</title>
+      <para>Provider allows services to create activities, access some topology information and send/receive message in synchornous way. </para>
+    </formalpara>
+    <programlisting role="JAVA">public interface CreditControlProvider {
+
+  /**
+   * Create a new client session to send and receive Diameter messages.
+   * All messages sent on an activity created by this method must contain valid
+   * routing AVPs (one or both of Destination-Realm and Destination-Host as
+   * defined by RFC3588).
+   * 
+   * @return a instance of a CreditControlClientSession to send credit control messages
+   */
+  public CreditControlClientSession createClientSession()throws CreateActivityException;
+
+  /**
+   * Create a new client session to send and receive Diameter messages.
+   * Messages sent on an activity created by this method will automatically
+   * have the Destination-Host and Destination-Realm AVPs set to the provided
+   * values.
+   * 
+   * @param destinationHost a destination host to automatically put in all messages, may be null if not needed
+   * @param destinationRealm a destination realm to automatically put in all messages
+   * @return a instance of a CreditControlClientSession to send credit control messages
+   * @throws CreateActivityException 
+   */
+  public CreditControlClientSession createClientSession(
+      DiameterIdentity destinationHost,
+      DiameterIdentity destinationRealm) throws CreateActivityException;
+
+  /**
+   * Return a message factory to be used to create credit control messages
+   * 
+   * @return a CreditControlMessageFactory implementation
+   */
+  public CreditControlMessageFactory getCreditControlMessageFactory();
+
+  /**
+   * Return a AVP factory to be used to create credit control AVPs
+   * 
+   * @return a CreditControlAVPFactory implementation
+   */
+  public CreditControlAVPFactory getCreditControlAVPFactory();
+
+  /**
+   * Return the number of peers this Diameter resource adaptor is connected
+   * to.
+   * 
+   * @return connected peer count
+   */
+  int getPeerCount();
+
+  /**
+   * Returns array containing identities of connected peers FIXME: baranowb; -
+   * should it be InetAddres, Port pair?
+   * 
+   * @return
+   */
+  DiameterIdentity[] getConnectedPeers();</programlisting>
+  </section>
+  <section>
+    <title>API Usage Examples</title>
+    <para>Following example shows how CCR message is created and sent.</para>
+    <example>
+      <title>Sending CCR</title>
+      <programlisting role="JAVA">try {
+CreditControlClientSession session = this.provider.createClientSession();
+ActivityContextInterface localACI = this.acif.getActivityContextInterface(session);
+localACI.attach(this.getSbbContext().getSbbLocalObject());
+
+CreditControlRequest request = session.createCreditControlRequest();
+
+List&lt;DiameterAvp&gt; avps = new ArrayList&lt;DiameterAvp&gt;();
+
+avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, (&quot;aaa://&quot; + originIP + &quot;:&quot; + originPort).getBytes()));
+avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, originRealm.getBytes()));
+
+avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, (&quot;aaa://&quot; + destinationIP + &quot;:&quot; + destinationPort).getBytes()));
+avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, destinationRealm.getBytes()));
+
+avps.add(avpFactory.getBaseFactory().createAvp(CreditControlAVPCodes.CC_Request_Type, 4l));
+avps.add(avpFactory.getBaseFactory().createAvp(CreditControlAVPCodes.CC_Request_Number, 0l));
+
+RequestedServiceUnitAvp rsu = this.avpFactory.createRequestedServiceUnit();
+
+CcMoneyAvp ccMoney = this.avpFactory.createCcMoney();
+ccMoney.setCurrencyCode(100);
+ccMoney.setUnitValue(this.avpFactory.createUnitValue());
+
+rsu.setCreditControlInputOctets(10);
+rsu.setCreditControlMoneyAvp(ccMoney);
+rsu.setCreditControlServiceSpecificUnits(1000);
+rsu.setCreditControlTime(100);
+rsu.setCreditControlTotalOctets(5000);
+
+avps.add(rsu);
+
+avps.add(avpFactory.getBaseFactory().createAvp(CreditControlAVPCodes.Requested_Action, 0));
+
+// Now create &amp; send
+request.setExtensionAvps(avps.toArray(new DiameterAvp[avps.size()]));
+if (logger.isInfoEnabled())
+logger.info(&quot;About to send:\n&quot; + request);
+
+session.sendCreditControlRequest(request);
+} catch (Exception e) {
+logger.error(&quot;Failed to create/send Credit-Control-Request.&quot;, e);
+}</programlisting>
+    </example>
+    <para>The following code demonstrates how CCR is received and how different state machines are handled.</para>
+    <example>
+      <title>Handling CCR</title>
+      <programlisting role="JAVA">public void onCreditControlRequest(CreditControlRequest request, ActivityContextInterface aci) {
+if (logger.isInfoEnabled())
+logger.info(&quot;Received Credit-Control-Request (Application-Id[&quot; + request.getHeader().getApplicationId() + &quot;].&quot;);
+
+// INITIAL_REQUEST(1), UPDATE_REQUEST(2), TERMINATION_REQUEST(3),
+// EVENT_REQUEST(4)
+CreditControlServerSession session = (CreditControlServerSession) aci.getActivity();
+CreditControlAnswer answer = null;
+
+switch (request.getCcRequestType().getValue()) {
+case 1:
+try {
+if (logger.isInfoEnabled())
+logger.info(&quot;Got INITIAL_REQUEST(1).&quot;);
+
+if (getSentInitialAnswer()) {
+logger.error(&quot;Error. Initial answer already sent! Aborting.&quot;);
+return;
+}
+
+answer = session.createCreditControlAnswer();
+answer.setResultCode(2001);
+if (logger.isInfoEnabled()) {
+logger.info(&quot;Processed Credit-Control-Request:\n&quot; + request);
+logger.info(&quot;Sending Credit-Control-Answer:\n&quot; + answer);
+}
+
+session.sendCreditControlAnswer(answer);
+this.setSentInitialAnswer(true);
+} catch (Exception e) {
+logger.error(&quot;Failed to create/send Credit-Control-Answer to reply INITIAL_REQUEST(1).&quot;, e);
+}
+break;
+case 2:
+try {
+if (logger.isInfoEnabled())
+logger.info(&quot;Got UPDATE_REQUEST(2).&quot;);
+
+if (getSentUpdateAnswer()) {
+logger.error(&quot;Error. Update answer already sent! Aborting.&quot;);
+return;
+}
+
+answer = session.createCreditControlAnswer();
+answer.setResultCode(2001);
+if (logger.isInfoEnabled()) {
+logger.info(&quot;Processed Credit-Control-Request:\n&quot; + request);
+logger.info(&quot;Sending Credit-Control-Answer:\n&quot; + answer);
+}
+session.sendCreditControlAnswer(answer);
+setSentUpdateAnswer(true);
+} catch (Exception e) {
+logger.error(&quot;Failed to create/send Credit-Control-Answer to reply UPDATE_REQUEST(2).&quot;, e);
+}
+break;
+case 3:
+try {
+if (logger.isInfoEnabled())
+logger.info(&quot;Got TERMINATION_REQUEST(3).&quot;);
+
+if (getSentTerminationAnswer()) {
+logger.error(&quot;Error. Termination answer already sent! Aborting.&quot;);
+return;
+}
+
+answer = session.createCreditControlAnswer();
+answer.setResultCode(2001);
+if (logger.isInfoEnabled()) {
+logger.info(&quot;Processed Credit-Control-Request:\n&quot; + request);
+logger.info(&quot;Sending Credit-Control-Answer:\n&quot; + answer);
+}
+session.sendCreditControlAnswer(answer);
+setSentTerminationAnswer(true);
+} catch (Exception e) {
+logger.error(&quot;Failed to create/send Credit-Control-Answer to reply TERMINATION_REQUEST(3).&quot;, e);
+}
+break;
+case 4:
+try {
+if (logger.isInfoEnabled())
+logger.info(&quot;Got EVENT_REQUEST(4).&quot;);
+
+answer = session.createCreditControlAnswer();
+answer.setResultCode(2001);
+if (logger.isInfoEnabled())
+logger.info(&quot;Sending Credit-Control-Answer:\n&quot; + answer);
+
+session.sendCreditControlAnswer(answer);
+} catch (Exception e) {
+logger.error(&quot;Failed to create/send Credit-Control-Answer to reply EVENT_REQUEST(4).&quot;, e);
+}
+break;
+
+default:
+logger.error(&quot;Unexpected CC-Request-Type in message: &quot; + request.getCcRequestType() + &quot;. Aborting...&quot;);
+}
+}</programlisting>
+    </example>
+  </section>
+  <section>
+    <title>Examples</title>
+    <para>The sample application provided for CCA is very basic one.It supports three searate scenarios:</para>
+    <itemizedlist>
+      <listitem>
+        <para>Client</para>
+      </listitem>
+      <listitem>
+        <para>Server for event charing</para>
+      </listitem>
+      <listitem>
+        <para>Server for session based charging</para>
+      </listitem>
+    </itemizedlist>
+    <formalpara>
+      <title>Client</title>
+      <para>Example acts as CCA client . It issues order to charges some entity (unspecified) account with defined number of units. It sends CCR to Ericsson Diameter Server (EDS).  If the message is correctly built, the server will send an answer back to the application stating that the operation was executed correctly.  If the message is incorrectly built, the EDS sends an error message back to the application.</para>
+    </formalpara>
+    <formalpara>
+      <title>Server for event charging</title>
+      <para>Example service acts as simple server. It awaits for CCR message. Once client sends it(EDS) example receives it. Simplest processing of this request includes only sending success answer</para>
+    </formalpara>
+    <formalpara>
+      <title>Server for session based charging</title>
+      <para>Example acts a bit different than in above case. Service awaits session based exchange - that is CCRs with CC-Request-Type which follows sequence INITIAL, UPDATE(zero or more) and TERMINATION.</para>
+    </formalpara>
+    <section>
+      <title>Example Configuration</title>
+      <para>Example is confgiure via file <filename>example.properties</filename></para>
+      <programlisting># Act as &quot;client&quot; or &quot;server&quot; (default: server)
+example.mode=client
+
+# The AS IP Address, Port and Realm (default: 127.0.0.1 / 1812 / mobicents.org)
+origin.ip=127.0.0.1
+origin.port=1812
+origin.realm=mobicents.org
+
+# The Remote IP Address, Port and Realm (default: 127.0.0.1 / 3868 / mobicents.org)
+destination.ip=127.0.0.1
+destination.port=3868
+destination.realm=mobicents.org</programlisting>
+    </section>
+  </section>
 </section>

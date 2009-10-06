@@ -2,5 +2,200 @@
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
 <section>
   <title>Mobicents Diameter Ro</title>
-  <para>Text</para>
+  <para>Ro is on of two IMS reference point for charging. It covers online charging - scenarios  where charging information can affect, in real-time, the service rendered. Therefore, a direct interaction of the charging mechanism with session/service control is required. Ro is defined in <ulink url="http://www.3gpp.org/ftp/Specs/html-info/32299.htm">TS32.299</ulink>. </para>
+  <para>Charging involves two peers:</para>
+  <itemizedlist>
+    <listitem>
+      <para>CTF (Charging Trigger Function) - makes decision how to charge specific service for user, issues request/requests to server(OCF)</para>
+    </listitem>
+    <listitem>
+      <para>OCF(Online Charging Function) - performs actual charging based on received message type, service logic and user profile information.</para>
+    </listitem>
+  </itemizedlist>
+  <para>Ro application does not define new FSM or messages. It make use of commands, AVPs and FSM defined by base CCA application. Please refer to <!--TODO: add ref here, not sure how to handle this, some refs are broken, Jared?--> </para>
+  <para>Ro RA is responsible for managing state associated with different charging scenarios. TS defines following online scenarios:</para>
+  <itemizedlist>
+    <listitem>
+      <para>Imediate Event Charging(IEC) - CTF send one time request. This request contains predefined set of AVPs indicating which service has been activated or how many units consumed, this depends on application logic.</para>
+    </listitem>
+    <listitem>
+      <para>Event Charing wiht Unit Reservation(ECUR) - CTF issues request which indicates desired unit count for reservation. On service delivery, CTF issues antoher request which indicates actauly consumed units. Units can be of any type, its application specific.</para>
+    </listitem>
+    <listitem>
+      <para>Session Charging with Unit Reservation(SCUR) - as above, however reservation can happen more than once.</para>
+    </listitem>
+  </itemizedlist>
+  <figure>
+    <title>IEC Example Flow</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/dia-RoExamples-dia-IECFlow.jpg" format="JPG"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
+  <para>Above figure shows IEC interaction. Actions performed in diagram can be described as follows:</para>
+  <itemizedlist>
+    <listitem>
+      <para>(1)UA issues  service request - be it SMS, MMS, Data chunk transfer. </para>
+    </listitem>
+    <listitem>
+      <para>(2) CTF sends proper CCR. CC-Request-Type is set to enum value of &quot;EVENT&quot;. This request holds indication which allows OCF to perform some actions.</para>
+    </listitem>
+    <listitem>
+      <para>(3) OCF process request.</para>
+    </listitem>
+    <listitem>
+      <para>(4) OCF sends CCA back to CTF. On success answer CTF grants service to UA.</para>
+    </listitem>
+    <listitem>
+      <para>(5) Service is delivered.</para>
+    </listitem>
+  </itemizedlist>
+  <figure>
+    <title>ECUR Example flow</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/dia-RoExamples-dia-ECURFlow.jpg" format="JPEG"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
+  <para>Above figure shows ECUR interaction. Performed action can be described as follows:</para>
+  <itemizedlist>
+    <listitem>
+      <para>(1)UA issues  service request - this is more complicated case, service can be something like charging for phone call, but up to certain limit.</para>
+    </listitem>
+    <listitem>
+      <para>(2) CTF sends CCR to OCF. CC-Request-Type is set to enum value of &quot;INITIAL&quot;</para>
+    </listitem>
+    <listitem>
+      <para>(3) OCF process request</para>
+    </listitem>
+    <listitem>
+      <para>(4) OCF reserves certain amount of units, sends back CCA with this information</para>
+    </listitem>
+    <listitem>
+      <para>(5) CTF grants service to UA</para>
+    </listitem>
+    <listitem>
+      <para>(6) UA notifies that it does not require service any more(this does no have to happen, it may be AS decision)</para>
+    </listitem>
+    <listitem>
+      <para>(7) CTF sends CCR to OCF. CC-Request-Type is set to enum value of &quot;TERMINATION&quot;. CCR contains information on used units</para>
+    </listitem>
+    <listitem>
+      <para>(8) OCF processes request</para>
+    </listitem>
+    <listitem>
+      <para>(9)OCF sends back CCA.</para>
+    </listitem>
+    <listitem>
+      <para>(10)Service delivery ends</para>
+    </listitem>
+  </itemizedlist>
+  <figure>
+    <title>SCUR Example flow</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/dia-RoExamples-dia-SCURFlow.jpg" format="JPEG"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
+  <para>Above diagram shows example SCUR interaction. Actions are exactly the same as for ECUR case. However SCUR allows to use another type of message - where CC-Request-Type is set to value of enum &quot;UPDATE&quot;. CC-Request-Type per message is as follows:</para>
+  <itemizedlist>
+    <listitem>
+      <para>INITIAL - (2)</para>
+    </listitem>
+    <listitem>
+      <para>UPDATE - (6),(9)</para>
+    </listitem>
+    <listitem>
+      <para>TERMINATION - (13)</para>
+    </listitem>
+  </itemizedlist>
+  <section>
+    <title>Configuration</title>
+    <para><!--TODO: add any or remove.--></para>
+  </section>
+  <section>
+    <title>Resource Adaptor Type</title>
+    <para>Resource Adaptor Type provides following elements:</para>
+    <itemizedlist>
+      <listitem>
+        <para>Activities</para>
+      </listitem>
+      <listitem>
+        <para>Provider</para>
+      </listitem>
+      <listitem>
+        <para>Message Factory</para>
+      </listitem>
+    </itemizedlist>
+    <formalpara>
+      <title>Activities</title>
+      <para>The following activities are available, with the API definition listed for reference.  The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.</para>
+    </formalpara>
+    <para>The lifecycle of an activity depends on the type of received request and the application interaction. Request type is defined by CC-Request-Type AVP. In case of session like interaction(SCUR), the activity  timeout is taken into consideration.</para>
+    <para>The activitites allows the Ro application to retrieve message and AVP factories bound to the current session.  The functionality offered is limited only  by the implementation used.</para>
+    <variablelist>
+      <title>Ro Activities</title>
+      <varlistentry>
+        <term>RoClientSession</term>
+        <listitem>
+          <para>created on on demands. Life cycle depends on CC-Request-Type content sent as first message. Its subject to timeout if answer is not received.</para>
+          <programlisting role="JAVA"><!--TODO: add this, we had example but its gone?--></programlisting>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>RoServerSession</term>
+        <listitem>
+          <para>created by RA when request enters SLEE. Life cycle depends on CC-Request-Type AVP content recevied in first request.</para>
+          <programlisting role="JAVA"><!--TODO: Add code here, we had example, but its gone?--></programlisting>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <formalpara>
+      <title>Provider</title>
+      <para>Provider allows services to create activities, access some topology information and send/receive message in synchornous way.</para>
+    </formalpara>
+    <para>The API for the Provider is more than 100 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/ro/ratype/src/main/java/net/java/slee/resource/diameter/ro/RoProvider.java">RoProvider.java</ulink></para>
+    <formalpara>
+      <title>Message Factory</title>
+      <para>The Message Factory creates events  that can be executed within the JAIN SLEE Server.  Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.</para>
+    </formalpara>
+    <programlisting role="JAVA">public interface RoMessageFactory {
+
+  public static final long _RO_TGPP_VENDOR_ID = 10415L;
+  public static final int  _RO_AUTH_APP_ID = 4;
+
+  /**
+   * Creates an empty Credit Control Request message.
+   * 
+   * @return
+   */
+  public CreditControlRequest createRoCreditControlRequest();
+  
+  /**
+   * Creates a Credit Control Request message with the Session-Id AVP populated with the sessionId parameter.
+   * 
+   * @param sessionId
+   * @return
+   */
+  public CreditControlRequest createRoCreditControlRequest(String sessionId);
+  
+  /**
+   * Returns a reference to a message factory that can be used to create AVPs defined by the Diameter Base specification.
+   * 
+   * @return Base Diameter message factory
+   */
+  public DiameterMessageFactory getBaseMessageFactory();
+  
+}
+</programlisting>
+  </section>
+  <section>
+    <title>API usage examples</title>
+  </section>
+  <section>
+    <title>Examples</title>
+  </section>
 </section>
