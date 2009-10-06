@@ -26,7 +26,7 @@
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Base.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Client.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Server.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_CCA.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Ro.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Rf.xml" encoding="UTF-8"/>
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_CCA.xml" encoding="UTF-8"/>
 </chapter>

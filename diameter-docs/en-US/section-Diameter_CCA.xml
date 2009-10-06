@@ -1,16 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
-<section>
+<section id="cca-Credit_Control_Application">
   <title>Mobicents Diameter CCA</title>
   <para>Credit Control Application provides common part for credit applications. It defines minimal set of primitives to allow credit session management and to convey enough information to perform charging.</para>
   <para>It is defined in <ulink url="http://tools.ietf.org/html/rfc4006">rfc4006</ulink>. Declared state machines are based on following messsage:</para>
-  <table>
-    <title>CCA Messages<!--TODO: can someone add this? Serna dies when I perform some operation on table...--></title>
-  </table>
-  <para>RFC decalres only basic charging scenarios, which are event charing</para>
+<!--TODO: CCA Messages can someone add this? Serna dies when I perform some operation on table...-->  <para>RFC decalres only basic charging scenarios, which are event charing</para>
   <section>
     <title>Configuration</title>
-    <para/>
+    <para>Currently RA does not support any configuration options.</para>
   </section>
   <section>
     <title>Resource Adaptor Type</title>
@@ -46,35 +43,77 @@
         <term>CreditControlClientSession</term>
         <listitem>
           <para>Created on demand. Life cycle depends on request type. Request type is indicated by CC-Request-Type AVP. </para>
-          <programlisting role="JAVA">private String originIP = &quot;127.0.0.1&quot;;
-private String originPort = &quot;1812&quot;;
-private String originRealm = &quot;mobicents.org&quot;;
+          <programlisting role="JAVA">/**
+   * Create a Credit-Control-Request message pre-populated with the AVPs
+   * appropriate for this session.
+   * 
+   * @return a new CreditControlRequest
+   */
+  CreditControlRequest createCreditControlRequest();
 
-private String destinationIP = &quot;127.0.0.1&quot;;
-private String destinationPort = &quot;3868&quot;;
-private String destinationRealm = &quot;mobicents.org&quot;;
+  /**
+   * Send an event Credit-Control-Request. An event containing the answer will
+   * be fired on this activity.
+   * 
+   * @param ccr the CreditControlRequest to send
+   * @throws IOException
+   */
+  void sendCreditControlRequest(CreditControlRequest ccr) throws IOException;
 
-....
+  /**
+   * Send an initial Credit-Control-Request. An event containing the answer
+   * will be fired on this activity.
+   * 
+   * @param ccr the CreditControlRequest to send
+   * @throws IOException
+   */
+  void sendInitialCreditControlRequest(CreditControlRequest ccr) throws IOException;
 
-try {
-CreditControlClientSession session = this.provider.createClientSession();
-ActivityContextInterface localACI = this.acif.getActivityContextInterface(session);
-localACI.attach(this.getSbbContext().getSbbLocalObject());
+  /**
+   * Send a Re-Auth-Answer message.
+   * 
+   * @param rar the CreditControlRequest to send
+   * @throws IOException
+   */
+  void sendReAuthAnswer(ReAuthAnswer rar) throws IOException;
 
-CreditControlRequest request = session.createCreditControlRequest();
+  /**
+   * Send an update (intermediate) Credit-Control-Request. An event containing
+   * the answer will be fired on this activity.
+   * 
+   * @param ccr the CreditControlRequest to send
+   * @throws IOException
+   */
+  void sendUpdateCreditControlRequest(CreditControlRequest ccr) throws IOException;
 
-....
+  /**
+   * Send a termination Credit-Control-Request. An event containing the answer
+   * will be fired on this activity. The activity will end when the event is
+   * fired.
+   * 
+   * @param ccr the CreditControlRequest to send
+   * @throws IOException 
+   */
+  void sendTerminationCreditControlRequest(CreditControlRequest ccr) throws IOException;
+/**
+   * Provides session state information. CC session must conform to CC FSM as
+   * described in &lt;a href=&quot;link http://rfc.net/rfc4006.html#s7&quot;&gt;section 7 of rfc4006&lt;/a&gt;
+   * 
+   * @return instance of {@link CreditControlSessionState}
+   */
+  public CreditControlSessionState getState();
 
-rsu.setCreditControlInputOctets(10);
-rsu.setCreditControlMoneyAvp(ccMoney);
-rsu.setCreditControlServiceSpecificUnits(1000);
-rsu.setCreditControlTime(100);
-rsu.setCreditControlTotalOctets(5000);
+  /**
+   * Returns the session ID of the credit control session, which uniquely
+   * identifies the session.
+   * 
+   * @return 
+   */
+  public String getSessionId();
 
-session.sendCreditControlRequest(request);
-} catch (Exception e) {
-logger.error(&quot;Failed to create/send Credit-Control-Request.&quot;, e);
-}
+  public CreditControlAVPFactory getCCAAvpFactory();
+
+  public CreditControlMessageFactory getCCAMessageFactory();
 </programlisting>
         </listitem>
       </varlistentry>
@@ -82,103 +121,49 @@ logger.error(&quot;Failed to create/send Credit-Control-Request.&quot;, e);
         <term>CreditControlServerSession</term>
         <listitem>
           <para>Created once request is received and there is no matching activity for it. Its life cycle is identical to client activity.</para>
-          <programlisting role="JAVA">public void onCreditControlRequest(CreditControlRequest request, ActivityContextInterface aci) {
-if (logger.isInfoEnabled())
-logger.info(&quot;Received Credit-Control-Request (Application-Id[&quot; + request.getHeader().getApplicationId() + &quot;].&quot;);
+          <programlisting role="JAVA"> /**
+   * Create a Credit-Control-Answer message pre-populated with the AVPs
+   * appropriate for this session.
+   * 
+   * @return a new CreditControlAnswer
+   */
+  CreditControlAnswer createCreditControlAnswer();
 
-// INITIAL_REQUEST(1), UPDATE_REQUEST(2), TERMINATION_REQUEST(3),
-// EVENT_REQUEST(4)
-CreditControlServerSession session = (CreditControlServerSession) aci.getActivity();
-CreditControlAnswer answer = null;
+  /**
+   * Send a Credit-Control-Answer message to the CC client.
+   * 
+   * @param cca the CreditControlAnswer to send
+   * @throws IOException
+   */
+  void sendCreditControlAnswer(CreditControlAnswer cca) throws IOException;
 
-switch (request.getCcRequestType().getValue()) {
-case 1:
-try {
-if (logger.isInfoEnabled())
-logger.info(&quot;Got INITIAL_REQUEST(1).&quot;);
+  /**
+   * Send a Re-Auth-Request message to the CC client.
+   * 
+   * @param rar the ReAuthRequest to send
+   * @throws IOException 
+   * @throws IOException
+   */
+  void sendReAuthRequest(ReAuthRequest rar) throws IOException;
+/**
+   * Provides session state information. CC session must conform to CC FSM as
+   * described in &lt;a href=&quot;link http://rfc.net/rfc4006.html#s7&quot;&gt;section 7 of rfc4006&lt;/a&gt;
+   * 
+   * @return instance of {@link CreditControlSessionState}
+   */
+  public CreditControlSessionState getState();
 
-if (getSentInitialAnswer()) {
-logger.error(&quot;Error. Initial answer already sent! Aborting.&quot;);
-return;
-}
+  /**
+   * Returns the session ID of the credit control session, which uniquely
+   * identifies the session.
+   * 
+   * @return 
+   */
+  public String getSessionId();
 
-answer = session.createCreditControlAnswer();
-answer.setResultCode(2001);
-if (logger.isInfoEnabled()) {
-logger.info(&quot;Processed Credit-Control-Request:\n&quot; + request);
-logger.info(&quot;Sending Credit-Control-Answer:\n&quot; + answer);
-}
+  public CreditControlAVPFactory getCCAAvpFactory();
 
-session.sendCreditControlAnswer(answer);
-this.setSentInitialAnswer(true);
-} catch (Exception e) {
-logger.error(&quot;Failed to create/send Credit-Control-Answer to reply INITIAL_REQUEST(1).&quot;, e);
-}
-break;
-case 2:
-try {
-if (logger.isInfoEnabled())
-logger.info(&quot;Got UPDATE_REQUEST(2).&quot;);
-
-if (getSentUpdateAnswer()) {
-logger.error(&quot;Error. Update answer already sent! Aborting.&quot;);
-return;
-}
-
-answer = session.createCreditControlAnswer();
-answer.setResultCode(2001);
-if (logger.isInfoEnabled()) {
-logger.info(&quot;Processed Credit-Control-Request:\n&quot; + request);
-logger.info(&quot;Sending Credit-Control-Answer:\n&quot; + answer);
-}
-session.sendCreditControlAnswer(answer);
-setSentUpdateAnswer(true);
-} catch (Exception e) {
-logger.error(&quot;Failed to create/send Credit-Control-Answer to reply UPDATE_REQUEST(2).&quot;, e);
-}
-break;
-case 3:
-try {
-if (logger.isInfoEnabled())
-logger.info(&quot;Got TERMINATION_REQUEST(3).&quot;);
-
-if (getSentTerminationAnswer()) {
-logger.error(&quot;Error. Termination answer already sent! Aborting.&quot;);
-return;
-}
-
-answer = session.createCreditControlAnswer();
-answer.setResultCode(2001);
-if (logger.isInfoEnabled()) {
-logger.info(&quot;Processed Credit-Control-Request:\n&quot; + request);
-logger.info(&quot;Sending Credit-Control-Answer:\n&quot; + answer);
-}
-session.sendCreditControlAnswer(answer);
-setSentTerminationAnswer(true);
-} catch (Exception e) {
-logger.error(&quot;Failed to create/send Credit-Control-Answer to reply TERMINATION_REQUEST(3).&quot;, e);
-}
-break;
-case 4:
-try {
-if (logger.isInfoEnabled())
-logger.info(&quot;Got EVENT_REQUEST(4).&quot;);
-
-answer = session.createCreditControlAnswer();
-answer.setResultCode(2001);
-if (logger.isInfoEnabled())
-logger.info(&quot;Sending Credit-Control-Answer:\n&quot; + answer);
-
-session.sendCreditControlAnswer(answer);
-} catch (Exception e) {
-logger.error(&quot;Failed to create/send Credit-Control-Answer to reply EVENT_REQUEST(4).&quot;, e);
-}
-break;
-
-default:
-logger.error(&quot;Unexpected CC-Request-Type in message: &quot; + request.getCcRequestType() + &quot;. Aborting...&quot;);
-}
-}</programlisting>
+  public CreditControlMessageFactory getCCAMessageFactory();</programlisting>
         </listitem>
       </varlistentry>
     </variablelist>
@@ -295,7 +280,7 @@ logger.error(&quot;Failed to create/send Credit-Control-Request.&quot;, e);
     <para>The following code demonstrates how CCR is received and how different state machines are handled.</para>
     <example>
       <title>Handling CCR</title>
-      <programlisting role="JAVA">public void onCreditControlRequest(CreditControlRequest request, ActivityContextInterface aci) {
+      <programlisting role="JAVA">public void onCreditControlRequest(CreditControlRequest request, ActivityContextInterface aci) {
 if (logger.isInfoEnabled())
 logger.info(&quot;Received Credit-Control-Request (Application-Id[&quot; + request.getHeader().getApplicationId() + &quot;].&quot;);
 

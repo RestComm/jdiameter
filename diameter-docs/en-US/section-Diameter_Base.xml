@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
-<section>
+<section id="db-Diabeter_Base">
   <title>Mobicents Diameter Base</title>
   <para>The Base RA  provides the Base application layer to SLEE, and base factories to resource adaptors in other applications. Therefore Base is a dependency for any other Diameter resource adaptor.</para>
   <para>The  Base RA is responsible for managing the connection between peers and provides basic authentication, accounting, and session management. Diameter Base can be extended to function with other applications because its factories provide methods for creating  raw messages and AVPs.  In order for the application to be compliant with the specification, state machines should be implemented at some level within the implementation.</para>
@@ -110,17 +110,17 @@
   </table>
   <section>
     <title>Configuration</title>
-    <para>Base RA entity supports four configuration properties that must be correctly configured before  the RA can fucntion correctly.      Properties are grouped in pairs, and each property contains a comma separated list of values (of type long).</para>
-    <para>The following property pairs are available for the Base RA:</para>
+    <para>Base RA entity supports four configuration properties that must be correctly configured before  the RA can fucntion correctly. RA supports two configuration properties, one for authentication applications and  one for accounting applications.</para>
+    <para>The following named properties  are available for the Base RA:</para>
     <para><itemizedlist>
         <listitem>
-          <para><literal>authVendorIds</literal> and <literal>authAppIds</literal></para>
+          <para>authApplicationIds</para>
         </listitem>
         <listitem>
-          <para><literal>acctVendorIds</literal> and <literal>acctAppIds</literal></para>
+          <para>acctApplicationIds</para>
         </listitem>
       </itemizedlist></para>
-    <para>The configuration property pairs can be configured using the following methods:</para>
+    <para>The configuration properties can be configured using the following methods:</para>
     <itemizedlist>
       <listitem>
         <para>Using Java XML Mapping (JXM) operations, available through the Management Console.</para>
@@ -129,29 +129,23 @@
         <para>Manually declaring the property pairs in the  <filename>resource-adaptor-jar.xml</filename> file within the <filename>base-ra-<replaceable>[version]</replaceable>-DU.jar</filename>, <filename>base-ra-<replaceable>[version]</replaceable>.jar</filename>, or <filename>META-INF</filename> files.</para>
       </listitem>
     </itemizedlist>
-    <para>Regardless of the configuration method used, the length of the property pairs must be equal.  For example, <literal>acctVendorIds.split(&quot;,&quot;).length == acctAppIds.split(&quot;,&quot;).length</literal>.  The application vendor ID and application ID are matched based on index of occurance.  For example, <literal>ApplicationId(acctVendorIds[index],acctAppIds[index])</literal>.  If no vendor is specified, the value must be set to <literal>0</literal>.</para>
+    <para>Each property consists of value pairs. Value pairs are separated from each other with &quot;,&quot; <!--TODO: add markup here for &quot;,&quot;-->. Each value pair consists of two long numbers separated with &quot;:&quot;. First number indicate vendor of supported application. Second is application id arbitrary assigned by IANA.</para>
+    <para>Each value pair identifies application that Base RA should advertise as supported. Some application do not have vendor assigned. In this case &quot;0&quot; is to be used as vendor id.</para>
     <example>
       <title>Configuring </title>
       <para>The following XML sample demonstrates how to configure an authentication application and two accounting applications in the <filename>resource-adaptor-jar.xml</filename>.  Note that each configuration property pair contains an equal value pair length.</para>
       <programlisting role="XML">&lt;config-property&gt;
-    &lt;config-property-name&gt;authVendorIds&lt;/config-property-name&gt;
+    &lt;description&gt;List of supported Authorization Application Ids in form of {vendor}:{application-id}, separated by comma (&apos;,&apos;)&lt;/description&gt;
+    &lt;config-property-name&gt;authApplicationIds&lt;/config-property-name&gt;
     &lt;config-property-type&gt;java.lang.String&lt;/config-property-type&gt;
-    &lt;config-property-value&gt;0&lt;/config-property-value&gt;
+    &lt;config-property-value&gt;193:19302&lt;/config-property-value&gt;
 &lt;/config-property&gt;
+
 &lt;config-property&gt;
-    &lt;config-property-name&gt;authAppIds&lt;/config-property-name&gt;
+    &lt;description&gt;List of supported Accounting Application Ids in form of {vendor}:{application-id}, separated by comma (&apos;,&apos;)&lt;/description&gt;
+    &lt;config-property-name&gt;acctApplicationIds&lt;/config-property-name&gt;
     &lt;config-property-type&gt;java.lang.String&lt;/config-property-type&gt;
-    &lt;config-property-value&gt;4&lt;/config-property-value&gt;
-&lt;/config-property&gt;
-&lt;config-property&gt;
-    &lt;config-property-name&gt;acctVendorIds&lt;/config-property-name&gt;
-    &lt;config-property-type&gt;java.lang.String&lt;/config-property-type&gt;
-    &lt;config-property-value&gt;193,14&lt;/config-property-value&gt;
-&lt;/config-property&gt;
-&lt;config-property&gt;
-    &lt;config-property-name&gt;acctAppIds&lt;/config-property-name&gt;
-    &lt;config-property-type&gt;java.lang.String&lt;/config-property-type&gt;
-    &lt;config-property-value&gt;19302,15&lt;/config-property-value&gt;
+    &lt;config-property-value&gt;0:0, 193:19302&lt;/config-property-value&gt;
 &lt;/config-property&gt;</programlisting>
     </example>
   </section>

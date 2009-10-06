@@ -2,5 +2,256 @@
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
 <section>
   <title>Mobicents Diameter Sh (Server)</title>
-  <para>Text</para>
+  <para>The Sh interface is the reference for interactions between the following servers:</para>
+  <itemizedlist>
+    <listitem>
+      <para>Home Subscriber Server (HSS) and the SIP Application Server (AS)</para>
+    </listitem>
+    <listitem>
+      <para>HSS and the Open Service Access (OSA) Service Capability Server (SCS)  in the IP Multimedia Subsystem (IMS)</para>
+    </listitem>
+  </itemizedlist>
+  <para>The standard interface is described in the 3GPP Specifications  <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29328.htm">TS29.328</ulink> and <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29329.htm">TS29.329</ulink>.  </para>
+  <para>For the purposes of this user guide, the following information relates to HSS and AS interactions, and only within the parameters of client-mode.  Sh (Server)   provides a number of message commands that can be used within the application.</para>
+  <table frame="all" pgwide="1" id="table-Diameter_Sh_Client_Messages">
+    <title>Diameter Sh (Server) Messages</title>
+    <tgroup cols="5" colsep="1">
+      <colspec colname="c1"/>
+      <colspec colname="c2"/>
+      <colspec colname="c3"/>
+      <colspec colname="c4"/>
+      <colspec colname="c5"/>
+      <thead>
+        <row>
+          <entry>Command Name</entry>
+          <entry>Abbreviation</entry>
+          <entry>Code</entry>
+          <entry>Source</entry>
+          <entry>Destination</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry>User-Data-Request</entry>
+          <entry>UDR</entry>
+          <entry>306</entry>
+          <entry>AS</entry>
+          <entry>HSS</entry>
+        </row>
+        <row>
+          <entry>User-Data-Answer</entry>
+          <entry>UDA</entry>
+          <entry>306</entry>
+          <entry>HSS</entry>
+          <entry>AS</entry>
+        </row>
+        <row>
+          <entry>Profile-Update-Request</entry>
+          <entry>PUR </entry>
+          <entry>307</entry>
+          <entry>AS</entry>
+          <entry>HSS</entry>
+        </row>
+        <row>
+          <entry>Profile-Update-Answer</entry>
+          <entry>PUA </entry>
+          <entry>307</entry>
+          <entry>HSS</entry>
+          <entry>AS</entry>
+        </row>
+        <row>
+          <entry>Subscribe-Notifications-Request</entry>
+          <entry>SNR</entry>
+          <entry>308</entry>
+          <entry>AS</entry>
+          <entry>HSS</entry>
+        </row>
+        <row>
+          <entry>Subscribe-Notifications-Answer</entry>
+          <entry>SNA</entry>
+          <entry>308</entry>
+          <entry>HSS</entry>
+          <entry>AS</entry>
+        </row>
+        <row>
+          <entry>Push-Notification-Request</entry>
+          <entry>PNR</entry>
+          <entry>309</entry>
+          <entry>HSS</entry>
+          <entry>AS</entry>
+        </row>
+        <row>
+          <entry>Push-Notification-Answer</entry>
+          <entry>PNA</entry>
+          <entry>309</entry>
+          <entry>AS</entry>
+          <entry>HSS</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </table>
+<!--TODO: paragraphs need rework.  Copied directly from wiki.-->  <para>As can be seen from the Command Names, these are related to managing User Data in the HSS. UDR/UDA is used in order to request data from the User profile. Client (AS) sends the request indicating which data he wants (see below for possible kinds of data) and if it has permissions on the HSS, they will be received via UDA. </para>
+  <para>PUR is meant to be used to update the profile of the user, and the success (or not) of the action is reported back in PUA. SNR offers the possibility to request for changes made in the user profile. If SNR is successful a SNA will be received stating that the operation was successful and when there are profile changes, a PNR will be sent by the HSS to the AS (this is the only time HSS initiates conversation) and the AS should acknowledge with a PNA.</para>
+  <section>
+    <title>Configuration</title>
+    <para>Currently Sh Server RA does not support any configuration options.</para>
+  </section>
+  <section>
+    <title>Resource Adaptor Type</title>
+    <para>The resource adapter  provides the following types:</para>
+    <itemizedlist>
+      <listitem>
+        <para>Activities</para>
+      </listitem>
+      <listitem>
+        <para>Provider</para>
+      </listitem>
+      <listitem>
+        <para>Message Factory</para>
+      </listitem>
+    </itemizedlist>
+    <formalpara>
+      <title>Activities</title>
+      <para>The following activities are available, with the API definition listed for reference.  The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.  </para>
+    </formalpara>
+    <para>The lifecycle of an activity depends on the type of received request and the application interaction.  In the case of a subscription activity, the activity  timeout is taken into consideration because the subscription may be time-based.  </para>
+    <para>The activitites allows the Sh (Server) application to retrieve message and AVP factories bound to the current session.  The functionality offered is limited only  by the implementation used. </para>
+    <variablelist>
+      <title>Diameter Sh (Server) Activities</title>
+      <varlistentry>
+        <term>ShServerActivity</term>
+        <listitem>
+          <para>This is base activity for Sh server side. It is created for event based interaction - like user data requests or profile update requests. Server activity ends when answer is sent back to client. It is created automaticly for UDR and PUR is received.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <programlisting role="JAVA">TODO: Program listing is over 100 lines
+</programlisting>
+    <variablelist>
+      <varlistentry>
+        <term>ShServerSubscriptionActivity</term>
+        <listitem>
+          <para>This activity is created when client desires to subscribe to changes to profile data. Once initial SNR is received SLEE creates subscription activity. It lingers until termination SNR is received or subscription times out.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <programlisting role="JAVA">TODO: Program listing is over 100 lines
+</programlisting>
+<!--JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.  -->    <formalpara>
+      <title>Provider</title>
+      <para>The API for the ShServerProvider is more than 100 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerProvider.java">ShServerProvider.java in the source code</ulink>.</para>
+    </formalpara>
+    <formalpara>
+      <title>Message Factory</title>
+      <para>The Message Factory creates events  that can be executed within the JAIN SLEE Server.  Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.</para>
+    </formalpara>
+    <para>The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerMessageFactory.java">ShServerMessageFactory.java in the source code</ulink>.</para>
+  </section>
+  <section>
+    <title>API Usage Examples</title>
+    <para>The following examples demonstrate basic usage examples for the Resource Adapter (RA) API.  </para>
+    <example>
+      <title>User-Data-Request</title>
+      <para>Following example shows how UDR is consumed on server side.</para>
+      <programlisting role="JAVA">public void onUserDataRequest(UserDataRequest event, ActivityContextInterface aci) {
+if (logger.isInfoEnabled())
+logger.info(&quot;onUserDataRequest :: &quot; + event);
+
+UserDataAnswer answer = ((ShServerActivity) aci.getActivity()).createUserDataAnswer(2001, false);
+
+try {
+if (logger.isInfoEnabled())
+logger.info(&quot;onUserDataRequest :: Created UDA:\r\n&quot; + answer);
+answer.setUserData(Utils.getUserData(event.getUserIdentity()));
+((ShServerActivity) aci.getActivity()).sendUserDataAnswer(answer);
+} catch (IOException e) {
+logger.error(&quot;Failed to send UDA.&quot;, e);
+}
+}</programlisting>
+    </example>
+    <example>
+      <title>Profile-Update-Request</title>
+      <para>The following code demonstrates how to consume a Profile-Update-Request (PUR).</para>
+      <programlisting role="JAVA">public void onProfileUpdateRequest(ProfileUpdateRequest event, ActivityContextInterface aci) {
+try {
+logger.info(&quot;onProfileUpdateRequest :: &quot; + event);
+
+ProfileUpdateAnswer answer = ((ShServerActivity) aci.getActivity()).createProfileUpdateAnswer(2001, false);
+
+logger.info(&quot;Created Profile-Update-Answer:\r\n&quot; + answer);
+Utils.updateUserData(event.getUserIdentity(),event.getUserIdentity());
+((ShServerActivity) aci.getActivity()).sendProfileUpdateAnswer(answer);
+} catch (Exception e) {
+logger.error(&quot;Failed to create/send PUA.&quot;, e);
+}
+}</programlisting>
+    </example>
+    <example>
+      <title>Subscribe-Notification-Request</title>
+      <para>The following example shows simple handling of Subscribe-Notification-Request (SNR)</para>
+      <programlisting role="JAVA">public void onSubscribeNotificationsRequest(SubscribeNotificationsRequest event, ActivityContextInterface aci) {
+logger.info(&quot;onSubscribeNotificationsRequest :: &quot; + event);
+
+SubscribeNotificationsAnswer answer = ((ShServerSubscriptionActivity) aci.getActivity()).createSubscribeNotificationsAnswer(2001, false);
+
+try {
+// This will be fixed in B2, we need more accessors
+
+
+logger.info(&quot; onSubscribeNotificationsRequest :: Created SNA:\r\n&quot; + answer);
+
+((ShServerSubscriptionActivity) aci.getActivity()).sendSubscribeNotificationsAnswer(answer);
+
+if (event.getSubsReqType() == SubsReqType.SUBSCRIBE) {
+logger.info(&quot;Setting Timer for firing PNR in 15 seconds...&quot;);
+
+TimerOptions options = new TimerOptions();
+timerFacility.setTimer(aci, null, System.currentTimeMillis() + 3000, options);
+}
+} catch (Exception e) {
+logger.error(&quot;Failed to create/send SNA.&quot;, e);
+}
+}</programlisting>
+    </example>
+  </section>
+  <section>
+    <title>Examples</title>
+    <para>The sample application provided for Diameter Sh (Client) supports two scenarios:</para>
+    <itemizedlist>
+      <listitem>
+        <para>Application is requested for user data</para>
+      </listitem>
+      <listitem>
+        <para>Application receives subscription to user data</para>
+      </listitem>
+    </itemizedlist>
+    <formalpara>
+      <title>Application is requested for user data</title>
+      <para>In this case example simply sends request to remote peer (HSS). It simply requests data for certain user.</para>
+    </formalpara>
+    <figure id="figure-Client_Application_Message_Flow_1">
+      <title>Data Request Flow</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dia-ShServerExamples-dia-UDRFlow.jpg" format="JPG"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <formalpara>
+      <title>Application receives subscription to user data</title>
+      <para>In this case example service subscribes in HSS to changes to user profile. Once subscribtion is estabilished, example service will receive .  </para>
+    </formalpara>
+    <figure id="figure-Server_Application_Message_Flow_1">
+      <title>Subscribe Request Message Flow</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dia-ShServerExamples-dia-SNRFlow.jpg" format="JPG"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <section>
+      <title>Configuration</title>
+      <para>Right now example does not support any configuration.</para>
+    </section>
+  </section>
 </section>

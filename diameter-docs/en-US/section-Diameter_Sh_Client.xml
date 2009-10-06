@@ -94,7 +94,8 @@
   <para>PUR is meant to be used to update the profile of the user, and the success (or not) of the action is reported back in PUA. SNR offers the possibility to request for changes made in the user profile. If SNR is successful a SNA will be received stating that the operation was successful and when there are profile changes, a PNR will be sent by the HSS to the AS (this is the only time HSS initiates conversation) and the AS should acknowledge with a PNA.</para>
   <section>
     <title>Configuration</title>
-    <para><!--TODO: Is this correct, or does this only relate to the example that uses SEAGULL?-->Configuration is made directly in the Sh (Client) code, by enabling or disabling (commenting or uncommenting)  the method calls.  In future releases, a property file will be available to better manage configuration.</para>
+    <para><!--TODO: Is this correct, or does this only relate to the example that uses SEAGULL?
+Comment: Jared this is example stuf, lets put here RA conf.-->Configuration is made directly in the Sh (Client) code, by enabling or disabling (commenting or uncommenting)  the method calls.  In future releases, a property file will be available to better manage configuration.</para>
     <example>
       <title>Configuring </title>
       <para>The following Java  sample shows a Subscribe-Notifications-Request method call, which has been commented out to disable it.</para>
@@ -129,40 +130,33 @@
     <variablelist>
       <title>Diameter Sh (Client) Activities</title>
       <varlistentry>
-        <term>Activity Name</term>
+        <term>ShClientActivity</term>
         <listitem>
-          <para>Activity Description.</para>
+          <para>This is base activity for Sh client side. It is created for event based interaction - like user data requests or profile update requests. Client activity ends when answer is consumed by SLEE.</para>
         </listitem>
       </varlistentry>
     </variablelist>
-    <programlisting role="JAVA">activity example
+    <programlisting role="JAVA">TODO: Program listing is over 100 lines
 </programlisting>
     <variablelist>
       <varlistentry>
-        <term>Activity Name</term>
+        <term>ShClientSubscriptionActivity</term>
         <listitem>
-          <para>Activity Description.</para>
+          <para>This activity is used in cases subscritpion to some HSS data is required. This is long living activity. It is terminated either explicitly by SBB, error response to initial SNR or subscription terminating SNR.</para>
         </listitem>
       </varlistentry>
     </variablelist>
-    <programlisting role="JAVA">activity example
+    <programlisting role="JAVA">TODO: Program listing is over 100 lines
 </programlisting>
-    <variablelist>
-      <varlistentry>
-        <term>Activity Name</term>
-        <listitem>
-          <para>Activity Description.</para>
-        </listitem>
-      </varlistentry>
-    </variablelist>
-    <programlisting role="JAVA">activity example
-</programlisting>
-<!--JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.  -->    <para>The API for the DiameterProvider is more than 100 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/base/ratype/src/main/java/net/java/slee/resource/diameter/base/DiameterProvider.java">DiameterProvider.java in the source code</ulink>.</para>
+<!--JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.  -->    <formalpara>
+      <title>Provider</title>
+      <para>The API for the ShClientProvider is more than 100 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientProvider.java">ShClientProvider.java in the source code</ulink>.</para>
+    </formalpara>
     <formalpara>
       <title>Message Factory</title>
       <para>The Message Factory creates events  that can be executed within the JAIN SLEE Server.  Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.</para>
     </formalpara>
-    <para>The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/base/ratype/src/main/java/net/java/slee/resource/diameter/base/DiameterMessageFactory.java">DiameterMessageFactory.java in the source code</ulink>.</para>
+    <para>The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientMessageFactory.java">ShClientMessageFactory.java in the source code</ulink>.</para>
   </section>
   <section>
     <title>API Usage Examples</title>
@@ -250,86 +244,69 @@
   </section>
   <section>
     <title>Examples</title>
-    <para>The sample application provided for Diameter Sh (Client) sends Sh commands.............</para>
+    <para>The sample application provided for Diameter Sh (Client) supports two scenarios:</para>
     <itemizedlist>
       <listitem>
-        <para>Application acting as a client</para>
+        <para>Application requests user data</para>
       </listitem>
       <listitem>
-        <para>Application acting as a server</para>
-      </listitem>
-      <listitem>
-        <para>Application acting as a relay or proxy.</para>
+        <para>Application subscribes to profiles changes</para>
       </listitem>
     </itemizedlist>
     <formalpara>
-      <title>Application acting as a client</title>
-      <para>In this example, the application acts as a Diameter Accounting Client, which issues a Debit or Refund request to the Ericsson Diameter Server (EDS).  If the message is correctly built, the server will send an answer back to the application stating that the operation was executed correctly.  If the message is incorrectly built, the EDS sends an error message back to the application.</para>
+      <title>Application requests user data</title>
+      <para>In this case example simply sends request to remote peer (HSS). It simply requests data for certain user.</para>
     </formalpara>
-    <para>The message flow for the client application is described in <xref linkend="figure-Client_Application_Message_Flow"/></para>
     <figure id="figure-Client_Application_Message_Flow_1">
-      <title>Client Application Message Flow</title>
+      <title>Data Request Flow</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/dia-BaseExamples-dia-AppActingAsClient.jpg" format="JPG"/>
+          <imagedata fileref="images/dia-ShClientExamples-dia-UDRFlow.jpg" format="JPG"/>
         </imageobject>
       </mediaobject>
     </figure>
     <formalpara>
-      <title>Application acting as a server</title>
-      <para>In this example, the Ericsson SDK acts as the client and the application Service Building Block (SBB) acts as the server. When the request is received from the client, the SBB checks a pre-loaded set of user data and verifies the user exists, and that there is sufficient credit to complete the debit request.  </para>
+      <title>Application subscribes to profiles changes</title>
+      <para>In this case example service subscribes in HSS to changes to user profile. Once subscribtion is estabilished, example service will receive .  </para>
     </formalpara>
-    <para>If both requirements are met, the SBB sends a response with a  2001 (SUCCESS) Credit-Control-Answer message.  If one or all conditions are not met, the appropriate error code  is returned:</para>
-    <itemizedlist>
-      <listitem>
-        <para>No user name match: 5421 (USER_NOT_FOUND)</para>
-      </listitem>
-      <listitem>
-        <para>Not enough credit to complete the transaction: 4241 (INSUFFICIENT_BALANCE).</para>
-      </listitem>
-    </itemizedlist>
-    <para>The message flow for the server application is described in <xref linkend="figure-Server_Application_Message_Flow"/></para>
     <figure id="figure-Server_Application_Message_Flow_1">
-      <title>Server Application Message Flow</title>
+      <title>Subscribe Request Message Flow</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/dia-BaseExamples-dia-AppActingAsServer.jpg" format="JPG"/>
+          <imagedata fileref="images/dia-ShClientExamples-dia-SNRFlow.jpg" format="JPG"/>
         </imageobject>
       </mediaobject>
     </figure>
-    <formalpara>
-      <title>Application acting as a relay or proxy</title>
-      <para>In this example, the application plays the role of a proxy or relay, and handles request and answer message proxying.  Both the Ericsson Client and Server SDK are used in this example.  The example requires the most configuration of all examples:</para>
-    </formalpara>
-    <itemizedlist>
-      <listitem>
-        <para>Ericsson client SDK is connected as a client to Mobicents Diameter through the Diameter Base RA.</para>
-      </listitem>
-      <listitem>
-        <para>Ericsson server SDK is connected as a server to Mobicents Diameter through the Diameter SBB.</para>
-      </listitem>
-      <listitem>
-        <para>Diameter SBB is configured as a proxy.</para>
-      </listitem>
-    </itemizedlist>
-    <para>The Ericsson Client SDK is used to establish the connection to the Ericsson Server SDK behind the Diameter SBB.  In the example, requests received by the SBB are forwarded to the Server SDK, and answers are routed back to the Client SDK.</para>
     <section>
       <title>Configuration</title>
       <para>To configure the examples, changest must be made to the <filename>example.properties</filename> file in the <filename>/du/main/resources</filename> directory.</para>
-      <para>The following example configuration supports two modes: client, and server.  In client mode, the application sends an Accounting Request (ACR). To make the example act as a proxy, settings relating to ACR must be added in order for the application to handle Attribute Value Pairs (AVPs). </para>
+      <para>Aside common properties to configure ip, port and realm example has two properties to control which scenario is enabled. </para>
+      <itemizedlist>
+        <listitem>
+          <para>send.udr - boolean type, if set to true, example will send UDR to remote peer.</para>
+        </listitem>
+        <listitem>
+          <para>send.snr - boolean type, if set to true example will send SNR and await updates on profile changes.</para>
+        </listitem>
+      </itemizedlist>
       <example>
         <title>Setting origin and destination properties</title>
-        <programlisting># Act as &quot;client&quot; or &quot;server&quot; (default: server)
-example.mode=server
+        <programlisting>#                           ##
+# Diameter Sh Client Example #
+##                           #
+
+# Controls how example acts on start, it can either send UDR or SNR
+send.udr = true
+send.snr = false
 
 # The AS IP Address, Port and Realm (default: 127.0.0.1 / 1812 / mobicents.org)
 origin.ip=127.0.0.1
 origin.port=1812
 origin.realm=mobicents.org
 
-# The Remote IP Address, Port and Realm (default: 127.0.0.1 / 21812 / mobicents.org)
+# The Remote IP Address, Port and Realm (default: 127.0.0.1 / 3868 / mobicents.org)
 destination.ip=127.0.0.1
-destination.port=21812
+destination.port=3868
 destination.realm=mobicents.org</programlisting>
       </example>
     </section>
