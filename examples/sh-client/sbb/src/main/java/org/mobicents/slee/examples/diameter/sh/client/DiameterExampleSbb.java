@@ -3,6 +3,7 @@ package org.mobicents.slee.examples.diameter.sh.client;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -60,7 +61,12 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
   private TimerFacility timerFacility = null;
   
   private String originIP = "127.0.0.1";
+  private String originPort = "1812";
+  private String originRealm = "mobicents.org";
+
   private String destinationIP = "127.0.0.1";
+  private String destinationPort = "21812";
+  private String destinationRealm = "mobicents.org";
   
   public void setSbbContext( SbbContext context )
   {
@@ -224,26 +230,46 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
   
   public void onTimerEvent(TimerEvent event, ActivityContextInterface aci)
   {
-	  doSimpleTestsSendUDR();
-	
-	  //doSimpleTestSendSNR();
+	  
+	    Properties props = new Properties();
+		try {
+			props.load(this.getClass().getClassLoader().getResourceAsStream("example.properties"));
+			this.originIP = props.getProperty("origin.ip") == null ? this.originIP : props.getProperty("origin.ip");
+			this.originPort = props.getProperty("origin.port") == null ? this.originPort : props.getProperty("origin.port");
+			this.originRealm = props.getProperty("origin.realm") == null ? this.originRealm : props.getProperty("origin.realm");
+
+			this.destinationIP = props.getProperty("destination.ip") == null ? this.destinationIP : props.getProperty("destination.ip");
+			this.destinationPort = props.getProperty("destination.port") == null ? this.destinationPort : props.getProperty("destination.port");
+			this.destinationRealm = props.getProperty("destination.realm") == null ? this.destinationRealm : props.getProperty("destination.realm");
+			
+			boolean b = Boolean.parseBoolean(props.getProperty("send.udr"));
+			if(b)
+			{
+				
+				doSimpleTestsSendUDR();
+			}
+			b = Boolean.parseBoolean(props.getProperty("send.snr"));
+			if(b)
+			{
+				doSimpleTestSendSNR();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	 
   }
   
   private void doSimpleTestsSendUDR()
   {
-	  logger.info(" On TimerEvent: performing basic creation tests.");
+
 	  logger.info(" On TimerEvent: ShClient activity and messages creation.");
 	  try {
 			ShClientActivity basicClientActivity=this.provider.createShClientActivity();
 			logger.info(" On TimerEvent: activity created");
-			//DiameterMessage msg=((ShClientMessageFactory)basicClientActivity.getDiameterMessageFactory()).createProfileUpdateRequest();
-			//logger.info(" On TimerEvent: PUR created.\n"+msg);
-			//msg=((ShClientMessageFactory)basicClientActivity.getDiameterMessageFactory()).createUserDataRequest();
-			//logger.info(" On TimerEvent: UDR created.\n"+msg);
-			//msg=((ShClientMessageFactory)basicClientActivity.getDiameterMessageFactory()).createPushNotificationAnswer();
-			//logger.info(" On TimerEvent: PUA created.\n"+msg);
-			//msg=((ShClientMessageFactory)basicClientActivity.getDiameterMessageFactory()).createSubscribeNotificationsRequest();
-			//logger.info(" On TimerEvent: SNR created.\n"+msg);
+			
 			ActivityContextInterface localACI=acif.getActivityContextInterface(basicClientActivity);
 			logger.info(" On TimerEvent: ACI created for basicClientActivity");
 			
@@ -270,11 +296,11 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 		      
 		      avps.add( avpFactory.getBaseFactory().createAvp( Avp.VENDOR_SPECIFIC_APPLICATION_ID, new DiameterAvp[]{avpVendorId, avpAcctApplicationId} ) );
 		      
-		      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, ("aaa://" + originIP + ":1812").getBytes() ));
-		      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, "mobicents.org".getBytes() ));
+		      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, ("aaa://" + originIP + ":"+originPort).getBytes() ));
+		      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, originRealm.getBytes() ));
 		      
-		      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, ("aaa://" + destinationIP + ":3868").getBytes() ));
-		      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, "mobicents.org".getBytes() ));
+		      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, ("aaa://" + destinationIP + ":"+destinationPort).getBytes() ));
+		      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, destinationRealm.getBytes() ));
 		      UserIdentityAvp ui=avpFactory.createUserIdentity();
 		      ui.setPublicIdentity("sip:subscriber@mobicents.org");
 
@@ -326,13 +352,13 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 	     
 		//				{ Auth-Session-State }
 		//				{ Origin-Host }
-	      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, "aaa://" + originIP + ":1812".getBytes() ));
+	      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, ("aaa://" + originIP + ":"+originPort).getBytes() ));
 		//				{ Origin-Realm }
-	      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, "mobicents.org".getBytes() ));
+	      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, originRealm.getBytes() ));
 		//				[ Destination-Host ]
-	      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, "aaa://" + destinationIP + ":3868".getBytes() ));
+	      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, ("aaa://" + destinationIP + ":"+destinationPort).getBytes() ));
 		//				{ Destination-Realm }
-	      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, "mobicents.org".getBytes() ));
+	      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, destinationRealm.getBytes() ));
 		//				*[ Supported-Features ]
 		//				{ User-Identity }
 	      UserIdentityAvp ui=avpFactory.createUserIdentity();
