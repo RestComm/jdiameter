@@ -18,7 +18,7 @@
     <title>Event Charging Flow</title>
     <mediaobject>
       <imageobject>
-        <imagedata format="JPEG" fileref="images/dia-RfExamples-dia-EventFlow.jpg"/>
+        <imagedata fileref="images/dia-RfExamples-dia-EventFlow.jpg" format="JPEG"/>
       </imageobject>
     </mediaobject>
   </figure>
@@ -37,7 +37,7 @@
     <title>Session Charging Flow</title>
     <mediaobject>
       <imageobject>
-        <imagedata format="JPEG" fileref="images/dia-RfExamples-dia-SessionFlow.jpg"/>
+        <imagedata fileref="images/dia-RfExamples-dia-SessionFlow.jpg" format="JPEG"/>
       </imageobject>
     </mediaobject>
   </figure>
@@ -230,8 +230,10 @@ AccountingSessionState getAccountingSessionState();</programlisting>
   </section>
   <section>
     <title>API Usage Examples</title>
+    <para>TEXT</para>
   </section>
   <section>
     <title>Examples</title>
+    <para>TEXT</para>
   </section>
 </section>

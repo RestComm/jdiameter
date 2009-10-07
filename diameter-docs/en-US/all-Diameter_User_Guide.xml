@@ -1898,7 +1898,7 @@ rep.isProtected(), value);
 			</para>
 		</listitem>
 	</itemizedlist>
-	<section lang="en-US">
+	<section id="db-Diabeter_Base" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Base</title>
 	<para>
 		The Base RA provides the Base application layer to SLEE, and base factories to resource adaptors in other applications. Therefore Base is a dependency for any other Diameter resource adaptor.
@@ -2135,27 +2135,27 @@ rep.isProtected(), value);
 	<section>
 		<title>Configuration</title>
 		<para>
-			Base RA entity supports four configuration properties that must be correctly configured before the RA can fucntion correctly. Properties are grouped in pairs, and each property contains a comma separated list of values (of type long).
+			Base RA entity supports four configuration properties that must be correctly configured before the RA can fucntion correctly. RA supports two configuration properties, one for authentication applications and one for accounting applications.
 		</para>
 		<para>
-			The following property pairs are available for the Base RA:
+			The following named properties are available for the Base RA:
 		</para>
 		<para>
 			<itemizedlist>
 				<listitem>
 					<para>
-						<literal>authVendorIds</literal> and <literal>authAppIds</literal>
+						authApplicationIds
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<literal>acctVendorIds</literal> and <literal>acctAppIds</literal>
+						acctApplicationIds
 					</para>
 				</listitem>
 			</itemizedlist>
 		</para>
 		<para>
-			The configuration property pairs can be configured using the following methods:
+			The configuration properties can be configured using the following methods:
 		</para>
 		<itemizedlist>
 			<listitem>
@@ -2170,7 +2170,10 @@ rep.isProtected(), value);
 			</listitem>
 		</itemizedlist>
 		<para>
-			Regardless of the configuration method used, the length of the property pairs must be equal. For example, <literal>acctVendorIds.split(",").length == acctAppIds.split(",").length</literal>. The application vendor ID and application ID are matched based on index of occurance. For example, <literal>ApplicationId(acctVendorIds[index],acctAppIds[index])</literal>. If no vendor is specified, the value must be set to <literal>0</literal>.
+			Each property consists of value pairs. Value pairs are separated from each other with "," <!-- TODO: add markup here for &quot;,&quot; -->. Each value pair consists of two long numbers separated with ":". First number indicate vendor of supported application. Second is application id arbitrary assigned by IANA.
+		</para>
+		<para>
+			Each value pair identifies application that Base RA should advertise as supported. Some application do not have vendor assigned. In this case "0" is to be used as vendor id.
 		</para>
 		<example>
 			<title>Configuring </title>
@@ -2179,24 +2182,17 @@ rep.isProtected(), value);
 			</para>
 			
 <programlisting role="XML">&lt;config-property&gt;
-    &lt;config-property-name&gt;authVendorIds&lt;/config-property-name&gt;
+    &lt;description&gt;List of supported Authorization Application Ids in form of {vendor}:{application-id}, separated by comma (',')&lt;/description&gt;
+    &lt;config-property-name&gt;authApplicationIds&lt;/config-property-name&gt;
     &lt;config-property-type&gt;java.lang.String&lt;/config-property-type&gt;
-    &lt;config-property-value&gt;0&lt;/config-property-value&gt;
+    &lt;config-property-value&gt;193:19302&lt;/config-property-value&gt;
 &lt;/config-property&gt;
+
 &lt;config-property&gt;
-    &lt;config-property-name&gt;authAppIds&lt;/config-property-name&gt;
+    &lt;description&gt;List of supported Accounting Application Ids in form of {vendor}:{application-id}, separated by comma (',')&lt;/description&gt;
+    &lt;config-property-name&gt;acctApplicationIds&lt;/config-property-name&gt;
     &lt;config-property-type&gt;java.lang.String&lt;/config-property-type&gt;
-    &lt;config-property-value&gt;4&lt;/config-property-value&gt;
-&lt;/config-property&gt;
-&lt;config-property&gt;
-    &lt;config-property-name&gt;acctVendorIds&lt;/config-property-name&gt;
-    &lt;config-property-type&gt;java.lang.String&lt;/config-property-type&gt;
-    &lt;config-property-value&gt;193,14&lt;/config-property-value&gt;
-&lt;/config-property&gt;
-&lt;config-property&gt;
-    &lt;config-property-name&gt;acctAppIds&lt;/config-property-name&gt;
-    &lt;config-property-type&gt;java.lang.String&lt;/config-property-type&gt;
-    &lt;config-property-value&gt;19302,15&lt;/config-property-value&gt;
+    &lt;config-property-value&gt;0:0, 193:19302&lt;/config-property-value&gt;
 &lt;/config-property&gt;
 </programlisting>
 		</example>
@@ -2884,7 +2880,8 @@ destination.realm=mobicents.org
 	<section>
 		<title>Configuration</title>
 		<para>
-			<!-- TODO: Is this correct, or does this only relate to the example that uses SEAGULL? -->Configuration is made directly in the Sh (Client) code, by enabling or disabling (commenting or uncommenting) the method calls. In future releases, a property file will be available to better manage configuration.
+			<!-- TODO: Is this correct, or does this only relate to the example that uses SEAGULL?
+Comment: Jared this is example stuf, lets put here RA conf. -->Configuration is made directly in the Sh (Client) code, by enabling or disabling (commenting or uncommenting) the method calls. In future releases, a property file will be available to better manage configuration.
 		</para>
 		<example>
 			<title>Configuring </title>
@@ -2939,46 +2936,36 @@ destination.realm=mobicents.org
 		<variablelist>
 			<title>Diameter Sh (Client) Activities</title>
 			<varlistentry>
-				<term>Activity Name</term>
+				<term>ShClientActivity</term>
 				<listitem>
 					<para>
-						Activity Description.
+						This is base activity for Sh client side. It is created for event based interaction - like user data requests or profile update requests. Client activity ends when answer is consumed by SLEE.
 					</para>
 				</listitem>
 			</varlistentry>
 		</variablelist>
 		
-<programlisting role="JAVA">activity example
+<programlisting role="JAVA">TODO: Program listing is over 100 lines
 </programlisting>
 		<variablelist>
 			<varlistentry>
-				<term>Activity Name</term>
+				<term>ShClientSubscriptionActivity</term>
 				<listitem>
 					<para>
-						Activity Description.
+						This activity is used in cases subscritpion to some HSS data is required. This is long living activity. It is terminated either explicitly by SBB, error response to initial SNR or subscription terminating SNR.
 					</para>
 				</listitem>
 			</varlistentry>
 		</variablelist>
 		
-<programlisting role="JAVA">activity example
+<programlisting role="JAVA">TODO: Program listing is over 100 lines
 </programlisting>
-		<variablelist>
-			<varlistentry>
-				<term>Activity Name</term>
-				<listitem>
-					<para>
-						Activity Description.
-					</para>
-				</listitem>
-			</varlistentry>
-		</variablelist>
-		
-<programlisting role="JAVA">activity example
-</programlisting>
-		<!-- JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <para>
-			The API for the DiameterProvider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/base/ratype/src/main/java/net/java/slee/resource/diameter/base/DiameterProvider.java">DiameterProvider.java in the source code</ulink>.
-		</para>
+		<!-- JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <formalpara>
+			<title>Provider</title>
+			<para>
+				The API for the ShClientProvider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientProvider.java">ShClientProvider.java in the source code</ulink>.
+			</para>
+		</formalpara>
 		<formalpara>
 			<title>Message Factory</title>
 			<para>
@@ -2986,7 +2973,7 @@ destination.realm=mobicents.org
 			</para>
 		</formalpara>
 		<para>
-			The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/base/ratype/src/main/java/net/java/slee/resource/diameter/base/DiameterMessageFactory.java">DiameterMessageFactory.java in the source code</ulink>.
+			The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientMessageFactory.java">ShClientMessageFactory.java in the source code</ulink>.
 		</para>
 	</section>
 	
@@ -3088,122 +3075,87 @@ destination.realm=mobicents.org
 	<section>
 		<title>Examples</title>
 		<para>
-			The sample application provided for Diameter Sh (Client) sends Sh commands.............
+			The sample application provided for Diameter Sh (Client) supports two scenarios:
 		</para>
 		<itemizedlist>
 			<listitem>
 				<para>
-					Application acting as a client
+					Application requests user data
 				</para>
 			</listitem>
 			<listitem>
 				<para>
-					Application acting as a server
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Application acting as a relay or proxy.
+					Application subscribes to profiles changes
 				</para>
 			</listitem>
 		</itemizedlist>
 		<formalpara>
-			<title>Application acting as a client</title>
+			<title>Application requests user data</title>
 			<para>
-				In this example, the application acts as a Diameter Accounting Client, which issues a Debit or Refund request to the Ericsson Diameter Server (EDS). If the message is correctly built, the server will send an answer back to the application stating that the operation was executed correctly. If the message is incorrectly built, the EDS sends an error message back to the application.
+				In this case example simply sends request to remote peer (HSS). It simply requests data for certain user.
 			</para>
 		</formalpara>
-		<para>
-			The message flow for the client application is described in <xref linkend="figure-Client_Application_Message_Flow"/>
-		</para>
 		<figure id="figure-Client_Application_Message_Flow_1">
-			<title>Client Application Message Flow</title>
+			<title>Data Request Flow</title>
 			<mediaobject>
 				<imageobject>
-					<imagedata fileref="images/dia-BaseExamples-dia-AppActingAsClient.jpg" format="JPG" scalefit="1"/>
+					<imagedata fileref="images/dia-ShClientExamples-dia-UDRFlow.jpg" format="JPG"/>
 				</imageobject>
 			</mediaobject>
 		</figure>
 		<formalpara>
-			<title>Application acting as a server</title>
+			<title>Application subscribes to profiles changes</title>
 			<para>
-				In this example, the Ericsson SDK acts as the client and the application Service Building Block (SBB) acts as the server. When the request is received from the client, the SBB checks a pre-loaded set of user data and verifies the user exists, and that there is sufficient credit to complete the debit request.
+				In this case example service subscribes in HSS to changes to user profile. Once subscribtion is estabilished, example service will receive .
 			</para>
 		</formalpara>
-		<para>
-			If both requirements are met, the SBB sends a response with a 2001 (SUCCESS) Credit-Control-Answer message. If one or all conditions are not met, the appropriate error code is returned:
-		</para>
-		<itemizedlist>
-			<listitem>
-				<para>
-					No user name match: 5421 (USER_NOT_FOUND)
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Not enough credit to complete the transaction: 4241 (INSUFFICIENT_BALANCE).
-				</para>
-			</listitem>
-		</itemizedlist>
-		<para>
-			The message flow for the server application is described in <xref linkend="figure-Server_Application_Message_Flow"/>
-		</para>
 		<figure id="figure-Server_Application_Message_Flow_1">
-			<title>Server Application Message Flow</title>
+			<title>Subscribe Request Message Flow</title>
 			<mediaobject>
 				<imageobject>
-					<imagedata fileref="images/dia-BaseExamples-dia-AppActingAsServer.jpg" format="JPG" scalefit="1"/>
+					<imagedata fileref="images/dia-ShClientExamples-dia-SNRFlow.jpg" format="JPG"/>
 				</imageobject>
 			</mediaobject>
 		</figure>
-		<formalpara>
-			<title>Application acting as a relay or proxy</title>
-			<para>
-				In this example, the application plays the role of a proxy or relay, and handles request and answer message proxying. Both the Ericsson Client and Server SDK are used in this example. The example requires the most configuration of all examples:
-			</para>
-		</formalpara>
-		<itemizedlist>
-			<listitem>
-				<para>
-					Ericsson client SDK is connected as a client to Mobicents Diameter through the Diameter Base RA.
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Ericsson server SDK is connected as a server to Mobicents Diameter through the Diameter SBB.
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Diameter SBB is configured as a proxy.
-				</para>
-			</listitem>
-		</itemizedlist>
-		<para>
-			The Ericsson Client SDK is used to establish the connection to the Ericsson Server SDK behind the Diameter SBB. In the example, requests received by the SBB are forwarded to the Server SDK, and answers are routed back to the Client SDK.
-		</para>
 		<section>
 			<title>Configuration</title>
 			<para>
 				To configure the examples, changest must be made to the <filename>example.properties</filename> file in the <filename>/du/main/resources</filename> directory.
 			</para>
 			<para>
-				The following example configuration supports two modes: client, and server. In client mode, the application sends an Accounting Request (ACR). To make the example act as a proxy, settings relating to ACR must be added in order for the application to handle Attribute Value Pairs (AVPs).
+				Aside common properties to configure ip, port and realm example has two properties to control which scenario is enabled.
 			</para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						send.udr - boolean type, if set to true, example will send UDR to remote peer.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						send.snr - boolean type, if set to true example will send SNR and await updates on profile changes.
+					</para>
+				</listitem>
+			</itemizedlist>
 			<example>
 				<title>Setting origin and destination properties</title>
 				
-<programlisting># Act as "client" or "server" (default: server)
-example.mode=server
+<programlisting>#                           ##
+# Diameter Sh Client Example #
+##                           #
+
+# Controls how example acts on start, it can either send UDR or SNR
+send.udr = true
+send.snr = false
 
 # The AS IP Address, Port and Realm (default: 127.0.0.1 / 1812 / mobicents.org)
 origin.ip=127.0.0.1
 origin.port=1812
 origin.realm=mobicents.org
 
-# The Remote IP Address, Port and Realm (default: 127.0.0.1 / 21812 / mobicents.org)
+# The Remote IP Address, Port and Realm (default: 127.0.0.1 / 3868 / mobicents.org)
 destination.ip=127.0.0.1
-destination.port=21812
+destination.port=3868
 destination.realm=mobicents.org
 </programlisting>
 			</example>
@@ -3215,26 +3167,1534 @@ destination.realm=mobicents.org
 	<section lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Sh (Server)</title>
 	<para>
-		Text
+		The Sh interface is the reference for interactions between the following servers:
 	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				Home Subscriber Server (HSS) and the SIP Application Server (AS)
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				HSS and the Open Service Access (OSA) Service Capability Server (SCS) in the IP Multimedia Subsystem (IMS)
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>
+		The standard interface is described in the 3GPP Specifications <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29328.htm">TS29.328</ulink> and <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29329.htm">TS29.329</ulink>.
+	</para>
+	<para>
+		For the purposes of this user guide, the following information relates to HSS and AS interactions, and only within the parameters of client-mode. Sh (Server) provides a number of message commands that can be used within the application.
+	</para>
+	<table frame="all" id="table-Diameter_Sh_Server_Messages" pgwide="1">
+		<title>Diameter Sh (Server) Messages</title>
+		<tgroup cols="5" colsep="1">
+			<colspec colname="c1"/>
+			<colspec colname="c2"/>
+			<colspec colname="c3"/>
+			<colspec colname="c4"/>
+			<colspec colname="c5"/>
+			<thead>
+				<row>
+					<entry>
+						Command Name
+					</entry>
+					<entry>
+						Abbreviation
+					</entry>
+					<entry>
+						Code
+					</entry>
+					<entry>
+						Source
+					</entry>
+					<entry>
+						Destination
+					</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry>
+						User-Data-Request
+					</entry>
+					<entry>
+						UDR
+					</entry>
+					<entry>
+						306
+					</entry>
+					<entry>
+						AS
+					</entry>
+					<entry>
+						HSS
+					</entry>
+				</row>
+				<row>
+					<entry>
+						User-Data-Answer
+					</entry>
+					<entry>
+						UDA
+					</entry>
+					<entry>
+						306
+					</entry>
+					<entry>
+						HSS
+					</entry>
+					<entry>
+						AS
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Profile-Update-Request
+					</entry>
+					<entry>
+						PUR
+					</entry>
+					<entry>
+						307
+					</entry>
+					<entry>
+						AS
+					</entry>
+					<entry>
+						HSS
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Profile-Update-Answer
+					</entry>
+					<entry>
+						PUA
+					</entry>
+					<entry>
+						307
+					</entry>
+					<entry>
+						HSS
+					</entry>
+					<entry>
+						AS
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Subscribe-Notifications-Request
+					</entry>
+					<entry>
+						SNR
+					</entry>
+					<entry>
+						308
+					</entry>
+					<entry>
+						AS
+					</entry>
+					<entry>
+						HSS
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Subscribe-Notifications-Answer
+					</entry>
+					<entry>
+						SNA
+					</entry>
+					<entry>
+						308
+					</entry>
+					<entry>
+						HSS
+					</entry>
+					<entry>
+						AS
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Push-Notification-Request
+					</entry>
+					<entry>
+						PNR
+					</entry>
+					<entry>
+						309
+					</entry>
+					<entry>
+						HSS
+					</entry>
+					<entry>
+						AS
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Push-Notification-Answer
+					</entry>
+					<entry>
+						PNA
+					</entry>
+					<entry>
+						309
+					</entry>
+					<entry>
+						AS
+					</entry>
+					<entry>
+						HSS
+					</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</table>
+	<!-- TODO: paragraphs need rework.  Copied directly from wiki. --> <para>
+		As can be seen from the Command Names, these are related to managing User Data in the HSS. UDR/UDA is used in order to request data from the User profile. Client (AS) sends the request indicating which data he wants (see below for possible kinds of data) and if it has permissions on the HSS, they will be received via UDA.
+	</para>
+	<para>
+		PUR is meant to be used to update the profile of the user, and the success (or not) of the action is reported back in PUA. SNR offers the possibility to request for changes made in the user profile. If SNR is successful a SNA will be received stating that the operation was successful and when there are profile changes, a PNR will be sent by the HSS to the AS (this is the only time HSS initiates conversation) and the AS should acknowledge with a PNA.
+	</para>
+	<section>
+		<title>Configuration</title>
+		<para>
+			Currently Sh Server RA does not support any configuration options.
+		</para>
+	</section>
+	
+	<section>
+		<title>Resource Adaptor Type</title>
+		<para>
+			The resource adapter provides the following types:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Activities
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Provider
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Message Factory
+				</para>
+			</listitem>
+		</itemizedlist>
+		<formalpara>
+			<title>Activities</title>
+			<para>
+				The following activities are available, with the API definition listed for reference. The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.
+			</para>
+		</formalpara>
+		<para>
+			The lifecycle of an activity depends on the type of received request and the application interaction. In the case of a subscription activity, the activity timeout is taken into consideration because the subscription may be time-based.
+		</para>
+		<para>
+			The activitites allows the Sh (Server) application to retrieve message and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
+		</para>
+		<variablelist>
+			<title>Diameter Sh (Server) Activities</title>
+			<varlistentry>
+				<term>ShServerActivity</term>
+				<listitem>
+					<para>
+						This is base activity for Sh server side. It is created for event based interaction - like user data requests or profile update requests. Server activity ends when answer is sent back to client. It is created automaticly for UDR and PUR is received.
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+		
+<programlisting role="JAVA">TODO: Program listing is over 100 lines
+</programlisting>
+		<variablelist>
+			<varlistentry>
+				<term>ShServerSubscriptionActivity</term>
+				<listitem>
+					<para>
+						This activity is created when client desires to subscribe to changes to profile data. Once initial SNR is received SLEE creates subscription activity. It lingers until termination SNR is received or subscription times out.
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+		
+<programlisting role="JAVA">TODO: Program listing is over 100 lines
+</programlisting>
+		<!-- JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <formalpara>
+			<title>Provider</title>
+			<para>
+				The API for the ShServerProvider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerProvider.java">ShServerProvider.java in the source code</ulink>.
+			</para>
+		</formalpara>
+		<formalpara>
+			<title>Message Factory</title>
+			<para>
+				The Message Factory creates events that can be executed within the JAIN SLEE Server. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
+			</para>
+		</formalpara>
+		<para>
+			The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerMessageFactory.java">ShServerMessageFactory.java in the source code</ulink>.
+		</para>
+	</section>
+	
+	<section>
+		<title>API Usage Examples</title>
+		<para>
+			The following examples demonstrate basic usage examples for the Resource Adapter (RA) API.
+		</para>
+		<example>
+			<title>User-Data-Request</title>
+			<para>
+				Following example shows how UDR is consumed on server side.
+			</para>
+			
+<programlisting role="JAVA">public void onUserDataRequest(UserDataRequest event, ActivityContextInterface aci) {
+if (logger.isInfoEnabled())
+logger.info("onUserDataRequest :: " + event);
+
+UserDataAnswer answer = ((ShServerActivity) aci.getActivity()).createUserDataAnswer(2001, false);
+
+try {
+if (logger.isInfoEnabled())
+logger.info("onUserDataRequest :: Created UDA:\r\n" + answer);
+answer.setUserData(Utils.getUserData(event.getUserIdentity()));
+((ShServerActivity) aci.getActivity()).sendUserDataAnswer(answer);
+} catch (IOException e) {
+logger.error("Failed to send UDA.", e);
+}
+}
+</programlisting>
+		</example>
+		<example>
+			<title>Profile-Update-Request</title>
+			<para>
+				The following code demonstrates how to consume a Profile-Update-Request (PUR).
+			</para>
+			
+<programlisting role="JAVA">public void onProfileUpdateRequest(ProfileUpdateRequest event, ActivityContextInterface aci) {
+try {
+logger.info("onProfileUpdateRequest :: " + event);
+
+ProfileUpdateAnswer answer = ((ShServerActivity) aci.getActivity()).createProfileUpdateAnswer(2001, false);
+
+logger.info("Created Profile-Update-Answer:\r\n" + answer);
+Utils.updateUserData(event.getUserIdentity(),event.getUserIdentity());
+((ShServerActivity) aci.getActivity()).sendProfileUpdateAnswer(answer);
+} catch (Exception e) {
+logger.error("Failed to create/send PUA.", e);
+}
+}
+</programlisting>
+		</example>
+		<example>
+			<title>Subscribe-Notification-Request</title>
+			<para>
+				The following example shows simple handling of Subscribe-Notification-Request (SNR)
+			</para>
+			
+<programlisting role="JAVA">public void onSubscribeNotificationsRequest(SubscribeNotificationsRequest event, ActivityContextInterface aci) {
+logger.info("onSubscribeNotificationsRequest :: " + event);
+
+SubscribeNotificationsAnswer answer = ((ShServerSubscriptionActivity) aci.getActivity()).createSubscribeNotificationsAnswer(2001, false);
+
+try {
+// This will be fixed in B2, we need more accessors
+
+
+logger.info(" onSubscribeNotificationsRequest :: Created SNA:\r\n" + answer);
+
+((ShServerSubscriptionActivity) aci.getActivity()).sendSubscribeNotificationsAnswer(answer);
+
+if (event.getSubsReqType() == SubsReqType.SUBSCRIBE) {
+logger.info("Setting Timer for firing PNR in 15 seconds...");
+
+TimerOptions options = new TimerOptions();
+timerFacility.setTimer(aci, null, System.currentTimeMillis() + 3000, options);
+}
+} catch (Exception e) {
+logger.error("Failed to create/send SNA.", e);
+}
+}
+</programlisting>
+		</example>
+	</section>
+	
+	<section>
+		<title>Examples</title>
+		<para>
+			The sample application provided for Diameter Sh (Client) supports two scenarios:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Application is requested for user data
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Application receives subscription to user data
+				</para>
+			</listitem>
+		</itemizedlist>
+		<formalpara>
+			<title>Application is requested for user data</title>
+			<para>
+				In this case example simply sends request to remote peer (HSS). It simply requests data for certain user.
+			</para>
+		</formalpara>
+		<figure id="figure-Sh_Client_Application_Message_Flow_1">
+			<title>Data Request Flow</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/dia-ShServerExamples-dia-UDRFlow.jpg" format="JPG"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+		<formalpara>
+			<title>Application receives subscription to user data</title>
+			<para>
+				In this case example service subscribes in HSS to changes to user profile. Once subscribtion is estabilished, example service will receive .
+			</para>
+		</formalpara>
+		<figure id="figure-Sh_Server_Application_Message_Flow_1">
+			<title>Subscribe Request Message Flow</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/dia-ShServerExamples-dia-SNRFlow.jpg" format="JPG"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+		<section>
+			<title>Configuration</title>
+			<para>
+				Right now example does not support any configuration.
+			</para>
+		</section>
+
+	</section>
+
+</section>
+	<section id="cca-Credit_Control_Application" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter CCA</title>
+	<para>
+		Credit Control Application provides common part for credit applications. It defines minimal set of primitives to allow credit session management and to convey enough information to perform charging.
+	</para>
+	<para>
+		It is defined in <ulink url="http://tools.ietf.org/html/rfc4006">rfc4006</ulink>. Declared state machines are based on following messsage:
+	</para>
+	<!-- TODO: CCA Messages can someone add this? Serna dies when I perform some operation on table... --> <para>
+		RFC decalres only basic charging scenarios, which are event charing
+	</para>
+	<section>
+		<title>Configuration</title>
+		<para>
+			Currently RA does not support any configuration options.
+		</para>
+	</section>
+	
+	<section>
+		<title>Resource Adaptor Type</title>
+		<para>
+			Resource Adaptor Type provides following elements:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Activities
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Provider
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Message Factory
+				</para>
+			</listitem>
+		</itemizedlist>
+		<formalpara>
+			<title>Activities</title>
+			<para>
+				The following activities are available, with the API definition listed for reference. The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.
+			</para>
+		</formalpara>
+		<para>
+			The lifecycle of an activity depends on the type of received request and the application interaction. Request type is defined by CC-Request-Type AVP. In case of session like interaction, the activity timeout is taken into consideration.
+		</para>
+		<para>
+			The activitites allows the CCA application to retrieve message and AVP factories bound to the current session. The functionality offered is limited only by the implementation used. There are two types of actiovities:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					short living - when CC-Request-Type is equal to enum value of "EVENT". Activities created for such request are terminated once answer is sent(server)/received(client) or when session termianted due to lack of answer.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					ling living - activities are long lived when two conditions are met, first messages has CC-Request-Type is equal to enum value of "INITIAL", last message has CC-Request-Type equal to enum value of "TERMINATION". Between initial and termianting message there can be any number of "UPDATE" messages.
+				</para>
+			</listitem>
+		</itemizedlist>
+		<variablelist>
+			<title>CCA Activities</title>
+			<varlistentry>
+				<term>CreditControlClientSession</term>
+				<listitem>
+					<para>
+						Created on demand. Life cycle depends on request type. Request type is indicated by CC-Request-Type AVP.
+					</para>
+					
+<programlisting role="JAVA">/**
+   * Create a Credit-Control-Request message pre-populated with the AVPs
+   * appropriate for this session.
+   * 
+   * @return a new CreditControlRequest
+   */
+  CreditControlRequest createCreditControlRequest();
+
+  /**
+   * Send an event Credit-Control-Request. An event containing the answer will
+   * be fired on this activity.
+   * 
+   * @param ccr the CreditControlRequest to send
+   * @throws IOException
+   */
+  void sendCreditControlRequest(CreditControlRequest ccr) throws IOException;
+
+  /**
+   * Send an initial Credit-Control-Request. An event containing the answer
+   * will be fired on this activity.
+   * 
+   * @param ccr the CreditControlRequest to send
+   * @throws IOException
+   */
+  void sendInitialCreditControlRequest(CreditControlRequest ccr) throws IOException;
+
+  /**
+   * Send a Re-Auth-Answer message.
+   * 
+   * @param rar the CreditControlRequest to send
+   * @throws IOException
+   */
+  void sendReAuthAnswer(ReAuthAnswer rar) throws IOException;
+
+  /**
+   * Send an update (intermediate) Credit-Control-Request. An event containing
+   * the answer will be fired on this activity.
+   * 
+   * @param ccr the CreditControlRequest to send
+   * @throws IOException
+   */
+  void sendUpdateCreditControlRequest(CreditControlRequest ccr) throws IOException;
+
+  /**
+   * Send a termination Credit-Control-Request. An event containing the answer
+   * will be fired on this activity. The activity will end when the event is
+   * fired.
+   * 
+   * @param ccr the CreditControlRequest to send
+   * @throws IOException 
+   */
+  void sendTerminationCreditControlRequest(CreditControlRequest ccr) throws IOException;
+/**
+   * Provides session state information. CC session must conform to CC FSM as
+   * described in &lt;a href="link http://rfc.net/rfc4006.html#s7"&gt;section 7 of rfc4006&lt;/a&gt;
+   * 
+   * @return instance of {@link CreditControlSessionState}
+   */
+  public CreditControlSessionState getState();
+
+  /**
+   * Returns the session ID of the credit control session, which uniquely
+   * identifies the session.
+   * 
+   * @return 
+   */
+  public String getSessionId();
+
+  public CreditControlAVPFactory getCCAAvpFactory();
+
+  public CreditControlMessageFactory getCCAMessageFactory();
+</programlisting>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>CreditControlServerSession</term>
+				<listitem>
+					<para>
+						Created once request is received and there is no matching activity for it. Its life cycle is identical to client activity.
+					</para>
+					
+<programlisting role="JAVA"> /**
+   * Create a Credit-Control-Answer message pre-populated with the AVPs
+   * appropriate for this session.
+   * 
+   * @return a new CreditControlAnswer
+   */
+  CreditControlAnswer createCreditControlAnswer();
+
+  /**
+   * Send a Credit-Control-Answer message to the CC client.
+   * 
+   * @param cca the CreditControlAnswer to send
+   * @throws IOException
+   */
+  void sendCreditControlAnswer(CreditControlAnswer cca) throws IOException;
+
+  /**
+   * Send a Re-Auth-Request message to the CC client.
+   * 
+   * @param rar the ReAuthRequest to send
+   * @throws IOException 
+   * @throws IOException
+   */
+  void sendReAuthRequest(ReAuthRequest rar) throws IOException;
+/**
+   * Provides session state information. CC session must conform to CC FSM as
+   * described in &lt;a href="link http://rfc.net/rfc4006.html#s7"&gt;section 7 of rfc4006&lt;/a&gt;
+   * 
+   * @return instance of {@link CreditControlSessionState}
+   */
+  public CreditControlSessionState getState();
+
+  /**
+   * Returns the session ID of the credit control session, which uniquely
+   * identifies the session.
+   * 
+   * @return 
+   */
+  public String getSessionId();
+
+  public CreditControlAVPFactory getCCAAvpFactory();
+
+  public CreditControlMessageFactory getCCAMessageFactory();
+</programlisting>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+		<formalpara>
+			<title>Provider</title>
+			<para>
+				Provider allows services to create activities, access some topology information and send/receive message in synchornous way.
+			</para>
+		</formalpara>
+		
+<programlisting role="JAVA">public interface CreditControlProvider {
+
+  /**
+   * Create a new client session to send and receive Diameter messages.
+   * All messages sent on an activity created by this method must contain valid
+   * routing AVPs (one or both of Destination-Realm and Destination-Host as
+   * defined by RFC3588).
+   * 
+   * @return a instance of a CreditControlClientSession to send credit control messages
+   */
+  public CreditControlClientSession createClientSession()throws CreateActivityException;
+
+  /**
+   * Create a new client session to send and receive Diameter messages.
+   * Messages sent on an activity created by this method will automatically
+   * have the Destination-Host and Destination-Realm AVPs set to the provided
+   * values.
+   * 
+   * @param destinationHost a destination host to automatically put in all messages, may be null if not needed
+   * @param destinationRealm a destination realm to automatically put in all messages
+   * @return a instance of a CreditControlClientSession to send credit control messages
+   * @throws CreateActivityException 
+   */
+  public CreditControlClientSession createClientSession(
+      DiameterIdentity destinationHost,
+      DiameterIdentity destinationRealm) throws CreateActivityException;
+
+  /**
+   * Return a message factory to be used to create credit control messages
+   * 
+   * @return a CreditControlMessageFactory implementation
+   */
+  public CreditControlMessageFactory getCreditControlMessageFactory();
+
+  /**
+   * Return a AVP factory to be used to create credit control AVPs
+   * 
+   * @return a CreditControlAVPFactory implementation
+   */
+  public CreditControlAVPFactory getCreditControlAVPFactory();
+
+  /**
+   * Return the number of peers this Diameter resource adaptor is connected
+   * to.
+   * 
+   * @return connected peer count
+   */
+  int getPeerCount();
+
+  /**
+   * Returns array containing identities of connected peers FIXME: baranowb; -
+   * should it be InetAddres, Port pair?
+   * 
+   * @return
+   */
+  DiameterIdentity[] getConnectedPeers();
+</programlisting>
+	</section>
+	
+	<section>
+		<title>API Usage Examples</title>
+		<para>
+			Following example shows how CCR message is created and sent.
+		</para>
+		<example>
+			<title>Sending CCR</title>
+			
+<programlisting role="JAVA">try {
+CreditControlClientSession session = this.provider.createClientSession();
+ActivityContextInterface localACI = this.acif.getActivityContextInterface(session);
+localACI.attach(this.getSbbContext().getSbbLocalObject());
+
+CreditControlRequest request = session.createCreditControlRequest();
+
+List&lt;DiameterAvp&gt; avps = new ArrayList&lt;DiameterAvp&gt;();
+
+avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, ("aaa://" + originIP + ":" + originPort).getBytes()));
+avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, originRealm.getBytes()));
+
+avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, ("aaa://" + destinationIP + ":" + destinationPort).getBytes()));
+avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, destinationRealm.getBytes()));
+
+avps.add(avpFactory.getBaseFactory().createAvp(CreditControlAVPCodes.CC_Request_Type, 4l));
+avps.add(avpFactory.getBaseFactory().createAvp(CreditControlAVPCodes.CC_Request_Number, 0l));
+
+RequestedServiceUnitAvp rsu = this.avpFactory.createRequestedServiceUnit();
+
+CcMoneyAvp ccMoney = this.avpFactory.createCcMoney();
+ccMoney.setCurrencyCode(100);
+ccMoney.setUnitValue(this.avpFactory.createUnitValue());
+
+rsu.setCreditControlInputOctets(10);
+rsu.setCreditControlMoneyAvp(ccMoney);
+rsu.setCreditControlServiceSpecificUnits(1000);
+rsu.setCreditControlTime(100);
+rsu.setCreditControlTotalOctets(5000);
+
+avps.add(rsu);
+
+avps.add(avpFactory.getBaseFactory().createAvp(CreditControlAVPCodes.Requested_Action, 0));
+
+// Now create &amp; send
+request.setExtensionAvps(avps.toArray(new DiameterAvp[avps.size()]));
+if (logger.isInfoEnabled())
+logger.info("About to send:\n" + request);
+
+session.sendCreditControlRequest(request);
+} catch (Exception e) {
+logger.error("Failed to create/send Credit-Control-Request.", e);
+}
+</programlisting>
+		</example>
+		<para>
+			The following code demonstrates how CCR is received and how different state machines are handled.
+		</para>
+		<example>
+			<title>Handling CCR</title>
+			
+<programlisting role="JAVA">public void onCreditControlRequest(CreditControlRequest request, ActivityContextInterface aci) {
+if (logger.isInfoEnabled())
+logger.info("Received Credit-Control-Request (Application-Id[" + request.getHeader().getApplicationId() + "].");
+
+// INITIAL_REQUEST(1), UPDATE_REQUEST(2), TERMINATION_REQUEST(3),
+// EVENT_REQUEST(4)
+CreditControlServerSession session = (CreditControlServerSession) aci.getActivity();
+CreditControlAnswer answer = null;
+
+switch (request.getCcRequestType().getValue()) {
+case 1:
+try {
+if (logger.isInfoEnabled())
+logger.info("Got INITIAL_REQUEST(1).");
+
+if (getSentInitialAnswer()) {
+logger.error("Error. Initial answer already sent! Aborting.");
+return;
+}
+
+answer = session.createCreditControlAnswer();
+answer.setResultCode(2001);
+if (logger.isInfoEnabled()) {
+logger.info("Processed Credit-Control-Request:\n" + request);
+logger.info("Sending Credit-Control-Answer:\n" + answer);
+}
+
+session.sendCreditControlAnswer(answer);
+this.setSentInitialAnswer(true);
+} catch (Exception e) {
+logger.error("Failed to create/send Credit-Control-Answer to reply INITIAL_REQUEST(1).", e);
+}
+break;
+case 2:
+try {
+if (logger.isInfoEnabled())
+logger.info("Got UPDATE_REQUEST(2).");
+
+if (getSentUpdateAnswer()) {
+logger.error("Error. Update answer already sent! Aborting.");
+return;
+}
+
+answer = session.createCreditControlAnswer();
+answer.setResultCode(2001);
+if (logger.isInfoEnabled()) {
+logger.info("Processed Credit-Control-Request:\n" + request);
+logger.info("Sending Credit-Control-Answer:\n" + answer);
+}
+session.sendCreditControlAnswer(answer);
+setSentUpdateAnswer(true);
+} catch (Exception e) {
+logger.error("Failed to create/send Credit-Control-Answer to reply UPDATE_REQUEST(2).", e);
+}
+break;
+case 3:
+try {
+if (logger.isInfoEnabled())
+logger.info("Got TERMINATION_REQUEST(3).");
+
+if (getSentTerminationAnswer()) {
+logger.error("Error. Termination answer already sent! Aborting.");
+return;
+}
+
+answer = session.createCreditControlAnswer();
+answer.setResultCode(2001);
+if (logger.isInfoEnabled()) {
+logger.info("Processed Credit-Control-Request:\n" + request);
+logger.info("Sending Credit-Control-Answer:\n" + answer);
+}
+session.sendCreditControlAnswer(answer);
+setSentTerminationAnswer(true);
+} catch (Exception e) {
+logger.error("Failed to create/send Credit-Control-Answer to reply TERMINATION_REQUEST(3).", e);
+}
+break;
+case 4:
+try {
+if (logger.isInfoEnabled())
+logger.info("Got EVENT_REQUEST(4).");
+
+answer = session.createCreditControlAnswer();
+answer.setResultCode(2001);
+if (logger.isInfoEnabled())
+logger.info("Sending Credit-Control-Answer:\n" + answer);
+
+session.sendCreditControlAnswer(answer);
+} catch (Exception e) {
+logger.error("Failed to create/send Credit-Control-Answer to reply EVENT_REQUEST(4).", e);
+}
+break;
+
+default:
+logger.error("Unexpected CC-Request-Type in message: " + request.getCcRequestType() + ". Aborting...");
+}
+}
+</programlisting>
+		</example>
+	</section>
+	
+	<section>
+		<title>Examples</title>
+		<para>
+			The sample application provided for CCA is very basic one.It supports three searate scenarios:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Client
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Server for event charing
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Server for session based charging
+				</para>
+			</listitem>
+		</itemizedlist>
+		<formalpara>
+			<title>Client</title>
+			<para>
+				Example acts as CCA client . It issues order to charges some entity (unspecified) account with defined number of units. It sends CCR to Ericsson Diameter Server (EDS). If the message is correctly built, the server will send an answer back to the application stating that the operation was executed correctly. If the message is incorrectly built, the EDS sends an error message back to the application.
+			</para>
+		</formalpara>
+		<formalpara>
+			<title>Server for event charging</title>
+			<para>
+				Example service acts as simple server. It awaits for CCR message. Once client sends it(EDS) example receives it. Simplest processing of this request includes only sending success answer
+			</para>
+		</formalpara>
+		<formalpara>
+			<title>Server for session based charging</title>
+			<para>
+				Example acts a bit different than in above case. Service awaits session based exchange - that is CCRs with CC-Request-Type which follows sequence INITIAL, UPDATE(zero or more) and TERMINATION.
+			</para>
+		</formalpara>
+		<section>
+			<title>Example Configuration</title>
+			<para>
+				Example is confgiure via file <filename>example.properties</filename>
+			</para>
+			
+<programlisting># Act as "client" or "server" (default: server)
+example.mode=client
+
+# The AS IP Address, Port and Realm (default: 127.0.0.1 / 1812 / mobicents.org)
+origin.ip=127.0.0.1
+origin.port=1812
+origin.realm=mobicents.org
+
+# The Remote IP Address, Port and Realm (default: 127.0.0.1 / 3868 / mobicents.org)
+destination.ip=127.0.0.1
+destination.port=3868
+destination.realm=mobicents.org
+</programlisting>
+		</section>
+
+	</section>
+
 </section>
 	<section lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Ro</title>
 	<para>
-		Text
+		Ro is on of two IMS reference point for charging. It covers online charging - scenarios where charging information can affect, in real-time, the service rendered. Therefore, a direct interaction of the charging mechanism with session/service control is required. Ro is defined in <ulink url="http://www.3gpp.org/ftp/Specs/html-info/32299.htm">TS32.299</ulink>.
 	</para>
+	<para>
+		Charging involves two peers:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				CTF (Charging Trigger Function) - makes decision how to charge specific service for user, issues request/requests to server(OCF)
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				OCF(Online Charging Function) - performs actual charging based on received message type, service logic and user profile information.
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>
+		Ro application does not define new FSM or messages. It make use of commands, AVPs and FSM defined by base CCA application. Please refer to <!-- TODO: add ref here, not sure how to handle this, some refs are broken, Jared? -->
+	</para>
+	<para>
+		Ro RA is responsible for managing state associated with different charging scenarios. TS defines following online scenarios:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				Imediate Event Charging(IEC) - CTF send one time request. This request contains predefined set of AVPs indicating which service has been activated or how many units consumed, this depends on application logic.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Event Charing wiht Unit Reservation(ECUR) - CTF issues request which indicates desired unit count for reservation. On service delivery, CTF issues antoher request which indicates actauly consumed units. Units can be of any type, its application specific.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Session Charging with Unit Reservation(SCUR) - as above, however reservation can happen more than once.
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>
+		As per definition from techincal specification, Ro reuses messages defined by CCA application. For more information about CCA please refer to <!-- TODO: Add xref to : cca-Credit_Control_Application, serna does not allow me.... -->
+	</para>
+	<figure id="ro-Figure_IEC_Flow">
+		<title>IEC Example Flow</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="images/dia-RoExamples-dia-IECFlow.jpg" format="JPG" scalefit="1"/>
+			</imageobject>
+		</mediaobject>
+	</figure>
+	<para>
+		Above figure shows IEC interaction. Actions performed in diagram can be described as follows:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				(1)UA issues service request - be it SMS, MMS, Data chunk transfer.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(2) CTF sends proper CCR. CC-Request-Type is set to enum value of "EVENT". This request holds indication which allows OCF to perform some actions.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(3) OCF process request.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(4) OCF sends CCA back to CTF. On success answer CTF grants service to UA.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(5) Service is delivered.
+			</para>
+		</listitem>
+	</itemizedlist>
+	<figure id="ro-Figure_ECUR_Flow">
+		<title>ECUR Example flow</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="images/dia-RoExamples-dia-ECURFlow.jpg" format="JPG" scalefit="1"/>
+			</imageobject>
+		</mediaobject>
+	</figure>
+	<para>
+		Above figure shows ECUR interaction. Performed action can be described as follows:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				(1)UA issues service request - this is more complicated case, service can be something like charging for phone call, but up to certain limit.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(2) CTF sends CCR to OCF. CC-Request-Type is set to enum value of "INITIAL"
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(3) OCF process request
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(4) OCF reserves certain amount of units, sends back CCA with this information
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(5) CTF grants service to UA
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(6) UA notifies that it does not require service any more(this does no have to happen, it may be AS decision)
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(7) CTF sends CCR to OCF. CC-Request-Type is set to enum value of "TERMINATION". CCR contains information on used units
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(8) OCF processes request
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(9)OCF sends back CCA.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(10)Service delivery ends
+			</para>
+		</listitem>
+	</itemizedlist>
+	<figure id="ro-Figure_SCUR_Flow">
+		<title>SCUR Example flow</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="images/dia-RoExamples-dia-SCURFlow.jpg" format="JPG" scalefit="1"/>
+			</imageobject>
+		</mediaobject>
+	</figure>
+	<para>
+		Above diagram shows example SCUR interaction. Actions are exactly the same as for ECUR case. However SCUR allows to use another type of message - where CC-Request-Type is set to value of enum "UPDATE". CC-Request-Type per message is as follows:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				INITIAL - (2)
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				UPDATE - (6),(9)
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				TERMINATION - (13)
+			</para>
+		</listitem>
+	</itemizedlist>
+	<section>
+		<title>Configuration</title>
+		<para>
+			Currently RA does not supporty any configuration options.
+		</para>
+	</section>
+	
+	<section>
+		<title>Resource Adaptor Type</title>
+		<para>
+			Resource Adaptor Type provides following elements:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Activities
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Provider
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Message Factory
+				</para>
+			</listitem>
+		</itemizedlist>
+		<formalpara>
+			<title>Activities</title>
+			<para>
+				The following activities are available, with the API definition listed for reference. The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.
+			</para>
+		</formalpara>
+		<para>
+			The lifecycle of an activity depends on the type of received request and the application interaction. Request type is defined by CC-Request-Type AVP. In case of session like interaction(SCUR), the activity timeout is taken into consideration. Please refer to <!-- TODO: add ref to ro-Figure_IEC_Flow, ro-Figure_ECUR_Flow and ro-Figure_SCUR_Flow -->
+		</para>
+		<para>
+			The activitites allows the Ro application to retrieve message and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
+		</para>
+		<variablelist>
+			<title>Ro Activities</title>
+			<varlistentry>
+				<term>RoClientSession</term>
+				<listitem>
+					<para>
+						created on on demands. Life cycle depends on CC-Request-Type content sent as first message. Its subject to timeout if answer is not received.
+					</para>
+					
+<programlisting role="JAVA"><!-- TODO: add this, we had example but its gone? -->
+</programlisting>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>RoServerSession</term>
+				<listitem>
+					<para>
+						created by RA when request enters SLEE. Life cycle depends on CC-Request-Type AVP content recevied in first request.
+					</para>
+					
+<programlisting role="JAVA"><!-- TODO: Add code here, we had example, but its gone? -->
+</programlisting>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+		<formalpara>
+			<title>Provider</title>
+			<para>
+				Provider allows services to create activities, access some topology information and send/receive message in synchornous way.
+			</para>
+		</formalpara>
+		<para>
+			The API for the Provider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/ro/ratype/src/main/java/net/java/slee/resource/diameter/ro/RoProvider.java">RoProvider.java</ulink>
+		</para>
+		<formalpara>
+			<title>Message Factory</title>
+			<para>
+				The Message Factory creates events that can be executed within the JAIN SLEE Server. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
+			</para>
+		</formalpara>
+		
+<programlisting role="JAVA">public interface RoMessageFactory {
+
+  public static final long _RO_TGPP_VENDOR_ID = 10415L;
+  public static final int  _RO_AUTH_APP_ID = 4;
+
+  /**
+   * Creates an empty Credit Control Request message.
+   * 
+   * @return
+   */
+  public CreditControlRequest createRoCreditControlRequest();
+  
+  /**
+   * Creates a Credit Control Request message with the Session-Id AVP populated with the sessionId parameter.
+   * 
+   * @param sessionId
+   * @return
+   */
+  public CreditControlRequest createRoCreditControlRequest(String sessionId);
+  
+  /**
+   * Returns a reference to a message factory that can be used to create AVPs defined by the Diameter Base specification.
+   * 
+   * @return Base Diameter message factory
+   */
+  public DiameterMessageFactory getBaseMessageFactory();
+  
+}
+</programlisting>
+	</section>
+	
+	<section>
+		<title>API usage examples</title>
+		<para>
+			TEXT
+		</para>
+	</section>
+	
+	<section>
+		<title>Examples</title>
+		<para>
+			TEXT
+		</para>
+	</section>
+
 </section>
 	<section lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Rf</title>
 	<para>
-		Text
+		Ro is on of two IMS reference point for charging. It covers offline charging - scenarios where charging information does not affect, in real-time, the service rendered.
 	</para>
-</section>
-	<section lang="en-US">
-	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter CCA</title>
 	<para>
-		Text
+		Charging involves two peers:
 	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				CTF (Charging Trigger Function) - makes decision how to charge specific service for user, issues request/requests to server(CDF)
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				CDF (Charging Data Function) - performs actual charging based on received message type, service logic and user profile information.
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>
+		Difference to Ro interface is that information/requests sent from CTF to CDF do not affect service delivery. CTF only informs CDF about units consumption. For detailed information on Rf interface please refer to information found <ulink url="http://www.3gpp.org/ftp/Specs/html-info/32299.htm">here</ulink> and <ulink url="http://www.3gpp.org/ftp/Specs/html-info/32240.htm">here</ulink>.
+	</para>
+	<para>
+		As per definition from technical specification Rf reuses messages defined in Diameter Base. For more information about base please refer to <!-- TODO: add ref to db-Diabeter_Base -->
+	</para>
+	<figure id="rf-Figure_Event_Charging_Flow">
+		<title>Event Charging Flow</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="images/dia-RfExamples-dia-EventFlow.jpg" format="JPG" scalefit="1"/>
+			</imageobject>
+		</mediaobject>
+	</figure>
+	<para>
+		Above diagram shows event based charging. Actions performed in diagram can be described as follows:
+		<itemizedlist>
+			<listitem>
+				<para>
+					(1) CTF(actually its AS) delivers service to UA
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					(2) CTF sends ACR with Record-Type AVP set to enum value of "EVENT"
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					(3) CDF response after charging
+				</para>
+			</listitem>
+		</itemizedlist>
+	</para>
+	<figure id="rf-Figure_Session_Charging_Flow">
+		<title>Session Charging Flow</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="images/dia-RfExamples-dia-SessionFlow.jpg" format="JPG"/>
+			</imageobject>
+		</mediaobject>
+	</figure>
+	<para>
+		Above diagram shwos session based charging. Performed actions can be described as follows:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				(1) Service is beeing delivered to UA
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(2) CTF sends ACR with Record-Type AVP equal to enum value of "START". This indicates that session is beeing estabilished
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(3) CDF processes received ACR
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(4) CDF responds with ACA, acknowledging charge operation
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(5) CTF sends interim ACR(this can happen zero or more times). This is sent once predefined time elapses.It contains additional charge information. Record-Type AVP equals to enum value of "INTERIM".
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(6) Processes received ACR
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(7) CDF responds with ACA, acknowledging charge operation
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(8) Service for UA has been termianted
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(9) CTF creates termianting ACR. It contains last charge information for session. Record-Type AVP is equal to enum value of "STOP"
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(10) CDF process received ACR
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				(11) CDF responds with ACA, acknowledging charge operation
+			</para>
+		</listitem>
+	</itemizedlist>
+	<section>
+		<title>Configuration</title>
+		<para>
+			Currently RA does not support any confgiuration options.
+		</para>
+	</section>
+	
+	<section>
+		<title>Resource Adaptor Type</title>
+		<para>
+			Resource Adaptor Type provides following elements:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Activities
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Provider
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Message Factory
+				</para>
+			</listitem>
+		</itemizedlist>
+		<formalpara>
+			<title>Activities</title>
+			<para>
+				The following activities are available, with the API definition listed for reference. The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.
+			</para>
+		</formalpara>
+		<para>
+			The lifecycle of an activity depends on the type of received request and the application interaction. Request type is defined by Record-Type AVP. In case of session like interaction, the activity timeout is taken into consideration. Please refer to <!-- TODO: add ref to rf-Figure_Event_Charging_Flow, rf-Figure_Session_Charging_Flow --> for example.
+		</para>
+		<para>
+			The activitites allows the Rf application to retrieve message and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
+		</para>
+		<variablelist>
+			<title>Rf Activities</title>
+			<varlistentry>
+				<term>RfClientSession</term>
+				<listitem>
+					<para>
+						created on demand. Life cycle depends on Record-Type AVP content sent in first message. Its subject to timeout if answer is not received. Activity ends once ending answer is receive - be it error, success, event delivery timeout.
+					</para>
+					
+<programlisting role="JAVA">/**
+ * Send Account Request to Server
+ * @param request
+ * @throws IOException 
+ */
+ void sendAccountRequest(AccountingRequest request) throws IOException;
+/**
+   * Return a message factory to be used to create concrete implementations of credit control messages.
+   * 
+   * @return
+   */
+  public RfMessageFactory getRfMessageFactory();
+
+  /**
+ * Returns the session ID of the credit control session, which uniquely
+ * identifies the session.
+ * 
+ * @return 
+ */
+public String getSessionId();
+/**
+ * Returns accounting session state of underlying session. Valid values are: Idle,PendingS,PendingE,PendingB,Open,PendingI,PendingL
+ * {@link AccountingSessionState}
+ * @return
+ */
+AccountingSessionState getAccountingSessionState();
+</programlisting>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>RfServerSession</term>
+				<listitem>
+					<para>
+						created by RA when request enters SLEE. Life cycle depends on Record-Type AVP content recevied in first request. Activity ends once ending answer is sent - be it error, success, event delivery timeout.
+					</para>
+					
+<programlisting role="JAVA">/**
+   * Create an Accounting-Answer with the Acct-Application-Id set to 3.
+   *
+   * @return an Accounting-Answer
+   */
+  public AccountingAnswer createRfAccountingAnswer();
+  
+  /**
+   * Create an Accounting-Answer with some AVPs populated from the provided Accounting-Request.
+   * 
+   * The ACA will contain the AVPs specified in createRfAccountingAnswer() and the following AVPs from the Accounting-Request:
+   * &lt;ul&gt;Accounting-Record-Type&lt;/ul&gt;
+   * &lt;ul&gt;Accounting-Record-Number&lt;/ul&gt;
+   * 
+   * @param acr Accounting-Request to copy AVPs from
+   * @return an Accounting-Answer
+   */
+  public AccountingAnswer createRfAccountingAnswer(AccountingRequest acr);
+  
+  /**
+   * Send an Accounting Answer.
+   * 
+   * @param accountingAnswer answer message to send
+   * @throws IOException if the message could not be sent 
+   * @throws IllegalArgumentException if accountingAnswer is missing any required AVPs
+   */
+  public void sendAccountingAnswer(AccountingAnswer accountingAnswer) throws IOException, IllegalArgumentException;
+/**
+ * Sends generated answer back to client
+ * @param answer
+ * @throws IOException
+ */
+void sendAccountAnswer(AccountingAnswer answer) throws IOException;
+/**
+   * Return a message factory to be used to create concrete implementations of credit control messages.
+   * 
+   * @return
+   */
+  public RfMessageFactory getRfMessageFactory();
+
+  /**
+ * Returns the session ID of the credit control session, which uniquely
+ * identifies the session.
+ * 
+ * @return 
+ */
+public String getSessionId();
+/**
+ * Returns accounting session state of underlying session. Valid values are: Idle,PendingS,PendingE,PendingB,Open,PendingI,PendingL
+ * {@link AccountingSessionState}
+ * @return
+ */
+AccountingSessionState getAccountingSessionState();
+</programlisting>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+		<formalpara>
+			<title>Provider</title>
+			<para>
+				Provider allows services to create activities, access some topology information and send/receive message in synchornous way.
+			</para>
+		</formalpara>
+		<para>
+			The API for the Provider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/ro/ratype/src/main/java/net/java/slee/resource/diameter/rf/RfProvider.java">RoProvider.java</ulink>
+		</para>
+		<formalpara>
+			<title>Message Factory</title>
+			<para>
+				The Message Factory creates events that can be executed within the JAIN SLEE Server. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
+			</para>
+		</formalpara>
+		
+<programlisting role="JAVA">public interface RfMessageFactory {
+
+  public static final long _RF_TGPP_VENDOR_ID = 10415L;
+  public static final int  _RF_ACC_APP_ID = 3;
+
+  /**
+   * Get a factory to create AVPs and messages defined by Diameter Base. 
+   * 
+   * @return
+   */
+  public DiameterMessageFactory getBaseMessageFactory();
+
+  /**
+   * Creates an Accounting Request message with the Accounting-Record-Type AVP set. 
+   * 
+   * @param accountingrecordtype
+   * @return
+   */
+  public AccountingRequest createRfAccountingRequest(AccountingRecordType accountingrecordtype);
+
+}
+</programlisting>
+	</section>
+	
+	<section>
+		<title>API Usage Examples</title>
+		<para>
+			TEXT
+		</para>
+	</section>
+	
+	<section>
+		<title>Examples</title>
+		<para>
+			TEXT
+		</para>
+	</section>
+
 </section>
 </chapter>
 	<appendix lang="en-US">
