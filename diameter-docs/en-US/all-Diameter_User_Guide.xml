@@ -639,7 +639,7 @@ public class ExClient
 </programlisting>
 	
 <programlisting role="XML">&lt;LocalPeer&gt;
-      &lt;URI value="aaa://127.0.0.1:1812"/&gt;
+      &lt;URI value="aaa://localhost:1812"/&gt;
       &lt;IPAddresses&gt;
       &lt;IPAddress value="127.0.0.1"/&gt;
       &lt;/IPAddresses&gt;
@@ -771,8 +771,7 @@ public class ExClient
 	<para>
 		The &lt;Parameters&gt; element contains elements that specify parameters for the Diameter stack. The available elements and attributes are listed for reference.
 	</para>
-	<!-- TODO: 20090916 - Need to obtain better definitions for the Parameter Elements and Attributes.  information present at the moment is not that helpful to readers. -->
-	<variablelist>
+	<!-- TODO: 20090916 - Need to obtain better definitions for the Parameter Elements and Attributes.  information present at the moment is not that helpful to readers. --> <variablelist>
 		<title>&lt;Parameter&gt; Elements and Attributes</title>
 		<varlistentry>
 			<term>&lt;AcceptUndefinedPeer&gt;</term>
@@ -926,7 +925,7 @@ public class ExClient
 			</listitem>
 		</varlistentry>
 	</variablelist>
-	<!-- TODO: Need more information about what might go into the extensions element. -->
+	<!-- TODO: Need more information about what might go into the extensions element. --> 
 <programlisting>&lt;Extensions/&gt;
 </programlisting>
 </section>
@@ -1239,7 +1238,7 @@ public class MyDiameterApplication implements DiameterListener
 &lt;vendor vendor-id="Vodafone" code="12645" name="Vodafone" /&gt;
 </programlisting>
 	</example>
-	<formalpara>
+	<!-- TODO:  Developer:  Correct the <typedefn> section so it meets RFC 3588 requirements. --> <formalpara>
 		<title>&lt;typedefn/&gt;</title>
 		<para>
 			Defines the simple Attribute Value Pair (AVP) types. The element supports the following required attributes:
@@ -1308,7 +1307,7 @@ public class MyDiameterApplication implements DiameterListener
 			<term>uri</term>
 			<listitem>
 				<para>
-					Optional attribute, which specifies a link to further information about the application for configurers.
+					Optional attribute, which specifies a link to additional application information.
 				</para>
 			</listitem>
 		</varlistentry>
@@ -1329,6 +1328,11 @@ public class MyDiameterApplication implements DiameterListener
 	<para>
 		The &lt;avp&gt; element supports a number of child elements, which are used to set finer parameters for the individual AVP. The supported elements are &lt;type&gt;, &lt;enum&gt;, and &lt;grouped&gt;.
 	</para>
+	<note>
+		<para>
+			Different sets of elements are supported by &lt;avp&gt; depending on its position in the dictionary.xml file.
+		</para>
+	</note>
 	<example>
 		<title>&lt;avp&gt; Child Elements and Attributes</title>
 		
@@ -1364,6 +1368,11 @@ public class MyDiameterApplication implements DiameterListener
 			</listitem>
 		</varlistentry>
 	</variablelist>
+	<note>
+		<para>
+			&lt;type&gt; is ignored if the &lt;avp&gt; element contains the &lt;grouped&gt; element.
+		</para>
+	</note>
 	<formalpara>
 		<title>&lt;enum&gt;</title>
 		<para>
@@ -1388,6 +1397,11 @@ public class MyDiameterApplication implements DiameterListener
 			</listitem>
 		</varlistentry>
 	</variablelist>
+	<note>
+		<para>
+			&lt;enum&gt; is ignored if the &lt;avp&gt; element contains the &lt;grouped&gt; element.
+		</para>
+	</note>
 	<formalpara>
 		<title>&lt;grouped&gt;</title>
 		<para>
@@ -1405,12 +1419,12 @@ public class MyDiameterApplication implements DiameterListener
 			<term>name</term>
 			<listitem>
 				<para>
-					Specifies the name of a grouped AVP. The AVP name must match the name of the defined grouped AVP.
+					Specifies the name of the grouped AVP member. The value must match the defined AVP name.
 				</para>
 			</listitem>
 		</varlistentry>
 	</variablelist>
-	<table frame="all" id="table-avp_attributes" pgwide="1">
+	<!-- TODO: Developer:  Ensure the attributes in the AVP table are correct according to the allowed child elements and conditions. --> <table frame="all" id="table-avp_attributes" pgwide="1">
 		<title>&lt;avp&gt; Attributes</title>
 		<tgroup cols="3" colsep="1">
 			<colspec colname="c1"/>
@@ -1639,24 +1653,17 @@ public class MyDiameterApplication implements DiameterListener
 			</listitem>
 		</varlistentry>
 	</variablelist>
+	<note>
+		<para>
+			If the &lt;avp&gt; element is specified in &lt;command&gt; it does not support any child elements. The &lt;avp&gt; element only refers to defined AVPs when used in this context.
+		</para>
+	</note>
 	<example>
 		<title>&lt;command&gt; Elements and Attributes</title>
 		
 <programlisting>&lt;command name="User-Authorization" code="300" vendor-id="TGPP" request="true"&gt;
   &lt;avp name="Server-Assignment-Type" code="614" mandatory="must" vendor-bit="must" 
-   vendor-id="TGPP" may-encrypt="no"&gt;
-    &lt;type type-name="Unsigned32" /&gt;
-    &lt;enum name="NO_ASSIGMENT" code="0" /&gt;
-    &lt;enum name="REGISTRATION" code="1" /&gt;
-    &lt;enum name="RE_REGISTRATION" code="2" /&gt;
-    &lt;enum name="UNREGISTERED_USER" code="3" /&gt;
-    &lt;grouped&gt;
-      &lt;gavp name="SIP-Item-Number" multiplicity="0-1"/&gt;
-      &lt;gavp name="SIP-Authentication-Scheme" multiplicity="0-1"/&gt;
-      &lt;gavp name="SIP-Authenticate" multiplicity="0-1"/&gt;         
-      &lt;gavp name="Line-Identifier" multiplicity="0+"/&gt;
-    &lt;/grouped&gt;
-  &lt;/avp&gt;    
+   vendor-id="TGPP" may-encrypt="no"/&gt;
 &lt;/command&gt;
 </programlisting>
 	</example>
@@ -1773,6 +1780,9 @@ if (validator.hasRepresentation(msg.getCommandCode(), msg.getApplicationId(),
 	</example>
 	<example id="example-Base_Listener_Code_2">
 		<title>Validator Message Check Example</title>
+		<para>
+			The example below is pseudo-code.
+		</para>
 		
 <programlisting role="JAVA">...
 DiameterMessageValidator messageValidator = 
@@ -1792,6 +1802,9 @@ try{
 	</example>
 	<example id="example-Base_Listener_Code_3">
 		<title>Validator Multiplicity Count Check Example</title>
+		<para>
+			The example below is pseudo-code.
+		</para>
 		
 <programlisting role="JAVA">...
 
@@ -1814,8 +1827,11 @@ if (validator.isCountValidForMultiplicity(message.getCommandCode(), message.getA
 }
 </programlisting>
 	</example>
-	<example>
+	<!-- TODO: Developer:  Explain what _DEFAULT_MANDATORY and _DEFALUT_PROTECTED mean in the example.  Choose whether to put the information before the example, or include it within the example itself. --> <example>
 		<title>Dictionary Base Code</title>
+		<para>
+			The example below is pseudo-code.
+		</para>
 		
 <programlisting role="JAVA">public static  void setAvpAsFloat32(Message msg, int avpCode, long
  vendorId, AvpSet set, float value)
@@ -1836,6 +1852,9 @@ if (validator.isCountValidForMultiplicity(message.getCommandCode(), message.getA
 	</example>
 	<example>
 		<title>Dictionary AVP Encoding Example</title>
+		<para>
+			In this example, the AVP types are inherited.
+		</para>
 		
 <programlisting role="JAVA">public static  void setAvp(Message msg, int avpCode, long vendorId, AvpSet set, float value)
   {

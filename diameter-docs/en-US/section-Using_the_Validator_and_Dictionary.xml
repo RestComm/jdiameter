@@ -88,6 +88,7 @@ if (validator.hasRepresentation(msg.getCommandCode(), msg.getApplicationId(),
   </example>
   <example id="example-Base_Listener_Code_2">
     <title>Validator Message Check Example</title>
+    <para>The example below is pseudo-code.</para>
     <programlisting role="JAVA">...
 DiameterMessageValidator messageValidator = 
  DiameterMessageValidator.getInstance();
@@ -105,6 +106,7 @@ try{
   </example>
   <example id="example-Base_Listener_Code_3">
     <title>Validator Multiplicity Count Check Example</title>
+    <para>The example below is pseudo-code.</para>
     <programlisting role="JAVA">...
 
 DiameterMessageValidator messageValidator = 
@@ -125,8 +127,9 @@ if (validator.isCountValidForMultiplicity(message.getCommandCode(), message.getA
   throw new Exception(&quot;Error&quot;);
 }</programlisting>
   </example>
-  <example>
+<!--TODO: Developer:  Explain what _DEFAULT_MANDATORY and _DEFALUT_PROTECTED mean in the example.  Choose whether to put the information before the example, or include it within the example itself.-->  <example>
     <title>Dictionary Base Code</title>
+    <para>The example below is pseudo-code.</para>
     <programlisting role="JAVA">public static  void setAvpAsFloat32(Message msg, int avpCode, long
  vendorId, AvpSet set, float value)
   {
@@ -145,6 +148,7 @@ if (validator.isCountValidForMultiplicity(message.getCommandCode(), message.getA
   </example>
   <example>
     <title>Dictionary AVP Encoding Example</title>
+    <para>In this example, the AVP types are inherited.</para>
     <programlisting role="JAVA">public static  void setAvp(Message msg, int avpCode, long vendorId, AvpSet set, float value)
   {
   AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
