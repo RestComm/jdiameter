@@ -263,6 +263,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                 }
 
                 public void messageReceived(String connKey, IMessage message) {
+                  logger.debug("Message {} received to peer {}", new Object[]{message, connKey});
                   if (message.isRequest() && message.getCommandCode() == Message.CAPABILITIES_EXCHANGE_REQUEST) {
                     connection.remConnectionListener(this);
                     IPeer peer = null;
@@ -295,8 +296,10 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                     }
 
                     if (peer != null) {
+                      logger.debug("Add {} connection to peer {}", new Object[]{connection, peer});
                       peer.addIncomingConnection(connection);
                       try {
+                        logger.debug("Handle {} message on peer {}", new Object[]{message, peer});
                         peer.handleMessage(message.isRequest() ? EventTypes.CER_EVENT : EventTypes.CER_EVENT, message, connKey);
                       }
                       catch (Exception e) {
@@ -319,7 +322,9 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
 
                           peer = newPeerInstance(0, uri, connection.getRemoteAddress().getHostAddress(), null, metaData,
                               config, null, fsmFactory, transportFactory, parser, false, connection);
+                          logger.debug("Add {} peer {}", peer);
                           appendPeerToPeerTable(peer);
+                          logger.debug("Handle {} message on peer {}", new Object[]{message, peer});
                           peer.handleMessage(message.isRequest() ? EventTypes.CER_EVENT : EventTypes.CER_EVENT, message, connKey);
                         }
                         catch (Exception e) {

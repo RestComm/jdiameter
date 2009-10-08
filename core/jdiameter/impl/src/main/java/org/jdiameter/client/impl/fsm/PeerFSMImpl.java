@@ -24,6 +24,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.OverloadException;
@@ -61,6 +63,7 @@ public class PeerFSMImpl implements IStateMachine {
   protected IContext context;
   protected State[] states;
   protected int predefSize;
+  private Lock lock = new ReentrantLock();
 
   public static class CIntState {
 
@@ -141,6 +144,7 @@ public class PeerFSMImpl implements IStateMachine {
                 logger.debug("Peer fsm stopped");
                 break;
               }
+              lock.lock();
               try {
                 if (event != null) {
                   logger.debug("Process event {}", event);
@@ -153,6 +157,9 @@ public class PeerFSMImpl implements IStateMachine {
               }
               catch (Exception e) {
                 logger.debug("Error during processing fsm event", e);
+              }
+              finally {
+                lock.unlock();
               }
             }
           }

@@ -41,7 +41,6 @@ import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.acc.ClientAccSessionState;
 import org.jdiameter.common.api.app.acc.IClientAccActionContext;
-import org.jdiameter.common.impl.app.acc.AccountRequestImpl;
 import org.jdiameter.common.impl.app.acc.AppAccSessionImpl;
 
 /**
@@ -467,7 +466,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
   }
 
   public void receivedSuccessMessage(Request request, Answer answer) {
-    if (request.getCommandCode() == AccountRequestImpl.code) {
+    if (request.getCommandCode() == AccountRequest.code) {
       try {
         sendAndStateLock.lock();
         handleEvent(new Event(createAccountAnswer(answer)));
@@ -505,7 +504,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
   }
 
   public Answer processRequest(Request request) {
-    if (request.getCommandCode() == AccountRequestImpl.code) {
+    if (request.getCommandCode() == AccountRequest.code) {
       try {
         listener.doAccAnswerEvent(this, createAccountRequest(request), null);
       }
@@ -525,7 +524,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
   }
 
   protected Request createInterimRecord() {
-    Request interimRecord = session.createRequest(AccountRequestImpl.code, appId, destRealm, destHost);
+    Request interimRecord = session.createRequest(AccountRequest.code, appId, destRealm, destHost);
     interimRecord.getAvps().addAvp(Avp.ACC_RECORD_TYPE, 3);
     return interimRecord;
   }

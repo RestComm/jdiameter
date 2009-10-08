@@ -17,15 +17,15 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class UIDGenerator {
 
-    private long value;
-    private final Lock mutex = new ReentrantLock();
-    private final ThreadLocal<Delta> ranges = new ThreadLocal<Delta>() {
+    private static long value;
+    private static final Lock mutex = new ReentrantLock();
+    private static final ThreadLocal<Delta> ranges = new ThreadLocal<Delta>() {
         protected synchronized Delta initialValue() {
             return new Delta();
         }
     };
 
-    private class Delta {
+    private static class Delta {
         long start;
         long stop;
 
@@ -45,6 +45,7 @@ public class UIDGenerator {
 
     /**
      * Create instance of class with predefined start value
+     * 
      * @param startValue start value of counter
      */
     public UIDGenerator(long startValue) {
@@ -53,6 +54,7 @@ public class UIDGenerator {
 
     /**
      * Return next uid as int
+     * 
      * @return  uid
      */
     public int nextInt() {
@@ -61,6 +63,7 @@ public class UIDGenerator {
 
     /**
      * Return next uid as long
+     * 
      * @return uid as long
      */
     public long nextLong() {

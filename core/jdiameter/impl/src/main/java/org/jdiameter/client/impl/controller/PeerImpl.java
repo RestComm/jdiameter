@@ -54,6 +54,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Avp;
@@ -107,7 +108,7 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
   protected String productName;
   protected int firmWare;
   protected Set<ApplicationId> commonApplications = new HashSet<ApplicationId>();
-  protected long hopByHopId = uid.nextInt();
+  protected AtomicLong hopByHopId = new AtomicLong(uid.nextInt());
   protected int rating;
   protected boolean stopping = false;
   // Members
@@ -116,7 +117,7 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
   // Facilities
   protected IRouter router;
   protected Map<String, NetworkReqListener> slc;
-  protected Map<Long, IMessage> peerRequests = new ConcurrentHashMap<Long, IMessage>();
+  protected final Map<Long, IMessage> peerRequests = new ConcurrentHashMap<Long, IMessage>();
   // FSM layer
   protected IStateMachine fsm;
   protected IMessageParser parser;
@@ -429,7 +430,7 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
   }
 
   public long getHopByHopIdentifier() {
-    return hopByHopId++;
+    return hopByHopId.incrementAndGet();
   }
 
   public void addMessage(IMessage message) {
@@ -441,7 +442,7 @@ public class PeerImpl implements IPeer, Comparable<Peer> {
   }
 
   public IMessage[] remAllMessage() {
-    IMessage[] m = peerRequests.values().toArray(new IMessage[0]);
+    IMessage[] m = peerRequests.values().toArray(new IMessage[peerRequests.size()]);
     peerRequests.clear();
     return m;
   }

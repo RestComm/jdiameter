@@ -28,6 +28,7 @@ import java.net.UnknownServiceException;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Configuration;
@@ -114,7 +115,7 @@ public class MetaDataImpl implements IMetaData {
 
   protected class LocalPeer implements IPeer {
 
-    protected long hopByHopId;
+    protected AtomicLong hopByHopId;
     protected InetAddress[] addresses = new InetAddress[0];
 
     public void resetAddresses() {
@@ -246,7 +247,7 @@ public class MetaDataImpl implements IMetaData {
     }
 
     public long getHopByHopIdentifier() {
-      return hopByHopId++;
+      return hopByHopId.incrementAndGet();
     }
 
     public void addMessage(IMessage message) {

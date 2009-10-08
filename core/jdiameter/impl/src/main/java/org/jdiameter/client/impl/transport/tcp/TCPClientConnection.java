@@ -1,12 +1,5 @@
 package org.jdiameter.client.impl.transport.tcp;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.nio.ByteBuffer;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.InternalException;
@@ -17,17 +10,57 @@ import org.jdiameter.client.api.io.IConnectionListener;
 import org.jdiameter.client.api.io.TransportError;
 import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.api.parser.IMessageParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 public class TCPClientConnection implements IConnection {
+  
+  private static Logger log = LoggerFactory.getLogger(TCPClientConnection.class);
 
   private final long createdTime;
   private TCPTransportClient client;
+
+  protected static enum EventType {
+    CONNECTED, DISCONNECTED, MESSAGE_RECEIVED, DATA_EXCEPTION
+  }
+
+  protected static class Event {
+    EventType type;
+    ByteBuffer message;
+    Exception exception;
+
+    Event(EventType type) {
+      this.type = type;
+    }
+
+    Event(EventType type, Exception exception) {
+      this(type);
+      this.exception = exception;
+    }
+
+    Event(EventType type, ByteBuffer message) {
+      this(type);
+      this.message = message;
+    }
+  }
+
+  protected LinkedBlockingDeque<Event> buffer = new LinkedBlockingDeque<Event>(64);
   protected IMessageParser parser;
-  protected final Object lock = new Object();
+  protected Lock lock = new ReentrantLock();
   protected ConcurrentLinkedQueue<IConnectionListener> listeners = new ConcurrentLinkedQueue<IConnectionListener>();
 
-  protected TCPClientConnection (IMessageParser parser) {
+  protected TCPClientConnection(IMessageParser parser) {
     this.createdTime = System.currentTimeMillis();
     this.parser = parser;
     client = new TCPTransportClient(this);
@@ -44,7 +77,6 @@ public class TCPClientConnection implements IConnection {
     this(parser);
     client.setDestAddress(new InetSocketAddress(remoteAddress, remotePort));
     client.setOrigAddress(new InetSocketAddress(localAddress, localPort));
-    this.parser = parser;
   }
 
   public TCPClientConnection(Configuration config, InetAddress remoteAddress, int remotePort, InetAddress localAddress, int localPort, IConnectionListener listener, IMessageParser parser, String ref) {
@@ -52,7 +84,6 @@ public class TCPClientConnection implements IConnection {
     client.setDestAddress(new InetSocketAddress(remoteAddress, remotePort));
     client.setOrigAddress(new InetSocketAddress(localAddress, localPort));
     listeners.add(listener);
-    this.parser = parser;
   }
 
   public long getCreatedTime() {
@@ -63,22 +94,19 @@ public class TCPClientConnection implements IConnection {
     try {
       getClient().initialize();
       getClient().start();
-    }
-    catch(IOException e) {
-      throw new TransportException("Cannot init transport: ", TransportError.NetWorkError, e);            
-    }
-    catch (Exception e) {
+    } catch (IOException e) {
+      throw new TransportException("Cannot init transport: ", TransportError.NetWorkError, e);
+    } catch (Exception e) {
       throw new TransportException("Cannot init transport: ", TransportError.Internal, e);
     }
   }
 
   public void disconnect() throws InternalError {
     try {
-      if(getClient() != null) {
+      if (getClient() != null) {
         getClient().stop();
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new InternalError("Error while stopping transport: " + e.getMessage());
     }
   }
@@ -88,13 +116,12 @@ public class TCPClientConnection implements IConnection {
       if (getClient() != null) {
         getClient().release();
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new IOException(e.getMessage());
-    }
-    finally {
+    } finally {
       parser = null;
-      listeners = null;
+      buffer.clear();
+      remAllConnectionListener();
     }
   }
 
@@ -103,8 +130,7 @@ public class TCPClientConnection implements IConnection {
       if (getClient() != null) {
         getClient().sendMessage(parser.encodeMessage(message));
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new TransportException("Cannot send message: ", TransportError.FailedSendMessage, e);
     }
   }
@@ -130,19 +156,38 @@ public class TCPClientConnection implements IConnection {
   }
 
   public void addConnectionListener(IConnectionListener listener) {
-    if (listeners != null) {
+    lock.lock();
+    try {
       listeners.add(listener);
-      notifyListeners();
+      if (buffer.size() != 0) {
+        for (Event e : buffer) {
+          try {
+            onEvent(e);
+          } catch (AvpDataException e1) {
+          }
+        }
+        buffer.clear();
+      }
+    } finally {
+      lock.unlock();
     }
   }
 
   public void remAllConnectionListener() {
-    listeners.clear();
+    lock.lock();
+    try {
+      listeners.clear();
+    } finally {
+      lock.unlock();
+    }
   }
 
   public void remConnectionListener(IConnectionListener listener) {
-    if (listeners != null) {
+    lock.lock();
+    try {
       listeners.remove(listener);
+    } finally {
+      lock.unlock();
     }
   }
 
@@ -151,66 +196,77 @@ public class TCPClientConnection implements IConnection {
   }
 
   public <T> T unwrap(Class<T> aClass) throws InternalException {
-    return null; 
+    return null;
   }
 
   public String getKey() {
     return "aaa://" + getRemoteAddress().getHostName() + ":" + getRemotePort();
   }
 
-  void onDisconnect() {
-    if (listeners != null) {
-      waitListeners();
-      for (IConnectionListener listener : listeners) {
-        listener.connectionClosed(getKey(), null);
-      }
+  protected void onDisconnect() throws AvpDataException {
+    onEvent(new Event(EventType.DISCONNECTED));
+  }
+
+  protected void onMessageReveived(ByteBuffer message) throws AvpDataException {
+    if (log.isDebugEnabled()) {
+      log.debug("Received message");
+    }
+    onEvent(new Event(EventType.MESSAGE_RECEIVED, message));
+  }
+
+  protected void onAvpDataException(AvpDataException e) {
+    try {
+      onEvent(new Event(EventType.DATA_EXCEPTION, e));
+    } catch (AvpDataException e1) {
     }
   }
 
-  void onMessageReveived(ByteBuffer message) throws AvpDataException {
-    if (listeners != null) {
-      waitListeners();
-      for (IConnectionListener listener : listeners) {
-        listener.messageReceived(getKey(), parser.createMessage(message));
-      }
+  protected void onConnected() {
+    try {
+      onEvent(new Event(EventType.CONNECTED));
+    } catch (AvpDataException e1) {
     }
   }
 
-
-  void onAvpDataException(AvpDataException e) {
-    if (listeners != null) {
-      waitListeners();
-      for (IConnectionListener listener : listeners) {
-        listener.internalError(getKey(), null, new TransportException("Avp Data Exception:", TransportError.ReceivedBrokenMessage, e));
-      }
-    }
-  }
-
-  void onConnected() {
-    if (listeners != null) {
-      waitListeners();
-      for (IConnectionListener listener : listeners) {
-        listener.connectionOpened(getKey());
-      }
-    }
-  }
-
-  void notifyListeners() {
-    if (listeners != null && listeners.size() == 0) {
-      synchronized (lock) {
-        lock.notifyAll();
-      }
-    }
-  }
-
-  void waitListeners() {        
-    if (listeners != null && listeners.size() == 0) {
-      synchronized (lock) {
-        try {
-          lock.wait(500);
+  protected void onEvent(Event event) throws AvpDataException {
+    lock.lock();
+    try {
+      if (processBufferedMessages(event)) {
+        for (IConnectionListener listener : listeners) {
+          switch (event.type) {
+            case CONNECTED:
+              listener.connectionOpened(getKey());
+              break;
+            case DISCONNECTED:
+              listener.connectionClosed(getKey(), null);
+              break;
+            case MESSAGE_RECEIVED:
+              listener.messageReceived(getKey(), parser.createMessage(event.message));
+              break;
+            case DATA_EXCEPTION:
+              listener.internalError(getKey(), null,
+                  new TransportException("Avp Data Exception:", TransportError.ReceivedBrokenMessage,
+                      event.exception));
+              break;
+          }
         }
-        catch (InterruptedException e) {}
       }
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  protected boolean processBufferedMessages(Event event) throws AvpDataException {
+    if (listeners.size() == 0) {
+      try {
+        buffer.add(event);
+      } catch (IllegalStateException e) {
+        buffer.removeLast();
+        buffer.add(event);
+      }
+      return false;
+    } else {
+      return true;
     }
   }
 }
