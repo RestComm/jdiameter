@@ -18,6 +18,7 @@ import javax.slee.serviceactivity.ServiceActivity;
 import javax.slee.serviceactivity.ServiceActivityFactory;
 
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
+import net.java.slee.resource.diameter.base.events.avp.AuthSessionStateType;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
@@ -27,9 +28,11 @@ import net.java.slee.resource.diameter.sh.client.ShClientActivityContextInterfac
 import net.java.slee.resource.diameter.sh.client.ShClientMessageFactory;
 import net.java.slee.resource.diameter.sh.client.ShClientProvider;
 import net.java.slee.resource.diameter.sh.client.ShClientSubscriptionActivity;
+import net.java.slee.resource.diameter.sh.client.events.avp.DataReferenceType;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
 import net.java.slee.resource.diameter.sh.client.events.avp.SubsReqType;
 import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
+import net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest;
 import net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest;
 import net.java.slee.resource.diameter.sh.server.events.UserDataRequest;
 
@@ -66,8 +69,9 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
   private String originRealm = "mobicents.org";
 
   private String destinationIP = "127.0.0.1";
-  private String destinationPort = "21812";
+  private String destinationPort = "3868";
   private String destinationRealm = "mobicents.org";
+
   
   public void setSbbContext( SbbContext context )
   {
@@ -192,7 +196,7 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 
         TimerOptions options = new TimerOptions();
         
-        timerFacility.setTimer(aci, null, System.currentTimeMillis() + 5000, options);
+        timerFacility.setTimer(aci, null, System.currentTimeMillis() + 30000, options);
         
         /* Uncomment for basic message sending testing (DWR/DWA)
 
@@ -248,11 +252,25 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 			{
 				
 				doSimpleTestsSendUDR();
+			}else
+			{
+				logger.info(" On TimerEvent: Skipping UDR send");
 			}
 			b = Boolean.parseBoolean(props.getProperty("send.snr"));
 			if(b)
 			{
 				doSimpleTestSendSNR();
+			}else
+			{
+				logger.info(" On TimerEvent: Skipping SNR send");
+			}
+			b = Boolean.parseBoolean(props.getProperty("send.pur"));
+			if(b)
+			{
+				doSimpleTestSendPUR();
+			}else
+			{
+				logger.info(" On TimerEvent: Skipping PUR send");
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -269,6 +287,7 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 	  logger.info(" On TimerEvent: ShClient activity and messages creation.");
 	  try {
 			ShClientActivity basicClientActivity=this.provider.createShClientActivity();
+			
 			logger.info(" On TimerEvent: activity created");
 			
 			ActivityContextInterface localACI=acif.getActivityContextInterface(basicClientActivity);
@@ -289,29 +308,18 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 			UserDataRequest udr=((ShClientMessageFactory)basicClientActivity.getDiameterMessageFactory()).createUserDataRequest();
 			
 			List<DiameterAvp> avps = new ArrayList<DiameterAvp>();
-		      
-		      avps.add(avpFactory.getBaseFactory().createAvp(Avp.SESSION_ID, basicClientActivity.getSessionId().getBytes() ));
 		  
-		      DiameterAvp avpVendorId = avpFactory.getBaseFactory().createAvp( Avp.VENDOR_ID, MessageFactory._SH_VENDOR_ID );
-		      DiameterAvp avpAcctApplicationId = avpFactory.getBaseFactory().createAvp( Avp.ACCT_APPLICATION_ID, MessageFactory._SH_APP_ID );
-		      
-		      avps.add( avpFactory.getBaseFactory().createAvp( Avp.VENDOR_SPECIFIC_APPLICATION_ID, new DiameterAvp[]{avpVendorId, avpAcctApplicationId} ) );
-		      
-		      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, ("aaa://" + originIP + ":"+originPort).getBytes() ));
-		      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, originRealm.getBytes() ));
 		      
 		      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, ("aaa://" + destinationIP + ":"+destinationPort).getBytes() ));
 		      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, destinationRealm.getBytes() ));
 		      UserIdentityAvp ui=avpFactory.createUserIdentity();
 		      ui.setPublicIdentity("sip:subscriber@mobicents.org");
-
-		      avps.add(ui);
-		      ui=avpFactory.createUserIdentity();
-		      ui.setPublicIdentity("TEL:+64216543210");
-
-		      avps.add(ui);
-		      udr.setExtensionAvps(avps.toArray(new DiameterAvp[avps.size()]));
 		      
+		      avps.add(ui);
+		    
+		      udr.setExtensionAvps(avps.toArray(new DiameterAvp[avps.size()]));
+		      udr.setAuthSessionState(AuthSessionStateType.STATE_MAINTAINED);
+		      udr.setDataReference(DataReferenceType.IMS_PUBLIC_IDENTITY);
 		      logger.info(" On TimerEvent: Sending message:\n"+udr);
 		      basicClientActivity.sendUserDataRequest(udr);
 		      
@@ -341,21 +349,11 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 		SubscribeNotificationsRequest snr=((ShClientMessageFactory)shClientSubscriptionActivity.getDiameterMessageFactory()).createSubscribeNotificationsRequest();
 		//< Subscribe-Notifications-Request > ::=	< Diameter Header: 308, REQ, PXY, 16777217 >
 		//				< Session-Id >
-		 avps.add(avpFactory.getBaseFactory().createAvp(Avp.SESSION_ID, shClientSubscriptionActivity.getSessionId().getBytes() ));
 		//				{ Vendor-Specific-Application-Id }
-	      DiameterAvp avpVendorId = avpFactory.getBaseFactory().createAvp( Avp.VENDOR_ID, MessageFactory._SH_VENDOR_ID );
-	      DiameterAvp avpAcctApplicationId = avpFactory.getBaseFactory().createAvp( Avp.ACCT_APPLICATION_ID, MessageFactory._SH_APP_ID );
-	      
-	      avps.add( avpFactory.getBaseFactory().createAvp( Avp.VENDOR_SPECIFIC_APPLICATION_ID, new DiameterAvp[]{avpVendorId, avpAcctApplicationId} ) );
-	      
-	   
-	      
-	     
-		//				{ Auth-Session-State }
+	 	//				{ Auth-Session-State }
+		snr.setAuthSessionState(AuthSessionStateType.STATE_MAINTAINED);
 		//				{ Origin-Host }
-	      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, ("aaa://" + originIP + ":"+originPort).getBytes() ));
 		//				{ Origin-Realm }
-	      avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, originRealm.getBytes() ));
 		//				[ Destination-Host ]
 	      avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, ("aaa://" + destinationIP + ":"+destinationPort).getBytes() ));
 		//				{ Destination-Realm }
@@ -388,7 +386,73 @@ public abstract class DiameterExampleSbb implements javax.slee.Sbb {
 	    logger.error( "Failure creating/sending SNR.", e );
 		}
   }
-  
+  private void doSimpleTestSendPUR()
+  {
+	  logger.info(" On TimerEvent: ShClient activity and messages creation.");
+	  try {
+			ShClientActivity basicClientActivity=this.provider.createShClientActivity();
+			
+			logger.info(" On TimerEvent: activity created");
+			
+			ActivityContextInterface localACI=acif.getActivityContextInterface(basicClientActivity);
+			logger.info(" On TimerEvent: ACI created for basicClientActivity");
+			
+			localACI.attach(getSbbContext().getSbbLocalObject());
+			
+			
+			DiameterIdentity[] peers=provider.getConnectedPeers();
+			
+			for(DiameterIdentity peer: peers)
+			{
+				logger.info(" On TimerEvent: Connected Peer: "+peer.toString());
+			}
+			
+			logger.info(" On TimerEvent: creating PUR");
+			
+			ProfileUpdateRequest pur=((ShClientMessageFactory)basicClientActivity.getDiameterMessageFactory()).createProfileUpdateRequest();
+			
+			List<DiameterAvp> avps = new ArrayList<DiameterAvp>();
+		  
+//			< Profile-Update-Request > ::=		< Diameter Header: 307, REQ, PXY, 16777217 >
+//			< Session-Id >
+//			{ Vendor-Specific-Application-Id }
+//			{ Auth-Session-State }\
+			pur.setAuthSessionState(AuthSessionStateType.STATE_MAINTAINED);
+//			{ Origin-Host }
+//			{ Origin-Realm }
+//			[ Destination-Host ]
+			avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, ("aaa://" + destinationIP + ":"+destinationPort).getBytes() ));
+//			{ Destination-Realm }
+			 avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, destinationRealm.getBytes() ));
+//			*[ Supported-Features ]
+//			{ User-Identity }
+			UserIdentityAvp ui = this.avpFactory.createUserIdentity();
+			ui.setPublicIdentity("sip:pomyslowy.romek@asn.media.com");
+			pur.setUserIdentity(ui);
+//			[ Wildcarded-PSI ]
+//			[ Wildcarded-IMPU ]
+//			{ Data-Reference }
+			pur.setDataReference(DataReferenceType.IMS_PUBLIC_IDENTITY);
+//			{ User-Data }
+			pur.setUserData("<xml>  some data</xml>");
+//			*[ AVP ]
+//			*[ Proxy-Info ]
+//			*[ Route-Record ]
+
+		    
+		      pur.setExtensionAvps(avps.toArray(new DiameterAvp[avps.size()]));
+		    
+		      logger.info(" On TimerEvent: Sending message:\n"+pur);
+		      basicClientActivity.sendProfileUpdateRequest(pur);
+		      
+			logger.info(" On TimerEvent: Message send");
+			
+			
+			
+		} catch (Exception e) {
+		  logger.error( "Failure trying to create/send PUR.", e );
+		}
+  }
   // ###################################
   // #  REQEUSTS - PNR, this is client #
   // ###################################

@@ -24,6 +24,7 @@ import net.java.slee.resource.diameter.sh.client.events.SubscribeNotificationsAn
 import net.java.slee.resource.diameter.sh.client.events.UserDataAnswer;
 import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
 import net.java.slee.resource.diameter.sh.client.events.avp.SubsReqType;
+import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
 import net.java.slee.resource.diameter.sh.server.ShServerActivity;
 import net.java.slee.resource.diameter.sh.server.ShServerActivityContextInterfaceFactory;
 import net.java.slee.resource.diameter.sh.server.ShServerMessageFactory;
@@ -60,7 +61,13 @@ public abstract class DiameterShServerExampleSbb implements javax.slee.Sbb {
 	private DiameterShAvpFactory avpFactory = null;
 	private ShServerActivityContextInterfaceFactory acif = null;
 	private TimerFacility timerFacility = null;
+	private String originIP = "127.0.0.1";
+	private String originPort = "1812";
+	private String originRealm = "mobicents.org";
 
+	private String destinationIP = "127.0.0.1";
+	private String destinationPort = "3868";
+	private String destinationRealm = "mobicents.org";
 	public void setSbbContext(SbbContext context) {
 		logger.info("sbbRolledBack invoked.");
 
@@ -200,6 +207,12 @@ public abstract class DiameterShServerExampleSbb implements javax.slee.Sbb {
 
 		try {
 			request.setUserData("HEHE, some secrete user data.");
+			//This is present in activity in 2.x, will be backported.
+			UserIdentityAvp ui = avpFactory.createUserIdentity();
+			ui.setPublicIdentity("sip:ala@ma.siersciucha.pl");
+			request.setUserIdentity(ui);
+			request.setUserData("<xml>Some secrete user xml</xml>");
+			logger.info("onTimerEvent :: About to send PNR:\r\n" + request);
 			activity.sendPushNotificationRequest(request);
 		} catch (Exception e) {
 			logger.error("Failed to send PNR.", e);
@@ -229,18 +242,7 @@ public abstract class DiameterShServerExampleSbb implements javax.slee.Sbb {
 
 		try {
 			// This will be fixed in B2, we need more accessors
-			DiameterAvp requestNumber = null;
-
-			for (DiameterAvp a : event.getAvps()) {
-				if (a.getCode() == DiameterShAvpCodes.SUBS_REQ_TYPE) {
-					requestNumber = a;
-					break;
-				}
-			}
-
-			if (requestNumber != null) {
-				answer.setExtensionAvps(requestNumber);
-			}
+		
 
 			logger.info(" onSubscribeNotificationsRequest :: Created SNA:\r\n" + answer);
 
@@ -262,7 +264,21 @@ public abstract class DiameterShServerExampleSbb implements javax.slee.Sbb {
 			logger.info("onProfileUpdateRequest :: " + event);
 
 			ProfileUpdateAnswer answer = ((ShServerActivity) aci.getActivity()).createProfileUpdateAnswer(2001, false);
-
+//			< Profile-Update-Answer > ::=< Diameter Header: 307, PXY, 16777217 >
+//			< Session-Id >
+//			{ Vendor-Specific-Application-Id }
+//			[ Result-Code ]
+//			[ Experimental-Result ]
+//			{ Auth-Session-State }
+//			{ Origin-Host }
+//			{ Origin-Realm }
+//			[ Wildcarded-PSI ]
+//			[ Wildcarded-IMPU ]
+//			*[ Supported-Features ]
+//			*[ AVP ]
+//			*[ Failed-AVP ]
+//			*[ Proxy-Info ]
+//			*[ Route-Record ]
 			logger.info("Created Profile-Update-Answer:\r\n" + answer);
 
 			((ShServerActivity) aci.getActivity()).sendProfileUpdateAnswer(answer);
