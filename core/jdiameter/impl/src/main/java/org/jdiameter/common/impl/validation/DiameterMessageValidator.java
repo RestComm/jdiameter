@@ -265,11 +265,25 @@ public class DiameterMessageValidator {
                     index = commandAvpElement.getAttribute("index");
                   }
 
+                  String avpCode = commandAvpElement.getAttribute("code");
+                  String avpVendor = commandAvpElement.getAttribute("vendor");
+                  if(avpCode == null)
+                  {
+                	  log.error("Command defines avp without code! Command: {}, Code: {}, ApplicationID: {}", new Object[] { msg.getName(), msg.getCommandCode(),
+                              msg.getApplicationId() });
+                	  continue;
+                  }
+                	  if(avpVendor == null)
+                  {
+                		  log.warn("Command defines avp without vendor, assuming default. Command: {}, Code: {}, ApplicationID: {}", new Object[] { msg.getName(), msg.getCommandCode(),
+                                  msg.getApplicationId() });
+                		  avpVendor = "0";
+                  }
                   // here we have name and multiplicity. we
                   // have to get avp def from name, clone and
                   // set multiplicity.
                   VAvpRepresentation strongRepresentation = null;
-                  VAvpRepresentation strongKey = nameToCodeMap.get(name.trim());
+                  VAvpRepresentation strongKey = new VAvpRepresentation(Integer.valueOf(avpCode),Long.valueOf(avpVendor));
                   if (strongKey == null) {
                     log.warn("No strong avp key representation for msg, name: {}", name.trim());
                     continue;

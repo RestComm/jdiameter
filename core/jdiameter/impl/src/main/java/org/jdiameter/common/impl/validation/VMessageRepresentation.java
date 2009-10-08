@@ -119,13 +119,14 @@ public class VMessageRepresentation implements Comparable<VMessageRepresentation
 		for (VAvpRepresentation ap : this.messageAvps.values()) {
 
 			AvpSet innerSet = msg.getAvps().getAvps(ap.getCode(), ap.getVendorId());
+			
 			int count = 0;
 			if (innerSet != null) {
 				count = innerSet.size();
 			}
 
 			if (!ap.isCountValidForMultiplicity(count)) {
-				throw new JAvpNotAllowedException("AVP: " + ap + " has wrong count in message - " + (count), ap.getCode(), ap.getVendorId());
+				throw new JAvpNotAllowedException("AVP: \n" + ap + "\n,has wrong count in message - " + (count), ap.getCode(), ap.getVendorId());
 			}
 
 			if (count != 0 && ap.isGrouped()) {
