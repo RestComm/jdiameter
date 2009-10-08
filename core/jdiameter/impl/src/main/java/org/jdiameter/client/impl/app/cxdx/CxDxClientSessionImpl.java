@@ -216,17 +216,17 @@ public class CxDxClientSessionImpl extends CxDxSession implements ClientCxDxSess
 
   protected void send(Event.Type type, AppEvent request, AppEvent answer) throws InternalException {
     try {
-
+      
       if (type != null) {
         handleEvent(new Event(type, request, answer));
       }
-      AppEvent event = null;
-      if (request != null) {
-        event = request;
-      } else {
-        event = answer;
-      }
-      session.send(event.getMessage(), this);
+//      AppEvent event = null;
+//      if (request != null) {
+//        event = request;
+//      } else {
+//        event = answer;
+//      }
+//      session.send(event.getMessage(), this);
 
     } catch (Exception e) {
       throw new InternalException(e);
@@ -260,7 +260,7 @@ public class CxDxClientSessionImpl extends CxDxSession implements ClientCxDxSess
 
         case SEND_MESSAGE:
           newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
-          super.session.send(((AppEvent) event.getData()).getMessage());
+          super.session.send(((AppEvent) event.getData()).getMessage(),this);
           break;
         default:
           logger.error("Something went wrong, we should not b here, its a bug.");

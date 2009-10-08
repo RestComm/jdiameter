@@ -175,7 +175,7 @@ public class CxDxServerSessionImpl extends CxDxSession implements ServerCxDxSess
           break;
         case SEND_MESSAGE:
           newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
-          super.session.send(((AppEvent) event.getData()).getMessage());
+          super.session.send(((AppEvent) event.getData()).getMessage(),this);
           break;
         default:
           logger.error("Something went wrong, we should not b here, its a bug.");
@@ -315,8 +315,8 @@ public class CxDxServerSessionImpl extends CxDxSession implements ServerCxDxSess
       if (type != null) {
         handleEvent(new Event(type, request, answer));
       }
-      AppEvent event = request != null ? request : answer;
-      session.send(event.getMessage(), this);
+//      AppEvent event = request != null ? request : answer;
+//      session.send(event.getMessage(), this);
     }
     catch (Exception e) {
       throw new InternalException(e);

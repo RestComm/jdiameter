@@ -95,7 +95,7 @@ public class PeerTableImpl implements IPeerTable {
             }
           }
           catch (Exception e) {
-            logger.warn("Can not create peer {}", uri, e);
+               logger.warn("Can not create peer {} due to {}", uri, e);
           }
         }
       }
