@@ -28,7 +28,7 @@ import org.mobicents.slee.resource.diameter.cxdx.handlers.CxDxSessionCreationLis
  */
 public abstract class CxDxSessionImpl extends DiameterActivityImpl implements CxDxSession ,StateChangeListener{
 
-  protected CxDxMessageFactory cxdxMessageFactory = null;
+  protected CxDxMessageFactoryImpl cxdxMessageFactory = null;
   protected CxDxAVPFactory cxdxAvpFactory = null;
 
   protected DiameterMessage lastRequest = null;
@@ -38,7 +38,7 @@ public abstract class CxDxSessionImpl extends DiameterActivityImpl implements Cx
   public CxDxSessionImpl(CxDxMessageFactory messageFactory, CxDxAVPFactory avpFactory, Session session, EventListener<Request, Answer> raEventListener, long timeout, DiameterIdentity destinationHost, DiameterIdentity destinationRealm, SleeEndpoint endpoint) {
     super(null, null, session, raEventListener, timeout, destinationHost, destinationRealm, endpoint);
 
-    this.cxdxMessageFactory = messageFactory;
+    this.cxdxMessageFactory = (CxDxMessageFactoryImpl) messageFactory;
     this.cxdxAvpFactory = avpFactory;
     //this.cxdxSessionListener = (CxDxSessionCreationListener)raEventListener;
   }

@@ -1,6 +1,6 @@
 package net.java.slee.resource.diameter.cxdx;
 
-import org.jdiameter.api.Request;
+
 
 import net.java.slee.resource.diameter.base.CreateActivityException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;

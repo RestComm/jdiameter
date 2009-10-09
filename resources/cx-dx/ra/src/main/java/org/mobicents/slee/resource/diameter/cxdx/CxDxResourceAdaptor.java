@@ -868,8 +868,8 @@ public class CxDxResourceAdaptor implements ResourceAdaptor, DiameterListener , 
         ClientCxDxSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(sessionId, ApplicationId.createByAuthAppId(10415L, 16777216L), ClientCxDxSession.class);
 
         //return new org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl(ra.cxdxMessageFactory, ra.cxdxAvpFactory, session, (EventListener<Request, Answer>) session, ra.messageTimeout, destinationHost, destinationRealm, ra.sleeEndpoint);
-         
-        org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl activity = new org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl(ra.cxdxMessageFactory, ra.cxdxAvpFactory, session, (EventListener<Request, Answer>) session, ra.messageTimeout, null, null, ra.sleeEndpoint);
+        //org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl activity = new org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl(ra.cxdxMessageFactory, ra.cxdxAvpFactory, session, (EventListener<Request, Answer>) session, ra.messageTimeout, null, null, ra.sleeEndpoint);
+        org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl activity = new org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl(new CxDxMessageFactoryImpl(session.getSessions().get(0),stack), ra.cxdxAvpFactory, session, (EventListener<Request, Answer>) session, ra.messageTimeout, null, null, ra.sleeEndpoint);
         activityCreated(activity);
         if(req!=null)
         {
@@ -890,7 +890,8 @@ public class CxDxResourceAdaptor implements ResourceAdaptor, DiameterListener , 
 	        ClientCxDxSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAuthAppId(10415L, 16777216L), ClientCxDxSession.class);
 
 	        //return new org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl(ra.cxdxMessageFactory, ra.cxdxAvpFactory, session, (EventListener<Request, Answer>) session, ra.messageTimeout, destinationHost, destinationRealm, ra.sleeEndpoint);
-	        org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl activity = new org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl(ra.cxdxMessageFactory, ra.cxdxAvpFactory, session, (EventListener<Request, Answer>) session, ra.messageTimeout, destinationHost, destinationRealm, ra.sleeEndpoint);
+	        //org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl activity = new org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl(ra.cxdxMessageFactory, ra.cxdxAvpFactory, session, (EventListener<Request, Answer>) session, ra.messageTimeout, destinationHost, destinationRealm, ra.sleeEndpoint);
+	        org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl activity = new org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl(new CxDxMessageFactoryImpl(session.getSessions().get(0),stack), ra.cxdxAvpFactory, session, (EventListener<Request, Answer>) session, ra.messageTimeout, destinationHost, destinationRealm, ra.sleeEndpoint);
 	        activityCreated(activity);
 	        return activity;
 	      }

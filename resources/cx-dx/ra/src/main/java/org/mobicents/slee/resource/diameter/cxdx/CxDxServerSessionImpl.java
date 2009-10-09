@@ -2,12 +2,15 @@ package org.mobicents.slee.resource.diameter.cxdx;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.slee.resource.SleeEndpoint;
 
+import net.java.slee.resource.diameter.base.NoSuchAvpException;
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.avp.AvpNotAllowedException;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodes;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.cxdx.CxDxAVPFactory;
 import net.java.slee.resource.diameter.cxdx.CxDxMessageFactory;
@@ -96,13 +99,29 @@ public class CxDxServerSessionImpl extends CxDxSessionImpl implements CxDxServer
 			logger.warn("Invalid type of answer for this activity.");
 			return null;
 		}
+		DiameterAvp[] avps = new DiameterAvp[0];
 
+		
+		try {
+			DiameterAvp sessionIdAvp = null;
+			sessionIdAvp = cxdxAvpFactory.createAvp(0, DiameterAvpCodes.SESSION_ID, lastRequest.getSessionId());
+			avps = new DiameterAvp[]{sessionIdAvp};
+		}
+		catch (NoSuchAvpException e) {
+			logger.error("Unable to create Session-Id AVP.", e);
+		}
 		// Create Request from last received and set it as answer
-		//FIXME: Alex this is prob with ANSWER
-		Message msg = session.createRequest((Request) ((DiameterMessageImpl) lastRequest).getGenericData());
-		msg.setRequest(false);
-		LocationInfoAnswer lia = new LocationInfoAnswerImpl(msg);
-
+		//Message msg = session.createRequest((Request) ((DiameterMessageImpl) lastRequest).getGenericData());
+		//msg.setRequest(false);
+		//LocationInfoAnswer lia = new LocationInfoAnswerImpl(msg);
+		LocationInfoAnswer lia = null;
+		try {
+			lia = (LocationInfoAnswer) this.cxdxMessageFactory.createCxDxMessage(lastRequest.getHeader(),avps,LocationInfoAnswer.COMMAND_CODE,cxdxMessageFactory.cxdxAppId);
+		} catch (InternalException e1) {
+			
+			e1.printStackTrace();
+			return null;
+		}
 		// Fill extension avps if present
 		if (sessionAvps.size() > 0) {
 			try {
@@ -112,10 +131,6 @@ public class CxDxServerSessionImpl extends CxDxSessionImpl implements CxDxServer
 			}
 		}
 
-		// Guarantee session-id is present
-		if (!lia.hasSessionId()) {
-			lia.setSessionId(sessionId);
-		}
 
 		return lia;
 	}
@@ -134,10 +149,29 @@ public class CxDxServerSessionImpl extends CxDxSessionImpl implements CxDxServer
 		}
 
 		// Create Request from last received and set it as answer
-		Message msg = session.createRequest((Request) ((DiameterMessageImpl) lastRequest).getGenericData());
-		msg.setRequest(false);
-		MultimediaAuthenticationAnswer maa = new MultimediaAuthenticationAnswerImpl(msg);
+		DiameterAvp[] avps = new DiameterAvp[0];
 
+		
+		try {
+			DiameterAvp sessionIdAvp = null;
+			sessionIdAvp = cxdxAvpFactory.createAvp(0, DiameterAvpCodes.SESSION_ID, lastRequest.getSessionId());
+			avps = new DiameterAvp[]{sessionIdAvp};
+		}
+		catch (NoSuchAvpException e) {
+			logger.error("Unable to create Session-Id AVP.", e);
+		}
+		// Create Request from last received and set it as answer
+//		Message msg = session.createRequest((Request) ((DiameterMessageImpl) lastRequest).getGenericData());
+//		msg.setRequest(false);
+//		MultimediaAuthenticationAnswer maa = new MultimediaAuthenticationAnswerImpl(msg);
+		MultimediaAuthenticationAnswer maa = null;
+		try {
+			maa = (MultimediaAuthenticationAnswer) this.cxdxMessageFactory.createCxDxMessage(lastRequest.getHeader(),avps,MultimediaAuthenticationAnswer.COMMAND_CODE,cxdxMessageFactory.cxdxAppId);
+		} catch (InternalException e1) {
+			
+			e1.printStackTrace();
+			return null;
+		}
 		// Fill extension avps if present
 		if (sessionAvps.size() > 0) {
 			try {
@@ -147,10 +181,7 @@ public class CxDxServerSessionImpl extends CxDxSessionImpl implements CxDxServer
 			}
 		}
 
-		// Guarantee session-id is present
-		if (!maa.hasSessionId()) {
-			maa.setSessionId(sessionId);
-		}
+
 
 		return maa;
 	}
@@ -235,10 +266,29 @@ public class CxDxServerSessionImpl extends CxDxSessionImpl implements CxDxServer
 		}
 
 		// Create Request from last received and set it as answer
-		Message msg = session.createRequest((Request) ((DiameterMessageImpl) lastRequest).getGenericData());
-		msg.setRequest(false);
-		ServerAssignmentAnswer saa = new ServerAssignmentAnswerImpl(msg);
+		DiameterAvp[] avps = new DiameterAvp[0];
 
+		
+		try {
+			DiameterAvp sessionIdAvp = null;
+			sessionIdAvp = cxdxAvpFactory.createAvp(0, DiameterAvpCodes.SESSION_ID, lastRequest.getSessionId());
+			avps = new DiameterAvp[]{sessionIdAvp};
+		}
+		catch (NoSuchAvpException e) {
+			logger.error("Unable to create Session-Id AVP.", e);
+		}
+		// Create Request from last received and set it as answer
+//		Message msg = session.createRequest((Request) ((DiameterMessageImpl) lastRequest).getGenericData());
+//		msg.setRequest(false);
+//		ServerAssignmentAnswer saa = new ServerAssignmentAnswerImpl(msg);
+		ServerAssignmentAnswer saa = null;
+		try {
+			saa = (ServerAssignmentAnswer) this.cxdxMessageFactory.createCxDxMessage(lastRequest.getHeader(),avps,ServerAssignmentAnswer.COMMAND_CODE,cxdxMessageFactory.cxdxAppId);
+		} catch (InternalException e1) {
+			
+			e1.printStackTrace();
+			return null;
+		}
 		// Fill extension avps if present
 		if (sessionAvps.size() > 0) {
 			try {
@@ -270,10 +320,29 @@ public class CxDxServerSessionImpl extends CxDxSessionImpl implements CxDxServer
 		}
 
 		// Create Request from last received and set it as answer
-		Message msg = session.createRequest((Request) ((DiameterMessageImpl) lastRequest).getGenericData());
-		msg.setRequest(false);
-		UserAuthorizationAnswer uaa = new UserAuthorizationAnswerImpl(msg);
+		DiameterAvp[] avps = new DiameterAvp[0];
 
+		
+		try {
+			DiameterAvp sessionIdAvp = null;
+			sessionIdAvp = cxdxAvpFactory.createAvp(0, DiameterAvpCodes.SESSION_ID, lastRequest.getSessionId());
+			avps = new DiameterAvp[]{sessionIdAvp};
+		}
+		catch (NoSuchAvpException e) {
+			logger.error("Unable to create Session-Id AVP.", e);
+		}
+		// Create Request from last received and set it as answer
+//		Message msg = session.createRequest((Request) ((DiameterMessageImpl) lastRequest).getGenericData());
+//		msg.setRequest(false);
+//		UserAuthorizationAnswer uaa = new UserAuthorizationAnswerImpl(msg);
+		UserAuthorizationAnswer uaa = null;
+		try {
+			uaa = (UserAuthorizationAnswer) this.cxdxMessageFactory.createCxDxMessage(lastRequest.getHeader(),avps,UserAuthorizationAnswer.COMMAND_CODE,cxdxMessageFactory.cxdxAppId);
+		} catch (InternalException e1) {
+			
+			e1.printStackTrace();
+			return null;
+		}
 		// Fill extension avps if present
 		if (sessionAvps.size() > 0) {
 			try {

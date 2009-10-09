@@ -1,5 +1,6 @@
 package net.java.slee.resource.diameter.cxdx;
 
+import net.java.slee.resource.diameter.base.DiameterAvpFactory;
 import net.java.slee.resource.diameter.cxdx.events.avp.AssociatedIdentities;
 import net.java.slee.resource.diameter.cxdx.events.avp.AssociatedRegisteredIdentities;
 import net.java.slee.resource.diameter.cxdx.events.avp.ChargingInformation;
@@ -18,7 +19,7 @@ import net.java.slee.resource.diameter.cxdx.events.avp.SubscriptionInfo;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
-public interface CxDxAVPFactory {
+public interface CxDxAVPFactory extends DiameterAvpFactory{
 
   /**
    * Create an empty AssociatedIdentities instance.

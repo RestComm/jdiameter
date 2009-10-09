@@ -150,11 +150,5 @@ public interface CxDxMessageFactory {
    */
   PushProfileRequest createPushProfileRequest(String sessionId) throws IllegalArgumentException;
 
-  /**
-   * Get the Diameter Base protocol message factory.
-   * 
-   * @return
-   */
-  DiameterMessageFactory getBaseMessageFactory();
 
 }

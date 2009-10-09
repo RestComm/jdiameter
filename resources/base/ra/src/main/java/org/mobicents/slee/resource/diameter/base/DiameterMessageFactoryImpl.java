@@ -25,6 +25,8 @@
  */
 package org.mobicents.slee.resource.diameter.base;
 
+import javax.management.RuntimeErrorException;
+
 import net.java.slee.resource.diameter.base.DiameterMessageFactory;
 import net.java.slee.resource.diameter.base.events.AbortSessionAnswer;
 import net.java.slee.resource.diameter.base.events.AbortSessionRequest;
@@ -462,7 +464,8 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 		
 		return diamMessage;
 	}
-
+	
+	//FIXME: add proper exception and proper handling
 	protected Message createMessage(DiameterHeader header, DiameterAvp[] avps,int _commandCode, ApplicationId appId) throws AvpNotAllowedException
 	{
 	  try {
@@ -478,6 +481,10 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 	    return msg;
 	  }
 	  catch (Exception e) {
+		  if(e instanceof RuntimeException)
+		  {
+			  throw (RuntimeException)e;
+		  }
 	    logger.error("Failure trying to create Diameter message.", e);
 	  }
 	  
@@ -509,10 +516,11 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 			Message msg = stack.getSessionFactory().getNewRawSession().createMessage(commandCode, aid, hopByHopId, endToEndId);
 			return msg;
 		} catch (Exception e) {
-			logger.error( "Failure while treying to create raw message.", e );
+			//logger.error( "Failure while trying to create raw message. Command code="+_commandCode+", applicatiod id="+appId+", header="+header, e );
+			throw new RuntimeException("Failure while trying to create raw message. Command code="+_commandCode+", applicatiod id="+appId+", header="+header, e);
 		}
 		
-		return null;
+		//return null;
 	}
 	protected void addAvp(DiameterAvp avp, AvpSet set) {
 
@@ -543,7 +551,7 @@ public class DiameterMessageFactoryImpl implements DiameterMessageFactory {
 		return this.createDiameterMessage(header, avps, header.getCommandCode(), getApplicationId(header));
 	}
 
-  private void addOriginHostAndRealm(DiameterMessage msg) {
+  protected void addOriginHostAndRealm(DiameterMessage msg) {
     if(!msg.hasOriginHost()) {
       msg.setOriginHost(new DiameterIdentity(stack.getMetaData().getLocalPeer().getUri().getFQDN().toString()));
     }
