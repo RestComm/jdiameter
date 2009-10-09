@@ -1,0 +1,336 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<section>
+  <title>Mobicents Diameter Cx/Dx</title>
+  <para>The Cx and Dx  interfaces are the reference for interactions between the following servers:</para>
+  <itemizedlist>
+    <listitem>
+      <para>Home Subscriber Server (HSS) </para>
+    </listitem>
+    <listitem>
+      <para>I-CSCF and S-CSCF</para>
+    </listitem>
+  </itemizedlist>
+  <para>The standard interface is described in the 3GPP Specifications  <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29328.htm">TS29.228</ulink> and <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29329.htm">TS29.229</ulink>.  </para>
+  <para>  Cx and Dx interface    provide a number of message commands that can be used within the application.</para>
+  <table frame="all" pgwide="1" id="table-Diameter_Sh_Client_Messages">
+    <title>Diameter Cx and Dx Messages</title>
+    <tgroup cols="5" colsep="1">
+      <colspec colname="c1"/>
+      <colspec colname="c2"/>
+      <colspec colname="c3"/>
+      <colspec colname="c4"/>
+      <colspec colname="c5"/>
+      <thead>
+        <row>
+          <entry>Command Name</entry>
+          <entry>Abbreviation</entry>
+          <entry>Code</entry>
+          <entry>Source</entry>
+          <entry>Destination</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry>User-Autorization-Request</entry>
+          <entry>UAR</entry>
+          <entry>300</entry>
+          <entry>I-CSCF</entry>
+          <entry>HSS</entry>
+        </row>
+        <row>
+          <entry>User-Autorization-Answer</entry>
+          <entry>UAA</entry>
+          <entry>300</entry>
+          <entry>HSS</entry>
+          <entry>I-CSCF</entry>
+        </row>
+        <row>
+          <entry>Server-Assignment-Request</entry>
+          <entry>SAR</entry>
+          <entry>301</entry>
+          <entry>S-CSCF</entry>
+          <entry>HSS</entry>
+        </row>
+        <row>
+          <entry>Server-Assignment-Answer</entry>
+          <entry>SAA </entry>
+          <entry>301</entry>
+          <entry>HSS</entry>
+          <entry>S-CSCF</entry>
+        </row>
+        <row>
+          <entry>Location-Info-Request</entry>
+          <entry>LIR</entry>
+          <entry>302</entry>
+          <entry>I-CSCF</entry>
+          <entry>HSS</entry>
+        </row>
+        <row>
+          <entry>Location-Info-Answer</entry>
+          <entry>LIA</entry>
+          <entry>302</entry>
+          <entry>HSS</entry>
+          <entry>I-CSCF</entry>
+        </row>
+        <row>
+          <entry>Multimedia-Auth-Request</entry>
+          <entry>MAR</entry>
+          <entry>303</entry>
+          <entry>S-CSCF</entry>
+          <entry>HSS</entry>
+        </row>
+        <row>
+          <entry>Multimedia-Auth-Answer</entry>
+          <entry>MAA</entry>
+          <entry>303</entry>
+          <entry>HSS</entry>
+          <entry>S-CSCF</entry>
+        </row>
+        <row>
+          <entry>Registration-Termination-Request</entry>
+          <entry>RTR</entry>
+          <entry>304</entry>
+          <entry>HSS</entry>
+          <entry>S-CSCF</entry>
+        </row>
+        <row>
+          <entry>Registration-Termination-Answer</entry>
+          <entry>RTA</entry>
+          <entry>304</entry>
+          <entry>S-CSCF</entry>
+          <entry>HSS</entry>
+        </row>
+        <row>
+          <entry>Push-Profile-Request</entry>
+          <entry>PPR</entry>
+          <entry>305</entry>
+          <entry>HSS</entry>
+          <entry>S-CSCF</entry>
+        </row>
+        <row>
+          <entry>Push-Profile-Answer</entry>
+          <entry>PPA</entry>
+          <entry>303</entry>
+          <entry>S-CSCF</entry>
+          <entry>HSS</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </table>
+<!--TODO: paragraphs need rework.  Copied directly from wiki.-->  <para>Cx and Dx interfaces definition is mixed. This is due fact that  both are meant to standarise communication between SIP IMS Proxies and HSS</para>
+  <para>UAR/UA pair allow to perform follwing operations:</para>
+  <itemizedlist>
+    <listitem>
+      <para>authorize the registration of the Public User Identity, checking multimedia subsystem access permissions and roaming agreements.
+</para>
+    </listitem>
+    <listitem>
+      <para>perform a first security check, determining whether the Public User Identity in the message is associated with the Private User Identity sent in the message.
+</para>
+    </listitem>
+    <listitem>
+      <para>obtain either the S-CSCF where the Public User Identity is registered or unregistered (i.e. registered as a consequence of a terminating call or there is a S-CSCF keeping the user profile stored), or the list of capabilities that the S-CSCF has to support.
+</para>
+    </listitem>
+  </itemizedlist>
+  <para>SAR/SAA pair allow to perform following operations:</para>
+  <itemizedlist>
+    <listitem>
+      <para>assign an S-CSCF to a Public Identity, or to clear the name of the S-CSCF assigned to one or more Public Identities.
+</para>
+    </listitem>
+    <listitem>
+      <para>download from HSS the relevant user information for the S-CSCF.</para>
+    </listitem>
+    <listitem>
+      <para>backup and retrieve the S-CSCF Restoration Information (see 3GPP TS 23.380 [19]) in the HSS.</para>
+    </listitem>
+  </itemizedlist>
+  <para>LIR/LIA pair allow to perform following operations:</para>
+  <itemizedlist>
+    <listitem>
+      <para>obtain the name of the S-CSCF assigned to a Public Identity</para>
+    </listitem>
+    <listitem>
+      <para>obtain the name of the AS hosting a PSI for direct routing.</para>
+    </listitem>
+  </itemizedlist>
+  <para>RTR/RTA pair allow to perform following operation:</para>
+  <itemizedlist>
+    <listitem>
+      <para>notify that public identity is to be unregistered -allow S-CSCF to clean state.</para>
+    </listitem>
+  </itemizedlist>
+  <para>PPR/PPA pair allows to perform following operations:</para>
+  <itemizedlist>
+    <listitem>
+      <para>update user profile</para>
+    </listitem>
+    <listitem>
+      <para>update charging information</para>
+    </listitem>
+    <listitem>
+      <para>update SIP Digest information</para>
+    </listitem>
+  </itemizedlist>
+  <section>
+    <title>Configuration</title>
+    <para>Currently Cx/Dx RA does not support any configuration options.</para>
+  </section>
+  <section>
+    <title>Resource Adaptor Type</title>
+    <para>The resource adapter  provides the following types:</para>
+    <itemizedlist>
+      <listitem>
+        <para>Activities</para>
+      </listitem>
+      <listitem>
+        <para>Provider</para>
+      </listitem>
+      <listitem>
+        <para>Message Factory</para>
+      </listitem>
+    </itemizedlist>
+    <formalpara>
+      <title>Activities</title>
+      <para>The following activities are available, with the API definition listed for reference.  The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.  </para>
+    </formalpara>
+    <para>All Cx/Dx activities are short lived - activity is ended after answer is receveid or sent.</para>
+    <para>The activitites allows the Cx/Dx application to retrieve message and AVP factories bound to the current session.  The functionality offered is limited only  by the implementation used. </para>
+    <variablelist>
+      <title>Diameter Cx/Dx Server Activities</title>
+      <varlistentry>
+        <term>CxDxServerSession</term>
+        <listitem>
+          <para>This is base activity for Cx/Dx server side. It is created for event based interaction. Server activity ends when answer is sent back to client. It is created automaticly for Cx/Dx requests.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <programlisting role="JAVA">TODO: Program listing is over 100 lines
+</programlisting>
+    <variablelist>
+      <title>Diameter Cx/Dx Client Activities</title>
+      <varlistentry>
+        <term>CxDxClientSession</term>
+        <listitem>
+          <para>This activity is created when client desires to dispatch Cx?Dx request to peer. Activity terminates on receiving answer or send </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <programlisting role="JAVA">TODO: Program listing is over 100 lines
+</programlisting>
+<!--JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.  -->    <formalpara>
+      <title>Provider</title>
+      <para>The API for the CxDxProvider is more than 100 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerProvider.java">CxDxProvider.java in the source code</ulink>.</para>
+    </formalpara>
+    <formalpara>
+      <title>Message Factory</title>
+      <para>The Message Factory creates events  that can be executed within the JAIN SLEE Server.  Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.</para>
+    </formalpara>
+    <para>The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/cx-dx/ratype/src/main/java/net/java/slee/resource/diameter/cxdx/CxDxMessageFactory.java">CxDxMessageFactory.java in the source code</ulink>.</para>
+  </section>
+  <section>
+    <title>API Usage Examples</title>
+    <para>The following examples demonstrate basic usage examples for the Resource Adapter (RA) API.  </para>
+    <example>
+      <title>UAR</title>
+      <para>Following example shows how UAR is created and dispatched</para>
+      <programlisting role="JAVA">//We are client - ICSCF, we get REGISTER from UE, and send this to HSS to notify that UE is not there anymore
+DiameterIdentity destinationHost = new DiameterIdentity(&quot;aaa://&quot; + getProperty(&quot;destination.ip&quot;) + &quot;:&quot; + getProperty(&quot;destination.port&quot;));
+DiameterIdentity destinationRealm = new DiameterIdentity((String)getProperty(&quot;destination.realm&quot;));
+CxDxClientSession clientSession;
+try {
+
+clientSession = this.provider.createCxDxClientSessionActivity(destinationHost, destinationRealm);
+
+ActivityContextInterface clientACI=this.acif.getActivityContextInterface(clientSession);
+clientACI.attach(this.sbbContext.getSbbLocalObject());
+
+UserAuthorizationRequest UAR = clientSession.createUserAuthorizationRequest();
+//&lt; User-Authorization-Request&gt; ::=&lt; Diameter Header: 300, REQ, PXY, 16777216 &gt;
+//&lt; Session-Id &gt;
+//{ Vendor-Specific-Application-Id }
+//{ Auth-Session-State }
+UAR.setAuthSessionState(AuthSessionStateType.STATE_MAINTAINED);
+//{ Origin-Host }
+//{ Origin-Realm }
+//[ Destination-Host ]
+//   { Destination-Realm }
+UAR.setUserName(&quot;sip:adam@example.domain.org&quot;);
+//{ User-Name }
+//*[ Supported-Features ]
+//{ Public-Identity }
+UAR.setPublicIdentity(&quot;sip:adam.b@travel.contanct.com&quot;);
+//{ Visited-Network-Identifier }
+UAR.setVisitedNetworkIdentifier(&quot;visit.airport.moscow.ru&quot;);
+//[ User-Authorization-Type ]
+UAR.setUserAuthorizationType(UserAuthorizationType.DE_REGISTRATION);
+//[ UAR-Flags ]
+
+//*[ AVP ]
+//*[ Proxy-Info ]
+//*[ Route-Record ]
+
+//go
+clientSession.sendUserAuthorizationRequest(UAR);
+} catch (CreateActivityException e) {
+// TODO Auto-generated catch block
+e.printStackTrace();
+} catch (IOException e) {
+// TODO Auto-generated catch block
+e.printStackTrace();
+}</programlisting>
+    </example>
+  </section>
+  <section>
+    <title>Examples</title>
+    <para>The sample application provided for Cx/Dx Application is part of &quot;User Equipment initiated de-registration&quot; scenario. Scenario includes three diameter peers:</para>
+    <itemizedlist>
+      <listitem>
+        <para>HSS</para>
+      </listitem>
+      <listitem>
+        <para>I-CSCF</para>
+      </listitem>
+      <listitem>
+        <para>S-CSCF</para>
+      </listitem>
+    </itemizedlist>
+    <para>Scenario also includes SIP messaging, which example ommits for sake of simplicity. &quot;Client&quot; side emualtes I-CSCF and S-CSCF. &quot;Server&quot; side of example emulates HSS.</para>
+    <formalpara>
+      <title>UE initiated de-registration flow</title>
+      <para>Below flow shows actual scenario. Example flow does not include SIP and UE. I-CSCF and S-CSCF are emualted by &quot;client&quot; side.</para>
+    </formalpara>
+    <figure id="figure-Client_Application_Message_Flow_1">
+      <title>UE initiated de-registration flow</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dia-CxDxExamples-dia-UE-IDeregistrationFlow.jpg" format="JPG"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <section>
+      <title>Configuration</title>
+      <para>Proper configuration includes setting up two instances of jboss. To achieve this please refere to <ulink url="http://www.jboss.org/community/wiki/ConfiguringMultipleJBossInstancesOnOneMachine">this page</ulink>. Example also requries proper configuration of mux. Ports, IPAddress set in its configuration must match those in example configuration file.</para>
+      <para>Example is configured via single file: <filename>examples/cxdx/du/src/main/resources/example.properties</filename>. Its content are standard for most of examples. Aside ip/port/realm properties it contains property which controls how example behaves - client or server mode.</para>
+      <programlisting><!--TODO: Whats the ROLE here?-->
+#                       ##
+# Diameter Cx/Dx Example #
+##                       #
+
+# Act as &quot;client&quot; or &quot;server&quot; (default: server)
+example.mode=client
+
+# The AS IP Address, Port and Realm (default: 127.0.0.1 / 1812 / mobicents.org)
+origin.ip=127.0.0.1
+origin.port=1812
+origin.realm=mobicents.org
+
+# The Remote IP Address, Port and Realm (default: 127.0.0.1 / 3868 / mobicents.org)
+destination.ip=127.0.0.1
+destination.port=3868
+destination.realm=mobicents.org</programlisting>
+    </section>
+  </section>
+</section>
