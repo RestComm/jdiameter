@@ -148,7 +148,7 @@ if (validator.isCountValidForMultiplicity(message.getCommandCode(), message.getA
   </example>
   <example>
     <title>Dictionary AVP Encoding Example</title>
-    <para>In this example, the AVP types are inherited.</para>
+    <para>In this example the AVP types, and some default values, inherit.</para>
     <programlisting role="JAVA">public static  void setAvp(Message msg, int avpCode, long vendorId, AvpSet set, float value)
   {
   AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);

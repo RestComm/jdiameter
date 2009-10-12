@@ -135,7 +135,7 @@
       <title>Activities</title>
       <para>The following activities are available, with the API definition listed for reference.  The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.</para>
     </formalpara>
-    <para>The lifecycle of an activity depends on the type of received request and the application interaction. Request type is defined by CC-Request-Type AVP. In case of session like interaction(SCUR), the activity  timeout is taken into consideration. Please refer to <!--TODO: add ref to ro-Figure_IEC_Flow, ro-Figure_ECUR_Flow and ro-Figure_SCUR_Flow-->   </para>
+    <para>The lifecycle of an activity depends on the type of received request and the application interaction. Request type is defined by CC-Request-Type AVP. In case of session like interaction(SCUR), the activity  timeout is taken into consideration. Please refer to  <!--TODO: add ref to ro-Figure_IEC_Flow, ro-Figure_ECUR_Flow and ro-Figure_SCUR_Flow-->   </para>
     <para>The activitites allows the Ro application to retrieve message and AVP factories bound to the current session.  The functionality offered is limited only  by the implementation used.</para>
     <variablelist>
       <title>Ro Activities</title>
@@ -143,7 +143,7 @@
         <term>RoClientSession</term>
         <listitem>
           <para>created on on demands. Life cycle depends on CC-Request-Type content sent as first message. Its subject to timeout if answer is not received.</para>
-          <programlisting role="JAVA"><!--TODO: add this, we had example but its gone?--></programlisting>
+          <programlisting role="JAVA"><!--TODO: Developer:  add this, we had example but its gone?--></programlisting>
         </listitem>
       </varlistentry>
       <varlistentry>

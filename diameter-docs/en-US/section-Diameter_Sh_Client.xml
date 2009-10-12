@@ -90,7 +90,7 @@
       </tbody>
     </tgroup>
   </table>
-<!--TODO: paragraphs need rework.  Copied directly from wiki.-->  <para>As can be seen from the Command Names, these are related to managing User Data in the HSS. UDR/UDA is used in order to request data from the User profile. Client (AS) sends the request indicating which data he wants (see below for possible kinds of data) and if it has permissions on the HSS, they will be received via UDA. </para>
+<!--TODO: Editor: paragraphs need rework.  Copied directly from wiki.-->  <para>As can be seen from the Command Names, these are related to managing User Data in the HSS. UDR/UDA is used in order to request data from the User profile. Client (AS) sends the request indicating which data he wants (see below for possible kinds of data) and if it has permissions on the HSS, they will be received via UDA. </para>
   <para>PUR is meant to be used to update the profile of the user, and the success (or not) of the action is reported back in PUA. SNR offers the possibility to request for changes made in the user profile. If SNR is successful a SNA will be received stating that the operation was successful and when there are profile changes, a PNR will be sent by the HSS to the AS (this is the only time HSS initiates conversation) and the AS should acknowledge with a PNA.</para>
   <section>
     <title>Configuration</title>
@@ -132,38 +132,38 @@ Comment: Jared this is example stuf, lets put here RA conf.-->Configuration is m
       <varlistentry>
         <term>ShClientActivity</term>
         <listitem>
-          <para>This is base activity for Sh client side. It is created for event based interaction - like user data requests or profile update requests. Client activity ends when answer is consumed by SLEE.</para>
+          <para>This is the base activity for the Sh (Client). It is created for event based interaction, such as user data requests or profile update requests. Client activity ends when answer is received, or the request times-out.</para>
         </listitem>
       </varlistentry>
     </variablelist>
-    <programlisting role="JAVA">TODO: Program listing is over 100 lines
-</programlisting>
+    <para>The API for ShClientActivity  is more than 60 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientActivity.java">ShClientActivity.java in the source code</ulink>.</para>
     <variablelist>
       <varlistentry>
         <term>ShClientSubscriptionActivity</term>
         <listitem>
-          <para>This activity is used in cases subscritpion to some HSS data is required. This is long living activity. It is terminated either explicitly by SBB, error response to initial SNR or subscription terminating SNR.</para>
+          <para>Used in cases where a subscritpion to  HSS data is required. This is long living activity. It is terminated either explicitly by SBB, error response to initial SNR or subscription terminating SNR.</para>
         </listitem>
       </varlistentry>
     </variablelist>
-    <programlisting role="JAVA">TODO: Program listing is over 100 lines
-</programlisting>
-<!--JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.  -->    <formalpara>
+    <para>The API for ShClientSubscriptionActivity  is more than 60 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientSubscriptionActivity.java">ShClientSubscriptionActivity.java in the source code</ulink>.</para>
+<!--TODO:  Developer:  I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.  -->    <formalpara>
       <title>Provider</title>
-      <para>The API for the ShClientProvider is more than 100 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientProvider.java">ShClientProvider.java in the source code</ulink>.</para>
+      <para>The Sh (Client) provider allows SBBs to create activities on demand and retrieve AVP and message factories.   In addition, connection information about connected peers is also made available.</para>
     </formalpara>
+    <para> The API for the ShClientProvider is more than 80 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientProvider.java">ShClientSubscriptionActivity.java in the source code</ulink>.</para>
     <formalpara>
       <title>Message Factory</title>
-      <para>The Message Factory creates events  that can be executed within the JAIN SLEE Server.  Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.</para>
+      <para>The Message Factory creates events  that can be executed within the JAIN SLEE Server, or sent through a Resource Adapter.   Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.</para>
     </formalpara>
-    <para>The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientMessageFactory.java">ShClientMessageFactory.java in the source code</ulink>.</para>
+    <para>The API for the ShClientMessageFactory is more than 300 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientSubscriptionActivity.java">ShClientMessageFactory.java in the source code</ulink>.</para>
   </section>
   <section>
     <title>API Usage Examples</title>
     <para>The following examples demonstrate basic usage examples for the Resource Adapter (RA) API.  </para>
     <example>
       <title>Push-Notification-Request</title>
-      <para>The following code demonstrates how to configure a Push-Notification-Request.  This example utilizes the setExtensionAvps() methods, however it is also possible to utilize specific methods such as udr.setUserIdentity() to achieve the same goal.  This falls outside the scope of this example.</para>
+      <para>The following code demonstrates how to configure a Push-Notification-Request using setExtensionAvps() methods.  </para>
+      <para>It is  possible to utilize specific methods such as udr.setUserIdentity() to achieve the same goal, however this falls outside the scope of this example.</para>
       <programlisting role="JAVA">public void onPushNotificationRequest(net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest pnr, ActivityContextInterface aci)
                  {
                      try

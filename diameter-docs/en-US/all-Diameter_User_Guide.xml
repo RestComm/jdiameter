@@ -347,7 +347,7 @@ public class ExClient
 		It was designed in a way to be compatible with RADIUS but also to be easily extended with new use cases within AAA scenario and other IMS scenarios. Extensions are called "Applications".
 	</para>
 	<para>
-		Each application introduces new kind of messages, message and AVP codes (assigned by IANA) and state machines. Moreover each application has its own Application-Id and Vendor-Id which distinguishes its messages from messages of another application. In addition, application code gives means of telling other peers what operations are supported by connecting peer (Capabilities Exchange).
+		Each application introduces new types of messages, AVP codes, and state machines. The Message and AVP codes are assigned by the IANA. Furthermore, each application has its own application ID and vendor ID that is used to distinguish between applications. In addition, application code is used to signal to other peers which operations are supported by connecting peer (Capabilities Exchange).
 	</para>
 	<section>
 		<title>Message Format</title>
@@ -771,7 +771,7 @@ public class ExClient
 	<para>
 		The &lt;Parameters&gt; element contains elements that specify parameters for the Diameter stack. The available elements and attributes are listed for reference.
 	</para>
-	<!-- TODO: 20090916 - Need to obtain better definitions for the Parameter Elements and Attributes.  information present at the moment is not that helpful to readers. --> <variablelist>
+	<!-- TODO:  Developer: Need to obtain better definitions for the Parameter Elements and Attributes.  information present at the moment is not that helpful to readers. --> <variablelist>
 		<title>&lt;Parameter&gt; Elements and Attributes</title>
 		<varlistentry>
 			<term>&lt;AcceptUndefinedPeer&gt;</term>
@@ -975,7 +975,7 @@ public class ExClient
 	<para>
 		Configuring the Multiplexer requires configuration changes to the <filename>diameter-config.xml</filename> file. The <filename>diameter-config.xml</filename> file is a standard JDiameter configuration file, and forms the base configuration for all MUX listener applications.
 	</para>
-	<!-- TODO: So what changes specifically are required in the diameter-config.xml file. --> <para>
+	<!-- TODO: Developer: So what changes specifically are required in the diameter-config.xml file. --> <para>
 		By default, <filename>diameter-config.xml</filename> is located in the <filename>\default\deploy\mobicents-diameter-mux-<replaceable>[version_number]</replaceable>.sar\config\</filename> directory.
 	</para>
 	<para>
@@ -1303,7 +1303,7 @@ public class MyDiameterApplication implements DiameterListener
 				</para>
 			</listitem>
 		</varlistentry>
-		<!-- TODO: In the code examples on mobicents-public, there is the uri parameter.  While not mentioned in the attributes, is it still a valid addition to the <application> tag? --> <varlistentry>
+		<!-- TODO: Developer: In the code examples on mobicents-public, there is the uri parameter.  While not mentioned in the attributes, is it still a valid addition to the <application> tag? --> <varlistentry>
 			<term>uri</term>
 			<listitem>
 				<para>
@@ -1853,7 +1853,7 @@ if (validator.isCountValidForMultiplicity(message.getCommandCode(), message.getA
 	<example>
 		<title>Dictionary AVP Encoding Example</title>
 		<para>
-			In this example, the AVP types are inherited.
+			In this example the AVP types, and some default values, inherit.
 		</para>
 		
 <programlisting role="JAVA">public static  void setAvp(Message msg, int avpCode, long vendorId, AvpSet set, float value)
@@ -2189,7 +2189,7 @@ rep.isProtected(), value);
 			</listitem>
 		</itemizedlist>
 		<para>
-			Each property consists of value pairs. Value pairs are separated from each other with "," <!-- TODO: add markup here for &quot;,&quot; -->. Each value pair consists of two long numbers separated with ":". First number indicate vendor of supported application. Second is application id arbitrary assigned by IANA.
+			Each property consists of value pairs. Value pairs are separated from each other with "," <!-- TODO: Developer: add markup here for &quot;,&quot; -->. Each value pair consists of two long numbers separated with ":". First number indicate vendor of supported application. Second is application id arbitrary assigned by IANA.
 		</para>
 		<para>
 			Each value pair identifies application that Base RA should advertise as supported. Some application do not have vendor assigned. In this case "0" is to be used as vendor id.
@@ -2426,7 +2426,7 @@ public interface AuthServerSessionActivity extends AuthSessionActivity {
 				Provider defines the basic features that must be supported by all other providers. Service Building Blocks (SBBs) create activities on demand and retrieve AVP and message factories. The connection information is retrieved from the connected peers.
 			</para>
 		</formalpara>
-		<!-- JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <para>
+		<!-- TODO:  Developer:  I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <para>
 			The API for the DiameterProvider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/base/ratype/src/main/java/net/java/slee/resource/diameter/base/DiameterProvider.java">DiameterProvider.java in the source code</ulink>.
 		</para>
 		<formalpara>
@@ -2890,7 +2890,7 @@ destination.realm=mobicents.org
 			</tbody>
 		</tgroup>
 	</table>
-	<!-- TODO: paragraphs need rework.  Copied directly from wiki. --> <para>
+	<!-- TODO: Editor: paragraphs need rework.  Copied directly from wiki. --> <para>
 		As can be seen from the Command Names, these are related to managing User Data in the HSS. UDR/UDA is used in order to request data from the User profile. Client (AS) sends the request indicating which data he wants (see below for possible kinds of data) and if it has permissions on the HSS, they will be received via UDA.
 	</para>
 	<para>
@@ -2958,41 +2958,44 @@ Comment: Jared this is example stuf, lets put here RA conf. -->Configuration is 
 				<term>ShClientActivity</term>
 				<listitem>
 					<para>
-						This is base activity for Sh client side. It is created for event based interaction - like user data requests or profile update requests. Client activity ends when answer is consumed by SLEE.
+						This is the base activity for the Sh (Client). It is created for event based interaction, such as user data requests or profile update requests. Client activity ends when answer is received, or the request times-out.
 					</para>
 				</listitem>
 			</varlistentry>
 		</variablelist>
-		
-<programlisting role="JAVA">TODO: Program listing is over 100 lines
-</programlisting>
+		<para>
+			The API for ShClientActivity is more than 60 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientActivity.java">ShClientActivity.java in the source code</ulink>.
+		</para>
 		<variablelist>
 			<varlistentry>
 				<term>ShClientSubscriptionActivity</term>
 				<listitem>
 					<para>
-						This activity is used in cases subscritpion to some HSS data is required. This is long living activity. It is terminated either explicitly by SBB, error response to initial SNR or subscription terminating SNR.
+						Used in cases where a subscritpion to HSS data is required. This is long living activity. It is terminated either explicitly by SBB, error response to initial SNR or subscription terminating SNR.
 					</para>
 				</listitem>
 			</varlistentry>
 		</variablelist>
-		
-<programlisting role="JAVA">TODO: Program listing is over 100 lines
-</programlisting>
-		<!-- JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <formalpara>
+		<para>
+			The API for ShClientSubscriptionActivity is more than 60 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientSubscriptionActivity.java">ShClientSubscriptionActivity.java in the source code</ulink>.
+		</para>
+		<!-- TODO:  Developer:  I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <formalpara>
 			<title>Provider</title>
 			<para>
-				The API for the ShClientProvider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientProvider.java">ShClientProvider.java in the source code</ulink>.
-			</para>
-		</formalpara>
-		<formalpara>
-			<title>Message Factory</title>
-			<para>
-				The Message Factory creates events that can be executed within the JAIN SLEE Server. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
+				The Sh (Client) provider allows SBBs to create activities on demand and retrieve AVP and message factories. In addition, connection information about connected peers is also made available.
 			</para>
 		</formalpara>
 		<para>
-			The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientMessageFactory.java">ShClientMessageFactory.java in the source code</ulink>.
+			The API for the ShClientProvider is more than 80 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientProvider.java">ShClientSubscriptionActivity.java in the source code</ulink>.
+		</para>
+		<formalpara>
+			<title>Message Factory</title>
+			<para>
+				The Message Factory creates events that can be executed within the JAIN SLEE Server, or sent through a Resource Adapter. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
+			</para>
+		</formalpara>
+		<para>
+			The API for the ShClientMessageFactory is more than 300 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientSubscriptionActivity.java">ShClientMessageFactory.java in the source code</ulink>.
 		</para>
 	</section>
 	
@@ -3004,7 +3007,10 @@ Comment: Jared this is example stuf, lets put here RA conf. -->Configuration is 
 		<example>
 			<title>Push-Notification-Request</title>
 			<para>
-				The following code demonstrates how to configure a Push-Notification-Request. This example utilizes the setExtensionAvps() methods, however it is also possible to utilize specific methods such as udr.setUserIdentity() to achieve the same goal. This falls outside the scope of this example.
+				The following code demonstrates how to configure a Push-Notification-Request using setExtensionAvps() methods.
+			</para>
+			<para>
+				It is possible to utilize specific methods such as udr.setUserIdentity() to achieve the same goal, however this falls outside the scope of this example.
 			</para>
 			
 <programlisting role="JAVA">public void onPushNotificationRequest(net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest pnr, ActivityContextInterface aci)
@@ -3373,7 +3379,7 @@ destination.realm=mobicents.org
 			</tbody>
 		</tgroup>
 	</table>
-	<!-- TODO: paragraphs need rework.  Copied directly from wiki. --> <para>
+	<!-- TODO: Editor: paragraphs need rework.  Copied directly from wiki. --> <para>
 		As can be seen from the Command Names, these are related to managing User Data in the HSS. UDR/UDA is used in order to request data from the User profile. Client (AS) sends the request indicating which data he wants (see below for possible kinds of data) and if it has permissions on the HSS, they will be received via UDA.
 	</para>
 	<para>
@@ -3447,7 +3453,7 @@ destination.realm=mobicents.org
 		
 <programlisting role="JAVA">TODO: Program listing is over 100 lines
 </programlisting>
-		<!-- JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <formalpara>
+		<formalpara>
 			<title>Provider</title>
 			<para>
 				The API for the ShServerProvider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerProvider.java">ShServerProvider.java in the source code</ulink>.
@@ -3609,7 +3615,72 @@ logger.error("Failed to create/send SNA.", e);
 	<para>
 		It is defined in <ulink url="http://tools.ietf.org/html/rfc4006">rfc4006</ulink>. Declared state machines are based on following messsage:
 	</para>
-	<!-- TODO: CCA Messages can someone add this? Serna dies when I perform some operation on table... --> <para>
+	<table frame="all" id="table-Diameter_Sh_Server_Messages_1" pgwide="1">
+		<title>Diameter CCA Messages</title>
+		<tgroup cols="5" colsep="1">
+			<colspec colname="c1"/>
+			<colspec colname="c2"/>
+			<colspec colname="c3"/>
+			<colspec colname="c4"/>
+			<colspec colname="c5"/>
+			<thead>
+				<row>
+					<entry>
+						Command Name
+					</entry>
+					<entry>
+						Abbreviation
+					</entry>
+					<entry>
+						Code
+					</entry>
+					<entry>
+						Source
+					</entry>
+					<entry>
+						Destination
+					</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry>
+						Credit-Control-Request
+					</entry>
+					<entry>
+						CCR
+					</entry>
+					<entry>
+						272
+					</entry>
+					<entry>
+						equipment
+					</entry>
+					<entry>
+						server
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Credit-Control-Answer
+					</entry>
+					<entry>
+						CCA
+					</entry>
+					<entry>
+						272
+					</entry>
+					<entry>
+						server
+					</entry>
+					<entry>
+						equipment
+					</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</table>
+	<para>
 		RFC decalres only basic charging scenarios, which are event charing
 	</para>
 	<section>
@@ -4317,7 +4388,7 @@ destination.realm=mobicents.org
 						created on on demands. Life cycle depends on CC-Request-Type content sent as first message. Its subject to timeout if answer is not received.
 					</para>
 					
-<programlisting role="JAVA"><!-- TODO: add this, we had example but its gone? -->
+<programlisting role="JAVA"><!-- TODO: Developer:  add this, we had example but its gone? -->
 </programlisting>
 				</listitem>
 			</varlistentry>
@@ -4712,6 +4783,569 @@ AccountingSessionState getAccountingSessionState();
 		<para>
 			TEXT
 		</para>
+	</section>
+
+</section>
+	<section lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Cx/Dx</title>
+	<para>
+		The Cx and Dx interfaces are the reference for interactions between the following servers:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				Home Subscriber Server (HSS)
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				I-CSCF and S-CSCF
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>
+		The standard interface is described in the 3GPP Specifications <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29328.htm">TS29.228</ulink> and <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29329.htm">TS29.229</ulink>.
+	</para>
+	<para>
+		Cx and Dx interface provide a number of message commands that can be used within the application.
+	</para>
+	<table frame="all" pgwide="1">
+		<title>Diameter Cx and Dx Messages</title>
+		<tgroup cols="5" colsep="1">
+			<colspec colname="c1"/>
+			<colspec colname="c2"/>
+			<colspec colname="c3"/>
+			<colspec colname="c4"/>
+			<colspec colname="c5"/>
+			<thead>
+				<row>
+					<entry>
+						Command Name
+					</entry>
+					<entry>
+						Abbreviation
+					</entry>
+					<entry>
+						Code
+					</entry>
+					<entry>
+						Source
+					</entry>
+					<entry>
+						Destination
+					</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry>
+						User-Autorization-Request
+					</entry>
+					<entry>
+						UAR
+					</entry>
+					<entry>
+						300
+					</entry>
+					<entry>
+						I-CSCF
+					</entry>
+					<entry>
+						HSS
+					</entry>
+				</row>
+				<row>
+					<entry>
+						User-Autorization-Answer
+					</entry>
+					<entry>
+						UAA
+					</entry>
+					<entry>
+						300
+					</entry>
+					<entry>
+						HSS
+					</entry>
+					<entry>
+						I-CSCF
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Server-Assignment-Request
+					</entry>
+					<entry>
+						SAR
+					</entry>
+					<entry>
+						301
+					</entry>
+					<entry>
+						S-CSCF
+					</entry>
+					<entry>
+						HSS
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Server-Assignment-Answer
+					</entry>
+					<entry>
+						SAA
+					</entry>
+					<entry>
+						301
+					</entry>
+					<entry>
+						HSS
+					</entry>
+					<entry>
+						S-CSCF
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Location-Info-Request
+					</entry>
+					<entry>
+						LIR
+					</entry>
+					<entry>
+						302
+					</entry>
+					<entry>
+						I-CSCF
+					</entry>
+					<entry>
+						HSS
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Location-Info-Answer
+					</entry>
+					<entry>
+						LIA
+					</entry>
+					<entry>
+						302
+					</entry>
+					<entry>
+						HSS
+					</entry>
+					<entry>
+						I-CSCF
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Multimedia-Auth-Request
+					</entry>
+					<entry>
+						MAR
+					</entry>
+					<entry>
+						303
+					</entry>
+					<entry>
+						S-CSCF
+					</entry>
+					<entry>
+						HSS
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Multimedia-Auth-Answer
+					</entry>
+					<entry>
+						MAA
+					</entry>
+					<entry>
+						303
+					</entry>
+					<entry>
+						HSS
+					</entry>
+					<entry>
+						S-CSCF
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Registration-Termination-Request
+					</entry>
+					<entry>
+						RTR
+					</entry>
+					<entry>
+						304
+					</entry>
+					<entry>
+						HSS
+					</entry>
+					<entry>
+						S-CSCF
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Registration-Termination-Answer
+					</entry>
+					<entry>
+						RTA
+					</entry>
+					<entry>
+						304
+					</entry>
+					<entry>
+						S-CSCF
+					</entry>
+					<entry>
+						HSS
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Push-Profile-Request
+					</entry>
+					<entry>
+						PPR
+					</entry>
+					<entry>
+						305
+					</entry>
+					<entry>
+						HSS
+					</entry>
+					<entry>
+						S-CSCF
+					</entry>
+				</row>
+				<row>
+					<entry>
+						Push-Profile-Answer
+					</entry>
+					<entry>
+						PPA
+					</entry>
+					<entry>
+						303
+					</entry>
+					<entry>
+						S-CSCF
+					</entry>
+					<entry>
+						HSS
+					</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</table>
+	<!-- TODO:  Editor: paragraphs need rework.  Copied directly from wiki. --> <para>
+		Cx and Dx interfaces definition is mixed. This is due fact that both are meant to standarise communication between SIP IMS Proxies and HSS
+	</para>
+	<para>
+		UAR/UA pair allow to perform follwing operations:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				authorize the registration of the Public User Identity, checking multimedia subsystem access permissions and roaming agreements.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				perform a first security check, determining whether the Public User Identity in the message is associated with the Private User Identity sent in the message.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				obtain either the S-CSCF where the Public User Identity is registered or unregistered (i.e. registered as a consequence of a terminating call or there is a S-CSCF keeping the user profile stored), or the list of capabilities that the S-CSCF has to support.
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>
+		SAR/SAA pair allow to perform following operations:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				assign an S-CSCF to a Public Identity, or to clear the name of the S-CSCF assigned to one or more Public Identities.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				download from HSS the relevant user information for the S-CSCF.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				backup and retrieve the S-CSCF Restoration Information (see 3GPP TS 23.380 [19]) in the HSS.
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>
+		LIR/LIA pair allow to perform following operations:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				obtain the name of the S-CSCF assigned to a Public Identity
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				obtain the name of the AS hosting a PSI for direct routing.
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>
+		RTR/RTA pair allow to perform following operation:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				notify that public identity is to be unregistered -allow S-CSCF to clean state.
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>
+		PPR/PPA pair allows to perform following operations:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				update user profile
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				update charging information
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				update SIP Digest information
+			</para>
+		</listitem>
+	</itemizedlist>
+	<section>
+		<title>Configuration</title>
+		<para>
+			Currently Cx/Dx RA does not support any configuration options.
+		</para>
+	</section>
+	
+	<section>
+		<title>Resource Adaptor Type</title>
+		<para>
+			The resource adapter provides the following types:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Activities
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Provider
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Message Factory
+				</para>
+			</listitem>
+		</itemizedlist>
+		<formalpara>
+			<title>Activities</title>
+			<para>
+				The following activities are available, with the API definition listed for reference. The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.
+			</para>
+		</formalpara>
+		<para>
+			All Cx/Dx activities are short lived - activity is ended after answer is receveid or sent.
+		</para>
+		<para>
+			The activitites allows the Cx/Dx application to retrieve message and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
+		</para>
+		<variablelist>
+			<title>Diameter Cx/Dx Server Activities</title>
+			<varlistentry>
+				<term>CxDxServerSession</term>
+				<listitem>
+					<para>
+						This is base activity for Cx/Dx server side. It is created for event based interaction. Server activity ends when answer is sent back to client. It is created automaticly for Cx/Dx requests.
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+		
+<programlisting role="JAVA">TODO: Program listing is over 100 lines
+</programlisting>
+		<variablelist>
+			<title>Diameter Cx/Dx Client Activities</title>
+			<varlistentry>
+				<term>CxDxClientSession</term>
+				<listitem>
+					<para>
+						This activity is created when client desires to dispatch Cx?Dx request to peer. Activity terminates on receiving answer or send
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+		
+<programlisting role="JAVA">TODO: Program listing is over 100 lines
+</programlisting>
+		<!-- JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <formalpara>
+			<title>Provider</title>
+			<para>
+				The API for the CxDxProvider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerProvider.java">CxDxProvider.java in the source code</ulink>.
+			</para>
+		</formalpara>
+		<formalpara>
+			<title>Message Factory</title>
+			<para>
+				The Message Factory creates events that can be executed within the JAIN SLEE Server. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
+			</para>
+		</formalpara>
+		<para>
+			The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/cx-dx/ratype/src/main/java/net/java/slee/resource/diameter/cxdx/CxDxMessageFactory.java">CxDxMessageFactory.java in the source code</ulink>.
+		</para>
+	</section>
+	
+	<section>
+		<title>API Usage Examples</title>
+		<para>
+			The following examples demonstrate basic usage examples for the Resource Adapter (RA) API.
+		</para>
+		<example>
+			<title>UAR</title>
+			<para>
+				Following example shows how UAR is created and dispatched
+			</para>
+			
+<programlisting role="JAVA">//We are client - ICSCF, we get REGISTER from UE, and send this to HSS to notify that UE is not there anymore
+DiameterIdentity destinationHost = new DiameterIdentity("aaa://" + getProperty("destination.ip") + ":" + getProperty("destination.port"));
+DiameterIdentity destinationRealm = new DiameterIdentity((String)getProperty("destination.realm"));
+CxDxClientSession clientSession;
+try {
+
+clientSession = this.provider.createCxDxClientSessionActivity(destinationHost, destinationRealm);
+
+ActivityContextInterface clientACI=this.acif.getActivityContextInterface(clientSession);
+clientACI.attach(this.sbbContext.getSbbLocalObject());
+
+UserAuthorizationRequest UAR = clientSession.createUserAuthorizationRequest();
+//&lt; User-Authorization-Request&gt; ::=&lt; Diameter Header: 300, REQ, PXY, 16777216 &gt;
+//&lt; Session-Id &gt;
+//{ Vendor-Specific-Application-Id }
+//{ Auth-Session-State }
+UAR.setAuthSessionState(AuthSessionStateType.STATE_MAINTAINED);
+//{ Origin-Host }
+//{ Origin-Realm }
+//[ Destination-Host ]
+//   { Destination-Realm }
+UAR.setUserName("sip:adam@example.domain.org");
+//{ User-Name }
+//*[ Supported-Features ]
+//{ Public-Identity }
+UAR.setPublicIdentity("sip:adam.b@travel.contanct.com");
+//{ Visited-Network-Identifier }
+UAR.setVisitedNetworkIdentifier("visit.airport.moscow.ru");
+//[ User-Authorization-Type ]
+UAR.setUserAuthorizationType(UserAuthorizationType.DE_REGISTRATION);
+//[ UAR-Flags ]
+
+//*[ AVP ]
+//*[ Proxy-Info ]
+//*[ Route-Record ]
+
+//go
+clientSession.sendUserAuthorizationRequest(UAR);
+} catch (CreateActivityException e) {
+// TODO Auto-generated catch block
+e.printStackTrace();
+} catch (IOException e) {
+// TODO Auto-generated catch block
+e.printStackTrace();
+}
+</programlisting>
+		</example>
+	</section>
+	
+	<section>
+		<title>Examples</title>
+		<para>
+			The sample application provided for Cx/Dx Application is part of "User Equipment initiated de-registration" scenario. Scenario includes three diameter peers:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					HSS
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					I-CSCF
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					S-CSCF
+				</para>
+			</listitem>
+		</itemizedlist>
+		<para>
+			Scenario also includes SIP messaging, which example ommits for sake of simplicity. "Client" side emualtes I-CSCF and S-CSCF. "Server" side of example emulates HSS.
+		</para>
+		<formalpara>
+			<title>UE initiated de-registration flow</title>
+			<para>
+				Below flow shows actual scenario. Example flow does not include SIP and UE. I-CSCF and S-CSCF are emualted by "client" side.
+			</para>
+		</formalpara>
+		<figure id="figure-UE_Initiated_deregistration_flow">
+			<title>UE initiated de-registration flow</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/dia-CxDxExamples-dia-UE-IDeregistrationFlow.jpg" format="JPG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+		<section>
+			<title>Configuration</title>
+			<para>
+				Proper configuration includes setting up two instances of jboss. To achieve this please refere to <ulink url="http://www.jboss.org/community/wiki/ConfiguringMultipleJBossInstancesOnOneMachine">this page</ulink>. Example also requries proper configuration of mux. Ports, IPAddress set in its configuration must match those in example configuration file.
+			</para>
+			<para>
+				Example is configured via single file: <filename>examples/cxdx/du/src/main/resources/example.properties</filename>. Its content are standard for most of examples. Aside ip/port/realm properties it contains property which controls how example behaves - client or server mode.
+			</para>
+			
+<programlisting><!-- TODO: Whats the ROLE here? -->
+#                       ##
+# Diameter Cx/Dx Example #
+##                       #
+
+# Act as "client" or "server" (default: server)
+example.mode=client
+
+# The AS IP Address, Port and Realm (default: 127.0.0.1 / 1812 / mobicents.org)
+origin.ip=127.0.0.1
+origin.port=1812
+origin.realm=mobicents.org
+
+# The Remote IP Address, Port and Realm (default: 127.0.0.1 / 3868 / mobicents.org)
+destination.ip=127.0.0.1
+destination.port=3868
+destination.realm=mobicents.org
+</programlisting>
+		</section>
+
 	</section>
 
 </section>

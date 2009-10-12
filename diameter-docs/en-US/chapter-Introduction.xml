@@ -48,7 +48,7 @@
     </listitem>
   </itemizedlist>
   <para>It was designed in a way to be compatible with RADIUS but also to be easily extended with new use cases within AAA scenario and other IMS scenarios. Extensions are called &quot;Applications&quot;.</para>
-  <para>Each application introduces new kind of messages, message and AVP codes (assigned by IANA) and state machines. Moreover each application has its own Application-Id and Vendor-Id which distinguishes its messages from messages of another application. In addition, application code gives means of telling other peers what operations are supported by connecting peer (Capabilities Exchange).</para>
+  <para>Each application introduces new types of messages,  AVP codes, and state machines.  The Message and AVP codes are assigned by the IANA.  Furthermore,  each application has its own application ID and vendor ID that is used to distinguish between applications. In addition, application code is used to signal to other peers which  operations are supported by connecting peer (Capabilities Exchange).</para>
   <section>
     <title>Message Format</title>
     <para>Each message that is sent and received using Diameter is comprised according to  a consistent structure.  A Diameter message always contains message headers, and the message payload.   </para>
@@ -56,7 +56,7 @@
       <title>Diameter Message Structure</title>
       <mediaobject>
         <imageobject>
-          <imagedata format="PNG" fileref="images/dia-Introduction-dia-DiameterPacketFormat.png"/>
+          <imagedata fileref="images/dia-Introduction-dia-DiameterPacketFormat.png" format="PNG"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -126,7 +126,7 @@
       <title>Payload Structure</title>
       <mediaobject>
         <imageobject>
-          <imagedata format="PNG" fileref="images/dia-Introduction-dia-DiameterAVPLayout.png"/>
+          <imagedata fileref="images/dia-Introduction-dia-DiameterAVPLayout.png" format="PNG"/>
         </imageobject>
       </mediaobject>
     </figure>

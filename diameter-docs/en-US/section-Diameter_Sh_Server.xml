@@ -90,7 +90,7 @@
       </tbody>
     </tgroup>
   </table>
-<!--TODO: paragraphs need rework.  Copied directly from wiki.-->  <para>As can be seen from the Command Names, these are related to managing User Data in the HSS. UDR/UDA is used in order to request data from the User profile. Client (AS) sends the request indicating which data he wants (see below for possible kinds of data) and if it has permissions on the HSS, they will be received via UDA. </para>
+<!--TODO: Editor: paragraphs need rework.  Copied directly from wiki.-->  <para>As can be seen from the Command Names, these are related to managing User Data in the HSS. UDR/UDA is used in order to request data from the User profile. Client (AS) sends the request indicating which data he wants (see below for possible kinds of data) and if it has permissions on the HSS, they will be received via UDA. </para>
   <para>PUR is meant to be used to update the profile of the user, and the success (or not) of the action is reported back in PUA. SNR offers the possibility to request for changes made in the user profile. If SNR is successful a SNA will be received stating that the operation was successful and when there are profile changes, a PNR will be sent by the HSS to the AS (this is the only time HSS initiates conversation) and the AS should acknowledge with a PNA.</para>
   <section>
     <title>Configuration</title>
@@ -137,7 +137,7 @@
     </variablelist>
     <programlisting role="JAVA">TODO: Program listing is over 100 lines
 </programlisting>
-<!--JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.  -->    <formalpara>
+    <formalpara>
       <title>Provider</title>
       <para>The API for the ShServerProvider is more than 100 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerProvider.java">ShServerProvider.java in the source code</ulink>.</para>
     </formalpara>

@@ -135,7 +135,7 @@
         <para>Optional attribute, which specifies the logical name of the application for configurers.</para>
       </listitem>
     </varlistentry>
-<!--TODO: In the code examples on mobicents-public, there is the uri parameter.  While not mentioned in the attributes, is it still a valid addition to the <application> tag?-->    <varlistentry>
+<!--TODO: Developer: In the code examples on mobicents-public, there is the uri parameter.  While not mentioned in the attributes, is it still a valid addition to the <application> tag?-->    <varlistentry>
       <term>uri</term>
       <listitem>
         <para>Optional attribute, which specifies a link to additional application information.</para>

@@ -4,7 +4,42 @@
   <title>Mobicents Diameter CCA</title>
   <para>Credit Control Application provides common part for credit applications. It defines minimal set of primitives to allow credit session management and to convey enough information to perform charging.</para>
   <para>It is defined in <ulink url="http://tools.ietf.org/html/rfc4006">rfc4006</ulink>. Declared state machines are based on following messsage:</para>
-<!--TODO: CCA Messages can someone add this? Serna dies when I perform some operation on table...-->  <para>RFC decalres only basic charging scenarios, which are event charing</para>
+  <table frame="all" pgwide="1" id="table-Diameter_Sh_Server_Messages_1">
+    <title>Diameter CCA Messages</title>
+    <tgroup cols="5" colsep="1">
+      <colspec colname="c1"/>
+      <colspec colname="c2"/>
+      <colspec colname="c3"/>
+      <colspec colname="c4"/>
+      <colspec colname="c5"/>
+      <thead>
+        <row>
+          <entry>Command Name</entry>
+          <entry>Abbreviation</entry>
+          <entry>Code</entry>
+          <entry>Source</entry>
+          <entry>Destination</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry>Credit-Control-Request</entry>
+          <entry>CCR</entry>
+          <entry>272</entry>
+          <entry>equipment</entry>
+          <entry>server</entry>
+        </row>
+        <row>
+          <entry>Credit-Control-Answer</entry>
+          <entry>CCA</entry>
+          <entry>272</entry>
+          <entry>server</entry>
+          <entry>equipment</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </table>
+  <para>RFC decalres only basic charging scenarios, which are event charing</para>
   <section>
     <title>Configuration</title>
     <para>Currently RA does not support any configuration options.</para>

@@ -13,7 +13,7 @@
   </itemizedlist>
   <para>The standard interface is described in the 3GPP Specifications  <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29328.htm">TS29.228</ulink> and <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29329.htm">TS29.229</ulink>.  </para>
   <para>  Cx and Dx interface    provide a number of message commands that can be used within the application.</para>
-  <table frame="all" pgwide="1" id="table-Diameter_Sh_Client_Messages">
+  <table frame="all" pgwide="1">
     <title>Diameter Cx and Dx Messages</title>
     <tgroup cols="5" colsep="1">
       <colspec colname="c1"/>
@@ -118,7 +118,7 @@
       </tbody>
     </tgroup>
   </table>
-<!--TODO: paragraphs need rework.  Copied directly from wiki.-->  <para>Cx and Dx interfaces definition is mixed. This is due fact that  both are meant to standarise communication between SIP IMS Proxies and HSS</para>
+<!--TODO:  Editor: paragraphs need rework.  Copied directly from wiki.-->  <para>Cx and Dx interfaces definition is mixed. This is due fact that  both are meant to standarise communication between SIP IMS Proxies and HSS</para>
   <para>UAR/UA pair allow to perform follwing operations:</para>
   <itemizedlist>
     <listitem>
@@ -302,7 +302,7 @@ e.printStackTrace();
       <title>UE initiated de-registration flow</title>
       <para>Below flow shows actual scenario. Example flow does not include SIP and UE. I-CSCF and S-CSCF are emualted by &quot;client&quot; side.</para>
     </formalpara>
-    <figure id="figure-Client_Application_Message_Flow_1">
+    <figure id="figure-UE_Initiated_deregistration_flow">
       <title>UE initiated de-registration flow</title>
       <mediaobject>
         <imageobject>
