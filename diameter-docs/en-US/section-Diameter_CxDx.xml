@@ -8,11 +8,11 @@
       <para>Home Subscriber Server (HSS) </para>
     </listitem>
     <listitem>
-      <para>I-CSCF and S-CSCF</para>
+<!--Note: Developer: Acronyms need to be defined.-->      <para>I-CSCF and S-CSCF</para>
     </listitem>
   </itemizedlist>
   <para>The standard interface is described in the 3GPP Specifications  <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29328.htm">TS29.228</ulink> and <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29329.htm">TS29.229</ulink>.  </para>
-  <para>  Cx and Dx interface    provide a number of message commands that can be used within the application.</para>
+  <para>  The Cx and Dx interfaces    provide a number of message commands that can be used within the application.</para>
   <table frame="all" pgwide="1">
     <title>Diameter Cx and Dx Messages</title>
     <tgroup cols="5" colsep="1">
@@ -32,14 +32,14 @@
       </thead>
       <tbody>
         <row>
-          <entry>User-Autorization-Request</entry>
+          <entry>User-Authorization-Request</entry>
           <entry>UAR</entry>
           <entry>300</entry>
           <entry>I-CSCF</entry>
           <entry>HSS</entry>
         </row>
         <row>
-          <entry>User-Autorization-Answer</entry>
+          <entry>User-Authorization-Answer</entry>
           <entry>UAA</entry>
           <entry>300</entry>
           <entry>HSS</entry>
@@ -118,8 +118,8 @@
       </tbody>
     </tgroup>
   </table>
-<!--TODO:  Editor: paragraphs need rework.  Copied directly from wiki.-->  <para>Cx and Dx interfaces definition is mixed. This is due fact that  both are meant to standarise communication between SIP IMS Proxies and HSS</para>
-  <para>UAR/UA pair allow to perform follwing operations:</para>
+<!--TODO:  Editor: paragraphs need rework.  Copied directly from wiki.-->  <para>The Cx and Dx interfaces definition are mixed. This is because  both are meant to standardize communication between SIP IMS Proxies and HSS</para>
+  <para>UAR/UAA perform the following operations:</para>
   <itemizedlist>
     <listitem>
       <para>authorize the registration of the Public User Identity, checking multimedia subsystem access permissions and roaming agreements.
@@ -134,10 +134,10 @@
 </para>
     </listitem>
   </itemizedlist>
-  <para>SAR/SAA pair allow to perform following operations:</para>
+  <para>SAR/SAA  perform the following operations:</para>
   <itemizedlist>
     <listitem>
-      <para>assign an S-CSCF to a Public Identity, or to clear the name of the S-CSCF assigned to one or more Public Identities.
+      <para>assign an S-CSCF to a Public Identity, or  clear the name of the S-CSCF assigned to one or more Public Identities.
 </para>
     </listitem>
     <listitem>
@@ -147,7 +147,7 @@
       <para>backup and retrieve the S-CSCF Restoration Information (see 3GPP TS 23.380 [19]) in the HSS.</para>
     </listitem>
   </itemizedlist>
-  <para>LIR/LIA pair allow to perform following operations:</para>
+  <para>LIR/LIA perform the following operations:</para>
   <itemizedlist>
     <listitem>
       <para>obtain the name of the S-CSCF assigned to a Public Identity</para>
@@ -156,13 +156,13 @@
       <para>obtain the name of the AS hosting a PSI for direct routing.</para>
     </listitem>
   </itemizedlist>
-  <para>RTR/RTA pair allow to perform following operation:</para>
+  <para>RTR/RTA perform the following operation:</para>
   <itemizedlist>
     <listitem>
-      <para>notify that public identity is to be unregistered -allow S-CSCF to clean state.</para>
+      <para>notify the server that the public identity is to be unregistered -allow S-CSCF to clean state.</para>
     </listitem>
   </itemizedlist>
-  <para>PPR/PPA pair allows to perform following operations:</para>
+  <para>PPR/PPA perform the following operations:</para>
   <itemizedlist>
     <listitem>
       <para>update user profile</para>
@@ -176,7 +176,7 @@
   </itemizedlist>
   <section>
     <title>Configuration</title>
-    <para>Currently Cx/Dx RA does not support any configuration options.</para>
+    <para>The Cx/Dx RA does not currently Cy urrentlsupport any configuration options.</para>
   </section>
   <section>
     <title>Resource Adaptor Type</title>
@@ -194,16 +194,16 @@
     </itemizedlist>
     <formalpara>
       <title>Activities</title>
-      <para>The following activities are available, with the API definition listed for reference.  The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.  </para>
+      <para>The following activities are available, with the API definition listed for reference.  The API defines methods to create requests, send and receive answers for a certain activity, and retrieve session-specific data. </para>
     </formalpara>
-    <para>All Cx/Dx activities are short lived - activity is ended after answer is receveid or sent.</para>
-    <para>The activitites allows the Cx/Dx application to retrieve message and AVP factories bound to the current session.  The functionality offered is limited only  by the implementation used. </para>
+    <para>All Cx/Dx activities are short lived - activity is ended after an answer is received or sent.</para>
+    <para>These activitites allow the Cx/Dx applications to retrieve messagew and AVP factories bound to the current session.  The functionality offered is limited only  by the implementation used. </para>
     <variablelist>
       <title>Diameter Cx/Dx Server Activities</title>
       <varlistentry>
         <term>CxDxServerSession</term>
         <listitem>
-          <para>This is base activity for Cx/Dx server side. It is created for event based interaction. Server activity ends when answer is sent back to client. It is created automaticly for Cx/Dx requests.</para>
+          <para>This is the base activity for the Cx/Dx server side. It is created for event based interaction. Server activity ends when an answer is sent back to the client. It is created automatically for Cx/Dx requests.</para>
         </listitem>
       </varlistentry>
     </variablelist>
@@ -214,7 +214,7 @@
       <varlistentry>
         <term>CxDxClientSession</term>
         <listitem>
-          <para>This activity is created when client desires to dispatch Cx?Dx request to peer. Activity terminates on receiving answer or send </para>
+          <para>This activity is created when the client desires to dispatch a Cx/Dx request to a peer. Activity terminates when an answer is received from or sent to the client.</para>
         </listitem>
       </varlistentry>
     </variablelist>
@@ -232,10 +232,10 @@
   </section>
   <section>
     <title>API Usage Examples</title>
-    <para>The following examples demonstrate basic usage examples for the Resource Adapter (RA) API.  </para>
+    <para>The following examples demonstrate some basic usage examples for the Resource Adapter (RA) API.  </para>
     <example>
       <title>UAR</title>
-      <para>Following example shows how UAR is created and dispatched</para>
+      <para>The following example shows how a UAR is created and dispatched</para>
       <programlisting role="JAVA">//We are client - ICSCF, we get REGISTER from UE, and send this to HSS to notify that UE is not there anymore
 DiameterIdentity destinationHost = new DiameterIdentity(&quot;aaa://&quot; + getProperty(&quot;destination.ip&quot;) + &quot;:&quot; + getProperty(&quot;destination.port&quot;));
 DiameterIdentity destinationRealm = new DiameterIdentity((String)getProperty(&quot;destination.realm&quot;));
@@ -285,7 +285,7 @@ e.printStackTrace();
   </section>
   <section>
     <title>Examples</title>
-    <para>The sample application provided for Cx/Dx Application is part of &quot;User Equipment initiated de-registration&quot; scenario. Scenario includes three diameter peers:</para>
+    <para>The sample application provided for the Cx/Dx Applications are part of the &quot;User Equipment initiated de-registration&quot; scenario. The scenario includes three diameter peers:</para>
     <itemizedlist>
       <listitem>
         <para>HSS</para>
@@ -297,10 +297,10 @@ e.printStackTrace();
         <para>S-CSCF</para>
       </listitem>
     </itemizedlist>
-    <para>Scenario also includes SIP messaging, which example ommits for sake of simplicity. &quot;Client&quot; side emualtes I-CSCF and S-CSCF. &quot;Server&quot; side of example emulates HSS.</para>
+    <para>The scenario also includes SIP messaging, which the example omits for the sake of simplicity. The &quot;Client&quot; side emualtes I-CSCF and S-CSCF, while the &quot;Server&quot; side of example emulates HSS.</para>
     <formalpara>
       <title>UE initiated de-registration flow</title>
-      <para>Below flow shows actual scenario. Example flow does not include SIP and UE. I-CSCF and S-CSCF are emualted by &quot;client&quot; side.</para>
+      <para>The  flow below shows an actual scenario. The example flow does not include SIP and UE. I-CSCF and S-CSCF are emualted by the  &quot;client&quot; side.</para>
     </formalpara>
     <figure id="figure-UE_Initiated_deregistration_flow">
       <title>UE initiated de-registration flow</title>
@@ -312,8 +312,8 @@ e.printStackTrace();
     </figure>
     <section>
       <title>Configuration</title>
-      <para>Proper configuration includes setting up two instances of jboss. To achieve this please refere to <ulink url="http://www.jboss.org/community/wiki/ConfiguringMultipleJBossInstancesOnOneMachine">this page</ulink>. Example also requries proper configuration of mux. Ports, IPAddress set in its configuration must match those in example configuration file.</para>
-      <para>Example is configured via single file: <filename>examples/cxdx/du/src/main/resources/example.properties</filename>. Its content are standard for most of examples. Aside ip/port/realm properties it contains property which controls how example behaves - client or server mode.</para>
+      <para>Proper configuration includes setting up two instances of jboss. To achieve this please refer to <ulink url="http://www.jboss.org/community/wiki/ConfiguringMultipleJBossInstancesOnOneMachine">this page</ulink>. The example also requries proper configuration of mux. The ports and IP address set in its configuration must match those in the example configuration file.</para>
+      <para>The example is configured via a single file: <filename>examples/cxdx/du/src/main/resources/example.properties</filename>. Its content are standard for most of the examples. Aside from the ip/port/realm properties, it contains property which controls how the example behaves - client or server mode.</para>
       <programlisting><!--TODO: Whats the ROLE here?-->
 #                       ##
 # Diameter Cx/Dx Example #
