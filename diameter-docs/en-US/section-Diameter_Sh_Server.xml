@@ -111,16 +111,16 @@
     </itemizedlist>
     <formalpara>
       <title>Activities</title>
-      <para>The following activities are available, with the API definition listed for reference.  The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.  </para>
+      <para>The following activities are available, with the API definition listed for reference.  The API defines methods to create requests, send and receive answers for a certain activity, and retrieve session-specific data.  </para>
     </formalpara>
     <para>The lifecycle of an activity depends on the type of received request and the application interaction.  In the case of a subscription activity, the activity  timeout is taken into consideration because the subscription may be time-based.  </para>
-    <para>The activitites allows the Sh (Server) application to retrieve message and AVP factories bound to the current session.  The functionality offered is limited only  by the implementation used. </para>
+    <para>The activitites allow the Sh (Server) application to retrieve messages and AVP factories bound to the current session.  The functionality offered is limited only  by the implementation used. </para>
     <variablelist>
       <title>Diameter Sh (Server) Activities</title>
       <varlistentry>
         <term>ShServerActivity</term>
         <listitem>
-          <para>This is base activity for Sh server side. It is created for event based interaction - like user data requests or profile update requests. Server activity ends when answer is sent back to client. It is created automaticly for UDR and PUR is received.</para>
+          <para>This is the base activity for the Sh server side. It is created for event based interaction, such as UDRs or PURs. The activity is created automatically when a UDR or PUR request is received, and ends when an answer is sent back to the client.</para>
         </listitem>
       </varlistentry>
     </variablelist>
@@ -130,7 +130,7 @@
       <varlistentry>
         <term>ShServerSubscriptionActivity</term>
         <listitem>
-          <para>This activity is created when client desires to subscribe to changes to profile data. Once initial SNR is received SLEE creates subscription activity. It lingers until termination SNR is received or subscription times out.</para>
+          <para>The Subscription activity is created when the client desires to subscribe to changes to the profile data. Once the initial SNR is received, SLEE creates a subscription activity. This remains in place until a termination subscription request is received or the subscription times out.</para>
         </listitem>
       </varlistentry>
     </variablelist>
@@ -151,7 +151,7 @@
     <para>The following examples demonstrate basic usage examples for the Resource Adapter (RA) API.  </para>
     <example>
       <title>User-Data-Request</title>
-      <para>Following example shows how UDR is consumed on server side.</para>
+      <para>The following example shows how a UDR is consumed on the server side.</para>
       <programlisting role="JAVA">public void onUserDataRequest(UserDataRequest event, ActivityContextInterface aci) {
 if (logger.isInfoEnabled())
 logger.info(&quot;onUserDataRequest :: &quot; + event);
