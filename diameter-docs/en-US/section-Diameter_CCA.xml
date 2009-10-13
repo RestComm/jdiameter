@@ -66,13 +66,13 @@ I'm sorry, but there are huge gaps in this section, and I'm finding it really di
     </formalpara>
     <para>The lifecycle of an activity depends on the type of received request and the application interaction.  In the case of a subscription activity, the activity  timeout is taken into consideration because the subscription may be time-based.  </para>
     <para>The activitites allow the CCA to retrieve messages and AVP factories bound to the current session.  The functionality offered is limited only  by the implementation used. </para>
-    <para>Each Request type is defined by the CC-Request-Type Attribute Value Pair (AVP).  The types of activities are described below: </para>
+    <para>Each Request type is defined by the <literal>CC-Request-Type</literal> Attribute Value Pair (AVP).  The types of activities are described below: </para>
     <itemizedlist>
       <listitem>
-        <para>event-based - when <literal>CC-Request-Type</literal> is equal to the enumerated value of &quot;EVENT&quot;. Activities created for such request are terminated once answer is sent(server)/received(client) or when session termianted due to lack of answer.</para>
+        <para>event-based - when <literal>CC-Request-Type = EVENT</literal>. Activities created for such request are terminated once answer is sent(server)/received(client) or when session termianted due to lack of answer.</para>
       </listitem>
       <listitem>
-        <para>session-based - activities are long lived when two conditions are met, first messages has CC-Request-Type is equal to enum value of &quot;INITIAL&quot;, last message has CC-Request-Type equal to enum value of &quot;TERMINATION&quot;. Between initial and termianting message there can be any number of &quot;UPDATE&quot; messages.</para>
+        <para>session-based - when the first message contains <literal>CC-Request-Type = INITIAL</literal>, and the last message contains  <literal>CC-Request-Type = TERMINATION</literal>. Any number of &quot;UPDATE&quot; messages are allowed between the  initial and termianting message.</para>
       </listitem>
     </itemizedlist>
     <variablelist>
@@ -80,7 +80,7 @@ I'm sorry, but there are huge gaps in this section, and I'm finding it really di
       <varlistentry>
         <term>CreditControlClientSession</term>
         <listitem>
-          <para>Created on demand. Life cycle depends on request type. Request type is indicated by CC-Request-Type AVP. </para>
+          <para>Created on demand. Life cycle depends on request type. Request type is indicated by <literal>CC-Request-Type</literal> AVP. </para>
           <programlisting role="JAVA">/**
    * Create a Credit-Control-Request message pre-populated with the AVPs
    * appropriate for this session.
