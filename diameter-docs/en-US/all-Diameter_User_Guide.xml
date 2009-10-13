@@ -2891,31 +2891,19 @@ destination.realm=mobicents.org
 		</tgroup>
 	</table>
 	<!-- TODO: Editor: paragraphs need rework.  Copied directly from wiki. --> <para>
-		As can be seen from the Command Names, these are related to managing User Data in the HSS. UDR/UDA is used in order to request data from the User profile. Client (AS) sends the request indicating which data he wants (see below for possible kinds of data) and if it has permissions on the HSS, they will be received via UDA.
+		The command names provide the ability to manage User Data in the HSS. UDR and UDA are used to request data from the User profile. The AS client sends the request indicating what data is required. If the client has the appropriate permissions on the HSS, they will be received via UDA.
 	</para>
 	<para>
-		PUR is meant to be used to update the profile of the user, and the success (or not) of the action is reported back in PUA. SNR offers the possibility to request for changes made in the user profile. If SNR is successful a SNA will be received stating that the operation was successful and when there are profile changes, a PNR will be sent by the HSS to the AS (this is the only time HSS initiates conversation) and the AS should acknowledge with a PNA.
+		PUR is used to update the user profile, with the success (or failure) of the action being reported back in PUA. SNR is used to retrieve changes made in the user profile. If SNR is successful, a SNA is received stating that the operation was successful.
+	</para>
+	<para>
+		Where profile changes have occurred, a PNR is sent by the HSS to the AS. On receipt of the PNR, the AS acknowledges the request with a PNA. The only instance where the HSS initiates a conversation is for profile changes.
 	</para>
 	<section>
 		<title>Configuration</title>
 		<para>
-			<!-- TODO: Is this correct, or does this only relate to the example that uses SEAGULL?
-Comment: Jared this is example stuf, lets put here RA conf. -->Configuration is made directly in the Sh (Client) code, by enabling or disabling (commenting or uncommenting) the method calls. In future releases, a property file will be available to better manage configuration.
+			The Sh (Client) does not currently support direct configuration changes.
 		</para>
-		<example>
-			<title>Configuring </title>
-			<para>
-				The following Java sample shows a Subscribe-Notifications-Request method call, which has been commented out to disable it.
-			</para>
-			
-<programlisting role="XML">public void onTimerEvent(TimerEvent event, ActivityContextInterface aci)
-
-  {
-   doSimpleTestsSendUDR();
-  //doSimpleTestSendSNR();
-  }
-</programlisting>
-		</example>
 	</section>
 	
 	<section>
@@ -2943,14 +2931,14 @@ Comment: Jared this is example stuf, lets put here RA conf. -->Configuration is 
 		<formalpara>
 			<title>Activities</title>
 			<para>
-				The following activities are available, with the API definition listed for reference. The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.
+				The following activities are available, with the API definition listed for reference. In addition to retrieving session-specific data, the API defines methods to easily create and send answers and requests for certain activities.
 			</para>
 		</formalpara>
 		<para>
 			The lifecycle of an activity depends on the type of received request and the application interaction. In the case of a subscription activity, the activity timeout is taken into consideration because the subscription may be time-based.
 		</para>
 		<para>
-			The activitites allows the Sh (Client) application to retrieve message and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
+			Activitites allows the Sh (Client) application to retrieve message and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
 		</para>
 		<variablelist>
 			<title>Diameter Sh (Client) Activities</title>
@@ -2964,20 +2952,37 @@ Comment: Jared this is example stuf, lets put here RA conf. -->Configuration is 
 			</varlistentry>
 		</variablelist>
 		<para>
-			The API for ShClientActivity is more than 60 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientActivity.java">ShClientActivity.java in the source code</ulink>.
+			The API for <literal>ShClientActivity</literal> is more than 60 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientActivity.java"><literal>ShClientActivity.java</literal> in the source code</ulink>.
 		</para>
 		<variablelist>
 			<varlistentry>
 				<term>ShClientSubscriptionActivity</term>
 				<listitem>
 					<para>
-						Used in cases where a subscritpion to HSS data is required. This is long living activity. It is terminated either explicitly by SBB, error response to initial SNR or subscription terminating SNR.
+						Used in cases where a subscritpion to HSS data is required. This activity is persistent, and is terminated under the following conditions:
 					</para>
+					<itemizedlist>
+						<listitem>
+							<para>
+								When terminated explicitly by a Service Building Block (SBB).
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								When terminated by a returned error originating from the original SNR.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								When terminated by a subscription terminating SNR.
+							</para>
+						</listitem>
+					</itemizedlist>
 				</listitem>
 			</varlistentry>
 		</variablelist>
 		<para>
-			The API for ShClientSubscriptionActivity is more than 60 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientSubscriptionActivity.java">ShClientSubscriptionActivity.java in the source code</ulink>.
+			The API for <literal>ShClientSubscriptionActivity</literal> is more than 60 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientSubscriptionActivity.java"><literal>ShClientSubscriptionActivity.java</literal> in the source code</ulink>.
 		</para>
 		<!-- TODO:  Developer:  I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <formalpara>
 			<title>Provider</title>
@@ -2986,16 +2991,16 @@ Comment: Jared this is example stuf, lets put here RA conf. -->Configuration is 
 			</para>
 		</formalpara>
 		<para>
-			The API for the ShClientProvider is more than 80 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientProvider.java">ShClientSubscriptionActivity.java in the source code</ulink>.
+			The API for the <literal>ShClientProvider</literal> is more than 80 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientProvider.java"><literal>ShClientSubscriptionActivity.java</literal> in the source code</ulink>.
 		</para>
 		<formalpara>
 			<title>Message Factory</title>
 			<para>
-				The Message Factory creates events that can be executed within the JAIN SLEE Server, or sent through a Resource Adapter. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
+				The Message Factory creates events that can be executed within the JAIN SLEE Server, or sent through a Resource Adapter. Depending on the situation, Message Factory completes some Attribute Value Pairs (AVPs) for the session using the information made available to it.
 			</para>
 		</formalpara>
 		<para>
-			The API for the ShClientMessageFactory is more than 300 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientSubscriptionActivity.java">ShClientMessageFactory.java in the source code</ulink>.
+			The API for the <literal>ShClientMessageFactory</literal> is more than 300 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientSubscriptionActivity.java"><literal>ShClientMessageFactory.java</literal> in the source code</ulink>.
 		</para>
 	</section>
 	
@@ -3007,12 +3012,12 @@ Comment: Jared this is example stuf, lets put here RA conf. -->Configuration is 
 		<example>
 			<title>Push-Notification-Request</title>
 			<para>
-				The following code demonstrates how to configure a Push-Notification-Request using setExtensionAvps() methods.
+				The following code demonstrates how to configure a Push-Notification-Request using <literal>setExtensionAvps()</literal> methods.
 			</para>
 			<para>
-				It is possible to utilize specific methods such as udr.setUserIdentity() to achieve the same goal, however this falls outside the scope of this example.
+				It is possible to utilize specific methods such as <literal>udr.setUserIdentity()</literal> to achieve the same goal, however this falls outside the scope of this example.
 			</para>
-			
+			<!-- TODO:  Developer:  Where can users find out more about the other method calls available?  Is there a website?  Or can we create an example and then document it? --><!-- TODO: Editor:  Reformat programlistings so they flow correctly when published. --> 
 <programlisting role="JAVA">public void onPushNotificationRequest(net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest pnr, ActivityContextInterface aci)
                  {
                      try
@@ -3110,14 +3115,14 @@ Comment: Jared this is example stuf, lets put here RA conf. -->Configuration is 
 			</listitem>
 			<listitem>
 				<para>
-					Application subscribes to profiles changes
+					Application subscribes to profiles changes.
 				</para>
 			</listitem>
 		</itemizedlist>
 		<formalpara>
 			<title>Application requests user data</title>
 			<para>
-				In this case example simply sends request to remote peer (HSS). It simply requests data for certain user.
+				In this scenario, the application sends a request to the remote peer (the Home Subscriber Server). The application then requests data for a single user.
 			</para>
 		</formalpara>
 		<figure id="figure-Client_Application_Message_Flow_1">
@@ -3131,7 +3136,7 @@ Comment: Jared this is example stuf, lets put here RA conf. -->Configuration is 
 		<formalpara>
 			<title>Application subscribes to profiles changes</title>
 			<para>
-				In this case example service subscribes in HSS to changes to user profile. Once subscribtion is estabilished, example service will receive .
+				In this scenario, the application subscribes to the Home Subscriber Server (HSS) to monitor changes to a user profile. Once the subscription is established, the example service receives .
 			</para>
 		</formalpara>
 		<figure id="figure-Server_Application_Message_Flow_1">
@@ -3145,23 +3150,26 @@ Comment: Jared this is example stuf, lets put here RA conf. -->Configuration is 
 		<section>
 			<title>Configuration</title>
 			<para>
-				To configure the examples, changest must be made to the <filename>example.properties</filename> file in the <filename>/du/main/resources</filename> directory.
+				To configure the examples, changes must be made to the <filename>example.properties</filename> file in the <filename>/du/main/resources</filename> directory.
 			</para>
 			<para>
-				Aside common properties to configure ip, port and realm example has two properties to control which scenario is enabled.
+				In addition to the common properties such as IP Address, port number, and realm, the example has two properties to control which scenario is enabled.
 			</para>
 			<itemizedlist>
 				<listitem>
 					<para>
-						send.udr - boolean type, if set to true, example will send UDR to remote peer.
+						<literal>send.udr</literal> - If set to <literal>true</literal>, example will send UDR to remote peer.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						send.snr - boolean type, if set to true example will send SNR and await updates on profile changes.
+						<literal>send.snr</literal> - If set to <literal>true</literal>, example will send SNR and await updates on profile changes.
 					</para>
 				</listitem>
 			</itemizedlist>
+			<para>
+				For information regarding the requests available for Sh (Client), refer to <xref linkend="table-Diameter_Sh_Client_Messages"/>
+			</para>
 			<example>
 				<title>Setting origin and destination properties</title>
 				
@@ -3380,15 +3388,12 @@ destination.realm=mobicents.org
 		</tgroup>
 	</table>
 	<!-- TODO: Editor: paragraphs need rework.  Copied directly from wiki. --> <para>
-		As can be seen from the Command Names, these are related to managing User Data in the HSS. UDR/UDA is used in order to request data from the User profile. Client (AS) sends the request indicating which data he wants (see below for possible kinds of data) and if it has permissions on the HSS, they will be received via UDA.
-	</para>
-	<para>
-		PUR is meant to be used to update the profile of the user, and the success (or not) of the action is reported back in PUA. SNR offers the possibility to request for changes made in the user profile. If SNR is successful a SNA will be received stating that the operation was successful and when there are profile changes, a PNR will be sent by the HSS to the AS (this is the only time HSS initiates conversation) and the AS should acknowledge with a PNA.
+		The command names are related to managing user data in the HSS, and represent various types of requests. For example, UDR/UDA are used to request and receive data from the user profile. The client (in this case, AS), sends the request indicating which data is required (see below for possible kinds of data). If the client has the correct permissions on the HSS, the data will be received by UDA.
 	</para>
 	<section>
 		<title>Configuration</title>
 		<para>
-			Currently Sh Server RA does not support any configuration options.
+			The Sh Server RA does not currently support any configuration options.
 		</para>
 	</section>
 	
@@ -3417,14 +3422,14 @@ destination.realm=mobicents.org
 		<formalpara>
 			<title>Activities</title>
 			<para>
-				The following activities are available, with the API definition listed for reference. The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.
+				The following activities are available, with the API definition listed for reference. The API defines methods to create requests, send and receive answers for a certain activity, and retrieve session-specific data.
 			</para>
 		</formalpara>
 		<para>
 			The lifecycle of an activity depends on the type of received request and the application interaction. In the case of a subscription activity, the activity timeout is taken into consideration because the subscription may be time-based.
 		</para>
 		<para>
-			The activitites allows the Sh (Server) application to retrieve message and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
+			The activitites allow the Sh (Server) application to retrieve messages and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
 		</para>
 		<variablelist>
 			<title>Diameter Sh (Server) Activities</title>
@@ -3432,7 +3437,7 @@ destination.realm=mobicents.org
 				<term>ShServerActivity</term>
 				<listitem>
 					<para>
-						This is base activity for Sh server side. It is created for event based interaction - like user data requests or profile update requests. Server activity ends when answer is sent back to client. It is created automaticly for UDR and PUR is received.
+						This is the base activity for the Sh server side. It is created for event based interaction, such as UDRs or PURs. The activity is created automatically when a UDR or PUR request is received, and ends when an answer is sent back to the client.
 					</para>
 				</listitem>
 			</varlistentry>
@@ -3445,7 +3450,7 @@ destination.realm=mobicents.org
 				<term>ShServerSubscriptionActivity</term>
 				<listitem>
 					<para>
-						This activity is created when client desires to subscribe to changes to profile data. Once initial SNR is received SLEE creates subscription activity. It lingers until termination SNR is received or subscription times out.
+						The Subscription activity is created when the client desires to subscribe to changes to the profile data. Once the initial SNR is received, SLEE creates a subscription activity. This remains in place until a termination subscription request is received or the subscription times out.
 					</para>
 				</listitem>
 			</varlistentry>
@@ -3456,7 +3461,7 @@ destination.realm=mobicents.org
 		<formalpara>
 			<title>Provider</title>
 			<para>
-				The API for the ShServerProvider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerProvider.java">ShServerProvider.java in the source code</ulink>.
+				<!-- Note: Developer: What does the Provider do? If there is a description of Message Factory, there needs to be one for Provider as well. -->The API for the ShServerProvider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerProvider.java">ShServerProvider.java in the source code</ulink>.
 			</para>
 		</formalpara>
 		<formalpara>
@@ -3478,7 +3483,7 @@ destination.realm=mobicents.org
 		<example>
 			<title>User-Data-Request</title>
 			<para>
-				Following example shows how UDR is consumed on server side.
+				The following example shows how a UDR is consumed on the server side.
 			</para>
 			
 <programlisting role="JAVA">public void onUserDataRequest(UserDataRequest event, ActivityContextInterface aci) {
@@ -3610,12 +3615,14 @@ logger.error("Failed to create/send SNA.", e);
 	<section id="cca-Credit_Control_Application" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter CCA</title>
 	<para>
-		Credit Control Application provides common part for credit applications. It defines minimal set of primitives to allow credit session management and to convey enough information to perform charging.
+		<!-- TODO: Developer:  Did you incorporate the wiki content into this section from here: http://groups.google.com/group/mobicents-public/web/mobicents-diameter-cca, 
+
+I'm sorry, but there are huge gaps in this section, and I'm finding it really difficult to work out what content you've incorporated. -->The Credit Control Application (CCA) provides a common interface for credit applications. CCA defines a minimal set of Java primitives that enable credit session management, and convey sufficient information for applications to perform charging activities.
 	</para>
 	<para>
-		It is defined in <ulink url="http://tools.ietf.org/html/rfc4006">rfc4006</ulink>. Declared state machines are based on following messsage:
+		For detailed information regarding the Diameter Credit Control Application, refer to the <ulink url="http://tools.ietf.org/html/rfc4006">IETF RFC4006 memorandum</ulink>. <xref linkend="table-Diameter_CCA_Messages"/> describes the messages that are compatible with declared state machines.
 	</para>
-	<table frame="all" id="table-Diameter_Sh_Server_Messages_1" pgwide="1">
+	<table frame="all" id="table-Diameter_CCA_Messages" pgwide="1">
 		<title>Diameter CCA Messages</title>
 		<tgroup cols="5" colsep="1">
 			<colspec colname="c1"/>
@@ -3681,19 +3688,19 @@ logger.error("Failed to create/send SNA.", e);
 		</tgroup>
 	</table>
 	<para>
-		RFC decalres only basic charging scenarios, which are event charing
+		RFC decalres only basic charging scenarios, which are event charging. <!-- TODO: Developer:  This is where this sentence ends.  I don't know what's supposed to come after this, but I assume there's something... -->
 	</para>
 	<section>
 		<title>Configuration</title>
 		<para>
-			Currently RA does not support any configuration options.
+			The CCA RA does not support any configuration options.
 		</para>
 	</section>
 	
 	<section>
 		<title>Resource Adaptor Type</title>
 		<para>
-			Resource Adaptor Type provides following elements:
+			The CCA Resource Adaptor Type provides the following types:
 		</para>
 		<itemizedlist>
 			<listitem>
@@ -3719,20 +3726,23 @@ logger.error("Failed to create/send SNA.", e);
 			</para>
 		</formalpara>
 		<para>
-			The lifecycle of an activity depends on the type of received request and the application interaction. Request type is defined by CC-Request-Type AVP. In case of session like interaction, the activity timeout is taken into consideration.
+			The lifecycle of an activity depends on the type of received request and the application interaction. In the case of a subscription activity, the activity timeout is taken into consideration because the subscription may be time-based.
 		</para>
 		<para>
-			The activitites allows the CCA application to retrieve message and AVP factories bound to the current session. The functionality offered is limited only by the implementation used. There are two types of actiovities:
+			The activitites allow the CCA to retrieve messages and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
+		</para>
+		<para>
+			Each Request type is defined by the CC-Request-Type Attribute Value Pair (AVP). The types of activities are described below:
 		</para>
 		<itemizedlist>
 			<listitem>
 				<para>
-					short living - when CC-Request-Type is equal to enum value of "EVENT". Activities created for such request are terminated once answer is sent(server)/received(client) or when session termianted due to lack of answer.
+					event-based - when <literal>CC-Request-Type</literal> is equal to the enumerated value of "EVENT". Activities created for such request are terminated once answer is sent(server)/received(client) or when session termianted due to lack of answer.
 				</para>
 			</listitem>
 			<listitem>
 				<para>
-					ling living - activities are long lived when two conditions are met, first messages has CC-Request-Type is equal to enum value of "INITIAL", last message has CC-Request-Type equal to enum value of "TERMINATION". Between initial and termianting message there can be any number of "UPDATE" messages.
+					session-based - activities are long lived when two conditions are met, first messages has CC-Request-Type is equal to enum value of "INITIAL", last message has CC-Request-Type equal to enum value of "TERMINATION". Between initial and termianting message there can be any number of "UPDATE" messages.
 				</para>
 			</listitem>
 		</itemizedlist>
