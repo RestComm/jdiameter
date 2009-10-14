@@ -34,9 +34,9 @@ public class Parameters extends org.jdiameter.client.impl.helpers.Parameters{
     /**
      * Realm hosts property
      */
-    public static final Parameters RealmHosts = new Parameters("RealmLocalAction", String.class, "localhost");
+    public static final Parameters RealmHosts = new Parameters("RealmHosts", String.class, "localhost");
     /**
-     * Realm action ptoperty
+     * Realm action property
      */
     public static final Parameters RealmLocalAction = new Parameters("RealmLocalAction", String.class, "LOCAL");
     /**
@@ -48,36 +48,36 @@ public class Parameters extends org.jdiameter.client.impl.helpers.Parameters{
      */
     public static final Parameters RealmEntryExpTime = new Parameters("RealmEntryExpTime", Long.class, 0);
     /**
-     * Overload monitor ptoperty
+     * Overload monitor property
      */
     public static final Parameters OverloadMonitor = new Parameters("OverloadMonitor", Object.class, "");
     /**
-     *  Overload monitor entry ptoperty
+     *  Overload monitor entry property
      */
     public static final Parameters OverloadMonitorEntry = new Parameters("OverloadMonitorEntry", Object.class, "");
     /**
-     * Overload monitor data ptoperty
+     * Overload monitor data property
      */
     public static final Parameters OverloadMonitorData  = new Parameters("OverloadMonitorData", Object.class, "");
     /**
-     * Overload entry Index ptoperty
+     * Overload entry Index property
      */
     public static final Parameters OverloadEntryIndex   = new Parameters("OverloadEntryIndex", Integer.class, "");
     /**
-     * Overload high threshold ptoperty
+     * Overload high threshold property
      */
     public static final Parameters OverloadEntryhighThreshold = new Parameters("OverloadEntryhighThreshold", Double.class, "");
     /**
-     * Overload low threshold ptoperty
+     * Overload low threshold property
      */
     public static final Parameters OverloadEntrylowThreshold  = new Parameters("OverloadEntrylowThreshold", Double.class, "");
     /**
-     * Peer reconnection property ptoperty
+     * Peer reconnection property property
      */
     public static final Parameters PeerAttemptConnection = new Parameters("PeerAttemptConnection", Boolean.class, false);
 
     /**
-     * Peer reconnection property ptoperty
+     * Peer reconnection property property
      */
     public static final Parameters NeedClientAuth = new Parameters("NeedClientAuth", Boolean.class);
 

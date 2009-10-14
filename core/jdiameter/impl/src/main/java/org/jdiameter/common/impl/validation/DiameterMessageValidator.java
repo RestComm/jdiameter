@@ -69,7 +69,7 @@ public class DiameterMessageValidator {
   private static final DiameterMessageValidator instance = new DiameterMessageValidator();
   private static final String fileName = "dictionary.xml";
 
-  private boolean on = true;
+  private static boolean on = true;
   private boolean configured = false;
   protected Map<VMessageRepresentation, VMessageRepresentation> commandMap = new HashMap<VMessageRepresentation, VMessageRepresentation>();
   protected Map<VAvpRepresentation, VAvpRepresentation> avpMap = new HashMap<VAvpRepresentation, VAvpRepresentation>();
@@ -133,7 +133,7 @@ public class DiameterMessageValidator {
 
       NodeList validatorNodeList = doc.getElementsByTagName(_VALIDATOR_NODE_NAME);
       if (validatorNodeList == null || validatorNodeList.getLength() == 0) {
-        this.on = false;
+        on = false;
       }
       else {
         boolean found = false;
@@ -142,16 +142,16 @@ public class DiameterMessageValidator {
             found = true;
             Element validatorElement = (Element) validatorNodeList.item(index);
             if (!validatorElement.hasAttribute(_VALIDATOR_NODE_ENABLED_ATTR)) {
-              this.on = false;
+              on = false;
             }
             else {
-              this.on = Boolean.parseBoolean(validatorElement.getAttribute(_VALIDATOR_NODE_ENABLED_ATTR));
+              on = Boolean.parseBoolean(validatorElement.getAttribute(_VALIDATOR_NODE_ENABLED_ATTR));
             }
             break;
           }
         }
         if (!found) {
-          this.on = false;
+          on = false;
         }
       }
 
@@ -708,8 +708,9 @@ public class DiameterMessageValidator {
    *            - avp to be checked.
    */
   public void validate(int commandCode, long appId, boolean isRequest, AvpSet destination, Avp avp) {
-    if (!on)
-      throw new IllegalStateException("validation is of.");
+    if (!on) {
+      return; //throw new IllegalStateException("validation is of.");
+    }
     VMessageRepresentation rep = new VMessageRepresentation(commandCode, appId, isRequest);
     rep = this.commandMap.get(rep);
     if (rep == null) {
@@ -742,8 +743,9 @@ public class DiameterMessageValidator {
    *             <b>false</b> if multiplicity is incorrect</li> </ul>
    */
   public boolean isCountValidForMultiplicity(int commandCode, long appId, boolean isRequest, AvpSet destination, int avpCode, long avpVendor) {
-    if (!on)
-      throw new IllegalStateException("validation is of.");
+    if (!on) {
+      return true; //throw new IllegalStateException("validation is of.");
+    }
     VMessageRepresentation rep = new VMessageRepresentation(commandCode, appId, isRequest);
     rep = this.commandMap.get(rep);
     if (rep == null) {
@@ -778,8 +780,9 @@ public class DiameterMessageValidator {
    * @return
    */
   public boolean isAllowed(int commandCode, long appId, boolean isRequest, int avpCode, long avpVendor) {
-    if (!on)
-      throw new IllegalStateException("Message validation is disabled.");
+    if (!on) {
+      return true; //throw new IllegalStateException("Message validation is disabled.");
+    }
     VMessageRepresentation rep = new VMessageRepresentation(commandCode, appId, isRequest);
     rep = this.commandMap.get(rep);
 
@@ -857,5 +860,10 @@ public class DiameterMessageValidator {
 
   public boolean isConfigured() {
     return configured;
+  }
+  
+  public static void setOn(boolean isOn) {
+    on = isOn;
+    log.info("Diameter Message/AVP Validator is now " + (on ? "enabled." : "disabled."));
   }
 }

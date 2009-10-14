@@ -17,6 +17,8 @@ import java.util.ArrayList;
  */
 public class Parameters extends Ordinal {
 
+    private static final long serialVersionUID = 1L;
+
     protected static int index;
 
     private static ArrayList<Parameters> value = new ArrayList<Parameters>();
@@ -147,7 +149,7 @@ public class Parameters extends Ordinal {
     public static final Parameters ApplicationId = new Parameters("ApplicationId",Object.class);
 
     /**
-     * Extendion point property
+     * Extension point property
      */
     public static final Parameters Extensions = new Parameters("Extensions",Object.class);
     /**
