@@ -157,9 +157,13 @@ public class EmptyConfiguration extends org.jdiameter.client.impl.helpers.EmptyC
             for (ConfigurationListener l : list)
                 commit &= l.elementChanged(key, values);
             if (commit)
-                putValue(key, new EmptyConfiguration(false).add(key, values));
+                putValue(key, values);
+                // Removed due to issue #1009 (http://code.google.com/p/mobicents/issues/detail?id=1009)
+                // putValue(key, new EmptyConfiguration(false).add(key, values));
         } else {
-            putValue(key, new EmptyConfiguration(false).add(key, values));
+            putValue(key, values);
+            // Removed due to issue #1009 (http://code.google.com/p/mobicents/issues/detail?id=1009)
+            // putValue(key, new EmptyConfiguration(false).add(key, values));
         }
     }
 
