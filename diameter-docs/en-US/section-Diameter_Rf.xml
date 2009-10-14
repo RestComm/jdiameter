@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
 <section>
-  <title>Mobicents Diameter Rf</title>
-  <para>Ro is on of two IMS reference point for charging. It covers offline charging - scenarios  where charging information does not affect, in real-time, the service rendered. </para>
+  <title><!--Note: Developer: This section hasn't been edited at all, because it is so similar to the Ro section that it is impossible to differentiate between the two. You need to merge the two sections, and then concisely explain the differences between the two. Otherwise it is both a waste of space and confusing for the user.-->Mobicents Diameter Rf</title>
+  <para>Rf is one of two IMS reference points for charging. It covers offline charging - scenarios  where charging information does not affect, in real-time, the service rendered. </para>
   <para>Charging involves two peers:</para>
   <itemizedlist>
     <listitem>
