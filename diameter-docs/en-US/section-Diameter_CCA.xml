@@ -69,7 +69,7 @@ I'm sorry, but there are huge gaps in this section, and I'm finding it really di
     <para>Each Request type is defined by the <literal>CC-Request-Type</literal> Attribute Value Pair (AVP).  The types of activities are described below: </para>
     <itemizedlist>
       <listitem>
-        <para>event-based - when <literal>CC-Request-Type = EVENT</literal>. Activities created for such request are terminated once answer is sent(server)/received(client) or when session termianted due to lack of answer.</para>
+        <para>event-based - when <literal>CC-Request-Type = EVENT</literal>. Activities created for this kind of request are terminated once an answer is sent(server)/received(client) or when the session termianted due to lack of an answer.</para>
       </listitem>
       <listitem>
         <para>session-based - when the first message contains <literal>CC-Request-Type = INITIAL</literal>, and the last message contains  <literal>CC-Request-Type = TERMINATION</literal>. Any number of &quot;UPDATE&quot; messages are allowed between the  initial and termianting message.</para>
@@ -80,7 +80,7 @@ I'm sorry, but there are huge gaps in this section, and I'm finding it really di
       <varlistentry>
         <term>CreditControlClientSession</term>
         <listitem>
-          <para>Created on demand. Life cycle depends on request type. Request type is indicated by <literal>CC-Request-Type</literal> AVP. </para>
+          <para>Created on demand. The life cycle of this session depends on the type of request. The request type is indicated by <literal>CC-Request-Type</literal> AVP. </para>
           <programlisting role="JAVA">/**
    * Create a Credit-Control-Request message pre-populated with the AVPs
    * appropriate for this session.
@@ -158,7 +158,7 @@ I'm sorry, but there are huge gaps in this section, and I'm finding it really di
       <varlistentry>
         <term>CreditControlServerSession</term>
         <listitem>
-          <para>Created once request is received and there is no matching activity for it. Its life cycle is identical to client activity.</para>
+          <para>Created once a request is received and there is no matching activity for it. Its life cycle is identical to that of a client activity.</para>
           <programlisting role="JAVA"> /**
    * Create a Credit-Control-Answer message pre-populated with the AVPs
    * appropriate for this session.
@@ -207,7 +207,7 @@ I'm sorry, but there are huge gaps in this section, and I'm finding it really di
     </variablelist>
     <formalpara>
       <title>Provider</title>
-      <para>Provider allows services to create activities, access some topology information and send/receive message in synchornous way. </para>
+      <para>Provider allows services to create activities, access some topology information and send/receive message in a synchronised way. </para>
     </formalpara>
     <programlisting role="JAVA">public interface CreditControlProvider {
 
@@ -268,7 +268,7 @@ I'm sorry, but there are huge gaps in this section, and I'm finding it really di
   </section>
   <section>
     <title>API Usage Examples</title>
-    <para>Following example shows how CCR message is created and sent.</para>
+    <para>The following example shows how a CCR message is created and sent.</para>
     <example>
       <title>Sending CCR</title>
       <programlisting role="JAVA">try {
@@ -315,7 +315,7 @@ session.sendCreditControlRequest(request);
 logger.error(&quot;Failed to create/send Credit-Control-Request.&quot;, e);
 }</programlisting>
     </example>
-    <para>The following code demonstrates how CCR is received and how different state machines are handled.</para>
+    <para>The following code demonstrates how the CCR is received and how different state machines are handled.</para>
     <example>
       <title>Handling CCR</title>
       <programlisting role="JAVA">public void onCreditControlRequest(CreditControlRequest request, ActivityContextInterface aci) {
@@ -419,13 +419,13 @@ logger.error(&quot;Unexpected CC-Request-Type in message: &quot; + request.getCc
   </section>
   <section>
     <title>Examples</title>
-    <para>The sample application provided for CCA is very basic one.It supports three searate scenarios:</para>
+    <para>The sample application provided for CCA is a very basic one.It supports three separate scenarios:</para>
     <itemizedlist>
       <listitem>
         <para>Client</para>
       </listitem>
       <listitem>
-        <para>Server for event charing</para>
+        <para>Server for event charging</para>
       </listitem>
       <listitem>
         <para>Server for session based charging</para>
@@ -433,19 +433,19 @@ logger.error(&quot;Unexpected CC-Request-Type in message: &quot; + request.getCc
     </itemizedlist>
     <formalpara>
       <title>Client</title>
-      <para>Example acts as CCA client . It issues order to charges some entity (unspecified) account with defined number of units. It sends CCR to Ericsson Diameter Server (EDS).  If the message is correctly built, the server will send an answer back to the application stating that the operation was executed correctly.  If the message is incorrectly built, the EDS sends an error message back to the application.</para>
+      <para>The example acts as a CCA client . It issues an order to charge an entity (unspecified) account with a defined number of units. It sends a CCR to the Ericsson Diameter Server (EDS).  If the message is correctly built, the server will send an answer back to the application stating that the operation was executed correctly.  If the message is incorrectly built, the EDS sends an error message back to the application.</para>
     </formalpara>
-    <formalpara>
+<!--Note: Developers: Am leaving this section unedited as it makes no sense. I need a more structured, logical explanation of what the example is if I am going to rewrite it coherently.-->    <formalpara>
       <title>Server for event charging</title>
-      <para>Example service acts as simple server. It awaits for CCR message. Once client sends it(EDS) example receives it. Simplest processing of this request includes only sending success answer</para>
+      <para>The example service acts as a simple server. It awaits for a CCR message. Once the client sends it (EDS), the  service receives it. The simplest processing of this request includes only sending success answer</para>
     </formalpara>
     <formalpara>
       <title>Server for session based charging</title>
-      <para>Example acts a bit different than in above case. Service awaits session based exchange - that is CCRs with CC-Request-Type which follows sequence INITIAL, UPDATE(zero or more) and TERMINATION.</para>
+      <para>The service awaits a session based exchange - that is CCRs with CC-Request-Type which follows sequence INITIAL, UPDATE(zero or more) and TERMINATION.</para>
     </formalpara>
     <section>
       <title>Example Configuration</title>
-      <para>Example is confgiure via file <filename>example.properties</filename></para>
+      <para>The example is configured via the file <filename>example.properties</filename></para>
       <programlisting># Act as &quot;client&quot; or &quot;server&quot; (default: server)
 example.mode=client
 
