@@ -19,7 +19,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.LinkedBlockingDeque;
+// FIXME : requires JDK6 : import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -55,7 +56,8 @@ public class TCPClientConnection implements IConnection {
     }
   }
 
-  protected LinkedBlockingDeque<Event> buffer = new LinkedBlockingDeque<Event>(64);
+  //FIXME : requires JDK6 : protected LinkedBlockingDeque<Event> buffer = new LinkedBlockingDeque<Event>(64);
+  protected LinkedBlockingQueue<Event> buffer = new LinkedBlockingQueue<Event>(64);
   protected IMessageParser parser;
   protected Lock lock = new ReentrantLock();
   protected ConcurrentLinkedQueue<IConnectionListener> listeners = new ConcurrentLinkedQueue<IConnectionListener>();
@@ -261,7 +263,9 @@ public class TCPClientConnection implements IConnection {
       try {
         buffer.add(event);
       } catch (IllegalStateException e) {
-        buffer.removeLast();
+        // FIXME : requires JDK6 : buffer.removeLast();
+        Event[] tempBuffer = buffer.toArray(new Event[buffer.size()]);
+        buffer.remove(tempBuffer[tempBuffer.length-1]);
         buffer.add(event);
       }
       return false;

@@ -628,7 +628,10 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   public void _Network_Peers_addPeer(String name, boolean attemptConnect, int rating) throws MBeanException {
     Configuration[] oldPeerTable = getMutableConfiguration().getChildren(PeerTable.ordinal());
     
-    Configuration[] newPeerTable = Arrays.copyOf(oldPeerTable, oldPeerTable.length + 1);
+    // FIXME: Requires JDK6 : Configuration[] newPeerTable = Arrays.copyOf(oldPeerTable, oldPeerTable.length + 1);
+    Configuration[] newPeerTable = new Configuration[oldPeerTable.length + 1];
+    
+    System.arraycopy(oldPeerTable, 0, newPeerTable, 0, oldPeerTable.length);
     
     AppConfiguration newPeer = getClientConfiguration().add(PeerName, name);
     newPeer.add(PeerAttemptConnection, attemptConnect);
@@ -700,8 +703,11 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       }
     }
 
-    Configuration[] newRealmEntries = Arrays.copyOf(oldRealmEntries, oldRealmEntries.length + 1);
+    // FIXME: Requires JDK6 : Configuration[] newRealmEntries = Arrays.copyOf(oldRealmEntries, oldRealmEntries.length + 1);
+    Configuration[] newRealmEntries = new Configuration[oldRealmEntries.length + 1];
     
+    System.arraycopy(oldRealmEntries, 0, newRealmEntries, 0, oldRealmEntries.length);
+
     AppConfiguration newRealm = getClientConfiguration().add(RealmEntry, getClientConfiguration().
         add(ApplicationId, new Configuration[] {getClientConfiguration().add(VendorId, appVendorId).add(AcctApplId, appAcctId).add(AuthApplId, appAuthId)}).
         add(RealmName, name).
