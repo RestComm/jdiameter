@@ -1,0 +1,154 @@
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. -->
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<section id="dcaue-Diameter_CCA_API_Usage_Examples">
+    <title>API Usage Examples</title>
+    <para>The following example shows how a CCR message is created and sent.</para>
+    <example>
+      <title>Sending CCR</title>
+      <programlisting role="JAVA">try {
+CreditControlClientSession session = this.provider.createClientSession();
+ActivityContextInterface localACI = this.acif.getActivityContextInterface(session);
+localACI.attach(this.getSbbContext().getSbbLocalObject());
+
+CreditControlRequest request = session.createCreditControlRequest();
+
+List&lt;DiameterAvp&gt; avps = new ArrayList&lt;DiameterAvp&gt;();
+
+avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, (&quot;aaa://&quot; + originIP + &quot;:&quot; + originPort).getBytes()));
+avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, originRealm.getBytes()));
+
+avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, (&quot;aaa://&quot; + destinationIP + &quot;:&quot; + destinationPort).getBytes()));
+avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, destinationRealm.getBytes()));
+
+avps.add(avpFactory.getBaseFactory().createAvp(CreditControlAVPCodes.CC_Request_Type, 4l));
+avps.add(avpFactory.getBaseFactory().createAvp(CreditControlAVPCodes.CC_Request_Number, 0l));
+
+RequestedServiceUnitAvp rsu = this.avpFactory.createRequestedServiceUnit();
+
+CcMoneyAvp ccMoney = this.avpFactory.createCcMoney();
+ccMoney.setCurrencyCode(100);
+ccMoney.setUnitValue(this.avpFactory.createUnitValue());
+
+rsu.setCreditControlInputOctets(10);
+rsu.setCreditControlMoneyAvp(ccMoney);
+rsu.setCreditControlServiceSpecificUnits(1000);
+rsu.setCreditControlTime(100);
+rsu.setCreditControlTotalOctets(5000);
+
+avps.add(rsu);
+
+avps.add(avpFactory.getBaseFactory().createAvp(CreditControlAVPCodes.Requested_Action, 0));
+
+// Now create &amp; send
+request.setExtensionAvps(avps.toArray(new DiameterAvp[avps.size()]));
+if (logger.isInfoEnabled())
+logger.info(&quot;About to send:\n&quot; + request);
+
+session.sendCreditControlRequest(request);
+} catch (Exception e) {
+logger.error(&quot;Failed to create/send Credit-Control-Request.&quot;, e);
+}</programlisting>
+    </example>
+    <para>The following code demonstrates how the CCR is received and how different state machines are handled.</para>
+    <example>
+      <title>Handling CCR</title>
+      <programlisting role="JAVA">public void onCreditControlRequest(CreditControlRequest request, ActivityContextInterface aci) {
+if (logger.isInfoEnabled())
+logger.info(&quot;Received Credit-Control-Request (Application-Id[&quot; + request.getHeader().getApplicationId() + &quot;].&quot;);
+
+// INITIAL_REQUEST(1), UPDATE_REQUEST(2), TERMINATION_REQUEST(3),
+// EVENT_REQUEST(4)
+CreditControlServerSession session = (CreditControlServerSession) aci.getActivity();
+CreditControlAnswer answer = null;
+
+switch (request.getCcRequestType().getValue()) {
+case 1:
+try {
+if (logger.isInfoEnabled())
+logger.info(&quot;Got INITIAL_REQUEST(1).&quot;);
+
+if (getSentInitialAnswer()) {
+logger.error(&quot;Error. Initial answer already sent! Aborting.&quot;);
+return;
+}
+
+answer = session.createCreditControlAnswer();
+answer.setResultCode(2001);
+if (logger.isInfoEnabled()) {
+logger.info(&quot;Processed Credit-Control-Request:\n&quot; + request);
+logger.info(&quot;Sending Credit-Control-Answer:\n&quot; + answer);
+}
+
+session.sendCreditControlAnswer(answer);
+this.setSentInitialAnswer(true);
+} catch (Exception e) {
+logger.error(&quot;Failed to create/send Credit-Control-Answer to reply INITIAL_REQUEST(1).&quot;, e);
+}
+break;
+case 2:
+try {
+if (logger.isInfoEnabled())
+logger.info(&quot;Got UPDATE_REQUEST(2).&quot;);
+
+if (getSentUpdateAnswer()) {
+logger.error(&quot;Error. Update answer already sent! Aborting.&quot;);
+return;
+}
+
+answer = session.createCreditControlAnswer();
+answer.setResultCode(2001);
+if (logger.isInfoEnabled()) {
+logger.info(&quot;Processed Credit-Control-Request:\n&quot; + request);
+logger.info(&quot;Sending Credit-Control-Answer:\n&quot; + answer);
+}
+session.sendCreditControlAnswer(answer);
+setSentUpdateAnswer(true);
+} catch (Exception e) {
+logger.error(&quot;Failed to create/send Credit-Control-Answer to reply UPDATE_REQUEST(2).&quot;, e);
+}
+break;
+case 3:
+try {
+if (logger.isInfoEnabled())
+logger.info(&quot;Got TERMINATION_REQUEST(3).&quot;);
+
+if (getSentTerminationAnswer()) {
+logger.error(&quot;Error. Termination answer already sent! Aborting.&quot;);
+return;
+}
+
+answer = session.createCreditControlAnswer();
+answer.setResultCode(2001);
+if (logger.isInfoEnabled()) {
+logger.info(&quot;Processed Credit-Control-Request:\n&quot; + request);
+logger.info(&quot;Sending Credit-Control-Answer:\n&quot; + answer);
+}
+session.sendCreditControlAnswer(answer);
+setSentTerminationAnswer(true);
+} catch (Exception e) {
+logger.error(&quot;Failed to create/send Credit-Control-Answer to reply TERMINATION_REQUEST(3).&quot;, e);
+}
+break;
+case 4:
+try {
+if (logger.isInfoEnabled())
+logger.info(&quot;Got EVENT_REQUEST(4).&quot;);
+
+answer = session.createCreditControlAnswer();
+answer.setResultCode(2001);
+if (logger.isInfoEnabled())
+logger.info(&quot;Sending Credit-Control-Answer:\n&quot; + answer);
+
+session.sendCreditControlAnswer(answer);
+} catch (Exception e) {
+logger.error(&quot;Failed to create/send Credit-Control-Answer to reply EVENT_REQUEST(4).&quot;, e);
+}
+break;
+
+default:
+logger.error(&quot;Unexpected CC-Request-Type in message: &quot; + request.getCcRequestType() + &quot;. Aborting...&quot;);
+}
+}</programlisting>
+    </example>
+  </section>

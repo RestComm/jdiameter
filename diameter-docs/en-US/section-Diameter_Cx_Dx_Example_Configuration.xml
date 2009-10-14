@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<section id="dcdec-Diameter_Cx_Dx_Example_Configuration">
+  <title>Configuration</title>
+  <para>Proper configuration includes setting up two instances of JBoss. To achieve this please refer to <ulink url="http://www.jboss.org/community/wiki/ConfiguringMultipleJBossInstancesOnOneMachine">this page</ulink>. The example also requires proper configuration of MUX. The ports and IP address set in its configuration must match those in the example configuration file.</para>
+  <para>The example is configured via a single file: <filename>examples/cxdx/du/src/main/resources/example.properties</filename>. Its content are standard for most of the examples. Aside from the IP/port/realm properties, it contains property which controls how the example behaves - client or server mode.</para>
+  <programlisting><!--TODO: Whats the ROLE here?-->
+#                       ##
+# Diameter Cx/Dx Example #
+##                       #
+
+# Act as &quot;client&quot; or &quot;server&quot; (default: server)
+example.mode=client
+
+# The AS IP Address, Port and Realm (default: 127.0.0.1 / 1812 / mobicents.org)
+origin.ip=127.0.0.1
+origin.port=1812
+origin.realm=mobicents.org
+
+# The Remote IP Address, Port and Realm (default: 127.0.0.1 / 3868 / mobicents.org)
+destination.ip=127.0.0.1
+destination.port=3868
+destination.realm=mobicents.org</programlisting>
+</section>

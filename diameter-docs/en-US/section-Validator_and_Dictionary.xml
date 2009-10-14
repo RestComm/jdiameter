@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
-<section id="section-Validator_and_Dictionary">
+<section id="vad-Validator_and_Dictionary">
   <title>Validator and Dictionary</title>
   <para>The Validator and Dictionary are core elements of the Diameter MUX stack.  </para>
   <formalpara>
     <title>Validator</title>
     <para>The Diameter Validator provides   message validation in accordance with industry standards.     The primary purpose of the Validator is  to detect malformed messages, such as an Answer message that contains a  Destination-Host Attribute Value Pair (AVP).  </para>
   </formalpara>
-  <para>The Valdiator is  capable of validating multi-leveled, grouped AVPs, excluding the following content types: </para>
+  <para>The Validator is  capable of validating multi-leveled, grouped AVPs, excluding the following content types: </para>
   <itemizedlist>
     <listitem>
       <para>URI, or Identifier types.</para>
@@ -23,7 +23,7 @@
     <para>The Dictionary  is used by the MUX to  create and retrieve correctly configured messages and Attribute Value Pairs (AVPs) such as bit flags and AVP types.  </para>
   </formalpara>
   <para>Because the Diameter dictionary is responsible for setting the parameters and flags, an  application does not need to control this information.  This results in applications that are more efficient.  The dictionary also provides information that can be used for validation purposes.</para>
-  <para>During runtime, the Dictionary API provides developers and users the abiltiy to extract message information, and provides AVP definition flexibility.  The definition can be changed without the need for the project source to be recompiled.  </para>
+  <para>During runtime, the Dictionary API provides developers and users the ability to extract message information, and provides AVP definition flexibility.  The definition can be changed without the need for the project source to be recompiled.  </para>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Configuring_The_Validator_And_Dictionary.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Using_the_Validator_and_Dictionary.xml" encoding="UTF-8"/>
 </section>

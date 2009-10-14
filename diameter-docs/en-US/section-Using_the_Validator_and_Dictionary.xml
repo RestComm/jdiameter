@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
-<section>
+<section id="utvad-Using_The_Validator_And_Dictionary">
   <title>Using the Validator and Dictionary</title>
   <para>To use the Diameter Validator, and Dictionary, the following prerequisites are required:</para>
   <itemizedlist>
@@ -53,8 +53,8 @@
   <note>
     <para> In addition to the API methods, <literal>public static final DiameterMessageValidator getInstance()</literal> and <literal>public boolean isOn()</literal>are compatible.</para>
   </note>
-  <example id="example-Base_Listener_Code_1">
-    <title>Validator and Dictionary Code Examples</title>
+  <example id="example-Validator_And_Dictionary_Code_Example">
+    <title>Validator and Dictionary Code Example</title>
     <programlisting role="JAVA">if (!validator.isOn())
                 return;
 
@@ -86,7 +86,7 @@ if (validator.hasRepresentation(msg.getCommandCode(), msg.getApplicationId(),
     //Default we dont do a thing.
 }</programlisting>
   </example>
-  <example id="example-Base_Listener_Code_2">
+  <example id="example-Validator_Message_Check_Example">
     <title>Validator Message Check Example</title>
     <para>The example below is pseudo-code.</para>
     <programlisting role="JAVA">...
@@ -104,7 +104,7 @@ try{
      e.getVendorId()+&quot;, message:&quot;+ e.getMessage();
 }</programlisting>
   </example>
-  <example id="example-Base_Listener_Code_3">
+  <example id="example-Validator_Multiplicity_Count_Check_Example">
     <title>Validator Multiplicity Count Check Example</title>
     <para>The example below is pseudo-code.</para>
     <programlisting role="JAVA">...
@@ -127,7 +127,7 @@ if (validator.isCountValidForMultiplicity(message.getCommandCode(), message.getA
   throw new Exception(&quot;Error&quot;);
 }</programlisting>
   </example>
-<!--TODO: Developer:  Explain what _DEFAULT_MANDATORY and _DEFALUT_PROTECTED mean in the example.  Choose whether to put the information before the example, or include it within the example itself.-->  <example>
+<!--TODO: Developer:  Explain what _DEFAULT_MANDATORY and _DEFALUT_PROTECTED mean in the example.  Choose whether to put the information before the example, or include it within the example itself.-->  <example id="example-Dictionary_Base_Code">
     <title>Dictionary Base Code</title>
     <para>The example below is pseudo-code.</para>
     <programlisting role="JAVA">public static  void setAvpAsFloat32(Message msg, int avpCode, long
@@ -146,7 +146,7 @@ if (validator.isCountValidForMultiplicity(message.getCommandCode(), message.getA
     }
   }</programlisting>
   </example>
-  <example>
+  <example id="example-Dictionary_AVP_Encoding_Example">
     <title>Dictionary AVP Encoding Example</title>
     <para>In this example the AVP types, and some default values, inherit.</para>
     <programlisting role="JAVA">public static  void setAvp(Message msg, int avpCode, long vendorId, AvpSet set, float value)

@@ -80,6 +80,16 @@ trading, online gaming, (<acronym>RFID</acronym>) sensor network integration, an
 		</affiliation>
 		<email>jmorgan@redhat.com</email>
 	</author>
+	<author>
+		<firstname>Tom</firstname>
+		<surname>Wells</surname>
+		<contrib>Technical Writer and Editor</contrib>
+		<affiliation>
+			<orgname>Red Hat, </orgname>
+			<orgdiv>Engineering Content Services</orgdiv>
+		</affiliation>
+		<email>twells@redhat.com</email>
+	</author>
 </authorgroup>
 				</bookinfo>
 	<preface lang="en-US">
@@ -140,7 +150,7 @@ trading, online gaming, (<acronym>RFID</acronym>) sensor network integration, an
 			<application>Proportional Bold</application>
 		</para>
 		<para>
-			This denotes words or phrases encountered on a system, including application names; dialogue box text; labelled buttons; check-box and radio button labels; menu titles and sub-menu titles. For example:
+			This denotes words or phrases encountered on a system, including application names; dialog box text; labeled buttons; check-box and radio button labels; menu titles and sub-menu titles. For example:
 		</para>
 		<blockquote>
 			<para>
@@ -266,7 +276,7 @@ public class ExClient
 	</para>
 </section>
 </preface>
-	<chapter lang="en-US">
+	<chapter id="i-Introduction" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Introduction</title>
 	<para>
 		Diameter is a computer networking protocol for AAA (Authentication, Authorization and Accounting) defined in RFC 3588. It is a successor to RADIUS (and its name is a reference to it, a diameter is twice the radius) offering the following advantages:
@@ -279,7 +289,7 @@ public class ExClient
 		</listitem>
 		<listitem>
 			<para>
-				Network or transport level security (IPsec or TLS)
+				Network or transport level security (IPSec or TLS)
 			</para>
 		</listitem>
 		<listitem>
@@ -314,7 +324,7 @@ public class ExClient
 		</listitem>
 		<listitem>
 			<para>
-				Supports application layer acknowledgements, defines failover methods and state machines (RFC 3539)
+				Supports application layer acknowledgments, defines failover methods and state machines (RFC 3539)
 			</para>
 		</listitem>
 		<listitem>
@@ -349,247 +359,245 @@ public class ExClient
 	<para>
 		Each application introduces new types of messages, AVP codes, and state machines. The Message and AVP codes are assigned by the IANA. Furthermore, each application has its own application ID and vendor ID that is used to distinguish between applications. In addition, application code is used to signal to other peers which operations are supported by connecting peer (Capabilities Exchange).
 	</para>
-	<section>
-		<title>Message Format</title>
-		<para>
-			Each message that is sent and received using Diameter is comprised according to a consistent structure. A Diameter message always contains message headers, and the message payload.
-		</para>
-		<figure>
-			<title>Diameter Message Structure</title>
-			<mediaobject>
-				<imageobject>
-					<imagedata fileref="images/dia-Introduction-dia-DiameterPacketFormat.png" format="PNG" scalefit="1"/>
-				</imageobject>
-			</mediaobject>
-		</figure>
-		<para>
-			Within the message, several headers are present:
-		</para>
-		<variablelist>
-			<title>Message Headers</title>
-			<varlistentry>
-				<term>Version</term>
-				<listitem>
-					<para>
-						Indicates the Diameter protocol version. This value is always set to <literal>1</literal>.
-					</para>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term>Message Length</term>
-				<listitem>
-					<para>
-						Indicates the Diameter message length, including the header fields.
-					</para>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term>Command Flags</term>
-				<listitem>
-					<para>
-						Bits, which specify the type of message. The first four bits are occupied with any one of the following values:
-					</para>
-					<itemizedlist>
-						<listitem>
-							<para>
-								R = Message is a request
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-								P = Message is proxiable
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-								E = Message is an error message
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-								T = Message is potentially retransmitted
-							</para>
-						</listitem>
-					</itemizedlist>
-					<para>
-						The last four bits are reserved for future use, and should be set to <literal>0</literal>
-					</para>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term>Command Code</term>
-				<listitem>
-					<para>
-						Indicates the command associated with the message, such as what type of message it is.
-					</para>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term>Application ID</term>
-				<listitem>
-					<para>
-						Identifies which application the message is applicable to. The application can be an authentication, accounting, or vendor-specific application.
-					</para>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term>Hop-by-Hop ID</term>
-				<listitem>
-					<para>
-						Unique ID that is used to match requests and replies. The Answer message must ensure this header field contains the same value present in the corresponding request.
-					</para>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term>End-to-End ID</term>
-				<listitem>
-					<para>
-						Time-limited unique ID that is used to to detect duplicate mesages. The ID must be unique for at least four minutes. The Answer message originator must ensure that this header contains the same value present in the corresponding request.
-					</para>
-				</listitem>
-			</varlistentry>
-		</variablelist>
-		<para>
-			The message contents (payload) is comprised of Attribute Value Pairs (AVPs), which also have their own header and data.
-		</para>
-		<figure>
-			<title>Payload Structure</title>
-			<mediaobject>
-				<imageobject>
-					<imagedata fileref="images/dia-Introduction-dia-DiameterAVPLayout.png" format="PNG" scalefit="1"/>
-				</imageobject>
-			</mediaobject>
-		</figure>
-		<variablelist>
-			<title>Payload AVPs</title>
-			<varlistentry>
-				<term>AVP Code</term>
-				<listitem>
-					<para>
-						Uniquely identifies the attribute, by combining the specified code with the value contained witing the Vendor-ID header field.
-					</para>
-					<para>
-						AVP numbers 1 to 255 are reserved for RADIUS backwards compatibility, and do not require the Vendor-ID header field. AVP numbers 256 and above are used exclusively for the Diameter protocol, and are allocated by <orgname>IANA</orgname>
-						.
-					</para>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term>AVP Flags</term>
-				<listitem>
-					<para>
-						Flags, which specify how each attribute must be handled. The first three bits are occupied with any one of the following values:
-					</para>
-					<itemizedlist>
-						<listitem>
-							<para>
-								V = Message is an error message.
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-								M = Message is proxiable.
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-								P = Message is a request.
-							</para>
-						</listitem>
-					</itemizedlist>
-					<para>
-						The last 5 bits are reserved for future use, and should be set to <literal>0</literal>
-					</para>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term>AVP Length</term>
-				<listitem>
-					<para>
-						Indicates the number of octets in the AVP, including the following information:
-					</para>
-					<itemizedlist>
-						<listitem>
-							<para>
-								AVP Code
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-								AVP Length
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-								AVP Flags
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-								Vendor-ID field (if present)
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-								AVP Data
-							</para>
-						</listitem>
-					</itemizedlist>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term>Vendor-ID</term>
-				<listitem>
-					<para>
-						Optional field that identifies which application the message is applicable to. The application can be either an authentication, accounting, or vendor-specific application.
-					</para>
-				</listitem>
-			</varlistentry>
-		</variablelist>
-	</section>
-
+	<section id="mf-Message_Format" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Message Format</title>
+	<para>
+		Each message that is sent and received using Diameter is comprised according to a consistent structure. A Diameter message always contains message headers, and the message payload.
+	</para>
+	<figure>
+		<title>Diameter Message Structure</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="images/dia-Introduction-dia-DiameterPacketFormat.png" format="PNG" scalefit="1"/>
+			</imageobject>
+		</mediaobject>
+	</figure>
+	<para>
+		Within the message, several headers are present:
+	</para>
+	<variablelist>
+		<title>Message Headers</title>
+		<varlistentry>
+			<term>Version</term>
+			<listitem>
+				<para>
+					Indicates the Diameter protocol version. This value is always set to <literal>1</literal>.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Message Length</term>
+			<listitem>
+				<para>
+					Indicates the Diameter message length, including the header fields.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Command Flags</term>
+			<listitem>
+				<para>
+					Bits, which specify the type of message. The first four bits are occupied with any one of the following values:
+				</para>
+				<itemizedlist>
+					<listitem>
+						<para>
+							R = Message is a request
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							P = Message is proxiable
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							E = Message is an error message
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							T = Message is potentially retransmitted
+						</para>
+					</listitem>
+				</itemizedlist>
+				<para>
+					The last four bits are reserved for future use, and should be set to <literal>0</literal>
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Command Code</term>
+			<listitem>
+				<para>
+					Indicates the command associated with the message, such as what type of message it is.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Application ID</term>
+			<listitem>
+				<para>
+					Identifies which application the message is applicable to. The application can be an authentication, accounting, or vendor-specific application.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Hop-by-Hop ID</term>
+			<listitem>
+				<para>
+					Unique ID that is used to match requests and replies. The Answer message must ensure this header field contains the same value present in the corresponding request.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>End-to-End ID</term>
+			<listitem>
+				<para>
+					Time-limited unique ID that is used to to detect duplicate messages. The ID must be unique for at least four minutes. The Answer message originator must ensure that this header contains the same value present in the corresponding request.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	<para>
+		The message contents (payload) is comprised of Attribute Value Pairs (AVPs), which also have their own header and data.
+	</para>
+	<figure>
+		<title>Payload Structure</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="images/dia-Introduction-dia-DiameterAVPLayout.png" format="PNG" scalefit="1"/>
+			</imageobject>
+		</mediaobject>
+	</figure>
+	<variablelist>
+		<title>Payload AVPs</title>
+		<varlistentry>
+			<term>AVP Code</term>
+			<listitem>
+				<para>
+					Uniquely identifies the attribute, by combining the specified code with the value contained within the Vendor-ID header field.
+				</para>
+				<para>
+					AVP numbers 1 to 255 are reserved for RADIUS backwards compatibility, and do not require the Vendor-ID header field. AVP numbers 256 and above are used exclusively for the Diameter protocol, and are allocated by <orgname>IANA</orgname>
+					.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>AVP Flags</term>
+			<listitem>
+				<para>
+					Flags, which specify how each attribute must be handled. The first three bits are occupied with any one of the following values:
+				</para>
+				<itemizedlist>
+					<listitem>
+						<para>
+							V = Message is an error message.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							M = Message is proxiable.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							P = Message is a request.
+						</para>
+					</listitem>
+				</itemizedlist>
+				<para>
+					The last 5 bits are reserved for future use, and should be set to <literal>0</literal>
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>AVP Length</term>
+			<listitem>
+				<para>
+					Indicates the number of octets in the AVP, including the following information:
+				</para>
+				<itemizedlist>
+					<listitem>
+						<para>
+							AVP Code
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							AVP Length
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							AVP Flags
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Vendor-ID field (if present)
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							AVP Data
+						</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Vendor-ID</term>
+			<listitem>
+				<para>
+					Optional field that identifies which application the message is applicable to. The application can be either an authentication, accounting, or vendor-specific application.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+</section>
 </chapter>
 	<chapter lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Installation</title>
 	<para>
-		Text
+		Under Development
 	</para>
-	<section>
-		<title>Installing Resource Adapters</title>
-		<para>
-			Two options are available for installing Resource Adapters (RAs) that are compatible with Mobicents Diameter:
-		</para>
-		<itemizedlist>
-			<listitem>
-				<para>
-					Installing from the binary
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Building from source code.
-				</para>
-			</listitem>
-		</itemizedlist>
-		<para>
-			For new users, it is recommended that you install the Base RA from the binary. If you are an advanced user, who is comfortable with building from source, you can choose to build the RA from source code.
-		</para>
-		<formalpara>
-			<title>Install From The Binary</title>
+	<section id="ira-Installing_Resource_Adapters" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Installing Resource Adapters</title>
+	<para>
+		Two options are available for installing Resource Adapters (RAs) that are compatible with Mobicents Diameter:
+	</para>
+	<itemizedlist>
+		<listitem>
 			<para>
-				The binary package is available from the Mobicents Diameter SourceForge page (<ulink url="http://sourceforge.net/projects/mobicents/files/Mobicents%20Diameter/">http://sourceforge.net/projects/mobicents/files/Mobicents%20Diameter/</ulink>)
+				Installing from the binary
 			</para>
-		</formalpara>
+		</listitem>
+		<listitem>
+			<para>
+				Building from source code.
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>
+		For new users, it is recommended that you install the Base RA from the binary. If you are an advanced user, who is comfortable with building from source, you can choose to build the RA from source code.
+	</para>
+	<formalpara>
+		<title>Install From The Binary</title>
 		<para>
-			Select the Resource Adapter file that you want to install from the list, and download the archive.
+			The binary package is available from the Mobicents Diameter SourceForge page (<ulink url="http://sourceforge.net/projects/mobicents/files/Mobicents%20Diameter/">http://sourceforge.net/projects/mobicents/files/Mobicents%20Diameter/</ulink>)
 		</para>
-		<para>
-			Extract the files and deploy the diameter-base-ra-
-		</para>
-	</section>
-
+	</formalpara>
+	<para>
+		Select the Resource Adapter file that you want to install from the list, and download the archive.
+	</para>
+	<para>
+		Extract the files and deploy the diameter-base-ra- <!-- TODO: Developer: Generic installation instructions need to be added for RAs -->
+	</para>
+</section>
 </chapter>
-	<chapter lang="en-US">
+	<chapter id="a-Architecture" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Architecture</title>
 	<para>
 		The Diameter architecture consists of the following core components:
@@ -611,7 +619,7 @@ public class ExClient
 			</para>
 		</listitem>
 	</itemizedlist>
-	<section lang="en-US">
+	<section id="ds-Diameter_Stack" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Stack</title>
 	<para>
 		The Diameter Stack is the primary component of the Diameter solution. The Stack governs the mechanisms that control message sending and receiving, peer management, and session management. The stack manages these resources using State Machines.
@@ -624,7 +632,7 @@ public class ExClient
 			For more information about the different applications Diameter supports, refer to <xref linkend="chapter-Resource_Adapter_Components"/>.
 		</para>
 	</note>
-	<section lang="en-US">
+	<section id="cts-Configuring_The_Stack" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Configuring the Stack</title>
 	<para>
 		The stack is configured using an XML file that contains the options set during initialization. The top level structure of the file is described below. Further explanation of each child element, and the applicable attributes is provided later in this section.
@@ -777,7 +785,7 @@ public class ExClient
 			<term>&lt;AcceptUndefinedPeer&gt;</term>
 			<listitem>
 				<para>
-					Specifies whether the stack will accept connections from unidentified peers. The defalut value is <literal>false</literal>.
+					Specifies whether the stack will accept connections from unidentified peers. The default value is <literal>false</literal>.
 				</para>
 			</listitem>
 		</varlistentry>
@@ -785,7 +793,7 @@ public class ExClient
 			<term>&lt;DuplicateProtection&gt;</term>
 			<listitem>
 				<para>
-					Specifies whether duplicate message protection is enabled. The defalut value is <literal>false</literal>.
+					Specifies whether duplicate message protection is enabled. The default value is <literal>false</literal>.
 				</para>
 			</listitem>
 		</varlistentry>
@@ -801,7 +809,7 @@ public class ExClient
 			<term>&lt;UseUriAsFqdn&gt;</term>
 			<listitem>
 				<para>
-					Specifies whether the Ericcson SDK Emulator. The defalut value is <literal>true</literal>.
+					Specifies whether the Ericsson SDK Emulator. The default value is <literal>true</literal>.
 				</para>
 			</listitem>
 		</varlistentry>
@@ -932,17 +940,17 @@ public class ExClient
 	<section id="section-Stack_Example" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Stack Example</title>
 	<para>
-		Stack Example Under Development...
+		Under Development
 	</para>
 </section>
 	<section id="section-Stack_API_Usage" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Stack API Usage</title>
 	<para>
-		Stack API Usage Under Development...
+		Under Development
 	</para>
 </section>
 </section>
-	<section lang="en-US">
+	<section id="dm-Diameter_Multiplexer" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Multiplexer</title>
 	<para>
 		The Multiplexer (MUX) is designed to provide a wrapper to the stack, which includes a simplified API. The Multiplexer provides the ability to register listeners to applications, making it possible to have more than one application sharing the same stack instance.
@@ -968,9 +976,9 @@ public class ExClient
 		</listitem>
 	</itemizedlist>
 	<para>
-		For more information about the Message Validator and Dictionary, refer to <xref linkend="section-Validator_and_Dictionary"/>
+		For more information about the Message Validator and Dictionary, refer to <xref linkend="vad-Validator_and_Dictionary"/>
 	</para>
-	<section lang="en-US">
+	<section id="ctm-Configuring_The_Multiplexer" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Configuring the Multiplexer</title>
 	<para>
 		Configuring the Multiplexer requires configuration changes to the <filename>diameter-config.xml</filename> file. The <filename>diameter-config.xml</filename> file is a standard JDiameter configuration file, and forms the base configuration for all MUX listener applications.
@@ -982,7 +990,7 @@ public class ExClient
 		It is not yet possible to change configuration in runtime, however this feature is planned for subsequent versions of the Multiplexer.
 	</para>
 </section>
-	<section lang="en-US">
+	<section id="utm-Using_The_Multiplexer" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Using the Multiplexer</title>
 	<para>
 		To use the Diameter Multiplexer (MUX), deploy the SAR into the JBoss <filename>/deploy</filename> folder.
@@ -1084,7 +1092,7 @@ public class MyDiameterApplication implements DiameterListener
 	</example>
 </section>
 </section>
-	<section id="section-Validator_and_Dictionary" lang="en-US">
+	<section id="vad-Validator_and_Dictionary" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Validator and Dictionary</title>
 	<para>
 		The Validator and Dictionary are core elements of the Diameter MUX stack.
@@ -1096,7 +1104,7 @@ public class MyDiameterApplication implements DiameterListener
 		</para>
 	</formalpara>
 	<para>
-		The Valdiator is capable of validating multi-leveled, grouped AVPs, excluding the following content types:
+		The Validator is capable of validating multi-leveled, grouped AVPs, excluding the following content types:
 	</para>
 	<itemizedlist>
 		<listitem>
@@ -1126,9 +1134,9 @@ public class MyDiameterApplication implements DiameterListener
 		Because the Diameter dictionary is responsible for setting the parameters and flags, an application does not need to control this information. This results in applications that are more efficient. The dictionary also provides information that can be used for validation purposes.
 	</para>
 	<para>
-		During runtime, the Dictionary API provides developers and users the abiltiy to extract message information, and provides AVP definition flexibility. The definition can be changed without the need for the project source to be recompiled.
+		During runtime, the Dictionary API provides developers and users the ability to extract message information, and provides AVP definition flexibility. The definition can be changed without the need for the project source to be recompiled.
 	</para>
-	<section lang="en-US">
+	<section id="ctvad-Configuring_The_Validator_And_Dictionary" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Configuring the Validator and Dictionary</title>
 	<para>
 		The <filename>dictionary.xml</filename> file contains the configuration data for both the Validator and Dictionary components. The file is located in the <filename>/dictionary</filename> directory of the MUX:
@@ -1262,7 +1270,7 @@ public class MyDiameterApplication implements DiameterListener
 			</listitem>
 		</varlistentry>
 	</variablelist>
-	<example>
+	<example id="example-Typedefn_XML_Attributes">
 		<title>&lt;typedefn&gt; XML Attributes</title>
 		
 <programlisting role="XML">&lt;typedefn type-name="OctetString" /&gt;
@@ -1312,7 +1320,7 @@ public class MyDiameterApplication implements DiameterListener
 			</listitem>
 		</varlistentry>
 	</variablelist>
-	<example>
+	<example id="example-Application_XML_Attributes">
 		<title>&lt;application&gt; XML Attributes</title>
 		
 <programlisting role="XML">&lt;application id="16777216" name="3GPP Cx/Dx"  
@@ -1333,7 +1341,7 @@ public class MyDiameterApplication implements DiameterListener
 			Different sets of elements are supported by &lt;avp&gt; depending on its position in the dictionary.xml file.
 		</para>
 	</note>
-	<example>
+	<example id="example-Avp_Child_Elements_And_Attributes">
 		<title>&lt;avp&gt; Child Elements and Attributes</title>
 		
 <programlisting role="XML">&lt;avp name="Server-Assignment-Type" code="614" mandatory="must" vendor-bit="must" 
@@ -1602,7 +1610,7 @@ public class MyDiameterApplication implements DiameterListener
 			</tbody>
 		</tgroup>
 	</table>
-	<example>
+	<example id="example-Avp_XML_Attributes">
 		<title>&lt;avp&gt; XML Attributes</title>
 		
 <programlisting role="XML">&lt;!-- MUST --&gt;
@@ -1632,7 +1640,7 @@ public class MyDiameterApplication implements DiameterListener
 			<term>name</term>
 			<listitem>
 				<para>
-					Optional paramter, which specifies the message name for descriptive purposes.
+					Optional parameter, which specifies the message name for descriptive purposes.
 				</para>
 			</listitem>
 		</varlistentry>
@@ -1658,7 +1666,7 @@ public class MyDiameterApplication implements DiameterListener
 			If the &lt;avp&gt; element is specified in &lt;command&gt; it does not support any child elements. The &lt;avp&gt; element only refers to defined AVPs when used in this context.
 		</para>
 	</note>
-	<example>
+	<example id="example-Command_Elements_And_Attributes">
 		<title>&lt;command&gt; Elements and Attributes</title>
 		
 <programlisting>&lt;command name="User-Authorization" code="300" vendor-id="TGPP" request="true"&gt;
@@ -1668,7 +1676,7 @@ public class MyDiameterApplication implements DiameterListener
 </programlisting>
 	</example>
 </section>
-	<section lang="en-US">
+	<section id="utvad-Using_The_Validator_And_Dictionary" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Using the Validator and Dictionary</title>
 	<para>
 		To use the Diameter Validator, and Dictionary, the following prerequisites are required:
@@ -1743,8 +1751,8 @@ public class MyDiameterApplication implements DiameterListener
 			In addition to the API methods, <literal>public static final DiameterMessageValidator getInstance()</literal> and <literal>public boolean isOn()</literal>are compatible.
 		</para>
 	</note>
-	<example id="example-Base_Listener_Code_1">
-		<title>Validator and Dictionary Code Examples</title>
+	<example id="example-Validator_And_Dictionary_Code_Example">
+		<title>Validator and Dictionary Code Example</title>
 		
 <programlisting role="JAVA">if (!validator.isOn())
                 return;
@@ -1778,7 +1786,7 @@ if (validator.hasRepresentation(msg.getCommandCode(), msg.getApplicationId(),
 }
 </programlisting>
 	</example>
-	<example id="example-Base_Listener_Code_2">
+	<example id="example-Validator_Message_Check_Example">
 		<title>Validator Message Check Example</title>
 		<para>
 			The example below is pseudo-code.
@@ -1800,7 +1808,7 @@ try{
 }
 </programlisting>
 	</example>
-	<example id="example-Base_Listener_Code_3">
+	<example id="example-Validator_Multiplicity_Count_Check_Example">
 		<title>Validator Multiplicity Count Check Example</title>
 		<para>
 			The example below is pseudo-code.
@@ -1827,7 +1835,7 @@ if (validator.isCountValidForMultiplicity(message.getCommandCode(), message.getA
 }
 </programlisting>
 	</example>
-	<!-- TODO: Developer:  Explain what _DEFAULT_MANDATORY and _DEFALUT_PROTECTED mean in the example.  Choose whether to put the information before the example, or include it within the example itself. --> <example>
+	<!-- TODO: Developer:  Explain what _DEFAULT_MANDATORY and _DEFALUT_PROTECTED mean in the example.  Choose whether to put the information before the example, or include it within the example itself. --> <example id="example-Dictionary_Base_Code">
 		<title>Dictionary Base Code</title>
 		<para>
 			The example below is pseudo-code.
@@ -1850,7 +1858,7 @@ if (validator.isCountValidForMultiplicity(message.getCommandCode(), message.getA
   }
 </programlisting>
 	</example>
-	<example>
+	<example id="example-Dictionary_AVP_Encoding_Example">
 		<title>Dictionary AVP Encoding Example</title>
 		<para>
 			In this example the AVP types, and some default values, inherit.
@@ -1917,10 +1925,10 @@ rep.isProtected(), value);
 			</para>
 		</listitem>
 	</itemizedlist>
-	<section id="db-Diabeter_Base" lang="en-US">
+	<section id="db-Diameter_Base" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Base</title>
 	<para>
-		The Base RA provides the Base application layer to SLEE, and base factories to resource adaptors in other applications. Therefore Base is a dependency for any other Diameter resource adaptor.
+		The Base RA provides the Base application layer to SLEE, and base factories to resource adapters in other applications. Therefore Base is a dependency for any other Diameter resource adapter.
 	</para>
 	<para>
 		The Base RA is responsible for managing the connection between peers and provides basic authentication, accounting, and session management. Diameter Base can be extended to function with other applications because its factories provide methods for creating raw messages and AVPs. In order for the application to be compliant with the specification, state machines should be implemented at some level within the implementation.
@@ -1928,7 +1936,7 @@ rep.isProtected(), value);
 	<para>
 		Diameter Base provides a number of message commands that can be used within the application.
 	</para>
-	<table frame="all" pgwide="1">
+	<table frame="all" id="table-Diameter_Messages" pgwide="1">
 		<title>Diameter Messages</title>
 		<tgroup cols="4" colsep="1">
 			<colspec colname="c1"/>
@@ -2151,55 +2159,55 @@ rep.isProtected(), value);
 			</tbody>
 		</tgroup>
 	</table>
-	<section>
-		<title>Configuration</title>
-		<para>
-			Base RA entity supports four configuration properties that must be correctly configured before the RA can fucntion correctly. RA supports two configuration properties, one for authentication applications and one for accounting applications.
-		</para>
-		<para>
-			The following named properties are available for the Base RA:
-		</para>
-		<para>
-			<itemizedlist>
-				<listitem>
-					<para>
-						authApplicationIds
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						acctApplicationIds
-					</para>
-				</listitem>
-			</itemizedlist>
-		</para>
-		<para>
-			The configuration properties can be configured using the following methods:
-		</para>
+	<section id="dac-Diameter_Base_Configuration" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Configuration</title>
+	<para>
+		Base RA entity supports four configuration properties that must be correctly configured before the RA can function correctly. RA supports two configuration properties, one for authentication applications and one for accounting applications.
+	</para>
+	<para>
+		The following named properties are available for the Base RA:
+	</para>
+	<para>
 		<itemizedlist>
 			<listitem>
 				<para>
-					Using Java XML Mapping (JXM) operations, available through the Management Console.
+					authApplicationIds
 				</para>
 			</listitem>
 			<listitem>
 				<para>
-					Manually declaring the property pairs in the <filename>resource-adaptor-jar.xml</filename> file within the <filename>base-ra-<replaceable>[version]</replaceable>-DU.jar</filename>, <filename>base-ra-<replaceable>[version]</replaceable>.jar</filename>, or <filename>META-INF</filename> files.
+					acctApplicationIds
 				</para>
 			</listitem>
 		</itemizedlist>
-		<para>
-			Each property consists of value pairs. Value pairs are separated from each other with "," <!-- TODO: Developer: add markup here for &quot;,&quot; -->. Each value pair consists of two long numbers separated with ":". First number indicate vendor of supported application. Second is application id arbitrary assigned by IANA.
-		</para>
-		<para>
-			Each value pair identifies application that Base RA should advertise as supported. Some application do not have vendor assigned. In this case "0" is to be used as vendor id.
-		</para>
-		<example>
-			<title>Configuring </title>
+	</para>
+	<para>
+		The configuration properties can be configured using the following methods:
+	</para>
+	<itemizedlist>
+		<listitem>
 			<para>
-				The following XML sample demonstrates how to configure an authentication application and two accounting applications in the <filename>resource-adaptor-jar.xml</filename>. Note that each configuration property pair contains an equal value pair length.
+				Using Java XML Mapping (JXM) operations, available through the Management Console.
 			</para>
-			
+		</listitem>
+		<listitem>
+			<para>
+				Manually declaring the property pairs in the <filename>resource-adaptor-jar.xml</filename> file within the <filename>base-ra-<replaceable>[version]</replaceable>-DU.jar</filename>, <filename>base-ra-<replaceable>[version]</replaceable>.jar</filename>, or <filename>META-INF</filename> files.
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>
+		Each property consists of value pairs. Value pairs are separated from each other with "," <!-- TODO: Developer: add markup here for &quot;,&quot; -->. Each value pair consists of two long numbers separated with ":". First number indicate vendor of supported application. Second is application id arbitrary assigned by IANA.
+	</para>
+	<para>
+		Each value pair identifies application that Base RA should advertise as supported. Some application do not have vendor assigned. In this case "0" is to be used as vendor id.
+	</para>
+	<example id="example-Diameter_Base_Configuring">
+		<title>Configuring </title>
+		<para>
+			The following XML sample demonstrates how to configure an authentication application and two accounting applications in the <filename>resource-adaptor-jar.xml</filename>. Note that each configuration property pair contains an equal value pair length.
+		</para>
+		
 <programlisting role="XML">&lt;config-property&gt;
     &lt;description&gt;List of supported Authorization Application Ids in form of {vendor}:{application-id}, separated by comma (',')&lt;/description&gt;
     &lt;config-property-name&gt;authApplicationIds&lt;/config-property-name&gt;
@@ -2214,52 +2222,51 @@ rep.isProtected(), value);
     &lt;config-property-value&gt;0:0, 193:19302&lt;/config-property-value&gt;
 &lt;/config-property&gt;
 </programlisting>
-		</example>
-	</section>
-	
-	<section>
-		<title>Resource Adapter Type</title>
-		<para>
-			The resource adapter provides the following types:
-		</para>
-		<itemizedlist>
-			<listitem>
-				<para>
-					Activities
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Provider
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Message Factory
-				</para>
-			</listitem>
-		</itemizedlist>
-		<formalpara>
-			<title>Activities</title>
+	</example>
+</section>
+	<section id="dbrat-Diameter_Base_Resource_Adapter_Type" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Resource Adapter Type</title>
+	<para>
+		The resource adapter provides the following types:
+	</para>
+	<itemizedlist>
+		<listitem>
 			<para>
-				The following activities are available, with the API definition listed for reference. The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.
+				Activities
 			</para>
-		</formalpara>
+		</listitem>
+		<listitem>
+			<para>
+				Provider
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Message Factory
+			</para>
+		</listitem>
+	</itemizedlist>
+	<formalpara>
+		<title>Activities</title>
 		<para>
-			The lifecycle of an activity depends on the type of received request and the application interaction. In the case of a subscription activity, the activity timeout is taken into consideration because the subscription may be time-based.
+			The following activities are available, with the API definition listed for reference. The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.
 		</para>
-		<variablelist>
-			<title>Diameter Base Activities</title>
-			<varlistentry>
-				<term>AccountingClientSessionActivity</term>
-				<listitem>
-					<para>
-						Client accounting activity, which is created for each ACR request. The activity ends when an answer is received, or the request times out.
-					</para>
-				</listitem>
-			</varlistentry>
-		</variablelist>
-		
+	</formalpara>
+	<para>
+		The life cycle of an activity depends on the type of received request and the application interaction. In the case of a subscription activity, the activity timeout is taken into consideration because the subscription may be time-based.
+	</para>
+	<variablelist>
+		<title>Diameter Base Activities</title>
+		<varlistentry>
+			<term>AccountingClientSessionActivity</term>
+			<listitem>
+				<para>
+					Client accounting activity, which is created for each ACR request. The activity ends when an answer is received, or the request times out.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	
 <programlisting role="JAVA">package net.java.slee.resource.diameter.base;
 
 import java.io.IOException;
@@ -2277,17 +2284,17 @@ public interface AccountingClientSessionActivity extends
          void   sendAccountRequest(AccountingRequest request) throws IOException;        
 }
 </programlisting>
-		<variablelist>
-			<varlistentry>
-				<term>AuthClientSessionActivity</term>
-				<listitem>
-					<para>
-						Client authorization activity, which is created for each RAR request. The activity ends when an answer is received, or the request times out.
-					</para>
-				</listitem>
-			</varlistentry>
-		</variablelist>
-		
+	<variablelist>
+		<varlistentry>
+			<term>AuthClientSessionActivity</term>
+			<listitem>
+				<para>
+					Client authorization activity, which is created for each RAR request. The activity ends when an answer is received, or the request times out.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	
 <programlisting role="JAVA">package net.java.slee.resource.diameter.base;
 
 import java.io.IOException;
@@ -2334,17 +2341,17 @@ public interface AuthClientSessionActivity extends AuthSessionActivity{
        
 }
 </programlisting>
-		<variablelist>
-			<varlistentry>
-				<term>AccountingServerSessionActivity</term>
-				<listitem>
-					<para>
-						Server accounting activity, which is created for eash ACR request. The activity ends when an answer is sent, or the request times out.
-					</para>
-				</listitem>
-			</varlistentry>
-		</variablelist>
-		
+	<variablelist>
+		<varlistentry>
+			<term>AccountingServerSessionActivity</term>
+			<listitem>
+				<para>
+					Server accounting activity, which is created for each ACR request. The activity ends when an answer is sent, or the request times out.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	
 <programlisting role="JAVA">package net.java.slee.resource.diameter.base;
 
 import java.io.IOException;
@@ -2364,17 +2371,17 @@ public interface AccountingServerSessionActivity extends
         
 }
 </programlisting>
-		<variablelist>
-			<varlistentry>
-				<term>AuthServerSessionActivity</term>
-				<listitem>
-					<para>
-						Server authorization activity, which is created for each RAR request. The activity ends when an answer is sent, or the request times out.
-					</para>
-				</listitem>
-			</varlistentry>
-		</variablelist>
-		
+	<variablelist>
+		<varlistentry>
+			<term>AuthServerSessionActivity</term>
+			<listitem>
+				<para>
+					Server authorization activity, which is created for each RAR request. The activity ends when an answer is sent, or the request times out.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	
 <programlisting role="JAVA">package net.java.slee.resource.diameter.base;
 
 import java.io.IOException;
@@ -2420,37 +2427,36 @@ public interface AuthServerSessionActivity extends AuthSessionActivity {
 
 }
 </programlisting>
-		<formalpara>
-			<title>Provider</title>
-			<para>
-				Provider defines the basic features that must be supported by all other providers. Service Building Blocks (SBBs) create activities on demand and retrieve AVP and message factories. The connection information is retrieved from the connected peers.
-			</para>
-		</formalpara>
-		<!-- TODO:  Developer:  I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <para>
-			The API for the DiameterProvider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/base/ratype/src/main/java/net/java/slee/resource/diameter/base/DiameterProvider.java">DiameterProvider.java in the source code</ulink>.
-		</para>
-		<formalpara>
-			<title>Message Factory</title>
-			<para>
-				The Message Factory creates events that can be executed within the JAIN SLEE Server. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
-			</para>
-		</formalpara>
+	<formalpara>
+		<title>Provider</title>
 		<para>
-			The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/base/ratype/src/main/java/net/java/slee/resource/diameter/base/DiameterMessageFactory.java">DiameterMessageFactory.java in the source code</ulink>.
+			Provider defines the basic features that must be supported by all other providers. Service Building Blocks (SBBs) create activities on demand and retrieve AVP and message factories. The connection information is retrieved from the connected peers.
 		</para>
-	</section>
-	
-	<section>
-		<title>API Usage Examples</title>
+	</formalpara>
+	<!-- TODO:  Developer:  I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <para>
+		The API for the DiameterProvider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/base/ratype/src/main/java/net/java/slee/resource/diameter/base/DiameterProvider.java">DiameterProvider.java in the source code</ulink>.
+	</para>
+	<formalpara>
+		<title>Message Factory</title>
 		<para>
-			The following examples demonstrate basic usage examples for the Resource Adapter (RA) API.
+			The Message Factory creates events that can be executed within the JAIN SLEE Server. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
 		</para>
-		<example>
-			<title>Send ACR</title>
-			<para>
-				The following code demonstrates how to configure a Send ACR.
-			</para>
-			
+	</formalpara>
+	<para>
+		The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/base/ratype/src/main/java/net/java/slee/resource/diameter/base/DiameterMessageFactory.java">DiameterMessageFactory.java in the source code</ulink>.
+	</para>
+</section>
+	<section id="dbaue-Diameter_Base_API_Usage_Examples" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>API Usage Examples</title>
+	<para>
+		The following examples demonstrate basic usage examples for the Resource Adapter (RA) API.
+	</para>
+	<example id="example-Diameter_Base_Send_ACR">
+		<title>Send ACR</title>
+		<para>
+			The following code demonstrates how to configure a Send ACR.
+		</para>
+		
 <programlisting role="JAVA">AccountingClientSessionActivity activity = 
  provider.createAccountingActivity();
 
@@ -2541,13 +2547,13 @@ activity.sendAccountRequest(ms);
    if (logger.isInfoEnabled())
        logger.info("Sent Custom Message[" + ms + "]");
 </programlisting>
-		</example>
-		<example>
-			<title>Receive ACR</title>
-			<para>
-				The following code demonstrates how to configure a Receive ACR.
-			</para>
-			
+	</example>
+	<example id="example-Diameter_Base_Receive_ACR">
+		<title>Receive ACR</title>
+		<para>
+			The following code demonstrates how to configure a Receive ACR.
+		</para>
+		
 <programlisting role="JAVA">public void onAccountingRequest(net.java.slee.resource.
  diameter.base.events.AccountingRequest acr, 
  ActivityContextInterface aci) {
@@ -2570,117 +2576,116 @@ activity.sendAccountRequest(ms);
     }
 }
 </programlisting>
-		</example>
-	</section>
-	
-	<section>
-		<title>Examples</title>
-		<para>
-			The sample application provided for Diameter Base is a simple application that interacts with the Ericsson Diameter Software Development Kit (SDK). The application provides both client and server interaction. The following use cases are provided as part of the example:
-		</para>
-		<itemizedlist>
-			<listitem>
-				<para>
-					Application acting as a client
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Application acting as a server
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Application acting as a relay or proxy.
-				</para>
-			</listitem>
-		</itemizedlist>
-		<formalpara>
-			<title>Application acting as a client</title>
+	</example>
+</section>
+	<section id="dbe-Diameter_Base_Examples" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Examples</title>
+	<para>
+		The sample application provided for Diameter Base is a simple application that interacts with the Ericsson Diameter Software Development Kit (SDK). The application provides both client and server interaction. The following use cases are provided as part of the example:
+	</para>
+	<itemizedlist>
+		<listitem>
 			<para>
-				In this example, the application acts as a Diameter Accounting Client, which issues a Debit or Refund request to the Ericsson Diameter Server (EDS). If the message is correctly built, the server will send an answer back to the application stating that the operation was executed correctly. If the message is incorrectly built, the EDS sends an error message back to the application.
+				Application acting as a client
 			</para>
-		</formalpara>
-		<para>
-			The message flow for the client application is described in <xref linkend="figure-Client_Application_Message_Flow"/>
-		</para>
-		<figure id="figure-Client_Application_Message_Flow">
-			<title>Client Application Message Flow</title>
-			<mediaobject>
-				<imageobject>
-					<imagedata fileref="images/dia-BaseExamples-dia-AppActingAsClient.jpg" format="JPG" scalefit="1"/>
-				</imageobject>
-			</mediaobject>
-		</figure>
-		<formalpara>
-			<title>Application acting as a server</title>
+		</listitem>
+		<listitem>
 			<para>
-				In this example, the Ericsson SDK acts as the client and the application Service Building Block (SBB) acts as the server. When the request is received from the client, the SBB checks a pre-loaded set of user data and verifies the user exists, and that there is sufficient credit to complete the debit request.
+				Application acting as a server
 			</para>
-		</formalpara>
-		<para>
-			If both requirements are met, the SBB sends a response with a 2001 (SUCCESS) Credit-Control-Answer message. If one or all conditions are not met, the appropriate error code is returned:
-		</para>
-		<itemizedlist>
-			<listitem>
-				<para>
-					No user name match: 5421 (USER_NOT_FOUND)
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Not enough credit to complete the transaction: 4241 (INSUFFICIENT_BALANCE).
-				</para>
-			</listitem>
-		</itemizedlist>
-		<para>
-			The message flow for the server application is described in <xref linkend="figure-Server_Application_Message_Flow"/>
-		</para>
-		<figure id="figure-Server_Application_Message_Flow">
-			<title>Server Application Message Flow</title>
-			<mediaobject>
-				<imageobject>
-					<imagedata fileref="images/dia-BaseExamples-dia-AppActingAsServer.jpg" format="JPG" scalefit="1"/>
-				</imageobject>
-			</mediaobject>
-		</figure>
-		<formalpara>
-			<title>Application acting as a relay or proxy</title>
+		</listitem>
+		<listitem>
 			<para>
-				In this example, the application plays the role of a proxy or relay, and handles request and answer message proxying. Both the Ericsson Client and Server SDK are used in this example. The example requires the most configuration of all examples:
+				Application acting as a relay or proxy.
 			</para>
-		</formalpara>
-		<itemizedlist>
-			<listitem>
-				<para>
-					Ericsson client SDK is connected as a client to Mobicents Diameter through the Diameter Base RA.
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Ericsson server SDK is connected as a server to Mobicents Diameter through the Diameter SBB.
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Diameter SBB is configured as a proxy.
-				</para>
-			</listitem>
-		</itemizedlist>
+		</listitem>
+	</itemizedlist>
+	<formalpara>
+		<title>Application acting as a client</title>
 		<para>
-			The Ericsson Client SDK is used to establish the connection to the Ericsson Server SDK behind the Diameter SBB. In the example, requests received by the SBB are forwarded to the Server SDK, and answers are routed back to the Client SDK.
+			In this example, the application acts as a Diameter Accounting Client, which issues a Debit or Refund request to the Ericsson Diameter Server (EDS). If the message is correctly built, the server will send an answer back to the application stating that the operation was executed correctly. If the message is incorrectly built, the EDS sends an error message back to the application.
 		</para>
-		<section>
-			<title>Configuration</title>
+	</formalpara>
+	<para>
+		The message flow for the client application is described in <xref linkend="figure-Client_Application_Message_Flow"/>
+	</para>
+	<figure id="figure-Client_Application_Message_Flow">
+		<title>Client Application Message Flow</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="images/dia-BaseExamples-dia-AppActingAsClient.jpg" format="JPG" scalefit="1"/>
+			</imageobject>
+		</mediaobject>
+	</figure>
+	<formalpara>
+		<title>Application acting as a server</title>
+		<para>
+			In this example, the Ericsson SDK acts as the client and the application Service Building Block (SBB) acts as the server. When the request is received from the client, the SBB checks a pre-loaded set of user data and verifies the user exists, and that there is sufficient credit to complete the debit request.
+		</para>
+	</formalpara>
+	<para>
+		If both requirements are met, the SBB sends a response with a 2001 (SUCCESS) Credit-Control-Answer message. If one or all conditions are not met, the appropriate error code is returned:
+	</para>
+	<itemizedlist>
+		<listitem>
 			<para>
-				To configure the examples, changest must be made to the <filename>example.properties</filename> file in the <filename>/du/main/resources</filename> directory.
+				No user name match: 5421 (USER_NOT_FOUND)
 			</para>
+		</listitem>
+		<listitem>
 			<para>
-				The following example configuration supports two modes: client, and server. In client mode, the application sends an Accounting Request (ACR). To make the example act as a proxy, settings relating to ACR must be added in order for the application to handle Attribute Value Pairs (AVPs).
+				Not enough credit to complete the transaction: 4241 (INSUFFICIENT_BALANCE).
 			</para>
-			<example>
-				<title>Setting origin and destination properties</title>
-				
+		</listitem>
+	</itemizedlist>
+	<para>
+		The message flow for the server application is described in <xref linkend="figure-Server_Application_Message_Flow"/>
+	</para>
+	<figure id="figure-Server_Application_Message_Flow">
+		<title>Server Application Message Flow</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="images/dia-BaseExamples-dia-AppActingAsServer.jpg" format="JPG" scalefit="1"/>
+			</imageobject>
+		</mediaobject>
+	</figure>
+	<formalpara>
+		<title>Application acting as a relay or proxy</title>
+		<para>
+			In this example, the application plays the role of a proxy or relay, and handles request and answer message proxying. Both the Ericsson Client and Server SDK are used in this example. The example requires the most configuration of all examples:
+		</para>
+	</formalpara>
+	<itemizedlist>
+		<listitem>
+			<para>
+				Ericsson client SDK is connected as a client to Mobicents Diameter through the Diameter Base RA.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Ericsson server SDK is connected as a server to Mobicents Diameter through the Diameter SBB.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Diameter SBB is configured as a proxy.
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>
+		The Ericsson Client SDK is used to establish the connection to the Ericsson Server SDK behind the Diameter SBB. In the example, requests received by the SBB are forwarded to the Server SDK, and answers are routed back to the Client SDK.
+	</para>
+	<section id="dbc-Diameter_Base_Example_Configuration" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Example Configuration</title>
+	<para>
+		To configure the examples, changes must be made to the <filename>example.properties</filename> file in the <filename>/du/main/resources</filename> directory.
+	</para>
+	<para>
+		The following example configuration supports two modes: client, and server. In client mode, the application sends an Accounting Request (ACR). To make the example act as a proxy, settings relating to ACR must be added in order for the application to handle Attribute Value Pairs (AVPs).
+	</para>
+	<example>
+		<title>Setting origin and destination properties</title>
+		
 <programlisting># Act as "client" or "server" (default: server)
 example.mode=server
 
@@ -2694,11 +2699,9 @@ destination.ip=127.0.0.1
 destination.port=21812
 destination.realm=mobicents.org
 </programlisting>
-			</example>
-		</section>
-
-	</section>
-
+	</example>
+</section>
+</section>
 </section>
 	<section lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Sh (Client)</title>
@@ -2890,7 +2893,7 @@ destination.realm=mobicents.org
 			</tbody>
 		</tgroup>
 	</table>
-	<!-- TODO: Editor: paragraphs need rework.  Copied directly from wiki. --> <para>
+	<para>
 		The command names provide the ability to manage User Data in the HSS. UDR and UDA are used to request data from the User profile. The AS client sends the request indicating what data is required. If the client has the appropriate permissions on the HSS, they will be received via UDA.
 	</para>
 	<para>
@@ -2899,125 +2902,123 @@ destination.realm=mobicents.org
 	<para>
 		Where profile changes have occurred, a PNR is sent by the HSS to the AS. On receipt of the PNR, the AS acknowledges the request with a PNA. The only instance where the HSS initiates a conversation is for profile changes.
 	</para>
-	<section>
-		<title>Configuration</title>
+	<section id="dscc-Diameter_Sh_Client_Configuration" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Configuration</title>
+	<para>
+		The Sh (Client) does not currently support direct configuration changes.
+	</para>
+</section>
+	<section id="dscrat-Diameter_Sh_Client_Resource_Adapter_Type" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Resource Adapter Type</title>
+	<para>
+		The resource adapter provides the following types:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				Activities
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Provider
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Message Factory
+			</para>
+		</listitem>
+	</itemizedlist>
+	<formalpara>
+		<title>Activities</title>
 		<para>
-			The Sh (Client) does not currently support direct configuration changes.
+			The following activities are available, with the API definition listed for reference. In addition to retrieving session-specific data, the API defines methods to easily create and send answers and requests for certain activities.
 		</para>
-	</section>
-	
-	<section>
-		<title>Resource Adapter Type</title>
-		<para>
-			The resource adapter provides the following types:
-		</para>
-		<itemizedlist>
+	</formalpara>
+	<para>
+		The life cycle of an activity depends on the type of received request and the application interaction. In the case of a subscription activity, the activity timeout is taken into consideration because the subscription may be time-based.
+	</para>
+	<para>
+		Activities allows the Sh (Client) application to retrieve message and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
+	</para>
+	<variablelist>
+		<title>Diameter Sh (Client) Activities</title>
+		<varlistentry>
+			<term>ShClientActivity</term>
 			<listitem>
 				<para>
-					Activities
+					This is the base activity for the Sh (Client). It is created for event based interaction, such as user data requests or profile update requests. Client activity ends when answer is received, or the request times-out.
 				</para>
 			</listitem>
+		</varlistentry>
+	</variablelist>
+	<para>
+		The API for <literal>ShClientActivity</literal> is more than 60 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientActivity.java"><literal>ShClientActivity.java</literal> in the source code</ulink>.
+	</para>
+	<variablelist>
+		<varlistentry>
+			<term>ShClientSubscriptionActivity</term>
 			<listitem>
 				<para>
-					Provider
+					Used in cases where a subscription to HSS data is required. This activity is persistent, and is terminated under the following conditions:
 				</para>
+				<itemizedlist>
+					<listitem>
+						<para>
+							When terminated explicitly by a Service Building Block (SBB).
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							When terminated by a returned error originating from the original SNR.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							When terminated by a subscription terminating SNR.
+						</para>
+					</listitem>
+				</itemizedlist>
 			</listitem>
-			<listitem>
-				<para>
-					Message Factory
-				</para>
-			</listitem>
-		</itemizedlist>
-		<formalpara>
-			<title>Activities</title>
-			<para>
-				The following activities are available, with the API definition listed for reference. In addition to retrieving session-specific data, the API defines methods to easily create and send answers and requests for certain activities.
-			</para>
-		</formalpara>
+		</varlistentry>
+	</variablelist>
+	<para>
+		The API for <literal>ShClientSubscriptionActivity</literal> is more than 60 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientSubscriptionActivity.java"><literal>ShClientSubscriptionActivity.java</literal> in the source code</ulink>.
+	</para>
+	<!-- TODO:  Developer:  I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <formalpara>
+		<title>Provider</title>
 		<para>
-			The lifecycle of an activity depends on the type of received request and the application interaction. In the case of a subscription activity, the activity timeout is taken into consideration because the subscription may be time-based.
+			The Sh (Client) provider allows SBBs to create activities on demand and retrieve AVP and message factories. In addition, connection information about connected peers is also made available.
+		</para>
+	</formalpara>
+	<para>
+		The API for the <literal>ShClientProvider</literal> is more than 80 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientProvider.java"><literal>ShClientSubscriptionActivity.java</literal> in the source code</ulink>.
+	</para>
+	<formalpara>
+		<title>Message Factory</title>
+		<para>
+			The Message Factory creates events that can be executed within the JAIN SLEE Server, or sent through a Resource Adapter. Depending on the situation, Message Factory completes some Attribute Value Pairs (AVPs) for the session using the information made available to it.
+		</para>
+	</formalpara>
+	<para>
+		The API for the <literal>ShClientMessageFactory</literal> is more than 300 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientSubscriptionActivity.java"><literal>ShClientMessageFactory.java</literal> in the source code</ulink>.
+	</para>
+</section>
+	<section id="dscaue-Diameter_Sh_Client_API_Usage_Examples" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>API Usage Examples</title>
+	<para>
+		The following examples demonstrate basic usage examples for the Resource Adapter (RA) API.
+	</para>
+	<example>
+		<title>Push-Notification-Request</title>
+		<para>
+			The following code demonstrates how to configure a Push-Notification-Request using <literal>setExtensionAvps()</literal> methods.
 		</para>
 		<para>
-			Activitites allows the Sh (Client) application to retrieve message and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
+			It is possible to utilize specific methods such as <literal>udr.setUserIdentity()</literal> to achieve the same goal, however this falls outside the scope of this example.
 		</para>
-		<variablelist>
-			<title>Diameter Sh (Client) Activities</title>
-			<varlistentry>
-				<term>ShClientActivity</term>
-				<listitem>
-					<para>
-						This is the base activity for the Sh (Client). It is created for event based interaction, such as user data requests or profile update requests. Client activity ends when answer is received, or the request times-out.
-					</para>
-				</listitem>
-			</varlistentry>
-		</variablelist>
-		<para>
-			The API for <literal>ShClientActivity</literal> is more than 60 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientActivity.java"><literal>ShClientActivity.java</literal> in the source code</ulink>.
-		</para>
-		<variablelist>
-			<varlistentry>
-				<term>ShClientSubscriptionActivity</term>
-				<listitem>
-					<para>
-						Used in cases where a subscritpion to HSS data is required. This activity is persistent, and is terminated under the following conditions:
-					</para>
-					<itemizedlist>
-						<listitem>
-							<para>
-								When terminated explicitly by a Service Building Block (SBB).
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-								When terminated by a returned error originating from the original SNR.
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-								When terminated by a subscription terminating SNR.
-							</para>
-						</listitem>
-					</itemizedlist>
-				</listitem>
-			</varlistentry>
-		</variablelist>
-		<para>
-			The API for <literal>ShClientSubscriptionActivity</literal> is more than 60 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientSubscriptionActivity.java"><literal>ShClientSubscriptionActivity.java</literal> in the source code</ulink>.
-		</para>
-		<!-- TODO:  Developer:  I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <formalpara>
-			<title>Provider</title>
-			<para>
-				The Sh (Client) provider allows SBBs to create activities on demand and retrieve AVP and message factories. In addition, connection information about connected peers is also made available.
-			</para>
-		</formalpara>
-		<para>
-			The API for the <literal>ShClientProvider</literal> is more than 80 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientProvider.java"><literal>ShClientSubscriptionActivity.java</literal> in the source code</ulink>.
-		</para>
-		<formalpara>
-			<title>Message Factory</title>
-			<para>
-				The Message Factory creates events that can be executed within the JAIN SLEE Server, or sent through a Resource Adapter. Depending on the situation, Message Factory completes some Attribute Value Pairs (AVPs) for the session using the information made available to it.
-			</para>
-		</formalpara>
-		<para>
-			The API for the <literal>ShClientMessageFactory</literal> is more than 300 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientSubscriptionActivity.java"><literal>ShClientMessageFactory.java</literal> in the source code</ulink>.
-		</para>
-	</section>
-	
-	<section>
-		<title>API Usage Examples</title>
-		<para>
-			The following examples demonstrate basic usage examples for the Resource Adapter (RA) API.
-		</para>
-		<example>
-			<title>Push-Notification-Request</title>
-			<para>
-				The following code demonstrates how to configure a Push-Notification-Request using <literal>setExtensionAvps()</literal> methods.
-			</para>
-			<para>
-				It is possible to utilize specific methods such as <literal>udr.setUserIdentity()</literal> to achieve the same goal, however this falls outside the scope of this example.
-			</para>
-			<!-- TODO:  Developer:  Where can users find out more about the other method calls available?  Is there a website?  Or can we create an example and then document it? --><!-- TODO: Editor:  Reformat programlistings so they flow correctly when published. --> 
+		<!-- TODO:  Developer:  Where can users find out more about the other method calls available?  Is there a website?  Or can we create an example and then document it? --><!-- TODO: Editor:  Reformat programlistings so they flow correctly when published. --> 
 <programlisting role="JAVA">public void onPushNotificationRequest(net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest pnr, ActivityContextInterface aci)
                  {
                      try
@@ -3034,13 +3035,13 @@ destination.realm=mobicents.org
                    }
                  }
 </programlisting>
-		</example>
-		<example>
-			<title>User-Data-Request</title>
-			<para>
-				The following code demonstrates how to configure a User-Data-Request (UDR).
-			</para>
-			
+	</example>
+	<example>
+		<title>User-Data-Request</title>
+		<para>
+			The following code demonstrates how to configure a User-Data-Request (UDR).
+		</para>
+		
 <programlisting role="JAVA">private void doSimpleTestsSendUDR()
                    {
                    
@@ -3099,80 +3100,79 @@ destination.realm=mobicents.org
                          }
                    }
 </programlisting>
-		</example>
-	</section>
-	
-	<section>
-		<title>Examples</title>
+	</example>
+</section>
+	<section id="dsce-Diameter_Sh_Client_Examples" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Examples</title>
+	<para>
+		The sample application provided for Diameter Sh (Client) supports two scenarios:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				Application requests user data
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Application subscribes to profiles changes.
+			</para>
+		</listitem>
+	</itemizedlist>
+	<formalpara>
+		<title>Application requests user data</title>
 		<para>
-			The sample application provided for Diameter Sh (Client) supports two scenarios:
+			In this scenario, the application sends a request to the remote peer (the Home Subscriber Server). The application then requests data for a single user.
 		</para>
-		<itemizedlist>
-			<listitem>
-				<para>
-					Application requests user data
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Application subscribes to profiles changes.
-				</para>
-			</listitem>
-		</itemizedlist>
-		<formalpara>
-			<title>Application requests user data</title>
+	</formalpara>
+	<figure id="figure-Client_Application_Message_Flow_1">
+		<title>Data Request Flow</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="images/dia-ShClientExamples-dia-UDRFlow.jpg" format="JPG"/>
+			</imageobject>
+		</mediaobject>
+	</figure>
+	<formalpara>
+		<title>Application subscribes to profiles changes</title>
+		<para>
+			In this scenario, the application subscribes to the Home Subscriber Server (HSS) to monitor changes to a user profile. Once the subscription is established, the example service receives .
+		</para>
+	</formalpara>
+	<figure id="figure-Server_Application_Message_Flow_1">
+		<title>Subscribe Request Message Flow</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="images/dia-ShClientExamples-dia-SNRFlow.jpg" format="JPG"/>
+			</imageobject>
+		</mediaobject>
+	</figure>
+	<section id="dscec-Diameter_Sh_Client_Example_Configuration" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Configuration</title>
+	<para>
+		To configure the examples, changes must be made to the <filename>example.properties</filename> file in the <filename>/du/main/resources</filename> directory.
+	</para>
+	<para>
+		In addition to the common properties such as IP Address, port number, and realm, the example has two properties to control which scenario is enabled.
+	</para>
+	<itemizedlist>
+		<listitem>
 			<para>
-				In this scenario, the application sends a request to the remote peer (the Home Subscriber Server). The application then requests data for a single user.
+				<literal>send.udr</literal> - If set to <literal>true</literal>, example will send UDR to remote peer.
 			</para>
-		</formalpara>
-		<figure id="figure-Client_Application_Message_Flow_1">
-			<title>Data Request Flow</title>
-			<mediaobject>
-				<imageobject>
-					<imagedata fileref="images/dia-ShClientExamples-dia-UDRFlow.jpg" format="JPG"/>
-				</imageobject>
-			</mediaobject>
-		</figure>
-		<formalpara>
-			<title>Application subscribes to profiles changes</title>
+		</listitem>
+		<listitem>
 			<para>
-				In this scenario, the application subscribes to the Home Subscriber Server (HSS) to monitor changes to a user profile. Once the subscription is established, the example service receives .
+				<literal>send.snr</literal> - If set to <literal>true</literal>, example will send SNR and await updates on profile changes.
 			</para>
-		</formalpara>
-		<figure id="figure-Server_Application_Message_Flow_1">
-			<title>Subscribe Request Message Flow</title>
-			<mediaobject>
-				<imageobject>
-					<imagedata fileref="images/dia-ShClientExamples-dia-SNRFlow.jpg" format="JPG"/>
-				</imageobject>
-			</mediaobject>
-		</figure>
-		<section>
-			<title>Configuration</title>
-			<para>
-				To configure the examples, changes must be made to the <filename>example.properties</filename> file in the <filename>/du/main/resources</filename> directory.
-			</para>
-			<para>
-				In addition to the common properties such as IP Address, port number, and realm, the example has two properties to control which scenario is enabled.
-			</para>
-			<itemizedlist>
-				<listitem>
-					<para>
-						<literal>send.udr</literal> - If set to <literal>true</literal>, example will send UDR to remote peer.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<literal>send.snr</literal> - If set to <literal>true</literal>, example will send SNR and await updates on profile changes.
-					</para>
-				</listitem>
-			</itemizedlist>
-			<para>
-				For information regarding the requests available for Sh (Client), refer to <xref linkend="table-Diameter_Sh_Client_Messages"/>
-			</para>
-			<example>
-				<title>Setting origin and destination properties</title>
-				
+		</listitem>
+	</itemizedlist>
+	<para>
+		For information regarding the requests available for Sh (Client), refer to <xref linkend="table-Diameter_Sh_Client_Messages"/>
+	</para>
+	<example>
+		<title>Setting origin and destination properties</title>
+		
 <programlisting>#                           ##
 # Diameter Sh Client Example #
 ##                           #
@@ -3191,13 +3191,11 @@ destination.ip=127.0.0.1
 destination.port=3868
 destination.realm=mobicents.org
 </programlisting>
-			</example>
-		</section>
-
-	</section>
-
+	</example>
 </section>
-	<section lang="en-US">
+</section>
+</section>
+	<section id="dss-Diameter_Sh_Server" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Sh (Server)</title>
 	<para>
 		The Sh interface is the reference for interactions between the following servers:
@@ -3390,102 +3388,100 @@ destination.realm=mobicents.org
 	<!-- TODO: Editor: paragraphs need rework.  Copied directly from wiki. --> <para>
 		The command names are related to managing user data in the HSS, and represent various types of requests. For example, UDR/UDA are used to request and receive data from the user profile. The client (in this case, AS), sends the request indicating which data is required (see below for possible kinds of data). If the client has the correct permissions on the HSS, the data will be received by UDA.
 	</para>
-	<section>
-		<title>Configuration</title>
-		<para>
-			The Sh Server RA does not currently support any configuration options.
-		</para>
-	</section>
-	
-	<section>
-		<title>Resource Adaptor Type</title>
-		<para>
-			The resource adapter provides the following types:
-		</para>
-		<itemizedlist>
-			<listitem>
-				<para>
-					Activities
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Provider
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Message Factory
-				</para>
-			</listitem>
-		</itemizedlist>
-		<formalpara>
-			<title>Activities</title>
+	<section id="dssc-Diameter_Sh_Server_Configuration" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Configuration</title>
+	<para>
+		The Sh Server RA does not currently support any configuration options.
+	</para>
+</section>
+	<section id="dssrat-Diamter_Sh_Server_Resource_Adapter_Type" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Resource Adapter Type</title>
+	<para>
+		The resource adapter provides the following types:
+	</para>
+	<itemizedlist>
+		<listitem>
 			<para>
-				The following activities are available, with the API definition listed for reference. The API defines methods to create requests, send and receive answers for a certain activity, and retrieve session-specific data.
+				Activities
 			</para>
-		</formalpara>
+		</listitem>
+		<listitem>
+			<para>
+				Provider
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Message Factory
+			</para>
+		</listitem>
+	</itemizedlist>
+	<formalpara>
+		<title>Activities</title>
 		<para>
-			The lifecycle of an activity depends on the type of received request and the application interaction. In the case of a subscription activity, the activity timeout is taken into consideration because the subscription may be time-based.
+			The following activities are available, with the API definition listed for reference. The API defines methods to create requests, send and receive answers for a certain activity, and retrieve session-specific data.
 		</para>
-		<para>
-			The activitites allow the Sh (Server) application to retrieve messages and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
-		</para>
-		<variablelist>
-			<title>Diameter Sh (Server) Activities</title>
-			<varlistentry>
-				<term>ShServerActivity</term>
-				<listitem>
-					<para>
-						This is the base activity for the Sh server side. It is created for event based interaction, such as UDRs or PURs. The activity is created automatically when a UDR or PUR request is received, and ends when an answer is sent back to the client.
-					</para>
-				</listitem>
-			</varlistentry>
-		</variablelist>
-		
+	</formalpara>
+	<para>
+		The life cycle of an activity depends on the type of received request and the application interaction. In the case of a subscription activity, the activity timeout is taken into consideration because the subscription may be time-based.
+	</para>
+	<para>
+		The activities allow the Sh (Server) application to retrieve messages and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
+	</para>
+	<variablelist>
+		<title>Diameter Sh (Server) Activities</title>
+		<varlistentry>
+			<term>ShServerActivity</term>
+			<listitem>
+				<para>
+					This is the base activity for the Sh server side. It is created for event based interaction, such as UDRs or PURs. The activity is created automatically when a UDR or PUR request is received, and ends when an answer is sent back to the client.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	
 <programlisting role="JAVA">TODO: Program listing is over 100 lines
 </programlisting>
-		<variablelist>
-			<varlistentry>
-				<term>ShServerSubscriptionActivity</term>
-				<listitem>
-					<para>
-						The Subscription activity is created when the client desires to subscribe to changes to the profile data. Once the initial SNR is received, SLEE creates a subscription activity. This remains in place until a termination subscription request is received or the subscription times out.
-					</para>
-				</listitem>
-			</varlistentry>
-		</variablelist>
-		
+	<variablelist>
+		<varlistentry>
+			<term>ShServerSubscriptionActivity</term>
+			<listitem>
+				<para>
+					The Subscription activity is created when the client desires to subscribe to changes to the profile data. Once the initial SNR is received, SLEE creates a subscription activity. This remains in place until a termination subscription request is received or the subscription times out.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	
 <programlisting role="JAVA">TODO: Program listing is over 100 lines
 </programlisting>
-		<formalpara>
-			<title>Provider</title>
-			<para>
-				<!-- Note: Developer: What does the Provider do? If there is a description of Message Factory, there needs to be one for Provider as well. -->The API for the ShServerProvider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerProvider.java">ShServerProvider.java in the source code</ulink>.
-			</para>
-		</formalpara>
-		<formalpara>
-			<title>Message Factory</title>
-			<para>
-				The Message Factory creates events that can be executed within the JAIN SLEE Server. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
-			</para>
-		</formalpara>
+	<formalpara>
+		<title>Provider</title>
 		<para>
-			The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerMessageFactory.java">ShServerMessageFactory.java in the source code</ulink>.
+			<!-- Note: Developer: What does the Provider do? If there is a description of Message Factory, there needs to be one for Provider as well. -->The API for the ShServerProvider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerProvider.java">ShServerProvider.java in the source code</ulink>.
 		</para>
-	</section>
-	
-	<section>
-		<title>API Usage Examples</title>
+	</formalpara>
+	<formalpara>
+		<title>Message Factory</title>
 		<para>
-			The following examples demonstrate basic usage examples for the Resource Adapter (RA) API.
+			The Message Factory creates events that can be executed within the JAIN SLEE Server. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
 		</para>
-		<example>
-			<title>User-Data-Request</title>
-			<para>
-				The following example shows how a UDR is consumed on the server side.
-			</para>
-			
+	</formalpara>
+	<para>
+		The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerMessageFactory.java">ShServerMessageFactory.java in the source code</ulink>.
+	</para>
+</section>
+	<section id="dssaue-Diameter_Sh_Server_API_Usage_Examples" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>API Usage Examples</title>
+	<para>
+		The following examples demonstrate some basic usage examples for the Resource Adapter (RA) API.
+	</para>
+	<example>
+		<title>User-Data-Request</title>
+		<para>
+			The following example shows how a UDR is consumed on the server side.
+		</para>
+		
 <programlisting role="JAVA">public void onUserDataRequest(UserDataRequest event, ActivityContextInterface aci) {
 if (logger.isInfoEnabled())
 logger.info("onUserDataRequest :: " + event);
@@ -3502,13 +3498,13 @@ logger.error("Failed to send UDA.", e);
 }
 }
 </programlisting>
-		</example>
-		<example>
-			<title>Profile-Update-Request</title>
-			<para>
-				The following code demonstrates how to consume a Profile-Update-Request (PUR).
-			</para>
-			
+	</example>
+	<example>
+		<title>Profile-Update-Request</title>
+		<para>
+			The following code demonstrates how to consume a Profile-Update-Request (PUR).
+		</para>
+		
 <programlisting role="JAVA">public void onProfileUpdateRequest(ProfileUpdateRequest event, ActivityContextInterface aci) {
 try {
 logger.info("onProfileUpdateRequest :: " + event);
@@ -3523,13 +3519,13 @@ logger.error("Failed to create/send PUA.", e);
 }
 }
 </programlisting>
-		</example>
-		<example>
-			<title>Subscribe-Notification-Request</title>
-			<para>
-				The following example shows simple handling of Subscribe-Notification-Request (SNR)
-			</para>
-			
+	</example>
+	<example>
+		<title>Subscribe-Notification-Request</title>
+		<para>
+			The following example shows simple handling of Subscribe-Notification-Request (SNR)
+		</para>
+		
 <programlisting role="JAVA">public void onSubscribeNotificationsRequest(SubscribeNotificationsRequest event, ActivityContextInterface aci) {
 logger.info("onSubscribeNotificationsRequest :: " + event);
 
@@ -3554,65 +3550,94 @@ logger.error("Failed to create/send SNA.", e);
 }
 }
 </programlisting>
-		</example>
-	</section>
-	
-	<section>
-		<title>Examples</title>
-		<para>
-			The sample application provided for Diameter Sh (Client) supports two scenarios:
-		</para>
-		<itemizedlist>
-			<listitem>
-				<para>
-					Application is requested for user data
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Application receives subscription to user data
-				</para>
-			</listitem>
-		</itemizedlist>
-		<formalpara>
-			<title>Application is requested for user data</title>
-			<para>
-				In this case example simply sends request to remote peer (HSS). It simply requests data for certain user.
-			</para>
-		</formalpara>
-		<figure id="figure-Sh_Client_Application_Message_Flow_1">
-			<title>Data Request Flow</title>
-			<mediaobject>
-				<imageobject>
-					<imagedata fileref="images/dia-ShServerExamples-dia-UDRFlow.jpg" format="JPG"/>
-				</imageobject>
-			</mediaobject>
-		</figure>
-		<formalpara>
-			<title>Application receives subscription to user data</title>
-			<para>
-				In this case example service subscribes in HSS to changes to user profile. Once subscribtion is estabilished, example service will receive .
-			</para>
-		</formalpara>
-		<figure id="figure-Sh_Server_Application_Message_Flow_1">
-			<title>Subscribe Request Message Flow</title>
-			<mediaobject>
-				<imageobject>
-					<imagedata fileref="images/dia-ShServerExamples-dia-SNRFlow.jpg" format="JPG"/>
-				</imageobject>
-			</mediaobject>
-		</figure>
-		<section>
-			<title>Configuration</title>
-			<para>
-				Right now example does not support any configuration.
-			</para>
-		</section>
-
-	</section>
-
+	</example>
+	<!-- Note: Developer: Example needs to be inserted here for Diameter Sh (Server) --><!-- <section>
+  <title>Examples</title>
+  <para>The sample application provided for Diameter Sh (Client) supports two scenarios:</para>
+  <itemizedlist>
+    <listitem>
+      <para>The application is requested for user data</para>
+    </listitem>
+    <listitem>
+      <para>The application receives a subscription to user data</para>
+    </listitem>
+  </itemizedlist>
+  <formalpara>
+    <title>Application is requested for user data</title>
+    <para>In this case example simply sends request to remote peer (HSS). It simply requests data for certain user.</para>
+  </formalpara>
+  <figure id="figure-Sh_Client_Application_Message_Flow_1">
+    <title>Data Request Flow</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/dia-ShServerExamples-dia-UDRFlow.jpg" format="JPG"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
+  <formalpara>
+    <title>Application receives subscription to user data</title>
+    <para>In this case example service subscribes in HSS to changes to user profile. Once subscribtion is estabilished, example service will receive .  </para>
+  </formalpara>
+  <figure id="figure-Sh_Server_Application_Message_Flow_1">
+    <title>Subscribe Request Message Flow</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/dia-ShServerExamples-dia-SNRFlow.jpg" format="JPG"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
+  <section>
+    <title>Configuration</title>
+    <para>Right now example does not support any configuration.</para>
+  </section>
+</section> -->
 </section>
-	<section id="cca-Credit_Control_Application" lang="en-US">
+	<section lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Examples</title>
+	<para>
+		Under Development
+	</para>
+	<!-- Note: Developer: Example needs to be inserted here for Diameter Sh (Server)
+  <para>The sample application provided for Diameter Sh (Client) supports two scenarios:</para>
+  <itemizedlist>
+    <listitem>
+      <para>The application is requested for user data</para>
+    </listitem>
+    <listitem>
+      <para>The application receives a subscription to user data</para>
+    </listitem>
+  </itemizedlist>
+  <formalpara>
+    <title>Application is requested for user data</title>
+    <para>In this case example simply sends request to remote peer (HSS). It simply requests data for certain user.</para>
+  </formalpara>
+  <figure id="figure-Sh_Client_Application_Message_Flow_1">
+    <title>Data Request Flow</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/dia-ShServerExamples-dia-UDRFlow.jpg" format="JPG"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
+  <formalpara>
+    <title>Application receives subscription to user data</title>
+    <para>In this case example service subscribes in HSS to changes to user profile. Once subscribtion is estabilished, example service will receive .  </para>
+  </formalpara>
+  <figure id="figure-Sh_Server_Application_Message_Flow_1">
+    <title>Subscribe Request Message Flow</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/dia-ShServerExamples-dia-SNRFlow.jpg" format="JPG"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
+  <section>
+    <title>Configuration</title>
+    <para>Right now example does not support any configuration.</para>
+  </section> -->
+</section>
+</section>
+	<section id="dcca-Diameter_CCA" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter CCA</title>
 	<para>
 		<!-- TODO: Developer:  Did you incorporate the wiki content into this section from here: http://groups.google.com/group/mobicents-public/web/mobicents-diameter-cca, 
@@ -3688,73 +3713,72 @@ I'm sorry, but there are huge gaps in this section, and I'm finding it really di
 		</tgroup>
 	</table>
 	<para>
-		RFC decalres only basic charging scenarios, which are event charging. <!-- TODO: Developer:  This is where this sentence ends.  I don't know what's supposed to come after this, but I assume there's something... -->
+		RFC declares only basic charging scenarios, which are event charging. <!-- TODO: Developer:  This is where this sentence ends.  I don't know what's supposed to come after this, but I assume there's something... -->
 	</para>
-	<section>
-		<title>Configuration</title>
-		<para>
-			The CCA RA does not support any configuration options.
-		</para>
-	</section>
-	
-	<section>
-		<title>Resource Adaptor Type</title>
-		<para>
-			The CCA Resource Adaptor Type provides the following types:
-		</para>
-		<itemizedlist>
-			<listitem>
-				<para>
-					Activities
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Provider
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Message Factory
-				</para>
-			</listitem>
-		</itemizedlist>
-		<formalpara>
-			<title>Activities</title>
+	<section id="dcc-Diameter_CCA_Configuration" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Configuration</title>
+	<para>
+		The CCA RA does not support any configuration options.
+	</para>
+</section>
+	<section id="dcrat-Diameter_CCA_Resource_Adapter_Type" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Resource Adapter Type</title>
+	<para>
+		The CCA Resource Adapter Type provides the following types:
+	</para>
+	<itemizedlist>
+		<listitem>
 			<para>
-				The following activities are available, with the API definition listed for reference. The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.
+				Activities
 			</para>
-		</formalpara>
+		</listitem>
+		<listitem>
+			<para>
+				Provider
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Message Factory
+			</para>
+		</listitem>
+	</itemizedlist>
+	<formalpara>
+		<title>Activities</title>
 		<para>
-			The lifecycle of an activity depends on the type of received request and the application interaction. In the case of a subscription activity, the activity timeout is taken into consideration because the subscription may be time-based.
+			The following activities are available, with the API definition listed for reference. The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.
 		</para>
-		<para>
-			The activitites allow the CCA to retrieve messages and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
-		</para>
-		<para>
-			Each Request type is defined by the CC-Request-Type Attribute Value Pair (AVP). The types of activities are described below:
-		</para>
-		<itemizedlist>
+	</formalpara>
+	<para>
+		The life cycle of an activity depends on the type of received request and the application interaction. In the case of a subscription activity, the activity timeout is taken into consideration because the subscription may be time-based.
+	</para>
+	<para>
+		The activities allow the CCA to retrieve messages and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
+	</para>
+	<para>
+		Each Request type is defined by the <literal>CC-Request-Type</literal> Attribute Value Pair (AVP). The types of activities are described below:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				event-based - when <literal>CC-Request-Type = EVENT</literal>. Activities created for this kind of request are terminated once an answer is sent(server)/received(client) or when the session terminated due to lack of an answer.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				session-based - when the first message contains <literal>CC-Request-Type = INITIAL</literal>, and the last message contains <literal>CC-Request-Type = TERMINATION</literal>. Any number of "UPDATE" messages are allowed between the initial and terminating message.
+			</para>
+		</listitem>
+	</itemizedlist>
+	<variablelist>
+		<title>CCA Activities</title>
+		<varlistentry>
+			<term>CreditControlClientSession</term>
 			<listitem>
 				<para>
-					event-based - when <literal>CC-Request-Type</literal> is equal to the enumerated value of "EVENT". Activities created for such request are terminated once answer is sent(server)/received(client) or when session termianted due to lack of answer.
+					Created on demand. The life cycle of this session depends on the type of request. The request type is indicated by <literal>CC-Request-Type</literal> AVP.
 				</para>
-			</listitem>
-			<listitem>
-				<para>
-					session-based - activities are long lived when two conditions are met, first messages has CC-Request-Type is equal to enum value of "INITIAL", last message has CC-Request-Type equal to enum value of "TERMINATION". Between initial and termianting message there can be any number of "UPDATE" messages.
-				</para>
-			</listitem>
-		</itemizedlist>
-		<variablelist>
-			<title>CCA Activities</title>
-			<varlistentry>
-				<term>CreditControlClientSession</term>
-				<listitem>
-					<para>
-						Created on demand. Life cycle depends on request type. Request type is indicated by CC-Request-Type AVP.
-					</para>
-					
+				
 <programlisting role="JAVA">/**
    * Create a Credit-Control-Request message pre-populated with the AVPs
    * appropriate for this session.
@@ -3827,15 +3851,15 @@ I'm sorry, but there are huge gaps in this section, and I'm finding it really di
 
   public CreditControlMessageFactory getCCAMessageFactory();
 </programlisting>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term>CreditControlServerSession</term>
-				<listitem>
-					<para>
-						Created once request is received and there is no matching activity for it. Its life cycle is identical to client activity.
-					</para>
-					
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>CreditControlServerSession</term>
+			<listitem>
+				<para>
+					Created once a request is received and there is no matching activity for it. Its life cycle is identical to that of a client activity.
+				</para>
+				
 <programlisting role="JAVA"> /**
    * Create a Credit-Control-Answer message pre-populated with the AVPs
    * appropriate for this session.
@@ -3880,16 +3904,16 @@ I'm sorry, but there are huge gaps in this section, and I'm finding it really di
 
   public CreditControlMessageFactory getCCAMessageFactory();
 </programlisting>
-				</listitem>
-			</varlistentry>
-		</variablelist>
-		<formalpara>
-			<title>Provider</title>
-			<para>
-				Provider allows services to create activities, access some topology information and send/receive message in synchornous way.
-			</para>
-		</formalpara>
-		
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	<formalpara>
+		<title>Provider</title>
+		<para>
+			Provider allows services to create activities, access some topology information and send/receive message in a synchronized way.
+		</para>
+	</formalpara>
+	
 <programlisting role="JAVA">public interface CreditControlProvider {
 
   /**
@@ -3947,16 +3971,15 @@ I'm sorry, but there are huge gaps in this section, and I'm finding it really di
    */
   DiameterIdentity[] getConnectedPeers();
 </programlisting>
-	</section>
-	
-	<section>
-		<title>API Usage Examples</title>
-		<para>
-			Following example shows how CCR message is created and sent.
-		</para>
-		<example>
-			<title>Sending CCR</title>
-			
+</section>
+	<section id="dcaue-Diameter_CCA_API_Usage_Examples" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>API Usage Examples</title>
+	<para>
+		The following example shows how a CCR message is created and sent.
+	</para>
+	<example>
+		<title>Sending CCR</title>
+		
 <programlisting role="JAVA">try {
 CreditControlClientSession session = this.provider.createClientSession();
 ActivityContextInterface localACI = this.acif.getActivityContextInterface(session);
@@ -4001,13 +4024,13 @@ session.sendCreditControlRequest(request);
 logger.error("Failed to create/send Credit-Control-Request.", e);
 }
 </programlisting>
-		</example>
-		<para>
-			The following code demonstrates how CCR is received and how different state machines are handled.
-		</para>
-		<example>
-			<title>Handling CCR</title>
-			
+	</example>
+	<para>
+		The following code demonstrates how the CCR is received and how different state machines are handled.
+	</para>
+	<example>
+		<title>Handling CCR</title>
+		
 <programlisting role="JAVA">public void onCreditControlRequest(CreditControlRequest request, ActivityContextInterface aci) {
 if (logger.isInfoEnabled())
 logger.info("Received Credit-Control-Request (Application-Id[" + request.getHeader().getApplicationId() + "].");
@@ -4106,55 +4129,54 @@ logger.error("Unexpected CC-Request-Type in message: " + request.getCcRequestTyp
 }
 }
 </programlisting>
-		</example>
-	</section>
-	
-	<section>
-		<title>Examples</title>
+	</example>
+</section>
+	<section id="dce-Diameter_CCA_Examples" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Examples</title>
+	<para>
+		The sample application provided for CCA is a very basic one.It supports three separate scenarios:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				Client
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Server for event charging
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Server for session based charging
+			</para>
+		</listitem>
+	</itemizedlist>
+	<formalpara>
+		<title>Client</title>
 		<para>
-			The sample application provided for CCA is very basic one.It supports three searate scenarios:
+			The example acts as a CCA client . It issues an order to charge an entity (unspecified) account with a defined number of units. It sends a CCR to the Ericsson Diameter Server (EDS). If the message is correctly built, the server will send an answer back to the application stating that the operation was executed correctly. If the message is incorrectly built, the EDS sends an error message back to the application.
 		</para>
-		<itemizedlist>
-			<listitem>
-				<para>
-					Client
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Server for event charing
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Server for session based charging
-				</para>
-			</listitem>
-		</itemizedlist>
-		<formalpara>
-			<title>Client</title>
-			<para>
-				Example acts as CCA client . It issues order to charges some entity (unspecified) account with defined number of units. It sends CCR to Ericsson Diameter Server (EDS). If the message is correctly built, the server will send an answer back to the application stating that the operation was executed correctly. If the message is incorrectly built, the EDS sends an error message back to the application.
-			</para>
-		</formalpara>
-		<formalpara>
-			<title>Server for event charging</title>
-			<para>
-				Example service acts as simple server. It awaits for CCR message. Once client sends it(EDS) example receives it. Simplest processing of this request includes only sending success answer
-			</para>
-		</formalpara>
-		<formalpara>
-			<title>Server for session based charging</title>
-			<para>
-				Example acts a bit different than in above case. Service awaits session based exchange - that is CCRs with CC-Request-Type which follows sequence INITIAL, UPDATE(zero or more) and TERMINATION.
-			</para>
-		</formalpara>
-		<section>
-			<title>Example Configuration</title>
-			<para>
-				Example is confgiure via file <filename>example.properties</filename>
-			</para>
-			
+	</formalpara>
+	<!-- Note: Developers: Am leaving this section unedited as it makes no sense. I need a more structured, logical explanation of what the example is if I am going to rewrite it coherently. --> <formalpara>
+		<title>Server for event charging</title>
+		<para>
+			The example service acts as a simple server. It awaits for a CCR message. Once the client sends it (EDS), the service receives it. The simplest processing of this request includes only sending success answer
+		</para>
+	</formalpara>
+	<formalpara>
+		<title>Server for session based charging</title>
+		<para>
+			The service awaits a session based exchange - that is CCRs with CC-Request-Type which follows sequence INITIAL, UPDATE(zero or more) and TERMINATION.
+		</para>
+	</formalpara>
+	<section id="dcec-Diameter_CCA_Example_Configuration" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Example Configuration</title>
+	<para>
+		The example is configured via the file <filename>example.properties</filename>
+	</para>
+	
 <programlisting># Act as "client" or "server" (default: server)
 example.mode=client
 
@@ -4168,46 +4190,44 @@ destination.ip=127.0.0.1
 destination.port=3868
 destination.realm=mobicents.org
 </programlisting>
-		</section>
-
-	</section>
-
 </section>
-	<section lang="en-US">
+</section>
+</section>
+	<section id="dr-Diameter_Ro" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Ro</title>
 	<para>
-		Ro is on of two IMS reference point for charging. It covers online charging - scenarios where charging information can affect, in real-time, the service rendered. Therefore, a direct interaction of the charging mechanism with session/service control is required. Ro is defined in <ulink url="http://www.3gpp.org/ftp/Specs/html-info/32299.htm">TS32.299</ulink>.
+		Ro is one of two IMS reference points for charging. It covers online charging - scenarios where charging information can affect, in real-time, the service rendered. Therefore, a direct interaction between the charging mechanism and the session/service control is required. Ro is defined in <ulink url="http://www.3gpp.org/ftp/Specs/html-info/32299.htm">TS32.299</ulink>.
 	</para>
-	<para>
+	<!-- Note: Developer: The link between the CTF and the OCF needs to be explained better. If the CTF makes the decisions then the OCF carries the decisions out, then that needs to be clarified so that we can make sense of it. --> <para>
 		Charging involves two peers:
 	</para>
 	<itemizedlist>
 		<listitem>
 			<para>
-				CTF (Charging Trigger Function) - makes decision how to charge specific service for user, issues request/requests to server(OCF)
+				Charging Trigger Function (CTF) - makes decisions on how to charge the user for specific services, issues requests to the server (OCF)
 			</para>
 		</listitem>
 		<listitem>
 			<para>
-				OCF(Online Charging Function) - performs actual charging based on received message type, service logic and user profile information.
+				Online Charging Function (OCF) - performs actual charging based on received message type, service logic and user profile information.
 			</para>
 		</listitem>
 	</itemizedlist>
 	<para>
-		Ro application does not define new FSM or messages. It make use of commands, AVPs and FSM defined by base CCA application. Please refer to <!-- TODO: add ref here, not sure how to handle this, some refs are broken, Jared? -->
+		The Ro application does not define new FSMs or messages. It makes use of commands, AVPs and FSMs defined by the base CCA application. Please refer to <!-- TODO: add ref here, not sure how to handle this, some refs are broken, Jared? -->
 	</para>
 	<para>
-		Ro RA is responsible for managing state associated with different charging scenarios. TS defines following online scenarios:
+		The Ro RA is responsible for managing states associated with different charging scenarios. The 3GPP TS32.299 defines the following online scenarios:
 	</para>
 	<itemizedlist>
 		<listitem>
 			<para>
-				Imediate Event Charging(IEC) - CTF send one time request. This request contains predefined set of AVPs indicating which service has been activated or how many units consumed, this depends on application logic.
+				Immediate Event Charging (IEC) - the CTF sends a one time request. This request contains a predefined set of AVPs indicating which service has been activated or how many units have been consumed (this depends on application logic)
 			</para>
 		</listitem>
 		<listitem>
 			<para>
-				Event Charing wiht Unit Reservation(ECUR) - CTF issues request which indicates desired unit count for reservation. On service delivery, CTF issues antoher request which indicates actauly consumed units. Units can be of any type, its application specific.
+				Event Charging with Unit Reservation (ECUR) - the CTF issues a request which indicates the desired unit count for reservation. On service delivery, the CTF issues another request which indicates how many units were actually consumed. Units can be of any type, as they are application specific.
 			</para>
 		</listitem>
 		<listitem>
@@ -4217,7 +4237,7 @@ destination.realm=mobicents.org
 		</listitem>
 	</itemizedlist>
 	<para>
-		As per definition from techincal specification, Ro reuses messages defined by CCA application. For more information about CCA please refer to <!-- TODO: Add xref to : cca-Credit_Control_Application, serna does not allow me.... -->
+		As per the definition in the technical specification, Ro reuses messages defined by the CCA application. For more information about CCA please refer to <xref linkend="dcca-Diameter_CCA"/>
 	</para>
 	<figure id="ro-Figure_IEC_Flow">
 		<title>IEC Example Flow</title>
@@ -4228,27 +4248,27 @@ destination.realm=mobicents.org
 		</mediaobject>
 	</figure>
 	<para>
-		Above figure shows IEC interaction. Actions performed in diagram can be described as follows:
+		The above figure are an example of IEC interaction. Actions performed in the diagram can be described as follows:
 	</para>
 	<itemizedlist>
 		<listitem>
 			<para>
-				(1)UA issues service request - be it SMS, MMS, Data chunk transfer.
+				(1)UA issues service request - be it SMS, MMS, Data chunk transfer etc
+			</para>
+		</listitem>
+		<!-- Note: Developer: Point Two needs to be explained concisely. At the moment, the last sentence makes no sense at all. --> <listitem>
+			<para>
+				(2) The CTF a sends proper CCR. The CC-Request-Type is set to an enum value of "EVENT". This request holds indication which allows OCF to perform some actions.
 			</para>
 		</listitem>
 		<listitem>
 			<para>
-				(2) CTF sends proper CCR. CC-Request-Type is set to enum value of "EVENT". This request holds indication which allows OCF to perform some actions.
+				(3) The OCF processes the request.
 			</para>
 		</listitem>
 		<listitem>
 			<para>
-				(3) OCF process request.
-			</para>
-		</listitem>
-		<listitem>
-			<para>
-				(4) OCF sends CCA back to CTF. On success answer CTF grants service to UA.
+				(4) The OCF sends the CCA back to the CTF. If the request is accepted, the CTF grants service to UA.
 			</para>
 		</listitem>
 		<listitem>
@@ -4266,57 +4286,57 @@ destination.realm=mobicents.org
 		</mediaobject>
 	</figure>
 	<para>
-		Above figure shows ECUR interaction. Performed action can be described as follows:
+		The above figure shows ECUR interaction. The performed action can be described as follows:
 	</para>
 	<itemizedlist>
 		<listitem>
 			<para>
-				(1)UA issues service request - this is more complicated case, service can be something like charging for phone call, but up to certain limit.
+				(1) The UA issues a service request - this is a more complex case, as the service can be something like charging for a phone call, but up to a certain limit
 			</para>
 		</listitem>
 		<listitem>
 			<para>
-				(2) CTF sends CCR to OCF. CC-Request-Type is set to enum value of "INITIAL"
+				(2) The CTF sends a CCR to the OCF. The CC-Request-Type is set to an enum value of "INITIAL"
 			</para>
 		</listitem>
 		<listitem>
 			<para>
-				(3) OCF process request
+				(3) The OCF processes the request
 			</para>
 		</listitem>
 		<listitem>
 			<para>
-				(4) OCF reserves certain amount of units, sends back CCA with this information
+				(4) The OCF then reserves a certain amount of units, and sends back the CCA with this information
 			</para>
 		</listitem>
 		<listitem>
 			<para>
-				(5) CTF grants service to UA
+				(5) The CTF grants service to the UA
 			</para>
 		</listitem>
 		<listitem>
 			<para>
-				(6) UA notifies that it does not require service any more(this does no have to happen, it may be AS decision)
+				(6) The UA notifies that it does not require service any more (this does not have to happen, as it may be an AS decision)
 			</para>
 		</listitem>
 		<listitem>
 			<para>
-				(7) CTF sends CCR to OCF. CC-Request-Type is set to enum value of "TERMINATION". CCR contains information on used units
+				(7) The CTF sends a CCR to the OCF. The CC-Request-Type is set to an enum value of "TERMINATION". The CCR contains information on used units
 			</para>
 		</listitem>
 		<listitem>
 			<para>
-				(8) OCF processes request
+				(8) The OCF processes the request
 			</para>
 		</listitem>
 		<listitem>
 			<para>
-				(9)OCF sends back CCA.
+				(9) The OCF sends back the CCA
 			</para>
 		</listitem>
 		<listitem>
 			<para>
-				(10)Service delivery ends
+				(10) Service delivery ends
 			</para>
 		</listitem>
 	</itemizedlist>
@@ -4329,7 +4349,7 @@ destination.realm=mobicents.org
 		</mediaobject>
 	</figure>
 	<para>
-		Above diagram shows example SCUR interaction. Actions are exactly the same as for ECUR case. However SCUR allows to use another type of message - where CC-Request-Type is set to value of enum "UPDATE". CC-Request-Type per message is as follows:
+		The above diagram is an example of a SCUR interaction. SCUR actions are exactly the same as for the ECUR case. However SCUR allows for the use another type of message - where CC-Request-Type is set to value of enum "UPDATE". CC-Request-Type per message is as follows:
 	</para>
 	<itemizedlist>
 		<listitem>
@@ -4348,88 +4368,87 @@ destination.realm=mobicents.org
 			</para>
 		</listitem>
 	</itemizedlist>
-	<section>
-		<title>Configuration</title>
-		<para>
-			Currently RA does not supporty any configuration options.
-		</para>
-	</section>
-	
-	<section>
-		<title>Resource Adaptor Type</title>
-		<para>
-			Resource Adaptor Type provides following elements:
-		</para>
-		<itemizedlist>
-			<listitem>
-				<para>
-					Activities
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Provider
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Message Factory
-				</para>
-			</listitem>
-		</itemizedlist>
-		<formalpara>
-			<title>Activities</title>
+	<section id="drc-Diameter_Ro_Configuration" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Configuration</title>
+	<para>
+		The RA does not currently support any configuration options.
+	</para>
+</section>
+	<section id="drrat-Diameter_Ro_Resource_Adapter_Type" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Resource Adapter Type</title>
+	<para>
+		Resource Adapter Type provides following elements:
+	</para>
+	<itemizedlist>
+		<listitem>
 			<para>
-				The following activities are available, with the API definition listed for reference. The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.
+				Activities
 			</para>
-		</formalpara>
+		</listitem>
+		<listitem>
+			<para>
+				Provider
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Message Factory
+			</para>
+		</listitem>
+	</itemizedlist>
+	<formalpara>
+		<title>Activities</title>
 		<para>
-			The lifecycle of an activity depends on the type of received request and the application interaction. Request type is defined by CC-Request-Type AVP. In case of session like interaction(SCUR), the activity timeout is taken into consideration. Please refer to <!-- TODO: add ref to ro-Figure_IEC_Flow, ro-Figure_ECUR_Flow and ro-Figure_SCUR_Flow -->
+			The following activities are available, with the API definition listed for reference. The API defines methods to create requests, send and receive answers for a certain activity, and retrieve session-specific data.
 		</para>
-		<para>
-			The activitites allows the Ro application to retrieve message and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
-		</para>
-		<variablelist>
-			<title>Ro Activities</title>
-			<varlistentry>
-				<term>RoClientSession</term>
-				<listitem>
-					<para>
-						created on on demands. Life cycle depends on CC-Request-Type content sent as first message. Its subject to timeout if answer is not received.
-					</para>
-					
+	</formalpara>
+	<para>
+		The life cycle of an activity depends on the type of received request and the application interaction. Request type is defined by the CC-Request-Type AVP. In case of session like interaction (SCUR), the activity timeout is taken into consideration. Please refer to <!-- TODO: add ref to ro-Figure_IEC_Flow, ro-Figure_ECUR_Flow and ro-Figure_SCUR_Flow -->
+	</para>
+	<para>
+		The activities allow the Ro application to retrieve messages and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
+	</para>
+	<variablelist>
+		<title>Ro Activities</title>
+		<varlistentry>
+			<term>RoClientSession</term>
+			<listitem>
+				<para>
+					created at beginning of request. The session's life cycle depends on the CC-Request-Type content sent as its first message. It is subject to timeout if an answer is not received.
+				</para>
+				
 <programlisting role="JAVA"><!-- TODO: Developer:  add this, we had example but its gone? -->
 </programlisting>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term>RoServerSession</term>
-				<listitem>
-					<para>
-						created by RA when request enters SLEE. Life cycle depends on CC-Request-Type AVP content recevied in first request.
-					</para>
-					
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>RoServerSession</term>
+			<listitem>
+				<para>
+					created by RA when the request enters SLEE. The session's life cycle depends on the CC-Request-Type AVP content received in first request.
+				</para>
+				
 <programlisting role="JAVA"><!-- TODO: Add code here, we had example, but its gone? -->
 </programlisting>
-				</listitem>
-			</varlistentry>
-		</variablelist>
-		<formalpara>
-			<title>Provider</title>
-			<para>
-				Provider allows services to create activities, access some topology information and send/receive message in synchornous way.
-			</para>
-		</formalpara>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	<formalpara>
+		<title>Provider</title>
 		<para>
-			The API for the Provider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/ro/ratype/src/main/java/net/java/slee/resource/diameter/ro/RoProvider.java">RoProvider.java</ulink>
+			Provider allows services to create activities, access some topology information and send/receive message in a synchronized way.
 		</para>
-		<formalpara>
-			<title>Message Factory</title>
-			<para>
-				The Message Factory creates events that can be executed within the JAIN SLEE Server. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
-			</para>
-		</formalpara>
-		
+	</formalpara>
+	<para>
+		The API for the Provider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/ro/ratype/src/main/java/net/java/slee/resource/diameter/ro/RoProvider.java">RoProvider.java</ulink>
+	</para>
+	<formalpara>
+		<title>Message Factory</title>
+		<para>
+			The Message Factory creates events that can be executed within the JAIN SLEE Server. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
+		</para>
+	</formalpara>
+	
 <programlisting role="JAVA">public interface RoMessageFactory {
 
   public static final long _RO_TGPP_VENDOR_ID = 10415L;
@@ -4459,27 +4478,30 @@ destination.realm=mobicents.org
   
 }
 </programlisting>
-	</section>
-	
-	<section>
-		<title>API usage examples</title>
-		<para>
-			TEXT
-		</para>
-	</section>
-	
-	<section>
-		<title>Examples</title>
-		<para>
-			TEXT
-		</para>
-	</section>
-
 </section>
-	<section lang="en-US">
-	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Rf</title>
+	<section id="draue-Diameter_Ro_API_Usage_Examples" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>API usage examples</title>
 	<para>
-		Ro is on of two IMS reference point for charging. It covers offline charging - scenarios where charging information does not affect, in real-time, the service rendered.
+		Under Development
+	</para>
+</section>
+	<section id="dre-Diameter_Ro_Examples" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Examples</title>
+	<para>
+		Under Development
+	</para>
+	<section lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Example Configuration</title>
+	<para>
+		Under Development
+	</para>
+</section>
+</section>
+</section>
+	<section id="dr-Diameter_Rf" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Rf</title>
+	<!-- Note: Developer: This section hasn't been edited at all, because it is so similar to the Ro section that it is impossible to differentiate between the two. You need to merge the two sections, and then concisely explain the differences between the two. Otherwise it is both a waste of space and confusing for the user. --> <para>
+		Rf is one of two IMS reference points for charging. It covers offline charging - scenarios where charging information does not affect, in real-time, the service rendered.
 	</para>
 	<para>
 		Charging involves two peers:
@@ -4500,7 +4522,7 @@ destination.realm=mobicents.org
 		Difference to Ro interface is that information/requests sent from CTF to CDF do not affect service delivery. CTF only informs CDF about units consumption. For detailed information on Rf interface please refer to information found <ulink url="http://www.3gpp.org/ftp/Specs/html-info/32299.htm">here</ulink> and <ulink url="http://www.3gpp.org/ftp/Specs/html-info/32240.htm">here</ulink>.
 	</para>
 	<para>
-		As per definition from technical specification Rf reuses messages defined in Diameter Base. For more information about base please refer to <!-- TODO: add ref to db-Diabeter_Base -->
+		As per definition from technical specification Rf reuses messages defined in Diameter Base. For more information about base please refer to <xref linkend="db-Diameter_Base"/>
 	</para>
 	<figure id="rf-Figure_Event_Charging_Flow">
 		<title>Event Charging Flow</title>
@@ -4539,17 +4561,17 @@ destination.realm=mobicents.org
 		</mediaobject>
 	</figure>
 	<para>
-		Above diagram shwos session based charging. Performed actions can be described as follows:
+		Above diagram shows session based charging. Performed actions can be described as follows:
 	</para>
 	<itemizedlist>
 		<listitem>
 			<para>
-				(1) Service is beeing delivered to UA
+				(1) Service is being delivered to UA
 			</para>
 		</listitem>
 		<listitem>
 			<para>
-				(2) CTF sends ACR with Record-Type AVP equal to enum value of "START". This indicates that session is beeing estabilished
+				(2) CTF sends ACR with Record-Type AVP equal to enum value of "START". This indicates that session is being established
 			</para>
 		</listitem>
 		<listitem>
@@ -4579,12 +4601,12 @@ destination.realm=mobicents.org
 		</listitem>
 		<listitem>
 			<para>
-				(8) Service for UA has been termianted
+				(8) Service for UA has been terminated
 			</para>
 		</listitem>
 		<listitem>
 			<para>
-				(9) CTF creates termianting ACR. It contains last charge information for session. Record-Type AVP is equal to enum value of "STOP"
+				(9) CTF creates terminating ACR. It contains last charge information for session. Record-Type AVP is equal to enum value of "STOP"
 			</para>
 		</listitem>
 		<listitem>
@@ -4598,56 +4620,55 @@ destination.realm=mobicents.org
 			</para>
 		</listitem>
 	</itemizedlist>
-	<section>
-		<title>Configuration</title>
-		<para>
-			Currently RA does not support any confgiuration options.
-		</para>
-	</section>
-	
-	<section>
-		<title>Resource Adaptor Type</title>
-		<para>
-			Resource Adaptor Type provides following elements:
-		</para>
-		<itemizedlist>
-			<listitem>
-				<para>
-					Activities
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Provider
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Message Factory
-				</para>
-			</listitem>
-		</itemizedlist>
-		<formalpara>
-			<title>Activities</title>
+	<section id="drc-Diameter_Rf_Configuration" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Configuration</title>
+	<para>
+		Currently RA does not support any configuration options.
+	</para>
+</section>
+	<section id="drrat-Diameter_Rf_Resource_Adapter_Type" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Resource Adapter Type</title>
+	<para>
+		Resource Adapter Type provides following elements:
+	</para>
+	<itemizedlist>
+		<listitem>
 			<para>
-				The following activities are available, with the API definition listed for reference. The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.
+				Activities
 			</para>
-		</formalpara>
+		</listitem>
+		<listitem>
+			<para>
+				Provider
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Message Factory
+			</para>
+		</listitem>
+	</itemizedlist>
+	<formalpara>
+		<title>Activities</title>
 		<para>
-			The lifecycle of an activity depends on the type of received request and the application interaction. Request type is defined by Record-Type AVP. In case of session like interaction, the activity timeout is taken into consideration. Please refer to <!-- TODO: add ref to rf-Figure_Event_Charging_Flow, rf-Figure_Session_Charging_Flow --> for example.
+			The following activities are available, with the API definition listed for reference. The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.
 		</para>
-		<para>
-			The activitites allows the Rf application to retrieve message and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
-		</para>
-		<variablelist>
-			<title>Rf Activities</title>
-			<varlistentry>
-				<term>RfClientSession</term>
-				<listitem>
-					<para>
-						created on demand. Life cycle depends on Record-Type AVP content sent in first message. Its subject to timeout if answer is not received. Activity ends once ending answer is receive - be it error, success, event delivery timeout.
-					</para>
-					
+	</formalpara>
+	<para>
+		The life cycle of an activity depends on the type of received request and the application interaction. Request type is defined by Record-Type AVP. In case of session like interaction, the activity timeout is taken into consideration. Please refer to <!-- TODO: add ref to rf-Figure_Event_Charging_Flow, rf-Figure_Session_Charging_Flow --> for example.
+	</para>
+	<para>
+		The activities allows the Rf application to retrieve message and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
+	</para>
+	<variablelist>
+		<title>Rf Activities</title>
+		<varlistentry>
+			<term>RfClientSession</term>
+			<listitem>
+				<para>
+					created on demand. Life cycle depends on Record-Type AVP content sent in first message. Its subject to timeout if answer is not received. Activity ends once ending answer is receive - be it error, success, event delivery timeout.
+				</para>
+				
 <programlisting role="JAVA">/**
  * Send Account Request to Server
  * @param request
@@ -4675,15 +4696,15 @@ public String getSessionId();
  */
 AccountingSessionState getAccountingSessionState();
 </programlisting>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term>RfServerSession</term>
-				<listitem>
-					<para>
-						created by RA when request enters SLEE. Life cycle depends on Record-Type AVP content recevied in first request. Activity ends once ending answer is sent - be it error, success, event delivery timeout.
-					</para>
-					
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>RfServerSession</term>
+			<listitem>
+				<para>
+					created by RA when request enters SLEE. Life cycle depends on Record-Type AVP content received in first request. Activity ends once ending answer is sent - be it error, success, event delivery timeout.
+				</para>
+				
 <programlisting role="JAVA">/**
    * Create an Accounting-Answer with the Acct-Application-Id set to 3.
    *
@@ -4738,25 +4759,25 @@ public String getSessionId();
  */
 AccountingSessionState getAccountingSessionState();
 </programlisting>
-				</listitem>
-			</varlistentry>
-		</variablelist>
-		<formalpara>
-			<title>Provider</title>
-			<para>
-				Provider allows services to create activities, access some topology information and send/receive message in synchornous way.
-			</para>
-		</formalpara>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	<formalpara>
+		<title>Provider</title>
 		<para>
-			The API for the Provider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/ro/ratype/src/main/java/net/java/slee/resource/diameter/rf/RfProvider.java">RoProvider.java</ulink>
+			Provider allows services to create activities, access some topology information and send/receive messages in a synchronous way.
 		</para>
-		<formalpara>
-			<title>Message Factory</title>
-			<para>
-				The Message Factory creates events that can be executed within the JAIN SLEE Server. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
-			</para>
-		</formalpara>
-		
+	</formalpara>
+	<para>
+		The API for the Provider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/ro/ratype/src/main/java/net/java/slee/resource/diameter/rf/RfProvider.java">RoProvider.java</ulink>
+	</para>
+	<formalpara>
+		<title>Message Factory</title>
+		<para>
+			The Message Factory creates events that can be executed within the JAIN SLEE Server. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
+		</para>
+	</formalpara>
+	
 <programlisting role="JAVA">public interface RfMessageFactory {
 
   public static final long _RF_TGPP_VENDOR_ID = 10415L;
@@ -4779,24 +4800,27 @@ AccountingSessionState getAccountingSessionState();
 
 }
 </programlisting>
-	</section>
-	
-	<section>
-		<title>API Usage Examples</title>
-		<para>
-			TEXT
-		</para>
-	</section>
-	
-	<section>
-		<title>Examples</title>
-		<para>
-			TEXT
-		</para>
-	</section>
-
 </section>
+	<section id="draue-Diameter_Rf_API_Usage_Examples" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>API Usage Examples</title>
+	<para>
+		Under Development
+	</para>
+</section>
+	<section id="dre-Diameter_Rf_Examples" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Examples</title>
+	<para>
+		Under Development
+	</para>
 	<section lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Example Configuration</title>
+	<para>
+		Under Development
+	</para>
+</section>
+</section>
+</section>
+	<section id="dcd-Diameter_Cx_Dx" lang="en-US">
 	<!--  This document was created with Syntext Serna Free.  --><title>Mobicents Diameter Cx/Dx</title>
 	<para>
 		The Cx and Dx interfaces are the reference for interactions between the following servers:
@@ -4808,7 +4832,7 @@ AccountingSessionState getAccountingSessionState();
 			</para>
 		</listitem>
 		<listitem>
-			<para>
+			<!-- Note: Developer: Acronyms need to be defined. --> <para>
 				I-CSCF and S-CSCF
 			</para>
 		</listitem>
@@ -4817,7 +4841,7 @@ AccountingSessionState getAccountingSessionState();
 		The standard interface is described in the 3GPP Specifications <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29328.htm">TS29.228</ulink> and <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29329.htm">TS29.229</ulink>.
 	</para>
 	<para>
-		Cx and Dx interface provide a number of message commands that can be used within the application.
+		The Cx and Dx interfaces provide a number of message commands that can be used within the application.
 	</para>
 	<table frame="all" pgwide="1">
 		<title>Diameter Cx and Dx Messages</title>
@@ -4849,7 +4873,7 @@ AccountingSessionState getAccountingSessionState();
 			<tbody>
 				<row>
 					<entry>
-						User-Autorization-Request
+						User-Authorization-Request
 					</entry>
 					<entry>
 						UAR
@@ -4866,7 +4890,7 @@ AccountingSessionState getAccountingSessionState();
 				</row>
 				<row>
 					<entry>
-						User-Autorization-Answer
+						User-Authorization-Answer
 					</entry>
 					<entry>
 						UAA
@@ -5055,10 +5079,10 @@ AccountingSessionState getAccountingSessionState();
 		</tgroup>
 	</table>
 	<!-- TODO:  Editor: paragraphs need rework.  Copied directly from wiki. --> <para>
-		Cx and Dx interfaces definition is mixed. This is due fact that both are meant to standarise communication between SIP IMS Proxies and HSS
+		The Cx and Dx interfaces definition are mixed. This is because both are meant to standardize communication between SIP IMS Proxies and HSS
 	</para>
 	<para>
-		UAR/UA pair allow to perform follwing operations:
+		UAR/UAA perform the following operations:
 	</para>
 	<itemizedlist>
 		<listitem>
@@ -5078,12 +5102,12 @@ AccountingSessionState getAccountingSessionState();
 		</listitem>
 	</itemizedlist>
 	<para>
-		SAR/SAA pair allow to perform following operations:
+		SAR/SAA perform the following operations:
 	</para>
 	<itemizedlist>
 		<listitem>
 			<para>
-				assign an S-CSCF to a Public Identity, or to clear the name of the S-CSCF assigned to one or more Public Identities.
+				assign an S-CSCF to a Public Identity, or clear the name of the S-CSCF assigned to one or more Public Identities.
 			</para>
 		</listitem>
 		<listitem>
@@ -5098,7 +5122,7 @@ AccountingSessionState getAccountingSessionState();
 		</listitem>
 	</itemizedlist>
 	<para>
-		LIR/LIA pair allow to perform following operations:
+		LIR/LIA perform the following operations:
 	</para>
 	<itemizedlist>
 		<listitem>
@@ -5113,17 +5137,17 @@ AccountingSessionState getAccountingSessionState();
 		</listitem>
 	</itemizedlist>
 	<para>
-		RTR/RTA pair allow to perform following operation:
+		RTR/RTA perform the following operation:
 	</para>
 	<itemizedlist>
 		<listitem>
 			<para>
-				notify that public identity is to be unregistered -allow S-CSCF to clean state.
+				notify the server that the public identity is to be unregistered -allow S-CSCF to clean state.
 			</para>
 		</listitem>
 	</itemizedlist>
 	<para>
-		PPR/PPA pair allows to perform following operations:
+		PPR/PPA perform the following operations:
 	</para>
 	<itemizedlist>
 		<listitem>
@@ -5142,103 +5166,101 @@ AccountingSessionState getAccountingSessionState();
 			</para>
 		</listitem>
 	</itemizedlist>
-	<section>
-		<title>Configuration</title>
-		<para>
-			Currently Cx/Dx RA does not support any configuration options.
-		</para>
-	</section>
-	
-	<section>
-		<title>Resource Adaptor Type</title>
-		<para>
-			The resource adapter provides the following types:
-		</para>
-		<itemizedlist>
-			<listitem>
-				<para>
-					Activities
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Provider
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Message Factory
-				</para>
-			</listitem>
-		</itemizedlist>
-		<formalpara>
-			<title>Activities</title>
+	<section id="dcdc-Diameter_Cx_Dx_Configuration" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Configuration</title>
+	<para>
+		The Cx/Dx RA does not currently support any configuration options.
+	</para>
+</section>
+	<section id="dcdrat-Diameter_Cx_Dx_Resource_Adapter_Type" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Resource Adapter Type</title>
+	<para>
+		The resource adapter provides the following types:
+	</para>
+	<itemizedlist>
+		<listitem>
 			<para>
-				The following activities are available, with the API definition listed for reference. The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.
+				Activities
 			</para>
-		</formalpara>
+		</listitem>
+		<listitem>
+			<para>
+				Provider
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Message Factory
+			</para>
+		</listitem>
+	</itemizedlist>
+	<formalpara>
+		<title>Activities</title>
 		<para>
-			All Cx/Dx activities are short lived - activity is ended after answer is receveid or sent.
+			The following activities are available, with the API definition listed for reference. The API defines methods to create requests, send and receive answers for a certain activity, and retrieve session-specific data.
 		</para>
-		<para>
-			The activitites allows the Cx/Dx application to retrieve message and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
-		</para>
-		<variablelist>
-			<title>Diameter Cx/Dx Server Activities</title>
-			<varlistentry>
-				<term>CxDxServerSession</term>
-				<listitem>
-					<para>
-						This is base activity for Cx/Dx server side. It is created for event based interaction. Server activity ends when answer is sent back to client. It is created automaticly for Cx/Dx requests.
-					</para>
-				</listitem>
-			</varlistentry>
-		</variablelist>
-		
+	</formalpara>
+	<para>
+		All Cx/Dx activities are short lived - activity is ended after an answer is received or sent.
+	</para>
+	<para>
+		These activities allow the Cx/Dx applications to retrieve messages and AVP factories bound to the current session. The functionality offered is limited only by the implementation used.
+	</para>
+	<variablelist>
+		<title>Diameter Cx/Dx Server Activities</title>
+		<varlistentry>
+			<term>CxDxServerSession</term>
+			<listitem>
+				<para>
+					This is the base activity for the Cx/Dx server side. It is created for event based interaction. Server activity ends when an answer is sent back to the client. It is created automatically for Cx/Dx requests.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	
 <programlisting role="JAVA">TODO: Program listing is over 100 lines
 </programlisting>
-		<variablelist>
-			<title>Diameter Cx/Dx Client Activities</title>
-			<varlistentry>
-				<term>CxDxClientSession</term>
-				<listitem>
-					<para>
-						This activity is created when client desires to dispatch Cx?Dx request to peer. Activity terminates on receiving answer or send
-					</para>
-				</listitem>
-			</varlistentry>
-		</variablelist>
-		
+	<variablelist>
+		<title>Diameter Cx/Dx Client Activities</title>
+		<varlistentry>
+			<term>CxDxClientSession</term>
+			<listitem>
+				<para>
+					This activity is created when the client desires to dispatch a Cx/Dx request to a peer. Activity terminates when an answer is received from or sent to the client.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	
 <programlisting role="JAVA">TODO: Program listing is over 100 lines
 </programlisting>
-		<!-- JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <formalpara>
-			<title>Provider</title>
-			<para>
-				The API for the CxDxProvider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerProvider.java">CxDxProvider.java in the source code</ulink>.
-			</para>
-		</formalpara>
-		<formalpara>
-			<title>Message Factory</title>
-			<para>
-				The Message Factory creates events that can be executed within the JAIN SLEE Server. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
-			</para>
-		</formalpara>
+	<!-- JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.   --> <formalpara>
+		<title>Provider</title>
 		<para>
-			The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/cx-dx/ratype/src/main/java/net/java/slee/resource/diameter/cxdx/CxDxMessageFactory.java">CxDxMessageFactory.java in the source code</ulink>.
+			The API for the CxDxProvider is more than 100 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerProvider.java">CxDxProvider.java in the source code</ulink>.
 		</para>
-	</section>
-	
-	<section>
-		<title>API Usage Examples</title>
+	</formalpara>
+	<formalpara>
+		<title>Message Factory</title>
 		<para>
-			The following examples demonstrate basic usage examples for the Resource Adapter (RA) API.
+			The Message Factory creates events that can be executed within the JAIN SLEE Server. Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.
 		</para>
-		<example>
-			<title>UAR</title>
-			<para>
-				Following example shows how UAR is created and dispatched
-			</para>
-			
+	</formalpara>
+	<para>
+		The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be included directly for reference. To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/cx-dx/ratype/src/main/java/net/java/slee/resource/diameter/cxdx/CxDxMessageFactory.java">CxDxMessageFactory.java in the source code</ulink>.
+	</para>
+</section>
+	<section id="dcdaue-Diameter_Cx_Dx_API_Usage_Examples" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>API Usage Examples</title>
+	<para>
+		The following examples demonstrate some basic usage examples for the Resource Adapter (RA) API.
+	</para>
+	<example>
+		<title>UAR</title>
+		<para>
+			The following example shows how a UAR is created and dispatched
+		</para>
+		
 <programlisting role="JAVA">//We are client - ICSCF, we get REGISTER from UE, and send this to HSS to notify that UE is not there anymore
 DiameterIdentity destinationHost = new DiameterIdentity("aaa://" + getProperty("destination.ip") + ":" + getProperty("destination.port"));
 DiameterIdentity destinationRealm = new DiameterIdentity((String)getProperty("destination.realm"));
@@ -5285,57 +5307,56 @@ e.printStackTrace();
 e.printStackTrace();
 }
 </programlisting>
-		</example>
-	</section>
+	</example>
+</section>
+	<section id="dcde-Diameter_Cx_Dx_Examples" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Examples</title>
+	<para>
+		The sample application provided for the Cx/Dx Applications are part of the "User Equipment initiated deregistration" scenario. The scenario includes three diameter peers:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				HSS
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				I-CSCF
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				S-CSCF
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>
+		The scenario also includes SIP messaging, which the example omits for the sake of simplicity. The "Client" side emulates I-CSCF and S-CSCF, while the "Server" side of example emulates HSS.
+	</para>
+	<formalpara>
+		<title>UE initiated deregistration flow</title>
+		<para>
+			The flow below shows an actual scenario. The example flow does not include SIP and UE. I-CSCF and S-CSCF are emulated by the "client" side.
+		</para>
+	</formalpara>
+	<figure id="figure-UE_Initiated_deregistration_flow">
+		<title>UE initiated deregistration flow</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="images/dia-CxDxExamples-dia-UE-IDeregistrationFlow.jpg" format="JPG" scalefit="1"/>
+			</imageobject>
+		</mediaobject>
+	</figure>
+	<section id="dcdec-Diameter_Cx_Dx_Example_Configuration" lang="en-US">
+	<!--  This document was created with Syntext Serna Free.  --><title>Configuration</title>
+	<para>
+		Proper configuration includes setting up two instances of JBoss. To achieve this please refer to <ulink url="http://www.jboss.org/community/wiki/ConfiguringMultipleJBossInstancesOnOneMachine">this page</ulink>. The example also requires proper configuration of MUX. The ports and IP address set in its configuration must match those in the example configuration file.
+	</para>
+	<para>
+		The example is configured via a single file: <filename>examples/cxdx/du/src/main/resources/example.properties</filename>. Its content are standard for most of the examples. Aside from the IP/port/realm properties, it contains property which controls how the example behaves - client or server mode.
+	</para>
 	
-	<section>
-		<title>Examples</title>
-		<para>
-			The sample application provided for Cx/Dx Application is part of "User Equipment initiated de-registration" scenario. Scenario includes three diameter peers:
-		</para>
-		<itemizedlist>
-			<listitem>
-				<para>
-					HSS
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					I-CSCF
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					S-CSCF
-				</para>
-			</listitem>
-		</itemizedlist>
-		<para>
-			Scenario also includes SIP messaging, which example ommits for sake of simplicity. "Client" side emualtes I-CSCF and S-CSCF. "Server" side of example emulates HSS.
-		</para>
-		<formalpara>
-			<title>UE initiated de-registration flow</title>
-			<para>
-				Below flow shows actual scenario. Example flow does not include SIP and UE. I-CSCF and S-CSCF are emualted by "client" side.
-			</para>
-		</formalpara>
-		<figure id="figure-UE_Initiated_deregistration_flow">
-			<title>UE initiated de-registration flow</title>
-			<mediaobject>
-				<imageobject>
-					<imagedata fileref="images/dia-CxDxExamples-dia-UE-IDeregistrationFlow.jpg" format="JPG" scalefit="1"/>
-				</imageobject>
-			</mediaobject>
-		</figure>
-		<section>
-			<title>Configuration</title>
-			<para>
-				Proper configuration includes setting up two instances of jboss. To achieve this please refere to <ulink url="http://www.jboss.org/community/wiki/ConfiguringMultipleJBossInstancesOnOneMachine">this page</ulink>. Example also requries proper configuration of mux. Ports, IPAddress set in its configuration must match those in example configuration file.
-			</para>
-			<para>
-				Example is configured via single file: <filename>examples/cxdx/du/src/main/resources/example.properties</filename>. Its content are standard for most of examples. Aside ip/port/realm properties it contains property which controls how example behaves - client or server mode.
-			</para>
-			
 <programlisting><!-- TODO: Whats the ROLE here? -->
 #                       ##
 # Diameter Cx/Dx Example #
@@ -5354,16 +5375,33 @@ destination.ip=127.0.0.1
 destination.port=3868
 destination.realm=mobicents.org
 </programlisting>
-		</section>
-
-	</section>
-
+</section>
+</section>
 </section>
 </chapter>
 	<appendix lang="en-US">
 	<title>Revision History</title>
 	<simpara>
 		<revhistory>
+			<revision>
+				<revnumber> 1.0</revnumber>
+				<date>Wed Oct 14 2009</date>
+				<author>
+					<firstname>Jared </firstname>
+					<surname>Morgan</surname>
+					<email>jmorgan@redhat.com</email>
+				</author>
+				<author>
+					<firstname>Tom </firstname>
+					<surname>Wells</surname>
+					<email>twells@redhat.com</email>
+				</author>
+				<revdescription>
+					<simplelist>
+						<member>Edited supplied developer content, and released first edition of the user guide. </member>
+					</simplelist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber> 0.1</revnumber>
 				<date>Thu Sep 11 2009</date>

@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
-<section>
+<section id="ctvad-Configuring_The_Validator_And_Dictionary">
   <title>Configuring the Validator and Dictionary</title>
   <para>The <filename>dictionary.xml</filename>  file contains the configuration data for both the Validator and Dictionary components.  The file is located in the <filename>/dictionary</filename> directory of the MUX:</para>
   <para>   <filename>mobicents-diameter-mux-<replaceable>[version]</replaceable>.sar/lib/mobicents-diameter-mux-jar-<replaceable>[version]</replaceable>.jar/org/mobicents/diameter/dictionary/dictionary.xml</filename></para>
@@ -102,7 +102,7 @@
       </listitem>
     </varlistentry>
   </variablelist>
-  <example>
+  <example id="example-Typedefn_XML_Attributes">
     <title>&lt;typedefn&gt; XML Attributes</title>
     <programlisting role="XML">&lt;typedefn type-name=&quot;OctetString&quot; /&gt;
 &lt;typedefn type-name=&quot;UTF8String&quot; type-parent=&quot;OctetString&quot; /&gt;
@@ -142,7 +142,7 @@
       </listitem>
     </varlistentry>
   </variablelist>
-  <example>
+  <example id="example-Application_XML_Attributes">
     <title>&lt;application&gt; XML Attributes</title>
     <programlisting role="XML">&lt;application id=&quot;16777216&quot; name=&quot;3GPP Cx/Dx&quot;  
  uri=&quot;http://www.ietf.org/rfc/rfc3588.txt?number=3588&quot;&gt;</programlisting>
@@ -155,7 +155,7 @@
   <note>
     <para>Different sets of elements are supported by &lt;avp&gt; depending on its  position in the dictionary.xml file. </para>
   </note>
-  <example>
+  <example id="example-Avp_Child_Elements_And_Attributes">
     <title>&lt;avp&gt; Child Elements and Attributes</title>
     <programlisting role="XML">&lt;avp name=&quot;Server-Assignment-Type&quot; code=&quot;614&quot; mandatory=&quot;must&quot; vendor-bit=&quot;must&quot; 
  vendor-id=&quot;TGPP&quot; may-encrypt=&quot;no&quot;&gt;
@@ -316,7 +316,7 @@
       </tbody>
     </tgroup>
   </table>
-  <example>
+  <example id="example-Avp_XML_Attributes">
     <title>&lt;avp&gt; XML Attributes</title>
     <programlisting role="XML">&lt;!-- MUST --&gt;
 
@@ -341,7 +341,7 @@
     <varlistentry>
       <term>name</term>
       <listitem>
-        <para>Optional paramter, which specifies the message name for descriptive purposes.</para>
+        <para>Optional parameter, which specifies the message name for descriptive purposes.</para>
       </listitem>
     </varlistentry>
     <varlistentry>
@@ -360,7 +360,7 @@
   <note>
     <para>If the &lt;avp&gt; element is specified in &lt;command&gt; it does not support any child elements.  The &lt;avp&gt; element only refers to defined AVPs when used in this context.</para>
   </note>
-  <example>
+  <example id="example-Command_Elements_And_Attributes">
     <title>&lt;command&gt; Elements and Attributes</title>
     <programlisting>&lt;command name=&quot;User-Authorization&quot; code=&quot;300&quot; vendor-id=&quot;TGPP&quot; request=&quot;true&quot;&gt;
   &lt;avp name=&quot;Server-Assignment-Type&quot; code=&quot;614&quot; mandatory=&quot;must&quot; vendor-bit=&quot;must&quot; 

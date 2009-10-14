@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
-<section id="section-Stack_API_Usage">
-  <title>Stack API Usage</title>
+<section id="dre-Diameter_Rf_Examples">
+  <title>Examples</title>
   <para>Under Development</para>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Rf_Example_Configuration.xml" encoding="UTF-8"/>
 </section>

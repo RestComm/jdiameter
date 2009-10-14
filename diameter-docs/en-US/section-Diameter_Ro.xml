@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
-<section>
+<section id="dr-Diameter_Ro">
   <title>Mobicents Diameter Ro</title>
   <para>Ro is one of two IMS reference points for charging. It covers online charging - scenarios  where charging information can affect, in real-time, the service rendered. Therefore, a direct interaction between the charging mechanism and the session/service control is required. Ro is defined in <ulink url="http://www.3gpp.org/ftp/Specs/html-info/32299.htm">TS32.299</ulink>. </para>
 <!--Note: Developer: The link between the CTF and the OCF needs to be explained better. If the CTF makes the decisions then the OCF carries the decisions out, then that needs to be clarified so that we can make sense of it.-->  <para>Charging involves two peers:</para>
@@ -25,7 +25,7 @@
       <para>Session Charging with Unit Reservation(SCUR) - as above, however reservation can happen more than once.</para>
     </listitem>
   </itemizedlist>
-  <para>As per the definition  in the technical specification, Ro reuses messages defined by the  CCA application. For more information about CCA please refer to <!--TODO: Add xref to : cca-Credit_Control_Application, serna does not allow me....--></para>
+  <para>As per the definition  in the technical specification, Ro reuses messages defined by the  CCA application. For more information about CCA please refer to <xref linkend="dcca-Diameter_CCA"/> </para>
   <figure id="ro-Figure_IEC_Flow">
     <title>IEC Example Flow</title>
     <mediaobject>
@@ -43,7 +43,7 @@
       <para>(2) The CTF a sends proper CCR. The CC-Request-Type is set to an enum value of &quot;EVENT&quot;. This request holds indication which allows OCF to perform some actions.</para>
     </listitem>
     <listitem>
-      <para>(3) The OCF processess the request.</para>
+      <para>(3) The OCF processes the request.</para>
     </listitem>
     <listitem>
       <para>(4) The OCF sends the CCA back to the CTF.  If the request is accepted, the CTF grants service to UA.</para>
@@ -66,7 +66,7 @@
       <para>(1) The UA issues  a service request - this is a more complex case, as the service can be something like charging for a phone call, but up to a  certain limit</para>
     </listitem>
     <listitem>
-      <para>(2) The CTF sends a CCR to the OCF. Tje CC-Request-Type is set to an enum value of &quot;INITIAL&quot;</para>
+      <para>(2) The CTF sends a CCR to the OCF. The CC-Request-Type is set to an enum value of &quot;INITIAL&quot;</para>
     </listitem>
     <listitem>
       <para>(3) The OCF processes the request</para>
@@ -113,92 +113,8 @@
       <para>TERMINATION - (13)</para>
     </listitem>
   </itemizedlist>
-  <section>
-    <title>Configuration</title>
-    <para>The  RA does not currently support any configuration options.</para>
-  </section>
-  <section>
-    <title>Resource Adaptor Type</title>
-    <para>Resource Adaptor Type provides following elements:</para>
-    <itemizedlist>
-      <listitem>
-        <para>Activities</para>
-      </listitem>
-      <listitem>
-        <para>Provider</para>
-      </listitem>
-      <listitem>
-        <para>Message Factory</para>
-      </listitem>
-    </itemizedlist>
-    <formalpara>
-      <title>Activities</title>
-      <para>The following activities are available, with the API definition listed for reference.  The API defines methods to create requests, send and receive answers for a certain activity, and retrieve session-specific data.  </para>
-    </formalpara>
-    <para>The lifecycle of an activity depends on the type of received request and the application interaction. Request type is defined by the CC-Request-Type AVP. In case of session like interaction (SCUR), the activity timeout is taken into consideration. Please refer to  <!--TODO: add ref to ro-Figure_IEC_Flow, ro-Figure_ECUR_Flow and ro-Figure_SCUR_Flow-->   </para>
-    <para>The activitites allow the Ro application to retrieve messages and AVP factories bound to the current session.  The functionality offered is limited only  by the implementation used.</para>
-    <variablelist>
-      <title>Ro Activities</title>
-      <varlistentry>
-        <term>RoClientSession</term>
-        <listitem>
-          <para>created at beginning of request. The session&apos;s life cycle depends on the CC-Request-Type content sent as its first message. It is  subject to timeout if an answer is not received.</para>
-          <programlisting role="JAVA"><!--TODO: Developer:  add this, we had example but its gone?--></programlisting>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>RoServerSession</term>
-        <listitem>
-          <para>created by RA when the request enters SLEE. The session&apos;s life cycle depends on the CC-Request-Type AVP content received in first request.</para>
-          <programlisting role="JAVA"><!--TODO: Add code here, we had example, but its gone?--></programlisting>
-        </listitem>
-      </varlistentry>
-    </variablelist>
-    <formalpara>
-      <title>Provider</title>
-      <para>Provider allows services to create activities, access some topology information and send/receive message in a synchronised way.</para>
-    </formalpara>
-    <para>The API for the Provider is more than 100 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/ro/ratype/src/main/java/net/java/slee/resource/diameter/ro/RoProvider.java">RoProvider.java</ulink></para>
-    <formalpara>
-      <title>Message Factory</title>
-      <para>The Message Factory creates events  that can be executed within the JAIN SLEE Server.  Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.</para>
-    </formalpara>
-    <programlisting role="JAVA">public interface RoMessageFactory {
-
-  public static final long _RO_TGPP_VENDOR_ID = 10415L;
-  public static final int  _RO_AUTH_APP_ID = 4;
-
-  /**
-   * Creates an empty Credit Control Request message.
-   * 
-   * @return
-   */
-  public CreditControlRequest createRoCreditControlRequest();
-  
-  /**
-   * Creates a Credit Control Request message with the Session-Id AVP populated with the sessionId parameter.
-   * 
-   * @param sessionId
-   * @return
-   */
-  public CreditControlRequest createRoCreditControlRequest(String sessionId);
-  
-  /**
-   * Returns a reference to a message factory that can be used to create AVPs defined by the Diameter Base specification.
-   * 
-   * @return Base Diameter message factory
-   */
-  public DiameterMessageFactory getBaseMessageFactory();
-  
-}
-</programlisting>
-  </section>
-  <section>
-    <title>API usage examples</title>
-    <para>TEXT</para>
-  </section>
-  <section>
-    <title>Examples</title>
-    <para>TEXT</para>
-  </section>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Ro_Configuration.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Ro_Resource_Adapter_Type.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Ro_API_Usage_Example.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Ro_Examples.xml" encoding="UTF-8"/>
 </section>

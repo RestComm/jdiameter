@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
-<section>
+<section id="cts-Configuring_The_Stack">
   <title>Configuring the Stack</title>
   <para>The stack is configured using an XML file that contains the options set during initialization.  The  top level structure of the file is described below.  Further explanation of each child element, and the applicable attributes is provided later in this section.</para>
   <programlisting role="XML">&lt;Configuration xmlns=&quot;http://www.jdiameter.org/jdiameter-server&quot;&gt;
@@ -118,13 +118,13 @@
     <varlistentry>
       <term>&lt;AcceptUndefinedPeer&gt;</term>
       <listitem>
-        <para> Specifies whether the stack will accept connections from unidentified peers. The defalut value is <literal>false</literal>.</para>
+        <para> Specifies whether the stack will accept connections from unidentified peers. The default value is <literal>false</literal>.</para>
       </listitem>
     </varlistentry>
     <varlistentry>
       <term>&lt;DuplicateProtection&gt;</term>
       <listitem>
-        <para> Specifies whether duplicate message protection is enabled.  The defalut value is <literal>false</literal>.</para>
+        <para> Specifies whether duplicate message protection is enabled.  The default value is <literal>false</literal>.</para>
       </listitem>
     </varlistentry>
     <varlistentry>
@@ -136,7 +136,7 @@
     <varlistentry>
       <term>&lt;UseUriAsFqdn&gt;</term>
       <listitem>
-        <para> Specifies whether the Ericcson SDK Emulator.  The defalut value is <literal>true</literal>.</para>
+        <para> Specifies whether the Ericsson SDK Emulator.  The default value is <literal>true</literal>.</para>
       </listitem>
     </varlistentry>
     <varlistentry>

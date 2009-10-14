@@ -1,0 +1,88 @@
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. -->
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+ <section id="dscaue-Diameter_Sh_Client_API_Usage_Examples">
+    <title>API Usage Examples</title>
+    <para>The following examples demonstrate basic usage examples for the Resource Adapter (RA) API.  </para>
+    <example>
+      <title>Push-Notification-Request</title>
+      <para>The following code demonstrates how to configure a Push-Notification-Request using <literal>setExtensionAvps()</literal> methods.  </para>
+      <para>It is  possible to utilize specific methods such as <literal>udr.setUserIdentity()</literal> to achieve the same goal, however this falls outside the scope of this example.</para>
+<!--TODO:  Developer:  Where can users find out more about the other method calls available?  Is there a website?  Or can we create an example and then document it?--><!--TODO: Editor:  Reformat programlistings so they flow correctly when published.-->      <programlisting role="JAVA">public void onPushNotificationRequest(net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest pnr, ActivityContextInterface aci)
+                 {
+                     try
+                   {
+                       logger.info( &quot;Push-Notification-Request activity[&quot;+aci.getActivity()+&quot;] received.\n&quot;+pnr );
+       
+                       // Let&apos;s be nice and say OK :)
+                       ShClientSubscriptionActivityImpl shActivity = (ShClientSubscriptionActivityImpl) aci.getActivity();
+
+                       shActivity.sendPushNotificationAnswer( 2001, false );
+                   }
+                   catch ( IOException e ) {
+                     logger.error( &quot;Failure while creating/sending PNA.&quot;, e );
+                   }
+                 }</programlisting>
+    </example>
+    <example>
+      <title>User-Data-Request</title>
+      <para>The following code demonstrates how to configure a User-Data-Request (UDR).</para>
+      <programlisting role="JAVA">private void doSimpleTestsSendUDR()
+                   {
+                   
+                       try {
+                            ShClientActivity basicClientActivity=this.provider.createShClientActivity();
+                             logger.info(&quot; On TimerEvent: activity created&quot;);
+                          
+           
+                            localACI.attach(getSbbContext().getSbbLocalObject());
+           
+           
+                             DiameterIdentity[] peers=provider.getConnectedPeers();
+           
+                            for(DiameterIdentity peer: peers)
+                             {
+                                 logger.info(&quot; On TimerEvent: Connected Peer: &quot;+peer.toString());
+                            }
+           
+                            logger.info(&quot; On TimerEvent: creating UDR&quot;);
+           
+                            UserDataRequest udr=((ShClientMessageFactory)basicClientActivity.getDiameterMessageFactory()).createUserDataRequest();
+           
+                             List&lt;DiameterAvp&gt; avps = new ArrayList&lt;DiameterAvp&gt;();
+             
+                              avps.add(avpFactory.getBaseFactory().createAvp(Avp.SESSION_ID, basicClientActivity.getSessionId().getBytes() ));
+         
+                              DiameterAvp avpVendorId = avpFactory.getBaseFactory().createAvp( Avp.VENDOR_ID, MessageFactory._SH_VENDOR_ID );
+                              DiameterAvp avpAcctApplicationId = avpFactory.getBaseFactory().createAvp( Avp.ACCT_APPLICATION_ID, MessageFactory._SH_APP_ID );
+             
+                               avps.add( avpFactory.getBaseFactory().createAvp( Avp.VENDOR_SPECIFIC_APPLICATION_ID, new DiameterAvp[]{avpVendorId, avpAcctApplicationId} ) );
+             
+                               avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_HOST, (&quot;aaa://&quot; + originIP + &quot;:1812&quot;).getBytes() ));
+                              avps.add(avpFactory.getBaseFactory().createAvp(Avp.ORIGIN_REALM, &quot;mobicents.org&quot;.getBytes() ));
+             
+                               avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_HOST, (&quot;aaa://&quot; + destinationIP + &quot;:3868&quot;).getBytes() ));
+                               avps.add(avpFactory.getBaseFactory().createAvp(Avp.DESTINATION_REALM, &quot;mobicents.org&quot;.getBytes() ));
+                               UserIdentityAvp ui=avpFactory.createUserIdentity();
+                               ui.setPublicIdentity(&quot;sip:subscriber@mobicents.org&quot;);
+
+                               avps.add(ui);
+                               ui=avpFactory.createUserIdentity();
+                               ui.setPublicIdentity(&quot;TEL:+64216543210&quot;);
+
+                               avps.add(ui);
+                               udr.setExtensionAvps(avps.toArray(new DiameterAvp[avps.size()]));
+             
+                               logger.info(&quot; On TimerEvent: Sending message:\n&quot;+udr);
+                              basicClientActivity.sendUserDataRequest(udr);
+             
+                            logger.info(&quot; On TimerEvent: Message send&quot;);
+           
+           
+           
+                         } catch (Exception e) {
+                          logger.error( &quot;Failure trying to create/sen UDR.&quot;, e );
+                         }
+                   }</programlisting>
+    </example>
+  </section>

@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
-<section>
-  <title><!--Note: Developer: This section hasn't been edited at all, because it is so similar to the Ro section that it is impossible to differentiate between the two. You need to merge the two sections, and then concisely explain the differences between the two. Otherwise it is both a waste of space and confusing for the user.-->Mobicents Diameter Rf</title>
-  <para>Rf is one of two IMS reference points for charging. It covers offline charging - scenarios  where charging information does not affect, in real-time, the service rendered. </para>
+<section id="dr-Diameter_Rf">
+  <title>Mobicents Diameter Rf</title>
+<!--Note: Developer: This section hasn't been edited at all, because it is so similar to the Ro section that it is impossible to differentiate between the two. You need to merge the two sections, and then concisely explain the differences between the two. Otherwise it is both a waste of space and confusing for the user.-->  <para>Rf is one of two IMS reference points for charging. It covers offline charging - scenarios  where charging information does not affect, in real-time, the service rendered. </para>
   <para>Charging involves two peers:</para>
   <itemizedlist>
     <listitem>
@@ -13,7 +13,7 @@
     </listitem>
   </itemizedlist>
   <para>Difference to Ro interface is that information/requests sent from CTF to CDF do  not affect service delivery. CTF only informs CDF about units consumption.  For detailed information on Rf interface please refer to information found  <ulink url="http://www.3gpp.org/ftp/Specs/html-info/32299.htm">here</ulink> and <ulink url="http://www.3gpp.org/ftp/Specs/html-info/32240.htm">here</ulink>.</para>
-  <para>As per definition from technical specification Rf reuses messages defined in Diameter Base. For more information about base please refer to <!--TODO: add ref to db-Diabeter_Base--></para>
+  <para>As per definition from technical specification Rf reuses messages defined in Diameter Base. For more information about base please refer to <xref linkend="db-Diameter_Base"/> </para>
   <figure id="rf-Figure_Event_Charging_Flow">
     <title>Event Charging Flow</title>
     <mediaobject>
@@ -41,13 +41,13 @@
       </imageobject>
     </mediaobject>
   </figure>
-  <para>Above diagram shwos session based charging. Performed actions can be described as follows:</para>
+  <para>Above diagram shows session based charging. Performed actions can be described as follows:</para>
   <itemizedlist>
     <listitem>
-      <para>(1) Service is beeing delivered to UA</para>
+      <para>(1) Service is being delivered to UA</para>
     </listitem>
     <listitem>
-      <para>(2) CTF sends ACR with Record-Type AVP equal to enum value of &quot;START&quot;. This indicates that session is beeing estabilished</para>
+      <para>(2) CTF sends ACR with Record-Type AVP equal to enum value of &quot;START&quot;. This indicates that session is being established</para>
     </listitem>
     <listitem>
       <para>(3) CDF processes received ACR</para>
@@ -65,10 +65,10 @@
       <para>(7) CDF responds with ACA, acknowledging charge operation</para>
     </listitem>
     <listitem>
-      <para>(8) Service for UA has been termianted</para>
+      <para>(8) Service for UA has been terminated</para>
     </listitem>
     <listitem>
-      <para>(9) CTF creates termianting ACR. It contains last charge information for session. Record-Type AVP is equal to enum value of &quot;STOP&quot;</para>
+      <para>(9) CTF creates terminating ACR. It contains last charge information for session. Record-Type AVP is equal to enum value of &quot;STOP&quot;</para>
     </listitem>
     <listitem>
       <para>(10) CDF process received ACR</para>
@@ -77,163 +77,8 @@
       <para>(11) CDF responds with ACA, acknowledging charge operation</para>
     </listitem>
   </itemizedlist>
-  <section>
-    <title>Configuration</title>
-    <para>Currently RA does not support any confgiuration options.</para>
-  </section>
-  <section>
-    <title>Resource Adaptor Type</title>
-    <para>Resource Adaptor Type provides following elements:</para>
-    <itemizedlist>
-      <listitem>
-        <para>Activities</para>
-      </listitem>
-      <listitem>
-        <para>Provider</para>
-      </listitem>
-      <listitem>
-        <para>Message Factory</para>
-      </listitem>
-    </itemizedlist>
-    <formalpara>
-      <title>Activities</title>
-      <para>The following activities are available, with the API definition listed for reference.  The API defines methods to easily create and send answers and requests for a certain activity, in addition to retrieving session-specific data.</para>
-    </formalpara>
-    <para>The lifecycle of an activity depends on the type of received request and the application interaction. Request type is defined by Record-Type AVP. In case of session like interaction, the activity  timeout is taken into consideration. Please refer to <!--TODO: add ref to rf-Figure_Event_Charging_Flow, rf-Figure_Session_Charging_Flow-->    for example.</para>
-    <para>The activitites allows the Rf application to retrieve message and AVP factories bound to the current session.  The functionality offered is limited only  by the implementation used.</para>
-    <variablelist>
-      <title>Rf Activities</title>
-      <varlistentry>
-        <term>RfClientSession</term>
-        <listitem>
-          <para>created on  demand. Life cycle depends on Record-Type AVP content sent in  first message. Its subject to timeout if answer is not received. Activity ends once ending answer is receive - be it error,  success, event delivery timeout.</para>
-          <programlisting role="JAVA">/**
- * Send Account Request to Server
- * @param request
- * @throws IOException 
- */
- void sendAccountRequest(AccountingRequest request) throws IOException;
-/**
-   * Return a message factory to be used to create concrete implementations of credit control messages.
-   * 
-   * @return
-   */
-  public RfMessageFactory getRfMessageFactory();
-
-  /**
- * Returns the session ID of the credit control session, which uniquely
- * identifies the session.
- * 
- * @return 
- */
-public String getSessionId();
-/**
- * Returns accounting session state of underlying session. Valid values are: Idle,PendingS,PendingE,PendingB,Open,PendingI,PendingL
- * {@link AccountingSessionState}
- * @return
- */
-AccountingSessionState getAccountingSessionState();</programlisting>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>RfServerSession</term>
-        <listitem>
-          <para>created by RA when request enters SLEE. Life cycle depends on Record-Type AVP content recevied in first request. Activity ends once ending answer is sent - be it error, success, event delivery timeout.</para>
-          <programlisting role="JAVA">/**
-   * Create an Accounting-Answer with the Acct-Application-Id set to 3.
-   *
-   * @return an Accounting-Answer
-   */
-  public AccountingAnswer createRfAccountingAnswer();
-  
-  /**
-   * Create an Accounting-Answer with some AVPs populated from the provided Accounting-Request.
-   * 
-   * The ACA will contain the AVPs specified in createRfAccountingAnswer() and the following AVPs from the Accounting-Request:
-   * &lt;ul&gt;Accounting-Record-Type&lt;/ul&gt;
-   * &lt;ul&gt;Accounting-Record-Number&lt;/ul&gt;
-   * 
-   * @param acr Accounting-Request to copy AVPs from
-   * @return an Accounting-Answer
-   */
-  public AccountingAnswer createRfAccountingAnswer(AccountingRequest acr);
-  
-  /**
-   * Send an Accounting Answer.
-   * 
-   * @param accountingAnswer answer message to send
-   * @throws IOException if the message could not be sent 
-   * @throws IllegalArgumentException if accountingAnswer is missing any required AVPs
-   */
-  public void sendAccountingAnswer(AccountingAnswer accountingAnswer) throws IOException, IllegalArgumentException;
-/**
- * Sends generated answer back to client
- * @param answer
- * @throws IOException
- */
-void sendAccountAnswer(AccountingAnswer answer) throws IOException;
-/**
-   * Return a message factory to be used to create concrete implementations of credit control messages.
-   * 
-   * @return
-   */
-  public RfMessageFactory getRfMessageFactory();
-
-  /**
- * Returns the session ID of the credit control session, which uniquely
- * identifies the session.
- * 
- * @return 
- */
-public String getSessionId();
-/**
- * Returns accounting session state of underlying session. Valid values are: Idle,PendingS,PendingE,PendingB,Open,PendingI,PendingL
- * {@link AccountingSessionState}
- * @return
- */
-AccountingSessionState getAccountingSessionState();</programlisting>
-        </listitem>
-      </varlistentry>
-    </variablelist>
-    <formalpara>
-      <title>Provider</title>
-      <para>Provider allows services to create activities, access some topology information and send/receive message in synchornous way.</para>
-    </formalpara>
-    <para>The API for the Provider is more than 100 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/ro/ratype/src/main/java/net/java/slee/resource/diameter/rf/RfProvider.java">RoProvider.java</ulink></para>
-    <formalpara>
-      <title>Message Factory</title>
-      <para>The Message Factory creates events  that can be executed within the JAIN SLEE Server.  Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.</para>
-    </formalpara>
-    <programlisting role="JAVA">public interface RfMessageFactory {
-
-  public static final long _RF_TGPP_VENDOR_ID = 10415L;
-  public static final int  _RF_ACC_APP_ID = 3;
-
-  /**
-   * Get a factory to create AVPs and messages defined by Diameter Base. 
-   * 
-   * @return
-   */
-  public DiameterMessageFactory getBaseMessageFactory();
-
-  /**
-   * Creates an Accounting Request message with the Accounting-Record-Type AVP set. 
-   * 
-   * @param accountingrecordtype
-   * @return
-   */
-  public AccountingRequest createRfAccountingRequest(AccountingRecordType accountingrecordtype);
-
-}
-
-</programlisting>
-  </section>
-  <section>
-    <title>API Usage Examples</title>
-    <para>TEXT</para>
-  </section>
-  <section>
-    <title>Examples</title>
-    <para>TEXT</para>
-  </section>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Rf_Configuration.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Rf_Resource_Adapter_Type.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Rf_API_Usage_Example.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Rf_Examples.xml" encoding="UTF-8"/>
 </section>

@@ -1,4 +1,4 @@
-﻿<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE authorgroup PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
 ]>
 <authorgroup>
@@ -33,5 +33,15 @@
       <orgdiv>Engineering Content Services</orgdiv>
     </affiliation>
     <email>jmorgan@redhat.com</email>
+  </author>
+  <author>
+    <firstname>Tom</firstname>
+    <surname>Wells</surname>
+    <contrib>Technical Writer and Editor</contrib>
+    <affiliation>
+      <orgname>Red Hat, </orgname>
+      <orgdiv>Engineering Content Services</orgdiv>
+    </affiliation>
+    <email>twells@redhat.com</email>
   </author>
 </authorgroup>

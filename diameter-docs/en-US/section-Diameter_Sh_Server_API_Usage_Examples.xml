@@ -1,0 +1,110 @@
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. -->
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<section id="dssaue-Diameter_Sh_Server_API_Usage_Examples">
+    <title>API Usage Examples</title>
+    <para>The following examples demonstrate some basic usage examples for the Resource Adapter (RA) API.  </para>
+    <example>
+      <title>User-Data-Request</title>
+      <para>The following example shows how a UDR is consumed on the server side.</para>
+      <programlisting role="JAVA">public void onUserDataRequest(UserDataRequest event, ActivityContextInterface aci) {
+if (logger.isInfoEnabled())
+logger.info(&quot;onUserDataRequest :: &quot; + event);
+
+UserDataAnswer answer = ((ShServerActivity) aci.getActivity()).createUserDataAnswer(2001, false);
+
+try {
+if (logger.isInfoEnabled())
+logger.info(&quot;onUserDataRequest :: Created UDA:\r\n&quot; + answer);
+answer.setUserData(Utils.getUserData(event.getUserIdentity()));
+((ShServerActivity) aci.getActivity()).sendUserDataAnswer(answer);
+} catch (IOException e) {
+logger.error(&quot;Failed to send UDA.&quot;, e);
+}
+}</programlisting>
+    </example>
+    <example>
+      <title>Profile-Update-Request</title>
+      <para>The following code demonstrates how to consume a Profile-Update-Request (PUR).</para>
+      <programlisting role="JAVA">public void onProfileUpdateRequest(ProfileUpdateRequest event, ActivityContextInterface aci) {
+try {
+logger.info(&quot;onProfileUpdateRequest :: &quot; + event);
+
+ProfileUpdateAnswer answer = ((ShServerActivity) aci.getActivity()).createProfileUpdateAnswer(2001, false);
+
+logger.info(&quot;Created Profile-Update-Answer:\r\n&quot; + answer);
+Utils.updateUserData(event.getUserIdentity(),event.getUserIdentity());
+((ShServerActivity) aci.getActivity()).sendProfileUpdateAnswer(answer);
+} catch (Exception e) {
+logger.error(&quot;Failed to create/send PUA.&quot;, e);
+}
+}</programlisting>
+    </example>
+    <example>
+      <title>Subscribe-Notification-Request</title>
+      <para>The following example shows simple handling of Subscribe-Notification-Request (SNR)</para>
+      <programlisting role="JAVA">public void onSubscribeNotificationsRequest(SubscribeNotificationsRequest event, ActivityContextInterface aci) {
+logger.info(&quot;onSubscribeNotificationsRequest :: &quot; + event);
+
+SubscribeNotificationsAnswer answer = ((ShServerSubscriptionActivity) aci.getActivity()).createSubscribeNotificationsAnswer(2001, false);
+
+try {
+// This will be fixed in B2, we need more accessors
+
+
+logger.info(&quot; onSubscribeNotificationsRequest :: Created SNA:\r\n&quot; + answer);
+
+((ShServerSubscriptionActivity) aci.getActivity()).sendSubscribeNotificationsAnswer(answer);
+
+if (event.getSubsReqType() == SubsReqType.SUBSCRIBE) {
+logger.info(&quot;Setting Timer for firing PNR in 15 seconds...&quot;);
+
+TimerOptions options = new TimerOptions();
+timerFacility.setTimer(aci, null, System.currentTimeMillis() + 3000, options);
+}
+} catch (Exception e) {
+logger.error(&quot;Failed to create/send SNA.&quot;, e);
+}
+}</programlisting>
+    </example>
+  </section>
+<!--Note: Developer: Example needs to be inserted here for Diameter Sh (Server)--><!--<section>
+  <title>Examples</title>
+  <para>The sample application provided for Diameter Sh (Client) supports two scenarios:</para>
+  <itemizedlist>
+    <listitem>
+      <para>The application is requested for user data</para>
+    </listitem>
+    <listitem>
+      <para>The application receives a subscription to user data</para>
+    </listitem>
+  </itemizedlist>
+  <formalpara>
+    <title>Application is requested for user data</title>
+    <para>In this case example simply sends request to remote peer (HSS). It simply requests data for certain user.</para>
+  </formalpara>
+  <figure id="figure-Sh_Client_Application_Message_Flow_1">
+    <title>Data Request Flow</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/dia-ShServerExamples-dia-UDRFlow.jpg" format="JPG"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
+  <formalpara>
+    <title>Application receives subscription to user data</title>
+    <para>In this case example service subscribes in HSS to changes to user profile. Once subscribtion is estabilished, example service will receive .  </para>
+  </formalpara>
+  <figure id="figure-Sh_Server_Application_Message_Flow_1">
+    <title>Subscribe Request Message Flow</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/dia-ShServerExamples-dia-SNRFlow.jpg" format="JPG"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
+  <section>
+    <title>Configuration</title>
+    <para>Right now example does not support any configuration.</para>
+  </section>
+</section>-->

@@ -1,0 +1,57 @@
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. -->
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<section id="dcdaue-Diameter_Cx_Dx_API_Usage_Examples">
+    <title>API Usage Examples</title>
+    <para>The following examples demonstrate some basic usage examples for the Resource Adapter (RA) API.  </para>
+    <example>
+      <title>UAR</title>
+      <para>The following example shows how a UAR is created and dispatched</para>
+      <programlisting role="JAVA">//We are client - ICSCF, we get REGISTER from UE, and send this to HSS to notify that UE is not there anymore
+DiameterIdentity destinationHost = new DiameterIdentity(&quot;aaa://&quot; + getProperty(&quot;destination.ip&quot;) + &quot;:&quot; + getProperty(&quot;destination.port&quot;));
+DiameterIdentity destinationRealm = new DiameterIdentity((String)getProperty(&quot;destination.realm&quot;));
+CxDxClientSession clientSession;
+try {
+
+clientSession = this.provider.createCxDxClientSessionActivity(destinationHost, destinationRealm);
+
+ActivityContextInterface clientACI=this.acif.getActivityContextInterface(clientSession);
+clientACI.attach(this.sbbContext.getSbbLocalObject());
+
+UserAuthorizationRequest UAR = clientSession.createUserAuthorizationRequest();
+//&lt; User-Authorization-Request&gt; ::=&lt; Diameter Header: 300, REQ, PXY, 16777216 &gt;
+//&lt; Session-Id &gt;
+//{ Vendor-Specific-Application-Id }
+//{ Auth-Session-State }
+UAR.setAuthSessionState(AuthSessionStateType.STATE_MAINTAINED);
+//{ Origin-Host }
+//{ Origin-Realm }
+//[ Destination-Host ]
+//   { Destination-Realm }
+UAR.setUserName(&quot;sip:adam@example.domain.org&quot;);
+//{ User-Name }
+//*[ Supported-Features ]
+//{ Public-Identity }
+UAR.setPublicIdentity(&quot;sip:adam.b@travel.contanct.com&quot;);
+//{ Visited-Network-Identifier }
+UAR.setVisitedNetworkIdentifier(&quot;visit.airport.moscow.ru&quot;);
+//[ User-Authorization-Type ]
+UAR.setUserAuthorizationType(UserAuthorizationType.DE_REGISTRATION);
+//[ UAR-Flags ]
+
+//*[ AVP ]
+//*[ Proxy-Info ]
+//*[ Route-Record ]
+
+//go
+clientSession.sendUserAuthorizationRequest(UAR);
+} catch (CreateActivityException e) {
+// TODO Auto-generated catch block
+e.printStackTrace();
+} catch (IOException e) {
+// TODO Auto-generated catch block
+e.printStackTrace();
+}</programlisting>
+    </example>
+  </section>
+  

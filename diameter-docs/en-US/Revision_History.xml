@@ -6,6 +6,25 @@
   <simpara>
     <revhistory>
       <revision>
+        <revnumber> 1.0</revnumber>
+        <date>Wed Oct 14 2009</date>
+        <author>
+          <firstname>Jared </firstname>
+          <surname>Morgan</surname>
+          <email>jmorgan@redhat.com</email>
+        </author>
+        <author>
+          <firstname>Tom </firstname>
+          <surname>Wells</surname>
+          <email>twells@redhat.com</email>
+        </author>
+        <revdescription>
+          <simplelist>
+            <member>Edited supplied developer content, and released first edition of the user guide. </member>
+          </simplelist>
+        </revdescription>
+      </revision>
+      <revision>
         <revnumber> 0.1</revnumber>
         <date>Thu Sep 11 2009</date>
         <author>

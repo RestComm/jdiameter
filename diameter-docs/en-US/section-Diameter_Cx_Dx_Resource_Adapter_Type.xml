@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<section id="dcdrat-Diameter_Cx_Dx_Resource_Adapter_Type">
+  <title>Resource Adapter Type</title>
+  <para>The resource adapter  provides the following types:</para>
+  <itemizedlist>
+    <listitem>
+      <para>Activities</para>
+    </listitem>
+    <listitem>
+      <para>Provider</para>
+    </listitem>
+    <listitem>
+      <para>Message Factory</para>
+    </listitem>
+  </itemizedlist>
+  <formalpara>
+    <title>Activities</title>
+    <para>The following activities are available, with the API definition listed for reference.  The API defines methods to create requests, send and receive answers for a certain activity, and retrieve session-specific data. </para>
+  </formalpara>
+  <para>All Cx/Dx activities are short lived - activity is ended after an answer is received or sent.</para>
+  <para>These activities allow the Cx/Dx applications to retrieve messages and AVP factories bound to the current session.  The functionality offered is limited only  by the implementation used. </para>
+  <variablelist>
+    <title>Diameter Cx/Dx Server Activities</title>
+    <varlistentry>
+      <term>CxDxServerSession</term>
+      <listitem>
+        <para>This is the base activity for the Cx/Dx server side. It is created for event based interaction. Server activity ends when an answer is sent back to the client. It is created automatically for Cx/Dx requests.</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+  <programlisting role="JAVA">TODO: Program listing is over 100 lines
+</programlisting>
+  <variablelist>
+    <title>Diameter Cx/Dx Client Activities</title>
+    <varlistentry>
+      <term>CxDxClientSession</term>
+      <listitem>
+        <para>This activity is created when the client desires to dispatch a Cx/Dx request to a peer. Activity terminates when an answer is received from or sent to the client.</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+  <programlisting role="JAVA">TODO: Program listing is over 100 lines
+</programlisting>
+<!--JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.  -->  <formalpara>
+    <title>Provider</title>
+    <para>The API for the CxDxProvider is more than 100 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerProvider.java">CxDxProvider.java in the source code</ulink>.</para>
+  </formalpara>
+  <formalpara>
+    <title>Message Factory</title>
+    <para>The Message Factory creates events  that can be executed within the JAIN SLEE Server.  Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.</para>
+  </formalpara>
+  <para>The API for the DiameterMessageFactory is more than 300 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/cx-dx/ratype/src/main/java/net/java/slee/resource/diameter/cxdx/CxDxMessageFactory.java">CxDxMessageFactory.java in the source code</ulink>.</para>
+</section>

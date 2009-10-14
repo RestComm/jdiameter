@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<section id="dbc-Diameter_Base_Example_Configuration">
+  <title>Example Configuration</title>
+  <para>To configure the examples, changes must be made to the <filename>example.properties</filename> file in the <filename>/du/main/resources</filename> directory.</para>
+  <para>The following example configuration supports two modes: client, and server.  In client mode, the application sends an Accounting Request (ACR). To make the example act as a proxy, settings relating to ACR must be added in order for the application to handle Attribute Value Pairs (AVPs). </para>
+  <example>
+    <title>Setting origin and destination properties</title>
+    <programlisting># Act as &quot;client&quot; or &quot;server&quot; (default: server)
+example.mode=server
+
+# The AS IP Address, Port and Realm (default: 127.0.0.1 / 1812 / mobicents.org)
+origin.ip=127.0.0.1
+origin.port=1812
+origin.realm=mobicents.org
+
+# The Remote IP Address, Port and Realm (default: 127.0.0.1 / 21812 / mobicents.org)
+destination.ip=127.0.0.1
+destination.port=21812
+destination.realm=mobicents.org</programlisting>
+  </example>
+</section>

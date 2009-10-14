@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<section id="dsce-Diameter_Sh_Client_Examples">
+  <title>Examples</title>
+  <para>The sample application provided for Diameter Sh (Client) supports two scenarios:</para>
+  <itemizedlist>
+    <listitem>
+      <para>Application requests user data</para>
+    </listitem>
+    <listitem>
+      <para>Application subscribes to profiles changes.</para>
+    </listitem>
+  </itemizedlist>
+  <formalpara>
+    <title>Application requests user data</title>
+    <para>In this scenario, the application  sends a request to the remote peer (the Home Subscriber Server). The application then requests data for a single user.</para>
+  </formalpara>
+  <figure id="figure-Client_Application_Message_Flow_1">
+    <title>Data Request Flow</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/dia-ShClientExamples-dia-UDRFlow.jpg" format="JPG"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
+  <formalpara>
+    <title>Application subscribes to profiles changes</title>
+    <para>In this scenario, the  application subscribes to the Home Subscriber Server (HSS) to monitor changes to a user profile. Once the subscription is established, the example service receives  .  </para>
+  </formalpara>
+  <figure id="figure-Server_Application_Message_Flow_1">
+    <title>Subscribe Request Message Flow</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/dia-ShClientExamples-dia-SNRFlow.jpg" format="JPG"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Client_Example_Configuration.xml" xpointer="dscec-Diameter_Sh_Client_Example_Configuration" encoding="UTF-8"/>
+</section>

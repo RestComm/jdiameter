@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
-<section id="section-Stack_API_Usage">
-  <title>Stack API Usage</title>
-  <para>Under Development</para>
+<section id="drc-Diameter_Rf_Configuration">
+  <title>Configuration</title>
+  <para>Currently RA does not support any configuration options.</para>
 </section>

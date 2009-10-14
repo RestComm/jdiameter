@@ -1,0 +1,37 @@
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. -->
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<section id="dscec-Diameter_Sh_Client_Example_Configuration">
+      <title>Configuration</title>
+      <para>To configure the examples, changes must be made to the <filename>example.properties</filename> file in the <filename>/du/main/resources</filename> directory.</para>
+      <para>In addition to the  common properties such as IP Address, port number,  and realm, the example has two properties to control which scenario is enabled.  </para>
+      <itemizedlist>
+        <listitem>
+          <para><literal>send.udr</literal> - If set to <literal>true</literal>, example will send UDR to remote peer.</para>
+        </listitem>
+        <listitem>
+          <para><literal>send.snr</literal> - If set to <literal>true</literal>, example will send SNR and await updates on profile changes.</para>
+        </listitem>
+      </itemizedlist>
+      <para>For information regarding the requests available for Sh (Client), refer to <xref linkend="table-Diameter_Sh_Client_Messages"/></para>
+      <example>
+        <title>Setting origin and destination properties</title>
+        <programlisting>#                           ##
+# Diameter Sh Client Example #
+##                           #
+
+# Controls how example acts on start, it can either send UDR or SNR
+send.udr = true
+send.snr = false
+
+# The AS IP Address, Port and Realm (default: 127.0.0.1 / 1812 / mobicents.org)
+origin.ip=127.0.0.1
+origin.port=1812
+origin.realm=mobicents.org
+
+# The Remote IP Address, Port and Realm (default: 127.0.0.1 / 3868 / mobicents.org)
+destination.ip=127.0.0.1
+destination.port=3868
+destination.realm=mobicents.org</programlisting>
+      </example>
+    </section>

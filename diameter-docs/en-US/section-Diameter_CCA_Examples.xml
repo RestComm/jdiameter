@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<section id="dce-Diameter_CCA_Examples">
+  <title>Examples</title>
+  <para>The sample application provided for CCA is a very basic one.It supports three separate scenarios:</para>
+  <itemizedlist>
+    <listitem>
+      <para>Client</para>
+    </listitem>
+    <listitem>
+      <para>Server for event charging</para>
+    </listitem>
+    <listitem>
+      <para>Server for session based charging</para>
+    </listitem>
+  </itemizedlist>
+  <formalpara>
+    <title>Client</title>
+    <para>The example acts as a CCA client . It issues an order to charge an entity (unspecified) account with a defined number of units. It sends a CCR to the Ericsson Diameter Server (EDS).  If the message is correctly built, the server will send an answer back to the application stating that the operation was executed correctly.  If the message is incorrectly built, the EDS sends an error message back to the application.</para>
+  </formalpara>
+<!--Note: Developers: Am leaving this section unedited as it makes no sense. I need a more structured, logical explanation of what the example is if I am going to rewrite it coherently.-->  <formalpara>
+    <title>Server for event charging</title>
+    <para>The example service acts as a simple server. It awaits for a CCR message. Once the client sends it (EDS), the  service receives it. The simplest processing of this request includes only sending success answer</para>
+  </formalpara>
+  <formalpara>
+    <title>Server for session based charging</title>
+    <para>The service awaits a session based exchange - that is CCRs with CC-Request-Type which follows sequence INITIAL, UPDATE(zero or more) and TERMINATION.</para>
+  </formalpara>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_CCA_Example_Configuration.xml" xpointer="dcec-Diameter_CCA_Example_Configuration" encoding="UTF-8"/>
+</section>

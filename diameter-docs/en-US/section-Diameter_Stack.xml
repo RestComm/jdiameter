@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
-<section>
+<section id="ds-Diameter_Stack">
   <title>Stack</title>
   <para>The Diameter Stack is the primary component of the Diameter solution.  The Stack governs the mechanisms that control message sending and receiving,  peer management, and session management.  The stack manages these resources using State Machines.  </para>
   <para>State Machines as defined in RFC 3588 are fully compatible with the Stack, while custom State Machines that handle different applications such as Sh, Ro, Rf, Cx, and Dx are also supported.</para>
@@ -8,6 +8,6 @@
     <para>For more information about the different applications Diameter supports, refer to <xref linkend="chapter-Resource_Adapter_Components"/>. </para>
   </note>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Configuring_The_Stack.xml" encoding="UTF-8"/>
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Stack_Example.xml" xpointer="section-Stack_Example" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Stack_Example.xml" encoding="UTF-8" xpointer="section-Stack_Example"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Stack_API_Usage.xml" encoding="UTF-8"/>
 </section>
