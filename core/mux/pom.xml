@@ -59,13 +59,13 @@
 			<modules>
 				<module>sar-jboss-4</module>
 			</modules>
-		<profile>
+		</profile>
 		<profile>
 			<id>jboss5</id>
 			<modules>
 				<module>sar-jboss-5</module>
 			</modules>
-		<profile>		
+		</profile>		
 	</profiles>
 
 	<scm>

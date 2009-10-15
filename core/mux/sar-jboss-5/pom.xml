@@ -5,10 +5,10 @@
   <parent>
     <groupId>org.mobicents.servers.diameter</groupId>
     <artifactId>mobicents-diameter-mux-parent</artifactId>
-    <version>1.1.1.GA-SNAPSHOT</version> 
+    <version>1.1.0.GA-SNAPSHOT</version> 
   </parent>
   
-  <artifactId>mobicents-diameter-mux-sar</artifactId>
+  <artifactId>mobicents-diameter-mux-sar-jboss-5</artifactId>
 
   <name>Mobicents :: Diameter Multiplexer :: ${pom.artifactId}</name>
   
@@ -23,65 +23,6 @@
     </dependency>
   </dependencies>
 
-  <profiles>
-    <profile>
-      <id>jboss5</id>
-      <modules />
-      <build>
-        <plugins>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>deploy</id>
-            <phase>install</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
-                <echo message="Using JBoss 5.x Configuration" />
-                <delete dir="target/${project.build.finalName}/META-INF" />
-                <move file="target/${project.build.finalName}/META-INF-JBoss5" tofile="target/${project.build.finalName}/META-INF" />
-              </tasks>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-        </plugins>
-      </build>    
-    </profile>
-    <profile>
-      <id>jboss4</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules />
-      <build>
-        <plugins>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>deploy</id>
-            <phase>install</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
-                <echo message="Using JBoss 4.x Configuration" />
-                <delete dir="target/${project.build.finalName}/META-INF-JBoss5" />
-              </tasks>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-        </plugins>
-      </build>    
-    </profile>
-  </profiles>
-  
   <build>
     <finalName>mobicents-diameter-mux-${pom.version}</finalName>
     <plugins>
