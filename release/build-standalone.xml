@@ -7,23 +7,27 @@
 		 NOTE#2: ./README.txt is used for / readme of zip
 	
 	 -->
-	<property name="VERSION" value="1.0.1.GA" />
-	<property name="JDIAM_VERSION" value="1.5.2.2-build212" />
-	<property name="MUX_VERSION" value="1.0.1.GA" />
-	<property name="base_VERSION" value="1.0.1.GA" />
-	<property name="cca_VERSION" value="1.0.1.GA" />
-	<property name="sh-client_VERSION" value="1.0.1.GA" />
-	<property name="sh-server_VERSION" value="1.0.1.GA" />
-	<property name="ro_VERSION" value="1.0.1.GA" />
-	<property name="rf_VERSION" value="1.0.1.GA" />
-	<property name="base_EXAMPLE_VERSION" value="1.0.1.GA" />
-	<property name="openims_EXAMPLE_VERSION" value="1.0.1.GA" />
+	<property name="VERSION" value="1.1.0.GA" />
+	<property name="JDIAM_VERSION" value="1.5.3.0-build315" />
+	<property name="MUX_VERSION" value="1.1.0.GA" />
+	<property name="base_VERSION" value="1.1.0.GA" />
+	<property name="cca_VERSION" value="1.1.0.GA" />
+	<property name="sh-client_VERSION" value="1.1.0.GA" />
+	<property name="sh-server_VERSION" value="1.1.0.GA" />
+	<property name="ro_VERSION" value="1.1.0.GA" />
+	<property name="rf_VERSION" value="1.1.0.GA" />
+	<property name="cx-dx_VERSION" value="1.0.0.BETA2" />
+	<property name="base_EXAMPLE_VERSION" value="1.1.0.GA" />
+	<property name="openims_EXAMPLE_VERSION" value="1.1.0.GA" />
+	<property name="cx-dx_EXAMPLE_VERSION" value="1.0.0.BETA1" />
 
 	<property name="JAINSLEE_VERSION" value="1.2.6.GA" />
 	<property name="JBOSS_VERSION" value="4.2.3.GA" />
 	
-	<property name="ra_list" value="base,cca,sh-client,sh-server,ro,rf" />
-	<property name="example_list" value="base,openims" />
+	<property name="SAR_CONFIGURATION" value="jboss-4" />
+	
+	<property name="ra_list" value="base,cca,sh-client,sh-server,ro,rf,cx-dx" />
+	<property name="example_list" value="base,openims,cx-dx" />
 	<property name="checkout_base_dir" value="${basedir}/diameter" />
 	<property name="zip_dir" value="${basedir}/diameter/zip" />
 
@@ -63,10 +67,10 @@
 	</target>
 
 	
-	<target name="checkout" depends="init,checkout-core,checkout-resources,checkout-examples,checkout-jainslee" />
-	<target name="build-src" depends="build-src-core,build-src-resources,build-src-examples,build-jainslee" />
+	<target name="checkout" depends="init,checkout-core,checkout-resources,checkout-examples,checkout-docs,checkout-jainslee" />
+	<target name="build-src" depends="build-src-core,build-src-resources,build-src-examples,build-docs,build-jainslee" />
 	<target name="prepare-text-content" depends="prepare-text-content-core,prepare-text-content-resources,prepare-text-content-examples" />
-	<target name="copy-jars" depends="copy-jars-core,copy-jars-resources,copy-jars-examples,copy-jars-additional-resources" />
+	<target name="copy-jars" depends="copy-jars-core,copy-jars-resources,copy-jars-examples,copy-docs,copy-jars-additional-resources" />
 
 	
 	<target name="build-src-zip" depends="clean,checkout">
@@ -120,6 +124,13 @@
 		</for>
 	</target>
 
+	<target name="checkout-docs">
+		<echo>Checkout Diameter Documentation</echo>
+		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
+			<arg line="-f internal-components-checkout-standalone.xml validate -P checkout-docs" />
+		</exec>
+	</target>
+
 	<!--
 	#####################
 	#  compile section  #
@@ -153,6 +164,11 @@
 			</sequential>
 		</for>
 	</target>
+	<target name="build-docs">
+		<exec executable="${mvn.executable}" dir="${checkout_base_dir}/diameter-docs">
+			<arg line="clean compile -Ppdf -Denv.DOCNAME=Diameter_User_Guide" />
+		</exec>
+	</target>
 
 	<!--
 			#######################
@@ -175,7 +191,7 @@
 				<include name="mobicents-diameter-mux-${MUX_VERSION}.jar" />
 			</fileset>
 		</copy>
-		<unzip src="${checkout_base_dir}/core/mux/sar/target/mobicents-diameter-mux-${MUX_VERSION}.sar" dest="${zip_dir}/core/mux/mobicents-diameter-mux-${MUX_VERSION}.sar/"/>
+		<unzip src="${checkout_base_dir}/core/mux/sar-${SAR_CONFIGURATION}/target/mobicents-diameter-mux-${MUX_VERSION}.sar" dest="${zip_dir}/core/mux/mobicents-diameter-mux-${MUX_VERSION}.sar/"/>
 	</target>
 	<target name="copy-jars-resources">
 		<for delimiter="," param="ra.name" list="${ra_list}">
@@ -202,6 +218,13 @@
 				</copy>
 			</sequential>
 		</for>
+	</target>
+	<target name="copy-docs">
+		<copy todir="${zip_dir}">
+			<fileset dir="${checkout_base_dir}/diameter-docs/target/docbook/publish/en-US/pdf">
+				<include name="Diameter_User_Guide.pdf" />
+			</fileset>
+		</copy>
 	</target>
 	<target name="copy-jars-additional-resources">
 	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${mobicents.folder.path}/resources/sip11/sip11-ra-DU-${JAINSLEE_VERSION}.jar" failonerror="${failoncopy}" />
