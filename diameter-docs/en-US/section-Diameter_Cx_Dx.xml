@@ -8,7 +8,13 @@
       <para>Home Subscriber Server (HSS) </para>
     </listitem>
     <listitem>
-<!--Note: Developer: Acronyms need to be defined.-->      <para>I-CSCF and S-CSCF</para>
+<!--Note: Developer: Acronyms need to be defined.
+Content: those should be well known by readers, if not I dont think they should start with Diameter :)
+
+CSCF -  Call Session Control Function
+I - Interrogatin
+P - Proxy
+S - Serving-->      <para>I-CSCF and S-CSCF</para>
     </listitem>
   </itemizedlist>
   <para>The standard interface is described in the 3GPP Specifications  <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29328.htm">TS29.228</ulink> and <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29329.htm">TS29.229</ulink>.  </para>
@@ -118,7 +124,8 @@
       </tbody>
     </tgroup>
   </table>
-<!--TODO:  Editor: paragraphs need rework.  Copied directly from wiki.-->  <para>The Cx and Dx interfaces definition are mixed. This is because  both are meant to standardize communication between SIP IMS Proxies and HSS</para>
+<!--TODO:  Editor: paragraphs need rework.  Copied directly from wiki.
+Content: Hmm we dont have wiki for that.-->  <para>The Cx and Dx interfaces definition are mixed. This is because  both are meant to standardize communication between SIP IMS Proxies and HSS</para>
   <para>UAR/UAA perform the following operations:</para>
   <itemizedlist>
     <listitem>

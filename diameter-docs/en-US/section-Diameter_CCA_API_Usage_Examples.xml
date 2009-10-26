@@ -1,12 +1,11 @@
 ﻿<?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. -->
-<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
 <section id="dcaue-Diameter_CCA_API_Usage_Examples">
-    <title>API Usage Examples</title>
-    <para>The following example shows how a CCR message is created and sent.</para>
-    <example>
-      <title>Sending CCR</title>
-      <programlisting role="JAVA">try {
+  <title>API Usage Examples</title>
+  <para>The following example shows how a CCR message is created and sent.</para>
+  <example>
+    <title>Sending CCR</title>
+    <programlisting role="JAVA"><!--Content: Should this be refactored to make it more redable code?-->try {
 CreditControlClientSession session = this.provider.createClientSession();
 ActivityContextInterface localACI = this.acif.getActivityContextInterface(session);
 localACI.attach(this.getSbbContext().getSbbLocalObject());
@@ -49,11 +48,11 @@ session.sendCreditControlRequest(request);
 } catch (Exception e) {
 logger.error(&quot;Failed to create/send Credit-Control-Request.&quot;, e);
 }</programlisting>
-    </example>
-    <para>The following code demonstrates how the CCR is received and how different state machines are handled.</para>
-    <example>
-      <title>Handling CCR</title>
-      <programlisting role="JAVA">public void onCreditControlRequest(CreditControlRequest request, ActivityContextInterface aci) {
+  </example>
+  <para>The following code demonstrates how the CCR is received and how different state machines are handled.</para>
+  <example>
+    <title>Handling CCR</title>
+    <programlisting role="JAVA">public void onCreditControlRequest(CreditControlRequest request, ActivityContextInterface aci) {
 if (logger.isInfoEnabled())
 logger.info(&quot;Received Credit-Control-Request (Application-Id[&quot; + request.getHeader().getApplicationId() + &quot;].&quot;);
 
@@ -150,5 +149,5 @@ default:
 logger.error(&quot;Unexpected CC-Request-Type in message: &quot; + request.getCcRequestType() + &quot;. Aborting...&quot;);
 }
 }</programlisting>
-    </example>
-  </section>
+  </example>
+</section>

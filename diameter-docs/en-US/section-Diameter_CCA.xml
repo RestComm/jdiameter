@@ -4,7 +4,8 @@
   <title>Mobicents Diameter CCA</title>
   <para><!--TODO: Developer:  Did you incorporate the wiki content into this section from here: http://groups.google.com/group/mobicents-public/web/mobicents-diameter-cca, 
 
-I'm sorry, but there are huge gaps in this section, and I'm finding it really difficult to work out what content you've incorporated.-->The Credit Control Application (CCA) provides a common interface  for credit applications. CCA defines a minimal  set of Java primitives that  enable  credit session management,  and convey sufficient  information for  applications to perform charging activities.</para>
+I'm sorry, but there are huge gaps in this section, and I'm finding it really difficult to work out what content you've incorporated.
+Content: Yes, wiki is incorporated and refactored a bit to make more sense I think.-->The Credit Control Application (CCA) provides a common interface  for credit applications. CCA defines a minimal  set of Java primitives that  enable  credit session management,  and convey sufficient  information for  applications to perform charging activities.</para>
   <para>For detailed information regarding the Diameter Credit Control Application, refer to the <ulink url="http://tools.ietf.org/html/rfc4006">IETF RFC4006 memorandum</ulink>.   <xref linkend="table-Diameter_CCA_Messages"/> describes the messages that are compatible with declared state machines.</para>
   <table frame="all" pgwide="1" id="table-Diameter_CCA_Messages">
     <title>Diameter CCA Messages</title>
@@ -41,7 +42,8 @@ I'm sorry, but there are huge gaps in this section, and I'm finding it really di
       </tbody>
     </tgroup>
   </table>
-  <para>RFC declares only basic charging scenarios, which are event charging. <!--TODO: Developer:  This is where this sentence ends.  I don't know what's supposed to come after this, but I assume there's something...--></para>
+  <para> <!--TODO: Developer:  This is where this sentence ends.  I don't know what's supposed to come after this, but I assume there's something...
+Content: Remvoed "RFC declares only basic charging scenarios, which are event charging." --></para>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_CCA_Configuration.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_CCA_Resource_Adapter_Type.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_CCA_API_Usage_Examples.xml" encoding="UTF-8"/>

@@ -231,5 +231,6 @@
       </listitem>
     </varlistentry>
   </variablelist>
-<!--TODO: Need more information about what might go into the extensions element.-->  <programlisting>&lt;Extensions/&gt;</programlisting>
+<!--TODO: Need more information about what might go into the extensions element.
+Content: This is impl specific for user impl features I think.-->  <programlisting>&lt;Extensions/&gt;</programlisting>
 </section>

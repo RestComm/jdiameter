@@ -43,8 +43,10 @@
 </programlisting>
   <formalpara>
     <title>Provider</title>
-    <para><!--Note: Developer: What does the Provider do? If there is a description of Message Factory, there needs to be one for Provider as well.-->The API for the ShServerProvider is more than 100 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerProvider.java">ShServerProvider.java in the source code</ulink>.</para>
+    <para><!--Note: Developer: What does the Provider do? If there is a description of Message Factory, there needs to be one for Provider as well.
+Content: Desc present.-->The Sh (Server) provider allows SBBs to retrieve AVP and message factories.   In addition, connection information about connected peers is also  available.</para>
   </formalpara>
+  <para>The API for the ShServerProvider is more than 100 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerProvider.java">ShServerProvider.java in the source code</ulink></para>
   <formalpara>
     <title>Message Factory</title>
     <para>The Message Factory creates events  that can be executed within the JAIN SLEE Server.  Depending on the situation, Message Factory completes some AVPs for the session using the information made available to it.</para>

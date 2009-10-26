@@ -3,15 +3,17 @@
 <section id="dr-Diameter_Ro">
   <title>Mobicents Diameter Ro</title>
   <para>Ro is one of two IMS reference points for charging. It covers online charging - scenarios  where charging information can affect, in real-time, the service rendered. Therefore, a direct interaction between the charging mechanism and the session/service control is required. Ro is defined in <ulink url="http://www.3gpp.org/ftp/Specs/html-info/32299.htm">TS32.299</ulink>. </para>
-<!--Note: Developer: The link between the CTF and the OCF needs to be explained better. If the CTF makes the decisions then the OCF carries the decisions out, then that needs to be clarified so that we can make sense of it.-->  <para>Charging involves two peers:</para>
+<!--Note: Developer: The link between the CTF and the OCF needs to be explained better. If the CTF makes the decisions then the OCF carries the decisions out, then that needs to be clarified so that we can make sense of it.
+Content: para inserted below.-->  <para>Charging involves two peers:</para>
   <itemizedlist>
     <listitem>
-      <para>Charging Trigger Function (CTF) - makes decisions on how to charge the user for specific services, issues requests to the server (OCF)</para>
+      <para>Charging Trigger Function (CTF) - makes decisions on how to charge the user for specific services, issues requests to the server (OCF). </para>
     </listitem>
     <listitem>
       <para>Online Charging Function (OCF) - performs actual charging based on received message type, service logic and user profile information.</para>
     </listitem>
   </itemizedlist>
+  <para>Where CTF is part of service element (Application Server) it is responsible for monitoring service usage and generatios of charging events. Those events are consumed by OCF. OCF perfroms certain operations which produce result returned to CTF. Based on result CTF grants or denies access to service.</para>
   <para>The Ro application does not define new FSMs or messages. It makes use of commands, AVPs and FSMs defined by the base CCA application. Please refer to <!--TODO: add ref here, not sure how to handle this, some refs are broken, Jared?--> </para>
   <para>The Ro RA is responsible for managing states associated with different charging scenarios. The 3GPP TS32.299 defines the following online scenarios:</para>
   <itemizedlist>
@@ -34,7 +36,7 @@
       </imageobject>
     </mediaobject>
   </figure>
-  <para>The above figure are an example of IEC interaction. Actions performed in the diagram can be described as follows:</para>
+  <para>The above figure is an example of IEC interaction. Actions performed in the diagram can be described as follows:</para>
   <itemizedlist>
     <listitem>
       <para>(1)UA issues  service request - be it SMS, MMS, Data chunk transfer etc </para>

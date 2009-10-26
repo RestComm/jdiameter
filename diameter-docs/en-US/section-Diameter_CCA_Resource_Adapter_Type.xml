@@ -213,7 +213,7 @@
   int getPeerCount();
 
   /**
-   * Returns array containing identities of connected peers FIXME: baranowb; -
+   * Returns array containing identities of connected peers 
    * should it be InetAddres, Port pair?
    * 
    * @return

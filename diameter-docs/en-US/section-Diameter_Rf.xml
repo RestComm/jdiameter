@@ -2,7 +2,8 @@
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
 <section id="dr-Diameter_Rf">
   <title>Mobicents Diameter Rf</title>
-<!--Note: Developer: This section hasn't been edited at all, because it is so similar to the Ro section that it is impossible to differentiate between the two. You need to merge the two sections, and then concisely explain the differences between the two. Otherwise it is both a waste of space and confusing for the user.-->  <para>Rf is one of two IMS reference points for charging. It covers offline charging - scenarios  where charging information does not affect, in real-time, the service rendered. </para>
+<!--Note: Developer: This section hasn't been edited at all, because it is so similar to the Ro section that it is impossible to differentiate between the two. You need to merge the two sections, and then concisely explain the differences between the two. Otherwise it is both a waste of space and confusing for the user.
+Content: glad You dont have to read TS :). Ro/Rf are very alike, with very few differences, possibly only in use case cause. Scenarios are very similar with different application in real life.-->  <para>Rf is one of two IMS reference points for charging. It covers offline charging - scenarios  where charging information does not affect, in real-time, the service rendered. </para>
   <para>Charging involves two peers:</para>
   <itemizedlist>
     <listitem>

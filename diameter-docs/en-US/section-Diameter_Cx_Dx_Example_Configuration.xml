@@ -4,7 +4,7 @@
   <title>Configuration</title>
   <para>Proper configuration includes setting up two instances of JBoss. To achieve this please refer to <ulink url="http://www.jboss.org/community/wiki/ConfiguringMultipleJBossInstancesOnOneMachine">this page</ulink>. The example also requires proper configuration of MUX. The ports and IP address set in its configuration must match those in the example configuration file.</para>
   <para>The example is configured via a single file: <filename>examples/cxdx/du/src/main/resources/example.properties</filename>. Its content are standard for most of the examples. Aside from the IP/port/realm properties, it contains property which controls how the example behaves - client or server mode.</para>
-  <programlisting><!--TODO: Whats the ROLE here?-->
+  <programlisting role="JAVA">
 #                       ##
 # Diameter Cx/Dx Example #
 ##                       #

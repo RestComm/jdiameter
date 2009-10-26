@@ -21,7 +21,8 @@
       <para>Manually declaring the property pairs in the  <filename>resource-adaptor-jar.xml</filename> file within the <filename>base-ra-<replaceable>[version]</replaceable>-DU.jar</filename>, <filename>base-ra-<replaceable>[version]</replaceable>.jar</filename>, or <filename>META-INF</filename> files.</para>
     </listitem>
   </itemizedlist>
-  <para>Each property consists of value pairs. Value pairs are separated from each other with &quot;,&quot; <!--TODO: Developer: add markup here for &quot;,&quot;-->. Each value pair consists of two long numbers separated with &quot;:&quot;. First number indicate vendor of supported application. Second is application id arbitrary assigned by IANA.</para>
+  <para>Each property consists of value pairs. Value pairs are separated from each other with &quot;,&quot; <!--TODO: Developer: add markup here for &quot;,&quot;
+Content: huh, this is lesson, btu be more specific.-->. Each value pair consists of two long numbers separated with &quot;:&quot;. First number indicate vendor of supported application. Second is application id arbitrary assigned by IANA.</para>
   <para>Each value pair identifies application that Base RA should advertise as supported. Some application do not have vendor assigned. In this case &quot;0&quot; is to be used as vendor id.</para>
   <example id="example-Diameter_Base_Configuring">
     <title>Configuring </title>

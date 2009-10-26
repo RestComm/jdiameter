@@ -127,7 +127,8 @@ if (validator.isCountValidForMultiplicity(message.getCommandCode(), message.getA
   throw new Exception(&quot;Error&quot;);
 }</programlisting>
   </example>
-<!--TODO: Developer:  Explain what _DEFAULT_MANDATORY and _DEFALUT_PROTECTED mean in the example.  Choose whether to put the information before the example, or include it within the example itself.-->  <example id="example-Dictionary_Base_Code">
+<!--TODO: Developer:  Explain what _DEFAULT_MANDATORY and _DEFALUT_PROTECTED mean in the example.  Choose whether to put the information before the example, or include it within the example itself.
+Content: default values are specified in RFC 3588: http://tools.ietf.org/html/rfc3588#section-4.1  should be well known to reader. Not sure if we should add explanation.-->  <example id="example-Dictionary_Base_Code">
     <title>Dictionary Base Code</title>
     <para>The example below is pseudo-code.</para>
     <programlisting role="JAVA">public static  void setAvpAsFloat32(Message msg, int avpCode, long

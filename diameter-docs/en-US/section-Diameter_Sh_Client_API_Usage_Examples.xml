@@ -1,14 +1,14 @@
-﻿<?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. -->
-<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
- <section id="dscaue-Diameter_Sh_Client_API_Usage_Examples">
-    <title>API Usage Examples</title>
-    <para>The following examples demonstrate basic usage examples for the Resource Adapter (RA) API.  </para>
-    <example>
-      <title>Push-Notification-Request</title>
-      <para>The following code demonstrates how to configure a Push-Notification-Request using <literal>setExtensionAvps()</literal> methods.  </para>
-      <para>It is  possible to utilize specific methods such as <literal>udr.setUserIdentity()</literal> to achieve the same goal, however this falls outside the scope of this example.</para>
-<!--TODO:  Developer:  Where can users find out more about the other method calls available?  Is there a website?  Or can we create an example and then document it?--><!--TODO: Editor:  Reformat programlistings so they flow correctly when published.-->      <programlisting role="JAVA">public void onPushNotificationRequest(net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest pnr, ActivityContextInterface aci)
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<section id="dscaue-Diameter_Sh_Client_API_Usage_Examples">
+  <title>API Usage Examples</title>
+  <para>The following examples demonstrate basic usage examples for the Resource Adapter (RA) API.  </para>
+  <example>
+    <title>Push-Notification-Request</title>
+    <para>The following code demonstrates how to configure a Push-Notification-Request using <literal>setExtensionAvps()</literal> methods.  </para>
+    <para>It is  possible to utilize specific methods such as <literal>udr.setUserIdentity()</literal> to achieve the same goal, however this falls outside the scope of this example.</para>
+<!--TODO:  Developer:  Where can users find out more about the other method calls available?  Is there a website?  Or can we create an example and then document it?
+Content: https://mobicents.googlecode.com/svn/trunk/servers/diameter/examples/sh-client--><!--TODO: Editor:  Reformat programlistings so they flow correctly when published.-->    <programlisting role="JAVA">public void onPushNotificationRequest(net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest pnr, ActivityContextInterface aci)
                  {
                      try
                    {
@@ -23,11 +23,11 @@
                      logger.error( &quot;Failure while creating/sending PNA.&quot;, e );
                    }
                  }</programlisting>
-    </example>
-    <example>
-      <title>User-Data-Request</title>
-      <para>The following code demonstrates how to configure a User-Data-Request (UDR).</para>
-      <programlisting role="JAVA">private void doSimpleTestsSendUDR()
+  </example>
+  <example>
+    <title>User-Data-Request</title>
+    <para>The following code demonstrates how to configure a User-Data-Request (UDR).</para>
+    <programlisting role="JAVA">private void doSimpleTestsSendUDR()
                    {
                    
                        try {
@@ -84,5 +84,5 @@
                           logger.error( &quot;Failure trying to create/sen UDR.&quot;, e );
                          }
                    }</programlisting>
-    </example>
-  </section>
+  </example>
+</section>
