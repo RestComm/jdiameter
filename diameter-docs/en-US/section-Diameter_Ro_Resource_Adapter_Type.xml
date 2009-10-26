@@ -26,14 +26,83 @@
       <term>RoClientSession</term>
       <listitem>
         <para>created at beginning of request. The session&apos;s life cycle depends on the CC-Request-Type content sent as its first message. It is  subject to timeout if an answer is not received.</para>
-        <programlisting role="JAVA"><!--TODO: Developer:  add this, we had example but its gone?--></programlisting>
+        <programlisting role="JAVA"><!--TODO: Developer:  add this, we had example but its gone?--> /**
+   * Send an Accounting Request.
+   * 
+   * @param accountingRequest request message to send
+   * @throws IOException if the message could not be sent 
+   * @throws IllegalArgumentException if accountingRequest is missing any required AVPs
+   */
+  public void sendAccountingRequest(AccountingRequest accountingRequest) throws IOException, IllegalArgumentException;
+/**
+ * Send Account Request to Server
+ * @param request
+ * @throws IOException 
+ */
+ void sendAccountRequest(AccountingRequest request) throws IOException;
+/**
+ * Returns accounting session state of underlying session. Valid values are: Idle,PendingS,PendingE,PendingB,Open,PendingI,PendingL
+ * {@link AccountingSessionState}
+ * @return
+ */
+AccountingSessionState getAccountingSessionState();
+/**
+   * Return a message factory to be used to create concrete implementations of credit control messages.
+   * 
+   * @return
+   */
+  public RfMessageFactory getRfMessageFactory();</programlisting>
       </listitem>
     </varlistentry>
     <varlistentry>
       <term>RoServerSession</term>
       <listitem>
         <para>created by RA when the request enters SLEE. The session&apos;s life cycle depends on the CC-Request-Type AVP content received in first request.</para>
-        <programlisting role="JAVA"><!--TODO: Add code here, we had example, but its gone?--></programlisting>
+        <programlisting role="JAVA"><!--TODO: Add code here, we had example, but its gone?-->/**
+   * Create an Accounting-Answer with the Acct-Application-Id set to 3.
+   *
+   * @return an Accounting-Answer
+   */
+  public AccountingAnswer createRfAccountingAnswer();
+  
+  /**
+   * Create an Accounting-Answer with some AVPs populated from the provided Accounting-Request.
+   * 
+   * The ACA will contain the AVPs specified in createRfAccountingAnswer() and the following AVPs from the Accounting-Request:
+   * &lt;ul&gt;Accounting-Record-Type&lt;/ul&gt;
+   * &lt;ul&gt;Accounting-Record-Number&lt;/ul&gt;
+   * 
+   * @param acr Accounting-Request to copy AVPs from
+   * @return an Accounting-Answer
+   */
+  public AccountingAnswer createRfAccountingAnswer(AccountingRequest acr);
+  
+  /**
+   * Send an Accounting Answer.
+   * 
+   * @param accountingAnswer answer message to send
+   * @throws IOException if the message could not be sent 
+   * @throws IllegalArgumentException if accountingAnswer is missing any required AVPs
+   */
+  public void sendAccountingAnswer(AccountingAnswer accountingAnswer) throws IOException, IllegalArgumentException;
+/**
+   * Return a message factory to be used to create concrete implementations of credit control messages.
+   * 
+   * @return
+   */
+  public RfMessageFactory getRfMessageFactory();
+/**
+ * Sends generated answer back to client
+ * @param answer
+ * @throws IOException
+ */
+void sendAccountAnswer(AccountingAnswer answer) throws IOException;
+/**
+ * Returns accounting session state of underlying session. Valid values are: Idle,PendingS,PendingE,PendingB,Open,PendingI,PendingL
+ * {@link AccountingSessionState}
+ * @return
+ */
+AccountingSessionState getAccountingSessionState();</programlisting>
       </listitem>
     </varlistentry>
   </variablelist>

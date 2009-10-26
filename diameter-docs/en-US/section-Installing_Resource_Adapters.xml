@@ -17,5 +17,30 @@
     <para>The binary package is available from the Mobicents Diameter SourceForge page (<ulink url="http://sourceforge.net/projects/mobicents/files/Mobicents%20Diameter/">http://sourceforge.net/projects/mobicents/files/Mobicents%20Diameter/</ulink>)</para>
   </formalpara>
   <para>Select the Resource Adapter file that you want to install from the list, and download the archive.  </para>
-  <para>Extract the files and deploy the diameter-base-ra- <!--TODO: Developer: Generic installation instructions need to be added for RAs--></para>
+  <para> <!--TODO: Developer: Generic installation instructions need to be added for RAs
+Content: filled. There is no guide for consoles yet, how should we handle that?-->Binary distribution can be installed  by:</para>
+  <itemizedlist>
+    <listitem>
+      <para>putting RA Deployable Unit in server deploy folder (by default:  <filename>$JBOSS_HOME/servers/${node}/deploy</filename>)</para>
+    </listitem>
+    <listitem>
+      <para>console <!--Content: how to put info about it?--></para>
+    </listitem>
+    <listitem>
+      <para>standard JSLEE JMX interface, refer to JSLEE specification for examples.</para>
+    </listitem>
+  </itemizedlist>
+  <formalpara>
+    <title>Install from source</title>
+    <para>Installation from source requires project tree to be checked out. Diameter sources can be found here: <filename>https://mobicents.googlecode.com/svn/trunk/servers/diameter</filename>. Resource adaptors can be found under <filename>resources</filename>. In desired RA folder simply type <!--Content: is there xml element for this?--> &quot;mvn install&quot;. This will compile RA from source and install it in server. </para>
+  </formalpara>
+  <para>To install RAs from source two requierements have to be met:</para>
+  <itemizedlist>
+    <listitem>
+      <para>Maven must be installed.</para>
+    </listitem>
+    <listitem>
+      <para>JBOSS_HOME variable must be set, for steps to perform this pelase refere to <!--Content: How refer difefrent section in proper way?   section-Setting_the_JBOSS_HOME_Environment_Variable.xml--></para>
+    </listitem>
+  </itemizedlist>
 </section>
