@@ -26,7 +26,8 @@
       <term>RoClientSession</term>
       <listitem>
         <para>created at beginning of request. The session&apos;s life cycle depends on the CC-Request-Type content sent as its first message. It is  subject to timeout if an answer is not received.</para>
-        <programlisting role="JAVA"><!--TODO: Developer:  add this, we had example but its gone?--> /**
+        <programlisting role="JAVA"><!--TODO: Developer:  add this, we had example but its gone?
+Content: How section can be "gone" ?--> /**
    * Send an Accounting Request.
    * 
    * @param accountingRequest request message to send
