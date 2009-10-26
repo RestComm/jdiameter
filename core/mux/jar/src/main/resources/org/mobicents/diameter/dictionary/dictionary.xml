@@ -965,13 +965,44 @@
 		<vendor vendor-id="Vodafone" code="12645" name="Vodafone" />
 		<!-- *********************** End Vendors ************************** -->
 		<!-- ************************ typedefn's ************************** -->
+		
+		<!-- Primitive types, see http://tools.ietf.org/html/rfc3588#section-4.2 -->
 		<typedefn type-name="OctetString" />
-		<!--
-			The data contains arbitrary data of variable length. Unless otherwise noted, the AVP Length field MUST be set to at least 9 (13 if the 'V' bit is enabled). Data used to transmit (human readable)
-			character string data uses the UTF-8 [24] character set and is NOT NULL-terminated. The minimum Length field MUST be 9, but can be set to any value up to 65504 bytes. AVP Values of this type that
-			do not align on a 32-bit boundary MUST have the necessary padding.
-		-->
-		<typedefn type-name="UTF8String" type-parent="OctetString" />
+		<typedefn type-name="Float64" />
+		<typedefn type-name="Float32" />
+		<typedefn type-name="Integer64" />
+		<typedefn type-name="Integer32" />
+		<typedefn type-name="Unsigned64" />
+		<typedefn type-name="Unsigned32" />
+		
+		<!-- derived avp types, see http://tools.ietf.org/html/rfc3588#section-4.3 -->
+		<!-- 
+			The Address format is derived from the OctetString AVP Base
+      		Format.  It is a discriminated union, representing, for example a
+     		 32-bit (IPv4) [IPV4] or 128-bit (IPv6) [IPV6] address, most
+      		significant octet first.  The first two octets of the Address
+       		AVP represents the AddressType, which contains an Address Family
+      		defined in [IANAADFAM].  The AddressType is used to discriminate
+      		the content and format of the remaining octets.
+      
+		 -->
+		<typedefn type-name="Address" type-parent="OctetString" />
+		
+		
+		<!-- 
+			The Time format is derived from the OctetString AVP Base Format.
+      		The string MUST contain four octets, in the same format as the
+      		first four bytes are in the NTP timestamp format.  The NTP
+      		Timestamp format is defined in chapter 3 of [SNTP].
+
+      		This represents the number of seconds since 0h on 1 January 1900
+      		with respect to the Coordinated Universal Time (UTC).
+
+      		On 6h 28m 16s UTC, 7 February 2036 the time value will overflow.
+		    SNTP [SNTP] describes a procedure to extend the time to 2104.
+      		This procedure MUST be supported by all DIAMETER nodes.
+		 -->
+		<typedefn type-name="Time" type-parent="OctetString" />
 		<!--
 			The UTF8String format is derived from the OctetString AVP Base Format. This is a human readable string represented using the ISO/IEC IS 10646-1 character set, encoded as an OctetString using the
 			UTF-8 [29] transformation format described in RFC 2279. Since additional code points are added by amendments to the 10646 standard from time to time, implementations MUST be prepared to encounter
@@ -982,13 +1013,7 @@
 			single character / code point; thus the length of a UTF8String in octets may be different from the number of characters encoded. Note that the size of an UTF8String is measured in octets, not
 			characters. The UTF8String MUST not contain any octets with a value of zero.
 		-->
-		<typedefn type-name="IPAddress" type-parent="OctetString" />
-		<!--
-			The IPAddress format is derived from the OctetString AVP Base Format. It represents 32 bit (IPv4) [17] or 128 bit (IPv6) [16] address, most significant octet first. The format of the address (IPv4
-			or IPv6) is determined by the length. If the attribute value is an IPv4 address, the AVP Length field MUST be 12 (16 if 'V' bit is enabled), otherwise the AVP Length field MUST be set to 24 (28 if
-			the 'V' bit is enabled) for IPv6 addresses.
-		-->
-		<typedefn type-name="DiameterIdentity" type-parent="OctetString" />
+		<typedefn type-name="UTF8String" type-parent="OctetString" />
 		<!--
 			The DiameterIdentity format is derived from the OctetString AVP Base Format. It uses the UTF-8 encoding and has the same requirements as the UTF8String. In addition, it must follow the Uniform
 			Resource Identifiers (URI) syntax [29] rules specified below: Diameter-Identity = fqdn [ port ] [ transport ] [ protocol ] aaa-protocol = ( "diameter" | "radius" | "tacacs+" ) protocol =
@@ -1001,7 +1026,73 @@
 			CEA's Origin-Host AVP, but the same identity MUST be used throughout the duration of a connection. When comparing AVPs of this format, it is necessary to add any absent fields with the default
 			values prior to the comparison. For example, diameter-host.abc.com would be expanded to aaa://diameter/diameter-host.abc.com:TBD;protocol=sctp.
 		-->
-		<typedefn type-name="IPFilterRule" type-parent="OctetString" />
+		<typedefn type-name="DiameterIdentity" type-parent="OctetString" />
+		
+		
+		
+		
+		
+		
+		<!-- 
+		 The DiameterURI MUST follow the Uniform Resource Identifiers (URI)
+      syntax [URI] rules specified below:
+
+      "aaa://" FQDN [ port ] [ transport ] [ protocol ]
+
+                      ; No transport security
+
+      "aaas://" FQDN [ port ] [ transport ] [ protocol ]
+
+                      ; Transport security used
+
+      FQDN               = Fully Qualified Host Name
+
+      port               = ":" 1*DIGIT
+
+                      ; One of the ports used to listen for
+                      ; incoming connections.
+                      ; If absent,
+                      ; the default Diameter port (3868) is
+                      ; assumed.
+
+      transport          = ";transport=" transport-protocol
+
+                      ; One of the transports used to listen
+                      ; for incoming connections.  If absent,
+                      ; the default SCTP [SCTP] protocol is
+                      ; assumed.  UDP MUST NOT be used when
+                      ; the aaa-protocol field is set to
+                      ; diameter.
+		      transport-protocol = ( "tcp" / "sctp" / "udp" )
+
+      protocol           = ";protocol=" aaa-protocol
+
+                      ; If absent, the default AAA protocol
+                      ; is diameter.
+
+      aaa-protocol       = ( "diameter" / "radius" / "tacacs+" )
+
+      The following are examples of valid Diameter host identities:
+
+      aaa://host.example.com;transport=tcp
+      aaa://host.example.com:6666;transport=tcp
+      aaa://host.example.com;protocol=diameter
+      aaa://host.example.com:6666;protocol=diameter
+      aaa://host.example.com:6666;transport=tcp;protocol=diameter
+      aaa://host.example.com:1813;transport=udp;protocol=radius
+		
+		 -->
+		<typedefn type-name="DiameterURI" type-parent="UTF8String" />
+		
+		
+		<!-- 
+				Enumerated is derived from the Integer32 AVP Base Format.  The
+      		definition contains a list of valid values and their
+      		interpretation and is described in the Diameter application
+      		introducing the AVP.
+		 -->
+		<typedefn type-name="Enumerated" type-parent="Integer32" />
+		
 		<!--
 			The IPFilterRule format is derived from the OctetString AVP Base Format. It uses the UTF-8 encoding and has the same requirements as the UTF8String. Packets may be filtered based on the following
 			information that is associated with it: Direction (in or out) Source and destination IP address (possibly masked) Protocol Source and destination port (lists or ranges) TCP flags IP fragment flag
@@ -1029,6 +1120,12 @@
 			or apply a permit rule MAY apply a more restrictive rule. An access device MAY apply deny rules of its own before the supplied rules, for example to protect the access device owner's
 			infrastructure. The rule syntax is a modified subset of ipfw(8) from FreeBSD, and the ipfw.c code may provide a useful base for implementations.
 		-->
+		<typedefn type-name="IPFilterRule" type-parent="OctetString" />
+		
+		
+		
+		
+		
 		<typedefn type-name="QOSFilterRule" type-parent="OctetString" />
 		<!--
 			The QosFilterRule format is derived from the OctetString AVP Base Format. It uses the UTF-8 encoding and has the same requirements as the UTF8String. Packets may be marked or metered based on the
@@ -1050,39 +1147,19 @@
 			implementations.
 		-->
 		<typedefn type-name="MIPRegistrationRequest" type-parent="OctetString" />
-		<typedefn type-name="Integer32" />
+		
+		<typedefn type-name="IPAddress" type-parent="OctetString" />
 		<!--
-         32 bit signed value, in network byte order. The AVP Length
-         field MUST be set to 12 (16 if the 'V' bit is enabled).
-	-->
+			The IPAddress format is derived from the OctetString AVP Base Format. It represents 32 bit (IPv4) [17] or 128 bit (IPv6) [16] address, most significant octet first. The format of the address (IPv4
+			or IPv6) is determined by the length. If the attribute value is an IPv4 address, the AVP Length field MUST be 12 (16 if 'V' bit is enabled), otherwise the AVP Length field MUST be set to 24 (28 if
+			the 'V' bit is enabled) for IPv6 addresses.
+		-->
+			
 		<typedefn type-name="VendorId" type-parent="Unsigned32" />
 		<typedefn type-name="AppId" type-parent="Unsigned32" />
 
-		<typedefn type-name="Float64" />
-
-		<typedefn type-name="Integer64" />
-		<!--
-         64 bit signed value, in network byte order. The AVP Length
-         field MUST be set to 16 (20 if the 'V' bit is enabled).
-        -->
-		<typedefn type-name="Unsigned32" />
-		<!--
-			32 bit unsigned value, in network byte order. The AVP Length field MUST be set to 12 (16 if the 'V' bit is enabled). Unsigned32 values used to transmit time data contains the four most significant
-			octets returned from NTP [18], in network byte order.
-		-->
-		<typedefn type-name="Time" />
-		<!--
-			The Time format is derived from the Unsigned32 AVP Base Format. This is 32 bit unsigned value containing the four most significant octets returned from NTP [18], in network byte order. This
-			represent the number of seconds since 0h on 1 January 1900 with respect to the Coordinated Universal Time (UTC). On 6h 28m 16s UTC, 7 February 2036 the time value will overflow. NTP [18] describes
-			a procedure to extend the time to 2104.
-		-->
-		<typedefn type-name="Unsigned64" />
-		<!--
-         64 bit unsigned value, in network byte order. The AVP Length
-         field MUST be set to 16 (20 if the 'V' bit is enabled).
-	-->
-		<typedefn type-name="Enumerated" type-parent="Integer32" />
-		<typedefn type-name="DiameterURI" type-parent="UTF8String" />
+	
+		
 
 		<!-- ************************* End Typedefns ************************
 -->
