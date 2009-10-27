@@ -4,6 +4,9 @@
   <title>Mobicents Diameter Rf</title>
 <!--Note: Developer: This section hasn't been edited at all, because it is so similar to the Ro section that it is impossible to differentiate between the two. You need to merge the two sections, and then concisely explain the differences between the two. Otherwise it is both a waste of space and confusing for the user.
 Content: glad You dont have to read TS :). Ro/Rf are very alike, with very few differences, possibly only in use case cause. Scenarios are very similar with different application in real life.-->  <para>Rf is one of two IMS reference points for charging. It covers offline charging - scenarios  where charging information does not affect, in real-time, the service rendered. </para>
+  <para>Difference to Ro interface is that information/requests sent from CTF to CDF do  not affect service delivery. CTF only informs CDF about units consumption.  .</para>
+  <para>For contrast with Ro(which is almost identical) consider regular phone call.  User accessing platform is <emphasis role="bold">premium user</emphasis> - that means he is bound to one of better  phone plans. Provider charges him only on call start - that is, user is not cahrfed for call length. This requires only information on call initiation to perform initial charging(there might be different rates depending on area/country code/time).</para>
+  <para>For detailed information on Rf interface please refer to information found  <ulink url="http://www.3gpp.org/ftp/Specs/html-info/32299.htm">here</ulink> and <ulink url="http://www.3gpp.org/ftp/Specs/html-info/32240.htm">here</ulink></para>
   <para>Charging involves two peers:</para>
   <itemizedlist>
     <listitem>
@@ -13,7 +16,6 @@ Content: glad You dont have to read TS :). Ro/Rf are very alike, with very few d
       <para>CDF (Charging Data Function) - performs actual charging based on received message type, service logic and user profile information.</para>
     </listitem>
   </itemizedlist>
-  <para>Difference to Ro interface is that information/requests sent from CTF to CDF do  not affect service delivery. CTF only informs CDF about units consumption.  For detailed information on Rf interface please refer to information found  <ulink url="http://www.3gpp.org/ftp/Specs/html-info/32299.htm">here</ulink> and <ulink url="http://www.3gpp.org/ftp/Specs/html-info/32240.htm">here</ulink>.</para>
   <para>As per definition from technical specification Rf reuses messages defined in Diameter Base. For more information about base please refer to <xref linkend="db-Diameter_Base"/> </para>
   <figure id="rf-Figure_Event_Charging_Flow">
     <title>Event Charging Flow</title>
