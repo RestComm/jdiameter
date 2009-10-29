@@ -1,24 +1,38 @@
-﻿<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
 <section id="dcd-Diameter_Cx_Dx">
   <title>Mobicents Diameter Cx/Dx</title>
-  <para>The Cx and Dx  interfaces are the reference for interactions between the following servers:</para>
+  <para>The Cx and Dx interfaces are the reference points for interactions between the following servers:</para>
   <itemizedlist>
     <listitem>
       <para>Home Subscriber Server (HSS) </para>
     </listitem>
     <listitem>
-<!--Note: Developer: Acronyms need to be defined.
-Content: those should be well known by readers, if not I dont think they should start with Diameter :)
-
-CSCF -  Call Session Control Function
-I - Interrogatin
-P - Proxy
-S - Serving-->      <para>I-CSCF and S-CSCF</para>
+      <para>Interrogating Call Session Control Function (I-CSCF) and Serving Call Session Control Function (S-CSCF)</para>
     </listitem>
   </itemizedlist>
   <para>The standard interface is described in the 3GPP Specifications  <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29328.htm">TS29.228</ulink> and <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29329.htm">TS29.229</ulink>.  </para>
-  <para>  The Cx and Dx interfaces    provide a number of message commands that can be used within the application.</para>
+  <para>A Serving-CSCF (S-CSCF) is the central node of the signalling plane. It is a SIP server, but performs session control too. It is always located in the home network. It uses Diameter Cx and Dx interfaces to the HSS to download and upload user profiles — it has no local storage of the user. All necessary information is loaded from the HSS.</para>
+  <itemizedlist>
+    <listitem>
+      <para>It handles SIP registrations, which allows it to bind the user location (e.g. the IP address of the terminal) and the SIP address</para>
+    </listitem>
+    <listitem>
+      <para>It sits on the path of all signaling messages, and can inspect every message</para>
+    </listitem>
+    <listitem>
+      <para>It decides to which application server(s) the SIP message will be forwarded, in order to provide their services</para>
+    </listitem>
+    <listitem>
+      <para>It provides routing services, typically using Electronic Numbering (ENUM) lookups</para>
+    </listitem>
+    <listitem>
+      <para>It enforces the policy of the network operator</para>
+    </listitem>
+  </itemizedlist>
+  <para>There can be multiple S-CSCFs in the network for load distribution and high availability reasons. It&apos;s the HSS that assigns the S-CSCF to a user, when it&apos;s queried by the I-CSCF.</para>
+  <para>An Interrogating-CSCF (I-CSCF) is another SIP function located at the edge of an administrative domain. Its IP address is published in the Domain Name System (DNS) of the domain, so that remote servers can find it, and use it as a forwarding point (e.g. registering) for SIP packets to this domain. The I-CSCF queries the HSS using the Diameter Cx interface to retrieve the user location (the Dx interface is used from I-CSCF to SLF to locate the needed HSS only), and then routes the SIP request to its assigned S-CSCF.</para>
+  <para>  The Cx and Dx interfaces provide a number of message commands that can be used within the application.</para>
   <table frame="all" pgwide="1">
     <title>Diameter Cx and Dx Messages</title>
     <tgroup cols="5" colsep="1">
