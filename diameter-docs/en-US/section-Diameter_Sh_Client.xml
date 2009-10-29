@@ -93,6 +93,15 @@
   <para>The command names provide the ability to  manage User Data in the HSS. UDR and UDA are used to request data from the User profile. The AS client sends the request indicating what  data is required.  If the client has the appropriate permissions on the HSS, they will be received via UDA. </para>
   <para>PUR is used to update the user profile,  with the success (or failure) of the action being reported back in PUA. SNR is used  to retrieve  changes made in the user profile. If SNR is successful, a SNA is received stating that the operation was successful. </para>
   <para>Where profile changes have occurred, a PNR is  sent by the HSS to the AS.  On receipt of the PNR, the AS acknowledges the request with a PNA.  The only instance where the HSS  initiates a conversation is for  profile changes.</para>
+  <para>Cx/Dx interface depends on following resources:</para>
+  <itemizedlist>
+    <listitem>
+      <para>MUX</para>
+    </listitem>
+    <listitem>
+      <para>Base RA</para>
+    </listitem>
+  </itemizedlist>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Client_Configuration.xml" xpointer="dscc-Diameter_Sh_Client_Configuration" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Client_Resource_Adapter_Type.xml" xpointer="dscrat-Diameter_Sh_Client_Resource_Adapter_Type" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Client_API_Usage_Examples.xml" xpointer="dscaue-Diameter_Sh_Client_API_Usage_Examples" encoding="UTF-8"/>

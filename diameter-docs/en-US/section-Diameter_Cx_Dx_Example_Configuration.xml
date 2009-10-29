@@ -21,4 +21,5 @@ origin.realm=mobicents.org
 destination.ip=127.0.0.1
 destination.port=3868
 destination.realm=mobicents.org</programlisting>
+  <para>For proper configuration of MUX/stack please refer to provided <filename>jdiameter-config.xml</filename>, it contains commented out elements. Those elements are valid configuration pieces for certain applications. Configuration should be aligned with example properties(IP, Port and Realm).</para>
 </section>

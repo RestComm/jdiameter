@@ -2,7 +2,7 @@
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
 <section id="cts-Configuring_The_Stack">
   <title>Configuring the Stack</title>
-  <para>The stack is configured using an XML file that contains the options set during initialization.  The  top level structure of the file is described below.  Further explanation of each child element, and the applicable attributes is provided later in this section.</para>
+  <para>The stack is configured using an XML file which contains the options set during initialization.  The  top level structure of the file is described below.  Further explanation of each child element, and the applicable attributes is provided later in this section.</para>
   <programlisting role="XML">&lt;Configuration xmlns=&quot;http://www.jdiameter.org/jdiameter-server&quot;&gt;
       &lt;LocalPeer&gt;&lt;/LocalPeer&gt;
       &lt;Parameters&gt;&lt;/Parameters&gt;

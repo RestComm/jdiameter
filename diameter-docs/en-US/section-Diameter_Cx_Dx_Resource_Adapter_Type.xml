@@ -18,7 +18,7 @@
     <title>Activities</title>
     <para>The following activities are available, with the API definition listed for reference.  The API defines methods to create requests, send and receive answers for a certain activity, and retrieve session-specific data. </para>
   </formalpara>
-  <para>All Cx/Dx activities are short lived - activity is ended after an answer is received or sent.</para>
+  <para>All Cx/Dx activities are short lived - activity ends after an answer is received or sent.</para>
   <para>These activities allow the Cx/Dx applications to retrieve messages and AVP factories bound to the current session.  The functionality offered is limited only  by the implementation used. </para>
   <variablelist>
     <title>Diameter Cx/Dx Server Activities</title>

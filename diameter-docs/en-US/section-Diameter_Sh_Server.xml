@@ -91,6 +91,15 @@
     </tgroup>
   </table>
 <!--TODO: Editor: paragraphs need rework.  Copied directly from wiki.-->  <para>The command names are related to managing user data in the HSS, and represent various types of requests. For example, UDR/UDA are used to request and receive data from the user profile. The client (in this case, AS), sends the request indicating which data is required (see below for possible kinds of data). If the client has the correct permissions on the HSS, the data will be received by UDA.</para>
+  <para>Cx/Dx interface depends on following resources:</para>
+  <itemizedlist>
+    <listitem>
+      <para>MUX</para>
+    </listitem>
+    <listitem>
+      <para>Base RA</para>
+    </listitem>
+  </itemizedlist>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Server_Configuration.xml" xpointer="dssc-Diameter_Sh_Server_Configuration" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Server_Resource_Adapter_Type.xml" xpointer="dssrat-Diamter_Sh_Server_Resource_Adapter_Type" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Server_API_Usage_Examples.xml" xpointer="dssaue-Diameter_Sh_Server_API_Usage_Examples" encoding="UTF-8"/>

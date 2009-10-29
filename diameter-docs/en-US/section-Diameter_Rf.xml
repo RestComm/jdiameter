@@ -80,6 +80,21 @@ Content: glad You dont have to read TS :). Ro/Rf are very alike, with very few d
       <para>(11) CDF responds with ACA, acknowledging charge operation</para>
     </listitem>
   </itemizedlist>
+  <para>Cx/Dx interface depends on following resources:</para>
+  <itemizedlist>
+    <listitem>
+      <para>MUX</para>
+    </listitem>
+    <listitem>
+      <para>Base RA</para>
+    </listitem>
+    <listitem>
+      <para>Credit Control Application RA (CCA RA)</para>
+    </listitem>
+    <listitem>
+      <para>Ro RA</para>
+    </listitem>
+  </itemizedlist>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Rf_Configuration.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Rf_Resource_Adapter_Type.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Rf_API_Usage_Example.xml" encoding="UTF-8"/>

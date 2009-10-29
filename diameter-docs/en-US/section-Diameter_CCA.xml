@@ -44,6 +44,15 @@ Content: Yes, wiki is incorporated and refactored a bit to make more sense I thi
   </table>
   <para> <!--TODO: Developer:  This is where this sentence ends.  I don't know what's supposed to come after this, but I assume there's something...
 Content: Remvoed "RFC declares only basic charging scenarios, which are event charging." --></para>
+  <para>Cx/Dx interface depends on following resources:</para>
+  <itemizedlist>
+    <listitem>
+      <para>MUX</para>
+    </listitem>
+    <listitem>
+      <para>Base RA</para>
+    </listitem>
+  </itemizedlist>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_CCA_Configuration.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_CCA_Resource_Adapter_Type.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_CCA_API_Usage_Examples.xml" encoding="UTF-8"/>

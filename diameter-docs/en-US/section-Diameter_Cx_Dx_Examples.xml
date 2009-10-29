@@ -2,7 +2,8 @@
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
 <section id="dcde-Diameter_Cx_Dx_Examples">
   <title>Examples</title>
-  <para>The sample application provided for the Cx/Dx Applications are part of the &quot;User Equipment initiated deregistration&quot; scenario. The scenario includes three diameter peers:</para>
+  <para>The sample application provided for the Cx/Dx Applications are part of the &quot;User Equipment initiated deregistration&quot; scenario. For more information about this scenario please refere to section A.4.3 of <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29228.htm">TS 29.228</ulink>.</para>
+  <para>The scenario includes three diameter peers:</para>
   <itemizedlist>
     <listitem>
       <para>HSS</para>

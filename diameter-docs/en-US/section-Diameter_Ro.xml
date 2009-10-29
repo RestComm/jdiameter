@@ -118,6 +118,18 @@ Content: para inserted below.-->  <para>Charging involves two peers:</para>
       <para>TERMINATION - (13)</para>
     </listitem>
   </itemizedlist>
+  <para>Cx/Dx interface depends on following resources:</para>
+  <itemizedlist>
+    <listitem>
+      <para>MUX</para>
+    </listitem>
+    <listitem>
+      <para>Base RA</para>
+    </listitem>
+    <listitem>
+      <para>Credit Contral Application RA (CCA RA)</para>
+    </listitem>
+  </itemizedlist>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Ro_Configuration.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Ro_Resource_Adapter_Type.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Ro_API_Usage_Example.xml" encoding="UTF-8"/>
