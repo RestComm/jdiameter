@@ -195,6 +195,21 @@ Content: Hmm we dont have wiki for that.-->  <para>The Cx and Dx interfaces defi
       <para>update SIP Digest information</para>
     </listitem>
   </itemizedlist>
+  <para>Cx/Dx interface depends on following resources:</para>
+  <itemizedlist>
+    <listitem>
+      <para>MUX</para>
+    </listitem>
+    <listitem>
+      <para>Base RA</para>
+    </listitem>
+    <listitem>
+      <para>Ro RA</para>
+    </listitem>
+    <listitem>
+      <para>Sh Client RA</para>
+    </listitem>
+  </itemizedlist>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Cx_Dx_Configuration.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Cx_Dx_Resource_Adapter_Type.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Cx_Dx_API_Usage_Examples.xml" encoding="UTF-8"/>
