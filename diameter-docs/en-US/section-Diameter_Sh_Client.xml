@@ -1,5 +1,7 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">
+%BOOK_ENTITIES;]>
 <section>
   <title>Mobicents Diameter Sh (Client)</title>
   <para>The Sh interface is the reference for interactions between the following servers:</para>
@@ -102,8 +104,8 @@
       <para>Base RA</para>
     </listitem>
   </itemizedlist>
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Client_Configuration.xml" xpointer="dscc-Diameter_Sh_Client_Configuration" encoding="UTF-8"/>
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Client_Resource_Adapter_Type.xml" xpointer="dscrat-Diameter_Sh_Client_Resource_Adapter_Type" encoding="UTF-8"/>
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Client_API_Usage_Examples.xml" xpointer="dscaue-Diameter_Sh_Client_API_Usage_Examples" encoding="UTF-8"/>
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Client_Examples.xml" xpointer="dsce-Diameter_Sh_Client_Examples" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Client_Configuration.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Client_Resource_Adapter_Type.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Client_API_Usage_Examples.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Client_Examples.xml" encoding="UTF-8"/>
 </section>

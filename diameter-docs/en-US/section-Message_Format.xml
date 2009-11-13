@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">
+%BOOK_ENTITIES;]>
 <section id="mf-Message_Format">
   <title>Message Format</title>
   <para>Each message that is sent and received using Diameter is comprised according to  a consistent structure.  A Diameter message always contains message headers, and the message payload.   </para>

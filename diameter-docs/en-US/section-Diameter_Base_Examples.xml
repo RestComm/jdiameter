@@ -1,5 +1,7 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">
+%BOOK_ENTITIES;]>
 <section id="dbe-Diameter_Base_Examples">
   <title>Examples</title>
   <para>The sample application provided for Diameter Base is a simple application that interacts with the Ericsson Diameter Software Development Kit (SDK).  The application provides both client and server interaction.  The following use cases are provided as part of the example:</para>
@@ -65,5 +67,5 @@
     </listitem>
   </itemizedlist>
   <para>The Ericsson Client SDK is used to establish the connection to the Ericsson Server SDK behind the Diameter SBB.  In the example, requests received by the SBB are forwarded to the Server SDK, and answers are routed back to the Client SDK.</para>
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Base_Example_Configuration.xml" xpointer="dbc-Diameter_Base_Example_Configuration" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Base_Example_Configuration.xml" encoding="UTF-8"/>
 </section>

@@ -1,5 +1,7 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">
+%BOOK_ENTITIES;]>
 <section id="dsce-Diameter_Sh_Client_Examples">
   <title>Examples</title>
   <para>The sample application provided for Diameter Sh (Client) supports two scenarios:</para>
@@ -35,5 +37,5 @@
       </imageobject>
     </mediaobject>
   </figure>
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Client_Example_Configuration.xml" xpointer="dscec-Diameter_Sh_Client_Example_Configuration" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_Sh_Client_Example_Configuration.xml" encoding="UTF-8"/>
 </section>

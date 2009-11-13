@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">
+%BOOK_ENTITIES;]>
 <section id="dr-Diameter_Ro">
   <title>Mobicents Diameter Ro</title>
   <para>Ro is one of two IMS reference points for charging. It covers online charging - scenarios  where charging information can affect, in real-time, the service rendered.  In other words Ro is application used in cases when service provider(or platform) ensures that user has enough units to cover ongoing activity. </para>

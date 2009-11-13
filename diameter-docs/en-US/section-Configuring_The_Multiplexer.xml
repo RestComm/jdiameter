@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">
+%BOOK_ENTITIES;]>
 <section id="ctm-Configuring_The_Multiplexer">
   <title>Configuring the Multiplexer</title>
   <para>Configuring the Multiplexer requires configuration changes to the <filename>diameter-config.xml</filename> file.  The <filename>diameter-config.xml</filename> file is a standard JDiameter configuration file, and forms the base configuration for all MUX listener applications.</para>

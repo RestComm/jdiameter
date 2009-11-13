@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
 <!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">
+%BOOK_ENTITIES;
+<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">
 <!ENTITY PRODUCT "JBoss_Communications_Platform">
 <!ENTITY BOOKID "doc-Diameter_User_Guide">
 <!ENTITY YEAR "2009">

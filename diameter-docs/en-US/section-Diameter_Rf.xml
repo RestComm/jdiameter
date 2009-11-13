@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">
+%BOOK_ENTITIES;]>
 <section id="dr-Diameter_Rf">
   <title>Mobicents Diameter Rf</title>
 <!--Note: Developer: This section hasn't been edited at all, because it is so similar to the Ro section that it is impossible to differentiate between the two. You need to merge the two sections, and then concisely explain the differences between the two. Otherwise it is both a waste of space and confusing for the user.

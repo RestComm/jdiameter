@@ -1,5 +1,7 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">
+%BOOK_ENTITIES;]>
 <section id="dcca-Diameter_CCA">
   <title>Mobicents Diameter CCA</title>
   <para><!--TODO: Developer:  Did you incorporate the wiki content into this section from here: http://groups.google.com/group/mobicents-public/web/mobicents-diameter-cca, 

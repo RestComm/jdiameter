@@ -1,5 +1,7 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" []>
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">
+%BOOK_ENTITIES;]>
 <section id="dce-Diameter_CCA_Examples">
   <title>Examples</title>
   <para>The sample application provided for CCA is a very basic one.It supports three separate scenarios:</para>
@@ -37,5 +39,5 @@ Content: so this is basicaly what we had in mind:
     <para>The service awaits a session based exchange - that is CCRs with CC-Request-Type which follows sequence INITIAL, UPDATE(zero or more) and TERMINATION.</para>
   </formalpara>
   <para>Server side scenarios are triggered by message types. Event charing is triggered by request with CC-Request-Type set to &quot;EVENT&quot;.</para>
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_CCA_Example_Configuration.xml" xpointer="dcec-Diameter_CCA_Example_Configuration" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Diameter_CCA_Example_Configuration.xml" encoding="UTF-8"/>
 </section>
