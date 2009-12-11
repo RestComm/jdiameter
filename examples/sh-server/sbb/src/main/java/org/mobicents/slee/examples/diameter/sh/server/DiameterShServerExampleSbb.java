@@ -15,18 +15,15 @@ import javax.slee.facilities.TimerOptions;
 import javax.slee.serviceactivity.ServiceActivity;
 import javax.slee.serviceactivity.ServiceActivityFactory;
 
-import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.sh.client.DiameterShAvpFactory;
 import net.java.slee.resource.diameter.sh.client.events.ProfileUpdateAnswer;
 import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
 import net.java.slee.resource.diameter.sh.client.events.SubscribeNotificationsAnswer;
 import net.java.slee.resource.diameter.sh.client.events.UserDataAnswer;
-import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
 import net.java.slee.resource.diameter.sh.client.events.avp.SubsReqType;
 import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
 import net.java.slee.resource.diameter.sh.server.ShServerActivity;
-import net.java.slee.resource.diameter.sh.server.ShServerActivityContextInterfaceFactory;
 import net.java.slee.resource.diameter.sh.server.ShServerMessageFactory;
 import net.java.slee.resource.diameter.sh.server.ShServerProvider;
 import net.java.slee.resource.diameter.sh.server.ShServerSubscriptionActivity;
@@ -59,15 +56,8 @@ public abstract class DiameterShServerExampleSbb implements javax.slee.Sbb {
 
 	private ShServerMessageFactory messageFactory = null;
 	private DiameterShAvpFactory avpFactory = null;
-	private ShServerActivityContextInterfaceFactory acif = null;
 	private TimerFacility timerFacility = null;
-	private String originIP = "127.0.0.1";
-	private String originPort = "1812";
-	private String originRealm = "mobicents.org";
 
-	private String destinationIP = "127.0.0.1";
-	private String destinationPort = "3868";
-	private String destinationRealm = "mobicents.org";
 	public void setSbbContext(SbbContext context) {
 		logger.info("sbbRolledBack invoked.");
 
@@ -84,8 +74,6 @@ public abstract class DiameterShServerExampleSbb implements javax.slee.Sbb {
 
 			avpFactory = provider.getAvpFactory();
 			logger.info("Got AVP Factory:" + avpFactory);
-
-			acif = (ShServerActivityContextInterfaceFactory) myEnv.lookup("slee/resources/JDiameterShServerResourceAdaptor/java.net/0.8.1/acif");
 
 			// Get the timer facility
 			timerFacility = (TimerFacility) myEnv.lookup("slee/facilities/timer");
