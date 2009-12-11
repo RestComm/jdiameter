@@ -25,6 +25,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
@@ -52,7 +57,27 @@ import org.slf4j.LoggerFactory;
 
 public class PeerTableImpl implements IPeerTable {
 
-  protected Logger logger = LoggerFactory.getLogger(PeerTableImpl.class);
+  protected static final Logger logger = LoggerFactory.getLogger(PeerTableImpl.class);
+  
+  /**
+   * determines core pool size, those threads are always there, so if there is no traffic stack wont take much time to act.
+   */
+  private static final int _THREAD_POOL_CORE_SIZE = 1;
+  /**
+   * determines in seconds keep alive time for thread in pool.
+   */
+  private static final int _THREAD_POOL_KEEP_ALIVE_TIME = 60;
+  /**
+   * determines how many thread pool can have.
+   */
+  protected int maximumThreadPoolSize = 5;
+  /**
+   * determines thread priority for executor.
+   */
+  protected int threadPoolPriority = Thread.NORM_PRIORITY;
+  protected ThreadFactory threadFactory;
+  
+  
   // Peer table
   protected ConcurrentHashMap<URI,Peer> peerTable = new ConcurrentHashMap<URI,Peer>();
   protected boolean isStarted;
@@ -76,7 +101,18 @@ public class PeerTableImpl implements IPeerTable {
     this.router = router;
     this.metaData = metaData;
     this.stopTimeOut = globalConfig.getLongValue(StopTimeOut.ordinal(), (Long) StopTimeOut.defValue());
-    this.peerTaskExecutor = Executors.newCachedThreadPool();
+    Configuration[] threadPoolConf = globalConfig.getChildren(Parameters.ThreadPool.ordinal());
+    if(threadPoolConf!=null && threadPoolConf.length>0)
+    {
+    	Configuration tpc = threadPoolConf[0];
+    	this.maximumThreadPoolSize = tpc.getIntValue(Parameters.ThreadPoolSize.ordinal(), (Integer)Parameters.ThreadPoolSize.defValue());
+    	this.threadPoolPriority = tpc.getIntValue(Parameters.ThreadPoolPriority.ordinal(), (Integer)Parameters.ThreadPoolPriority.defValue());
+    }
+    
+    this.threadFactory = new PeerTableThreadFactory(this.threadPoolPriority);
+    //this.peerTaskExecutor = Executors.newCachedThreadPool();
+    this.peerTaskExecutor = new ThreadPoolExecutor(_THREAD_POOL_CORE_SIZE, this.maximumThreadPoolSize, _THREAD_POOL_KEEP_ALIVE_TIME, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), this.threadFactory);
+
     Configuration[] peers = globalConfig.getChildren( Parameters.PeerTable.ordinal() );
     if (peers != null && peers.length > 0) {
       for (Configuration peerConfig : peers) {
@@ -279,5 +315,29 @@ public class PeerTableImpl implements IPeerTable {
 
   public <T> T unwrap(Class<T> aClass) throws InternalException {
     return null; 
+  }
+  
+  protected class PeerTableThreadFactory implements ThreadFactory {
+
+	    public final AtomicLong sequence = new AtomicLong(0);
+	    private int priority = Thread.NORM_PRIORITY;
+	    private ThreadGroup factoryThreadGroup = new ThreadGroup("JDiameterThreadGroup[" + sequence.incrementAndGet() + "]");
+
+	    
+	    
+	    public PeerTableThreadFactory(int priority) {
+			super();
+			this.priority = priority;
+		}
+
+
+
+		public Thread newThread(Runnable r) {
+	        Thread t = new Thread(this.factoryThreadGroup, r);
+	        t.setPriority(this.priority);
+	        // ??
+	        //t.start();
+	        return t;
+	    }
   }
 }

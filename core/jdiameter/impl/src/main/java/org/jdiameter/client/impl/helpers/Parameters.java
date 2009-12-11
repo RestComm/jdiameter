@@ -259,6 +259,18 @@ public class Parameters extends Ordinal {
     public static final Parameters SecurityRef = new Parameters("SecurityRef",String.class);
 
     /**
+    * XML entry for thread pool
+    */
+    public static final Parameters ThreadPool = new Parameters("ThreadPool",Object.class);
+    /**
+    * Thread pool max size
+    */
+    public static final Parameters ThreadPoolSize = new Parameters("ThreadPoolSize",Integer.class,10);
+    /**
+    * Thread pool max size
+    */
+    public static final Parameters ThreadPoolPriority = new Parameters("ThreadPoolPriority",Integer.class,5);
+    /**
      * Return all parameters as iterator
      * @return all parameters as iterator
      */

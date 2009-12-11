@@ -14,6 +14,7 @@ import org.jdiameter.client.impl.helpers.AppConfiguration;
 import static org.jdiameter.server.impl.helpers.Parameters.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -162,19 +163,47 @@ public class XMLConfiguration extends EmptyConfiguration {
         NodeList c = node.getChildNodes();
         for (int i = 0; i < c.getLength(); i++) {
             String nodeName = c.item(i).getNodeName();
-            if (nodeName.equals("UseUriAsFqdn")) add(UseUriAsFqdn, Boolean.valueOf(getValue(c.item(i))));
-            if (nodeName.equals("QueueSize")) add(QueueSize, getIntValue(c.item(i)));
-            if (nodeName.equals("MessageTimeOut")) add(MessageTimeOut, getLongValue(c.item(i)));
-            if (nodeName.equals("StopTimeOut")) add(StopTimeOut, getLongValue(c.item(i)));
-            if (nodeName.equals("CeaTimeOut")) add(CeaTimeOut, getLongValue(c.item(i)));
-            if (nodeName.equals("IacTimeOut")) add(IacTimeOut, getLongValue(c.item(i)));
-            if (nodeName.equals("DwaTimeOut")) add(DwaTimeOut, getLongValue(c.item(i)));
-            if (nodeName.equals("DpaTimeOut")) add(DpaTimeOut, getLongValue(c.item(i)));
-            if (nodeName.equals("RecTimeOut")) add(RecTimeOut, getLongValue(c.item(i)));
-            appendOtherParameter(c.item(i));
+            if (nodeName.equals("UseUriAsFqdn")) { add(UseUriAsFqdn, Boolean.valueOf(getValue(c.item(i))));   }
+            else if (nodeName.equals("QueueSize")) { add(QueueSize, getIntValue(c.item(i))); 				  }
+            else if (nodeName.equals("MessageTimeOut")) { add(MessageTimeOut, getLongValue(c.item(i)));       }
+            else if (nodeName.equals("StopTimeOut")) { add(StopTimeOut, getLongValue(c.item(i)));             }
+            else if (nodeName.equals("CeaTimeOut")) { add(CeaTimeOut, getLongValue(c.item(i)));               }
+            else if (nodeName.equals("IacTimeOut")) { add(IacTimeOut, getLongValue(c.item(i)));               }
+            else if (nodeName.equals("DwaTimeOut")) { add(DwaTimeOut, getLongValue(c.item(i)));               }
+            else if (nodeName.equals("DpaTimeOut")) { add(DpaTimeOut, getLongValue(c.item(i)));               }
+            else if (nodeName.equals("RecTimeOut")) { add(RecTimeOut, getLongValue(c.item(i)));               }
+            else if (nodeName.equals("ThreadPool")) { addThreadPool(c.item(i));                               }
+            else 
+            {    appendOtherParameter(c.item(i)); }
         }
     }
 
+	protected void addThreadPool(Node item) {
+
+		AppConfiguration threadPoolConfiguration = EmptyConfiguration.getInstance();
+		NamedNodeMap attributes = item.getAttributes();
+
+		for (int index = 0; index < attributes.getLength(); index++) {
+			Node n = attributes.item(index);
+
+			int v = Integer.parseInt(n.getNodeValue());
+			if (n.getNodeName().equals("size")) {
+				threadPoolConfiguration.add(ThreadPoolSize, v);
+			} else if (n.getNodeName().equals("priority")) {
+				threadPoolConfiguration.add(ThreadPoolPriority, v);
+			} else {
+				//log.error("Unkonwn attribute on " + item.getNodeName() + ", attribute name: " + n.getNodeName());
+			}
+		}
+		if (!threadPoolConfiguration.isAttributeExist(ThreadPoolSize.ordinal())) {
+			threadPoolConfiguration.add(ThreadPoolSize, ThreadPoolSize.defValue());
+		}
+		if (!threadPoolConfiguration.isAttributeExist(ThreadPoolPriority.ordinal())) {
+			threadPoolConfiguration.add(ThreadPoolPriority, ThreadPoolPriority.defValue());
+		}
+		this.add(ThreadPool, threadPoolConfiguration);
+
+	}
     protected void addNetwork(Node node) {
         NodeList c = node.getChildNodes();
         for (int i = 0; i < c.getLength(); i++) {
