@@ -138,7 +138,7 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
           else if (event.getType() == Event.Type.TIMEOUT_EXPIRES) {
             newState = ShSessionState.TERMINATED;
           }
-          else if(event.getType() != Event.Type.SEND_USER_DATA_REQUEST && event.getType() != Event.Type.SEND_PROFILE_UPDATE_REQUEST && event.getType() != Event.Type.SEND_SUBSCRIBE_NOTIFICATIONS_REQUEST ){
+          else if(event.getType() != Event.Type.SEND_USER_DATA_REQUEST && event.getType() != Event.Type.SEND_PROFILE_UPDATE_REQUEST && event.getType() != Event.Type.SEND_SUBSCRIBE_NOTIFICATIONS_REQUEST && event.getType()!= Event.Type.RECEIVE_PUSH_NOTIFICATION_REQUEST) {
             // Other messages just make it go into terminated state and release
             newState = ShSessionState.TERMINATED;
           }
