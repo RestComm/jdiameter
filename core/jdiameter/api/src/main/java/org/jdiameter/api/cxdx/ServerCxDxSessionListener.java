@@ -7,17 +7,13 @@ import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
-import org.jdiameter.api.cxdx.events.JLocationInfoAnswer;
 import org.jdiameter.api.cxdx.events.JLocationInfoRequest;
-import org.jdiameter.api.cxdx.events.JMultimediaAuthAnswer;
 import org.jdiameter.api.cxdx.events.JMultimediaAuthRequest;
 import org.jdiameter.api.cxdx.events.JPushProfileAnswer;
 import org.jdiameter.api.cxdx.events.JPushProfileRequest;
 import org.jdiameter.api.cxdx.events.JRegistrationTerminationAnswer;
 import org.jdiameter.api.cxdx.events.JRegistrationTerminationRequest;
-import org.jdiameter.api.cxdx.events.JServerAssignmentAnswer;
 import org.jdiameter.api.cxdx.events.JServerAssignmentRequest;
-import org.jdiameter.api.cxdx.events.JUserAuthorizationAnswer;
 import org.jdiameter.api.cxdx.events.JUserAuthorizationRequest;
 
 /**
@@ -41,15 +37,15 @@ public interface ServerCxDxSessionListener {
    */
   void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-  void doUserAuthorizationRequest(ServerCxDxSession session,JUserAuthorizationRequest request,JUserAuthorizationAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doUserAuthorizationRequest(ServerCxDxSession session,JUserAuthorizationRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-  void doServerAssignmentRequest(ServerCxDxSession session,JServerAssignmentRequest request,JServerAssignmentAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doServerAssignmentRequest(ServerCxDxSession session,JServerAssignmentRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
   void doRegistrationTerminationAnswer(ServerCxDxSession session,JRegistrationTerminationRequest request,JRegistrationTerminationAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-  void doLocationInformationRequest(ServerCxDxSession session,JLocationInfoRequest request,JLocationInfoAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doLocationInformationRequest(ServerCxDxSession session,JLocationInfoRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
   void doPushProfileAnswer(ServerCxDxSession session,JPushProfileRequest request,JPushProfileAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-  void doMultimediaAuthRequest(ServerCxDxSession session,JMultimediaAuthRequest request,JMultimediaAuthAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doMultimediaAuthRequest(ServerCxDxSession session,JMultimediaAuthRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 }

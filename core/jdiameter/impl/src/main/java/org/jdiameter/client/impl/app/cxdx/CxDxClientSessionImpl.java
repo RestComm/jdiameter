@@ -6,14 +6,12 @@
  */
 package org.jdiameter.client.impl.app.cxdx;
 
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
-import org.jdiameter.api.Message;
 import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
@@ -95,7 +93,6 @@ public class CxDxClientSessionImpl extends CxDxSession implements ClientCxDxSess
    * @see org.jdiameter.api.app.StateMachine#getState(java.lang.Class)
    */
   public <E> E getState(Class<E> stateType) {
-
     return stateType == CxDxSessionState.class ? (E) super.state : null;
   }
 
@@ -250,12 +247,12 @@ public class CxDxClientSessionImpl extends CxDxSession implements ClientCxDxSess
         case RECEIVE_PPR:
           CxDxSession.scheduler.schedule(new TimeoutTimerTask((Request) ((AppEvent) event.getData()).getMessage()), CxDxSession._TX_TIMEOUT, TimeUnit.MILLISECONDS);
           newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
-          listener.doPushProfileRequest(this, (JPushProfileRequest) event.getData(), null);
+          listener.doPushProfileRequest(this, (JPushProfileRequest) event.getData());
           break;
         case RECEIVE_RTR:
           CxDxSession.scheduler.schedule(new TimeoutTimerTask((Request) ((AppEvent) event.getData()).getMessage()), CxDxSession._TX_TIMEOUT, TimeUnit.MILLISECONDS);
           newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
-          listener.doRegistrationTerminationRequest(this, (JRegistrationTerminationRequest) event.getData(), null);
+          listener.doRegistrationTerminationRequest(this, (JRegistrationTerminationRequest) event.getData());
           break;
 
         case SEND_MESSAGE:

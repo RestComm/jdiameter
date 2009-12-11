@@ -181,6 +181,18 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
           case SEND_PUSH_NOTIFICATION_ANSWER:
           case SEND_SUBSCRIBE_NOTIFICATIONS_REQUEST:
           case SEND_USER_DATA_REQUEST:
+        	 
+        	  Message m = null;
+        	  Object data = event.getData();
+        	  if(data instanceof AppEvent)
+        	  {
+        		  m = ((AppEvent)data).getMessage();
+        	  }else
+        	  {
+        		  m = (Message) event.getData();
+        	  }
+              session.send(m, this);
+
           case TIMEOUT_EXPIRES:
             // TODO Anything here?
             break;
@@ -282,15 +294,7 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
       if (type != null) {
         handleEvent(new Event(type, request, answer));
       }
-      AppEvent event = null;
-      if (request != null) {
-        event = request;
-      }
-      else {
-        event = answer;
-      }
-      session.send(event.getMessage(), this);
-
+      
       if(request != null)
       {
         AvpSet avps = request.getMessage().getAvps();

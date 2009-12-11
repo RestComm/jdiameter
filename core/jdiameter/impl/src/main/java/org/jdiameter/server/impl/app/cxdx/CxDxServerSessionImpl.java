@@ -156,22 +156,22 @@ public class CxDxServerSessionImpl extends CxDxSession implements ServerCxDxSess
         case RECEIVE_LIR:
           CxDxSession.scheduler.schedule(new TimeoutTimerTask((Request) ((AppEvent) event.getData()).getMessage()), CxDxSession._TX_TIMEOUT, TimeUnit.MILLISECONDS);
           newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
-          listener.doLocationInformationRequest(this,  (JLocationInfoRequest) event.getData(),null);
+          listener.doLocationInformationRequest(this,  (JLocationInfoRequest) event.getData());
           break;
         case RECEIVE_MAR:
           CxDxSession.scheduler.schedule(new TimeoutTimerTask((Request) ((AppEvent) event.getData()).getMessage()), CxDxSession._TX_TIMEOUT, TimeUnit.MILLISECONDS);
           newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
-          listener.doMultimediaAuthRequest(this,  (JMultimediaAuthRequest) event.getData(),null);
+          listener.doMultimediaAuthRequest(this,  (JMultimediaAuthRequest) event.getData());
           break;
         case RECEIVE_SAR:
           CxDxSession.scheduler.schedule(new TimeoutTimerTask((Request) ((AppEvent) event.getData()).getMessage()), CxDxSession._TX_TIMEOUT, TimeUnit.MILLISECONDS);
           newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
-          listener.doServerAssignmentRequest(this,  (JServerAssignmentRequest) event.getData(),null);
+          listener.doServerAssignmentRequest(this,  (JServerAssignmentRequest) event.getData());
           break;
         case RECEIVE_UAR:
           CxDxSession.scheduler.schedule(new TimeoutTimerTask((Request) ((AppEvent) event.getData()).getMessage()), CxDxSession._TX_TIMEOUT, TimeUnit.MILLISECONDS);
           newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
-          listener.doUserAuthorizationRequest(this, (JUserAuthorizationRequest) event.getData(),null);
+          listener.doUserAuthorizationRequest(this, (JUserAuthorizationRequest) event.getData());
           break;
         case SEND_MESSAGE:
           newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;

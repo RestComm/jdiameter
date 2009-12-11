@@ -11,9 +11,7 @@ import org.jdiameter.api.cxdx.events.JLocationInfoAnswer;
 import org.jdiameter.api.cxdx.events.JLocationInfoRequest;
 import org.jdiameter.api.cxdx.events.JMultimediaAuthAnswer;
 import org.jdiameter.api.cxdx.events.JMultimediaAuthRequest;
-import org.jdiameter.api.cxdx.events.JPushProfileAnswer;
 import org.jdiameter.api.cxdx.events.JPushProfileRequest;
-import org.jdiameter.api.cxdx.events.JRegistrationTerminationAnswer;
 import org.jdiameter.api.cxdx.events.JRegistrationTerminationRequest;
 import org.jdiameter.api.cxdx.events.JServerAssignmentAnswer;
 import org.jdiameter.api.cxdx.events.JServerAssignmentRequest;
@@ -45,11 +43,11 @@ public interface ClientCxDxSessionListener {
 
   void doServerAssignmentAnswer(ClientCxDxSession session,JServerAssignmentRequest request,JServerAssignmentAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-  void doRegistrationTerminationRequest(ClientCxDxSession session,JRegistrationTerminationRequest request,JRegistrationTerminationAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doRegistrationTerminationRequest(ClientCxDxSession session,JRegistrationTerminationRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
   void doLocationInformationAnswer(ClientCxDxSession session,JLocationInfoRequest request,JLocationInfoAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-  void doPushProfileRequest(ClientCxDxSession session,JPushProfileRequest request,JPushProfileAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doPushProfileRequest(ClientCxDxSession session,JPushProfileRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
   void doMultimediaAuthAnswer(ClientCxDxSession session,JMultimediaAuthRequest request,JMultimediaAuthAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 }
