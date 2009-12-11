@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.jboss.logging.Logger;
+import org.apache.log4j.Logger;
 import org.jdiameter.common.impl.validation.DiameterMessageValidator;
 import org.jdiameter.common.impl.validation.VAvpRepresentation;
 import org.jdiameter.common.impl.validation.VMessageRepresentation;
