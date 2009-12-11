@@ -122,7 +122,7 @@ public class CxDxSessionFactory implements IAppSessionFactory, ServerCxDxSession
 	/* (non-Javadoc)
 	 * @see org.jdiameter.api.cxdx.ServerCxDxSessionListener#doLocationInformationRequest(org.jdiameter.api.cxdx.ServerCxDxSession, org.jdiameter.api.cxdx.events.JLocationInfoRequest, org.jdiameter.api.cxdx.events.JLocationInfoAnswer)
 	 */
-	public void doLocationInformationRequest(ServerCxDxSession session, JLocationInfoRequest request, JLocationInfoAnswer answer) throws InternalException, IllegalDiameterStateException,
+	public void doLocationInformationRequest(ServerCxDxSession session, JLocationInfoRequest request) throws InternalException, IllegalDiameterStateException,
 			RouteException, OverloadException {
 		this.cxDxResourceAdaptor.fireEvent(session.getSessions().get(0).getSessionId(),_LocationInfoRequest , (Request)request.getMessage(), null);
 		
@@ -131,7 +131,7 @@ public class CxDxSessionFactory implements IAppSessionFactory, ServerCxDxSession
 	/* (non-Javadoc)
 	 * @see org.jdiameter.api.cxdx.ServerCxDxSessionListener#doMultimediaAuthRequest(org.jdiameter.api.cxdx.ServerCxDxSession, org.jdiameter.api.cxdx.events.JMultimediaAuthRequest, org.jdiameter.api.cxdx.events.JMultimediaAuthAnswer)
 	 */
-	public void doMultimediaAuthRequest(ServerCxDxSession session, JMultimediaAuthRequest request, JMultimediaAuthAnswer answer) throws InternalException, IllegalDiameterStateException,
+	public void doMultimediaAuthRequest(ServerCxDxSession session, JMultimediaAuthRequest request) throws InternalException, IllegalDiameterStateException,
 			RouteException, OverloadException {
 		this.cxDxResourceAdaptor.fireEvent(session.getSessions().get(0).getSessionId(),_MultimediaAuthenticationRequest , (Request)request.getMessage(), null);
 		
@@ -176,7 +176,7 @@ public class CxDxSessionFactory implements IAppSessionFactory, ServerCxDxSession
 	/* (non-Javadoc)
 	 * @see org.jdiameter.api.cxdx.ServerCxDxSessionListener#doServerAssignmentRequest(org.jdiameter.api.cxdx.ServerCxDxSession, org.jdiameter.api.cxdx.events.JServerAssignmentRequest, org.jdiameter.api.cxdx.events.JServerAssignmentAnswer)
 	 */
-	public void doServerAssignmentRequest(ServerCxDxSession session, JServerAssignmentRequest request, JServerAssignmentAnswer answer) throws InternalException, IllegalDiameterStateException,
+	public void doServerAssignmentRequest(ServerCxDxSession session, JServerAssignmentRequest request) throws InternalException, IllegalDiameterStateException,
 			RouteException, OverloadException {
 		this.cxDxResourceAdaptor.fireEvent(session.getSessions().get(0).getSessionId(),_ServerAssignmentRequest , (Request)request.getMessage(), null);
 		
@@ -185,7 +185,7 @@ public class CxDxSessionFactory implements IAppSessionFactory, ServerCxDxSession
 	/* (non-Javadoc)
 	 * @see org.jdiameter.api.cxdx.ServerCxDxSessionListener#doUserAuthorizationRequest(org.jdiameter.api.cxdx.ServerCxDxSession, org.jdiameter.api.cxdx.events.JUserAuthorizationRequest, org.jdiameter.api.cxdx.events.JUserAuthorizationAnswer)
 	 */
-	public void doUserAuthorizationRequest(ServerCxDxSession session, JUserAuthorizationRequest request, JUserAuthorizationAnswer answer) throws InternalException, IllegalDiameterStateException,
+	public void doUserAuthorizationRequest(ServerCxDxSession session, JUserAuthorizationRequest request) throws InternalException, IllegalDiameterStateException,
 			RouteException, OverloadException {
 		this.cxDxResourceAdaptor.fireEvent(session.getSessions().get(0).getSessionId(),_UserAuthorizationRequest , (Request)request.getMessage(), null);
 		
@@ -212,7 +212,7 @@ public class CxDxSessionFactory implements IAppSessionFactory, ServerCxDxSession
 	/* (non-Javadoc)
 	 * @see org.jdiameter.api.cxdx.ClientCxDxSessionListener#doPushProfileRequest(org.jdiameter.api.cxdx.ClientCxDxSession, org.jdiameter.api.cxdx.events.JPushProfileRequest, org.jdiameter.api.cxdx.events.JPushProfileAnswer)
 	 */
-	public void doPushProfileRequest(ClientCxDxSession session, JPushProfileRequest request, JPushProfileAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException,
+	public void doPushProfileRequest(ClientCxDxSession session, JPushProfileRequest request) throws InternalException, IllegalDiameterStateException, RouteException,
 			OverloadException {
 		this.cxDxResourceAdaptor.fireEvent(session.getSessions().get(0).getSessionId(),_PushProfileRequest , (Request)request.getMessage(), null);
 		
@@ -221,7 +221,7 @@ public class CxDxSessionFactory implements IAppSessionFactory, ServerCxDxSession
 	/* (non-Javadoc)
 	 * @see org.jdiameter.api.cxdx.ClientCxDxSessionListener#doRegistrationTerminationRequest(org.jdiameter.api.cxdx.ClientCxDxSession, org.jdiameter.api.cxdx.events.JRegistrationTerminationRequest, org.jdiameter.api.cxdx.events.JRegistrationTerminationAnswer)
 	 */
-	public void doRegistrationTerminationRequest(ClientCxDxSession session, JRegistrationTerminationRequest request, JRegistrationTerminationAnswer answer) throws InternalException,
+	public void doRegistrationTerminationRequest(ClientCxDxSession session, JRegistrationTerminationRequest request) throws InternalException,
 			IllegalDiameterStateException, RouteException, OverloadException {
 		this.cxDxResourceAdaptor.fireEvent(session.getSessions().get(0).getSessionId(),_RegistrationTerminationRequest , (Request)request.getMessage(), null);
 		
