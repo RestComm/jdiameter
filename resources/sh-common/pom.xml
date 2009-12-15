@@ -3,11 +3,11 @@
 	<packaging>pom</packaging>
 
   <parent>
-		<groupId>org.mobicents</groupId>
-		<artifactId>mobicents</artifactId>
-		<version>12</version>
-		<relativePath>../../../../parent/pom.xml</relativePath>
-	</parent>
+    <groupId>org.mobicents</groupId>
+    <artifactId>mobicents</artifactId>
+    <version>1.14</version>
+    <relativePath>../../../../parent/pom.xml</relativePath>
+  </parent>
 
   <groupId>org.mobicents.servers.diameter.resources</groupId>
 	<artifactId>sh-common-parent</artifactId>
@@ -23,8 +23,8 @@
 
   <properties>
     <!-- Mobicents Diameter Components Versions -->
-    <mobicents.diameter.jdiameter.version>1.5.3.0-build350-SNAPSHOT</mobicents.diameter.jdiameter.version>
-    <mobicents.diameter.resources.base.version>1.1.1.GA-SNAPSHOT</mobicents.diameter.resources.base.version>
+    <mobicents.diameter.jdiameter.version>1.5.3.0-build350</mobicents.diameter.jdiameter.version>
+    <mobicents.diameter.resources.base.version>1.1.1.GA</mobicents.diameter.resources.base.version>
     
     <!-- Other Mobicents Components Versions -->
     <mobicents.servers.jainslee.version>1.2.7.GA</mobicents.servers.jainslee.version>
