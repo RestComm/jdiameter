@@ -12,7 +12,7 @@
 
 	<groupId>org.mobicents.servers.diameter.examples</groupId>
 	<artifactId>cx-dx-parent</artifactId>
-	<version>1.0.0.BETA2</version>
+	<version>1.0.0.BETA3-SNAPSHOT</version>
 
 	<name>Mobicents :: Diameter Examples :: ${pom.artifactId}</name>
 
@@ -97,9 +97,9 @@
 	</profiles>
 
 	<scm>
-		<connection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/examples/cx-dx/cx-dx-1.0.0.BETA2</connection>
-		<developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/examples/cx-dx/cx-dx-1.0.0.BETA2</developerConnection>
-		<url>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/examples/cx-dx/cx-dx-1.0.0.BETA2</url>
+		<connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/examples/cx-dx</connection>
+		<developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/examples/cx-dx</developerConnection>
+		<url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/examples/cx-dx</url>
 	</scm>
 
 </project>
