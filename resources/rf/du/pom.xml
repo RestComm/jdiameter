@@ -16,11 +16,6 @@
 		<!-- components -->
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>rf-events</artifactId>
-			<version>${pom.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
 			<artifactId>rf-ratype</artifactId>
 			<version>${pom.version}</version>
 		</dependency>

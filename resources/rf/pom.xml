@@ -16,7 +16,6 @@
 	<name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
 
 	<modules>
-		<module>events</module>
 		<module>ratype</module>
 		<module>ra</module>
 		<module>du</module>
