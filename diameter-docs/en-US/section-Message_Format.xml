@@ -31,7 +31,7 @@
     <varlistentry>
       <term>Command Flags</term>
       <listitem>
-        <para>Bits, which specify the type of message.  The first four bits are occupied with any one of the following values: </para>
+        <para>Bits that specify the type of message.  The first four bits are occupied with any one of the following values: </para>
         <itemizedlist>
           <listitem>
             <para>R = Message is a request</para>
@@ -95,7 +95,7 @@
     <varlistentry>
       <term>AVP Flags</term>
       <listitem>
-        <para>Flags, which specify how each attribute must be handled.  The first three  bits are occupied with any one of the following values: </para>
+        <para>Specify how each attribute must be handled.  The first three  bits are occupied with any one of the following values: </para>
         <itemizedlist>
           <listitem>
             <para>V = Message is an error message.</para>

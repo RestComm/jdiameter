@@ -15,18 +15,18 @@
   </itemizedlist>
   <para>For new users, it is recommended that you install the Base RA from the binary.  If you are an advanced user, who is comfortable with building from source, you can choose to build the RA from source code.</para>
   <formalpara>
-    <title>Install From The Binary</title>
+<!--Note: Developer: install instructions need to be more detailed than this. Otherwise, users may become confused. Please provide more steps to fill this section out.-->    <title>Install From The Binary</title>
     <para>The binary package is available from the Mobicents Diameter SourceForge page (<ulink url="http://sourceforge.net/projects/mobicents/files/Mobicents%20Diameter/">http://sourceforge.net/projects/mobicents/files/Mobicents%20Diameter/</ulink>)</para>
   </formalpara>
   <para>Select the Resource Adapter file that you want to install from the list, and download the archive.  </para>
-  <para> <!--TODO: Developer: Generic installation instructions need to be added for RAs
+  <para><!--***TODO: Developer: Generic installation instructions need to be added for RAs
 Content: filled. There is no guide for consoles yet, how should we handle that?-->Binary distribution can be installed  by:</para>
   <itemizedlist>
     <listitem>
       <para>putting the RA Deployable Unit in the server deploy folder (by default:  <filename>$JBOSS_HOME/servers/${node}/deploy</filename>)</para>
     </listitem>
     <listitem>
-      <para>console <!--Content: how to put info about it?--></para>
+      <para>console </para>
     </listitem>
     <listitem>
       <para>standard JSLEE JMX interface, refer to JSLEE specification for examples.</para>
