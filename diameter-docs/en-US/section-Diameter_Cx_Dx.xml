@@ -140,8 +140,7 @@
       </tbody>
     </tgroup>
   </table>
-<!--TODO:  Editor: paragraphs need rework.  Copied directly from wiki.
-Content: Hmm we dont have wiki for that.-->  <para>The Cx and Dx interfaces definition are mixed. This is because  both are meant to standardize communication between SIP IMS Proxies and HSS</para>
+  <para>The Cx and Dx interfaces definition are mixed. This is because  both are meant to standardize communication between SIP IMS Proxies and HSS</para>
   <para>UAR/UAA perform the following operations:</para>
   <itemizedlist>
     <listitem>

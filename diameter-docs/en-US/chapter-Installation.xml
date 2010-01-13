@@ -4,6 +4,6 @@
 %BOOK_ENTITIES;]>
 <chapter>
   <title>Installation</title>
-  <para>Under Development</para>
+  <para><!--Note: Developer: This section needs to be completed as soon as possible-->Under Development</para>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Installing_Resource_Adapters.xml" encoding="UTF-8"/>
 </chapter>

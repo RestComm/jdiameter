@@ -8,8 +8,7 @@
   <para>Therefore, a direct interaction between the charging mechanism and the session/service control is required.</para>
   <para>For contrast with Rf (which is almost identical) consider the regular phone call. User accessing platform is <emphasis role="bold">regular user</emphasis> - that means he is bound to regular phone plan. Provider charges him on every activity during call - call start, every n-service units and finally on call end. This allows to deny service during (here a phone call) if user account does not have enough credit.</para>
   <para>Ro is defined in <ulink url="http://www.3gpp.org/ftp/Specs/html-info/32299.htm">TS32.299</ulink>.</para>
-<!--Note: Developer: The link between the CTF and the OCF needs to be explained better. If the CTF makes the decisions then the OCF carries the decisions out, then that needs to be clarified so that we can make sense of it.
-Content: para inserted below.-->  <para>Charging involves two peers:</para>
+  <para>Charging involves two peers:</para>
   <itemizedlist>
     <listitem>
       <para>Charging Trigger Function (CTF) - makes decisions on how to charge the user for specific services, issues requests to the server (OCF). </para>

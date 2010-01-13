@@ -1,10 +1,10 @@
-﻿<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" [
 <!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">
 %BOOK_ENTITIES;]>
 <chapter id="i-Introduction">
   <title>Introduction</title>
-  <para>Diameter is a computer networking protocol for AAA (Authentication, Authorization and Accounting) defined in RFC 3588. It is a successor to RADIUS (and its name is a reference to it, a diameter is twice the radius) offering the following advantages:</para>
+  <para>Diameter is a computer networking protocol for AAA (Authentication, Authorization and Accounting), as defined in RFC 3588. It is a successor to RADIUS, and offers the following advantages:</para>
   <itemizedlist>
     <listitem>
       <para>Reliable transport protocols (TCP or SCTP, not UDP)</para>
@@ -50,6 +50,6 @@
     </listitem>
   </itemizedlist>
   <para>It was designed in a way to be compatible with RADIUS but also to be easily extended with new use cases within AAA scenario and other IMS scenarios. Extensions are called &quot;Applications&quot;.</para>
-  <para>Each application introduces new types of messages,  AVP codes, and state machines.  The Message and AVP codes are assigned by the IANA.  Furthermore,  each application has its own application ID and vendor ID that is used to distinguish between applications. In addition, application code is used to signal to other peers which  operations are supported by connecting peer (Capabilities Exchange).</para>
+  <para><!--Note: Developer: The last sentence in particular is unclear. Please provide a clearer explanation-->Each application introduces new types of messages,  AVP codes, and state machines.  The Message and AVP codes are assigned by the IANA.  Furthermore,  each application has its own application ID and vendor ID that is used to distinguish between applications. Application code is used to signal to other peers which  operations are supported by connecting peer (Capabilities Exchange).</para>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Message_Format.xml" encoding="UTF-8"/>
 </chapter>
