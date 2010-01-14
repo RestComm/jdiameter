@@ -4,52 +4,38 @@
 %BOOK_ENTITIES;]>
 <chapter id="i-Introduction">
   <title>Introduction</title>
-  <para>Diameter is a computer networking protocol for AAA (Authentication, Authorization and Accounting), as defined in RFC 3588. It is a successor to RADIUS, and offers the following advantages:</para>
+  <para>Diameter is a computer networking protocol for AAA (Authentication, Authorization and Accounting) defined in RFC 3588. It is a successor to RADIUS (and its name is a reference to it, a diameter is twice the radius). Diameter has been desgined to overcome certain RADIUS limitations:</para>
   <itemizedlist>
     <listitem>
-      <para>Reliable transport protocols (TCP or SCTP, not UDP)</para>
+      <para>No  transport reliability and flexibility (TCP/SCTP instead only UDP)</para>
     </listitem>
     <listitem>
-      <para>Network or transport level security (IPSec or TLS)</para>
+      <para>No security within protocol  (IPSec or TLS)</para>
     </listitem>
     <listitem>
-      <para>Transition support for RADIUS, although Diameter is not fully compatible with RADIUS</para>
+      <para>Limited address space for AVPs (32 bits instead of 8 bits)</para>
     </listitem>
     <listitem>
-      <para>Larger address space for attribute-value pairs (AVPs) and identifiers (32 bits instead of 8 bits)</para>
+      <para>Only stateless mode is possible(Diameter supports both)</para>
     </listitem>
     <listitem>
-      <para>Client-server protocol, with exception of supporting some server-initiated messages as well</para>
+      <para>Static peers ( Diameter offers dynamic discovery, using DNS SRV and NAPTR)</para>
     </listitem>
     <listitem>
-      <para>Both stateful and stateless models can be used</para>
+      <para>No peer alignment capabilities (Diameter introduce capabilities negotiation)</para>
     </listitem>
     <listitem>
-      <para>Dynamic discovery of peers (using DNS SRV and NAPTR)</para>
+      <para>No support for transport layer failover (Diameter follows RFC 3539, which introduces proper procedures)</para>
     </listitem>
     <listitem>
-      <para>Capability negotiation</para>
+      <para>Limited support for roaming( Diameter introduces new mechanism for this)</para>
     </listitem>
     <listitem>
-      <para>Supports application layer acknowledgments, defines failover methods and state machines (RFC 3539)</para>
-    </listitem>
-    <listitem>
-      <para>Error notification</para>
-    </listitem>
-    <listitem>
-      <para>Better roaming support</para>
-    </listitem>
-    <listitem>
-      <para>More easily extended; new commands and attributes can be defined</para>
-    </listitem>
-    <listitem>
-      <para>Aligned on 32-bit boundaries</para>
-    </listitem>
-    <listitem>
-      <para>Basic support for user-sessions and accounting</para>
+      <para>No extension possible(Diameter allows extension - new commands and avps to be defined)</para>
     </listitem>
   </itemizedlist>
-  <para>It was designed in a way to be compatible with RADIUS but also to be easily extended with new use cases within an AAA scenario and other IMS scenarios. Extensions are called &quot;Applications&quot;.</para>
-  <para>Each application introduces new types of messages, AVP codes, and state machines. The Message and AVP codes are assigned by the IANA. Each of the applications has its own application ID and vendor ID that is used to distinguish between the various applications., while an Application code is used to signal to other peers which operations are supported by that peer (Capabilities Exchange).</para>
+  <para>Diameter offers all capabilities of RADIUS protocol. Also as logical successor it is comptibile with RADIUS. </para>
+  <para>Diameter also allows to define extension. Each extension is called &quot;Application&quot;.</para>
+  <para>Each application introduces new types of messages,  AVP codes, and state machines.  The Message and AVP codes are assigned by the IANA.  Furthermore,  each application has its own application ID and vendor ID that is used to distinguish between applications. In addition, application code is used to signal to other peers which  operations are supported by connecting peer (Capabilities Exchange / Negotiation). </para>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="section-Message_Format.xml" encoding="UTF-8"/>
 </chapter>

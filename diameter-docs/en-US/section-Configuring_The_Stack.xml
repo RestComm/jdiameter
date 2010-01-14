@@ -14,35 +14,42 @@
   <programlisting role="XML">&lt;LocalPeer&gt;
       &lt;URI value=&quot;aaa://localhost:1812&quot;/&gt;
       &lt;IPAddresses&gt;
-      &lt;IPAddress value=&quot;127.0.0.1&quot;/&gt;
+          &lt;IPAddress value=&quot;127.0.0.1&quot;/&gt;
       &lt;/IPAddresses&gt;
       &lt;Realm value=&quot;mobicents.org&quot;/&gt;
       &lt;VendorID value=&quot;193&quot;/&gt;
       &lt;ProductName value=&quot;jDiameter&quot;/&gt;
       &lt;FirmwareRevision value=&quot;1&quot;/&gt;
       &lt;OverloadMonitor&gt;
-      &lt;Entry index=&quot;1&quot; lowThreshold=&quot;0.5&quot; highThreshold=&quot;0.6&quot;&gt;
-      &lt;ApplicationID&gt;
-      &lt;VendorId value=&quot;193&quot;/&gt;
-      &lt;AuthApplId value=&quot;0&quot;/&gt;
-      &lt;AcctApplId value=&quot;19302&quot;/&gt;
-      &lt;/ApplicationID&gt;
-      &lt;/Entry&gt;
-      &lt;/OverloadMonitor&gt;
-      &lt;/LocalPeer&gt;</programlisting>
+         &lt;Entry index=&quot;1&quot; lowThreshold=&quot;0.5&quot; highThreshold=&quot;0.6&quot;&gt;
+          &lt;ApplicationID&gt;
+             &lt;VendorId value=&quot;193&quot;/&gt;
+             &lt;AuthApplId value=&quot;0&quot;/&gt;
+             &lt;AcctApplId value=&quot;19302&quot;/&gt;
+           &lt;/ApplicationID&gt;
+         &lt;/Entry&gt;
+      &lt;/OverloadMonitor&gt;
+      &lt;Applications&gt;
+         &lt;ApplicationID&gt;
+            &lt;VendorId value=&quot;193&quot;/&gt;
+            &lt;AuthApplId value=&quot;0&quot;/&gt;
+            &lt;AcctApplId value=&quot;19302&quot;/&gt;
+         &lt;/ApplicationID&gt;
+      &lt;/Applications&gt;
+&lt;/LocalPeer&gt;</programlisting>
   <para>The &lt;LocalPeer&gt; element contains parameters that affect the local Diameter peer.  The available elements and attributes are listed for reference.</para>
   <variablelist>
     <title>&lt;LocalPeer&gt; Elements and Attributes</title>
     <varlistentry>
       <term>&lt;URI&gt;</term>
       <listitem>
-        <para>Specifies the URI for the local peer.  </para>
+        <para>Specifies the URI for the local peer.  URI has following format: &quot;aaa://FQDN:port&quot;.</para>
       </listitem>
     </varlistentry>
     <varlistentry>
       <term>&lt;IPAddresses&gt;</term>
       <listitem>
-        <para>Contains one or more child &lt;IPAddress&gt; elements that contain a single, valid IP address for the local peer.</para>
+        <para>Contains one or more child &lt;IPAddress&gt; elements that contain a single, valid IP address for the local peer, which is stored in property of IPAddress: &quot;value&quot;.</para>
       </listitem>
     </varlistentry>
     <varlistentry>
@@ -78,25 +85,56 @@
     <varlistentry>
       <term>&lt;Entry&gt;</term>
       <listitem>
-        <para>Specifies three attributes that control the overload element index, overload low threshold and overload high threshold.</para>
+        <para>Supports chiled elements of type &lt;ApplicationID&gt;, which define tracked application. It also supports following properties:<variablelist>
+            <varlistentry>
+              <term>index</term>
+              <listitem>
+                <para><!--Developer: fill this--></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lowThreshold</term>
+              <listitem>
+                <para><!--Developer: fill this--></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>highThreshold</term>
+              <listitem>
+                <para><!--Developer: fill this--></para>
+              </listitem>
+            </varlistentry>
+          </variablelist></para>
       </listitem>
     </varlistentry>
     <varlistentry>
       <term>&lt;ApplicationID&gt;</term>
       <listitem>
-        <para>Parent element containing child elements that specify information about the application</para>
+        <para>Parent element containing child elements that specify information about the application. Child elements are: VendorId, AuthAppId and AcctAppId. Togther they create unique application identifier.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;VendorId&gt;</term>
+      <listitem>
+        <para>Specifies vendor id for application definition. It support single property: &quot;value&quot;</para>
       </listitem>
     </varlistentry>
     <varlistentry>
       <term>&lt;AuthAppId&gt;</term>
       <listitem>
-        <para>The Authentication Application ID.</para>
+        <para>The Authentication Application ID for application definition. It support single property: &quot;value&quot;</para>
       </listitem>
     </varlistentry>
     <varlistentry>
       <term>&lt;AcctAplId&gt;</term>
       <listitem>
-        <para>The Account Application ID</para>
+        <para>The Account Application ID for application defitniion. It support single property: &quot;value&quot;</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;Applications&gt;</term>
+      <listitem>
+        <para>Contain child element &lt;ApplicationID&gt;, which define complete list of localy supported applications. It is used for server side. When stack is configured to accept incoming calls and there is empty list of preconfigured peers(server is configured to accept any connection).</para>
       </listitem>
     </varlistentry>
   </variablelist>
@@ -112,9 +150,10 @@
       &lt;IacTimeOut value=&quot;30000&quot;/&gt;
       &lt;DwaTimeOut value=&quot;10000&quot;/&gt;
       &lt;DpaTimeOut value=&quot;5000&quot;/&gt;
-      &lt;RecTimeOut value=&quot;10000&quot;/&gt;
-      &lt;/Parameters&gt;</programlisting>
-  <para>The &lt;Parameters&gt; element contains elements that specify parameters for the Diameter stack.  The available elements and attributes are listed for reference.</para>
+      &lt;RecTimeOut value=&quot;10000&quot;/&gt;
+      &lt;ThreadPool size=&quot;10&quot; priority=&quot;5&quot;/&gt;
+ &lt;/Parameters&gt;</programlisting>
+  <para>The &lt;Parameters&gt; element contains elements that specify parameters for the Diameter stack.  The available elements and attributes are listed for reference. If not specified otherwise each tag supports single property &quot;value&quot; which indicates value of tag.</para>
 <!--TODO:  Developer: Need to obtain better definitions for the Parameter Elements and Attributes.  information present at the moment is not that helpful to readers.-->  <variablelist>
     <title>&lt;Parameter&gt; Elements and Attributes</title>
     <varlistentry>
@@ -138,35 +177,38 @@
     <varlistentry>
       <term>&lt;UseUriAsFqdn&gt;</term>
       <listitem>
-        <para> Specifies whether the Ericsson SDK Emulator.  The default value is <literal>true</literal>.</para>
+        <para> Determines as URI should be used as FQDN, if set to  <literal>true</literal> stack expects destination/origin host in format of &quot;aaa://isdn.domain.com:3868&quot; instead of proper &quot;isdn.domain.com&quot;. Default value is <literal>false</literal>.</para>
       </listitem>
     </varlistentry>
     <varlistentry>
       <term>&lt;QueueSize&gt;</term>
       <listitem>
-        <para> In milliseconds</para>
+        <para> Determines how many tasks peer state machine can have before rejecting next task. This queue contains FSM event and messaging.</para>
       </listitem>
     </varlistentry>
     <varlistentry>
       <term>&lt;MessageTimeOut&gt;</term>
       <listitem>
-        <para>  In milliseconds</para>
+        <para>  Determines timeout for other than protocol FSM messages. Delay is in milliseconds.</para>
       </listitem>
     </varlistentry>
     <varlistentry>
       <term>&lt;StopTimeOut&gt;</term>
       <listitem>
-        <para>  In milliseconds</para>
+        <para>  Determines how long stack waits for all resources to stop gracefully. Delays is in milliseconds.</para>
       </listitem>
     </varlistentry>
     <varlistentry>
       <term>&lt;CeaTimeOut&gt;</term>
       <listitem>
-        <para>  In milliseconds</para>
+        <para>  Determines how long it takes for CER/CEA exchange to timeout if there is no response. Delay is in milliseconds.</para>
       </listitem>
     </varlistentry>
     <varlistentry>
-      <term>&lt;IacTimeOut&gt;</term>
+      <term>&lt;IacTimeOut&gt;<!--Developer:
+Conent:
+
+What the hell is that?--></term>
       <listitem>
         <para>  In milliseconds</para>
       </listitem>
@@ -174,19 +216,26 @@
     <varlistentry>
       <term>&lt;DwaTimeOut&gt;</term>
       <listitem>
-        <para>  In milliseconds</para>
+        <para>  Determines how long it takes for DWR/DWA exchange to timeout if there is no response. Delay is in milliseconds.</para>
       </listitem>
     </varlistentry>
     <varlistentry>
       <term>&lt;DpaTimeOut&gt;</term>
       <listitem>
-        <para>  In milliseconds</para>
+        <para>  Determines how long it takes for DPR/DPA exchange to timeout if there is no response. Delay is in milliseconds.</para>
       </listitem>
     </varlistentry>
     <varlistentry>
       <term>&lt;RecTimeOut&gt;</term>
       <listitem>
-        <para>  In milliseconds</para>
+        <para> Determines how long it takes for reconnection procedure to timeout. Delay is in milliseconds.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;ThreadPool /&gt;</term>
+      <listitem>
+        <para>Supports two integer properties, which control thread pool size and priority. Properties supported are &quot;priority&quot;(1-10) and &quot;size&quot;.</para>
+        <para>Default value for size is 10, for priority 5.</para>
       </listitem>
     </varlistentry>
   </variablelist>
@@ -218,6 +267,26 @@
       <term>&lt;Peer&gt;</term>
       <listitem>
         <para>Specifies the name of the external peer, whether the peer should be treated as a server or client, and what rating the peer has externally.</para>
+        <para>Peer supports following properties:<variablelist>
+            <varlistentry>
+              <term>name</term>
+              <listitem>
+                <para>specifies name of peer in for of URI. structure looks as follows &quot;aaa://[fqdn|ip]:port&quot;, for example &quot;aaa://192.168.1.1:3868&quot;</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>attempt_connect</term>
+              <listitem>
+                <para>determines wheather stack should try to connect to this peer. This property accepts boolean values.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>rating</term>
+              <listitem>
+                <para><!--Developer: fill this--></para>
+              </listitem>
+            </varlistentry>
+          </variablelist></para>
       </listitem>
     </varlistentry>
     <varlistentry>
@@ -229,10 +298,38 @@
     <varlistentry>
       <term>&lt;Realm&gt;</term>
       <listitem>
-        <para>Child element containing attributes and elements that describe the different realms configured for the Core.</para>
+        <para>Child element containing attributes and elements that describe the different realms configured for the Core. It supports &lt;ApplicationID&gt; child elements, which define applications supported. </para>
+        <para>Realm supports following parameters:</para>
+        <variablelist>
+          <varlistentry>
+            <term>peers</term>
+            <listitem>
+              <para>comma separated list of peers, each peer is represented by ip or fqdn,</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>loca_action</term>
+            <listitem>
+              <para><!--Developer: fill this--></para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>dynamic</term>
+            <listitem>
+              <para><!--Developer: fill this--></para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>exp_time</term>
+            <listitem>
+              <para><!--Developer: fill this--></para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
       </listitem>
     </varlistentry>
   </variablelist>
 <!--TODO: Need more information about what might go into the extensions element.
-Content: This is impl specific for user impl features I think.-->  <programlisting>&lt;Extensions/&gt;</programlisting>
+Content: This is impl specific for user impl features I think.
+Developer: y, we dont support this yet, it shoudl be removed.-->  <programlisting>&lt;Extensions/&gt;</programlisting>
 </section>
