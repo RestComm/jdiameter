@@ -20,7 +20,7 @@
     <title>Activities</title>
     <para>The following activities are available, with the API definition listed for reference.  The API defines methods to create requests, send and receive answers for a certain activity, and retrieve session-specific data. </para>
   </formalpara>
-  <para>All Cx/Dx activities are short lived - activity ends after an answer is received or sent.</para>
+  <para>All Cx/Dx activities are short lived - the activity ends after an answer is received or sent.</para>
   <para>These activities allow the Cx/Dx applications to retrieve messages and AVP factories bound to the current session.  The functionality offered is limited only  by the implementation used. </para>
   <variablelist>
     <title>Diameter Cx/Dx Server Activities</title>
@@ -42,8 +42,7 @@
       </listitem>
     </varlistentry>
   </variablelist>
-<!--JLM - I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.  
-Content: Link is fine?-->  <formalpara>
+  <formalpara>
     <title>Provider</title>
     <para>The API for the CxDxProvider is more than 100 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-server/ratype/src/main/java/net/java/slee/resource/diameter/sh/server/ShServerProvider.java">CxDxProvider.java in the source code</ulink>.</para>
   </formalpara>

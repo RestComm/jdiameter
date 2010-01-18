@@ -1,4 +1,4 @@
-﻿<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" [
 <!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">
 %BOOK_ENTITIES;]>
@@ -7,7 +7,7 @@
   <para>The following examples demonstrate some basic usage examples for the Resource Adapter (RA) API.  </para>
   <example>
     <title>User-Data-Request</title>
-    <para>The following example shows how a UDR is consumed on the server side. <!--Content: should code examples be refactored to present better?--></para>
+    <para>The following example shows how a UDR is consumed on the server side. </para>
     <programlisting role="JAVA">public void onUserDataRequest(UserDataRequest event, ActivityContextInterface aci) {
 if (logger.isInfoEnabled())
 logger.info(&quot;onUserDataRequest :: &quot; + event);

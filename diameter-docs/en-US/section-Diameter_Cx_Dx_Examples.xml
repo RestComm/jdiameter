@@ -4,7 +4,7 @@
 %BOOK_ENTITIES;]>
 <section id="dcde-Diameter_Cx_Dx_Examples">
   <title>Examples</title>
-  <para>The sample application provided for the Cx/Dx Applications are part of the &quot;User Equipment initiated deregistration&quot; scenario. For more information about this scenario please refere to section A.4.3 of <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29228.htm">TS 29.228</ulink>.</para>
+  <para>The sample application provided for the Cx/Dx Applications are part of the &quot;User Equipment initiated deregistration&quot; scenario. For more information about this scenario please refer to section A.4.3 of <ulink url="http://www.3gpp.org/ftp/Specs/html-info/29228.htm">TS 29.228</ulink>.</para>
   <para>The scenario includes three diameter peers:</para>
   <itemizedlist>
     <listitem>
@@ -17,7 +17,6 @@
       <para>S-CSCF</para>
     </listitem>
   </itemizedlist>
-  <para>The scenario also includes SIP messaging, which the example omits for the sake of simplicity. The &quot;Client&quot; side emulates I-CSCF and S-CSCF, while the &quot;Server&quot; side of example emulates HSS.</para>
   <formalpara>
     <title>UE initiated deregistration flow</title>
     <para>The  flow below shows an actual scenario. The example flow does not include SIP and UE. I-CSCF and S-CSCF are emulated by the  &quot;client&quot; side.</para>

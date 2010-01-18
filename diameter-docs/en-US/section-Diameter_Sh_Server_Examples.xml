@@ -4,8 +4,6 @@
 %BOOK_ENTITIES;]>
 <section>
   <title>Examples</title>
-  <para>Under Development</para>
-<!--Note: Developer: Example needs to be inserted here for Diameter Sh (Server)
   <para>The sample application provided for Diameter Sh (Client) supports two scenarios:</para>
   <itemizedlist>
     <listitem>
@@ -17,7 +15,7 @@
   </itemizedlist>
   <formalpara>
     <title>Application is requested for user data</title>
-    <para>In this case example simply sends request to remote peer (HSS). It simply requests data for certain user.</para>
+    <para>In this case, the  example simply sends a request to the remote peer (HSS). It requests data for a certain user.</para>
   </formalpara>
   <figure id="figure-Sh_Client_Application_Message_Flow_1">
     <title>Data Request Flow</title>
@@ -29,7 +27,7 @@
   </figure>
   <formalpara>
     <title>Application receives subscription to user data</title>
-    <para>In this case example service subscribes in HSS to changes to user profile. Once subscribtion is estabilished, example service will receive .  </para>
+    <para>In this case, the  example service subscribes in HSS to changes to the user profile. Once the subscription is estabilished, the example service will receive <!--Note: Developer: Again, what does the service receive?-->.  </para>
   </formalpara>
   <figure id="figure-Sh_Server_Application_Message_Flow_1">
     <title>Subscribe Request Message Flow</title>
@@ -41,5 +39,6 @@
   </figure>
   <section>
     <title>Configuration</title>
-    <para>Right now example does not support any configuration.</para>
-  </section>--></section>
+    <para>At this time, the example does not allow for direct configuration.</para>
+  </section>
+</section>

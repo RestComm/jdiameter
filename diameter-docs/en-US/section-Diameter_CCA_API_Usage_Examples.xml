@@ -1,4 +1,4 @@
-﻿<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" [
 <!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">
 %BOOK_ENTITIES;]>
@@ -145,7 +145,7 @@ session.sendCreditControlAnswer(answer);
 } catch (Exception e) {
 logger.error(&quot;Failed to create/send Credit-Control-Answer to reply EVENT_REQUEST(4).&quot;, e);
 }
-break;
+break;setResultCodesetResultCodesetResultCodesetResultCodesetResultCode[Chapter/Section &amp; Name] -
 
 default:
 logger.error(&quot;Unexpected CC-Request-Type in message: &quot; + request.getCcRequestType() + &quot;. Aborting...&quot;);

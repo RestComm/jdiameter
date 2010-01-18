@@ -6,7 +6,7 @@
   <title>Configuring the Validator and Dictionary</title>
   <para>The <filename>dictionary.xml</filename>  file contains the configuration data for both the Validator and Dictionary components.  The file is located in the <filename>/dictionary</filename> directory of the MUX:</para>
   <para>   <filename>mobicents-diameter-mux-<replaceable>[version]</replaceable>.sar/lib/mobicents-diameter-mux-jar-<replaceable>[version]</replaceable>.jar/org/mobicents/diameter/dictionary/dictionary.xml</filename></para>
-  <para>When the MUX component creates the stack, the validator and dictionary are both started and configured, based on the <filename>dictionary.xml</filename> file present in the MUX classpath.  The advantage of using the same file for the validator and dictionary is that there is no way to introduce configuration mistakes between  components.  If the <filename>dictionary.xml</filename> file contains incorrect settings, these settings may affect both components.  Therefore, be careful when setting the parameters, which are explained below for reference.</para>
+  <para>When the MUX component creates the stack, the Validator and Dictionary are both started and configured, based on the <filename>dictionary.xml</filename> file present in the MUX classpath.  The advantage of using the same file for the validator and dictionary is that there is no way to introduce configuration mistakes between  components.  If the <filename>dictionary.xml</filename> file contains incorrect settings, these settings affect both components.  Therefore, be careful when setting the parameters, which are explained below for reference.</para>
   <para>The basic XML structure of the <filename>dictionary.xml</filename> file is described below.  All elements are mandatory, and contain a number of attributes that set the parameters for the Validator and Dictionary.  </para>
   <programlisting role="XML">&lt;dictonary&gt;
   &lt;validator enabled=&quot;true|false&quot;/&gt;
@@ -32,7 +32,7 @@
 &lt;dictionary/&gt;</programlisting>
   <formalpara>
     <title>&lt;dictionary&gt;</title>
-    <para>The root element,which  contains the child elements comprising the validator and dictionary components.  This element does not support any attributes.</para>
+    <para>The root element, which  contains the child elements comprising the validator and dictionary components.  This element does not support any attributes.</para>
   </formalpara>
   <formalpara>
     <title>&lt;validator/&gt;</title>
@@ -86,7 +86,7 @@
 &lt;vendor vendor-id=&quot;ETSI&quot; code=&quot;13019&quot; name=&quot;ETSI&quot; /&gt;
 &lt;vendor vendor-id=&quot;Vodafone&quot; code=&quot;12645&quot; name=&quot;Vodafone&quot; /&gt;</programlisting>
   </example>
-<!--TODO:  Developer:  Correct the <typedefn> section so it meets RFC 3588 requirements.
+<!--***TODO:  Developer:  Correct the <typedefn> section so it meets RFC 3588 requirements.
 Content: refs in comments mayeb should be removed?-->  <formalpara>
     <title>&lt;typedefn/&gt;</title>
     <para>Defines the simple Attribute Value Pair (AVP) types.  The element supports the following required attributes:</para>
@@ -136,11 +136,10 @@ Content: refs in comments mayeb should be removed?-->  <formalpara>
     <varlistentry>
       <term>name</term>
       <listitem>
-        <para>Optional attribute, which specifies the logical name of the application for configurers.</para>
+        <para>Optional attribute, which specifies the logical name of the application.</para>
       </listitem>
     </varlistentry>
-<!--TODO: Developer: In the code examples on mobicents-public, there is the uri parameter.  While not mentioned in the attributes, is it still a valid addition to the <application> tag?
-Content: this is only informational element, not used by java code. that is if uri is used in application tag as param.-->    <varlistentry>
+    <varlistentry>
       <term>uri</term>
       <listitem>
         <para>Optional attribute, which specifies a link to additional application information.</para>
@@ -206,7 +205,7 @@ Content: this is only informational element, not used by java code. that is if u
     <varlistentry>
       <term>code</term>
       <listitem>
-        <para>Specifies the integer value associated with the name of the constant.  The value is passed as a a value of the AVP, and maps to the name attribute.</para>
+        <para>Specifies the integer value associated with the name of the constant.  The value is passed as a value of the AVP, and maps to the name attribute.</para>
       </listitem>
     </varlistentry>
   </variablelist>
@@ -215,7 +214,7 @@ Content: this is only informational element, not used by java code. that is if u
   </note>
   <formalpara>
     <title>&lt;grouped&gt;</title>
-    <para>Child element of &lt;avp&gt;, which specifies the AVP is a grouped type.  A grouped AVP is one that has  no &lt;typedefn&gt; element  present). The element does not support any attributes, however the &lt;gavp&gt; element is allowed as a child element.</para>
+    <para>Child element of &lt;avp&gt;, which specifies the AVP is a grouped type.  A grouped AVP is one that has  no &lt;typedefn&gt; element  present. The element does not support any attributes, however the &lt;gavp&gt; element is allowed as a child element.</para>
   </formalpara>
   <formalpara>
     <title>&lt;gavp&gt;</title>
@@ -229,10 +228,7 @@ Content: this is only informational element, not used by java code. that is if u
       </listitem>
     </varlistentry>
   </variablelist>
-<!--TODO: Developer:  Ensure the attributes in the AVP table are correct according to the allowed child elements and conditions.
-Content:
-- index attr has -1 by default, it can be ommited I think
--->  <table frame="all" pgwide="1" id="table-avp_attributes">
+  <table frame="all" pgwide="1" id="table-avp_attributes">
     <title>&lt;avp&gt; Attributes</title>
     <tgroup cols="3" colsep="1">
       <colspec colname="c1"/>
@@ -290,11 +286,6 @@ Content:
           <entry/>
           <entry>1+</entry>
           <entry>At least one instance of the AVP <emphasis>must be</emphasis> present in the message.</entry>
-        </row>
-        <row>
-          <entry>index</entry>
-          <entry/>
-          <entry>Specifies the index in a message. Only the SessionId AVP supports a fixed index, which starts at 0. If the index location is not important, -1 must be specified manually.</entry>
         </row>
         <row>
           <entry>may-encrypt</entry>

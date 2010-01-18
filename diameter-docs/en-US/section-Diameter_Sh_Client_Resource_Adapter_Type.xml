@@ -52,8 +52,7 @@
     </varlistentry>
   </variablelist>
   <para>The API for <literal>ShClientSubscriptionActivity</literal>  is more than 60 lines, and therefore can not be  included directly for reference.  To view the API, refer to <ulink url="http://code.google.com/p/mobicents/source/browse/trunk/servers/diameter/resources/sh-client/ratype/src/main/java/net/java/slee/resource/diameter/sh/client/ShClientSubscriptionActivity.java"><literal>ShClientSubscriptionActivity.java</literal> in the source code</ulink>.</para>
-<!--TODO:  Developer:  I was going to include the API directly in the documentation, but the API is over 300 lines which would break the publish, or look really bad.  If you want to include the API, then you may want to break up the program listing into logical chunks.  
-Content: ok, if links are fine.-->  <formalpara>
+  <formalpara>
     <title>Provider</title>
     <para>The Sh (Client) provider allows SBBs to create activities on demand and retrieve AVP and message factories.   In addition, connection information about connected peers is also  available.</para>
   </formalpara>

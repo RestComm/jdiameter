@@ -25,7 +25,7 @@
   <para>Each Request type is defined by the <literal>CC-Request-Type</literal> Attribute Value Pair (AVP).  The types of activities are described below: </para>
   <itemizedlist>
     <listitem>
-      <para>event-based - when <literal>CC-Request-Type = EVENT</literal>. Activities created for this kind of request are terminated once an answer is sent(server)/received(client) or when the session terminated due to lack of an answer.</para>
+      <para>event-based - when <literal>CC-Request-Type = EVENT</literal>. Activities created for this kind of request are terminated once an answer is sent(server)/received(client) or when the session is terminated due to lack of an answer.</para>
     </listitem>
     <listitem>
       <para>session-based - when the first message contains <literal>CC-Request-Type = INITIAL</literal>, and the last message contains  <literal>CC-Request-Type = TERMINATION</literal>. Any number of &quot;UPDATE&quot; messages are allowed between the  initial and terminating message.</para>

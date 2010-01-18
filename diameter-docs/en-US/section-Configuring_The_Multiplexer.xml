@@ -5,6 +5,6 @@
 <section id="ctm-Configuring_The_Multiplexer">
   <title>Configuring the Multiplexer</title>
   <para>Configuring the Multiplexer requires configuration changes to the <filename>diameter-config.xml</filename> file.  The <filename>diameter-config.xml</filename> file is a standard JDiameter configuration file, and forms the base configuration for all MUX listener applications.</para>
-<!--TODO: Content: this is diameter.xml configuration file for jdiameter, its described in another section iirc?-->  <para>By default,  <filename>diameter-config.xml</filename> is located in the <filename>\default\deploy\mobicents-diameter-mux-<replaceable>[version_number]</replaceable>.sar\config\</filename> directory.</para>
+  <para>By default,  <filename>diameter-config.xml</filename> is located in the <filename>\default\deploy\mobicents-diameter-mux-<replaceable>[version_number]</replaceable>.sar\config\</filename> directory.</para>
   <para>It is not yet possible to change configuration in runtime, however this feature is planned for subsequent versions of the Multiplexer.</para>
 </section>

@@ -15,7 +15,7 @@
   </itemizedlist>
   <para>For new users, it is recommended that you install the Base RA from the binary.  If you are an advanced user, who is comfortable with building from source, you can choose to build the RA from source code.</para>
   <formalpara>
-<!--Note: Developer: install instructions need to be more detailed than this. Otherwise, users may become confused. Please provide more steps to fill this section out.-->    <title>Install From The Binary</title>
+<!--***Note: Developer: install instructions need to be more detailed than this. Otherwise, users may become confused. Please provide more steps to fill this section out.-->    <title>Install From The Binary</title>
     <para>The binary package is available from the Mobicents Diameter SourceForge page (<ulink url="http://sourceforge.net/projects/mobicents/files/Mobicents%20Diameter/">http://sourceforge.net/projects/mobicents/files/Mobicents%20Diameter/</ulink>)</para>
   </formalpara>
   <para>Select the Resource Adapter file that you want to install from the list, and download the archive.  </para>
@@ -34,7 +34,7 @@ Content: filled. There is no guide for consoles yet, how should we handle that?-
   </itemizedlist>
   <formalpara>
     <title>Install from source</title>
-    <para>Installation from source requires project tree to be checked out. Diameter sources can be found here: <filename>https://mobicents.googlecode.com/svn/trunk/servers/diameter</filename>. Resource adaptors can be found under <filename>resources</filename>. In desired RA folder simply type <!--Content: is there xml element for this?--> &quot;mvn install&quot;. This will compile RA from source and install it in server. </para>
+    <para>Installation from source requires the  project tree to be checked out. Diameter sources can be found here: <filename>https://mobicents.googlecode.com/svn/trunk/servers/diameter</filename>. Resource adaptors can be found under <filename>resources</filename>. In desired RA folder simply type <!--Content: is there xml element for this?--> &quot;mvn install&quot;. This will compile RA from source and install it in server. </para>
   </formalpara>
   <para>To install RAs from source, two requirements have to be met:</para>
   <itemizedlist>

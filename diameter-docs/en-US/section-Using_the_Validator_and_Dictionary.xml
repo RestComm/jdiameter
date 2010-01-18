@@ -4,7 +4,7 @@
 %BOOK_ENTITIES;]>
 <section id="utvad-Using_The_Validator_And_Dictionary">
   <title>Using the Validator and Dictionary</title>
-  <para>To use the Diameter Validator, and Dictionary, the following prerequisites are required:</para>
+  <para>To use the Diameter Validator and Dictionary, the following prerequisites are required:</para>
   <itemizedlist>
     <listitem>
       <para>An instance of the Validator</para>
@@ -151,7 +151,7 @@ Content: default values are specified in RFC 3588: http://tools.ietf.org/html/rf
   </example>
   <example id="example-Dictionary_AVP_Encoding_Example">
     <title>Dictionary AVP Encoding Example</title>
-    <para>In this example the AVP types, and some default values, inherit.</para>
+    <para>In this example the AVP types, and some default values, inherit <!--***Note: Developer: What do they inherit?-->.</para>
     <programlisting role="JAVA">public static  void setAvp(Message msg, int avpCode, long vendorId, AvpSet set, float value)
   {
   AvpRepresentation rep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);

@@ -1,4 +1,4 @@
-﻿<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "docbookV4.5/docbookx.dtd" [
 <!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">
 %BOOK_ENTITIES;]>
@@ -27,8 +27,8 @@
   </figure>
   <formalpara>
     <title>Application subscribes to profiles changes</title>
-    <para>In this scenario, the  application subscribes to the Home Subscriber Server (HSS) to monitor changes to a user profile. Once the subscription is established, the example service receives  .  </para>
-  </formalpara>
+    <para>In this scenario, the  application subscribes to the Home Subscriber Server (HSS) to monitor changes to a user profile. Once the subscription is established, the example service receives.  </para>
+<!--Note: Developer: What does the example service receive?-->  </formalpara>
   <figure id="figure-Server_Application_Message_Flow_1">
     <title>Subscribe Request Message Flow</title>
     <mediaobject>
