@@ -19,19 +19,9 @@
 		</dependency>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>sh-common-events</artifactId>
-			<version>${mobicents.diameter.resources.sh-common.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
 			<artifactId>sh-common-ra</artifactId>
 			<version>${mobicents.diameter.resources.sh-common.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>base-ra</artifactId>
-			<version>${mobicents.diameter.resources.base.version}</version>
-		</dependency>		
 	</dependencies>
 
 </project>

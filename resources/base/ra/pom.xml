@@ -1,37 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
+  <parent>
     <groupId>org.mobicents.servers.diameter.resources</groupId>
-  	<artifactId>base-parent</artifactId>
-  	<version>1.1.2.GA-SNAPSHOT</version>
-	</parent>
+    <artifactId>base-parent</artifactId>
+    <version>1.1.2.GA-SNAPSHOT</version>
+  </parent>
 
-	<artifactId>base-ra</artifactId>
+  <artifactId>base-ra</artifactId>
 
-	<name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
+  <name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
 
-	<dependencies>
+  <dependencies>
     <dependency>
-      <groupId>org.mobicents.servers.diameter</groupId>
-      <artifactId>mobicents-diameter-mux-jar</artifactId>
-      <version>${mobicents.diameter.mux.version}</version>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>base-ratype</artifactId>
+      <version>${pom.version}</version>
     </dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>base-ratype</artifactId>
-			<version>${pom.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>base-events</artifactId>
-			<version>${pom.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mobicents.core</groupId>
-			<artifactId>mobicents-core-jar</artifactId>
-			<version>${mobicents.servers.jainslee.version}</version>
-		</dependency>
-	</dependencies>
+  </dependencies>
 
 </project>

@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.mobicents</groupId>
 		<artifactId>mobicents</artifactId>
-		<version>1.14</version>
+		<version>1.16</version>
 		<relativePath>../../../../parent/pom.xml</relativePath>
 	</parent>
 
@@ -23,10 +23,7 @@
 
 	<properties>
 		<!-- Mobicents Diameter Components Versions -->
-		<mobicents.diameter.jdiameter.version>1.5.3.0-build350</mobicents.diameter.jdiameter.version>
-		<mobicents.diameter.mux.version>1.1.1.GA</mobicents.diameter.mux.version>
-		<mobicents.diameter.resources.base.version>1.1.1.GA</mobicents.diameter.resources.base.version>
-		<mobicents.diameter.resources.cx-dx.version>1.0.0.BETA3</mobicents.diameter.resources.cx-dx.version>
+		<mobicents.diameter.resources.cx-dx.version>1.0.0.BETA4-SNAPSHOT</mobicents.diameter.resources.cx-dx.version>
 
 		<!-- Other Mobicents Components Versions -->
 		<mobicents.servers.jainslee.version>1.2.7.GA</mobicents.servers.jainslee.version>

@@ -12,41 +12,16 @@
 	<name>Mobicents :: Diameter Resources :: ${pom.artifactId}</name>
 
 	<dependencies>
-    <dependency>
-      <groupId>${pom.groupId}</groupId>
-      <artifactId>sh-common-events</artifactId>
-      <version>${mobicents.diameter.resources.sh-common.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${pom.groupId}</groupId>
-      <artifactId>sh-common-ratype</artifactId>
-      <version>${mobicents.diameter.resources.sh-common.version}</version>
-    </dependency><!--
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>sh-client-ratype</artifactId>
-			<version>${mobicents.diameter.resources.sh-client.version}</version>
-		</dependency>
-		--><dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>base-events</artifactId>
-			<version>${mobicents.diameter.resources.base.version}</version>
+			<artifactId>sh-server-events</artifactId>
+			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>base-ratype</artifactId>
-			<version>${mobicents.diameter.resources.base.version}</version>
+			<artifactId>sh-common-ratype</artifactId>
+			<version>${mobicents.diameter.resources.sh-common.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>base-ra</artifactId>
-			<version>${mobicents.diameter.resources.base.version}</version>
-		</dependency>
-    <dependency>
-      <groupId>org.mobicents.core</groupId>
-      <artifactId>mobicents-core-jar</artifactId>
-      <version>${mobicents.servers.jainslee.version}</version>
-    </dependency>		
 	</dependencies>
 
 </project>

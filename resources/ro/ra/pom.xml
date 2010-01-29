@@ -19,14 +19,9 @@
 		</dependency>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>ro-events</artifactId>
-			<version>${pom.version}</version>
+			<artifactId>cca-ra</artifactId>
+			<version>${mobicents.diameter.resources.cca.version}</version>
 		</dependency>
-    <dependency>
-      <groupId>${pom.groupId}</groupId>
-      <artifactId>cca-ra</artifactId>
-      <version>${mobicents.diameter.resources.cca.version}</version>
-    </dependency>
 	</dependencies>
 
 </project>

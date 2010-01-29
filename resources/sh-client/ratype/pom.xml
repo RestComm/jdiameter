@@ -2,9 +2,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-    <groupId>org.mobicents.servers.diameter.resources</groupId>
-  	<artifactId>sh-client-parent</artifactId>
-  	<version>1.1.2.GA-SNAPSHOT</version>
+		<groupId>org.mobicents.servers.diameter.resources</groupId>
+		<artifactId>sh-client-parent</artifactId>
+		<version>1.1.2.GA-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>sh-client-ratype</artifactId>
@@ -17,26 +17,6 @@
 			<artifactId>sh-common-ratype</artifactId>
 			<version>${mobicents.diameter.resources.sh-common.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>sh-common-events</artifactId>
-			<version>${mobicents.diameter.resources.sh-common.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>base-events</artifactId>
-			<version>${mobicents.diameter.resources.base.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>base-ratype</artifactId>
-			<version>${mobicents.diameter.resources.base.version}</version>
-		</dependency>
-    <dependency>
-      <groupId>org.mobicents.core</groupId>
-      <artifactId>mobicents-core-jar</artifactId>
-      <version>${mobicents.servers.jainslee.version}</version>
-    </dependency>		
 	</dependencies>
 
 </project>

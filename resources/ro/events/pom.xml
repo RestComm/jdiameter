@@ -14,8 +14,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>base-events</artifactId>
-			<version>${mobicents.diameter.resources.base.version}</version>
+			<artifactId>cca-events</artifactId>
+			<version>${mobicents.diameter.resources.cca.version}</version>
 		</dependency>
 	</dependencies>
 

@@ -15,11 +15,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.mobicents.servers.diameter.resources</groupId>
-			<artifactId>sh-client-ratype</artifactId>
-			<version>${mobicents.diameter.resources.sh-client.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mobicents.servers.diameter.resources</groupId>
 			<artifactId>sh-client-ra</artifactId>
 			<version>${mobicents.diameter.resources.sh-client.version}</version>
 		</dependency>

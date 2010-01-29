@@ -18,20 +18,9 @@
 			<version>${mobicents.diameter.mux.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.mobicents.servers.diameter</groupId>
-			<artifactId>jdiameter-api</artifactId>
-			<version>${mobicents.diameter.jdiameter.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mobicents.servers.diameter</groupId>
-			<artifactId>jdiameter-impl</artifactId>
-			<version>${mobicents.diameter.jdiameter.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.mobicents.core</groupId>
 			<artifactId>mobicents-core-jar</artifactId>
 			<version>${mobicents.servers.jainslee.version}</version>
 		</dependency>
-
 	</dependencies>
 </project>

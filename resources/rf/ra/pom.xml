@@ -19,16 +19,6 @@
     </dependency>
     <dependency>
       <groupId>${pom.groupId}</groupId>
-      <artifactId>ro-ratype</artifactId>
-      <version>${mobicents.diameter.resources.ro.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${pom.groupId}</groupId>
-      <artifactId>base-ra</artifactId>
-      <version>${mobicents.diameter.resources.base.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${pom.groupId}</groupId>
       <artifactId>rf-ratype</artifactId>
       <version>${pom.version}</version>
     </dependency>

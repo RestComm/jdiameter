@@ -19,16 +19,6 @@
 		</dependency>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>sh-common-events</artifactId>
-			<version>${mobicents.diameter.resources.sh-common.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
-			<artifactId>sh-common-ratype</artifactId>
-			<version>${mobicents.diameter.resources.sh-common.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${pom.groupId}</groupId>
 			<artifactId>sh-common-ra</artifactId>
 			<version>${mobicents.diameter.resources.sh-common.version}</version>
 		</dependency>

@@ -3,9 +3,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<parent>
-    <groupId>org.mobicents.servers.diameter.examples</groupId>
-  	<artifactId>openims-parent</artifactId>
-  	<version>1.1.2.GA-SNAPSHOT</version>
+		<groupId>org.mobicents.servers.diameter.examples</groupId>
+		<artifactId>openims-parent</artifactId>
+		<version>1.1.2.GA-SNAPSHOT</version>
 	</parent>
 	
 	<artifactId>openims-example-sbb</artifactId>
@@ -15,25 +15,19 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.mobicents.servers.diameter.resources</groupId>
-			<artifactId>sh-client-ratype</artifactId>
-			<version>${mobicents.diameter.resources.sh-client.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mobicents.servers.diameter.resources</groupId>
 			<artifactId>sh-client-ra</artifactId>
 			<version>${mobicents.diameter.resources.sh-client.version}</version>
 		</dependency>
-		
-    <dependency>
-      <groupId>org.mobicents.resources</groupId>
-      <artifactId>sip11-ra</artifactId>
-      <version>${mobicents.servers.jainslee.resources.sip11.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.mobicents.resources</groupId>
-      <artifactId>sip11-events</artifactId>
-      <version>${mobicents.servers.jainslee.resources.sip11.version}</version>
-    </dependency>		
+		<dependency>
+			<groupId>org.mobicents.resources</groupId>
+			<artifactId>sip11-ra</artifactId>
+			<version>${mobicents.servers.jainslee.resources.sip11.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mobicents.resources</groupId>
+			<artifactId>sip11-events</artifactId>
+			<version>${mobicents.servers.jainslee.resources.sip11.version}</version>
+		</dependency>		
 	</dependencies>
 	
 </project>
