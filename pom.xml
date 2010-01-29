@@ -8,13 +8,13 @@
   <parent>
     <groupId>org.mobicents</groupId>
     <artifactId>mobicents</artifactId>
-    <version>1.14</version>
+    <version>1.16</version>
     <relativePath>../../parent/pom.xml</relativePath>
   </parent>
 
   <groupId>org.mobicents.servers.diameter</groupId>
   <artifactId>diameter-parent</artifactId>
-  <version>1.1.1.GA-SNAPSHOT</version>
+  <version>1.1.2.GA-SNAPSHOT</version>
 
   <name>Mobicents :: Diameter :: ${pom.artifactId}</name>
 

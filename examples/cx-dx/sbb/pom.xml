@@ -15,11 +15,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.mobicents.servers.diameter.resources</groupId>
-			<artifactId>cx-dx-ratype</artifactId>
-			<version>${mobicents.diameter.resources.cx-dx.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mobicents.servers.diameter.resources</groupId>
 			<artifactId>cx-dx-ra</artifactId>
 			<version>${mobicents.diameter.resources.cx-dx.version}</version>
 		</dependency>

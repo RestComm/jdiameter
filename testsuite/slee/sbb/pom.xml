@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.mobicents.servers.diameter.testsuite</groupId>
     <artifactId>testsuite-slee-parent</artifactId>
-    <version>1.1.1.GA-SNAPSHOT</version>
+    <version>1.1.2.GA-SNAPSHOT</version>
   </parent>
 
   <artifactId>testsuite-slee-sbb</artifactId>
@@ -16,11 +16,6 @@
     <dependency>
       <groupId>org.mobicents.servers.diameter.resources</groupId>
       <artifactId>base-ra</artifactId>
-      <version>${mobicents.diameter.resources.base.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.mobicents.servers.diameter.resources</groupId>
-      <artifactId>base-ratype</artifactId>
       <version>${mobicents.diameter.resources.base.version}</version>
     </dependency>
   </dependencies>
