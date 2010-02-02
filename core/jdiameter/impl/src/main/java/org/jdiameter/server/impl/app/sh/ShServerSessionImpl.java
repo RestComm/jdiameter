@@ -41,6 +41,8 @@ import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.jdiameter.common.impl.app.sh.ProfileUpdateRequestImpl;
 import org.jdiameter.common.impl.app.sh.PushNotificationRequestImpl;
 import org.jdiameter.common.impl.app.sh.ShSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -62,6 +64,8 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 
   private static final long serialVersionUID = 1L;
 
+  private Logger logger = LoggerFactory.getLogger(ShServerSessionImpl.class);
+  
   protected ShSessionState state = ShSessionState.NOTSUBSCRIBED;
   protected boolean stateless = false;
   protected IShMessageFactory factory = null;

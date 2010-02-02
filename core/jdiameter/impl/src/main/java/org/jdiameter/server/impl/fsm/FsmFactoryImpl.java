@@ -13,15 +13,18 @@ package org.jdiameter.server.impl.fsm;
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.client.api.fsm.IContext;
-import org.jdiameter.client.api.fsm.IFsmFactory;
-import org.jdiameter.client.api.fsm.IStateMachine;
-import org.jdiameter.client.api.fsm.ExecutorFactory;
+import org.jdiameter.common.api.concurrent.IConcurrentFactory;
+import org.jdiameter.common.api.statistic.IStatisticFactory;
+import org.jdiameter.server.api.IFsmFactory;
+import org.jdiameter.server.api.IStateMachine;
 
-import java.util.concurrent.Executor;
+public class FsmFactoryImpl extends org.jdiameter.client.impl.fsm.FsmFactoryImpl implements IFsmFactory {
 
-public class FsmFactoryImpl implements IFsmFactory {
+  public FsmFactoryImpl(IStatisticFactory statisticFactory) {
+    super(statisticFactory);
+  }
 
-    public IStateMachine createInstanceFsm(IContext context, ExecutorFactory executor, Configuration config) throws InternalException {
-        return new PeerFSMImpl(context, executor, config);
-    }
+  public IStateMachine createInstanceFsm(IContext context, IConcurrentFactory concurrentFactory, Configuration config) throws InternalException {
+    return new org.jdiameter.server.impl.fsm.PeerFSMImpl(context, concurrentFactory, config, statisticFactory);
+  }
 }

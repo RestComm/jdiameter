@@ -31,11 +31,13 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 public class XMLConfiguration extends EmptyConfiguration {
 
     /**
      * Create instance of class and load file from defined input stream
+     * 
      * @param in input stream
      * @throws Exception
      */
@@ -45,17 +47,19 @@ public class XMLConfiguration extends EmptyConfiguration {
 
     /**
      * Create instance of class and load file from defined input stream
+     * 
      * @param in input stream
      * @param attributes attributes for DocumentBuilderFactory
      * @param  features features for DocumentBuilderFactory
      * @throws Exception
      */
-    public XMLConfiguration(InputStream in,  Hashtable<String,Object> attributes, Hashtable<String,Boolean> features) throws Exception {
+    public XMLConfiguration(InputStream in, Hashtable<String, Object> attributes, Hashtable<String, Boolean> features) throws Exception {
         this(in, attributes, features, false);
     }
 
     /**
      * Create instance of class and load file from defined  file name
+     * 
      * @param filename configuration file name
      * @throws Exception
      */
@@ -65,33 +69,34 @@ public class XMLConfiguration extends EmptyConfiguration {
 
     /**
      * Create instance of class and load file from defined input stream
+     * 
      * @param filename configuration file name
      * @param attributes attributes for DocumentBuilderFactory
      * @param  features features for DocumentBuilderFactory
      * @throws Exception
      */
 
-    public XMLConfiguration(String filename, Hashtable<String,Object> attributes, Hashtable<String,Boolean> features) throws Exception {
+    public XMLConfiguration(String filename, Hashtable<String, Object> attributes, Hashtable<String, Boolean> features) throws Exception {
         this(filename, attributes, features, false);
     }
 
-    protected XMLConfiguration(Object in, Hashtable<String,Object> attributes, Hashtable<String,Boolean> features, boolean nop) throws Exception {
+    protected XMLConfiguration(Object in, Hashtable<String, Object> attributes, Hashtable<String, Boolean> features, boolean nop) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         if (attributes != null)
-            for (String key : attributes.keySet() )
+            for (String key : attributes.keySet())
                 factory.setAttribute(key, attributes.get(key));
         if (features != null)
-            for (String key : features.keySet() )
+            for (String key : features.keySet())
                 factory.setFeature(key, features.get(key));
 
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document;
        
         if (in instanceof InputStream)
-            document = builder.parse((InputStream)in);
+            document = builder.parse((InputStream) in);
         else if (in instanceof String)
-            document = builder.parse(new File((String)in));
+            document = builder.parse(new File((String) in));
         else
             throw  new Exception("Unknown type of input data");
         validate(document);
@@ -111,17 +116,20 @@ public class XMLConfiguration extends EmptyConfiguration {
         NodeList c = element.getChildNodes();
         for (int i = 0; i < c.getLength(); i++) {
             String nodeName = c.item(i).getNodeName();
-            if (nodeName.equals("LocalPeer")) addLocalPeer(c.item(i));
-            else
-            if (nodeName.equals("Parameters")) addParameters(c.item(i));
-            else
-            if (nodeName.equals("Network")) addNetwork(c.item(i));
-            else
-            if (nodeName.equals("Extensions")) addExtensions(c.item(i));
+            if (nodeName.equals("LocalPeer")) {
+              addLocalPeer(c.item(i));
+            }
+            else if (nodeName.equals("Parameters")) {
+              addParameters(c.item(i));
+            }
+            else if (nodeName.equals("Network")) {
+              addNetwork(c.item(i));
+            }
+            else if (nodeName.equals("Extensions")) {
+              addExtensions(c.item(i));
+            }
         }
     }
-
-
 
     protected void addApplications(Node node) {
         NodeList c = node.getChildNodes();
@@ -130,7 +138,9 @@ public class XMLConfiguration extends EmptyConfiguration {
             String nodeName = c.item(i).getNodeName();
             if (nodeName.equals("ApplicationID")) {
                 Configuration m = addApplicationID(c.item(i));
-                if (m!=null) items.add(m);
+                if (m != null) {
+                  items.add(m);
+                }
             }
         }
         add(ApplicationId, items.toArray(EMPTY_ARRAY));
@@ -151,10 +161,8 @@ public class XMLConfiguration extends EmptyConfiguration {
         for (int i = 0; i < c.getLength(); i++) {
             String nodeName = c.item(i).getNodeName();
             if (nodeName.equals("VendorId"))   e.add(VendorId,   getLongValue(c.item(i)));
-            else
-            if (nodeName.equals("AuthApplId")) e.add(AuthApplId, getLongValue(c.item(i)));
-            else
-            if (nodeName.equals("AcctApplId")) e.add(AcctApplId, getLongValue(c.item(i)));
+            else if (nodeName.equals("AuthApplId")) e.add(AuthApplId, getLongValue(c.item(i)));
+            else if (nodeName.equals("AcctApplId")) e.add(AcctApplId, getLongValue(c.item(i)));
         }
         return e;
     }
@@ -173,6 +181,8 @@ public class XMLConfiguration extends EmptyConfiguration {
             else if (nodeName.equals("DpaTimeOut")) { add(DpaTimeOut, getLongValue(c.item(i)));               }
             else if (nodeName.equals("RecTimeOut")) { add(RecTimeOut, getLongValue(c.item(i)));               }
             else if (nodeName.equals("ThreadPool")) { addThreadPool(c.item(i));                               }
+            else if (nodeName.equals("StatisticLogger")) { addStatisticLogger(StatisticLogger, c.item(i));    }
+            else if (nodeName.equals("Concurrent")) { addConcurrent(Concurrent, c.item(i));                   }
             else 
             {    appendOtherParameter(c.item(i)); }
         }
@@ -202,15 +212,49 @@ public class XMLConfiguration extends EmptyConfiguration {
 			threadPoolConfiguration.add(ThreadPoolPriority, ThreadPoolPriority.defValue());
 		}
 		this.add(ThreadPool, threadPoolConfiguration);
-
 	}
-    protected void addNetwork(Node node) {
+
+	protected void addConcurrent(org.jdiameter.client.impl.helpers.Parameters name, Node node) {
+	  NodeList c = node.getChildNodes();
+	  List<Configuration> items = new ArrayList<Configuration>();
+	  for (int i = 0; i < c.getLength(); i++) {
+	    String nodeName = c.item(i).getNodeName();
+	    if (nodeName.equals("Entity")) addConcurrentEntity(items, c.item(i));
+	  }
+	  add(name, items.toArray(new Configuration[items.size()]));
+	}
+
+	protected void addConcurrentEntity(List<Configuration> items, Node node) {
+	  AppConfiguration cfg = getInstance();
+	  String name = node.getAttributes().getNamedItem("name").getNodeValue();
+	  cfg.add(ConcurrentEntityName, name);
+	  if (node.getAttributes().getNamedItem("description") != null) {
+	    String descr = node.getAttributes().getNamedItem("description").getNodeValue();
+	    cfg.add(ConcurrentEntityDescription, descr);
+	  }
+	  if (node.getAttributes().getNamedItem("size") != null) {
+	    String size = node.getAttributes().getNamedItem("size").getNodeValue();
+	    cfg.add(ConcurrentEntityPoolSize, Integer.parseInt(size));
+	  }
+	  items.add(cfg);
+	}
+
+
+	protected void addStatisticLogger(org.jdiameter.client.impl.helpers.Parameters name, Node node) {
+	  String pause = node.getAttributes().getNamedItem("pause").getNodeValue();
+	  String delay = node.getAttributes().getNamedItem("delay").getNodeValue();
+	  add(name, getInstance().
+	      add(StatisticLoggerPause, Long.parseLong(pause)).
+	      add(StatisticLoggerDelay, Long.parseLong(delay))
+	  );
+	}
+
+	protected void addNetwork(Node node) {
         NodeList c = node.getChildNodes();
         for (int i = 0; i < c.getLength(); i++) {
             String nodeName = c.item(i).getNodeName();
             if (nodeName.equals("Peers")) addPeers(c.item(i));
-            else
-            if (nodeName.equals("Realms")) addRealms(c.item(i));
+            else if (nodeName.equals("Realms")) addRealms(c.item(i));
         }
     }
 
@@ -220,7 +264,7 @@ public class XMLConfiguration extends EmptyConfiguration {
         for (int i = 0; i < c.getLength(); i++) {
             String nodeName = c.item(i).getNodeName();
             if (nodeName.equals("Peer"))
-                items.add( addPeer(c.item(i)) );
+                items.add(addPeer(c.item(i)));
         }
         add(PeerTable, items.toArray(EMPTY_ARRAY));
     }
@@ -231,7 +275,7 @@ public class XMLConfiguration extends EmptyConfiguration {
         for (int i = 0; i < c.getLength(); i++) {
             String nodeName = c.item(i).getNodeName();
             if (nodeName.equals("Realm"))
-                items.add( addRealm(c.item(i)) );
+                items.add(addRealm(c.item(i)));
         }
         add(RealmTable, items.toArray(EMPTY_ARRAY));
     }
@@ -241,14 +285,14 @@ public class XMLConfiguration extends EmptyConfiguration {
         String connecting = node.getAttributes().getNamedItem("attempt_connect").getNodeValue();
         String name = node.getAttributes().getNamedItem("name").getNodeValue();
         AppConfiguration c = getInstance();
-        c.add( PeerRating, Integer.parseInt(rating));
-        c.add( PeerAttemptConnection, Boolean.valueOf(connecting) );
-        c.add( PeerName, name );
-        if ( node.getAttributes().getNamedItem("ip") != null) {
-            c.add( PeerIp, node.getAttributes().getNamedItem("ip").getNodeValue() );
+        c.add(PeerRating, Integer.parseInt(rating));
+        c.add(PeerAttemptConnection, Boolean.valueOf(connecting));
+        c.add(PeerName, name);
+        if (node.getAttributes().getNamedItem("ip") != null) {
+            c.add(PeerIp, node.getAttributes().getNamedItem("ip").getNodeValue());
         }
-        if ( node.getAttributes().getNamedItem("portRange") != null) {
-            c.add( PeerLocalPortRange, node.getAttributes().getNamedItem("portRange").getNodeValue() );
+        if (node.getAttributes().getNamedItem("portRange") != null) {
+            c.add(PeerLocalPortRange, node.getAttributes().getNamedItem("portRange").getNodeValue());
         }
         return c;
     }
@@ -299,9 +343,7 @@ public class XMLConfiguration extends EmptyConfiguration {
             String nodeName = c.item(i).getNodeName();
             if (nodeName.equals("IPAddress")) items.add(addIPAddressItem(c.item(i)));
         }
-        add(
-           OwnIPAddresses, items.toArray(EMPTY_ARRAY)
-        );
+        add(OwnIPAddresses, items.toArray(EMPTY_ARRAY));
     }
 
     protected Configuration addIPAddressItem(Node node) {

@@ -46,7 +46,8 @@ public class EmptyConfiguration extends org.jdiameter.client.impl.helpers.EmptyC
                     add(InternalPeerFsmFactory, "org.jdiameter.server.impl.fsm.FsmFactoryImpl").
                     add(InternalSessionFactory, InternalSessionFactory.defValue()).
                     add(InternalRouterEngine, "org.jdiameter.server.impl.RouterImpl").
-                    add(InternalNetWork, "org.jdiameter.server.impl.NetWorkImpl").
+                    add(InternalNetWork, "org.jdiameter.server.impl.NetworkImpl").
+                    add(InternalStatisticFactory, InternalStatisticFactory.defValue()).
                     add(InternalOverloadManager, "org.jdiameter.server.impl.OverloadManagerImpl").
                     add(InternalPeerController, "org.jdiameter.server.impl.MutablePeerTableImpl"),
                     getInstance().  // StackLayer extension point
@@ -175,7 +176,9 @@ public class EmptyConfiguration extends org.jdiameter.client.impl.helpers.EmptyC
                 for (ConfigurationListener l : list) {
                     rem &= l.elementChanged(i, null);
                 }
-                if (rem) removeVelue(i);
+                if (rem) {
+                  removeValue(i);
+                }
             }
         }
     }

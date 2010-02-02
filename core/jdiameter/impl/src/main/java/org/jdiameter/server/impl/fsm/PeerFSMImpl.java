@@ -1,8 +1,5 @@
 package org.jdiameter.server.impl.fsm;
 
-import static org.jdiameter.client.impl.fsm.PeerFSMImpl.CIntState.*;
-import static org.jdiameter.server.impl.helpers.StatisticTypes.PEER_QUEUE_SIZE;
-
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.ConfigurationListener;
 import org.jdiameter.api.MutableConfiguration;
@@ -11,33 +8,27 @@ import org.jdiameter.api.Statistic;
 import org.jdiameter.api.app.State;
 import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.client.api.IMessage;
-import org.jdiameter.client.api.fsm.ExecutorFactory;
+
 import org.jdiameter.client.api.fsm.IContext;
-import org.jdiameter.server.api.IStatistic;
-import org.jdiameter.server.api.IStatisticRecord;
-import org.jdiameter.server.impl.StatisticImpl;
-import org.jdiameter.server.impl.StatisticRecordImpl;
+import static org.jdiameter.client.impl.fsm.FsmState.*;
+import org.jdiameter.common.api.concurrent.IConcurrentFactory;
+import org.jdiameter.common.api.statistic.IStatisticFactory;
+import org.jdiameter.server.api.IStateMachine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl implements ConfigurationListener {
+public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl implements IStateMachine, ConfigurationListener {
 
-  protected IStatisticRecord queueSize = new StatisticRecordImpl("FsmQueue", "Peer FSM queue size", PEER_QUEUE_SIZE,
-      new StatisticRecordImpl.Counter() { public int getValueAsInt() { return eventQueue.size(); } }
-  );
+  private static final Logger logger = LoggerFactory.getLogger(org.jdiameter.server.impl.fsm.PeerFSMImpl.class);
 
-  protected IStatistic queueStat = new StatisticImpl("PeerFSM" , "PeerFSM statistic", queueSize);
-
-  public Statistic getStatistic() {
-    return queueStat;
-  }
-
-  public PeerFSMImpl(IContext context, ExecutorFactory executor, Configuration config) {
-    super(context, executor, config);
+  public PeerFSMImpl(IContext context, IConcurrentFactory concurrentFactory, Configuration config, IStatisticFactory statisticFactory) {
+    super(context, concurrentFactory, config, statisticFactory);
   }
 
   protected void loadTimeOuts(Configuration config) {
     super.loadTimeOuts(config);
     if (config instanceof MutableConfiguration) {
-      ((MutableConfiguration)config).addChangeListener(this, 0);
+      ((MutableConfiguration) config).addChangeListener(this, 0);
     }
   }
 
@@ -93,11 +84,11 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 break;
               case RECEIVE_MSG_EVENT:
                 setInActiveTimer();
-                context.receiveMessage( message(event) );
+                context.receiveMessage(message(event));
                 break;
               case CEA_EVENT:
                 setInActiveTimer();
-                if ( context.processCeaMessage(key(event), message(event)) ) {
+                if (context.processCeaMessage(key(event), message(event))) {
                   doDisconnect(); // !
                   doEndConnection();
                 }
@@ -109,7 +100,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
               case DPR_EVENT:
                 try {
                   int code = context.processDprMessage((IMessage) event.getData());
-                  context.sendDpaMessage( message(event), code, null );
+                  context.sendDpaMessage(message(event), code, null);
                 }
                 catch (Throwable e) {
                   logger.debug("Can not send DPA", e);
@@ -120,7 +111,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
               case DWR_EVENT:
                 setInActiveTimer();
                 try {
-                  context.sendDwaMessage( message(event), ResultCode.SUCCESS, null);
+                  context.sendDwaMessage(message(event), ResultCode.SUCCESS, null);
                 }
                 catch (Throwable e) {
                   logger.debug("Can not send DWA", e);
@@ -134,7 +125,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 break;
               case SEND_MSG_EVENT:
                 try {
-                  context.sendMessage( message(event) );
+                  context.sendMessage(message(event));
                 }
                 catch (Throwable e) {
                   logger.debug("Can not send message", e);
@@ -181,7 +172,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
               case DPR_EVENT:
                 try {
                   int code = context.processDprMessage((IMessage) event.getData());
-                  context.sendDpaMessage( message(event), code, null);
+                  context.sendDpaMessage(message(event), code, null);
                 }
                 catch (Throwable e) {
                   logger.debug("Can not send DPA", e);
@@ -192,7 +183,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
               case DWR_EVENT:
                 try {
                   int code = context.processDwrMessage((IMessage) event.getData());
-                  context.sendDwaMessage( message(event),code, null);
+                  context.sendDwaMessage(message(event),code, null);
                   swithToNextState(OKAY);
                 }
                 catch (Throwable e) {
@@ -203,7 +194,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 break;
               case RECEIVE_MSG_EVENT:
                 clearTimer();
-                context.receiveMessage( message(event) );
+                context.receiveMessage(message(event));
                 swithToNextState(OKAY);
                 break;
               case SEND_MSG_EVENT: // todo buffering
@@ -225,7 +216,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
               switch (type(event)) {
               case START_EVENT:
                 try {
-                  if ( !context.isConnected() ) {
+                  if (!context.isConnected()) {
                     context.connect();                              
                   }
                   context.sendCerMessage();
@@ -233,13 +224,13 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                   swithToNextState(INITIAL);
                 }
                 catch (Throwable e) {
-                  logger.debug( "Connect error", e);
+                  logger.debug("Connect error", e);
                   doEndConnection();
                 }
                 break;
               case CER_EVENT:
                 int resultCode = context.processCerMessage(key(event), message(event));
-                if ( resultCode == ResultCode.SUCCESS ) {
+                if (resultCode == ResultCode.SUCCESS) {
                   try {
                     context.sendCeaMessage(resultCode, message(event), null);
                     swithToNextState(OKAY);
@@ -285,7 +276,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                   setTimer(CEA_TIMEOUT);
                   swithToNextState(INITIAL);
                 }
-                catch(Throwable e) {
+                catch (Throwable e) {
                   logger.debug("Can not send CER", e);
                   setTimer(REC_TIMEOUT);
                 }
@@ -339,7 +330,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 break;
               case CEA_EVENT:
                 setTimer(0);
-                if ( context.processCeaMessage(key(event), message(event)) ) {
+                if (context.processCeaMessage(key(event), message(event))) {
                   swithToNextState(OKAY);
                 }
                 else {
@@ -349,7 +340,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 break;
               case CER_EVENT:
                 int resultCode = context.processCerMessage(key(event), message(event));
-                if ( resultCode == ResultCode.SUCCESS ) {
+                if (resultCode == ResultCode.SUCCESS) {
                   try {
                     context.sendCeaMessage(resultCode, message(event), null);
                     swithToNextState(OKAY); // if other connection is win
@@ -384,7 +375,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 swithToNextState(DOWN);
                 break;
               case RECEIVE_MSG_EVENT:
-                context.receiveMessage( message(event) );
+                context.receiveMessage(message(event));
                 break;
               case SEND_MSG_EVENT:
                 throw new IllegalStateException("Stack now is stopping");

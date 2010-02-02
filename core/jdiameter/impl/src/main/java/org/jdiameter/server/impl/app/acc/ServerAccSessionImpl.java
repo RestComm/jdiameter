@@ -37,10 +37,13 @@ import org.jdiameter.common.api.app.acc.IServerAccActionContext;
 import org.jdiameter.common.api.app.acc.ServerAccSessionState;
 import org.jdiameter.common.impl.app.acc.AccountRequestImpl;
 import org.jdiameter.common.impl.app.acc.AppAccSessionImpl;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ServerAccSessionImpl extends AppAccSessionImpl implements EventListener<Request, Answer>, ServerAccSession, NetworkReqListener {
 
+  private Logger logger = LoggerFactory.getLogger(ServerAccSessionImpl.class);
+  
     protected ServerAccSessionState state = ServerAccSessionState.IDLE;
     protected IServerAccActionContext context;
     protected long tsTimeout;
@@ -48,8 +51,6 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
     protected ServerAccSessionListener listener;
     protected boolean stateless = false;
 
-    //protected Logger logger =Logger.getLogger(ServerAccSessionImpl.class.getCanonicalName());
-    
     public ServerAccSessionImpl(Session session, Request initialRequest, ServerAccSessionListener listener, long tsTimeout, boolean stateless, StateChangeListener... scListeners) {
         if (session == null)
             throw new IllegalArgumentException("Session can not be null");

@@ -272,6 +272,17 @@
                    <xsi:attribute name="value" type="xsi:long" use="required"/>
                </xsi:complexType>
             </xsi:element>
+            <xsi:element name="StatisticLogger" minOccurs="0" maxOccurs="1">
+                <xsi:annotation>
+                   <xsi:documentation>Statistic logger configuration</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                    <xsi:attribute name="pause" type="xsi:long" use="required"/>
+                    <xsi:attribute name="delay" type="xsi:long" use="required"/>
+                </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="Concurrent" minOccurs="0" maxOccurs="1"/>
+            <!--  Mobicents jDiameter Thread Configuration -->
             <xsi:element name="ThreadPool" minOccurs="1" maxOccurs="1">
                 <xsi:annotation>
                     <xsi:documentation>Determines thread pool configuration.</xsi:documentation>
@@ -282,6 +293,41 @@
                </xsi:complexType>
             </xsi:element>
         </xsi:sequence>
+    </xsi:complexType>
+
+    <xsi:element name="Concurrent" type="ConcurrentType">
+        <xsi:annotation>
+            <xsi:documentation>Parameters of concurrent part of stack</xsi:documentation>
+        </xsi:annotation>
+    </xsi:element>
+
+    <xsi:complexType name="ConcurrentType">
+        <xsi:sequence>
+            <xsi:element ref="Entity" minOccurs="0" maxOccurs="unbounded"/>
+        </xsi:sequence>
+    </xsi:complexType>
+
+    <xsi:element name="Entity" type="EntityType">
+        <xsi:annotation>
+            <xsi:documentation>Concurrent entity</xsi:documentation>
+        </xsi:annotation>
+    </xsi:element>
+
+    <xsi:simpleType name="EntityNames">
+        <xsi:restriction base="xsi:string">
+            <xsi:enumeration value="ThreadGroup"/>
+            <xsi:enumeration value="ProcessingMessageTimer"/>
+            <xsi:enumeration value="DuplicationMessageTimer"/>
+            <xsi:enumeration value="RedirectMessageTimer"/>
+            <xsi:enumeration value="PeerOverloadTimer"/>
+            <xsi:enumeration value="ConnectionTimer"/>
+            <xsi:enumeration value="StatisticTimer"/>
+        </xsi:restriction>
+    </xsi:simpleType>
+    <xsi:complexType name="EntityType">
+        <xsi:attribute name="name" type="EntityNames" use="required"/>
+        <xsi:attribute name="description" type="xsi:string" use="optional"/>
+        <xsi:attribute name="size" type="xsi:int" use="required"/>
     </xsi:complexType>
 
     <xsi:element name="Network" type="NetworkType">
