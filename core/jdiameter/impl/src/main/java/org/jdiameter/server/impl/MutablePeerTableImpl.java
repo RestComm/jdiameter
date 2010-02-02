@@ -4,21 +4,23 @@ import org.jdiameter.api.*;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.api.fsm.EventTypes;
-import org.jdiameter.client.api.fsm.IFsmFactory;
 import org.jdiameter.client.api.io.IConnection;
 import org.jdiameter.client.api.io.IConnectionListener;
 import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.impl.controller.PeerTableImpl;
-import org.jdiameter.server.api.IMutablePeerTable;
-import org.jdiameter.server.api.INetwork;
-import org.jdiameter.server.api.IOverloadManager;
-import org.jdiameter.server.api.IPeer;
-import org.jdiameter.server.api.io.INetWorkConnectionListener;
-import org.jdiameter.server.api.io.INetWorkGuard;
+import org.jdiameter.common.api.concurrent.IConcurrentFactory;
+import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.*;
+import org.jdiameter.common.api.statistic.IStatisticFactory;
+import org.jdiameter.server.api.*;
+import org.jdiameter.server.api.io.INetworkConnectionListener;
+import org.jdiameter.server.api.io.INetworkGuard;
 import org.jdiameter.server.api.io.ITransportLayerFactory;
 import org.jdiameter.server.impl.helpers.EmptyConfiguration;
 import static org.jdiameter.server.impl.helpers.Parameters.*;
+import org.jdiameter.server.impl.helpers.StatisticAdaptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -26,17 +28,12 @@ import java.net.UnknownServiceException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import org.jdiameter.api.Network;
+import java.util.concurrent.*;
 
 public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerTable, ConfigurationListener {
 
+  private static final Logger logger = LoggerFactory.getLogger(MutablePeerTableImpl.class);
+  
   private static final int MAX_DUPLICATE_ANSWERS = 5000;
   private static final int CONN_INVALIDATE_PERIOD = 60000;
 
@@ -49,7 +46,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
 
   protected boolean duplicateProtection = false;
   protected long duplicateTimer;
-  protected ScheduledExecutorService dupliocationScheduler = null;
+  protected ScheduledExecutorService duplicationScheduler = null;
   protected ScheduledFuture duplicationHandler = null;
   protected ConcurrentHashMap<String, StorageEntry> storageAnswers = new ConcurrentHashMap<String, StorageEntry>();
 
@@ -59,7 +56,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   private ScheduledExecutorService connScheduler;
   private ScheduledFuture connHandler;
 
-  protected INetWorkGuard networkGuard;
+  protected INetworkGuard networkGuard;
   protected INetwork network;
   protected Set<URI> predefinedPeerTable;
 
@@ -67,6 +64,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   protected ScheduledExecutorService overloadScheduler = null;
   protected ScheduledFuture overloadHandler = null;
   protected PeerTableListener peerTableListener = null;
+  protected IStatisticFactory statisticFactory;
 
   protected class StorageEntry {
 
@@ -94,11 +92,14 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
 
   public MutablePeerTableImpl(Configuration config, MetaData metaData, org.jdiameter.server.api.IRouter router,
       ISessionFactory sessionFactory, IFsmFactory fsmFactory, ITransportLayerFactory trFactory,
-      IMessageParser parser, INetwork network, IOverloadManager ovrManager) {
+      IMessageParser parser, INetwork network, IOverloadManager ovrManager,
+      IStatisticFactory statisticFactory, IConcurrentFactory concurrentFactory) {
     this.metaData = metaData;
     this.config = config;
     this.router = router;
     this.sessionFactory = sessionFactory;
+    this.statisticFactory = statisticFactory;
+    this.concurrentFactory = concurrentFactory;
     this.fsmFactory = fsmFactory;
     this.transportFactory = trFactory;
     this.parser = parser;
@@ -117,28 +118,37 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       ((MutableConfiguration) config).addChangeListener(this);
     }
 
-    init(router, config, metaData, fsmFactory, transportFactory, parser);
+    init(router, config, metaData, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser);
   }
 
-  protected Peer createPeer(int rating, String uri, String ip, String portRange, MetaData metaData, Configuration globalConfig, Configuration peerConfig, IFsmFactory fsmFactory,
-      org.jdiameter.client.api.io.ITransportLayerFactory transportFactory, IMessageParser parser) throws InternalException, TransportException, URISyntaxException, UnknownServiceException {
+  @Override
+  protected Peer createPeer(int rating, String uri, String ip, String portRange, MetaData metaData, Configuration globalConfig,
+      Configuration peerConfig, org.jdiameter.client.api.fsm.IFsmFactory fsmFactory,
+      org.jdiameter.client.api.io.ITransportLayerFactory transportFactory,
+      IStatisticFactory statisticFactory, IConcurrentFactory concurrentFactory,
+      IMessageParser parser) throws InternalException, TransportException, URISyntaxException, UnknownServiceException {
     if (predefinedPeerTable == null) {
       predefinedPeerTable = new CopyOnWriteArraySet<URI>();
     }
     predefinedPeerTable.add(new URI(uri));
     if (peerConfig.getBooleanValue(PeerAttemptConnection.ordinal(), false)) {
-      return newPeerInstance(rating, new URI(uri), ip, portRange, metaData, globalConfig, peerConfig, fsmFactory, (org.jdiameter.server.api.io.ITransportLayerFactory)transportFactory, parser, true, null);
+      return newPeerInstance(rating, new URI(uri), ip, portRange, true, null,
+          metaData, globalConfig, peerConfig, (IFsmFactory) fsmFactory,
+          (ITransportLayerFactory) transportFactory, parser, statisticFactory, concurrentFactory);
     }
     else {
       return null;
     }
   }
 
-  protected IPeer newPeerInstance(int rating, URI uri, String ip, String portRange, MetaData metaData, Configuration globalConfig, Configuration peerConfig, IFsmFactory fsmFactory,
-      org.jdiameter.server.api.io.ITransportLayerFactory transportFactory, IMessageParser parser,
-      boolean attCnn, IConnection connection ) throws URISyntaxException, UnknownServiceException, InternalException, TransportException {
-    return new org.jdiameter.server.impl.PeerImpl(this, rating, uri, ip, portRange, (org.jdiameter.server.api.IMetaData) metaData,
-        globalConfig, peerConfig, sessionFactory, fsmFactory, transportFactory, parser, network, ovrManager, attCnn, connection
+  protected IPeer newPeerInstance(int rating, URI uri, String ip, String portRange, boolean attCnn, IConnection connection,
+      MetaData metaData, Configuration globalConfig, Configuration peerConfig, IFsmFactory fsmFactory,
+      ITransportLayerFactory transportFactory, IMessageParser parser,
+      IStatisticFactory statisticFactory, IConcurrentFactory concurrentFactory) throws URISyntaxException, UnknownServiceException, InternalException, TransportException {
+    return new org.jdiameter.server.impl.PeerImpl(
+        rating, uri, ip, portRange, attCnn, connection,
+        this, (org.jdiameter.server.api.IMetaData) metaData, globalConfig, peerConfig, sessionFactory,
+        fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser, network, ovrManager
     );
   }
 
@@ -159,12 +169,10 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   }
 
   public void start() throws IllegalDiameterStateException, IOException { // TODO: use parent method
-    if (peerTaskExecutor.isShutdown()) {
-      peerTaskExecutor = Executors.newCachedThreadPool();
-    }
     router.start();
     // Start overload manager
-    overloadScheduler = Executors.newScheduledThreadPool(1);
+    overloadScheduler = concurrentFactory.getScheduledExecutorService(PeerOverloadTimer.name());
+    Executors.newScheduledThreadPool(1);
     Runnable overloadTask = new Runnable() {
       public void run() {
         if (ovrManager != null) {
@@ -177,7 +185,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     overloadHandler = overloadScheduler.scheduleAtFixedRate(overloadTask, 0, 1, TimeUnit.SECONDS);
     // Start duplication protection procedure
     if (duplicateProtection) {
-      dupliocationScheduler = Executors.newScheduledThreadPool(1);
+      duplicationScheduler = concurrentFactory.getScheduledExecutorService(DuplicationMessageTimer.name());
       Runnable duplicateTask = new Runnable() {
         public void run() {
           long now = System.currentTimeMillis();
@@ -188,10 +196,10 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
           }
         }
       };
-      duplicationHandler = dupliocationScheduler.scheduleAtFixedRate(duplicateTask, duplicateTimer, duplicateTimer, TimeUnit.MILLISECONDS);
+      duplicationHandler = duplicationScheduler.scheduleAtFixedRate(duplicateTask, duplicateTimer, duplicateTimer, TimeUnit.MILLISECONDS);
     }
     //
-    connScheduler = Executors.newScheduledThreadPool(1);
+    connScheduler = concurrentFactory.getScheduledExecutorService(ConnectionTimer.name());
     Runnable connectionCheckTask = new Runnable() {
       public void run() {
         Map<String, IConnection> connections = getIncConnections();
@@ -213,7 +221,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     connHandler = connScheduler.scheduleAtFixedRate(connectionCheckTask, CONN_INVALIDATE_PERIOD, CONN_INVALIDATE_PERIOD, TimeUnit.MILLISECONDS);
     // Start server socket
     try {
-      networkGuard = createNetWorkGuard(transportFactory);
+      networkGuard = createNetworkGuard(transportFactory);
     }
     catch (TransportException e) {
       logger.debug("Can not create server socket", e);
@@ -244,12 +252,12 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
 
   private final Object regLock = new Object();
 
-  private INetWorkGuard createNetWorkGuard(final ITransportLayerFactory transportFactory) throws TransportException {
-    return transportFactory.createNetWorkGuard(
+  private INetworkGuard createNetworkGuard(final ITransportLayerFactory transportFactory) throws TransportException {
+    return transportFactory.createNetworkGuard(
         metaData.getLocalPeer().getIPAddresses()[0],
         metaData.getLocalPeer().getUri().getPort(),
-        new INetWorkConnectionListener() {
-          public void newNetWorkConnection(final IConnection connection) {
+        new INetworkConnectionListener() {
+          public void newNetworkConnection(final IConnection connection) {
             synchronized (regLock) {
               final IConnectionListener listener = new IConnectionListener() {
 
@@ -320,8 +328,8 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                             uri = new URI("aaa://" + host + ":" + port);
                           }
 
-                          peer = newPeerInstance(0, uri, connection.getRemoteAddress().getHostAddress(), null, metaData,
-                              config, null, fsmFactory, transportFactory, parser, false, connection);
+                          peer = newPeerInstance(0, uri, connection.getRemoteAddress().getHostAddress(), null, false, connection,
+                              metaData, config, null, fsmFactory, transportFactory, parser, statisticFactory, concurrentFactory);
                           logger.debug("Add {} peer {}", peer);
                           appendPeerToPeerTable(peer);
                           logger.debug("Handle {} message on peer {}", new Object[]{message, peer});
@@ -385,15 +393,15 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     }
     //
     if (overloadScheduler != null) {
-      Executors.unconfigurableScheduledExecutorService(overloadScheduler);
+      concurrentFactory.shutdownNow(overloadScheduler);
       overloadScheduler = null;
       overloadHandler.cancel(true);
       overloadHandler = null;            
     }
     //
-    if (dupliocationScheduler != null) {
-      Executors.unconfigurableScheduledExecutorService(dupliocationScheduler);
-      dupliocationScheduler = null;
+    if (duplicationScheduler != null) {
+      concurrentFactory.shutdownNow(duplicationScheduler);
+      duplicationScheduler = null;
     }
     if (duplicationHandler != null) {
       duplicationHandler.cancel(true);
@@ -401,7 +409,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     }
     //
     if (connScheduler != null) {
-      Executors.unconfigurableScheduledExecutorService(connScheduler);
+      concurrentFactory.shutdownNow(connScheduler);
       connScheduler = null;
     }
     if (connHandler != null) {
@@ -425,7 +433,8 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       if (peerConfig == null) {
         peerConfig = new EmptyConfiguration(false).add(PeerAttemptConnection, connecting);
       }
-      IPeer peer = (IPeer) createPeer(0, peerURI.getFQDN(), null, null, metaData, config, peerConfig, fsmFactory, transportFactory, parser);
+      IPeer peer = (IPeer) createPeer(0, peerURI.getFQDN(), null, null, metaData, config, peerConfig, fsmFactory, 
+          transportFactory, statisticFactory, concurrentFactory, parser);
       if (peer == null) return null;
       peer.setRealm(realm);
       appendPeerToPeerTable(peer);
@@ -485,7 +494,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   public Statistic getStatistic(String name) {
     for (Peer p : peerTable.values()) {
       if (p.getUri().getFQDN().equals(name)) {
-        return ((IPeer) p).getStatistic();
+        return StatisticAdaptor.adapt(((IPeer) p).getStatistic());
       }
     }
     return null;

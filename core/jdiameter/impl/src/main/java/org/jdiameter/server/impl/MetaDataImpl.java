@@ -22,26 +22,36 @@ import org.jdiameter.api.StackType;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.ISessionFactory;
+import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.impl.helpers.IPConverter;
+import org.jdiameter.common.api.statistic.IStatisticFactory;
 import org.jdiameter.server.api.IMetaData;
 import org.jdiameter.server.api.IMutablePeerTable;
 import org.jdiameter.server.api.INetwork;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl implements IMetaData {
 
+  private static final Logger logger = LoggerFactory.getLogger(MetaDataImpl.class);
+  
   private final Object lock = new Object();
 
   public MetaDataImpl(IContainer s) {
     super(s);
   }
 
-  public LocalPeer getLocalPeer() {
-    return new MyLocalPeer();        
+  public MetaDataImpl(IContainer s, IStatisticFactory factory) {
+    super(s, factory);
   }
 
   public StackType getStackType() {
     return StackType.TYPE_SERVER;
+  }
+
+  protected IPeer newLocalPeer(IStatisticFactory statisticFactory) {
+    return new ServerLocalPeer(statisticFactory);
   }
 
   public void addApplicationId(ApplicationId applicationId) {
@@ -65,18 +75,22 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
       appIds.clear();
       getLocalPeerInfo().getCommonApplications();
       // Reload ip addresses from configuration
-      peer.resetAddresses();
+      ((ServerLocalPeer) peer).resetAddresses();
       peer.getIPAddresses();
     }
   }
 
-  protected class MyLocalPeer extends LocalPeer {
+  protected class ServerLocalPeer extends ClientLocalPeer {
 
     protected INetwork net = null;
     protected IMutablePeerTable manager = null;
     protected ISessionFactory factory = null;
     protected Map<String, NetworkReqListener> slc = null;
     Map<Long, IMessage> peerRequests = new ConcurrentHashMap<Long, IMessage>();
+
+    public ServerLocalPeer(IStatisticFactory statisticFactory) {
+      super(statisticFactory);
+    }
 
     public Set<ApplicationId> getCommonApplications() {
       Set<ApplicationId> set;
@@ -138,7 +152,7 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
 
     private InetAddress getDefaultIpAddress() {
       try {
-        return InetAddress.getByName( getLocalPeer().getUri().getFQDN() );
+        return InetAddress.getByName(getLocalPeer().getUri().getFQDN());
       }
       catch (Exception e1) {
         logger.debug("Can not get ip by uri", e1);
@@ -169,7 +183,7 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
 
         IMessage answer = null;
         if (message.isRequest()) {
-          message.setHopByHopIdentifier( peer.getHopByHopIdentifier() );
+          message.setHopByHopIdentifier(peer.getHopByHopIdentifier());
           peerRequests.put(message.getHopByHopIdentifier(), message);
           NetworkReqListener listener = net.getListener(message);
           if (listener != null) {
@@ -209,7 +223,7 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
             logger.debug("Can not find handler {} for message {}", message.getSingleApplicationId(), message);
           }
           if (answer != null) {
-            peerRequests.remove( message.getHopByHopIdentifier() );
+            peerRequests.remove(message.getHopByHopIdentifier());
           }
         }
         else {
@@ -217,7 +231,7 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
           message = peerRequests.get(answer.getHopByHopIdentifier());
         }
         // Process answer
-        if ( message != null && !message.isTimeOut() && answer != null ) {
+        if (message != null && !message.isTimeOut() && answer != null) {
           message.clearTimer();
           message.setState(IMessage.STATE_ANSWERED);
           message.getEventListener().receivedSuccessMessage(message, answer);

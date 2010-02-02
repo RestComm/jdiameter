@@ -21,22 +21,24 @@ import java.net.InetAddress;
 public interface ITransportLayerFactory extends org.jdiameter.client.api.io.ITransportLayerFactory {
 
     /**
-     * Create INetWorkGuard instance with predefined parameters
+     * Create INetworkGuard instance with predefined parameters
+     * 
      * @param inetAddress address of server socket
      * @param port  port of server socket
      * @return INetWorkGuard instance
      * @throws TransportException
      */
-    INetWorkGuard createNetWorkGuard(InetAddress inetAddress, int port) throws TransportException;
+    INetworkGuard createNetworkGuard(InetAddress inetAddress, int port) throws TransportException;
 
     /**
-     * Create INetWorkGuard instance with predefined parameters
+     * Create INetworkGuard instance with predefined parameters
+     * 
      * @param inetAddress address of server socket
      * @param port  port of server socket
      * @param listener event listener
      * @return INetWorkGuard instance
      * @throws TransportException
      */    
-    INetWorkGuard createNetWorkGuard(InetAddress inetAddress, int port, INetWorkConnectionListener listener) throws TransportException;
+    INetworkGuard createNetworkGuard(InetAddress inetAddress, int port, INetworkConnectionListener listener) throws TransportException;
 
 }

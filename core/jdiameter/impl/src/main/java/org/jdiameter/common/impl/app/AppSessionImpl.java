@@ -14,7 +14,7 @@ public abstract class AppSessionImpl implements AppSession {
 
   private static final long serialVersionUID = 1L;
 
-  protected static final Logger logger = LoggerFactory.getLogger(AppSessionImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(AppSessionImpl.class);
 
   protected Session session;
   protected ApplicationId appId;

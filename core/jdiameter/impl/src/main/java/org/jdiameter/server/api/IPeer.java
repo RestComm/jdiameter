@@ -9,7 +9,6 @@
  */
 package org.jdiameter.server.api;
 
-import org.jdiameter.api.Statistic;
 import org.jdiameter.client.api.fsm.IContext;
 import org.jdiameter.client.api.io.IConnection;
 
@@ -18,45 +17,45 @@ import org.jdiameter.client.api.io.IConnection;
  */
 public interface IPeer extends org.jdiameter.client.api.controller.IPeer {
 
-    /**
-     * Return peer statistic
-     * @return peer statistic
-     */
-    Statistic getStatistic();
+  /**
+   * Return true if peer must start reconnect procedure
+   * 
+   * @return true if peer must start reconnect procedure
+   */
+  boolean isAttemptConnection();
 
-    /**
-     * Return true if peer must start reconnect procedure
-     * @return true if peer must start reconnect procedure
-     */
-    boolean isAttemptConnection();
+  /**
+   * Return action context
+   * 
+   * @return action context
+   */
+  IContext getContext();
 
-    /**
-     * Return action context
-     * @returnaction context
-     */
-    IContext getContext();
+  /**
+   * Return peer connection
+   * 
+   * @return peer connection
+   */
+  IConnection getConnection();
 
-    /**
-     * Return peer connection
-     * @return peer connection
-     */
-    IConnection getConnection();
+  /**
+   * Add new network connection (wait CER/CEA)
+   * 
+   * @param conn new network connection
+   */
+  void addIncomingConnection(IConnection conn);
 
-    /**
-     * Add new network connection (wait CER/CEA)
-     * @param conn new network connection
-     */
-    void addIncomingConnection(IConnection conn);
+  /**
+   * Set result of election
+   * 
+   * @param isElection result of election
+   */
+  void setElection(boolean isElection);
 
-    /**
-     * Set result of election
-     * @param isElection result of election
-     */
-    void setElection(boolean isElection);
-
-    /**
-     * Set overload manager
-     * @param ovrManager overload manager
-     */
-    void notifyOvrManager(IOverloadManager ovrManager);
+  /**
+   * Set overload manager
+   * 
+   * @param ovrManager overload manager
+   */
+  void notifyOvrManager(IOverloadManager ovrManager);
 }

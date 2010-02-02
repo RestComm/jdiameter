@@ -3,8 +3,12 @@ package org.jdiameter.server.impl;
 import org.jdiameter.api.*;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.controller.IPeer;
+import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.server.api.INetwork;
 import org.jdiameter.server.api.IRouter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static org.jdiameter.server.impl.helpers.Parameters.*;
 
 import java.util.Set;
@@ -13,15 +17,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RouterImpl extends org.jdiameter.client.impl.router.RouterImpl implements IRouter {
 
+  private static final Logger logger = LoggerFactory.getLogger(RouterImpl.class);
+  
   protected INetwork net;
   private ConcurrentHashMap<String, Realm> network;
 
-  public RouterImpl(Configuration config, MetaData metaData) {
-    super(config, metaData);
+  public RouterImpl(IConcurrentFactory concurrentFactory, Configuration config, MetaData metaData) {
+    super(concurrentFactory, config, metaData);
   }
 
   protected void init() {
-    network = new ConcurrentHashMap<String,Realm>();
+    network = new ConcurrentHashMap<String, Realm>();
   }
 
   protected void loadConfiguration(Configuration config) {
@@ -72,9 +78,9 @@ public class RouterImpl extends org.jdiameter.client.impl.router.RouterImpl impl
     String localHost = metaData.getLocalPeer().getUri().getFQDN();
     String localRealm = metaData.getLocalPeer().getRealmName();
     // Check local host
-    if ( (destHost == null && destRealm == null && hasLocalApp(message))  ||
-        (destHost == null && destRealm != null && destRealm.equals(localRealm) && hasLocalApp(message))  ||
-        (destHost != null && destHost.equals(localHost) && destRealm != null && destRealm.equals(localRealm) && hasLocalApp(message)) ) {
+    if ((destHost == null && destRealm == null && hasLocalApp(message)) ||
+        (destHost == null && destRealm != null && destRealm.equals(localRealm) && hasLocalApp(message)) ||
+        (destHost != null && destHost.equals(localHost) && destRealm != null && destRealm.equals(localRealm) && hasLocalApp(message))) {
 
       return (IPeer) metaData.getLocalPeer();
     }
