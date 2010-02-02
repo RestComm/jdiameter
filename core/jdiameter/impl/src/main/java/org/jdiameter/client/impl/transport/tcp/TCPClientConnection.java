@@ -10,6 +10,7 @@ import org.jdiameter.client.api.io.IConnectionListener;
 import org.jdiameter.client.api.io.TransportError;
 import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.api.parser.IMessageParser;
+import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +24,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
 
 public class TCPClientConnection implements IConnection {
   
@@ -62,27 +62,31 @@ public class TCPClientConnection implements IConnection {
   protected Lock lock = new ReentrantLock();
   protected ConcurrentLinkedQueue<IConnectionListener> listeners = new ConcurrentLinkedQueue<IConnectionListener>();
 
-  protected TCPClientConnection(IMessageParser parser) {
+  protected TCPClientConnection(IConcurrentFactory concurrentFactory, IMessageParser parser) {
     this.createdTime = System.currentTimeMillis();
     this.parser = parser;
-    client = new TCPTransportClient(this);
+    client = new TCPTransportClient(concurrentFactory, this);
   }
 
-  public TCPClientConnection(Configuration config, Socket socket, IMessageParser parser, String ref) throws Exception {
-    this(parser);
-    client = new TCPTransportClient(this);
+  public TCPClientConnection(Configuration config, IConcurrentFactory concurrentFactory, Socket socket,
+    IMessageParser parser, String ref) throws Exception {
+    this(concurrentFactory, parser);
+    client = new TCPTransportClient(concurrentFactory, this);
     client.initialize(socket);
     client.start();
   }
 
-  public TCPClientConnection(Configuration config, InetAddress remoteAddress, int remotePort, InetAddress localAddress, int localPort, IMessageParser parser, String ref) {
-    this(parser);
+  public TCPClientConnection(Configuration config, IConcurrentFactory concurrentFactory, InetAddress remoteAddress,
+      int remotePort, InetAddress localAddress, int localPort, IMessageParser parser, String ref) {
+    this(concurrentFactory, parser);
     client.setDestAddress(new InetSocketAddress(remoteAddress, remotePort));
     client.setOrigAddress(new InetSocketAddress(localAddress, localPort));
   }
 
-  public TCPClientConnection(Configuration config, InetAddress remoteAddress, int remotePort, InetAddress localAddress, int localPort, IConnectionListener listener, IMessageParser parser, String ref) {
-    this(parser);
+  public TCPClientConnection(Configuration config, IConcurrentFactory concurrentFactory, InetAddress remoteAddress,
+      int remotePort, InetAddress localAddress, int localPort, IConnectionListener listener,
+      IMessageParser parser, String ref) {
+    this(concurrentFactory, parser);
     client.setDestAddress(new InetSocketAddress(remoteAddress, remotePort));
     client.setOrigAddress(new InetSocketAddress(localAddress, localPort));
     listeners.add(listener);
@@ -246,9 +250,8 @@ public class TCPClientConnection implements IConnection {
               listener.messageReceived(getKey(), parser.createMessage(event.message));
               break;
             case DATA_EXCEPTION:
-              listener.internalError(getKey(), null,
-                  new TransportException("Avp Data Exception:", TransportError.ReceivedBrokenMessage,
-                      event.exception));
+              listener.internalError(getKey(), null, new TransportException("Avp Data Exception:", 
+                  TransportError.ReceivedBrokenMessage, event.exception));
               break;
           }
         }

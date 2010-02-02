@@ -11,7 +11,7 @@ package org.jdiameter.common.api.app.auth;
 
 import org.jdiameter.common.api.app.IAppSessionState;
 
-public enum ClientAuthSessionState implements IAppSessionState<ClientAuthSessionState> { // todo this enum must moved to API
+public enum ClientAuthSessionState implements IAppSessionState<ClientAuthSessionState> {
 
     IDLE(0), OPEN(1), PENDING(2), DISCONNECTED(3);
 

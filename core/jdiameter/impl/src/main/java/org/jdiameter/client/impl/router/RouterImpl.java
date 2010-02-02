@@ -15,14 +15,18 @@ import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.controller.IPeerTable;
 import org.jdiameter.client.api.router.IRouter;
-import org.slf4j.Logger;
+import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.slf4j.LoggerFactory;
 
+import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.RedirectMessageTimer;import org.slf4j.Logger;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -36,14 +40,15 @@ public class RouterImpl implements IRouter {
     public static final int ALL_HOST = 5;
     public static final int ALL_USER = 6;
     //
-    protected Logger logger = LoggerFactory.getLogger(RouterImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(RouterImpl.class);
     protected MetaData metaData;
     //
     private ConcurrentHashMap<String, String[]> network = new ConcurrentHashMap<String, String[]>();
     // Redirection feature
     public final int REDIRECT_TABLE_SIZE = 1024;
     protected ConcurrentHashMap<RedirectEntry, RedirectEntry> redirectTable = new ConcurrentHashMap<RedirectEntry, RedirectEntry>(REDIRECT_TABLE_SIZE);
-    protected ScheduledExecutorService redirectScheduler = Executors.newScheduledThreadPool(1);
+    protected IConcurrentFactory concurrentFactory;
+    protected ScheduledExecutorService redirectScheduler;
     protected Runnable redirectTask = new Runnable() {
         public void run() {
             for (RedirectEntry entry : redirectTable.values()) {
@@ -52,16 +57,18 @@ public class RouterImpl implements IRouter {
             }
         }
     };
-    protected ScheduledFuture redirectEntryHandler = redirectScheduler.scheduleAtFixedRate(redirectTask, 1, 1, TimeUnit.SECONDS);
+    protected ScheduledFuture redirectEntryHandler;
     // Answer routing feature
     public static final int REQUEST_TABLE_SIZE = 10 * 1024;
     public static final int REQUEST_TABLE_CLEAR_SIZE = 5 * 1024;
     protected ReadWriteLock requestLock = new ReentrantReadWriteLock();
     protected Map<Long, AnswerEntry> requestEntryTable = new ConcurrentHashMap<Long, AnswerEntry>(REQUEST_TABLE_SIZE);
     protected List<Long> requestSortedEntryTable = new java.util.concurrent.CopyOnWriteArrayList<Long>();
+    protected boolean isStopped = true;
 
-    public RouterImpl(Configuration config, MetaData aMetaData) {
-        metaData = aMetaData;
+    public RouterImpl(IConcurrentFactory concurrentFactory, Configuration config, MetaData aMetaData) {
+        this.concurrentFactory = concurrentFactory;
+        this.metaData = aMetaData;
         init();
         loadConfiguration(config);
     }
@@ -74,7 +81,7 @@ public class RouterImpl implements IRouter {
         Configuration[] items = config.getChildren(RealmTable.ordinal());
         if (items != null & items.length > 0) {
             String entry;
-            for (Configuration c:items) {
+            for (Configuration c : items) {
                 entry = c.getStringValue(RealmEntry.ordinal(), null);
                 if (entry != null) {
                     try {
@@ -102,23 +109,24 @@ public class RouterImpl implements IRouter {
                             realmAvp != null ? realmAvp.getOctetString() : null);
             requestEntryTable.put(hopByHopId, entry);
             requestSortedEntryTable.add(hopByHopId);
-            if ( requestEntryTable.size() > REQUEST_TABLE_SIZE) {
-              for (int i = 0; i < REQUEST_TABLE_CLEAR_SIZE ; i++) {
+            if (requestEntryTable.size() > REQUEST_TABLE_SIZE) {
+              for (int i = 0; i < REQUEST_TABLE_CLEAR_SIZE; i++) {
                 Long lastKey = requestSortedEntryTable.remove(0);
-                requestEntryTable.remove( lastKey );
+                requestEntryTable.remove(lastKey);
               }
             }
         }
         catch (Exception e) {
           logger.warn("Can not store route info", e);
-        } finally{
-            requestLock.readLock().unlock();
+        }
+        finally {
+          requestLock.readLock().unlock();
         }
     }
 
     public String[] getRequestRouteInfo(long hopByHopIdentifier) {
         requestLock.writeLock().lock();
-        AnswerEntry ans = requestEntryTable.get( hopByHopIdentifier );
+        AnswerEntry ans = requestEntryTable.get(hopByHopIdentifier);
         requestLock.writeLock().unlock();
         if (ans != null) {
         	return new String[] {ans.getHost(), ans.getRealm()};
@@ -214,7 +222,7 @@ public class RouterImpl implements IRouter {
         String destHost = null;
         // Get destination information
         String[] info = null;
-        if ( !message.isRequest() )
+        if (!message.isRequest())
         {
             info = getRequestRouteInfo(message.getHopByHopIdentifier());
             if (info != null) {
@@ -243,7 +251,7 @@ public class RouterImpl implements IRouter {
         }
 
         // Check realm name
-        if ( !checkRealm(destRealm) )
+        if (!checkRealm(destRealm))
             throw new RouteException("Unknown realm name [" + destRealm + "]");
 
         // Redirect processing
@@ -256,28 +264,30 @@ public class RouterImpl implements IRouter {
             return message.getPeer();
         }
 
-        // Balansing procedure
+        // Balancing procedure
         IPeer c = destHost != null ? manager.getPeerByName(destHost) : null;
-        if (c != null && c.hasValidConnection() ) {
+        if (c != null && c.hasValidConnection()) {
             logger.debug("Select peer by destination host avp [{}] peer {}", new Object[] {destHost, message.getPeer()});
             return c;
         }
         else {
-            logger.debug("Peer by destination host avp [host={},peer={}] has no valid connection ", destHost, c);
+            if (destHost != null) {
+              logger.debug("Peer by destination host avp [host={},peer={}] has no valid connection ", destHost, c);
+            }
             String peers[] = getRealmPeers(destRealm);
             if (peers == null || peers.length == 0)
                 throw new RouteException("Can not find context by route information [" + destRealm + " ," + destHost + "]");
             // Collect peers
-            ArrayList<IPeer> avaliblePeers = new ArrayList<IPeer>(5);
+            ArrayList<IPeer> availablePeers = new ArrayList<IPeer>(5);
             for (String peerName : peers) {
                 IPeer localPeer = manager.getPeerByName(peerName);
                 if (localPeer != null && localPeer.hasValidConnection())
-                    avaliblePeers.add(localPeer);
+                    availablePeers.add(localPeer);
             }
-            logger.debug("Realm {} has avaliable following peers {} from list {}", new Object[] {destRealm  , avaliblePeers, Arrays.asList(peers)});
+            logger.debug("Realm {} has avaliable following peers {} from list {}", new Object[] {destRealm  , availablePeers, Arrays.asList(peers)});
             
-            // Balansing
-            peer = selectPeer(avaliblePeers);
+            // Balancing
+            peer = selectPeer(availablePeers);
             if (peer == null)
                 throw new RouteException("Can not find valid connection to peer[" + destHost + "] in realm[" + destRealm + "]");
             return peer;
@@ -289,47 +299,53 @@ public class RouterImpl implements IRouter {
     }
 
     public void start() {
+      if (isStopped) {
+        redirectScheduler = concurrentFactory.getScheduledExecutorService(RedirectMessageTimer.name());
         redirectEntryHandler = redirectScheduler.scheduleAtFixedRate(redirectTask, 1, 1, TimeUnit.SECONDS);
+        isStopped = false;
+      }
     }
 
     public void stop() {
-        if (redirectEntryHandler != null)
-            redirectEntryHandler.cancel(true);
-        if (redirectTable != null)
-            redirectTable.clear();
-        if (requestEntryTable != null)
-            requestEntryTable.clear();
-        if (requestSortedEntryTable != null)
-            requestSortedEntryTable.clear();
+      isStopped = true;
+      if (redirectEntryHandler != null) {
+        redirectEntryHandler.cancel(true);
+      }
+      if (redirectTable != null) {
+        redirectTable.clear();
+      }
+      if (requestEntryTable != null) {
+        requestEntryTable.clear();
+      }
+      if (requestSortedEntryTable != null) {
+        requestSortedEntryTable.clear();
+      }
+      if (redirectScheduler != null) {
+        concurrentFactory.shutdownNow(redirectScheduler);
+      }
     }
 
     public void destroy() {
-        if (redirectEntryHandler != null)
-            redirectEntryHandler.cancel(true);
-        redirectEntryHandler = null;
-
-        if (redirectScheduler != null) {
-            redirectScheduler.shutdownNow();
-            Executors.unconfigurableScheduledExecutorService(redirectScheduler);
+      try {
+        if (!isStopped) {
+          stop();        
         }
-        redirectScheduler = null;
-
-        if (redirectTable != null)
-            redirectTable.clear();
-        redirectTable = null;
-
-        if (requestEntryTable != null)
-            requestEntryTable.clear();
-        requestEntryTable = null;
-        if (requestSortedEntryTable != null)
-            requestSortedEntryTable.clear();
-        requestEntryTable = null;
+      }
+      catch (Exception exc) {
+        logger.error("Can not stop router", exc);
+      }
+      
+      redirectEntryHandler = null;
+      redirectScheduler = null;
+      redirectTable = null;
+      requestEntryTable = null;
+      requestEntryTable = null;
     }
 
     protected IPeer selectPeer(List<IPeer> avaliblePeers) {
         IPeer p = null;
         for (IPeer c : avaliblePeers) {
-            if (p == null || c.getRaiting() >= p.getRaiting())
+            if (p == null || c.getRating() >= p.getRating())
                 p = c;
         }
         return p;

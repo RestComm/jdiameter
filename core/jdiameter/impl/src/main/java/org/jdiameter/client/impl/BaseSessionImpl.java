@@ -71,7 +71,7 @@ public abstract class BaseSessionImpl implements BaseSession {
   }
 
   protected void genericSend(Message aMessage, EventListener listener, long timeout, TimeUnit timeUnit) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    if ( isValid ) {
+    if (isValid) {
       lastAccessedTime = System.currentTimeMillis();
 
       if(BaseSessionImpl.messageValidator.isOn()) {
@@ -171,7 +171,7 @@ public abstract class BaseSessionImpl implements BaseSession {
 
     public Message get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
       try {                
-        block.await();
+        block.await(timeout, unit);
       }
       catch (Exception e) {
         throw new ExecutionException(e);
@@ -287,7 +287,7 @@ class MyEventListener implements IEventListener {
 
   public void setValid(boolean value) {
     isValid = value;
-    if ( !isValid ) {
+    if (!isValid) {
       session = null;
       listener = null;
     }
@@ -312,7 +312,7 @@ class MyEventListener implements IEventListener {
   }
 
   public int hashCode() {
-    return listener == null ? 0 :listener.hashCode();
+    return listener == null ? 0 : listener.hashCode();
   }
 
   public boolean equals(Object obj) {

@@ -48,7 +48,7 @@ public class Recoder implements IRecoder {
         return encode(yourDomainMessageObject, request,  resultCode);
     }
 
-  public Message encode( Object yourDomainMessageObject, Request request, long resultCode, Avp... addAvp) throws RecoderException {
+  public Message encode(Object yourDomainMessageObject, Request request, long resultCode, Avp... addAvp) throws RecoderException {
     IMessage message = null;
     ClassInfo classInfo = storage.getClassInfo(yourDomainMessageObject.getClass());
     CommandDscr commandDscr = classInfo.getAnnotation(CommandDscr.class);
@@ -59,24 +59,23 @@ public class Recoder implements IRecoder {
                 message.setRequest(true);
                 message.getAvps().addAvp(addAvp);
                 try {
-                    if ( message.getAvps().getAvp(Avp.AUTH_APPLICATION_ID) != null ) {
-                        message.setHeaderApplicationId( message.getAvps().getAvp(Avp.AUTH_APPLICATION_ID).getUnsigned32() );
-                    } else
-                    if ( message.getAvps().getAvp(Avp.ACCT_APPLICATION_ID) != null ) {
-                         message.setHeaderApplicationId( message.getAvps().getAvp(Avp.ACCT_APPLICATION_ID).getUnsigned32() );
-                    } else
-                    if ( message.getAvps().getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) != null ) {
-                         message.setHeaderApplicationId( message.getAvps().getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID).
-                                 getGrouped().getAvp(Avp.VENDOR_ID).getUnsigned32()
-                         );       
+                    if (message.getAvps().getAvp(Avp.AUTH_APPLICATION_ID) != null) {
+                        message.setHeaderApplicationId(message.getAvps().getAvp(Avp.AUTH_APPLICATION_ID).getUnsigned32());
+                    }
+                    else if (message.getAvps().getAvp(Avp.ACCT_APPLICATION_ID) != null) {
+                         message.setHeaderApplicationId(message.getAvps().getAvp(Avp.ACCT_APPLICATION_ID).getUnsigned32());
+                    }
+                    else if (message.getAvps().getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) != null) {
+                         message.setHeaderApplicationId(message.getAvps().getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID).
+                             getGrouped().getAvp(Avp.VENDOR_ID).getUnsigned32());       
                     }
                 } catch (Exception exc) {
                     throw new RecoderException(exc);
                 }                
-                if ( message.getAvps().getAvp(Avp.ORIGIN_HOST) == null ) {
+                if (message.getAvps().getAvp(Avp.ORIGIN_HOST) == null) {
                     message.getAvps().addAvp(Avp.ORIGIN_HOST, metaData.getLocalPeer().getUri().getFQDN(), true, false, true);
                 }
-                if ( message.getAvps().getAvp(Avp.ORIGIN_REALM) == null ) {
+                if (message.getAvps().getAvp(Avp.ORIGIN_REALM) == null) {
                     message.getAvps().addAvp(Avp.ORIGIN_REALM, metaData.getLocalPeer().getRealmName(), true, false, true);
                 }
             } else {
@@ -115,7 +114,7 @@ public class Recoder implements IRecoder {
     if (chMap == null) 
       chMap = new HashMap<String, Object>();  
     for (MethodInfo mi : c.getMethodsInfo()) {
-      if ( mi.getAnnotation(Getter.class) != null) {
+      if (mi.getAnnotation(Getter.class) != null) {
                 try {
                     Object value = mi.getMethod().invoke(yourDomainMessageObject);
                     if (value != null) {
@@ -135,7 +134,7 @@ public class Recoder implements IRecoder {
   }
 
   private void fillChild(AvpSet as, Child ci, Map<String, Object> childs) throws RecoderException {
-    Object c = childs.get( ci.ref().getName() );
+    Object c = childs.get(ci.ref().getName());
     if (c != null) { 
       ClassInfo cc = storage.getClassInfo(ci.ref());
       AvpDscr ad = cc.getAnnotation(AvpDscr.class);
@@ -144,48 +143,68 @@ public class Recoder implements IRecoder {
         // cast <=> getter for primitive
         switch (ad.type()) {
           case Integer32: 
-          case Enumerated: 
-            { 
+          case Enumerated: { 
               for (AvpFlag f : ad.must()) 
-                if (AvpFlag.M.equals(f)) m = true; else if (AvpFlag.P.equals(f)) p = true;
+                if (AvpFlag.M.equals(f)) { 
+                  m = true;
+                } 
+                else if (AvpFlag.P.equals(f)) {
+                  p = true;
+                }
               // find in getter
               Collection<Integer> cv = getValue(c, Integer.class);
               for (Integer v : cv)
                 as.addAvp(ad.code(), v, ad.vendorId(), m, p);
             }
             break;
-          case Unsigned32:        
-            {
+          case Unsigned32: {
               for (AvpFlag f : ad.must()) 
-                if (AvpFlag.M.equals(f)) m = true; else if (AvpFlag.P.equals(f)) p = true;
+                if (AvpFlag.M.equals(f)) {
+                  m = true;
+                }
+                else if (AvpFlag.P.equals(f)) {
+                  p = true;
+                }
               Collection<Long> cv = getValue(c, Long.class);
               for (Long v : cv)
                 as.addAvp(ad.code(), v, ad.vendorId(), m, p, true);
             }
             break;              
           case Unsigned64:  
-          case Integer64: 
-            {
+          case Integer64: {
               for (AvpFlag f : ad.must()) 
-                if (AvpFlag.M.equals(f)) m = true; else if (AvpFlag.P.equals(f)) p = true;
+                if (AvpFlag.M.equals(f)) {
+                  m = true;
+                }
+                else if (AvpFlag.P.equals(f)) {
+                  p = true;
+                }
               Collection<Long> cv = getValue(c, Long.class); 
               for (Long v : cv)
                 as.addAvp(ad.code(), v, ad.vendorId(), m, p);
             }
             break;    
-          case Float32:   
-            {
+          case Float32: {
               for (AvpFlag f : ad.must()) 
-                if (AvpFlag.M.equals(f)) m = true; else if (AvpFlag.P.equals(f)) p = true;
+                if (AvpFlag.M.equals(f)) {
+                  m = true;
+                }
+                else if (AvpFlag.P.equals(f)) {
+                  p = true;
+                }
               Collection<Float> cv = getValue(c, Float.class);
               for (Float v : cv)
                 as.addAvp(ad.code(), v, ad.vendorId(), m, p);
             }
             break;            
-          case Float64: 
-            {
+          case Float64: {
               for (AvpFlag f : ad.must()) 
-                if (AvpFlag.M.equals(f)) m = true; else if (AvpFlag.P.equals(f)) p = true;
+                if (AvpFlag.M.equals(f)) {
+                  m = true;
+                }
+                else if (AvpFlag.P.equals(f)) {
+                  p = true;
+                }
               Collection<Double> cv = getValue(c, Double.class);
               for (Double v : cv)
                 as.addAvp(ad.code(), v, ad.vendorId(), m, p);
@@ -197,45 +216,54 @@ public class Recoder implements IRecoder {
           case DiameterIdentity:  
           case DiameterURI:
           case IPFilterRule:
-          case QoSFilterRule: 
-            {
+          case QoSFilterRule: {
               for (AvpFlag f : ad.must()) 
-                if (AvpFlag.M.equals(f)) m = true; else if (AvpFlag.P.equals(f)) p = true;
+                if (AvpFlag.M.equals(f)) {
+                  m = true;
+                }
+                else if (AvpFlag.P.equals(f)) {
+                  p = true;
+                }
               Collection<String> cv = getValue(c, String.class);
               for (String v : cv) 
                 as.addAvp(ad.code(), v, ad.vendorId(), m, p, true);
             }
             break;
-          case UTF8String:  
-            {
+          case UTF8String: {
               for (AvpFlag f : ad.must()) 
-                if (AvpFlag.M.equals(f)) m = true; else if (AvpFlag.P.equals(f)) p = true;
+                if (AvpFlag.M.equals(f)) {
+                  m = true;
+                }
+                else if (AvpFlag.P.equals(f)) {
+                  p = true;
+                }
               Collection<String> cv = getValue(c, String.class);
               for (String v : cv)               
                 as.addAvp(ad.code(), v, ad.vendorId(), m, p, false);
             }
             break;            
-          case Grouped:
-            {
+          case Grouped: {
               for (AvpFlag f : ad.must()) {
                 if (AvpFlag.M.equals(f)) {
-                                    m = true;
-                                } else if (AvpFlag.P.equals(f)) {
-                                    p = true;
-                                }
-                            }
+                    m = true;
+                }
+                else if (AvpFlag.P.equals(f)) {
+                    p = true;
+                }
+              }
               Collection<Object> cv = new ArrayList<Object>();
               if (c.getClass().isArray()) {
                 cv = Arrays.asList((Object[])c);
-                            } else {
+              }
+              else {
                 cv.add(c);
-                            }
+              }
               for (Object cj : cv) {
                 AvpSet las = as.addGroupedAvp(ad.code(),ad.vendorId(), m, p);               
                 Map<String, Object> lchilds = getChildInstance(cj, storage.getClassInfo(cj.getClass()), null);            
                 for (Child lci : ad.childs()) {
                   fillChild(las, lci, lchilds);
-                                }
+                }
               }
             }
             break;
@@ -244,7 +272,7 @@ public class Recoder implements IRecoder {
     } 
   }
   
-  private <T> Collection<T> getValue(Object ic, Class<T> type ) throws RecoderException {
+  private <T> Collection<T> getValue(Object ic, Class<T> type) throws RecoderException {
     Collection<T> rc = new ArrayList<T>();
     Object[] xc = null;
     if (ic.getClass().isArray()) 
@@ -253,9 +281,9 @@ public class Recoder implements IRecoder {
       xc = new Object[] {ic};
     for (Object  c : xc) {  
       for (MethodInfo lm : storage.getClassInfo(c.getClass()).getMethodsInfo()) {
-        if ( lm.getAnnotation(Getter.class) != null ) {
+        if (lm.getAnnotation(Getter.class) != null) {
                     try {
-                        rc.add((T)lm.getMethod().invoke(c));
+                        rc.add((T) lm.getMethod().invoke(c));
                     } catch (IllegalAccessException e) {
                         throw new RecoderException(e);
                     } catch (InvocationTargetException e) {
@@ -269,7 +297,7 @@ public class Recoder implements IRecoder {
   
   // =======================================================================================
   
-  public <T> T decode( Message message, java.lang.Class<T> yourDomainMessageObject) throws RecoderException {
+  public <T> T decode(Message message, java.lang.Class<T> yourDomainMessageObject) throws RecoderException {
     Object rc = null;
     ClassInfo c = storage.getClassInfo(yourDomainMessageObject);
     CommandDscr cd = c.getAnnotation(CommandDscr.class);
@@ -282,19 +310,19 @@ public class Recoder implements IRecoder {
                 for (CommandFlag f : cd.flags()) {
                     switch (f) {
                         case E:
-                            if ( !message.isError() )
+                            if (!message.isError())
                                 throw new IllegalArgumentException("Flag e is not set");
                             break;
                         case P:
-                            if ( !message.isProxiable() )
+                            if (!message.isProxiable())
                                 throw new IllegalArgumentException("Flag p is not set");
                             break;
                         case R:
-                            if ( !message.isRequest())
+                            if (!message.isRequest())
                                 throw new IllegalArgumentException("Flag m is not set");
                             break;
                         case T:
-                            if ( !message.isReTransmitted() )
+                            if (!message.isReTransmitted())
                                 throw new IllegalArgumentException("Flag t is not set");
                             break;
                     }
@@ -304,19 +332,20 @@ public class Recoder implements IRecoder {
                 Constructor<?> cm = null;
                 Map<String, Class<?>> cmargs = new HashMap<String, Class<?>>();
                 for (ConstructorInfo ci : c.getConstructorsInfo()) {
-                    if ( ci.getAnnotation(Setter.class) != null ) {
+                    if (ci.getAnnotation(Setter.class) != null) {
                         // check params - all params must have avp annotation
                         Class<?>[] params = ci.getConstructor().getParameterTypes();
                         boolean correct = true;
-                        for (Class<?> j : params ) {
+                        for (Class<?> j : params) {
                             if (j.isArray())
                                 j = j.getComponentType();
-                            if ( storage.getClassInfo(j).getAnnotation(AvpDscr.class) == null) {
+                            if (storage.getClassInfo(j).getAnnotation(AvpDscr.class) == null) {
                                 correct = false;
                                 break;
                             }
                         }
-                        if ( !correct ) continue;
+                        if (!correct)
+                          continue;
                         // find max args constructor
                         if (cacount < params.length) {
                             cacount = params.length;
@@ -331,7 +360,7 @@ public class Recoder implements IRecoder {
                         Class<?> lac = ac.isArray() ? ac.getComponentType() : ac;
                         cmargs.put(lac.getName(), ac);
                         // Create params
-                        initargs.add( createChildByAvp( findChildDscr(cd.childs(), ac), ac, message.getAvps()) );
+                        initargs.add(createChildByAvp(findChildDscr(cd.childs(), ac), ac, message.getAvps()));
                     }
                     // Create instance class
                     rc = cm.newInstance(initargs.toArray());
@@ -340,13 +369,13 @@ public class Recoder implements IRecoder {
                 }
                 //
                 for (MethodInfo mi : c.getMethodsInfo()) {
-                    if ( mi.getAnnotation(Setter.class) != null ) {
+                    if (mi.getAnnotation(Setter.class) != null) {
                         Class<?>[] pt = mi.getMethod().getParameterTypes();
                         if (pt.length == 1 && storage.getClassInfo(pt[0]).getAnnotation(AvpDscr.class) != null) {
-                            Class<?> ptc = pt[0].isArray()? pt[0].getComponentType() : pt[0];
-                            if ( !cmargs.containsKey(ptc.getName()) ) {
+                            Class<?> ptc = pt[0].isArray() ? pt[0].getComponentType() : pt[0];
+                            if (!cmargs.containsKey(ptc.getName())) {
                                 cmargs.put(ptc.getName(), ptc);
-                                mi.getMethod().invoke(rc, createChildByAvp( findChildDscr(cd.childs(), pt[0]), pt[0], message.getAvps()));
+                                mi.getMethod().invoke(rc, createChildByAvp(findChildDscr(cd.childs(), pt[0]), pt[0], message.getAvps()));
                             }
                         }
                     }
@@ -368,17 +397,15 @@ public class Recoder implements IRecoder {
         try {
             for (MethodInfo mi : c.getMethodsInfo()) {
                 Setter s = mi.getAnnotation(Setter.class);
-                if ( s != null && Setter.Type.UNDEFINED.equals(s.value())) {
+                if (s != null && Setter.Type.UNDEFINED.equals(s.value())) {
                     Map<Integer, Integer> known = new HashMap<Integer, Integer>();
                     for (Class<?> argc : cmargs.values()) {
-                        AvpDscr argd = storage.getClassInfo( (argc.isArray() ? argc.getComponentType() : argc) ).getAnnotation(AvpDscr.class);
+                        AvpDscr argd = storage.getClassInfo((argc.isArray() ? argc.getComponentType() : argc)).getAnnotation(AvpDscr.class);
                         known.put(argd.code(), argd.code());
                     }
                     for (Avp a : set) {
-                        if ( !known.containsKey(a.getCode()))
-                            mi.getMethod().invoke(rc,
-                                new UnknownAvp(a.getCode(), a.isMandatory(), a.isVendorId(), a.isEncrypted(), a.getVendorId(), a.getRaw())
-                            );
+                        if (!known.containsKey(a.getCode()))
+                            mi.getMethod().invoke(rc, new UnknownAvp(a.getCode(), a.isMandatory(), a.isVendorId(), a.isEncrypted(), a.getVendorId(), a.getRaw()));
                     }
                     break;
                 }
@@ -396,29 +423,32 @@ public class Recoder implements IRecoder {
     for (Child c : childs) {
       Class<?> t = c.ref();
       m = m.isArray() ? m.getComponentType() : m;
-      if ( m == t ) return c;
-      if ( m.getSuperclass() == t ) return c;
+      if (m == t)
+        return c;
+      if (m.getSuperclass() == t)
+        return c;
       for (Class<?> i : m.getInterfaces()) 
-        if ( i == t ) return c;
+        if (i == t)
+          return c;
     }
     return null;
   }
 
   private Object createChildByAvp(Child mInfo, Class<?> m, AvpSet parentSet)  throws RecoderException {
     Object rc;    
-    AvpDscr ad = storage.getClassInfo((m.isArray() ? m.getComponentType():m)).getAnnotation(AvpDscr.class);     
+    AvpDscr ad = storage.getClassInfo((m.isArray() ? m.getComponentType() : m)).getAnnotation(AvpDscr.class);     
     Avp av = parentSet.getAvp(ad.code());
     if (av != null) {     
       for (AvpFlag i : ad.must())
         switch (i) {
           case M:
-            if ( !av.isMandatory() ) throw new IllegalArgumentException("not set flag M");
+            if (!av.isMandatory()) throw new IllegalArgumentException("not set flag M");
             break;
           case V:
-            if ( !av.isVendorId() ) throw new IllegalArgumentException("not set flag V");
+            if (!av.isVendorId()) throw new IllegalArgumentException("not set flag V");
             break;
           case P:
-            if ( !av.isEncrypted() ) throw new IllegalArgumentException("not set flag P");
+            if (!av.isEncrypted()) throw new IllegalArgumentException("not set flag P");
             break;
         }
     } else {      
@@ -426,7 +456,7 @@ public class Recoder implements IRecoder {
         throw new IllegalArgumentException("Avp " + ad.code() + " is mandatory");       
     }
 
-    if (AvpType.Grouped.equals( ad.type()) ) {
+    if (AvpType.Grouped.equals(ad.type())) {
       if (m.isArray()) {
         Class<?> arrayClass = m.getComponentType();       
         AvpSet as = parentSet.getAvps(ad.code());       
@@ -463,19 +493,20 @@ public class Recoder implements IRecoder {
     Constructor<?> cm = null;
     Map<String, Class<?>> cmargs = new HashMap<String, Class<?>>();
     for (ConstructorInfo ci : c.getConstructorsInfo()) {
-      if ( ci.getAnnotation(Setter.class) != null ) {
+      if (ci.getAnnotation(Setter.class) != null) {
         // check params - all params must have avp annotation
         Class<?>[] params = ci.getConstructor().getParameterTypes();
         boolean correct = true;           
-        for (Class<?> j : params ) {
+        for (Class<?> j : params) {
           if (j.isArray())
             j = j.getComponentType();
-          if ( storage.getClassInfo(j).getAnnotation(AvpDscr.class) == null) {
+          if (storage.getClassInfo(j).getAnnotation(AvpDscr.class) == null) {
             correct = false;
             break;
           }
         }
-        if ( !correct ) continue;
+        if (!correct)
+          continue;
         // find max args constructor
         if (cacount < params.length) {
           cacount = params.length;
@@ -491,7 +522,7 @@ public class Recoder implements IRecoder {
                     Class<?> lac = ac.isArray() ? ac.getComponentType() : ac;
                     cmargs.put(lac.getName(), ac);
                     // Create params
-                    initargs.add( createChildByAvp( findChildDscr(ad.childs(), ac), ac, avp.getGrouped()) );
+                    initargs.add(createChildByAvp(findChildDscr(ad.childs(), ac), ac, avp.getGrouped()));
                 }
                 // Create instance class
                 rc = cm.newInstance(initargs.toArray());
@@ -500,15 +531,13 @@ public class Recoder implements IRecoder {
             }
             //
             for (MethodInfo mi : c.getMethodsInfo()) {
-                if ( mi.getAnnotation(Setter.class) != null ) {
+                if (mi.getAnnotation(Setter.class) != null) {
                     Class<?>[] pt = mi.getMethod().getParameterTypes();
                     if (pt.length == 1 && storage.getClassInfo(pt[0]).getAnnotation(AvpDscr.class) != null) {
-                        Class<?> ptc = pt[0].isArray()? pt[0].getComponentType() : pt[0];
-                        if ( !cmargs.containsKey(ptc.getName()) ) {
+                        Class<?> ptc = pt[0].isArray() ? pt[0].getComponentType() : pt[0];
+                        if (!cmargs.containsKey(ptc.getName())) {
                             cmargs.put(ptc.getName(), ptc);
-                            mi.getMethod().invoke(
-                                    rc, createChildByAvp( findChildDscr(ad.childs(), pt[0]), pt[0], avp.getGrouped())
-                            );
+                            mi.getMethod().invoke(rc, createChildByAvp(findChildDscr(ad.childs(), pt[0]), pt[0], avp.getGrouped()));
                         }
                     }
                 }
@@ -533,12 +562,12 @@ public class Recoder implements IRecoder {
     ClassInfo c = storage.getClassInfo(m);
         try {
             for (ConstructorInfo ci : c.getConstructorsInfo()) {
-                if ( ci.getConstructor().getParameterTypes().length == 1 && ci.getAnnotation(Setter.class) != null ) {
+                if (ci.getConstructor().getParameterTypes().length == 1 && ci.getAnnotation(Setter.class) != null) {
                     List<Object> args = new ArrayList<Object>();
-                    if ( ci.getConstructor().getParameterTypes()[0].isArray() ) {
-                        args.add( getValue(ad.type(), avp ) );
+                    if (ci.getConstructor().getParameterTypes()[0].isArray()) {
+                        args.add(getValue(ad.type(), avp));
                     } else {
-                        args.add( getValue(ad.type(), avp ) );
+                        args.add(getValue(ad.type(), avp));
                     }
                     rc = ci.getConstructor().newInstance(args.toArray());
                 }
@@ -546,12 +575,12 @@ public class Recoder implements IRecoder {
             if (rc == null) {
                 rc = m.newInstance();
                 for (MethodInfo mi : c.getMethodsInfo()) {
-                    if ( mi.getAnnotation(Setter.class) != null ) {
+                    if (mi.getAnnotation(Setter.class) != null) {
                         List<Object> args = new ArrayList<Object>();
-                        if (  mi.getMethod().getParameterTypes()[0].isArray() ) {
-                            args.add( getValue(ad.type(), avp ) );
+                        if (mi.getMethod().getParameterTypes()[0].isArray()) {
+                            args.add(getValue(ad.type(), avp));
                         } else {
-                            args.add( getValue(ad.type(), avp ) );
+                            args.add(getValue(ad.type(), avp));
                         }
                         mi.getMethod().invoke(rc, args);
                     }

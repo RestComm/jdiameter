@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class EmptyConfiguration implements AppConfiguration {
 
     protected final Configuration[] EMPTY_ARRAY = new Configuration[0];
-    private final ConcurrentHashMap<Integer, Object> p = new ConcurrentHashMap<Integer, Object>();
+    private final ConcurrentHashMap<Integer, Object> elements = new ConcurrentHashMap<Integer, Object>();
 
     /**
      * Create instance of class with system default parameters
@@ -57,7 +57,8 @@ public class EmptyConfiguration implements AppConfiguration {
                                 add(InternalTransportFactory, InternalTransportFactory.defValue()).
                                 add(InternalPeerFsmFactory, InternalPeerFsmFactory.defValue()).
                                 add(InternalSessionFactory, InternalSessionFactory.defValue()).
-                                add(InternalPeerController, InternalPeerController.defValue()
+                                add(InternalPeerController, InternalPeerController.defValue()).
+                                add(InternalStatisticFactory, InternalStatisticFactory.defValue()
                             ),
                             getInstance().  // StackLayer extension point
                                 add(ExtensioinName, ExtensionPoint.StackLayer.name()),
@@ -72,7 +73,7 @@ public class EmptyConfiguration implements AppConfiguration {
      * @see AppConfiguration class
      */
     public AppConfiguration add(Ordinal e, Configuration... value) {
-        p.put(e.ordinal(), value);
+        elements.put(e.ordinal(), value);
         return this;
     }
 
@@ -81,27 +82,27 @@ public class EmptyConfiguration implements AppConfiguration {
      */
     public AppConfiguration add(Ordinal e, Object value) {
         if (value instanceof Configuration) {
-            p.put(e.ordinal(), new Configuration[]{(Configuration) value});
+            elements.put(e.ordinal(), new Configuration[]{(Configuration) value});
         } else {
-            p.put(e.ordinal(), value);
+            elements.put(e.ordinal(), value);
         }
         return this;
     }
 
     protected void putValue(int key, Object value) {
-        p.put(key, value);
+        elements.put(key, value);
     }
 
     protected Object getValue(int key) {
-        return p.get(key);
+        return elements.get(key);
     }
 
-    protected void removeVelue(int... keys) {
-        for (int i:keys) p.remove(i);
+    protected void removeValue(int... keys) {
+        for (int i : keys) elements.remove(i);
     }
 
     protected AppConfiguration add(int e, Configuration... value) {
-        p.put(e, value);
+        elements.put(e, value);
         return this;
     }
 
@@ -109,49 +110,49 @@ public class EmptyConfiguration implements AppConfiguration {
      * @see org.jdiameter.api.Configuration class
      */
     public byte getByteValue(int i, byte b) {
-        return (Byte) (isAttributeExist(i) ? p.get(i) : b);
+        return (Byte) (isAttributeExist(i) ? elements.get(i) : b);
     }
 
     /**
      * @see org.jdiameter.api.Configuration class
      */
     public int getIntValue(int i, int i1) {
-        return (Integer) (isAttributeExist(i) ? p.get(i) : i1);
+        return (Integer) (isAttributeExist(i) ? elements.get(i) : i1);
     }
 
     /**
      * @see org.jdiameter.api.Configuration class
      */
     public long getLongValue(int i, long l) {
-        return (Long) (isAttributeExist(i) ? p.get(i) : l);
+        return (Long) (isAttributeExist(i) ? elements.get(i) : l);
     }
 
     /**
      * @see org.jdiameter.api.Configuration class
      */
     public double getDoubleValue(int i, double v) {
-        return (Double) (isAttributeExist(i) ? p.get(i) : v);
+        return (Double) (isAttributeExist(i) ? elements.get(i) : v);
     }
 
     /**
      * @see org.jdiameter.api.Configuration class
      */
     public byte[] getByteArrayValue(int i, byte[] bytes) {
-        return (byte[]) (isAttributeExist(i) ? p.get(i) : bytes);
+        return (byte[]) (isAttributeExist(i) ? elements.get(i) : bytes);
     }
 
     /**
      * @see org.jdiameter.api.Configuration class
      */
     public boolean getBooleanValue(int i, boolean b) {
-        return (Boolean) (isAttributeExist(i) ? p.get(i) : b);
+        return (Boolean) (isAttributeExist(i) ? elements.get(i) : b);
     }
 
     /**
      * @see org.jdiameter.api.Configuration class
      */
     public String getStringValue(int i, String defValue) {
-        String result = (String) p.get(i);
+        String result = (String) elements.get(i);
         return result != null ? result : defValue;
     }
 
@@ -159,14 +160,14 @@ public class EmptyConfiguration implements AppConfiguration {
      * @see org.jdiameter.api.Configuration class
      */
     public boolean isAttributeExist(int i) {
-        return p.containsKey(i);
+        return elements.containsKey(i);
     }
 
     /**
      * @see org.jdiameter.api.Configuration class
      */
     public Configuration[] getChildren(int i) {
-        return (Configuration[]) p.get(i);
+        return (Configuration[]) elements.get(i);
     }
 
     /**
@@ -178,8 +179,8 @@ public class EmptyConfiguration implements AppConfiguration {
         StringBuffer buf = new StringBuffer("Configuration");
         buf.append("{");
 
-        for (Integer key : p.keySet()) {
-            Object value = p.get(key);
+        for (Integer key : elements.keySet()) {
+            Object value = elements.get(key);
             Parameters pr = getParameterByIndex(key);
             if (pr == null) continue;
             if (pr.name().equals(Extensions.name())) continue;

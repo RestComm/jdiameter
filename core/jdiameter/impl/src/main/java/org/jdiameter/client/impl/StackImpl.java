@@ -17,7 +17,6 @@ import static org.jdiameter.client.impl.helpers.Parameters.Assembler;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -44,6 +43,9 @@ import org.jdiameter.client.api.StackState;
 import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.controller.IPeerTable;
 import org.jdiameter.common.impl.validation.DiameterMessageValidator;
+import org.jdiameter.common.api.concurrent.IConcurrentFactory;
+import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.ProcessingMessageTimer;
+import org.jdiameter.common.api.statistic.IStatisticProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,9 +54,10 @@ import org.slf4j.LoggerFactory;
  */
 public class StackImpl implements IContainer, StackImplMBean {
 
-  protected Logger log = LoggerFactory.getLogger(StackImpl.class);
+  private static final Logger log = LoggerFactory.getLogger(StackImpl.class);
 
   protected IAssembler assembler;
+  protected IConcurrentFactory concurrentFactory;
   protected Configuration config;
   protected IPeerTable peerManager;
   protected StackState state = StackState.IDLE;
@@ -80,13 +83,14 @@ public class StackImpl implements IContainer, StackImplMBean {
         assembler.registerComponentInstance(this);
         assembler.registerComponentInstance(config);
       }
-      catch(Exception e) {
+      catch (Exception e) {
         throw new InternalException(e);
       }
       this.config = config;
       // created manager
       this.peerManager = (IPeerTable) assembler.getComponentInstance(IPeerTable.class);
-      this.peerManager.setAssempler(assembler);
+      this.concurrentFactory = (IConcurrentFactory) assembler.getComponentInstance(IConcurrentFactory.class);
+      this.peerManager.setAssembler(assembler);
       this.state = StackState.CONFIGURED;
     }
     finally {
@@ -110,7 +114,8 @@ public class StackImpl implements IContainer, StackImplMBean {
       if (state != StackState.STOPPED && state != StackState.CONFIGURED) {
         throw new IllegalDiameterStateException();
       }
-      scheduledFacility = Executors.newScheduledThreadPool(4); // TODO must configured
+      scheduledFacility = concurrentFactory.getScheduledExecutorService(ProcessingMessageTimer.name());
+      assembler.getComponentInstance(IStatisticProcessor.class).start();
       startPeerManager();
       state = StackState.STARTED;
     }
@@ -125,7 +130,8 @@ public class StackImpl implements IContainer, StackImplMBean {
       if (state != StackState.STOPPED && state != StackState.CONFIGURED) {
         throw new IllegalDiameterStateException();
       }
-      scheduledFacility = Executors.newScheduledThreadPool(4); // todo must configured
+      scheduledFacility = concurrentFactory.getScheduledExecutorService(ProcessingMessageTimer.name());
+      assembler.getComponentInstance(IStatisticProcessor.class).start();
       List<Peer> peerTable = peerManager.getPeerTable();
       final CountDownLatch barrier = new CountDownLatch(Mode.ANY_PEER.equals(mode) ? 1 : peerTable.size());
       StateChangeListener listener = new StateChangeListener() {
@@ -136,7 +142,7 @@ public class StackImpl implements IContainer, StackImplMBean {
         }
       };
       for (Peer p : peerTable) {
-        ((IPeer)p).addStateChangeListener(listener);
+        ((IPeer) p).addStateChangeListener(listener);
       }
       startPeerManager();
       try {
@@ -216,13 +222,14 @@ public class StackImpl implements IContainer, StackImplMBean {
             ((IPeer) p).remStateChangeListener(listener);
           }
         }
+        assembler.getComponentInstance(IStatisticProcessor.class).stop();
         try {
           if (peerManager != null) {
             peerManager.stopped();
           }
           // Clear all timeout tasks
           if (scheduledFacility != null) {
-            scheduledFacility.shutdownNow();
+            concurrentFactory.shutdownNow(scheduledFacility);
           }
         }
         catch (Exception e) {
@@ -246,7 +253,7 @@ public class StackImpl implements IContainer, StackImplMBean {
         assembler.destroy();
       }
       if (scheduledFacility != null) {
-        scheduledFacility.shutdownNow();
+        concurrentFactory.shutdownNow(scheduledFacility);
       }
     }
     catch (Exception e) {

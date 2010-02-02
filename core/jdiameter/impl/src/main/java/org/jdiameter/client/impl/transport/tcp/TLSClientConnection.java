@@ -4,6 +4,7 @@ import org.jdiameter.api.Configuration;
 import org.jdiameter.client.api.io.IConnectionListener;
 import org.jdiameter.client.api.parser.IMessageParser;
 import static org.jdiameter.client.impl.helpers.Parameters.*;
+import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 
 import javax.net.ssl.*;
 import java.io.FileInputStream;
@@ -26,22 +27,22 @@ public class TLSClientConnection extends TCPClientConnection {
     private SSLSocketFactory factory;
     private Configuration sslConfig;
 
-    public TLSClientConnection(Configuration config, InetAddress remoteAddress, int remotePort, InetAddress localAddress, int localPort, IMessageParser parser, String ref) {
-        super(parser);
+    public TLSClientConnection(Configuration config, IConcurrentFactory concurrentFactory, InetAddress remoteAddress, int remotePort, InetAddress localAddress, int localPort, IMessageParser parser, String ref) {
+        super(concurrentFactory, parser);
         this.client = new TLSTransportClient(this);
         client.setDestAddress(new InetSocketAddress(remoteAddress, remotePort));
         client.setOrigAddress(new InetSocketAddress(localAddress, localPort));
         this.parser = parser;
         try {
             if (ref == null) throw new Exception("Can not create connection with out TLS parameters");
-            fiilSecurityData(config, ref);
+            fillSecurityData(config, ref);
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         }
     }
 
-    public TLSClientConnection(Configuration config, InetAddress remoteAddress, int remotePort, InetAddress localAddress, int localPort, IConnectionListener listener, IMessageParser parser, String ref) {
-        super(parser);
+    public TLSClientConnection(Configuration config, IConcurrentFactory concurrentFactory, InetAddress remoteAddress, int remotePort, InetAddress localAddress, int localPort, IConnectionListener listener, IMessageParser parser, String ref) {
+        super(concurrentFactory, parser);
         this.client = new TLSTransportClient(this);
         client.setDestAddress(new InetSocketAddress(remoteAddress, remotePort));
         client.setOrigAddress(new InetSocketAddress(localAddress, localPort));
@@ -49,29 +50,29 @@ public class TLSClientConnection extends TCPClientConnection {
         this.parser = parser;
         try {
             if (ref == null) throw new Exception("Can not create connection with out TLS parameters");
-            fiilSecurityData(config, ref);
+            fillSecurityData(config, ref);
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         }
     }
 
-    public TLSClientConnection(Configuration config, SSLSocket socket, IMessageParser parser, String ref) throws Exception {
-        super(parser);
+    public TLSClientConnection(Configuration config, IConcurrentFactory concurrentFactory, SSLSocket socket, IMessageParser parser, String ref) throws Exception {
+        super(concurrentFactory, parser);
         this.client = new TLSTransportClient(this);
         this.client.initialize(socket);
         this.client.start();
         try {
             if (ref == null) throw new Exception("Can not create connection with out TLS parameters");
-            fiilSecurityData(config, ref);
+            fillSecurityData(config, ref);
         } catch (Exception e) {
            throw new IllegalArgumentException(e);
         }
     }
 
-    private void fiilSecurityData(Configuration config, String ref) throws Exception {
-        Configuration sec[] = config.getChildren( Security.ordinal() )[0].getChildren(SecurityData.ordinal());
-        for (Configuration i:sec) {
-            if ( i.getStringValue(SDName.ordinal(),"").equals(ref) ) {
+    private void fillSecurityData(Configuration config, String ref) throws Exception {
+        Configuration sec[] = config.getChildren(Security.ordinal())[0].getChildren(SecurityData.ordinal());
+        for (Configuration i : sec) {
+            if (i.getStringValue(SDName.ordinal(), "").equals(ref)) {
                 sslConfig = i;
                 break;
             }

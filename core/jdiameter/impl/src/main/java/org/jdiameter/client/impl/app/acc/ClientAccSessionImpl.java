@@ -42,6 +42,8 @@ import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.acc.ClientAccSessionState;
 import org.jdiameter.common.api.app.acc.IClientAccActionContext;
 import org.jdiameter.common.impl.app.acc.AppAccSessionImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Client Accounting session implementation
@@ -50,6 +52,8 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
 
   private static final long serialVersionUID = 1L;
 
+  private static final Logger logger = LoggerFactory.getLogger(ClientAccSessionImpl.class);
+  
   public static final int DELIVER_AND_GRANT = 1;
   public static final int GRANT_AND_LOSE = 3;
 
@@ -124,7 +128,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
     IAppSessionState oldState = state;
     state = (ClientAccSessionState) newState;
     for (StateChangeListener i : stateListeners) {
-      i.stateChanged( (Enum) oldState, (Enum) newState);
+      i.stateChanged((Enum) oldState, (Enum) newState);
     }
   }
 
@@ -214,7 +218,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
             }
           }
           catch (Exception e) {
-            logger.debug("Can not processed answer", e);
+            logger.debug("Can not process answer", e);
             setState(IDLE);
           }
           break;

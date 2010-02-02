@@ -20,9 +20,11 @@ public class FsmEvent implements StateEvent {
     private String key;
     private EventTypes type;
     private Object value;
+    private final long createdTime = System.currentTimeMillis();
 
     /**
      * Create instance of class
+     * 
      * @param type type of event
      */
     public FsmEvent(EventTypes type) {
@@ -31,6 +33,7 @@ public class FsmEvent implements StateEvent {
 
     /**
      * Create instance of class with predefined parameters
+     * 
      * @param type type of event
      * @param key event key
      */
@@ -41,6 +44,7 @@ public class FsmEvent implements StateEvent {
 
     /**
      * Create instance of class with predefined parameters
+     * 
      * @param type type of event
      * @param value attached message
      */
@@ -51,6 +55,7 @@ public class FsmEvent implements StateEvent {
 
     /**
      * Create instance of class with predefined parameters
+     * 
      * @param type type of event
      * @param value  attached message
      * @param key event key
@@ -62,6 +67,7 @@ public class FsmEvent implements StateEvent {
 
     /**
      * Return key value
+     * 
      * @return key value
      */
     public String getKey() {
@@ -70,12 +76,22 @@ public class FsmEvent implements StateEvent {
 
     /**
      * Return attached message
+     * 
      * @return diameter message
      */
     public IMessage getMessage() {
         return (IMessage) getData();
     }
 
+    /**
+     * Return created time
+     *
+     * @return created time
+     */
+    public long getCreatedTime() {
+        return createdTime;
+    }
+    
     public <E> E encodeType(Class<E> eClass) {
         return (E) type;
     }
@@ -98,6 +114,7 @@ public class FsmEvent implements StateEvent {
 
     /**
      * Return string representation of instance
+     * 
      * @return string representation of instance
      */
     public String toString() {

@@ -27,7 +27,8 @@ public class AssemblerImpl implements IAssembler {
     final  MutablePicoContainer pico = new DefaultPicoContainer();
 
     /**
-     * Create instance of class with predefined configiration
+     * Create instance of class with predefined configuration
+     * 
      * @param config configuration of stack
      * @throws Exception if generated internal exception
      */
@@ -36,36 +37,35 @@ public class AssemblerImpl implements IAssembler {
         for (Configuration e : ext) {
             String extName = e.getStringValue(ExtensioinName.ordinal(), "");
             // Create structure of containers
-            if ( extName.equals(ExtensionPoint.Internal.name()) ) {
+            if (extName.equals(ExtensionPoint.Internal.name())) {
                 fill(ExtensionPoint.Internal.getArrayOfParameters(), e, true);
-            } else
-            if ( extName.equals(ExtensionPoint.StackLayer.name()) ) {
+            }
+            else if (extName.equals(ExtensionPoint.StackLayer.name())) {
                 updatePicoContainer(config, StackLayer, InternalMetaData, InternalSessionFactory, InternalMessageParser, InternalElementParser);
             }
-            else
-            if ( extName.equals(ExtensionPoint.ControllerLayer.name()) ) {
+            else if (extName.equals(ExtensionPoint.ControllerLayer.name())) {
                 updatePicoContainer(config, ControllerLayer, InternalPeerController, InternalPeerFsmFactory, InternalRouterEngine);
             }
-            else
-            if ( extName.equals(ExtensionPoint.TransportLayer.name()) ) {
-                updatePicoContainer(config, TransportLayer, InternalTransportFactory );
+            else if (extName.equals(ExtensionPoint.TransportLayer.name())) {
+                updatePicoContainer(config, TransportLayer, InternalTransportFactory);
             }
         }
     }
 
     private void updatePicoContainer(Configuration config, ExtensionPoint pointType, ExtensionPoint... updEntries) throws ClassNotFoundException {
         for (ExtensionPoint e : updEntries) {
-            String oldValue = config.getChildren(Extensions.ordinal())[ Internal.id() ].getStringValue(e.ordinal(), null);
-            String newValue = config.getChildren(Extensions.ordinal())[ pointType.id()].getStringValue(e.ordinal(), null);
-            if (oldValue != null && newValue != null ) {
-                pico.unregisterComponent( Class.forName( oldValue) );
-                pico.registerComponentImplementation( Class.forName( newValue ));
+            String oldValue = config.getChildren(Extensions.ordinal())[Internal.id()].getStringValue(e.ordinal(), null);
+            String newValue = config.getChildren(Extensions.ordinal())[pointType.id()].getStringValue(e.ordinal(), null);
+            if (oldValue != null && newValue != null) {
+                pico.unregisterComponent(Class.forName(oldValue));
+                pico.registerComponentImplementation(Class.forName(newValue));
             }
         }
     }
 
     /**
      * Create child Assembler
+     * 
      * @param parent parent assembler
      * @param e child configuration
      * @param p extension poit
@@ -78,12 +78,12 @@ public class AssemblerImpl implements IAssembler {
 
     private void fill(ExtensionPoint[] codes, Configuration e, boolean check) throws Exception {
         for (ExtensionPoint c : codes) {
-            String value = e.getStringValue( c.ordinal(), c.defValue() );
+            String value = e.getStringValue(c.ordinal(), c.defValue());
             if (!check && (value == null || value.trim().length() == 0))
                 return;
             try {
-                pico.registerComponentImplementation( Class.forName(value) );
-            } catch(NoClassDefFoundError exc) {
+                pico.registerComponentImplementation(Class.forName(value));
+            } catch (NoClassDefFoundError exc) {
                 throw new Exception(exc);
             }
         }
@@ -92,8 +92,8 @@ public class AssemblerImpl implements IAssembler {
     /**
      * @see org.picocontainer.MutablePicoContainer
      */
-    public Object getComponentInstance(Class<?> aClass) {
-        return pico.getComponentInstanceOfType(aClass);
+    public <T> T getComponentInstance(Class<T> aClass) {
+        return (T) pico.getComponentInstanceOfType(aClass);
     }
 
     /**
@@ -104,7 +104,7 @@ public class AssemblerImpl implements IAssembler {
     }
 
     public void registerComponentImplementation(Class aClass) {
-         pico.registerComponentImplementation( aClass );
+         pico.registerComponentImplementation(aClass);
     }
 
     /**
@@ -134,6 +134,7 @@ public class AssemblerImpl implements IAssembler {
 
     /**
      * Get childs IOCs
+     * 
      * @return childs IOCs
      */
     public IAssembler[] getChilds() {

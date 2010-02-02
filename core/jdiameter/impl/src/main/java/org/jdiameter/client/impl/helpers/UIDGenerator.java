@@ -4,7 +4,7 @@
  *
  * License: GPL v3
  *
- * e-mail: erick.svenson@yahoo.com
+ * e-mail: ivar.tamm@yahoo.com
  *
  */
 package org.jdiameter.client.impl.helpers;
@@ -13,13 +13,13 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * This class provide uid generator functionality
+ * This class provide uid range generator functionality
  */
-public class UIDGenerator {
+public class UIDGenerator {  // todo remove or redesign
 
-    private static long value;
-    private static final Lock mutex = new ReentrantLock();
-    private static final ThreadLocal<Delta> ranges = new ThreadLocal<Delta>() {
+  private static long value;
+  private final static Lock mutex = new ReentrantLock();
+  private final static ThreadLocal<Delta> ranges = new ThreadLocal<Delta>() {
         protected synchronized Delta initialValue() {
             return new Delta();
         }

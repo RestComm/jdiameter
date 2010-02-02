@@ -28,107 +28,107 @@ public class Parameters extends Ordinal {
      */
     public static final Parameters Assembler = new Parameters("Assembler", String.class, "org.jdiameter.client.impl.helpers.AssemblerImpl");
     /**
-     * Ckass name of connection interface implementation property
+     * Class name of connection interface implementation property
      */
-    public static final Parameters ConnectionImplClass = new Parameters("ConnectionImplClas",String.class, "org.jdiameter.client.impl.transport.tcp.TCPClientConnection");
+    public static final Parameters ConnectionImplClass = new Parameters("ConnectionImplClas", String.class, "org.jdiameter.client.impl.transport.tcp.TCPClientConnection");
 
     /**
      * Local peer URI property
      */
-    public static final Parameters OwnDiameterURI = new Parameters("OwnDiameterURI",String.class, "aaa://localhost:1812");
+    public static final Parameters OwnDiameterURI = new Parameters("OwnDiameterURI", String.class, "aaa://localhost:1812");
     /**
      * Local peer ip address property
      */
-    public static final Parameters OwnIPAddress = new Parameters("OwnIPAddress",String.class, "");
+    public static final Parameters OwnIPAddress = new Parameters("OwnIPAddress", String.class, "");
     /**
      * Local peer realm name property
      */
-    public static final Parameters OwnRealm = new Parameters("OwnRealm",String.class, "local");
+    public static final Parameters OwnRealm = new Parameters("OwnRealm", String.class, "local");
     /**
      * Local peer vendor id  property
      */
-    public static final Parameters OwnVendorID = new Parameters("OwnVendorID",Long.class, 0L);
+    public static final Parameters OwnVendorID = new Parameters("OwnVendorID", Long.class, 0L);
     /**
      * Local peer stack product name property
      */
-    public static final Parameters OwnProductName = new Parameters("OwnProductName",String.class, "jDiameter");
+    public static final Parameters OwnProductName = new Parameters("OwnProductName", String.class, "jDiameter");
     /**
      * Local peer stack firmware version property
      */
-    public static final Parameters OwnFirmwareRevision = new Parameters("OwnFirmwareRevision",Long.class, 0L);
+    public static final Parameters OwnFirmwareRevision = new Parameters("OwnFirmwareRevision", Long.class, 0L);
 
     /**
      * Task executor task queue size  property 
      */
-    public static final Parameters QueueSize = new Parameters("QueueSize",Integer.class,   10000);
+    public static final Parameters QueueSize = new Parameters("QueueSize", Integer.class,   10000);
 
     /**
      * Message time out  property
       */
-    public static final Parameters MessageTimeOut = new Parameters("MessageTimeOut",Long.class, 60000L);
+    public static final Parameters MessageTimeOut = new Parameters("MessageTimeOut", Long.class, 60000L);
     /**
      * Stop stack time out  property
      */
-    public static final Parameters StopTimeOut = new Parameters("StopTimeOut",Long.class,    10000L);
+    public static final Parameters StopTimeOut = new Parameters("StopTimeOut", Long.class, 10000L);
 
     /**
      * CEA command time out property
      */
-    public static final Parameters CeaTimeOut = new Parameters("CeaTimeOut",Long.class, 10000L);
+    public static final Parameters CeaTimeOut = new Parameters("CeaTimeOut", Long.class, 10000L);
     /**
      * Peer inactive time out property
      */
-    public static final Parameters IacTimeOut = new Parameters("IacTimeOut",Long.class, 20000L);
+    public static final Parameters IacTimeOut = new Parameters("IacTimeOut", Long.class, 20000L);
     /**
      * DWA command time out property
      */
-    public static final Parameters DwaTimeOut = new Parameters("DwaTimeOut",Long.class, 10000L);
+    public static final Parameters DwaTimeOut = new Parameters("DwaTimeOut", Long.class, 10000L);
     /**
      * DPA command time out property
      */
-    public static final Parameters DpaTimeOut = new Parameters("DpaTimeOut",Long.class, 5000L);
+    public static final Parameters DpaTimeOut = new Parameters("DpaTimeOut", Long.class, 5000L);
     /**
      * Reconnect time out property
      */
-    public static final Parameters RecTimeOut = new Parameters("RecTimeOut",Long.class, 10000L);
+    public static final Parameters RecTimeOut = new Parameters("RecTimeOut", Long.class, 10000L);
 
     /**
      * Orig_host avp set as URI into CER message
      */
-    public static final Parameters UseUriAsFqdn = new Parameters("UseUriAsFqdn",Boolean.class, false);    
+    public static final Parameters UseUriAsFqdn = new Parameters("UseUriAsFqdn", Boolean.class, false);    
 
     /**
      * Peer name property
      */
-    public static final Parameters PeerName = new Parameters("PeerName",String.class, "");
+    public static final Parameters PeerName = new Parameters("PeerName", String.class, "");
 
     /**
      * Peer ip property
      */
-    public static final Parameters PeerIp = new Parameters("PeerIp",String.class, "");
+    public static final Parameters PeerIp = new Parameters("PeerIp", String.class, "");
 
     /**
      * Peer local peer port range (format: 1345-1346) property
      */
-    public static final Parameters PeerLocalPortRange = new Parameters("PeerLocalPortRange",String.class, "");
+    public static final Parameters PeerLocalPortRange = new Parameters("PeerLocalPortRange", String.class, "");
     
     /**
      * Peer rating property
      */
-    public static final Parameters PeerRating = new Parameters("PeerRating",Integer.class, 0);
+    public static final Parameters PeerRating = new Parameters("PeerRating", Integer.class, 0);
     /**
      *  Peer ptoperty
      */
-    public static final Parameters Peer = new Parameters("Peer",Object.class);
+    public static final Parameters Peer = new Parameters("Peer", Object.class);
 
     /**
      * Real entry property
       */
-    public static final Parameters RealmEntry = new Parameters("RealmEntry",String.class, "");
+    public static final Parameters RealmEntry = new Parameters("RealmEntry", String.class, "");
     /**
      * Realm property
      */
-    public static final Parameters Realm = new Parameters("Realm",Object.class);
+    public static final Parameters Realm = new Parameters("Realm", Object.class);
 
     /**
      * Vendor id property
@@ -141,140 +141,177 @@ public class Parameters extends Ordinal {
     /**
      * Accounting application id property
      */
-    public static final Parameters AcctApplId = new Parameters("AcctApplId",Long.class);
+    public static final Parameters AcctApplId = new Parameters("AcctApplId", Long.class);
 
     /**
      * Application Id property
      */
-    public static final Parameters ApplicationId = new Parameters("ApplicationId",Object.class);
+    public static final Parameters ApplicationId = new Parameters("ApplicationId", Object.class);
 
     /**
      * Extension point property
      */
-    public static final Parameters Extensions = new Parameters("Extensions",Object.class);
+    public static final Parameters Extensions = new Parameters("Extensions", Object.class);
     /**
      * Extension point name property
      */
-    public static final Parameters ExtensioinName = new Parameters("ExtensioinName",String.class);
+    public static final Parameters ExtensioinName = new Parameters("ExtensioinName", String.class);
 
     /**
      * Peer list property
      */
-    public static final Parameters PeerTable = new Parameters("PeerTable",Object.class);
+    public static final Parameters PeerTable = new Parameters("PeerTable", Object.class);
 
     /**
      * Realm list property
      */
-    public static final Parameters RealmTable = new Parameters("RealmTable",Object.class);
+    public static final Parameters RealmTable = new Parameters("RealmTable", Object.class);
 
     /**
      * Security list property
      */
-    public static final Parameters Security = new Parameters("Security",Object.class);
+    public static final Parameters Security = new Parameters("Security", Object.class);
 
     /**
      * Security entry
      */
-    public static final Parameters SecurityData = new Parameters("SecurityData",Object.class);
+    public static final Parameters SecurityData = new Parameters("SecurityData", Object.class);
 
     /**
      * Security data name
      */
-    public static final Parameters SDName = new Parameters("SDName",String.class);    
+    public static final Parameters SDName = new Parameters("SDName", String.class);    
 
     /**
      * Security protocol
      */
-    public static final Parameters SDProtocol = new Parameters("SDProtocol",String.class,"TLS");
+    public static final Parameters SDProtocol = new Parameters("SDProtocol", String.class, "TLS");
 
     /**
      * Security session creation flag
      */
-    public static final Parameters SDEnableSessionCreation = new Parameters("SDEnableSessionCreation",Boolean.class, false);
+    public static final Parameters SDEnableSessionCreation = new Parameters("SDEnableSessionCreation", Boolean.class, false);
 
     /**
      * Security client mode flag
      */
-    public static final Parameters SDUseClientMode= new Parameters("SDUseClientMode",Boolean.class, false);
+    public static final Parameters SDUseClientMode= new Parameters("SDUseClientMode", Boolean.class, false);
 
     /**
-     * Cipher suites separated by ','
+     * Cipher suites separated by ', '
      */
-    public static final Parameters CipherSuites = new Parameters("CipherSuites",String.class);
+    public static final Parameters CipherSuites = new Parameters("CipherSuites", String.class);
 
     /**
      * Key data
      */
-    public static final Parameters KeyData = new Parameters("KeyData",String.class);
+    public static final Parameters KeyData = new Parameters("KeyData", String.class);
 
     /**
      * Key manager
      */
-    public static final Parameters KDManager = new Parameters("KDManager",String.class);
+    public static final Parameters KDManager = new Parameters("KDManager", String.class);
 
     /**
      * Key store
      */
-    public static final Parameters KDStore = new Parameters("KDStore",String.class);
+    public static final Parameters KDStore = new Parameters("KDStore", String.class);
 
     /**
      * Key file
      */
-    public static final Parameters KDFile = new Parameters("KDFile",String.class);
+    public static final Parameters KDFile = new Parameters("KDFile", String.class);
 
     /**
      * Key password
      */
-    public static final Parameters KDPwd = new Parameters("KDPwd",String.class);
+    public static final Parameters KDPwd = new Parameters("KDPwd", String.class);
 
 
     /**
      * Trust data
      */
-    public static final Parameters TrustData = new Parameters("TrustData",String.class);    
+    public static final Parameters TrustData = new Parameters("TrustData", String.class);    
 
     /**
      * Key manager
      */
-    public static final Parameters TDManager = new Parameters("TDManager",String.class);
+    public static final Parameters TDManager = new Parameters("TDManager", String.class);
 
     /**
      * Key store
      */
-    public static final Parameters TDStore = new Parameters("TDStore",String.class);
+    public static final Parameters TDStore = new Parameters("TDStore", String.class);
 
     /**
      * Key file
      */
-    public static final Parameters TDFile = new Parameters("TDFile",String.class);
+    public static final Parameters TDFile = new Parameters("TDFile", String.class);
 
     /**
      * Key password
      */
-    public static final Parameters TDPwd = new Parameters("TDPwd",String.class);
+    public static final Parameters TDPwd = new Parameters("TDPwd", String.class);
 
     /**
      * Reference to security information
      */
-    public static final Parameters SecurityRef = new Parameters("SecurityRef",String.class);
+    public static final Parameters SecurityRef = new Parameters("SecurityRef", String.class);
 
     /**
     * XML entry for thread pool
     */
-    public static final Parameters ThreadPool = new Parameters("ThreadPool",Object.class);
+    public static final Parameters ThreadPool = new Parameters("ThreadPool", Object.class);
     /**
     * Thread pool max size
     */
-    public static final Parameters ThreadPoolSize = new Parameters("ThreadPoolSize",Integer.class,10);
+    public static final Parameters ThreadPoolSize = new Parameters("ThreadPoolSize", Integer.class, 10);
     /**
     * Thread pool max size
     */
-    public static final Parameters ThreadPoolPriority = new Parameters("ThreadPoolPriority",Integer.class,5);
+    public static final Parameters ThreadPoolPriority = new Parameters("ThreadPoolPriority", Integer.class, 5);
+
+    /**
+     * Statistic logger properties
+     */
+    public static final Parameters StatisticLogger = new Parameters("StatisticLogger", Object.class);
+
+    /**
+     * Statistic logger start pause
+     */
+    public static final Parameters StatisticLoggerPause = new Parameters("StatisticLoggerPause", Long.class, 5000L);
+
+    /**
+     * Statistic logger delay between save statistic information
+     */
+    public static final Parameters StatisticLoggerDelay = new Parameters("StatisticLoggerDelay", Long.class, 5000L);
+
+    /**
+     * Concurrent configuration root point
+     */
+    public static final Parameters Concurrent = new Parameters("Concurrent", Object.class);
+
+    /**
+     * Concurrent entity name
+     */
+    public static final Parameters ConcurrentEntityName = new Parameters("ConcurrentEntityName", String.class, "Empty");
+
+    /**
+     * Concurrent thread group name
+     */
+    public static final Parameters ConcurrentEntityDescription = new Parameters("ConcurrentEntityDescription", String.class, "ThreadPool");
+
+    /**
+     * Concurrent thread group size
+     */
+    public static final Parameters ConcurrentEntityPoolSize = new Parameters("ConcurrentEntityPoolSize", Integer.class, 4);
+    
     /**
      * Return all parameters as iterator
+     * 
      * @return all parameters as iterator
      */
-    public static Iterable<Parameters> values(){
+    public static Iterable<Parameters> values() {
         return value;
     }
 
@@ -298,6 +335,7 @@ public class Parameters extends Ordinal {
 
     /**
      * Return default value of property
+     * 
      * @return default value of property
      */
     public Object defValue() {
@@ -306,6 +344,7 @@ public class Parameters extends Ordinal {
 
     /**
      * Return type of property
+     * 
      * @return type of property
      */
     public Class type() {

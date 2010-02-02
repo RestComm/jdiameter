@@ -11,22 +11,21 @@ package org.jdiameter.client.api.fsm;
 
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.InternalException;
-
-import java.util.concurrent.Executor;
+import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 
 /**
  * Peer FSM factory
  */
 public interface IFsmFactory {
 
-    /**
-     * Create instance of Peer FSM
-     * @param context fsm context object
-     * @param executor executor facility
-     * @param config configuration
-     * @return State machine instance
-     * @throws InternalException
-     */
-    IStateMachine createInstanceFsm(IContext context, ExecutorFactory executor, Configuration config) throws InternalException;
-    
+  /**
+   * Create instance of Peer FSM
+   * 
+   * @param context FSM context object
+   * @param concurrentFactory executor facility
+   * @param config configuration
+   * @return State machine instance
+   * @throws InternalException
+   */
+  IStateMachine createInstanceFsm(IContext context, IConcurrentFactory concurrentFactory, Configuration config) throws InternalException;    
 }

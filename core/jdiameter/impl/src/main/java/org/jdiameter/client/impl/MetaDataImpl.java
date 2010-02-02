@@ -21,13 +21,18 @@ import static org.jdiameter.client.impl.helpers.Parameters.OwnRealm;
 import static org.jdiameter.client.impl.helpers.Parameters.OwnVendorID;
 import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryPoolMXBean;
+import java.lang.management.MemoryType;
+import java.lang.management.MemoryUsage;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.net.UnknownServiceException;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.jdiameter.api.ApplicationId;
@@ -49,6 +54,10 @@ import org.jdiameter.client.api.fsm.EventTypes;
 import org.jdiameter.client.api.io.IConnectionListener;
 import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.impl.helpers.IPConverter;
+import org.jdiameter.common.api.statistic.IStatistic;
+import org.jdiameter.common.api.statistic.IStatisticFactory;
+import org.jdiameter.common.api.statistic.IStatisticRecord;
+import org.jdiameter.common.impl.controller.AbstractPeer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,20 +66,66 @@ import org.slf4j.LoggerFactory;
  */
 public class MetaDataImpl implements IMetaData {
 
-  protected Logger logger = LoggerFactory.getLogger(MetaDataImpl.class);
+  private static final Logger log = LoggerFactory.getLogger(MetaDataImpl.class);
+  protected List<MemoryPoolMXBean> beans = ManagementFactory.getMemoryPoolMXBeans();
 
   protected IContainer stack;
   protected int state;
-  protected LocalPeer peer;
-  protected Set<ApplicationId> appIds = new CopyOnWriteArraySet<ApplicationId>();
+  protected IPeer peer;
+  protected Set<ApplicationId> appIds = new LinkedHashSet<ApplicationId>();
 
   public MetaDataImpl(IContainer s) {
     this.stack = s;
-    this.peer = getLocalPeer();
   }
 
-  public LocalPeer getLocalPeer() {
-    return new LocalPeer();
+  public MetaDataImpl(IContainer s, IStatisticFactory statisticFactory) {
+    this(s);
+    this.peer = newLocalPeer(statisticFactory);
+    IStatisticRecord heapMemory = statisticFactory.newCounterRecord(IStatistic.Counters.HeapMemory,
+        new IStatisticRecord.LongValueHolder() {
+      public long getValueAsLong() {
+        for (MemoryPoolMXBean bean : beans) {
+          MemoryType memoryType = bean.getType();
+          MemoryUsage memoryUsage = bean.getUsage();
+          if (memoryType == MemoryType.HEAP) {
+            return memoryUsage.getUsed();
+          }
+        }
+        return 0;
+      }
+
+      public String getValueAsString() {
+        return String.valueOf(getValueAsLong());
+      }
+    }
+    );
+    IStatisticRecord noHeapMemory = statisticFactory.newCounterRecord(IStatistic.Counters.NoHeapMemory,
+        new IStatisticRecord.LongValueHolder() {
+      public long getValueAsLong() {
+        for (MemoryPoolMXBean bean : beans) {
+          MemoryType memoryType = bean.getType();
+          MemoryUsage memoryUsage = bean.getUsage();
+          if (memoryType != MemoryType.HEAP) {
+            return memoryUsage.getUsed();
+          }
+        }
+        return 0;
+      }
+
+      public String getValueAsString() {
+        return String.valueOf(getValueAsLong());
+      }
+    }
+    );
+    peer.getStatistic().appendCounter(heapMemory, noHeapMemory);
+  }
+
+  protected IPeer newLocalPeer(IStatisticFactory statisticFactory) {
+    return new ClientLocalPeer(statisticFactory);
+  }
+
+  public Peer getLocalPeer() {
+    return peer;
   }
 
   public int getMajorVersion() {
@@ -94,7 +149,7 @@ public class MetaDataImpl implements IMetaData {
   }
 
   public void updateLocalHostStateId() {
-    state = Math.abs( (int) System.currentTimeMillis() );
+    state = Math.abs((int) System.currentTimeMillis());
   }
 
   public int getLocalHostStateId() {
@@ -113,9 +168,9 @@ public class MetaDataImpl implements IMetaData {
     return null;
   }
 
-  protected class LocalPeer implements IPeer {
+  protected class ClientLocalPeer extends AbstractPeer implements IPeer {
 
-    protected AtomicLong hopByHopId;
+    protected AtomicLong hopByHopId = new AtomicLong(0);
     protected InetAddress[] addresses = new InetAddress[0];
 
     public void resetAddresses() {
@@ -128,6 +183,10 @@ public class MetaDataImpl implements IMetaData {
 
     public void disconnect() throws IllegalDiameterStateException {
       throw new IllegalDiameterStateException("Illegal operation");
+    }
+
+    public ClientLocalPeer(IStatisticFactory statisticFactory) {
+      super(null, statisticFactory);
     }
 
     public <E> E getState(Class<E> anEnum) {
@@ -181,10 +240,10 @@ public class MetaDataImpl implements IMetaData {
             long auth = a.getLongValue(AuthApplId.ordinal(), 0L);
             long acc = a.getLongValue(AcctApplId.ordinal(), 0L);
             if (auth != 0) {
-              appIds.add( org.jdiameter.api.ApplicationId.createByAuthAppId(vnd, auth) );
+              appIds.add(org.jdiameter.api.ApplicationId.createByAuthAppId(vnd, auth));
             }
             if (acc != 0) {
-              appIds.add( org.jdiameter.api.ApplicationId.createByAccAppId(vnd, acc) );
+              appIds.add(org.jdiameter.api.ApplicationId.createByAccAppId(vnd, acc));
             }
           }
         }
@@ -228,15 +287,19 @@ public class MetaDataImpl implements IMetaData {
       return addresses;
     }
 
-    public String toString() {
-      return "Peer{" +
-        "\n\tUri=" + getUri() + "; RealmName=" + getRealmName() + "; VendorId=" + getVendorId() +
-        ";\n\tProductName=" + getProductName() + "; FirmWare=" + getFirmware() +
-        ";\n\tAppIds=" + getCommonApplications() +
-        ";\n\tIPAddresses=" + Arrays.asList(getIPAddresses()).toString() + ";" + "\n}";
+    public IStatistic getStatistic() {
+      return statistic;
     }
 
-    public int getRaiting() {
+    public String toString() {
+      return "Peer{" +
+      "\n\tUri=" + getUri() + "; RealmName=" + getRealmName() + "; VendorId=" + getVendorId() +
+      ";\n\tProductName=" + getProductName() + "; FirmWare=" + getFirmware() +
+      ";\n\tAppIds=" + getCommonApplications() +
+      ";\n\tIPAddresses=" + Arrays.asList(getIPAddresses()).toString() + ";" + "\n}";
+    }
+
+    public int getRating() {
       return 0;
     }
 

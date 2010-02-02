@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -52,12 +50,15 @@ import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.api.router.IRouter;
 import org.jdiameter.client.impl.helpers.Parameters;
+import org.jdiameter.common.api.concurrent.IConcurrentFactory;
+import org.jdiameter.common.api.statistic.IStatistic;
+import org.jdiameter.common.api.statistic.IStatisticFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PeerTableImpl implements IPeerTable {
 
-  protected static final Logger logger = LoggerFactory.getLogger(PeerTableImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(PeerTableImpl.class);
   
   /**
    * determines core pool size, those threads are always there, so if there is no traffic stack wont take much time to act.
@@ -76,34 +77,37 @@ public class PeerTableImpl implements IPeerTable {
    */
   protected int threadPoolPriority = Thread.NORM_PRIORITY;
   protected ThreadFactory threadFactory;
-  
-  
+
   // Peer table
-  protected ConcurrentHashMap<URI,Peer> peerTable = new ConcurrentHashMap<URI,Peer>();
+  protected ConcurrentHashMap<URI, Peer> peerTable = new ConcurrentHashMap<URI, Peer>();
   protected boolean isStarted;
   protected long stopTimeOut;
   protected IAssembler assembler;
   protected IRouter router;
   protected MetaData metaData;
-  protected ExecutorService peerTaskExecutor;
+  protected IConcurrentFactory concurrentFactory;
   protected ConcurrentHashMap<String, NetworkReqListener> sessionReqListeners = new ConcurrentHashMap<String, NetworkReqListener>();
-
-  public PeerTableImpl(Configuration globalConfig, MetaData metaData, IRouter router, IFsmFactory fsmFactory,
-      ITransportLayerFactory transportFactory, IMessageParser parser) {
-    init(router, globalConfig, metaData, fsmFactory, transportFactory, parser);
-  }
 
   protected PeerTableImpl() {
   }
 
+  public PeerTableImpl(Configuration globalConfig, MetaData metaData, IRouter router, IFsmFactory fsmFactory,
+      ITransportLayerFactory transportFactory, IStatisticFactory statisticFactory,
+      IConcurrentFactory concurrentFactory, IMessageParser parser) {
+    init(router, globalConfig, metaData, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser);
+  }
+
   protected void init(IRouter router, Configuration globalConfig, MetaData metaData, IFsmFactory fsmFactory,
-      ITransportLayerFactory transportFactory, IMessageParser parser) {
+      ITransportLayerFactory transportFactory, IStatisticFactory statisticFactory,
+      IConcurrentFactory concurrentFactory, IMessageParser parser) {
     this.router = router;
     this.metaData = metaData;
+    this.concurrentFactory = concurrentFactory;
     this.stopTimeOut = globalConfig.getLongValue(StopTimeOut.ordinal(), (Long) StopTimeOut.defValue());
+
+    // Mobicents jDiameter Thread Pool Configuration
     Configuration[] threadPoolConf = globalConfig.getChildren(Parameters.ThreadPool.ordinal());
-    if(threadPoolConf!=null && threadPoolConf.length>0)
-    {
+    if(threadPoolConf != null && threadPoolConf.length > 0) {
     	Configuration tpc = threadPoolConf[0];
     	this.maximumThreadPoolSize = tpc.getIntValue(Parameters.ThreadPoolSize.ordinal(), (Integer)Parameters.ThreadPoolSize.defValue());
     	this.threadPoolPriority = tpc.getIntValue(Parameters.ThreadPoolPriority.ordinal(), (Integer)Parameters.ThreadPoolPriority.defValue());
@@ -111,9 +115,11 @@ public class PeerTableImpl implements IPeerTable {
     
     this.threadFactory = new PeerTableThreadFactory(this.threadPoolPriority);
     //this.peerTaskExecutor = Executors.newCachedThreadPool();
-    this.peerTaskExecutor = new ThreadPoolExecutor(_THREAD_POOL_CORE_SIZE, this.maximumThreadPoolSize, _THREAD_POOL_KEEP_ALIVE_TIME, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), this.threadFactory);
+    
+    // XXX: WHAT ABOUT THIS????
+    //this.peerTaskExecutor = new ThreadPoolExecutor(_THREAD_POOL_CORE_SIZE, this.maximumThreadPoolSize, _THREAD_POOL_KEEP_ALIVE_TIME, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), this.threadFactory);
 
-    Configuration[] peers = globalConfig.getChildren( Parameters.PeerTable.ordinal() );
+    Configuration[] peers = globalConfig.getChildren(Parameters.PeerTable.ordinal());
     if (peers != null && peers.length > 0) {
       for (Configuration peerConfig : peers) {
         if (peerConfig.isAttributeExist(PeerName.ordinal())) {
@@ -123,7 +129,7 @@ public class PeerTableImpl implements IPeerTable {
           String portRange = peerConfig.getStringValue(PeerLocalPortRange.ordinal(), null);
           try {
             // create predefined peer
-            IPeer peer = (IPeer) createPeer(rating, uri, ip, portRange, metaData, globalConfig, peerConfig, fsmFactory, transportFactory, parser);
+            IPeer peer = (IPeer) createPeer(rating, uri, ip, portRange, metaData, globalConfig, peerConfig, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser);
             if (peer != null) {
               peer.setRealm(router.getRealmForPeer(peer.getUri().getFQDN()));
               peerTable.put(peer.getUri(), peer);
@@ -138,13 +144,11 @@ public class PeerTableImpl implements IPeerTable {
     }
   }
 
-  protected Peer createPeer(int rating, String uri, String ip, String portRange, MetaData metaData, Configuration config, Configuration peerConfig, IFsmFactory fsmFactory,
-      ITransportLayerFactory transportFactory, IMessageParser parser)
-  throws InternalException, TransportException, URISyntaxException, UnknownServiceException {
-
-    return new PeerImpl(
-        this, rating, new URI(uri), ip, portRange,  metaData.unwrap(IMetaData.class), config, peerConfig, fsmFactory, transportFactory, parser
-    );
+  protected Peer createPeer(int rating, String uri, String ip, String portRange, MetaData metaData, Configuration config, Configuration peerConfig, 
+      IFsmFactory fsmFactory, ITransportLayerFactory transportFactory, IStatisticFactory statisticFactory, IConcurrentFactory concurrentFactory, IMessageParser parser)  
+      throws InternalException, TransportException, URISyntaxException, UnknownServiceException {
+    return new PeerImpl(this, rating, new URI(uri), ip, portRange, metaData.unwrap(IMetaData.class), config,
+        peerConfig, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser);
   }
 
   public List<Peer> getPeerTable() {
@@ -159,13 +163,13 @@ public class PeerTableImpl implements IPeerTable {
 
   public void sendMessage(IMessage message)
   throws IllegalDiameterStateException, RouteException, AvpDataException, IOException {
-    if ( !isStarted)
-      throw new IllegalDiameterStateException( "Stack is down" );
+    if (!isStarted)
+      throw new IllegalDiameterStateException("Stack is down");
 
     // Get context
     IPeer peer;
     if (message.isRequest()) {
-      logger.debug("Send request {} [destHost={}; destRealm={}]", new Object[] {message,
+      logger.debug("Send request {} [destHost={}; destRealm={}]", new Object[] {message, 
           message.getAvps().getAvp(Avp.DESTINATION_HOST) != null ? message.getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString() : "",
               message.getAvps().getAvp(Avp.DESTINATION_REALM) != null ? message.getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString() : ""}
       );
@@ -173,10 +177,10 @@ public class PeerTableImpl implements IPeerTable {
       peer = router.getPeer(message, this);
       logger.debug( "Selected peer {} for sending message {}", new Object[] {peer, message});
       if (peer == metaData.getLocalPeer()) {
-        logger.debug("Request {} will be processed by local service",message);
+        logger.debug("Request {} will be processed by local service", message);
       }
       else {
-        message.setHopByHopIdentifier( peer.getHopByHopIdentifier() );
+        message.setHopByHopIdentifier(peer.getHopByHopIdentifier());
         peer.addMessage(message);
         message.setPeer(peer);
       }
@@ -193,11 +197,26 @@ public class PeerTableImpl implements IPeerTable {
     }
 
     try {
-      if ( !peer.sendMessage(message) ) {
-        throw new IOException( "Can not send message" );
+      if (!peer.sendMessage(message)) {
+        throw new IOException("Can not send message");
+      }
+      else {
+        if (message.isRequest()) {
+          peer.getStatistic().getRecordByName(IStatistic.Counters.AppGenRequest.name()).inc();
+          }
+        else {
+          peer.getStatistic().getRecordByName(IStatistic.Counters.AppGenResponse.name()).inc();
+        }
       }
     }
-    catch(Exception e) {
+    catch (Exception e) {
+        logger.error("Can not send message", e);
+        if (message.isRequest()) {
+          peer.getStatistic().getRecordByName(IStatistic.Counters.AppGenRejectedRequest.name()).inc();
+        }
+        else {
+          peer.getStatistic().getRecordByName(IStatistic.Counters.AppGenRejectedResponse.name()).inc();
+        }
       throw new IOException(e.getMessage());
     }
   }
@@ -211,7 +230,7 @@ public class PeerTableImpl implements IPeerTable {
   }
 
   public IPeer getPeerByName(String peerName) {
-    for (Peer p: peerTable.values()) {
+    for (Peer p : peerTable.values()) {
       if (p.getUri().getFQDN().equals(peerName)) {
         return (IPeer) p;
       }
@@ -227,7 +246,7 @@ public class PeerTableImpl implements IPeerTable {
     catch (Exception e) {
       return null;
     }
-    for (Peer p: peerTable.values()) {
+    for (Peer p : peerTable.values()) {
       if (p.getUri().getFQDN().equals(otherUri.getFQDN())) {
         return (IPeer) p;
       }
@@ -239,16 +258,13 @@ public class PeerTableImpl implements IPeerTable {
     sessionReqListeners.remove(sessionId);
   }
 
-  public void setAssempler(IAssembler assembler) {
+  public void setAssembler(IAssembler assembler) {
     this.assembler = assembler;
   }
 
   // Life cycle
   public void start() throws IllegalDiameterStateException, IOException {
-    if (peerTaskExecutor.isShutdown()) {
-      peerTaskExecutor = Executors.newCachedThreadPool();
-    }
-    for(Peer peer: peerTable.values()) {
+    for(Peer peer : peerTable.values()) {
       try {
         peer.connect();
       }
@@ -260,25 +276,24 @@ public class PeerTableImpl implements IPeerTable {
     isStarted = true;
   }
 
-  public ExecutorService getPeerTaskExecutor() {
-    return peerTaskExecutor;
-  }
-
   public void stopped() {
     if (sessionReqListeners != null) {
       sessionReqListeners.clear();
     }
     for (Peer p : peerTable.values()) {
-      for (IMessage m : ((IPeer)p).remAllMessage()) {
+      for (IMessage m : ((IPeer) p).remAllMessage()) {
         try {
           m.runTimer();
         }
-        catch(Exception e) {}
+        catch(Exception e) {
+          logger.debug("Can not stop timer", e);
+        }
       }
     }
-    if (peerTaskExecutor != null) {
+    if (concurrentFactory  != null) {
       try {
-        peerTaskExecutor.shutdownNow();
+        concurrentFactory.getThreadGroup().interrupt();
+        concurrentFactory.getThreadGroup().destroy();
       } catch (Exception e) {
         logger.warn("Can not stop executor");
       }
@@ -288,7 +303,7 @@ public class PeerTableImpl implements IPeerTable {
 
   public void stopping() {
     isStarted = false;
-    for(Peer peer : peerTable.values()) {
+    for (Peer peer : peerTable.values()) {
       try {
         peer.disconnect();
       }
@@ -299,7 +314,6 @@ public class PeerTableImpl implements IPeerTable {
   }
 
   public void destroy() {
-    Executors.unconfigurableExecutorService(peerTaskExecutor);
     if (router != null) {
       router.destroy();
     }

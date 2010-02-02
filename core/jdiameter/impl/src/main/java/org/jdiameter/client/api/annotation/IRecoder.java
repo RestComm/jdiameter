@@ -9,9 +9,9 @@
  */
 package org.jdiameter.client.api.annotation;
 
+import org.jdiameter.api.Avp;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.Request;
-import org.jdiameter.api.Avp;
 
 /**
  * This interface provide methods for create diameter messages from your annotated domain object and
@@ -21,6 +21,7 @@ public interface IRecoder {
 
   /**
    * Create Request message from specified annotated domain object
+   * 
    * @param yourDomainMessageObject annotated domain object
    * @param additionalAvp additional avp
    * @return message instance
@@ -30,6 +31,7 @@ public interface IRecoder {
 
   /**
    * Create Answer message from specified annotated domain object
+   * 
    * @param yourDomainMessageObject annotated domain object
    * @param request request message
    * @param resultCode result code of answer
@@ -40,6 +42,7 @@ public interface IRecoder {
 
   /**
    * Create specified domain object by message and class of object
+   * 
    * @param message diameter message
    * @param yourDomainMessageObject class of domain object
    * @return instance of domain object

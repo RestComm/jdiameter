@@ -17,6 +17,7 @@ import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.fsm.EventTypes;
 import org.jdiameter.client.api.io.IConnectionListener;
 import org.jdiameter.client.api.io.TransportException;
+import org.jdiameter.common.api.statistic.IStatistic;
 
 /**
  * This interface provide additional methods for Peer interface
@@ -24,25 +25,29 @@ import org.jdiameter.client.api.io.TransportException;
 public interface IPeer extends Peer {
 
     /**
-     * Return rating of pee
+     * Return rating of peer
+     * 
      * @return int value
      */
-    int getRaiting();
+    int getRating();
 
     /**
      * Return new hop by hop id for new message
+     * 
      * @return new hop by hop id
      */
     long getHopByHopIdentifier();
 
     /**
      * Append request to peer request storage map
+     * 
      * @param message request instance
      */
     void addMessage(IMessage message);
 
     /**
      * Remove request from request storage map
+     * 
      * @param message request instance
      */
     void remMessage(IMessage message);
@@ -54,6 +59,7 @@ public interface IPeer extends Peer {
 
     /**
      * Put message to peer fsm
+     * 
      * @param message request instance
      * @return true if message will be set to FSM
      * @throws TransportException
@@ -63,6 +69,7 @@ public interface IPeer extends Peer {
     
     /**
      * Send message to diameter network
+     * 
      * @param message request instance
      * @return true if message will be set to FSM
      * @throws TransportException
@@ -72,38 +79,50 @@ public interface IPeer extends Peer {
 
     /**
      * Return true if peer has valid connection
+     * 
      * @return true if peer has valid connection
      */
     boolean hasValidConnection();
 
     /**
      * Attach peer to realm
+     * 
      * @param realm realm name
      */
     void setRealm(String realm);
 
     /**
      * Add state change listener
+     * 
      * @param listener listener instance
      */
     void addStateChangeListener(StateChangeListener listener);
 
     /**
      * Remove state change listener
+     * 
      * @param listener listener instance
      */
     void remStateChangeListener(StateChangeListener listener);
 
     /**
      * Add connection state change listener
+     * 
      * @param listener listener instance
      */
     void addConnectionListener(IConnectionListener listener);
 
     /**
      * Remove connection state change listener
+     * 
      * @param listener listener instance
      */
     void remConnectionListener(IConnectionListener listener);
-}
 
+    /**
+     * Return peer statistic
+     *
+     * @return peer statistic
+     */
+    IStatistic getStatistic();
+}

@@ -14,6 +14,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.jdiameter.api.Answer;
@@ -33,7 +34,7 @@ public class MessageImpl implements IMessage {
 
   private static final long serialVersionUID = 1L;
 
-  protected static Logger logger = LoggerFactory.getLogger(MessageImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(MessageImpl.class);
 
   int state = STATE_NOT_SENT;
 
@@ -54,7 +55,8 @@ public class MessageImpl implements IMessage {
   transient IEventListener listener;
 
   /**
-   * Create empry message
+   * Create empty message
+   * 
    * @param parser
    * @param commandCode
    * @param appId
@@ -69,6 +71,7 @@ public class MessageImpl implements IMessage {
 
   /**
    * Create empty message
+   * 
    * @param parser
    * @param commandCode
    * @param applicationId
@@ -88,7 +91,8 @@ public class MessageImpl implements IMessage {
   }
 
   /**
-   * Create empry message
+   * Create empty message
+   * 
    * @param metaData
    * @param parser
    * @param commandCode
@@ -107,12 +111,12 @@ public class MessageImpl implements IMessage {
 
   /**
    * Create Answer
+   * 
    * @param request parent request
    */
   private MessageImpl(MessageImpl request) {
     this(request.parser, request.getCommandCode(), request.getHeaderApplicationId());
     copyHeader(request);
-    //
     setRequest(false);
     parser.copyBasicAvps(this, request, true);
   }
@@ -182,7 +186,7 @@ public class MessageImpl implements IMessage {
       Avp avpSessionId = avpSet.getAvp(Avp.SESSION_ID);
       return avpSessionId != null ? avpSessionId.getUTF8String() : null;
     }
-    catch(AvpDataException exc) {
+    catch (AvpDataException exc) {
       return null;
     }
   }
@@ -224,7 +228,7 @@ public class MessageImpl implements IMessage {
   public ApplicationId getSingleApplicationId(long applicationId) {      
     Set<ApplicationId> appIds = getApplicationIdAvps();
     ApplicationId first = null;
-    for (ApplicationId id: appIds) {
+    for (ApplicationId id : appIds) {
       if (first == null) {
         first = id;
       }
@@ -234,7 +238,7 @@ public class MessageImpl implements IMessage {
       if (applicationId != 0 && id.getVendorId() == 0 && applicationId == id.getAcctAppId()) {
         return id;
       }
-      if (applicationId != 0 && ( applicationId == id.getAuthAppId() || applicationId == id.getAcctAppId())) {
+      if (applicationId != 0 && (applicationId == id.getAuthAppId() || applicationId == id.getAcctAppId())) {
         return id;
       }
     }
@@ -246,16 +250,16 @@ public class MessageImpl implements IMessage {
     try {
       AvpSet authAppId = avpSet.getAvps(Avp.AUTH_APPLICATION_ID);
       for (Avp anAuthAppId : authAppId) {
-        rc.add(ApplicationId.createByAuthAppId(( anAuthAppId).getInteger32()));
+        rc.add(ApplicationId.createByAuthAppId((anAuthAppId).getInteger32()));
       }
       AvpSet accAppId = avpSet.getAvps(Avp.ACCT_APPLICATION_ID);
       for (Avp anAccAppId : accAppId) {
-        rc.add(ApplicationId.createByAccAppId(( anAccAppId).getInteger32()));
+        rc.add(ApplicationId.createByAccAppId((anAccAppId).getInteger32()));
       }
       AvpSet specAppId = avpSet.getAvps(Avp.VENDOR_SPECIFIC_APPLICATION_ID);
       for (Avp aSpecAppId : specAppId) {
         long vendorId = 0, acctApplicationId = 0, authApplicationId = 0;
-        AvpSet avps = ( aSpecAppId).getGrouped();
+        AvpSet avps = (aSpecAppId).getGrouped();
         for (Avp localAvp : avps) {
           if (localAvp.getCode() == Avp.VENDOR_ID) {
             vendorId = localAvp.getUnsigned32();
@@ -267,10 +271,10 @@ public class MessageImpl implements IMessage {
             acctApplicationId = localAvp.getUnsigned32();
           }
         }
-        if ( authApplicationId != 0 ) {
+        if (authApplicationId != 0) {
           rc.add(ApplicationId.createByAuthAppId(vendorId, authApplicationId));
         }
-        if ( acctApplicationId != 0 ) {
+        if (acctApplicationId != 0) {
           rc.add(ApplicationId.createByAccAppId(vendorId, acctApplicationId));
         }
       }
@@ -324,7 +328,7 @@ public class MessageImpl implements IMessage {
 
   // Inner API
   public void setHopByHopIdentifier(long hopByHopId) {
-    if (hopByHopId < 0 ) {
+    if (hopByHopId < 0) {
       this.hopByHopId = -hopByHopId;
       this.notMutableHopByHop = true;
     }
@@ -369,7 +373,7 @@ public class MessageImpl implements IMessage {
 
   public void createTimer(ScheduledExecutorService scheduledFacility, long timeOut, TimeUnit timeUnit) {
     timerTask = new TimerTask(this);
-    timerTask.setTimerHandler(scheduledFacility.schedule(timerTask, timeOut, timeUnit));
+    timerTask.setTimerHandler(scheduledFacility, scheduledFacility.schedule(timerTask, timeOut, timeUnit));
   }
 
   public void runTimer() {
@@ -425,9 +429,7 @@ public class MessageImpl implements IMessage {
 
   public String getDuplicationKey() {
     try {
-      return getDuplicationKey(
-          getAvps().getAvp(Avp.ORIGIN_HOST).getOctetString(), getEndToEndIdentifier()
-      );
+      return getDuplicationKey(getAvps().getAvp(Avp.ORIGIN_HOST).getOctetString(), getEndToEndIdentifier());
     }
     catch (AvpDataException e) {
       throw new IllegalArgumentException(e);
@@ -448,16 +450,18 @@ public class MessageImpl implements IMessage {
     }
   }    
 
-  protected static class TimerTask implements Runnable{
+  protected static class TimerTask implements Runnable {
 
     ScheduledFuture timerHandler;
     MessageImpl message;
+    ScheduledExecutorService scheduledFacility;
 
     public TimerTask(MessageImpl message) {
       this.message = message;
     }
 
-    public void setTimerHandler(ScheduledFuture timerHandler) {
+    public void setTimerHandler(ScheduledExecutorService scheduledFacility, ScheduledFuture timerHandler) {
+      this.scheduledFacility = scheduledFacility;
       this.timerHandler = timerHandler;
     }
 
@@ -465,7 +469,7 @@ public class MessageImpl implements IMessage {
       try {
         if (message != null && message.state != STATE_ANSWERED) {
           IEventListener listener = null;
-          if ( message.listener  instanceof IEventListener) {
+          if (message.listener  instanceof IEventListener) {
             listener = message.listener;
           }
           if (listener != null && listener.isValid()) {
@@ -484,6 +488,9 @@ public class MessageImpl implements IMessage {
     public void cancel() {
       if (timerHandler != null) {
         timerHandler.cancel(true);
+        if (scheduledFacility instanceof ThreadPoolExecutor && timerHandler instanceof Runnable) {
+          ((ThreadPoolExecutor) scheduledFacility).remove((Runnable) timerHandler);
+        }
       }
       message = null;
     }

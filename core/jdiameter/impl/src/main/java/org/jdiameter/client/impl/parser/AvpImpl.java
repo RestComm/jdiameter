@@ -36,10 +36,10 @@ class AvpImpl implements Avp {
   boolean isEncrypted = false;
   boolean isVendorSpecific = false;
 
-  byte [] rawData = new byte[0];
+  byte[] rawData = new byte[0];
   AvpSet groupedData;
 
-  protected Logger logger = LoggerFactory.getLogger(AvpImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(AvpImpl.class);
 
   AvpImpl(MessageParser messageParser, int code, int flags, long vnd, byte[] data) {
     parser   = messageParser;
@@ -168,6 +168,7 @@ class AvpImpl implements Avp {
       throw new AvpDataException(e);
     }
   }
+
   public boolean isWrapperFor(Class<?> aClass) throws InternalException {
     return false;
   }

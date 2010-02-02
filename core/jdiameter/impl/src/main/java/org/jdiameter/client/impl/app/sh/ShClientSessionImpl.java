@@ -40,6 +40,8 @@ import org.jdiameter.common.impl.app.sh.SubscribeNotificationsAnswerImpl;
 import org.jdiameter.common.impl.app.sh.SubscribeNotificationsRequestImpl;
 import org.jdiameter.common.impl.app.sh.UserDataAnswerImpl;
 import org.jdiameter.common.impl.app.sh.UserDataRequestImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Basic implementation of ShClientSession - can be one time - for UDR,PUR and
@@ -60,6 +62,8 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
 
   private static final long serialVersionUID = 1L;
 
+  private Logger logger = LoggerFactory.getLogger(ShClientSessionImpl.class);
+  
   protected ShSessionState state = ShSessionState.NOTSUBSCRIBED;
   protected boolean stateless = false;
   protected IShMessageFactory factory = null;

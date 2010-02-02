@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 
 public class MessageParser extends ElementParser implements IMessageParser {
 
-  protected Logger logger = LoggerFactory.getLogger(MessageParser.class);
+  private static final Logger logger = LoggerFactory.getLogger(MessageParser.class);
 
   protected UIDGenerator endToEndGen = new UIDGenerator(
       (int) (TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) & 0xFFF) << 20
@@ -55,18 +55,18 @@ public class MessageParser extends ElementParser implements IMessageParser {
     try {
       byte[] message = data.array();
       long tmp;
-      DataInputStream in = new DataInputStream( new ByteArrayInputStream(message) );
+      DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
       tmp = in.readInt();
       short version = (short) (tmp >> 24);
       if (version != 1) {
         throw new Exception("Illegal value of version " + version);
       }
       tmp = in.readInt();
-      short flags        = (short) ( (tmp >> 24) & 0xFF );
+      short flags        = (short) ((tmp >> 24) & 0xFF);
       int commandCode    = (int) (tmp & 0xFFFFFF);
-      long applicationId = ((long)in.readInt() << 32) >>> 32;
-      long hopByHopId    = ((long)in.readInt() << 32) >>> 32;
-      long endToEndId    = ((long)in.readInt() << 32) >>> 32;
+      long applicationId = ((long) in.readInt() << 32) >>> 32;
+      long hopByHopId    = ((long) in.readInt() << 32) >>> 32;
+      long endToEndId    = ((long) in.readInt() << 32) >>> 32;
       // Read body
       byte[] body = new byte[message.length - 20];
       System.arraycopy(message, 20, body, 0, body.length);
@@ -74,7 +74,7 @@ public class MessageParser extends ElementParser implements IMessageParser {
 
       return new MessageImpl(this, commandCode, applicationId, flags, hopByHopId, endToEndId, avpSet);
     }
-    catch(Exception exc) {
+    catch (Exception exc) {
       throw new AvpDataException(exc);
     }
   }
@@ -89,17 +89,17 @@ public class MessageParser extends ElementParser implements IMessageParser {
       int flags = (tmp >> 24) & 0xFF;
       int length  = tmp & 0xFFFFFF;
       long vendor = 0;
-      if ( (flags & 0x80) != 0 ) {
+      if ((flags & 0x80) != 0) {
         vendor = in.readInt();
       }
-      byte[] rawData = new byte[length - (8 + (vendor == 0 ? 0:4))];
+      byte[] rawData = new byte[length - (8 + (vendor == 0 ? 0 : 4))];
       in.read(rawData);
       if (length % 4 != 0) {
         for (int i; length % 4 != 0; length += i) {
           i = (int) in.skip((4 - length % 4));
         }
       }
-      AvpImpl avp = new AvpImpl(this, code, (short)flags, (int)vendor, rawData);
+      AvpImpl avp = new AvpImpl(this, code, (short) flags, (int) vendor, rawData);
       avps.addAvp(avp);
       counter += length;
     }
@@ -108,7 +108,7 @@ public class MessageParser extends ElementParser implements IMessageParser {
 
   public <T> T createMessage(Class<?> iface, ByteBuffer data) throws AvpDataException {
     if (iface == IMessage.class) {
-      return (T)createMessage(data);
+      return (T) createMessage(data);
     }
     return null;
   }
@@ -190,7 +190,7 @@ public class MessageParser extends ElementParser implements IMessageParser {
           }
         }
         catch (AvpDataException e) {
-          logger.debug("Error during copy proxy avp", e);
+          logger.debug("Error copying Proxy-Info AVP", e);
         }
       }
     }
@@ -220,13 +220,13 @@ public class MessageParser extends ElementParser implements IMessageParser {
           newMessage.getAvps().addAvp(avp);
         }
       }
-      // set Orig host and rellm
+      // set Orig host and realm
       try {
         newMessage.getAvps().addAvp(Avp.ORIGIN_HOST, metaData.getLocalPeer().getUri().getFQDN(), true, false, true);
         newMessage.getAvps().addAvp(Avp.ORIGIN_REALM, metaData.getLocalPeer().getRealmName(), true, false, true);
       }
       catch (Exception e) {
-        logger.debug("Error during copy orig destination avp", e);
+        logger.debug("Error copying Origin-Host/Realm AVPs", e);
       }
     }
   }
@@ -234,7 +234,7 @@ public class MessageParser extends ElementParser implements IMessageParser {
   public ByteBuffer encodeMessage(IMessage message) throws DecodeException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     try {
-      byte[] rawData = encodeAvpSet((AvpSetImpl)message.getAvps());
+      byte[] rawData = encodeAvpSet(message.getAvps());
       DataOutputStream data = new DataOutputStream(out);
       int tmp = (1 << 24) & 0xFF000000;
       tmp += 20 + rawData.length;
@@ -242,12 +242,12 @@ public class MessageParser extends ElementParser implements IMessageParser {
       tmp = (message.getFlags() << 24) & 0xFF000000;
       tmp += message.getCommandCode();
       data.writeInt(tmp);
-      data.write( toBytes(message.getHeaderApplicationId()));
-      data.write( toBytes(message.getHopByHopIdentifier()));
-      data.write( toBytes(message.getEndToEndIdentifier())); 
+      data.write(toBytes(message.getHeaderApplicationId()));
+      data.write(toBytes(message.getHopByHopIdentifier()));
+      data.write(toBytes(message.getEndToEndIdentifier())); 
       data.write(rawData);
     }
-    catch(Exception e) {
+    catch (Exception e) {
       logger.debug("Error during encode message", e);
     }
     return prepareBuffer(out.toByteArray(), out.size());
@@ -266,17 +266,17 @@ public class MessageParser extends ElementParser implements IMessageParser {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     try {
       DataOutputStream data = new DataOutputStream(out);
-      for(Avp a: avps) {
+      for (Avp a : avps) {
         if (a instanceof AvpImpl) {
           AvpImpl aImpl = (AvpImpl) a;
           if (aImpl.rawData.length == 0 && aImpl.groupedData != null) {
-            aImpl.rawData = encodeAvpSet( a.getGrouped() );
+            aImpl.rawData = encodeAvpSet(a.getGrouped());
           }
-          data.write(encodeAvp( aImpl ));
+          data.write(encodeAvp(aImpl));
         }
       }
     }
-    catch(Exception e) {
+    catch (Exception e) {
       logger.debug("Error during encode avps", e);
     }
     return out.toByteArray();
@@ -298,25 +298,25 @@ public class MessageParser extends ElementParser implements IMessageParser {
     try {
       DataOutputStream data = new DataOutputStream(out);
       data.writeInt(avp.getCode());
-      int flags = (byte) ( (avp.getVendorId() !=0 ? 0x80:0) |
-          (avp.isMandatory() ? 0x40:0)     |
-          (avp.isEncrypted() ? 0x20:0)
-      );
-      int origLength = avp.getRaw().length + 8 + (avp.getVendorId() != 0 ? 4:0);
+      int flags = (byte) ((avp.getVendorId() != 0 ? 0x80 : 0) |
+          (avp.isMandatory() ? 0x40 : 0) | (avp.isEncrypted() ? 0x20 : 0));
+      int origLength = avp.getRaw().length + 8 + (avp.getVendorId() != 0 ? 4 : 0);
       int newLength  = origLength;
       if (newLength % 4 != 0) {
         newLength += 4 - (newLength % 4);
       }
-      data.writeInt( ((flags << 24) & 0xFF000000 ) + origLength);
+      data.writeInt(((flags << 24) & 0xFF000000) + origLength);
       if (avp.getVendorId() != 0) {
-        data.writeInt((int)avp.getVendorId());
+        data.writeInt((int) avp.getVendorId());
       }
       data.write(avp.getRaw());
-      if(avp.getRaw().length % 4 != 0) {
-        for(int i = 0; i < 4 - avp.getRaw().length % 4; i++) data.write(0);
+      if (avp.getRaw().length % 4 != 0) {
+        for(int i = 0; i < 4 - avp.getRaw().length % 4; i++) {
+          data.write(0);
+        }
       }
     }
-    catch(Exception e) {
+    catch (Exception e) {
       logger.debug("Error during encode avp", e);
     }
     return out.toByteArray();

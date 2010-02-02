@@ -24,13 +24,14 @@ public interface IPeerTable extends PeerTable {
 
     /**
      * Start peer manager ( start network activity )
+     * 
      * @throws IllegalDiameterStateException
      * @throws IOException
      */
     void start() throws IllegalDiameterStateException, IOException;
 
     /**
-     * Run stopping oricedure (unsynchronized)
+     * Run stopping procedure (unsynchronized)
      */
     void stopping();
 
@@ -46,6 +47,7 @@ public interface IPeerTable extends PeerTable {
 
     /**
      * Send message to diameter network ( routing procedure )
+     * 
      * @param message  message instance
      * @throws IllegalDiameterStateException
      * @throws IOException
@@ -56,6 +58,7 @@ public interface IPeerTable extends PeerTable {
 
     /**
      * Register session lister
+     * 
      * @param sessionId session id
      * @param listener listener listener
      */
@@ -63,6 +66,7 @@ public interface IPeerTable extends PeerTable {
 
     /**
      * Return peer from peer table by peerURI
+     * 
      * @param peerHost peer host
      * @return peer instance
      */
@@ -70,6 +74,7 @@ public interface IPeerTable extends PeerTable {
 
     /**
      * Return peer from peer table by peerURI
+     * 
      * @param peerUri peer uri
      * @return peer instance
      */
@@ -77,25 +82,22 @@ public interface IPeerTable extends PeerTable {
 
     /**
      * Return map of session event listeners
+     * 
      * @return map of session event listeners
      */
     Map<String, NetworkReqListener> getSessionReqListeners();
 
     /**
      * Remove session event listener
+     * 
      * @param sessionId id of session
      */
     void removeSessionListener(String sessionId);
 
     /**
      * Set instance assembler
+     * 
      * @param assembler assembler instance
      */
-    void setAssempler(IAssembler assembler);
-    
-    /**
-     * Return peer common executor
-     * @return  peer common executor
-     */
-    ExecutorService getPeerTaskExecutor();    
+    void setAssembler(IAssembler assembler);
 }

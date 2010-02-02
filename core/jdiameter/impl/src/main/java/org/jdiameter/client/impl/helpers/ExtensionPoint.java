@@ -19,6 +19,8 @@ import java.util.List;
  */
 public class ExtensionPoint extends Ordinal {
 
+  private static final long serialVersionUID = 1L;
+
     protected static int index;
 
     private static ArrayList<Parameters> value = new ArrayList<Parameters>();
@@ -62,10 +64,26 @@ public class ExtensionPoint extends Ordinal {
      * Peer fsm factory implementation class name
      */
     public static final ExtensionPoint InternalPeerFsmFactory = new ExtensionPoint("InternalPeerFsmFactory", "org.jdiameter.client.impl.fsm.FsmFactoryImpl");
+
+    /**
+     * Statistic factory implementation class name
+     */
+    public static final ExtensionPoint InternalStatisticFactory = new ExtensionPoint("InternalStatisticFactory", "org.jdiameter.common.impl.statistic.StatisticFactory");
+
+    /**
+     * Statistic factory implementation class name
+     */
+    public static final ExtensionPoint InternalStatisticProcessor = new ExtensionPoint("InternalStatisticProcessor", "org.jdiameter.common.impl.statistic.StatisticProcessor");
+
+    /**
+     * Concurrent factory implementation class name
+     */
+    public static final ExtensionPoint InternalConcurrentFactory = new ExtensionPoint("InternalConcurrentFactory", "org.jdiameter.common.impl.concurrent.ConcurrentFactory");
+
     /**
      * List of internal extension point
      */
-    public static final ExtensionPoint Internal = new ExtensionPoint (
+    public static final ExtensionPoint Internal = new ExtensionPoint(
             "Internal", 0,
             InternalMetaData,
             InternalMessageParser,
@@ -74,7 +92,10 @@ public class ExtensionPoint extends Ordinal {
             InternalPeerController,
             InternalSessionFactory,
             InternalTransportFactory,
-            InternalPeerFsmFactory
+            InternalPeerFsmFactory,
+            InternalStatisticFactory,
+            InternalConcurrentFactory,
+            InternalStatisticProcessor
     );
 
     /**
@@ -94,9 +115,10 @@ public class ExtensionPoint extends Ordinal {
 
     /**
      * Return Iterator of all entries
+     * 
      * @return  Iterator of all entries
      */
-    public static Iterable<Parameters> values(){
+    public static Iterable<Parameters> values() {
         return value;
     }
 
@@ -137,17 +159,19 @@ public class ExtensionPoint extends Ordinal {
 
     /**
      * Append extension point entries
+     * 
      * @param elements array of append extension point entries
      */
     public void appendElements(ExtensionPoint... elements) {
         List<ExtensionPoint> rc = new ArrayList<ExtensionPoint>();
         rc.addAll(Arrays.asList(this.elements));
         rc.addAll(Arrays.asList(elements));
-        this.elements = rc.toArray( new ExtensionPoint[0] );
+        this.elements = rc.toArray(new ExtensionPoint[0]);
     }
 
     /**
      * Return parameters of extension point
+     * 
      * @return array parameters of extension point
      */
     public ExtensionPoint[] getArrayOfParameters() {
@@ -156,6 +180,7 @@ public class ExtensionPoint extends Ordinal {
 
     /**
      * Return default value of extension point
+     * 
      * @return default value of extension point
      */
     public String defValue() {
@@ -163,8 +188,9 @@ public class ExtensionPoint extends Ordinal {
     }
 
     /**
-     * Return id of extwnsion point
-     * @return id of extwnsion point
+     * Return id of extension point
+     * 
+     * @return id of extension point
      */
     public int id() {
         return id;

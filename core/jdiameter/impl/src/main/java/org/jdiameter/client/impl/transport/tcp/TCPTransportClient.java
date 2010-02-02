@@ -2,6 +2,7 @@ package org.jdiameter.client.impl.transport.tcp;
 
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.client.api.io.NotInitializedException;
+import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,7 @@ import java.util.concurrent.locks.ReentrantLock;
 class TCPTransportClient implements Runnable {
 
   private TCPClientConnection parentConnection;
+  private IConcurrentFactory concurrentFactory;
 
   public static final int DEFAULT_BUFFER_SIZE  = 1024;
   public static final int DEFAULT_STORAGE_SIZE = 2048;
@@ -39,7 +41,7 @@ class TCPTransportClient implements Runnable {
   protected int storageSize = DEFAULT_STORAGE_SIZE;
   protected ByteBuffer storage = ByteBuffer.allocate(storageSize);
 
-  protected Logger logger = LoggerFactory.getLogger(TCPTransportClient.class);
+  private static final Logger logger = LoggerFactory.getLogger(TCPTransportClient.class);
 
   TCPTransportClient() {
   }
@@ -47,13 +49,17 @@ class TCPTransportClient implements Runnable {
   /**
    * Default constructor
    *
+   * @param concurrentFactory factory for create threads
    * @param parenConnection connection created this transport
    */
-  TCPTransportClient(TCPClientConnection parenConnection) {
+  TCPTransportClient(IConcurrentFactory concurrentFactory, TCPClientConnection parenConnection) {
     this.parentConnection = parenConnection;
+    this.concurrentFactory = concurrentFactory;
   }
 
-  /** Network init socket */
+  /**
+   *  Network init socket 
+   */
   public void initialize() throws IOException, NotInitializedException {
     if (destAddress == null) {
       throw new NotInitializedException("Destination address is not set");
@@ -89,7 +95,7 @@ class TCPTransportClient implements Runnable {
       throw new NotInitializedException("No parent connection is set is set");
     }
     if (selfThread == null || !selfThread.isAlive()) {
-      selfThread = new Thread(this); // TODO
+      selfThread = concurrentFactory.getThread("TCPReader", this);
     }
 
     if (!selfThread.isAlive()) {
@@ -114,11 +120,14 @@ class TCPTransportClient implements Runnable {
     }
     catch (ClosedByInterruptException e) {
       logger.debug("Transport exception ", e);
-    } catch (AsynchronousCloseException e) {
+    }
+    catch (AsynchronousCloseException e) {
       logger.debug("Transport exception ", e);
-    } catch (Throwable e) {
+    }
+    catch (Throwable e) {
       logger.debug("Transport exception ", e);
-    } finally {
+    }
+    finally {
       try {
         clearBuffer();
         if (socketChannel != null && socketChannel.isOpen()) {
@@ -195,7 +204,8 @@ class TCPTransportClient implements Runnable {
       buffer.append(this.destAddress.getHostName());
       buffer.append(":");
       buffer.append(this.destAddress.getPort());
-    } else {
+    }
+    else {
       buffer.append("null");
     }
     buffer.append("@");

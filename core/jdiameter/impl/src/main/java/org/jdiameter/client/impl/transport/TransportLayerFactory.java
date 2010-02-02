@@ -5,6 +5,8 @@ import org.jdiameter.api.InternalException;
 import org.jdiameter.client.api.io.*;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.impl.helpers.Parameters;
+import org.jdiameter.common.api.concurrent.DummyConcurrentFactory;
+import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 
 import static java.lang.Class.forName;
 import java.lang.reflect.Constructor;
@@ -35,11 +37,12 @@ public class TransportLayerFactory implements ITransportLayerFactory {
             this.connectionClass = (Class<IConnection>) forName(implName);
             Class[] interf = this.connectionClass.getInterfaces();
             boolean isIConnection = false;
-            for (Class c : interf)
+            for (Class c : interf) {
                 if (c.equals(IConnection.class)) {
                     isIConnection = true;
                     break;
                 }
+            }
             if (!isIConnection)
                 throw new TransportException("Specified class does not inherit IConnection interface " + this.connectionClass, TransportError.Internal);
         } catch (Exception e) {
@@ -47,28 +50,31 @@ public class TransportLayerFactory implements ITransportLayerFactory {
         }
         try {
             constructorIAiCL = connectionClass.getConstructor(
-                    Configuration.class, InetAddress.class, Integer.TYPE, InetAddress.class, Integer.TYPE, IConnectionListener.class, IMessageParser.class, String.class
-            );
+                Configuration.class, IConcurrentFactory.class, InetAddress.class, Integer.TYPE, InetAddress.class,
+                Integer.TYPE, IConnectionListener.class, IMessageParser.class, String.class);
             constructorIAi = connectionClass.getConstructor(
-                    Configuration.class, InetAddress.class, Integer.TYPE, InetAddress.class, Integer.TYPE, IMessageParser.class, String.class
-            );
-        } catch (Exception e) {
+                Configuration.class, IConcurrentFactory.class, InetAddress.class, Integer.TYPE, InetAddress.class,
+                Integer.TYPE, IMessageParser.class, String.class);
+        }
+        catch (Exception e) {
             throw new TransportException("Cannot find required constructor", TransportError.Internal, e);
         }
         this.parser = parser;
     }
 
-    public IConnection createConnection(InetAddress remoteAddress, int remotePort, InetAddress localAddress, int localPort, String ref) throws TransportException {
+    public IConnection createConnection(InetAddress remoteAddress, IConcurrentFactory factory, int remotePort, InetAddress localAddress, int localPort, String ref) throws TransportException {
         try {
-            return constructorIAi.newInstance(config, remoteAddress, remotePort, localAddress, localPort,  parser, ref);
+          factory = factory == null ? new DummyConcurrentFactory() : factory;
+          return constructorIAi.newInstance(config, factory, remoteAddress, remotePort, localAddress, localPort, parser, ref);
         } catch (Exception e) {
             throw new TransportException("Cannot create an instance of " + connectionClass, TransportError.Internal, e);
         }
     }
 
-    public IConnection createConnection(InetAddress remoteAddress, int remotePort, InetAddress localAddress, int localPort, IConnectionListener listener, String ref) throws TransportException {
+    public IConnection createConnection(InetAddress remoteAddress, IConcurrentFactory factory, int remotePort, InetAddress localAddress, int localPort, IConnectionListener listener, String ref) throws TransportException {
         try {
-            return constructorIAiCL.newInstance(config, remoteAddress, remotePort, localAddress, localPort, listener, parser, ref);
+          factory = factory == null ? new DummyConcurrentFactory() : factory;
+          return constructorIAiCL.newInstance(config, factory, remoteAddress, remotePort, localAddress, localPort, listener, parser, ref);
         } catch (Exception e) {
             throw new TransportException("Cannot create an instance of " + connectionClass, TransportError.Internal, e);
         }
