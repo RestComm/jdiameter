@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>org.mobicents</groupId>
 		<artifactId>mobicents</artifactId>
-		<version>12</version>
+		<version>1.16</version>
 		<relativePath>../../../../parent/pom.xml</relativePath>
 	</parent>
 
 	<groupId>org.mobicents.servers.diameter</groupId>
 	<artifactId>diameter-core</artifactId>
-	<version>1.1.0.GA-SNAPSHOT</version>
+	<version>1.1.2.GA-SNAPSHOT</version>
 
 	<name>Mobicents :: Diameter :: ${pom.artifactId}</name>
 
