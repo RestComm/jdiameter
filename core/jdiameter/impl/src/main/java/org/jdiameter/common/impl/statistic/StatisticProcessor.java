@@ -32,7 +32,6 @@ public class StatisticProcessor implements IStatisticProcessor {
     new StatisticLogger((StatisticFactory) statisticFactory, executorService, config);
 
     executorService.scheduleAtFixedRate(new Runnable() {
-      @Override
       public void run() {
         try {
           for (IStatisticRecord r : ((StatisticFactory) statisticFactory).allPSStatisticRecord) {

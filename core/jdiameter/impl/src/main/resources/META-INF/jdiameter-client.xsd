@@ -214,6 +214,7 @@
                    <xsi:attribute name="value" type="xsi:long" use="required"/>
                </xsi:complexType>
             </xsi:element>
+            <!-- 
             <xsi:element name="ThreadPool" minOccurs="1" maxOccurs="1">
                 <xsi:annotation>
                     <xsi:documentation>Determines thread pool configuration.</xsi:documentation>
@@ -223,6 +224,7 @@
                    <xsi:attribute name="size" type="xsi:integer" default="16"/>
                </xsi:complexType>               
             </xsi:element>
+             -->
             <xsi:element name="StatisticLogger" minOccurs="0" maxOccurs="1">
                 <xsi:annotation>
                     <xsi:documentation>Statistic logger configuration</xsi:documentation>

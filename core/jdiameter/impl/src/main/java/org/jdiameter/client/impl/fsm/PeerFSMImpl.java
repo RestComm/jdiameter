@@ -136,6 +136,7 @@ public class PeerFSMImpl implements IStateMachine {
                 logger.debug("Peer fsm stopped");
                 break;
               }
+              //FIXME: baranowb: why this lock is here?
               lock.lock();
               try {
                 if (event != null) {

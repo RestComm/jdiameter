@@ -60,23 +60,23 @@ public class PeerTableImpl implements IPeerTable {
 
   private static final Logger logger = LoggerFactory.getLogger(PeerTableImpl.class);
   
-  /**
-   * determines core pool size, those threads are always there, so if there is no traffic stack wont take much time to act.
-   */
-  private static final int _THREAD_POOL_CORE_SIZE = 1;
-  /**
-   * determines in seconds keep alive time for thread in pool.
-   */
-  private static final int _THREAD_POOL_KEEP_ALIVE_TIME = 60;
-  /**
-   * determines how many thread pool can have.
-   */
-  protected int maximumThreadPoolSize = 5;
-  /**
-   * determines thread priority for executor.
-   */
-  protected int threadPoolPriority = Thread.NORM_PRIORITY;
-  protected ThreadFactory threadFactory;
+//  /**
+//   * determines core pool size, those threads are always there, so if there is no traffic stack wont take much time to act.
+//   */
+//  private static final int _THREAD_POOL_CORE_SIZE = 1;
+//  /**
+//   * determines in seconds keep alive time for thread in pool.
+//   */
+//  private static final int _THREAD_POOL_KEEP_ALIVE_TIME = 60;
+//  /**
+//   * determines how many thread pool can have.
+//   */
+//  protected int maximumThreadPoolSize = 5;
+//  /**
+//   * determines thread priority for executor.
+//   */
+//  protected int threadPoolPriority = Thread.NORM_PRIORITY;
+//  protected ThreadFactory threadFactory;
 
   // Peer table
   protected ConcurrentHashMap<URI, Peer> peerTable = new ConcurrentHashMap<URI, Peer>();
@@ -105,15 +105,15 @@ public class PeerTableImpl implements IPeerTable {
     this.concurrentFactory = concurrentFactory;
     this.stopTimeOut = globalConfig.getLongValue(StopTimeOut.ordinal(), (Long) StopTimeOut.defValue());
 
-    // Mobicents jDiameter Thread Pool Configuration
-    Configuration[] threadPoolConf = globalConfig.getChildren(Parameters.ThreadPool.ordinal());
-    if(threadPoolConf != null && threadPoolConf.length > 0) {
-    	Configuration tpc = threadPoolConf[0];
-    	this.maximumThreadPoolSize = tpc.getIntValue(Parameters.ThreadPoolSize.ordinal(), (Integer)Parameters.ThreadPoolSize.defValue());
-    	this.threadPoolPriority = tpc.getIntValue(Parameters.ThreadPoolPriority.ordinal(), (Integer)Parameters.ThreadPoolPriority.defValue());
-    }
-    
-    this.threadFactory = new PeerTableThreadFactory(this.threadPoolPriority);
+//    // Mobicents jDiameter Thread Pool Configuration
+//    Configuration[] threadPoolConf = globalConfig.getChildren(Parameters.ThreadPool.ordinal());
+//    if(threadPoolConf != null && threadPoolConf.length > 0) {
+//    	Configuration tpc = threadPoolConf[0];
+//    	this.maximumThreadPoolSize = tpc.getIntValue(Parameters.ThreadPoolSize.ordinal(), (Integer)Parameters.ThreadPoolSize.defValue());
+//    	this.threadPoolPriority = tpc.getIntValue(Parameters.ThreadPoolPriority.ordinal(), (Integer)Parameters.ThreadPoolPriority.defValue());
+//    }
+//    
+//    this.threadFactory = new PeerTableThreadFactory(this.threadPoolPriority);
     //this.peerTaskExecutor = Executors.newCachedThreadPool();
     
     // XXX: WHAT ABOUT THIS????

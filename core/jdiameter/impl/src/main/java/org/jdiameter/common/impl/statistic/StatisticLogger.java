@@ -22,7 +22,7 @@ public class StatisticLogger {
     }
 
     concurrentFactory.scheduleAtFixedRate(new Runnable() {
-      @Override
+
       public void run() {
         boolean oneLine = false;
         for (IStatistic statistic : factory.allStatistic) {
