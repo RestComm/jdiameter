@@ -1,0 +1,295 @@
+<!--
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ (c)Copyright 2006 Hewlett-Packard Development Company, LP.
+
+-->
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<protocol name="diameter-v1" type="binary" padding="4">
+
+
+<types>
+<!-- Types defined for the AVP   -->
+  <typedef name="Integer32" type="signed" size="4" unit="octet"> </typedef>
+  <typedef name="Unsigned32" type="number" size="4" unit="octet"> </typedef>
+  <typedef name="Integer64" type="signed64" size="8" unit="octet"> </typedef>
+  <typedef name="Unsigned64" type="number64" size="8" unit="octet"> </typedef>
+  <typedef name="OctetString" type="string" size="4" unit="octet"> </typedef>
+  <typedef name="Grouped" type="grouped"></typedef>
+</types>
+
+<header name="command" length="msg-length" type="cmd-code">
+  <fielddef name="protocol-version" size="1" unit="octet"></fielddef>
+  <fielddef name="msg-length" size="3" unit="octet"> </fielddef>
+  <fielddef name="flags" size="1" unit="octet"> </fielddef>
+  <fielddef name="cmd-code" size="3" unit="octet"> </fielddef>
+  <fielddef name="application-id" size="4" unit="octet"> </fielddef>
+  <fielddef name="HbH-id" size="4" unit="octet"> </fielddef>
+  <fielddef name="EtE-id" size="4" unit="octet"> </fielddef>
+</header>
+
+<body>
+  <header name="avp" length="avp-length" type="avp-code">
+     <fielddef name="avp-code" size="4" unit="octet"> </fielddef>
+     <fielddef name="flags" size="1" unit="octet"> </fielddef>
+     <fielddef name="avp-length" size="3" unit="octet"> </fielddef>
+     <optional>
+        <fielddef name="Vendor-ID" size="4" unit="octet"
+                  condition="mask" field="flags" mask="128">
+        </fielddef>
+     </optional>
+  </header>
+</body>
+
+<dictionary>
+  <!-- AVP definitions -->
+  <!-- Note: should be coming from external dictionary.XML -->
+  <avp>
+    <!-- Diameter base AVPs -->
+    <define name="User-Name" type="OctetString">
+      <setfield name="avp-code" value="1"></setfield>
+      <setfield name="flags" value="64"></setfield>
+    </define>
+    <define name="Host-IP-Address" type="OctetString">
+      <setfield name="avp-code" value="257"></setfield>
+      <setfield name="flags" value="64"></setfield>
+    </define>
+    <define name="Auth-Application-Id" type="Unsigned32">
+      <setfield name="avp-code" value="258"></setfield>
+      <setfield name="flags" value="64"></setfield>
+    </define>
+    <define name="Acct-Application-Id" type="Unsigned32">
+      <setfield name="avp-code" value="259"></setfield>
+      <setfield name="flags" value="64"></setfield>
+    </define>
+    <define name="Vendor-Specific-Application-Id" type="Grouped">
+      <setfield name="avp-code" value="260"></setfield>
+      <setfield name="flags" value="64"></setfield>
+    </define>
+    <define name="Session-Id" type="OctetString">
+      <setfield name="avp-code" value="263"></setfield>
+      <setfield name="flags" value="64"></setfield>
+    </define>
+    <define name="Origin-Host" type="OctetString">
+      <setfield name="avp-code" value="264"></setfield>
+      <setfield name="flags" value="64"></setfield>
+    </define>
+    <define name="Supported-Vendor-Id" type="Unsigned32">
+      <setfield name="avp-code" value="265"></setfield>
+      <setfield name="flags" value="64"></setfield>
+    </define>
+    <define name="Vendor-Id" type="Unsigned32">
+      <setfield name="avp-code" value="266"></setfield>
+      <setfield name="flags" value="64"></setfield>
+    </define>
+    <define name="Firmware-Revision" type="Unsigned32">
+      <setfield name="avp-code" value="267"></setfield>
+      <setfield name="flags" value="0"></setfield>
+    </define>
+    <define name="Result-Code" type="Unsigned32">
+      <setfield name="avp-code" value="268"></setfield>
+      <setfield name="flags" value="64"></setfield>
+    </define>
+    <define name="Product-Name" type="OctetString">
+      <setfield name="avp-code" value="269"></setfield>
+      <setfield name="flags" value="64"></setfield>
+    </define>
+    <define name="Auth-Session-State" type="Unsigned32">
+      <setfield name="avp-code" value="277"></setfield>
+      <setfield name="flags" value="64"></setfield>
+    </define>
+    <define name="Origin-State-Id" type="Unsigned32">
+      <setfield name="avp-code" value="278"></setfield>
+      <setfield name="flags" value="64"></setfield>
+    </define>
+    <define name="Destination-Realm" type="OctetString">
+      <setfield name="avp-code" value="283"></setfield>
+      <setfield name="flags" value="64"></setfield>
+    </define>
+    <define name="Destination-Host" type="OctetString">
+      <setfield name="avp-code" value="293"></setfield>
+      <setfield name="flags" value="64"></setfield>
+    </define>
+    <define name="Origin-Realm" type="OctetString">
+      <setfield name="avp-code" value="296"></setfield>
+      <setfield name="flags" value="64"></setfield>
+    </define>
+    <define name="Experimental-Result" type="Grouped">
+      <setfield name="avp-code" value="297"></setfield>
+      <setfield name="flags" value="64"></setfield>
+    </define>
+    <define name="Experimental-Result-Code" type="Unsigned32">
+      <setfield name="avp-code" value="298"></setfield>
+      <setfield name="flags" value="64"></setfield>
+    </define>
+    <!-- 3GPP Cx AVPs (!!! vendor-id=10415) -->
+    <define name="Visited-Network-Identifier" type="OctetString">
+      <setfield name="avp-code" value="1"></setfield>
+      <setfield name="flags" value="192"></setfield>
+      <setfield name="Vendor-ID" value="10415"></setfield>
+    </define>
+    <define name="Public-Identity" type="OctetString">
+      <setfield name="avp-code" value="2"></setfield>
+      <setfield name="flags" value="192"></setfield>
+      <setfield name="Vendor-ID" value="10415"></setfield>
+    </define>
+    <define name="Server-Name" type="OctetString">
+      <setfield name="avp-code" value="3"></setfield>
+      <setfield name="flags" value="192"></setfield>
+      <setfield name="Vendor-ID" value="10415"></setfield>
+    </define>
+    <define name="Server-Assignment-Type" type="Unsigned32">
+      <setfield name="avp-code" value="15"></setfield>
+      <setfield name="flags" value="192"></setfield>
+      <setfield name="Vendor-ID" value="10415"></setfield>
+    </define>
+
+    <define name="User-Authorization-Type" type="Unsigned32">
+      <setfield name="avp-code" value="24"></setfield>
+      <setfield name="flags" value="192"></setfield>
+      <setfield name="Vendor-ID" value="10415"></setfield>
+    </define>
+    <define name="User-Data-Request-Type" type="Unsigned32">
+      <setfield name="avp-code" value="25"></setfield>
+      <setfield name="flags" value="192"></setfield>
+      <setfield name="Vendor-ID" value="10415"></setfield>
+    </define>
+    <define name="User-Data-Already-Available" type="Unsigned32">
+      <setfield name="avp-code" value="26"></setfield>
+      <setfield name="flags" value="192"></setfield>
+      <setfield name="Vendor-ID" value="10415"></setfield>
+    </define>
+    <!-- Grouped AVPs (to do)                                               -->
+    <!-- Proxy-Info, Auth-Application-Id, Failed-AVP, Server-Capabilities,  -->
+    <!-- SIP-Auth-Data-Item, DeRegistration-Reason, Charging-Information,   -->
+    <!-- Experimental-Result                                                -->
+    <define name="DeRegistration-Reason" type="Grouped">
+      <setfield name="avp-code" value="615"></setfield>
+      <setfield name="flags" value="192"></setfield>
+      <setfield name="Vendor-ID" value="10415"></setfield>
+    </define>
+    <define name="Reason-Code" type="Unsigned32">
+      <setfield name="avp-code" value="616"></setfield>
+      <setfield name="flags" value="192"></setfield>
+      <setfield name="Vendor-ID" value="10415"></setfield>
+    </define>
+  </avp>
+
+  <!-- COMMAND definitions -->
+  <command session-id="Session-Id" out-of-session-id="HbH-id">
+    <!-- It's a request, R bit is set -->
+    <define name="CER">
+       <setfield name="flags" value="128"> </setfield>
+       <setfield name="cmd-code" value="257"></setfield>
+       <setfield name="protocol-version" value="1"></setfield>
+    </define> 
+    <!-- It's an answer, R bit is unset -->
+    <define name="CEA">
+       <setfield name="flags" value="0"> </setfield>
+       <setfield name="cmd-code" value="257"></setfield>
+       <setfield name="protocol-version" value="1"></setfield>
+    </define> 
+    <!-- It's a request, R bit is set -->
+    <define name="UAR">
+       <setfield name="flags" value="128"> </setfield>
+       <setfield name="cmd-code" value="300"></setfield>
+       <setfield name="application-id" value="16777216"></setfield>
+       <setfield name="protocol-version" value="1"></setfield>
+    </define> 
+    <!-- It's an answer, R bit is unset -->
+    <define name="UAA">
+       <setfield name="flags" value="0"> </setfield>
+       <setfield name="cmd-code" value="300"></setfield>
+       <setfield name="application-id" value="16777216"></setfield>
+       <setfield name="protocol-version" value="1"></setfield>
+    </define> 
+    <!-- It's a request, R bit is set -->
+    <define name="SAR">
+       <setfield name="flags" value="128"> </setfield>
+       <setfield name="cmd-code" value="301"></setfield>
+       <setfield name="application-id" value="16777216"></setfield>
+       <setfield name="protocol-version" value="1"></setfield>
+    </define> 
+    <!-- It's an answer, R bit is unset -->
+    <define name="SAA">
+       <setfield name="flags" value="0"> </setfield>
+       <setfield name="cmd-code" value="301"></setfield>
+       <setfield name="application-id" value="16777216"></setfield>
+       <setfield name="protocol-version" value="1"></setfield>
+    </define> 
+    <!-- It's a request, R bit is set -->
+    <define name="LIR">
+       <setfield name="flags" value="128"> </setfield>
+       <setfield name="cmd-code" value="302"></setfield>
+       <setfield name="application-id" value="16777216"></setfield>
+       <setfield name="protocol-version" value="1"></setfield>
+    </define> 
+    <!-- It's an answer, R bit is unset -->
+    <define name="LIA">
+       <setfield name="flags" value="0"> </setfield>
+       <setfield name="cmd-code" value="302"></setfield>
+       <setfield name="application-id" value="16777216"></setfield>
+       <setfield name="protocol-version" value="1"></setfield>
+    </define> 
+    <!-- It's a request, R bit is set -->
+    <define name="MAR">
+       <setfield name="flags" value="128"> </setfield>
+       <setfield name="cmd-code" value="303"></setfield>
+       <setfield name="application-id" value="16777216"></setfield>
+       <setfield name="protocol-version" value="1"></setfield>
+    </define> 
+    <!-- It's an answer, R bit is unset -->
+    <define name="MAA">
+       <setfield name="flags" value="0"> </setfield>
+       <setfield name="cmd-code" value="303"></setfield>
+       <setfield name="application-id" value="16777216"></setfield>
+       <setfield name="protocol-version" value="1"></setfield>
+    </define> 
+    <!-- It's a request, R bit is set -->
+    <define name="RTR">
+       <setfield name="flags" value="128"> </setfield>
+       <setfield name="cmd-code" value="304"></setfield>
+       <setfield name="application-id" value="16777216"></setfield>
+       <setfield name="protocol-version" value="1"></setfield>
+    </define> 
+    <!-- It's an answer, R bit is unset -->
+    <define name="RTA">
+       <setfield name="flags" value="0"> </setfield>
+       <setfield name="cmd-code" value="304"></setfield>
+       <setfield name="application-id" value="16777216"></setfield>
+       <setfield name="protocol-version" value="1"></setfield>
+    </define> 
+    <!-- It's a request, R bit is set -->
+    <define name="PPR">
+       <setfield name="flags" value="128"> </setfield>
+       <setfield name="cmd-code" value="305"></setfield>
+       <setfield name="application-id" value="16777216"></setfield>
+       <setfield name="protocol-version" value="1"></setfield>
+    </define> 
+    <!-- It's an answer, R bit is unset -->
+    <define name="PPA">
+       <setfield name="flags" value="0"> </setfield>
+       <setfield name="cmd-code" value="305"></setfield>
+       <setfield name="application-id" value="16777216"></setfield>
+       <setfield name="protocol-version" value="1"></setfield>
+    </define> 
+  </command>
+
+</dictionary>
+
+</protocol>
+

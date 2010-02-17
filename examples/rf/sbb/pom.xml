@@ -1,0 +1,33 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>org.mobicents.servers.diameter.examples</groupId>
+		<artifactId>rf-parent</artifactId>
+		<version>1.1.2.GA-SNAPSHOT</version>
+	</parent>
+	
+	<artifactId>rf-example-sbb</artifactId>
+
+  <name>Mobicents :: Diameter Examples :: ${pom.artifactId}</name>
+		
+	<dependencies>
+		<dependency>
+			<groupId>org.mobicents.servers.diameter.resources</groupId>
+			<artifactId>rf-ra</artifactId>
+			<version>${mobicents.diameter.resources.rf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mobicents.servers.diameter.resources</groupId>
+			<artifactId>rf-ratype</artifactId>
+			<version>${mobicents.diameter.resources.rf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mobicents.resources</groupId>
+			<artifactId>sip11-ra</artifactId>
+			<version>${mobicents.servers.jainslee.version}</version>
+		</dependency>
+	</dependencies>
+	
+</project>

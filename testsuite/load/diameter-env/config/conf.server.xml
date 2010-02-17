@@ -1,0 +1,66 @@
+<!--
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ (c)Copyright 2006 Hewlett-Packard Development Company, LP.
+
+-->
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<configuration name="Simple IP Server Conf">
+  <define entity="transport"
+    name="trans-1"
+    file="libtrans_ip.so"
+    create_function="create_cipio_instance"
+    delete_function="delete_cipio_instance"
+    init-args="type=tcp">
+  </define>
+
+  <define entity="channel"
+    name="channel-1"
+    protocol="diameter-v1"
+    transport="trans-1"
+    open-args="mode=server;source=127.0.0.1:3868">
+  </define>
+
+  <define entity="traffic-param" name="display-period" value="1"></define>
+  <define entity="traffic-param" name="log-stat-period" value="1"></define>
+  <define entity="traffic-param" name="log-stat-file" value="../logs/server-stat.csv"></define>
+  <define entity="traffic-param" name="call-timeout-ms" value="3600000"></define>
+  <define entity="traffic-param" name="display-scenario-stat" value="true"></define>
+  <define entity="traffic-param" name="display-protocol-stat" value="true"></define>
+  <define entity="traffic-param" name="log-protocol-stat-period" value="5"></define>
+  <define entity="traffic-param" name="log-protocol-stat-name" value="all"></define>
+  <define entity="traffic-param" name="log-protocol-stat-file" value="../logs/server-protocol-stat.csv"></define>
+
+<!--
+  <define entity="traffic-param" name="data-log-period" value="10"></define>
+  <define entity="traffic-param" name="data-log-number" value="1000"></define>
+  <define entity="traffic-param" name="data-log-file" value="../logs/server-rtt.csv"></define>
+  <define entity="traffic-param" name="data-log-rtdistrib" value="3000"></define>
+-->
+
+  <define entity="traffic-param" name="max-send" value="2000"></define>
+  <define entity="traffic-param" name="max-receive" value="2000"></define>
+  <define entity="traffic-param" name="max-simultaneous-calls" value="2000"></define>
+  <define entity="traffic-param" name="select-timeout-ms" value="50"></define>
+
+<!--
+ <define entity="traffic-param" name="files-no-timestamp" value="true"></define>
+-->
+
+
+</configuration>

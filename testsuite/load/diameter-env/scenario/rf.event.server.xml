@@ -1,0 +1,90 @@
+<!--
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ (c)Copyright 2006 Hewlett-Packard Development Company, LP.
+
+-->
+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<scenario>
+
+<init>
+  <receive channel="channel-1">
+    <command name="CER">
+    </command>
+    <action>
+    <store name="ven" entity="Vendor-Id"> </store>
+    </action>
+  </receive>
+  
+  <send channel="channel-1">
+    <command name="CEA">
+      <avp name="Result-Code" value="2001"> </avp>
+      <avp name="Origin-Host" value="uas.mobicents.org"> </avp>
+      <avp name="Origin-Realm" value="mobicents.org"> </avp>
+      <avp name="Host-IP-Address" value="0x00010f80aa3c"> </avp> 
+      <avp name="Vendor-Id" value="11"> </avp>
+      <avp name="Product-Name" value="HP_HSS"> </avp>
+      <avp name="Firmware-Revision" value="1"> </avp>    
+    </command>
+  </send>
+</init>
+
+<traffic>
+  <receive channel="channel-1">
+    <command name="ACR">
+      <!-- Only need to specify what needs to be parsed -->
+      <avp name="Session-Id" value="dont_care"> </avp>
+    </command>
+    <!-- Store action is at the end of the command -->
+    <action>
+      <store name="HbH" entity="HbH-id"></store>
+      <store name="E2E" entity="EtE-id"></store>
+      <store name="sid" entity="Session-Id"></store>
+      <!--
+      <store name="art" entity="Accounting-Record-Type"></store>
+      <store name="arn" entity="Accounting-Record-Number"></store> 
+      <store name="aid" entity="Accounting-Application-Id"></store>
+      -->
+    </action>
+  </receive>
+  
+  <send channel="channel-1">
+    <!-- Restore action is before the command -->
+    <action>
+      <restore name="HbH" entity="HbH-id"> </restore>
+      <restore name="E2E" entity="EtE-id"> </restore>
+      <restore name="sid" entity="Session-Id"> </restore>
+      <!--
+      <restore name="art" entity="Accounting-Record-Type"> </restore>
+      <restore name="arn" entity="Accounting-Record-Number"> </restore>
+      <restore name="aid" entity="Accounting-Application-Id"> </restore>
+      -->
+    </action>
+    <!-- Warning: content of CCA to check -->
+    <command name="ACA">
+      <avp name="Session-Id" value="will_be_erased"> </avp>
+      <avp name="Origin-Host" value="uas.mobicents.org"> </avp>
+      <avp name="Origin-Realm" value="mobicents.org"> </avp>
+      <avp name="Accounting-Record-Type" value="1"> </avp>
+      <avp name="Accounting-Record-Number" value="0"> </avp>
+      <avp name="Acct-Application-Id" value="3"> </avp>
+      <avp name="Acct-Interim-Interval" value="60"> </avp>
+      <avp name="Result-Code" value="2001"> </avp>
+    </command>
+  </send>
+</traffic>
+</scenario>

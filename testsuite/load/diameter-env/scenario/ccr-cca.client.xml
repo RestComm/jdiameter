@@ -1,0 +1,108 @@
+<!--
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ (c)Copyright 2006 Hewlett-Packard Development Company, LP.
+
+-->
+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<scenario>
+
+<counter>
+  <counterdef name="HbH-counter" init="1000"> </counterdef>
+  <counterdef name="EtE-counter" init="2000"> </counterdef>
+  <counterdef name="session-counter" init="0"> </counterdef>
+</counter>
+
+<init>
+  <send channel="channel-1">
+    <command name="CER">
+      <avp name="Origin-Host" value="uac.mobicents.org"> </avp>
+      <avp name="Origin-Realm" value="mobicents.org"> </avp>
+      <avp name="Host-IP-Address" value="0x00010a03fc5e"> </avp> <!-- IPV4 10.3.252.94-->
+      <avp name="Vendor-Id" value="11"> </avp>
+      <avp name="Product-Name" value="HP Cx Interface"> </avp>
+      <avp name="Origin-State-Id" value="1094807040"> </avp>
+      <avp name="Supported-Vendor-Id" value="193"> </avp>
+      <avp name="Auth-Application-Id" value="4"> </avp>
+      <avp name="Acct-Application-Id" value="0"> </avp>
+      <avp name="Vendor-Specific-Application-Id">
+        <avp name="Vendor-Id" value="0"></avp>
+        <avp name="Auth-Application-Id" value="4"></avp>
+        <avp name="Acct-Application-Id" value="0"></avp>
+      </avp>
+      <avp name="Firmware-Revision" value="1"> </avp>
+    </command>
+  </send>
+  
+  <receive channel="channel-1">
+    <command name="CEA">
+    </command>
+  </receive>
+</init>
+
+<!-- Traffic -->
+<traffic>
+  <send channel="channel-1">
+    <action>
+      <!-- For each new call, increment the session-ID counter -->
+      <inc-counter name="HbH-counter"> </inc-counter>
+      <inc-counter name="EtE-counter"> </inc-counter>
+      <inc-counter name="session-counter"> </inc-counter>
+      <set-value name="HbH-id" 
+                 format="$(HbH-counter)"></set-value>
+      <set-value name="EtE-id" 
+                 format="$(EtE-counter)"></set-value>
+      <set-value name="Session-Id" 
+                 format=".;1096298391;$(session-counter)"></set-value>
+    </action>
+    <command name="CCR">
+      <avp name="Session-Id" value="value_is_replaced"> </avp>
+      <avp name="Auth-Session-State" value="0"> </avp>
+      <avp name="Origin-Host" value="uac.mobicents.org"> </avp>
+      <avp name="Origin-Realm" value="mobicents.org"> </avp>
+      <avp name="Destination-Realm" value="mobicents.org"> </avp>
+      <avp name="Destination-Host" value="uas.mobicents.org"> </avp>
+      <avp name="Auth-Application-Id" value="4"></avp>
+ 
+      <avp name="Vendor-Specific-Application-Id">
+        <avp name="Vendor-Id" value="0"></avp>
+        <avp name="Auth-Application-Id" value="4"></avp>
+        <avp name="Acct-Application-Id" value="0"></avp>
+      </avp>
+
+      <!-- Added -->
+      <avp name="CC-Request-Type" value="4"> </avp>
+      <avp name="CC-Request-Number" value="0"> </avp>
+      <avp name="Service-Context-Id" value="eventloadtest@mobicents.org"></avp>
+      
+    </command>
+    <action>
+      <start-timer></start-timer>
+    </action>
+  </send>
+  
+  <receive channel="channel-1">
+    <action>
+      <stop-timer></stop-timer>
+    </action>
+    <command name="CCA">
+    </command>
+  </receive>
+</traffic>
+  
+</scenario>
+
