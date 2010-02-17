@@ -35,7 +35,15 @@
     <DwaTimeOut value="10000" />
     <DpaTimeOut value="5000" />
     <RecTimeOut value="10000" />
-    <ThreadPool size="10" priority="5"/>
+    <Concurrent>
+      <Entity name="ThreadGroup" size="64"/> // Common Thread Pool
+      <Entity name="ProcessingMessageTimer" size="1"/>
+      <Entity name="DuplicationMessageTimer" size="1"/>
+      <Entity name="RedirectMessageTimer" size="1"/>
+      <Entity name="PeerOverloadTimer" size="1"/>
+      <Entity name="ConnectionTimer" size="1"/>
+      <Entity name="StatisticTimer" size="1"/>
+    </Concurrent>
     </Parameters>
 
   <Network>
