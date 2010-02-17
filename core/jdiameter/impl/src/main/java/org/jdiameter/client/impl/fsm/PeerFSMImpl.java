@@ -27,6 +27,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.jdiameter.api.Configuration;
+import org.jdiameter.api.Message;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.PeerState;
 import org.jdiameter.api.ResultCode;
@@ -42,6 +43,8 @@ import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.statistic.IStatistic;
 import org.jdiameter.common.api.statistic.IStatisticFactory;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
+import org.jdiameter.common.impl.validation.DiameterMessageValidator;
+import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -202,6 +205,38 @@ public class PeerFSMImpl implements IStateMachine {
     if (state.getPublicState() == PeerState.DOWN && event.encodeType(EventTypes.class) == EventTypes.START_EVENT) {
       runQueueProcessing();
     }
+    
+    if (DiameterMessageValidator.getInstance().isOn()) {
+		if (event.getType() == EventTypes.RECEIVE_MSG_EVENT) {
+
+			//try {
+
+				DiameterMessageValidator.getInstance().validate((Message) event.getData(), true);
+			//} catch (JAvpNotAllowedException e) {
+			//	e.printStackTrace();
+			//	if (logger.isErrorEnabled()) {
+			//		logger.error("Error on incoming message, dictionary indicates some trouble, see log", e);
+			//	}
+			//}
+		} else
+		{
+			if (event.getType() == EventTypes.SEND_MSG_EVENT) {
+
+			//	try {
+
+					DiameterMessageValidator.getInstance().validate((Message) event.getData(), true);
+				//} catch (JAvpNotAllowedException e) {
+				//	e.printStackTrace();
+				//	if (logger.isErrorEnabled()) {
+				//		logger.error("Error on incoming message, dictionary indicates some trouble, see log", e);
+				//	}
+				//}
+			}
+		}
+		
+	}
+    
+    
     boolean rc;
     try {
       rc = eventQueue.offer(event, IAC_TIMEOUT, TimeUnit.MILLISECONDS);

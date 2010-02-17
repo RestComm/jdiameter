@@ -113,9 +113,16 @@ public class VMessageRepresentation implements Comparable<VMessageRepresentation
 	 * not present, and number of avps is correct.
 	 * 
 	 * @param msg
+	 * @param validatorLevel 
 	 * @throws JAvpNotAllowedException
 	 */
-	public void validate(Message msg) throws JAvpNotAllowedException {
+	public void validate(Message msg, ValidatorLevel validatorLevel) throws JAvpNotAllowedException {
+		if(validatorLevel == ValidatorLevel._OFF)
+		{
+			return;
+		}
+		
+		
 		for (VAvpRepresentation ap : this.messageAvps.values()) {
 
 			AvpSet innerSet = msg.getAvps().getAvps(ap.getCode(), ap.getVendorId());
@@ -128,7 +135,10 @@ public class VMessageRepresentation implements Comparable<VMessageRepresentation
 			if (!ap.isCountValidForMultiplicity(count)) {
 				throw new JAvpNotAllowedException("AVP: \n" + ap + "\n,has wrong count in message - " + (count), ap.getCode(), ap.getVendorId());
 			}
-
+			if(validatorLevel != ValidatorLevel._ALL)
+			{
+				continue;
+			}
 			if (count != 0 && ap.isGrouped()) {
 				// we are grouped
 				validateGrouped(ap, innerSet);

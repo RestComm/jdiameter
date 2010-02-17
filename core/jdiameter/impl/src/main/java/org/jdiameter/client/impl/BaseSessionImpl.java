@@ -37,8 +37,7 @@ public abstract class BaseSessionImpl implements BaseSession {
   protected transient IContainer container;
   protected transient IMessageParser parser;
   protected NetworkReqListener reqListener;
-  protected static final DiameterMessageValidator messageValidator = DiameterMessageValidator.getInstance();
-
+ 
   public long getCreationTime() {
     return creationTime;
   }
@@ -74,9 +73,6 @@ public abstract class BaseSessionImpl implements BaseSession {
     if (isValid) {
       lastAccessedTime = System.currentTimeMillis();
 
-      if(BaseSessionImpl.messageValidator.isOn()) {
-        BaseSessionImpl.messageValidator.validate(aMessage);
-      }
       IMessage message = (IMessage) aMessage;
       IEventListener localListener = createListenerWrapper(listener);
       if (message.isRequest()) {

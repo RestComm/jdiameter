@@ -15,7 +15,14 @@
 		"gqpolicy.xml"> <!ENTITY etsie2e4 SYSTEM "etsie2e4.xml"> <!ENTITY Ericsson SYSTEM "Ericsson.xml"> ]
 	-->
 <dictionary>
-	<validator enabled="true" />
+	<!-- LEVEL: 
+	  ** OFF - no validation
+	  ** MESSAGE - only message level is validate, no grouped avp check
+	  ** ALL - full validation, message level avps and grouped structure
+	  
+	  sendX,receiveX - control level of validation in certain direction.
+	-->  
+	<validator enabled="false" sendLevel="ALL" receiveLevel="OFF"/>
 	<!-- <base uri="http://www.ietf.org/rfc/rfc3588.txt">  -->
 	<application id="19302" name="Ericsson ACC">
 		<command name="Accounting" code="271" request="false">

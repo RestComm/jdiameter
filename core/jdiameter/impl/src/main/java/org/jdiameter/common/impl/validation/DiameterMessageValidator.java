@@ -1,28 +1,28 @@
 /*
- * Mobicents, Communications Middleware
- *
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
- * indicated by the @author tags or express copyright attribution
- * statements applied by the authors. All third-party contributions are
- * distributed under license by Red Hat Middleware LLC.
- *
- * This copyrighted material is made available to anyone wishing to use, modify, 
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
- * for more details.
- *
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- *
- * Boston, MA  02110-1301  USA
- */
+* Mobicents, Communications Middleware
+*
+* Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+* indicated by the @author tags or express copyright attribution
+* statements applied by the authors. All third-party contributions are
+* distributed under license by Red Hat Middleware LLC.
+*
+* This copyrighted material is made available to anyone wishing to use, modify, 
+* copy, or redistribute it subject to the terms and conditions of the GNU
+* Lesser General Public License, as published by the Free Software Foundation.
+*
+* This program is distributed in the hope that it will be useful, but
+* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+* or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+* for more details.
+*
+*
+* You should have received a copy of the GNU Lesser General Public License
+* along with this distribution; if not, write to:
+* Free Software Foundation, Inc.
+* 51 Franklin Street, Fifth Floor
+*
+* Boston, MA  02110-1301  USA
+*/
 package org.jdiameter.common.impl.validation;
 
 import java.io.InputStream;
@@ -47,88 +47,92 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * Start time:11:42:36 2009-05-26<br>
- * Project: diameter-parent<br>
- * 
- * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
- * @since 1.5.189
- */
+* Start time:11:42:36 2009-05-26<br>
+* Project: diameter-parent<br>
+* 
+* @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+* @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+* @since 1.5.189
+*/
 public class DiameterMessageValidator {
 
-  private static final transient Logger log = LoggerFactory.getLogger(DiameterMessageValidator.class);
+ private static final transient Logger log = LoggerFactory.getLogger(DiameterMessageValidator.class);
 
-  public static final String _AVP_ATTRIBUTE_NAME = "name";
-  public static final String _AVP_ATTRIBUTE_CODE = "code";
-  public static final String _AVP_ATTRIBUTE_VENDOR = "vendor";
-  public static final String _AVP_ATTRIBUTE_MULTIPLICITY = "multiplicity";
-  public static final String _AVP_ATTRIBUTE_INDEX = "index";
-  public static final String _VALIDATOR_NODE_NAME = "validator";
-  public static final String _VALIDATOR_NODE_ENABLED_ATTR = "enabled";
+ public static final String _AVP_ATTRIBUTE_NAME = "name";
+ public static final String _AVP_ATTRIBUTE_CODE = "code";
+ public static final String _AVP_ATTRIBUTE_VENDOR = "vendor";
+ public static final String _AVP_ATTRIBUTE_MULTIPLICITY = "multiplicity";
+ public static final String _AVP_ATTRIBUTE_INDEX = "index";
+ public static final String _VALIDATOR_NODE_NAME = "validator";
+ public static final String _VALIDATOR_NODE_ENABLED_ATTR = "enabled";
+ public static final String _VALIDATOR_NODE_SEND_LEVEL_ATTR = "sendLevel";
+ public static final String _VALIDATOR_NODE_RECEIVE_LEVEL_ATTR = "receiveLevel";
 
-  private static final DiameterMessageValidator instance = new DiameterMessageValidator();
-  private static final String fileName = "dictionary.xml";
+ private static final DiameterMessageValidator instance = new DiameterMessageValidator();
+ private static final String fileName = "dictionary.xml";
 
-  private static boolean on = true;
-  private boolean configured = false;
-  protected Map<VMessageRepresentation, VMessageRepresentation> commandMap = new HashMap<VMessageRepresentation, VMessageRepresentation>();
-  protected Map<VAvpRepresentation, VAvpRepresentation> avpMap = new HashMap<VAvpRepresentation, VAvpRepresentation>();
-  protected Map<String, String> vendorMap = new HashMap<String, String>();
-  protected Map<String, String> typedefMap = new HashMap<String, String>();
-  protected Map<String, VAvpRepresentation> nameToCodeMap = new TreeMap<String, VAvpRepresentation>(new Comparator<String>() {
+ private boolean on = true;
+ private boolean configured = false;
+ private ValidatorLevel sendValidationLevel = ValidatorLevel._OFF;
+ private ValidatorLevel receiveValidationLevel = ValidatorLevel._OFF;
+ protected Map<VMessageRepresentation, VMessageRepresentation> commandMap = new HashMap<VMessageRepresentation, VMessageRepresentation>();
+ protected Map<VAvpRepresentation, VAvpRepresentation> avpMap = new HashMap<VAvpRepresentation, VAvpRepresentation>();
+ protected Map<String, String> vendorMap = new HashMap<String, String>();
+ protected Map<String, String> typedefMap = new HashMap<String, String>();
+ protected Map<String, VAvpRepresentation> nameToCodeMap = new TreeMap<String, VAvpRepresentation>(new Comparator<String>() {
 
-    public int compare(String o1, String o2) {
-      return (o1 == null) ? 1 : (o2 == null) ? -1 : o1.compareTo(o2); 
-    }
-  });
+   public int compare(String o1, String o2) {
+     return (o1 == null) ? 1 : (o2 == null) ? -1 : o1.compareTo(o2); 
+   }
+ });
 
-  /**
-   * 	
-   */
-  protected DiameterMessageValidator() {
-    try {
-      InputStream is = DiameterMessageValidator.class.getClassLoader().getResourceAsStream(fileName);
-      if (is != null) {
-        parseConfiguration(is, false);
-      }
-      else {
-        log.debug("Unable to initialize validator with default filename ({} not found in classpath).", fileName);
-      }
-    }
-    catch (Exception e) {
-      log.error("Failed to init validator dictionary resources.", e);
-    }
-  }
+ /**
+  * 	
+  */
+ protected DiameterMessageValidator() {
+   try {
+     InputStream is = DiameterMessageValidator.class.getClassLoader().getResourceAsStream(fileName);
+     if (is != null) {
+       parseConfiguration(is, false);
+     }
+     else {
+       log.debug("Unable to initialize validator with default filename ({} not found in classpath).", fileName);
+     }
+   }
+   catch (Exception e) {
+     log.error("Failed to init validator dictionary resources.", e);
+   }
+ }
 
-  public void parseConfiguration(InputStream is, boolean reset) {
-    long startTime = System.currentTimeMillis();
+ public void parseConfiguration(InputStream is, boolean reset) {
+   long startTime = System.currentTimeMillis();
 
-    if (reset) {
-      this.configured = false;
-      this.commandMap.clear();
-      this.avpMap.clear();
-      this.vendorMap.clear();
-      this.typedefMap.clear();
-      this.nameToCodeMap.clear();
-    }
+   if (reset) {
+     this.configured = false;
+     this.commandMap.clear();
+     this.avpMap.clear();
+     this.vendorMap.clear();
+     this.typedefMap.clear();
+     this.nameToCodeMap.clear();
+   }
 
-    if (this.configured) {
-      return;
-    }
+   if (this.configured) {
+     return;
+   }
 
-    try {
-      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-      dbf.setValidating(false);
-      DocumentBuilder db = dbf.newDocumentBuilder();
-      Document doc = db.parse(is);
+   try {
+     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+     dbf.setValidating(false);
+     DocumentBuilder db = dbf.newDocumentBuilder();
+     Document doc = db.parse(is);
 
-      doc.getDocumentElement().normalize();
+     doc.getDocumentElement().normalize();
 
-      this.vendorMap = parseVendors(doc);
-      this.typedefMap = parseTypDefs(doc);
-      this.avpMap = parseAvps(doc, this.vendorMap);
-      this.resolveWeakGroupedChildren(this.avpMap, this.nameToCodeMap);
-      this.commandMap = parseCommands(doc, this.avpMap, this.nameToCodeMap);
+     this.vendorMap = parseVendors(doc);
+     this.typedefMap = parseTypDefs(doc);
+     this.avpMap = parseAvps(doc, this.vendorMap);
+     this.resolveWeakGroupedChildren(this.avpMap, this.nameToCodeMap);
+     this.commandMap = parseCommands(doc, this.avpMap, this.nameToCodeMap);
       this.configured = true;
 
       NodeList validatorNodeList = doc.getElementsByTagName(_VALIDATOR_NODE_NAME);
@@ -142,16 +146,48 @@ public class DiameterMessageValidator {
             found = true;
             Element validatorElement = (Element) validatorNodeList.item(index);
             if (!validatorElement.hasAttribute(_VALIDATOR_NODE_ENABLED_ATTR)) {
-              on = false;
-            }
-            else {
-              on = Boolean.parseBoolean(validatorElement.getAttribute(_VALIDATOR_NODE_ENABLED_ATTR));
-            }
+                on = false;
+              }
+              else {
+                on = Boolean.parseBoolean(validatorElement.getAttribute(_VALIDATOR_NODE_ENABLED_ATTR));
+              }
+            
+            if (!validatorElement.hasAttribute(_VALIDATOR_NODE_RECEIVE_LEVEL_ATTR)) {
+            	this.receiveValidationLevel = ValidatorLevel._OFF;
+              }
+              else {
+            	  try{
+            		  this.receiveValidationLevel = ValidatorLevel.fromString(validatorElement.getAttribute(_VALIDATOR_NODE_RECEIVE_LEVEL_ATTR));
+            	  }catch(IllegalArgumentException e)
+            	  {
+            		  if(log.isErrorEnabled())
+            		  {
+            			  log.error("Failed to decode reiceve validation level due to: ",e);
+            		  }
+            	  }
+              }
+            if (!validatorElement.hasAttribute(_VALIDATOR_NODE_SEND_LEVEL_ATTR)) {
+            	this.sendValidationLevel = ValidatorLevel._OFF;
+              }
+              else {
+            	  try{
+            		  this.sendValidationLevel = ValidatorLevel.fromString(validatorElement.getAttribute(_VALIDATOR_NODE_SEND_LEVEL_ATTR));
+            	  }catch(IllegalArgumentException e)
+            	  {
+            		  if(log.isErrorEnabled())
+            		  {
+            			  log.error("Failed to decode send validation level due to: ",e);
+            		  }
+            	  }
+              }
+          
             break;
           }
         }
         if (!found) {
           on = false;
+          this.sendValidationLevel = ValidatorLevel._OFF;
+          this.receiveValidationLevel = ValidatorLevel._OFF;
         }
       }
 
@@ -486,7 +522,6 @@ public class DiameterMessageValidator {
     HashMap<String, String> typedefMap = new HashMap<String, String>();
     for (int td = 0; td < typedefNodes.getLength(); td++) {
       Node typedefNode = typedefNodes.item(td);
-
       if (typedefNode.getNodeType() == Node.ELEMENT_NODE) {
         Element typedefElement = (Element) typedefNode;
 
@@ -616,13 +651,13 @@ public class DiameterMessageValidator {
           children.add(index, strongRep);
         }
       }
-      else {
+     else {
         continue;
       }
     }
 
     if (!hasWeaklings) {
-      groupedAvp.markWeak(false);
+     groupedAvp.markWeak(false);
     }
 
     return hasWeaklings;
@@ -630,10 +665,9 @@ public class DiameterMessageValidator {
 
   public long getVendorCode(String vendorId, Map<String, String> vendorMap) {
     long value = -1;
-
     if (vendorId == null) {
       value = 0;
-    }
+   }
     else {
       String vendorCode = vendorMap.get(vendorId);
 
@@ -674,7 +708,7 @@ public class DiameterMessageValidator {
    * @throws JAvpNotAllowedException
    *             - thrown when validation fails.
    */
-  public void validate(Message msg) throws JAvpNotAllowedException {
+  public void validate(Message msg, boolean incoming) throws JAvpNotAllowedException {
     if (!on) {
       return; // throw new IllegalStateException("validation is of.");
     }
@@ -687,7 +721,7 @@ public class DiameterMessageValidator {
       return;
     }
 
-    rep.validate(msg);
+    rep.validate(msg,(incoming?receiveValidationLevel:sendValidationLevel));
   }
 
   /**
@@ -767,7 +801,7 @@ public class DiameterMessageValidator {
    * {@link DiameterMessageValidator#hasRepresentation(int, long, boolean, int, long)}
    * returns false this method returns always true.
    * 
-   * @param commandCode
+  * @param commandCode
    *            - message command code
    * @param appId
    *            - message application id
@@ -831,14 +865,14 @@ public class DiameterMessageValidator {
   }
 
   public void setAvpMap(Map<VAvpRepresentation, VAvpRepresentation> avpMap) {
-    this.avpMap = avpMap;
+   this.avpMap = avpMap;
   }
 
   public Map<String, String> getVendorMap() {
     return vendorMap;
   }
 
-  public void setVendorMap(Map<String, String> vendorMap) {
+ public void setVendorMap(Map<String, String> vendorMap) {
     this.vendorMap = vendorMap;
   }
 
@@ -849,7 +883,6 @@ public class DiameterMessageValidator {
   public void setTypedefMap(Map<String, String> typedefMap) {
     this.typedefMap = typedefMap;
   }
-
   public Map<String, VAvpRepresentation> getNameToCodeMap() {
     return nameToCodeMap;
   }
@@ -863,7 +896,16 @@ public class DiameterMessageValidator {
   }
   
   public static void setOn(boolean isOn) {
-    on = isOn;
-    log.info("Diameter Message/AVP Validator is now " + (on ? "enabled." : "disabled."));
+	  instance.on = isOn;
+	  log.info("Diameter Message/AVP Validator is now " + (isOn ? "enabled." : "disabled."));
   }
+
+public ValidatorLevel getSendLevel() {
+	return this.receiveValidationLevel;
+}
+
+public ValidatorLevel getReceiveLevel() {
+	// TODO Auto-generated method stub
+	return this.sendValidationLevel;
+}
 }
