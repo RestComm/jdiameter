@@ -433,7 +433,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       if (peerConfig == null) {
         peerConfig = new EmptyConfiguration(false).add(PeerAttemptConnection, connecting);
       }
-      IPeer peer = (IPeer) createPeer(0, peerURI.getFQDN(), null, null, metaData, config, peerConfig, fsmFactory, 
+      IPeer peer = (IPeer) createPeer(0, peerURI.toString(), null, null, metaData, config, peerConfig, fsmFactory, 
           transportFactory, statisticFactory, concurrentFactory, parser);
       if (peer == null) return null;
       peer.setRealm(realm);
@@ -441,7 +441,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       boolean found = false;
       for (Realm r : router.getRealms()) {
         if (r.getName().equals(realm)) {
-          r.addPeerName(peerURI.getFQDN());
+          r.addPeerName(peerURI.toString());
           found = true;
           break;
         }

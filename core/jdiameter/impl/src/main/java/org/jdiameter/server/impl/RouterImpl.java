@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import static org.jdiameter.server.impl.helpers.Parameters.*;
 
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RouterImpl extends org.jdiameter.client.impl.router.RouterImpl implements IRouter {
@@ -100,7 +100,7 @@ public class RouterImpl extends org.jdiameter.client.impl.router.RouterImpl impl
   }
 
   public Set<Realm> getRealms() {
-    return new TreeSet<Realm>(network.values());
+    return new HashSet<Realm>(network.values());
   }
 
   public void setNetWork(INetwork network) {
