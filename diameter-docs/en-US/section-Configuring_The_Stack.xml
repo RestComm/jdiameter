@@ -28,7 +28,7 @@
              &lt;AcctApplId value=&quot;19302&quot;/&gt;
            &lt;/ApplicationID&gt;
          &lt;/Entry&gt;
-      &lt;/OverloadMonitor&gt;
+      &lt;/OverloadMonitor&gt;
       &lt;Applications&gt;
          &lt;ApplicationID&gt;
             &lt;VendorId value=&quot;193&quot;/&gt;
@@ -150,7 +150,7 @@
       &lt;IacTimeOut value=&quot;30000&quot;/&gt;
       &lt;DwaTimeOut value=&quot;10000&quot;/&gt;
       &lt;DpaTimeOut value=&quot;5000&quot;/&gt;
-      &lt;RecTimeOut value=&quot;10000&quot;/&gt;
+      &lt;RecTimeOut value=&quot;10000&quot;/&gt;
       &lt;ThreadPool size=&quot;10&quot; priority=&quot;5&quot;/&gt;
  &lt;/Parameters&gt;</programlisting>
   <para>The &lt;Parameters&gt; element contains elements that specify parameters for the Diameter stack.  The available elements and attributes are listed for reference. If not specified otherwise each tag supports single property &quot;value&quot; which indicates value of tag.</para>
@@ -205,12 +205,9 @@
       </listitem>
     </varlistentry>
     <varlistentry>
-      <term>&lt;IacTimeOut&gt;<!--Developer:
-Conent:
-
-What the hell is that?--></term>
+      <term>&lt;IacTimeOut&gt;</term>
       <listitem>
-        <para>  In milliseconds</para>
+        <para>Determines how long it takes for the IAR/IAC exchange to timeout if there is no response. The delay is in milliseconds</para>
       </listitem>
     </varlistentry>
     <varlistentry>
