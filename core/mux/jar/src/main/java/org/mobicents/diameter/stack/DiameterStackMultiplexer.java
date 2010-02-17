@@ -2,9 +2,13 @@ package org.mobicents.diameter.stack;
 
 import static org.jdiameter.server.impl.helpers.Parameters.*;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,26 +24,38 @@ import javax.management.MBeanException;
 import org.jboss.system.ServiceMBeanSupport;
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.ApplicationAlreadyUseException;
+import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.InternalException;
+import org.jdiameter.api.LocalAction;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.Mode;
 import org.jdiameter.api.MutableConfiguration;
+import org.jdiameter.api.MutablePeerTable;
 import org.jdiameter.api.Network;
 import org.jdiameter.api.NetworkReqListener;
+import org.jdiameter.api.PeerTable;
+import org.jdiameter.api.RealmTable;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.ResultCode;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.Stack;
+import org.jdiameter.client.impl.controller.PeerImpl;
 import org.jdiameter.client.impl.helpers.AppConfiguration;
 import org.jdiameter.common.impl.validation.DiameterMessageValidator;
+import org.jdiameter.server.impl.NetworkImpl;
 import org.jdiameter.server.impl.StackImpl;
 import org.jdiameter.server.impl.helpers.XMLConfiguration;
 import org.mobicents.diameter.api.DiameterMessageFactory;
 import org.mobicents.diameter.api.DiameterProvider;
 import org.mobicents.diameter.dictionary.AvpDictionary;
+import org.mobicents.diameter.stack.management.ApplicationIdJMX;
+import org.mobicents.diameter.stack.management.DiameterConfiguration;
+import org.mobicents.diameter.stack.management.NetworkPeer;
+import org.mobicents.diameter.stack.management.NetworkPeerImpl;
+import org.mobicents.diameter.stack.management.RealmImpl;
 
 public class DiameterStackMultiplexer extends ServiceMBeanSupport implements DiameterStackMultiplexerMBean, DiameterProvider, NetworkReqListener, EventListener<Request, Answer>, DiameterMessageFactory
 {
@@ -50,23 +66,26 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
   // This is for synch
   protected ReentrantLock lock = new ReentrantLock();
-  
-  protected DiameterProvider provider;
-  
-  // ===== STACK MANAGEMENT =====
-  
-  private void initStack() throws Exception
-  {
-    InputStream is = null;
 
+  protected DiameterProvider provider;
+
+  // ===== STACK MANAGEMENT =====
+
+  private void initStack() throws Exception {
+    initStack(this.getClass().getClassLoader().getResourceAsStream("config/jdiameter-config.xml"));
+    //initStack(this.getClass().getClassLoader().getResourceAsStream("C:\\jdiameter-config.xml"));
+  }
+
+  private void initStack(InputStream is) throws Exception
+  {
     try 
     {
       // Create and configure stack
       this.stack = new StackImpl();
 
       // Get configuration
-      String configFile = "jdiameter-config.xml";
-      is = this.getClass().getClassLoader().getResourceAsStream("config/" + configFile);
+      // String configFile = "jdiameter-config.xml";
+      // is = this.getClass().getClassLoader().getResourceAsStream("config/" + configFile);
 
       // Load the configuration
       Configuration config = new XMLConfiguration(is);
@@ -85,7 +104,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       {
         log.info("Diameter Stack Mux :: Adding Listener for [" + appId + "].");
         network.addNetworkReqListener(this, appId);
-        
+
         if( appId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE )
         {
           this.appIdToListener.put(appId.getAcctAppId(), null);
@@ -106,9 +125,9 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       {
         log.error( "Error while parsing dictionary file.", e );
       }
-      
+
       this.stack.start();
-      
+
     }
     finally
     {
@@ -120,15 +139,15 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
     log.info("Diameter Stack Mux :: Successfully initialized stack.");
   }
-  
+
   private void doStopStack() throws Exception
   {
     try
     {
       log.info("Stopping Diameter Mux Stack...");
-      
+
       stack.stop(10, TimeUnit.SECONDS);
-      
+
       log.info("Diameter Mux Stack Stopped Successfully.");
     }
     catch (Exception e)
@@ -138,26 +157,26 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
     stack.destroy();
   }
-  
+
   private DiameterListener findListener(Message message)
   {
 
     Set<org.jdiameter.api.ApplicationId> appIds = message.getApplicationIdAvps();
-    
+
     if( appIds.size() > 0 )
     {
       for(org.jdiameter.api.ApplicationId appId : appIds)
       {
         log.info( "Diameter Stack Mux :: findListener :: AVP AppId [" + appId + "]" );
-  
+
         DiameterListener listener;
-        
+
         Long appIdValue = appId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE ? appId.getAcctAppId() : appId.getAuthAppId(); 
-        
+
         if( (listener = this.appIdToListener.get(appIdValue)) != null )
         {
           log.info( "Diameter Stack Mux :: findListener :: Found Listener [" + listener + "]" );
-          
+
           return listener;
         }
       }
@@ -165,32 +184,32 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     else
     {
       Long appId = message.getApplicationId();
-      
+
       log.info( "Diameter Stack Mux :: findListener :: Header AppId [" + appId + "]" );
-      
+
       DiameterListener listener;
-      
+
       if( (listener = this.appIdToListener.get(appId)) != null )
       {
         log.info( "Diameter Stack Mux :: findListener :: Found Listener [" + listener + "]" );
-        
+
         return listener;
       }
     }
-    
+
     log.info( "Diameter Stack Mux :: findListener :: No Listener Found." );
-    
+
     return null;
   }
-  
+
   // ===== NetworkReqListener IMPLEMENTATION ===== 
-  
+
   public Answer processRequest( Request request )
   {
     log.info( "Diameter Stack Mux :: processRequest :: Command-Code [" + request.getCommandCode() + "]" );
-    
+
     DiameterListener listener = findListener( request );
-    
+
     if( listener != null )
     {
       return listener.processRequest( request );
@@ -200,9 +219,9 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       try
       {
         Answer answer = request.createAnswer( ResultCode.APPLICATION_UNSUPPORTED );
-        
+
         //this.stack.getSessionFactory().getNewRawSession().send(answer);
-        
+
         return answer;
       }
       catch ( Exception e )
@@ -210,16 +229,16 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
         log.error( "", e );
       }
     }
-    
+
     return null;
   }
 
   // ===== EventListener<Request, Answer> IMPLEMENTATION ===== 
-  
+
   public void receivedSuccessMessage( Request request, Answer answer )
   {
     DiameterListener listener = findListener( request );
-    
+
     if( listener != null )
     {
       listener.receivedSuccessMessage( request, answer );
@@ -229,20 +248,20 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   public void timeoutExpired( Request request )
   {
     DiameterListener listener = findListener( request );
-    
+
     if( listener != null )
     {
       listener.timeoutExpired( request );
     }
   }
-  
+
   // ===== SERVICE LIFECYCLE MANAGEMENT =====
-  
+
   @Override
   protected void startService() throws Exception
   {
     super.startService();
-    
+
     initStack();
   }
 
@@ -250,7 +269,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   protected void stopService() throws Exception
   {
     super.stopService();
-    
+
     doStopStack();
   }
 
@@ -260,7 +279,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     {
       Avp sessionId = null;
       Session session = null;
-      
+
       if((sessionId = message.getAvps().getAvp(Avp.SESSION_ID)) == null)
       {
         session = stack.getSessionFactory().getNewSession();
@@ -269,25 +288,25 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       {
         session = stack.getSessionFactory().getNewSession( sessionId.getUTF8String() );
       }
-      
+
       session.send( message );
-      
+
       return session.getSessionId();
     }
     catch (Exception e) {
       log.error( "", e );
     }
-    
+
     return null;
   }
-  
+
   public Message sendMessageSync( Message message )
   {
     try
     {
       Avp sessionId = null;
       Session session = null;
-      
+
       if((sessionId = message.getAvps().getAvp(Avp.SESSION_ID)) == null)
       {
         session = stack.getSessionFactory().getNewSession();
@@ -296,15 +315,15 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       {
         session = stack.getSessionFactory().getNewSession( sessionId.getUTF8String() );
       }
-      
+
       Future<Message> answer = session.send( message );
-      
+
       return answer.get();
     }
     catch (Exception e) {
       log.error( "", e );
     }
-    
+
     return null;
   }
 
@@ -314,14 +333,14 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     {
       Message message = this.stack.getSessionFactory().getNewRawSession().createMessage( commandCode, org.jdiameter.api.ApplicationId.createByAccAppId( applicationId ), new Avp[]{} );
       message.setRequest( isRequest );
-      
+
       return  message;
     }
     catch ( Exception e )
     {
       log.error( "Failure while creating message.", e );
     }
-    
+
     return null;
   }
 
@@ -336,7 +355,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   }
 
   // ===== MBEAN OPERATIONS =====
-  
+
   public DiameterStackMultiplexerMBean getMultiplexerMBean()
   {
     return this;
@@ -362,27 +381,27 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     if(listener == null)
     {
       log.warn( "Trying to register a null Listener. Give up..." );
-      
+
       return;
     }
-    
+
     int curAppIdIndex = 0;
-    
+
     try
     {
       lock.lock();
-      
+
       // Register the selected appIds in the stack
       Network network = stack.unwrap(Network.class);
 
       log.info("Diameter Stack Mux :: Registering  " + appIds.length + " applications.");
-      
+
       for (; curAppIdIndex < appIds.length; curAppIdIndex++)
       {
         org.jdiameter.api.ApplicationId appId = appIds[curAppIdIndex];
         log.info("Diameter Stack Mux :: Adding Listener for [" + appId + "].");
         network.addNetworkReqListener(this, appId);
-        
+
         if( appId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE )
         {
           this.appIdToListener.put(appId.getAcctAppId(), listener);
@@ -412,12 +431,12 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       try
       {
         Network network = stack.unwrap(Network.class);
-        
+
         for (; curAppIdIndex >= 0; curAppIdIndex--)
         {
           // Remove the app id from map
           this.appIdToListener.remove(appIds[curAppIdIndex]);
-          
+
           // Unregister it from stack listener
           network.removeNetworkReqListener(appIds[curAppIdIndex]);
         }
@@ -437,38 +456,38 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   public void unregisterListener( DiameterListener listener )
   {
     log.info( "Diameter Stack Mux :: unregisterListener :: Listener [" + listener + "]" );
-    
+
     if(listener == null)
     {
       log.warn( "Diameter Stack Mux :: unregisterListener :: Trying to unregister a null Listener. Give up..." );
-      
+
       return;
     }
-    
+
     try
     {
       lock.lock();
-      
+
       Collection<org.jdiameter.api.ApplicationId> appIds = this.listenerToAppId.remove(listener);
-      
+
       if(appIds == null)
       {
         log.warn( "Diameter Stack Mux :: unregisterListener :: Listener has no App-Ids registered. Give up..." );
-        
+
         return;
       }
 
       Network network = stack.unwrap(Network.class);
-      
+
       for (org.jdiameter.api.ApplicationId appId : appIds)
       {
         try
         {
           log.info( "Diameter Stack Mux :: unregisterListener :: Unregistering AppId [" + appId + "]" );
-          
+
           // Remove the appid from map
           this.appIdToListener.remove(appId);
-          
+
           // and unregister the listener from stack
           network.removeNetworkReqListener(appId);
         }
@@ -490,7 +509,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   }
 
   //  management operations ----------------------------------------------
-  
+
   /*
    *  -- MutableConfiguration Parameters --
    * Levels  Parameters name
@@ -521,11 +540,11 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
    */
 
   private final String DEFAULT_STRING = "default_string";
-  
+
   private MutableConfiguration getMutableConfiguration() throws MBeanException {
     return (MutableConfiguration) stack.getMetaData().getConfiguration();
   }
-  
+
   private AppConfiguration getClientConfiguration() {
     return org.jdiameter.client.impl.helpers.EmptyConfiguration.getInstance();
   }
@@ -536,11 +555,11 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     // validate ip address
     if(IP_PATTERN.matcher(ipAddress).matches()) {
       Configuration[] oldIPAddressesConfig = getMutableConfiguration().getChildren(OwnIPAddresses.ordinal());
-      
+
       List<Configuration> newIPAddressesConfig  = Arrays.asList(oldIPAddressesConfig);
       AppConfiguration newIPAddress = getClientConfiguration().add(OwnIPAddress, ipAddress);
       newIPAddressesConfig.add(newIPAddress);
-        
+
       getMutableConfiguration().setChildren(OwnIPAddresses.ordinal(), (Configuration[]) newIPAddressesConfig.toArray());
 
       log.info("Local Peer IP Address successfully changed to " + ipAddress + ". Restart to Diameter stack is needed to apply changes.");
@@ -556,16 +575,16 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
    */
   public void _LocalPeer_removeIPAddress(String ipAddress) throws MBeanException {
     Configuration[] oldIPAddressesConfig = getMutableConfiguration().getChildren(OwnIPAddresses.ordinal());
-    
+
     AppConfiguration ipAddressToRemove = null;
-    
+
     List<Configuration> newIPAddressesConfig  = Arrays.asList(oldIPAddressesConfig);
     for(Configuration curIPAddress : newIPAddressesConfig) {
       if(curIPAddress.getStringValue(OwnIPAddress.ordinal(), DEFAULT_STRING).equals(ipAddress)) {
         break;
       }
     }
-    
+
     if(ipAddressToRemove != null) {
       newIPAddressesConfig.remove(ipAddressToRemove);
 
@@ -584,7 +603,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
    */
   public void _LocalPeer_setRealm(String realm) throws MBeanException {
     getMutableConfiguration().setStringValue(OwnRealm.ordinal(), realm);
-    
+
     log.info("Local Peer Realm successfully changed to '" + realm + "'. Restart to Diameter stack is needed to apply changes.");
   }
 
@@ -596,9 +615,9 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     // validate uri
     try {
       new URI(uri);
-      
+
       getMutableConfiguration().setStringValue(OwnDiameterURI.ordinal(), uri);
-      
+
       log.info("Local Peer URI successfully changed to '" + uri + "'. Restart to Diameter stack is needed to apply changes.");
     }
     catch (URISyntaxException use) {
@@ -626,20 +645,16 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
    * @see org.mobicents.diameter.stack.DiameterStackMultiplexerMBean#_Network_Peers_addPeer(java.lang.String, boolean, int)
    */
   public void _Network_Peers_addPeer(String name, boolean attemptConnect, int rating) throws MBeanException {
-    Configuration[] oldPeerTable = getMutableConfiguration().getChildren(PeerTable.ordinal());
-    
-    // FIXME: Requires JDK6 : Configuration[] newPeerTable = Arrays.copyOf(oldPeerTable, oldPeerTable.length + 1);
-    Configuration[] newPeerTable = new Configuration[oldPeerTable.length + 1];
-    
-    System.arraycopy(oldPeerTable, 0, newPeerTable, 0, oldPeerTable.length);
-    
-    AppConfiguration newPeer = getClientConfiguration().add(PeerName, name);
-    newPeer.add(PeerAttemptConnection, attemptConnect);
-    newPeer.add(PeerRating, rating);
-    
-    newPeerTable[oldPeerTable.length] = newPeer;
-    
-    getMutableConfiguration().setChildren(PeerTable.ordinal(), newPeerTable);
+    try {
+      NetworkImpl n = (NetworkImpl) stack.unwrap(Network.class);
+      /*Peer p =*/ n.addPeer(name, "", attemptConnect); // FIXME: This requires realm...
+    }
+    catch (IllegalArgumentException e) {
+      log.warn(e.getMessage());
+    }
+    catch (InternalException e) {
+      throw new MBeanException(e, "Failed to add peer with name '" + name + "'");
+    }
   }
 
   /*
@@ -647,143 +662,68 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
    * @see org.mobicents.diameter.stack.DiameterStackMultiplexerMBean#_Network_Peers_removePeer(java.lang.String)
    */
   public void _Network_Peers_removePeer(String name) throws MBeanException {
-    Configuration[] oldPeerTable = getMutableConfiguration().getChildren(PeerTable.ordinal());
-    
-    AppConfiguration peerToRemove = null;
-    
-    List<Configuration> newPeerTable  = Arrays.asList(oldPeerTable);
-    for(Configuration curPeer : newPeerTable) {
-      if(curPeer.getStringValue(PeerName.ordinal(), DEFAULT_STRING).equals(name)) {
-        peerToRemove = (AppConfiguration) curPeer;
-        break;
-      }
+    try {
+      MutablePeerTable n = (MutablePeerTable) stack.unwrap(PeerTable.class);
+      n.removePeer(name);
     }
-    
-    if(peerToRemove != null) {
-      newPeerTable.remove(peerToRemove);
-      getMutableConfiguration().setChildren(PeerTable.ordinal(), (Configuration[]) newPeerTable.toArray());
-
-      log.info("Peer '" + name + "' successfully added. Restart to Diameter stack is needed to apply changes.");
-    }
-    else {
-      log.info("Peer '" + name + "' not found. No changes were made.");
+    catch (InternalException e) {
+      throw new MBeanException(e, "Failed to remove peer with name '" + name + "'");
     }
   }
 
-  public void _Network_Realms_addPeerToRealm(String realmName, String peerName) throws MBeanException {
-    
-    Configuration[] realmEntries = getMutableConfiguration().getChildren(RealmTable.ordinal())[0].getChildren(RealmEntry.ordinal());
-    
-    for(Configuration realmEntry : realmEntries) {
-      if(realmEntry.getStringValue(RealmName.ordinal(), DEFAULT_STRING).equals(realmName)) {
-        
-        String realmHosts = realmEntry.getStringValue(RealmHosts.ordinal(), DEFAULT_STRING);
-        if(!realmHosts.equals(DEFAULT_STRING)) {
-          realmHosts += ", " + peerName;
-        }
-        else {
-          realmHosts = peerName;
-        }
-        
-        ((org.jdiameter.client.impl.helpers.EmptyConfiguration)realmEntry).add(RealmHosts, realmHosts);
-        log.info("Added peer '" + peerName + "' to Realm '" + realmName + "'.");
-        return;
-      }
+  public void _Network_Realms_addPeerToRealm(String realmName, String peerName, boolean attemptConnect) throws MBeanException {
+    try {
+      NetworkImpl n = (NetworkImpl) stack.unwrap(Network.class);
+      /*Peer p =*/ n.addPeer(peerName, realmName, attemptConnect);
     }
-    
-    log.info("No Realm with name '" + realmName + "' was found, no action was performed.");
+    catch (IllegalArgumentException e) {
+      log.warn(e.getMessage());
+    }
+    catch (InternalException e) {
+      throw new MBeanException(e, "Failed to add peer with name '" + peerName + "' to realm '" + realmName + "'");
+    }
   }
 
+  public void _Network_Realms_addRealm(String name, String peers, long appVendorId, long appAcctId, long appAuthId, String localAction, boolean isDynamic, int expTime) throws MBeanException {
+    try {
+      org.jdiameter.server.impl.NetworkImpl n = (org.jdiameter.server.impl.NetworkImpl) stack.unwrap(org.jdiameter.api.Network.class);
+      ApplicationId appId = appAcctId == 0 ? org.jdiameter.api.ApplicationId.createByAuthAppId(appVendorId, appAuthId) : org.jdiameter.api.ApplicationId.createByAccAppId(appVendorId, appAcctId);
+      org.jdiameter.api.Realm r = n.addRealm(name, appId, LocalAction.valueOf(localAction), isDynamic, expTime);
+      for(String peer : peers.split(",")) {
+        r.addPeerName(peer);
+      }
+    }
+    catch (InternalException e) {
+      throw new MBeanException(e, "Failed to add realm with name '" + name + "'.");
+    }
+  }
+  
   public void _Network_Realms_addRealm(String name, String peers, long appVendorId, long appAcctId, long appAuthId) throws MBeanException {
-    Configuration[] oldRealmEntries = getMutableConfiguration().getChildren(RealmTable.ordinal())[0].getChildren(RealmEntry.ordinal());
-    
-    for(Configuration realmEntry : oldRealmEntries) {
-      if(realmEntry.getStringValue(RealmName.ordinal(), DEFAULT_STRING).equals(name)) {
-        throw new MBeanException(new IllegalArgumentException("Realm with name '" + name + "' already exists."));
-      }
-    }
-
-    // FIXME: Requires JDK6 : Configuration[] newRealmEntries = Arrays.copyOf(oldRealmEntries, oldRealmEntries.length + 1);
-    Configuration[] newRealmEntries = new Configuration[oldRealmEntries.length + 1];
-    
-    System.arraycopy(oldRealmEntries, 0, newRealmEntries, 0, oldRealmEntries.length);
-
-    AppConfiguration newRealm = getClientConfiguration().add(RealmEntry, getClientConfiguration().
-        add(ApplicationId, new Configuration[] {getClientConfiguration().add(VendorId, appVendorId).add(AcctApplId, appAcctId).add(AuthApplId, appAuthId)}).
-        add(RealmName, name).
-        add(RealmHosts, peers).
-        add(RealmLocalAction, "LOCAL").
-        add(RealmEntryIsDynamic, false).
-        add(RealmEntryExpTime, 1));
-    
-    newRealmEntries[oldRealmEntries.length] = newRealm;
-    
-    ((org.jdiameter.client.impl.helpers.EmptyConfiguration)getMutableConfiguration().getChildren(RealmTable.ordinal())[0]).add(RealmEntry, newRealmEntries);
-    log.info("Realm '" + name + "' added successfuly.");
+    _Network_Realms_addRealm(name, peers, appVendorId, appAcctId, appAuthId, "LOCAL", false, 1);
   }
 
   public void _Network_Realms_removePeerFromRealm(String realmName, String peerName) throws MBeanException {
-    
-    Configuration[] realmEntries = getMutableConfiguration().getChildren(RealmTable.ordinal())[0].getChildren(RealmEntry.ordinal());
-    
-    for(Configuration realmEntry : realmEntries) {
-      if(realmEntry.getStringValue(RealmName.ordinal(), DEFAULT_STRING).equals(realmName)) {
-        
-        String realmHosts[] = realmEntry.getStringValue(RealmHosts.ordinal(), DEFAULT_STRING).replaceAll(" ", "").split(",");
-        
-        String newRealmHosts[] = new String[realmHosts.length-1];
-        
-        int n = 0;
-        
-        for(String realmHost : realmHosts) {
-          if(!peerName.equals(realmHost)) {
-            if(n < newRealmHosts.length) {
-              newRealmHosts[n++] = realmHost;
-            }
-            else {
-              log.info("No Peer '" + peerName + "' found in Realm '" + realmName + "', no action was performed.");
-              return;
-            }            
-          }
+    try {
+      RealmTable rt = (RealmTable) stack.unwrap(RealmTable.class);
+      for(org.jdiameter.api.Realm r : rt.getAllRealms()) {
+        if(r.getName().equals(realmName)) {
+          r.removePeerName(peerName);
         }
-        
-        String newRealmHostsString = "";
-        for(String realm : newRealmHosts) {
-          newRealmHostsString += newRealmHostsString.length() == 0 ? realm : (", " + realm);
-        }
-        
-        ((org.jdiameter.client.impl.helpers.EmptyConfiguration)realmEntry).add(RealmHosts, newRealmHostsString);
-        log.info("Removed peer '" + peerName + "' from Realm '" + realmName + "'.");
-        return;
       }
     }
-    
-    log.info("No Realm with name '" + realmName + "' was found, no action was performed.");
+    catch (InternalException e) {
+      throw new MBeanException(e, "Failed to add peer '" + peerName + "' from realm with '" + realmName + "'.");
+    }
   }
 
   public void _Network_Realms_removeRealm(String name) throws MBeanException {
-    Configuration[] oldRealmEntries = getMutableConfiguration().getChildren(RealmTable.ordinal())[0].getChildren(RealmEntry.ordinal());
-    
-    Configuration[] newRealmEntries = new Configuration[oldRealmEntries.length-1];
-    
-    int n = 0;
-    
-    for(Configuration realmEntry : oldRealmEntries) {
-      if(!realmEntry.getStringValue(RealmName.ordinal(), DEFAULT_STRING).equals(name)) {
-        if(n < newRealmEntries.length) {
-          newRealmEntries[n++] = realmEntry;
-        }
-        else {
-          log.info("No Realm with name '" + name + "' was found, no action was performed.");
-        }
-      }
-      else if (log.isDebugEnabled()) {
-        log.debug("Found instance of Realm to be removed:" + realmEntry);
-      }
+    try {
+      org.jdiameter.server.impl.NetworkImpl n = (org.jdiameter.server.impl.NetworkImpl) stack.unwrap(org.jdiameter.api.Network.class);
+      n.remRealm(name);
     }
-    
-    ((org.jdiameter.client.impl.helpers.EmptyConfiguration)getMutableConfiguration().getChildren(RealmTable.ordinal())[0]).add(RealmEntry, newRealmEntries);
-    log.info("Realm '" + name + "' removed successfuly.");
+    catch (InternalException e) {
+      throw new MBeanException(e, "Failed to remove realm '" + name + "'.");
+    }
   }
 
   public void _Parameters_setAcceptUndefinedPeer(boolean acceptUndefinedPeer) throws MBeanException {
@@ -798,32 +738,50 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     getMutableConfiguration().setLongValue(DuplicateTimer.ordinal(), duplicateTimer);
   }
 
-  public void _Parameters_setMessageTimeOut(long messageTimeout) throws MBeanException {
+  public void _Parameters_setMessageTimeout(long messageTimeout) throws MBeanException {
     getMutableConfiguration().setLongValue(MessageTimeOut.ordinal(), messageTimeout);
   }
 
-  public void _Parameters_setStopTimeOut(long stopTimeout) throws MBeanException {
+  public void _Parameters_setStopTimeout(long stopTimeout) throws MBeanException {
     getMutableConfiguration().setLongValue(StopTimeOut.ordinal(), stopTimeout);
   }
 
-  public void _Parameters_setCeaTimeOut(long stopTimeout) throws MBeanException {
+  public void _Parameters_setCeaTimeout(long stopTimeout) throws MBeanException {
     getMutableConfiguration().setLongValue(CeaTimeOut.ordinal(), stopTimeout);
   }
 
-  public void _Parameters_setIacTimeOut(long stopTimeout) throws MBeanException {
+  public void _Parameters_setIacTimeout(long stopTimeout) throws MBeanException {
     getMutableConfiguration().setLongValue(IacTimeOut.ordinal(), stopTimeout);
   }
 
-  public void _Parameters_setDwaTimeOut(long stopTimeout) throws MBeanException {
+  public void _Parameters_setDwaTimeout(long stopTimeout) throws MBeanException {
     getMutableConfiguration().setLongValue(DwaTimeOut.ordinal(), stopTimeout);
   }
 
-  public void _Parameters_setDpaTimeOut(long stopTimeout) throws MBeanException {
+  public void _Parameters_setDpaTimeout(long stopTimeout) throws MBeanException {
     getMutableConfiguration().setLongValue(DpaTimeOut.ordinal(), stopTimeout);
   }
 
-  public void _Parameters_setRecTimeOut(long stopTimeout) throws MBeanException {
+  public void _Parameters_setRecTimeout(long stopTimeout) throws MBeanException {
     getMutableConfiguration().setLongValue(RecTimeOut.ordinal(), stopTimeout);
+  }
+
+  public void _Parameters_setConcurrentEntity(String name, String desc, Integer size) throws MBeanException {
+    for(Configuration c : getMutableConfiguration().getChildren(Concurrent.ordinal())) {
+      if(name.equals(c.getStringValue(ConcurrentEntityName.ordinal(), null))) {
+        ((AppConfiguration)c).add(ConcurrentEntityPoolSize, size);
+        if(desc != null) {
+          ((AppConfiguration)c).add(ConcurrentEntityDescription, desc);
+        }
+      }
+    }
+  }
+  public void _Parameters_setStatisticLoggerDelay(long delay)  throws MBeanException {
+    getMutableConfiguration().setLongValue(StatisticLoggerDelay.ordinal(), delay);
+  }
+
+  public void _Parameters_setStatisticLoggerPause(long pause) throws MBeanException {
+    getMutableConfiguration().setLongValue(StatisticLoggerPause.ordinal(), pause);
   }
 
   public void _Validation_setEnabled(boolean enableValidation) throws MBeanException {
@@ -852,4 +810,198 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     }
   }  
 
+  // Getters ------------------------------------------------------------- //
+  
+  public String _LocalPeer_getProductName() throws MBeanException {
+    return this.stack.getMetaData().getLocalPeer().getProductName();
+  }
+
+  public Long _LocalPeer_getVendorId() throws MBeanException {
+    return this.stack.getMetaData().getLocalPeer().getVendorId();
+  }
+
+  public Long _LocalPeer_getFirmware() throws MBeanException {
+    return this.stack.getMetaData().getLocalPeer().getFirmware();
+  }
+
+  public String _LocalPeer_getURI() throws MBeanException {
+    return this.stack.getMetaData().getLocalPeer().getUri().toString();
+  }
+
+  public String _LocalPeer_getRealmName() throws MBeanException {
+    return this.stack.getMetaData().getLocalPeer().getRealmName();
+  }
+
+  public InetAddress[] _LocalPeer_getIPAddresses() throws MBeanException {
+    return this.stack.getMetaData().getLocalPeer().getIPAddresses();
+  }
+
+  public Set<ApplicationId> _LocalPeer_getCommonApplicationIds() throws MBeanException {
+    return this.stack.getMetaData().getLocalPeer().getCommonApplications();
+  }
+
+  public String[] _Network_Realms_getRealms() throws MBeanException {
+    Configuration[] realmEntries = getMutableConfiguration().getChildren(RealmTable.ordinal())[0].getChildren(RealmEntry.ordinal());
+    String[] realmNames = new String[realmEntries.length];
+
+    for(int i = 0; i < realmEntries.length; i++) {
+      realmNames[i] = realmEntries[i].getStringValue(RealmName.ordinal(), DEFAULT_STRING);
+    }
+
+    return realmNames;
+  }
+
+  public String[] _Network_Realms_getRealmPeers(String realmName) throws MBeanException {
+    Configuration[] realmEntries = getMutableConfiguration().getChildren(RealmTable.ordinal())[0].getChildren(RealmEntry.ordinal());
+    String[] realmHosts = new String[realmEntries.length];
+
+    for(Configuration realmEntry : realmEntries) {
+      if(realmEntry.getStringValue(RealmName.ordinal(), DEFAULT_STRING).equals(realmName)) {
+
+        String realmHostsString = realmEntry.getStringValue(RealmHosts.ordinal(), DEFAULT_STRING);
+        if(!realmHostsString.equals(DEFAULT_STRING)) {
+          realmHosts = realmHostsString.replaceAll(" ", "").split(",");
+        }
+      }
+    }
+
+    return realmHosts;
+  }
+
+  public static void main(String[] args) throws Exception {
+    DiameterStackMultiplexer mux = new DiameterStackMultiplexer();
+    
+    InputStream is = new BufferedInputStream(new FileInputStream("/Users/ammendonca/work/jdiameter/jdiameter-config.xml"));
+    mux.initStack(is);
+    DiameterConfiguration mgmt = new DiameterConfiguration(mux.getStack());
+    //System.out.println(mgmt);
+
+    // Add Peer in runtime
+    //NetworkImpl n = (NetworkImpl) mux.getStack().unwrap(Network.class);
+    //Peer p = n.addPeer("aaa://127.0.0.1:21812", "mobicents.org", true);
+    //System.out.println(p);
+    
+    // Add Realm in runtime
+    //NetworkImpl n = (NetworkImpl) mux.getStack().unwrap(Network.class);
+    //Realm r = n.addRealm("brainslog.org", org.jdiameter.api.ApplicationId.createByAccAppId(69), LocalAction.LOCAL, false, 1);
+    //System.out.println("New Realm => " + r);
+
+    //System.out.println(rt);
+    //mgmt.getNetwork().getPeer("aaa://127.0.0.1:21812").setName("aaa://127.0.0.1:21822");
+    //System.out.println("STOPPING");
+    //mux.stopStack();
+    //System.out.println("STOPPED. STARTING.");
+    //mux.startStack();
+    //System.out.println("STARTED");
+    //System.exit(0);
+    
+    // Add realm
+    ApplicationIdJMX[] appIds = new ApplicationIdJMX[]{ApplicationIdJMX.createAcctApplicationId(69)};
+    RealmImpl realm = new RealmImpl(Arrays.asList(appIds), "brainslog.org", new ArrayList<String>(Arrays.asList(new String[]{"192.168.0.2"})), "LOCAL", false, 1L);
+    mgmt.getNetwork().addRealmRuntime(realm);
+
+    // Add peer
+    mgmt.getNetwork().addPeerRuntime(new NetworkPeerImpl("aaa://127.0.0.1:21818", true, 1), "brainslog.org");
+    
+    // Remove peer
+    // mgmt.getNetwork().removePeer("127.0.0.1");
+    
+    // Remove realm
+    // mgmt.getNetwork().removeRealm("mobicents.org");
+    
+    // Change DuplicateTimer
+    mgmt.getParameters().setDuplicateTimer(999L);
+    
+    // Change AcceptUndefinedPeer
+    mgmt.getParameters().setAcceptUndefinedPeer(false);
+    
+    // Change UseUriAsFqdn
+    mgmt.getParameters().setUseUriAsFqdn(false);
+    
+    // Change MessageTimeout
+    mgmt.getParameters().setMessageTimeout(999L);
+    
+    // Change StopTimeout
+    mgmt.getParameters().setStopTimeout(999L);
+    
+    // Change CeaTimeout
+    mgmt.getParameters().setCeaTimeout(999L);
+    
+    // Change IacTimeout
+    mgmt.getParameters().setIacTimeout(999L);
+    
+    // Change DwaTimeout
+    mgmt.getParameters().setDwaTimeout(999L);
+    
+    // Change DpaTimeout
+    mgmt.getParameters().setDpaTimeout(999L);
+    
+    // Change RecTimeout
+    mgmt.getParameters().setRecTimeout(999L);
+    
+    mgmt = new DiameterConfiguration(mux.getStack());
+    
+    // Network Peer Management
+    NetworkPeer nPeer = mgmt.getNetwork().getPeer("aaa://127.0.0.1:21812");
+    
+    // Set Rating
+    nPeer.setRating(28);
+    
+    // Set Name
+    nPeer.setName("aaa://127.0.0.1:21813");
+    
+    // Set IP Address
+    nPeer.setIp("192.168.10.12");
+    
+    // Set Port Range
+    nPeer.setPortRange(1024, 2048);
+
+    mgmt = new DiameterConfiguration(mux.getStack());
+
+    // Realm Management
+    org.mobicents.diameter.stack.management.Realm nRealm = mgmt.getNetwork().getRealm("mobicents.org");
+    
+    nRealm.setName("mobicentz.org");
+    
+    nRealm.setLocalAction(LocalAction.PROXY.name());
+    
+    nRealm.setDynamic(true);
+    
+    nRealm.addPeer("127.0.0.3");
+    
+    nRealm.setExpTime(3L);
+    
+    ((RealmImpl)nRealm).updateRealm();
+
+    mgmt = new DiameterConfiguration(mux.getStack());
+    System.out.println(mgmt);
+    //System.out.println(mux.getStack().isWrapperFor(PeerTable.class));
+    //MutablePeerTableImpl mpt = (MutablePeerTableImp ´+´l) mux.getStack().unwrap(PeerTable.class);
+    //mpt.getAllRealms();
+    //for(Peer x : mpt.getPeerTable()) {
+    //  System.out.println(x.toString());
+    //}
+    System.exit(0);
+  }
+
+  public DiameterConfiguration getDiameterConfiguration() throws MBeanException {
+    return new DiameterConfiguration(stack);
+  }
+  
+  public boolean _LocalPeer_isActive() throws MBeanException {
+    return this.stack.isActive();
+  }
+
+  public boolean _Network_Peers_isPeerConnected(String name) throws MBeanException {
+    try {
+      MutablePeerTable n = (MutablePeerTable) stack.unwrap(PeerTable.class);
+      PeerImpl p = ((PeerImpl)n.getPeer(name));
+      return p != null ? p.getContext().isConnected() : false;
+    }
+    catch (Exception e) {
+      throw new MBeanException(e, "Failed to get connection availability for peer with name '" + "'.");
+    }
+  }
+  
+  
 }

@@ -1,5 +1,8 @@
 package org.mobicents.diameter.stack;
 
+import java.net.InetAddress;
+import java.util.Set;
+
 import javax.management.MBeanException;
 
 import org.jboss.system.ServiceMBean;
@@ -7,6 +10,7 @@ import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Stack;
 import org.mobicents.diameter.api.DiameterMessageFactory;
 import org.mobicents.diameter.api.DiameterProvider;
+import org.mobicents.diameter.stack.management.DiameterConfiguration;
 
 public interface DiameterStackMultiplexerMBean extends ServiceMBean
 {
@@ -27,6 +31,10 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
   public DiameterStackMultiplexerMBean getMultiplexerMBean();
   
   // MANAGEMENT OPERATIONS
+  
+  // Get a Serializable Configuration
+  
+  public DiameterConfiguration getDiameterConfiguration() throws MBeanException;
   
   // Local Peer ----------------------------------------------------------
 
@@ -103,7 +111,7 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @param messageTimeout the amount of time, in ms.
    * @throws MBeanException if the operation is unable to perform correctly
    */
-  public void _Parameters_setMessageTimeOut(long messageTimeout) throws MBeanException;
+  public void _Parameters_setMessageTimeout(long messageTimeout) throws MBeanException;
   
   /**
    * Sets the timeout for stopping the stack. (default: 10000, 10 seconds).
@@ -111,7 +119,7 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @param stopTimeout the amount of time, in ms.
    * @throws MBeanException if the operation is unable to perform correctly
    */
-  public void _Parameters_setStopTimeOut(long stopTimeout) throws MBeanException;
+  public void _Parameters_setStopTimeout(long stopTimeout) throws MBeanException;
 
   /**
    * Sets the timeout for CEA messages. (default: 10000, 10 seconds).
@@ -119,7 +127,7 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @param ceaTimeout the amount of time, in ms.
    * @throws MBeanException if the operation is unable to perform correctly
    */
-  public void _Parameters_setCeaTimeOut(long ceaTimeout) throws MBeanException;
+  public void _Parameters_setCeaTimeout(long ceaTimeout) throws MBeanException;
 
   /**
    * Sets the timeout for inactiveness. (default: 20000, 20 seconds).
@@ -127,7 +135,7 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @param iacTimeout the amount of time, in ms.
    * @throws MBeanException if the operation is unable to perform correctly
    */
-  public void _Parameters_setIacTimeOut(long iacTimeout) throws MBeanException;
+  public void _Parameters_setIacTimeout(long iacTimeout) throws MBeanException;
 
   /**
    * Sets the timeout for DWA messages. (default: 10000, 10 seconds).
@@ -135,7 +143,7 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @param dwaTimeout the amount of time, in ms.
    * @throws MBeanException if the operation is unable to perform correctly
    */
-  public void _Parameters_setDwaTimeOut(long dwaTimeout) throws MBeanException;
+  public void _Parameters_setDwaTimeout(long dwaTimeout) throws MBeanException;
 
   /**
    * Sets the timeout for DPA messages. (default: 5000, 5 seconds).
@@ -143,7 +151,7 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @param dpaTimeout the amount of time, in ms.
    * @throws MBeanException if the operation is unable to perform correctly
    */
-  public void _Parameters_setDpaTimeOut(long dpaTimeout) throws MBeanException;
+  public void _Parameters_setDpaTimeout(long dpaTimeout) throws MBeanException;
 
   /**
    * Sets the timeout for reconnecting. (default: 10000, 10 seconds).
@@ -151,7 +159,13 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @param recTimeout the amount of time, in ms.
    * @throws MBeanException if the operation is unable to perform correctly
    */
-  public void _Parameters_setRecTimeOut(long recTimeout) throws MBeanException;
+  public void _Parameters_setRecTimeout(long recTimeout) throws MBeanException;
+  
+  public void _Parameters_setConcurrentEntity(String name, String desc, Integer size) throws MBeanException;
+
+  public void _Parameters_setStatisticLoggerDelay(long delay) throws MBeanException;
+
+  public void _Parameters_setStatisticLoggerPause(long pause) throws MBeanException;
   
   // Network : Peers -----------------------------------------------------
   
@@ -187,6 +201,8 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    */
   public void _Network_Realms_addRealm(String name, String peers, long appVendorId, long appAcctId, long appAuthId) throws MBeanException;
   
+  public void _Network_Realms_addRealm(String name, String peers, long appVendorId, long appAcctId, long appAuthId, String localAction, boolean isDynamic, int expTime) throws MBeanException;
+
   /**
    * Removes a Realm from the stack.
    * 
@@ -200,9 +216,10 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * 
    * @param realmName the name of the Realm
    * @param peerName the name/host of the Peer to be added
+   * @param attemptConnecting either try or not to connect the peer (client/server)
    * @throws MBeanException if the operation is unable to perform correctly
    */
-  public void _Network_Realms_addPeerToRealm(String realmName, String peerName) throws MBeanException;
+  public void _Network_Realms_addPeerToRealm(String realmName, String peerName, boolean attemptConnecting) throws MBeanException;
   
   /**
    * Removes a Peer host from the Realm
@@ -248,4 +265,29 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @throws MBeanException if the operation is unable to perform correctly
    */
   public String dumpStackConfiguration() throws MBeanException;
+  
+  // Information dump methods --------------------------------------------
+  
+  public String _LocalPeer_getProductName() throws MBeanException;
+
+  public Long _LocalPeer_getVendorId() throws MBeanException;
+
+  public Long _LocalPeer_getFirmware() throws MBeanException;
+
+  public String _LocalPeer_getURI() throws MBeanException;
+
+  public String _LocalPeer_getRealmName() throws MBeanException;
+
+  public InetAddress[] _LocalPeer_getIPAddresses() throws MBeanException;
+
+  public Set<ApplicationId> _LocalPeer_getCommonApplicationIds() throws MBeanException;
+
+  public String[] _Network_Realms_getRealms() throws MBeanException;
+  
+  public String[] _Network_Realms_getRealmPeers(String realmName) throws MBeanException;
+  
+  public boolean _LocalPeer_isActive() throws MBeanException;
+  
+  public boolean _Network_Peers_isPeerConnected(String name) throws MBeanException;
+
 }
