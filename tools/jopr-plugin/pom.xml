@@ -1,0 +1,365 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.mobicents</groupId>
+    <artifactId>mobicents-parent</artifactId>
+    <version>2.2-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.mobicents.servers.diameter.tools</groupId>
+  <artifactId>mobicents-diameter-jopr-as-5-plugin</artifactId>
+  <version>2.0.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>Jopr Mobicents Diameter Plugin For JBoss 5</name>
+  <description>A plugin for managing Mobicents Diameter on JBoss 5 servers</description>
+  <repositories>
+    <repository>
+      <id>maven2-repository.dev.java.net</id>
+      <name>Java.net Repository for Maven</name>
+      <url>http://download.java.net/maven/2/</url>
+      <layout>default</layout>
+    </repository>
+    <repository>
+      <id>JbossRepository</id>
+      <name>Jboss Repository</name>
+      <url>http://repository.jboss.org/maven2</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+    <repository>
+      <id>jboss-snapshots</id>
+      <name>JBoss Snapshot Repository</name>
+      <url>http://snapshots.jboss.org/maven2</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <properties>
+    <rhq.groupId>org.rhq</rhq.groupId>
+    <rhq.version>1.2.0.GA</rhq.version>
+    <jbossas.version>5.1.0.GA</jbossas.version>
+    <jopr-version>2.2.0.GA</jopr-version>
+    <rhq-version>1.4.0.B01</rhq-version>
+    <mobicents.jdiameter.version>1.5.3.0-build351-SNAPSHOT</mobicents.jdiameter.version>
+    <mobicents.diameter.version>1.1.2.GA-SNAPSHOT</mobicents.diameter.version>
+    <getopt.version>1.0.13</getopt.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.14</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- logging dependency -->
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.0.4</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- for the Nullable/NotNull annotations -->
+    <dependency>
+      <groupId>org.jetbrains</groupId>
+      <artifactId>annotations</artifactId>
+      <version>7.0.2</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.rhq</groupId>
+      <artifactId>rhq-core-plugin-api</artifactId>
+      <version>${rhq-version}</version>
+      <scope>provided</scope><!-- by PC -->
+    </dependency>
+
+    <dependency>
+      <groupId>org.rhq</groupId>
+      <artifactId>rhq-core-native-system</artifactId>
+      <version>${rhq-version}</version>
+      <scope>provided</scope><!-- by PC -->
+    </dependency>
+
+    <dependency>
+      <groupId>org.rhq</groupId>
+      <artifactId>rhq-jmx-plugin</artifactId>
+      <version>${rhq-version}</version>
+      <scope>provided</scope><!-- by PC -->
+    </dependency>
+
+    <dependency>
+      <groupId>org.rhq</groupId>
+      <artifactId>rhq-core-domain</artifactId>
+      <version>${rhq-version}</version>
+      <scope>provided</scope><!-- by PC -->
+    </dependency>
+
+    <dependency>
+      <groupId>org.rhq</groupId>
+      <artifactId>rhq-core-domain</artifactId>
+      <version>${rhq-version}</version>
+      <scope>provided</scope><!-- by PC -->
+    </dependency>
+    <dependency>
+      <groupId>org.mobicents.servers.diameter</groupId>
+      <artifactId>mobicents-diameter-mux-jar</artifactId>
+      <version>${mobicents.diameter.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mobicents.servers.diameter</groupId>
+      <artifactId>jdiameter-api</artifactId>
+	  <version>${mobicents.jdiameter.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mobicents.servers.diameter</groupId>
+      <artifactId>jdiameter-impl</artifactId>
+	  <version>${mobicents.jdiameter.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>gnu-getopt</groupId>
+      <artifactId>getopt</artifactId>
+      <version>${getopt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <version>1.6.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>1.3.2</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.4</version>
+    </dependency>
+    <dependency>
+      <groupId>ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>1.6.5</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.jbossas</groupId>
+      <artifactId>jboss-as-system</artifactId>
+      <version>${jbossas.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.jbossas</groupId>
+      <artifactId>jboss-as-system-jmx</artifactId>
+      <version>${jbossas.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.client</groupId>
+      <artifactId>jboss-client</artifactId>
+      <version>5.1.0.CR1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss</groupId>
+      <artifactId>jboss-common-core</artifactId>
+      <version>2.2.14.GA</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.integration</groupId>
+      <artifactId>jboss-integration</artifactId>
+      <version>${jbossas.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.javaee</groupId>
+      <artifactId>jboss-javaee</artifactId>
+      <version>5.0.1.GA</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging-spi</artifactId>
+      <version>2.1.0.GA</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.remoting</groupId>
+      <artifactId>jboss-remoting</artifactId>
+      <version>2.5.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.security</groupId>
+      <artifactId>jboss-security-spi</artifactId>
+      <version>2.0.3.SP1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-serialization</artifactId>
+      <version>1.0.3.GA</version>
+    </dependency>
+
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-transaction</artifactId>
+      <version>4.2.3.GA</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.naming</groupId>
+      <artifactId>jnp-client</artifactId>
+      <version>5.0.3.GA</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.jbossas</groupId>
+      <artifactId>jboss-as-server</artifactId>
+      <version>5.1.0.GA</version>
+      <classifier>jmx-invoker-adaptor-client</classifier>
+    </dependency>
+  </dependencies>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <inherited>false</inherited>
+            <executions>
+              <execution>
+                <phase>install</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <tasks>
+                    <copy overwrite="true" todir="${basedir}/../../release/${release.name}/tools/management-console">
+                      <fileset dir="${basedir}/target">
+                        <include name="**.jar" />
+                      </fileset>
+                    </copy>
+                    <copy overwrite="true" file="${basedir}/release/README.TXT" todir="${basedir}/../../release/${release.name}/tools/management-console" />
+                  </tasks>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>maven-release</id>
+      <modules />
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <configuration>
+              <autoVersionSubmodules>true</autoVersionSubmodules>
+              <tagBase>https://mobicents.googlecode.com/svn/tags/servers/diameter/tools/jopr-plugin</tagBase>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <scm>
+    <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/tools/jopr-plugin</connection>
+    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/tools/jopr-plugin</developerConnection>
+    <url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/tools/jopr-plugin</url>
+  </scm>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <compilerArguments>
+            <g />
+          </compilerArguments>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+          <groupId>org.mobicents.tools</groupId>
+          <inherited>false</inherited>
+          <executions />
+          <configuration>
+          <excludePoms />
+          <classpathExcludes>
+            <exclude>xml-apis:xml-apis</exclude>
+            <exclude>jtidy:jtidy</exclude>
+          </classpathExcludes>
+          <resolveTransitiveDependencies>true</resolveTransitiveDependencies>
+          <eclipseProjectName>mobicents-diameter-jopr</eclipseProjectName>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.0</version>
+        <executions>
+
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeScope>runtime</includeScope>
+              <excludeTransitive>true</excludeTransitive>
+              <outputDirectory>
+                ${project.build.outputDirectory}/lib
+              </outputDirectory>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>copy-dependencies-of-jbossas-common</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>javax.slee</groupId>
+                  <artifactId>jain-slee</artifactId>
+                  <version>1.1</version>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>
+                ${project.build.outputDirectory}/lib
+              </outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

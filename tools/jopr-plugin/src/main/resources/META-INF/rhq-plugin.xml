@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<plugin name="Mobicents-Diameter" displayName="Mobicents Diameter"
+  package="org.rhq.plugins.diameter"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  description="Supports management and monitoring of Mobicents Diameter"
+  xmlns="urn:xmlns:rhq-plugin" xmlns:c="urn:xmlns:rhq-configuration">
+
+  <depends plugin="JMX" useClasses="true" />
+
+  <server name="Mobicents Diameter" classLoader="instance" class="DiameterServerComponent"
+    discovery="DiameterServerDiscoveryComponent" description="Mobicents JAIN SLEE Server 2.x.y" supportsManualAdd="false">
+
+    <plugin-configuration>
+      <c:group name="connectionInfo">
+        <c:simple-property name="namingURL" displayName="Naming Provider URL" description="The JBoss Naming Provider (JNP) URL with which to connect to the JBoss AS or EAP instance (e.g. jnp://127.0.0.1:1099)." />
+        <c:simple-property name="principal" required="false" description="The name of the principal (i.e. user) to authenticate." />
+        <c:simple-property name="credentials" type="password" required="false" description="The credentials (i.e. password) that should be used to authenticate the principal." />
+        <c:simple-property name="homeDir" displayName="JBoss Home Directory" type="directory" readOnly="true" description="The absolute path to the directory where JBoss AS or EAP is installed (e.g. /opt/jboss-5.1.0.GA)." />
+        <c:simple-property name="serverHomeDir" type="directory" readOnly="true" description="The path to the configuration directory under which this instance operates (e.g. /opt/jboss-5.2.0.GA/server/default); if the path is not absolute, then it will be resolved relative to {homeDir}." />
+        <c:simple-property name="serverName" required="false" description="The name of the server configuration (e.g. minimal, default, or all); if not specified, it will default to the last path component of {serverHomeDir}." default="default" />
+      </c:group>
+    </plugin-configuration>
+
+    <process-scan name="jbossas" query="process|basename|match=^java.*,arg|org.jboss.Main|match=.*" />
+
+    <operation name="dumpStackConfiguration" description="Dumps stack configuration.">
+      <results>
+        <c:simple-property name="result" />
+      </results>
+    </operation>
+
+    <operation name="stopStack" description="Stops stack (if not stopped).">
+      <results>
+        <c:simple-property name="result" />
+      </results>
+    </operation>
+
+    <operation name="startStack" description="Starts stack (if not started).">
+      <results>
+        <c:simple-property name="result" />
+      </results>
+    </operation>
+
+    <operation name="setValidation" description="Enable/Disable Message/AVP Validation.">
+      <parameters>
+	      <c:simple-property name="validation" displayName="Enable Validation" summary="true" description="Allows to Enable or Disable the outgoing message validation.">
+	        <c:property-options>
+	          <c:option value="true" />
+	          <c:option value="false" />
+	        </c:property-options>
+	      </c:simple-property>
+      </parameters>
+      <results>
+        <c:simple-property name="result" />
+      </results>
+    </operation>
+
+    <resource-configuration>
+      <c:simple-property name="AcceptUndefinedPeer" displayName="AcceptUndefinedPeer" summary="true" description="Accept incoming connections from peers not configured?">
+	      <c:property-options>
+	        <c:option value="true" />
+	        <c:option value="false" />
+	      </c:property-options>
+      </c:simple-property>
+      <c:simple-property name="DuplicateProtection" displayName="DuplicateProtection" summary="true" readOnly="true" description="Detect duplicate messages?">
+        <c:property-options>
+          <c:option value="true" />
+          <c:option value="false" />
+        </c:property-options>
+      </c:simple-property>
+      <c:simple-property name="DuplicateTimer" displayName="DuplicateTimer" summary="true" description="Time between which message is considered duplicate (in ms)." />
+      <c:simple-property name="UseUriAsFqdn" displayName="UseUriAsFqdn" summary="true" description="Use URI as FQDN (ie, aaa://FQDN:port). Some applications require it, but it's against specs.">
+        <c:property-options>
+          <c:option value="true" />
+          <c:option value="false" />
+        </c:property-options>
+      </c:simple-property>
+      <c:simple-property name="QueueSize" displayName="QueueSize" summary="true" readOnly="true" description="Maximum number of messages to keep in peer queue, waiting for processing." />
+      <c:simple-property name="MessageTimeout" displayName="MessageTimeout" summary="true" description="Time to wait before considering a request has timed out (in ms)." />
+      <c:simple-property name="StopTimeout" displayName="StopTimeout" summary="true" description="Time to wait for stack to stop (in ms)." />
+      <c:simple-property name="CeaTimeout" displayName="CeaTimeout" summary="true" description="Timeout for processing CEA messages (in ms)." />
+      <c:simple-property name="IacTimeout" displayName="IacTimeout" summary="true" description="Timeout for processing DWR messages (in ms)." />
+      <c:simple-property name="DwaTimeout" displayName="DwaTimeout" summary="true" description="Timeout for processing DWA messages (in ms)." />
+      <c:simple-property name="DpaTimeout" displayName="DpaTimeout" summary="true" description="Timeout for processing DPA messages (in ms)." />
+      <c:simple-property name="RecTimeout" displayName="RecTimeout" summary="true" description="Time between failed retries to connect to peer (in ms)." />
+      <c:list-property name="ConcurrentEntitiesList">
+        <c:map-property name="ConcurrentEntitiesDefinition">
+	        <c:simple-property name="name" displayName="Entity Name" summary="true" description="Concurrent Layer Entity Name" />         
+	        <c:simple-property name="description" displayName="Entity Description" required="false" summary="true" description="Concurrent Layer Entity Description" />         
+	        <c:simple-property name="size" displayName="Entity Thread Pool Size" summary="true" description="Concurrent Layer Entity Thread Pool Size" />
+	      </c:map-property>         
+      </c:list-property>
+      <c:simple-property name="StatisticLoggerDelay" displayName="StatisticLoggerDelay" summary="true" description="Frequency with which statistics will be recorded" />
+      <c:simple-property name="StatisticLoggerPause" displayName="StatisticLoggerPause" summary="true" description="Frequency with which statistics will be recorded" />
+    </resource-configuration>
+
+
+     <service name="Network Peer" class="DiameterNetworkPeerComponent" discovery="DiameterNetworkPeerDiscoveryComponent" description="Network Peers" createDeletePolicy="both" creationDataType="configuration">
+       <metric property="AppGenRequest" displayName="Requests Created" dataType="measurement" measurementType="trendsup" displayType="summary" />
+       <metric property="AppGenRequestPerSecond" displayName="Requests Created per Second" dataType="measurement" measurementType="dynamic" displayType="summary" />
+       <metric property="AppGenRejectedRequest" displayName="Requests Failed to Create" dataType="measurement" measurementType="trendsup" displayType="summary" />
+       <metric property="AppGenResponse" displayName="Answers Created" dataType="measurement" measurementType="trendsup" displayType="summary" />
+       <metric property="AppGenResponsePerSecond" displayName="Answers Created per Second" dataType="measurement" measurementType="dynamic" displayType="summary" />
+       <metric property="AppGenRejectedResponse" displayName="Answers Failed to Create" dataType="measurement" measurementType="trendsup" displayType="summary" />
+       <metric property="NetGenRequest" displayName="Requests Received" dataType="measurement" measurementType="trendsup" displayType="summary" />
+       <metric property="NetGenRequestPerSecond" displayName="Requests Received per Second" dataType="measurement" measurementType="dynamic" displayType="summary" />
+       <metric property="NetGenRejectedRequest" displayName="Requests Failed to Receive" dataType="measurement" measurementType="trendsup" displayType="summary" />
+       <metric property="NetGenResponse" displayName="Answers Received" dataType="measurement" measurementType="trendsup" displayType="summary" />
+       <metric property="NetGenResponsePerSecond" displayName="Answers Received per Second" dataType="measurement" measurementType="dynamic" displayType="summary" />
+       <metric property="NetGenRejectedResponse" displayName="Answers Failed to Receive" dataType="measurement" measurementType="trendsup" displayType="summary" />
+       <metric property="SysGenResponse" displayName="Platform Generated Answers" dataType="measurement" measurementType="trendsup" displayType="summary" />
+       <metric property="QueueSize" displayName="Messages in Queue" dataType="measurement" measurementType="dynamic" displayType="summary" />
+       <metric property="MessageProcessingTime" displayName="Average Time for Message Processing" dataType="measurement" measurementType="dynamic" displayType="summary" />
+      
+       <resource-configuration>
+         <c:simple-property name="name" displayName="Peer Name" summary="true" description="The Network Peer FQDN" />
+         <c:simple-property name="rating" displayName="Peer Rating" summary="true" readOnly="true" description="The Network Peer Rating" />
+         <c:simple-property name="attemptConnect" displayName="Peer Attempt Connection" summary="true" description="Should it try to connect to this peer or wait for incoming connection?">
+	         <c:property-options>
+	           <c:option value="true" />
+	           <c:option value="false" />
+	         </c:property-options>
+	       </c:simple-property>
+         <c:map-property name="portRange" required="false" readOnly="true">
+           <c:simple-property name="portRangeLow" displayName="Low Port Range" summary="true" required="false" readOnly="true" description="The low boundary for Port Range connections to this peer (optional)" />         
+           <c:simple-property name="portRangeHigh" displayName="High Port Range" summary="true" required="false" readOnly="true" description="The high boundary for Port Range connections to this peer (optional)" />         
+         </c:map-property>
+         <c:simple-property name="ip" displayName="IP Address" summary="true" required="false" readOnly="true" description="The IP Address for this peer (optional)" />
+      </resource-configuration>
+    </service>
+
+     <service name="Realm" class="DiameterRealmComponent" discovery="DiameterRealmDiscoveryComponent" description="Realms" createDeletePolicy="both" creationDataType="configuration">
+       <resource-configuration>
+         <c:simple-property name="name" displayName="Realm Name" required="true" readOnly="true" summary="true" description="The Realm Name" />
+         <c:list-property name="peersList">
+           <c:map-property name="peersDefinition">
+             <c:simple-property name="ipAddress" displayName="IP Address" required="false" summary="true" description="IP Address of Peer belonging to Realm" />
+           </c:map-property>
+	       </c:list-property>
+         <c:simple-property name="localAction" displayName="Local Action" required="true" summary="true" description="Realm Local Action">
+           <c:property-options>
+             <c:option value="LOCAL" />
+             <c:option value="RELAY" />
+             <c:option value="PROXY" />
+             <c:option value="REDIRECT" />
+           </c:property-options>
+         </c:simple-property>
+         <c:simple-property name="dynamic" displayName="Dynamic" required="true" summary="true" description="Is Realm Dynamic? (New peers to be added at runtime, as they connect)">
+           <c:property-options>
+             <c:option value="true" />
+             <c:option value="false" />
+           </c:property-options>
+         </c:simple-property>
+         <c:simple-property name="expTime" displayName="Expiration Time" required="true" summary="true" description="Expire Time" />
+         <c:list-property name="applicationIdList" required="false">
+           <c:map-property name="applicationIdDefinition" required="false">
+             <c:simple-property name="vendorId" displayName="Vendor-Id" required="true" summary="true" description="Application supported by Realm : Vendor-Id" />         
+             <c:simple-property name="authAppId" displayName="Authorization Application-Id" required="false" summary="true" description="Application supported by Realm : Auth-Application-Id" />         
+             <c:simple-property name="acctAppId" displayName="Accounting Application-Id" required="false" summary="true" description="Application supported by Realm : Acct-Application-Id" />         
+           </c:map-property>
+         </c:list-property>
+      </resource-configuration>
+    </service>
+
+     <service name="LocalPeer" class="DiameterLocalPeerComponent" discovery="DiameterLocalPeerDiscoveryComponent" description="Local Peer">
+       <metric property="AppGenRequest" displayName="Requests Created" dataType="measurement" measurementType="trendsup" displayType="summary" />
+       <metric property="AppGenRequestPerSecond" displayName="Requests Created per Second" dataType="measurement" measurementType="dynamic" displayType="summary" />
+       <metric property="AppGenRejectedRequest" displayName="Requests Failed to Create" dataType="measurement" measurementType="trendsup" displayType="summary" />
+       <metric property="AppGenResponse" displayName="Answers Created" dataType="measurement" measurementType="trendsup" displayType="summary" />
+       <metric property="AppGenResponsePerSecond" displayName="Answers Created per Second" dataType="measurement" measurementType="dynamic" displayType="summary" />
+       <metric property="AppGenRejectedResponse" displayName="Answers Failed to Create" dataType="measurement" measurementType="trendsup" displayType="summary" />
+       <metric property="NetGenRequest" displayName="Requests Received" dataType="measurement" measurementType="trendsup" displayType="summary" />
+       <metric property="NetGenRequestPerSecond" displayName="Requests Received per Second" dataType="measurement" measurementType="dynamic" displayType="summary" />
+       <metric property="NetGenRejectedRequest" displayName="Requests Failed to Receive" dataType="measurement" measurementType="trendsup" displayType="summary" />
+       <metric property="NetGenResponse" displayName="Answers Received" dataType="measurement" measurementType="trendsup" displayType="summary" />
+       <metric property="NetGenResponsePerSecond" displayName="Answers Received per Second" dataType="measurement" measurementType="dynamic" displayType="summary" />
+       <metric property="NetGenRejectedResponse" displayName="Answers Failed to Receive" dataType="measurement" measurementType="trendsup" displayType="summary" />
+       <metric property="SysGenResponse" displayName="Platform Generated Answers" dataType="measurement" measurementType="trendsup" displayType="summary" />
+       <metric property="HeapMemory" displayName="Heap Memory Usage" dataType="measurement" measurementType="dynamic" displayType="summary" />
+       <metric property="NoHeapMemory" displayName="No-Heap Memory Usage" dataType="measurement" measurementType="dynamic" displayType="summary" />
+
+       <resource-configuration>
+         <c:simple-property name="uri" displayName="URI" summary="true" description="The Local Peer URI/Name" />
+         <c:list-property name="ipAddressesList">
+           <c:map-property name="ipAddressesDefinition">
+             <c:simple-property name="ipAddress" displayName="IP Address" required="false" summary="true" description="IP Address assigned to the Local Peer" />
+           </c:map-property>
+         </c:list-property>
+         <c:simple-property name="realm" displayName="Realm" summary="true" description="Local Peer Realm Name" />
+         <c:simple-property name="vendorId" displayName="VendorID" summary="true" description="Local Peer VendorID" />
+         <c:simple-property name="productName" displayName="Product Name" summary="true" description="Local Peer Product Name Identifier" />
+         <c:simple-property name="firmwareRev" displayName="Firmware Revision" summary="true" description="Local Peer Firmware revision number" />
+         <c:list-property name="applicationIdList">
+           <c:map-property name="applicationIdDefinition">
+             <c:simple-property name="vendorId" displayName="Vendor-Id" summary="true" description="Local Peer Default Application : Vendor-Id" />         
+             <c:simple-property name="authAppId" displayName="Authorization Application-Id" summary="true" description="Local Peer Default Application : Auth-Application-Id" />         
+             <c:simple-property name="acctAppId" displayName="Accounting Application-Id" summary="true" description="Local Peer Default Application : Acct-Application-Id" />         
+           </c:map-property>
+         </c:list-property>
+      </resource-configuration>
+    </service>
+
+  </server>
+</plugin>
