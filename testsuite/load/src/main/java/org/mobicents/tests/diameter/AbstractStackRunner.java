@@ -206,9 +206,9 @@ public abstract class AbstractStackRunner implements NetworkReqListener, EventLi
 		}
 	}
 
-	protected void dumpMessage(Message message) {
+	protected void dumpMessage(Message message, boolean sending) {
 		if (log.isInfoEnabled()) {
-			log.info("Received " + (message.isRequest() ? "Request: " : "Answer: ") + message.getCommandCode() + "\nE2E:"
+			log.info((sending?"Sending ":"Received ") + (message.isRequest() ? "Request: " : "Answer: ") + message.getCommandCode() + "\nE2E:"
 					+ message.getEndToEndIdentifier() + "\nHBH:" + message.getHopByHopIdentifier() + "\nAppID:" + message.getApplicationId());
 			log.info("Request AVPS: \n");
 			try {

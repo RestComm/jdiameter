@@ -169,15 +169,18 @@ public class PeerTableImpl implements IPeerTable {
     // Get context
     IPeer peer;
     if (message.isRequest()) {
-      logger.debug("Send request {} [destHost={}; destRealm={}]", new Object[] {message, 
+      logger.info("Send request {} [destHost={}; destRealm={}]", new Object[] {message, 
           message.getAvps().getAvp(Avp.DESTINATION_HOST) != null ? message.getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString() : "",
               message.getAvps().getAvp(Avp.DESTINATION_REALM) != null ? message.getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString() : ""}
+     
       );
+      
       // Check local request
       peer = router.getPeer(message, this);
-      logger.debug( "Selected peer {} for sending message {}", new Object[] {peer, message});
+      logger.info( "Selected peer {} for sending message {}", new Object[] {peer, message});
       if (peer == metaData.getLocalPeer()) {
-        logger.debug("Request {} will be processed by local service", message);
+    	  logger.info("Request {} will be processed by local service", message);
+    	
       }
       else {
         message.setHopByHopIdentifier(peer.getHopByHopIdentifier());

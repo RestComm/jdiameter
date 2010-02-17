@@ -73,6 +73,7 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
   }
 
   public ClientAuthSessionImpl(boolean stl, String sessionId, IAuthMessageFactory fct, SessionFactory sf, ClientAuthSessionListener lst) {
+	  super(sf);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
@@ -118,6 +119,7 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
   }
 
   protected void send(Event.Type type, AppEvent event) throws InternalException {
+	//This is called from app thread, it may be due to callback from our delivery thread, but we dont care
     try {
       sendAndStateLock.lock();
       if (type != null) {
@@ -382,36 +384,17 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
   }
 
   public void receivedSuccessMessage(Request request, Answer answer) {
-    try {
-      sendAndStateLock.lock();
-      //FIXME: baranowb: this shouldnt be like that
-      if (request.getCommandCode() == factory.getAuthMessageCommandCode()) {
-        handleEvent(new Event(Event.Type.RECEIVE_AUTH_ANSWER, factory.createAuthAnswer(answer)));
-      }
-      else if (request.getCommandCode() == AbortSessionRequestImpl.code) {
-        handleEvent(new Event(Event.Type.RECEIVE_ABORT_SESSION_REQUEST, createAbortSessionRequest(request)));
-      }
-      else if (request.getCommandCode() == ReAuthRequestImpl.code) {
-        listener.doReAuthRequestEvent(this, createReAuthRequest(request));
-      }
-      else if (request.getCommandCode() == SessionTermAnswerImpl.code) {
-        listener.doSessionTerminationAnswerEvent(this, new SessionTermAnswerImpl(answer));
-        handleEvent(new Event(Event.Type.RECEIVE_SESSION_TERINATION_ANSWER, createSessionTermAnswer(answer)));
-      }
-      else {
-        listener.doOtherEvent(this, factory.createAuthRequest(request), new AppAnswerEventImpl(answer));
-      }
-    }
-    catch (Exception e) {
-      logger.debug("Can not process received message", e);
-    }
-    finally {
-      sendAndStateLock.unlock();
-    }
+	  AnswerDelivery ad = new AnswerDelivery();
+	  ad.session = this;
+	  ad.request = request;
+	  ad.answer = answer;
+	  super.scheduler.execute(ad);
+    
   }
 
   public void timeoutExpired(Request request) {
     try {
+    	//FIXME: should this also be async ?
       handleEvent(new Event(Event.Type.RECEIVE_FAILED_AUTH_ANSWER, new AppRequestEventImpl(request)));
     }
     catch (Exception e) {
@@ -420,21 +403,10 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
   }
 
   public Answer processRequest(Request request) {
-    try {
-      if (request.getCommandCode() == AbortSessionRequestImpl.code) {
-        handleEvent(new Event(Event.Type.RECEIVE_ABORT_SESSION_REQUEST, createAbortSessionRequest(request)));
-      }
-      else if (request.getCommandCode() == ReAuthRequestImpl.code) {
-        listener.doReAuthRequestEvent(this, createReAuthRequest(request));
-      }
-      else {
-        //FIXME: baranowb : should it be like that?
-        listener.doOtherEvent(this, factory.createAuthRequest(request), null);
-      }
-    }
-    catch (Exception e) {
-      logger.debug("Can not process received request", e);
-    }
+	  RequestDelivery rd = new RequestDelivery();
+	  rd.session = this;
+	  rd.request = request;
+	  super.scheduler.execute(rd);
 
     return null;
   }
@@ -466,5 +438,65 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
   protected Request createSessionTermRequest() {
     return session.createRequest(SESSION_TERMINATION_REQUEST, appId, destRealm, destHost);
   }
+  
+	private class RequestDelivery implements Runnable {
+		ClientAuthSession session;
+		Request request;
+
+		public void run() {
+			try {
+				if (request.getCommandCode() == AbortSessionRequestImpl.code) {
+					handleEvent(new Event(Event.Type.RECEIVE_ABORT_SESSION_REQUEST, createAbortSessionRequest(request)));
+				} else if (request.getCommandCode() == ReAuthRequestImpl.code) {
+					listener.doReAuthRequestEvent(session, createReAuthRequest(request));
+				} else if (request.getCommandCode() == AbortSessionRequestImpl.code) {
+					handleEvent(new Event(Event.Type.RECEIVE_ABORT_SESSION_REQUEST, createAbortSessionRequest(request)));
+				} else {
+					// FIXME: baranowb : should it be like that?
+					listener.doOtherEvent(session, factory.createAuthRequest(request), null);
+				}
+			} catch (Exception e) {
+				logger.debug("Can not process received request", e);
+			}
+
+		}
+
+	}
+
+	private class AnswerDelivery implements Runnable {
+		ClientAuthSession session;
+		Answer answer;
+		Request request;
+
+		public void run() {
+			try {
+				sendAndStateLock.lock();
+				// FIXME: baranowb: this shouldnt be like that
+				if (answer.getCommandCode() == factory.getAuthMessageCommandCode()) {
+					handleEvent(new Event(Event.Type.RECEIVE_AUTH_ANSWER, factory.createAuthAnswer(answer)));
+				}
+
+				// else if (request.getCommandCode() == ReAuthRequestImpl.code)
+				// {
+				//		    	 
+				// listener.doReAuthRequestEvent(this,
+				// createReAuthRequest(request));
+				// }
+				else if (answer.getCommandCode() == SessionTermAnswerImpl.code) {
+					// listener.doSessionTerminationAnswerEvent(this, new
+					// SessionTermAnswerImpl(answer));
+					handleEvent(new Event(Event.Type.RECEIVE_SESSION_TERINATION_ANSWER, createSessionTermAnswer(answer)));
+				} else {
+					listener.doOtherEvent(session, factory.createAuthRequest(request), new AppAnswerEventImpl(answer));
+				}
+			} catch (Exception e) {
+				logger.debug("Can not process received message", e);
+			} finally {
+				sendAndStateLock.unlock();
+			}
+
+		}
+
+	}
 
 }

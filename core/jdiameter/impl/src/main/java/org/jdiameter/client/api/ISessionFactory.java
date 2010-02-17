@@ -14,6 +14,8 @@ import org.jdiameter.api.InternalException;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.common.api.app.IAppSessionFactory;
+import org.jdiameter.common.api.concurrent.IConcurrentEntityFactory;
+import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 
 /**
  * This interface describe extends methods of base class
@@ -28,5 +30,7 @@ public interface ISessionFactory extends SessionFactory {
   void registerAppFacory(Class<? extends AppSession> sessionClass, IAppSessionFactory factory);
 
   void unRegisterAppFacory(Class<? extends AppSession> sessionClass);    
+  
+  IConcurrentFactory getConcurrentFactory();
 
 }

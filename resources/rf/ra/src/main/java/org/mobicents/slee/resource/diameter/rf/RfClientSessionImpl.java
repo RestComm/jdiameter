@@ -64,4 +64,6 @@ public class RfClientSessionImpl extends AccountingClientSessionActivityImpl imp
     return this.rfMessageFactory;
   }
 
+
+
 }

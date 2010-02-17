@@ -19,6 +19,7 @@ import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.api.StackState;
 import org.jdiameter.common.api.app.IAppSessionFactory;
+import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -76,4 +77,13 @@ public class SessionFactoryImpl implements ISessionFactory {
     public void unRegisterAppFacory(Class<? extends AppSession> sessionClass) {
         appFactories.remove(sessionClass);
     }
+
+	public IConcurrentFactory getConcurrentFactory() {
+		if(stack != null)
+		{
+			return stack.getConcurrentFactory();
+		}
+		
+		return null;
+	}
 }

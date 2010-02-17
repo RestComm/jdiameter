@@ -3,6 +3,8 @@
  */
 package org.mobicents.tests.diameter.base.acr;
 
+import static org.jdiameter.common.api.app.acc.ServerAccSessionState.IDLE;
+
 import java.io.File;
 
 import org.apache.log4j.Level;
@@ -64,7 +66,7 @@ public class ACR extends AbstractStackRunner implements ServerAccSessionListener
 			if(super.log.isEnabledFor(Level.ERROR))
 			{
 				super.log.error("Received non ACR message, discarding.");
-				dumpMessage(request);
+				dumpMessage(request,false);
 			}
 			return null;
 		}
@@ -90,7 +92,7 @@ public class ACR extends AbstractStackRunner implements ServerAccSessionListener
 		if(super.log.isEnabledFor(Level.ERROR))
 		{
 			super.log.error("Received answer");
-			dumpMessage(arg1);
+			dumpMessage(arg1, false);
 		}
 		
 	}
@@ -99,7 +101,7 @@ public class ACR extends AbstractStackRunner implements ServerAccSessionListener
 		if(super.log.isInfoEnabled())
 		{
 			super.log.info("Timeout expired");
-			dumpMessage(arg0);
+			dumpMessage(arg0,true);
 		}
 		
 	}
@@ -178,7 +180,8 @@ public class ACR extends AbstractStackRunner implements ServerAccSessionListener
 			if (aClass == ServerAccSession.class) {
 				Request request = (Request) args[0];
 
-				ServerAccSessionImpl session = new ServerAccSessionImpl(super.factory.getNewSession(request.getSessionId()), request, this, 10000, true, new StateChangeListener[] { this });
+				ServerAccSessionImpl session = new ServerAccSessionImpl(super.factory.getNewSession(request.getSessionId()),super.factory, request, this, 10000, true, new StateChangeListener[] { this });
+				session.addStateChangeNotification(new LocalStateChangeListener(session));
 				session.processRequest(request);
 				
 				return session;
@@ -202,5 +205,22 @@ public class ACR extends AbstractStackRunner implements ServerAccSessionListener
 		}
 		
 	}
+	private class LocalStateChangeListener implements StateChangeListener
+	{
+		private ServerAccSessionImpl session;
 
+		public LocalStateChangeListener(ServerAccSessionImpl session) {
+			super();
+			this.session = session;
+		}
+
+		public void stateChanged(Enum oldState, Enum newState) {
+			if(session.isStateless() && newState == IDLE)
+	        {
+	        	session.release();
+	        }
+			
+		}
+		
+	}
 }

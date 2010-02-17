@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -19,7 +20,8 @@ public class ConcurrentFactory implements IConcurrentFactory {
 
   private BaseThreadFactory threadFactory;
 
-  private CopyOnWriteArrayList<CommonScheduledExecutorService> scheduledExecutorServices;
+  //private CopyOnWriteArrayList<CommonScheduledExecutorService> scheduledExecutorServices;
+  private Map<String, CommonScheduledExecutorService> scheduledExecutorServices;
   private Configuration[] config;
   private IStatisticFactory statisticFactory;
   private IStatistic statistic;
@@ -35,7 +37,8 @@ public class ConcurrentFactory implements IConcurrentFactory {
         int size = dgConfig != null ? dgConfig.getIntValue(Parameters.ConcurrentEntityPoolSize.ordinal(), Integer.MAX_VALUE) : Integer.MAX_VALUE;
 
         threadFactory = new BaseThreadFactory(defThreadGroupName, size);
-        scheduledExecutorServices = new CopyOnWriteArrayList<CommonScheduledExecutorService>();
+        //scheduledExecutorServices = new CopyOnWriteArrayList<CommonScheduledExecutorService>();
+        scheduledExecutorServices = new ConcurrentHashMap<String, CommonScheduledExecutorService>();
         IStatisticRecord threadCount = statisticFactory.newCounterRecord(
             IStatistic.Counters.ConcurrentThread,
             new IStatisticRecord.IntegerValueHolder() {
@@ -93,27 +96,36 @@ public class ConcurrentFactory implements IConcurrentFactory {
   }
 
   public ScheduledExecutorService getScheduledExecutorService(String name) {
-    CommonScheduledExecutorService service = new CommonScheduledExecutorService(name, getConfigByName(name), new EntityFactory(statistic), statisticFactory);
-    scheduledExecutorServices.add(service);
+	  CommonScheduledExecutorService service = null;
+	  if(!scheduledExecutorServices.containsKey(name))
+	  { 
+		  service = new CommonScheduledExecutorService(name, getConfigByName(name), new EntityFactory(statistic), statisticFactory);
+		  scheduledExecutorServices.put(name,service);
+	  }else
+	  {
+		  service = scheduledExecutorServices.get(name);
+	  }
+	   
     return service;
   }
 
   public Collection<ScheduledExecutorService> getScheduledExecutorServices() {
-    List<ScheduledExecutorService> external = new ArrayList<ScheduledExecutorService>();
-    for (ScheduledExecutorService e : scheduledExecutorServices) {
-      external.add(e);
-    }
+    List<ScheduledExecutorService> external = new ArrayList<ScheduledExecutorService>(scheduledExecutorServices.values());
+    
     return external;
   }
 
   public void shutdownNow(ScheduledExecutorService service) {
-    for (ScheduledExecutorService e : scheduledExecutorServices) {
-      if (e == service) {
-        e.shutdownNow();
-        scheduledExecutorServices.remove(e);
-        break;
-      }
-    }
+    
+	  for (String name : scheduledExecutorServices.keySet()) {
+	    	ExecutorService e = scheduledExecutorServices.get(name);
+	    	 if (e == service) {
+	    	        e.shutdownNow();
+	    	        scheduledExecutorServices.remove(name);
+	    	        break;
+	    	      }
+	      
+	    }
   }
 
   public IStatistic getStatistic() {
@@ -123,16 +135,18 @@ public class ConcurrentFactory implements IConcurrentFactory {
   public IStatistic[] getStatistics() {
     List<IStatistic> statistics = new ArrayList<IStatistic>();
 
-    for (CommonScheduledExecutorService e : scheduledExecutorServices) {
+    for (CommonScheduledExecutorService e : scheduledExecutorServices.values()) {
       statistics.add(e.getStatistic());
     }
     return statistics.toArray(new IStatistic[statistics.size()]);
   }
 
   public void shutdownAllNow() {
-    for (ExecutorService e : scheduledExecutorServices) {
-      e.shutdownNow();
-      scheduledExecutorServices.remove(e);
+    for (String name : scheduledExecutorServices.keySet()) {
+    	ExecutorService e = scheduledExecutorServices.remove(name);
+        e.shutdownNow();
+      
     }
+
   }
 }

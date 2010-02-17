@@ -30,6 +30,7 @@ import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.ErrorAnswer;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.rf.RfActivityContextInterfaceFactory;
+import net.java.slee.resource.diameter.rf.RfAvpFactory;
 import net.java.slee.resource.diameter.rf.RfClientSession;
 import net.java.slee.resource.diameter.rf.RfMessageFactory;
 import net.java.slee.resource.diameter.rf.RfProvider;
@@ -141,7 +142,7 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
 
   // Rf Specific Factories
   private RfMessageFactoryImpl rfMessageFactory;
-  private RoAvpFactoryImpl rfAvpFactory;
+  private RfAvpFactoryImpl rfAvpFactory;
 
   // ACI Factory
   protected RfActivityContextInterfaceFactory acif = null;
@@ -247,7 +248,7 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
       this.rfMessageFactory = new RfMessageFactoryImpl(this.baseMessageFactory, stack);
 
       this.baseAvpFactory = new DiameterAvpFactoryImpl();
-      this.rfAvpFactory = new RoAvpFactoryImpl(this.baseAvpFactory);
+      this.rfAvpFactory = new RfAvpFactoryImpl(this.baseAvpFactory);
 
       //      this.proxySessionFactory = new SessionFactory() {
       //
@@ -717,8 +718,15 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
    */
   private synchronized void initStack() throws Exception
   {
+	  //docs are BS....
     // Register the RA as a listener to Rf Application (Vendor-Id(0), Acct-App-Id(3))
-    this.diameterMux.registerListener(this, new ApplicationId[]{ApplicationId.createByAccAppId(0L, 3L)});
+	// Register the RA as a listener to Rf Application (Vendor-Id(10415), Acct-App-Id(3))
+	// Register the RA as a listener to Rf Application (Vendor-Id(10415), Auth-App-Id(4))  
+    this.diameterMux.registerListener(this, new ApplicationId[]{ApplicationId.createByAccAppId(0L, 3L)/*,ApplicationId.createByAccAppId(10415L, 3L),ApplicationId.createByAuthAppId(10415L, 4L)*/});
+    
+
+
+    
     this.stack = this.diameterMux.getStack();
     this.messageTimeout = this.stack.getMetaData().getConfiguration().getLongValue(MessageTimeOut.ordinal(), (Long) MessageTimeOut.defValue());
 
@@ -745,12 +753,13 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
    */
   private void activityCreated(DiameterActivity ac)
   {
-    logger.info( "Diameter Rf RA :: activityCreated :: activity[" + ac + "]" );
+   
 
     try
     {
       // Inform SLEE that Activity Started
       DiameterActivityImpl activity = (DiameterActivityImpl) ac;
+      logger.info( "Diameter Rf RA :: activityCreated :: activity[" + ac + "]["+activity.getActivityHandle()+"]" );
       sleeEndpoint.activityStarted(activity.getActivityHandle());
 
       // Put it into our activites map
@@ -926,8 +935,6 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
     protected final Logger logger = Logger.getLogger(RfProviderImpl.class);
 
     protected RfResourceAdaptor ra;
-    protected RoAvpFactory avpFactory = null;
-    protected DiameterMessageFactory messageFactory = null;
 
     /**
      * Constructor.
@@ -1027,8 +1034,9 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
       try
       {
         ClientAccSession session = ((ISessionFactory) stack.getSessionFactory()).getNewAppSession(null, ApplicationId.createByAccAppId(0L, 3L), ClientAccSession.class);
-
-        return new RfClientSessionImpl((DiameterMessageFactoryImpl)ra.rfMessageFactory, (DiameterAvpFactoryImpl) rfAvpFactory.getBaseFactory(), session, ra.messageTimeout, destinationHost, destinationRealm, ra.sleeEndpoint, stack);
+        RfClientSessionImpl clientSession = (RfClientSessionImpl) activities.get(getActivityHandle(session.getSessions().get(0).getSessionId()));
+        //return new RfClientSessionImpl((DiameterMessageFactoryImpl)ra.rfMessageFactory, (DiameterAvpFactoryImpl) rfAvpFactory.getBaseFactory(), session, ra.messageTimeout, destinationHost, destinationRealm, ra.sleeEndpoint, stack);
+        return  clientSession;
       }
       catch (Exception e) {
         throw new CreateActivityException("Internal exception while creating Client Accounting Activity", e);
@@ -1039,7 +1047,12 @@ public class RfResourceAdaptor implements ResourceAdaptor, DiameterListener, Bas
     {
       return ra.rfMessageFactory;
     }
-
+    
+    public RfAvpFactory getRfAvpFactory() {
+		
+		return ra.rfAvpFactory;
+	}
+    
     public AccountingAnswer sendAccountingRequest( AccountingRequest accountingRequest )
     {
       try

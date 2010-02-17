@@ -341,6 +341,11 @@ public class StackImpl implements IContainer, StackImplMBean {
     return scheduledFacility;
   }
 
+  public IConcurrentFactory getConcurrentFactory() {
+		
+		return this.concurrentFactory;
+	} 
+  
   public String configuration() {
     return config != null ? config.toString() : "not set";
   }
@@ -385,5 +390,7 @@ public class StackImpl implements IContainer, StackImplMBean {
     catch (Exception e) {
       log.debug("Exception", e);
     }
-  }    
+  }
+
+   
 }

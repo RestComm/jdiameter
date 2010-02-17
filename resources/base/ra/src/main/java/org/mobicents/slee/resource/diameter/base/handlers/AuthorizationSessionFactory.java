@@ -95,7 +95,7 @@ public class AuthorizationSessionFactory implements IAppSessionFactory, IAuthMes
 			if (aClass == ServerAuthSession.class) {
 				Request request = (Request) args[0];
 
-				ServerAuthSessionImpl session = new ServerAuthSessionImpl(sessionFactory.getNewSession(request.getSessionId()), request, this, this, messageTimeout, stateless, this);
+				ServerAuthSessionImpl session = new ServerAuthSessionImpl(sessionFactory.getNewSession(request.getSessionId()),sessionFactory, request, this, this, messageTimeout, stateless, this);
 				this.ra.sessionCreated(session);
 
 				return session;

@@ -10,6 +10,7 @@
 package org.jdiameter.client.api;
 
 import org.jdiameter.api.*;
+import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -46,6 +47,11 @@ public interface IContainer extends Stack {
      */
     ScheduledExecutorService getScheduledFacility();
 
+    /**
+     * Return common concurrent factory 
+     * @return
+     */
+    IConcurrentFactory getConcurrentFactory();
     /**
      * Send messahe
      * @param session session instance

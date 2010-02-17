@@ -324,6 +324,7 @@
             <xsi:enumeration value="PeerOverloadTimer"/>
             <xsi:enumeration value="ConnectionTimer"/>
             <xsi:enumeration value="StatisticTimer"/>
+            <xsi:enumeration value="ApplicationSession"/>
         </xsi:restriction>
     </xsi:simpleType>
     <xsi:complexType name="EntityType">

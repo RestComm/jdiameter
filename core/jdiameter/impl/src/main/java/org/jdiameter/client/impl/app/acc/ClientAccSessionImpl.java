@@ -65,12 +65,14 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
 
 
   public ClientAccSessionImpl(SessionFactory sf, ClientAccSessionListener lst, ApplicationId app) {
+	  super(sf);
     if (lst == null)
       throw new IllegalArgumentException("Listener can not be null");
     if (app == null)
       throw new IllegalArgumentException("ApplicationId can not be null");
     appId = app;
     listener = lst;
+
     if (listener instanceof IClientAccActionContext) {
       context = (IClientAccActionContext) listener;
     }
@@ -102,9 +104,11 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
         session.send(accountRequest.getMessage(), this);
         // Store last destinmation information
         destRealm = accountRequest.getMessage().getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString();
-        destHost = accountRequest.getMessage().getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString();
+        if(accountRequest.getMessage().getAvps().getAvp(Avp.DESTINATION_HOST)!=null)
+        	destHost = accountRequest.getMessage().getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString();
       }
       catch (Throwable t) {
+    	t.printStackTrace();
         handleEvent(new Event(Event.Type.FAILED_SEND_RECORD, accountRequest));
       }
     }
@@ -238,8 +242,12 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
         switch ((Event.Type) event.getType()) {
         // User service terminated
         case SEND_STOP_RECORD:
-          setState(PENDING_CLOSE);
-          break;
+            setState(PENDING_CLOSE);
+            break;
+        case SEND_INTERIM_RECORD:
+            setState(PENDING_INTERIM);
+            break;
+          
           // Create timer for "Interim interval elapses" event
         case RECEIVED_RECORD:
           processInterimIntervalAvp(event);
@@ -247,6 +255,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
         }
       }
       break;
+      //FIXME: add check for abonrmal
       // PendingI ==========
       case PENDING_INTERIM: {
         switch ((Event.Type) event.getType()) {
@@ -410,12 +419,15 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
           catch (Exception e) {
             logger.debug("can not send buffered message", e);
             synchronized (this) {
-              if (!context.failedSendRecord((Request) buffer.getMessage())) {
-                storeToBuffer(null);
-              }
-              if (!IDLE.equals(IDLE)) {
-                setState(IDLE);
-              }
+
+							if (context != null && buffer != null) {
+								if (!context.failedSendRecord((Request) buffer.getMessage())) {
+									storeToBuffer(null);
+								}
+							}
+							if (!IDLE.equals(IDLE)) {
+								setState(IDLE);
+							}
             }
           }
         }
@@ -470,23 +482,28 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
   }
 
   public void receivedSuccessMessage(Request request, Answer answer) {
+	 
     if (request.getCommandCode() == AccountRequest.code) {
+    	//FIXME: any reason for this to be after handle?
+    	 try {
+    	        listener.doAccAnswerEvent(this, createAccountRequest(request), createAccountAnswer(answer));
+    	      }
+    	      catch (Exception e) {
+    	    	e.printStackTrace();
+    	        logger.debug(e.getMessage(), e);
+    	      }	
       try {
         sendAndStateLock.lock();
         handleEvent(new Event(createAccountAnswer(answer)));
       }
       catch (Exception e) {
+    	e.printStackTrace();
         logger.debug(e.getMessage(), e);
       }
       finally {
         sendAndStateLock.unlock();
       }
-      try {
-        listener.doAccAnswerEvent(this, createAccountRequest(request), createAccountAnswer(answer));
-      }
-      catch (Exception e) {
-        logger.debug(e.getMessage(), e);
-      }
+     
     }
     else {
       try {

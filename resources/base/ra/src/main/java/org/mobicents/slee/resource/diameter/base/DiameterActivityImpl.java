@@ -23,21 +23,21 @@ import org.mobicents.slee.resource.diameter.base.handlers.BaseSessionCreationLis
 
 public class DiameterActivityImpl implements DiameterActivity {
 
-	protected String sessionId = null;
-	protected DiameterActivityHandle handle = null;
-	protected DiameterMessageFactoryImpl messageFactory = null;
-	protected DiameterAvpFactoryImpl avpFactory = null;
-	protected Session session = null;
-	protected EventListener<Request, Answer> raEventListener = null;
+	protected String sessionId;
+	protected DiameterActivityHandle handle;
+	protected DiameterMessageFactoryImpl messageFactory;
+	protected DiameterAvpFactoryImpl avpFactory;
+	protected Session session;
+	protected EventListener<Request, Answer> raEventListener;
 	protected long timeout = 5000;
 	protected static Logger logger = Logger
 			.getLogger(DiameterActivityImpl.class);
 	protected DiameterIdentity destinationHost, destinationRealm;
-	protected SleeEndpoint endpoint=null;
+	protected SleeEndpoint endpoint;
 	
 
 	
-	protected BaseSessionCreationListener baseListener=null;
+	protected BaseSessionCreationListener baseListener;
 	
 	public DiameterActivityImpl(DiameterMessageFactoryImpl messageFactory, DiameterAvpFactoryImpl avpFactory, Session session,
 			EventListener<Request, Answer> raEventListener, long timeout, DiameterIdentity destinationHost, 
@@ -169,6 +169,7 @@ public class DiameterActivityImpl implements DiameterActivity {
 
 	public void setSessionListener(Object ra) {
 		this.baseListener = (BaseSessionCreationListener) ra;
+		
 	}
 	protected void clean()
 	{

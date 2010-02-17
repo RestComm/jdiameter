@@ -3,15 +3,19 @@ package org.jdiameter.common.impl.app.cxdx;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.jdiameter.api.NetworkReqListener;
+import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateMachine;
+import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.cxdx.CxDxSessionState;
 import org.jdiameter.common.api.app.cxdx.ICxDxMessageFactory;
+import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.impl.app.AppSessionImpl;
 
 /**
@@ -26,14 +30,21 @@ public abstract class CxDxSession extends AppSessionImpl implements NetworkReqLi
 	private static final long serialVersionUID = 1L;
 	public static final int _TX_TIMEOUT=30*1000;
 	protected Lock sendAndStateLock = new ReentrantLock();
-	protected static final ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(4);
+	protected ScheduledExecutorService scheduler = null;
 	protected List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
 	protected CxDxSessionState state = CxDxSessionState.IDLE;
 	protected Future timeoutTaskFuture;
 	protected ICxDxMessageFactory messageFactory;
 
-	public CxDxSession() {
-		super();
+	protected SessionFactory sf = null;
+	  
+	public CxDxSession(SessionFactory sf) {
+		if (sf == null) {
+			throw new IllegalArgumentException("SessionFactory must not be null");
+		}
+		this.sf = sf;
+		this.scheduler = ((ISessionFactory) this.sf).getConcurrentFactory().getScheduledExecutorService(
+				IConcurrentFactory.ScheduledExecServices.ApplicationSession.name());
 	}
 
 	public void addStateChangeNotification(StateChangeListener listener) {

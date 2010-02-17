@@ -9,6 +9,7 @@ import static org.jdiameter.common.api.statistic.IStatistic.Groups.ScheduledExec
 import org.jdiameter.common.api.statistic.IStatisticFactory;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
 
+import java.util.Arrays;
 import java.util.concurrent.*;
 
 class CommonScheduledExecutorService extends ScheduledThreadPoolExecutor {
@@ -32,7 +33,7 @@ class CommonScheduledExecutorService extends ScheduledThreadPoolExecutor {
     waitTimeCount = statisticFactory.newCounterRecord("TimeSumm", "TimeSumm", 0);
 
     statistic = statisticFactory.newStatistic(ScheduledExecService.name() + "." + name, ScheduledExecService.getDescription(), rejectedCount);
-
+    
     final IStatisticRecord execTimeCounter = statisticFactory.newCounterRecord(IStatistic.Counters.ExecTimeTask, 
         new AbstractTask.AverajeValueHolder(statistic, IStatistic.Counters.ExecTimeTask), execTimeSumm, execTimeCount);
 
@@ -88,6 +89,6 @@ class CommonScheduledExecutorService extends ScheduledThreadPoolExecutor {
 
   @Override
   public void execute(Runnable runnable) {
-    super.execute(entityFactory.newDefaultRunnable(runnable));
+    super.execute(entityFactory.newDefaultRunnable(runnable, execTimeSumm, execTimeCount, waitTimeSumm, waitTimeCount));
   }
 }

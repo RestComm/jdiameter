@@ -23,7 +23,7 @@
  *
  * Boston, MA  02110-1301  USA
  */
-package net.java.slee.resource.diameter.ro;
+package net.java.slee.resource.diameter.rf;
 
 import net.java.slee.resource.diameter.cca.CreditControlAVPFactory;
 import net.java.slee.resource.diameter.ro.events.avp.AdditionalContentInformation;
@@ -60,12 +60,12 @@ import net.java.slee.resource.diameter.ro.events.avp.WlanRadioContainer;
 
 /**
  * 
- * Used by applications to create Diameter Ro AVPs.
+ * Used by applications to create Diameter Rf AVPs.
  * 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
-public interface RoAvpFactory extends CreditControlAVPFactory {
+public interface RfAvpFactory extends CreditControlAVPFactory {
 
 	public CreditControlAVPFactory getCreditControlAVPFactory();
 

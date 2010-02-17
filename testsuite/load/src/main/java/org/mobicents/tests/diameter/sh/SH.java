@@ -72,7 +72,7 @@ public class SH extends AbstractStackRunner implements IAppSessionFactory, Serve
 		if (commandCode != 308 && commandCode != 306 && commandCode != 309) {
 			if (log.isEnabledFor(Level.ERROR)) {
 				log.error("Received command with wrong code: " + commandCode);
-				super.dumpMessage(request);
+				super.dumpMessage(request,false);
 			}
 			return null;
 		}
@@ -107,7 +107,8 @@ public class SH extends AbstractStackRunner implements IAppSessionFactory, Serve
 		if(super.log.isEnabledFor(Level.ERROR))
 		{
 			super.log.error("Received answer");
-			dumpMessage(arg1);
+			dumpMessage(arg1,false);
+			new Exception().printStackTrace();
 		}
 		
 	}
@@ -116,7 +117,7 @@ public class SH extends AbstractStackRunner implements IAppSessionFactory, Serve
 		if(super.log.isInfoEnabled())
 		{
 			super.log.info("Timeout expired");
-			dumpMessage(arg0);
+			dumpMessage(arg0,true);
 		}
 		
 	}
@@ -159,9 +160,9 @@ public class SH extends AbstractStackRunner implements IAppSessionFactory, Serve
 	public void doPushNotificationAnswerEvent(ServerShSession arg0, PushNotificationRequest arg1, PushNotificationAnswer arg2)
 			throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
 
-		if (log.isEnabledFor(Level.INFO)) {
+		if (log.isEnabledFor(Level.DEBUG)) {
 			log.error("Received PNA");
-			super.dumpMessage(arg1.getMessage());
+			super.dumpMessage(arg1.getMessage(),false);
 		}
 	}
 
@@ -176,11 +177,11 @@ public class SH extends AbstractStackRunner implements IAppSessionFactory, Serve
 			// Auth-Session-State
 			set.addAvp(277, 0);
 
-			if (log.isInfoEnabled()) {
+			if (log.isDebugEnabled()) {
 				log.info("Recievend SNR in App Session.");
-				super.dumpMessage(request.getMessage());
+				super.dumpMessage(request.getMessage(),false);
 				log.info("Sending SNA in App Session.");
-				super.dumpMessage(answer);
+				super.dumpMessage(answer,true);
 			}
 
 			appSession.sendSubscribeNotificationsAnswer((SubscribeNotificationsAnswer) this.createSubscribeNotificationsAnswer(answer));
@@ -238,11 +239,11 @@ public class SH extends AbstractStackRunner implements IAppSessionFactory, Serve
 			// Auth-Session-State
 			set.addAvp(277, 0);
 
-			if (log.isInfoEnabled()) {
+			if (log.isDebugEnabled()) {
 				log.info("Recievend UDR in App Session.");
-				super.dumpMessage(request.getMessage());
+				super.dumpMessage(request.getMessage(),false);
 				log.info("Sending UDA in App Session.");
-				super.dumpMessage(answer);
+				super.dumpMessage(answer,true);
 			}
 
 			appSession.sendUserDataAnswer((UserDataAnswer) this.createUserDataAnswer(answer));
@@ -273,11 +274,11 @@ public class SH extends AbstractStackRunner implements IAppSessionFactory, Serve
 			// Auth-Session-State
 			set.addAvp(277, 0);
 
-			if (log.isInfoEnabled()) {
+			if (log.isDebugEnabled()) {
 				log.info("Recievend PNR in App Session.");
-				super.dumpMessage(request.getMessage());
+				super.dumpMessage(request.getMessage(),false);
 				log.info("Sending PNA in App Session.");
-				super.dumpMessage(answer);
+				super.dumpMessage(answer,true);
 			}
 
 			appSession.sendPushNotificationAnswer((PushNotificationAnswer) this.createPushNotificationAnswer(answer));

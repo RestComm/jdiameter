@@ -25,10 +25,12 @@ import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
+import org.jdiameter.api.auth.ClientAuthSession;
 import org.jdiameter.api.auth.events.AbortSessionAnswer;
 import org.jdiameter.api.auth.events.ReAuthAnswer;
 import org.jdiameter.api.auth.events.ReAuthRequest;
 import org.jdiameter.api.auth.events.SessionTermAnswer;
+import org.jdiameter.api.auth.events.SessionTermRequest;
 import org.jdiameter.api.cca.ClientCCASession;
 import org.jdiameter.api.cca.ClientCCASessionListener;
 import org.jdiameter.api.cca.events.JCreditControlAnswer;
@@ -46,6 +48,7 @@ import org.jdiameter.common.impl.app.acc.AccountRequestImpl;
 import org.jdiameter.common.impl.app.auth.AbortSessionAnswerImpl;
 import org.jdiameter.common.impl.app.auth.AbortSessionRequestImpl;
 import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
+import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
 import org.jdiameter.common.impl.app.auth.SessionTermAnswerImpl;
 import org.jdiameter.common.impl.app.auth.SessionTermRequestImpl;
 import org.jdiameter.common.impl.app.cca.AppCCASessionImpl;
@@ -120,6 +123,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
   public ClientCCASessionImpl(String sessionId, ICCAMessageFactory fct, SessionFactory sf, ClientCCASessionListener lst)
   {
+	super(sf);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
@@ -302,16 +306,18 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           try {
             if (isSuccess(answer.getResultCodeAvp().getUnsigned32())) {
               stopTx();
+              deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
               setState(ClientCCASessionState.OPEN);
             }
             if (isProvisional(answer.getResultCodeAvp()
                 .getUnsigned32())) {
+            	deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
             }
             else if (isFailure(answer.getResultCodeAvp().getUnsigned32())) {
               handleFailureMessage((JCreditControlAnswer) answer, (JCreditControlRequest) localEvent.getRequest(), eventType);
             }
 
-            deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
+            
           }
           catch (AvpDataException e) {
             // FIXME?
@@ -389,15 +395,17 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           try {
             if (isSuccess(answer.getResultCodeAvp().getUnsigned32())) {
               stopTx();
+              deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
               setState(ClientCCASessionState.OPEN);
             }
             if (isProvisional(answer.getResultCodeAvp().getUnsigned32())) {
               //
+            	deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
             }
             else if (isFailure(answer.getResultCodeAvp().getUnsigned32())) {
               handleFailureMessage((JCreditControlAnswer) answer, (JCreditControlRequest) localEvent.getRequest(), eventType);
             }
-            deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
+            
           }
           catch (AvpDataException e) {
             // FIXME?
@@ -446,9 +454,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           }
           break;
         case RECEIVED_TERMINATED_ANSWER:
-          setState(ClientCCASessionState.IDLE, false);
+          
           deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
-
+          setState(ClientCCASessionState.IDLE, false);
         default:
           logger.warn("Wrong event type ({}) on state {}", eventType, state);
         break;
@@ -473,74 +481,21 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
   public Answer processRequest(Request request) {
 
-    try{
-      //FIXME: baranowb: add message validation here!
-      //We handle CCR,STR,ACR,ASR other go into extension
-      switch(request.getCommandCode())
-      {
-      case ReAuthAnswerImpl.code:
-        handleEvent(new Event(Event.Type.RECEIVED_RAR, factory.createReAuthRequest(request), null));
-        break;
-
-        //All other go straight to listner, they dont change state machine
-        //Suprisingly there is no factory.... ech
-        //FIXME: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      case SessionTermAnswer.code:
-        listener.doSessionTerminationRequest(this, new SessionTermRequestImpl(request));
-        break;
-      case AbortSessionAnswer.code:
-        listener.doAbortSessionRequest(this, new AbortSessionRequestImpl(request));
-        break;
-      case AccountAnswer.code:
-        listener.doAccountingRequest(this, new AccountRequestImpl(request));
-        break;
-
-      default:
-        listener.doOtherEvent(this, new AppRequestEventImpl(request), null);
-      break;
-      }
-    }
-    catch(Exception e) {
-      logger.debug("Failure processing request", e);
-    }
-
+	RequestDelivery rd = new RequestDelivery();
+	rd.session = this;
+	rd.request = request;
+	super.scheduler.execute(rd);
     return null;
   }
 
   public void receivedSuccessMessage(Request request, Answer answer) {
 
-    try{
-      //FIXME: baranowb: add message validation here!!!
-      //We handle CCR,STR,ACR,ASR other go into extension
-      switch(request.getCommandCode())
-      {
-      case JCreditControlAnswer.code:
-        JCreditControlAnswer _answer=factory.createCreditControlAnswer(answer);
-        extractFHAVPs(null,_answer );
-        handleEvent(new Event(false, null, _answer));
-        break;
-
-        //All other go straight to listner, they dont change state machine
-        //Suprisingly there is no factory.... ech
-        //FIXME: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      case SessionTermAnswer.code:
-        listener.doSessionTerminationAnswer(this,null ,new SessionTermAnswerImpl(answer));
-        break;
-      case AbortSessionAnswer.code:
-        listener.doAbortSessionAnswer(this,null, new AbortSessionAnswerImpl(answer));
-        break;
-      case AccountAnswer.code:
-        listener.doAccountingAnswer(this,null, new AccountAnswerImpl(answer));
-        break;
-
-      default:
-        listener.doOtherEvent(this, null, new AppAnswerEventImpl(answer));
-      break;
-      }
-    }
-    catch(Exception e) {
-      logger.debug("Failure processing success message", e);
-    }
+	  AnswerDelivery ad = new AnswerDelivery();
+	  ad.session = this;
+	  ad.request = request;
+	  ad.answer = answer;
+	  super.scheduler.execute(ad);
+    
   }
 
   public void timeoutExpired(Request request) {
@@ -691,34 +646,39 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
           if ((resultCode == DIAMETER_END_USER_SERVICE_DENIED || resultCode == USER_UNKNOWN) && txFuture != null) {
             // #2
-            setState(ClientCCASessionState.IDLE);
+           
             context.denyAccessOnFailureMessage(this);
             deliverCCAnswer(request, event);
+            setState(ClientCCASessionState.IDLE);
           }
           else if (resultCode == CREDIT_CONTROL_NOT_APPLICABLE && gatheredRequestedAction == DIRECT_DEBITING) {
             // #3
-            setState(ClientCCASessionState.IDLE);
+            
             context.grantAccessOnFailureMessage(this);
             deliverCCAnswer(request, event);
+            setState(ClientCCASessionState.IDLE);
           }
           else if (temporaryErrorCodes.contains(resultCode)) {
             if (gatheredRequestedAction == CHECK_BALANCE || gatheredRequestedAction == PRICE_ENQUIRY) {
               // #1
-              setState(ClientCCASessionState.IDLE);
+              
               context.indicateServiceError(this);
               deliverCCAnswer(request, event);
+              setState(ClientCCASessionState.IDLE);
             }
             else if (gatheredRequestedAction == DIRECT_DEBITING && getLocalDDFH() == CONTINUE) {
               // #4
-              setState(ClientCCASessionState.IDLE);
+             
               context.grantAccessOnFailureMessage(this);
               deliverCCAnswer(request, event);
+              setState(ClientCCASessionState.IDLE);
             }
             else if (gatheredRequestedAction == DIRECT_DEBITING && getLocalDDFH() == CONTINUE && txFuture != null) {
               // #5
-              setState(ClientCCASessionState.IDLE);
+              
               context.denyAccessOnFailureMessage(this);
               deliverCCAnswer(request, event);
+              setState(ClientCCASessionState.IDLE);
             }
             else if (gatheredRequestedAction == REFUND_ACCOUNT) {
               // #12
@@ -727,41 +687,47 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
             }
             else {
               // FIXME
-              setState(ClientCCASessionState.IDLE, false);
+             
               deliverCCAnswer(request, event);
+              setState(ClientCCASessionState.IDLE, false);
             }
           }
           else {
             // we are in fauilure zone isFailure(true}
             if (gatheredRequestedAction == CHECK_BALANCE || gatheredRequestedAction == PRICE_ENQUIRY) {
               // #1
-              setState(ClientCCASessionState.IDLE);
+              
               context.indicateServiceError(this);
               deliverCCAnswer(request, event);
+              setState(ClientCCASessionState.IDLE);
             }
             else if (gatheredRequestedAction == DIRECT_DEBITING && getLocalDDFH() == CONTINUE) {
               // #4
-              setState(ClientCCASessionState.IDLE);
+             
               context.grantAccessOnFailureMessage(this);
               deliverCCAnswer(request, event);
+              setState(ClientCCASessionState.IDLE);
             }
             else if (gatheredRequestedAction == DIRECT_DEBITING && getLocalDDFH() == CONTINUE && txFuture != null) {
               // #5
-              setState(ClientCCASessionState.IDLE);
+              
               context.denyAccessOnFailureMessage(this);
               deliverCCAnswer(request, event);
+              setState(ClientCCASessionState.IDLE);
             }
             else if (gatheredRequestedAction == REFUND_ACCOUNT) {
               // #10
               buffer = null;
-              setState(ClientCCASessionState.IDLE);
+              
               context.indicateServiceError(this);
               deliverCCAnswer(request, event);
+              setState(ClientCCASessionState.IDLE);
             }
             else {
               // FIXME
-              setState(ClientCCASessionState.IDLE, false);
+              
               deliverCCAnswer(request, event);
+              setState(ClientCCASessionState.IDLE, false);
             }
           }
           break;
@@ -781,24 +747,28 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         switch (state) {
         case PENDING_INITIAL:
           if (responseCode == CREDIT_CONTROL_NOT_APPLICABLE) {
-            setState(ClientCCASessionState.IDLE, false);
+            
             context.grantAccessOnFailureMessage(this);
+            setState(ClientCCASessionState.IDLE, false);
           }
           else if ((responseCode == DIAMETER_END_USER_SERVICE_DENIED) || (responseCode == USER_UNKNOWN)) {
-            setState(ClientCCASessionState.IDLE, false);
+            
             context.denyAccessOnFailureMessage(this);
+            setState(ClientCCASessionState.IDLE, false);
           }
           else {
             // Temporary errors and others
             switch (getLocalCCFH()) {
             case CCFH_CONTINUE:
-              setState(ClientCCASessionState.IDLE, false);
+              
               context.grantAccessOnFailureMessage(this);
+              setState(ClientCCASessionState.IDLE, false);
               break;
             case CCFH_TERMINATE:
             case CCFH_RETRY_AND_TERMINATE:
-              setState(ClientCCASessionState.IDLE, false);
+              
               context.denyAccessOnFailureMessage(this);
+              setState(ClientCCASessionState.IDLE, false);
               break;
 
             default:
@@ -809,24 +779,28 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           break;
         case PENDING_UPDATE:
           if (responseCode == CREDIT_CONTROL_NOT_APPLICABLE) {
-            setState(ClientCCASessionState.IDLE, false);
+            
             context.grantAccessOnFailureMessage(this);
+            setState(ClientCCASessionState.IDLE, false);
           }
           else if (responseCode == DIAMETER_END_USER_SERVICE_DENIED) {
-            setState(ClientCCASessionState.IDLE, false);
+            
             context.denyAccessOnFailureMessage(this);
+            setState(ClientCCASessionState.IDLE, false);
           }
           else {
             // Temporary errors and others
             switch (getLocalCCFH()) {
             case CCFH_CONTINUE:
-              setState(ClientCCASessionState.IDLE, false);
+              
               context.grantAccessOnFailureMessage(this);
+              setState(ClientCCASessionState.IDLE, false);
               break;
             case CCFH_TERMINATE:
             case CCFH_RETRY_AND_TERMINATE:
-              setState(ClientCCASessionState.IDLE, false);
+              
               context.denyAccessOnFailureMessage(this);
+              setState(ClientCCASessionState.IDLE, false);
               break;
 
             default:
@@ -854,12 +828,14 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         if (gatheredRequestedAction == CHECK_BALANCE
             || gatheredRequestedAction == PRICE_ENQUIRY) {
           // #1
-          setState(ClientCCASessionState.IDLE);
+          
           context.indicateServiceError(this);
+          setState(ClientCCASessionState.IDLE);
         }
         else if (gatheredRequestedAction == DIRECT_DEBITING) {
-          setState(ClientCCASessionState.IDLE);
+          
           context.grantAccessOnTxExpire(this);
+          setState(ClientCCASessionState.IDLE);
         }
         else if (gatheredRequestedAction == REFUND_ACCOUNT) {
           buffer = m;
@@ -1075,4 +1051,85 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       }
     }
   }
+  
+	private class RequestDelivery implements Runnable {
+		ClientCCASession session;
+		Request request;
+
+		public void run() {
+			try {
+				// FIXME: baranowb: add message validation here!
+				// We handle CCR,STR,ACR,ASR other go into extension
+				switch (request.getCommandCode()) {
+				case ReAuthAnswerImpl.code:
+					handleEvent(new Event(Event.Type.RECEIVED_RAR, factory.createReAuthRequest(request), null));
+					break;
+
+				// FIXME: All other go straight to listner, they dont change state
+				// machine
+				//this shall be removed on 1.2.00
+				case SessionTermRequest.code:
+					listener.doSessionTerminationRequest(session, new SessionTermRequestImpl(request));
+					break;
+				case AbortSessionAnswer.code:
+					listener.doAbortSessionRequest(session, new AbortSessionRequestImpl(request));
+					break;
+				case AccountAnswer.code:
+					listener.doAccountingRequest(session, new AccountRequestImpl(request));
+					break;
+
+				default:
+					listener.doOtherEvent(session, new AppRequestEventImpl(request), null);
+					break;
+				}
+			} catch (Exception e) {
+				logger.debug("Failure processing request", e);
+			}
+
+		}
+
+	}
+
+	private class AnswerDelivery implements Runnable {
+		ClientCCASession session;
+		Answer answer;
+		Request request;
+
+		public void run() {
+			try{
+			      //FIXME: baranowb: add message validation here!!!
+			      //We handle CCR,STR,ACR,ASR other go into extension
+			      switch(request.getCommandCode())
+			      {
+			      case JCreditControlAnswer.code:
+			        JCreditControlAnswer _answer=factory.createCreditControlAnswer(answer);
+			        extractFHAVPs(null,_answer );
+			        handleEvent(new Event(false, null, _answer));
+			        break;
+
+			        //All other go straight to listner, they dont change state machine
+			        //Suprisingly there is no factory.... ech
+			        //FIXME: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+			      case SessionTermAnswer.code:
+			        listener.doSessionTerminationAnswer(session,null ,new SessionTermAnswerImpl(answer));
+			        break;
+			      case AbortSessionAnswer.code:
+			        listener.doAbortSessionAnswer(session,null, new AbortSessionAnswerImpl(answer));
+			        break;
+			      case AccountAnswer.code:
+			        listener.doAccountingAnswer(session,null, new AccountAnswerImpl(answer));
+			        break;
+
+			      default:
+			        listener.doOtherEvent(session, null, new AppAnswerEventImpl(answer));
+			      break;
+			      }
+			    }
+			    catch(Exception e) {
+			      logger.debug("Failure processing success message", e);
+			    }
+
+		}
+
+	}
 }

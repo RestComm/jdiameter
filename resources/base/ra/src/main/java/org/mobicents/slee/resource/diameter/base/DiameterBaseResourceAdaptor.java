@@ -1197,6 +1197,7 @@ public class DiameterBaseResourceAdaptor implements ResourceAdaptor, DiameterLis
 
     public DiameterActivity createActivity(DiameterIdentity destinationHost, DiameterIdentity destinationRealm, String sessionId) throws CreateActivityException
     {
+      //FIXME: DiameterIdentity is ignored
       Session session = null;
 
       try

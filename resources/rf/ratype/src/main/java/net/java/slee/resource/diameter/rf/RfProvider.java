@@ -30,7 +30,13 @@ public interface RfProvider {
    * @return a DiameterActivity 
    */
   public RfMessageFactory getRfMessageFactory();
-
+  
+  /**
+   * 
+   * @return
+   */
+  public RfAvpFactory getRfAvpFactory();
+  
   /**
    * Create a new activity to send and receive Diameter messages.
    * 

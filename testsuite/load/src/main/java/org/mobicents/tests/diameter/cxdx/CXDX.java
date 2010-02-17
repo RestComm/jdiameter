@@ -116,7 +116,7 @@ public class CXDX extends AbstractStackRunner implements IAppSessionFactory, Ser
 		if(super.log.isEnabledFor(Level.ERROR))
 		{
 			super.log.error("Received answer");
-			dumpMessage(arg1);
+			dumpMessage(arg1,false);
 		}
 		
 	}
@@ -125,7 +125,7 @@ public class CXDX extends AbstractStackRunner implements IAppSessionFactory, Ser
 		if(super.log.isInfoEnabled())
 		{
 			super.log.info("Timeout expired");
-			dumpMessage(arg0);
+			dumpMessage(arg0,true);
 		}
 		
 	}
@@ -185,11 +185,11 @@ public class CXDX extends AbstractStackRunner implements IAppSessionFactory, Ser
 			// Auth-Session-State
 			set.addAvp(277, 0);
 
-			if (log.isInfoEnabled()) {
+			if (log.isDebugEnabled()) {
 				log.info("Recievend UAR in App Session.");
-				super.dumpMessage(request.getMessage());
+				super.dumpMessage(request.getMessage(),false);
 				log.info("Sending UAA in App Session.");
-				super.dumpMessage(answer);
+				super.dumpMessage(answer,true);
 			}
 
 			appSession.sendUserAuthorizationAnswer((JUserAuthorizationAnswer) this.createUserAuthorizationAnswer(answer));
@@ -275,11 +275,11 @@ public class CXDX extends AbstractStackRunner implements IAppSessionFactory, Ser
 			// Auth-Session-State
 			set.addAvp(277, 0);
 
-			if (log.isInfoEnabled()) {
+			if (log.isDebugEnabled()) {
 				log.info("Recievend RTR in App Session.");
-				super.dumpMessage(request.getMessage());
+				super.dumpMessage(request.getMessage(),false);
 				log.info("Sending RTA in App Session.");
-				super.dumpMessage(answer);
+				super.dumpMessage(answer,true);
 			}
 
 			appSession.sendRegistrationTerminationAnswer((JRegistrationTerminationAnswer) this.createRegistrationTerminationAnswer(answer));

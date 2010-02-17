@@ -1,5 +1,6 @@
 package org.jdiameter.server.impl.app.cca;
 
+
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -22,6 +23,7 @@ import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
+import org.jdiameter.api.auth.ServerAuthSession;
 import org.jdiameter.api.auth.events.AbortSessionAnswer;
 import org.jdiameter.api.auth.events.ReAuthRequest;
 import org.jdiameter.api.auth.events.SessionTermAnswer;
@@ -65,6 +67,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
   }
 
   public ServerCCASessionImpl(String sessionId, ICCAMessageFactory fct, SessionFactory sf, ServerCCASessionListener lst) {
+	super(sf);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
@@ -228,74 +231,20 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
   }
 
   public Answer processRequest(Request request) {
-
-    try{
-      //FIXME: baranowb: add message validation here!!!
-      //We handle CCR,STR,ACR,ASR other go into extension
-      switch(request.getCommandCode())
-      {
-      case JCreditControlAnswer.code:
-        this.handleEvent(new Event(true,factory.createCreditControlRequest(request),null));
-        break;
-
-        //All other go straight to listner, they dont change state machine
-        //Suprisingly there is no factory.... ech
-        //FIXME: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      case SessionTermAnswer.code:
-        listener.doSessionTerminationRequest(this, new SessionTermRequestImpl(request));
-        break;
-      case AbortSessionAnswer.code:
-        listener.doAbortSessionRequest(this, new AbortSessionRequestImpl(request));
-        break;
-      case AccountAnswer.code:
-        listener.doAccountingRequest(this, new AccountRequestImpl(request));
-        break;
-
-      default:
-        listener.doOtherEvent(this, new AppRequestEventImpl(request), null);
-      break;
-      }
-    }
-    catch(Exception e) {
-      logger.debug("Failed to process request message", e);
-    }
-
+	  RequestDelivery rd = new RequestDelivery();
+	  rd.session = this;
+	  rd.request = request;
+	  super.scheduler.execute(rd);
     return null;
   }
 
 
   public void receivedSuccessMessage(Request request, Answer answer) {
-    try{
-      //FIXME: baranowb: add message validation here!!!
-      //We handle CCR,STR,ACR,ASR other go into extension
-      switch(request.getCommandCode())
-      {
-      case ReAuthRequest.code:
-        handleEvent(new Event(Event.Type.RECEIVED_RAA,factory.createReAuthRequest(request ),factory.createReAuthAnswer(answer)));
-        break;
-
-        //All other go straight to listner, they dont change state machine
-        //Suprisingly there is no factory.... ech
-        //FIXME: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      case SessionTermAnswer.code:
-        listener.doSessionTerminationAnswer(this,null ,new SessionTermAnswerImpl(answer));
-        break;
-      case AbortSessionAnswer.code:
-        listener.doAbortSessionAnswer(this,null, new AbortSessionAnswerImpl(answer));
-        break;
-      case AccountAnswer.code:
-        listener.doAccountingAnswer(this,null, new AccountAnswerImpl(answer));
-        break;
-
-      default:
-        listener.doOtherEvent(this, null, new AppAnswerEventImpl(answer));
-      break;
-      }
-
-    }
-    catch(Exception e) {
-      logger.debug("Failed to process success message", e);
-    }
+	  AnswerDelivery rd = new AnswerDelivery();
+		rd.session = this;
+		rd.request = request;
+		rd.answer = answer;
+		super.scheduler.execute(rd);
   }
 
   public void timeoutExpired(Request request) {
@@ -316,11 +265,11 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
     }
     if(tccFuture != null) {
       stopTcc(true);
-      tccFuture = scheduler.schedule(new TccScheduledTask(this),defaultValue,TimeUnit.SECONDS);
+      tccFuture = super.scheduler.schedule(new TccScheduledTask(this),defaultValue,TimeUnit.SECONDS);
       context.sessionSupervisionTimerReStarted(this, tccFuture);
     }
     else {
-      tccFuture = scheduler.schedule(new TccScheduledTask(this),defaultValue,TimeUnit.SECONDS);
+      tccFuture = super.scheduler.schedule(new TccScheduledTask(this),defaultValue,TimeUnit.SECONDS);
     }
   }
 
@@ -433,4 +382,87 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
       logger.debug("Failure trying to dispatch event", e);
     }
   }
+
+
+  private class RequestDelivery implements Runnable {
+	  ServerCCASession session;
+		Request request;
+
+		public void run() {
+
+			try{
+			      //FIXME: baranowb: add message validation here!!!
+			      //We handle CCR,STR,ACR,ASR other go into extension
+			      switch(request.getCommandCode())
+			      {
+			      case JCreditControlAnswer.code:
+			        handleEvent(new Event(true,factory.createCreditControlRequest(request),null));
+			        break;
+
+			        //All other go straight to listner, they dont change state machine
+			        //Suprisingly there is no factory.... ech
+			        //FIXME: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+			      case SessionTermAnswer.code:
+			        listener.doSessionTerminationRequest(session, new SessionTermRequestImpl(request));
+			        break;
+			      case AbortSessionAnswer.code:
+			        listener.doAbortSessionRequest(session, new AbortSessionRequestImpl(request));
+			        break;
+			      case AccountAnswer.code:
+			        listener.doAccountingRequest(session, new AccountRequestImpl(request));
+			        break;
+
+			      default:
+			        listener.doOtherEvent(session, new AppRequestEventImpl(request), null);
+			      break;
+			      }
+			    }
+			    catch(Exception e) {
+			      logger.debug("Failed to process request message", e);
+			    }
+
+		}
+
+	}
+
+	private class AnswerDelivery implements Runnable {
+		ServerCCASession session;
+		Answer answer;
+		Request request;
+
+		public void run() {
+			try{
+			      //FIXME: baranowb: add message validation here!!!
+			      //We handle CCR,STR,ACR,ASR other go into extension
+			      switch(request.getCommandCode())
+			      {
+			      case ReAuthRequest.code:
+			        handleEvent(new Event(Event.Type.RECEIVED_RAA,factory.createReAuthRequest(request ),factory.createReAuthAnswer(answer)));
+			        break;
+
+			        //All other go straight to listner, they dont change state machine
+			        //Suprisingly there is no factory.... ech
+			        //FIXME: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+			      case SessionTermAnswer.code:
+			        listener.doSessionTerminationAnswer(session,null ,new SessionTermAnswerImpl(answer));
+			        break;
+			      case AbortSessionAnswer.code:
+			        listener.doAbortSessionAnswer(session,null, new AbortSessionAnswerImpl(answer));
+			        break;
+			      case AccountAnswer.code:
+			        listener.doAccountingAnswer(session,null, new AccountAnswerImpl(answer));
+			        break;
+
+			      default:
+			        listener.doOtherEvent(session, null, new AppAnswerEventImpl(answer));
+			      break;
+			      }
+
+			    }
+			    catch(Exception e) {
+			      logger.debug("Failed to process success message", e);
+			    }
+		}
+
+	}
 }

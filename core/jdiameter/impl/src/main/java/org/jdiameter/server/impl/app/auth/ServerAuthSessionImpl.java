@@ -30,6 +30,7 @@ import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.Session;
+import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppRequestEvent;
@@ -42,6 +43,7 @@ import org.jdiameter.api.auth.events.AbortSessionRequest;
 import org.jdiameter.api.auth.events.ReAuthRequest;
 import org.jdiameter.api.auth.events.SessionTermAnswer;
 import org.jdiameter.api.auth.events.SessionTermRequest;
+import org.jdiameter.api.sh.ClientShSession;
 import org.jdiameter.client.impl.app.auth.ClientAuthSessionImpl;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.auth.ClientAuthSessionState;
@@ -49,9 +51,13 @@ import org.jdiameter.common.api.app.auth.IAuthMessageFactory;
 import org.jdiameter.common.api.app.auth.IServerAuthActionContext;
 import org.jdiameter.common.api.app.auth.ServerAuthSessionState;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
+import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.jdiameter.common.impl.app.auth.AbortSessionAnswerImpl;
 import org.jdiameter.common.impl.app.auth.AbortSessionRequestImpl;
 import org.jdiameter.common.impl.app.auth.AppAuthSessionImpl;
+import org.jdiameter.common.impl.app.sh.ProfileUpdateRequestImpl;
+import org.jdiameter.common.impl.app.sh.SubscribeNotificationsRequestImpl;
+import org.jdiameter.common.impl.app.sh.UserDataRequestImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,8 +79,9 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
 
   // =================== CONSTRUCTORS
 
-  public ServerAuthSessionImpl(Session session, Request initialRequest, ServerAuthSessionListener lst, IAuthMessageFactory fct, long tsTimeout, boolean stateless, StateChangeListener... scListeners)
+  public ServerAuthSessionImpl(Session session,SessionFactory sf, Request initialRequest, ServerAuthSessionListener lst, IAuthMessageFactory fct, long tsTimeout, boolean stateless, StateChangeListener... scListeners)
   {
+	super(sf);  
     if (session == null) {
       throw new IllegalArgumentException("Session can not be null");
     }
@@ -291,24 +298,11 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
   }
 
   public void receivedSuccessMessage(Request request, Answer answer) {
-    try {
-      sendAndStateLock.lock();
-      if (request.getCommandCode() == factory.getAuthMessageCommandCode()) {
-        handleEvent(new Event(RECEIVE_AUTH_REQUEST, factory.createAuthRequest(request)));
-      }
-      else if (request.getCommandCode() == AbortSessionRequestImpl.code) {
-        handleEvent(new Event(RECEVE_ASR_ANSWER, new AbortSessionAnswerImpl(answer)));
-      }
-      else {
-        listener.doOtherEvent(this, factory.createAuthRequest(request), new AppAnswerEventImpl(answer));
-      }
-    }
-    catch (Exception e) {
-      logger.debug("Can not handle event", e);
-    }
-    finally {
-      sendAndStateLock.unlock();
-    }
+	  AnswerDelivery rd = new AnswerDelivery();
+		rd.session = this;
+		rd.request = request;
+		rd.answer = answer;
+		super.scheduler.execute(rd);
   }
 
   public void timeoutExpired(Request request) {
@@ -326,30 +320,72 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
   }
 
   public Answer processRequest(Request request) {
-    if (request != null) {
-      if (request.getCommandCode() == factory.getAuthMessageCommandCode()) {
-        try {
-          sendAndStateLock.lock();
-          handleEvent(new Event(RECEIVE_AUTH_REQUEST, factory.createAuthRequest(request)));
-        }
-        catch (Exception e) {
-          logger.debug("Can not handle event", e);
-        }
-        finally {
-          sendAndStateLock.unlock();
-        }
-      }
-      else {
-        try {
-          listener.doOtherEvent(this, factory.createAuthRequest(request), null);
-        }
-        catch (Exception e) {
-          logger.debug("Can not handle event", e);
-        }
-      }
-    }
-
+	  RequestDelivery rd = new RequestDelivery();
+	  rd.session = this;
+	  rd.request = request;
+	  super.scheduler.execute(rd);
     return null;
   }
+  private class RequestDelivery implements Runnable {
+	  ServerAuthSession session;
+		Request request;
 
+		public void run() {
+
+			if (request != null) {
+			      if (request.getCommandCode() == factory.getAuthMessageCommandCode()) {
+			        try {
+			          sendAndStateLock.lock();
+			          handleEvent(new Event(RECEIVE_AUTH_REQUEST, factory.createAuthRequest(request)));
+			        }
+			        catch (Exception e) {
+			          logger.debug("Can not handle event", e);
+			        }
+			        finally {
+			          sendAndStateLock.unlock();
+			        }
+			      }
+			      else {
+			        try {
+			          listener.doOtherEvent(session, factory.createAuthRequest(request), null);
+			        }
+			        catch (Exception e) {
+			          logger.debug("Can not handle event", e);
+			        }
+			      }
+			    }
+
+
+		}
+
+	}
+
+	private class AnswerDelivery implements Runnable {
+		ServerAuthSession session;
+		Answer answer;
+		Request request;
+
+		public void run() {
+			try {
+			      sendAndStateLock.lock();
+			      if (request.getCommandCode() == factory.getAuthMessageCommandCode()) {
+			        handleEvent(new Event(RECEIVE_AUTH_REQUEST, factory.createAuthRequest(request)));
+			      }
+			      else if (request.getCommandCode() == AbortSessionRequestImpl.code) {
+			        handleEvent(new Event(RECEVE_ASR_ANSWER, new AbortSessionAnswerImpl(answer)));
+			      }
+			      else {
+			        listener.doOtherEvent(session, factory.createAuthRequest(request), new AppAnswerEventImpl(answer));
+			      }
+			    }
+			    catch (Exception e) {
+			      logger.debug("Can not handle event", e);
+			    }
+			    finally {
+			      sendAndStateLock.unlock();
+			    }
+
+		}
+
+	}
 }

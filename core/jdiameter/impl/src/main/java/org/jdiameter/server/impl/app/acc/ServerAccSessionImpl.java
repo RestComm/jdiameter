@@ -26,6 +26,7 @@ import org.jdiameter.api.Request;
 import org.jdiameter.api.ResultCode;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.Session;
+import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.acc.ServerAccSession;
 import org.jdiameter.api.acc.ServerAccSessionListener;
 import org.jdiameter.api.acc.events.AccountAnswer;
@@ -51,7 +52,8 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
     protected ServerAccSessionListener listener;
     protected boolean stateless = false;
 
-    public ServerAccSessionImpl(Session session, Request initialRequest, ServerAccSessionListener listener, long tsTimeout, boolean stateless, StateChangeListener... scListeners) {
+    public ServerAccSessionImpl(Session session,SessionFactory sf, Request initialRequest, ServerAccSessionListener listener, long tsTimeout, boolean stateless, StateChangeListener... scListeners) {
+    	super(sf);
         if (session == null)
             throw new IllegalArgumentException("Session can not be null");
         if (listener == null)
@@ -87,6 +89,11 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
         for (StateChangeListener i : stateListeners) {
             i.stateChanged((Enum) oldState, (Enum) newState);
         }
+        //FIXME: baranowb: make it go away like:
+        //if(isStateless() && newState == IDLE)
+        //{
+        //	release();
+        //}
     }
 
     public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
@@ -96,6 +103,7 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
     public boolean handleEventForStatelesMode(StateEvent event) throws InternalException, OverloadException {       
         try {
             switch (state) {
+            //FIXME: FSM is bit akward, we always end up in idle
                 // Idle ==========
                 case IDLE: {
                     switch ((Event.Type) event.getType()) {

@@ -14,7 +14,8 @@ public interface IConcurrentFactory {
     DuplicationMessageTimer,
     PeerOverloadTimer,
     ConnectionTimer,
-    StatisticTimer
+    StatisticTimer,
+    ApplicationSession
   }
 
   // Thread

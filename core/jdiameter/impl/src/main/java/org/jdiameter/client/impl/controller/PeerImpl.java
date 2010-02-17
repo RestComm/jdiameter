@@ -125,7 +125,10 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   protected IConnectionListener connListener = new IConnectionListener() {
 
     public void connectionOpened(String connKey) {
-      logger.debug("Connection to {} is opened", uri);
+    	if(logger.isDebugEnabled())
+    	{
+    		logger.debug("Connection to {} is opened", uri);
+    	}
       try {
         fsm.handleEvent(new FsmEvent(CONNECT_EVENT, connKey));
       }
@@ -135,7 +138,11 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
 
     public void connectionClosed(String connKey, List notSended) {
-      logger.debug("Connection from {} is closed", uri);
+    	if(logger.isDebugEnabled())
+    	{
+    		
+    		logger.debug("Connection from {} is closed", uri);
+    	}
       for (IMessage request : peerRequests.values()) {
         if (request.getState() == IMessage.STATE_SENT) {
           request.setReTransmitted(true);
@@ -161,7 +168,11 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       boolean req = message.isRequest();
       try {
         int type = message.getCommandCode();
-        logger.debug("Receive message type {} to peer {}", new Object[] {type, connKey});
+        if(logger.isDebugEnabled())
+    	{
+    		
+        	logger.debug("Receive message type {} to peer {}", new Object[] {type, connKey});
+    	}
         switch (type) {
         case CAPABILITIES_EXCHANGE_REQUEST:
           fsm.handleEvent(new FsmEvent(req ? CER_EVENT : CEA_EVENT, message, connKey));
@@ -178,7 +189,11 @@ public class PeerImpl extends AbstractPeer implements IPeer {
         }
       }
       catch (Exception e) {
-        logger.debug("Error during processing incomming message", e);
+    	  if(logger.isWarnEnabled())
+      	{
+      		 
+    		  logger.warn("Error during processing incomming message", e);
+      	}
         if (req) {
           try {
             message.setRequest(false);
@@ -187,7 +202,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
             connection.sendMessage(message);
           }
           catch (Exception exc) {
-            logger.debug("Can not send error answer", exc);
+            logger.warn("Can not send error answer", exc);
           }
         }
       }
@@ -195,7 +210,11 @@ public class PeerImpl extends AbstractPeer implements IPeer {
 
     public void internalError(String connKey, IMessage message, TransportException cause) {
       try {
-        logger.debug("internalError ", cause);
+    	  if(logger.isDebugEnabled())
+      	{
+      		
+    		  logger.debug("internalError ", cause);
+      	}
         fsm.handleEvent(new FsmEvent(INTERNAL_ERROR, message));
       }
       catch (Exception e) {
@@ -255,7 +274,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
           }
         }
         catch (Exception e) {
-          logger.debug("Can not get local address", e);
+          logger.warn("Can not get local address", e);
         }
         try {
           String[] rng = portRange.trim().split("-");
@@ -264,9 +283,13 @@ public class PeerImpl extends AbstractPeer implements IPeer {
           localPort = strRange + new Random().nextInt(endRange - strRange + 1);
         }
         catch (Exception exc) {
-          logger.debug("Can not get local port", exc);
+          logger.warn("Can not get local port", exc);
         }
-        logger.debug("Create conn with localAddress={}; localPort={}", localAddress, localPort);
+        if(logger.isDebugEnabled())
+    	{
+    		
+        	logger.debug("Create conn with localAddress={}; localPort={}", localAddress, localPort);	
+    	}
       }
       this.connection = trFactory.createConnection(remoteAddress, concurrentFactory, port, localAddress, localPort, connListener, ref);
     }
@@ -356,7 +379,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
         answer = null;
       }
       catch (Exception e) {
-        logger.debug("Unable to deliver due to error", e);
+        logger.warn("Unable to deliver due to error", e);
         resultCode = ResultCode.UNABLE_TO_DELIVER;
       }
     }
@@ -390,7 +413,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       }
       catch (OverloadException e) {
         stopping = false;
-        logger.debug("Error during stopping procedure", e);
+        logger.warn("Error during stopping procedure", e);
       }
     }
   }
@@ -498,7 +521,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
           t.add(avps.getAvpByIndex(i).getAddress());
         }
         catch (AvpDataException e) {
-          logger.debug("Can not get ip address from HOST_IP_ADDRESS avp");
+          logger.warn("Can not get ip address from HOST_IP_ADDRESS avp");
         }
       }
       addresses = t.toArray(new InetAddress[t.size()]);
@@ -532,7 +555,10 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     public void connect() throws InternalException, IOException, IllegalDiameterStateException {
       try {            
         connection.connect();
-        logger.debug("Connected to peer {}", PeerImpl.this.getUri());
+        if(logger.isDebugEnabled())
+        {
+        	logger.debug("Connected to peer {}", PeerImpl.this.getUri());
+        }
       }
       catch (TransportException e) {
         switch (e.getCode()) {
@@ -549,7 +575,10 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     public void disconnect() throws InternalException, IllegalDiameterStateException {
       if (connection != null) {
         connection.disconnect();
-        logger.debug("Disconnected from peer {}", PeerImpl.this.getUri());
+        if(logger.isDebugEnabled())
+        {
+        	logger.debug("Disconnected from peer {}", PeerImpl.this.getUri());
+        }
       }
     }
 
@@ -564,11 +593,19 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     public boolean sendMessage(IMessage message) throws TransportException, OverloadException {
       // Check message
       if (message.isTimeOut()) {
-        logger.debug("Message {} skipped (timeout)", message);
+    	  if(logger.isInfoEnabled())
+          {
+          	
+    		  logger.info("Message {} skipped (timeout)", message);
+          }
         return false;
       }
       if (message.getState() == IMessage.STATE_SENT) {
-        logger.debug("Message {} already sent", message);
+    	  if(logger.isInfoEnabled())
+          {
+    		  logger.info("Message {} already sent", message);
+          }
+        
         return false;
       }
       // Remove destionation information from answer messages
@@ -579,12 +616,21 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       // Send to network
       message.setState(IMessage.STATE_SENT);
       connection.sendMessage(message);
-      logger.debug("Send message {} to peer {}", message, PeerImpl.this.getUri());
+      
+      if(logger.isInfoEnabled())
+  		{
+  		
+    	  logger.info("Send message {} to peer {}", message, PeerImpl.this.getUri());
+  		}
       return true;
     }
 
     public void sendCerMessage() throws TransportException, OverloadException {
-      logger.debug("Send CER message");
+    	if(logger.isDebugEnabled())
+    	{
+    		
+    		logger.debug("Send CER message");
+    	}
       IMessage message = parser.createEmptyMessage(CAPABILITIES_EXCHANGE_REQUEST, 0);
       message.setRequest(true);
       message.setHopByHopIdentifier(getHopByHopIdentifier());
@@ -615,7 +661,10 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
 
     public void sendDwrMessage() throws TransportException, OverloadException {
-      logger.debug("Send DWR message");
+    	if(logger.isDebugEnabled())
+    	{
+    		logger.debug("Send DWR message");
+    	}
       IMessage message = parser.createEmptyMessage(DEVICE_WATCHDOG_REQUEST, 0);
       message.setRequest(true);
       message.setHopByHopIdentifier(getHopByHopIdentifier());
@@ -631,7 +680,11 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
 
     public void sendDwaMessage(IMessage dwr, int resultCode, String errorMessage) throws TransportException, OverloadException {
-      logger.debug("Send DWA message");
+    	if(logger.isDebugEnabled())
+    	{
+    		
+    		logger.debug("Send DWA message");
+    	}
       IMessage message = parser.createEmptyMessage(dwr);
       message.setRequest(false);
       message.setHopByHopIdentifier(dwr.getHopByHopIdentifier());
@@ -653,7 +706,10 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
 
     public void sendDprMessage(int disconnectCause) throws TransportException, OverloadException {
-      logger.debug("Send DPR message");
+    	if(logger.isDebugEnabled())
+    	{
+    		logger.debug("Send DPR message");
+    	}
       IMessage message = parser.createEmptyMessage(DISCONNECT_PEER_REQUEST, 0);
       message.setRequest(true);
       message.setHopByHopIdentifier(getHopByHopIdentifier());
@@ -664,7 +720,10 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
 
     public void sendDpaMessage(IMessage dpr, int resultCode, String errorMessage) throws TransportException, OverloadException {
-      logger.debug("Send DPA message");
+    	if(logger.isDebugEnabled())
+    	{
+    		logger.debug("Send DPA message");
+    	}
       IMessage message = parser.createEmptyMessage(dpr);
       message.setRequest(false);
       message.setHopByHopIdentifier(dpr.getHopByHopIdentifier());
@@ -690,7 +749,11 @@ public class PeerImpl extends AbstractPeer implements IPeer {
         Avp resCode = message.getAvps().getAvp(RESULT_CODE);
         Avp frmId     = message.getAvps().getAvp(FIRMWARE_REVISION);
         if (origHost == null || origRealm == null || vendorId == null) {
-          logger.debug("Incorrect CEA message (missing mandatory AVPs)");
+        	if(logger.isWarnEnabled())
+        	{
+        		
+        		logger.warn("Incorrect CEA message (missing mandatory AVPs)");
+        	}
         }
         else {
           if (realmName == null) {
@@ -776,7 +839,11 @@ public class PeerImpl extends AbstractPeer implements IPeer {
               request.getEventListener().receivedSuccessMessage(request, message);
             }
             else {
-              logger.debug("Can not call answer listener for request {} because listener not set", message);
+            	if(logger.isDebugEnabled())
+            	{
+            		
+            		logger.debug("Can not call answer listener for request {} because listener not set", message);
+            	}
               statistic.getRecordByName(IStatistic.Counters.NetGenRejectedResponse.name()).inc();
             }
             

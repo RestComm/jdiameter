@@ -2,7 +2,7 @@
 <Configuration xmlns="http://www.jdiameter.org/jdiameter-server">
 
   <LocalPeer>
-    <URI value="aaa://uas.mobicents.org:1812" />
+    <URI value="aaa://uas.mobicents.org:3868" />
     <IPAddresses>
       <IPAddress value="127.0.0.1" />
     </IPAddresses>
@@ -34,7 +34,16 @@
     <DwaTimeOut value="10000" />
     <DpaTimeOut value="5000" />
     <RecTimeOut value="10000" />
-    <ThreadPool size="10" priority="5"/>
+    <Concurrent>
+       <Entity name="ThreadGroup" size="64"/>
+       <Entity name="ProcessingMessageTimer" size="1"/>
+       <Entity name="DuplicationMessageTimer" size="1"/>
+       <Entity name="RedirectMessageTimer" size="1"/>
+       <Entity name="PeerOverloadTimer" size="1"/>
+       <Entity name="ConnectionTimer" size="1"/>
+       <Entity name="StatisticTimer" size="1"/>
+       <Entity name="ApplicationSession" size="10"/>
+    </Concurrent>
   </Parameters>
 
   <Network>

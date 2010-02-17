@@ -31,6 +31,7 @@
     <mobicents.tools.mavenplugin.eclipse.version>1.0.0.BETA2</mobicents.tools.mavenplugin.eclipse.version>
     <!-- Third party -->
     <get.opt.version>1.0.9</get.opt.version>
+    <slf4j.version>1.5.8</slf4j.version>
   </properties>
 
   <dependencyManagement>
@@ -101,6 +102,16 @@
 			<groupId>urbanophile</groupId>
 			<artifactId>java-getopt</artifactId>
 			<version>${get.opt.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
 		</dependency>
     </dependencies>
   </dependencyManagement>

@@ -19,8 +19,9 @@ import org.jdiameter.api.app.StateEvent;
 class Event implements StateEvent {
 
     enum Type{
+    	SEND_EVENT_RECORD,
         SEND_START_RECORD,
-        SEND_EVENT_RECORD,
+        SEND_INTERIM_RECORD,
         SEND_STOP_RECORD,
         FAILED_SEND_RECORD,
         RECEIVED_RECORD,
@@ -52,6 +53,9 @@ class Event implements StateEvent {
                 break;
             case 2:
                 this.type = Type.SEND_START_RECORD;
+                break;
+            case 3:
+                this.type = Type.SEND_INTERIM_RECORD;
                 break;
             case 4:
                 this.type = Type.SEND_STOP_RECORD;

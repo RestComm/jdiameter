@@ -316,7 +316,7 @@ public class CCR extends AbstractStackRunner implements NetworkReqListener, Even
 		if (request.getCommandCode() != 272) {
 			if (super.log.isEnabledFor(Level.ERROR)) {
 				//super.log.error("Received non CCR message, discarding: " + toString(request));
-				super.dumpMessage(request);
+				super.dumpMessage(request,false);
 			}
 			return null;
 		}

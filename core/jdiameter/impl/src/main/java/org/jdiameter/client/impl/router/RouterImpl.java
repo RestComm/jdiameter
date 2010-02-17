@@ -127,6 +127,7 @@ public class RouterImpl implements IRouter {
     public String[] getRequestRouteInfo(long hopByHopIdentifier) {
         requestLock.writeLock().lock();
         AnswerEntry ans = requestEntryTable.get(hopByHopIdentifier);
+        
         requestLock.writeLock().unlock();
         if (ans != null) {
         	return new String[] {ans.getHost(), ans.getRealm()};

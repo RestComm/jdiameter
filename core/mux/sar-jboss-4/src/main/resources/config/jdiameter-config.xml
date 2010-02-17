@@ -2,8 +2,7 @@
 <Configuration xmlns="http://www.jdiameter.org/jdiameter-server">
 
   <LocalPeer>
-    <URI value="aaa://127.0.0.1:1812" />
-    <!-- URI value="aaa://mobicents.open-ims.test:1812" /-->
+    <URI value="aaa://uas.mobicents.org:3868" />
     <IPAddresses>
       <IPAddress value="127.0.0.1" />
     </IPAddresses>
@@ -35,7 +34,16 @@
     <DwaTimeOut value="10000" />
     <DpaTimeOut value="5000" />
     <RecTimeOut value="10000" />
-    <ThreadPool size="10" priority="5"/>
+    <Concurrent>
+       <Entity name="ThreadGroup" size="64"/>
+       <Entity name="ProcessingMessageTimer" size="1"/>
+       <Entity name="DuplicationMessageTimer" size="1"/>
+       <Entity name="RedirectMessageTimer" size="1"/>
+       <Entity name="PeerOverloadTimer" size="1"/>
+       <Entity name="ConnectionTimer" size="1"/>
+       <Entity name="StatisticTimer" size="1"/>
+       <Entity name="ApplicationSession" size="10"/>
+    </Concurrent>
   </Parameters>
 
   <Network>
@@ -44,7 +52,7 @@
       <Peer name="aaa://127.0.0.1:21812" attempt_connect="false" rating="1" />
       
       <!-- Ericsson SDK Client -->
-      <!--Peer name="aaa://127.0.0.1:11812" attempt_connect="false" rating="1"/-->
+      <Peer name="aaa://uac.mobicents.org" attempt_connect="false" rating="1"/>
       
       <!-- Ericsson SDK Emulator -->
       <!--Peer name="aaa://127.0.0.1:21812" attempt_connect="true" rating="1" /-->
@@ -66,13 +74,13 @@
       </Realm>
 
       <!-- Sh -->
-      <!-- Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+      <Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
         <ApplicationID>
           <VendorId value="10415" />
           <AuthApplId value="16777217" />
           <AcctApplId value="0" />
         </ApplicationID>
-      </Realm-->
+      </Realm>
       
       <!-- Sh (OpenIMS) -->
       <!-- Realm name="mobicents.org" peers="192.168.124.1,192.168.124.132" local_action="LOCAL" dynamic="false" exp_time="1">
@@ -84,22 +92,22 @@
       </Realm-->
       
       <!--  CCA -->
-      <!--  Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+      <Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
         <ApplicationID>
           <VendorId value="0" />
           <AuthApplId value="4" />
           <AcctApplId value="0" />
         </ApplicationID>
-      </Realm-->
+      </Realm>
       
       <!-- Cx/Dx -->
-      <!-- Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+      <Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
         <ApplicationID>
           <VendorId value="10415" />
           <AuthApplId value="16777216" />
           <AcctApplId value="0" />
         </ApplicationID>
-      </Realm-->
+      </Realm>
     </Realms>
   </Network>
 

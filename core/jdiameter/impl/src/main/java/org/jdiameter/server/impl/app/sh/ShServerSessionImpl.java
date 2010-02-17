@@ -84,6 +84,7 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
   }
 
   public ShServerSessionImpl(String sessionId, IShMessageFactory fct, SessionFactory sf, ServerShSessionListener lst) {
+	super(sf);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
@@ -124,23 +125,11 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
   }
 
   public void receivedSuccessMessage(Request request, Answer answer) {
-    try {
-      sendAndStateLock.lock();
-      if (request.getApplicationId() == factory.getApplicationId()) {
-        if (request.getCommandCode() == PushNotificationRequestImpl.code) {
-          handleEvent(new Event(Event.Type.RECEIVE_PUSH_NOTIFICATION_ANSWER, factory.createPushNotificationRequest(request), factory.createPushNotificationAnswer(answer)));
-          return;
-        } 
-      }
-
-      listener.doOtherEvent(this, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
-    }
-    catch (Exception e) {
-      logger.debug("Failed to process success message", e);
-    }
-    finally {
-      sendAndStateLock.unlock();
-    }
+	  AnswerDelivery rd = new AnswerDelivery();
+		rd.session = this;
+		rd.request = request;
+		rd.answer = answer;
+		super.scheduler.execute(rd);
   }
 
   public void timeoutExpired(Request request) {
@@ -162,32 +151,12 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
   }
 
   public Answer processRequest(Request request) {
-    try {
-      if (request.getApplicationId() == factory.getApplicationId()) {
-        if (request.getCommandCode() == org.jdiameter.common.impl.app.sh.SubscribeNotificationsRequestImpl.code) {
-          handleEvent(new Event(Event.Type.RECEIVE_SUBSCRIBE_NOTIFICATIONS_REQUEST, factory.createSubscribeNotificationsRequest(request), null));
-          return null;
-        }
-        else if(request.getCommandCode() == org.jdiameter.common.impl.app.sh.UserDataRequestImpl.code) {
-          handleEvent(new Event(Event.Type.RECEIVE_USER_DATA_REQUEST,factory.createUserDataRequest(request),null));
-          return null;
-        }
-        else if(request.getCommandCode() == org.jdiameter.common.impl.app.sh.ProfileUpdateRequestImpl.code) {
-          handleEvent(new Event(Event.Type.RECEIVE_PROFILE_UPDATE_REQUEST,factory.createProfileUpdateRequest(request),null));
-          return null;
-        }
-        else {
-          // FIXME: Anything to do here?
-        }
-      }
-
-      listener.doOtherEvent(this, new AppRequestEventImpl(request), null);
-    }
-    catch (Exception e) {
-      logger.debug("Failed to process request message", e);
-    }
-
+	  RequestDelivery rd = new RequestDelivery();
+	  rd.session = this;
+	  rd.request = request;
+	  super.scheduler.execute(rd);
     return null;
+
   }
 
   public <E> E getState(Class<E> stateType) {
@@ -492,7 +461,7 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
       sendAndStateLock.lock();
       this.stopTxTimer();
       this.txTimerTask = new TxTimerTask(request);
-      this.txSft = ShSession.scheduler.schedule(this.txTimerTask, this.factory.getMessageTimeout(), TimeUnit.MILLISECONDS);
+      this.txSft = super.scheduler.schedule(this.txTimerTask, this.factory.getMessageTimeout(), TimeUnit.MILLISECONDS);
     }
     catch (Exception e) {
     }
@@ -563,4 +532,67 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
     return result >= 2000 && result < 3000;
   }
 
+  
+  private class RequestDelivery implements Runnable {
+	  ServerShSession session;
+		Request request;
+
+		public void run() {
+
+			try {
+			      if (request.getApplicationId() == factory.getApplicationId()) {
+			        if (request.getCommandCode() == org.jdiameter.common.impl.app.sh.SubscribeNotificationsRequestImpl.code) {
+			          handleEvent(new Event(Event.Type.RECEIVE_SUBSCRIBE_NOTIFICATIONS_REQUEST, factory.createSubscribeNotificationsRequest(request), null));
+			          return ;
+			        }
+			        else if(request.getCommandCode() == org.jdiameter.common.impl.app.sh.UserDataRequestImpl.code) {
+			          handleEvent(new Event(Event.Type.RECEIVE_USER_DATA_REQUEST,factory.createUserDataRequest(request),null));
+			          return ;
+			        }
+			        else if(request.getCommandCode() == org.jdiameter.common.impl.app.sh.ProfileUpdateRequestImpl.code) {
+			          handleEvent(new Event(Event.Type.RECEIVE_PROFILE_UPDATE_REQUEST,factory.createProfileUpdateRequest(request),null));
+			          return ;
+			        }
+			        else {
+			          // FIXME: Anything to do here?
+			        }
+			      }
+
+			      listener.doOtherEvent(session, new AppRequestEventImpl(request), null);
+			    }
+			    catch (Exception e) {
+			      logger.debug("Failed to process request message", e);
+			    }
+
+
+		}
+
+	}
+
+	private class AnswerDelivery implements Runnable {
+		ServerShSession session;
+		Answer answer;
+		Request request;
+
+		public void run() {
+			try {
+			      sendAndStateLock.lock();
+			      if (request.getApplicationId() == factory.getApplicationId()) {
+			        if (request.getCommandCode() == PushNotificationRequestImpl.code) {
+			          handleEvent(new Event(Event.Type.RECEIVE_PUSH_NOTIFICATION_ANSWER, factory.createPushNotificationRequest(request), factory.createPushNotificationAnswer(answer)));
+			          return;
+			        } 
+			      }
+
+			      listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
+			    }
+			    catch (Exception e) {
+			      logger.debug("Failed to process success message", e);
+			    }
+			    finally {
+			      sendAndStateLock.unlock();
+			    }
+		}
+
+	}
 }

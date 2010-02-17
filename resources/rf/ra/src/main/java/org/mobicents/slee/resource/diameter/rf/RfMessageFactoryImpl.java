@@ -8,6 +8,7 @@ import net.java.slee.resource.diameter.rf.RfMessageFactory;
 import org.apache.log4j.Logger;
 import org.jdiameter.api.Stack;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
+import org.mobicents.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvpImpl;
 
 /**
  * 
@@ -35,7 +36,6 @@ public class RfMessageFactoryImpl extends DiameterMessageFactoryImpl implements 
   {
     AccountingRequest acr = super.createAccountingRequest();
     acr.setAcctApplicationId( _RF_ACC_APP_ID );
-    
     if(logger.isDebugEnabled())
     {
       logger.debug( "Created Rf ACR with Accounting-Record-Type[" + accountingrecordtype + "]" );
