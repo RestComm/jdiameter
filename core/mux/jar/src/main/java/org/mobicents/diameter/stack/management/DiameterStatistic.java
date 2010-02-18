@@ -32,4 +32,9 @@ public class DiameterStatistic implements Serializable {
   public String getValueAsString() {
     return value;
   }
+  
+  @Override
+  public String toString() {
+    return name + "=" + value;
+  }
 }

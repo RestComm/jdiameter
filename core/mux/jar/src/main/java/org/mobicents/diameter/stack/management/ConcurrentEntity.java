@@ -6,7 +6,7 @@ public interface ConcurrentEntity extends Serializable {
 
   public static enum ConcurrentEntityNames {
     ThreadGroup, ProcessingMessageTimer, DuplicationMessageTimer,
-    RedirectMessageTimer, PeerOverloadTimer, ConnectionTimer, StatisticTimer;
+    RedirectMessageTimer, PeerOverloadTimer, ConnectionTimer, StatisticTimer, ApplicationSession;
   }
 
   public String getName();

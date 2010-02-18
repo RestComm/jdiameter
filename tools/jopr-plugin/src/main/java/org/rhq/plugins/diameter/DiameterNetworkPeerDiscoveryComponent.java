@@ -1,5 +1,7 @@
 package org.rhq.plugins.diameter;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -46,8 +48,15 @@ public class DiameterNetworkPeerDiscoveryComponent implements ResourceDiscoveryC
     String key = peer.getName();
     String description = peer.getName();
 
+    try {
+      key = new URI(key).getHost();
+    }
+    catch (URISyntaxException e) {
+      // ignore
+    }
+    
     // Create new Peer resource
-    DiscoveredResourceDetails discoveredNetworkPeer = new DiscoveredResourceDetails(resourceType, key, "[NP] "+ peer.getName(), "", description, null, null);
+    DiscoveredResourceDetails discoveredNetworkPeer = new DiscoveredResourceDetails(resourceType, key, "[NP] " + key, "", description, null, null);
 
     if(logger.isInfoEnabled()) {
       logger.info("Created new Peer. name=" + peer.getName());

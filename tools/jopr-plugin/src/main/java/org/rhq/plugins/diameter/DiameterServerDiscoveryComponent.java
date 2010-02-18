@@ -51,8 +51,8 @@ public class DiameterServerDiscoveryComponent implements ResourceDiscoveryCompon
   private static final String JAVA_HOME_ENV_VAR = "JAVA_HOME";
 
   private static final String[] CLIENT_JARS = new String[] { "client/jbossall-client.jar",
-    "common/lib/jboss-security-aspects.jar", "lib/jboss-managed.jar", "lib/jboss-metatype.jar",
-    "lib/jboss-dependency.jar" };
+    /*"common/lib/jboss-security-aspects.jar", "lib/jboss-managed.jar", "lib/jboss-metatype.jar",
+    "lib/jboss-dependency.jar"*/ };
 
   @Override
   public Set<DiscoveredResourceDetails> discoverResources(ResourceDiscoveryContext<DiameterServerComponent> discoveryContext) throws InvalidPluginConfigurationException, Exception {

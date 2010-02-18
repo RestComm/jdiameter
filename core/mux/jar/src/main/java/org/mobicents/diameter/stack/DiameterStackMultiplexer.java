@@ -31,7 +31,6 @@ import org.jdiameter.api.EventListener;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.LocalAction;
 import org.jdiameter.api.Message;
-import org.jdiameter.api.Mode;
 import org.jdiameter.api.MutableConfiguration;
 import org.jdiameter.api.MutablePeerTable;
 import org.jdiameter.api.Network;
@@ -73,19 +72,12 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
   private void initStack() throws Exception {
     initStack(this.getClass().getClassLoader().getResourceAsStream("config/jdiameter-config.xml"));
-    //initStack(this.getClass().getClassLoader().getResourceAsStream("C:\\jdiameter-config.xml"));
   }
 
-  private void initStack(InputStream is) throws Exception
-  {
-    try 
-    {
+  private void initStack(InputStream is) throws Exception {
+    try {
       // Create and configure stack
       this.stack = new StackImpl();
-
-      // Get configuration
-      // String configFile = "jdiameter-config.xml";
-      // is = this.getClass().getClassLoader().getResourceAsStream("config/" + configFile);
 
       // Load the configuration
       Configuration config = new XMLConfiguration(is);
@@ -96,344 +88,311 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
       Set<org.jdiameter.api.ApplicationId> appIds = stack.getMetaData().getLocalPeer().getCommonApplications();
 
-      log.info("Diameter Stack Mux :: Supporting " + appIds.size() + " applications.");
+      if(log.isInfoEnabled()) {
+        log.info("Diameter Stack Mux :: Supporting " + appIds.size() + " applications.");
+      }
+      //network.addNetworkReqListener(this, ApplicationId.createByAccAppId(193, 19302));
 
-      //network.addNetworkReqListener(this, ApplicationId.createByAccAppId( 193, 19302 ));
-
-      for (org.jdiameter.api.ApplicationId appId : appIds)
-      {
-        log.info("Diameter Stack Mux :: Adding Listener for [" + appId + "].");
+      for (org.jdiameter.api.ApplicationId appId : appIds) {
+        if(log.isInfoEnabled()) {
+          log.info("Diameter Stack Mux :: Adding Listener for [" + appId + "].");
+        }
         network.addNetworkReqListener(this, appId);
 
-        if( appId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE )
-        {
+        if(appId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE) {
           this.appIdToListener.put(appId.getAcctAppId(), null);
         }
-        else if( appId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE )
-        {
+        else if(appId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE) {
           this.appIdToListener.put(appId.getAuthAppId(), null);
         }
       }
 
-      try
-      {
-        log.info( "Parsing AVP Dictionary file..." );
-        AvpDictionary.INSTANCE.parseDictionary( AvpDictionary.class.getResourceAsStream("dictionary.xml") );
-        log.info( "AVP Dictionary file successfuly parsed!" );
+      try {
+        if(log.isInfoEnabled()) {
+          log.info("Parsing AVP Dictionary file...");
+        }
+        AvpDictionary.INSTANCE.parseDictionary(AvpDictionary.class.getResourceAsStream("dictionary.xml"));
+        if(log.isInfoEnabled()) {
+          log.info("AVP Dictionary file successfuly parsed!");
+        }
       }
-      catch ( Exception e )
-      {
-        log.error( "Error while parsing dictionary file.", e );
+      catch (Exception e) {
+        log.error("Error while parsing dictionary file.", e);
       }
 
       this.stack.start();
-
     }
-    finally
-    {
+    finally {
       if (is != null)
         is.close();
 
       is = null;
     }
 
-    log.info("Diameter Stack Mux :: Successfully initialized stack.");
+    if(log.isInfoEnabled()) {
+      log.info("Diameter Stack Mux :: Successfully initialized stack.");
+    }
   }
 
-  private void doStopStack() throws Exception
-  {
-    try
-    {
-      log.info("Stopping Diameter Mux Stack...");
+  private void doStopStack() throws Exception {
+    try {
+      if(log.isInfoEnabled()) {
+        log.info("Stopping Diameter Mux Stack...");
+      }
 
       stack.stop(10, TimeUnit.SECONDS);
 
-      log.info("Diameter Mux Stack Stopped Successfully.");
+      if(log.isInfoEnabled()) {
+        log.info("Diameter Mux Stack Stopped Successfully.");
+      }
     }
-    catch (Exception e)
-    {
-      log.error( "Failure while stopping stack", e );
+    catch (Exception e) {
+      log.error("Failure while stopping stack", e);
     }
 
     stack.destroy();
   }
 
-  private DiameterListener findListener(Message message)
-  {
-
+  private DiameterListener findListener(Message message) {
     Set<org.jdiameter.api.ApplicationId> appIds = message.getApplicationIdAvps();
 
-    if( appIds.size() > 0 )
-    {
-      for(org.jdiameter.api.ApplicationId appId : appIds)
-      {
-        log.info( "Diameter Stack Mux :: findListener :: AVP AppId [" + appId + "]" );
+    if(appIds.size() > 0) {
+      for(org.jdiameter.api.ApplicationId appId : appIds) {
+        if(log.isDebugEnabled()) {
+          log.debug("Diameter Stack Mux :: findListener :: AVP AppId [" + appId + "]");
+        }
 
         DiameterListener listener;
 
         Long appIdValue = appId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE ? appId.getAcctAppId() : appId.getAuthAppId(); 
 
-        if( (listener = this.appIdToListener.get(appIdValue)) != null )
-        {
-          log.info( "Diameter Stack Mux :: findListener :: Found Listener [" + listener + "]" );
+        if((listener = this.appIdToListener.get(appIdValue)) != null) {
+          if(log.isDebugEnabled()) {
+            log.debug("Diameter Stack Mux :: findListener :: Found Listener [" + listener + "]");
+          }
 
           return listener;
         }
       }
     }
-    else
-    {
+    else {
       Long appId = message.getApplicationId();
 
-      log.info( "Diameter Stack Mux :: findListener :: Header AppId [" + appId + "]" );
+      if(log.isDebugEnabled()) {
+        log.debug("Diameter Stack Mux :: findListener :: Header AppId [" + appId + "]");
+      }
 
       DiameterListener listener;
 
-      if( (listener = this.appIdToListener.get(appId)) != null )
-      {
-        log.info( "Diameter Stack Mux :: findListener :: Found Listener [" + listener + "]" );
+      if((listener = this.appIdToListener.get(appId)) != null) {
+        if(log.isDebugEnabled()) {
+          log.debug("Diameter Stack Mux :: findListener :: Found Listener [" + listener + "]");
+        }
 
         return listener;
       }
     }
 
-    log.info( "Diameter Stack Mux :: findListener :: No Listener Found." );
+    if(log.isInfoEnabled()) {
+      log.info("Diameter Stack Mux :: findListener :: No Listener Found.");
+    }
 
     return null;
   }
 
   // ===== NetworkReqListener IMPLEMENTATION ===== 
 
-  public Answer processRequest( Request request )
-  {
-    log.info( "Diameter Stack Mux :: processRequest :: Command-Code [" + request.getCommandCode() + "]" );
-
-    DiameterListener listener = findListener( request );
-
-    if( listener != null )
-    {
-      return listener.processRequest( request );
+  public Answer processRequest(Request request) {
+    if(log.isInfoEnabled()) {
+      log.info("Diameter Stack Mux :: processRequest :: Command-Code [" + request.getCommandCode() + "]");
     }
-    else
-    {
-      try
-      {
-        Answer answer = request.createAnswer( ResultCode.APPLICATION_UNSUPPORTED );
 
+    DiameterListener listener = findListener(request);
+
+    if(listener != null) {
+      return listener.processRequest(request);
+    }
+    else {
+      try {
+        Answer answer = request.createAnswer(ResultCode.APPLICATION_UNSUPPORTED);
         //this.stack.getSessionFactory().getNewRawSession().send(answer);
-
         return answer;
       }
-      catch ( Exception e )
-      {
-        log.error( "", e );
+      catch (Exception e) {
+        log.error("Failed to create APPLICATION UNSUPPORTED answer.", e);
       }
     }
-
     return null;
   }
 
   // ===== EventListener<Request, Answer> IMPLEMENTATION ===== 
 
-  public void receivedSuccessMessage( Request request, Answer answer )
-  {
-    DiameterListener listener = findListener( request );
+  public void receivedSuccessMessage(Request request, Answer answer) {
+    DiameterListener listener = findListener(request);
 
-    if( listener != null )
-    {
-      listener.receivedSuccessMessage( request, answer );
+    if(listener != null) {
+      listener.receivedSuccessMessage(request, answer);
     }
   }
 
-  public void timeoutExpired( Request request )
-  {
-    DiameterListener listener = findListener( request );
+  public void timeoutExpired(Request request) {
+    DiameterListener listener = findListener(request);
 
-    if( listener != null )
-    {
-      listener.timeoutExpired( request );
+    if(listener != null) {
+      listener.timeoutExpired(request);
     }
   }
 
   // ===== SERVICE LIFECYCLE MANAGEMENT =====
 
   @Override
-  protected void startService() throws Exception
-  {
+  protected void startService() throws Exception {
     super.startService();
-
     initStack();
   }
 
   @Override
-  protected void stopService() throws Exception
-  {
+  protected void stopService() throws Exception {
     super.stopService();
-
     doStopStack();
   }
 
-  public String sendMessage( Message message )
-  {
-    try
-    {
+  public String sendMessage(Message message) {
+    try {
       Avp sessionId = null;
       Session session = null;
 
-      if((sessionId = message.getAvps().getAvp(Avp.SESSION_ID)) == null)
-      {
+      if((sessionId = message.getAvps().getAvp(Avp.SESSION_ID)) == null) {
         session = stack.getSessionFactory().getNewSession();
       }
-      else
-      {
-        session = stack.getSessionFactory().getNewSession( sessionId.getUTF8String() );
+      else {
+        session = stack.getSessionFactory().getNewSession(sessionId.getUTF8String());
       }
 
-      session.send( message );
+      session.send(message);
 
       return session.getSessionId();
     }
     catch (Exception e) {
-      log.error( "", e );
+      log.error("", e);
     }
 
     return null;
   }
 
-  public Message sendMessageSync( Message message )
-  {
-    try
-    {
+  public Message sendMessageSync(Message message) {
+    try {
       Avp sessionId = null;
       Session session = null;
 
-      if((sessionId = message.getAvps().getAvp(Avp.SESSION_ID)) == null)
-      {
+      if((sessionId = message.getAvps().getAvp(Avp.SESSION_ID)) == null) {
         session = stack.getSessionFactory().getNewSession();
       }
-      else
-      {
-        session = stack.getSessionFactory().getNewSession( sessionId.getUTF8String() );
+      else {
+        session = stack.getSessionFactory().getNewSession(sessionId.getUTF8String());
       }
 
-      Future<Message> answer = session.send( message );
+      Future<Message> answer = session.send(message);
 
       return answer.get();
     }
     catch (Exception e) {
-      log.error( "", e );
+      log.error("", e);
     }
 
     return null;
   }
 
-  public Message createMessage( boolean isRequest, int commandCode, long applicationId )
-  {
-    try
-    {
-      Message message = this.stack.getSessionFactory().getNewRawSession().createMessage( commandCode, org.jdiameter.api.ApplicationId.createByAccAppId( applicationId ), new Avp[]{} );
-      message.setRequest( isRequest );
+  public Message createMessage(boolean isRequest, int commandCode, long applicationId) {
+    try {
+      Message message = this.stack.getSessionFactory().getNewRawSession().createMessage(commandCode, org.jdiameter.api.ApplicationId.createByAccAppId(applicationId), new Avp[]{});
+      message.setRequest(isRequest);
 
       return  message;
     }
-    catch ( Exception e )
-    {
-      log.error( "Failure while creating message.", e );
+    catch (Exception e) {
+      log.error("Failure while creating message.", e);
     }
 
     return null;
   }
 
-  public Message createRequest( int commandCode, long applicationId )
-  {
-    return createMessage( true, commandCode, applicationId );
+  public Message createRequest(int commandCode, long applicationId) {
+    return createMessage(true, commandCode, applicationId);
   }
 
-  public Message createAnswer( int commandCode, long applicationId )
-  {
-    return createMessage( false, commandCode, applicationId );
+  public Message createAnswer(int commandCode, long applicationId) {
+    return createMessage(false, commandCode, applicationId);
   }
 
   // ===== MBEAN OPERATIONS =====
 
-  public DiameterStackMultiplexerMBean getMultiplexerMBean()
-  {
+  public DiameterStackMultiplexerMBean getMultiplexerMBean() {
     return this;
   }
 
-  public DiameterMessageFactory getMessageFactory()
-  {
+  public DiameterMessageFactory getMessageFactory() {
     return this;
   }
 
-  public DiameterProvider getProvider()
-  {
+  public DiameterProvider getProvider() {
     return this;
   }
 
-  public Stack getStack()
-  {
+  public Stack getStack() {
     return new DiameterStackProxy(this.stack);
   }
 
-  public void registerListener( DiameterListener listener, org.jdiameter.api.ApplicationId[] appIds) throws IllegalStateException
-  {
-    if(listener == null)
-    {
-      log.warn( "Trying to register a null Listener. Give up..." );
-
+  public void registerListener(DiameterListener listener, org.jdiameter.api.ApplicationId[] appIds) throws IllegalStateException {
+    if(listener == null) {
+      log.warn("Trying to register a null Listener. Give up...");
       return;
     }
 
     int curAppIdIndex = 0;
 
-    try
-    {
+    try {
       lock.lock();
 
       // Register the selected appIds in the stack
       Network network = stack.unwrap(Network.class);
 
-      log.info("Diameter Stack Mux :: Registering  " + appIds.length + " applications.");
+      if(log.isInfoEnabled()) {
+        log.info("Diameter Stack Mux :: Registering  " + appIds.length + " applications.");
+      }
 
-      for (; curAppIdIndex < appIds.length; curAppIdIndex++)
-      {
+      for (; curAppIdIndex < appIds.length; curAppIdIndex++) {
         org.jdiameter.api.ApplicationId appId = appIds[curAppIdIndex];
-        log.info("Diameter Stack Mux :: Adding Listener for [" + appId + "].");
+        if(log.isInfoEnabled()) {
+          log.info("Diameter Stack Mux :: Adding Listener for [" + appId + "].");
+        }
         network.addNetworkReqListener(this, appId);
 
-        if( appId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE )
-        {
+        if(appId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE) {
           this.appIdToListener.put(appId.getAcctAppId(), listener);
         }
-        else if( appId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE )
-        {
+        else if(appId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE) {
           this.appIdToListener.put(appId.getAuthAppId(), listener);
         }
       }
 
       // And add the listener and it's holder
-      Collection<org.jdiameter.api.ApplicationId> registeredAppIds = this.listenerToAppId.get( listener );
+      Collection<org.jdiameter.api.ApplicationId> registeredAppIds = this.listenerToAppId.get(listener);
 
       // Merge the existing (if any) with new.
-      if(registeredAppIds != null)
-      {
-        registeredAppIds.addAll( Arrays.asList(appIds) );
+      if(registeredAppIds != null) {
+        registeredAppIds.addAll(Arrays.asList(appIds));
       }
-      else
-      {
-        this.listenerToAppId.put( listener, Arrays.asList(appIds) );
+      else {
+        this.listenerToAppId.put(listener, Arrays.asList(appIds));
       }
     }
     catch (ApplicationAlreadyUseException aaue) {
-
       // Let's remove what we've done so far...
-      try
-      {
+      try {
         Network network = stack.unwrap(Network.class);
 
-        for (; curAppIdIndex >= 0; curAppIdIndex--)
-        {
+        for (; curAppIdIndex >= 0; curAppIdIndex--) {
           // Remove the app id from map
           this.appIdToListener.remove(appIds[curAppIdIndex]);
 
@@ -442,25 +401,24 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
         }
       }
       catch (Exception e) {
-        log.error( "", e );
+        log.error("", e);
       }
     }
     catch (Exception e) {
-      log.error( "", e );
+      log.error("", e);
     }
     finally {
       lock.unlock();
     }
   }
 
-  public void unregisterListener( DiameterListener listener )
-  {
-    log.info( "Diameter Stack Mux :: unregisterListener :: Listener [" + listener + "]" );
-
-    if(listener == null)
-    {
-      log.warn( "Diameter Stack Mux :: unregisterListener :: Trying to unregister a null Listener. Give up..." );
-
+  public void unregisterListener(DiameterListener listener) {
+    if(log.isInfoEnabled()) {
+      log.info("Diameter Stack Mux :: unregisterListener :: Listener [" + listener + "]");
+    }
+    
+    if(listener == null) {
+      log.warn("Diameter Stack Mux :: unregisterListener :: Trying to unregister a null Listener. Give up...");
       return;
     }
 
@@ -470,20 +428,18 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
       Collection<org.jdiameter.api.ApplicationId> appIds = this.listenerToAppId.remove(listener);
 
-      if(appIds == null)
-      {
-        log.warn( "Diameter Stack Mux :: unregisterListener :: Listener has no App-Ids registered. Give up..." );
-
+      if(appIds == null) {
+        log.warn("Diameter Stack Mux :: unregisterListener :: Listener has no App-Ids registered. Give up...");
         return;
       }
 
       Network network = stack.unwrap(Network.class);
 
-      for (org.jdiameter.api.ApplicationId appId : appIds)
-      {
-        try
-        {
-          log.info( "Diameter Stack Mux :: unregisterListener :: Unregistering AppId [" + appId + "]" );
+      for (org.jdiameter.api.ApplicationId appId : appIds) {
+        try {
+          if(log.isInfoEnabled()) {
+            log.info("Diameter Stack Mux :: unregisterListener :: Unregistering AppId [" + appId + "]");
+          }
 
           // Remove the appid from map
           this.appIdToListener.remove(appId);
@@ -491,19 +447,15 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
           // and unregister the listener from stack
           network.removeNetworkReqListener(appId);
         }
-        catch (Exception e)
-        {
-          log.error( "", e );
+        catch (Exception e) {
+          log.error("", e);
         }
       }
-
     }
-    catch (InternalException ie)
-    {
-      log.error( "", ie );
+    catch (InternalException ie) {
+      log.error("", ie);
     }
-    finally
-    {
+    finally {
       lock.unlock();
     }
   }
@@ -523,8 +475,8 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
    *  y DwaTimeOut
    *  y DpaTimeOut
    *  y RecTimeOut
-   *  y PeerTable, Peer, PeerName, PeerRating, PeerAttemptConnection ( by NetWork interface)
-   *  y RealmTable, Realm, RealmEntry RealmName, RealmHosts, RealmLocalAction, RealmEntryIsDynamic, RealmEntryExpTime ( by NetWork interface)
+   *  y PeerTable, Peer, PeerName, PeerRating, PeerAttemptConnection (by NetWork interface)
+   *  y RealmTable, Realm, RealmEntry RealmName, RealmHosts, RealmLocalAction, RealmEntryIsDynamic, RealmEntryExpTime (by NetWork interface)
    * Restart stack
    *  y OwnDiameterURI
    *  y OwnIPAddresses, OwnIPAddress
@@ -562,7 +514,9 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
       getMutableConfiguration().setChildren(OwnIPAddresses.ordinal(), (Configuration[]) newIPAddressesConfig.toArray());
 
-      log.info("Local Peer IP Address successfully changed to " + ipAddress + ". Restart to Diameter stack is needed to apply changes.");
+      if(log.isInfoEnabled()) {
+        log.info("Local Peer IP Address successfully changed to " + ipAddress + ". Restart to Diameter stack is needed to apply changes.");
+      }
     }
     else {
       throw new MBeanException(new IllegalArgumentException("Invalid IP address entered (" + ipAddress + ")"));
@@ -590,10 +544,14 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
       getMutableConfiguration().setChildren(OwnIPAddresses.ordinal(), (Configuration[]) newIPAddressesConfig.toArray());
 
-      log.info("Local Peer IP Address " + ipAddress + " successfully added. Restart to Diameter stack is needed to apply changes.");
+      if(log.isInfoEnabled()) {
+        log.info("Local Peer IP Address " + ipAddress + " successfully added. Restart to Diameter stack is needed to apply changes.");
+      }
     }
     else {
-      log.info("Local Peer IP Address " + ipAddress + " not found. No changes were made.");
+      if(log.isInfoEnabled()) {
+        log.info("Local Peer IP Address " + ipAddress + " not found. No changes were made.");
+      }
     }
   }
 
@@ -604,7 +562,9 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   public void _LocalPeer_setRealm(String realm) throws MBeanException {
     getMutableConfiguration().setStringValue(OwnRealm.ordinal(), realm);
 
-    log.info("Local Peer Realm successfully changed to '" + realm + "'. Restart to Diameter stack is needed to apply changes.");
+    if(log.isInfoEnabled()) {
+      log.info("Local Peer Realm successfully changed to '" + realm + "'. Restart to Diameter stack is needed to apply changes.");
+    }
   }
 
   /*
@@ -618,7 +578,9 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
       getMutableConfiguration().setStringValue(OwnDiameterURI.ordinal(), uri);
 
-      log.info("Local Peer URI successfully changed to '" + uri + "'. Restart to Diameter stack is needed to apply changes.");
+      if(log.isInfoEnabled()) {
+        log.info("Local Peer URI successfully changed to '" + uri + "'. Restart to Diameter stack is needed to apply changes.");
+      }
     }
     catch (URISyntaxException use) {
       throw new MBeanException(use);
@@ -633,7 +595,9 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     // validate vendor-id
     try {
       getMutableConfiguration().setLongValue(OwnVendorID.ordinal(), vendorId);
-      log.info("Local Peer Vendor-Id successfully changed to '" + vendorId + "'. Restart to Diameter stack is needed to apply changes.");
+      if(log.isInfoEnabled()) {
+        log.info("Local Peer Vendor-Id successfully changed to '" + vendorId + "'. Restart to Diameter stack is needed to apply changes.");
+      }
     }
     catch (NumberFormatException nfe) {
       throw new MBeanException(nfe);
@@ -794,7 +758,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
   public void startStack() throws MBeanException {
     try {
-      this.stack.start(Mode.ALL_PEERS, 20000L, TimeUnit.MILLISECONDS);
+      this.stack.start();
     }
     catch (Exception e) {
       throw new MBeanException(e);

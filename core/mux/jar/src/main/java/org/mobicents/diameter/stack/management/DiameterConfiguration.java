@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.MutableConfiguration;
@@ -27,12 +25,14 @@ import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
 import org.jdiameter.server.impl.MutablePeerTableImpl;
 import org.jdiameter.server.impl.PeerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DiameterConfiguration implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private final Log logger = LogFactory.getLog(DiameterConfiguration.class);
+  private static final Logger logger = LoggerFactory.getLogger(DiameterConfiguration.class);
 
   protected static Stack stack;
 
@@ -168,9 +168,7 @@ public class DiameterConfiguration implements Serializable {
 
     long endTime = System.currentTimeMillis();
 
-    if(logger.isDebugEnabled()) {
-      logger.debug("Info gathered in " + (endTime - startTime) + "ms");
-    }
+    logger.debug("Info gathered in {}ms", (endTime - startTime));
   }
 
   public LocalPeer getLocalPeer() {

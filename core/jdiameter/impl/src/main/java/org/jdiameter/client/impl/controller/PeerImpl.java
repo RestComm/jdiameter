@@ -593,19 +593,11 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     public boolean sendMessage(IMessage message) throws TransportException, OverloadException {
       // Check message
       if (message.isTimeOut()) {
-    	  if(logger.isInfoEnabled())
-          {
-          	
-    		  logger.info("Message {} skipped (timeout)", message);
-          }
+  		  logger.debug("Message {} skipped (timeout)", message);
         return false;
       }
       if (message.getState() == IMessage.STATE_SENT) {
-    	  if(logger.isInfoEnabled())
-          {
-    		  logger.info("Message {} already sent", message);
-          }
-        
+  		  logger.debug("Message {} already sent", message);
         return false;
       }
       // Remove destionation information from answer messages
@@ -617,11 +609,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       message.setState(IMessage.STATE_SENT);
       connection.sendMessage(message);
       
-      if(logger.isInfoEnabled())
-  		{
-  		
-    	  logger.info("Send message {} to peer {}", message, PeerImpl.this.getUri());
-  		}
+  	  logger.debug("Send message {} to peer {}", message, PeerImpl.this.getUri());
       return true;
     }
 

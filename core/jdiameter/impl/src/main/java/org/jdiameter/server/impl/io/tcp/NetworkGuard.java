@@ -122,7 +122,7 @@ public class NetworkGuard implements INetworkGuard, Runnable {
       thread = null;
       serverSocket = null;
     } catch (IOException e) {
-      logger.info(e.getMessage());
+      logger.error(e.getMessage());
     }
   }
 }

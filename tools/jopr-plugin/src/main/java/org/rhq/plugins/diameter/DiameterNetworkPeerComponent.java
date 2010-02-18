@@ -66,7 +66,7 @@ public class DiameterNetworkPeerComponent implements ResourceComponent<DiameterS
       MBeanServerUtils mbeanUtils = resourceContext.getParentResourceComponent().getMBeanServerUtils();
       DiameterConfiguration diameterConfig = mbeanUtils.getDiameterMBean().getDiameterConfiguration();
       
-      HashMap<String,DiameterStatistic> stats = diameterConfig.getNetwork().getPeer(resourceContext.getResourceKey()).getStatistics();
+      HashMap<String,DiameterStatistic> stats = diameterConfig.getNetwork().getPeer(resourceContext.getPluginConfiguration().getSimpleValue("name", "")).getStatistics();
       
       for (MeasurementScheduleRequest request : metrics) {
         try {

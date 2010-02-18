@@ -3,18 +3,18 @@ package org.mobicents.diameter.stack.management;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.LocalAction;
 import org.jdiameter.api.PeerTable;
 import org.jdiameter.server.impl.MutablePeerTableImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NetworkImpl implements Network {
 
   private static final long serialVersionUID = 1L;
 
-  private final Log logger = LogFactory.getLog(NetworkImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(NetworkImpl.class);
 
   private Map<String, NetworkPeer> peers = new HashMap<String, NetworkPeer>();
   private Map<String, Realm> realms = new HashMap<String, Realm>();
@@ -70,7 +70,7 @@ public class NetworkImpl implements Network {
     try {
       org.jdiameter.server.impl.NetworkImpl n = (org.jdiameter.server.impl.NetworkImpl) DiameterConfiguration.stack.unwrap(org.jdiameter.api.Network.class);
       for(ApplicationIdJMX appId : realm.getApplicationIds()) {
-        org.jdiameter.api.Realm r = n.addRealm(realm.getName(), appId.asApplicationId(), LocalAction.valueOf(realm.getLocalAction()), realm.getDynamic(), realm.getExpTime());
+        /*org.jdiameter.api.Realm r =*/ n.addRealm(realm.getName(), appId.asApplicationId(), LocalAction.valueOf(realm.getLocalAction()), realm.getDynamic(), realm.getExpTime());
       }
     }
     catch (InternalException e) {
@@ -81,7 +81,7 @@ public class NetworkImpl implements Network {
   public void removeRealm(String name) {
     try {
       org.jdiameter.server.impl.NetworkImpl n = (org.jdiameter.server.impl.NetworkImpl) DiameterConfiguration.stack.unwrap(org.jdiameter.api.Network.class);
-      org.jdiameter.api.Realm r = n.remRealm(name);
+      /*org.jdiameter.api.Realm r =*/ n.remRealm(name);
     }
     catch (InternalException e) {
       logger.error("Failed to unwrap class.", e);
