@@ -83,7 +83,7 @@ public class MessageValidatorTest {
 	private static String clientURI = "aaa://" + clientHost + ":" + clientPort;
 
 	private static String serverHost = "localhost";
-	private static String serverPort = "1812";
+	private static String serverPort = "21812";
 	private static String serverURI = "aaa://" + serverHost + ":" + serverPort;
 
 	private static String realmName = "mobicents.org";
@@ -210,7 +210,7 @@ public class MessageValidatorTest {
 		
 		// here we should fail.
 		try {
-			instance.validate(answer.getGenericData());
+			instance.validate(answer.getGenericData(), false);
 			fail("Validation of message should fails: "+answer);
 		} catch (JAvpNotAllowedException ex) {
 			//we are ok,
@@ -224,11 +224,11 @@ public class MessageValidatorTest {
 		// index="-1" />
 		if (!answer.hasOriginHost()) {
 			answer.setOriginHost(new DiameterIdentity("aaa://127.0.0.1:1818"));
-		}
+		} 
 		
 		// here we should not fail.
 		try {
-			instance.validate(answer.getGenericData());
+			instance.validate(answer.getGenericData(), false);
 			
 		} catch (JAvpNotAllowedException ex) {
 			ex.printStackTrace();
@@ -263,7 +263,7 @@ public class MessageValidatorTest {
 		answer.setGrantedServiceUnit(gsuAVP);
 		
 		try {
-			instance.validate(answer.getGenericData());
+			instance.validate(answer.getGenericData(), false);
 			fail("Validation of message should fails: "+answer);
 		} catch (JAvpNotAllowedException ex) {
 			//we are ok,
@@ -309,7 +309,7 @@ public class MessageValidatorTest {
 		
 		// here we should fail.
 		try {
-			instance.validate(answer.getGenericData());
+			instance.validate(answer.getGenericData(), false);
 			fail("Validation of message should fails: "+answer);
 		} catch (JAvpNotAllowedException ex) {
 			//we are ok,
@@ -327,7 +327,7 @@ public class MessageValidatorTest {
 		
 		// here we should not fail.
 		try {
-			instance.validate(answer.getGenericData());
+			instance.validate(answer.getGenericData(), false);
 			
 		} catch (JAvpNotAllowedException ex) {
 			ex.printStackTrace();
@@ -362,7 +362,7 @@ public class MessageValidatorTest {
 		answer.setGrantedServiceUnit(gsuAVP);
 		
 		try {
-			instance.validate(answer.getGenericData());
+			instance.validate(answer.getGenericData(), false);
 			fail("Validation of message should fails: "+answer);
 		} catch (JAvpNotAllowedException ex) {
 			//we are ok,

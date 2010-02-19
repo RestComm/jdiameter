@@ -218,7 +218,7 @@ public class PeerTableImpl implements IPeerTable {
         else {
           peer.getStatistic().getRecordByName(IStatistic.Counters.AppGenRejectedResponse.name()).inc();
         }
-      throw new IOException(e.getMessage());
+      throw new IOException(e);
     }
   }
 

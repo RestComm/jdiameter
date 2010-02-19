@@ -206,37 +206,11 @@ public class PeerFSMImpl implements IStateMachine {
       runQueueProcessing();
     }
     
-    if (DiameterMessageValidator.getInstance().isOn()) {
-		if (event.getType() == EventTypes.RECEIVE_MSG_EVENT) {
-
-			//try {
-
-				DiameterMessageValidator.getInstance().validate((Message) event.getData(), true);
-			//} catch (JAvpNotAllowedException e) {
-			//	e.printStackTrace();
-			//	if (logger.isErrorEnabled()) {
-			//		logger.error("Error on incoming message, dictionary indicates some trouble, see log", e);
-			//	}
-			//}
-		} else
-		{
-			if (event.getType() == EventTypes.SEND_MSG_EVENT) {
-
-			//	try {
-
-					DiameterMessageValidator.getInstance().validate((Message) event.getData(), true);
-				//} catch (JAvpNotAllowedException e) {
-				//	e.printStackTrace();
-				//	if (logger.isErrorEnabled()) {
-				//		logger.error("Error on incoming message, dictionary indicates some trouble, see log", e);
-				//	}
-				//}
-			}
+    if (event.getData() != null && DiameterMessageValidator.getInstance().isOn()) {
+      boolean incoming = event.getType() == EventTypes.RECEIVE_MSG_EVENT;
+			DiameterMessageValidator.getInstance().validate((Message) event.getData(), incoming);
 		}
-		
-	}
-    
-    
+
     boolean rc;
     try {
       rc = eventQueue.offer(event, IAC_TIMEOUT, TimeUnit.MILLISECONDS);

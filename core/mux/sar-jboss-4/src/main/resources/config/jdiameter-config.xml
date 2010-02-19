@@ -2,10 +2,11 @@
 <Configuration xmlns="http://www.jdiameter.org/jdiameter-server">
 
   <LocalPeer>
-    <URI value="aaa://uas.mobicents.org:3868" />
-    <IPAddresses>
+    <URI value="aaa://127.0.0.1:1812" />
+    <!--URI value="aaa://uas.mobicents.org:3868" /-->
+    <!--IPAddresses>
       <IPAddress value="127.0.0.1" />
-    </IPAddresses>
+    </IPAddresses-->
     <Realm value="mobicents.org" />
     <VendorID value="193" />
     <ProductName value="jDiameter" />
@@ -42,7 +43,7 @@
        <Entity name="PeerOverloadTimer" size="1"/>
        <Entity name="ConnectionTimer" size="1"/>
        <Entity name="StatisticTimer" size="1"/>
-       <Entity name="ApplicationSession" size="10"/>
+       <Entity name="ApplicationSession" size="16"/>
     </Concurrent>
   </Parameters>
 
@@ -52,7 +53,7 @@
       <Peer name="aaa://127.0.0.1:21812" attempt_connect="false" rating="1" />
       
       <!-- Ericsson SDK Client -->
-      <Peer name="aaa://uac.mobicents.org" attempt_connect="false" rating="1"/>
+      <!--Peer name="aaa://uac.mobicents.org" attempt_connect="false" rating="1"/-->
       
       <!-- Ericsson SDK Emulator -->
       <!--Peer name="aaa://127.0.0.1:21812" attempt_connect="true" rating="1" /-->
@@ -74,13 +75,13 @@
       </Realm>
 
       <!-- Sh -->
-      <Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+      <!-- Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
         <ApplicationID>
           <VendorId value="10415" />
           <AuthApplId value="16777217" />
           <AcctApplId value="0" />
         </ApplicationID>
-      </Realm>
+      </Realm-->
       
       <!-- Sh (OpenIMS) -->
       <!-- Realm name="mobicents.org" peers="192.168.124.1,192.168.124.132" local_action="LOCAL" dynamic="false" exp_time="1">
@@ -92,22 +93,22 @@
       </Realm-->
       
       <!--  CCA -->
-      <Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+      <!-- Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
         <ApplicationID>
           <VendorId value="0" />
           <AuthApplId value="4" />
           <AcctApplId value="0" />
         </ApplicationID>
-      </Realm>
+      </Realm-->
       
       <!-- Cx/Dx -->
-      <Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+      <!--Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
         <ApplicationID>
           <VendorId value="10415" />
           <AuthApplId value="16777216" />
           <AcctApplId value="0" />
         </ApplicationID>
-      </Realm>
+      </Realm-->
     </Realms>
   </Network>
 

@@ -15,7 +15,7 @@
 		"gqpolicy.xml"> <!ENTITY etsie2e4 SYSTEM "etsie2e4.xml"> <!ENTITY Ericsson SYSTEM "Ericsson.xml"> ]
 	-->
 <dictionary>
-	<validator enabled="true" />
+	<validator enabled="true" sendLevel="ALL" receiveLevel="OFF"/>
 	<!-- <base uri="http://www.ietf.org/rfc/rfc3588.txt">  -->
 	<application id="19302" name="Ericsson ACC">
 		<command name="Accounting" code="271" request="false">
