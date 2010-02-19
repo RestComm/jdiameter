@@ -14,8 +14,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
-			<artifactId>base-ratype</artifactId>
-			<version>${mobicents.diameter.resources.base.version}</version>
+			<artifactId>ro-ratype</artifactId>
+			<version>${mobicents.diameter.resources.ro.version}</version>
 		</dependency>
 	</dependencies>
 

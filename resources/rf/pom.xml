@@ -23,7 +23,6 @@
 
 	<properties>
 		<!-- Mobicents Diameter Components Versions -->
-		<mobicents.diameter.resources.base.version>1.1.2.GA-SNAPSHOT</mobicents.diameter.resources.base.version>
 		<mobicents.diameter.resources.cca.version>1.1.2.GA-SNAPSHOT</mobicents.diameter.resources.cca.version>
 		<mobicents.diameter.resources.ro.version>1.1.2.GA-SNAPSHOT</mobicents.diameter.resources.ro.version>
 
