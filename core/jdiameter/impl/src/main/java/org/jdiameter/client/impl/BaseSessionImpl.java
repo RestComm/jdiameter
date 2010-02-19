@@ -80,6 +80,8 @@ public abstract class BaseSessionImpl implements BaseSession {
 
         // Auto set system avps
         if (message.getAvps().getAvpByIndex(0).getCode() != Avp.SESSION_ID && sessionId != null) {
+          // Just to make sure it doesn't get duplicated 
+          message.getAvps().removeAvp(Avp.SESSION_ID);
           message.getAvps().insertAvp(0, Avp.SESSION_ID, sessionId, true, false, false);
         }
       }
