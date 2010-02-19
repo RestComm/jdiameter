@@ -208,7 +208,17 @@ public class PeerFSMImpl implements IStateMachine {
     
     if (event.getData() != null && DiameterMessageValidator.getInstance().isOn()) {
       boolean incoming = event.getType() == EventTypes.RECEIVE_MSG_EVENT;
-			DiameterMessageValidator.getInstance().validate((Message) event.getData(), incoming);
+      		if(incoming)
+      		{
+      			//outgoing are done elswhere: see BaseSessionImpl
+      			try{
+      			DiameterMessageValidator.getInstance().validate((Message) event.getData(), incoming);
+      			}catch(JAvpNotAllowedException e)
+      			{
+      				logger.error("Failed to validate incoming message.", e);
+      				return false;
+      			}
+      		}
 		}
 
     boolean rc;

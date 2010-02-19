@@ -53,6 +53,7 @@ import org.jdiameter.client.impl.helpers.Parameters;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.statistic.IStatistic;
 import org.jdiameter.common.api.statistic.IStatisticFactory;
+import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -209,6 +210,9 @@ public class PeerTableImpl implements IPeerTable {
           peer.getStatistic().getRecordByName(IStatistic.Counters.AppGenResponse.name()).inc();
         }
       }
+    }catch(JAvpNotAllowedException j)
+    {
+    	throw j;
     }
     catch (Exception e) {
         logger.error("Can not send message", e);
@@ -218,7 +222,8 @@ public class PeerTableImpl implements IPeerTable {
         else {
           peer.getStatistic().getRecordByName(IStatistic.Counters.AppGenRejectedResponse.name()).inc();
         }
-      throw new IOException(e);
+        e.printStackTrace();
+      throw new IOException(e.getMessage());
     }
   }
 

@@ -91,12 +91,14 @@ import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.statistic.IStatistic;
 import org.jdiameter.common.api.statistic.IStatisticFactory;
 import org.jdiameter.common.impl.controller.AbstractPeer;
+import org.jdiameter.common.impl.validation.DiameterMessageValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PeerImpl extends AbstractPeer implements IPeer {
 
   private static final Logger logger = LoggerFactory.getLogger(PeerImpl.class);
+  protected static final DiameterMessageValidator _VALDIATOR_ = DiameterMessageValidator.getInstance();
   // Properties
   protected InetAddress[] addresses;
   protected String realmName;
@@ -473,6 +475,9 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   }
 
   public boolean sendMessage(IMessage message) throws TransportException, OverloadException, InternalException {
+	if(PeerImpl._VALDIATOR_.isOn()) {
+		PeerImpl._VALDIATOR_.validate(message,false);
+    }
     return !stopping && fsm.handleEvent(new FsmEvent(EventTypes.SEND_MSG_EVENT, message));
   }
 
@@ -532,6 +537,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     Set<ApplicationId> newAppId = new HashSet<ApplicationId>();
     Set<ApplicationId> locAppId = metaData.getLocalPeer().getCommonApplications();
     Set<ApplicationId> remAppId = message.getApplicationIdAvps();
+    logger.debug("Checking common applications. Remote applications: {}. Local applications: {}",new Object[]{remAppId,locAppId});
     // check common application
     for (ApplicationId l : locAppId) {
       for (ApplicationId r : remAppId) {
@@ -563,6 +569,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       catch (TransportException e) {
         switch (e.getCode()) {
         case NetWorkError:
+          e.printStackTrace();
           throw new IOException("Can not connect to " + connection.getKey() + " - " + e.getMessage());
         case FailedSendMessage:
           throw new IllegalDiameterStateException(e);
