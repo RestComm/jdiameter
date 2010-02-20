@@ -24,7 +24,7 @@
 
 	<properties>
 		<!-- Mobicents Diameter Components Versions -->
-		<mobicents.diameter.resources.cca.version>1.1.2.GA-SNAPSHOT</mobicents.diameter.resources.cca.version>
+		<mobicents.diameter.resources.cca.version>1.1.2.GA</mobicents.diameter.resources.cca.version>
 
 		<!-- Other Mobicents Components Versions -->
 		<mobicents.servers.jainslee.version>1.2.7.GA</mobicents.servers.jainslee.version>
