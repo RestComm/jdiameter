@@ -23,7 +23,7 @@
 
 	<properties>
 		<!-- Mobicents Diameter Components Versions -->
-		<mobicents.diameter.resources.cx-dx.version>1.0.0.BETA4-SNAPSHOT</mobicents.diameter.resources.cx-dx.version>
+		<mobicents.diameter.resources.cx-dx.version>1.0.0.BETA4</mobicents.diameter.resources.cx-dx.version>
 
 		<!-- Other Mobicents Components Versions -->
 		<mobicents.servers.jainslee.version>1.2.7.GA</mobicents.servers.jainslee.version>
