@@ -19,6 +19,7 @@
 		<diameter.resource.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/diameter/resources</diameter.resource.connectionURL>
 		<diameter.example.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/diameter/examples</diameter.example.connectionURL>
 		<diameter.docs.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/trunk/servers/diameter/diameter-docs</diameter.docs.connectionURL>
+		<diameter.jopr-plugin.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/trunk/servers/diameter/tools/jopr-plugin</diameter.jopr-plugin.connectionURL>
 
 	</properties>
 
@@ -171,6 +172,41 @@
                             </checkoutDirectory>
 									<connectionUrl>
 										${diameter.docs.connectionURL}
+                            </connectionUrl>
+									<username>${checkout.username}</username>
+									<password>${checkout.password}</password>
+								</configuration>
+							</execution>
+
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>checkout-jopr-plugin</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+						<inherited>false</inherited>
+						<executions>
+							<execution>
+								<id>diameter-jopr-plugin-checkout</id>
+								<goals>
+									<goal>checkout</goal>
+								</goals>
+								<phase>validate</phase>
+								<configuration>
+									<scmVersion>HEAD</scmVersion>
+									<scmVersionType>revision</scmVersionType>
+									<skipCheckoutIfExists>false</skipCheckoutIfExists>
+									<checkoutDirectory>
+										${checkout.basedir}/diameter-jopr-plugin
+                            </checkoutDirectory>
+									<connectionUrl>
+										${diameter.jopr-plugin.connectionURL}
                             </connectionUrl>
 									<username>${checkout.username}</username>
 									<password>${checkout.password}</password>
