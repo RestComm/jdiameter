@@ -161,9 +161,9 @@ public class VMessageRepresentation implements Comparable<VMessageRepresentation
 			AvpSet groupedPart = null;
 			try {
 				groupedPart = presumablyGrouped.getGrouped();
-			} catch (AvpDataException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			}
+			catch (AvpDataException e) {
+				log.debug("Failed to get grouped AVP.", e);
 			}
 
 			if (groupedPart == null) {

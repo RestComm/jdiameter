@@ -293,7 +293,6 @@ public class CxDxClientSessionImpl extends CxDxSession implements ClientCxDxSess
       }
     }
     catch (Exception e) {
-    	e.printStackTrace();
       throw new InternalException(e);
     }
     finally {

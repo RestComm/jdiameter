@@ -102,13 +102,13 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
       handleEvent(new Event(accountRequest));
       try {
         session.send(accountRequest.getMessage(), this);
-        // Store last destinmation information
+        // Store last destination information
         destRealm = accountRequest.getMessage().getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString();
         if(accountRequest.getMessage().getAvps().getAvp(Avp.DESTINATION_HOST)!=null)
         	destHost = accountRequest.getMessage().getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString();
       }
       catch (Throwable t) {
-    	t.printStackTrace();
+    	logger.debug("Failed to send ACR.", t);
         handleEvent(new Event(Event.Type.FAILED_SEND_RECORD, accountRequest));
       }
     }
@@ -489,7 +489,6 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
     	        listener.doAccAnswerEvent(this, createAccountRequest(request), createAccountAnswer(answer));
     	      }
     	      catch (Exception e) {
-    	    	e.printStackTrace();
     	        logger.debug(e.getMessage(), e);
     	      }	
       try {
@@ -497,7 +496,6 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
         handleEvent(new Event(createAccountAnswer(answer)));
       }
       catch (Exception e) {
-    	e.printStackTrace();
         logger.debug(e.getMessage(), e);
       }
       finally {

@@ -569,7 +569,6 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       catch (TransportException e) {
         switch (e.getCode()) {
         case NetWorkError:
-          e.printStackTrace();
           throw new IOException("Can not connect to " + connection.getKey() + " - " + e.getMessage());
         case FailedSendMessage:
           throw new IllegalDiameterStateException(e);
