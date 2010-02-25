@@ -181,7 +181,7 @@ public class StackImpl implements IContainer, StackImplMBean {
   public void stop(long timeOut, TimeUnit timeUnit) throws IllegalDiameterStateException, InternalException {
     lock.lock();
     try {
-      if (state != StackState.STOPPED && state == StackState.STARTED) {
+      if (state == StackState.STARTED || state == StackState.CONFIGURED) {
         List<Peer> peerTable = peerManager.getPeerTable();
         final CountDownLatch barrier = new CountDownLatch(peerTable.size());
         StateChangeListener listener = new StateChangeListener() {
@@ -199,13 +199,13 @@ public class StackImpl implements IContainer, StackImplMBean {
             ((IPeer) p).addStateChangeListener(listener);
           }
         }
-        try {
-          if (peerManager != null) {
+        if (peerManager != null) {
+          try {
             peerManager.stopping();
           }
-        }
-        catch (Exception e) {
-          log.warn("Stopping error", e);
+          catch (Exception e) {
+            log.warn("Stopping error", e);
+          }
         }
         try {
           barrier.await(timeOut, timeUnit);
