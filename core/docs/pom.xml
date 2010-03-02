@@ -1,0 +1,50 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.mobicents.servers.diameter</groupId>
+		<artifactId>diameter-core</artifactId>
+		<version>1.1.2.GA-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>mobicents-diameter-docs</artifactId>
+	<groupId>org.mobicents.servers.diameter</groupId>
+
+	<packaging>pom</packaging>
+
+
+	<properties>
+		<docs.bookid>MobicentsDiameter</docs.bookid>
+		<docs.dirname>diameter/core</docs.dirname>
+		<docs.jdiameter.dirname>jdiameter</docs.jdiameter.dirname>
+		<docs.mux.dirname>mux</docs.mux.dirname>
+	</properties>
+
+	<modules>
+		<module>sources</module>
+	</modules>
+
+	<profiles>
+		<profile>
+			<id>mobicents</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<modules>
+				<module>sources-mobicents</module>
+				<module>jdocbook-mobicents</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>jbcp</id>
+			<modules>
+				<module>sources-jbcp</module>
+				<module>jdocbook-jbcp</module>
+			</modules>
+		</profile>
+	</profiles>
+
+</project>

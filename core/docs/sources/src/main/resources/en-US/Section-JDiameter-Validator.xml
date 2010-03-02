@@ -1,0 +1,67 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [<!ENTITY % BOOK_ENTITIES SYSTEM "User_Guide.ent">%BOOK_ENTITIES;]>
+
+<section id="jdiameter-validator">
+
+	<title>&THIS.PLATFORM;
+		Validator
+	</title>
+	<para>Validator is one of Stacks features. The primary purpose of the
+		Validator is to
+		detect malformed messages, such as an Answer message
+		which contains a
+		Destination-Host Attribute Value Pair (AVP). </para>
+
+	<para>The Validator is capable of validating multi-leveled, grouped
+		AVPs, excluding the following content types: </para>
+	<itemizedlist>
+		<listitem>
+			<para>URI, or Identifier types.</para>
+		</listitem>
+		<listitem>
+			<para>Enumerated types against defined values.</para>
+		</listitem>
+	</itemizedlist>
+	<para>That is, it is capable of checking structural integrity, not
+		content.</para>
+	<para>Valdiator performs following checks:</para>
+	<variablelist>
+		<varlistentry>
+			<term>index</term>
+			<listitem>
+				<para>
+					check if
+					<acronym>AVP</acronym>
+					is in correct place, ie.
+					<literal>Session-Id</literal>
+					must always be encoded before any other
+					<acronym>AVP</acronym>
+					.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>multiplicity</term>
+			<listitem>
+				<para>
+					check if
+					<acronym>AVP</acronym>
+					occurs proper number of times
+				</para>
+			</listitem>
+		</varlistentry>
+		<!-- TODO: add more checks :) -->
+	</variablelist>
+	<para>
+		<literal>Validator</literal> is called by stack implementation. It is invoked after
+		message is received and before it is dispatched to remote peer. Note
+		that later means that if peer does not exist in local peer table
+		validator is not called, as stack fails before calling
+		it.
+	</para>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+		href="Section-JDiameter-Validator-Configuration.xml" encoding="UTF-8" />
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+		href="Section-JDiameter-Validator-Source_Overview.xml" encoding="UTF-8" />
+
+</section>

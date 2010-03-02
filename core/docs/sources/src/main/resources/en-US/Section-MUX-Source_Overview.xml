@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [<!ENTITY % BOOK_ENTITIES SYSTEM "User_Guide.ent">%BOOK_ENTITIES;]>
+
+<section id="mux-source_overview">
+
+	<title>MUX Source overview
+	</title>
+	<para>&THIS.PLATFORM.MUX;
+		capabilities are defined by
+		<literal>MBean</literal>
+		interface:
+		<literal>org.mobicents.diameter.stack.DiameterStackMultiplexerMBean
+		</literal>
+		. This interface defines two types of methods:
+	</para>
+	<variablelist>
+		<varlistentry>
+			<term>management</term>
+			<listitem>
+				<para>Used by <acronym>JOPR</acronym> console, those methods are out of scope for user.</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>stack accessors</term>
+			<listitem>
+				<para>methods which allow to use wrapped stack.</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	<para>
+	Following methods are of interest to &THIS.PLATFORM.MUX; user:
+	</para>
+	<variablelist>
+		<varlistentry>
+			<term><literal>public Stack getStack();</literal></term>
+			<listitem>
+				<para>returns stack wrapped by multiplexer.</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><literal>public void registerListener(DiameterListener listener, ApplicationId[] appIds) throws IllegalStateException;</literal></term>
+			<listitem>
+				<para>registers listener to be triggered when message for certain application id is received.</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><literal>public void unregisterListener(DiameterListener listener);</literal></term>
+			<listitem>
+				<para>removes message listener.</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><literal>public DiameterStackMultiplexerMBean getMultiplexerMBean();</literal></term>
+			<listitem>
+				<para>returns actual instance of <literal>MUX</literal></para>
+			</listitem>
+		</varlistentry>
+		
+	</variablelist>
+	<para>Listener interface is defined as follows: </para>
+	<programlisting role="JAVA" language="Java">
+package org.mobicents.diameter.stack;
+
+import java.io.Serializable;
+
+import org.jdiameter.api.Answer;
+import org.jdiameter.api.EventListener;
+import org.jdiameter.api.NetworkReqListener;
+import org.jdiameter.api.Request;
+
+public interface DiameterListener extends NetworkReqListener, Serializable, 
+	EventListener&lt;Request, Answer&gt;
+{
+
+}
+	</programlisting>
+	<para>
+		<acronym>MUX</acronym> can be used as follows:
+	</para>
+	<programlisting role="JAVA" language="Java">
+public class DiameterActor implements DiameterListener
+{
+  private ObjectName diameterMultiplexerObjectName = null;
+  private DiameterStackMultiplexerMBean diameterMux=null;
+
+
+  private synchronized void initStack() throws Exception
+  {
+		this.diameterMultiplexerObjectName=
+			new ObjectName("diameter.mobicents:service=DiameterStackMultiplexer");
+        
+        Object[] params = new Object[]{};
+
+        String[] signature = new String[]{};
+          
+        String operation = "getMultiplexerMBean";
+        this.diameterMux=mbeanServer.invoke( 
+        	this.diameterMultiplexerObjectName, operation, params, signature );
+   
+    
+    long acctAppIds = new long[]{19312L};
+    long acctVendorIds = new long[]{193L};
+    long authAppIds = new long[]{4L};
+    long authVendorIds = new long[]{0L};
+    List&lt;ApplicationId&gt; appIds = new ArrayList&lt;ApplicationId&gt;();
+    for(int index = 0;index&lt;acctAppIds.length;index++)
+    {
+    	appIds.add(ApplicationId.createByAccAppId(acctVendorIds[index],
+    		 acctAppIds[index]));
+    	
+    }
+    for(int index = 0;index&lt;authAppIds.length;index++)
+    {
+    	appIds.add(ApplicationId.createByAuthAppId(authVendorIds[index], 
+    		authAppIds[index]));
+    	
+    }
+    
+    
+    this.diameterMux.registerListener( this, 
+    	appIds.toArray(new ApplicationId[appIds.size()]));
+    this.stack=this.diameterMux.getStack();
+    this.messageTimeout = stack.getMetaData().getConfiguration()
+    	.getLongValue(MessageTimeOut.ordinal(), (Long) MessageTimeOut.defValue());
+
+  }
+
+}
+	</programlisting>
+
+</section>

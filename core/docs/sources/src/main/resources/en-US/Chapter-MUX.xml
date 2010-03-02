@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [<!ENTITY % BOOK_ENTITIES SYSTEM "User_Guide.ent">%BOOK_ENTITIES;]>
+
+<chapter id="mux">
+
+	<title>MUX
+	</title>
+	<para>
+		The
+		<literal>Multiplexer</literal>
+		(
+		<acronym>MUX</acronym>
+		) is designed as stack wrapper. Serves two purposes:
+	</para>
+	<variablelist>
+		<varlistentry>
+			<term>expose stack</term>
+			<listitem>
+				<para>
+					It exposes stack and allows to share it between multiple
+					listeners.
+					Stack follows life cycle of
+					<acronym>MUX</acronym>
+					- it is created and destroyed with
+					<acronym>MUX</acronym>.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>expose management operations</term>
+			<listitem>
+				<para>
+					It exposes management operation for
+					<acronym>JOPR</acronym>
+					console. For specifc information please refer to management console
+					guide.
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Section-MUX-Design_Overview.xml"
+		encoding="UTF-8" />
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Section-MUX-Setup.xml"
+		encoding="UTF-8" />
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Section-MUX-Configuration.xml"
+		encoding="UTF-8" />
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Section-MUX-Source_Overview.xml"
+		encoding="UTF-8" />
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Section-MUX-Dictionary.xml"
+		encoding="UTF-8" />
+
+
+</chapter>

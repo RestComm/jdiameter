@@ -1,0 +1,523 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [<!ENTITY % BOOK_ENTITIES SYSTEM "User_Guide.ent">%BOOK_ENTITIES;]>
+
+<section id="jdiameter-configuration">
+
+	<title>Configuration</title>
+	<!-- TODO: use CDATA<[]>  ?? -->
+	<para>The stack is configured with XML file. The top level structure of
+		the file
+		is described below. Further explanation of each child element,
+		and the
+		applicable attributes is provided later in this section.</para>
+	<programlisting role="XML">&lt;Configuration xmlns=&quot;http://www.jdiameter.org/jdiameter-server&quot;&gt;
+      &lt;LocalPeer&gt;&lt;/LocalPeer&gt;
+      &lt;Parameters&gt;&lt;/Parameters&gt;
+      &lt;Network&gt;&lt;/Network&gt;
+      &lt;Extensions&gt;&lt;/Extensions&gt;
+      &lt;/Configuration&gt;</programlisting>
+  <programlisting role="XML">&lt;LocalPeer&gt;
+      &lt;URI value=&quot;aaa://localhost:1812&quot;/&gt;
+      &lt;IPAddresses&gt;
+          &lt;IPAddress value=&quot;127.0.0.1&quot;/&gt;
+      &lt;/IPAddresses&gt;
+      &lt;Realm value=&quot;mobicents.org&quot;/&gt;
+      &lt;VendorID value=&quot;193&quot;/&gt;
+      &lt;ProductName value=&quot;jDiameter&quot;/&gt;
+      &lt;FirmwareRevision value=&quot;1&quot;/&gt;
+      &lt;OverloadMonitor&gt;
+         &lt;Entry index=&quot;1&quot; lowThreshold=&quot;0.5&quot; highThreshold=&quot;0.6&quot;&gt;
+          &lt;ApplicationID&gt;
+             &lt;VendorId value=&quot;193&quot;/&gt;
+             &lt;AuthApplId value=&quot;0&quot;/&gt;
+             &lt;AcctApplId value=&quot;19302&quot;/&gt;
+           &lt;/ApplicationID&gt;
+         &lt;/Entry&gt;
+      &lt;/OverloadMonitor&gt;
+      &lt;Applications&gt;
+         &lt;ApplicationID&gt;
+            &lt;VendorId value=&quot;193&quot;/&gt;
+            &lt;AuthApplId value=&quot;0&quot;/&gt;
+            &lt;AcctApplId value=&quot;19302&quot;/&gt;
+         &lt;/ApplicationID&gt;
+      &lt;/Applications&gt;
+&lt;/LocalPeer&gt;</programlisting>
+  <para>The &lt;LocalPeer&gt; element contains parameters that affect the local Diameter peer.  The available elements and attributes are listed for reference.</para>
+  <variablelist>
+    <title>&lt;LocalPeer&gt; Elements and Attributes</title>
+    <varlistentry>
+      <term>&lt;URI&gt;</term>
+      <listitem>
+        <para>Specifies the URI for the local peer.  URI has following format: &quot;aaa://FQDN:port&quot;.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;IPAddresses&gt;</term>
+      <listitem>
+        <para>Contains one or more child &lt;IPAddress&gt; elements that contain a single, valid IP address for the local peer, which is stored in property of IPAddress: &quot;value&quot;.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;Realm&gt;</term>
+      <listitem>
+        <para>Specifies the realm of the local peer, using the <literal>value</literal> attribute.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;VendorID&gt;</term>
+      <listitem>
+        <para>Specifies a numeric identifier that corresponds to the vendor ID allocated by IANA. </para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;ProductName&gt;</term>
+      <listitem>
+        <para>Specifies the name of the local peer product name.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;FirmwareRevision&gt;</term>
+      <listitem>
+        <para>Specifies the version of the firmware.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;OverloadMonitor&gt;</term>
+      <listitem>
+        <para>Optional parent element containing child elements that specify settings relating to the Overload Monitor.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;Entry&gt;</term>
+      <listitem>
+        <para>Supports chiled elements of type &lt;ApplicationID&gt;, which define tracked application. It also supports following properties:<variablelist>
+            <varlistentry>
+              <term>index</term>
+              <listitem>
+                <para><!--Developer: fill this--></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lowThreshold</term>
+              <listitem>
+                <para><!--Developer: fill this--></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>highThreshold</term>
+              <listitem>
+                <para><!--Developer: fill this--></para>
+              </listitem>
+            </varlistentry>
+          </variablelist></para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;ApplicationID&gt;</term>
+      <listitem>
+        <para>Parent element containing child elements that specify information about the application. Child elements are: VendorId, AuthAppId and AcctAppId. Togther they create unique application identifier.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;VendorId&gt;</term>
+      <listitem>
+        <para>Specifies vendor id for application definition. It support single property: &quot;value&quot;</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;AuthAppId&gt;</term>
+      <listitem>
+        <para>The Authentication Application ID for application definition. It support single property: &quot;value&quot;</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;AcctAplId&gt;</term>
+      <listitem>
+        <para>The Account Application ID for application defitniion. It support single property: &quot;value&quot;</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;Applications&gt;</term>
+      <listitem>
+        <para>Contain child element &lt;ApplicationID&gt;, which define complete list of localy supported applications. It is used for server side. When stack is configured to accept incoming calls and there is empty list of preconfigured peers(server is configured to accept any connection).</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+  <programlisting role="XML">&lt;Parameters&gt;
+      &lt;AcceptUndefinedPeer value=&quot;true&quot;/&gt;
+      &lt;DuplicateProtection value=&quot;true&quot;/&gt;
+      &lt;DuplicateTimer value=&quot;240000&quot;/&gt;
+      &lt;UseUriAsFqdn value=&quot;true&quot;/&gt; &lt;!-- Needed for Ericsson SDK Emulator --&gt;
+      &lt;QueueSize value=&quot;10000&quot;/&gt;
+      &lt;MessageTimeOut value=&quot;60000&quot;/&gt;
+      &lt;StopTimeOut value=&quot;10000&quot;/&gt;
+      &lt;CeaTimeOut value=&quot;10000&quot;/&gt;
+      &lt;IacTimeOut value=&quot;30000&quot;/&gt;
+      &lt;DwaTimeOut value=&quot;10000&quot;/&gt;
+      &lt;DpaTimeOut value=&quot;5000&quot;/&gt;
+      &lt;RecTimeOut value=&quot;10000&quot;/&gt;
+      &lt;Concurrent>
+       &lt;Entity name=&quot;ThreadGroup&quot; size=&quot;64&quot;/&gt;
+       &lt;Entity name=&quot;ProcessingMessageTimer&quot; size=&quot;1&quot;/&gt;
+       &lt;Entity name=&quot;DuplicationMessageTimer&quot; size=&quot;1&quot;/&gt;
+       &lt;Entity name=&quot;RedirectMessageTimer&quot; size=&quot;1&quot;/&gt;
+       &lt;Entity name=&quot;PeerOverloadTimer&quot; size=&quot;1&quot;/&gt;
+       &lt;Entity name=&quot;ConnectionTimer&quot; size=&quot;1&quot;/&gt;
+       &lt;Entity name=&quot;StatisticTimer&quot; size=&quot;1&quot;/&gt;
+       &lt;Entity name=&quot;ApplicationSession&quot; size=&quot;16&quot;/&gt;
+    &lt;/Concurrent&gt;
+ &lt;/Parameters&gt;</programlisting>
+  <para>The &lt;Parameters&gt; element contains elements that specify parameters for the Diameter stack.  The available elements and attributes are listed for reference. If not specified otherwise each tag supports single property &quot;value&quot; which indicates value of tag.</para>
+<!--TODO:  Developer: Need to obtain better definitions for the Parameter Elements and Attributes.  information present at the moment is not that helpful to readers.-->  <variablelist>
+    <title>&lt;Parameter&gt; Elements and Attributes</title>
+    <varlistentry>
+      <term>&lt;AcceptUndefinedPeer&gt;</term>
+      <listitem>
+        <para> Specifies whether the stack will accept connections from unidentified peers. The default value is <literal>false</literal>.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;DuplicateProtection&gt;</term>
+      <listitem>
+        <para> Specifies whether duplicate message protection is enabled.  The default value is <literal>false</literal>.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;DuplicateTimer&gt;</term>
+      <listitem>
+        <para> Specifies the time each duplicate message is valid for.  The default, minimum value is <literal>240000</literal> (4 minutes in milliseconds)</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;UseUriAsFqdn&gt;</term>
+      <listitem>
+        <para> Determines as URI should be used as FQDN, if set to  <literal>true</literal> stack expects destination/origin host in format of &quot;aaa://isdn.domain.com:3868&quot; instead of proper &quot;isdn.domain.com&quot;. Default value is <literal>false</literal>.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;QueueSize&gt;</term>
+      <listitem>
+        <para> Determines how many tasks peer state machine can have before rejecting next task. This queue contains FSM event and messaging.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;MessageTimeOut&gt;</term>
+      <listitem>
+        <para>  Determines timeout for other than protocol FSM messages. Delay is in milliseconds.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;StopTimeOut&gt;</term>
+      <listitem>
+        <para>  Determines how long stack waits for all resources to stop gracefully. Delays is in milliseconds.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;CeaTimeOut&gt;</term>
+      <listitem>
+        <para>  Determines how long it takes for CER/CEA exchange to timeout if there is no response. Delay is in milliseconds.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;IacTimeOut&gt;</term>
+      <listitem>
+        <para>Determines how long it takes for the IAR/IAC exchange to timeout if there is no response. The delay is in milliseconds</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;DwaTimeOut&gt;</term>
+      <listitem>
+        <para>  Determines how long it takes for DWR/DWA exchange to timeout if there is no response. Delay is in milliseconds.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;DpaTimeOut&gt;</term>
+      <listitem>
+        <para>  Determines how long it takes for DPR/DPA exchange to timeout if there is no response. Delay is in milliseconds.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;RecTimeOut&gt;</term>
+      <listitem>
+        <para> Determines how long it takes for reconnection procedure to timeout. Delay is in milliseconds.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;Concurrent /&gt;</term>
+      <listitem>
+        <para>Conrols thread pool sizes for different aspects of stack. Supports multiple <literal>Entity</literal> child elements. <literal>Entity</literal> elements configure thread groups</para>
+        <para><literal>Entity element supports following properties:</literal> </para>
+  		<variablelist>
+  			<varlistentry>
+  				<term>name</term>
+  				<listitem>
+  					<para>determine name of entity, name identifies entity</para>
+  				</listitem>
+  			</varlistentry>
+  			<varlistentry>
+  				<term>size</term>
+  			<listitem>
+  				<para>size/value of entity</para>
+  			</listitem>
+  			</varlistentry>
+  		</variablelist>
+  		<para>Supported entities are as follows:</para>
+  		<variablelist>
+  			<varlistentry>
+  				<term>ThreadGroup</term>
+  				<listitem>
+  					<para>determines max thread count in other entities</para>
+  				</listitem>
+  			</varlistentry>
+  			<varlistentry>
+  				<term>ProcessingMessageTimer</term>
+  				<listitem>
+  					<para>determines thread count managing tasks for message timeout</para>
+  				</listitem>
+  			</varlistentry>
+  			<varlistentry>
+  				<term>DuplicationMessageTimer</term>
+  				<listitem>
+  					<para>TODO</para>
+  				</listitem>
+  			</varlistentry>
+  			<varlistentry>
+  				<term>RedirectMessageTimer</term>
+  				<listitem>
+  					<para>TODO</para>
+  				</listitem>
+  			</varlistentry>
+  			<varlistentry>
+  				<term>PeerOverloadTimer</term>
+  				<listitem>
+  					<para>determines thread count managing thread overload monitor</para>
+  				</listitem>
+  			</varlistentry>
+  			<varlistentry>
+  				<term>ConnectionTimer</term>
+  				<listitem>
+  					<para>determines thread count managing tasks for peer connection <acronym>FSM</acronym> </para>
+  				</listitem>
+  			</varlistentry>
+  			<varlistentry>
+  				<term>StatisticTimer</term>
+  				<listitem>
+  					<para>determines thread count managing statistic gathering tasks</para>
+  				</listitem>
+  			</varlistentry>
+  			<varlistentry>
+  				<term>ApplicationSession</term>
+  				<listitem>
+  					<para>determines thread count managing invocation of application session <acronym>FSM</acronym>, those threads invoke listeners</para>
+  				</listitem>
+  			</varlistentry>
+  		</variablelist>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+  
+  <programlisting role="XML">&lt;Network&gt;
+      &lt;Peers&gt;
+      &lt;!-- This peer is a server, if it&apos;s a client attempt_connect should be set to false --&gt;
+      &lt;Peer name=&quot;aaa://127.0.0.1:3868&quot; attempt_connect=&quot;true&quot; rating=&quot;1&quot;/&gt;
+      &lt;/Peers&gt;
+      &lt;Realms&gt;
+      &lt;Realm name=&quot;mobicents.org&quot; peers=&quot;127.0.0.1&quot; local_action=&quot;LOCAL&quot; dynamic=&quot;false&quot; exp_time=&quot;1&quot;&gt;
+      &lt;ApplicationID&gt;
+      &lt;VendorId value=&quot;193&quot;/&gt;
+      &lt;AuthApplId value=&quot;0&quot;/&gt;
+      &lt;AcctApplId value=&quot;19302&quot;/&gt;
+      &lt;/ApplicationID&gt;
+      &lt;/Realm&gt;
+      &lt;/Realms&gt;
+      &lt;/Network&gt;</programlisting>
+  <para>The &lt;Network&gt; element contains elements that specify parameters for external peers.  The available elements and attributes are listed for reference.</para>
+  <variablelist>
+    <title>&lt;Network&gt; Elements and Attributes</title>
+    <varlistentry>
+      <term>&lt;Peers&gt;</term>
+      <listitem>
+        <para>Parent element containing child elements that specify external peers and the way they connect.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;Peer&gt;</term>
+      <listitem>
+        <para>Specifies the name of the external peer, whether the peer should be treated as a server or client, and what rating the peer has externally.</para>
+        <para>Peer supports following properties:<variablelist>
+            <varlistentry>
+              <term>name</term>
+              <listitem>
+                <para>specifies name of peer in for of URI. structure looks as follows &quot;aaa://[fqdn|ip]:port&quot;, for example &quot;aaa://192.168.1.1:3868&quot;</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>attempt_connect</term>
+              <listitem>
+                <para>determines wheather stack should try to connect to this peer. This property accepts boolean values.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>rating</term>
+              <listitem>
+                <para><!--Developer: fill this--></para>
+              </listitem>
+            </varlistentry>
+          </variablelist></para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;Realms&gt;</term>
+      <listitem>
+        <para>Parent element containing child elements that specify all realms that connect into the Diameter network.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;Realm&gt;</term>
+      <listitem>
+        <para>Child element containing attributes and elements that describe the different realms configured for the Core. It supports &lt;ApplicationID&gt; child elements, which define applications supported. </para>
+        <para>Realm supports following parameters:</para>
+        <variablelist>
+          <varlistentry>
+            <term>peers</term>
+            <listitem>
+              <para>comma separated list of peers, each peer is represented by ip or fqdn,</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>loca_action</term>
+            <listitem>
+              <para><!--Developer: fill this--></para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>dynamic</term>
+            <listitem>
+              <para><!--Developer: fill this--></para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>exp_time</term>
+            <listitem>
+              <para><!--Developer: fill this--></para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+ 	<para>Example server configuration file for following applications: </para>
+ 	<variablelist>
+ 		<varlistentry>
+ 			<term>Sh</term>
+ 			<listitem>
+ 				<para></para>
+ 			</listitem>
+ 		</varlistentry>
+ 		<varlistentry>
+ 			<term>CCA</term>
+ 			<listitem>
+ 				<para></para>
+ 			</listitem>
+ 		</varlistentry>
+ 		<varlistentry>
+ 			<term>Ro</term>
+ 			<listitem>
+ 				<para></para>
+ 			</listitem>
+ 		</varlistentry>
+ 	</variablelist>
+ 	<para>look as follows: </para>
+ 	<programlisting language="XML" role="XML"><![CDATA[
+<?xml version="1.0"?>
+<Configuration xmlns="http://www.jdiameter.org/jdiameter-server">
+
+  <LocalPeer>
+    <URI value="aaa://127.0.0.1:3868" />
+    <Realm value="mobicents.org" />
+    <VendorID value="193" />
+    <ProductName value="jDiameter" />
+    <FirmwareRevision value="1" />
+    <OverloadMonitor>
+      <Entry index="1" lowThreshold="0.5" highThreshold="0.6">
+        <ApplicationID>
+          <VendorId value="193" />
+          <AuthApplId value="0" />
+          <AcctApplId value="19302" />
+        </ApplicationID>
+      </Entry>
+    </OverloadMonitor>
+  </LocalPeer>
+
+  <Parameters>
+    <AcceptUndefinedPeer value="true" />
+    <DuplicateProtection value="true" />
+    <DuplicateTimer value="240000" />
+    <UseUriAsFqdn value="false" /> <!-- Needed for Ericsson Emulator (set to true) -->
+    <QueueSize value="10000" />
+    <MessageTimeOut value="60000" />
+    <StopTimeOut value="10000" />
+    <CeaTimeOut value="10000" />
+    <IacTimeOut value="30000" />
+    <DwaTimeOut value="10000" />
+    <DpaTimeOut value="5000" />
+    <RecTimeOut value="10000" />
+    <Concurrent>
+       <Entity name="ThreadGroup" size="64"/>
+       <Entity name="ProcessingMessageTimer" size="1"/>
+       <Entity name="DuplicationMessageTimer" size="1"/>
+       <Entity name="RedirectMessageTimer" size="1"/>
+       <Entity name="PeerOverloadTimer" size="1"/>
+       <Entity name="ConnectionTimer" size="1"/>
+       <Entity name="StatisticTimer" size="1"/>
+       <Entity name="ApplicationSession" size="16"/>
+    </Concurrent>
+  </Parameters>
+
+  <Network>
+    <Peers>
+      
+      <!-- Sh / CCA / Cx/Dx -->
+      <Peer name="aaa://127.0.0.1:1218" attempt_connect="false" rating="1" />
+
+    </Peers>
+    <Realms>
+
+
+      <!-- Sh -->
+      <Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+        <ApplicationID>
+          <VendorId value="10415" />
+          <AuthApplId value="16777217" />
+          <AcctApplId value="0" />
+        </ApplicationID>
+      </Realm>
+      
+    
+      <!--  CCA -->
+      <Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+        <ApplicationID>
+          <VendorId value="0" />
+          <AuthApplId value="4" />
+          <AcctApplId value="0" />
+        </ApplicationID>
+      </Realm>
+      
+      <!-- Cx/Dx -->
+      <Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+        <ApplicationID>
+          <VendorId value="10415" />
+          <AuthApplId value="16777216" />
+          <AcctApplId value="0" />
+        </ApplicationID>
+      </Realm>
+    </Realms>
+  </Network>
+
+  <Extensions />
+
+</Configuration>
+ 	]]>
+ 	</programlisting>
+
+</section>

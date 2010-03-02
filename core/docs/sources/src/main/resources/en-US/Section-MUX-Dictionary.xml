@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [<!ENTITY % BOOK_ENTITIES SYSTEM "User_Guide.ent">%BOOK_ENTITIES;]>
+
+<section id="mux-dictionary">
+
+	<title>Dictionary
+	</title>
+	<para>
+		<literal>Dictionary</literal>
+		is part of
+		<acronym>MUX</acronym>
+		package. Its purpose is to provide unified access to information
+		regarding
+		<acronym>AVP</acronym>
+		structure, content and definition.
+		<literal>Dictionary</literal>
+		is configured with
+		<acronym>XML</acronym>
+		file:
+		<filename>dictionary.xml</filename>
+		.
+	</para>
+	<para>
+		<literal>Dictionary</literal>
+		logic is contained in:
+		<literal>org.mobicents.diameter.dictionary.AvpDictionary</literal>
+		class.
+		It exposes following methods:
+	</para>
+	<variablelist>
+		<varlistentry>
+			<term>
+				<literal> public AvpRepresentation getAvp(int code)</literal>
+			</term>
+			<listitem>
+				<para>
+					return
+					<literal>AvpRepresentation</literal>
+					for given code, if there is no
+					<acronym>AVP</acronym>
+					defined, it returns
+					<literal>null</literal>
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>
+				<literal>public AvpRepresentation getAvp(int code, long vendorId)
+				</literal>
+			</term>
+			<listitem>
+				<para>
+					return
+					<literal>AvpRepresentation</literal>
+					for given code and vendor id, if there is no
+					<acronym>AVP</acronym>
+					defined, it returns
+					<literal>null</literal>
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>
+				<literal>public AvpRepresentation getAvp(String avpName)</literal>
+			</term>
+			<listitem>
+				<para>
+					return
+					<literal>AvpRepresentation</literal>
+					for given name, if there is no
+					<acronym>AVP</acronym>
+					defined, it returns
+					<literal>null</literal>
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	<para>
+		<literal>Dictionary</literal>
+		uses
+		<acronym>POJO</acronym>
+		class to allows access to stored information:
+		<literal>org.mobicents.diameter.dictionary.AvpRepresentation</literal>
+		.
+		It exposes following methods:
+	</para>
+	<variablelist>
+		<varlistentry>
+			<term>
+				<literal>public int getCode()</literal>
+			</term>
+			<listitem>
+				<para>
+					returns code assigned to represented
+					<acronym>AVP</acronym>
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>
+				<literal>public long getVendorId()</literal>
+			</term>
+			<listitem>
+				<para>
+					returns vendor id assigned to represented
+					<acronym>AVP</acronym>
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>
+				<literal>public String getName()</literal>
+			</term>
+			<listitem>
+				<para>
+					returns name assigned to represented
+					<acronym>AVP</acronym>
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>
+				<literal>public boolean isGrouped()</literal>
+			</term>
+			<listitem>
+				<para>
+					return
+					<literal>true</literal>
+					if
+					<acronym>AVP</acronym>
+					is grouped type
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>
+				<literal>public String getType()</literal>
+			</term>
+			<listitem>
+				<para>
+					return String representation of
+					<acronym>AVP</acronym>
+					type. return value is equal to one of defined types, for instance
+					<literal>OctetString</literal>
+					or
+					<literal>Unsiged32</literal>
+					.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>
+				<literal>public boolean isMayEncrypt()</literal>
+			</term>
+			<listitem>
+				<para>
+					returns
+					<literal>true</literal>
+					if
+					<acronym>AVP</acronym>
+					can be encrypted.
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>
+				<literal>public boolean isProtected()</literal>
+			</term>
+			<listitem>
+				<para>
+					returns
+					<literal>true</literal>
+					if
+					<acronym>AVP</acronym>
+					must be encrypted. It returns
+					<literal>true</literal>
+					only if
+					<literal>public String getRuleProtected()</literal>
+					returns
+					<literal>must</literal>
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>
+				<literal>public boolean isMandatory()</literal>
+			</term>
+			<listitem>
+				<para>
+					returns
+					<literal>true</literal>
+					if
+					<acronym>AVP</acronym>
+					must be supported by agent to properly consume message. It returns
+					<literal>true</literal>
+					only if
+					<literal>public String getRuleMandatory()</literal>
+					returns
+					<literal>must</literal>
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>
+				<literal>public String getRuleMandatory()</literal>
+			</term>
+			<listitem>
+				<para>
+					returns mandatory rule value. It can return one of following
+					values: may |
+					must | mustnot
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>
+				<literal>public String getRuleProtected()</literal>
+			</term>
+			<listitem>
+				<para>
+					returns rule protected value. It can have one of following
+					values: may | must | mustnot
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>
+				<literal>public String getRuleVendorBit()</literal>
+			</term>
+			<listitem>
+				<para>
+					returns rule vendor value. It can have one of following
+					values: must | mustnot
+				</para>
+			</listitem>
+		</varlistentry>
+		<!--
+			Developer: add this? public String getMultiplicityIndicator()
+		-->
+	</variablelist>
+	<para>
+	<literal>Dictionary</literal> can be used as follows: 
+	</para>
+	<programlisting role="JAVA" language="Java">
+public static void addAvp(Message msg, int avpCode, long vendorId, AvpSet set, Object avp)
+  {
+    AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
+
+    if(avpRep != null)
+    {
+      DiameterAvpType avpType = DiameterAvpType.fromString(avpRep.getType());
+
+      boolean isMandatoryAvp = avpRep.isMandatory();
+      boolean isProtectedAvp = avpRep.isProtected();
+
+      if(avp instanceof byte[])
+      {
+        setAvpAsRaw(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, (byte[]) avp);
+      }
+      else
+      {
+        switch (avpType.getType())
+        {
+        case DiameterAvpType._ADDRESS:
+        case DiameterAvpType._DIAMETER_IDENTITY:
+        case DiameterAvpType._DIAMETER_URI:
+        case DiameterAvpType._IP_FILTER_RULE:
+        case DiameterAvpType._OCTET_STRING:
+        case DiameterAvpType._QOS_FILTER_RULE:
+        {
+          setAvpAsOctetString(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, 
+          	avp.toString());
+          break;
+        }
+        case DiameterAvpType._ENUMERATED:
+        case DiameterAvpType._INTEGER_32:
+        {
+          setAvpAsInteger32(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, 
+          	(Integer) avp);        
+          break;
+        }
+        case DiameterAvpType._FLOAT_32:
+        {
+          setAvpAsFloat32(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, 
+          	(Float) avp);        
+          break;
+
+        }
+        case DiameterAvpType._FLOAT_64:
+        {
+          setAvpAsFloat64(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, 
+          	(Float) avp);        
+          break;
+        }
+        case DiameterAvpType._GROUPED:
+        {
+          setAvpAsGrouped(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, 
+          	(DiameterAvp[]) avp);
+          break;
+        }
+        case DiameterAvpType._INTEGER_64:
+        {
+          setAvpAsInteger64(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, 
+          	(Long) avp);
+          break;
+        }
+        case DiameterAvpType._TIME:
+        {
+          setAvpAsTime(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, 
+          	(Date) avp);
+          break;
+        }
+        case DiameterAvpType._UNSIGNED_32:
+        {
+          setAvpAsUnsigned32(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, 
+          	(Long) avp);
+          break;
+        }
+        case DiameterAvpType._UNSIGNED_64:
+        {
+          setAvpAsUnsigned64(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, 
+          	(Long) avp);
+          break;
+        }
+        case DiameterAvpType._UTF8_STRING:
+        {
+          setAvpAsUTF8String(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, 
+          	(String) avp);
+          break;
+        }
+        }
+      }
+    }
+  }
+	</programlisting>
+	
+</section>

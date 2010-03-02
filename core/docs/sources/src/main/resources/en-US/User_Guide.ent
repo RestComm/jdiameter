@@ -1,0 +1,31 @@
+<!-- NOTES ON CHANGING ENTITY FILES
+Important: take care when changing entities for directories
+* Linux path separators must be: "/"
+* Windows path separators must be: "\"
+* Entities which represent directories MUST HAVE a final path separator:
+	my/path/  <- (final separator)
+If this final separator is missing, then the documentation will be wrong. -->
+
+<!-- Common entities: same across all books except for BOOKID -->
+<!ENTITY THIS.VERSION "${version}">
+<!ENTITY THIS.VERSION.JDIAMETER "${version.jdiameter}">
+<!ENTITY THIS.PLATFORM "${THIS.PLATFORM}">
+<!ENTITY THIS.PLATFORM.MUX "${THIS.PLATFORM.MUX}">
+<!ENTITY JEE.PLATFORM "${JEE.PLATFORM}">
+<!ENTITY BOOK_ID "${docs.bookid}_User_Guide">
+<!ENTITY YEAR "2010">
+<!ENTITY HOLDER "Red Hat Inc">
+<!ENTITY AUTHOR.EMAIL.EDUARDO "${author.email.eduardo}">
+<!ENTITY AUTHOR.EMAIL.BARTOSZ "${author.email.bartosz}">
+<!ENTITY AUTHOR.EMAIL.ALEX "${author.email.alex}">
+<!ENTITY THIS.DIRNAME "${docs.dirname}">
+<!ENTITY THIS.DIRNAME.JDIAMETER "${docs.jdiameter.dirname}">
+<!ENTITY THIS.DIRNAME.MUX "${docs.mux.dirname}">
+<!ENTITY THIS.ISSUE_TRACKER_URL "${THIS.ISSUE_TRACKER_URL}">
+<!ENTITY THIS.RELEASE_SOURCE_CODE_URL "${THIS.RELEASE_SOURCE_CODE_URL}">
+<!ENTITY THIS.JDIAMETER_RELEASE_SOURCE_CODE_URL "${THIS.JDIAMETER_RELEASE_SOURCE_CODE_URL}">
+<!ENTITY THIS.JDIAMETER_TRUNK_SOURCE_CODE_URL "${THIS.JDIAMETER_TRUNK_SOURCE_CODE_URL}">
+<!ENTITY THIS.MUX_RELEASE_SOURCE_CODE_URL "${THIS.MUX_RELEASE_SOURCE_CODE_URL}">
+<!ENTITY THIS.MUX_TRUNK_SOURCE_CODE_URL "${THIS.MUX_TRUNK_SOURCE_CODE_URL}">
+<!ENTITY THIS.TRUNK_SOURCE_CODE_URL "${THIS.TRUNK_SOURCE_CODE_URL}">
+
