@@ -1,0 +1,140 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "User_Guide.ent">
+%BOOK_ENTITIES;
+]>
+
+<section id="management_diameter_networkpeer_top">
+	<title>Managing and Monitoring Diameter Network Peers</title>
+
+  <section id="management_diameter_networkpeer_summary">
+    <title>View Diameter Network Peer Summary</title>
+    <para>In the top, at the summary section the Type and State of the &THIS.PLATFORM; Diameter Network Peer is shown. Also, recent measurements, Out of Bound metrics and Alerts can be seen in a summary view.</para>
+    
+    <figure>
+      <title>&MANAGEMENT.PLATFORM; Diameter Network Peer Summary View.</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/img-jopr_diameter_networkpeer_summary.png" format="PNG"/>
+        </imageobject>
+        <textobject>
+          <para>&MANAGEMENT.PLATFORM; Diameter Network Peer Summary View.</para>
+        </textobject>
+      </mediaobject>
+    </figure>
+  </section>
+
+	<section id="management_diameter_networkpeer_monitor">
+		<title>Monitor Diameter Network Peer Measurements and Availability over time</title>
+		<para>By accessing the <guilabel>MONITOR</guilabel> tab it's possible to see a set of graphs showing measurements regarding Network Peer as well as a graph showing the availability of the Diameter Network Peer over time.</para>
+		
+		<figure>
+			<title>&MANAGEMENT.PLATFORM; Diameter Plugin Network Peer Monitor View.</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/img-jopr_diameter_networkpeer_monitor.png" format="PNG"/>
+				</imageobject>
+				<textobject>
+					<para>&MANAGEMENT.PLATFORM; Diameter Plugin Network Peer Monitor View.</para>
+				</textobject>
+			</mediaobject>
+		</figure>
+		
+		<para>The following metrics are available:</para>
+		<variablelist>
+      <varlistentry>
+        <term>Requests Received</term>
+        <listitem><para>Total number of requests received by this Network Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Requests Received per Minute</term>
+        <listitem><para>Average number of requests received per minute by this Network Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Requests Failed to Receive</term>
+        <listitem><para>Total number of requests that failed to be received by this Network Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Requests Failed to Receive per Minute</term>
+        <listitem><para>Average number of requests that failed to be received per minute by this Network Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Requests Created</term>
+        <listitem><para>Total number of requests created for this Network Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Requests Created per Minute</term>
+        <listitem><para>Average number of requests created per minute for this Network Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Requests Failed to Create</term>
+        <listitem><para>Total number of requests that failed to be created and/or sent for this Network Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Requests Failed to Create per Minute</term>
+        <listitem><para>Average number of requests that failed to be created and/or sent per minute for this Network Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Answers Received</term>
+        <listitem><para>Total number of answers received by this Network Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Answers Received per Minute</term>
+        <listitem><para>Average number of answers received per minute by this Network Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Answers Failed to Receive</term>
+        <listitem><para>Total number of answers that failed to be received by this Network Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Answers Failed to Receive per Minute</term>
+        <listitem><para>Average number of answers that failed to be received per minute by this Network Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Answers Created</term>
+        <listitem><para>Total number of answers created for this Network Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Answers Created per Minute</term>
+        <listitem><para>Average number of answers created per minute for this Network Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Answers Failed to Create</term>
+        <listitem><para>Total number of answers that failed to be created and/or sent for this Network Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Answers Failed to Create per Minute</term>
+        <listitem><para>Average number of answers that failed to be created and/or sent per minute for this Network Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Platform Generated Answers</term>
+        <listitem><para>Total number of answers created by the platorm (eg: early failures) for this Network Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Platform Generated Answers per Minute</term>
+        <listitem><para>Total number of answers created by the platorm (eg: early failures) per minute for this Network Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Average Time for Message Proccessing</term>
+        <listitem><para>Average time for processing a Diameter message.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Messages in Queue</term>
+        <listitem><para>Total number of messages waiting to be processed in the queue.</para></listitem>
+      </varlistentry>
+		</variablelist>
+		
+    <para>It is also possible to see the data in a table, by accessing the <guilabel>TABLES</guilabel> option under <guilabel>MONITOR</guilabel> tab.</para>
+
+    <para>Configuration of the interval between data collection, and disable/enable certain metrics is possible, in the <guilabel>SCHEDULES</guilabel> option under <guilabel>MONITOR</guilabel> tab.</para>
+	</section>
+
+  <section id="configuration_diameter_networkpeer">
+    <title>Configuration of &THIS.PLATFORM; Diameter Network Peer</title>
+    <important>
+      <title>Configuration of Network Peers not supported</title>
+      <para>At the moment, it's not possible to configure Network Peers in runtime.</para>
+    </important>
+  </section>
+
+</section>

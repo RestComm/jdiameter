@@ -1,0 +1,59 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [<!ENTITY % BOOK_ENTITIES SYSTEM "User_Guide.ent">%BOOK_ENTITIES;]>
+
+<chapter
+	id="management">
+
+	<title>Managing &THIS.PLATFORM; Diameter with &MANAGEMENT.PLATFORM;</title>
+
+	<section id="main_view">
+		<title>&MANAGEMENT.PLATFORM; Diameter Plugin Main View</title>
+		<para>This section describes the main view of &MANAGEMENT.PLATFORM; Diameter Plugin.</para>
+		
+		<para>In order to access this, go to the top menu and select <menuchoice><guimenu>Resources</guimenu><guisubmenu>Servers</guisubmenu></menuchoice>. A list should be presented, where &THIS.PLATFORM; Diameter is present. Click it to access server details.</para>
+		
+		<para>You should have something similar to the following figure:</para>
+
+		<figure>
+			<title>&MANAGEMENT.PLATFORM; Diameter Plugin Main View.</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/img-jopr_diameter_main_view.png" format="PNG"/>
+				</imageobject>
+				<textobject>
+					<para>&MANAGEMENT.PLATFORM; Diameter Plugin Main View</para>
+				</textobject>
+			</mediaobject>
+		</figure>
+
+		<para>As you can see in the left side menu you have the following components that can be managed by &MANAGEMENT.PLATFORM;:</para>
+
+		<itemizedlist>
+      <listitem>
+        <para>Stack (Parent)</para>
+      </listitem>
+      <listitem>
+        <para>Local Peer ([LP] ...)</para>
+      </listitem>
+			<listitem>
+				<para>Network Peers ([NP] ...)</para>
+			</listitem>
+			<listitem>
+				<para>Realms (FQDN)</para>
+			</listitem>
+		</itemizedlist>
+
+		<para>Each one will be described and explained in it's own section.</para>
+
+	</section>
+	
+	<xi:include href="Section-Management_Diameter_Stack.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+	
+	<xi:include href="Section-Management_Diameter_LocalPeer.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+	
+	<xi:include href="Section-Management_Diameter_NetworkPeers.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+	
+	<xi:include href="Section-Management_Diameter_Realms.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+</chapter>
+

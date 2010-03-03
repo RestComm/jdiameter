@@ -1,0 +1,118 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "User_Guide.ent">
+%BOOK_ENTITIES;
+]>
+
+<section id="management_diameter_localpeer_top">
+	<title>Managing and Monitoring Diameter Local Peer</title>
+
+  <section id="management_diameter_localpeer_summary">
+    <title>View Diameter Local Peer Summary</title>
+    <para>In the top, at the summary section the Type, Version and State of the &THIS.PLATFORM; Diameter Local Peer is shown. Also, recent measurements, Out of Bound metrics and Alerts can be seen in a summary view.</para>
+    
+    <figure>
+      <title>&MANAGEMENT.PLATFORM; Diameter Local Peer Summary View.</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/img-jopr_diameter_localpeer_summary.png" format="PNG"/>
+        </imageobject>
+        <textobject>
+          <para>&MANAGEMENT.PLATFORM; Diameter Local Peer Summary View.</para>
+        </textobject>
+      </mediaobject>
+    </figure>
+  </section>
+
+	<section id="management_diameter_localpeer_monitor">
+		<title>Monitor Diameter Local Peer Measurements and Availability over time</title>
+		<para>By accessing the <guilabel>MONITOR</guilabel> tab it's possible to see a set of graphs showing measurements regarding Local Peer as well as a graph showing the availability of the Diameter Local Peer over time.</para>
+		
+		<figure>
+			<title>&MANAGEMENT.PLATFORM; Diameter Plugin Monitor View.</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/img-jopr_diameter_localpeer_monitor.png" format="PNG"/>
+				</imageobject>
+				<textobject>
+					<para>&MANAGEMENT.PLATFORM; Diameter Plugin Monitor View.</para>
+				</textobject>
+			</mediaobject>
+		</figure>
+		
+		<para>The following metrics are available:</para>
+		<variablelist>
+      <varlistentry>
+        <term>Heap Memory Usage</term>
+        <listitem><para>Amount of memory from the Heap being used by the Local Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>No-Heap Memory Usage</term>
+        <listitem><para>Amount of memory excluding the Heap being used by the Local Peer.</para></listitem>
+      </varlistentry>
+		</variablelist>
+		
+    <para>It is also possible to see the data in a table, by accessing the <guilabel>TABLES</guilabel> option under <guilabel>MONITOR</guilabel> tab.</para>
+
+    <para>Configuration of the interval between data collection, and disable/enable certain metrics is possible, in the <guilabel>SCHEDULES</guilabel> option under <guilabel>MONITOR</guilabel> tab.</para>
+	</section>
+
+  <section id="configuration_diameter_localpeer">
+    <title>Configuration of &THIS.PLATFORM; Diameter Local Peer</title>
+    <para>Under the <guilabel>CONFIGURATION</guilabel> tab, it's possible to change several parameters of &THIS.PLATFORM; Diameter Local Peer. To start making changes, click the <guibutton>EDIT</guibutton> button:</para>
+    
+    <figure>
+      <title>Configuring &THIS.PLATFORM; Diameter Local Peer with &MANAGEMENT.PLATFORM; Diameter Plugin.</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/img-jopr_diameter_localpeer_configuration.png" format="PNG"/>
+        </imageobject>
+        <textobject>
+          <para>Configuring &THIS.PLATFORM; Diameter Local Peer with &MANAGEMENT.PLATFORM; Diameter Plugin.</para>
+        </textobject>
+      </mediaobject>
+    </figure>
+
+    <variablelist>
+      <title>&THIS.PLATFORM; Diameter Local Peer Parameters</title>
+      <varlistentry>
+        <term>URI</term>
+        <listitem><para>Defines the URI for the Local Peer, in form of aaa://FQDN:port.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>IP Addresses List</term>
+        <listitem><para>Defines the IP Address(es) to be used by the Local Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Realm</term>
+        <listitem><para>Defines the realm the Local Peer will belong to.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>VendorID</term>
+        <listitem><para>Defines the Vendor ID of this Diameter Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Product Name</term>
+        <listitem><para>Defines the internal product name of the Local Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Firmware Revision</term>
+        <listitem><para>Defines the Firmware revision number for the Local Peer.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Application Id List</term>
+        <listitem><para>Defines the default supported Application Ids for the Local Peer. They should be defined with Vendor-Id plus Authorization and/or Accounting Application-Id.</para></listitem>
+      </varlistentry>
+    </variablelist>
+    
+    <note><para>Not all values are changeable and those are read-only.</para></note>          
+
+    <para>When done editing the values, click on <guibutton>SAVE</guibutton>. In order to revert to the last saved values, click the <guibutton>RESET</guibutton> button.</para>
+    
+    <important>
+      <title>Changes to Local Peer require Stack restart!</title>
+      <para>When making changes to the Local Peer configuration, in order to apply them, a Stack restart is required. Please see <xref linkend="management_diameter_op_stopstack" /> and <xref linkend="management_diameter_op_startstack" />.</para>
+    </important>
+  </section>
+
+</section>
