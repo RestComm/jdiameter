@@ -69,14 +69,16 @@
 						</includes>
 					</imageResource>
 					<formats>
-						<!--
-							<format> <formatName>pdf</formatName>
+						<format>
+							<formatName>pdf</formatName>
 							<stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
-							<finalName>User_Guide.pdf</finalName> </format> <format>
+							<finalName>User_Guide.pdf</finalName>
+						</format>
+						<format>
 							<formatName>html</formatName>
 							<stylesheetResource>classpath:/xslt/org/jboss/xhtml.xsl</stylesheetResource>
-							<finalName>index.html</finalName> </format>
-						-->
+							<finalName>index.html</finalName>
+						</format>
 						<format>
 							<formatName>html_single</formatName>
 							<stylesheetResource>classpath:/xslt/org/jboss/xhtml-single.xsl</stylesheetResource>
