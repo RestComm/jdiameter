@@ -24,6 +24,8 @@
 		<THIS.TRUNK_SOURCE_CODE_URL>http://mobicents.googlecode.com/svn/trunk/servers/${docs.dirname}</THIS.TRUNK_SOURCE_CODE_URL>
 		<THIS.JDIAMETER_TRUNK_SOURCE_CODE_URL>${THIS.TRUNK_SOURCE_CODE_URL}/${docs.jdiameter.dirname}</THIS.JDIAMETER_TRUNK_SOURCE_CODE_URL>
 		<THIS.MUX_TRUNK_SOURCE_CODE_URL>${THIS.TRUNK_SOURCE_CODE_URL}/${docs.mux.dirname}</THIS.MUX_TRUNK_SOURCE_CODE_URL>
+
+		<THIS.TESTSUITE_TRUNK_SOURCE_CODE_URL>http://mobicents.googlecode.com/svn/trunk/servers/${docs.dirname}/testsuite/load</THIS.TESTSUITE_TRUNK_SOURCE_CODE_URL>
 		
 		<author.email.bartosz>bbaranow (at) gmail.com</author.email.bartosz>
 		<author.email.alex>brainslog (at) gmail.com</author.email.alex>
