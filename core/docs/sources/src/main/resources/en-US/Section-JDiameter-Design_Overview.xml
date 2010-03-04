@@ -4,7 +4,85 @@
 
 <section id="jdiameter-design">
 
-	<title>JDiameter Design
+	<title>&THIS.PLATFORM;
+		Design
 	</title>
-	<para>TODO</para>
+	<section id="jdaimeter-desing_extensibility">
+		<title>Extensibility</title>
+		<para>
+			Stack has been designed to be extensible. That is, there are two set
+			of
+			<acronym>API</acronym>
+			implemented by stack. First defines basic contracts between user
+			application and stack.
+			Second defines contracts allowing for instance
+			to inject custom objects into
+			stack, to perform certain tasks. For
+			instance
+			<literal>SessionFactory</literal>
+			defines basic methods to create
+			<literal>Sessions</literal>
+			.
+			<literal>ISessionFactory</literal>
+			declares additional methods which allow to declare custom behaviour
+			(custom application sessions, please refer to
+			<xref linkend="jdiameter-source_overview-session_factory" />)
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata width="300px" align="center"
+					fileref="images/DIA_2_x_JD_DESIGN.png" format="PNG" />
+			</imageobject>
+			<caption>
+				<para>Extensibility visualization
+			</para>
+			</caption>
+		</mediaobject>
+		<para>
+			General pattern for interface declaration can be understood as
+			follows: interface
+			<literal>ComponentInterface</literal>
+			declares minimal set of method for component to perform its task,
+			interface
+			<literal>IComponentInterface</literal>
+			provides additional methods.
+			Please refer to java doc for list of
+			interfaces and description of method contracts.
+		</para>
+	</section>
+
+	<section id="jdaimeter-desing_model">
+		<title>Stack model</title>
+		<para>Stack operates differently than regular stacks. It does not
+			maintain references to handles(sessions)
+			used by application, nor does it maintain state of those handles.
+			Performs following tasks:</para>
+		<itemizedlist>
+			<listitem>
+				<para>manage connections to remote peers</para>
+			</listitem>
+			<listitem>
+				<para>send messages on behalf of sessions</para>
+			</listitem>
+			<listitem>
+				<para>receive and deliver messages to assigned listeners(usually
+					session object)</para>
+			</listitem>
+		</itemizedlist>
+		<para>
+			Sessions use stack and service it provides to communicate with remote peers.
+			Application is only place which holds reference to sessions. It can
+			be seen as follows: 
+		</para>
+		<mediaobject>
+		<imageobject>
+			<imagedata width="300px" align="center"
+				fileref="images/DIA_2_x_JD_stack_model.png" format="PNG" />
+		</imageobject>
+		<caption>
+			<para>Application and stack model
+			</para>
+		</caption>
+	</mediaobject>
+	</section>
 </section>

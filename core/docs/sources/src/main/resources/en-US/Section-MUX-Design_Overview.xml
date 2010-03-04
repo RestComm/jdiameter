@@ -6,5 +6,22 @@
 
 	<title>MUX Design
 	</title>
-	<para>TODO</para>
+	<para>MUX is simple service provided on behalf of stack. Entities
+		interested in receiving messages, for certain diameter application
+		register in MUX. Upon registration entity passes set of appliaction
+		ids, which are of interest to it.
+		Based on message content and registered listeners, MUX either drops message
+		or passes it to proper listener.
+		MUX checks application ids present in message to match target listener.
+	</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata width="300px" align="center"
+				fileref="images/DIA_2_x_MUX_design.png" format="PNG" />
+		</imageobject>
+		<caption>
+			<para>MUX design overview
+			</para>
+		</caption>
+	</mediaobject>
 </section>

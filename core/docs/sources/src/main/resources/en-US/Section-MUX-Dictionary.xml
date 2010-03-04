@@ -80,7 +80,7 @@
 		<literal>Dictionary</literal>
 		uses
 		<acronym>POJO</acronym>
-		class to allows access to stored information:
+		class to provide access to stored information:
 		<literal>org.mobicents.diameter.dictionary.AvpRepresentation</literal>
 		.
 		It exposes following methods:
