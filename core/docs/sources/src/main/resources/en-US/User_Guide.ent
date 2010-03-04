@@ -12,10 +12,10 @@ If this final separator is missing, then the documentation will be wrong. -->
 <!ENTITY THIS.PLATFORM "${THIS.PLATFORM}">
 <!ENTITY THIS.PLATFORM.MUX "${THIS.PLATFORM.MUX}">
 <!ENTITY JEE.PLATFORM "${JEE.PLATFORM}">
-<!ENTITY BOOK_ID "${docs.bookid}_User_Guide">
+<!--<!ENTITY BOOK_ID "${docs.bookid}_User_Guide"> -->
+<!ENTITY BOOK_ID "User_Guide">
 <!ENTITY YEAR "2010">
 <!ENTITY HOLDER "Red Hat Inc">
-<!ENTITY AUTHOR.EMAIL.EDUARDO "${author.email.eduardo}">
 <!ENTITY AUTHOR.EMAIL.BARTOSZ "${author.email.bartosz}">
 <!ENTITY AUTHOR.EMAIL.ALEX "${author.email.alex}">
 <!ENTITY THIS.DIRNAME "${docs.dirname}">

@@ -1,7 +1,6 @@
 <?xml version='1.0'?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [<!ENTITY % BOOK_ENTITIES SYSTEM "User_Guide.ent">%BOOK_ENTITIES;]>
-<bookinfo
-	id="&BOOK_ID;">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [<!ENTITY % BOOK_ENTITIES SYSTEM "User_Guide.ent">%BOOK_ENTITIES;]>
+<bookinfo id="&BOOK_ID;">
 	<title>&THIS.PLATFORM; User Guide</title>
 	<subtitle></subtitle>
 	<productname>&THIS.PLATFORM;</productname>
@@ -34,9 +33,10 @@
 		href="Common_Content/Legal_Notice.xml"
 		xmlns:xi="http://www.w3.org/2001/XInclude" />
 	-->
+	<!-- Docs: this import causes validation error!?! -->
 	<xi:include
-		href="Author_Group.xml"
-		xmlns:xi="http://www.w3.org/2001/XInclude" />
+		href="Author_Group.xml"	xmlns:xi="http://www.w3.org/2001/XInclude" />
+		
 </bookinfo>
 
 

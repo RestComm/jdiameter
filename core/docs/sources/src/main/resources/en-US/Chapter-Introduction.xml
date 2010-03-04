@@ -7,6 +7,7 @@
 	<title>Introduction
 		to &THIS.PLATFORM;
 	</title>
+
 	<para>Diameter is a computer networking protocol for AAA
 		(Authentication, Authorization and Accounting) defined in RFC 3588. It
 		is a successor to RADIUS (and its name is a reference to it, a
@@ -59,7 +60,6 @@
 		application code is used to signal to other peers which operations are
 		supported by connecting peer (Capabilities Exchange / Negotiation).
 	</para>
-
 
 	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
 		href="Section-Introduction-Message_Format.xml" encoding="UTF-8" />
