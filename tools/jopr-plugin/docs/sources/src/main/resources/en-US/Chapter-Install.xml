@@ -105,7 +105,11 @@
 						</listitem>
 						<listitem>
 							<para>Default settings should be fine to install the server correctly. To test the DB connection, please click <guibutton>Test Connection</guibutton> button.</para>
-							<warning>If the <guibutton>Test Connection</guibutton> button was used, make sure that the <guibutton>Database Password</guibutton> field is still filled, as some browsers lose the data in there. Default password is <emphasis>rhqadmin</emphasis>.</warning>
+							<warning>
+								<para>
+									If the <guibutton>Test Connection</guibutton> button was used, make sure that the <guibutton>Database Password</guibutton> field is still filled, as some browsers lose the data in there. Default password is <emphasis>rhqadmin</emphasis>.
+								</para>
+							</warning>
 						</listitem>
 						<listitem>
 							<para>Review the seleceted settings, click <guibutton>Install Server!</guibutton> and wait for it to complete.</para>
@@ -237,7 +241,11 @@
 				</mediaobject>
 			</figure>
 
-			<note>Please make sure that the &THIS.PLATFORM; Diameter is running at this time, otherwise it won't be shown under Auto Discovery.</note>
+			<note>
+				<para>
+					Please make sure that the &THIS.PLATFORM; Diameter is running at this time, otherwise it won't be shown under Auto Discovery.
+				</para>	
+			</note>
 
 			<warning>
 				<title>&THIS.PLATFORM; Diameter not showing in Auto Discovery?</title>
