@@ -15,7 +15,7 @@
       <title>&MANAGEMENT.PLATFORM; Diameter Network Peer Summary View.</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/img-jopr_diameter_networkpeer_summary.png" format="PNG"/>
+          <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_diameter_networkpeer_summary.png" format="PNG"/>
         </imageobject>
         <textobject>
           <para>&MANAGEMENT.PLATFORM; Diameter Network Peer Summary View.</para>
@@ -32,7 +32,7 @@
 			<title>&MANAGEMENT.PLATFORM; Diameter Plugin Network Peer Monitor View.</title>
 			<mediaobject>
 				<imageobject>
-					<imagedata fileref="images/img-jopr_diameter_networkpeer_monitor.png" format="PNG"/>
+					<imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_diameter_networkpeer_monitor.png" format="PNG"/>
 				</imageobject>
 				<textobject>
 					<para>&MANAGEMENT.PLATFORM; Diameter Plugin Network Peer Monitor View.</para>

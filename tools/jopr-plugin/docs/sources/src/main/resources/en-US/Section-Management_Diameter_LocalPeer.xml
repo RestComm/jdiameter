@@ -15,7 +15,7 @@
       <title>&MANAGEMENT.PLATFORM; Diameter Local Peer Summary View.</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/img-jopr_diameter_localpeer_summary.png" format="PNG"/>
+          <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_diameter_localpeer_summary.png" format="PNG"/>
         </imageobject>
         <textobject>
           <para>&MANAGEMENT.PLATFORM; Diameter Local Peer Summary View.</para>
@@ -32,7 +32,7 @@
 			<title>&MANAGEMENT.PLATFORM; Diameter Plugin Monitor View.</title>
 			<mediaobject>
 				<imageobject>
-					<imagedata fileref="images/img-jopr_diameter_localpeer_monitor.png" format="PNG"/>
+					<imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_diameter_localpeer_monitor.png" format="PNG"/>
 				</imageobject>
 				<textobject>
 					<para>&MANAGEMENT.PLATFORM; Diameter Plugin Monitor View.</para>
@@ -65,7 +65,7 @@
       <title>Configuring &THIS.PLATFORM; Diameter Local Peer with &MANAGEMENT.PLATFORM; Diameter Plugin.</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/img-jopr_diameter_localpeer_configuration.png" format="PNG"/>
+          <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_diameter_localpeer_configuration.png" format="PNG"/>
         </imageobject>
         <textobject>
           <para>Configuring &THIS.PLATFORM; Diameter Local Peer with &MANAGEMENT.PLATFORM; Diameter Plugin.</para>

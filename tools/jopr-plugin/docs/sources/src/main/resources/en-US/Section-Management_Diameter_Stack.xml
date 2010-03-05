@@ -15,7 +15,7 @@
 			<title>&MANAGEMENT.PLATFORM; Diameter Stack Summary View.</title>
 			<mediaobject>
 				<imageobject>
-					<imagedata fileref="images/img-jopr_diameter_stack_summary.png" format="PNG"/>
+					<imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_diameter_stack_summary.png" format="PNG"/>
 				</imageobject>
 				<textobject>
 					<para>&MANAGEMENT.PLATFORM; Diameter Stack Summary View.</para>
@@ -32,7 +32,7 @@
 			<title>&MANAGEMENT.PLATFORM; Diameter Plugin Availability View.</title>
 			<mediaobject>
 				<imageobject>
-					<imagedata fileref="images/img-jopr_diameter_availability.png" format="PNG"/>
+					<imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_diameter_availability.png" format="PNG"/>
 				</imageobject>
 				<textobject>
 					<para>&MANAGEMENT.PLATFORM; Diameter Plugin Availability View.</para>
@@ -49,7 +49,7 @@
 			<title>&MANAGEMENT.PLATFORM; Diameter Plugin Inventory View.</title>
 			<mediaobject>
 				<imageobject>
-					<imagedata fileref="images/img-jopr_diameter_stack_inventory.png" format="PNG"/>
+					<imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_diameter_stack_inventory.png" format="PNG"/>
 				</imageobject>
 				<textobject>
 					<para>&MANAGEMENT.PLATFORM; Diameter Plugin Inventory View.</para>
@@ -87,7 +87,7 @@
         <title>Adding a new Network Peer with &MANAGEMENT.PLATFORM; Diameter Plugin.</title>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="images/img-jopr_diameter_stack_add_network_peer.png" format="PNG"/>
+            <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_diameter_stack_add_network_peer.png" format="PNG"/>
           </imageobject>
           <textobject>
             <para>Adding a new Network Peer with &MANAGEMENT.PLATFORM; Diameter Plugin.</para>
@@ -144,7 +144,7 @@
         <title>Removing a Network Peer with &MANAGEMENT.PLATFORM; Diameter Plugin.</title>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="images/img-jopr_diameter_stack_remove_network_peer.png" format="PNG"/>
+            <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_diameter_stack_remove_network_peer.png" format="PNG"/>
           </imageobject>
           <textobject>
             <para>Removing a Network Peer with &MANAGEMENT.PLATFORM; Diameter Plugin.</para>
@@ -167,7 +167,7 @@
 				<title>Adding a new Realm with &MANAGEMENT.PLATFORM; Diameter Plugin.</title>
 				<mediaobject>
 					<imageobject>
-						<imagedata fileref="images/img-jopr_diameter_stack_add_realm.png" format="PNG"/>
+						<imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_diameter_stack_add_realm.png" format="PNG"/>
 					</imageobject>
 					<textobject>
 						<para>Adding a new Realm with &MANAGEMENT.PLATFORM; Diameter Plugin.</para>
@@ -241,7 +241,7 @@
 				<title>Removing a Realm with &MANAGEMENT.PLATFORM; Diameter Plugin.</title>
 				<mediaobject>
 					<imageobject>
-						<imagedata fileref="images/img-jopr_diameter_stack_remove_realm.png" format="PNG"/>
+						<imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_diameter_stack_remove_realm.png" format="PNG"/>
 					</imageobject>
 					<textobject>
 						<para>Removing a Realm with &MANAGEMENT.PLATFORM; Diameter Plugin.</para>
@@ -259,7 +259,7 @@
       <title>Configuring &THIS.PLATFORM; Diameter Stack with &MANAGEMENT.PLATFORM; Diameter Plugin.</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/img-jopr_diameter_stack_configuration.png" format="PNG"/>
+          <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_diameter_stack_configuration.png" format="PNG"/>
         </imageobject>
         <textobject>
           <para>Configuring &THIS.PLATFORM; Diameter Stack with &MANAGEMENT.PLATFORM; Diameter Plugin.</para>
@@ -397,7 +397,7 @@
       <title>Changing &THIS.PLATFOTRM; Diameter Message and AVP Validation.</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/img-jopr_diameter_op_setvalidation.png" format="PNG"/>
+          <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_diameter_op_setvalidation.png" format="PNG"/>
         </imageobject>
         <textobject>
           <para>Changing &THIS.PLATFOTRM; Diameter Message and AVP Validation.</para>
@@ -428,7 +428,7 @@
       <title>Sample result of invoking Dump Stack Configuration.</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/img-jopr_diameter_op_dumpstackconfig_result.png" format="PNG"/>
+          <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_diameter_op_dumpstackconfig_result.png" format="PNG"/>
         </imageobject>
         <textobject>
           <para>Sample result of invoking Dump Stack Configuration.</para>

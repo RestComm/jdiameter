@@ -15,7 +15,7 @@
       <title>&MANAGEMENT.PLATFORM; Diameter Realm Summary View.</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/img-jopr_diameter_realm_summary.png" format="PNG"/>
+          <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_diameter_realm_summary.png" format="PNG"/>
         </imageobject>
         <textobject>
           <para>&MANAGEMENT.PLATFORM; Diameter Realm Summary View.</para>
@@ -32,7 +32,7 @@
 			<title>&MANAGEMENT.PLATFORM; Diameter Plugin Realm Monitor View.</title>
 			<mediaobject>
 				<imageobject>
-					<imagedata fileref="images/img-jopr_diameter_availability.png" format="PNG"/>
+					<imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_diameter_availability.png" format="PNG"/>
 				</imageobject>
 				<textobject>
 					<para>&MANAGEMENT.PLATFORM; Diameter Plugin Realm Monitor View.</para>
@@ -49,7 +49,7 @@
       <title>Configuring &THIS.PLATFORM; Diameter Realm with &MANAGEMENT.PLATFORM; Diameter Plugin.</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/img-jopr_diameter_realm_configuration.png" format="PNG"/>
+          <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_diameter_realm_configuration.png" format="PNG"/>
         </imageobject>
         <textobject>
           <para>Configuring &THIS.PLATFORM; Diameter Realm with &MANAGEMENT.PLATFORM; Diameter Plugin.</para>

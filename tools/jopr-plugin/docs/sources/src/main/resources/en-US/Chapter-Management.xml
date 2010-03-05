@@ -18,7 +18,7 @@
 			<title>&MANAGEMENT.PLATFORM; Diameter Plugin Main View.</title>
 			<mediaobject>
 				<imageobject>
-					<imagedata fileref="images/img-jopr_diameter_main_view.png" format="PNG"/>
+					<imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_diameter_main_view.png" format="PNG"/>
 				</imageobject>
 				<textobject>
 					<para>&MANAGEMENT.PLATFORM; Diameter Plugin Main View</para>
