@@ -30,7 +30,7 @@
 		</para>
 		<mediaobject>
 			<imageobject>
-				<imagedata width="300px" align="center"
+				<imagedata scalefit="1" width="100%" contentdepth="100%" align="center"
 					fileref="images/DIA_2_x_JD_DESIGN.png" format="PNG" />
 			</imageobject>
 			<caption>
@@ -76,7 +76,7 @@
 		</para>
 		<mediaobject>
 		<imageobject>
-			<imagedata width="300px" align="center"
+			<imagedata scalefit="1" width="100%" contentdepth="100%" align="center"
 				fileref="images/DIA_2_x_JD_stack_model.png" format="PNG" />
 		</imageobject>
 		<caption>

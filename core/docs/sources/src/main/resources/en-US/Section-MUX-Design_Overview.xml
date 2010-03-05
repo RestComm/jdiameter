@@ -16,7 +16,7 @@
 	</para>
 	<mediaobject>
 		<imageobject>
-			<imagedata width="300px" align="center"
+			<imagedata scalefit="1" width="100%" contentdepth="100%" align="center"
 				fileref="images/DIA_2_x_MUX_design.png" format="PNG" />
 		</imageobject>
 		<caption>

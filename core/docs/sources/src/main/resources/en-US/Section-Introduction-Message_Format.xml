@@ -11,7 +11,7 @@
     <title>Diameter Message Structure</title>
     <mediaobject>
       <imageobject>
-        <imagedata fileref="images/dia-Introduction-dia-DiameterPacketFormat.png" format="PNG"/>
+        <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/dia-Introduction-dia-DiameterPacketFormat.png" format="PNG"/>
       </imageobject>
     </mediaobject>
   </figure>
@@ -81,7 +81,7 @@
     <title>Payload Structure</title>
     <mediaobject>
       <imageobject>
-        <imagedata fileref="images/dia-Introduction-dia-DiameterAVPLayout.png" format="PNG"/>
+        <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/dia-Introduction-dia-DiameterAVPLayout.png" format="PNG"/>
       </imageobject>
     </mediaobject>
   </figure>
