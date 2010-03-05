@@ -6,18 +6,18 @@
 
 	<title>MUX Setup
 	</title>
-	<section id="preinstall_requirements_and_prerequisites">
+	<section id="MUX-preinstall_requirements_and_prerequisites">
 		<title>Pre-Install Requirements and Prerequisites</title>
 		<para>Ensure that the following requirements have been met before
 			continuing with the install.</para>
-		<section id="hardware_requirements">
+		<section id="MUX-hardware_requirements">
 			<title>Hardware Requirements</title>
 			<para>
 				<acronym>MUX</acronym>
 				does not have any hardware requirements.
 			</para>
 		</section>
-		<section id="software_prerequisites">
+		<section id="MUX-software_prerequisites">
 			<title>Software Prerequisites</title>
 			<para>
 				<acronym>MUX</acronym>
@@ -32,14 +32,14 @@
 			</para>
 		</section>
 	</section>
-	<section id="source_code">
+	<section id="MUX-source_code">
 		<title>Source Code</title>
 		<para>This
 			section provides instructions on how to obtain and build the &THIS.PLATFORM.MUX;
 			from source code.
 		</para>
 
-		<section id="release_source_building">
+		<section id="MUX-release_source_building">
 			<title>Release Source Code Building</title>
 			<procedure>
 				<step>
@@ -93,11 +93,11 @@
 			</note>
 		</section>
 
-		<section id="trunk_source_building">
+		<section id="MUX-trunk_source_building">
 			<title>Development Trunk Source Building</title>
 			<para>
 				Similar process as for
-				<xref linkend="release_source_building" />,
+				<xref linkend="MUX-release_source_building" />,
 				the only change is the SVN source code URL, which is &THIS.MUX_TRUNK_SOURCE_CODE_URL;.
 			</para>
 		</section>
