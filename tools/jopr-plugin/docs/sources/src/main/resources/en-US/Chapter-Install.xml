@@ -130,7 +130,7 @@
 								<title>Accessing Download Menu</title>
 								<mediaobject>
 									<imageobject>
-										<imagedata fileref="images/img-jopr_download_menu.png" format="PNG"/>
+										<imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_download_menu.png" format="PNG"/>
 									</imageobject>
 									<textobject>
 										<para>Accessing Download Menu</para>
@@ -177,7 +177,7 @@
 							<title>Accessing Plugins Menu</title>
 							<mediaobject>
 								<imageobject>
-									<imagedata fileref="images/img-jopr_plugins_menu.png" format="PNG"/>
+									<imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_plugins_menu.png" format="PNG"/>
 								</imageobject>
 								<textobject>
 									<para>Accessing Plugins Menu</para>
@@ -191,7 +191,7 @@
 							<title>Uploading Plugin</title>
 							<mediaobject>
 								<imageobject>
-									<imagedata fileref="images/img-jopr_upload_plugin.png" format="PNG"/>
+									<imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_upload_plugin.png" format="PNG"/>
 								</imageobject>
 								<textobject>
 									<para>Uploading Plugin</para>
@@ -233,7 +233,7 @@
 				<title>Accessing Auto Discovery Queue Menu</title>
 				<mediaobject>
 					<imageobject>
-						<imagedata fileref="images/img-jopr_auto_discovery_menu.png" format="PNG"/>
+						<imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_auto_discovery_menu.png" format="PNG"/>
 					</imageobject>
 					<textobject>
 						<para>Accessing Auto Discovery Queue Menu</para>
@@ -263,7 +263,7 @@
 				<title>Selecting the server to be imported into &MANAGEMENT.PLATFORM;.</title>
 				<mediaobject>
 					<imageobject>
-						<imagedata fileref="images/img-jopr_import_resources.png" format="PNG"/>
+						<imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/img-jopr_import_resources.png" format="PNG"/>
 					</imageobject>
 					<textobject>
 						<para>Selecting the server to be imported into &MANAGEMENT.PLATFORM;.</para>
