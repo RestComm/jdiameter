@@ -101,7 +101,7 @@
 						<format>
 							<formatName>pdf</formatName>
 							<stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
-							<finalName>Mobicents_SLEE_Tools_Jopr_Management_Console_User_Guide.pdf</finalName>
+							<finalName>Mobicents_Diameter_Tools_Jopr_Management_Console_User_Guide.pdf</finalName>
 						</format>
 						<format>
 							<formatName>html</formatName>
