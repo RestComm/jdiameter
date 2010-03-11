@@ -24,7 +24,7 @@
 
   <properties>
     <!-- Mobicents Diameter Components Versions -->
-    <mobicents.diameter.resources.sh-common.version>1.1.2.GA</mobicents.diameter.resources.sh-common.version>
+    <mobicents.diameter.resources.sh-common.version>1.1.3.GA-SNAPSHOT</mobicents.diameter.resources.sh-common.version>
     
     <!-- Other Mobicents Components Versions -->
     <mobicents.servers.jainslee.version>1.2.7.GA</mobicents.servers.jainslee.version>
