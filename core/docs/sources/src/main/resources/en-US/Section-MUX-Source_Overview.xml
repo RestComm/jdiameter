@@ -4,16 +4,9 @@
 
 <section id="mux-source_overview">
 
-	<title>MUX Source overview
-	</title>
-	<para>&THIS.PLATFORM.MUX;
-		capabilities are defined by
-		<literal>MBean</literal>
-		interface:
-		<literal>org.mobicents.diameter.stack.DiameterStackMultiplexerMBean
-		</literal>
-		. This interface defines two types of methods:
-	</para>
+	<title>&THIS.PLATFORM; Diameter Multiplexer (MUX) Source Overview</title>
+
+	<para>&THIS.PLATFORM; Diameter MUX capabilities are defined by <literal>MBean</literal> interface: <literal>org.mobicents.diameter.stack.DiameterStackMultiplexerMBean</literal>. This interface defines two types of methods:</para>
 	<variablelist>
 		<varlistentry>
 			<term>management</term>
@@ -29,7 +22,7 @@
 		</varlistentry>
 	</variablelist>
 	<para>
-	Following methods are of interest to &THIS.PLATFORM.MUX; user:
+	Following methods are of interest to &THIS.PLATFORM; Diameter MUX user:
 	</para>
 	<variablelist>
 		<varlistentry>

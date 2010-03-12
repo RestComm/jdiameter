@@ -4,20 +4,20 @@
 
 <section id="jdiameter-setup">
 
-	<title>&THIS.PLATFORM; Setup</title>
+	<title>&THIS.PLATFORM; Diameter Stack Setup</title>
 	<section id="jdiameter-preinstall_requirements_and_prerequisites">
 		<title>Pre-Install Requirements and Prerequisites</title>
 		<para>Ensure that the following requirements have been met before continuing with the install.</para>
 		<section id="jdiameter-hardware_requirements">
 			<title>Hardware Requirements</title>
-			<para>Stack does not have any hardware requirements.</para>
+			<para>&THIS.PLATFORM; Diameter Stack does not have any hardware requirements.</para>
 		</section>
 		<section id="jdiameter-software_prerequisites">
 			<title>Software Prerequisites</title>
-			<para>Stack has following software dependencies:</para>
+			<para>&THIS.PLATFORM; Diameter Stack has the following software dependencies:</para>
 			<itemizedlist>
 				<listitem>
-					<para>pico container</para>
+					<para>Pico Container</para>
 				</listitem>
 				<listitem>
 					<para>slf4j</para>
@@ -27,7 +27,7 @@
 	</section>	
 	<section id="jdiameter-source_code">
 		<title>Source Code</title>
-		<para>This section provides instructions on how to obtain and build the &THIS.PLATFORM; from source code.</para>
+		<para>This section provides instructions on how to obtain and build the &THIS.PLATFORM; Diameter Stack from source code.</para>
 		
 		<section id="jdiameter-release_source_building">
 			<title>Release Source Code Building</title>

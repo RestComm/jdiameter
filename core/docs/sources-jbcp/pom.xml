@@ -13,9 +13,8 @@
 	<artifactId>mobicents-diameter-docs-sources-jbcp</artifactId>
 
 	<properties>
-		<version.jdiameter>1.5.3.0-build352-SNAPSHOT</version.jdiameter>
+		<version.jdiameter>1.5.3.0-build352</version.jdiameter>
 		<THIS.PLATFORM>JBoss Communications</THIS.PLATFORM>
-		<THIS.PLATFORM.MUX>??</THIS.PLATFORM.MUX>
 		<JEE.PLATFORM>JBoss Enterprise Application Platform</JEE.PLATFORM>
 		<THIS.ISSUE_TRACKER_URL>http://bugzilla.redhat.com/bugzilla/</THIS.ISSUE_TRACKER_URL>
 		<THIS.RELEASE_SOURCE_CODE_URL>?</THIS.RELEASE_SOURCE_CODE_URL>

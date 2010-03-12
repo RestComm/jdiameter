@@ -4,9 +4,7 @@
 
 <chapter id="introduction">
 
-	<title>Introduction
-		to &THIS.PLATFORM;
-	</title>
+	<title>Introduction to &THIS.PLATFORM; Diameter</title>
 
 	<para>Diameter is a computer networking protocol for AAA
 		(Authentication, Authorization and Accounting) defined in RFC 3588. It
@@ -15,80 +13,61 @@
 		certain RADIUS limitations:</para>
 	<itemizedlist>
 		<listitem>
-			<para>No transport reliability and flexibility (TCP/SCTP instead only
-				UDP)</para>
+			<para>No transport reliability and flexibility (Diameter uses TCP/SCTP instead of UDP)</para>
 		</listitem>
 		<listitem>
-			<para>No security within protocol (IPSec or TLS)</para>
+			<para>No security within protocol (Diameter supports IPSec (mandatory) and TLS (optional))</para>
 		</listitem>
 		<listitem>
-			<para>Limited address space for AVPs (32 bits instead of 8 bits)
+			<para>Limited address space for AVPs (Diameter uses 32-bit address space instead of 8-bit)
 			</para>
 		</listitem>
 		<listitem>
-			<para>Only stateless mode is possible(Diameter supports both)</para>
+			<para>Only stateless mode is possible (Diameter supports both stateful and stateless modes)</para>
 		</listitem>
 		<listitem>
-			<para>Static peers ( Diameter offers dynamic discovery, using DNS SRV
-				and NAPTR)</para>
+			<para>Static peers (Diameter offers dynamic discovery, using DNS SRV and NAPTR)</para>
 		</listitem>
 		<listitem>
-			<para>No peer alignment capabilities (Diameter introduce capabilities
-				negotiation)</para>
+			<para>No peer alignment capabilities (Diameter introduce capabilities negotiation)</para>
 		</listitem>
 		<listitem>
-			<para>No support for transport layer failover (Diameter follows RFC
-				3539, which introduces proper procedures)</para>
+			<para>No support for transport layer failover (Diameter follows <ulink url="http://tools.ietf.org/html/rfc3539">RFC3539</ulink>, which introduces proper procedures)</para>
 		</listitem>
 		<listitem>
-			<para>Limited support for roaming( Diameter introduces new mechanism
-				for this)</para>
+			<para>Limited support for roaming (Diameter introduces mechanisms for secure and scalable roaming)</para>
 		</listitem>
 		<listitem>
-			<para>No extension possible(Diameter allows extension - new commands
-				and avps to be defined)</para>
+			<para>No extension possible (Diameter allows extension - new commands and avps to be defined)</para>
 		</listitem>
 	</itemizedlist>
-	<para>Diameter offers all capabilities of RADIUS protocol. Also as
-		logical successor it is comptibile with RADIUS. </para>
-	<para>Diameter also allows to define extension. Each extension is
-		called &quot;Application&quot;.</para>
-	<para>Each application introduces new types of messages, AVP codes, and
-		state machines. The Message and AVP codes are assigned by the IANA.
-		Furthermore, each application has its own application ID and vendor ID
-		that is used to distinguish between applications. In addition,
-		application code is used to signal to other peers which operations are
-		supported by connecting peer (Capabilities Exchange / Negotiation).
-	</para>
+	<para>Diameter offers all capabilities of RADIUS protocol. Also as a logical successor, it is comptibile with RADIUS. </para>
+	<para>Diameter also allows to define extensions. Each extension is called &quot;Application&quot;.</para>
+	<para>Each application may introduce new types of messages, AVP codes, and state machines. The Message and AVP codes are assigned by the IANA. Furthermore, each application has its own Application ID and Vendor ID	that is used to distinguish between applications. In addition,	application code is used to signal to other peers which operations are supported by connecting peer (Capabilities Exchange / Negotiation).</para>
 
 	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
 		href="Section-Introduction-Message_Format.xml" encoding="UTF-8" />
 
 	<section id="introduction-contents">
 		<title>Contents</title>
-		<para>
-			<literal>Mobicents Diameter</literal>
-			core is build on top of three basic components:
-		</para>
+		<para>&THIS.PLATFORM; Diameter core is built on top of three basic components:</para>
 		<variablelist>
 			<varlistentry>
-				<term>stack</term>
+				<term>Stack</term>
 				<listitem>
-					<para>extensible stack. It provides basic session support along with application specific sessions.</para>
+					<para>Extensible Diameter stack. It provides basic session support along with application specific sessions.</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
-				<term>dictionary</term>
+				<term>Multiplexer (MUX)</term>
 				<listitem>
-					<para>message and <acronym>AVP</acronym> dictionary. 
-					Provides <acronym>API</acronym> to access information about <acronym>AVP</acronym>:
-					 flags, type, assigned values, etc. Dictionary is embeded in <acronym>MUX</acronym>. </para>
+					<para>Diameter Stack multiplexer. Allows different listeners to share the same stack instance.</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
-				<term>MUX</term>
+				<term>Dictionary</term>
 				<listitem>
-					<para>stack multiplexer. Allows different listeners to use the same stack instance.</para>
+					<para>Diameter Message and <acronym>AVP</acronym> dictionary. Provides an <acronym>API</acronym> to access information about <acronym>AVP</acronym>: Flags, Type, assigned values, etc. Dictionary is embeded in the <acronym>MUX</acronym>.</para>
 				</listitem>
 			</varlistentry>
 		</variablelist>

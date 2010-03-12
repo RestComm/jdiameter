@@ -3,17 +3,11 @@
 
 <section id="jdiameter-validator">
 
-	<title>&THIS.PLATFORM;
-		Validator
-	</title>
-	<para>Validator is one of Stacks features. The primary purpose of the
-		Validator is to
-		detect malformed messages, such as an Answer message
-		which contains a
-		Destination-Host Attribute Value Pair (AVP). </para>
+	<title>&THIS.PLATFORM; Diameter Stack Validator</title>
 
-	<para>The Validator is capable of validating multi-leveled, grouped
-		AVPs, excluding the following content types: </para>
+	<para>Validator is one of the Stack features. The primary purpose of the Validator is to detect malformed messages, such as an Answer message containing a Destination-Host Attribute Value Pair (<acronym>AVP</acronym>).</para>
+
+	<para>The Validator is capable of validating multi-leveled, grouped AVPs, excluding the following content types:</para>
 	<itemizedlist>
 		<listitem>
 			<para>URI, or Identifier types.</para>
@@ -22,43 +16,21 @@
 			<para>Enumerated types against defined values.</para>
 		</listitem>
 	</itemizedlist>
-	<para>That is, it is capable of checking structural integrity, not
-		content.</para>
-	<para>Valdiator performs following checks:</para>
+	<para>That is, it is capable of checking structural integrity, not content.</para>
+	<para>Validator performs the following checks:</para>
 	<variablelist>
 		<varlistentry>
-			<term>index</term>
-			<listitem>
-				<para>
-					check if
-					<acronym>AVP</acronym>
-					is in correct place, ie.
-					<literal>Session-Id</literal>
-					must always be encoded before any other
-					<acronym>AVP</acronym>
-					.
-				</para>
-			</listitem>
+			<term>Index</term>
+			<listitem><para>Checks if <acronym>AVP</acronym>s are in correct place, eg, <literal>Session-Id</literal> must always be encoded before any other <acronym>AVP</acronym>.</para></listitem>
 		</varlistentry>
 		<varlistentry>
-			<term>multiplicity</term>
-			<listitem>
-				<para>
-					check if
-					<acronym>AVP</acronym>
-					occurs proper number of times
-				</para>
-			</listitem>
+			<term>Multiplicity</term>
+			<listitem><para>Checks if message <acronym>AVP</acronym>s occurs proper number of times, eg, if Session-Id is present one and only one time.</para></listitem>
 		</varlistentry>
 		<!-- TODO: add more checks :) -->
 	</variablelist>
-	<para>
-		<literal>Validator</literal> is called by stack implementation. It is invoked after
-		message is received and before it is dispatched to remote peer. Note
-		that later means that if peer does not exist in local peer table
-		validator is not called, as stack fails before calling
-		it.
-	</para>
+	<para><literal>Validator</literal> is called by stack implementation. It is invoked after message is received and before it is dispatched to remote peer. Note that later means that if peer does not exist in local peer table validator is not called, as stack fails before calling it.</para>
+
 	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
 		href="Section-JDiameter-Validator-Configuration.xml" encoding="UTF-8" />
 	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"

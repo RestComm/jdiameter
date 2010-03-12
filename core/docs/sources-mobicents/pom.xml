@@ -13,10 +13,9 @@
 	<artifactId>mobicents-diameter-docs-sources-mobicents</artifactId>
 
 	<properties>
-		<version.jdiameter>1.5.3.0-build352-SNAPSHOT</version.jdiameter>
-		<THIS.PLATFORM>Mobicents Diameter</THIS.PLATFORM>
-		<THIS.PLATFORM.MUX>Mobicents MUX</THIS.PLATFORM.MUX>
-		<JEE.PLATFORM>XXXJBoss Application ServerXXX</JEE.PLATFORM>
+		<version.jdiameter>1.5.3.0-build352</version.jdiameter>
+		<THIS.PLATFORM>Mobicents</THIS.PLATFORM>
+		<JEE.PLATFORM>JBoss Application Server</JEE.PLATFORM>
 		<THIS.ISSUE_TRACKER_URL>http://code.google.com/p/mobicents/issues/list</THIS.ISSUE_TRACKER_URL>
 		<THIS.RELEASE_SOURCE_CODE_URL>http://mobicents.googlecode.com/svn/tags/servers/${docs.dirname}</THIS.RELEASE_SOURCE_CODE_URL>
 		<THIS.JDIAMETER_RELEASE_SOURCE_CODE_URL>${THIS.RELEASE_SOURCE_CODE_URL}/${docs.jdiameter.dirname}</THIS.JDIAMETER_RELEASE_SOURCE_CODE_URL>

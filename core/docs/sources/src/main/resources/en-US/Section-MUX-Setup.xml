@@ -34,10 +34,7 @@
 	</section>
 	<section id="MUX-source_code">
 		<title>Source Code</title>
-		<para>This
-			section provides instructions on how to obtain and build the &THIS.PLATFORM.MUX;
-			from source code.
-		</para>
+		<para>This section provides instructions on how to obtain and build the &THIS.PLATFORM; Diameter MUX from source code.</para>
 
 		<section id="MUX-release_source_building">
 			<title>Release Source Code Building</title>
@@ -83,13 +80,7 @@
 				</step>
 			</procedure>
 			<note>
-				<para>By
-					default &THIS.PLATFORM.MUX;
-					deploys in
-					<literal>JBoss4</literal>
-					<acronym>SAR</acronym>
-					. To change it run <literal>maven</literal> with profile switch: <literal>-Pjboss5</literal>
-				</para>
+				<para>By default &THIS.PLATFORM; Diameter MUX; deploys in <literal>JBoss4</literal> <acronym>SAR</acronym>. To change it run <literal>maven</literal> with profile switch: <literal>-Pjboss5</literal></para>
 			</note>
 		</section>
 

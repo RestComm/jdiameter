@@ -7,14 +7,18 @@
 		<revhistory>		
 			<revision>
 				<revnumber>1.0</revnumber>
-				<date>Tue Dec 30 2009</date>
+				<date>Thu Mar 11 2010</date>
 				<author>
-					<firstname>Eduardo</firstname>
-					<surname>Martins</surname>
+					<firstname>Bartosz</firstname>
+					<surname>Baranowski</surname>
 				</author>
+                                <author>
+                                        <firstname>Alexandre</firstname>
+                                        <surname>Mendon&#231;a</surname>
+                                </author>
 				<revdescription>
 					<simplelist>
-						<member>Creation of the &THIS.PLATFORM; User Guide.</member>
+						<member>Creation of the &THIS.PLATFORM; Diameter User Guide.</member>
 					</simplelist>
 				</revdescription>
 			</revision>

@@ -10,7 +10,6 @@ If this final separator is missing, then the documentation will be wrong. -->
 <!ENTITY THIS.VERSION "${version}">
 <!ENTITY THIS.VERSION.JDIAMETER "${version.jdiameter}">
 <!ENTITY THIS.PLATFORM "${THIS.PLATFORM}">
-<!ENTITY THIS.PLATFORM.MUX "${THIS.PLATFORM.MUX}">
 <!ENTITY JEE.PLATFORM "${JEE.PLATFORM}">
 <!--<!ENTITY BOOK_ID "${docs.bookid}_User_Guide"> -->
 <!ENTITY BOOK_ID "User_Guide">

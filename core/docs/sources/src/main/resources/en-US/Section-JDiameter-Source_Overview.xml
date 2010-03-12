@@ -3,67 +3,39 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [<!ENTITY % BOOK_ENTITIES SYSTEM "User_Guide.ent">%BOOK_ENTITIES;]>
 
 <section id="jdiameter-source_overview">
-	<!--
-		Developer: add section per each app session and factory, explain how
-		it is created
-	-->
-	<title>&THIS.PLATFORM;
-		Source overview
-	</title>
-	<para>Diameter stack is built with two basic components, that is:
-	</para>
+	<!-- TODO: Developer: add section per each app session and factory, explain how it is created -->
+	<title>&THIS.PLATFORM; Diameter Stack Source overview</title>
+
+	<para>&THIS.PLATFORM; Diameter stack is built with the following basic components:</para>
 	<para>
 		<variablelist>
 			<varlistentry>
-				<term>Session factory</term>
+				<term>Session Factory</term>
 				<listitem>
-					<para>Factory governs creation of sessions - raw and specific
-						application sessions.</para>
+					<para>Session Factory governs creation of sessions - raw and specific application sessions.</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
-				<term>Raw and application sessions</term>
+				<term>Raw and Application Sessions</term>
 				<listitem>
-					<para>Sessions govern stateful message routing between peers.
-						Specific application sessions
-						consume different type of messages
-						and act differently based on data
-						present.</para>
+					<para>Sessions govern stateful message routing between peers. Specific application sessions consume different type of messages and act differently based on data present.</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
 				<term>Stack</term>
 				<listitem>
-					<para>Stack governs all necessary components which allow to
-						establish connection and communicate with remote peers.</para>
+					<para>Stack governs all necessary components which allow to establish connection and communicate with remote peers.</para>
 				</listitem>
 			</varlistentry>
 		</variablelist>
 		<note>
-			<para>
-				For more detailed information please refer to
-				<literal>java doc</literal>
-				and simple examples which can be found here:
-				<ulink url="&THIS.TESTSUITE_TRUNK_SOURCE_CODE_URL;"></ulink>
-			</para>
+			<para>For more detailed information please refer to <literal>javadoc</literal> and simple examples which can be found at <ulink url="&THIS.TESTSUITE_TRUNK_SOURCE_CODE_URL;">SVN Testsuite Trunk</ulink>.</para>
 		</note>
 	</para>
 	<section id="jdiameter-source_overview-session_factory">
-		<title>Session factory</title>
-		<para>
-			<literal>SessionFactory</literal>
-			provides stack user with access to session object. It manages
-			registered application session factories, in order to allow creation
-			of specific application session. Factory instance can be obtainer
-			from stack with use of
-			<literal>getSessionFactory()</literal>
-			method.
-			Base
-			<literal>SessionFactory</literal>
-			interface is defined as follows:
-		</para>
-		<programlisting role="JAVA" language="Java">
-package org.jdiameter.api;
+		<title>Session Factory</title>
+		<para><literal>SessionFactory</literal> provides stack user access to session objects. It manages registered application session factories, in order to allow creation of specific application sessions. An Session Factory instance can be obtained from stack with use of <literal>getSessionFactory()</literal> method. Base <literal>SessionFactory</literal> interface is defined as follows:</para>
+<programlisting role="JAVA" language="Java">package org.jdiameter.api;
 
 import org.jdiameter.api.app.AppSession;
 
@@ -80,13 +52,9 @@ public interface SessionFactory {
 
     &lt;T extends AppSession&gt; T getNewAppSession(String sessionId, ApplicationId
     	 applicationId, Class&lt;? extends AppSession&gt; userSession) throws InternalException;
-}
-		</programlisting>
-		<para>
-			However, since stack is extensible, it is safe to cast <literal>SessionFactory</literal> object to this interface:
-		</para>
-		<programlisting role="JAVA" language="Java">
-package org.jdiameter.client.api;
+}</programlisting>
+		<para>However, since stack is extensible, it is safe to cast <literal>SessionFactory</literal> object to this interface:</para>
+<programlisting role="JAVA" language="Java">package org.jdiameter.client.api;
 
 
 public interface ISessionFactory extends SessionFactory {
@@ -102,12 +70,11 @@ public interface ISessionFactory extends SessionFactory {
   
   IConcurrentFactory getConcurrentFactory();
 
-}
-		</programlisting>
+}</programlisting>
 		<variablelist>
 			<varlistentry>
 				<term><literal>RawSession getNewRawSession() throws InternalException;</literal></term>
-				<listitem><para>This method creates <literal>RawSession</literal>. Raw sessions are meant as handles for code performing part of routing decision on stacks behalf - such as rely agents for instance. </para></listitem>
+				<listitem><para>This method creates <literal>RawSession</literal>. Raw sessions are meant as handles for code performing part of routing decision on stacks behalf - such as rely agents for instance.</para></listitem>
 			</varlistentry>
 			<varlistentry>
 				<term><literal>Session getNewSession() throws InternalException;</literal></term>
@@ -119,28 +86,23 @@ public interface ISessionFactory extends SessionFactory {
 			</varlistentry>
 			<varlistentry>
 				<!-- Docs: is there any way to break this? -->
-				<term><literal>&lt;T extends AppSession&gt; T getNewAppSession(ApplicationId applicationId, 
-    	Class&lt;? extends AppSession&gt; userSession) throws InternalException;</literal></term>
+				<term><literal>&lt;T extends AppSession&gt; T getNewAppSession(ApplicationId applicationId, Class&lt;? extends AppSession&gt; userSession) throws InternalException;</literal></term>
 				<listitem><para>This method creates new specific application session, identified by application Id and <literal>class</literal> of session passed. Session Id is generated by implementation. New application session should be considered as <literal>client</literal> session. It is safe to type cast return value to <literal>class</literal> passed as argument. This method delegates call to specific application session factory. </para></listitem>
 			</varlistentry>
 			<varlistentry>
-				<term><literal>&lt;T extends AppSession&gt; T getNewAppSession(String sessionId, ApplicationId
-    	 applicationId, Class&lt;? extends AppSession&gt; userSession) throws InternalException;</literal></term>
+				<term><literal>&lt;T extends AppSession&gt; T getNewAppSession(String sessionId, ApplicationId applicationId, Class&lt;? extends AppSession&gt; userSession) throws InternalException;</literal></term>
 				<listitem><para>As above, however session Id is equal to argument passed. New session should be considered as <literal>sever</literal> session.</para></listitem>
 			</varlistentry>
 			<varlistentry>
-				<term><literal>&lt;T extends AppSession&gt; T getNewAppSession(String sessionId, 
-  	ApplicationId applicationId, java.lang.Class&lt;? extends AppSession&gt; 
-  		aClass, Object... args) throws InternalException;</literal></term>
+				<term><literal>&lt;T extends AppSession&gt; T getNewAppSession(String sessionId, ApplicationId applicationId, java.lang.Class&lt;? extends AppSession&gt; aClass, Object... args) throws InternalException;</literal></term>
 				<listitem><para>As above, however it allows to pass some additional argument. Passed values are implementation specifc.</para></listitem>
 			</varlistentry>
 			<varlistentry>
-				<term><literal>void registerAppFacory(Class&lt;? extends AppSession&gt; sessionClass, 
-  	IAppSessionFactory factory);</literal></term>
+				<term><literal>void registerAppFacory(Class&lt;? extends AppSession&gt; sessionClass, IAppSessionFactory factory);</literal></term>
 				<listitem><para>registers <literal>factory</literal> for certain <literal>sessionClass</literal>. This factory will receive delegated call when ever <literal>getNewAppSession</literal> method is called with application <literal>class</literal> matching one from register method.</para></listitem>
 			</varlistentry>
 			<varlistentry>
-				<term><literal>void unRegisterAppFacory(Class&lt;? extends AppSession&gt; sessionClass);    </literal></term>
+				<term><literal>void unRegisterAppFacory(Class&lt;? extends AppSession&gt; sessionClass);</literal></term>
 				<listitem><para>removes application session factory registered for <literal>sessionClass</literal>. </para></listitem>
 			</varlistentry>
 			<!-- 
@@ -152,8 +114,7 @@ public interface ISessionFactory extends SessionFactory {
 		</variablelist>
 		<example>
 			<title>SessionFactory use example</title>
-			<programlisting language="Java" role="JAVA">
-class Test implements EventListener&lt;Request, Answer&gt;
+<programlisting language="Java" role="JAVA">class Test implements EventListener&lt;Request, Answer&gt;
 {
 
 ....
@@ -173,14 +134,11 @@ public void test(){
 	//add avps specific for app
 	session.send(r,this);
 	}
-}
-			</programlisting>
+}</programlisting>
 		</example>
 		<example>
 			<title>SessionFactory use example</title>
-			<programlisting language="Java" role="JAVA">
-
-class Test implements EventListener&lt;Request, Answer&gt;
+<programlisting language="Java" role="JAVA">class Test implements EventListener&lt;Request, Answer&gt;
 {
 	Stack stack = new StackImpl();
 	XMLConfiguration config = new XMLConfiguration(new FileInputStream(new File(configFile));
@@ -197,29 +155,15 @@ class Test implements EventListener&lt;Request, Answer&gt;
 	
 	...
 	session.sendUserDataRequest(udr);
-}
-			</programlisting>
+}</programlisting>
 		</example>
 	</section>
 	<section id="jdiameter-source_overview-session">
 		<title>Sessions</title>
-		<para>
-			<literal>RawSession</literal>,
-			<literal>Session</literal>
-			and
-			<literal>ApplicationSession</literal>
-			provide means of disspatching and receiving messages. Specific implementation of <literal>ApplicationSession</literal>
-			may provide non standard methods. 
-		</para>
-		<para>
-			<literal>RawSession</literal> and <literal>Session</literal> life span is controlled entirelly by application. However <literal>ApplicationSession</literal> life time depends on
-			implemented state machine. 
-		</para>
-		<para>
-			<literal>RawSession</literal> is defined as follows:
-		</para>
-		<programlisting role="JAVA" language="Java">
-public interface BaseSession extends Wrapper, Serializable {
+		<para><literal>RawSession</literal>, <literal>Session</literal> and <literal>ApplicationSession</literal> provide means of disspatching and receiving messages. Specific implementation of <literal>ApplicationSession</literal> may provide non standard methods.</para>
+		<para><literal>RawSession</literal> and <literal>Session</literal> life span is controlled entirelly by application. However <literal>ApplicationSession</literal> life time depends on implemented state machine.</para>
+		<para><literal>RawSession</literal> is defined as follows:</para>
+<programlisting role="JAVA" language="Java">public interface BaseSession extends Wrapper, Serializable {
  
     long getCreationTime();
     
@@ -251,80 +195,57 @@ public interface RawSession extends BaseSession {
     void send(Message message, EventListener&lt;Message, Message&gt; listener
     	, long timeOut, TimeUnit timeUnit) throws InternalException, 
     		IllegalDiameterStateException, RouteException, OverloadException;
-}
-		</programlisting>
+}</programlisting>
 		
 		<variablelist>
 			<varlistentry>		
 				<term>long getCreationTime();</term>
-				<listitem>
-					<para>returns time stamp of this session creation</para>
-				</listitem>
+				<listitem><para>Returns time stamp of this session creation</para></listitem>
 			</varlistentry>
 			<varlistentry>		
 				<term>long getLastAccessedTime();</term>
-				<listitem>
-					<para>returns last time stamp indicating send or receive operation</para>
-				</listitem>
+				<listitem><para>Returns last time stamp indicating send or receive operation</para></listitem>
 			</varlistentry>
 			<varlistentry>		
 				<term>boolean isValid();</term>
-				<listitem>
-					<para>return <literal>true</literal> when this session is still valid(ie. <literal>release()</literal> has not been called) </para>
-				</listitem>
+				<listitem><para>Returns <literal>true</literal> when this session is still valid (ie, <literal>release()</literal> has not been called)</para></listitem>
 			</varlistentry>
 			<varlistentry>		
 				<term>void release();</term>
-				<listitem>
-					<para>application calls this method to inform that session should free any associated resource - it shall not be used anymore</para>
-				</listitem>
+				<listitem><para>Application calls this method to inform that session should free any associated resource - it shall not be used anymore</para></listitem>
 			</varlistentry>
 			<varlistentry>		
 				<term>Future&lt;Message&gt; send(Message message)</term>
-				<listitem>
-					<para>sends message in async mode. Provided <literal>Future</literal> reference provides means of accessing answer once its received</para>
-				</listitem>
+				<listitem><para>Sends message in async mode. Provided <literal>Future</literal> reference provides means of accessing answer once its received</para></listitem>
 			</varlistentry>
 			<varlistentry>		
 				<term>void send(Message message, EventListener&lt;Message, Message&gt; listener, long timeOut, TimeUnit timeUnit)</term>
-				<listitem>
-					<para>As above. Allows to specif time out value for send operation</para>
-				</listitem>
+				<listitem><para>As above. Allows to specif time out value for send operation</para></listitem>
 			</varlistentry>
 			<varlistentry>		
 				<term>Message createMessage(int commandCode, ApplicationId applicationId, Avp... avp);</term>
-				<listitem>
-					<para>creates message. It should be explicitly set either as request or answer. Passed parameters are used to build message</para>
-				</listitem>
+				<listitem><para>Creates a Diameter message. It should be explicitly set either as request or answer. Passed parameters are used to build message</para></listitem>
 			</varlistentry>
 			<varlistentry>		
 				<term>Message createMessage(int commandCode, ApplicationId applicationId, long hopByHopIdentifier, long endToEndIdentifier, Avp... avp);</term>
-				<listitem>
-					<para>as above, however it also sets certain fields in message header. This method should be used to create answers</para>
-				</listitem>
+				<listitem><para>Same as above, however it allow to also set Hop-by-Hop and End-to-End Identifiers in message header. This method should be used to create answers</para></listitem>
 			</varlistentry>
 			<varlistentry>		
 				<term>Message createMessage(Message message, boolean copyAvps);</term>
-				<listitem>
-					<para>clones message and returns created object</para>
-				</listitem>
+				<listitem><para>Clones message and returns created object</para></listitem>
 			</varlistentry>
-			<varlistentry>		
+			<varlistentry>
 				<term>void send(Message message, EventListener&lt;Message, Message&gt; listener)</term>
-				<listitem>
-					<para>sends message, answer will be delivered on passed listener</para>
-				</listitem>
+				<listitem><para>Sends message, answer will be delivered to the specified listener</para></listitem>
 			</varlistentry>
 			<varlistentry>		
 				<term>void send(Message message, EventListener&lt;Message, Message&gt; listener, long timeOut, TimeUnit timeUnit)</term>
-				<listitem>
-					<para>as above, it allows to pass answer wait timeout</para>
-				</listitem>
+				<listitem><para>As above, it allows to pass answer wait timeout</para></listitem>
 			</varlistentry>
 		</variablelist>
 		<para><literal>Session</literal> is defines similar methods, with exactly the same purpose: </para>
-		<programlisting role="JAVA" language="Java">
-public interface Session extends BaseSession {
+
+<programlisting role="JAVA" language="Java">public interface Session extends BaseSession {
     String getSessionId();
 
     void setRequestListener(NetworkReqListener listener);
@@ -341,7 +262,6 @@ public interface Session extends BaseSession {
     void send(Message message, EventListener&lt;Request, Answer&gt; listener, long timeOut
     	, TimeUnit timeUnit) throws InternalException, IllegalDiameterStateException, 
     		RouteException, OverloadException;
-    }			
-		</programlisting>
+    }</programlisting>
 	</section>
 </section>
