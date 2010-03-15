@@ -33,32 +33,32 @@
 			<title>Release Source Code Building</title>
 			<procedure>
 				<step>
-				    <title>Downloading the source code</title>
-				    <important>
-				    	<para>Subversion is used to manage its source code. Instructions for using Subversion, including install, can be found at <ulink url="http://svnbook.red-bean.com" /></para>
-				    </important>
-				    <para>Use SVN to checkout a specific release source, the base URL is &THIS.JDIAMETER_RELEASE_SOURCE_CODE_URL;, then add the specific release version, lets consider &THIS.VERSION;.</para>
-				    <programlisting>[usr]$ svn co &THIS.JDIAMETER_RELEASE_SOURCE_CODE_URL;/&THIS.VERSION; &THIS.DIRNAME.JDIAMETER;-&THIS.VERSION;</programlisting>				    
-  				</step>
+					<title>Downloading the source code</title>
+					<important>
+						<para>Subversion is used to manage its source code. Instructions for using Subversion, including install, can be found at <ulink url="http://svnbook.red-bean.com" /></para>
+					</important>
+					<para>Use SVN to checkout a specific release source, the base URL is &THIS.JDIAMETER_RELEASE_SOURCE_CODE_URL;, then add the specific release version, lets consider &THIS.VERSION;.</para>
+					<programlisting>[usr]$ svn co &THIS.JDIAMETER_RELEASE_SOURCE_CODE_URL;/&THIS.VERSION; &THIS.DIRNAME.JDIAMETER;-&THIS.VERSION;</programlisting>
+				</step>
 				<step>
-				    <title>Building the source code</title>
-				    <important>
-				    	<para>Maven 2.0.9 (or higher) is used to build the release. Instructions for using Maven2, including install, can be found at <ulink url="http://maven.apache.org" /></para>
-				    </important>
-				    <para>Use Maven to build the deployable unit binary.</para>
-				    <programlisting>
-				    [usr]$ cd &THIS.DIRNAME.JDIAMETER;-&THIS.VERSION;
-				    [usr]$ mvn install
-				    </programlisting>
-				    <para>Once the process finishes you should have the <acronym>JAR</acronym> files deployed in maven archive.</para>
-  				</step>
-			</procedure>      
-		</section>	
+					<title>Building the source code</title>
+					<important>
+						<para>Maven 2.0.9 (or higher) is used to build the release. Instructions for using Maven2, including install, can be found at <ulink url="http://maven.apache.org" /></para>
+					</important>
+					<para>Use Maven to build the deployable unit binary.</para>
+					<programlisting>
+						[usr]$ cd &THIS.DIRNAME.JDIAMETER;-&THIS.VERSION;
+						[usr]$ mvn install
+					</programlisting>
+					<para>Once the process finishes you should have the <acronym>JAR</acronym> files deployed in maven archive.</para>
+				</step>
+			</procedure>
+		</section>
 		
 		<section id="jdiameter-trunk_source_building">
 			<title>Development Trunk Source Building</title>
 			<para>Similar process as for <xref linkend="jdiameter-release_source_building"/>, the only change is the SVN source code URL, which is &THIS.JDIAMETER_TRUNK_SOURCE_CODE_URL;.</para>
-		</section>	
+		</section>
 		
 	</section>
 </section>

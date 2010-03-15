@@ -9,15 +9,14 @@
 	<pubsnumber>1</pubsnumber>
 
 	<abstract>
-    	<para>This Guide introduces <literal>Mobicents Diameter</literal> solution.</para>
-  	</abstract>
-	
+		<para><application>The &THIS.PLATFORM; Platform</application> is the first and only open source <acronym>VoIP</acronym> platform certified for <acronym>JAIN SLEE</acronym> 1.1 and <acronym>SIP</acronym> Servlets 1.1 compliance. <application>&THIS.PLATFORM;</application> serves as a high-performance core for Service Delivery Platforms (<acronym>SDP</acronym>s) and <acronym>IP</acronym> Multimedia Subsystems (<acronym>IMS</acronym>es) by leveraging <acronym>J2EE</acronym> to enable the convergence of data and video in Next-Generation Intelligent Network (<acronym>NGIN</acronym>) applications.</para>
+
+		<para><application>The &THIS.PLATFORM; Diameter</application> solution provides &THIS.PLATFORM; Platform with Authentication, Authorization, and Accounting (<acronym>AAA</acronym>) capabilities.</para>
+	</abstract>
 	<corpauthor>
 		<inlinemediaobject>
 			<imageobject>
-				<imagedata
-					format="SVG"
-					fileref="images/icon.svg" />
+				<imagedata format="SVG" fileref="images/icon.svg" />
 			</imageobject>
 			<textobject>
 				<phrase>Logo</phrase>
@@ -33,11 +32,8 @@
 		href="Common_Content/Legal_Notice.xml"
 		xmlns:xi="http://www.w3.org/2001/XInclude" />
 	-->
-	<!-- Docs: this import causes validation error!?! -->
 	<xi:include
 		href="Author_Group.xml"	xmlns:xi="http://www.w3.org/2001/XInclude" />
 		
 </bookinfo>
-
-
 

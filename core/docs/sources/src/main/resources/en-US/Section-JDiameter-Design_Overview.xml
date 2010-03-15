@@ -10,8 +10,8 @@
 		<title>&THIS.PLATFORM; Diameter Stack Extensibility</title>
 		<para>
 			&THIS.PLATFORM; Diameter Stack has been designed to be extensible. In order to achieve that, two set of <acronym>API</acronym> are implemented by the stack:
-			One that defines basic contracts between user application and stack. A second which defines contracts allowing for instance to inject custom objects into stack, to perform certain tasks, as <literal>SessionFactory</literal> is an example of, which defines basic methods to create <literal>Sessions</literal>.
-			<literal>ISessionFactory</literal> declares additional methods which allow developer to declare custom behaviour (custom application sessions, please refer to <xref linkend="jdiameter-source_overview-session_factory" /> for more detailed information).
+			One that defines basic contracts between user application and stack. A second which defines contracts allowing for instance to inject custom objects into stack, to perform certain tasks, as <classname>SessionFactory</classname> is an example of, which defines basic methods to create <classname>Sessions</classname>.
+			<classname>ISessionFactory</classname> declares additional methods which allow developer to declare custom behaviour (custom application sessions, please refer to <xref linkend="jdiameter-source_overview-session_factory" /> for more detailed information).
 		</para>
 		<figure>
 			<title>&THIS.PLATFORM; Diameter Stack Extensibility Visualization</title>
@@ -19,12 +19,12 @@
 				<imageobject>
 					<imagedata scalefit="1" width="100%" contentdepth="100%" align="center" fileref="images/DIA_2_x_JD_DESIGN.png" format="PNG" />
 				</imageobject>
-				<caption>
+				<textobject>
 					<para>&THIS.PLATFORM; Diameter Stack Extensibility Visualization</para>
-				</caption>
+				</textobject>
 			</mediaobject>
 		</figure>
-		<para>General pattern for interface declaration can be understood as follows: Interface <literal>ComponentInterface</literal> declares minimal set of methods for component to perform its task, and Interface <literal>IComponentInterface</literal> provides additional behavior methods. Please refer to java doc for list of interfaces and description of method contracts.</para>
+		<para>General pattern for interface declaration can be understood as follows: Interface <classname>ComponentInterface</classname> declares minimal set of methods for component to perform its task, and Interface <classname>IComponentInterface</classname> provides additional behavior methods. Please refer to java doc for list of interfaces and description of method contracts.</para>
 	</section>
 
 	<section id="jdiameter-design_model">
@@ -49,9 +49,9 @@
 					<imagedata scalefit="1" width="100%" contentdepth="100%" align="center"
 						fileref="images/DIA_2_x_JD_stack_model.png" format="PNG" />
 				</imageobject>
-				<caption>
+				<textobject>
 					<para>&THIS.PLATFORM; Diameter Application and Stack Model</para>
-				</caption>
+				</textobject>
 			</mediaobject>
 		</figure>
 	</section>

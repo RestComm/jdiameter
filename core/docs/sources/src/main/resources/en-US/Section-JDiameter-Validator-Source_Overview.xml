@@ -4,97 +4,66 @@
 <section id="jdiameter-validator-source_overview">
 
 	<title>Validator Source Overview</title>
-	<para>
-		Validator
-		<acronym>API</acronym>
-		defines methods to access its data base of
-		<acronym>AVP</acronym>
-		and check if
-		<acronym>AVP</acronym>
-		and message has proper structure.
-	</para>
-	<para>
-		Currently
-		<literal>Validator</literal>
-		is message oriented, that is it declared methods which center on
-		message consitency checks. Class containing all validation logic is <literal>org.jdiameter.common.impl.validation.DiameterMessageValidator</literal>.
-		 It exposes following methods:
-	</para>
+	<para>Validator	<acronym>API</acronym> defines methods to access its data base of <acronym>AVP</acronym> and check if <acronym>AVP</acronym> and message has proper structure.</para>
+	<para>Currently	Validator is message oriented, that is it declared methods which center on message consitency checks. Class containing all validation logic is <classname>org.jdiameter.common.impl.validation.DiameterMessageValidator</classname>. It exposes the following methods:</para>
 	<variablelist>
 		<varlistentry>
 			<term>public boolean isOn();</term>
 			<listitem>
-				<para>
-					simple method to determine if
-					<literal>Validator</literal>
-					is on.
-				</para>
+				<para>Simple method to determine if <literal>Validator</literal> is enabled.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>public ValidatorLevel getSendLevel();
 			</term>
 			<listitem>
-				<para>returns validation level for outgoing messages. It can have
-					one of following values: OFF, MESSAGE,ALL</para>
+				<para>Returns validation level for outgoing messages. It can have one of following values: <literal>OFF</literal>, <literal>MESSAGE</literal>, <literal>ALL</literal></para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>public ValidatorLevel getReceiveLevel()</term>
 			<listitem>
-				<para>as above, but for incoming messages</para>
+				<para>Returns validation level for incoming messages. It can have one of following values: <literal>OFF</literal>, <literal>MESSAGE</literal>, <literal>ALL</literal></para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
-			<term> public void validate(Message msg, boolean incoming) throws
-				JAvpNotAllowedException</term>
+			<term> public void validate(Message msg, boolean incoming) throws JAvpNotAllowedException</term>
 			<listitem>
-				<para>
-					performs validation on message. Based on
-					<literal>incoming</literal>
-					flag value different level is used. If validation fails, method
-					throws exception with details
-				</para>
+				<para>Performs validation on message. Based on <parameter>incoming</parameter> flag, the correct validation level is applied. If validation fails, an exception with details is thrown.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
-			<term>public void validate(Message msg, ValidatorLevel
-				validatorLevel) throws JAvpNotAllowedException</term>
+			<term>public void validate(Message msg, ValidatorLevel validatorLevel) throws JAvpNotAllowedException</term>
 			<listitem>
-				<para>as above, however it performs validation with specified level,
-					it is programatical way to allow different level of validation than
-					configured</para>
+				<para>Performs validation on message with the specified level. It is a programatical way to allow different level of validation different than configured. If validation fails, a <classname>JAvpNotAllowedException</classname> with details is thrown.</para>
 			</listitem>
 		</varlistentry>
 	</variablelist>
 
 
-	<para>Current implementation provides more methods, however those are
-		out of scope of this documentation.</para>
+	<para>Current implementation provides more methods, however those are out of scope for this documentation.</para>
 	<para>Simple example of validator use case look as follows:</para>
 
 	<example id="example-Validator_Message_Check_Example">
 		<title>Validator Message Check Example</title>
 		<para>The example below is pseudo-code.</para>
 		<programlisting role="JAVA" language="Java">
- ...
- boolean isRequest = true;
- boolean isIncoming = false;
+...
+boolean isRequest = true;
+boolean isIncoming = false;
+
 DiameterMessageValidator messageValidator = DiameterMessageValidator.getInstance();
-Message message = createMessage(UserDataRequest.MESSAGE_CODE,isRequest, applicationId);
-        
+Message message = createMessage(UserDataRequest.MESSAGE_CODE, isRequest,
+	applicationId);
+
 //add AVPs
 ...
 //perform check
 try{
-   messageValidator.validate(message,isIncoming);
-}catch(JAvpNotAllowedException e)
-{
-    System.err.println(&quot;Failed to validate ...., avp code: &quot;+e.getAvpCode()&quot; 
-    	avp vendor:&quot;+
-     e.getVendorId()+&quot;, message:&quot;+ e.getMessage();
+	messageValidator.validate(message, isIncoming);
+}
+catch(JAvpNotAllowedException e) {
+	System.err.println(&quot;Failed to validate ..., avp code: &quot; + e.getAvpCode() + &quot; avp vendor:&quot; + e.getVendorId() + &quot;, message:&quot; + e.getMessage());
 }</programlisting>
-  </example>
- 
-
+	</example>
 </section>

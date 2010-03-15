@@ -56,13 +56,13 @@
 		<varlistentry>
 			<term>&lt;IPAddresses&gt;</term>
 			<listitem>
-				<para>Contains one or more child &lt;IPAddress&gt; elements which contain a single, valid IP address for the local peer, stored in the <literal>value</literal> attribute of IPAddress.</para>
+				<para>Contains one or more child &lt;IPAddress&gt; elements which contain a single, valid IP address for the local peer, stored in the <parameter>value</parameter> attribute of IPAddress.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>&lt;Realm&gt;</term>
 			<listitem>
-				<para>Specifies the realm of the local peer, using the <literal>value</literal> attribute.</para>
+				<para>Specifies the realm of the local peer, using the <parameter>value</parameter> attribute.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
@@ -200,7 +200,7 @@
 		<varlistentry>
 			<term>&lt;UseUriAsFqdn&gt;</term>
 			<listitem>
-				<para> Determines as URI should be used as FQDN, if set to	<literal>true</literal> stack expects destination/origin host in format of &quot;aaa://isdn.domain.com:3868&quot; instead of proper &quot;isdn.domain.com&quot;. Default value is <literal>false</literal>.</para>
+				<para> Determines as URI should be used as FQDN, if set to <literal>true</literal> stack expects destination/origin host in format of &quot;aaa://isdn.domain.com:3868&quot; instead of proper &quot;isdn.domain.com&quot;. Default value is <literal>false</literal>.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
@@ -254,8 +254,8 @@
 		<varlistentry>
 			<term>&lt;Concurrent /&gt;</term>
 			<listitem>
-				<para>Conrols thread pool sizes for different aspects of stack. Supports multiple <literal>Entity</literal> child elements. <literal>Entity</literal> elements configure thread groups</para>
-				<para><literal>Entity element supports following properties:</literal> </para>
+				<para>Controls thread pool sizes for different aspects of stack. Supports multiple <parameter>Entity</parameter> child elements. <parameter>Entity</parameter> elements configure thread groups</para>
+				<para>Entity element supports following properties:</para>
 			<variablelist>
 				<varlistentry>
 					<term>name</term>
@@ -270,18 +270,18 @@
 				</listitem>
 				</varlistentry>
 			</variablelist>
-			<para>Defailt supported entities are as follows:</para>
+			<para>Default supported entities are as follows:</para>
 			<variablelist>
 				<varlistentry>
 					<term>ThreadGroup</term>
 					<listitem>
-						<para>determines max thread count in other entities</para>
+						<para>Specifies maximum thread count in other entities</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
 					<term>ProcessingMessageTimer</term>
 					<listitem>
-						<para>determines thread count managing tasks for message timeout</para>
+						<para>Specifies thread count for message processing task.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
@@ -299,25 +299,25 @@
 				<varlistentry>
 					<term>PeerOverloadTimer</term>
 					<listitem>
-						<para>Determines thread pool for managing overload monitor.</para>
+						<para>Specifies thread pool for overload monitor tasks.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
 					<term>ConnectionTimer</term>
 					<listitem>
-						<para>Determines thread pool for managing tasks regarding peer connection <acronym>FSM</acronym>.</para>
+						<para>Specifies thread pool for managing tasks regarding peer connection <acronym>FSM</acronym>.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
 					<term>StatisticTimer</term>
 					<listitem>
-						<para>Determines thread pool for statistic gathering tasks.</para>
+						<para>Specifies thread pool for statistic gathering tasks.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
 					<term>ApplicationSession</term>
 					<listitem>
-						<para>Determines thread pool for managing invocation of application session <acronym>FSM</acronym>, which will invoke listeners.</para>
+						<para>Specifies thread pool for managing invocation of application session <acronym>FSM</acronym>, which will invoke listeners.</para>
 					</listitem>
 				</varlistentry>
 			</variablelist>

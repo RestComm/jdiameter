@@ -9,34 +9,34 @@
 	<para>Upon creation of Diameter Stack, the validator is initialized. It performs initialization by looking up <filename>dictionary.xml</filename> file in classpath.</para>
 	<note>
 		<para>
-			Configuration file contains more data than <literal>Validator</literal> use to build its data base. It is caused by the fact that <literal>Dictionary</literal> uses the same file to configure itself.
+			Configuration file contains more data than Validator use to build its data base. It is caused by the fact that Dictionary uses the same file to configure itself.
 			It reuses <acronym>AVP</acronym> definitions, extended with some information like <acronym>AVP</acronym> type and flags.
 		</para>
 	</note>
 
-	<para>Configuration file has structure as follows:</para>
+	<para>Configuration file structure is the following:</para>
 	<programlisting role="XML">
 &lt;dictonary&gt;
-  &lt;validator enabled=&quot;true|false&quot; sendLevel=&quot;OFF|MESSAGE|ALL&quot; receiveLevel=&quot;OFF|MESSAGE|ALL&quot; /&gt;
-  &lt;vendor name=&quot;&quot; vendor-id=&quot;&quot; code=&quot;&quot;/&gt;
-  &lt;typedefn type-name=&quot;&quot; type-parent=&quot;&quot;/&gt;
-  &lt;application id=&quot;&quot; name=&quot;&quot;&gt;
-    &lt;avp ...&gt;
-      &lt;type type-name=&quot;&quot;/&gt;
-      &lt;enum name=&quot;&quot; code=&quot;&quot;/&gt;
-      &lt;grouped&gt;
-        &lt;gavp name=&quot;&quot;/&gt;
-      &lt;grouped/&gt;
-    &lt;avp/&gt;
-    &lt;command name=&quot;&quot; code=&quot;&quot; request=&quot;true|false&quot;/&gt;
-    &lt;avp ...&gt;
-      &lt;type type-name=&quot;&quot;/&gt;
-      &lt;enum name=&quot;&quot; code=&quot;&quot;/&gt;
-      &lt;grouped&gt;
-        &lt;gavp name=&quot;&quot;/&gt;
-      &lt;grouped/&gt;
-    &lt;avp/&gt;
-  &lt;application&gt;
+	&lt;validator enabled=&quot;true|false&quot; sendLevel=&quot;OFF|MESSAGE|ALL&quot; receiveLevel=&quot;OFF|MESSAGE|ALL&quot; /&gt;
+	&lt;vendor name=&quot;&quot; vendor-id=&quot;&quot; code=&quot;&quot;/&gt;
+	&lt;typedefn type-name=&quot;&quot; type-parent=&quot;&quot;/&gt;
+	&lt;application id=&quot;&quot; name=&quot;&quot;&gt;
+		&lt;avp ...&gt;
+			&lt;type type-name=&quot;&quot;/&gt;
+			&lt;enum name=&quot;&quot; code=&quot;&quot;/&gt;
+			&lt;grouped&gt;
+				&lt;gavp name=&quot;&quot;/&gt;
+			&lt;grouped/&gt;
+		&lt;avp/&gt;
+		&lt;command name=&quot;&quot; code=&quot;&quot; request=&quot;true|false&quot;/&gt;
+		&lt;avp ...&gt;
+			&lt;type type-name=&quot;&quot;/&gt;
+			&lt;enum name=&quot;&quot; code=&quot;&quot;/&gt;
+			&lt;grouped&gt;
+				&lt;gavp name=&quot;&quot;/&gt;
+			&lt;grouped/&gt;
+		&lt;avp/&gt;
+	&lt;application&gt;
 &lt;dictionary/&gt;</programlisting>
 
 	<formalpara>

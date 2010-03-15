@@ -21,15 +21,15 @@
 	<variablelist>
 		<varlistentry>
 			<term>Index</term>
-			<listitem><para>Checks if <acronym>AVP</acronym>s are in correct place, eg, <literal>Session-Id</literal> must always be encoded before any other <acronym>AVP</acronym>.</para></listitem>
+			<listitem><para>Checks if <acronym>AVP</acronym>s are in correct place, eg, <parameter>Session-Id</parameter> must always be encoded before any other <acronym>AVP</acronym>.</para></listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>Multiplicity</term>
-			<listitem><para>Checks if message <acronym>AVP</acronym>s occurs proper number of times, eg, if Session-Id is present one and only one time.</para></listitem>
+			<listitem><para>Checks if message <acronym>AVP</acronym>s occurs the correct number of times, eg, if Session-Id is present one and only one time.</para></listitem>
 		</varlistentry>
 		<!-- TODO: add more checks :) -->
 	</variablelist>
-	<para><literal>Validator</literal> is called by stack implementation. It is invoked after message is received and before it is dispatched to remote peer. Note that later means that if peer does not exist in local peer table validator is not called, as stack fails before calling it.</para>
+	<para>Validator is called by stack implementation. It is invoked after message is received and before it is dispatched to remote peer. Note that latter means that if peer does not exist in local peer table validator is not called, as stack fails before calling it.</para>
 
 	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
 		href="Section-JDiameter-Validator-Configuration.xml" encoding="UTF-8" />

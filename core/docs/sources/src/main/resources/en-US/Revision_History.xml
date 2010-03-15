@@ -12,10 +12,10 @@
 					<firstname>Bartosz</firstname>
 					<surname>Baranowski</surname>
 				</author>
-                                <author>
-                                        <firstname>Alexandre</firstname>
-                                        <surname>Mendon&#231;a</surname>
-                                </author>
+				<author>
+					<firstname>Alexandre</firstname>
+					<surname>Mendon&#231;a</surname>
+				</author>
 				<revdescription>
 					<simplelist>
 						<member>Creation of the &THIS.PLATFORM; Diameter User Guide.</member>
