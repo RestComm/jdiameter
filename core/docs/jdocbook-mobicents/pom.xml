@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>mobicents-diameter-docs</artifactId>
 		<groupId>org.mobicents.servers.diameter</groupId>
-		<version>1.1.3.GA-SNAPSHOT</version>
+		<version>1.2.0.GA-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>mobicents-slee-example-template-docs-jdocbook-mobicents</artifactId>
