@@ -62,7 +62,9 @@
 						<artifactId>maven-release-plugin</artifactId>
 						<version>2.0</version>
 						<configuration>
+							<remoteTagging>true</remoteTagging>
 							<autoVersionSubmodules>true</autoVersionSubmodules>
+							<resume>false</resume>
 							<tagBase>https://mobicents.googlecode.com/svn/tags/servers/diameter/core/docs</tagBase>
 							<preparationGoals>clean install</preparationGoals>
 						</configuration>
@@ -72,4 +74,9 @@
 		</profile>
 	</profiles>
 
+	<scm>
+		<connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/docs</connection>
+		<developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/docs</developerConnection>
+		<url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/docs</url>
+	</scm>
 </project>
