@@ -10,7 +10,7 @@
 
   <groupId>org.mobicents.servers.diameter.tools</groupId>
   <artifactId>mobicents-diameter-jopr-plugin</artifactId>
-  <version>1.0.0.BETA1</version>
+  <version>1.0.0.BETA2-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Jopr Mobicents Diameter Plugin for JBoss AS</name>
@@ -286,9 +286,9 @@
   </profiles>
 
   <scm>
-    <connection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/tools/jopr-plugin/mobicents-diameter-jopr-plugin-1.0.0.BETA1</connection>
-    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/tools/jopr-plugin/mobicents-diameter-jopr-plugin-1.0.0.BETA1</developerConnection>
-    <url>http://mobicents.googlecode.com/svn/tags/servers/diameter/tools/jopr-plugin/mobicents-diameter-jopr-plugin-1.0.0.BETA1</url>
+    <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/tools/jopr-plugin</connection>
+    <developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/tools/jopr-plugin</developerConnection>
+    <url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/tools/jopr-plugin</url>
   </scm>
   
   <build>
