@@ -3,12 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<parent>
-		<artifactId>mobicents-diameter-docs</artifactId>
 		<groupId>org.mobicents.servers.diameter</groupId>
+		<artifactId>mobicents-diameter-core-docs</artifactId>
 		<version>1.2.0.GA-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>mobicents-slee-example-template-docs-jdocbook-mobicents</artifactId>
+	<artifactId>mobicents-diameter-core-docs-jdocbook-mobicents</artifactId>
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -30,7 +30,7 @@
 							<artifactItems>
 								<artifactItem>
 									<groupId>${pom.groupId}</groupId>
-									<artifactId>mobicents-diameter-docs-sources-mobicents</artifactId>
+									<artifactId>mobicents-diameter-core-docs-sources-mobicents</artifactId>
 									<version>${pom.version}</version>
 									<type>jar</type>
 									<overWrite>true</overWrite>
@@ -72,7 +72,7 @@
 						<format>
 							<formatName>pdf</formatName>
 							<stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
-							<finalName>User_Guide.pdf</finalName>
+							<finalName>Mobicents_Diameter_Core_User_Guide.pdf</finalName>
 						</format>
 						<format>
 							<formatName>html</formatName>

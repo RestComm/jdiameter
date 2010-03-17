@@ -5,15 +5,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<artifactId>mobicents-diameter-docs</artifactId>
 		<groupId>org.mobicents.servers.diameter</groupId>
+		<artifactId>mobicents-diameter-core-docs</artifactId>
 		<version>1.2.0.GA-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>mobicents-diameter-docs-sources-mobicents</artifactId>
+	<artifactId>mobicents-diameter-core-docs-sources-mobicents</artifactId>
 
 	<properties>
-		<version.jdiameter>1.5.3.0-build352</version.jdiameter>
+		<version.jdiameter>1.5.3.1-build352</version.jdiameter>
 		<THIS.PLATFORM>Mobicents</THIS.PLATFORM>
 		<JEE.PLATFORM>JBoss Application Server</JEE.PLATFORM>
 		<MANAGEMENT.PLATFORM>Jopr</MANAGEMENT.PLATFORM>
@@ -53,7 +53,7 @@
 							<artifactItems>
 								<artifactItem>
 									<groupId>${pom.groupId}</groupId>
-									<artifactId>mobicents-slee-example-template-docs-sources</artifactId>
+									<artifactId>mobicents-diameter-core-docs-sources</artifactId>
 									<version>${pom.version}</version>
 									<type>jar</type>
 									<overWrite>true</overWrite>
