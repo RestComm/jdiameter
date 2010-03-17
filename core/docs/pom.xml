@@ -5,9 +5,10 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.mobicents.servers.diameter</groupId>
-		<artifactId>diameter-core</artifactId>
-		<version>1.2.0.GA-SNAPSHOT</version>
+                <groupId>org.mobicents</groupId>
+                <artifactId>mobicents</artifactId>
+                <version>1.16</version>
+                <relativePath>../../../../parent/pom.xml</relativePath>
 	</parent>
 
 	<artifactId>mobicents-diameter-core-docs</artifactId>
