@@ -60,7 +60,7 @@
 					</dependency>
 				</dependencies>
 				<configuration>
-					<sourceDocumentName>JBCP_Diameter_Core_User_Guide.xml</sourceDocumentName>
+					<sourceDocumentName>User_Guide.xml</sourceDocumentName>
 					<sourceDirectory>${project.build.directory}/docbook/resources</sourceDirectory>
 					<imageResource>
 						<directory>${project.build.directory}/docbook/resources/en-US</directory>
@@ -72,7 +72,7 @@
 						<format>
 							<formatName>pdf</formatName>
 							<stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
-							<finalName>User_Guide.pdf</finalName>
+							<finalName>JBCP_Diameter_Core_User_Guide.pdf</finalName>
 						</format>
 						<format>
 							<formatName>html</formatName>
