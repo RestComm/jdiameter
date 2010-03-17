@@ -268,9 +268,10 @@
     </profile>
     <profile>
       <id>maven-release</id>
-      <modules>
+      <modules />
+      <!--modules>
         <module>docs</module>
-      </modules>
+      </modules-->
       <build>
         <plugins>
           <plugin>
