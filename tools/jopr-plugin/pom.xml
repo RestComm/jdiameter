@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.mobicents</groupId>
     <artifactId>mobicents-parent</artifactId>
-    <version>2.2-SNAPSHOT</version>
+    <version>2.2</version>
   </parent>
 
   <groupId>org.mobicents.servers.diameter.tools</groupId>
@@ -275,8 +275,11 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-release-plugin</artifactId>
             <configuration>
+              <remoteTagging>true</remoteTagging>
               <autoVersionSubmodules>true</autoVersionSubmodules>
+              <resume>false</resume>
               <tagBase>https://mobicents.googlecode.com/svn/tags/servers/diameter/tools/jopr-plugin</tagBase>
+              <preparationGoals>clean install</preparationGoals>
             </configuration>
           </plugin>
         </plugins>
