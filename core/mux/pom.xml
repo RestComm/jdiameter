@@ -53,15 +53,15 @@
 		</profile>
 		<profile>
 			<id>jboss4</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<modules>
 				<module>sar-jboss-4</module>
 			</modules>
 		</profile>
 		<profile>
 			<id>jboss5</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<modules>
 				<module>sar-jboss-5</module>
 			</modules>
