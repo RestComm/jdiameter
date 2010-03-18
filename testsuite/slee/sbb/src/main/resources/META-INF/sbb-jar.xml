@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sbb-jar
+	PUBLIC "-//Sun Microsystems, Inc.//DTD JAIN SLEE SBB 1.0//EN"
+	"http://java.sun.com/dtd/slee-sbb-jar_1_0.dtd">
+
 <sbb-jar>
   <sbb>
     <description/>
@@ -51,7 +55,6 @@
         <event-type-name>net.java.slee.resource.diameter.base.events.AccountingRequest</event-type-name>
         <event-type-vendor>java.net</event-type-vendor>
         <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.AccountingRequest</event-class-name>
       </event-type-ref>
       <initial-event-select variable="ActivityContext"/>
     </event>
@@ -62,7 +65,6 @@
         <event-type-name>net.java.slee.resource.diameter.base.events.CapabilitiesExchangeRequest</event-type-name>
         <event-type-vendor>java.net</event-type-vendor>
         <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.CapabilitiesExchangeRequest</event-class-name>
       </event-type-ref>
       <initial-event-select variable="ActivityContext"/>
     </event>
@@ -73,7 +75,6 @@
         <event-type-name>net.java.slee.resource.diameter.base.events.DeviceWatchdogRequest</event-type-name>
         <event-type-vendor>java.net</event-type-vendor>
         <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.DeviceWatchdogRequest</event-class-name>
       </event-type-ref>
       <initial-event-select variable="ActivityContext"/>
     </event>
@@ -84,7 +85,6 @@
         <event-type-name>net.java.slee.resource.diameter.base.events.DisconnectPeerRequest</event-type-name>
         <event-type-vendor>java.net</event-type-vendor>
         <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.DisconnectPeerRequest</event-class-name>
       </event-type-ref>
       <initial-event-select variable="ActivityContext"/>
     </event>
@@ -95,7 +95,6 @@
         <event-type-name>net.java.slee.resource.diameter.base.events.ReAuthRequest</event-type-name>
         <event-type-vendor>java.net</event-type-vendor>
         <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.ReAuthRequest</event-class-name>
       </event-type-ref>
       <initial-event-select variable="ActivityContext"/>
     </event>
@@ -106,7 +105,6 @@
         <event-type-name>net.java.slee.resource.diameter.base.events.SessionTerminationRequest</event-type-name>
         <event-type-vendor>java.net</event-type-vendor>
         <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.SessionTerminationRequest</event-class-name>
       </event-type-ref>
       <initial-event-select variable="ActivityContext"/>
     </event>
@@ -120,7 +118,6 @@
         <event-type-name>net.java.slee.resource.diameter.base.events.AbortSessionAnswer</event-type-name>
         <event-type-vendor>java.net</event-type-vendor>
         <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.AbortSessionAnswer</event-class-name>
       </event-type-ref>
       <initial-event-select variable="ActivityContext"/>
     </event>
@@ -131,7 +128,6 @@
         <event-type-name>net.java.slee.resource.diameter.base.events.AccountingAnswer</event-type-name>
         <event-type-vendor>java.net</event-type-vendor>
         <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.AccountingAnswer</event-class-name>
       </event-type-ref>
       <initial-event-select variable="ActivityContext"/>
     </event>
@@ -142,7 +138,6 @@
         <event-type-name>net.java.slee.resource.diameter.base.events.CapabilitiesExchangeAnswer</event-type-name>
         <event-type-vendor>java.net</event-type-vendor>
         <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.CapabilitiesExchangeAnswer</event-class-name>
       </event-type-ref>
       <initial-event-select variable="ActivityContext"/>
     </event>
@@ -153,7 +148,6 @@
         <event-type-name>net.java.slee.resource.diameter.base.events.DeviceWatchdogAnswer</event-type-name>
         <event-type-vendor>java.net</event-type-vendor>
         <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.DeviceWatchdogAnswer</event-class-name>
       </event-type-ref>
       <initial-event-select variable="ActivityContext"/>
     </event>
@@ -164,7 +158,6 @@
         <event-type-name>net.java.slee.resource.diameter.base.events.DisconnectPeerAnswer</event-type-name>
         <event-type-vendor>java.net</event-type-vendor>
         <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.DisconnectPeerAnswer</event-class-name>
       </event-type-ref>
       <initial-event-select variable="ActivityContext"/>
     </event>
@@ -175,7 +168,6 @@
         <event-type-name>net.java.slee.resource.diameter.base.events.ReAuthAnswer</event-type-name>
         <event-type-vendor>java.net</event-type-vendor>
         <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.ReAuthAnswer</event-class-name>
       </event-type-ref>
       <initial-event-select variable="ActivityContext"/>
     </event>
@@ -186,7 +178,6 @@
         <event-type-name>net.java.slee.resource.diameter.base.events.SessionTerminationAnswer</event-type-name>
         <event-type-vendor>java.net</event-type-vendor>
         <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.SessionTerminationAnswer</event-class-name>
       </event-type-ref>
       <initial-event-select variable="ActivityContext"/>
     </event>
@@ -197,7 +188,6 @@
         <event-type-name>net.java.slee.resource.diameter.base.events.ErrorAnswer</event-type-name>
         <event-type-vendor>java.net</event-type-vendor>
         <event-type-version>0.8</event-type-version>
-        <event-class-name>net.java.slee.resource.diameter.base.events.ErrorAnswer</event-class-name>
       </event-type-ref>
       <initial-event-select variable="ActivityContext"/>
     </event>
@@ -207,14 +197,15 @@
     
     <resource-adaptor-type-binding>
       <resource-adaptor-type-ref>
-        <resource-adaptor-type-name>Diameter Base Resource Adaptor Type</resource-adaptor-type-name>
+        <resource-adaptor-type-name>Diameter Base</resource-adaptor-type-name>
         <resource-adaptor-type-vendor>java.net</resource-adaptor-type-vendor>
         <resource-adaptor-type-version>0.8.1</resource-adaptor-type-version>
       </resource-adaptor-type-ref>
-      <activity-context-interface-factory-name>slee/resources/JDiameterBaseResourceAdaptor/java.net/0.8.1/JDiameterBase/factoryprovider</activity-context-interface-factory-name>
-      
+
+      <activity-context-interface-factory-name>slee/resources/diameter-base-ra/acif</activity-context-interface-factory-name>
+
       <resource-adaptor-entity-binding>
-        <resource-adaptor-object-name>slee/resources/diameter-base-ra-acif</resource-adaptor-object-name>
+        <resource-adaptor-object-name>slee/resources/diameter-base-ra/provider</resource-adaptor-object-name>
         <resource-adaptor-entity-link>DiameterBaseResourceAdaptor</resource-adaptor-entity-link>
       </resource-adaptor-entity-binding>
     </resource-adaptor-type-binding>
