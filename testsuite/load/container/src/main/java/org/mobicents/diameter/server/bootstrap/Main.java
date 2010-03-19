@@ -86,9 +86,10 @@ public class Main {
 
         int c;
         String arg;
-        LongOpt[] longopts = new LongOpt[2];
-        longopts[0] = new LongOpt("help", LongOpt.NO_ARGUMENT, null, 'h');
-        longopts[1] = new LongOpt("host", LongOpt.REQUIRED_ARGUMENT, null, 'b');
+        LongOpt[] longopts =
+        { new LongOpt("help", LongOpt.NO_ARGUMENT, null, 'h'),
+          new LongOpt("host", LongOpt.REQUIRED_ARGUMENT, null, 'b')
+        };
 
         Getopt g = new Getopt("MMS", args, "-:b:h", longopts);
         g.setOpterr(false); // We'll do our own error handling
