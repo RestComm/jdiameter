@@ -1,0 +1,44 @@
+<assembly>
+	<id>pojo</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<files>
+		<file>
+			<source>src/main/config/log4j.xml</source>
+			<destName>conf/log4j.xml</destName>
+		</file>
+		<file>
+			<source>src/main/config/bootstrap-beans.xml</source>
+			<destName>conf/bootstrap-beans.xml</destName>
+		</file>
+		<file>
+			<source>src/main/config/diameter-beans.xml</source>
+			<destName>deploy/diameter-beans.xml</destName>
+		</file>
+
+
+	</files>
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory>/lib</outputDirectory>
+			<unpack>false</unpack>
+			<scope>runtime</scope>
+			<includes>
+				<include>org.mobicents.servers.diameter.testsuite:testsuite-load</include>
+			</includes>
+			<!-- this does not work, it sucks... -->
+			<!-- 
+			<excludes>
+				<exclude>xml-apis:xml-apis</exclude>
+			</excludes>
+			 -->
+		</dependencySet>
+	</dependencySets>
+	<componentDescriptors>
+		<componentDescriptor>
+			src/main/assembly/common.xml
+		</componentDescriptor>
+	</componentDescriptors>
+</assembly>

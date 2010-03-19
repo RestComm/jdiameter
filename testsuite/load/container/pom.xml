@@ -1,0 +1,136 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.mobicents.servers.diameter.testsuite</groupId>
+		<artifactId>testsuite-load-parent</artifactId>
+		<version>1.2.1.GA-SNAPSHOT</version>
+	</parent>
+
+	<groupId>org.mobicents.servers.diameter.testsuite</groupId>
+	<artifactId>testsuite-load-container</artifactId>
+
+	<name>Mobicents :: Diameter Testsuite :: ${pom.artifactId}</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.mobicents.servers.diameter</groupId>
+			<artifactId>jdiameter-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.mobicents.servers.diameter</groupId>
+			<artifactId>jdiameter-impl</artifactId>
+		</dependency>
+		<dependency>
+			<artifactId>picocontainer</artifactId>
+			<groupId>picocontainer</groupId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.mobicents.servers.diameter.testsuite</groupId>
+			<artifactId>testsuite-load</artifactId>
+			<version>${pom.version}</version>
+		</dependency>
+		<!-- this sucks xml-apis 1.0b2.... -->
+		<dependency>
+			<groupId>urbanophile</groupId>
+			<artifactId>java-getopt</artifactId>
+		</dependency>
+		<!-- this sucks jboss 4.2.3..... -->
+		<dependency>
+			<groupId>org.mobicents.servers.diameter</groupId>
+			<artifactId>mobicents-diameter-mux-jar</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.microcontainer</groupId>
+			<artifactId>jboss-kernel</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.microcontainer</groupId>
+			<artifactId>jboss-dependency</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.microcontainer</groupId>
+			<artifactId>jboss-aop-mc-int</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.aop</groupId>
+			<artifactId>jboss-aop</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.aop</groupId>
+			<artifactId>jboss-aop-asintegration-mc</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.aop</groupId>
+			<artifactId>jboss-aop-asintegration-core</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.aop</groupId>
+			<artifactId>jboss-aop-asintegration-jmx</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jbosssx-client</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.naming</groupId>
+			<artifactId>jnp-client</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<!-- Fitler this BS.... -->
+		<dependency>
+			<groupId>xml-apis</groupId>
+			<artifactId>xml-apis</artifactId>
+			<version>1.0.b2</version>
+			<scope>provided</scope>
+		</dependency>
+
+	</dependencies>
+	<build>
+		<finalName>run</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<addMavenDescriptor>false</addMavenDescriptor>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>
+							src/main/assembly/pojo.xml
+						</descriptor>
+					</descriptors>
+					<finalName>${pom.artifactId}</finalName>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>directory-inline</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
