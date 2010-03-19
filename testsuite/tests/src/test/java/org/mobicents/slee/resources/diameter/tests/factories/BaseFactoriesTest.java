@@ -466,7 +466,7 @@ public class BaseFactoriesTest {
   @Test
   public void testAvpFactoryCreateProxyInfo()
   {
-    ProxyInfoAvp piAvp1 = avpFactory.createProxyInfo( new DiameterIdentity("diameter.mobicents.org"), "INITIALIZED".getBytes() );
+    ProxyInfoAvp piAvp1 = avpFactory.createProxyInfo( new DiameterIdentity("diameter.mobicents.org"), "INITIALIZED" );
     
     Assert.assertNotNull("Created Proxy-Info AVP from objects should not be null.", piAvp1);
 

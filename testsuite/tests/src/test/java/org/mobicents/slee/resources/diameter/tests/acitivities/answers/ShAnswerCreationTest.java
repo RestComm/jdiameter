@@ -10,8 +10,8 @@ package org.mobicents.slee.resources.diameter.tests.acitivities.answers;
 import java.util.ArrayList;
 
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
-import net.java.slee.resource.diameter.sh.client.events.PushNotificationRequest;
-import net.java.slee.resource.diameter.sh.server.events.UserDataRequest;
+import net.java.slee.resource.diameter.sh.events.PushNotificationRequest;
+import net.java.slee.resource.diameter.sh.events.UserDataRequest;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.IllegalDiameterStateException;
@@ -51,7 +51,7 @@ import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
-import org.mobicents.slee.resource.diameter.sh.client.DiameterShAvpFactoryImpl;
+import org.mobicents.slee.resource.diameter.sh.DiameterShAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.client.ShClientMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.client.ShClientSubscriptionActivityImpl;
 import org.mobicents.slee.resource.diameter.sh.server.ShServerActivityImpl;
@@ -105,8 +105,7 @@ public class ShAnswerCreationTest {
 		PushNotificationRequest pnr = factory.createPushNotificationRequest();
 		ArrayList<DiameterMessage> list = new ArrayList<DiameterMessage>();
 		list.add(pnr);
-		ShClientSubscriptionActivityImpl activity = new ShClientSubscriptionActivityImpl(msgFactory, new ShClientMessageFactoryImpl(session.getSessions().get(0), stack), diameterAvpFactory,
-				new DiameterShAvpFactoryImpl(diameterAvpFactory), session, 5000, null, null, null);
+		ShClientSubscriptionActivityImpl activity = new ShClientSubscriptionActivityImpl(new ShClientMessageFactoryImpl(session.getSessions().get(0), stack), new DiameterShAvpFactoryImpl(diameterAvpFactory), session, null, null, null);
 
 		DiameterActivityAnswerCreationHelper.testAnswerCreation(activity, "stateMessages", list);
 
@@ -118,15 +117,15 @@ public class ShAnswerCreationTest {
 		DiameterMessageFactoryImpl msgFactory = new DiameterMessageFactoryImpl(session.getSessions().get(0), stack, null, null);
 		ShClientMessageFactoryImpl factory = new ShClientMessageFactoryImpl(session.getSessions().get(0), stack);
 		UserDataRequest udr = factory.createUserDataRequest();
-		net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest pur = factory.createProfileUpdateRequest();
-		net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest snr = factory.createSubscribeNotificationsRequest();
+		net.java.slee.resource.diameter.sh.events.ProfileUpdateRequest pur = factory.createProfileUpdateRequest();
+		net.java.slee.resource.diameter.sh.events.SubscribeNotificationsRequest snr = factory.createSubscribeNotificationsRequest();
 		ArrayList<DiameterMessage> list = new ArrayList<DiameterMessage>();
 		list.add(udr);
 		list.add(pur);
 		list.add(snr);
 
 		ShServerActivityImpl activity = new ShServerActivityImpl(new ShServerMessageFactoryImpl(msgFactory, session.getSessions().get(0), stack, diameterShAvpFactory), diameterShAvpFactory, session,
-				5000, null, null, null);
+				null, null, null);
 
 		DiameterActivityAnswerCreationHelper.testAnswerCreation(activity, "stateMessages", list);
 
@@ -138,8 +137,8 @@ public class ShAnswerCreationTest {
 		DiameterMessageFactoryImpl msgFactory = new DiameterMessageFactoryImpl(session.getSessions().get(0), stack, null, null);
 		ShClientMessageFactoryImpl factory = new ShClientMessageFactoryImpl(session.getSessions().get(0), stack);
 		UserDataRequest udr = factory.createUserDataRequest();
-		net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest pur = factory.createProfileUpdateRequest();
-		net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest snr = factory.createSubscribeNotificationsRequest();
+		net.java.slee.resource.diameter.sh.events.ProfileUpdateRequest pur = factory.createProfileUpdateRequest();
+		net.java.slee.resource.diameter.sh.events.SubscribeNotificationsRequest snr = factory.createSubscribeNotificationsRequest();
 
 		ArrayList<DiameterMessage> list = new ArrayList<DiameterMessage>();
 		list.add(udr);
@@ -147,7 +146,7 @@ public class ShAnswerCreationTest {
 		list.add(snr);
 
 		ShServerSubscriptionActivityImpl activity = new ShServerSubscriptionActivityImpl(new ShServerMessageFactoryImpl(msgFactory, session.getSessions().get(0), stack, diameterShAvpFactory),
-				diameterShAvpFactory, session, 5000, null, null, null);
+				diameterShAvpFactory, session, null, null, null);
 
 		DiameterActivityAnswerCreationHelper.testAnswerCreation(activity, "stateMessages", list);
 

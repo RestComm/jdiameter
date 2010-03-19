@@ -79,6 +79,7 @@ import net.java.slee.resource.diameter.ro.events.avp.WlanInformation;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.ApplicationId;
+import org.jdiameter.api.Message;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.SessionFactory;
@@ -174,7 +175,7 @@ public class RfFactoriesTest implements BaseSessionCreationListener {
       acr.setAccountingRecordNumber( 5L );
       
       session = ((ISessionFactory) sf).getNewAppSession(null, null, ServerAccSession.class, ((DiameterMessageImpl)acr).getGenericData());
-      rfServerSession = new RfServerSessionImpl((DiameterMessageFactoryImpl)rfMessageFactory.getBaseMessageFactory(), (DiameterAvpFactoryImpl)rfAvpFactory.getBaseFactory(), session, 5000L, null, null, null, stack);
+      rfServerSession = new RfServerSessionImpl((DiameterMessageFactoryImpl)rfMessageFactory.getBaseMessageFactory(), (DiameterAvpFactoryImpl)rfAvpFactory.getBaseFactory(), session, null, null, null, stack);
       
       ((RfServerSessionImpl)rfServerSession).fetchSessionData( acr, true );
     }
@@ -1545,7 +1546,7 @@ public class RfFactoriesTest implements BaseSessionCreationListener {
     }
   }
 
-  public void fireEvent( String sessionId, String name, Request request, Answer answer )
+  public void fireEvent( String sessionId, Message message )
   {
     // TODO Auto-generated method stub
     

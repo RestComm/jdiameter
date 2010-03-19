@@ -22,7 +22,7 @@ import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
 import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
 import net.java.slee.resource.diameter.ro.RoAvpFactory;
 import net.java.slee.resource.diameter.ro.RoMessageFactory;
-import net.java.slee.resource.diameter.ro.RoServerSession;
+import net.java.slee.resource.diameter.ro.RoServerSessionActivity;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.IllegalDiameterStateException;
@@ -55,7 +55,7 @@ import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.ro.RoAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.ro.RoMessageFactoryImpl;
-import org.mobicents.slee.resource.diameter.ro.RoServerSessionImpl;
+import org.mobicents.slee.resource.diameter.ro.RoServerSessionActivityImpl;
 
 /**
  * 
@@ -117,15 +117,15 @@ public class RoFactoriesTest implements ICCAMessageFactory, ServerCCASessionList
     }
   }
   
-  private RoServerSession roServerSession = null;
+  private RoServerSessionActivity roServerSession = null;
   
   public RoFactoriesTest()
   {
     try
     {
       session = new ServerCCASessionImpl(null, this, stack.getSessionFactory(), this);
-      roServerSession = new RoServerSessionImpl((CreditControlMessageFactory) roMessageFactory, roAvpFactory, session, 5000, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), null, stack);
-      ((RoServerSessionImpl)roServerSession).fetchCurrentState(roMessageFactory.createRoCreditControlRequest());
+      roServerSession = new RoServerSessionActivityImpl((CreditControlMessageFactory) roMessageFactory, roAvpFactory, session, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), null, stack);
+      ((RoServerSessionActivityImpl)roServerSession).fetchCurrentState(roMessageFactory.createRoCreditControlRequest());
     }
     catch ( IllegalDiameterStateException e ) {
       e.printStackTrace();

@@ -7,12 +7,10 @@
     <version>1.2.1.GA-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.mobicents.servers.diameter.testsuite</groupId>
   <artifactId>testsuite-local</artifactId>
 
   <name>Mobicents :: Diameter Testsuite :: ${pom.artifactId}</name>
 
-  
   <dependencies>
     <dependency>
       <groupId>org.mobicents.servers.diameter.resources</groupId>

@@ -15,16 +15,16 @@ import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import net.java.slee.resource.diameter.sh.client.events.avp.DataReferenceType;
-import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
-import net.java.slee.resource.diameter.sh.client.events.avp.SubsReqType;
-import net.java.slee.resource.diameter.sh.client.events.avp.SupportedApplicationsAvp;
-import net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp;
-import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
-import net.java.slee.resource.diameter.sh.server.events.ProfileUpdateRequest;
-import net.java.slee.resource.diameter.sh.server.events.PushNotificationAnswer;
-import net.java.slee.resource.diameter.sh.server.events.SubscribeNotificationsRequest;
-import net.java.slee.resource.diameter.sh.server.events.UserDataRequest;
+import net.java.slee.resource.diameter.sh.events.avp.DataReferenceType;
+import net.java.slee.resource.diameter.sh.events.avp.DiameterShAvpCodes;
+import net.java.slee.resource.diameter.sh.events.avp.SubsReqType;
+import net.java.slee.resource.diameter.sh.events.avp.SupportedApplicationsAvp;
+import net.java.slee.resource.diameter.sh.events.avp.SupportedFeaturesAvp;
+import net.java.slee.resource.diameter.sh.events.avp.UserIdentityAvp;
+import net.java.slee.resource.diameter.sh.events.ProfileUpdateRequest;
+import net.java.slee.resource.diameter.sh.events.PushNotificationAnswer;
+import net.java.slee.resource.diameter.sh.events.SubscribeNotificationsRequest;
+import net.java.slee.resource.diameter.sh.events.UserDataRequest;
 
 import org.jdiameter.api.Stack;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
@@ -33,9 +33,9 @@ import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
-import org.mobicents.slee.resource.diameter.sh.client.DiameterShAvpFactoryImpl;
+import org.mobicents.slee.resource.diameter.sh.DiameterShAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.client.ShClientMessageFactoryImpl;
-import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvpImpl;
+import org.mobicents.slee.resource.diameter.sh.events.avp.UserIdentityAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.server.ShServerMessageFactoryImpl;
 
 /**

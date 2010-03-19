@@ -42,7 +42,6 @@ import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.cca.CreditControlAVPFactoryImpl;
 import org.mobicents.slee.resource.diameter.cca.CreditControlMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.cca.CreditControlServerSessionImpl;
-import org.mobicents.slee.resource.diameter.sh.client.DiameterShAvpFactoryImpl;
 import org.mobicents.slee.resources.diameter.tests.factories.ShClientFactoriesTest;
 import org.mobicents.slee.resources.diameter.tests.factories.ShClientFactoriesTest.MyConfiguration;
 
@@ -88,7 +87,7 @@ public class CCAAnswerCreationTest {
 		CreditControlMessageFactoryImpl ccaMessageFactory = new CreditControlMessageFactoryImpl(baseMessageFactory,session.getSessions().get(0),stack,ccaAvpFactory);
 		ArrayList<DiameterMessage> list = new ArrayList<DiameterMessage>();
 		list.add(ccaMessageFactory.createCreditControlRequest());
-		CreditControlServerSessionImpl activity = new CreditControlServerSessionImpl(ccaMessageFactory,ccaAvpFactory,session,5000,null,null,null);
+		CreditControlServerSessionImpl activity = new CreditControlServerSessionImpl(ccaMessageFactory,ccaAvpFactory,session,null,null,null);
 		DiameterActivityAnswerCreationHelper.testAnswerCreation(activity, "lastRequest", list);
 	}
 }

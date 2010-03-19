@@ -31,7 +31,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
-import org.mobicents.slee.resource.diameter.sh.client.DiameterShAvpFactoryImpl;
+import org.mobicents.slee.resource.diameter.sh.DiameterShAvpFactoryImpl;
 
 /**
  * Start time:11:09:44 2009-05-25<br>

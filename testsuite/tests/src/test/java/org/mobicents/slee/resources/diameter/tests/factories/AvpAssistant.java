@@ -115,9 +115,9 @@ import net.java.slee.resource.diameter.ro.events.avp.TimeStamps;
 import net.java.slee.resource.diameter.ro.events.avp.TrunkGroupId;
 import net.java.slee.resource.diameter.ro.events.avp.WlanInformation;
 import net.java.slee.resource.diameter.ro.events.avp.WlanRadioContainer;
-import net.java.slee.resource.diameter.sh.client.events.avp.DiameterShAvpCodes;
-import net.java.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvp;
-import net.java.slee.resource.diameter.sh.client.events.avp.UserIdentityAvp;
+import net.java.slee.resource.diameter.sh.events.avp.DiameterShAvpCodes;
+import net.java.slee.resource.diameter.sh.events.avp.SupportedFeaturesAvp;
+import net.java.slee.resource.diameter.sh.events.avp.UserIdentityAvp;
 
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Avp;
@@ -183,8 +183,8 @@ import org.mobicents.slee.resource.diameter.ro.events.avp.TimeStampsImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.TrunkGroupIdImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.WlanInformationImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.WlanRadioContainerImpl;
-import org.mobicents.slee.resource.diameter.sh.client.events.avp.SupportedFeaturesAvpImpl;
-import org.mobicents.slee.resource.diameter.sh.client.events.avp.UserIdentityAvpImpl;
+import org.mobicents.slee.resource.diameter.sh.events.avp.SupportedFeaturesAvpImpl;
+import org.mobicents.slee.resource.diameter.sh.events.avp.UserIdentityAvpImpl;
 
 /**
  *
