@@ -320,6 +320,9 @@ public class AvpAssistant {
     typeValues.put( SupportedFeaturesAvp.class, new SupportedFeaturesAvpImpl(DiameterShAvpCodes.SUPPORTED_FEATURES, DiameterShAvpCodes.SH_VENDOR_ID, 0, 1, dummyAvpBytes) );
     typeValues.put( SupportedFeaturesAvp[].class, new SupportedFeaturesAvpImpl[]{new SupportedFeaturesAvpImpl(DiameterShAvpCodes.SUPPORTED_FEATURES, DiameterShAvpCodes.SH_VENDOR_ID, 0, 1, dummyAvpBytes)});
 
+    typeValues.put( net.java.slee.resource.diameter.cxdx.events.avp.SupportedFeaturesAvp.class, new org.mobicents.slee.resource.diameter.cxdx.events.avp.SupportedFeaturesAvpImpl(DiameterShAvpCodes.SUPPORTED_FEATURES, DiameterShAvpCodes.SH_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.cxdx.events.avp.SupportedFeaturesAvp[].class, new org.mobicents.slee.resource.diameter.cxdx.events.avp.SupportedFeaturesAvpImpl[]{new org.mobicents.slee.resource.diameter.cxdx.events.avp.SupportedFeaturesAvpImpl(DiameterShAvpCodes.SUPPORTED_FEATURES, DiameterShAvpCodes.SH_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
     typeValues.put( ProxyInfoAvp.class, new ProxyInfoAvpImpl(Avp.PROXY_INFO, 0L, 0, 1, dummyAvpBytes) );
     typeValues.put( ProxyInfoAvp[].class, new ProxyInfoAvpImpl[]{new ProxyInfoAvpImpl(Avp.PROXY_INFO, 0L, 0, 1, dummyAvpBytes)});
 
