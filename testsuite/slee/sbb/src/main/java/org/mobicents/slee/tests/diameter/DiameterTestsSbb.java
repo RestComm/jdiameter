@@ -89,7 +89,9 @@ public abstract class DiameterTestsSbb implements javax.slee.Sbb {
     {
       myEnv = (Context) new InitialContext().lookup( "java:comp/env" );
 
-      provider = (DiameterProvider) myEnv.lookup("slee/resources/diameter-base-ra-acif");
+      provider = (DiameterProvider) myEnv.lookup("slee/resources/diameter-base-ra/provider");
+      
+      //acif = (DiameterActivityContextInterfaceFactory) myEnv.lookup("slee/resources/diameter-base-ra/acif");
       logger.info( "Got Provider:" + provider );
 
       messageFactory = provider.getDiameterMessageFactory();
@@ -498,7 +500,7 @@ public abstract class DiameterTestsSbb implements javax.slee.Sbb {
           
           logger.info( "Sending Accounting-Answer [" + ans + "]" );
 
-          assa.sendAccountAnswer( ans );
+          assa.sendAccountingAnswer( ans );
 
           logger.info( "Accounting-Answer sent." );
         }
