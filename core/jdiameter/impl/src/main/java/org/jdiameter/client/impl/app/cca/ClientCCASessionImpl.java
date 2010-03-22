@@ -1065,19 +1065,6 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 					handleEvent(new Event(Event.Type.RECEIVED_RAR, factory.createReAuthRequest(request), null));
 					break;
 
-				// FIXME: All other go straight to listner, they dont change state
-				// machine
-				//this shall be removed on 1.2.00
-				case SessionTermRequest.code:
-					listener.doSessionTerminationRequest(session, new SessionTermRequestImpl(request));
-					break;
-				case AbortSessionAnswer.code:
-					listener.doAbortSessionRequest(session, new AbortSessionRequestImpl(request));
-					break;
-				case AccountAnswer.code:
-					listener.doAccountingRequest(session, new AccountRequestImpl(request));
-					break;
-
 				default:
 					listener.doOtherEvent(session, new AppRequestEventImpl(request), null);
 					break;
@@ -1105,19 +1092,6 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 			        JCreditControlAnswer _answer=factory.createCreditControlAnswer(answer);
 			        extractFHAVPs(null,_answer );
 			        handleEvent(new Event(false, null, _answer));
-			        break;
-
-			        //All other go straight to listner, they dont change state machine
-			        //Suprisingly there is no factory.... ech
-			        //FIXME: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-			      case SessionTermAnswer.code:
-			        listener.doSessionTerminationAnswer(session,null ,new SessionTermAnswerImpl(answer));
-			        break;
-			      case AbortSessionAnswer.code:
-			        listener.doAbortSessionAnswer(session,null, new AbortSessionAnswerImpl(answer));
-			        break;
-			      case AccountAnswer.code:
-			        listener.doAccountingAnswer(session,null, new AccountAnswerImpl(answer));
 			        break;
 
 			      default:

@@ -1,6 +1,6 @@
 package org.mobicents.tests.diameter.cca;
 
-import java.io.File;
+
 import java.io.InputStream;
 import java.util.concurrent.ScheduledFuture;
 
@@ -18,18 +18,12 @@ import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
-import org.jdiameter.api.acc.events.AccountAnswer;
-import org.jdiameter.api.acc.events.AccountRequest;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
-import org.jdiameter.api.auth.events.AbortSessionAnswer;
-import org.jdiameter.api.auth.events.AbortSessionRequest;
 import org.jdiameter.api.auth.events.ReAuthAnswer;
 import org.jdiameter.api.auth.events.ReAuthRequest;
-import org.jdiameter.api.auth.events.SessionTermAnswer;
-import org.jdiameter.api.auth.events.SessionTermRequest;
 import org.jdiameter.api.cca.ClientCCASession;
 import org.jdiameter.api.cca.ClientCCASessionListener;
 import org.jdiameter.api.cca.ServerCCASession;
@@ -448,31 +442,7 @@ public class CCR extends AbstractStackRunner implements NetworkReqListener, Even
 
 	}
 
-	//
 
-	public void doAbortSessionAnswer(ClientCCASession arg0, AbortSessionRequest arg1, AbortSessionAnswer arg2) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void doAbortSessionRequest(ClientCCASession arg0, AbortSessionRequest arg1) throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void doAccountingAnswer(ClientCCASession arg0, AccountRequest arg1, AccountAnswer arg2) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void doAccountingRequest(ClientCCASession arg0, AccountRequest arg1) throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
-		// TODO Auto-generated method stub
-
-	}
 
 	public void doCreditControlAnswer(ClientCCASession arg0, JCreditControlRequest arg1, JCreditControlAnswer arg2) throws InternalException,
 			IllegalDiameterStateException, RouteException, OverloadException {
@@ -492,55 +462,9 @@ public class CCR extends AbstractStackRunner implements NetworkReqListener, Even
 
 	}
 
-	public void doSessionTerminationAnswer(ClientCCASession arg0, SessionTermRequest arg1, SessionTermAnswer arg2) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void doSessionTerminationRequest(ClientCCASession arg0, SessionTermRequest arg1) throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void doAbortSessionAnswer(ServerCCASession arg0, AbortSessionRequest arg1, AbortSessionAnswer arg2) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void doAbortSessionRequest(ServerCCASession arg0, AbortSessionRequest arg1) throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void doAccountingAnswer(ServerCCASession arg0, AccountRequest arg1, AccountAnswer arg2) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void doAccountingRequest(ServerCCASession arg0, AccountRequest arg1) throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
-		// TODO Auto-generated method stub
-
-	}
+	
 
 	public void doReAuthAnswer(ServerCCASession arg0, ReAuthRequest arg1, ReAuthAnswer arg2) throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void doSessionTerminationAnswer(ServerCCASession arg0, SessionTermRequest arg1, SessionTermAnswer arg2) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void doSessionTerminationRequest(ServerCCASession arg0, SessionTermRequest arg1) throws InternalException, IllegalDiameterStateException,
 			RouteException, OverloadException {
 		// TODO Auto-generated method stub
 
