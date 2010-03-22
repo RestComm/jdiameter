@@ -78,6 +78,7 @@ public class DiameterActivityAnswerCreationHelper {
 					Class[] parameters=createAnswerMethod.getParameterTypes();
 					if(parameters.length==0)
 					{
+					  args = new Object[]{};
 						//parms are null
 					}else
 					{
@@ -107,6 +108,7 @@ public class DiameterActivityAnswerCreationHelper {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.out.println("))))))))))))))))))))))))))))))))))))))))))))))))))");
 			fail(e.getMessage());
 		}
 	}

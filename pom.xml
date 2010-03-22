@@ -7,9 +7,8 @@
 
   <parent>
     <groupId>org.mobicents</groupId>
-    <artifactId>mobicents</artifactId>
-    <version>1.16</version>
-    <relativePath>../../parent/pom.xml</relativePath>
+    <artifactId>mobicents-parent</artifactId>
+    <version>2.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.mobicents.servers.diameter</groupId>
@@ -20,20 +19,20 @@
 
   <modules>
     <module>core</module>
-    <module>resources/base</module>
+    <!--module>resources/base</module>
     <module>resources/cca</module>
     <module>resources/sh-common</module>
     <module>resources/sh-client</module>
     <module>resources/sh-server</module>
     <module>resources/ro</module>
     <module>resources/rf</module>
-    <module>resources/cx-dx</module>
+    <module>resources/cx-dx</module-->
   </modules>
 
   <properties>
     <!-- DIAMETER SERVER CONFIGURATION -->
     <!-- OTHER MOBICENTS COMPONENTS VERSIONS -->
-    <mobicents.servers.jainslee.version>1.2.7.GA</mobicents.servers.jainslee.version>
+    <mobicents.servers.jainslee.version>2.0.0.GA</mobicents.servers.jainslee.version>
     <mobicents.tools.mavenplugin.du.version>1.0.0.BETA2</mobicents.tools.mavenplugin.du.version>
     <mobicents.tools.mavenplugin.eclipse.version>1.0.0.BETA2</mobicents.tools.mavenplugin.eclipse.version>
   </properties>  

@@ -103,6 +103,7 @@
               <excludes>
                 <exclude>**/*$*</exclude>
                 <exclude>**/TestingFramework.java</exclude>
+                <exclude>**/TestingFrameworkValidator.java</exclude>
               </excludes>
             </configuration>
           </plugin>

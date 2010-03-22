@@ -61,11 +61,8 @@ import org.mobicents.slee.resources.diameter.tests.factories.ShClientFactoriesTe
 import org.mobicents.slee.resources.diameter.tests.factories.ShClientFactoriesTest.MyConfiguration;
 
 /**
- * Start time:22:26:45 2009-07-07<br>
- * Project: diameter-auto<br>
  * 
- * @author <a href="mailto:baranowb@gmail.com">baranowb - Bartosz Baranowski
- *         </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class ShAnswerCreationTest {
@@ -89,12 +86,12 @@ public class ShAnswerCreationTest {
 		try {
 			stack.init(new MyConfiguration());
 			AvpDictionary.INSTANCE.parseDictionary(ShClientFactoriesTest.class.getClassLoader().getResourceAsStream("dictionary.xml"));
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new RuntimeException("Failed to initialize the stack.");
 		}
 
 		DiameterMessageFactoryImpl baseMessageFactory = new DiameterMessageFactoryImpl(stack);
-
 	}
 
 	@Test
@@ -108,7 +105,6 @@ public class ShAnswerCreationTest {
 		ShClientSubscriptionActivityImpl activity = new ShClientSubscriptionActivityImpl(new ShClientMessageFactoryImpl(session.getSessions().get(0), stack), new DiameterShAvpFactoryImpl(diameterAvpFactory), session, null, null, null);
 
 		DiameterActivityAnswerCreationHelper.testAnswerCreation(activity, "stateMessages", list);
-
 	}
 
 	@Test
@@ -124,11 +120,9 @@ public class ShAnswerCreationTest {
 		list.add(pur);
 		list.add(snr);
 
-		ShServerActivityImpl activity = new ShServerActivityImpl(new ShServerMessageFactoryImpl(msgFactory, session.getSessions().get(0), stack, diameterShAvpFactory), diameterShAvpFactory, session,
-				null, null, null);
+		ShServerActivityImpl activity = new ShServerActivityImpl(new ShServerMessageFactoryImpl(msgFactory, session.getSessions().get(0), stack, diameterShAvpFactory), diameterShAvpFactory, session, null, null, null);
 
 		DiameterActivityAnswerCreationHelper.testAnswerCreation(activity, "stateMessages", list);
-
 	}
 
 	@Test
