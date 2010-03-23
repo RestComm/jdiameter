@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<deploy-config>
-  <ra-entity resource-adaptor-id="JDiameterShServerResourceAdaptor#java.net#0.8.1" entity-name="ShServer">
-    <properties file="" />
-    <ra-link name="ShServer" />
-  </ra-entity>
-</deploy-config>
