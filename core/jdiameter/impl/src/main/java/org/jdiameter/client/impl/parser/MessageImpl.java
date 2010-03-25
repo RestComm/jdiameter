@@ -54,6 +54,10 @@ public class MessageImpl implements IMessage {
   transient TimerTask timerTask;
   transient IEventListener listener;
 
+  // Cached result for getApplicationIdAvps() method. It is called extensively and takes some time.
+  // Potential place for dirt, but Application IDs don't change during message life time.
+  transient Set<ApplicationId> applicationIds;
+
   /**
    * Create empty message
    * 
@@ -246,6 +250,10 @@ public class MessageImpl implements IMessage {
   }
 
   public Set<ApplicationId> getApplicationIdAvps() {
+    if (this.applicationIds != null) {
+      return this.applicationIds;
+    }
+
     Set<ApplicationId> rc = new LinkedHashSet<ApplicationId>();
     try {
       AvpSet authAppId = avpSet.getAvps(Avp.AUTH_APPLICATION_ID);
@@ -283,7 +291,8 @@ public class MessageImpl implements IMessage {
       return new LinkedHashSet<ApplicationId>();
     }
 
-    return rc;
+    this.applicationIds = rc;
+    return this.applicationIds;
   }
 
   public long getHopByHopIdentifier() {
