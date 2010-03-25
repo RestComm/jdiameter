@@ -62,6 +62,9 @@ public class TCPClientConnection implements IConnection {
   protected Lock lock = new ReentrantLock();
   protected ConcurrentLinkedQueue<IConnectionListener> listeners = new ConcurrentLinkedQueue<IConnectionListener>();
 
+  // Cached value for connection key
+  private String cachedKey = null;
+
   protected TCPClientConnection(IConcurrentFactory concurrentFactory, IMessageParser parser) {
     this.createdTime = System.currentTimeMillis();
     this.parser = parser;
@@ -206,7 +209,11 @@ public class TCPClientConnection implements IConnection {
   }
 
   public String getKey() {
-    return "aaa://" + getRemoteAddress().getHostName() + ":" + getRemotePort();
+    if(this.cachedKey == null) {
+      this.cachedKey = new StringBuffer("aaa://").append(getRemoteAddress().getHostName()).append(":").append(getRemotePort()).toString();
+    }
+
+    return this.cachedKey;
   }
 
   protected void onDisconnect() throws AvpDataException {
