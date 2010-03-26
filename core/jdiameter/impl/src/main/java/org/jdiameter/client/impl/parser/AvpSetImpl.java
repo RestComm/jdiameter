@@ -17,16 +17,21 @@ import org.jdiameter.api.URI;
 import org.jdiameter.client.api.parser.DecodeException;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.List;
 
 class AvpSetImpl implements AvpSet {
 
+  private static final long serialVersionUID = 1L;
+  
     MessageParser parser;
-    CopyOnWriteArrayList<Avp> avps = new CopyOnWriteArrayList<Avp>();
+    // why copy? app should ensure only one object modifies...
+    // CopyOnWriteArrayList<Avp> avps = new CopyOnWriteArrayList<Avp>();
+    List<Avp> avps = new ArrayList<Avp>();
 
     AvpSetImpl(MessageParser parser) {
         this.parser = parser;
@@ -41,15 +46,14 @@ class AvpSetImpl implements AvpSet {
         return null;
     }
 
-    public Avp getAvpByIndex(int avpCode) {
-        return this.avps.get(avpCode);
+    public Avp getAvpByIndex(int avpIndex) {
+        return this.avps.get(avpIndex);
     }
 
     public Avp getAvp(int avpCode, long vendorId) {
         for (Avp avp : this.avps) {
-            if (avp.getCode() == avpCode) {
-                if (avp.getVendorId() == vendorId)
-                    return avp;
+            if (avp.getCode() == avpCode && avp.getVendorId() == vendorId) {
+              return avp;
             }
         }
         return null;
@@ -70,50 +74,56 @@ class AvpSetImpl implements AvpSet {
     public AvpSet getAvps(int avpCode, long vendorId) {
         AvpSet result = new AvpSetImpl(parser);
         for (Avp avp : this.avps) {
-            if (avp.getCode() == avpCode) {
-                if (avp.getVendorId() == vendorId)
-                    result.addAvp(avp);
+            if (avp.getCode() == avpCode && avp.getVendorId() == vendorId) {
+              result.addAvp(avp);
             }
         }
         return result;
     }
 
     public AvpSet removeAvp(int avpCode) {
-        AvpSet result = new AvpSetImpl(parser);
-        for (Avp avp : this.avps) {
-            if (avp.getCode() == avpCode) {
-                result.addAvp(avp);
-                this.avps.remove(avp);
-            }
+      AvpSet result = new AvpSetImpl(parser);
+    //  for (Avp avp : this.avps) {
+    //    if (avp.getCode() == avpCode) {
+    //      result.addAvp(avp);
+    //      this.avps.remove(avp);
+    //    }
+    //  }
+      Iterator<Avp> it = this.avps.iterator();
+      while(it.hasNext()) {
+        Avp avp = it.next();
+        if (avp.getCode() == avpCode) {
+          result.addAvp(avp);
+          it.remove();
         }
-        return result;
+      }
+      return result;
     }
 
     public Avp removeAvpByIndex(int i) {
-        if (i >= this.avps.size()) return null;
-        return this.avps.remove(i);
+        return (i >= this.avps.size()) ? null : this.avps.remove(i);
     }
 
     public Avp[] asArray() {
         return this.avps.toArray(new Avp[avps.size()]);
     }
 
-    public Avp addAvp(int avpCode, long value, boolean asUsigned) {
-        Avp res = new AvpImpl(parser, avpCode, 0, 0, asUsigned ? parser.intU32ToBytes(value):parser.int64ToBytes(value));
+    public Avp addAvp(int avpCode, long value, boolean asUnsigned) {
+        Avp res = new AvpImpl(parser, avpCode, 0, 0, asUnsigned ? parser.intU32ToBytes(value) : parser.int64ToBytes(value));
         this.avps.add(res);
         return res;
     }
 
-    public Avp addAvp(int avpCode, long value, boolean mFlag, boolean pFlag, boolean asUsigned) {
+    public Avp addAvp(int avpCode, long value, boolean mFlag, boolean pFlag, boolean asUnsigned) {
         int flags = ((mFlag ? 0x40:0) | (pFlag ? 0x20:0));
-        Avp res = new AvpImpl(parser, avpCode, flags , 0, asUsigned ? parser.intU32ToBytes(value):parser.int64ToBytes(value) );
+        Avp res = new AvpImpl(parser, avpCode, flags , 0, asUnsigned ? parser.intU32ToBytes(value) : parser.int64ToBytes(value));
         this.avps.add(res);
         return res;
     }
 
-    public Avp addAvp(int avpCode, long value, long vndId, boolean mFlag, boolean pFlag, boolean asUsigned) {
+    public Avp addAvp(int avpCode, long value, long vndId, boolean mFlag, boolean pFlag, boolean asUnsigned) {
         int flags = ((vndId !=0 ? 0x80:0) | (mFlag ? 0x40:0) | (pFlag ? 0x20:0));
-        Avp res = new AvpImpl(parser, avpCode, flags, vndId, asUsigned ? parser.intU32ToBytes(value) : parser.int64ToBytes(value) );
+        Avp res = new AvpImpl(parser, avpCode, flags, vndId, asUnsigned ? parser.intU32ToBytes(value) : parser.int64ToBytes(value));
         this.avps.add(res);
         return res;
     }
@@ -126,28 +136,28 @@ class AvpSetImpl implements AvpSet {
         this.avps.addAll(index, Arrays.asList(avpSet.asArray()));
     }
 
-    public Avp insertAvp(int index, int avpCode, long value, boolean asUsigned) {
-        Avp res = new AvpImpl(parser, avpCode, 0, 0, asUsigned ? parser.intU32ToBytes(value):parser.int64ToBytes(value));
+    public Avp insertAvp(int index, int avpCode, long value, boolean asUnsigned) {
+        Avp res = new AvpImpl(parser, avpCode, 0, 0, asUnsigned ? parser.intU32ToBytes(value) : parser.int64ToBytes(value));
         this.avps.add(index, res);
         return res;
     }
 
-    public Avp insertAvp(int index, int avpCode, long value, boolean mFlag, boolean pFlag, boolean asUsigned) {
+    public Avp insertAvp(int index, int avpCode, long value, boolean mFlag, boolean pFlag, boolean asUnsigned) {
         int flags = ((mFlag ? 0x40:0) | (pFlag ? 0x20:0));
-        Avp res = new AvpImpl(parser, avpCode, flags , 0, asUsigned ? parser.intU32ToBytes(value):parser.int64ToBytes(value) );
+        Avp res = new AvpImpl(parser, avpCode, flags , 0, asUnsigned ? parser.intU32ToBytes(value) : parser.int64ToBytes(value));
         this.avps.add(index, res);
         return res;
     }
 
-    public Avp insertAvp(int index, int avpCode, long value, long vndId, boolean mFlag, boolean pFlag, boolean asUsigned) {
+    public Avp insertAvp(int index, int avpCode, long value, long vndId, boolean mFlag, boolean pFlag, boolean asUnsigned) {
         int flags = ((vndId !=0 ? 0x80:0) | (mFlag ? 0x40:0) | (pFlag ? 0x20:0));
-        Avp res = new AvpImpl(parser, avpCode, flags, vndId, asUsigned ? parser.intU32ToBytes(value) : parser.int64ToBytes(value) );
+        Avp res = new AvpImpl(parser, avpCode, flags, vndId, asUnsigned ? parser.intU32ToBytes(value) : parser.int64ToBytes(value));
         this.avps.add(res);
         return res;
     }
 
     public AvpSet insertGroupedAvp(int index, int avpCode) {
-        AvpImpl res = new AvpImpl(parser, avpCode, 0, 0, new byte[0] );
+        AvpImpl res = new AvpImpl(parser, avpCode, 0, 0, new byte[0]);
         res.groupedData = new AvpSetImpl(parser);
         this.avps.add(index, res);
         return res.groupedData;
@@ -163,8 +173,11 @@ class AvpSetImpl implements AvpSet {
 
     public void addAvp(Avp... avps) {
         for (Avp a : avps) {
-            Avp res = new AvpImpl(parser, a);
-            this.avps.add(res);
+          // No need to clone AVP, right?
+          // Avp res = new AvpImpl(parser, a);
+          if(a != null) {
+            this.avps.add(a);
+          }
         }
     }
 
