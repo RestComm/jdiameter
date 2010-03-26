@@ -225,8 +225,6 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     }
     catch (TransportException e) {
       logger.debug("Can not create server socket", e);
-      //FIXME:
-      throw new IOException("Failed to initiate server socket"/*,e*/);
     }
     // Connect to predefined peers
     for (Peer p : peerTable.values()) {

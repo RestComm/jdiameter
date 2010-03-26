@@ -30,7 +30,7 @@ import org.jdiameter.api.MetaData;
 import org.jdiameter.api.Request;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IRequest;
-import org.jdiameter.client.api.parser.DecodeException;
+import org.jdiameter.client.api.parser.ParseException;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.impl.helpers.UIDGenerator;
 import org.slf4j.Logger;
@@ -68,9 +68,9 @@ public class MessageParser extends ElementParser implements IMessageParser {
       long hopByHopId    = ((long) in.readInt() << 32) >>> 32;
       long endToEndId    = ((long) in.readInt() << 32) >>> 32;
       // Read body
-      byte[] body = new byte[message.length - 20];
-      System.arraycopy(message, 20, body, 0, body.length);
-      AvpSetImpl avpSet = decodeAvpSet(body);
+      // byte[] body = new byte[message.length - 20];
+      // System.arraycopy(message, 20, body, 0, body.length);
+      AvpSetImpl avpSet = decodeAvpSet(message, 20);
 
       return new MessageImpl(this, commandCode, applicationId, flags, hopByHopId, endToEndId, avpSet);
     }
@@ -79,11 +79,16 @@ public class MessageParser extends ElementParser implements IMessageParser {
     }
   }
 
-  public AvpSetImpl decodeAvpSet(byte[] message) throws IOException {
+  public AvpSetImpl decodeAvpSet(byte[] buffer) throws IOException {
+    return decodeAvpSet(buffer, 0);
+  }
+
+  public AvpSetImpl decodeAvpSet(byte[] buffer, int shift) throws IOException {
     AvpSetImpl avps = new AvpSetImpl(this);
-    int tmp, counter = 0;
-    DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
-    while (counter < message.length) {
+    int tmp, counter = shift;
+    DataInputStream in = new DataInputStream(new ByteArrayInputStream(buffer, shift, buffer.length /* - shift ? */));
+
+    while (counter < buffer.length) {
       int code = in.readInt();
       tmp = in.readInt();
       int flags = (tmp >> 24) & 0xFF;
@@ -92,6 +97,7 @@ public class MessageParser extends ElementParser implements IMessageParser {
       if ((flags & 0x80) != 0) {
         vendor = in.readInt();
       }
+      // Determine body L = length - 4(code) -1(flags) -3(length) [-4(vendor)]
       byte[] rawData = new byte[length - (8 + (vendor == 0 ? 0 : 4))];
       in.read(rawData);
       if (length % 4 != 0) {
@@ -231,15 +237,19 @@ public class MessageParser extends ElementParser implements IMessageParser {
     }
   }
 
-  public ByteBuffer encodeMessage(IMessage message) throws DecodeException {
+  public ByteBuffer encodeMessage(IMessage message) throws ParseException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     try {
       byte[] rawData = encodeAvpSet(message.getAvps());
       DataOutputStream data = new DataOutputStream(out);
-      int tmp = (1 << 24) & 0xFF000000;
+      // Wasting processor time, are we ?
+      // int tmp = (1 << 24) & 0xFF000000;
+      int tmp = (1 << 24);
       tmp += 20 + rawData.length;
       data.writeInt(tmp);
-      tmp = (message.getFlags() << 24) & 0xFF000000;
+      // Again, unneeded operation ?
+      // tmp = (message.getFlags() << 24) & 0xFF000000;
+      tmp = (message.getFlags() << 24);
       tmp += message.getCommandCode();
       data.writeInt(tmp);
       data.write(toBytes(message.getHeaderApplicationId()));
@@ -301,10 +311,11 @@ public class MessageParser extends ElementParser implements IMessageParser {
       int flags = (byte) ((avp.getVendorId() != 0 ? 0x80 : 0) |
           (avp.isMandatory() ? 0x40 : 0) | (avp.isEncrypted() ? 0x20 : 0));
       int origLength = avp.getRaw().length + 8 + (avp.getVendorId() != 0 ? 4 : 0);
-      int newLength  = origLength;
-      if (newLength % 4 != 0) {
-        newLength += 4 - (newLength % 4);
-      }
+      // newLength is never used. Should it?
+      //int newLength  = origLength;
+      //if (newLength % 4 != 0) {
+      //  newLength += 4 - (newLength % 4);
+      //}
       data.writeInt(((flags << 24) & 0xFF000000) + origLength);
       if (avp.getVendorId() != 0) {
         data.writeInt((int) avp.getVendorId());

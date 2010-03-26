@@ -80,8 +80,8 @@ public interface IMessageParser {
      * Encode message to ByteBuffer
      * @param message diameter message
      * @return instance of message
-     * @throws DecodeException
+     * @throws ParseException
      */
-    ByteBuffer encodeMessage(IMessage message) throws DecodeException;
+    ByteBuffer encodeMessage(IMessage message) throws ParseException;
 
 }

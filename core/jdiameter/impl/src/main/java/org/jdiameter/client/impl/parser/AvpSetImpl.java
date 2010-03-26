@@ -14,7 +14,7 @@ import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.URI;
-import org.jdiameter.client.api.parser.DecodeException;
+import org.jdiameter.client.api.parser.ParseException;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -325,7 +325,7 @@ class AvpSetImpl implements AvpSet {
             Avp res = new AvpImpl(parser, avpCode, 0, 0, parser.octetStringToBytes(value.toString()));
             this.avps.add(res);
             return res;
-        } catch (DecodeException e) {
+        } catch (ParseException e) {
             throw new IllegalArgumentException(e);
         }
     }
@@ -336,7 +336,7 @@ class AvpSetImpl implements AvpSet {
             Avp res = new AvpImpl(parser, avpCode, flags, 0, parser.octetStringToBytes(value.toString()));
             this.avps.add(res);
             return res;
-        } catch (DecodeException e) {
+        } catch (ParseException e) {
             throw new IllegalArgumentException(e);
         }
     }
@@ -347,7 +347,7 @@ class AvpSetImpl implements AvpSet {
             Avp res = new AvpImpl(parser, avpCode, flags, vndId, parser.octetStringToBytes(value.toString()));
             this.avps.add(res);
             return res;
-        } catch (DecodeException e) {
+        } catch (ParseException e) {
             throw new IllegalArgumentException(e);
         }
     }
@@ -650,7 +650,9 @@ class AvpSetImpl implements AvpSet {
     }
 
     public Iterator<Avp> iterator() {
-        return Collections.unmodifiableList(this.avps).iterator();
+      // Iterator contract demands it to be able to remove items
+      // return Collections.unmodifiableList(this.avps).iterator();
+      return this.avps.iterator();
     }
 
 }

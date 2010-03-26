@@ -123,17 +123,17 @@ public interface IElementParser {
      * Convert octet string to byte array representation
      * @param value octet string value
      * @return byte array
-     * @throws DecodeException
+     * @throws ParseException
      */
-    byte[] octetStringToBytes(String value) throws DecodeException;
+    byte[] octetStringToBytes(String value) throws ParseException;
 
     /**
      * Convert utf8 string to byte array representation
      * @param value utf8 string value
      * @return byte array
-     * @throws DecodeException
+     * @throws ParseException
      */
-    byte[] utf8StringToBytes(String value) throws DecodeException;
+    byte[] utf8StringToBytes(String value) throws ParseException;
 
     /**
      * Convert InetAddress to byte array representation
@@ -159,10 +159,10 @@ public interface IElementParser {
     <T> T bytesToObject(java.lang.Class<?> iface, byte[] rawData) throws AvpDataException;
 
     /**
-     * Convert specefied object to byte array representation
+     * Convert specified object to byte array representation
      * @param value object
      * @return byte array
-     * @throws DecodeException
+     * @throws ParseException
      */
-    byte[] objectToBytes(Object value) throws DecodeException;
+    byte[] objectToBytes(Object value) throws ParseException;
 }

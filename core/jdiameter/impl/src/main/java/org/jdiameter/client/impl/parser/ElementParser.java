@@ -11,7 +11,7 @@ package org.jdiameter.client.impl.parser;
  */
 
 import org.jdiameter.api.AvpDataException;
-import org.jdiameter.client.api.parser.DecodeException;
+import org.jdiameter.client.api.parser.ParseException;
 import org.jdiameter.client.api.parser.IElementParser;
 
 import java.io.UnsupportedEncodingException;
@@ -157,19 +157,19 @@ public class ElementParser implements IElementParser {
         return bytes;
     }
 
-    public byte[] octetStringToBytes(String value) throws DecodeException{
+    public byte[] octetStringToBytes(String value) throws ParseException{
         try {
             return value.getBytes("iso-8859-1");
         } catch (UnsupportedEncodingException e) {
-            throw new DecodeException(e);
+            throw new ParseException(e);
         }
     }
 
-    public byte[] utf8StringToBytes(String value) throws DecodeException {
+    public byte[] utf8StringToBytes(String value) throws ParseException {
         try {
             return value.getBytes("utf8");
         } catch (Exception e) {
-            throw new DecodeException(e);
+            throw new ParseException(e);
         }
     }
 
@@ -196,7 +196,7 @@ public class ElementParser implements IElementParser {
         return null;
     }
 
-    public byte [] objectToBytes(Object data) throws DecodeException {
+    public byte [] objectToBytes(Object data) throws ParseException {
         return null;
     }
 }
