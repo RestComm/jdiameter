@@ -74,42 +74,34 @@ public class DiameterStackProxy implements Stack, IContainer {
     return this.realStack.unwrap( iface );
   }
 
-  @Override
   public void addSessionListener(String sessionId, NetworkReqListener listener) {
     ((IContainer)realStack).addSessionListener(sessionId, listener);
   }
 
-  @Override
   public IConcurrentFactory getConcurrentFactory() {
     return ((IContainer)realStack).getConcurrentFactory();
   }
 
-  @Override
   public Configuration getConfiguration() {
     return ((IContainer)realStack).getConfiguration();
   }
 
-  @Override
   public ScheduledExecutorService getScheduledFacility() {
     return ((IContainer)realStack).getScheduledFacility();
   }
 
-  @Override
   public StackState getState() {
     return ((IContainer)realStack).getState();
   }
 
-  @Override
   public void removeSessionListener(String sessionId) {
     ((IContainer)realStack).removeSessionListener(sessionId);
   }
 
-  @Override
   public void sendMessage(IMessage session) throws RouteException, AvpDataException, IllegalDiameterStateException, IOException {
     ((IContainer)realStack).sendMessage(session);
   }
 
-  @Override
   public IAssembler getAssemblerFacility() {
     return ((IContainer)realStack).getAssemblerFacility();
   }
