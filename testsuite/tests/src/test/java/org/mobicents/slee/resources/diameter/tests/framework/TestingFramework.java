@@ -48,7 +48,7 @@ import org.jdiameter.api.Session;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.Stack;
 import org.jdiameter.api.StackType;
-import org.jdiameter.client.api.parser.DecodeException;
+import org.jdiameter.client.api.parser.ParseException;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
 import org.jdiameter.client.impl.helpers.Loggers;
 import org.jdiameter.client.impl.parser.MessageImpl;
@@ -761,9 +761,9 @@ public class TestingFramework
       {
         return parser.octetStringToBytes( (valueStr) );
       }
-      catch ( DecodeException de )
+      catch ( ParseException pe )
       {
-        de.printStackTrace();
+        pe.printStackTrace();
       }
     }
     else if(avpType.equals("Time"))
