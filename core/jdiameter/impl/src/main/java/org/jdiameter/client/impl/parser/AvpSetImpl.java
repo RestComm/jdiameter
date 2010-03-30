@@ -19,13 +19,15 @@ import org.jdiameter.client.api.parser.ParseException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 class AvpSetImpl implements AvpSet {
 
+  // FIXME: by default 3588.4-1 says: 'M' should be set to true;
+  // FIXME: by default 3588.x says: if grouped has at least on AVP with 'M' set, it also has to have 'M' set! - TODO: add backmapping.
+  
   private static final long serialVersionUID = 1L;
   
     MessageParser parser;
@@ -655,4 +657,8 @@ class AvpSetImpl implements AvpSet {
       return this.avps.iterator();
     }
 
+    @Override
+    public String toString() {
+      return new StringBuffer("AvpSetImpl [avps=").append(avps).append("]@").append(super.hashCode()).toString();
+    }
 }

@@ -23,6 +23,10 @@ import java.util.Date;
 
 public class ElementParser implements IElementParser {
 
+    /**
+     * This is seconds shift (70 years in seconds) applied to date, 
+     * since NTP date starts since 1900, not 1970.
+     */
     private static final long SECOND_SHIFT = 2208988800L;
     
     private static final int INT_INET4 = 1;
@@ -52,10 +56,10 @@ public class ElementParser implements IElementParser {
     protected ByteBuffer prepareBuffer(byte [] bytes, int len)  {
         if (bytes.length != len)
             throw new IllegalArgumentException("Incorrect data length");
-        ByteBuffer buffer = ByteBuffer.allocate(bytes.length);
-        buffer.put(bytes);
-        buffer.flip();
-        return buffer;
+        //ByteBuffer buffer = ByteBuffer.allocate(bytes.length);
+        //buffer.put(bytes);
+        //buffer.flip();
+        return ByteBuffer.wrap(bytes);
     }
 
     public String bytesToOctetString(byte[] rawData) throws AvpDataException {
@@ -113,14 +117,16 @@ public class ElementParser implements IElementParser {
 
     public byte [] int32ToBytes(int value){
         byte [] bytes = new byte[INT32_SIZE];
-        ByteBuffer buffer = ByteBuffer.allocate(INT32_SIZE);
+        //ByteBuffer buffer = ByteBuffer.allocate(INT32_SIZE);
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.putInt(value);
-        buffer.flip();
-        buffer.get(bytes);
+        //buffer.flip();
+        //buffer.get(bytes);
         return bytes;
     }
 
     public byte [] intU32ToBytes(long value){
+        // FIXME: this needs to reworked!
         byte [] bytes = new byte[INT32_SIZE];
         ByteBuffer buffer = ByteBuffer.allocate(INT64_SIZE);
         buffer.putLong(value);
@@ -132,35 +138,39 @@ public class ElementParser implements IElementParser {
 
     public byte [] int64ToBytes(long value){
         byte [] bytes = new byte[INT64_SIZE];
-        ByteBuffer buffer = ByteBuffer.allocate(INT64_SIZE);
+        //ByteBuffer buffer = ByteBuffer.allocate(INT64_SIZE);
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.putLong(value);
-        buffer.flip();
-        buffer.get(bytes);
+        //buffer.flip();
+        //buffer.get(bytes);
         return bytes;
     }
 
     public byte [] float32ToBytes(float value){
         byte [] bytes = new byte[FLOAT32_SIZE];
-        ByteBuffer buffer = ByteBuffer.allocate(FLOAT32_SIZE);
+        //ByteBuffer buffer = ByteBuffer.allocate(FLOAT32_SIZE);
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.putFloat(value);
-        buffer.flip();
-        buffer.get(bytes);
+        //buffer.flip();
+        //buffer.get(bytes);
         return bytes;
     }
 
     public byte [] float64ToBytes(double value){
         byte [] bytes = new byte[FLOAT64_SIZE];
-        ByteBuffer buffer = ByteBuffer.allocate(FLOAT64_SIZE);
+        //ByteBuffer buffer = ByteBuffer.allocate(FLOAT64_SIZE);
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.putDouble(value);
-        buffer.flip();
-        buffer.get(bytes);
+        //buffer.flip();
+        //buffer.get(bytes);
         return bytes;
     }
 
     public byte[] octetStringToBytes(String value) throws ParseException{
         try {
             return value.getBytes("iso-8859-1");
-        } catch (UnsupportedEncodingException e) {
+        }
+        catch (UnsupportedEncodingException e) {
             throw new ParseException(e);
         }
     }
@@ -168,7 +178,8 @@ public class ElementParser implements IElementParser {
     public byte[] utf8StringToBytes(String value) throws ParseException {
         try {
             return value.getBytes("utf8");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new ParseException(e);
         }
     }

@@ -180,4 +180,16 @@ class AvpImpl implements Avp {
   public byte[] getRawData() {
     return (rawData == null || rawData.length == 0) ? parser.encodeAvpSet(groupedData) : rawData;
   }
+
+  // Caching toString.. Avp shouldn't be modified once created.
+  private String toString;
+
+  @Override
+  public String toString() {
+    if(toString == null) {
+      this.toString = new StringBuffer("AvpImpl [avpCode=").append(avpCode).append(", vendorID=").append(vendorID).append("]@").append(super.hashCode()).toString(); 
+    }
+
+    return this.toString;
+  }
 }

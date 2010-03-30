@@ -61,6 +61,12 @@ public class MessageParser extends ElementParser implements IMessageParser {
       if (version != 1) {
         throw new Exception("Illegal value of version " + version);
       }
+      
+      if (message.length != (tmp & 0x00FFFFFF)) {
+        //throw new ParseException("Wrong length of data: " + (tmp & 0x00FFFFFF));
+        throw new Exception("Wrong length of data: " + (tmp & 0x00FFFFFF));
+      }
+      
       tmp = in.readInt();
       short flags        = (short) ((tmp >> 24) & 0xFF);
       int commandCode    = (int) (tmp & 0xFFFFFF);
@@ -70,6 +76,7 @@ public class MessageParser extends ElementParser implements IMessageParser {
       // Read body
       // byte[] body = new byte[message.length - 20];
       // System.arraycopy(message, 20, body, 0, body.length);
+      // AvpSetImpl avpSet = decodeAvpSet(body);
       AvpSetImpl avpSet = decodeAvpSet(message, 20);
 
       return new MessageImpl(this, commandCode, applicationId, flags, hopByHopId, endToEndId, avpSet);
@@ -79,11 +86,19 @@ public class MessageParser extends ElementParser implements IMessageParser {
     }
   }
 
-  public AvpSetImpl decodeAvpSet(byte[] buffer) throws IOException {
-    return decodeAvpSet(buffer, 0);
+  public AvpSetImpl decodeAvpSet(byte[] buffer) throws IOException, AvpDataException {
+    return this.decodeAvpSet(buffer, 0);
   }
 
-  public AvpSetImpl decodeAvpSet(byte[] buffer, int shift) throws IOException {
+  /**
+   * 
+   * @param buffer
+   * @param shift - shift in buffer, for instance for whole message it will have non zero value
+   * @return
+   * @throws IOException
+   * @throws AvpDataException
+   */
+  public AvpSetImpl decodeAvpSet(byte[] buffer, int shift) throws IOException, AvpDataException {
     AvpSetImpl avps = new AvpSetImpl(this);
     int tmp, counter = shift;
     DataInputStream in = new DataInputStream(new ByteArrayInputStream(buffer, shift, buffer.length /* - shift ? */));
@@ -93,6 +108,11 @@ public class MessageParser extends ElementParser implements IMessageParser {
       tmp = in.readInt();
       int flags = (tmp >> 24) & 0xFF;
       int length  = tmp & 0xFFFFFF;
+      // Proper AVPs have length of 4xn octets
+      if (length % 4 != 0) {
+        // http://tools.ietf.org/html/rfc3588#section-4.1 wrong avp, we choose to ignore message
+        throw new AvpDataException("Wrong length (" + length + ") of AVP code=" + code);
+      }
       long vendor = 0;
       if ((flags & 0x80) != 0) {
         vendor = in.readInt();
@@ -100,6 +120,8 @@ public class MessageParser extends ElementParser implements IMessageParser {
       // Determine body L = length - 4(code) -1(flags) -3(length) [-4(vendor)]
       byte[] rawData = new byte[length - (8 + (vendor == 0 ? 0 : 4))];
       in.read(rawData);
+      // skip remaining.
+      // TODO: Do we need to padd everything? Or on send stack should properly fill byte[] ... ?
       if (length % 4 != 0) {
         for (int i; length % 4 != 0; length += i) {
           i = (int) in.skip((4 - length % 4));
@@ -258,7 +280,8 @@ public class MessageParser extends ElementParser implements IMessageParser {
       data.write(rawData);
     }
     catch (Exception e) {
-      logger.debug("Error during encode message", e);
+      //logger.debug("Error during encode message", e);
+      throw new ParseException("Failed to encode message.", e);
     }
     return prepareBuffer(out.toByteArray(), out.size());
   }
