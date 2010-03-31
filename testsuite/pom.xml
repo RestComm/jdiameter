@@ -32,8 +32,15 @@
     <mobicents.tools.mavenplugin.eclipse.version>1.0.0.BETA2</mobicents.tools.mavenplugin.eclipse.version>
     <!-- Third party -->
     <get.opt.version>1.0.9</get.opt.version>
-    <slf4j.version>1.5.8</slf4j.version>
-	<picocontainer.version>1.2</picocontainer.version>
+    <picocontainer.version>1.2</picocontainer.version>
+	<slf4j.version>1.5.8</slf4j.version>
+	<version.jboss.microcontainer>2.2.0.M2</version.jboss.microcontainer>
+	<version.jboss.aop>2.1.8.GA</version.jboss.aop>
+	<version.aop.asintegration.mc>2.1.8.GA</version.aop.asintegration.mc>
+	<version.aop.asintegration.jmx>2.1.8.GA</version.aop.asintegration.jmx>
+	<version.aop.asintegration.core>2.1.8.GA</version.aop.asintegration.core>
+	<version.jboss.sx.client>2.0.1-BETA</version.jboss.sx.client>
+	<version.jboss.naming.jnp-client>5.0.4.GA</version.jboss.naming.jnp-client>
   </properties>
 
   <dependencyManagement>
@@ -91,38 +98,112 @@
         <version>${mobicents.diameter.jdiameter.version}</version>
       </dependency>
       <dependency>
-        <artifactId>picocontainer</artifactId>
-        <groupId>picocontainer</groupId>
-        <version>${picocontainer.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${junit.version}</version>
-      </dependency>
-		<dependency>
-			<groupId>urbanophile</groupId>
-			<artifactId>java-getopt</artifactId>
-			<version>${get.opt.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
+				<artifactId>picocontainer</artifactId>
+				<groupId>picocontainer</groupId>
+				<version>${picocontainer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>urbanophile</groupId>
+				<artifactId>java-getopt</artifactId>
+				<version>${get.opt.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.microcontainer</groupId>
+				<artifactId>jboss-kernel</artifactId>
+				<version>${version.jboss.microcontainer}</version>
+				<!-- <scope>provided</scope> -->
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.microcontainer</groupId>
+				<artifactId>jboss-dependency</artifactId>
+				<version>${version.jboss.microcontainer}</version>
+				<!-- <scope>provided</scope> -->
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.microcontainer</groupId>
+				<artifactId>jboss-aop-mc-int</artifactId>
+				<version>${version.jboss.microcontainer}</version>
+				<!-- <scope>provided</scope> -->
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.aop</groupId>
+				<artifactId>jboss-aop</artifactId>
+				<version>${version.jboss.aop}</version>
+				<!-- <scope>provided</scope> -->
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.aop</groupId>
+				<artifactId>jboss-aop-asintegration-mc</artifactId>
+				<version>${version.aop.asintegration.mc}</version>
+				<!-- <scope>provided</scope> -->
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.aop</groupId>
+				<artifactId>jboss-aop-asintegration-core</artifactId>
+				<version>${version.aop.asintegration.core}</version>
+				<!-- <scope>provided</scope> -->
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.aop</groupId>
+				<artifactId>jboss-aop-asintegration-jmx</artifactId>
+				<version>${version.aop.asintegration.jmx}</version>
+				<!-- <scope>provided</scope> -->
+			</dependency>
+			<dependency>
+				<groupId>jboss</groupId>
+				<artifactId>jbosssx-client</artifactId>
+				<version>${version.jboss.sx.client}</version>
+				<!-- <scope>provided</scope> -->
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.naming</groupId>
+				<artifactId>jnp-client</artifactId>
+				<version>${version.jboss.naming.jnp-client}</version>
+				<!-- <scope>provided</scope> -->
+			</dependency>
     </dependencies>
   </dependencyManagement>
 
-  <modules>
-    <module>slee</module>
-    <module>tests</module>
-    <module>load</module>
-  </modules>
+	<profiles>
+		<profile>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<id>default</id>
+			<modules>
+				<module>load</module>
+			</modules>
+		</profile>
+
+		<profile>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<id>jslee</id>
+			<modules>
+				<module>slee</module>
+				<module>tests</module>
+				<module>load</module>
+			</modules>
+		</profile>
+	</profiles>
+
+  
 
   <build>
     <plugins>
