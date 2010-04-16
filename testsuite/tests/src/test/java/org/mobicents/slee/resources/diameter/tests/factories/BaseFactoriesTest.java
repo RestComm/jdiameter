@@ -55,6 +55,7 @@ import net.java.slee.resource.diameter.base.events.ReAuthAnswer;
 import net.java.slee.resource.diameter.base.events.ReAuthRequest;
 import net.java.slee.resource.diameter.base.events.SessionTerminationAnswer;
 import net.java.slee.resource.diameter.base.events.SessionTerminationRequest;
+import net.java.slee.resource.diameter.base.events.avp.AvpUtilities;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp;
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
@@ -62,6 +63,7 @@ import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplication
 
 import org.jdiameter.api.Stack;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
+import org.jdiameter.client.impl.parser.MessageParser;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
@@ -100,7 +102,7 @@ public class BaseFactoriesTest {
     try
     {
       stack.init(new MyConfiguration());
-      AvpDictionary.INSTANCE.parseDictionary( ShClientFactoriesTest.class.getClassLoader().getResourceAsStream( "dictionary.xml" ) );
+      AvpDictionary.INSTANCE.parseDictionary( BaseFactoriesTest.class.getClassLoader().getResourceAsStream( "dictionary.xml" ) );
     }
     catch ( Exception e )
     {
