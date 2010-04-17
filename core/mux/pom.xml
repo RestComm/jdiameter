@@ -3,9 +3,8 @@
 
 	<parent>
 		<groupId>org.mobicents</groupId>
-		<artifactId>mobicents</artifactId>
-		<version>1.16</version>
-		<relativePath>../../../../parent/pom.xml</relativePath>
+		<artifactId>mobicents-parent</artifactId>
+		<version>2.5-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.mobicents.servers.diameter</groupId>
