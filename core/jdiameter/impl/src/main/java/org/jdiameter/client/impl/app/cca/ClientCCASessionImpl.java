@@ -306,8 +306,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           try {
             if (isSuccess(answer.getResultCodeAvp().getUnsigned32())) {
               stopTx();
-              deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
+              
               setState(ClientCCASessionState.OPEN);
+              deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
             }
             if (isProvisional(answer.getResultCodeAvp()
                 .getUnsigned32())) {
@@ -395,8 +396,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           try {
             if (isSuccess(answer.getResultCodeAvp().getUnsigned32())) {
               stopTx();
-              deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
               setState(ClientCCASessionState.OPEN);
+              deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
+              
             }
             if (isProvisional(answer.getResultCodeAvp().getUnsigned32())) {
               //
@@ -454,9 +456,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           }
           break;
         case RECEIVED_TERMINATED_ANSWER:
-          
-          deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
           setState(ClientCCASessionState.IDLE, false);
+          deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
+          
         default:
           logger.warn("Wrong event type ({}) on state {}", eventType, state);
         break;
