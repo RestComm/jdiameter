@@ -70,7 +70,8 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   protected IClientCCASessionContext context = null;
   protected ScheduledFuture txFuture = null;
   protected static final Set<Integer> temporaryErrorCodes;
-  private static final long TX_TIMER_DEFAULT_VALUE = 10;
+  //set default timeout to 30min
+  private static final long TX_TIMER_DEFAULT_VALUE = 1800;
 
   protected int gatheredCCFH = -300;
   protected int gatheredDDFH = -300;
@@ -130,7 +131,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     if (fct.getApplicationIds() == null) {
       throw new IllegalArgumentException("ApplicationId can not be less than zero");
     }
-    if(lst instanceof IServerCCASessionContext) {
+    if(lst instanceof IClientCCASessionContext) {
       context = (IClientCCASessionContext)lst;
     }
     authAppIds = fct.getApplicationIds();
