@@ -225,28 +225,30 @@ public class MessageParser extends ElementParser implements IMessageParser {
     }
     // Copy route information
     {
-      if (invertPoints) {
-        // set Dest host
-        avp = prnMessage.getAvps().getAvp(Avp.ORIGIN_HOST);
-        if (avp != null) {
-          newMessage.getAvps().addAvp(new AvpImpl(this, Avp.DESTINATION_HOST, avp));
+      if (newMessage.isRequest()) {
+        if (invertPoints) {
+          // set Dest host
+          avp = prnMessage.getAvps().getAvp(Avp.ORIGIN_HOST);
+          if (avp != null) {
+            newMessage.getAvps().addAvp(new AvpImpl(this, Avp.DESTINATION_HOST, avp));
+          }
+          // set Dest realm
+          avp = prnMessage.getAvps().getAvp(Avp.ORIGIN_REALM);
+          if (avp != null) {
+            newMessage.getAvps().addAvp(new AvpImpl(this, Avp.DESTINATION_REALM, avp));
+          }
         }
-        // set Dest realm
-        avp = prnMessage.getAvps().getAvp(Avp.ORIGIN_REALM);
-        if (avp != null) {
-          newMessage.getAvps().addAvp(new AvpImpl(this, Avp.DESTINATION_REALM, avp));
-        }
-      }
-      else {
-        // set Dest host
-        avp = prnMessage.getAvps().getAvp(Avp.DESTINATION_HOST);
-        if (avp != null) {
-          newMessage.getAvps().addAvp(avp);
-        }
-        // set Dest realm
-        avp = prnMessage.getAvps().getAvp(Avp.DESTINATION_REALM);
-        if (avp != null) {
-          newMessage.getAvps().addAvp(avp);
+        else {
+          // set Dest host
+          avp = prnMessage.getAvps().getAvp(Avp.DESTINATION_HOST);
+          if (avp != null) {
+            newMessage.getAvps().addAvp(avp);
+          }
+          // set Dest realm
+          avp = prnMessage.getAvps().getAvp(Avp.DESTINATION_REALM);
+          if (avp != null) {
+            newMessage.getAvps().addAvp(avp);
+          }
         }
       }
       // set Orig host and realm
