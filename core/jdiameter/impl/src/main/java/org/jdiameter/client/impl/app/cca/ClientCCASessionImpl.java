@@ -20,17 +20,12 @@ import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.SessionFactory;
-import org.jdiameter.api.acc.events.AccountAnswer;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
-import org.jdiameter.api.auth.ClientAuthSession;
-import org.jdiameter.api.auth.events.AbortSessionAnswer;
 import org.jdiameter.api.auth.events.ReAuthAnswer;
 import org.jdiameter.api.auth.events.ReAuthRequest;
-import org.jdiameter.api.auth.events.SessionTermAnswer;
-import org.jdiameter.api.auth.events.SessionTermRequest;
 import org.jdiameter.api.cca.ClientCCASession;
 import org.jdiameter.api.cca.ClientCCASessionListener;
 import org.jdiameter.api.cca.events.JCreditControlAnswer;
@@ -40,17 +35,9 @@ import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.cca.ClientCCASessionState;
 import org.jdiameter.common.api.app.cca.ICCAMessageFactory;
 import org.jdiameter.common.api.app.cca.IClientCCASessionContext;
-import org.jdiameter.common.api.app.cca.IServerCCASessionContext;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
-import org.jdiameter.common.impl.app.acc.AccountAnswerImpl;
-import org.jdiameter.common.impl.app.acc.AccountRequestImpl;
-import org.jdiameter.common.impl.app.auth.AbortSessionAnswerImpl;
-import org.jdiameter.common.impl.app.auth.AbortSessionRequestImpl;
 import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
-import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
-import org.jdiameter.common.impl.app.auth.SessionTermAnswerImpl;
-import org.jdiameter.common.impl.app.auth.SessionTermRequestImpl;
 import org.jdiameter.common.impl.app.cca.AppCCASessionImpl;
 
 public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCASession, NetworkReqListener, EventListener<Request, Answer> {
@@ -69,7 +56,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   protected ClientCCASessionListener listener = null;
   protected IClientCCASessionContext context = null;
   protected ScheduledFuture txFuture = null;
-  protected static final Set<Integer> temporaryErrorCodes;
+  protected static final Set<Long> temporaryErrorCodes;
   //set default timeout to 30min
   private static final long TX_TIMER_DEFAULT_VALUE = 1800;
 
@@ -99,14 +86,14 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   private Message buffer = null;
 
   static {
-    HashSet<Integer> tmp = new HashSet<Integer>();
+    HashSet<Long> tmp = new HashSet<Long>();
     // FIXME: add codes
     // DIAMETER_TOO_BUSY
-    tmp.add(3004);
+    tmp.add(3004L);
     // DIAMETER_UNABLE_TO_DELIVER
-    tmp.add(3002);
+    tmp.add(3002L);
     // DIAMETER_LOOP_DETECTED
-    tmp.add(3005);
+    tmp.add(3005L);
     temporaryErrorCodes = Collections.unmodifiableSet(tmp);
   }
 
@@ -290,10 +277,10 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
             // This handles failure to send in PendingI state in FSM table
             handleSendFailure(e, eventType, localEvent.getRequest().getMessage());
           }
-
+          break;
         default:
           logger.warn("Wrong event type ({}) on state {}", eventType, state);
-        break;
+          break;
         }
         break;
 
@@ -307,19 +294,15 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           try {
             if (isSuccess(answer.getResultCodeAvp().getUnsigned32())) {
               stopTx();
-              
               setState(ClientCCASessionState.OPEN);
-              deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
             }
-            if (isProvisional(answer.getResultCodeAvp()
-                .getUnsigned32())) {
-            	deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
+            if (isProvisional(answer.getResultCodeAvp().getUnsigned32())) {
+            	// Let's just deliver
             }
             else if (isFailure(answer.getResultCodeAvp().getUnsigned32())) {
               handleFailureMessage((JCreditControlAnswer) answer, (JCreditControlRequest) localEvent.getRequest(), eventType);
             }
-
-            
+            deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
           }
           catch (AvpDataException e) {
             // FIXME?
@@ -459,7 +442,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         case RECEIVED_TERMINATED_ANSWER:
           setState(ClientCCASessionState.IDLE, false);
           deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
-          
+          break;
         default:
           logger.warn("Wrong event type ({}) on state {}", eventType, state);
         break;
@@ -574,7 +557,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
   protected void handleSendFailure(Exception e, Event.Type eventType, Message request) throws Exception
   {
-    logger.debug("Failed to send message, type: {} message: {}", eventType, request);
+    logger.debug("Failed to send message, type: {} message: {}, failure: {}", new Object[]{eventType, request, e != null ? e.getLocalizedMessage() : ""});
     // FIXME: do we need check for RAR ?
     try {
       if (isStateless()) {
@@ -1004,7 +987,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
   protected void dispatchEvent(AppEvent event) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     session.send(event.getMessage(), this);
-    // Store last destinmation information
+    // Store last destination information
   }
 
   protected boolean isProvisional(long resultCode) {
@@ -1016,7 +999,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   }
 
   protected boolean isFailure(long code) {
-    return (!isProvisional(code) && !isSuccess(code) && ((code >= 3000 && code < 4000) || (code >= 5000 && code < 6000)) && !temporaryErrorCodes.contains(code));
+    return (!isProvisional(code) && !isSuccess(code) && ((code >= 3000 && /*code < 4000) || (code >= 5000 &&*/ code < 6000)) && !temporaryErrorCodes.contains(code));
   }
 
   private class TxTimerTask implements Runnable {
@@ -1092,13 +1075,14 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 			      switch(request.getCommandCode())
 			      {
 			      case JCreditControlAnswer.code:
-			        JCreditControlAnswer _answer=factory.createCreditControlAnswer(answer);
+                    JCreditControlRequest _request = factory.createCreditControlRequest(request);
+                    JCreditControlAnswer _answer = factory.createCreditControlAnswer(answer);
 			        extractFHAVPs(null,_answer );
-			        handleEvent(new Event(false, null, _answer));
+			        handleEvent(new Event(false, _request, _answer));
 			        break;
 
 			      default:
-			        listener.doOtherEvent(session, null, new AppAnswerEventImpl(answer));
+			        listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
 			      break;
 			      }
 			    }

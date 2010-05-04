@@ -369,20 +369,20 @@ public class CxDxClientSessionImpl extends CxDxSession implements ClientCxDxSess
 			try {
 				switch (answer.getCommandCode()) {
 				case JUserAuthorizationAnswer.code:
-					handleEvent(new Event(Event.Type.RECEIVE_UAA, null, factory.createUserAuthorizationAnswer(answer)));
+					handleEvent(new Event(Event.Type.RECEIVE_UAA, factory.createUserAuthorizationRequest(request), factory.createUserAuthorizationAnswer(answer)));
 					break;
 				case JServerAssignmentAnswer.code:
-					handleEvent(new Event(Event.Type.RECEIVE_SAA, null, factory.createServerAssignmentAnswer(answer)));
+					handleEvent(new Event(Event.Type.RECEIVE_SAA, factory.createServerAssignmentRequest(request), factory.createServerAssignmentAnswer(answer)));
 					break;
 				case JMultimediaAuthAnswer.code:
-					handleEvent(new Event(Event.Type.RECEIVE_MAA, null, factory.createMultimediaAuthAnswer(answer)));
+					handleEvent(new Event(Event.Type.RECEIVE_MAA, factory.createMultimediaAuthRequest(request), factory.createMultimediaAuthAnswer(answer)));
 					break;
 				case JLocationInfoAnswer.code:
-					handleEvent(new Event(Event.Type.RECEIVE_LIA, null, factory.createLocationInfoAnswer(answer)));
+					handleEvent(new Event(Event.Type.RECEIVE_LIA, factory.createLocationInfoRequest(request), factory.createLocationInfoAnswer(answer)));
 					break;
 
 				default:
-					listener.doOtherEvent(session, null, new AppAnswerEventImpl(answer));
+					listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
 					break;
 				}
 			} catch (Exception e) {

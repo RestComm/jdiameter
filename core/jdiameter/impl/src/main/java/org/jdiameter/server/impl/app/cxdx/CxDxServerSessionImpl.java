@@ -373,14 +373,14 @@ public class CxDxServerSessionImpl extends CxDxSession implements ServerCxDxSess
 			try{
 			      switch (answer.getCommandCode()) {
 			      case JPushProfileAnswer.code:
-			        handleEvent(new Event(Event.Type.RECEIVE_PPA, null, factory.createUserAuthorizationAnswer(answer)));
+			        handleEvent(new Event(Event.Type.RECEIVE_PPA, factory.createUserAuthorizationRequest(request), factory.createUserAuthorizationAnswer(answer)));
 			        break;
 			      case JRegistrationTerminationAnswer.code:
-			        handleEvent(new Event(Event.Type.RECEIVE_RTA, null, factory.createRegistrationTerminationAnswer(answer)));
+			        handleEvent(new Event(Event.Type.RECEIVE_RTA, factory.createRegistrationTerminationRequest(request), factory.createRegistrationTerminationAnswer(answer)));
 			        break;
 
 			      default:
-			        listener.doOtherEvent(session, null, new AppAnswerEventImpl(answer));
+			        listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
 			        break;
 			      }
 			    }

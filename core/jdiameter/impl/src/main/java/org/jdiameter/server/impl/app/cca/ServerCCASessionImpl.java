@@ -1,6 +1,5 @@
 package org.jdiameter.server.impl.app.cca;
 
-
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -17,16 +16,12 @@ import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.SessionFactory;
-import org.jdiameter.api.acc.events.AccountAnswer;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
-import org.jdiameter.api.auth.ServerAuthSession;
-import org.jdiameter.api.auth.events.AbortSessionAnswer;
 import org.jdiameter.api.auth.events.ReAuthRequest;
-import org.jdiameter.api.auth.events.SessionTermAnswer;
 import org.jdiameter.api.cca.ServerCCASession;
 import org.jdiameter.api.cca.ServerCCASessionListener;
 import org.jdiameter.api.cca.events.JCreditControlAnswer;
@@ -37,14 +32,8 @@ import org.jdiameter.common.api.app.cca.IServerCCASessionContext;
 import org.jdiameter.common.api.app.cca.ServerCCASessionState;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
-import org.jdiameter.common.impl.app.acc.AccountAnswerImpl;
-import org.jdiameter.common.impl.app.acc.AccountRequestImpl;
-import org.jdiameter.common.impl.app.auth.AbortSessionAnswerImpl;
-import org.jdiameter.common.impl.app.auth.AbortSessionRequestImpl;
 import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
 import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
-import org.jdiameter.common.impl.app.auth.SessionTermAnswerImpl;
-import org.jdiameter.common.impl.app.auth.SessionTermRequestImpl;
 import org.jdiameter.common.impl.app.cca.AppCCASessionImpl;
 
 public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCASession, NetworkReqListener,EventListener<Request, Answer> {
@@ -422,14 +411,10 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
 				// We handle CCR,STR,ACR,ASR other go into extension
 				switch (request.getCommandCode()) {
 				case ReAuthRequest.code:
-					handleEvent(new Event(Event.Type.RECEIVED_RAA, factory
-							.createReAuthRequest(request), factory
-							.createReAuthAnswer(answer)));
+					handleEvent(new Event(Event.Type.RECEIVED_RAA, factory.createReAuthRequest(request), factory.createReAuthAnswer(answer)));
 					break;
-
 				default:
-					listener.doOtherEvent(session, null,
-							new AppAnswerEventImpl(answer));
+					listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
 					break;
 				}
 
