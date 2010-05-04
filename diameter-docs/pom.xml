@@ -16,29 +16,39 @@
   </properties> 
 
   <repositories>
-      <repository>
-          <id>repository.jboss.org</id>
-          <name>JBoss Repository</name>
-          <layout>default</layout>
-          <url>http://repository.jboss.org/maven2/</url>
-          <snapshots>
-              <enabled>false</enabled>
-          </snapshots>
-      </repository>
+    <repository>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Maven Repository Group</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </snapshots>
+    </repository>
   </repositories>
+
   <pluginRepositories>
     <pluginRepository>
-      <id>repository.jboss.org</id>
-      <name>JBoss Repository</name>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Maven Repository Group</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
       <layout>default</layout>
-      <url>http://repository.jboss.org/maven2/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
       <snapshots>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
-  
-  
+
   <profiles>
 
     <!-- mvn compile -->

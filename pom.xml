@@ -55,52 +55,57 @@
   <profiles>
     <profile>
       <id>maven-release</id>
-        <modules>
-          <!-- any module not bound to default modules, such as the ones for test, release, etc... -->
-        </modules>
-        <build>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-release-plugin</artifactId>
-              <configuration>
-                <autoVersionSubmodules>true</autoVersionSubmodules>
-                <resume>false</resume>
-              </configuration>
-            </plugin>
-          </plugins>
-        </build>       
-      </profile>
-    </profiles>
+      <modules>
+        <!-- any module not bound to default modules, such as the ones for test, release, etc... -->
+      </modules>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <configuration>
+              <autoVersionSubmodules>true</autoVersionSubmodules>
+              <resume>false</resume>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>       
+    </profile>
+  </profiles>
 
   <repositories>
-		<repository>
-			<id>jboss</id>
-			<name>JBoss Repository</name>
-			<url>http://repository.jboss.org/maven2</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>jboss-snapshots</id>
-			<name>JBoss Snapshot Repository</name>
-			<url>http://snapshots.jboss.org/maven2</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
+    <repository>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Maven Repository Group</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </snapshots>
+    </repository>
+  </repositories>
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>repository.jboss.org</id>
-			<url>http://repository.jboss.org/maven2</url>
-		</pluginRepository>
-	</pluginRepositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Maven Repository Group</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 
   <scm>
     <connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter</connection>
