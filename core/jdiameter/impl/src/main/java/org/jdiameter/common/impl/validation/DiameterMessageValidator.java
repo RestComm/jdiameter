@@ -1,28 +1,28 @@
 /*
-* Mobicents, Communications Middleware
-*
-* Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
-* indicated by the @author tags or express copyright attribution
-* statements applied by the authors. All third-party contributions are
-* distributed under license by Red Hat Middleware LLC.
-*
-* This copyrighted material is made available to anyone wishing to use, modify, 
-* copy, or redistribute it subject to the terms and conditions of the GNU
-* Lesser General Public License, as published by the Free Software Foundation.
-*
-* This program is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-* or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
-* for more details.
-*
-*
-* You should have received a copy of the GNU Lesser General Public License
-* along with this distribution; if not, write to:
-* Free Software Foundation, Inc.
-* 51 Franklin Street, Fifth Floor
-*
-* Boston, MA  02110-1301  USA
-*/
+ * Mobicents, Communications Middleware
+ *
+ * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors. All third-party contributions are
+ * distributed under license by Red Hat Middleware LLC.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * for more details.
+ *
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ *
+ * Boston, MA  02110-1301  USA
+ */
 package org.jdiameter.common.impl.validation;
 
 import java.io.InputStream;
@@ -47,92 +47,91 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
-* Start time:11:42:36 2009-05-26<br>
-* Project: diameter-parent<br>
-* 
-* @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
-* @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
-* @since 1.5.189
-*/
+ * Start time:11:42:36 2009-05-26<br>
+ * Project: diameter-parent<br>
+ * 
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @since 1.5.189
+ */
 public class DiameterMessageValidator {
 
- private static final transient Logger log = LoggerFactory.getLogger(DiameterMessageValidator.class);
+  private static final transient Logger log = LoggerFactory.getLogger(DiameterMessageValidator.class);
 
- public static final String _AVP_ATTRIBUTE_NAME = "name";
- public static final String _AVP_ATTRIBUTE_CODE = "code";
- public static final String _AVP_ATTRIBUTE_VENDOR = "vendor";
- public static final String _AVP_ATTRIBUTE_MULTIPLICITY = "multiplicity";
- public static final String _AVP_ATTRIBUTE_INDEX = "index";
- public static final String _VALIDATOR_NODE_NAME = "validator";
- public static final String _VALIDATOR_NODE_ENABLED_ATTR = "enabled";
- public static final String _VALIDATOR_NODE_SEND_LEVEL_ATTR = "sendLevel";
- public static final String _VALIDATOR_NODE_RECEIVE_LEVEL_ATTR = "receiveLevel";
+  public static final String _AVP_ATTRIBUTE_NAME = "name";
+  public static final String _AVP_ATTRIBUTE_CODE = "code";
+  public static final String _AVP_ATTRIBUTE_VENDOR = "vendor";
+  public static final String _AVP_ATTRIBUTE_MULTIPLICITY = "multiplicity";
+  public static final String _AVP_ATTRIBUTE_INDEX = "index";
+  public static final String _VALIDATOR_NODE_NAME = "validator";
+  public static final String _VALIDATOR_NODE_ENABLED_ATTR = "enabled";
+  public static final String _VALIDATOR_NODE_SEND_LEVEL_ATTR = "sendLevel";
+  public static final String _VALIDATOR_NODE_RECEIVE_LEVEL_ATTR = "receiveLevel";
 
- private static final DiameterMessageValidator instance = new DiameterMessageValidator();
- private static final String fileName = "dictionary.xml";
+  private static final DiameterMessageValidator instance = new DiameterMessageValidator();
+  private static final String fileName = "dictionary.xml";
 
- private boolean on = true;
- private boolean configured = false;
- private ValidatorLevel sendValidationLevel = ValidatorLevel._OFF;
- private ValidatorLevel receiveValidationLevel = ValidatorLevel._OFF;
- protected Map<VMessageRepresentation, VMessageRepresentation> commandMap = new HashMap<VMessageRepresentation, VMessageRepresentation>();
- protected Map<VAvpRepresentation, VAvpRepresentation> avpMap = new HashMap<VAvpRepresentation, VAvpRepresentation>();
- protected Map<String, String> vendorMap = new HashMap<String, String>();
- protected Map<String, String> typedefMap = new HashMap<String, String>();
- protected Map<String, VAvpRepresentation> nameToCodeMap = new TreeMap<String, VAvpRepresentation>(new Comparator<String>() {
+  private boolean on = true;
+  private boolean configured = false;
+  private ValidatorLevel sendValidationLevel = ValidatorLevel._OFF;
+  private ValidatorLevel receiveValidationLevel = ValidatorLevel._OFF;
+  protected Map<VMessageRepresentation, VMessageRepresentation> commandMap = new HashMap<VMessageRepresentation, VMessageRepresentation>();
+  protected Map<VAvpRepresentation, VAvpRepresentation> avpMap = new HashMap<VAvpRepresentation, VAvpRepresentation>();
+  protected Map<String, String> vendorMap = new HashMap<String, String>();
+  protected Map<String, String> typedefMap = new HashMap<String, String>();
+  protected Map<String, VAvpRepresentation> nameToCodeMap = new TreeMap<String, VAvpRepresentation>(new Comparator<String>() {
+    public int compare(String o1, String o2) {
+      return (o1 == null) ? 1 : (o2 == null) ? -1 : o1.compareTo(o2); 
+    }
+  });
 
-   public int compare(String o1, String o2) {
-     return (o1 == null) ? 1 : (o2 == null) ? -1 : o1.compareTo(o2); 
-   }
- });
+  /**
+   * 	
+   */
+  protected DiameterMessageValidator() {
+    try {
+      InputStream is = DiameterMessageValidator.class.getClassLoader().getResourceAsStream(fileName);
+      if (is != null) {
+        parseConfiguration(is, false);
+      }
+      else {
+        log.debug("Unable to initialize validator with default filename ({} not found in classpath).", fileName);
+      }
+    }
+    catch (Exception e) {
+      log.error("Failed to init validator dictionary resources.", e);
+    }
+  }
 
- /**
-  * 	
-  */
- protected DiameterMessageValidator() {
-   try {
-     InputStream is = DiameterMessageValidator.class.getClassLoader().getResourceAsStream(fileName);
-     if (is != null) {
-       parseConfiguration(is, false);
-     }
-     else {
-       log.debug("Unable to initialize validator with default filename ({} not found in classpath).", fileName);
-     }
-   }
-   catch (Exception e) {
-     log.error("Failed to init validator dictionary resources.", e);
-   }
- }
+  public void parseConfiguration(InputStream is, boolean reset) {
+    long startTime = System.currentTimeMillis();
 
- public void parseConfiguration(InputStream is, boolean reset) {
-   long startTime = System.currentTimeMillis();
+    if (reset) {
+      this.configured = false;
+      this.commandMap.clear();
+      this.avpMap.clear();
+      this.vendorMap.clear();
+      this.typedefMap.clear();
+      this.nameToCodeMap.clear();
+    }
 
-   if (reset) {
-     this.configured = false;
-     this.commandMap.clear();
-     this.avpMap.clear();
-     this.vendorMap.clear();
-     this.typedefMap.clear();
-     this.nameToCodeMap.clear();
-   }
+    if (this.configured) {
+      return;
+    }
 
-   if (this.configured) {
-     return;
-   }
+    try {
+      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      dbf.setValidating(false);
+      DocumentBuilder db = dbf.newDocumentBuilder();
+      Document doc = db.parse(is);
 
-   try {
-     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-     dbf.setValidating(false);
-     DocumentBuilder db = dbf.newDocumentBuilder();
-     Document doc = db.parse(is);
+      doc.getDocumentElement().normalize();
 
-     doc.getDocumentElement().normalize();
-
-     this.vendorMap = parseVendors(doc);
-     this.typedefMap = parseTypDefs(doc);
-     this.avpMap = parseAvps(doc, this.vendorMap);
-     this.resolveWeakGroupedChildren(this.avpMap, this.nameToCodeMap);
-     this.commandMap = parseCommands(doc, this.avpMap, this.nameToCodeMap);
+      this.vendorMap = parseVendors(doc);
+      this.typedefMap = parseTypDefs(doc);
+      this.avpMap = parseAvps(doc, this.vendorMap);
+      this.resolveWeakGroupedChildren(this.avpMap, this.nameToCodeMap);
+      this.commandMap = parseCommands(doc, this.avpMap, this.nameToCodeMap);
       this.configured = true;
 
       NodeList validatorNodeList = doc.getElementsByTagName(_VALIDATOR_NODE_NAME);
@@ -146,41 +145,35 @@ public class DiameterMessageValidator {
             found = true;
             Element validatorElement = (Element) validatorNodeList.item(index);
             if (!validatorElement.hasAttribute(_VALIDATOR_NODE_ENABLED_ATTR)) {
-                on = false;
-              }
-              else {
-                on = Boolean.parseBoolean(validatorElement.getAttribute(_VALIDATOR_NODE_ENABLED_ATTR));
-              }
-            
+              on = false;
+            }
+            else {
+              on = Boolean.parseBoolean(validatorElement.getAttribute(_VALIDATOR_NODE_ENABLED_ATTR));
+            }
+
             if (!validatorElement.hasAttribute(_VALIDATOR_NODE_RECEIVE_LEVEL_ATTR)) {
-            	this.receiveValidationLevel = ValidatorLevel._OFF;
+              this.receiveValidationLevel = ValidatorLevel._OFF;
+            }
+            else {
+              try{
+                this.receiveValidationLevel = ValidatorLevel.fromString(validatorElement.getAttribute(_VALIDATOR_NODE_RECEIVE_LEVEL_ATTR));
               }
-              else {
-            	  try{
-            		  this.receiveValidationLevel = ValidatorLevel.fromString(validatorElement.getAttribute(_VALIDATOR_NODE_RECEIVE_LEVEL_ATTR));
-            	  }catch(IllegalArgumentException e)
-            	  {
-            		  if(log.isErrorEnabled())
-            		  {
-            			  log.error("Failed to decode reiceve validation level due to: ",e);
-            		  }
-            	  }
+              catch(IllegalArgumentException e) {
+                log.error("Failed to decode received validation level due to: ", e);
               }
+            }
             if (!validatorElement.hasAttribute(_VALIDATOR_NODE_SEND_LEVEL_ATTR)) {
-            	this.sendValidationLevel = ValidatorLevel._OFF;
+              this.sendValidationLevel = ValidatorLevel._OFF;
+            }
+            else {
+              try{
+                this.sendValidationLevel = ValidatorLevel.fromString(validatorElement.getAttribute(_VALIDATOR_NODE_SEND_LEVEL_ATTR));
               }
-              else {
-            	  try{
-            		  this.sendValidationLevel = ValidatorLevel.fromString(validatorElement.getAttribute(_VALIDATOR_NODE_SEND_LEVEL_ATTR));
-            	  }catch(IllegalArgumentException e)
-            	  {
-            		  if(log.isErrorEnabled())
-            		  {
-            			  log.error("Failed to decode send validation level due to: ",e);
-            		  }
-            	  }
+              catch(IllegalArgumentException e) {
+                log.error("Failed to decode send validation level due to: ", e);
               }
-          
+            }
+
             break;
           }
         }
@@ -224,9 +217,8 @@ public class DiameterMessageValidator {
    * @return
    */
   private Map<VMessageRepresentation, VMessageRepresentation> parseCommands(Document doc, Map<VAvpRepresentation, VAvpRepresentation> avpMap, Map<String, VAvpRepresentation> nameToCodeMap) {
-    // here all grouped avps should have proper filling.
-    // now lets go through message definition, we have to respect
-    // application nodes
+    // here all grouped AVPs should have proper filling.
+    // now lets go through message definition, we have to respect application nodes
     NodeList applicationNodes = doc.getElementsByTagName("application");
     Map<VMessageRepresentation, VMessageRepresentation> commandMap = new HashMap<VMessageRepresentation, VMessageRepresentation>();
     for (int applicationIndex = 0; applicationIndex < applicationNodes.getLength(); applicationIndex++) {
@@ -234,7 +226,7 @@ public class DiameterMessageValidator {
         Element applicationElement = (Element) applicationNodes.item(applicationIndex);
 
         if (!applicationElement.hasAttribute("id")) {
-          log.error("Application definition does not have ID, skipping message");
+          log.debug("[ERROR] Application definition does not have ID, skipping message");
           continue;
         }
 
@@ -247,22 +239,16 @@ public class DiameterMessageValidator {
           if (commandNode.getNodeType() == Node.ELEMENT_NODE) {
             Element commandElement = (Element) commandNode;
             // FIXME: add more
-
             if (!commandElement.hasAttribute("request")) {
-              if (log.isDebugEnabled()) {
-                log.debug("Command for application: {} does not define if its request or answer, skipping.", applicationCode);
-              }
+              log.debug("[ERROR] Command for application: {} does not define if its request or answer, skipping.", applicationCode);
               continue;
             }
             String commandName = commandElement.getAttribute("name");
             String commandCode = commandElement.getAttribute("code");
-            // String commandVendorId =
-            // commandElement.getAttribute("vendor-id");
+            // String commandVendorId = commandElement.getAttribute("vendor-id");
             String isRequest = commandElement.getAttribute("request");
-            // FIXME: should commandVendorId should be used
-            // somewhere?
-            // String commandVendorCode =
-            // vendorMap.get(commandVendorId);
+            // FIXME: should commandVendorId should be used somewhere?
+            // String commandVendorCode = vendorMap.get(commandVendorId);
             VMessageRepresentation msg = new VMessageRepresentation(Integer.valueOf(commandCode), applicationCode, Boolean.parseBoolean(isRequest), commandName);
 
             Map<VAvpRepresentation, VAvpRepresentation> commandAvpList = new HashMap<VAvpRepresentation, VAvpRepresentation>();
@@ -279,8 +265,7 @@ public class DiameterMessageValidator {
                   String name = null;
                   String index = null;
                   if (!commandAvpElement.hasAttribute("name")) {
-                    log.error("Command defines avp without name! Command: {}, Code: {}, ApplicationID: {}", new Object[] { msg.getName(), msg.getCommandCode(),
-                        msg.getApplicationId() });
+                    log.debug("[ERROR] Command defines avp without name! Command: {}, Code: {}, ApplicationID: {}", new Object[] { msg.getName(), msg.getCommandCode(), msg.getApplicationId() });
                     continue;
                   }
                   else {
@@ -288,7 +273,7 @@ public class DiameterMessageValidator {
                   }
 
                   if (!commandAvpElement.hasAttribute("multiplicity")) {
-                    log.warn("Command defines avp without multiplicity.");
+                    log.debug("[WARN] Command defines avp without multiplicity.");
                     multiplicity = VAvpRepresentation._MP_ZERO_OR_MORE;
                   }
                   else {
@@ -303,17 +288,13 @@ public class DiameterMessageValidator {
 
                   String avpCode = commandAvpElement.getAttribute("code");
                   String avpVendor = commandAvpElement.getAttribute("vendor");
-                  if(avpCode == null)
-                  {
-                	  log.error("Command defines avp without code! Command: {}, Code: {}, ApplicationID: {}", new Object[] { msg.getName(), msg.getCommandCode(),
-                              msg.getApplicationId() });
-                	  continue;
+                  if(avpCode == null) {
+                    log.debug("[ERROR] Command defines avp without code! Command: {}, Code: {}, ApplicationID: {}", new Object[] { msg.getName(), msg.getCommandCode(), msg.getApplicationId() });
+                    continue;
                   }
-                	  if(avpVendor == null)
-                  {
-                		  log.warn("Command defines avp without vendor, assuming default. Command: {}, Code: {}, ApplicationID: {}", new Object[] { msg.getName(), msg.getCommandCode(),
-                                  msg.getApplicationId() });
-                		  avpVendor = "0";
+                  if(avpVendor == null) {
+                    log.debug("[WARN] Command defines avp without vendor, assuming default. Command: {}, Code: {}, ApplicationID: {}", new Object[] { msg.getName(), msg.getCommandCode(), msg.getApplicationId() });
+                    avpVendor = "0";
                   }
                   // here we have name and multiplicity. we
                   // have to get avp def from name, clone and
@@ -321,7 +302,7 @@ public class DiameterMessageValidator {
                   VAvpRepresentation strongRepresentation = null;
                   VAvpRepresentation strongKey = new VAvpRepresentation(Integer.valueOf(avpCode),Long.valueOf(avpVendor));
                   if (strongKey == null) {
-                    log.warn("No strong avp key representation for msg, name: {}", name.trim());
+                    log.debug("[WARN] No strong avp key representation for msg, name: {}", name.trim());
                     continue;
                   }
                   strongRepresentation = this.avpMap.get(strongKey);
@@ -338,7 +319,7 @@ public class DiameterMessageValidator {
                     }
                   }
                   else {
-                    log.warn("No strong avp representation for msg: {}", strongKey);
+                    log.debug("[WARN] No strong avp representation for msg: {}", strongKey);
                   }
                 }
               }
@@ -424,9 +405,11 @@ public class DiameterMessageValidator {
                     String indexIndicator = "-1";
 
                     if (!groupedChildWeakElement.hasAttribute("name")) {
-                      log.error("Grouped child does not have name, grouped avp:  Name[" + avpName + "] Description[" + avpDescription + "] Code[" + avpCode + "] May-Encrypt["
-                          + avpMayEncrypt + "] Mandatory[" + avpMandatory + "] Protected [" + avpProtected + "] Vendor-Bit [" + avpVendorBit + "] Vendor-Id [" + avpVendorId
-                          + "] Constrained[" + avpConstrained + "] Type [" + avpType + "]");
+                      if(log.isDebugEnabled()) {
+                        log.debug("[ERROR] Grouped child does not have name, grouped avp:  Name[" + avpName + "] Description[" + avpDescription + "] Code[" + avpCode + "] May-Encrypt["
+                            + avpMayEncrypt + "] Mandatory[" + avpMandatory + "] Protected [" + avpProtected + "] Vendor-Bit [" + avpVendorBit + "] Vendor-Id [" + avpVendorId
+                            + "] Constrained[" + avpConstrained + "] Type [" + avpType + "]");
+                      }
                       continue;
                     }
                     else {
@@ -486,14 +469,14 @@ public class DiameterMessageValidator {
             VAvpRepresentation mapKey = new VAvpRepresentation(avp.getCode(), avp.getVendorId());
 
             avpMap.put(mapKey, avp);
-            if(nameToCodeMap.containsKey(avp.getName().trim()) && log.isErrorEnabled()) {
-              log.error("Overwriting definition of avp(same name) , present: {}, new one: {}",new Object[]{nameToCodeMap.get(avp.getName().trim()),mapKey});
+            if(nameToCodeMap.containsKey(avp.getName().trim())) {
+              log.debug("[ERROR] Overwriting definition of avp(same name) , present: {}, new one: {}",new Object[]{nameToCodeMap.get(avp.getName().trim()),mapKey});
             }
             nameToCodeMap.put(avp.getName().trim(), mapKey);
           }
           catch (Exception e) {
-            if (log.isErrorEnabled()) {
-              log.error("Failed Parsing AVP: Name[" + avpName + "] Description[" + avpDescription + "] Code[" + avpCode + "] May-Encrypt[" + avpMayEncrypt + "] Mandatory["
+            if (log.isDebugEnabled()) {
+              log.debug("[ERROR] Failed Parsing AVP: Name[" + avpName + "] Description[" + avpDescription + "] Code[" + avpCode + "] May-Encrypt[" + avpMayEncrypt + "] Mandatory["
                   + avpMandatory + "] Protected [" + avpProtected + "] Vendor-Bit [" + avpVendorBit + "] Vendor-Id [" + avpVendorId + "] Constrained[" + avpConstrained + "] Type ["
                   + avpType + "]", e);
             }
@@ -582,8 +565,7 @@ public class DiameterMessageValidator {
   public void resolveWeakGroupedChildren(Map<VAvpRepresentation, VAvpRepresentation> avpMap, Map<String, VAvpRepresentation> nameToCodeMap) {
     // FIXME: we have maximum 50 runs, this does not take much time, limits
     // number of iterations over collection to fill all data.
-    // this is due uncertanity - that data might have not been initialized
-    // yet - but its somewhere in collections
+    // this is due uncertanity - that data might have not been initialized yet - but its somewhere in collections
     int runCount = 20;
     boolean haveWeaklings = true;
     while (haveWeaklings && runCount > 0) {
@@ -651,13 +633,13 @@ public class DiameterMessageValidator {
           children.add(index, strongRep);
         }
       }
-     else {
+      else {
         continue;
       }
     }
 
     if (!hasWeaklings) {
-     groupedAvp.markWeak(false);
+      groupedAvp.markWeak(false);
     }
 
     return hasWeaklings;
@@ -667,7 +649,7 @@ public class DiameterMessageValidator {
     long value = -1;
     if (vendorId == null) {
       value = 0;
-   }
+    }
     else {
       String vendorCode = vendorMap.get(vendorId);
 
@@ -699,9 +681,8 @@ public class DiameterMessageValidator {
   }
 
   /**
-   * Valdiates message against XML configuration file. If there is no
-   * representation it does nothing. If
-   * {@link DiameterMessageValidator#hasRepresentation(int, long, boolean, int, long)}
+   * Validates message against XML configuration file. If there is norepresentation it does nothing.
+   * If {@link DiameterMessageValidator#hasRepresentation(int, long, boolean, int, long)}
    * returns false this method returns always without exception.
    * 
    * @param msg
@@ -710,7 +691,7 @@ public class DiameterMessageValidator {
    */
   public void validate(Message msg, boolean incoming) throws JAvpNotAllowedException {
     if (!on) {
-      return; // throw new IllegalStateException("validation is of.");
+      return;
     }
 
     VMessageRepresentation rep = new VMessageRepresentation(msg.getCommandCode(), msg.getApplicationId(), msg.isRequest());
@@ -725,9 +706,8 @@ public class DiameterMessageValidator {
   }
 
   /**
-   * Validate if avp can be added/present in message - meaning it checks if
-   * there is place for passed avp. If
-   * {@link DiameterMessageValidator#hasRepresentation(int, long, boolean, int, long)}
+   * Validate if avp can be added/present in message - meaning it checks if there is place for passed avp.
+   * If {@link DiameterMessageValidator#hasRepresentation(int, long, boolean, int, long)}
    * returns false this method returns always without exception.
    * 
    * @param commandCode
@@ -743,12 +723,13 @@ public class DiameterMessageValidator {
    */
   public void validate(int commandCode, long appId, boolean isRequest, AvpSet destination, Avp avp) {
     if (!on) {
-      return; //throw new IllegalStateException("validation is of.");
+      return;
     }
     VMessageRepresentation rep = new VMessageRepresentation(commandCode, appId, isRequest);
     rep = this.commandMap.get(rep);
     if (rep == null) {
       // no notion, lets leave it.
+      log.warn("Validation could not be performed for Command. Code={}, Application-Id={}, Req={}", new Object[] { commandCode, appId, isRequest });
       return;
     }
 
@@ -756,9 +737,8 @@ public class DiameterMessageValidator {
   }
 
   /**
-   * Determines if avp identified by code and vendor has correct multiplicity
-   * in passed set. If
-   * {@link DiameterMessageValidator#hasRepresentation(int, long, boolean, int, long)}
+   * Determines if avp identified by code and vendor has correct multiplicity in passed set.
+   * If {@link DiameterMessageValidator#hasRepresentation(int, long, boolean, int, long)}
    * returns false this method returns always true.
    * 
    * @param commandCode
@@ -784,10 +764,11 @@ public class DiameterMessageValidator {
     rep = this.commandMap.get(rep);
     if (rep == null) {
       // no notion, lets leave it.
+      log.warn("Validation could not be performed for Command. Code={}, Application-Id={}, Req={}", new Object[] { commandCode, appId, isRequest });
       return true;
     }
     AvpSet innerSet = destination.getAvps(avpCode, avpVendor);
-    // FIXME: 1 is for avp beeing added
+    // FIXME: 1 is for AVP being added
     int count = 1;
     if (innerSet != null) {
       count += innerSet.size();
@@ -801,7 +782,7 @@ public class DiameterMessageValidator {
    * {@link DiameterMessageValidator#hasRepresentation(int, long, boolean, int, long)}
    * returns false this method returns always true.
    * 
-  * @param commandCode
+   * @param commandCode
    *            - message command code
    * @param appId
    *            - message application id
@@ -865,14 +846,14 @@ public class DiameterMessageValidator {
   }
 
   public void setAvpMap(Map<VAvpRepresentation, VAvpRepresentation> avpMap) {
-   this.avpMap = avpMap;
+    this.avpMap = avpMap;
   }
 
   public Map<String, String> getVendorMap() {
     return vendorMap;
   }
 
- public void setVendorMap(Map<String, String> vendorMap) {
+  public void setVendorMap(Map<String, String> vendorMap) {
     this.vendorMap = vendorMap;
   }
 
@@ -894,18 +875,17 @@ public class DiameterMessageValidator {
   public boolean isConfigured() {
     return configured;
   }
-  
+
   public static void setOn(boolean isOn) {
-	  instance.on = isOn;
-	  log.info("Diameter Message/AVP Validator is now " + (isOn ? "enabled." : "disabled."));
+    instance.on = isOn;
+    log.info("Diameter Message/AVP Validator is now " + (isOn ? "enabled." : "disabled."));
   }
 
-public ValidatorLevel getSendLevel() {
-	return this.receiveValidationLevel;
-}
+  public ValidatorLevel getSendLevel() {
+    return this.receiveValidationLevel;
+  }
 
-public ValidatorLevel getReceiveLevel() {
-	// TODO Auto-generated method stub
-	return this.sendValidationLevel;
-}
+  public ValidatorLevel getReceiveLevel() {
+    return this.sendValidationLevel;
+  }
 }
