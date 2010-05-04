@@ -2,13 +2,10 @@ package org.mobicents.diameter.stack;
 
 import static org.jdiameter.server.impl.helpers.Parameters.*;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -50,14 +47,14 @@ import org.jdiameter.server.impl.helpers.XMLConfiguration;
 import org.mobicents.diameter.api.DiameterMessageFactory;
 import org.mobicents.diameter.api.DiameterProvider;
 import org.mobicents.diameter.dictionary.AvpDictionary;
-import org.mobicents.diameter.stack.management.ApplicationIdJMX;
 import org.mobicents.diameter.stack.management.DiameterConfiguration;
-import org.mobicents.diameter.stack.management.NetworkPeer;
-import org.mobicents.diameter.stack.management.NetworkPeerImpl;
-import org.mobicents.diameter.stack.management.RealmImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DiameterStackMultiplexer extends ServiceMBeanSupport implements DiameterStackMultiplexerMBean, DiameterProvider, NetworkReqListener, EventListener<Request, Answer>, DiameterMessageFactory
 {
+  private static final Logger logger = LoggerFactory.getLogger(DiameterStackMultiplexer.class);
+
   protected Stack stack = null;
 
   protected HashMap<DiameterListener, Collection<org.jdiameter.api.ApplicationId>> listenerToAppId = new HashMap<DiameterListener, Collection<org.jdiameter.api.ApplicationId>>(3);
@@ -88,14 +85,14 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
       Set<org.jdiameter.api.ApplicationId> appIds = stack.getMetaData().getLocalPeer().getCommonApplications();
 
-      if(log.isInfoEnabled()) {
-        log.info("Diameter Stack Mux :: Supporting " + appIds.size() + " applications.");
+      if(logger.isInfoEnabled()) {
+        logger.info("Diameter Stack Mux :: Supporting {} applications.", appIds.size());
       }
       //network.addNetworkReqListener(this, ApplicationId.createByAccAppId(193, 19302));
 
       for (org.jdiameter.api.ApplicationId appId : appIds) {
-        if(log.isInfoEnabled()) {
-          log.info("Diameter Stack Mux :: Adding Listener for [" + appId + "].");
+        if(logger.isInfoEnabled()) {
+          logger.info("Diameter Stack Mux :: Adding Listener for [{}].", appId);
         }
         network.addNetworkReqListener(this, appId);
 
@@ -108,16 +105,16 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       }
 
       try {
-        if(log.isInfoEnabled()) {
-          log.info("Parsing AVP Dictionary file...");
+        if(logger.isInfoEnabled()) {
+          logger.info("Parsing AVP Dictionary file...");
         }
         AvpDictionary.INSTANCE.parseDictionary(AvpDictionary.class.getResourceAsStream("dictionary.xml"));
-        if(log.isInfoEnabled()) {
-          log.info("AVP Dictionary file successfuly parsed!");
+        if(logger.isInfoEnabled()) {
+          logger.info("AVP Dictionary file successfuly parsed!");
         }
       }
       catch (Exception e) {
-        log.error("Error while parsing dictionary file.", e);
+        logger.error("Error while parsing dictionary file.", e);
       }
 
       this.stack.start();
@@ -129,25 +126,25 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       is = null;
     }
 
-    if(log.isInfoEnabled()) {
-      log.info("Diameter Stack Mux :: Successfully initialized stack.");
+    if(logger.isInfoEnabled()) {
+      logger.info("Diameter Stack Mux :: Successfully initialized stack.");
     }
   }
 
   private void doStopStack() throws Exception {
     try {
-      if(log.isInfoEnabled()) {
-        log.info("Stopping Diameter Mux Stack...");
+      if(logger.isInfoEnabled()) {
+        logger.info("Stopping Diameter Mux Stack...");
       }
 
       stack.stop(10, TimeUnit.SECONDS);
 
-      if(log.isInfoEnabled()) {
-        log.info("Diameter Mux Stack Stopped Successfully.");
+      if(logger.isInfoEnabled()) {
+        logger.info("Diameter Mux Stack Stopped Successfully.");
       }
     }
     catch (Exception e) {
-      log.error("Failure while stopping stack", e);
+      logger.error("Failure while stopping stack", e);
     }
 
     stack.destroy();
@@ -158,8 +155,8 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
     if(appIds.size() > 0) {
       for(org.jdiameter.api.ApplicationId appId : appIds) {
-        if(log.isDebugEnabled()) {
-          log.debug("Diameter Stack Mux :: findListener :: AVP AppId [" + appId + "]");
+        if(logger.isDebugEnabled()) {
+          logger.debug("Diameter Stack Mux :: findListener :: AVP AppId [" + appId + "]");
         }
 
         DiameterListener listener;
@@ -167,8 +164,8 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
         Long appIdValue = appId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE ? appId.getAcctAppId() : appId.getAuthAppId(); 
 
         if((listener = this.appIdToListener.get(appIdValue)) != null) {
-          if(log.isDebugEnabled()) {
-            log.debug("Diameter Stack Mux :: findListener :: Found Listener [" + listener + "]");
+          if(logger.isDebugEnabled()) {
+            logger.debug("Diameter Stack Mux :: findListener :: Found Listener [" + listener + "]");
           }
 
           return listener;
@@ -178,23 +175,23 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     else {
       Long appId = message.getApplicationId();
 
-      if(log.isDebugEnabled()) {
-        log.debug("Diameter Stack Mux :: findListener :: Header AppId [" + appId + "]");
+      if(logger.isDebugEnabled()) {
+        logger.debug("Diameter Stack Mux :: findListener :: Header AppId [" + appId + "]");
       }
 
       DiameterListener listener;
 
       if((listener = this.appIdToListener.get(appId)) != null) {
-        if(log.isDebugEnabled()) {
-          log.debug("Diameter Stack Mux :: findListener :: Found Listener [" + listener + "]");
+        if(logger.isDebugEnabled()) {
+          logger.debug("Diameter Stack Mux :: findListener :: Found Listener [" + listener + "]");
         }
 
         return listener;
       }
     }
 
-    if(log.isInfoEnabled()) {
-      log.info("Diameter Stack Mux :: findListener :: No Listener Found.");
+    if(logger.isInfoEnabled()) {
+      logger.info("Diameter Stack Mux :: findListener :: No Listener Found.");
     }
 
     return null;
@@ -203,8 +200,8 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   // ===== NetworkReqListener IMPLEMENTATION ===== 
 
   public Answer processRequest(Request request) {
-    if(log.isInfoEnabled()) {
-      log.info("Diameter Stack Mux :: processRequest :: Command-Code [" + request.getCommandCode() + "]");
+    if(logger.isInfoEnabled()) {
+      logger.info("Diameter Stack Mux :: processRequest :: Command-Code [" + request.getCommandCode() + "]");
     }
 
     DiameterListener listener = findListener(request);
@@ -219,7 +216,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
         return answer;
       }
       catch (Exception e) {
-        log.error("Failed to create APPLICATION UNSUPPORTED answer.", e);
+        logger.error("Failed to create APPLICATION UNSUPPORTED answer.", e);
       }
     }
     return null;
@@ -274,7 +271,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       return session.getSessionId();
     }
     catch (Exception e) {
-      log.error("", e);
+      logger.error("", e);
     }
 
     return null;
@@ -297,7 +294,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       return answer.get();
     }
     catch (Exception e) {
-      log.error("", e);
+      logger.error("", e);
     }
 
     return null;
@@ -311,7 +308,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       return  message;
     }
     catch (Exception e) {
-      log.error("Failure while creating message.", e);
+      logger.error("Failure while creating message.", e);
     }
 
     return null;
@@ -345,7 +342,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
   public void registerListener(DiameterListener listener, org.jdiameter.api.ApplicationId[] appIds) throws IllegalStateException {
     if(listener == null) {
-      log.warn("Trying to register a null Listener. Give up...");
+      logger.warn("Trying to register a null Listener. Give up...");
       return;
     }
 
@@ -357,14 +354,14 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       // Register the selected appIds in the stack
       Network network = stack.unwrap(Network.class);
 
-      if(log.isInfoEnabled()) {
-        log.info("Diameter Stack Mux :: Registering  " + appIds.length + " applications.");
+      if(logger.isInfoEnabled()) {
+        logger.info("Diameter Stack Mux :: Registering  " + appIds.length + " applications.");
       }
 
       for (; curAppIdIndex < appIds.length; curAppIdIndex++) {
         org.jdiameter.api.ApplicationId appId = appIds[curAppIdIndex];
-        if(log.isInfoEnabled()) {
-          log.info("Diameter Stack Mux :: Adding Listener for [" + appId + "].");
+        if(logger.isInfoEnabled()) {
+          logger.info("Diameter Stack Mux :: Adding Listener for [" + appId + "].");
         }
         network.addNetworkReqListener(this, appId);
 
@@ -401,11 +398,11 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
         }
       }
       catch (Exception e) {
-        log.error("", e);
+        logger.error("", e);
       }
     }
     catch (Exception e) {
-      log.error("", e);
+      logger.error("", e);
     }
     finally {
       lock.unlock();
@@ -413,12 +410,12 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   }
 
   public void unregisterListener(DiameterListener listener) {
-    if(log.isInfoEnabled()) {
-      log.info("Diameter Stack Mux :: unregisterListener :: Listener [" + listener + "]");
+    if(logger.isInfoEnabled()) {
+      logger.info("Diameter Stack Mux :: unregisterListener :: Listener [" + listener + "]");
     }
     
     if(listener == null) {
-      log.warn("Diameter Stack Mux :: unregisterListener :: Trying to unregister a null Listener. Give up...");
+      logger.warn("Diameter Stack Mux :: unregisterListener :: Trying to unregister a null Listener. Give up...");
       return;
     }
 
@@ -429,7 +426,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       Collection<org.jdiameter.api.ApplicationId> appIds = this.listenerToAppId.remove(listener);
 
       if(appIds == null) {
-        log.warn("Diameter Stack Mux :: unregisterListener :: Listener has no App-Ids registered. Give up...");
+        logger.warn("Diameter Stack Mux :: unregisterListener :: Listener has no App-Ids registered. Give up...");
         return;
       }
 
@@ -437,8 +434,8 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
       for (org.jdiameter.api.ApplicationId appId : appIds) {
         try {
-          if(log.isInfoEnabled()) {
-            log.info("Diameter Stack Mux :: unregisterListener :: Unregistering AppId [" + appId + "]");
+          if(logger.isInfoEnabled()) {
+            logger.info("Diameter Stack Mux :: unregisterListener :: Unregistering AppId [" + appId + "]");
           }
 
           // Remove the appid from map
@@ -448,12 +445,12 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
           network.removeNetworkReqListener(appId);
         }
         catch (Exception e) {
-          log.error("", e);
+          logger.error("", e);
         }
       }
     }
     catch (InternalException ie) {
-      log.error("", ie);
+      logger.error("", ie);
     }
     finally {
       lock.unlock();
@@ -514,8 +511,8 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
       getMutableConfiguration().setChildren(OwnIPAddresses.ordinal(), (Configuration[]) newIPAddressesConfig.toArray());
 
-      if(log.isInfoEnabled()) {
-        log.info("Local Peer IP Address successfully changed to " + ipAddress + ". Restart to Diameter stack is needed to apply changes.");
+      if(logger.isInfoEnabled()) {
+        logger.info("Local Peer IP Address successfully changed to " + ipAddress + ". Restart to Diameter stack is needed to apply changes.");
       }
     }
     else {
@@ -544,13 +541,13 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
       getMutableConfiguration().setChildren(OwnIPAddresses.ordinal(), (Configuration[]) newIPAddressesConfig.toArray());
 
-      if(log.isInfoEnabled()) {
-        log.info("Local Peer IP Address " + ipAddress + " successfully added. Restart to Diameter stack is needed to apply changes.");
+      if(logger.isInfoEnabled()) {
+        logger.info("Local Peer IP Address " + ipAddress + " successfully added. Restart to Diameter stack is needed to apply changes.");
       }
     }
     else {
-      if(log.isInfoEnabled()) {
-        log.info("Local Peer IP Address " + ipAddress + " not found. No changes were made.");
+      if(logger.isInfoEnabled()) {
+        logger.info("Local Peer IP Address " + ipAddress + " not found. No changes were made.");
       }
     }
   }
@@ -562,8 +559,8 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   public void _LocalPeer_setRealm(String realm) throws MBeanException {
     getMutableConfiguration().setStringValue(OwnRealm.ordinal(), realm);
 
-    if(log.isInfoEnabled()) {
-      log.info("Local Peer Realm successfully changed to '" + realm + "'. Restart to Diameter stack is needed to apply changes.");
+    if(logger.isInfoEnabled()) {
+      logger.info("Local Peer Realm successfully changed to '" + realm + "'. Restart to Diameter stack is needed to apply changes.");
     }
   }
 
@@ -578,8 +575,8 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
       getMutableConfiguration().setStringValue(OwnDiameterURI.ordinal(), uri);
 
-      if(log.isInfoEnabled()) {
-        log.info("Local Peer URI successfully changed to '" + uri + "'. Restart to Diameter stack is needed to apply changes.");
+      if(logger.isInfoEnabled()) {
+        logger.info("Local Peer URI successfully changed to '" + uri + "'. Restart to Diameter stack is needed to apply changes.");
       }
     }
     catch (URISyntaxException use) {
@@ -595,8 +592,8 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     // validate vendor-id
     try {
       getMutableConfiguration().setLongValue(OwnVendorID.ordinal(), vendorId);
-      if(log.isInfoEnabled()) {
-        log.info("Local Peer Vendor-Id successfully changed to '" + vendorId + "'. Restart to Diameter stack is needed to apply changes.");
+      if(logger.isInfoEnabled()) {
+        logger.info("Local Peer Vendor-Id successfully changed to '" + vendorId + "'. Restart to Diameter stack is needed to apply changes.");
       }
     }
     catch (NumberFormatException nfe) {
@@ -614,7 +611,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       /*Peer p =*/ n.addPeer(name, "", attemptConnect); // FIXME: This requires realm...
     }
     catch (IllegalArgumentException e) {
-      log.warn(e.getMessage());
+      logger.warn(e.getMessage());
     }
     catch (InternalException e) {
       throw new MBeanException(e, "Failed to add peer with name '" + name + "'");
@@ -641,7 +638,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       /*Peer p =*/ n.addPeer(peerName, realmName, attemptConnect);
     }
     catch (IllegalArgumentException e) {
-      log.warn(e.getMessage());
+      logger.warn(e.getMessage());
     }
     catch (InternalException e) {
       throw new MBeanException(e, "Failed to add peer with name '" + peerName + "' to realm '" + realmName + "'");
@@ -830,122 +827,6 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     }
 
     return realmHosts;
-  }
-
-  public static void main(String[] args) throws Exception {
-    DiameterStackMultiplexer mux = new DiameterStackMultiplexer();
-    
-    InputStream is = new BufferedInputStream(new FileInputStream("/Users/ammendonca/work/jdiameter/jdiameter-config.xml"));
-    mux.initStack(is);
-    DiameterConfiguration mgmt = new DiameterConfiguration(mux.getStack());
-    //System.out.println(mgmt);
-
-    // Add Peer in runtime
-    //NetworkImpl n = (NetworkImpl) mux.getStack().unwrap(Network.class);
-    //Peer p = n.addPeer("aaa://127.0.0.1:21812", "mobicents.org", true);
-    //System.out.println(p);
-    
-    // Add Realm in runtime
-    //NetworkImpl n = (NetworkImpl) mux.getStack().unwrap(Network.class);
-    //Realm r = n.addRealm("brainslog.org", org.jdiameter.api.ApplicationId.createByAccAppId(69), LocalAction.LOCAL, false, 1);
-    //System.out.println("New Realm => " + r);
-
-    //System.out.println(rt);
-    //mgmt.getNetwork().getPeer("aaa://127.0.0.1:21812").setName("aaa://127.0.0.1:21822");
-    //System.out.println("STOPPING");
-    //mux.stopStack();
-    //System.out.println("STOPPED. STARTING.");
-    //mux.startStack();
-    //System.out.println("STARTED");
-    //System.exit(0);
-    
-    // Add realm
-    ApplicationIdJMX[] appIds = new ApplicationIdJMX[]{ApplicationIdJMX.createAcctApplicationId(69)};
-    RealmImpl realm = new RealmImpl(Arrays.asList(appIds), "brainslog.org", new ArrayList<String>(Arrays.asList(new String[]{"192.168.0.2"})), "LOCAL", false, 1L);
-    mgmt.getNetwork().addRealmRuntime(realm);
-
-    // Add peer
-    mgmt.getNetwork().addPeerRuntime(new NetworkPeerImpl("aaa://127.0.0.1:21818", true, 1), "brainslog.org");
-    
-    // Remove peer
-    // mgmt.getNetwork().removePeer("127.0.0.1");
-    
-    // Remove realm
-    // mgmt.getNetwork().removeRealm("mobicents.org");
-    
-    // Change DuplicateTimer
-    mgmt.getParameters().setDuplicateTimer(999L);
-    
-    // Change AcceptUndefinedPeer
-    mgmt.getParameters().setAcceptUndefinedPeer(false);
-    
-    // Change UseUriAsFqdn
-    mgmt.getParameters().setUseUriAsFqdn(false);
-    
-    // Change MessageTimeout
-    mgmt.getParameters().setMessageTimeout(999L);
-    
-    // Change StopTimeout
-    mgmt.getParameters().setStopTimeout(999L);
-    
-    // Change CeaTimeout
-    mgmt.getParameters().setCeaTimeout(999L);
-    
-    // Change IacTimeout
-    mgmt.getParameters().setIacTimeout(999L);
-    
-    // Change DwaTimeout
-    mgmt.getParameters().setDwaTimeout(999L);
-    
-    // Change DpaTimeout
-    mgmt.getParameters().setDpaTimeout(999L);
-    
-    // Change RecTimeout
-    mgmt.getParameters().setRecTimeout(999L);
-    
-    mgmt = new DiameterConfiguration(mux.getStack());
-    
-    // Network Peer Management
-    NetworkPeer nPeer = mgmt.getNetwork().getPeer("aaa://127.0.0.1:21812");
-    
-    // Set Rating
-    nPeer.setRating(28);
-    
-    // Set Name
-    nPeer.setName("aaa://127.0.0.1:21813");
-    
-    // Set IP Address
-    nPeer.setIp("192.168.10.12");
-    
-    // Set Port Range
-    nPeer.setPortRange(1024, 2048);
-
-    mgmt = new DiameterConfiguration(mux.getStack());
-
-    // Realm Management
-    org.mobicents.diameter.stack.management.Realm nRealm = mgmt.getNetwork().getRealm("mobicents.org");
-    
-    nRealm.setName("mobicentz.org");
-    
-    nRealm.setLocalAction(LocalAction.PROXY.name());
-    
-    nRealm.setDynamic(true);
-    
-    nRealm.addPeer("127.0.0.3");
-    
-    nRealm.setExpTime(3L);
-    
-    ((RealmImpl)nRealm).updateRealm();
-
-    mgmt = new DiameterConfiguration(mux.getStack());
-    System.out.println(mgmt);
-    //System.out.println(mux.getStack().isWrapperFor(PeerTable.class));
-    //MutablePeerTableImpl mpt = (MutablePeerTableImp ´+´l) mux.getStack().unwrap(PeerTable.class);
-    //mpt.getAllRealms();
-    //for(Peer x : mpt.getPeerTable()) {
-    //  System.out.println(x.toString());
-    //}
-    System.exit(0);
   }
 
   public DiameterConfiguration getDiameterConfiguration() throws MBeanException {
