@@ -13,7 +13,7 @@
 
   <groupId>org.mobicents.servers.diameter</groupId>
   <artifactId>diameter-parent</artifactId>
-  <version>1.2.1.GA-SNAPSHOT</version>
+  <version>1.2.2.GA-SNAPSHOT</version>
 
   <name>Mobicents :: Diameter :: ${pom.artifactId}</name>
 
