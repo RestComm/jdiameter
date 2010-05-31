@@ -5,17 +5,15 @@
 
 	<parent>
 		<groupId>org.mobicents</groupId>
-		<artifactId>mobicents</artifactId>
-		<version>1.16</version>
-		<relativePath>../../../../parent/pom.xml</relativePath>
+		<artifactId>mobicents-parent</artifactId>
+		<version>2.5</version>
 	</parent>
 
 	<artifactId>mobicents-diameter-core-docs</artifactId>
 	<groupId>org.mobicents.servers.diameter</groupId>
-	<version>1.2.1.GA-SNAPSHOT</version>
+	<version>1.2.2.GA-SNAPSHOT</version>
 
 	<packaging>pom</packaging>
-
 
 	<properties>
 		<docs.bookid>MobicentsDiameter</docs.bookid>

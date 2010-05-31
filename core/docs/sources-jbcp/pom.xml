@@ -6,13 +6,13 @@
 	<parent>
 		<groupId>org.mobicents.servers.diameter</groupId>
 		<artifactId>mobicents-diameter-core-docs</artifactId>
-		<version>1.2.1.GA-SNAPSHOT</version>
+		<version>1.2.2.GA-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>mobicents-diameter-core-docs-sources-jbcp</artifactId>
 
 	<properties>
-		<version.jdiameter>1.5.3.1-build353-SNAPSHOT</version.jdiameter>
+		<version.jdiameter>1.5.3.1-build354</version.jdiameter>
 		<THIS.PLATFORM>JBoss Communications</THIS.PLATFORM>
 		<JEE.PLATFORM>JBoss Enterprise Application Platform</JEE.PLATFORM>
 		<MANAGEMENT.PLATFORM>JBoss Operations Network</MANAGEMENT.PLATFORM>
