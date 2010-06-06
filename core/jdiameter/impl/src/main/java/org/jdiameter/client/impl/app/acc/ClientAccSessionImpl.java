@@ -53,23 +53,30 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
   private static final long serialVersionUID = 1L;
 
   private static final Logger logger = LoggerFactory.getLogger(ClientAccSessionImpl.class);
-  
+
+  // Constants ----------------------------------------------------------------
   public static final int DELIVER_AND_GRANT = 1;
   public static final int GRANT_AND_LOSE = 3;
 
+  // Session State Handling ---------------------------------------------------
   protected ClientAccSessionState state = IDLE;
-  protected String destHost, destRealm;
+
+  // Factories and Listeners --------------------------------------------------
   protected IClientAccActionContext context;
-  protected AppEvent buffer;
   protected ClientAccSessionListener listener;
 
+  protected String destHost, destRealm;
+  protected AppEvent buffer;
 
   public ClientAccSessionImpl(SessionFactory sf, ClientAccSessionListener lst, ApplicationId app) {
-	  super(sf);
-    if (lst == null)
+    super(sf);
+    if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
-    if (app == null)
+    }
+    if (app == null) {
       throw new IllegalArgumentException("ApplicationId can not be null");
+    }
+
     appId = app;
     listener = lst;
 
@@ -104,11 +111,13 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
         session.send(accountRequest.getMessage(), this);
         // Store last destination information
         destRealm = accountRequest.getMessage().getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString();
-        if(accountRequest.getMessage().getAvps().getAvp(Avp.DESTINATION_HOST)!=null)
-        	destHost = accountRequest.getMessage().getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString();
+        Avp destHostAvp = accountRequest.getMessage().getAvps().getAvp(Avp.DESTINATION_HOST);
+        if(destHostAvp != null) {
+          destHost = destHostAvp.getOctetString();
+        }
       }
       catch (Throwable t) {
-    	logger.debug("Failed to send ACR.", t);
+        logger.debug("Failed to send ACR.", t);
         handleEvent(new Event(Event.Type.FAILED_SEND_RECORD, accountRequest));
       }
     }
@@ -151,10 +160,17 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
         switch ((Event.Type) event.getType()) {
         // Client or device requests access
         case SEND_START_RECORD:
+          // Current State: IDLE
+          // Event: Client or Device Requests access
+          // Action: Send accounting start req.
+          // New State: PENDING_S
           setState(PENDING_START);
           break;
-          // Client or device requests a one-time service
         case SEND_EVENT_RECORD:
+          // Current State: IDLE
+          // Event: Client or device requests a one-time service
+          // Action: Send accounting event req
+          // New State: PENDING_E
           setState(PENDING_EVENT);
           break;
           // Send buffered message action in other section of this method see below
@@ -169,18 +185,28 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
         case FAILED_SEND_RECORD:
           AccountRequest request = (AccountRequest) event.getData();
           Avp accRtReq = request.getMessage().getAvps().getAvp(ACCOUNTING_REALTIME_REQUIRED);
-          // Failure to send and buffer space available and realtime not equal to DELIVER_AND_GRANT
+
+          // Current State: PENDING_S
+          // Event: Failure to send and buffer space available and realtime not equal to DELIVER_AND_GRANT
+          // Action: Store Start Record
+          // New State: OPEN
           if (checkBufferSpace() && accRtReq != null && accRtReq.getInteger32() != DELIVER_AND_GRANT) {
             storeToBuffer(request);
             setState(OPEN);
           }
           else {
-            // Failure to send and no buffer space available and realtime equal to GRANT_AND_LOSE
+            // Current State: PENDING_S
+            // Event: Failure to send and no buffer space available and realtime equal to GRANT_AND_LOSE
+            // Action: -
+            // New State: OPEN
             if (!checkBufferSpace() && accRtReq != null && accRtReq.getInteger32() == GRANT_AND_LOSE) {
               setState(OPEN);
             }
             else {
-              // Failure to send and no buffer space available and realtime not equal to GRANT_AND_LOSE
+              // Current State: PENDING_S
+              // Event: Failure to send and no buffer space available and realtime not equal to GRANT_AND_LOSE
+              // Action: Disconnect User/Device
+              // New State: IDLE
               if (!checkBufferSpace() && accRtReq != null && accRtReq.getInteger32() != GRANT_AND_LOSE) {
                 sendAndStateLock.lock();
                 if (context != null) {
@@ -194,8 +220,11 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
             }
           }
           break;
-          // Successful accounting start answer received
         case RECEIVED_RECORD:
+          // Current State: PENDING_S
+          // Event: Successful accounting start answer received
+          // Action: -
+          // New State: OPEN
           processInterimIntervalAvp(event);
           setState(OPEN);
           break;
@@ -203,12 +232,18 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
           try {
             AccountAnswer answer = (AccountAnswer) event.getData();
             accRtReq = answer.getMessage().getAvps().getAvp(ACCOUNTING_REALTIME_REQUIRED);
-            // Failed accounting start answer received and realtime equal to GRANT_AND_LOSE
+            // Current State: PENDING_S
+            // Event: Failed accounting start answer received and realtime equal to GRANT_AND_LOSE
+            // Action: -
+            // New State: OPEN
             if (accRtReq != null && accRtReq.getInteger32() == GRANT_AND_LOSE) {
               setState(OPEN);
             }
             else {
-              // Failed accounting start answer received and realtime not equal to GRANT_AND_LOSE
+              // Current State: PENDING_S
+              // Event: Failed accounting start answer received and realtime not equal to GRANT_AND_LOSE
+              // Action: Disconnect User/Device
+              // New State: IDLE
               if (accRtReq != null && accRtReq.getInteger32() != GRANT_AND_LOSE) {
                 sendAndStateLock.lock();
                 if (context != null) {
@@ -226,8 +261,11 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
             setState(IDLE);
           }
           break;
-          // User service terminated
         case SEND_STOP_RECORD:
+          // Current State: PENDING_S
+          // Event: User service terminated
+          // Action: Store stop record
+          // New State: PENDING_S
           if (context != null) {
             Request str = createSessionTermRequest();
             context.disconnectUserOrDev(str);
@@ -242,12 +280,21 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
         switch ((Event.Type) event.getType()) {
         // User service terminated
         case SEND_STOP_RECORD:
-            setState(PENDING_CLOSE);
-            break;
+          // Current State: OPEN
+          // Event: User service terminated
+          // Action: Send accounting stop request
+          // New State: PENDING_L
+          setState(PENDING_CLOSE);
+          break;
         case SEND_INTERIM_RECORD:
-            setState(PENDING_INTERIM);
-            break;
-          
+          // FIXME: Shouldn't this be different ?
+          // Current State: OPEN
+          // Event: Interim interval elapses
+          // Action: Send accounting interim record
+          // New State: PENDING_I
+          setState(PENDING_INTERIM);
+          break;
+
           // Create timer for "Interim interval elapses" event
         case RECEIVED_RECORD:
           processInterimIntervalAvp(event);
@@ -255,31 +302,43 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
         }
       }
       break;
-      //FIXME: add check for abonrmal
+      //FIXME: add check for abnormal
       // PendingI ==========
       case PENDING_INTERIM: {
         switch ((Event.Type) event.getType()) {
-        // Successful accounting interim answer received
         case RECEIVED_RECORD:
+          // Current State: PENDING_I
+          // Event: Successful accounting interim answer received
+          // Action: -
+          // New State: OPEN
           processInterimIntervalAvp(event);
           setState(OPEN);
           break;
-
         case FAILED_SEND_RECORD:
           AccountRequest request = (AccountRequest) event.getData();
           Avp accRtReq = ((Message) event.getData()).getAvps().getAvp(ACCOUNTING_REALTIME_REQUIRED);
-          // Failure to send and realtime not equal to DELIVER_AND_GRANT
+
+          // Current State: PENDING_I
+          // Event: Failure to send and buffer space available (or old record interim can be overwritten) and realtime not equal to DELIVER_AND_GRANT
+          // Action: Store interim record
+          // New State: OPEN
           if (checkBufferSpace() && accRtReq != null && accRtReq.getInteger32() != DELIVER_AND_GRANT) {
             storeToBuffer(request);
             setState(OPEN);
           }
           else {
-            // Failure to send and no buffer space available and realtime equal to GRANT_AND_LOSE
+            // Current State: PENDING_I
+            // Event: Failure to send and no buffer space available and realtime equal to GRANT_AND_LOSE
+            // Action: -
+            // New State: OPEN
             if (!checkBufferSpace() && accRtReq != null && accRtReq.getInteger32() == GRANT_AND_LOSE) {
               setState(OPEN);
             }
             else {
-              // Failure to send and no buffer space available and realtime not equal to GRANT_AND_LOSE
+              // Current State: PENDING_I
+              // Event: Failure to send and no buffer space available and realtime not equal to GRANT_AND_LOSE
+              // Action: Disconnect User/Device
+              // New State: IDLE
               if (!checkBufferSpace() && accRtReq != null && accRtReq.getInteger32() != GRANT_AND_LOSE) {
                 sendAndStateLock.lock();
                 if (context != null) {
@@ -297,12 +356,19 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
           try {
             AccountAnswer answer = (AccountAnswer) event.getData();
             accRtReq = answer.getMessage().getAvps().getAvp(ACCOUNTING_REALTIME_REQUIRED);
-            // Failed accounting interim answer received and realtime equal to GRANT_AND_LOSE
+
+            // Current State: PENDING_I
+            // Event: Failed accounting interim answer received and realtime equal to GRANT_AND_LOSE
+            // Action: -
+            // New State: OPEN
             if (accRtReq != null && accRtReq.getInteger32() == GRANT_AND_LOSE) {
               setState(OPEN);
             }
             else {
-              // Failed accounting interim answer received and realtime not equal to GRANT_AND_LOSE
+              // Current State: PENDING_I
+              // Event: Failed account interim answer received and realtime not equal to GRANT_AND_LOSE
+              // Action: Disconnect User/Device
+              // New State: IDLE
               if (accRtReq != null && accRtReq.getInteger32() != GRANT_AND_LOSE) {
                 sendAndStateLock.lock();
                 if (context != null) {
@@ -316,12 +382,15 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
             }
           }
           catch (Exception e) {
-            logger.debug(e.getMessage(), e);
+            logger.debug("Can not process received request", e);
             setState(IDLE);
           }
           break;
-          // User service terminated
         case SEND_STOP_RECORD:
+          // Current State: PENDING_I
+          // Event: User service terminated
+          // Action: Store stop record
+          // New State: PENDING_I
           if (context != null) {
             Request str = createSessionTermRequest();
             context.disconnectUserOrDev(str);
@@ -334,20 +403,34 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
       // PendingE ==========
       case PENDING_EVENT: {
         switch ((Event.Type) event.getType()) {
-        // Successful accounting event answer received
         case RECEIVED_RECORD:
+          // Current State: PENDING_E
+          // Event: Successful accounting event answer received
+          // Action: -
+          // New State: IDLE
           setState(IDLE);
           break;
         case FAILED_SEND_RECORD:
           if (checkBufferSpace()) {
-            // Failure to send and buffer space available
+            // Current State: PENDING_E
+            // Event: Failure to send and buffer space available
+            // Action: Store event record
+            // New State: IDLE
             AccountRequest data = (AccountRequest) event.getData();
             storeToBuffer(data);
           }
+
+          // Current State: PENDING_E
+          // Event: Failure to send and no buffer space available
+          // Action: -
+          // New State: IDLE
           setState(IDLE);
           break;
-          // Failed accounting event answer received
         case FAILED_RECEIVE_RECORD:
+          // Current State: PENDING_E
+          // Event: Failed accounting event answer received
+          // Action: -
+          // New State: IDLE
           setState(IDLE);
           break;
         }
@@ -356,8 +439,11 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
       // PendingB ==========
       case PENDING_BUFFERED: {
         switch ((Event.Type) event.getType()) {
-        // Successful accounting answer received
         case RECEIVED_RECORD:
+          // Current State: PENDING_B
+          // Event: Successful accounting answer received
+          // Action: Delete record
+          // New State: IDLE
           synchronized (this) {
             storeToBuffer(null);
           }
@@ -365,10 +451,18 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
           break;
           // Failure to send
         case FAILED_SEND_RECORD:
+          // Current State: PENDING_B
+          // Event: Failure to send
+          // Action: -
+          // New State: IDLE
           setState(IDLE);
           break;
           // Failed accounting answer received
         case FAILED_RECEIVE_RECORD:
+          // Current State: PENDING_B
+          // Event: Failed accounting answer received
+          // Action: Delete record
+          // New State: IDLE
           synchronized (this) {
             storeToBuffer(null);
           }
@@ -380,20 +474,34 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
       // PendingL ==========
       case PENDING_CLOSE: {
         switch ((Event.Type) event.getType()) {
-        // Successful accounting  stop answer received
         case RECEIVED_RECORD:
+          // Current State: PENDING_L
+          // Event: Successful accounting stop answer received
+          // Action: -
+          // New State: IDLE
           setState(IDLE);
           break;
         case FAILED_SEND_RECORD:
           if (checkBufferSpace()) {
-            // Failure to send and buffer space available
+            // Current State: PENDING_L
+            // Event: Failure to send and buffer space available
+            // Action: Store stop record
+            // New State: IDLE
             AccountRequest data = (AccountRequest) event.getData();
             storeToBuffer(data);
           }
+          // Current State: PENDING_L
+          // Event: Failure to send and no buffer space available
+          // Action: -
+          // New State: IDLE
           setState(IDLE);
           break;
           // Failed accounting stop answer received
         case FAILED_RECEIVE_RECORD:
+          // Current State: PENDING_L
+          // Event: Failed accounting stop answer received
+          // Action: -
+          // New State: IDLE
           setState(IDLE);
           break;
         }
@@ -407,7 +515,10 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
         // IDLE ===========
         case IDLE: 
         {
-          // Records in storage
+          // Current State: IDLE
+          // Event: Records in storage
+          // Action: Send record
+          // New State: PENDING_B
           try {
             synchronized (this) {
               if (buffer != null) {
@@ -419,15 +530,14 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
           catch (Exception e) {
             logger.debug("can not send buffered message", e);
             synchronized (this) {
-
-							if (context != null && buffer != null) {
-								if (!context.failedSendRecord((Request) buffer.getMessage())) {
-									storeToBuffer(null);
-								}
-							}
-							if (!IDLE.equals(IDLE)) {
-								setState(IDLE);
-							}
+              if (context != null && buffer != null) {
+                if (!context.failedSendRecord((Request) buffer.getMessage())) {
+                  storeToBuffer(null);
+                }
+              }
+              if (!IDLE.equals(IDLE)) {
+                setState(IDLE);
+              }
             }
           }
         }
@@ -459,7 +569,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
                       setState(PENDING_INTERIM);
                     }
                     catch (Exception e) {
-                      logger.debug(e.getMessage(), e);
+                      logger.debug("Can not process Interim Interval AVP", e);
                     }
                     finally {
                       sendAndStateLock.unlock();
@@ -472,7 +582,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
         }
       }
       catch (AvpDataException e) {
-        logger.debug(e.getMessage(), e);
+        logger.debug("Unable to retrieve Acct-Interim-Interval AVP value", e);
       }
     }
   }
@@ -482,33 +592,31 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
   }
 
   public void receivedSuccessMessage(Request request, Answer answer) {
-	 
     if (request.getCommandCode() == AccountRequest.code) {
-    	//FIXME: any reason for this to be after handle?
-    	 try {
-    	        listener.doAccAnswerEvent(this, createAccountRequest(request), createAccountAnswer(answer));
-    	      }
-    	      catch (Exception e) {
-    	        logger.debug(e.getMessage(), e);
-    	      }	
+      //FIXME: any reason for this to be after handle?
+      try {
+        listener.doAccAnswerEvent(this, createAccountRequest(request), createAccountAnswer(answer));
+      }
+      catch (Exception e) {
+        logger.debug("Unable to deliver message to listener.", e);
+      }	
       try {
         sendAndStateLock.lock();
         handleEvent(new Event(createAccountAnswer(answer)));
       }
       catch (Exception e) {
-        logger.debug(e.getMessage(), e);
+        logger.debug("Can not process received request", e);
       }
       finally {
         sendAndStateLock.unlock();
       }
-     
     }
     else {
       try {
         listener.doOtherEvent(this, createAccountRequest(request), createAccountAnswer(answer));
       }
       catch (Exception e) {
-        logger.debug(e.getMessage(), e);
+        logger.debug("Can not process received request", e);
       }
     }
   }
@@ -518,7 +626,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
       handleEvent(new Event(Event.Type.FAILED_RECEIVE_RECORD, createAccountRequest(request)));
     }
     catch (Exception e) {
-      logger.debug(e.getMessage(), e);
+      logger.debug("Can not handle timeout event", e);
     }
   }
 
@@ -528,7 +636,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
         listener.doAccAnswerEvent(this, createAccountRequest(request), null);
       }
       catch (Exception e) {
-        logger.debug(e.getMessage(), e);
+        logger.debug("Can not process received request", e);
       }
     }
     else {
@@ -536,7 +644,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
         listener.doOtherEvent(this, createAccountRequest(request), null);
       }
       catch (Exception e) {
-        logger.debug(e.getMessage(), e);
+        logger.debug("Can not process received request", e);
       }
     }
     return null;

@@ -1,5 +1,6 @@
 package org.jdiameter.common.impl.app.cca;
 
+import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.app.AppSession;
@@ -36,10 +37,15 @@ public class JCreditControlRequestImpl extends AppRequestEventImpl implements JC
     super(request);
   }
 
+  public boolean isRequestedActionAVPPresent() {
+    return super.message.getAvps().getAvp(REQUESTED_ACTION_AVP_CODE) != null;
+  }
+
   public int getRequestedActionAVPValue() {
-    if(isRequestedActionAVPPresent()) {
+    Avp requestedActionAvp = super.message.getAvps().getAvp(REQUESTED_ACTION_AVP_CODE);
+    if(requestedActionAvp != null) {
       try {
-        return super.message.getAvps().getAvp(REQUESTED_ACTION_AVP_CODE).getInteger32();
+        return requestedActionAvp.getInteger32();
       }
       catch (AvpDataException e) {
         logger.debug("Failure trying to obtain Requested-Action AVP value", e);
@@ -49,14 +55,15 @@ public class JCreditControlRequestImpl extends AppRequestEventImpl implements JC
     return -1;
   }
 
-  public boolean isRequestedActionAVPPresent() {
-    return super.message.getAvps().getAvp(REQUESTED_ACTION_AVP_CODE) != null;
+  public boolean isRequestTypeAVPPresent() {
+    return super.message.getAvps().getAvp(CC_REQUEST_TYPE_AVP_CODE) != null;
   }
 
   public int getRequestTypeAVPValue() {
-    if(isRequestTypeAVPPresent()) {
+    Avp requestTypeAvp = super.message.getAvps().getAvp(CC_REQUEST_TYPE_AVP_CODE);
+    if(requestTypeAvp != null) {
       try {
-        return super.message.getAvps().getAvp(CC_REQUEST_TYPE_AVP_CODE).getInteger32();
+        return requestTypeAvp.getInteger32();
       }
       catch (AvpDataException e) {
         logger.debug("Failure trying to obtain CC-Request-Type AVP value", e);
@@ -66,7 +73,4 @@ public class JCreditControlRequestImpl extends AppRequestEventImpl implements JC
     return -1;
   }
 
-  public boolean isRequestTypeAVPPresent() {
-    return super.message.getAvps().getAvp(CC_REQUEST_TYPE_AVP_CODE) != null;
-  }
 }

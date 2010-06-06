@@ -3,7 +3,6 @@ package org.jdiameter.common.impl.app.acc;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -27,16 +26,18 @@ public abstract class AppAccSessionImpl extends AppSessionImpl implements  Netwo
   protected List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
   protected SessionFactory sf = null;
 
-	public AppAccSessionImpl(SessionFactory sf) {
-		if (sf == null) {
-			throw new IllegalArgumentException("SessionFactory must not be null");
-		}
-		this.sf = sf;
-		this.scheduler = ((ISessionFactory) this.sf).getConcurrentFactory().getScheduledExecutorService(
-				IConcurrentFactory.ScheduledExecServices.ApplicationSession.name());
-	}
+  public AppAccSessionImpl(SessionFactory sf) {
+    if (sf == null) {
+      throw new IllegalArgumentException("SessionFactory must not be null");
+    }
+    this.sf = sf;
 
-public void addStateChangeNotification(StateChangeListener listener) {
+    // The per-Application Executor
+    this.scheduler = ((ISessionFactory) this.sf).getConcurrentFactory().getScheduledExecutorService(
+        IConcurrentFactory.ScheduledExecServices.ApplicationSession.name());
+  }
+
+  public void addStateChangeNotification(StateChangeListener listener) {
     if (!stateListeners.contains(listener)) {
       stateListeners.add(listener);
     }

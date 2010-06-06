@@ -9,7 +9,6 @@ import static org.jdiameter.common.api.statistic.IStatistic.Groups.ScheduledExec
 import org.jdiameter.common.api.statistic.IStatisticFactory;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
 
-import java.util.Arrays;
 import java.util.concurrent.*;
 
 class CommonScheduledExecutorService extends ScheduledThreadPoolExecutor {

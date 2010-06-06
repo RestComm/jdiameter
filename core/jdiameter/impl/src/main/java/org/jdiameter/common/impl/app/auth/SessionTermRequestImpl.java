@@ -24,8 +24,9 @@ public class SessionTermRequestImpl extends AppRequestEventImpl implements Sessi
   }
 
   public long getAuthApplicationId() throws AvpDataException {
-    if (message.getAvps().getAvp(AUTH_APPLICATION_ID) != null) {
-      return message.getAvps().getAvp(AUTH_APPLICATION_ID).getUnsigned32();
+    Avp authApplicationIdAvp = message.getAvps().getAvp(AUTH_APPLICATION_ID);
+    if (authApplicationIdAvp != null) {
+      return authApplicationIdAvp.getUnsigned32();
     }
     else {
       throw new AvpDataException("Avp AUTH_APPLICATION_ID not found");
@@ -33,8 +34,9 @@ public class SessionTermRequestImpl extends AppRequestEventImpl implements Sessi
   }
 
   public int getTerminationCause() throws AvpDataException {
-    if (message.getAvps().getAvp(TERMINATION_CAUSE) != null) {
-      return message.getAvps().getAvp(TERMINATION_CAUSE).getInteger32();
+    Avp terminationCauseAvp = message.getAvps().getAvp(TERMINATION_CAUSE);
+    if (terminationCauseAvp != null) {
+      return terminationCauseAvp.getInteger32();
     }
     else {
       throw new AvpDataException("Avp TERMINATION_CAUSE not found");

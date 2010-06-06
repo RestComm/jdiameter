@@ -14,43 +14,43 @@ import org.jdiameter.api.app.StateEvent;
 
 class Event implements StateEvent {
 
-    enum Type{
-        SEND_AUTH_REQUEST,
-        SEND_AUTH_ANSWER,
-        SEND_SESSION_TERINATION_REQUEST,
-        SEND_SESSION_ABORT_ANSWER,
-        RECEIVE_AUTH_ANSWER,
-        RECEIVE_FAILED_AUTH_ANSWER,
-        RECEIVE_ABORT_SESSION_REQUEST,
-        RECEIVE_SESSION_TERINATION_ANSWER,
-        TIMEOUT_EXPIRES
-    }
+  enum Type{
+    SEND_AUTH_REQUEST,
+    SEND_AUTH_ANSWER,
+    SEND_SESSION_TERMINATION_REQUEST,
+    SEND_SESSION_ABORT_ANSWER,
+    RECEIVE_AUTH_ANSWER,
+    RECEIVE_FAILED_AUTH_ANSWER,
+    RECEIVE_ABORT_SESSION_REQUEST,
+    RECEIVE_SESSION_TERINATION_ANSWER,
+    TIMEOUT_EXPIRES
+  }
 
-    Type type;
-    AppEvent data;
-    
-    Event(Type type, AppEvent data) {
-        this.type = type;
-        this.data = data;
-    }
+  Type type;
+  AppEvent data;
 
-    public <E> E encodeType(Class<E> eClass) {
-        return eClass == Type.class ? (E) type : null;
-    }
+  Event(Type type, AppEvent data) {
+    this.type = type;
+    this.data = data;
+  }
 
-    public Enum getType() {
-        return type;
-    }
+  public <E> E encodeType(Class<E> eClass) {
+    return eClass == Type.class ? (E) type : null;
+  }
 
-    public void setData(Object o) {
-        data = (AppEvent) o;
-    }
+  public Enum getType() {
+    return type;
+  }
 
-    public Object getData() {
-        return data;
-    }
+  public void setData(Object o) {
+    data = (AppEvent) o;
+  }
 
-    public int compareTo(Object o) {
-        return 0;
-    }
+  public Object getData() {
+    return data;
+  }
+
+  public int compareTo(Object o) {
+    return 0;
+  }
 }

@@ -36,16 +36,19 @@ public class JCreditControlAnswerImpl extends AppAnswerEventImpl implements JCre
     super(message.createAnswer(resultCode));
   }
 
-  public JCreditControlAnswerImpl(Answer message )
-  {
+  public JCreditControlAnswerImpl(Answer message) {
     super(message);
   }
 
-  public int getCredidControlFailureHandlingAVPValue()
-  {
-    if(isCreditControlFailureHandlingAVPPresent()) {
+  public boolean isCreditControlFailureHandlingAVPPresent() {
+    return super.message.getAvps().getAvp(CREDIT_CONTROL_FAILURE_HANDLING_AVP_CODE) != null;
+  }
+
+  public int getCredidControlFailureHandlingAVPValue() {
+    Avp credidControlFailureHandlingAvp = super.message.getAvps().getAvp(CREDIT_CONTROL_FAILURE_HANDLING_AVP_CODE);
+    if(credidControlFailureHandlingAvp != null) {
       try {
-        return super.message.getAvps().getAvp(CREDIT_CONTROL_FAILURE_HANDLING_AVP_CODE).getInteger32();
+        return credidControlFailureHandlingAvp.getInteger32();
       }
       catch (AvpDataException e) {
         logger.debug("Failure trying to obtain Credit-Control-Failure-Handling AVP value", e);
@@ -55,52 +58,18 @@ public class JCreditControlAnswerImpl extends AppAnswerEventImpl implements JCre
     return -1;
   }
 
-  public int getDirectDebitingFailureHandlingAVPValue()
-  {
-    if(isDirectDebitingFailureHandlingAVPPresent()) {
-      try {
-        return super.message.getAvps().getAvp(DIRECT_DEBITING_FAILURE_HANDLING_AVP_CODE).getInteger32();
-      }
-      catch (AvpDataException e) {
-        logger.debug("Failure trying to obtain Direct-Debiting-Failure-Handling AVP value", e);
-      }
-    }
-
-    return -1;
-  }
-
-  public boolean isCreditControlFailureHandlingAVPPresent() {
-    return super.message.getAvps().getAvp(CREDIT_CONTROL_FAILURE_HANDLING_AVP_CODE) != null;
-  }
-
   public boolean isDirectDebitingFailureHandlingAVPPresent() {
     return super.message.getAvps().getAvp(DIRECT_DEBITING_FAILURE_HANDLING_AVP_CODE) != null;
   }
 
-  public int getRequestedActionAVPValue() {
-    if(isRequestedActionAVPPresent()) {
+  public int getDirectDebitingFailureHandlingAVPValue() {
+    Avp directDebitingFailureHandlingAvp = super.message.getAvps().getAvp(DIRECT_DEBITING_FAILURE_HANDLING_AVP_CODE);
+    if(directDebitingFailureHandlingAvp != null) {
       try {
-        return super.message.getAvps().getAvp(REQUESTED_ACTION_AVP_CODE).getInteger32();
+        return directDebitingFailureHandlingAvp.getInteger32();
       }
       catch (AvpDataException e) {
-        logger.debug("Failure trying to obtain Requested-Action AVP value", e);
-      }
-    }
-
-    return -1;
-  }
-
-  public boolean isRequestedActionAVPPresent() {
-    return super.message.getAvps().getAvp(REQUESTED_ACTION_AVP_CODE) != null;
-  }
-
-  public int getRequestTypeAVPValue() {
-    if(isRequestTypeAVPPresent()) {
-      try {
-        return super.message.getAvps().getAvp(CC_REQUEST_TYPE_AVP_CODE).getInteger32();
-      }
-      catch (AvpDataException e) {
-        logger.debug("Failure trying to obtain CC-Request-Type AVP value", e);
+        logger.debug("Failure trying to obtain Direct-Debiting-Failure-Handling AVP value", e);
       }
     }
 
@@ -114,4 +83,37 @@ public class JCreditControlAnswerImpl extends AppAnswerEventImpl implements JCre
   public boolean isRequestTypeAVPPresent() {
     return super.message.getAvps().getAvp(CC_REQUEST_TYPE_AVP_CODE) != null;
   }
+
+  public int getRequestTypeAVPValue() {
+    Avp requestTypeAvp = super.message.getAvps().getAvp(CC_REQUEST_TYPE_AVP_CODE);
+    if(requestTypeAvp != null) {
+      try {
+        return requestTypeAvp.getInteger32();
+      }
+      catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain CC-Request-Type AVP value", e);
+      }
+    }
+
+    return -1;
+  }
+
+  public boolean isRequestedActionAVPPresent() {
+    return super.message.getAvps().getAvp(REQUESTED_ACTION_AVP_CODE) != null;
+  }
+
+  public int getRequestedActionAVPValue() {
+    Avp requestedActionAvp = super.message.getAvps().getAvp(REQUESTED_ACTION_AVP_CODE);
+    if(requestedActionAvp != null) {
+      try {
+        return requestedActionAvp.getInteger32();
+      }
+      catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain Requested-Action AVP value", e);
+      }
+    }
+
+    return -1;
+  }
+
 }

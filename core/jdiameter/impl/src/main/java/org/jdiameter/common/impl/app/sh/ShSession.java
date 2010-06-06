@@ -2,10 +2,7 @@ package org.jdiameter.common.impl.app.sh;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -32,16 +29,16 @@ public abstract class ShSession extends AppSessionImpl implements NetworkReqList
   protected List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
 
   protected SessionFactory sf = null;
-  
- public ShSession(SessionFactory sf) {
-		if (sf == null) {
-			throw new IllegalArgumentException("SessionFactory must not be null");
-		}
-		this.sf = sf;
-		this.scheduler = ((ISessionFactory) this.sf).getConcurrentFactory().getScheduledExecutorService(
-				IConcurrentFactory.ScheduledExecServices.ApplicationSession.name());
-	}
-  
+
+  public ShSession(SessionFactory sf) {
+    if (sf == null) {
+      throw new IllegalArgumentException("SessionFactory must not be null");
+    }
+    this.sf = sf;
+    this.scheduler = ((ISessionFactory) this.sf).getConcurrentFactory().getScheduledExecutorService(
+        IConcurrentFactory.ScheduledExecServices.ApplicationSession.name());
+  }
+
   public void addStateChangeNotification(StateChangeListener listener) {
     if (!stateListeners.contains(listener)) {
       stateListeners.add(listener);

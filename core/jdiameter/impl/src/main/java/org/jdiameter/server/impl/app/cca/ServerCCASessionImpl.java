@@ -36,27 +36,33 @@ import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
 import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
 import org.jdiameter.common.impl.app.cca.AppCCASessionImpl;
 
-public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCASession, NetworkReqListener,EventListener<Request, Answer> {
+public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCASession, NetworkReqListener, EventListener<Request, Answer> {
 
   private static final long serialVersionUID = 1L;
 
-  //Is there any state?
+  // Session State Handling ---------------------------------------------------
   protected boolean stateless = true;
   protected ServerCCASessionState state = ServerCCASessionState.IDLE;
-  protected ICCAMessageFactory factory = null;
-  protected String originHost, originRealm;
   protected Lock sendAndStateLock = new ReentrantLock();
-  protected long[] authAppIds = new long[]{4};
-  protected ServerCCASessionListener listener = null;
+
+  // Factories and Listeners --------------------------------------------------
+  protected ICCAMessageFactory factory = null;
   protected IServerCCASessionContext context = null;
+  protected ServerCCASessionListener listener = null;
+
+  //  Tcc timer (supervises an ongoing credit-control
+  //             session in the credit-control server) ------------------------
   protected ScheduledFuture tccFuture = null;
 
+  protected long[] authAppIds = new long[]{4};
+  protected String originHost, originRealm;
+
   public ServerCCASessionImpl(ICCAMessageFactory fct, SessionFactory sf, ServerCCASessionListener lst) {
-    this(null,fct,sf,lst);
+    this(null, fct, sf, lst);
   }
 
   public ServerCCASessionImpl(String sessionId, ICCAMessageFactory fct, SessionFactory sf, ServerCCASessionListener lst) {
-	super(sf);
+    super(sf);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
@@ -70,12 +76,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
     listener = lst;
     factory = fct;
     try {
-      if (sessionId == null) {
-        session = sf.getNewSession();
-      }
-      else {
-        session = sf.getNewSession(sessionId);
-      }
+      session = sessionId == null ? sf.getNewSession() : sf.getNewSession(sessionId);
       session.setRequestListener(this);
     }
     catch (InternalException e) {
@@ -84,8 +85,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
   }
 
   public void sendCreditControlAnswer(JCreditControlAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    //could be send but
-    handleEvent(new Event(false,null,answer));
+    handleEvent(new Event(false, null, answer));
   }
 
   public void sendReAuthRequest(ReAuthRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
@@ -102,12 +102,12 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
 
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
     ServerCCASessionState newState = null;
+
     try {
       sendAndStateLock.lock();
 
-      //Can be null if there is no state transition, transition to IDLE state should terminate this app session
+      // Can be null if there is no state transition, transition to IDLE state should terminate this app session
       Event localEvent = (Event) event;
-
 
       //Its kind of akward, but with two state on server side its easier to go through event types?
       //but for sake of FSM readability
@@ -120,26 +120,45 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
         case RECEIVED_INITIAL:
           listener.doCreditControlRequest(this, (JCreditControlRequest)localEvent.getRequest());
           break;
+
         case RECEIVED_EVENT:
+          // Current State: IDLE
+          // Event: CC event request received and successfully processed
+          // Action: Send CC event answer
+          // New State: IDLE
           listener.doCreditControlRequest(this, (JCreditControlRequest)localEvent.getRequest());
           break;
-          //Do nothing, only deliver
 
         case SENT_EVENT_RESPONSE:
-          //We dont care about code, its always IDLE == terminate
+          // Current State: IDLE
+          // Event: CC event request received and successfully processed
+          // Action: Send CC event answer
+          // New State: IDLE
+
+          // Current State: IDLE
+          // Event: CC event request received but not successfully processed
+          // Action: Send CC event answer with Result-Code != SUCCESS
+          // New State: IDLE
           newState = ServerCCASessionState.IDLE;
           dispatchEvent(localEvent.getAnswer());
           break;
+
         case SENT_INITIAL_RESPONSE:
           JCreditControlAnswer answer = (JCreditControlAnswer) localEvent.getAnswer();
           try {
-            if(isSuccess(answer.getResultCodeAvp().getUnsigned32())) {
+            long resultCode = answer.getResultCodeAvp().getUnsigned32();
+            // Current State: IDLE
+            // Event: CC initial request received and successfully processed
+            // Action: Send CC initial answer, reserve units, start Tcc
+            // New State: OPEN
+            if(isSuccess(resultCode)) {
               startTcc(answer.getValidityTimeAvp());
               newState = ServerCCASessionState.OPEN;
             }
-            else if(isProvisional(answer.getResultCodeAvp().getUnsigned32())) {
-              //
-            }
+            // Current State: IDLE
+            // Event: CC initial request received but not successfully processed
+            // Action: Send CC initial answer with Result-Code != SUCCESS
+            // New State: IDLE
             else {
               newState = ServerCCASessionState.IDLE;
             }
@@ -150,7 +169,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
           }
           break;
         default:
-          throw new InternalException("Wrong state: "+ServerCCASessionState.IDLE+" one event: "+eventType+" "+localEvent.getRequest()+" "+localEvent.getAnswer());
+          throw new InternalException("Wrong state: " + ServerCCASessionState.IDLE + " one event: " + eventType + " " + localEvent.getRequest() + " " + localEvent.getAnswer());
         }
 
       case OPEN:
@@ -159,15 +178,24 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
         case RECEIVED_UPDATE:
           listener.doCreditControlRequest(this, (JCreditControlRequest)localEvent.getRequest());
           break;
-          //Do nothing, deliver
+
         case SENT_UPDATE_RESPONSE:
           JCreditControlAnswer answer = (JCreditControlAnswer) localEvent.getAnswer();
           try {
             if(isSuccess(answer.getResultCodeAvp().getUnsigned32())) {
+              // Current State: OPEN
+              // Event: CC update request received and successfully processed
+              // Action: Send CC update answer, debit used units, reserve new units, restart Tcc
+              // New State: OPEN
               startTcc(answer.getValidityTimeAvp());
             }
             else {
-              //its a failure, we wait for Tcc to fire
+              // Current State: OPEN
+              // Event: CC update request received but not successfully processed
+              // Action: Send CC update answer with Result-Code != SUCCESS, debit used units
+              // New State: IDLE
+
+              // It's a failure, we wait for Tcc to fire -- FIXME: Alexandre: Should we?
             }
           }
           catch (AvpDataException e) {
@@ -181,11 +209,20 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
         case SENT_TERMINATE_RESPONSE:
           answer = (JCreditControlAnswer) localEvent.getAnswer();
           try {
+            // Current State: OPEN
+            // Event: CC termination request received and successfully processed
+            // Action: Send CC termination answer, Stop Tcc, debit used units
+            // New State: IDLE
             if(isSuccess(answer.getResultCodeAvp().getUnsigned32())) {
               stopTcc(false);
             }
             else {
-              //its a failure, we wait for Tcc to fire
+              // Current State: OPEN
+              // Event: CC termination request received but not successfully processed
+              // Action: Send CC termination answer with Result-Code != SUCCESS, debit used units
+              // New State: IDLE
+
+              // It's a failure, we wait for Tcc to fire -- FIXME: Alexandre: Should we?
             }
           }
           catch (AvpDataException e) {
@@ -198,7 +235,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
           break;
 
         case RECEIVED_RAA:
-          listener.doReAuthAnswer(this, new ReAuthRequestImpl(localEvent.getRequest().getMessage()),new ReAuthAnswerImpl(localEvent.getAnswer().getMessage()));
+          listener.doReAuthAnswer(this, new ReAuthRequestImpl(localEvent.getRequest().getMessage()), new ReAuthAnswerImpl(localEvent.getAnswer().getMessage()));
           break;
         case SENT_RAR:
           dispatchEvent(localEvent.getAnswer());
@@ -206,7 +243,6 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
         }
       }
       return true;
-
     }
     catch (Exception e) {
       throw new InternalException(e);
@@ -219,21 +255,46 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
     }
   }
 
+  private class TccScheduledTask implements Runnable {
+    ServerCCASession session = null;
+
+    private TccScheduledTask(ServerCCASession session) {
+      super();
+      this.session = session;
+    }
+
+    public void run() {
+      // Current State: OPEN
+      // Event: Session supervision timer Tcc expired
+      // Action: Release reserved units
+      // New State: IDLE
+      context.sessionSupervisionTimerExpired(session);
+      try {
+        sendAndStateLock.lock();
+        tccFuture = null;
+        setState(ServerCCASessionState.IDLE);
+      }
+      finally {
+        sendAndStateLock.unlock();
+      }
+    }
+  }
+
   public Answer processRequest(Request request) {
-	  RequestDelivery rd = new RequestDelivery();
-	  rd.session = this;
-	  rd.request = request;
-	  super.scheduler.execute(rd);
+    RequestDelivery rd = new RequestDelivery();
+    rd.session = this;
+    rd.request = request;
+    super.scheduler.execute(rd);
     return null;
   }
 
 
   public void receivedSuccessMessage(Request request, Answer answer) {
-	  AnswerDelivery rd = new AnswerDelivery();
-		rd.session = this;
-		rd.request = request;
-		rd.answer = answer;
-		super.scheduler.execute(rd);
+    AnswerDelivery rd = new AnswerDelivery();
+    rd.session = this;
+    rd.request = request;
+    rd.answer = answer;
+    super.scheduler.execute(rd);
   }
 
   public void timeoutExpired(Request request) {
@@ -254,16 +315,15 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
     }
     if(tccFuture != null) {
       stopTcc(true);
-      tccFuture = super.scheduler.schedule(new TccScheduledTask(this),defaultValue,TimeUnit.SECONDS);
+      tccFuture = super.scheduler.schedule(new TccScheduledTask(this), defaultValue, TimeUnit.SECONDS);
       context.sessionSupervisionTimerReStarted(this, tccFuture);
     }
     else {
-      tccFuture = super.scheduler.schedule(new TccScheduledTask(this),defaultValue,TimeUnit.SECONDS);
+      tccFuture = super.scheduler.schedule(new TccScheduledTask(this), defaultValue, TimeUnit.SECONDS);
     }
   }
 
-  private void stopTcc(boolean willRestart)
-  {
+  private void stopTcc(boolean willRestart) {
     if(tccFuture != null) {
       tccFuture.cancel(false);
       ScheduledFuture f = tccFuture;
@@ -302,48 +362,28 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
 
   @Override
   public void release() {
-
     this.stopTcc(false);
+
     if(super.isValid()) {
       super.release();
     }
+
     if(super.session != null) {
       super.session.setRequestListener(null);
     }
 
     this.session = null;
+
     if(listener != null) {
       this.removeStateChangeNotification((StateChangeListener) listener);
+      this.listener = null;
     }
-    this.listener = null;
+
     this.factory = null;
-  }
-
-  private class TccScheduledTask implements Runnable
-  {
-    ServerCCASession session = null;
-
-    private TccScheduledTask(ServerCCASession session) {
-      super();
-      this.session = session;
-    }
-
-    public void run() {
-      context.sessionSupervisionTimerExpired(session);
-      try {
-        sendAndStateLock.lock();
-        tccFuture = null;
-        setState(ServerCCASessionState.IDLE);
-      }
-      finally {
-        sendAndStateLock.unlock();
-      }
-    }
   }
 
   protected void send(Event.Type type, AppRequestEvent request, AppAnswerEvent answer) throws InternalException {
     try {
-      //FIXME: isnt this bad? Shouldnt send be before state change?
       sendAndStateLock.lock();
       if (type != null) {
         handleEvent(new Event(type, request, answer));
@@ -357,12 +397,11 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
     }
   }
 
-  protected void dispatchEvent(AppEvent event) throws InternalException
-  {
+  protected void dispatchEvent(AppEvent event) throws InternalException {
     try{
       session.send(event.getMessage(), this);
-      // Store last destinmation information
-      //FIXME: add differentation on server/client request
+      // Store last destination information
+      // FIXME: add differentiation on server/client request
       originRealm = event.getMessage().getAvps().getAvp(Avp.ORIGIN_REALM).getOctetString();
       originHost = event.getMessage().getAvps().getAvp(Avp.ORIGIN_HOST).getOctetString();
     }
@@ -372,56 +411,51 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
     }
   }
 
+  private class RequestDelivery implements Runnable {
+    ServerCCASession session;
+    Request request;
 
-	private class RequestDelivery implements Runnable {
-		ServerCCASession session;
-		Request request;
+    public void run() {
+      try {
+        switch (request.getCommandCode()) {
+        case JCreditControlAnswer.code:
+          handleEvent(new Event(true, factory.createCreditControlRequest(request), null));
+          break;
 
-		public void run() {
+        default:
+          listener.doOtherEvent(session, new AppRequestEventImpl(request), null);
+          break;
+        }
+      }
+      catch (Exception e) {
+        logger.debug("Failed to process request message", e);
+      }
+    }
+  }
 
-			try {
+  private class AnswerDelivery implements Runnable {
+    ServerCCASession session;
+    Answer answer;
+    Request request;
 
-				switch (request.getCommandCode()) {
-				case JCreditControlAnswer.code:
-					handleEvent(new Event(true, factory
-							.createCreditControlRequest(request), null));
-					break;
+    public void run() {
+      try {
+        // FIXME: baranowb: add message validation here!!!
+        // We handle CCR, STR, ACR, ASR other go into extension
+        switch (request.getCommandCode()) {
+        case ReAuthRequest.code:
+          handleEvent(new Event(Event.Type.RECEIVED_RAA, factory.createReAuthRequest(request), factory.createReAuthAnswer(answer)));
+          break;
+        default:
+          listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
+          break;
+        }
 
-				default:
-					listener.doOtherEvent(session, new AppRequestEventImpl(
-							request), null);
-					break;
-				}
-			} catch (Exception e) {
-				logger.debug("Failed to process request message", e);
-			}
+      }
+      catch (Exception e) {
+        logger.debug("Failed to process success message", e);
+      }
+    }
+  }
 
-		}
-
-	}
-
-	private class AnswerDelivery implements Runnable {
-		ServerCCASession session;
-		Answer answer;
-		Request request;
-
-		public void run() {
-			try {
-				// FIXME: baranowb: add message validation here!!!
-				// We handle CCR,STR,ACR,ASR other go into extension
-				switch (request.getCommandCode()) {
-				case ReAuthRequest.code:
-					handleEvent(new Event(Event.Type.RECEIVED_RAA, factory.createReAuthRequest(request), factory.createReAuthAnswer(answer)));
-					break;
-				default:
-					listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
-					break;
-				}
-
-			} catch (Exception e) {
-				logger.debug("Failed to process success message", e);
-			}
-		}
-
-	}
 }

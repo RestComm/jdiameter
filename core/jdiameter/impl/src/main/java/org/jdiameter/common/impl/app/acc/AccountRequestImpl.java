@@ -38,17 +38,19 @@ public class AccountRequestImpl extends AppRequestEventImpl implements AccountRe
   }
 
   public int getAccountingRecordType() throws AvpDataException {
-    if ( message.getAvps().getAvp(Avp.ACC_RECORD_TYPE) != null ) {
-      return message.getAvps().getAvp(Avp.ACC_RECORD_TYPE).getInteger32();
+    Avp accRecordTypeAvp = message.getAvps().getAvp(Avp.ACC_RECORD_TYPE);
+    if (accRecordTypeAvp != null) {
+      return accRecordTypeAvp.getInteger32();
     }
     else {
-      throw new AvpDataException("Avp ACC_RECORD_NUMBER not found");
+      throw new AvpDataException("Avp ACC_RECORD_TYPE not found");
     }
   }
 
   public long getAccountingRecordNumber() throws AvpDataException {
-    if ( message.getAvps().getAvp(ACC_RECORD_NUMBER) != null ) {
-      return message.getAvps().getAvp(ACC_RECORD_NUMBER).getUnsigned32();
+    Avp accRecordNumberAvp = message.getAvps().getAvp(ACC_RECORD_NUMBER);
+    if (accRecordNumberAvp != null) {
+      return accRecordNumberAvp.getUnsigned32();
     }
     else {
       throw new AvpDataException("Avp ACC_RECORD_NUMBER not found");

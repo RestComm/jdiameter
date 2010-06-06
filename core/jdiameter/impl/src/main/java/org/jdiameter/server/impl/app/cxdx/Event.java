@@ -13,49 +13,54 @@ import org.jdiameter.api.app.StateEvent;
  */
 public class Event implements StateEvent{
 
-	enum Type
-	{
-		SEND_MESSAGE,TIMEOUT_EXPIRES, RECEIVE_UAR,RECEIVE_SAR,RECEIVE_LIR, RECEIVE_MAR, RECEIVE_PPA,RECEIVE_RTA;
-	}
-	
-	AppEvent request;
-	AppEvent answer;
-	Type type;
+  enum Type {
+    SEND_MESSAGE,
+    TIMEOUT_EXPIRES, 
+    RECEIVE_UAR,
+    RECEIVE_SAR,
+    RECEIVE_LIR, 
+    RECEIVE_MAR, 
+    RECEIVE_PPA,RECEIVE_RTA;
+  }
 
-	Event(Type type, AppEvent request, AppEvent answer) {
-		this.type = type;
-		this.answer = answer;
-		this.request = request;
-	}
+  AppEvent request;
+  AppEvent answer;
+  Type type;
 
-	public <E> E encodeType(Class<E> eClass) {
-		return eClass == Type.class ? (E) type : null;
-	}
+  Event(Type type, AppEvent request, AppEvent answer) {
+    this.type = type;
+    this.answer = answer;
+    this.request = request;
+  }
 
-	public Enum getType() {
-		return type;
-	}
+  public <E> E encodeType(Class<E> eClass) {
+    return eClass == Type.class ? (E) type : null;
+  }
 
-	public AppEvent getRequest() {
-		return request;
-	}
+  public Enum getType() {
+    return type;
+  }
 
-	public AppEvent getAnswer() {
-		return answer;
-	}
+  public AppEvent getRequest() {
+    return request;
+  }
 
-	public int compareTo(Object o) {
-		return 0;
-	}
+  public AppEvent getAnswer() {
+    return answer;
+  }
 
-	public Object getData() {
-		return request != null ? request : answer;
-	}
+  public int compareTo(Object o) {
+    return 0;
+  }
 
-	/* (non-Javadoc)
-	 * @see org.jdiameter.api.app.StateEvent#setData(java.lang.Object)
-	 */
-	public void setData(Object data) {
+  public Object getData() {
+    return request != null ? request : answer;
+  }
+
+  /* (non-Javadoc)
+   * @see org.jdiameter.api.app.StateEvent#setData(java.lang.Object)
+   */
+  public void setData(Object data) {
     try {
       if( ((AppEvent) data).getMessage().isRequest() ) {
         request = (AppEvent) data;
@@ -67,6 +72,6 @@ public class Event implements StateEvent{
     catch (InternalException e) {
       throw new IllegalArgumentException(e);
     }
-	}
+  }
 
 }

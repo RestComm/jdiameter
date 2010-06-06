@@ -44,74 +44,77 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
   private static final long serialVersionUID = 1L;
 
-  protected boolean stateless = true;
-  protected boolean statelessModeSet=false;
+  // Session State Handling ---------------------------------------------------
+  protected boolean isEventBased = true;
+  protected boolean requestTypeSet = false;
   protected ClientCCASessionState state = ClientCCASessionState.IDLE;
-  protected ICCAMessageFactory factory = null;
-  //protected String destHost, destRealm;
-  protected String originHost,originRealm;
-
   protected Lock sendAndStateLock = new ReentrantLock();
-  protected long[] authAppIds = new long[] { 4 };
+
+  // Factories and Listeners --------------------------------------------------
+  protected ICCAMessageFactory factory = null;
   protected ClientCCASessionListener listener = null;
   protected IClientCCASessionContext context = null;
-  protected ScheduledFuture txFuture = null;
-  protected static final Set<Long> temporaryErrorCodes;
-  //set default timeout to 30min
-  private static final long TX_TIMER_DEFAULT_VALUE = 1800;
 
-  protected int gatheredCCFH = -300;
-  protected int gatheredDDFH = -300;
-  protected int gatheredRequestedAction = -300;
+  // Tx Timer -----------------------------------------------------------------
+  protected ScheduledFuture txFuture = null;
+  private static final long TX_TIMER_DEFAULT_VALUE = 30 * 60;
+
+  protected String originHost, originRealm;
+  protected long[] authAppIds = new long[] { 4 };
+
+  // Requested Action + Credit-Control and Direct-Debiting Failure-Handling ---
+  private static final int NON_INITIALIZED = -300;
+
+  protected int gatheredRequestedAction = NON_INITIALIZED;
+
+  protected int gatheredCCFH = NON_INITIALIZED;
+  protected int gatheredDDFH = NON_INITIALIZED;
 
   protected static final int CCFH_TERMINATE = 0;
   protected static final int CCFH_CONTINUE = 1;
   protected static final int CCFH_RETRY_AND_TERMINATE = 2;
 
-  protected static final int DIAMETER_END_USER_SERVICE_DENIED = 4010;
+  private static final int DDFH_TERMINATE_OR_BUFFER = 0;
+  private static final int DDFH_CONTINUE = 1;
+
+  // CC-Request-Type Values ---------------------------------------------------
+  private static final int DIRECT_DEBITING = 0;
+  private static final int REFUND_ACCOUNT = 1;
+  private static final int CHECK_BALANCE = 2;
+  private static final int PRICE_ENQUIRY = 3;
+  private static final int EVENT_REQUEST = 4;
+
+  // Error Codes --------------------------------------------------------------
+  private static final long END_USER_SERVICE_DENIED = 4010;
   private static final long CREDIT_CONTROL_NOT_APPLICABLE = 4011;
   private static final long USER_UNKNOWN = 5030;
 
-  private static final long DIRECT_DEBITING = 0;
-  private static final long REFUND_ACCOUNT = 1;
-  private static final long CHECK_BALANCE = 2;
-  private static final long PRICE_ENQUIRY = 3;
+  private static final long DIAMETER_UNABLE_TO_DELIVER = 3002L;
+  private static final long DIAMETER_TOO_BUSY = 3004L;
+  private static final long DIAMETER_LOOP_DETECTED = 3005L;
 
-  private static final long TERMINATE_OR_BUFFER = 0;
-  private static final long CONTINUE = 1;
-  /**
-   * This is buffered message, there can be only one, specs do not say a thing
-   * about multiple
-   */
-  private Message buffer = null;
+  protected static final Set<Long> temporaryErrorCodes;
 
   static {
     HashSet<Long> tmp = new HashSet<Long>();
-    // FIXME: add codes
-    // DIAMETER_TOO_BUSY
-    tmp.add(3004L);
-    // DIAMETER_UNABLE_TO_DELIVER
-    tmp.add(3002L);
-    // DIAMETER_LOOP_DETECTED
-    tmp.add(3005L);
+    tmp.add(DIAMETER_UNABLE_TO_DELIVER);
+    tmp.add(DIAMETER_TOO_BUSY);
+    tmp.add(DIAMETER_LOOP_DETECTED);
     temporaryErrorCodes = Collections.unmodifiableSet(tmp);
   }
 
-  // FIXME: This is not described, but in FSM - transitions go from PendingI
-  // -> PendingI and PendungU -> PendingU in two cases - TermRequest is to be
-  // sent and UpdateRequest
-  // Indicating that messages are queued and sent once response is received
-  // (possibly) - once session goe sinto Open state this queue is looked UP :]
-  // This should be done by app, but if for some reason its not, we handle it.
+  // Event Based Buffer
+  private Message buffer = null;
+
+  // Session Based Queue
   protected ArrayList<Event> eventQueue = new ArrayList<Event>();
 
   public ClientCCASessionImpl(ICCAMessageFactory fct, SessionFactory sf, ClientCCASessionListener lst) {
-    this(null,fct,sf,lst);
+    this(null, fct, sf, lst);
   }
 
-  public ClientCCASessionImpl(String sessionId, ICCAMessageFactory fct, SessionFactory sf, ClientCCASessionListener lst)
-  {
-	super(sf);
+  public ClientCCASessionImpl(String sessionId, ICCAMessageFactory fct, SessionFactory sf, ClientCCASessionListener lst) {
+    super(sf);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
@@ -151,7 +154,11 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   }
 
   public boolean isStateless() {
-    return this.stateless;
+    return false;
+  }
+
+  public boolean isEventBased() {
+    return this.isEventBased;
   }
 
   public <E> E getState(Class<E> stateType) {
@@ -159,7 +166,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   }
 
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
-    return this.isStateless() ? handleEventForEventBased(event) : handleEventForSessionBased(event);
+    return this.isEventBased() ? handleEventForEventBased(event) : handleEventForSessionBased(event);
   }
 
   protected boolean handleEventForEventBased(StateEvent event) throws InternalException, OverloadException {
@@ -172,8 +179,10 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       case IDLE:
         switch (eventType) {
         case SEND_EVENT_REQUEST:
-          // Action: send initial request, starTx, move to PendingI state
-          // However failure handling is complicated, so we shift state first
+          // Current State: IDLE
+          // Event: Client or device requests a one-time service
+          // Action: Send CC event request, start Tx
+          // New State: PENDING_E
           startTx((JCreditControlRequest) localEvent.getRequest());
           setState(ClientCCASessionState.PENDING_EVENT);
           try {
@@ -187,7 +196,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           break;
         default:
           logger.warn("Wrong event type ({}) on state {}", eventType, state);
-        break;
+          break;
         }
         break;
 
@@ -196,14 +205,15 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         case RECEIVE_EVENT_ANSWER:
           AppAnswerEvent answer = (AppAnswerEvent) localEvent.getAnswer();
           try {
-            if (isSuccess(answer.getResultCodeAvp().getUnsigned32())) {
-              // stopTx();
+            long resultCode = answer.getResultCodeAvp().getUnsigned32();
+            if (isSuccess(resultCode)) {
+              // Current State: PENDING_E
+              // Event: Successful CC event answer received
+              // Action: Grant service to end user
+              // New State: IDLE
               setState(ClientCCASessionState.IDLE, false);
             }
-            if (isProvisional(answer.getResultCodeAvp().getUnsigned32())) {
-              //
-            }
-            else if (isFailure(answer.getResultCodeAvp().getUnsigned32())) {
+            if (isProvisional(resultCode) || isFailure(resultCode)) {
               handleFailureMessage((JCreditControlAnswer) answer, (JCreditControlRequest) localEvent.getRequest(), eventType);
             }
 
@@ -219,32 +229,33 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           break;
         default:
           logger.warn("Wrong event type ({}) on state {}", eventType, state);
-        break;
+          break;
         }
         break;
 
       case PENDING_BUFFERED:
         switch (eventType) {
         case RECEIVE_EVENT_ANSWER:
-          // We should delete request but since we remove it once we resend it so....
-          // Its always IDLE here
-          // FIXME: xxxxxxxxxxxxxx to rfc
+          // Current State: PENDING_B
+          // Event: Successful CC answer received
+          // Action: Delete request
+          // New State: IDLE
           setState(ClientCCASessionState.IDLE, false);
           buffer = null;
-          listener.doCreditControlAnswer(this, (JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
+          deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
           break;
         default:
           logger.warn("Wrong event type ({}) on state {}", eventType, state);
-        break;
+          break;
         }
         break;
 
       default:
         logger.warn("Wrong event type ({}) on state {}", eventType, state);
-      break;
+        break;
       }
 
-      doEndChecks();
+      dispatch();
       return true;
     }
     catch (Exception e) {
@@ -262,12 +273,13 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       Event.Type eventType = (Type) localEvent.getType();
       switch (this.state) {
 
-      // IDLE BLOCK - only SEND_INITIAL_REQUEST event type is permited!
       case IDLE:
         switch (eventType) {
         case SEND_INITIAL_REQUEST:
-          // Action: send initial request, starTx, move to PendingI state
-          // However failure handling is complicated, so we shift state first
+          // Current State: IDLE
+          // Event: Client or device requests access/service
+          // Action: Send CC initial request, start Tx
+          // New State: PENDING_I
           startTx((JCreditControlRequest) localEvent.getRequest());
           setState(ClientCCASessionState.PENDING_INITIAL);
           try {
@@ -284,53 +296,68 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         }
         break;
 
-        // ////////////////////////
-        // PENDING_INITIAL BLOCK //
-        // /////////////////////////
       case PENDING_INITIAL:
         AppAnswerEvent answer = (AppAnswerEvent) localEvent.getAnswer();
         switch (eventType) {
         case RECEIVED_INITIAL_ANSWER:
-          try {
-            if (isSuccess(answer.getResultCodeAvp().getUnsigned32())) {
-              stopTx();
-              setState(ClientCCASessionState.OPEN);
-            }
-            if (isProvisional(answer.getResultCodeAvp().getUnsigned32())) {
-            	// Let's just deliver
-            }
-            else if (isFailure(answer.getResultCodeAvp().getUnsigned32())) {
-              handleFailureMessage((JCreditControlAnswer) answer, (JCreditControlRequest) localEvent.getRequest(), eventType);
-            }
-            deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
+          long resultCode = answer.getResultCodeAvp().getUnsigned32();
+          if (isSuccess(resultCode)) {
+            // Current State: PENDING_I
+            // Event: Successful CC initial answer received
+            // Action: Stop Tx
+            // New State: OPEN
+            stopTx();
+            setState(ClientCCASessionState.OPEN);
           }
-          catch (AvpDataException e) {
-            // FIXME?
-            logger.debug("Failure handling received initial answer event", e);
-            setState(ClientCCASessionState.IDLE, false);
+          else if (isProvisional(resultCode) || isFailure(resultCode)) {
+            handleFailureMessage((JCreditControlAnswer) answer, (JCreditControlRequest) localEvent.getRequest(), eventType);
           }
+          deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
           break;
         case Tx_TIMER_FIRED:
           handleTxExpires(localEvent.getRequest().getMessage());
           break;
         case SEND_UPDATE_REQUEST:
         case SEND_TERMINATE_REQUEST:
-          // we schedule, once in Open state, those messages can fly
+          // Current State: PENDING_I
+          // Event: User service terminated
+          // Action: Queue termination event
+          // New State: PENDING_I
+
+          // Current State: PENDING_I
+          // Event: Change in rating condition
+          // Action: Queue changed rating condition event
+          // New State: PENDING_I
           eventQueue.add(localEvent);
           break;
         default:
           logger.warn("Wrong event type ({}) on state {}", eventType, state);
-        break;
+          break;
         }
         break;
 
-        // /////////////////
-        // // OPEN BLOCK //
-        // ////////////////
       case OPEN:
         switch (eventType) {
         case SEND_UPDATE_REQUEST:
+          // Current State: OPEN
+          // Event: Granted unit elapses and no final unit indication received
+          // Action: Send CC update request, start Tx
+          // New State: PENDING_U
 
+          // Current State: OPEN
+          // Event: Change in rating condition in queue
+          // Action: Send CC update request, start Tx
+          // New State: PENDING_U
+
+          // Current State: OPEN
+          // Event: Change in rating condition or Validity-Time elapses
+          // Action: Send CC update request, start Tx
+          // New State: PENDING_U
+
+          // Current State: OPEN
+          // Event: RAR received
+          // Action: Send RAA followed by CC update request, start Tx
+          // New State: PENDING_U
           startTx((JCreditControlRequest) localEvent.getRequest());
           setState(ClientCCASessionState.PENDING_UPDATE);
           try {
@@ -342,6 +369,20 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           }
           break;
         case SEND_TERMINATE_REQUEST:
+          // Current State: OPEN
+          // Event: Granted unit elapses and final unit action equal to TERMINATE received
+          // Action: Terminate end user’s service, send CC termination request
+          // New State: PENDING_T
+
+          // Current State: OPEN
+          // Event: Service terminated in queue
+          // Action: Send CC termination request
+          // New State: PENDING_T
+
+          // Current State: OPEN
+          // Event: User service terminated
+          // Action: Send CC termination request
+          // New State: PENDING_T
           setState(ClientCCASessionState.PENDING_TERMINATION);
           try {
             dispatchEvent(localEvent.getRequest());
@@ -364,39 +405,25 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
         default:
           logger.warn("Wrong event type ({}) on state {}", eventType, state);
-        break;
+          break;
         }
         break;
 
-        // /////////////////////////
-        // // PendingUpdate BLOCK //
-        // /////////////////////////
       case PENDING_UPDATE:
-
         answer = (AppAnswerEvent) localEvent.getAnswer();
         switch (eventType) {
         case RECEIVED_UPDATE_ANSWER:
-
-          try {
-            if (isSuccess(answer.getResultCodeAvp().getUnsigned32())) {
-              stopTx();
-              setState(ClientCCASessionState.OPEN);
-              deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
-              
-            }
-            if (isProvisional(answer.getResultCodeAvp().getUnsigned32())) {
-              //
-            	deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
-            }
-            else if (isFailure(answer.getResultCodeAvp().getUnsigned32())) {
-              handleFailureMessage((JCreditControlAnswer) answer, (JCreditControlRequest) localEvent.getRequest(), eventType);
-            }
-            
+          long resultCode = answer.getResultCodeAvp().getUnsigned32();
+          if (isSuccess(resultCode)) {
+            // Current State: PENDING_U
+            // Event: Successful CC update answer received
+            // Action: Stop Tx
+            // New State: OPEN
+            stopTx();
+            setState(ClientCCASessionState.OPEN);
           }
-          catch (AvpDataException e) {
-            // FIXME?
-            logger.debug("Failure handling received update answer event", e);
-            setState(ClientCCASessionState.IDLE, false);
+          else if (isProvisional(resultCode) || isFailure(resultCode)) {
+            handleFailureMessage((JCreditControlAnswer) answer, (JCreditControlRequest) localEvent.getRequest(), eventType);
           }
           break;
         case Tx_TIMER_FIRED:
@@ -405,13 +432,25 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
         case SEND_UPDATE_REQUEST:
         case SEND_TERMINATE_REQUEST:
-          // we schedule, once in Open state, those messages can fly
+          // Current State: PENDING_U
+          // Event: User service terminated
+          // Action: Queue termination event
+          // New State: PENDING_U
+
+          // Current State: PENDING_U
+          // Event: Change in rating condition
+          // Action: Queue changed rating condition event
+          // New State: PENDING_U
           eventQueue.add(localEvent);
           break;
         case RECEIVED_RAR:
           deliverRAR((ReAuthRequest) localEvent.getRequest());
           break;
         case SEND_RAA:
+          // Current State: PENDING_U
+          // Event: RAR received
+          // Action: Send RAA
+          // New State: PENDING_U
           try {
             dispatchEvent(localEvent.getAnswer());
           }
@@ -423,14 +462,14 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
         break;
 
-        // ////////////////////////////
-        // // PendingTERMIANTE BLOCK //
-        // ////////////////////////////
-
       case PENDING_TERMINATION:
         switch (eventType) {
         case SEND_UPDATE_REQUEST:
           try {
+            // Current State: PENDING_T
+            // Event: Change in rating condition
+            // Action: - 
+            // New State: PENDING_T
             dispatchEvent(localEvent.getRequest());
             // No transition
           }
@@ -440,12 +479,21 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           }
           break;
         case RECEIVED_TERMINATED_ANSWER:
+          // Current State: PENDING_T
+          // Event: Successful CC termination answer received
+          // Action: - 
+          // New State: IDLE
+
+          // Current State: PENDING_T
+          // Event: Failure to send, temporary error, or failed answer
+          // Action: - 
+          // New State: IDLE
           setState(ClientCCASessionState.IDLE, false);
           deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
           break;
         default:
           logger.warn("Wrong event type ({}) on state {}", eventType, state);
-        break;
+          break;
         }
         break;
 
@@ -454,7 +502,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         setState(ClientCCASessionState.IDLE, true);
       }
 
-      doEndChecks();
+      dispatch();
       return true;
     }
     catch (Exception e) {
@@ -467,21 +515,21 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
   public Answer processRequest(Request request) {
 
-	RequestDelivery rd = new RequestDelivery();
-	rd.session = this;
-	rd.request = request;
-	super.scheduler.execute(rd);
+    RequestDelivery rd = new RequestDelivery();
+    rd.session = this;
+    rd.request = request;
+    super.scheduler.execute(rd);
     return null;
   }
 
   public void receivedSuccessMessage(Request request, Answer answer) {
 
-	  AnswerDelivery ad = new AnswerDelivery();
-	  ad.session = this;
-	  ad.request = request;
-	  ad.answer = answer;
-	  super.scheduler.execute(ad);
-    
+    AnswerDelivery ad = new AnswerDelivery();
+    ad.session = this;
+    ad.request = request;
+    ad.answer = answer;
+    super.scheduler.execute(ad);
+
   }
 
   public void timeoutExpired(Request request) {
@@ -555,190 +603,258 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     this.factory = null;
   }
 
-  protected void handleSendFailure(Exception e, Event.Type eventType, Message request) throws Exception
-  {
+  protected void handleSendFailure(Exception e, Event.Type eventType, Message request) throws Exception {
     logger.debug("Failed to send message, type: {} message: {}, failure: {}", new Object[]{eventType, request, e != null ? e.getLocalizedMessage() : ""});
-    // FIXME: do we need check for RAR ?
     try {
-      if (isStateless()) {
+      // Event Based ----------------------------------------------------------
+      if (isEventBased()) {
         switch (state) {
         case PENDING_EVENT:
           if (gatheredRequestedAction == CHECK_BALANCE || gatheredRequestedAction == PRICE_ENQUIRY) {
-            // #1
+            // Current State: PENDING_E
+            // Event: Failure to send, temporary error, failed CC event answer received or Tx expired; requested action CHECK_BALANCE or PRICE_ENQUIRY
+            // Action: Indicate service error
+            // New State: IDLE
             setState(ClientCCASessionState.IDLE);
             context.indicateServiceError(this);
           }
-          else if (gatheredRequestedAction == DIRECT_DEBITING && getLocalDDFH() == TERMINATE_OR_BUFFER) {
-            // #7
-            setState(ClientCCASessionState.IDLE, false);
-            buffer = request;
-            buffer.setReTransmitted(true);
-            // context.grantAccessOnDeliverFailure(this, request);
+          else if (gatheredRequestedAction == DIRECT_DEBITING) {
+            switch(getLocalDDFH()) {
+            case DDFH_TERMINATE_OR_BUFFER:
+              // Current State: PENDING_E
+              // Event: Failure to send; request action DIRECT_DEBITING; DDFH equal to TERMINATE_OR_BUFFER
+              // Action: Store request with T-flag
+              // New State: IDLE
+              buffer = request;
+              buffer.setReTransmitted(true);
+              setState(ClientCCASessionState.IDLE, false);
+              break;
+            case DDFH_CONTINUE:
+              // Current State: PENDING_E
+              // Event: Failure to send, temporary error, failed CC event answer received or Tx expired; requested action DIRECT_DEBITING; DDFH equal to CONTINUE
+              // Action: Grant service to end user
+              // New State: IDLE
+              context.grantAccessOnDeliverFailure(this, request);
+              break;
+            default:
+              logger.warn("Invalid Direct-Debiting-Failure-Handling AVP value {}", getLocalDDFH());
+            }
           }
           else if (gatheredRequestedAction == REFUND_ACCOUNT) {
-            // #11
+            // Current State: PENDING_E
+            // Event: Failure to send or Tx expired; requested action REFUND_ACCOUNT
+            // Action: Store request with T-flag
+            // New State: IDLE
             setState(ClientCCASessionState.IDLE, false);
             buffer = request;
             buffer.setReTransmitted(true);
-            // context.grantAccessOnDeliverFailure(this, request);
           }
           else {
-            // FIXME: no transition is mentioned in specs
-            setState(ClientCCASessionState.IDLE, false);
+            logger.warn("Invalid Requested-Action AVP value {}", gatheredRequestedAction);
           }
           break;
         case PENDING_BUFFERED:
+          // Current State: PENDING_B
+          // Event: Failure to send or temporary error
+          // Action: -
+          // New State: IDLE
           setState(ClientCCASessionState.IDLE, false);
-
-          //FIXME: baranowb?
-          buffer = null;
+          buffer = null; // FIXME: Action does not mention, but ...
           break;
         default:
-          //This happens when message timesout
           logger.warn("Wrong event type ({}) on state {}", eventType, state);
-        break;
+          break;
         }
       }
+      // Session Based --------------------------------------------------------
       else {
-        // In all cases it moves to idle
-        setState(ClientCCASessionState.IDLE, false);
-
         switch (getLocalCCFH()) {
         case CCFH_CONTINUE:
+          // Current State: PENDING_I
+          // Event: Failure to send, or temporary error and CCFH equal to CONTINUE
+          // Action: Grant service to end user
+          // New State: IDLE
+
+          // Current State: PENDING_U
+          // Event: Failure to send, or temporary error and CCFH equal to CONTINUE
+          // Action: Grant service to end user
+          // New State: IDLE
+          setState(ClientCCASessionState.IDLE, false);
           this.context.grantAccessOnDeliverFailure(this, request);
           break;
 
         default:
+          // Current State: PENDING_I
+          // Event: Failure to send, or temporary error and CCFH equal to TERMINATE or to RETRY_AND_TERMINATE
+          // Action: Terminate end user’s service
+          // New State: IDLE
+
+          // Current State: PENDING_U
+          // Event: Failure to send, or temporary error and CCFH equal to TERMINATE or to RETRY_AND_TERMINATE
+          // Action: Terminate end user’s service
+          // New State: IDLE
           this.context.denyAccessOnDeliverFailure(this, request);
-        break;
+          setState(ClientCCASessionState.IDLE, true);
+          break;
         }
       }
     }
     finally {
-      doEndChecks();
+      dispatch();
     }
   }
 
   protected void handleFailureMessage(JCreditControlAnswer event, JCreditControlRequest request, Event.Type eventType) {
     try {
-      if (isStateless()) {
-
-        // Stateless FSM part is a killer ;[
-        // This has to be present.....
+      // Event Based ----------------------------------------------------------
+      long resultCode = event.getResultCodeAvp().getUnsigned32();
+      if (isEventBased()) {
         switch (state) {
         case PENDING_EVENT:
-
-          int resultCode = event.getRequestTypeAVPValue();
-
-          if ((resultCode == DIAMETER_END_USER_SERVICE_DENIED || resultCode == USER_UNKNOWN) && txFuture != null) {
-            // #2
-           
-            context.denyAccessOnFailureMessage(this);
-            deliverCCAnswer(request, event);
-            setState(ClientCCASessionState.IDLE);
+          if (resultCode == END_USER_SERVICE_DENIED || resultCode == USER_UNKNOWN) {
+            if(txFuture != null) {
+              // Current State: PENDING_E
+              // Event: CC event answer received with result code END_USER_SERVICE_DENIED or USER_UNKNOWN and Tx running
+              // Action: Terminate end user’s service
+              // New State: IDLE
+              context.denyAccessOnFailureMessage(this);
+              deliverCCAnswer(request, event);
+              setState(ClientCCASessionState.IDLE);
+            }
+            else if(gatheredRequestedAction == DIRECT_DEBITING && txFuture == null) {
+              // Current State: PENDING_E
+              // Event: Failed answer or answer received with result code END_USER_SERVICE DENIED or USER_UNKNOWN; requested action DIRECT_DEBITING; Tx expired
+              // Action: -
+              // New State: IDLE
+              setState(ClientCCASessionState.IDLE);
+            }
           }
           else if (resultCode == CREDIT_CONTROL_NOT_APPLICABLE && gatheredRequestedAction == DIRECT_DEBITING) {
-            // #3
-            
+            // Current State: PENDING_E
+            // Event: CC event answer received with result code CREDIT_CONTROL_NOT_APPLICABLE; requested action DIRECT_DEBITING
+            // Action: Grant service to end user
+            // New State: IDLE
             context.grantAccessOnFailureMessage(this);
             deliverCCAnswer(request, event);
             setState(ClientCCASessionState.IDLE);
           }
           else if (temporaryErrorCodes.contains(resultCode)) {
             if (gatheredRequestedAction == CHECK_BALANCE || gatheredRequestedAction == PRICE_ENQUIRY) {
-              // #1
-              
+              // Current State: PENDING_E
+              // Event: Failure to send, temporary error, failed CC event answer received or Tx expired; requested action CHECK_BALANCE or PRICE_ENQUIRY
+              // Action: Indicate service error
+              // New State: IDLE
               context.indicateServiceError(this);
               deliverCCAnswer(request, event);
               setState(ClientCCASessionState.IDLE);
             }
-            else if (gatheredRequestedAction == DIRECT_DEBITING && getLocalDDFH() == CONTINUE) {
-              // #4
-             
-              context.grantAccessOnFailureMessage(this);
-              deliverCCAnswer(request, event);
-              setState(ClientCCASessionState.IDLE);
-            }
-            else if (gatheredRequestedAction == DIRECT_DEBITING && getLocalDDFH() == CONTINUE && txFuture != null) {
-              // #5
-              
-              context.denyAccessOnFailureMessage(this);
-              deliverCCAnswer(request, event);
-              setState(ClientCCASessionState.IDLE);
+            else if (gatheredRequestedAction == DIRECT_DEBITING) {
+              if(getLocalDDFH() == DDFH_CONTINUE) {
+                // Current State: PENDING_E
+                // Event: Failure to send, temporary error, failed CC event answer received or Tx expired; requested action DIRECT_DEBITING; DDFH equal to CONTINUE
+                // Action: Grant service to end user
+                // New State: IDLE
+                context.grantAccessOnFailureMessage(this);
+                deliverCCAnswer(request, event);
+                setState(ClientCCASessionState.IDLE);
+              }
+              else if (getLocalDDFH() == DDFH_TERMINATE_OR_BUFFER && txFuture != null) {
+                // Current State: PENDING_E
+                // Event: Failed CC event answer received or temporary error; requested action DIRECT_DEBITING; DDFH equal to TERMINATE_OR_BUFFER and Tx running
+                // Action: Terminate end user’s service
+                // New State: IDLE
+                context.denyAccessOnFailureMessage(this);
+                deliverCCAnswer(request, event);
+                setState(ClientCCASessionState.IDLE);
+              }
             }
             else if (gatheredRequestedAction == REFUND_ACCOUNT) {
-              // #12
+              // Current State: PENDING_E
+              // Event: Temporary error, and requested action REFUND_ACCOUNT
+              // Action: Store request
+              // New State: IDLE
               buffer = request.getMessage();
               setState(ClientCCASessionState.IDLE, false);
             }
             else {
-              // FIXME
-             
-              deliverCCAnswer(request, event);
-              setState(ClientCCASessionState.IDLE, false);
+              logger.warn("Invalid combination for CCA Client FSM: State {}, Result-Code {}, Requested-Action {}, DDFH {}, Tx {}", new Object[]{state, resultCode, gatheredRequestedAction, getLocalDDFH(), txFuture});
             }
           }
-          else {
-            // we are in fauilure zone isFailure(true}
+          else { // Failure 
             if (gatheredRequestedAction == CHECK_BALANCE || gatheredRequestedAction == PRICE_ENQUIRY) {
-              // #1
-              
+              // Current State: PENDING_E
+              // Event: Failure to send, temporary error, failed CC event answer received or Tx expired; requested action CHECK_BALANCE or PRICE_ENQUIRY
+              // Action: Indicate service error
+              // New State: IDLE
               context.indicateServiceError(this);
               deliverCCAnswer(request, event);
               setState(ClientCCASessionState.IDLE);
             }
-            else if (gatheredRequestedAction == DIRECT_DEBITING && getLocalDDFH() == CONTINUE) {
-              // #4
-             
-              context.grantAccessOnFailureMessage(this);
-              deliverCCAnswer(request, event);
-              setState(ClientCCASessionState.IDLE);
-            }
-            else if (gatheredRequestedAction == DIRECT_DEBITING && getLocalDDFH() == CONTINUE && txFuture != null) {
-              // #5
-              
-              context.denyAccessOnFailureMessage(this);
-              deliverCCAnswer(request, event);
-              setState(ClientCCASessionState.IDLE);
+            else if (gatheredRequestedAction == DIRECT_DEBITING) {
+              if(getLocalDDFH() == DDFH_CONTINUE) {
+                // Current State: PENDING_E
+                // Event: Failure to send, temporary error, failed CC event answer received or Tx expired; requested action DIRECT_DEBITING; DDFH equal to CONTINUE
+                // Action: Grant service to end user
+                // New State: IDLE
+                context.grantAccessOnFailureMessage(this);
+                deliverCCAnswer(request, event);
+                setState(ClientCCASessionState.IDLE);
+              }
+              else if (getLocalDDFH() == DDFH_TERMINATE_OR_BUFFER && txFuture != null) {
+                // Current State: PENDING_E
+                // Event: Failed CC event answer received or temporary error; requested action DIRECT_DEBITING; DDFH equal to TERMINATE_OR_BUFFER and Tx running
+                // Action: Terminate end user’s service
+                // New State: IDLE
+                context.denyAccessOnFailureMessage(this);
+                deliverCCAnswer(request, event);
+                setState(ClientCCASessionState.IDLE);
+              }
             }
             else if (gatheredRequestedAction == REFUND_ACCOUNT) {
-              // #10
+              // Current State: PENDING_E
+              // Event: Failed CC event answer received; requested action REFUND_ACCOUNT
+              // Action: Indicate service error and delete request
+              // New State: IDLE
               buffer = null;
-              
               context.indicateServiceError(this);
               deliverCCAnswer(request, event);
               setState(ClientCCASessionState.IDLE);
             }
             else {
-              // FIXME
-              
-              deliverCCAnswer(request, event);
-              setState(ClientCCASessionState.IDLE, false);
+              logger.warn("Invalid combination for CCA Client FSM: State {}, Result-Code {}, Requested-Action {}, DDFH {}, Tx {}", new Object[]{state, resultCode, gatheredRequestedAction, getLocalDDFH(), txFuture});
             }
           }
           break;
 
         case PENDING_BUFFERED:
+          // Current State: PENDING_B
+          // Event: Failed CC answer received
+          // Action: Delete request
+          // New State: IDLE
           buffer = null;
           setState(ClientCCASessionState.IDLE, false);
           break;
-
         default:
           logger.warn("Wrong event type ({}) on state {}", eventType, state);
         }
       }
+      // Session Based --------------------------------------------------------
       else {
-        // FIXME CRAP what a pain
-        long responseCode = event.getResultCodeAvp().getUnsigned32();
         switch (state) {
         case PENDING_INITIAL:
-          if (responseCode == CREDIT_CONTROL_NOT_APPLICABLE) {
-            
+          if (resultCode == CREDIT_CONTROL_NOT_APPLICABLE) {
+            // Current State: PENDING_I
+            // Event: CC initial answer received with result code equal to CREDIT_CONTROL_NOT_APPLICABLE
+            // Action: Grant service to end user
+            // New State: IDLE
             context.grantAccessOnFailureMessage(this);
             setState(ClientCCASessionState.IDLE, false);
           }
-          else if ((responseCode == DIAMETER_END_USER_SERVICE_DENIED) || (responseCode == USER_UNKNOWN)) {
-            
+          else if ((resultCode == END_USER_SERVICE_DENIED) || (resultCode == USER_UNKNOWN)) {
+            // Current State: PENDING_I
+            // Event: CC initial answer received with result code END_USER_SERVICE_DENIED or USER_UNKNOWN
+            // Action: Terminate end user’s service
+            // New State: IDLE
             context.denyAccessOnFailureMessage(this);
             setState(ClientCCASessionState.IDLE, false);
           }
@@ -746,31 +862,43 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
             // Temporary errors and others
             switch (getLocalCCFH()) {
             case CCFH_CONTINUE:
-              
+              // Current State: PENDING_I
+              // Event: Failed CC initial answer received and CCFH equal to CONTINUE
+              // Action: Grant service to end user
+              // New State: IDLE
               context.grantAccessOnFailureMessage(this);
               setState(ClientCCASessionState.IDLE, false);
               break;
             case CCFH_TERMINATE:
             case CCFH_RETRY_AND_TERMINATE:
-              
+              // Current State: PENDING_I
+              // Event: Failed CC initial answer received and CCFH equal to TERMINATE or to RETRY_AND_TERMINATE
+              // Action: Terminate end user’s service
+              // New State: IDLE
               context.denyAccessOnFailureMessage(this);
               setState(ClientCCASessionState.IDLE, false);
               break;
-
             default:
               logger.warn("Invalid value for CCFH: {}", getLocalCCFH());
-            break;
+              break;
             }
           }
           break;
+
         case PENDING_UPDATE:
-          if (responseCode == CREDIT_CONTROL_NOT_APPLICABLE) {
-            
+          if (resultCode == CREDIT_CONTROL_NOT_APPLICABLE) {
+            // Current State: PENDING_U
+            // Event: CC update answer received with result code equal to CREDIT_CONTROL_NOT_APPLICABLE
+            // Action: Grant service to end user
+            // New State: IDLE
             context.grantAccessOnFailureMessage(this);
             setState(ClientCCASessionState.IDLE, false);
           }
-          else if (responseCode == DIAMETER_END_USER_SERVICE_DENIED) {
-            
+          else if (resultCode == END_USER_SERVICE_DENIED) {
+            // Current State: PENDING_U
+            // Event: CC update answer received with result code END_USER_SERVICE_DENIED
+            // Action: Terminate end user’s service
+            // New State: IDLE
             context.denyAccessOnFailureMessage(this);
             setState(ClientCCASessionState.IDLE, false);
           }
@@ -778,23 +906,29 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
             // Temporary errors and others
             switch (getLocalCCFH()) {
             case CCFH_CONTINUE:
-              
+              // Current State: PENDING_U
+              // Event: Failed CC update answer received and CCFH equal to CONTINUE
+              // Action: Grant service to end user
+              // New State: IDLE
               context.grantAccessOnFailureMessage(this);
               setState(ClientCCASessionState.IDLE, false);
               break;
             case CCFH_TERMINATE:
             case CCFH_RETRY_AND_TERMINATE:
-              
+              // Current State: PENDING_U
+              // Event: Failed CC update answer received and CCFH equal to CONTINUE or to RETRY_AND_CONTINUE
+              // Action: Terminate end user’s service
+              // New State: IDLE
               context.denyAccessOnFailureMessage(this);
               setState(ClientCCASessionState.IDLE, false);
               break;
-
             default:
               logger.warn("Invalid value for CCFH: " + getLocalCCFH());
-            break;
+              break;
             }
           }
           break;
+
         default:
           logger.warn("Wrong event type ({}) on state {}", eventType, state);
         }
@@ -807,79 +941,104 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     }
   }
 
-  protected void handleTxExpires(Message m) {
-    ClientCCASessionState newState = state;
-    try {
-      if (isStateless()) {
-        if (gatheredRequestedAction == CHECK_BALANCE
-            || gatheredRequestedAction == PRICE_ENQUIRY) {
-          // #1
-          
-          context.indicateServiceError(this);
-          setState(ClientCCASessionState.IDLE);
-        }
-        else if (gatheredRequestedAction == DIRECT_DEBITING) {
-          
-          context.grantAccessOnTxExpire(this);
-          setState(ClientCCASessionState.IDLE);
-        }
-        else if (gatheredRequestedAction == REFUND_ACCOUNT) {
-          buffer = m;
-          buffer.setReTransmitted(true);
+  protected void handleTxExpires(Message message) {
+    // Event Based ----------------------------------------------------------
+    if (isEventBased()) {
+      if (gatheredRequestedAction == CHECK_BALANCE || gatheredRequestedAction == PRICE_ENQUIRY) {
+        // Current State: PENDING_E
+        // Event: Failure to send, temporary error, failed CC event answer received or Tx expired; requested action CHECK_BALANCE or PRICE_ENQUIRY
+        // Action: Indicate service error
+        // New State: IDLE
+        context.indicateServiceError(this);
+        setState(ClientCCASessionState.IDLE);
+      }
+      else if (gatheredRequestedAction == DIRECT_DEBITING) {
+        if(gatheredDDFH == DDFH_TERMINATE_OR_BUFFER) {
+          // Current State: PENDING_E
+          // Event: Temporary error; requested action DIRECT_DEBITING; DDFH equal to TERMINATE_OR_BUFFER; Tx expired
+          // Action: Store request
+          // New State: IDLE
+          buffer = message;
           setState(ClientCCASessionState.IDLE, false);
         }
-      }
-      else {
-        switch (state) {
-        case PENDING_INITIAL:
-
-          switch (getLocalCCFH()) {
-          case CCFH_CONTINUE:
-          case CCFH_RETRY_AND_TERMINATE:
-            newState = ClientCCASessionState.PENDING_INITIAL;
-            context.grantAccessOnTxExpire(this);
-            break;
-          case CCFH_TERMINATE:
-            context.denyAccessOnTxExpire(this);
-            break;
-
-          default:
-            logger.warn("Invalid value for CCFH: " + getLocalCCFH());
-          break;
-          }
-
-          break;
-
-        case PENDING_UPDATE:
-
-          switch (getLocalCCFH()) {
-          case CCFH_CONTINUE:
-          case CCFH_RETRY_AND_TERMINATE:
-            newState = ClientCCASessionState.PENDING_UPDATE;
-            context.grantAccessOnTxExpire(this);
-            break;
-          case CCFH_TERMINATE:
-            context.denyAccessOnTxExpire(this);
-            break;
-
-          default:
-            logger.error("Bad value of CCFH: " + getLocalCCFH());
-          break;
-
-          }
-          break;
-        default:
-          logger.error("Unknown state (" + state + ") on txExpire");
-        break;
+        else {
+          // Current State: PENDING_E
+          // Event: Tx expired; requested action DIRECT_DEBITING
+          // Action: Grant service to end user
+          // New State: PENDING_E
+          context.grantAccessOnTxExpire(this);
+          setState(ClientCCASessionState.PENDING_EVENT);
         }
       }
-    }
-    finally {
-      if (state == newState) {
-        setState(ClientCCASessionState.IDLE, true);
+      else if (gatheredRequestedAction == REFUND_ACCOUNT) {
+        // Current State: PENDING_E
+        // Event: Failure to send or Tx expired; requested action REFUND_ACCOUNT
+        // Action: Store request with T-flag
+        // New State: IDLE
+        buffer = message;
+        buffer.setReTransmitted(true);
+        setState(ClientCCASessionState.IDLE, false);
       }
-      // else
-      // setState(newState, false);
+    }
+    // Session Based --------------------------------------------------------
+    else {
+      switch (state) {
+      case PENDING_INITIAL:
+        switch (getLocalCCFH()) {
+        case CCFH_CONTINUE:
+        case CCFH_RETRY_AND_TERMINATE:
+          // Current State: PENDING_I
+          // Event: Tx expired and CCFH equal to CONTINUE or to RETRY_AND_TERMINATE
+          // Action: Grant service to end user
+          // New State: PENDING_I
+          context.grantAccessOnTxExpire(this);
+          break;
+
+        case CCFH_TERMINATE:
+          // Current State: PENDING_I
+          // Event: Tx expired and CCFH equal to TERMINATE
+          // Action: Terminate end user’s service
+          // New State: IDLE
+          context.denyAccessOnTxExpire(this);
+          setState(ClientCCASessionState.IDLE, true);
+          break;
+
+        default:
+          logger.warn("Invalid value for CCFH: " + getLocalCCFH());
+          break;
+        }
+        break;
+
+      case PENDING_UPDATE:
+        switch (getLocalCCFH()) {
+        case CCFH_CONTINUE:
+        case CCFH_RETRY_AND_TERMINATE:
+          // Current State: PENDING_U
+          // Event: Tx expired and CCFH equal to CONTINUE or to RETRY_AND_TERMINATE
+          // Action: Grant service to end user
+          // New State: PENDING_U
+          context.grantAccessOnTxExpire(this);
+          break;
+
+        case CCFH_TERMINATE:
+          // Current State: PENDING_U
+          // Event: Tx expired and CCFH equal to TERMINATE
+          // Action: Terminate end user’s service
+          // New State: IDLE
+          context.denyAccessOnTxExpire(this);
+          setState(ClientCCASessionState.IDLE, true);
+          break;
+
+        default:
+          logger.error("Bad value of CCFH: " + getLocalCCFH());
+          break;
+        }
+        break;
+
+      default:
+        logger.error("Unknown state (" + state + ") on txExpire");
+        break;
+      }
     }
   }
 
@@ -887,9 +1046,13 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
    * This makes checks on queue, moves it to proper state if event there is
    * present on Open state ;]
    */
-  protected void doEndChecks() {
-
-    if (isStateless()) {
+  protected void dispatch() {
+    // Event Based ----------------------------------------------------------
+    if (isEventBased()) {
+      // Current State: IDLE
+      // Event: Request in storage
+      // Action: Send stored request
+      // New State: PENDING_B
       if (buffer != null) {
         setState(ClientCCASessionState.PENDING_BUFFERED);
         try {
@@ -900,18 +1063,19 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
             handleSendFailure(e, Event.Type.SEND_EVENT_REQUEST, buffer);
           }
           catch (Exception e1) {
-            logger.error("Failure handling send failure", e1);
+            logger.error("Failure handling buffer send failure", e1);
           }
         }
       }
     }
+    // Session Based --------------------------------------------------------
     else {
       if (state == ClientCCASessionState.OPEN && eventQueue.size() > 0) {
         try {
           this.handleEvent(eventQueue.remove(0));
         }
         catch (Exception e) {
-          logger.error("Failure handling event", e);
+          logger.error("Failure handling queued event", e);
         }
       }
     }
@@ -944,14 +1108,10 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       catch (Exception e) {
         logger.debug("Failure trying to obtain Direct-Debit-Failure-Handling AVP value", e);
       }
-      if(!statelessModeSet) {
-        statelessModeSet = true;
-        if(answer.isRequestTypeAVPPresent()) {
-          stateless = (answer.getRequestTypeAVPValue() == 4);
-        }
-        else {
-          //FIXME: send error ?
-        }
+      if(!requestTypeSet) {
+        requestTypeSet = true;
+        // No need to check if it exists.. it must, if not fail with exception
+        isEventBased = (answer.getRequestTypeAVPValue() == EVENT_REQUEST);
       }
     }
     else if (request != null) {
@@ -964,14 +1124,10 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         logger.debug("Failure trying to obtain Request-Action AVP value", e);
       }
 
-      if(!statelessModeSet) {
-        statelessModeSet = true;
-        if(request.isRequestTypeAVPPresent()) {
-          stateless = (request.getRequestTypeAVPValue() == 4);
-        }
-        else {
-          //FIXME: send error ?
-        }
+      if(!requestTypeSet) {
+        requestTypeSet = true;
+        // No need to check if it exists.. it must, if not fail with exception
+        isEventBased = (request.getRequestTypeAVPValue() == EVENT_REQUEST);
       }
     }
   }
@@ -987,7 +1143,6 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
   protected void dispatchEvent(AppEvent event) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     session.send(event.getMessage(), this);
-    // Store last destination information
   }
 
   protected boolean isProvisional(long resultCode) {
@@ -1023,8 +1178,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         catch (Exception e) {
           logger.debug("Failure handling TX Timer Expired", e);
         }
-        handleEvent(new Event(Event.Type.Tx_TIMER_FIRED,
-            request == null ? null : request, null));
+        handleEvent(new Event(Event.Type.Tx_TIMER_FIRED, request, null));
       }
       catch (InternalException e) {
         logger.error("Internal Exception", e);
@@ -1037,60 +1191,54 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       }
     }
   }
-  
-	private class RequestDelivery implements Runnable {
-		ClientCCASession session;
-		Request request;
 
-		public void run() {
-			try {
-				// FIXME: baranowb: add message validation here!
-				// We handle CCR,STR,ACR,ASR other go into extension
-				switch (request.getCommandCode()) {
-				case ReAuthAnswerImpl.code:
-					handleEvent(new Event(Event.Type.RECEIVED_RAR, factory.createReAuthRequest(request), null));
-					break;
+  private class RequestDelivery implements Runnable {
+    ClientCCASession session;
+    Request request;
 
-				default:
-					listener.doOtherEvent(session, new AppRequestEventImpl(request), null);
-					break;
-				}
-			} catch (Exception e) {
-				logger.debug("Failure processing request", e);
-			}
+    public void run() {
+      try {
+        switch (request.getCommandCode()) {
+        case ReAuthAnswerImpl.code:
+          handleEvent(new Event(Event.Type.RECEIVED_RAR, factory.createReAuthRequest(request), null));
+          break;
 
-		}
+        default:
+          listener.doOtherEvent(session, new AppRequestEventImpl(request), null);
+          break;
+        }
+      }
+      catch (Exception e) {
+        logger.debug("Failure processing request", e);
+      }
+    }
+  }
 
-	}
+  private class AnswerDelivery implements Runnable {
+    ClientCCASession session;
+    Answer answer;
+    Request request;
 
-	private class AnswerDelivery implements Runnable {
-		ClientCCASession session;
-		Answer answer;
-		Request request;
+    public void run() {
+      try{
+        switch(request.getCommandCode())
+        {
+        case JCreditControlAnswer.code:
+          JCreditControlRequest _request = factory.createCreditControlRequest(request);
+          JCreditControlAnswer _answer = factory.createCreditControlAnswer(answer);
+          extractFHAVPs(null, _answer );
+          handleEvent(new Event(false, _request, _answer));
+          break;
 
-		public void run() {
-			try{
-			      //FIXME: baranowb: add message validation here!!!
-			      //We handle CCR,STR,ACR,ASR other go into extension
-			      switch(request.getCommandCode())
-			      {
-			      case JCreditControlAnswer.code:
-                    JCreditControlRequest _request = factory.createCreditControlRequest(request);
-                    JCreditControlAnswer _answer = factory.createCreditControlAnswer(answer);
-			        extractFHAVPs(null,_answer );
-			        handleEvent(new Event(false, _request, _answer));
-			        break;
+        default:
+          listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
+          break;
+        }
+      }
+      catch(Exception e) {
+        logger.debug("Failure processing success message", e);
+      }
+    }
+  }
 
-			      default:
-			        listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
-			      break;
-			      }
-			    }
-			    catch(Exception e) {
-			      logger.debug("Failure processing success message", e);
-			    }
-
-		}
-
-	}
 }

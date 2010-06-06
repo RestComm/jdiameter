@@ -3,6 +3,7 @@ package org.jdiameter.common.impl.app.auth;
 import static org.jdiameter.api.Avp.AUTH_APPLICATION_ID;
 import static org.jdiameter.api.Avp.RE_AUTH_REQUEST_TYPE;
 
+import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.auth.events.ReAuthRequest;
@@ -17,8 +18,9 @@ public class ReAuthRequestImpl extends AppRequestEventImpl implements ReAuthRequ
   }
 
   public long getAuthApplicationId() throws AvpDataException {
-    if (message.getAvps().getAvp(AUTH_APPLICATION_ID) != null) {
-      return message.getAvps().getAvp(AUTH_APPLICATION_ID).getUnsigned32();
+    Avp authApplicationIdAvp = message.getAvps().getAvp(AUTH_APPLICATION_ID);
+    if (authApplicationIdAvp != null) {
+      return authApplicationIdAvp.getUnsigned32();
     }
     else {
       throw new AvpDataException("Avp AUTH_APPLICATION_ID not found");
@@ -26,8 +28,9 @@ public class ReAuthRequestImpl extends AppRequestEventImpl implements ReAuthRequ
   }
 
   public int getReAuthRequestType() throws AvpDataException {
-    if (message.getAvps().getAvp(RE_AUTH_REQUEST_TYPE) != null) {
-      return message.getAvps().getAvp(RE_AUTH_REQUEST_TYPE).getInteger32();
+    Avp reAuthRequestTypeAvp = message.getAvps().getAvp(RE_AUTH_REQUEST_TYPE);
+    if (reAuthRequestTypeAvp != null) {
+      return reAuthRequestTypeAvp.getInteger32();
     }
     else {
       throw new AvpDataException("Avp RE_AUTH_REQUEST_TYPE not found");

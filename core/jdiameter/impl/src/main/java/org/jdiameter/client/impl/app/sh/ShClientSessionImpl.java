@@ -25,6 +25,7 @@ import org.jdiameter.api.sh.ClientShSession;
 import org.jdiameter.api.sh.ClientShSessionListener;
 import org.jdiameter.api.sh.events.ProfileUpdateRequest;
 import org.jdiameter.api.sh.events.PushNotificationAnswer;
+import org.jdiameter.api.sh.events.PushNotificationRequest;
 import org.jdiameter.api.sh.events.SubscribeNotificationsRequest;
 import org.jdiameter.api.sh.events.UserDataRequest;
 import org.jdiameter.common.api.app.IAppSessionState;
@@ -33,13 +34,10 @@ import org.jdiameter.common.api.app.sh.ShSessionState;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.jdiameter.common.impl.app.sh.ProfileUpdateAnswerImpl;
-import org.jdiameter.common.impl.app.sh.ProfileUpdateRequestImpl;
 import org.jdiameter.common.impl.app.sh.PushNotificationRequestImpl;
 import org.jdiameter.common.impl.app.sh.ShSession;
 import org.jdiameter.common.impl.app.sh.SubscribeNotificationsAnswerImpl;
-import org.jdiameter.common.impl.app.sh.SubscribeNotificationsRequestImpl;
 import org.jdiameter.common.impl.app.sh.UserDataAnswerImpl;
-import org.jdiameter.common.impl.app.sh.UserDataRequestImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,22 +61,28 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
   private static final long serialVersionUID = 1L;
 
   private Logger logger = LoggerFactory.getLogger(ShClientSessionImpl.class);
-  
-  protected ShSessionState state = ShSessionState.NOTSUBSCRIBED;
+
+  // Session State Handling ---------------------------------------------------
   protected boolean stateless = false;
-  protected IShMessageFactory factory = null;
-  protected String destHost, destRealm;
+  protected ShSessionState state = ShSessionState.NOTSUBSCRIBED;
   protected Lock sendAndStateLock = new ReentrantLock();
+
+  // Factories and Listeners --------------------------------------------------
+  protected IShMessageFactory factory = null;
   protected ClientShSessionListener listener;
-  protected long appId = -1;
+
+  // Subscription Timer -------------------------------------------------------
   protected ScheduledFuture sft = null;
+
+  protected long appId = -1;
+  protected String destHost, destRealm;
 
   public ShClientSessionImpl(IShMessageFactory fct, SessionFactory sf, ClientShSessionListener lst) {
     this(null, fct, sf, lst);
   }
 
   public ShClientSessionImpl(String sessionId, IShMessageFactory fct, SessionFactory sf, ClientShSessionListener lst) {
-	super(sf);
+    super(sf);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
@@ -103,10 +107,10 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
   }
 
   public Answer processRequest(Request request) {
-	  RequestDelivery rd = new RequestDelivery();
-	  rd.session = this;
-	  rd.request = request;
-	  super.scheduler.execute(rd);
+    RequestDelivery rd = new RequestDelivery();
+    rd.session = this;
+    rd.request = request;
+    super.scheduler.execute(rd);
     return null;
   }
 
@@ -138,12 +142,13 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
             newState = ShSessionState.TERMINATED;
           }
           break;
+
         case SUBSCRIBED:
           if (event.getType() == Event.Type.RECEIVE_SUBSCRIBE_NOTIFICATIONS_ANSWER) {
             newState = doSNX(answer);
           }
           else if (event.getType() == Event.Type.TIMEOUT_EXPIRES) {
-            if (localEvent.getRequest().getCommandCode() == SubscribeNotificationsRequestImpl.code) {
+            if (localEvent.getRequest().getCommandCode() == SubscribeNotificationsRequest.code) {
               newState = ShSessionState.TERMINATED;
             }
           }
@@ -151,8 +156,9 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
             // FIXME: What about timeout here?
           }
           break;
+
         case TERMINATED:
-          // We shouldnt receive anything here
+          // We shouldn't receive anything here
           break;
         }
 
@@ -163,34 +169,33 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
           case RECEIVE_PUSH_NOTIFICATION_REQUEST:
             listener.doPushNotificationRequestEvent(this, new PushNotificationRequestImpl( (Request) localEvent.getRequest().getMessage() ));
             break;
+
           case RECEIVE_PROFILE_UPDATE_ANSWER:
             listener.doProfileUpdateAnswerEvent(this, null, new ProfileUpdateAnswerImpl( (Answer) localEvent.getAnswer().getMessage()));
             break;
+
           case RECEIVE_USER_DATA_ANSWER:
             listener.doUserDataAnswerEvent(this, null, new UserDataAnswerImpl((Answer) localEvent.getAnswer().getMessage()));
             break;
+
           case RECEIVE_SUBSCRIBE_NOTIFICATIONS_ANSWER:
             listener.doSubscribeNotificationsAnswerEvent(this, null, new SubscribeNotificationsAnswerImpl( (Answer) localEvent.getAnswer().getMessage()));
             break;
+
           case SEND_PROFILE_UPDATE_REQUEST:
           case SEND_PUSH_NOTIFICATION_ANSWER:
           case SEND_SUBSCRIBE_NOTIFICATIONS_REQUEST:
           case SEND_USER_DATA_REQUEST:
-        	 
-        	  Message m = null;
-        	  Object data = event.getData();
-        	  if(data instanceof AppEvent)
-        	  {
-        		  m = ((AppEvent)data).getMessage();
-        	  }else
-        	  {
-        		  m = (Message) event.getData();
-        	  }
-              session.send(m, this);
+            Message m = null;
+            Object data = event.getData();
+            m = data instanceof AppEvent ? ((AppEvent)data).getMessage() : (Message) event.getData();
+            session.send(m, this);
+            break;
 
           case TIMEOUT_EXPIRES:
             // TODO Anything here?
             break;
+
           default:
             logger.error("Wrong message type={} req={} ans={}", new Object[]{localEvent.getType(), localEvent.getRequest(), localEvent.getAnswer()});
           }
@@ -221,40 +226,37 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
     long resultCode = -1;
 
     try {
-      Avp avp = set.getAvp(Avp.EXPERIMENTAL_RESULT) != null ? 
-          set.getAvp(Avp.EXPERIMENTAL_RESULT).getGrouped().getAvp(Avp.EXPERIMENTAL_RESULT_CODE) : 
-            set.getAvp(Avp.RESULT_CODE);
+      Avp avp = set.getAvp(Avp.RESULT_CODE);
+      if(avp == null) {
+        avp = set.getAvp(Avp.EXPERIMENTAL_RESULT).getGrouped().getAvp(Avp.EXPERIMENTAL_RESULT_CODE);
+      }
+      resultCode = avp.getUnsigned32();
 
-          resultCode = avp.getUnsigned32();
-          if (resultCode >= 2000 && resultCode < 3000) {
-            long expiryTime = extractExpirationTime(answer.getMessage());
-            if (expiryTime >= 0) {
-              if (this.sft != null) {
-                this.sft.cancel(true);
-              }
-              this.sft = scheduler.schedule(new Runnable() {
-                public void run() {
-                  try {
-                    sendAndStateLock.lock();
-                    if (state != ShSessionState.TERMINATED) {
-                      setState(ShSessionState.TERMINATED);
-                    }
-                  }
-                  finally {
-                    sendAndStateLock.unlock();
-                  }
+      if (resultCode >= 2000 && resultCode < 3000) {
+        long expiryTime = extractExpiryTime(answer.getMessage());
+        if (expiryTime >= 0) {
+          if (this.sft != null) {
+            this.sft.cancel(true);
+          }
+          this.sft = scheduler.schedule(new Runnable() {
+            public void run() {
+              try {
+                sendAndStateLock.lock();
+                if (state != ShSessionState.TERMINATED) {
+                  setState(ShSessionState.TERMINATED);
                 }
-              }, expiryTime, TimeUnit.SECONDS);
+              }
+              finally {
+                sendAndStateLock.unlock();
+              }
             }
-            else {
-              // FIXME: We relly on user?
-            }
-            newState = ShSessionState.SUBSCRIBED;
-          }
-          else {
-            // its a failure?
-            newState = ShSessionState.TERMINATED;
-          }
+          }, expiryTime, TimeUnit.SECONDS);
+        }
+        newState = ShSessionState.SUBSCRIBED;
+      }
+      else {
+        newState = ShSessionState.TERMINATED;
+      }
     }
     catch (AvpDataException e) {
       logger.debug("Could not retrieve Result-Code from Message", e);
@@ -289,12 +291,11 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
       if (type != null) {
         handleEvent(new Event(type, request, answer));
       }
-      
-      if(request != null)
-      {
+
+      if(request != null) {
         AvpSet avps = request.getMessage().getAvps();
         Avp a = null;
-        // Store last destinmation information
+        // Store last destination information
         if((a = avps.getAvp(Avp.DESTINATION_REALM)) != null) {
           destRealm = a.getOctetString();         
         }
@@ -312,31 +313,30 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
   }
 
   public void receivedSuccessMessage(Request request, Answer answer) {
-	  AnswerDelivery rd = new AnswerDelivery();
-		rd.session = this;
-		rd.request = request;
-		rd.answer = answer;
-		super.scheduler.execute(rd);
+    AnswerDelivery rd = new AnswerDelivery();
+    rd.session = this;
+    rd.request = request;
+    rd.answer = answer;
+    super.scheduler.execute(rd);
   }
 
   public void timeoutExpired(Request request) {
     try {
       sendAndStateLock.lock();
       if (request.getApplicationId() == factory.getApplicationId()) {
-        if (request.getCommandCode() == ProfileUpdateRequestImpl.code) {
+        if (request.getCommandCode() == ProfileUpdateRequest.code) {
           handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, factory.createProfileUpdateRequest(request), null));
           return;
         }
-        else if (request.getCommandCode() == UserDataRequestImpl.code) {
+        else if (request.getCommandCode() == UserDataRequest.code) {
           handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, factory.createUserDataRequest(request), null));
           return;
         }
-        else if (request.getCommandCode() == SubscribeNotificationsRequestImpl.code) {
+        else if (request.getCommandCode() == SubscribeNotificationsRequest.code) {
           handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, factory.createSubscribeNotificationsRequest(request), null));
           return;
         }
       }
-      // FIXME: Anything else todo?
     }
     catch (Exception e) {
       logger.debug("Failed to process timeout message", e);
@@ -367,7 +367,16 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
     }
   }
 
-  protected long extractExpirationTime(Message answer) {
+  protected long extractExpiryTime(Message answer) {
+    try {
+      // FIXME: Replace 709 by Avp.EXPIRY_TIME
+      Avp expiryTimeAvp = answer.getAvps().getAvp(709);
+      return expiryTimeAvp != null ? expiryTimeAvp.getTime().getTime() : -1;
+    }
+    catch (AvpDataException ade) {
+      logger.debug("Failure trying to extract Expiry-Time AVP value", ade);
+    }
+
     return -1;
   }
 
@@ -376,7 +385,6 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
       sendAndStateLock.lock();
       if (state != ShSessionState.TERMINATED) {
         setState(ShSessionState.TERMINATED, false);
-        //session.release();
       }
 
       if(super.isValid()) {
@@ -402,63 +410,57 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
   }
 
   private class RequestDelivery implements Runnable {
-	  ClientShSession session;
-		Request request;
+    ClientShSession session;
+    Request request;
 
-		public void run() {
+    public void run() {
+      try {
+        if (request.getApplicationId() == factory.getApplicationId()) {
+          if (request.getCommandCode() == PushNotificationRequest.code) {
+            handleEvent(new Event(Event.Type.RECEIVE_PUSH_NOTIFICATION_REQUEST, factory.createPushNotificationRequest(request), null));
+            return;
+          }
+        }
+        listener.doOtherEvent(session, new AppRequestEventImpl(request), null);
+      }
+      catch (Exception e) {
+        logger.debug("Failed to process request {}", request, e);
+      }
+    }
+  }
 
-			 try {
-			      if (request.getApplicationId() == factory.getApplicationId()) {
-			        if (request.getCommandCode() == org.jdiameter.common.impl.app.sh.PushNotificationRequestImpl.code) {
-			          handleEvent(new Event(Event.Type.RECEIVE_PUSH_NOTIFICATION_REQUEST, factory.createPushNotificationRequest(request), null));
-			          return;
-			        }
-			      }
+  private class AnswerDelivery implements Runnable {
+    ClientShSession session;
+    Answer answer;
+    Request request;
 
-			      listener.doOtherEvent(session, new AppRequestEventImpl(request), null);
-			    }
-			    catch (Exception e) {
-			      logger.debug("Failed to process request {}", request, e);
-			    }
+    public void run() {
+      try {
+        sendAndStateLock.lock();
+        if (request.getApplicationId() == factory.getApplicationId()) {
+          if (request.getCommandCode() == ProfileUpdateRequest.code) {
+            handleEvent(new Event(Event.Type.RECEIVE_PROFILE_UPDATE_ANSWER, factory.createProfileUpdateRequest(request), factory.createProfileUpdateAnswer(answer)));
+            return;
+          }
+          else if (request.getCommandCode() == UserDataRequest.code) {
+            handleEvent(new Event(Event.Type.RECEIVE_USER_DATA_ANSWER, factory.createUserDataRequest(request), factory.createUserDataAnswer(answer)));
+            return;
+          }
+          else if (request.getCommandCode() == SubscribeNotificationsRequest.code) {
+            handleEvent(new Event(Event.Type.RECEIVE_SUBSCRIBE_NOTIFICATIONS_ANSWER, factory.createSubscribeNotificationsRequest(request), factory
+                .createSubscribeNotificationsAnswer(answer)));
+            return;
+          }
+        }
+        listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
+      }
+      catch (Exception e) {
+        logger.debug("Failed to process success message", e);
+      }
+      finally {
+        sendAndStateLock.unlock();
+      }
+    }
+  }
 
-		}
-
-	}
-
-	private class AnswerDelivery implements Runnable {
-		ClientShSession session;
-		Answer answer;
-		Request request;
-
-		public void run() {
-			 try {
-			      sendAndStateLock.lock();
-			      if (request.getApplicationId() == factory.getApplicationId()) {
-			        if (request.getCommandCode() == ProfileUpdateRequestImpl.code) {
-			          handleEvent(new Event(Event.Type.RECEIVE_PROFILE_UPDATE_ANSWER, factory.createProfileUpdateRequest(request), factory.createProfileUpdateAnswer(answer)));
-			          return;
-			        }
-			        else if (request.getCommandCode() == UserDataRequestImpl.code) {
-			          handleEvent(new Event(Event.Type.RECEIVE_USER_DATA_ANSWER, factory.createUserDataRequest(request), factory.createUserDataAnswer(answer)));
-			          return;
-			        }
-			        else if (request.getCommandCode() == SubscribeNotificationsRequestImpl.code) {
-			          handleEvent(new Event(Event.Type.RECEIVE_SUBSCRIBE_NOTIFICATIONS_ANSWER, factory.createSubscribeNotificationsRequest(request), factory
-			              .createSubscribeNotificationsAnswer(answer)));
-			          return;
-			        }
-			      }
-			      listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
-			    }
-			    catch (Exception e) {
-			      logger.debug("Failed to process success message", e);
-			    }
-			    finally {
-			      sendAndStateLock.unlock();
-			    }
-
-		}
-
-	}
-  
 }

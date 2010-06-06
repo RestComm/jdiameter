@@ -3,7 +3,6 @@ package org.jdiameter.common.impl.app.auth;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -22,16 +21,16 @@ public abstract class AppAuthSessionImpl extends AppSessionImpl implements  Netw
   protected ScheduledExecutorService scheduler = null;
   protected List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
   protected SessionFactory sf = null;
-  
-	public AppAuthSessionImpl(SessionFactory sf) {
-		if (sf == null) {
-			throw new IllegalArgumentException("SessionFactory must not be null");
-		}
-		this.sf = sf;
-		this.scheduler = ((ISessionFactory) this.sf).getConcurrentFactory().getScheduledExecutorService(
-				IConcurrentFactory.ScheduledExecServices.ApplicationSession.name());
-	}
-  
+
+  public AppAuthSessionImpl(SessionFactory sf) {
+    if (sf == null) {
+      throw new IllegalArgumentException("SessionFactory must not be null");
+    }
+    this.sf = sf;
+    this.scheduler = ((ISessionFactory) this.sf).getConcurrentFactory().getScheduledExecutorService(
+        IConcurrentFactory.ScheduledExecServices.ApplicationSession.name());
+  }
+
   public void addStateChangeNotification(StateChangeListener listener) {
     if (!stateListeners.contains(listener)) {
       stateListeners.add(listener);
@@ -42,7 +41,7 @@ public abstract class AppAuthSessionImpl extends AppSessionImpl implements  Netw
     stateListeners.remove(listener);
   }
 
-public void release() {
+  public void release() {
     //scheduler.shutdownNow();
     super.release();
   }

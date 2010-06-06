@@ -3,7 +3,6 @@ package org.jdiameter.client.impl.app.sh;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.StateEvent;
 
-
 public class Event implements StateEvent {
   enum Type {
     SEND_USER_DATA_REQUEST,

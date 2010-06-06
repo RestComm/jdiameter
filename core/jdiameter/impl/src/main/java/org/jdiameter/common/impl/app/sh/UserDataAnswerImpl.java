@@ -7,14 +7,14 @@ import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 
 public class UserDataAnswerImpl extends AppAnswerEventImpl implements UserDataAnswer {
 
-	
-	public UserDataAnswerImpl(Request request, long resultCode) {
-		super(request.createAnswer(resultCode));
-		
-	}
-	
-	public UserDataAnswerImpl(Answer answer) {
-		super(answer);
-		
-	}
+  private static final long serialVersionUID = 1L;
+
+  public UserDataAnswerImpl(Request request, long resultCode) {
+    super(request.createAnswer(resultCode));
+  }
+
+  public UserDataAnswerImpl(Answer answer) {
+    super(answer);
+  }
+
 }

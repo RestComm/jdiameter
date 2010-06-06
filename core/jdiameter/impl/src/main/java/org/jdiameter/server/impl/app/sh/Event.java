@@ -3,8 +3,8 @@ package org.jdiameter.server.impl.app.sh;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.StateEvent;
 
-
 public class Event implements StateEvent {
+
   enum Type {
     RECEIVE_USER_DATA_REQUEST,
     RECEIVE_PROFILE_UPDATE_REQUEST, 
@@ -26,7 +26,7 @@ public class Event implements StateEvent {
   Event(Type type, AppEvent request, AppEvent answer) {
     this.type = type;
     this.answer = answer;
-    this.request=request;
+    this.request = request;
   }
 
   public <E> E encodeType(Class<E> eClass) {

@@ -154,13 +154,15 @@ public class RouterImpl implements IRouter {
             }
             //
             int redirectUsage = DONT_CACHE;
-            if (answer.getAvps().getAvp(Avp.REDIRECT_HOST_USAGE) != null)
-                redirectUsage = answer.getAvps().getAvp(Avp.REDIRECT_HOST_USAGE).getInteger32();
+            Avp redirectHostUsageAvp = answer.getAvps().getAvp(Avp.REDIRECT_HOST_USAGE);
+            if (redirectHostUsageAvp != null)
+                redirectUsage = redirectHostUsageAvp.getInteger32();
             //
             if (redirectUsage != DONT_CACHE) {
                 long redirectCacheTime = 0;
-                if (answer.getAvps().getAvp(Avp.REDIRECT_MAX_CACHE_TIME) != null)
-                    redirectCacheTime = answer.getAvps().getAvp(Avp.REDIRECT_MAX_CACHE_TIME).getUnsigned32();
+                Avp redirectCacheMaxTimeAvp = answer.getAvps().getAvp(Avp.REDIRECT_MAX_CACHE_TIME);
+                if (redirectCacheMaxTimeAvp != null)
+                    redirectCacheTime = redirectCacheMaxTimeAvp.getUnsigned32();
                 String primaryKey = null;
                 ApplicationId secondaryKey = null;
                 switch (redirectUsage) {
@@ -169,24 +171,28 @@ public class RouterImpl implements IRouter {
                             primaryKey = answer.getSessionId();
                         break;
                     case ALL_REALM:
-                        if (answer.getAvps().getAvp(Avp.DESTINATION_REALM) != null)
-                            primaryKey = answer.getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString();
+                        Avp destinationRealmAvp = answer.getAvps().getAvp(Avp.DESTINATION_REALM);
+                        if (destinationRealmAvp != null)
+                            primaryKey = destinationRealmAvp.getOctetString();
                         break;
                     case REALM_AND_APPLICATION:
-                        if (answer.getAvps().getAvp(Avp.DESTINATION_REALM) != null)
-                            primaryKey = answer.getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString();
+                        destinationRealmAvp = answer.getAvps().getAvp(Avp.DESTINATION_REALM);
+                        if (destinationRealmAvp != null)
+                            primaryKey = destinationRealmAvp.getOctetString();
                         secondaryKey = answer.getSingleApplicationId();
                         break;
                     case ALL_APPLICATION:
                         secondaryKey = answer.getSingleApplicationId();
                         break;
                     case ALL_HOST:
-                        if (answer.getAvps().getAvp(Avp.DESTINATION_HOST) != null)
-                            primaryKey = answer.getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString();
+                        Avp destinationHostAvp = answer.getAvps().getAvp(Avp.DESTINATION_HOST);
+                        if (destinationHostAvp != null)
+                            primaryKey = destinationHostAvp.getOctetString();
                         break;
                     case ALL_USER:
-                        if (answer.getAvps().getAvp(Avp.USER_NAME) != null)
-                            primaryKey = answer.getAvps().getAvp(Avp.USER_NAME).getUTF8String();
+                        Avp userNameAvp = answer.getAvps().getAvp(Avp.USER_NAME);
+                        if (userNameAvp != null)
+                            primaryKey = userNameAvp.getUTF8String();
                         break;
                 }
                 //

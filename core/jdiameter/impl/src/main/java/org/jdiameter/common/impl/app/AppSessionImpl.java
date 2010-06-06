@@ -6,15 +6,10 @@ import java.util.List;
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.app.AppSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 public abstract class AppSessionImpl implements AppSession {
 
   private static final long serialVersionUID = 1L;
-
-  private static final Logger logger = LoggerFactory.getLogger(AppSessionImpl.class);
 
   protected Session session;
   protected ApplicationId appId;
