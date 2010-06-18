@@ -425,6 +425,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           else if (isProvisional(resultCode) || isFailure(resultCode)) {
             handleFailureMessage((JCreditControlAnswer) answer, (JCreditControlRequest) localEvent.getRequest(), eventType);
           }
+          deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
           break;
         case Tx_TIMER_FIRED:
           handleTxExpires(localEvent.getRequest().getMessage());
