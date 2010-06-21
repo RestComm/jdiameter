@@ -39,8 +39,14 @@ import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import net.java.slee.resource.diameter.base.events.AbortSessionAnswer;
 import net.java.slee.resource.diameter.base.events.AbortSessionRequest;
 import net.java.slee.resource.diameter.base.events.AccountingAnswer;
@@ -55,7 +61,8 @@ import net.java.slee.resource.diameter.base.events.ReAuthAnswer;
 import net.java.slee.resource.diameter.base.events.ReAuthRequest;
 import net.java.slee.resource.diameter.base.events.SessionTerminationAnswer;
 import net.java.slee.resource.diameter.base.events.SessionTerminationRequest;
-import net.java.slee.resource.diameter.base.events.avp.AvpUtilities;
+import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
+import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodes;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp;
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
@@ -63,7 +70,6 @@ import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplication
 
 import org.jdiameter.api.Stack;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
-import org.jdiameter.client.impl.parser.MessageParser;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
@@ -497,6 +503,71 @@ public class BaseFactoriesTest {
     Assert.assertEquals("Created Vendor-Specific-Application-Id AVP from getters should be equal to original.", vsaidAvp1, vsaidAvp3);    
   }
   
+  @Test
+  public void testMessageCreationVendorSpecificApplicationIdAvp() {
+    // Relates to Issue #1555 (http://code.google.com/p/mobicents/issues/detail?id=1555)
+    List<DiameterAvp> avps = new ArrayList<DiameterAvp>();
+
+    try {
+      long vendorId = 2312L;
+      long acctApplicationId = 23121L;
+
+      DiameterAvp avpVendorId = avpFactory.createAvp(DiameterAvpCodes.VENDOR_ID, vendorId);
+      DiameterAvp avpAcctApplicationId = avpFactory.createAvp(DiameterAvpCodes.ACCT_APPLICATION_ID, acctApplicationId);
+
+      avps.add(avpFactory.createAvp(DiameterAvpCodes.VENDOR_SPECIFIC_APPLICATION_ID, new DiameterAvp[] { avpVendorId, avpAcctApplicationId }));
+
+      DiameterAvp[] avpArray = new DiameterAvp[avps.size()];
+      avpArray = avps.toArray(avpArray);
+
+      AccountingRequest acr = messageFactory.createAccountingRequest(avpArray);
+
+      VendorSpecificApplicationIdAvp vsaidAvp = acr.getVendorSpecificApplicationId();
+      assertNotNull("Vendor-Specific-Application-Id should be present in message.", vsaidAvp);
+
+      // hack: vendor id is Avp vendor-id value, need to do this way.
+      long msgAppVendorId = vsaidAvp.getVendorIdsAvp()[0];
+      assertTrue("Vendor-Specific-Application-Id / Vendor-Id should be [" + vendorId + "] it is ["  + msgAppVendorId + "]", vendorId == msgAppVendorId);
+
+      long msgAppId = vsaidAvp.getAcctApplicationId();
+      assertTrue("Vendor-Specific-Application-Id / Acct-Application-Id should be [" + acctApplicationId + "] it is ["  + msgAppId + "]", acctApplicationId == msgAppId);
+
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      fail(e.getLocalizedMessage());
+    }
+  }
+
+  @Test
+  public void testMessageCreationApplicationIdAvp() {
+    // Relates to Issue #1555 (http://code.google.com/p/mobicents/issues/detail?id=1555)
+    List<DiameterAvp> avps = new ArrayList<DiameterAvp>();
+
+    try {
+      long acctApplicationId = 23121L;
+
+      DiameterAvp avpAcctApplicationId = avpFactory.createAvp(DiameterAvpCodes.ACCT_APPLICATION_ID, acctApplicationId);
+
+      avps.add(avpAcctApplicationId);
+
+      DiameterAvp[] avpArray = new DiameterAvp[avps.size()];
+      avpArray = avps.toArray(avpArray);
+
+      AccountingRequest acr = messageFactory.createAccountingRequest(avpArray);
+
+      VendorSpecificApplicationIdAvp vsaidAvp = acr.getVendorSpecificApplicationId();
+      assertNull("Vendor-Specific-Application-Id should not be present in message.", vsaidAvp);
+
+      long msgAppId = acr.getAcctApplicationId();
+      assertTrue("Acct-Application-Id should be [" + acctApplicationId + "] it is ["  + msgAppId + "]", acctApplicationId == msgAppId);
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      fail(e.getLocalizedMessage());
+    }
+  }
+
   /**
    * Class representing the Diameter Configuration  
    */
