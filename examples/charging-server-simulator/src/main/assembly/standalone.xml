@@ -1,0 +1,29 @@
+<assembly>
+	<id>standalone</id>
+	<formats>
+		<format>jar</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<dependencySets>
+		<dependencySet>
+			<!-- TODO: Try to use dependencies unpacked -->
+			<!--outputDirectory>lib/</outputDirectory-->
+			<unpack>true</unpack>
+			<includes>
+				<include>org.mobicents.servers.diameter:mobicents-diameter-mux-jar</include>
+				<include>org.mobicents.servers.diameter:jdiameter-api</include>
+				<include>org.mobicents.servers.diameter:jdiameter-impl</include>
+				<include>org.slf4j:slf4j-api</include>
+				<include>org.slf4j:slf4j-log4j12</include>
+				<include>log4j:log4j</include>
+				<include>picocontainer:picocontainer</include>
+			</includes>
+		</dependencySet>
+	</dependencySets>
+	<fileSets>
+		<fileSet>
+			<directory>target/classes</directory>
+			<outputDirectory></outputDirectory>
+		</fileSet>
+	</fileSets>
+</assembly>
