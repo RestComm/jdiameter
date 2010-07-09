@@ -1,7 +1,27 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2010, Red Hat Middleware LLC, and individual contributors
+ * as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
 package org.jdiameter.client.impl;
 
 /*
- * Copyright (c) 2006 jDiameter.
  * https://jdiameter.dev.java.net/
  *
  * License: GPL v3
@@ -9,15 +29,23 @@ package org.jdiameter.client.impl;
  * e-mail: erick.svenson@yahoo.com
  *
  */
-
 import org.jdiameter.api.*;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IRequest;
 import org.jdiameter.client.api.ISession;
 import org.jdiameter.client.api.parser.IMessageParser;
+import org.jdiameter.common.api.data.ISessionDatasource;
+
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Implementation for {@link ISession}
+ * 
+ * @author erick.svenson@yahoo.com
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ */
 public class SessionImpl extends BaseSessionImpl implements ISession {
 
   private static final long serialVersionUID = 1L;
@@ -32,10 +60,6 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
     this.parser = (IMessageParser) container.getAssemblerFacility().getComponentInstance(IMessageParser.class);
   }
 
-  public String getSessionId() {
-    return sessionId;
-  }
-
   public void send(Message message, EventListener<Request, Answer> listener) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     genericSend(message,  listener);
   }
@@ -46,13 +70,13 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
 
   public void setRequestListener(NetworkReqListener listener) {
     if (listener != null) {
-      this.reqListener = listener;
+      super.reqListener = listener;
       container.addSessionListener(sessionId, listener);
     }
   }
 
   public NetworkReqListener getReqListener() {
-    return reqListener;
+    return super.reqListener;
   }
 
   public Request createRequest(int commandCode, ApplicationId appId, String destRealm) {
@@ -113,6 +137,8 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
     isValid = false;
     if (container != null) {
       container.removeSessionListener(sessionId);
+      // FIXME
+      container.getAssemblerFacility().getComponentInstance(ISessionDatasource.class).removeSession(sessionId);
     }
     container = null;
     parser = null;
@@ -123,7 +149,8 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
     return iface == RawSession.class;
   }
 
+  @SuppressWarnings("unchecked")
   public <T> T unwrap(Class<T> iface) throws InternalException {
     return (T) (iface == RawSession.class ?  new RawSessionImpl(container) : null);
-  }    
+  }
 }

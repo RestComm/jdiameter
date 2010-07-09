@@ -1,3 +1,24 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2010, Red Hat Middleware LLC, and individual contributors
+ * as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
 package org.jdiameter.client.impl.app.auth;
 
 import static org.jdiameter.api.Message.SESSION_TERMINATION_REQUEST;
@@ -6,8 +27,7 @@ import static org.jdiameter.common.api.app.auth.ClientAuthSessionState.IDLE;
 import static org.jdiameter.common.api.app.auth.ClientAuthSessionState.OPEN;
 import static org.jdiameter.common.api.app.auth.ClientAuthSessionState.PENDING;
 
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.io.Serializable;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -24,19 +44,24 @@ import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppRequestEvent;
+import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.api.auth.ClientAuthSession;
 import org.jdiameter.api.auth.ClientAuthSessionListener;
+import org.jdiameter.api.auth.ServerAuthSession;
 import org.jdiameter.api.auth.events.AbortSessionAnswer;
 import org.jdiameter.api.auth.events.AbortSessionRequest;
 import org.jdiameter.api.auth.events.ReAuthAnswer;
 import org.jdiameter.api.auth.events.ReAuthRequest;
 import org.jdiameter.api.auth.events.SessionTermAnswer;
 import org.jdiameter.api.auth.events.SessionTermRequest;
+import org.jdiameter.client.api.IContainer;
+import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.auth.ClientAuthSessionState;
 import org.jdiameter.common.api.app.auth.IAuthMessageFactory;
+import org.jdiameter.common.api.app.auth.IAuthSessionFactory;
 import org.jdiameter.common.api.app.auth.IClientAuthActionContext;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
@@ -50,6 +75,13 @@ import org.jdiameter.common.impl.app.auth.SessionTermRequestImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Client Authorization session implementation
+ * 
+ * @author erick.svenson@yahoo.com
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ */
 public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientAuthSession, EventListener<Request, Answer>, NetworkReqListener {
 
   private static final long serialVersionUID = 1L;
@@ -62,22 +94,20 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
   private Lock sendAndStateLock = new ReentrantLock();
 
   // Factories and Listeners --------------------------------------------------
-  protected IAuthMessageFactory factory;
-  protected IClientAuthActionContext context;
-  protected ClientAuthSessionListener listener;
+  protected transient IAuthMessageFactory factory;
+  protected transient IClientAuthActionContext context;
+  protected transient ClientAuthSessionListener listener;
 
   protected String destHost, destRealm;
-  protected ScheduledFuture sessionTimer;
-  protected AppEvent buffer;
+  //protected ScheduledFuture sessionTimer;
+  protected Serializable timerId_ts;
+  protected static final String TIMER_NAME_TS="AUTH_TS";
+  //protected AppEvent buffer;
 
   // Constructors -------------------------------------------------------------
 
-  public ClientAuthSessionImpl(boolean stl, IAuthMessageFactory fct, SessionFactory sf, ClientAuthSessionListener lst) {
-    this(stl, null, fct, sf, lst);
-  }
-
-  public ClientAuthSessionImpl(boolean stl, String sessionId, IAuthMessageFactory fct, SessionFactory sf, ClientAuthSessionListener lst) {
-    super(sf);
+  public ClientAuthSessionImpl(String sessionId,SessionFactory sf,ClientAuthSessionListener lst, IAuthMessageFactory fct, StateChangeListener<AppSession> scListener,IClientAuthActionContext context,  boolean stateless) {
+    super(sf, sessionId);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
@@ -87,22 +117,9 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
     appId = fct.getApplicationId();
     listener = lst;
     factory = fct;
-    stateless = stl;
-    try {
-      if (sessionId == null) {
-        session = sf.getNewSession();
-      }
-      else {
-        session = sf.getNewSession(sessionId);
-      }
-      session.setRequestListener(this);
-    }
-    catch (InternalException e) {
-      throw new IllegalArgumentException(e);
-    }
-    if (listener instanceof IClientAuthActionContext) {
-      context = (IClientAuthActionContext) listener;
-    }
+    this.stateless = stateless;
+    this.context = context;
+    super.addStateChangeNotification(scListener);
   }
 
   // ClientAuthSession Implementation methods ---------------------------------
@@ -147,14 +164,17 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
     return stateless;
   }
 
+  @SuppressWarnings("unchecked")
   protected void setState(ClientAuthSessionState newState) {
     IAppSessionState oldState = state;
     state = newState;
+    super.sessionDataSource.updateSession(this);
     for (StateChangeListener i : stateListeners) {
-      i.stateChanged((Enum) oldState, (Enum) newState);
+      i.stateChanged(this,(Enum) oldState, (Enum) newState);
     }
   }
 
+  @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> eClass) {
     return eClass == ClientAuthSessionState.class ? (E) state : null;
   }
@@ -165,7 +185,6 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
 
   public boolean handleEventForStatelessSession(StateEvent event) throws InternalException, OverloadException {
     try {
-
       ClientAuthSessionState oldState = state;
 
       switch (state) {
@@ -223,7 +242,7 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
           // Action: Send STR
           // New State: DISCON
           if (context != null) {
-            context.accessTimeoutElapses();
+            context.accessTimeoutElapses(this);
             Request str = createSessionTermRequest();
             context.disconnectUserOrDev(this, str);
             session.send(str, this);
@@ -241,24 +260,23 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
       // post processing
       if (oldState != state) {
         if (DISCONNECTED.equals(state) || IDLE.equals(state)) {
-          if (sessionTimer != null) {
-            sessionTimer.cancel(false);
-          }
-          sessionTimer = null;
+          cancelTsTimer();
         }
-        else if (OPEN.equals(state) && context != null && context.createAccessTimer() > 0) {
-          sessionTimer = scheduler.schedule(new Runnable() {
-            public void run() {
-              if (context != null) {
-                try {
-                  handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, null));
-                }
-                catch (Exception e) {
-                  logger.debug("Can not handle event", e);
-                }
-              }
-            }
-          }, context.createAccessTimer(), TimeUnit.MILLISECONDS);
+        else if (OPEN.equals(state) && context != null && context.getAccessTimeout() > 0) {
+          //          sessionTimer = scheduler.schedule(new Runnable() {
+          //            public void run() {
+          //              if (context != null) {
+          //                try {
+          //                  handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, null));
+          //                }
+          //                catch (Exception e) {
+          //                  logger.debug("Can not handle event", e);
+          //                }
+          //              }
+          //            }
+          //          }, context.createAccessTimer(), TimeUnit.MILLISECONDS);
+          cancelTsTimer();
+          startTsTimer();
         }
       }
     }
@@ -270,7 +288,6 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
   }
 
   public boolean handleEventForStatefulSession(StateEvent event) throws InternalException, OverloadException {
-
     ClientAuthSessionState oldState = state;
 
     try {
@@ -392,7 +409,7 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
           // Action: Send STR
           // New State: DISCON
           if (context != null) {
-            context.accessTimeoutElapses();
+            context.accessTimeoutElapses(this);
             Request str = createSessionTermRequest();
             context.disconnectUserOrDev(this, str);
             session.send(str, this);
@@ -433,19 +450,21 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
 
       // post processing
       if (oldState != state) {
-        if (OPEN.equals(state) && context != null && context.createAccessTimer() > 0) {
-          scheduler.schedule(new Runnable() {
-            public void run() {
-              if (context != null) {
-                try {
-                  handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, null));
-                }
-                catch (Exception e) {
-                  logger.debug("Can not handle event", e);
-                }
-              }
-            }
-          }, context.createAccessTimer(), TimeUnit.MILLISECONDS);
+        if (OPEN.equals(state) && context != null && context.getAccessTimeout() > 0) {
+          //          scheduler.schedule(new Runnable() {
+          //            public void run() {
+          //              if (context != null) {
+          //                try {
+          //                  handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, null));
+          //                }
+          //                catch (Exception e) {
+          //                  logger.debug("Can not handle event", e);
+          //                }
+          //              }
+          //            }
+          //          }, context.createAccessTimer(), TimeUnit.MILLISECONDS);
+          cancelTsTimer();
+          startTsTimer();
         }
       }
     }
@@ -481,6 +500,145 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
     super.scheduler.execute(rd);
 
     return null;
+  }
+  
+  /* (non-Javadoc)
+   * @see org.jdiameter.common.impl.app.AppSessionImpl#isReplicable()
+   */
+  @Override
+  public boolean isReplicable() {
+    return true;
+  }
+
+  /* (non-Javadoc)
+   * @see org.jdiameter.common.impl.app.auth.AppAuthSessionImpl#relink(org.jdiameter.client.api.IContainer)
+   */
+  @Override
+  public void relink(IContainer stack) {
+    if(super.sf == null) {
+      super.relink(stack);
+      IAuthSessionFactory fct = (IAuthSessionFactory) ((ISessionFactory)super.sf).getAppSessionFactory(ServerAuthSession.class);
+      this.listener = fct.getClientSessionListener();
+      this.context = fct.getClientSessionContext();
+      this.factory = fct.getMessageFactory();
+    }
+  }
+
+  protected void startTsTimer() throws IllegalArgumentException, InternalException {
+    try {
+      sendAndStateLock.lock();
+      this.timerId_ts = super.timerFacility.schedule(sessionId, TIMER_NAME_TS, context.getAccessTimeout());
+      super.sessionDataSource.updateSession(this);
+    }
+    finally {
+      sendAndStateLock.unlock();
+    }
+  }
+
+  protected void cancelTsTimer() {
+    try {
+      sendAndStateLock.lock();
+      if(this.timerId_ts != null) {
+        super.timerFacility.cancel(timerId_ts);
+        this.timerId_ts = null;
+        super.sessionDataSource.updateSession(this);
+      }
+    }
+    finally {
+      sendAndStateLock.unlock();
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see org.jdiameter.common.impl.app.AppSessionImpl#onTimer(java.lang.String)
+   */
+  @Override
+  public void onTimer(String timerName) {
+    if(timerName.equals(TIMER_NAME_TS)) {
+      try {
+        sendAndStateLock.lock();
+        if (context != null) {
+          try {
+            handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, null));
+          }
+          catch (Exception e) {
+            logger.debug("Can not handle event", e);
+          }
+        }
+      }
+      finally {
+        sendAndStateLock.unlock();
+      }
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((destHost == null) ? 0 : destHost.hashCode());
+    result = prime * result + ((destRealm == null) ? 0 : destRealm.hashCode());
+    result = prime * result + ((state == null) ? 0 : state.hashCode());
+    result = prime * result + (stateless ? 1231 : 1237);
+    result = prime * result + ((timerId_ts == null) ? 0 : timerId_ts.hashCode());
+    return result;
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+
+    ClientAuthSessionImpl other = (ClientAuthSessionImpl) obj;
+    if (destHost == null) {
+      if (other.destHost != null) {
+        return false;
+      }
+    }
+    else if (!destHost.equals(other.destHost)) {
+      return false;
+    }
+    if (destRealm == null) {
+      if (other.destRealm != null) {
+        return false;
+      }
+    }
+    else if (!destRealm.equals(other.destRealm)) {
+      return false;
+    }
+    if (state == null) {
+      if (other.state != null) {
+        return false;
+      }
+    }
+    else if (!state.equals(other.state)) {
+      return false;
+    }
+    if (stateless != other.stateless) {
+      return false;
+    }
+    if (timerId_ts == null) {
+      if (other.timerId_ts != null) {
+        return false;
+      }
+    }
+    else if (!timerId_ts.equals(other.timerId_ts)) {
+      return false;
+    }
+    return true;
   }
 
   protected AbortSessionAnswer createAbortSessionAnswer(Answer answer) {
@@ -544,7 +702,7 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
     public void run() {
       try {
         sendAndStateLock.lock();
-        // FIXME: baranowb: this shouldnt be like that
+        // FIXME: baranowb: this shouldn't be like that?
         if (answer.getCommandCode() == factory.getAuthMessageCommandCode()) {
           handleEvent(new Event(Event.Type.RECEIVE_AUTH_ANSWER, factory.createAuthAnswer(answer)));
         }

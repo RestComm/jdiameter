@@ -19,33 +19,35 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
-package org.jdiameter.api.app;
+package org.jdiameter.common.api.data;
+
+import org.jdiameter.api.BaseSession;
+import org.jdiameter.api.NetworkReqListener;
 
 /**
- * Interface used to inform about changes in the state for a FSM.
  * 
- * @author erick.svenson@yahoo.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
-public interface StateChangeListener<T> {
+public interface ISessionDatasource {
 
-  /**
-   * @deprecated
-   * A change of state has occurred for a FSM.
-   * @param oldState Old state of FSM
-   * @param newState New state of FSM
-   */
-  @SuppressWarnings("unchecked")
-  void stateChanged(Enum oldState, Enum newState);
+  void start();
 
-  /**
-   * A change of state has occurred for a FSM.
-   * 
-   * @param source the App Session that generated the change. 
-   * @param oldState Old state of FSM
-   * @param newState New state of FSM
-   */
-  @SuppressWarnings("unchecked")
-  void stateChanged(T source, Enum oldState, Enum newState);
+  void stop();
+
+  public NetworkReqListener getSessionListener(String sessionId);
+
+  public void setSessionListener(String sessionId, NetworkReqListener data);
+
+  public NetworkReqListener removeSessionListener(String sessionId);
+
+  public void removeSession(String sessionId);
+
+  public void addSession(BaseSession session);
+
+  public BaseSession getSession(String sessionId);
+
+  public void updateSession(BaseSession session);
+
+  public boolean isClustered();
 }

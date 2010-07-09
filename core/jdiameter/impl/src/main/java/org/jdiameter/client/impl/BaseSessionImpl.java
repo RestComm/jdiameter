@@ -1,3 +1,24 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2010, Red Hat Middleware LLC, and individual contributors
+ * as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
 package org.jdiameter.client.impl;
 
 import org.jdiameter.api.*;
@@ -6,7 +27,6 @@ import org.jdiameter.client.api.IEventListener;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.impl.helpers.UIDGenerator;
-import org.jdiameter.common.impl.validation.DiameterMessageValidator;
 
 import static org.jdiameter.client.impl.helpers.Parameters.MessageTimeOut;
 
@@ -14,16 +34,13 @@ import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-/*
- * Copyright (c) 2006 jDiameter.
- * https://jdiameter.dev.java.net/
- *
- * License: GPL v3
- *
- * e-mail: erick.svenson@yahoo.com
- *
+/**
+ * Implementation for {@link BaseSession}.
+ * 
+ * @author erick.svenson@yahoo.com
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
-
 public abstract class BaseSessionImpl implements BaseSession {
 
   private static final long serialVersionUID = 1L;
@@ -37,7 +54,7 @@ public abstract class BaseSessionImpl implements BaseSession {
   protected transient IContainer container;
   protected transient IMessageParser parser;
   protected NetworkReqListener reqListener;
- 
+
   public long getCreationTime() {
     return creationTime;
   }
@@ -50,6 +67,24 @@ public abstract class BaseSessionImpl implements BaseSession {
     return isValid;
   }
 
+  public String getSessionId() {
+    return sessionId;
+  }
+
+  /* (non-Javadoc)
+   * @see org.jdiameter.api.BaseSession#isAppSession()
+   */
+  public boolean isAppSession() {
+    return false;
+  }
+
+  /* (non-Javadoc)
+   * @see org.jdiameter.api.BaseSession#isReplicable()
+   */
+  public boolean isReplicable() {
+    return false;
+  }
+
   public String generateSessionId() {
     long id = uid.nextLong();
     long high32 = (id & 0xffffffff00000000L) >> 32;
@@ -59,6 +94,7 @@ public abstract class BaseSessionImpl implements BaseSession {
     append(";").append(high32).append(";").append(low32).toString();
   }
 
+  @SuppressWarnings("unchecked")
   protected void genericSend(Message message, EventListener listener) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     if (isValid) {
       long timeOut = container.getConfiguration().getLongValue(MessageTimeOut.ordinal(), (Long) MessageTimeOut.defValue());
@@ -69,6 +105,7 @@ public abstract class BaseSessionImpl implements BaseSession {
     }
   }
 
+  @SuppressWarnings("unchecked")
   protected void genericSend(Message aMessage, EventListener listener, long timeout, TimeUnit timeUnit) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     if (isValid) {
       lastAccessedTime = System.currentTimeMillis();
@@ -107,6 +144,7 @@ public abstract class BaseSessionImpl implements BaseSession {
     }
   }
 
+  @SuppressWarnings("unchecked")
   protected IEventListener createListenerWrapper(final EventListener listener) {
     return listener == null ? null : new MyEventListener(this, listener);
   }
@@ -235,7 +273,10 @@ public abstract class BaseSessionImpl implements BaseSession {
   }
 
   protected void appendAppId(ApplicationId appId, Message m) { // todo duplicate code look peerimpl 601 line
-    if (appId == null) return;
+    if (appId == null) {
+      return;
+    }
+
     if (appId.getVendorId() == 0) {
       if (appId.getAcctAppId() != 0) {
         m.getAvps().addAvp(Avp.ACCT_APPLICATION_ID, appId.getAcctAppId(), true, false, true);
@@ -269,15 +310,17 @@ public abstract class BaseSessionImpl implements BaseSession {
     }
     // }
     return appId.getVendorId();
-  }    
+  }
 }
 
 class MyEventListener implements IEventListener {
 
   BaseSessionImpl session;
+  @SuppressWarnings("unchecked")
   EventListener listener;
   boolean isValid = true;
 
+  @SuppressWarnings("unchecked")
   public MyEventListener(BaseSessionImpl session, EventListener listener) {
     this.session = session;
     this.listener = listener;
@@ -295,6 +338,7 @@ class MyEventListener implements IEventListener {
     return isValid;
   }
 
+  @SuppressWarnings("unchecked")
   public void receivedSuccessMessage(Message request, Message answer) {
     if (isValid) {
       session.lastAccessedTime = System.currentTimeMillis();
@@ -302,6 +346,7 @@ class MyEventListener implements IEventListener {
     }
   }
 
+  @SuppressWarnings("unchecked")
   public void timeoutExpired(Message message) {
     if (isValid) {
       session.lastAccessedTime = System.currentTimeMillis();

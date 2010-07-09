@@ -1,6 +1,28 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2010, Red Hat Middleware LLC, and individual contributors
+ * as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
 package org.jdiameter.server.impl;
 
 import org.jdiameter.api.*;
+import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.api.fsm.EventTypes;
@@ -30,10 +52,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.*;
 
+/**
+ * 
+ * @author erick.svenson@yahoo.com
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerTable, ConfigurationListener {
 
   private static final Logger logger = LoggerFactory.getLogger(MutablePeerTableImpl.class);
-  
+
   private static final int MAX_DUPLICATE_ANSWERS = 5000;
   private static final int CONN_INVALIDATE_PERIOD = 60000;
 
@@ -44,24 +72,31 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   protected IMessageParser parser;
   protected org.jdiameter.server.api.IRouter router;
 
+  // Duplicate handling -------------------------------------------------------
   protected boolean duplicateProtection = false;
   protected long duplicateTimer;
   protected ScheduledExecutorService duplicationScheduler = null;
+  @SuppressWarnings("unchecked")
   protected ScheduledFuture duplicationHandler = null;
   protected ConcurrentHashMap<String, StorageEntry> storageAnswers = new ConcurrentHashMap<String, StorageEntry>();
 
   protected boolean isAcceptUndefinedPeer  = false;
 
+  // Connections handling -----------------------------------------------------
   private ConcurrentHashMap<String, IConnection> incConnections;
   private ScheduledExecutorService connScheduler;
+  @SuppressWarnings("unchecked")
   private ScheduledFuture connHandler;
 
+  // Network management -------------------------------------------------------
   protected INetworkGuard networkGuard;
   protected INetwork network;
   protected Set<URI> predefinedPeerTable;
 
+  // Overload handling --------------------------------------------------------
   protected IOverloadManager ovrManager;
   protected ScheduledExecutorService overloadScheduler = null;
+  @SuppressWarnings("unchecked")
   protected ScheduledFuture overloadHandler = null;
   protected PeerTableListener peerTableListener = null;
   protected IStatisticFactory statisticFactory;
@@ -90,7 +125,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     }
   }    
 
-  public MutablePeerTableImpl(Configuration config, MetaData metaData, org.jdiameter.server.api.IRouter router,
+  public MutablePeerTableImpl(Configuration config, MetaData metaData,IContainer stack, org.jdiameter.server.api.IRouter router,
       ISessionFactory sessionFactory, IFsmFactory fsmFactory, ITransportLayerFactory trFactory,
       IMessageParser parser, INetwork network, IOverloadManager ovrManager,
       IStatisticFactory statisticFactory, IConcurrentFactory concurrentFactory) {
@@ -118,7 +153,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       ((MutableConfiguration) config).addChangeListener(this);
     }
 
-    init(router, config, metaData, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser);
+    init(stack,router, config, metaData, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser);
   }
 
   @Override
@@ -147,7 +182,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       IStatisticFactory statisticFactory, IConcurrentFactory concurrentFactory) throws URISyntaxException, UnknownServiceException, InternalException, TransportException {
     return new org.jdiameter.server.impl.PeerImpl(
         rating, uri, ip, portRange, attCnn, connection,
-        this, (org.jdiameter.server.api.IMetaData) metaData, globalConfig, peerConfig, sessionFactory,
+        this, (org.jdiameter.server.api.IMetaData) metaData, globalConfig, peerConfig, sessionDatasource, sessionFactory,
         fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser, network, ovrManager
     );
   }
@@ -265,6 +300,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                   logger.debug("Connection {} opened", connKey);
                 }
 
+                @SuppressWarnings("unchecked")
                 public void connectionClosed(String connKey, List notSended) {
                   logger.debug("Connection {} closed", connKey);
                   unregister(true);

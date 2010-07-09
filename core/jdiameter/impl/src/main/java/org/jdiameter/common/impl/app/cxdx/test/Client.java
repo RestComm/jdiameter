@@ -432,4 +432,9 @@ public class Client extends SessionFactoryCXDX implements NetworkReqListener, Ev
 
 	}
 
+	public void stateChanged(Object source, Enum oldState, Enum newState) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -1,14 +1,25 @@
-package org.jdiameter.client.impl;
-
 /*
- * Copyright (c) 2006 jDiameter.
- * https://jdiameter.dev.java.net/
- *
- * License: GPL v3
- *
- * e-mail: erick.svenson@yahoo.com
- *
+ * JBoss, Home of Professional Open Source
+ * Copyright 2010, Red Hat Middleware LLC, and individual contributors
+ * as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
  */
+package org.jdiameter.client.impl;
 
 import static org.jdiameter.client.impl.helpers.Parameters.AcctApplId;
 import static org.jdiameter.client.impl.helpers.Parameters.ApplicationId;
@@ -54,6 +65,7 @@ import org.jdiameter.client.api.fsm.EventTypes;
 import org.jdiameter.client.api.io.IConnectionListener;
 import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.impl.helpers.IPConverter;
+import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.api.statistic.IStatistic;
 import org.jdiameter.common.api.statistic.IStatisticFactory;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
@@ -63,19 +75,25 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Use stack extension point
+ * 
+ * @author erick.svenson@yahoo.com
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class MetaDataImpl implements IMetaData {
 
-  private static final Logger log = LoggerFactory.getLogger(MetaDataImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(MetaDataImpl.class);
   protected List<MemoryPoolMXBean> beans = ManagementFactory.getMemoryPoolMXBeans();
 
   protected IContainer stack;
   protected int state;
   protected IPeer peer;
   protected Set<ApplicationId> appIds = new LinkedHashSet<ApplicationId>();
+  protected final ISessionDatasource sessionDataSource;
 
   public MetaDataImpl(IContainer s) {
     this.stack = s;
+    this.sessionDataSource = s.getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
   }
 
   public MetaDataImpl(IContainer s, IStatisticFactory statisticFactory) {
@@ -142,7 +160,7 @@ public class MetaDataImpl implements IMetaData {
 
   public Peer getLocalPeerInfo() {
     return peer;
-  }                              
+  }
 
   public Configuration getConfiguration() {
     return stack.getConfiguration();
@@ -160,6 +178,7 @@ public class MetaDataImpl implements IMetaData {
     return aClass == IMetaData.class;
   }
 
+  @SuppressWarnings("unchecked")
   public <T> T unwrap(Class<T> aClass) throws InternalException {
     if (aClass == IMetaData.class) {
       return (T) this;
@@ -189,6 +208,7 @@ public class MetaDataImpl implements IMetaData {
       super(null, statisticFactory);
     }
 
+    @SuppressWarnings("unchecked")
     public <E> E getState(Class<E> anEnum) {
       switch (stack.getState()) {
       case IDLE:
@@ -259,6 +279,7 @@ public class MetaDataImpl implements IMetaData {
             addresses = new InetAddress[]{InetAddress.getByName(getUri().getFQDN())};
           }
           catch (UnknownHostException e) {
+            logger.debug("Can not get ip by URI {}", e);
             try {
               addresses = new InetAddress[]{InetAddress.getLocalHost()};
             }
@@ -275,7 +296,8 @@ public class MetaDataImpl implements IMetaData {
           if (ia == null) {
             try {
               addresses = new InetAddress[]{InetAddress.getLocalHost()};
-            } catch (UnknownHostException e) {
+            }
+            catch (UnknownHostException e) {
               addresses = new InetAddress[0];
             }
           }
@@ -338,9 +360,11 @@ public class MetaDataImpl implements IMetaData {
     public void setRealm(String realm) {
     }
 
+    @SuppressWarnings("unchecked")
     public void addStateChangeListener(StateChangeListener listener) {
     }
 
+    @SuppressWarnings("unchecked")
     public void remStateChangeListener(StateChangeListener listener) {
     }
 

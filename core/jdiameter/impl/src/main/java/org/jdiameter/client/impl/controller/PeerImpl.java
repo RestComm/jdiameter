@@ -1,7 +1,27 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2010, Red Hat Middleware LLC, and individual contributors
+ * as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
 package org.jdiameter.client.impl.controller;
 
 /*
- * Copyright (c) 2006 jDiameter.
  * https://jdiameter.dev.java.net/
  *
  * License: GPL v3
@@ -9,7 +29,6 @@ package org.jdiameter.client.impl.controller;
  * e-mail: erick.svenson@yahoo.com
  *
  */
-
 import static org.jdiameter.api.Avp.ACCT_APPLICATION_ID;
 import static org.jdiameter.api.Avp.AUTH_APPLICATION_ID;
 import static org.jdiameter.api.Avp.DESTINATION_HOST;
@@ -87,7 +106,9 @@ import org.jdiameter.client.api.io.TransportError;
 import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.api.router.IRouter;
+import org.jdiameter.client.impl.AbstractStateChangeListener;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
+import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.api.statistic.IStatistic;
 import org.jdiameter.common.api.statistic.IStatisticFactory;
 import org.jdiameter.common.impl.controller.AbstractPeer;
@@ -95,10 +116,17 @@ import org.jdiameter.common.impl.validation.DiameterMessageValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Client Peer implementation
+ * 
+ * @author erick.svenson@yahoo.com
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ */
 public class PeerImpl extends AbstractPeer implements IPeer {
 
   private static final Logger logger = LoggerFactory.getLogger(PeerImpl.class);
-  protected static final DiameterMessageValidator _VALDIATOR_ = DiameterMessageValidator.getInstance();
+  protected static final DiameterMessageValidator VALIDATOR = DiameterMessageValidator.getInstance();
   // Properties
   protected InetAddress[] addresses;
   protected String realmName;
@@ -114,7 +142,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   protected PeerTableImpl table;
   // Facilities
   protected IRouter router;
-  protected Map<String, NetworkReqListener> slc;
+  // XXX: FT/HA // protected Map<String, NetworkReqListener> slc;
   protected final Map<Long, IMessage> peerRequests = new ConcurrentHashMap<Long, IMessage>();
   // FSM layer
   protected IStateMachine fsm;
@@ -122,15 +150,15 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   // Feature
   protected boolean useUriAsFQDN = false; // Use URI as orign host name into CER command
 
+  //session store and data
+  protected ISessionDatasource sessionDataSource;
+
   // Transport layer
   protected IConnection connection;
   protected IConnectionListener connListener = new IConnectionListener() {
 
     public void connectionOpened(String connKey) {
-    	if(logger.isDebugEnabled())
-    	{
-    		logger.debug("Connection to {} is opened", uri);
-    	}
+      logger.debug("Connection to {} is opened", uri);
       try {
         fsm.handleEvent(new FsmEvent(CONNECT_EVENT, connKey));
       }
@@ -139,12 +167,9 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       }
     }
 
+    @SuppressWarnings("unchecked")
     public void connectionClosed(String connKey, List notSended) {
-    	if(logger.isDebugEnabled())
-    	{
-    		
-    		logger.debug("Connection from {} is closed", uri);
-    	}
+      logger.debug("Connection from {} is closed", uri);
       for (IMessage request : peerRequests.values()) {
         if (request.getState() == IMessage.STATE_SENT) {
           request.setReTransmitted(true);
@@ -170,11 +195,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       boolean req = message.isRequest();
       try {
         int type = message.getCommandCode();
-        if(logger.isDebugEnabled())
-    	{
-    		
-        	logger.debug("Receive message type {} to peer {}", new Object[] {type, connKey});
-    	}
+        logger.debug("Receive message type {} to peer {}", new Object[] {type, connKey});
         switch (type) {
         case CAPABILITIES_EXCHANGE_REQUEST:
           fsm.handleEvent(new FsmEvent(req ? CER_EVENT : CEA_EVENT, message, connKey));
@@ -191,11 +212,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
         }
       }
       catch (Exception e) {
-    	  if(logger.isWarnEnabled())
-      	{
-      		 
-    		  logger.warn("Error during processing incomming message", e);
-      	}
+        logger.warn("Error during processing incomming message", e);
         if (req) {
           try {
             message.setRequest(false);
@@ -212,11 +229,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
 
     public void internalError(String connKey, IMessage message, TransportException cause) {
       try {
-    	  if(logger.isDebugEnabled())
-      	{
-      		
-    		  logger.debug("internalError ", cause);
-      	}
+        logger.debug("internalError ", cause);
         fsm.handleEvent(new FsmEvent(INTERNAL_ERROR, message));
       }
       catch (Exception e) {
@@ -225,13 +238,14 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
   };
 
-  public PeerImpl(PeerTableImpl table, int rating, URI remotePeer, String ip,  String portRange, IMetaData metaData, Configuration config,
+  public PeerImpl(final PeerTableImpl table, final ISessionDatasource sessionDataSource,int rating, URI remotePeer, String ip,  String portRange, IMetaData metaData, Configuration config,
       Configuration peerConfig, IFsmFactory fsmFactory, ITransportLayerFactory trFactory, IStatisticFactory statisticFactory,
       IConcurrentFactory concurrentFactory, IMessageParser parser) throws InternalException, TransportException {
-    this(table, rating, remotePeer, ip, portRange, metaData, config, peerConfig, fsmFactory, trFactory, parser, statisticFactory, concurrentFactory, null);
+    this(table,sessionDataSource, rating, remotePeer, ip, portRange, metaData, config, peerConfig, fsmFactory, trFactory, parser, statisticFactory, concurrentFactory, null);
   }
 
-  protected PeerImpl(final PeerTableImpl table, int rating, URI remotePeer, String ip, String portRange, IMetaData metaData,
+  @SuppressWarnings("unchecked")
+  protected PeerImpl(final PeerTableImpl table,final ISessionDatasource sessionDataSource, int rating, URI remotePeer, String ip, String portRange, IMetaData metaData,
       Configuration config, Configuration peerConfig, IFsmFactory fsmFactory, ITransportLayerFactory trFactory,
       IMessageParser parser, IStatisticFactory statisticFactory, IConcurrentFactory concurrentFactory,
       IConnection connection) throws InternalException, TransportException {
@@ -240,7 +254,9 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     this.rating = rating;
     this.router = table.router;
     this.metaData = metaData;
-    this.slc = table.getSessionReqListeners();
+    // XXX: FT/HA // this.slc = table.getSessionReqListeners();
+    this.sessionDataSource = sessionDataSource;
+
     int port = remotePeer.getPort();
     InetAddress remoteAddress;
     try {
@@ -252,7 +268,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     IContext actionContext = getContext();
     this.fsm = fsmFactory.createInstanceFsm(actionContext, concurrentFactory, config);
     this.fsm.addStateChangeNotification(
-        new StateChangeListener() {
+        new AbstractStateChangeListener() {
           public void stateChanged(Enum oldState, Enum newState) {
             PeerState s = (PeerState) newState;
             if (PeerState.DOWN.equals(s)) {
@@ -287,11 +303,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
         catch (Exception exc) {
           logger.warn("Can not get local port", exc);
         }
-        if(logger.isDebugEnabled())
-    	{
-    		
-        	logger.debug("Create conn with localAddress={}; localPort={}", localAddress, localPort);	
-    	}
+        logger.debug("Create conn with localAddress={}; localPort={}", localAddress, localPort);	
       }
       this.connection = trFactory.createConnection(remoteAddress, concurrentFactory, port, localAddress, localPort, connListener, ref);
     }
@@ -321,8 +333,10 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     return statistic;
   }
 
+  @SuppressWarnings("unchecked")
   public void addPeerStateListener(final PeerStateListener listener) {
-    fsm.addStateChangeNotification(new StateChangeListener() {
+    fsm.addStateChangeNotification(new AbstractStateChangeListener() {
+
       public void stateChanged(Enum oldState, Enum newState) {
         listener.stateChanged((PeerState) oldState, (PeerState) newState);
       }
@@ -337,9 +351,10 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     });
   }
 
+  @SuppressWarnings("unchecked")
   public void removePeerStateListener(final PeerStateListener listener) {
     if (listener != null) {
-      fsm.remStateChangeNotification(new StateChangeListener() {
+      fsm.remStateChangeNotification(new AbstractStateChangeListener() {
         public void stateChanged(Enum oldState, Enum newState) {
           listener.stateChanged((PeerState) oldState, (PeerState) newState);
         }
@@ -475,8 +490,8 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   }
 
   public boolean sendMessage(IMessage message) throws TransportException, OverloadException, InternalException {
-	if(PeerImpl._VALDIATOR_.isOn()) {
-		PeerImpl._VALDIATOR_.validate(message,false);
+    if(PeerImpl.VALIDATOR.isOn()) {
+      PeerImpl.VALIDATOR.validate(message,false);
     }
     return !stopping && fsm.handleEvent(new FsmEvent(EventTypes.SEND_MSG_EVENT, message));
   }
@@ -489,10 +504,12 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     realmName = realm;
   }
 
+  @SuppressWarnings("unchecked")
   public void addStateChangeListener(StateChangeListener listener) {
     fsm.addStateChangeNotification(listener);
   }
 
+  @SuppressWarnings("unchecked")
   public void remStateChangeListener(StateChangeListener listener) {
     fsm.remStateChangeNotification(listener);
   }
@@ -561,10 +578,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     public void connect() throws InternalException, IOException, IllegalDiameterStateException {
       try {            
         connection.connect();
-        if(logger.isDebugEnabled())
-        {
-        	logger.debug("Connected to peer {}", PeerImpl.this.getUri());
-        }
+        logger.debug("Connected to peer {}", PeerImpl.this.getUri());
       }
       catch (TransportException e) {
         switch (e.getCode()) {
@@ -581,10 +595,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     public void disconnect() throws InternalException, IllegalDiameterStateException {
       if (connection != null) {
         connection.disconnect();
-        if(logger.isDebugEnabled())
-        {
-        	logger.debug("Disconnected from peer {}", PeerImpl.this.getUri());
-        }
+        logger.debug("Disconnected from peer {}", PeerImpl.this.getUri());
       }
     }
 
@@ -599,11 +610,11 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     public boolean sendMessage(IMessage message) throws TransportException, OverloadException {
       // Check message
       if (message.isTimeOut()) {
-  		  logger.debug("Message {} skipped (timeout)", message);
+        logger.debug("Message {} skipped (timeout)", message);
         return false;
       }
       if (message.getState() == IMessage.STATE_SENT) {
-  		  logger.debug("Message {} already sent", message);
+        logger.debug("Message {} already sent", message);
         return false;
       }
       // Remove destionation information from answer messages
@@ -614,17 +625,13 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       // Send to network
       message.setState(IMessage.STATE_SENT);
       connection.sendMessage(message);
-      
-  	  logger.debug("Send message {} to peer {}", message, PeerImpl.this.getUri());
+
+      logger.debug("Send message {} to peer {}", message, PeerImpl.this.getUri());
       return true;
     }
 
     public void sendCerMessage() throws TransportException, OverloadException {
-    	if(logger.isDebugEnabled())
-    	{
-    		
-    		logger.debug("Send CER message");
-    	}
+      logger.debug("Send CER message");
       IMessage message = parser.createEmptyMessage(CAPABILITIES_EXCHANGE_REQUEST, 0);
       message.setRequest(true);
       message.setHopByHopIdentifier(getHopByHopIdentifier());
@@ -655,10 +662,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
 
     public void sendDwrMessage() throws TransportException, OverloadException {
-    	if(logger.isDebugEnabled())
-    	{
-    		logger.debug("Send DWR message");
-    	}
+      logger.debug("Send DWR message");
       IMessage message = parser.createEmptyMessage(DEVICE_WATCHDOG_REQUEST, 0);
       message.setRequest(true);
       message.setHopByHopIdentifier(getHopByHopIdentifier());
@@ -674,11 +678,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
 
     public void sendDwaMessage(IMessage dwr, int resultCode, String errorMessage) throws TransportException, OverloadException {
-    	if(logger.isDebugEnabled())
-    	{
-    		
-    		logger.debug("Send DWA message");
-    	}
+      logger.debug("Send DWA message");
       IMessage message = parser.createEmptyMessage(dwr);
       message.setRequest(false);
       message.setHopByHopIdentifier(dwr.getHopByHopIdentifier());
@@ -700,10 +700,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
 
     public void sendDprMessage(int disconnectCause) throws TransportException, OverloadException {
-    	if(logger.isDebugEnabled())
-    	{
-    		logger.debug("Send DPR message");
-    	}
+      logger.debug("Send DPR message");
       IMessage message = parser.createEmptyMessage(DISCONNECT_PEER_REQUEST, 0);
       message.setRequest(true);
       message.setHopByHopIdentifier(getHopByHopIdentifier());
@@ -714,10 +711,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
 
     public void sendDpaMessage(IMessage dpr, int resultCode, String errorMessage) throws TransportException, OverloadException {
-    	if(logger.isDebugEnabled())
-    	{
-    		logger.debug("Send DPA message");
-    	}
+      logger.debug("Send DPA message");
       IMessage message = parser.createEmptyMessage(dpr);
       message.setRequest(false);
       message.setHopByHopIdentifier(dpr.getHopByHopIdentifier());
@@ -743,11 +737,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
         Avp resCode = message.getAvps().getAvp(RESULT_CODE);
         Avp frmId     = message.getAvps().getAvp(FIRMWARE_REVISION);
         if (origHost == null || origRealm == null || vendorId == null) {
-        	if(logger.isWarnEnabled())
-        	{
-        		
-        		logger.warn("Incorrect CEA message (missing mandatory AVPs)");
-        	}
+          logger.warn("Incorrect CEA message (missing mandatory AVPs)");
         }
         else {
           if (realmName == null) {
@@ -771,7 +761,8 @@ public class PeerImpl extends AbstractPeer implements IPeer {
           if (cai.size() > 0) {
             commonApplications.clear();
             commonApplications.addAll(cai);
-          } else {
+          }
+          else {
             logger.debug("CEA did not containe appId, therefore  set local appids to common-appid field");
             commonApplications.clear();
             commonApplications.addAll(metaData.getLocalPeer().getCommonApplications());
@@ -789,13 +780,15 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       return rc;
     }
 
+    @SuppressWarnings("unchecked")
     public boolean receiveMessage(IMessage message) {
       boolean isProcessed = false;
       if (message.isRequest()) {
         // Server request
         String avpSessionId = message.getSessionId();
         if (avpSessionId != null) {
-          NetworkReqListener listener = slc.get(avpSessionId);
+          // XXX: FT/HA // NetworkReqListener listener = slc.get(avpSessionId);
+          NetworkReqListener listener = (NetworkReqListener) sessionDataSource.getSessionListener(avpSessionId);
           if (listener != null) {
             router.registerRequestRouteInfo(message);
             preProcessRequest(message);
@@ -804,7 +797,8 @@ public class PeerImpl extends AbstractPeer implements IPeer {
               try {
                 sendMessage(answer);
                 statistic.getRecordByName(IStatistic.Counters.AppGenResponse.name()).inc();
-              } catch (Exception e) {
+              }
+              catch (Exception e) {
                 logger.warn("Can not send immediate answer {}", answer);
               }
             }
@@ -833,14 +827,10 @@ public class PeerImpl extends AbstractPeer implements IPeer {
               request.getEventListener().receivedSuccessMessage(request, message);
             }
             else {
-            	if(logger.isDebugEnabled())
-            	{
-            		
-            		logger.debug("Can not call answer listener for request {} because listener not set", message);
-            	}
+              logger.debug("Can not call answer listener for request {} because listener not set", message);
               statistic.getRecordByName(IStatistic.Counters.NetGenRejectedResponse.name()).inc();
             }
-            
+
             isProcessed = true;
             statistic.getRecordByName(IStatistic.Counters.NetGenResponse.name()).inc();
           }
@@ -850,7 +840,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
         }
         else {
           statistic.getRecordByName(IStatistic.Counters.NetGenRejectedResponse.name()).inc();
-        } 
+        }
       }
       return isProcessed;
     }

@@ -16,6 +16,7 @@
 
 	<modules>
 		<module>jdiameter</module>
+		<module>jdiameter-ha</module>
 		<module>mux</module>
 	</modules>
 

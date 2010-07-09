@@ -1,3 +1,24 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2010, Red Hat Middleware LLC, and individual contributors
+ * as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
 package org.jdiameter.server.impl;
 
 import org.jdiameter.api.*;
@@ -12,6 +33,7 @@ import org.jdiameter.client.api.io.ITransportLayerFactory;
 import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
+import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.api.statistic.IStatistic;
 import org.jdiameter.common.api.statistic.IStatisticFactory;
 import org.jdiameter.server.api.*;
@@ -23,6 +45,12 @@ import java.net.InetAddress;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * 
+ * @author erick.svenson@yahoo.com
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl implements IPeer {
 
   private static final Logger logger = LoggerFactory.getLogger(org.jdiameter.server.impl.PeerImpl.class);
@@ -44,11 +72,11 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
      */
     public PeerImpl(int rating, URI remotePeer, String ip, String portRange, boolean attCnn, IConnection connection,
           MutablePeerTableImpl peerTable, IMetaData metaData, Configuration config, Configuration peerConfig,
-          ISessionFactory sessionFactory, IFsmFactory fsmFactory, ITransportLayerFactory trFactory,
+          ISessionDatasource sessionDataSource,ISessionFactory sessionFactory, IFsmFactory fsmFactory, ITransportLayerFactory trFactory,
           IStatisticFactory statisticFactory, IConcurrentFactory concurrentFactory,
           IMessageParser parser, INetwork nWork, IOverloadManager oManager)
           throws InternalException, TransportException {
-        super(peerTable, rating, remotePeer, ip, portRange, metaData, config, peerConfig, fsmFactory, trFactory, parser,
+        super(peerTable, sessionDataSource,rating, remotePeer, ip, portRange, metaData, config, peerConfig, fsmFactory, trFactory, parser,
         statisticFactory, concurrentFactory, connection);
         // Create specific action context
         this.peerTable = peerTable;
@@ -88,14 +116,17 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
         if (DOWN  ==  state || INITIAL == state) {
             conn.addConnectionListener(connListener);
             logger.debug("Append external connection {}", conn.getKey());
-        } else {
+        }
+        else {
             logger.debug("Releasing connection {}", conn.getKey());
             incConnections.remove(conn.getKey());
             try {
                 conn.release();
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
               logger.debug("Can not close external connection", e);
-            } finally {
+            }
+            finally {
               logger.debug("Close external connection");
             }
         }
@@ -169,9 +200,9 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                             if (isElection)
                                 try {
                                      isLocalWin = metaData.getLocalPeer().getUri().getFQDN().compareTo(
-                                            message.getAvps().getAvp(Avp.ORIGIN_HOST).getOctetString()
-                                    ) <= 0;
-                                } catch(Exception exc) {
+                                            message.getAvps().getAvp(Avp.ORIGIN_HOST).getOctetString()) <= 0;
+                                }
+                                catch(Exception exc) {
                                     isLocalWin = true;
                                 }
                                 
@@ -192,9 +223,10 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                             break;
                     }
                 } else {
-                  logger.debug("CER received by current connection");
+                  logger.debug("CER received by current connection, key: "+key+", PeerState: "+fsm.getState(PeerState.class));
                     if (fsm.getState(PeerState.class).equals(INITIAL)) // received cer by current connection
                         resultCode = 0; // NOP
+                    
                     incConnections.remove(key);
                 }
                 if (resultCode == ResultCode.SUCCESS) {

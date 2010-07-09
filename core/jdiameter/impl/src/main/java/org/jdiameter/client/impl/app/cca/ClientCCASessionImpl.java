@@ -1,11 +1,32 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2010, Red Hat Middleware LLC, and individual contributors
+ * as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
 package org.jdiameter.client.impl.app.cca;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -22,6 +43,7 @@ import org.jdiameter.api.RouteException;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
+import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.api.auth.events.ReAuthAnswer;
@@ -30,16 +52,25 @@ import org.jdiameter.api.cca.ClientCCASession;
 import org.jdiameter.api.cca.ClientCCASessionListener;
 import org.jdiameter.api.cca.events.JCreditControlAnswer;
 import org.jdiameter.api.cca.events.JCreditControlRequest;
+import org.jdiameter.client.api.IContainer;
+import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.impl.app.cca.Event.Type;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.cca.ClientCCASessionState;
 import org.jdiameter.common.api.app.cca.ICCAMessageFactory;
+import org.jdiameter.common.api.app.cca.ICCASessionFactory;
 import org.jdiameter.common.api.app.cca.IClientCCASessionContext;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
 import org.jdiameter.common.impl.app.cca.AppCCASessionImpl;
 
+/**
+ * Client Credit-Control Application session implementation
+ * 
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCASession, NetworkReqListener, EventListener<Request, Answer> {
 
   private static final long serialVersionUID = 1L;
@@ -51,13 +82,20 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   protected Lock sendAndStateLock = new ReentrantLock();
 
   // Factories and Listeners --------------------------------------------------
-  protected ICCAMessageFactory factory = null;
-  protected ClientCCASessionListener listener = null;
-  protected IClientCCASessionContext context = null;
+  protected transient ICCAMessageFactory factory;
+  protected transient ClientCCASessionListener listener;
+  protected transient IClientCCASessionContext context;
 
   // Tx Timer -----------------------------------------------------------------
-  protected ScheduledFuture txFuture = null;
-  private static final long TX_TIMER_DEFAULT_VALUE = 30 * 60;
+  //protected transient ScheduledFuture txFuture = null; //FIXME: HA/FT
+  protected Serializable txTimerId;
+  protected JCreditControlRequest txTimerRequest;
+
+  // Event Based Buffer
+  protected Message buffer = null;
+
+  protected final static String TX_TIMER_NAME = "CCA_CLIENT_TX_TIMER";
+  protected static final long TX_TIMER_DEFAULT_VALUE = 30 * 60 * 1000; // miliseconds
 
   protected String originHost, originRealm;
   protected long[] authAppIds = new long[] { 4 };
@@ -103,37 +141,35 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     temporaryErrorCodes = Collections.unmodifiableSet(tmp);
   }
 
-  // Event Based Buffer
-  private Message buffer = null;
-
   // Session Based Queue
   protected ArrayList<Event> eventQueue = new ArrayList<Event>();
 
-  public ClientCCASessionImpl(ICCAMessageFactory fct, SessionFactory sf, ClientCCASessionListener lst) {
-    this(null, fct, sf, lst);
+  public ClientCCASessionImpl(ICCAMessageFactory fct, SessionFactory sf, ClientCCASessionListener lst,IClientCCASessionContext ctx, StateChangeListener<AppSession> stLst) {
+    this(null, fct, sf, lst,ctx,stLst);
   }
 
-  public ClientCCASessionImpl(String sessionId, ICCAMessageFactory fct, SessionFactory sf, ClientCCASessionListener lst) {
-    super(sf);
+  public ClientCCASessionImpl(String sessionId, ICCAMessageFactory fct, SessionFactory sf, ClientCCASessionListener lst,IClientCCASessionContext ctx, StateChangeListener<AppSession> stLst) {
+    super(sf,sessionId);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
     if (fct.getApplicationIds() == null) {
       throw new IllegalArgumentException("ApplicationId can not be less than zero");
     }
-    if(lst instanceof IClientCCASessionContext) {
-      context = (IClientCCASessionContext)lst;
-    }
+
+    context = (IClientCCASessionContext)ctx;
+
     authAppIds = fct.getApplicationIds();
     listener = lst;
     factory = fct;
-    try {
-      session = sessionId == null ? sf.getNewSession() : sf.getNewSession(sessionId);
-      session.setRequestListener(this);
-    }
-    catch (InternalException e) {
-      throw new IllegalArgumentException(e);
-    }
+    super.addStateChangeNotification(stLst);
+    //    try {
+    //      session = sessionId == null ? sf.getNewSession() : sf.getNewSession(sessionId);
+    //      //session.setRequestListener(this);
+    //    }
+    //    catch (InternalException e) {
+    //      throw new IllegalArgumentException(e);
+    //    }
   }
 
   protected int getLocalCCFH() {
@@ -161,6 +197,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     return this.isEventBased;
   }
 
+  @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> stateType) {
     return stateType == ClientCCASessionState.class ? (E) state : null;
   }
@@ -371,7 +408,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         case SEND_TERMINATE_REQUEST:
           // Current State: OPEN
           // Event: Granted unit elapses and final unit action equal to TERMINATE received
-          // Action: Terminate end user’s service, send CC termination request
+          // Action: Terminate end userï¿½s service, send CC termination request
           // New State: PENDING_T
 
           // Current State: OPEN
@@ -489,8 +526,11 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           // Event: Failure to send, temporary error, or failed answer
           // Action: - 
           // New State: IDLE
+
+          //FIXME: Alex broke this, setting back "true" ? 
           setState(ClientCCASessionState.IDLE, false);
           deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
+          setState(ClientCCASessionState.IDLE, true);
           break;
         default:
           logger.warn("Wrong event type ({}) on state {}", eventType, state);
@@ -515,7 +555,6 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   }
 
   public Answer processRequest(Request request) {
-
     RequestDelivery rd = new RequestDelivery();
     rd.session = this;
     rd.request = request;
@@ -524,7 +563,6 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   }
 
   public void receivedSuccessMessage(Request request, Answer answer) {
-
     AnswerDelivery ad = new AnswerDelivery();
     ad.session = this;
     ad.request = request;
@@ -552,13 +590,30 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     stopTx();
 
     logger.debug("Scheduling TX Timer {}", txTimerValue);
-    this.txFuture = scheduler.schedule(new TxTimerTask(this, request), txTimerValue, TimeUnit.SECONDS);
+    //this.txFuture = scheduler.schedule(new TxTimerTask(this, request), txTimerValue, TimeUnit.SECONDS);
+    this.txTimerRequest = request;
+    this.txTimerId = this.timerFacility.schedule(this.sessionId, TX_TIMER_NAME, TX_TIMER_DEFAULT_VALUE);
   }
 
   protected void stopTx() {
-    if (this.txFuture != null) {
-      this.txFuture.cancel(true);
-      this.txFuture = null;
+    //    if (this.txFuture != null) {
+    //      this.txFuture.cancel(true);
+    //      this.txFuture = null;
+    //    }
+    if(this.txTimerId != null) {
+      this.txTimerRequest = null;
+      this.timerFacility.cancel(this.txTimerId);
+      this.txTimerId = null;
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see org.jdiameter.common.impl.app.AppSessionImpl#onTimer(java.lang.String)
+   */
+  @Override
+  public void onTimer(String timerName) {
+    if(timerName.equals(TX_TIMER_NAME)) {
+      new TxTimerTask(this, this.txTimerRequest).run();
     }
   }
 
@@ -566,13 +621,16 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     setState(newState, true);
   }
 
+  @SuppressWarnings("unchecked")
   protected void setState(ClientCCASessionState newState, boolean release) {
     try {
       IAppSessionState oldState = state;
       state = newState;
+      super.sessionDataSource.updateSession(this);
       for (StateChangeListener i : stateListeners) {
-        i.stateChanged((Enum) oldState, (Enum) newState);
+        i.stateChanged(this,(Enum) oldState, (Enum) newState);
       }
+
       if (newState == ClientCCASessionState.IDLE) {
         if (release) {
           this.release();
@@ -587,6 +645,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void release() {
     this.stopTx();
@@ -687,12 +746,12 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         default:
           // Current State: PENDING_I
           // Event: Failure to send, or temporary error and CCFH equal to TERMINATE or to RETRY_AND_TERMINATE
-          // Action: Terminate end user’s service
+          // Action: Terminate end userï¿½s service
           // New State: IDLE
 
           // Current State: PENDING_U
           // Event: Failure to send, or temporary error and CCFH equal to TERMINATE or to RETRY_AND_TERMINATE
-          // Action: Terminate end user’s service
+          // Action: Terminate end userï¿½s service
           // New State: IDLE
           this.context.denyAccessOnDeliverFailure(this, request);
           setState(ClientCCASessionState.IDLE, true);
@@ -713,16 +772,16 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         switch (state) {
         case PENDING_EVENT:
           if (resultCode == END_USER_SERVICE_DENIED || resultCode == USER_UNKNOWN) {
-            if(txFuture != null) {
+            if(txTimerId != null) {
               // Current State: PENDING_E
               // Event: CC event answer received with result code END_USER_SERVICE_DENIED or USER_UNKNOWN and Tx running
-              // Action: Terminate end user’s service
+              // Action: Terminate end userï¿½s service
               // New State: IDLE
               context.denyAccessOnFailureMessage(this);
               deliverCCAnswer(request, event);
               setState(ClientCCASessionState.IDLE);
             }
-            else if(gatheredRequestedAction == DIRECT_DEBITING && txFuture == null) {
+            else if(gatheredRequestedAction == DIRECT_DEBITING && txTimerId == null) {
               // Current State: PENDING_E
               // Event: Failed answer or answer received with result code END_USER_SERVICE DENIED or USER_UNKNOWN; requested action DIRECT_DEBITING; Tx expired
               // Action: -
@@ -759,10 +818,10 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                 deliverCCAnswer(request, event);
                 setState(ClientCCASessionState.IDLE);
               }
-              else if (getLocalDDFH() == DDFH_TERMINATE_OR_BUFFER && txFuture != null) {
+              else if (getLocalDDFH() == DDFH_TERMINATE_OR_BUFFER && txTimerId != null) {
                 // Current State: PENDING_E
                 // Event: Failed CC event answer received or temporary error; requested action DIRECT_DEBITING; DDFH equal to TERMINATE_OR_BUFFER and Tx running
-                // Action: Terminate end user’s service
+                // Action: Terminate end userï¿½s service
                 // New State: IDLE
                 context.denyAccessOnFailureMessage(this);
                 deliverCCAnswer(request, event);
@@ -778,7 +837,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               setState(ClientCCASessionState.IDLE, false);
             }
             else {
-              logger.warn("Invalid combination for CCA Client FSM: State {}, Result-Code {}, Requested-Action {}, DDFH {}, Tx {}", new Object[]{state, resultCode, gatheredRequestedAction, getLocalDDFH(), txFuture});
+              logger.warn("Invalid combination for CCA Client FSM: State {}, Result-Code {}, Requested-Action {}, DDFH {}, Tx {}", new Object[]{state, resultCode, gatheredRequestedAction, getLocalDDFH(), txTimerId});
             }
           }
           else { // Failure 
@@ -801,10 +860,10 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                 deliverCCAnswer(request, event);
                 setState(ClientCCASessionState.IDLE);
               }
-              else if (getLocalDDFH() == DDFH_TERMINATE_OR_BUFFER && txFuture != null) {
+              else if (getLocalDDFH() == DDFH_TERMINATE_OR_BUFFER && txTimerId != null) {
                 // Current State: PENDING_E
                 // Event: Failed CC event answer received or temporary error; requested action DIRECT_DEBITING; DDFH equal to TERMINATE_OR_BUFFER and Tx running
-                // Action: Terminate end user’s service
+                // Action: Terminate end userï¿½s service
                 // New State: IDLE
                 context.denyAccessOnFailureMessage(this);
                 deliverCCAnswer(request, event);
@@ -822,7 +881,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               setState(ClientCCASessionState.IDLE);
             }
             else {
-              logger.warn("Invalid combination for CCA Client FSM: State {}, Result-Code {}, Requested-Action {}, DDFH {}, Tx {}", new Object[]{state, resultCode, gatheredRequestedAction, getLocalDDFH(), txFuture});
+              logger.warn("Invalid combination for CCA Client FSM: State {}, Result-Code {}, Requested-Action {}, DDFH {}, Tx {}", new Object[]{state, resultCode, gatheredRequestedAction, getLocalDDFH(), txTimerId});
             }
           }
           break;
@@ -854,7 +913,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           else if ((resultCode == END_USER_SERVICE_DENIED) || (resultCode == USER_UNKNOWN)) {
             // Current State: PENDING_I
             // Event: CC initial answer received with result code END_USER_SERVICE_DENIED or USER_UNKNOWN
-            // Action: Terminate end user’s service
+            // Action: Terminate end userï¿½s service
             // New State: IDLE
             context.denyAccessOnFailureMessage(this);
             setState(ClientCCASessionState.IDLE, false);
@@ -874,7 +933,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
             case CCFH_RETRY_AND_TERMINATE:
               // Current State: PENDING_I
               // Event: Failed CC initial answer received and CCFH equal to TERMINATE or to RETRY_AND_TERMINATE
-              // Action: Terminate end user’s service
+              // Action: Terminate end userï¿½s service
               // New State: IDLE
               context.denyAccessOnFailureMessage(this);
               setState(ClientCCASessionState.IDLE, false);
@@ -898,7 +957,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           else if (resultCode == END_USER_SERVICE_DENIED) {
             // Current State: PENDING_U
             // Event: CC update answer received with result code END_USER_SERVICE_DENIED
-            // Action: Terminate end user’s service
+            // Action: Terminate end userï¿½s service
             // New State: IDLE
             context.denyAccessOnFailureMessage(this);
             setState(ClientCCASessionState.IDLE, false);
@@ -918,7 +977,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
             case CCFH_RETRY_AND_TERMINATE:
               // Current State: PENDING_U
               // Event: Failed CC update answer received and CCFH equal to CONTINUE or to RETRY_AND_CONTINUE
-              // Action: Terminate end user’s service
+              // Action: Terminate end userï¿½s service
               // New State: IDLE
               context.denyAccessOnFailureMessage(this);
               setState(ClientCCASessionState.IDLE, false);
@@ -998,7 +1057,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         case CCFH_TERMINATE:
           // Current State: PENDING_I
           // Event: Tx expired and CCFH equal to TERMINATE
-          // Action: Terminate end user’s service
+          // Action: Terminate end userï¿½s service
           // New State: IDLE
           context.denyAccessOnTxExpire(this);
           setState(ClientCCASessionState.IDLE, true);
@@ -1024,7 +1083,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         case CCFH_TERMINATE:
           // Current State: PENDING_U
           // Event: Tx expired and CCFH equal to TERMINATE
-          // Action: Terminate end user’s service
+          // Action: Terminate end userï¿½s service
           // New State: IDLE
           context.denyAccessOnTxExpire(this);
           setState(ClientCCASessionState.IDLE, true);
@@ -1158,6 +1217,32 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     return (!isProvisional(code) && !isSuccess(code) && ((code >= 3000 && /*code < 4000) || (code >= 5000 &&*/ code < 6000)) && !temporaryErrorCodes.contains(code));
   }
 
+  /* (non-Javadoc)
+   * @see org.jdiameter.common.impl.app.AppSessionImpl#isReplicable()
+   */
+  @Override
+  public boolean isReplicable() {
+    return true;
+  }
+
+  /* (non-Javadoc)
+   * @see org.jdiameter.common.impl.app.AppSessionImpl#relink(org.jdiameter.client.api.IContainer)
+   */
+  @Override
+  public void relink(IContainer stack) {
+    // Check if some transient field is null
+    if(super.sf == null) {
+      super.relink(stack);
+
+      //hack this will change
+      ICCASessionFactory fct = (ICCASessionFactory) ((ISessionFactory)super.sf).getAppSessionFactory(this.getClass());
+
+      this.listener = fct.getClientSessionListener();
+      this.context = fct.getClientContextListener();
+      this.factory = fct.getMessageFactory();
+    }
+  }
+
   private class TxTimerTask implements Runnable {
     private ClientCCASession session = null;
     private JCreditControlRequest request = null;
@@ -1172,7 +1257,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       try {
         sendAndStateLock.lock();
         logger.debug("Fired TX Timer");
-        txFuture = null;
+        txTimerId = null;
         try {
           context.txTimerExpired(session);
         }
@@ -1242,4 +1327,84 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     }
   }
 
+  /* (non-Javadoc)
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + Arrays.hashCode(authAppIds);
+    result = prime * result + gatheredCCFH;
+    result = prime * result + gatheredDDFH;
+    result = prime * result + gatheredRequestedAction;
+    result = prime * result + (isEventBased ? 1231 : 1237);
+    result = prime * result + ((originHost == null) ? 0 : originHost.hashCode());
+    result = prime * result + ((originRealm == null) ? 0 : originRealm.hashCode());
+    result = prime * result + (requestTypeSet ? 1231 : 1237);
+    result = prime * result + ((state == null) ? 0 : state.hashCode());
+    return result;
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+
+    ClientCCASessionImpl other = (ClientCCASessionImpl) obj;
+    if (!Arrays.equals(authAppIds, other.authAppIds)) {
+      return false;
+    }
+    if (gatheredCCFH != other.gatheredCCFH) {
+      return false;
+    }
+    if (gatheredDDFH != other.gatheredDDFH) {
+      return false;
+    }
+    if (gatheredRequestedAction != other.gatheredRequestedAction) {
+      return false;
+    }
+    if (isEventBased != other.isEventBased) {
+      return false;
+    }
+    if (originHost == null) {
+      if (other.originHost != null) {
+        return false;
+      }
+    }
+    else if (!originHost.equals(other.originHost)) {
+      return false;
+    }
+    if (originRealm == null) {
+      if (other.originRealm != null) {
+        return false;
+      }
+    }
+    else if (!originRealm.equals(other.originRealm)) {
+      return false;
+    }
+    if (requestTypeSet != other.requestTypeSet) {
+      return false;
+    }
+    if (state == null) {
+      if (other.state != null) {
+        return false;
+      }
+    }
+    else if (!state.equals(other.state)) {
+      return false;
+    }
+
+    return true;
+  }
 }

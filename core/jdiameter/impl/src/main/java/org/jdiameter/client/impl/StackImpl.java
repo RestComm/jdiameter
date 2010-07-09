@@ -1,11 +1,23 @@
 /*
- * Copyright (c) 2006 jDiameter.
- * https://jdiameter.dev.java.net/
- *
- * License: GPL v3
- *
- * e-mail: erick.svenson@yahoo.com
- *
+ * JBoss, Home of Professional Open Source
+ * Copyright 2010, Red Hat Middleware LLC, and individual contributors
+ * as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
  */
 package org.jdiameter.client.impl;
 
@@ -15,6 +27,7 @@ import static org.jdiameter.client.impl.helpers.ExtensionPoint.TransportLayer;
 import static org.jdiameter.client.impl.helpers.Parameters.Assembler;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledExecutorService;
@@ -42,15 +55,25 @@ import org.jdiameter.client.api.IMetaData;
 import org.jdiameter.client.api.StackState;
 import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.controller.IPeerTable;
+import org.jdiameter.client.impl.helpers.Parameters;
+import org.jdiameter.common.impl.data.LocalDataSource;
+import org.jdiameter.common.impl.timer.LocalTimerFacilityImpl;
 import org.jdiameter.common.impl.validation.DiameterMessageValidator;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
+import org.jdiameter.common.api.data.ISessionDatasource;
+
 import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.ProcessingMessageTimer;
 import org.jdiameter.common.api.statistic.IStatisticProcessor;
+import org.jdiameter.common.api.timer.ITimerFacility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Use stack extension point
+ * 
+ * @author erick.svenson@yahoo.com
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class StackImpl implements IContainer, StackImplMBean {
 
@@ -69,6 +92,7 @@ public class StackImpl implements IContainer, StackImplMBean {
    */
   protected ScheduledExecutorService scheduledFacility;
 
+  @SuppressWarnings("unchecked")
   public SessionFactory init(Configuration config) throws IllegalDiameterStateException, InternalException {
     lock.lock();
     try {
@@ -87,16 +111,61 @@ public class StackImpl implements IContainer, StackImplMBean {
         throw new InternalException(e);
       }
       this.config = config;
-      // created manager
-      this.peerManager = (IPeerTable) assembler.getComponentInstance(IPeerTable.class);
       this.concurrentFactory = (IConcurrentFactory) assembler.getComponentInstance(IConcurrentFactory.class);
+
+      try {
+        // Create and register Session DS and Timer Facility 
+        Class sessionDataSourceClass = Class.forName(config.getStringValue(Parameters.SessionDatasource.ordinal(), (String) Parameters.SessionDatasource.defValue()));
+        createISessionDataSource(sessionDataSourceClass);
+        Class timerFacilityClass = Class.forName(config.getStringValue(Parameters.TimerFacility.ordinal(), (String) Parameters.TimerFacility.defValue()));
+        createITimerFacility(timerFacilityClass);
+      }
+      catch (Exception e) {
+        throw new InternalException(e);
+      }
+
+      // create manager
+      this.peerManager = (IPeerTable) assembler.getComponentInstance(IPeerTable.class);
       this.peerManager.setAssembler(assembler);
+
       this.state = StackState.CONFIGURED;
     }
     finally {
       lock.unlock();
     }
     return (SessionFactory) assembler.getComponentInstance(SessionFactory.class);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void createITimerFacility(Class clazz) throws InternalException {
+    ITimerFacility itf;
+    if(assembler.getComponentInstance(ISessionDatasource.class).isClustered()) {
+      try{
+        Constructor<ITimerFacility> con = clazz.getConstructor(IContainer.class);
+        itf = con.newInstance(this);
+      }
+      catch(Exception e) {
+        throw new InternalException(e);
+      }
+    }
+    else {
+      itf = new LocalTimerFacilityImpl(this);
+    }
+    assembler.registerComponentInstance(itf);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void createISessionDataSource(Class clazz) throws InternalException {
+    ISessionDatasource isd = new LocalDataSource();
+    try {
+      Constructor<ISessionDatasource> con = clazz.getConstructor(IContainer.class);
+      isd = con.newInstance(this);
+    }
+    catch (Exception e) {
+      throw new InternalException(e);
+    }
+    // finally register, so other components can be created.
+    assembler.registerComponentInstance(isd);
   }
 
   public SessionFactory getSessionFactory() throws IllegalDiameterStateException {
@@ -114,7 +183,9 @@ public class StackImpl implements IContainer, StackImplMBean {
       if (state != StackState.STOPPED && state != StackState.CONFIGURED) {
         throw new IllegalDiameterStateException();
       }
+
       scheduledFacility = concurrentFactory.getScheduledExecutorService(ProcessingMessageTimer.name());
+      assembler.getComponentInstance(ISessionDatasource.class).start();
       assembler.getComponentInstance(IStatisticProcessor.class).start();
       startPeerManager();
       state = StackState.STARTED;
@@ -124,6 +195,7 @@ public class StackImpl implements IContainer, StackImplMBean {
     }
   }
 
+  @SuppressWarnings("unchecked")
   public void start(final Mode mode, long timeOut, TimeUnit timeUnit) throws IllegalDiameterStateException, InternalException {
     lock.lock();
     try {
@@ -132,9 +204,10 @@ public class StackImpl implements IContainer, StackImplMBean {
       }
       scheduledFacility = concurrentFactory.getScheduledExecutorService(ProcessingMessageTimer.name());
       assembler.getComponentInstance(IStatisticProcessor.class).start();
+      assembler.getComponentInstance(ISessionDatasource.class).start();
       List<Peer> peerTable = peerManager.getPeerTable();
       final CountDownLatch barrier = new CountDownLatch(Mode.ANY_PEER.equals(mode) ? 1 : peerTable.size());
-      StateChangeListener listener = new StateChangeListener() {
+      StateChangeListener listener = new AbstractStateChangeListener() {
         public void stateChanged(Enum oldState, Enum newState) {
           if (PeerState.OKAY.equals(newState)) {
             barrier.countDown();
@@ -178,13 +251,14 @@ public class StackImpl implements IContainer, StackImplMBean {
     }
   }
 
+  @SuppressWarnings("unchecked")
   public void stop(long timeOut, TimeUnit timeUnit) throws IllegalDiameterStateException, InternalException {
     lock.lock();
     try {
       if (state == StackState.STARTED || state == StackState.CONFIGURED) {
         List<Peer> peerTable = peerManager.getPeerTable();
         final CountDownLatch barrier = new CountDownLatch(peerTable.size());
-        StateChangeListener listener = new StateChangeListener() {
+        StateChangeListener listener = new AbstractStateChangeListener() {
           public void stateChanged(Enum oldState, Enum newState) {
             if (PeerState.DOWN.equals(newState)) {
               barrier.countDown();
@@ -222,6 +296,7 @@ public class StackImpl implements IContainer, StackImplMBean {
             ((IPeer) p).remStateChangeListener(listener);
           }
         }
+        assembler.getComponentInstance(ISessionDatasource.class).stop();
         assembler.getComponentInstance(IStatisticProcessor.class).stop();
         try {
           if (peerManager != null) {
@@ -294,6 +369,7 @@ public class StackImpl implements IContainer, StackImplMBean {
     return isWrap;
   }
 
+  @SuppressWarnings("unchecked")
   public <T> T unwrap(Class<T> aClass) throws InternalException {
     Object unwrapObject = null;
     if (aClass == PeerTable.class) {
@@ -342,10 +418,9 @@ public class StackImpl implements IContainer, StackImplMBean {
   }
 
   public IConcurrentFactory getConcurrentFactory() {
-		
-		return this.concurrentFactory;
-	} 
-  
+    return this.concurrentFactory;
+  }
+
   public String configuration() {
     return config != null ? config.toString() : "not set";
   }
@@ -392,5 +467,4 @@ public class StackImpl implements IContainer, StackImplMBean {
     }
   }
 
-   
 }

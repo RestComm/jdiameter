@@ -1,30 +1,58 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2010, Red Hat Middleware LLC, and individual contributors
+ * as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
 package org.jdiameter.common.api.app.cca;
 
 import org.jdiameter.api.Message;
 import org.jdiameter.api.cca.ClientCCASession;
-import org.jdiameter.client.impl.app.cca.ClientCCASessionImpl;
 
+/**
+ * Diameter Credit Control Application Client Additional listener
+ * Actions for FSM
+ * 
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ */
 public interface IClientCCASessionContext {
 
-	long getDefaultTxTimerValue();
+  long getDefaultTxTimerValue();
 
-	void txTimerExpired(ClientCCASession session);
-	
-	int getDefaultCCFHValue();
-	int getDefaultDDFHValue();
+  void txTimerExpired(ClientCCASession session);
 
-	void grantAccessOnDeliverFailure(ClientCCASession clientCCASessionImpl,Message request);
+  int getDefaultCCFHValue();
 
-	void denyAccessOnDeliverFailure(ClientCCASession clientCCASessionImpl,Message request);
+  int getDefaultDDFHValue();
 
-	void grantAccessOnTxExpire(ClientCCASession clientCCASessionImpl);
+  void grantAccessOnDeliverFailure(ClientCCASession clientCCASessionImpl,Message request);
 
-	void denyAccessOnTxExpire(ClientCCASession clientCCASessionImpl);
+  void denyAccessOnDeliverFailure(ClientCCASession clientCCASessionImpl,Message request);
 
-	void grantAccessOnFailureMessage(ClientCCASession clientCCASessionImpl);
+  void grantAccessOnTxExpire(ClientCCASession clientCCASessionImpl);
 
-	void denyAccessOnFailureMessage(ClientCCASession clientCCASessionImpl);
+  void denyAccessOnTxExpire(ClientCCASession clientCCASessionImpl);
 
-	void indicateServiceError(ClientCCASession clientCCASessionImpl);
+  void grantAccessOnFailureMessage(ClientCCASession clientCCASessionImpl);
+
+  void denyAccessOnFailureMessage(ClientCCASession clientCCASessionImpl);
+
+  void indicateServiceError(ClientCCASession clientCCASessionImpl);
 
 }

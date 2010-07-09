@@ -1,8 +1,27 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2010, Red Hat Middleware LLC, and individual contributors
+ * as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
 package org.jdiameter.server.impl.app.sh;
 
-import java.util.TimerTask;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.io.Serializable;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -33,8 +52,11 @@ import org.jdiameter.api.sh.events.SubscribeNotificationsAnswer;
 import org.jdiameter.api.sh.events.SubscribeNotificationsRequest;
 import org.jdiameter.api.sh.events.UserDataAnswer;
 import org.jdiameter.api.sh.events.UserDataRequest;
+import org.jdiameter.client.api.IContainer;
+import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.sh.IShMessageFactory;
+import org.jdiameter.common.api.app.sh.IShSessionFactory;
 import org.jdiameter.common.api.app.sh.ShSessionState;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
@@ -51,8 +73,6 @@ import org.slf4j.LoggerFactory;
  * If ShSession moves to ShSessionState.TERMINATED - it means that no further
  * messages can be received via it and it should be discarded. <br>
  * <br>
- * Super project: mobicents-jainslee-server <br>
- * 10:53:02 2008-09-05 <br>
  * 
  * @author <a href = "mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href = "mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
@@ -70,13 +90,19 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
   protected boolean receivedSubTerm = false;
 
   // Factories and Listeners --------------------------------------------------
-  protected IShMessageFactory factory = null;
-  protected ServerShSessionListener listener;
+  protected transient IShMessageFactory factory = null;
+  protected transient ServerShSessionListener listener;
 
   // Subscription Timer -------------------------------------------------------
-  protected ScheduledFuture sft = null;
-  protected ScheduledFuture txSft = null;
-  protected TxTimerTask txTimerTask = null;
+  private static final String _TIMER_NAME_SFT = "SFT";
+  private static final String _TIMER_NAME_TXSFT = "TXSFT";
+  //protected ScheduledFuture sft = null;
+  //protected ScheduledFuture txSft = null;
+  protected Serializable timerId_sft;
+  protected Serializable timerId_txsft; //FIXME: move this to stack?
+  protected AppEvent txRequest;
+
+  //protected TxTimerTask txTimerTask = null;
 
   protected String destHost, destRealm;
   protected long appId = -1;
@@ -93,7 +119,7 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
   }
 
   public ShServerSessionImpl(String sessionId, IShMessageFactory fct, SessionFactory sf, ServerShSessionListener lst) {
-    super(sf);
+    super(sf,sessionId);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
@@ -103,18 +129,18 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
     appId = fct.getApplicationId();
     listener = lst;
     factory = fct;
-    try {
-      if (sessionId == null) {
-        session = sf.getNewSession();
-      }
-      else {
-        session = sf.getNewSession(sessionId);
-      }
-      session.setRequestListener(this);
-    }
-    catch (InternalException e) {
-      throw new IllegalArgumentException(e);
-    }
+    //    try {
+    //      if (sessionId == null) {
+    //        session = sf.getNewSession();
+    //      }
+    //      else {
+    //        session = sf.getNewSession(sessionId);
+    //      }
+    //      session.setRequestListener(this);
+    //    }
+    //    catch (InternalException e) {
+    //      throw new IllegalArgumentException(e);
+    //    }
   }
 
   public void sendProfileUpdateAnswer(ProfileUpdateAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
@@ -167,6 +193,7 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
     return null;
   }
 
+  @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> stateType) {
     return stateType == ShSessionState.class ? (E) state : null;
   }
@@ -314,7 +341,7 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
   protected void dispatchEvent(AppEvent event) throws InternalException {
     try{
       session.send(event.getMessage(), this);
-      //FIXME: add differentation on server/client request
+      // FIXME: add differentiation on server/client request
     }
     catch(Exception e) {
       logger.debug("Failed to dispatch event", e);
@@ -325,12 +352,13 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
     setState(newState, true);
   }
 
+  @SuppressWarnings("unchecked")
   protected void setState(ShSessionState newState, boolean release) {
     IAppSessionState oldState = state;
     state = newState;
-
+    super.sessionDataSource.updateSession(this);
     for (StateChangeListener i : stateListeners) {
-      i.stateChanged((Enum) oldState, (Enum) newState);
+      i.stateChanged(this,(Enum) oldState, (Enum) newState);
     }
     if (newState == ShSessionState.TERMINATED) {
       if (release) {
@@ -341,6 +369,7 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
     }
   }
 
+  @SuppressWarnings("unchecked")
   public void release() {
     try {
       sendAndStateLock.lock();
@@ -444,39 +473,89 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
     return newState;
   }
 
+  /* (non-Javadoc)
+   * @see org.jdiameter.common.impl.app.AppSessionImpl#onTimer(java.lang.String)
+   */
+  @Override
+  public void onTimer(String timerName) {
+    if (timerName.equals(_TIMER_NAME_SFT)) {
+      try {
+        sendAndStateLock.lock();
+        timerId_sft = null;
+        if (state != ShSessionState.TERMINATED) {
+          setState(ShSessionState.TERMINATED);
+        }
+      }
+      finally {
+        sendAndStateLock.unlock();
+      }
+    }
+    else if (timerName.equals(_TIMER_NAME_TXSFT)) {
+      try {
+        sendAndStateLock.lock();
+        timerId_txsft = null;
+        handleEvent(new Event(Event.Type.TX_TIMER_EXPIRED, this.txRequest, null));
+      }
+      catch (InternalException e) {
+        logger.error("Internal Exception", e);
+      }
+      catch (OverloadException e) {
+        logger.error("Overload Exception", e);
+      }
+      finally {
+        this.txRequest = null;
+        sendAndStateLock.unlock();
+      }
+    }
+    else {
+      super.onTimer(timerName);
+    }
+  }
+
   private void startSubscriptionTimer(Message message) {
     long expiryTime = extractExpiryTime(message);
     if (expiryTime >= 0) {
       stopSubscriptionTimer();
-      this.sft = scheduler.schedule(new Runnable() {
-        public void run() {
-          try {
-            sendAndStateLock.lock();
-            if (state != ShSessionState.TERMINATED) {
-              setState(ShSessionState.TERMINATED);
-            }
-          }
-          finally {
-            sendAndStateLock.unlock();
-          }
-        }
-      }, expiryTime, TimeUnit.SECONDS);
+      //this.sft = scheduler.schedule(new Runnable() {
+      this.timerId_sft = super.timerFacility.schedule(super.sessionId, _TIMER_NAME_SFT, expiryTime* 1000);
+      //        public void run() {
+      //          try {
+      //            sendAndStateLock.lock();
+      //            if (state != ShSessionState.TERMINATED) {
+      //              setState(ShSessionState.TERMINATED);
+      //            }
+      //          }
+      //          finally {
+      //            sendAndStateLock.unlock();
+      //          }
+      //        }
+      //      }, expiryTime, TimeUnit.SECONDS);
+      super.sessionDataSource.updateSession(this);
     }
   }
 
   private void stopSubscriptionTimer() {
-    if(this.sft != null) {
-      this.sft.cancel(false);
-      this.sft = null;
+    //    if(this.sft != null) {
+    //      this.sft.cancel(false);
+    //      this.sft = null;
+    //    }
+
+    if(this.timerId_sft != null) {
+      super.timerFacility.cancel(timerId_sft);
+      this.timerId_sft = null;
     }
+    super.sessionDataSource.updateSession(this);
   }
 
   private void startTxTimer(AppEvent request) {
     try {
       sendAndStateLock.lock();
       this.stopTxTimer();
-      this.txTimerTask = new TxTimerTask(request);
-      this.txSft = super.scheduler.schedule(this.txTimerTask, this.factory.getMessageTimeout(), TimeUnit.MILLISECONDS);
+      this.txRequest = request;
+      this.timerId_txsft = super.timerFacility.schedule(super.sessionId, _TIMER_NAME_TXSFT, this.factory.getMessageTimeout());
+      super.sessionDataSource.updateSession(this);
+      //this.txTimerTask = new TxTimerTask(request);
+      //this.txSft = super.scheduler.schedule(this.txTimerTask, this.factory.getMessageTimeout(), TimeUnit.MILLISECONDS);
     }
     catch (Exception e) {
       logger.debug("Error while setting up TxTimer", e);
@@ -489,11 +568,17 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
   private void stopTxTimer() {
     try {
       sendAndStateLock.lock();
-      if (this.txTimerTask != null) {
-        this.txSft.cancel(false);
-        this.txSft = null;
-        this.txTimerTask.cancel();
-        this.txTimerTask = null;
+      //      if (this.txTimerTask != null) {
+      //        this.txSft.cancel(false);
+      //        this.txSft = null;
+      //        this.txTimerTask.cancel();
+      //        this.txTimerTask = null;
+      //      }
+      if (this.timerId_txsft != null) {
+        super.timerFacility.cancel(timerId_txsft);
+        this.timerId_txsft = null;
+        this.txRequest = null;
+        super.sessionDataSource.updateSession(this);
       }
     }
     catch (Exception e) {
@@ -504,38 +589,38 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
     }
   }
 
-  private class TxTimerTask extends TimerTask {
-    private AppEvent request = null;
-
-    public TxTimerTask(AppEvent request2) {
-      super();
-      this.request = request2;
-    }
-
-    @Override
-    public boolean cancel() {
-      this.request = null;
-      return super.cancel();
-    }
-
-    @Override
-    public void run() {
-      try {
-        sendAndStateLock.lock();
-        handleEvent(new Event(Event.Type.TX_TIMER_EXPIRED, request, null));
-      }
-      catch (InternalException e) {
-        logger.error("Internal Exception", e);
-      }
-      catch (OverloadException e) {
-        logger.error("Overload Exception", e);
-      }
-      finally {
-        this.request = null;
-        sendAndStateLock.unlock();
-      }
-    }
-  }
+  //  private class TxTimerTask extends TimerTask {
+  //    private AppEvent request = null;
+  //
+  //    public TxTimerTask(AppEvent request2) {
+  //      super();
+  //      this.request = request2;
+  //    }
+  //
+  //    @Override
+  //    public boolean cancel() {
+  //      this.request = null;
+  //      return super.cancel();
+  //    }
+  //
+  //    @Override
+  //    public void run() {
+  //      try {
+  //        sendAndStateLock.lock();
+  //        handleEvent(new Event(Event.Type.TX_TIMER_EXPIRED, request, null));
+  //      }
+  //      catch (InternalException e) {
+  //        logger.error("Internal Exception", e);
+  //      }
+  //      catch (OverloadException e) {
+  //        logger.error("Overload Exception", e);
+  //      }
+  //      finally {
+  //        this.request = null;
+  //        sendAndStateLock.unlock();
+  //      }
+  //    }
+  //  }
 
   protected  boolean isProvisional(long result) {
     return result >= 1000 && result < 2000;
@@ -543,6 +628,103 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 
   protected boolean isSuccess(long result) {
     return result >= 2000 && result < 3000;
+  }
+
+  /* (non-Javadoc)
+   * @see org.jdiameter.common.impl.app.AppSessionImpl#isReplicable()
+   */
+  @Override
+  public boolean isReplicable() {
+    return true;
+  }
+  
+  /* (non-Javadoc)
+   * @see org.jdiameter.common.impl.app.sh.ShSessionImpl#relink(org.jdiameter.client.api.IContainer)
+   */
+  @Override
+  public void relink(IContainer stack) {
+    if (super.sf == null) {
+      super.relink(stack);
+      IShSessionFactory fct = (IShSessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(ServerShSession.class);
+      this.listener = fct.getServerShSessionListener();
+      this.factory = fct.getMessageFactory();
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + (int) (appId ^ (appId >>> 32));
+    result = prime * result + ((destHost == null) ? 0 : destHost.hashCode());
+    result = prime * result + ((destRealm == null) ? 0 : destRealm.hashCode());
+    result = prime * result + (receivedSubTerm ? 1231 : 1237);
+    result = prime * result + ((state == null) ? 0 : state.hashCode());
+    result = prime * result + (stateless ? 1231 : 1237);
+    result = prime * result + ((txRequest == null) ? 0 : txRequest.hashCode());
+    return result;
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+
+    ShServerSessionImpl other = (ShServerSessionImpl) obj;
+    if (appId != other.appId) {
+      return false;
+    }
+    if (destHost == null) {
+      if (other.destHost != null)
+        return false;
+    }
+    else if (!destHost.equals(other.destHost)) {
+      return false;
+    }
+    if (destRealm == null) {
+      if (other.destRealm != null) {
+        return false;
+      }
+    }
+    else if (!destRealm.equals(other.destRealm)) {
+      return false;
+    }
+    if (receivedSubTerm != other.receivedSubTerm) {
+      return false;
+    }
+    if (state == null) {
+      if (other.state != null) {
+        return false;
+      }
+    }
+    else if (!state.equals(other.state)) {
+      return false;
+    }
+    if (stateless != other.stateless) {
+      return false;
+    }
+    if (txRequest == null) {
+      if (other.txRequest != null) {
+        return false;
+      }
+    }
+    else if (!txRequest.equals(other.txRequest)) {
+      return false;
+    }
+    return true;
   }
 
   private class RequestDelivery implements Runnable {

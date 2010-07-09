@@ -1,19 +1,30 @@
 /*
- * Copyright (c) 2006 jDiameter.
- * https://jdiameter.dev.java.net/
- *
- * License: Lesser General Public License (LGPL)
- *
- * e-mail: erick.svenson@yahoo.com
- *
+ * JBoss, Home of Professional Open Source
+ * Copyright 2010, Red Hat Middleware LLC, and individual contributors
+ * as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
  */
 package org.jdiameter.server.impl.app.acc;
 
 import static org.jdiameter.common.api.app.acc.ServerAccSessionState.IDLE;
 import static org.jdiameter.common.api.app.acc.ServerAccSessionState.OPEN;
 
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.io.Serializable;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.Avp;
@@ -25,15 +36,18 @@ import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.ResultCode;
 import org.jdiameter.api.RouteException;
-import org.jdiameter.api.Session;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.acc.ServerAccSession;
 import org.jdiameter.api.acc.ServerAccSessionListener;
 import org.jdiameter.api.acc.events.AccountAnswer;
 import org.jdiameter.api.acc.events.AccountRequest;
+import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
+import org.jdiameter.client.api.IContainer;
+import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.IAppSessionState;
+import org.jdiameter.common.api.app.acc.IAccSessionFactory;
 import org.jdiameter.common.api.app.acc.IServerAccActionContext;
 import org.jdiameter.common.api.app.acc.ServerAccSessionState;
 import org.jdiameter.common.impl.app.acc.AccountRequestImpl;
@@ -41,53 +55,54 @@ import org.jdiameter.common.impl.app.acc.AppAccSessionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Server Accounting session implementation
+ * 
+ * @author erick.svenson@yahoo.com
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 public class ServerAccSessionImpl extends AppAccSessionImpl implements EventListener<Request, Answer>, ServerAccSession, NetworkReqListener {
 
   private static final long serialVersionUID = 1L;
 
-  private Logger logger = LoggerFactory.getLogger(ServerAccSessionImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(ServerAccSessionImpl.class);
 
   // Session State Handling ---------------------------------------------------
   protected boolean stateless = false;
   protected ServerAccSessionState state = ServerAccSessionState.IDLE;
 
   // Factories and Listeners --------------------------------------------------
-  protected IServerAccActionContext context;
-  protected ServerAccSessionListener listener;
+  protected transient IServerAccActionContext context;
+  protected transient  ServerAccSessionListener listener;
 
   // Ts Timer -----------------------------------------------------------------
   protected long tsTimeout;
-  protected ScheduledFuture tsTask;
+  //protected ScheduledFuture tsTask;
+  protected Serializable timerId_ts;
+  protected static final String TIMER_NAME_TS = "TS";
 
   // Constructors -------------------------------------------------------------
-
-  public ServerAccSessionImpl(Session session,SessionFactory sf, Request initialRequest, ServerAccSessionListener listener, long tsTimeout, boolean stateless, StateChangeListener... scListeners) {
-    super(sf);
-
-    if (session == null) {
-      throw new IllegalArgumentException("Session can not be null");
-    }
-    if (listener == null) {
-      throw new IllegalArgumentException("Session listener can not be null");
-    }
-
-    this.session = session;
-    this.listener = listener;
-    if (this.listener instanceof IServerAccActionContext) {
-      context = (IServerAccActionContext) this.listener;
-    }
-
+  public ServerAccSessionImpl(String sessionId, SessionFactory sessionFactory, Request request,
+      ServerAccSessionListener serverSessionListener, 
+      IServerAccActionContext serverContextListener,StateChangeListener<AppSession> stLst, long tsTimeout, boolean stateless) {
+    // TODO Auto-generated constructor stub
+    super(sessionFactory,sessionId);
+    this.listener = serverSessionListener;
+    this.context = serverContextListener;
     this.tsTimeout = tsTimeout;
     this.stateless = stateless;
-    this.session.setRequestListener(this);
-    for (StateChangeListener l : scListeners) {
-      addStateChangeNotification(l);
-    }
+    super.addStateChangeNotification(stLst);
   }
 
   public void sendAccountAnswer(AccountAnswer accountAnswer) throws InternalException, IllegalStateException, RouteException, OverloadException {
     try {
       session.send(accountAnswer.getMessage());
+      /* TODO: Need to notify state change...
+      if(isStateless() && isValid()) {
+        session.release();
+      }
+      */
     }
     catch (IllegalDiameterStateException e) {
       throw new IllegalStateException(e);
@@ -98,11 +113,13 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
     return stateless;
   }
 
+  @SuppressWarnings("unchecked")
   protected void setState(IAppSessionState newState) {
     IAppSessionState oldState = state;
     state = (ServerAccSessionState) newState;
+    super.sessionDataSource.updateSession(this);
     for (StateChangeListener i : stateListeners) {
-      i.stateChanged((Enum) oldState, (Enum) newState);
+      i.stateChanged(this,(Enum) oldState, (Enum) newState);
     }
   }
 
@@ -187,7 +204,8 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
     }
     finally {
       // TODO: Since setState was removed, we are now using this to terminate. Correct?
-      release();
+      // We can't release here, answer needs to be sent through. done at send.
+      // release();
     }
     return true;
   }
@@ -205,9 +223,10 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
           if (listener != null) {
             try {
               listener.doAccRequestEvent(this, (AccountRequest) event.getData());
-              tsTask = runTsTimer();
+              cancelTsTimer();
+              timerId_ts = startTsTimer();
               if (context != null) {
-                context.sessionTimerStarted(this, tsTask);
+                context.sessionTimerStarted(this, null);
               }
               setState(OPEN);
             }
@@ -229,7 +248,7 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
             catch (Exception e) {
               logger.debug("Can not handle event", e);
             }
-          }                            
+          }
           break;
         }
         break;
@@ -243,9 +262,10 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
           // New State: OPEN
           try {
             listener.doAccRequestEvent(this, (AccountRequest) event.getData());
-            tsTask = runTsTimer();
+            cancelTsTimer();
+            timerId_ts = startTsTimer();
             if (context != null) {
-              context.sessionTimerStarted(this, tsTask);
+              context.sessionTimerStarted(this, null);
             }
           }
           catch (Exception e) {
@@ -260,9 +280,9 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
           // New State: IDLE
           try {
             listener.doAccRequestEvent(this, (AccountRequest) event.getData());
-            tsTask.cancel(true);
+            cancelTsTimer();
             if (context != null) {
-              context.srssionTimerCanceled(this, tsTask);
+              context.sessionTimerCanceled(this, null);
             }
             setState(IDLE);
           }
@@ -283,21 +303,65 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
     return true;
   }
 
-  private ScheduledFuture runTsTimer() {
-    return scheduler.schedule(new Runnable() {
-      public void run() {
-        logger.debug("Ts timer expired");
-        if (context != null) {
-          try {
-            context.sessionTimeoutElapses(ServerAccSessionImpl.this);
-          }
-          catch (InternalException e) {
-            logger.debug("Failure on processing expired Ts", e);
-          }
-        }
-        setState(IDLE);
+  private Serializable startTsTimer() {
+    //    return scheduler.schedule(new Runnable() {
+    //      public void run() {
+    //        logger.debug("Ts timer expired");
+    //        if (context != null) {
+    //          try {
+    //            context.sessionTimeoutElapses(ServerAccSessionImpl.this);
+    //          }
+    //          catch (InternalException e) {
+    //            logger.debug("Failure on processing expired Ts", e);
+    //          }
+    //        }
+    //        setState(IDLE);
+    //      }
+    //    }, tsTimeout, TimeUnit.MILLISECONDS);
+    try{
+      sendAndStateLock.lock();
+      this.timerId_ts = super.timerFacility.schedule(sessionId, TIMER_NAME_TS, tsTimeout);
+      super.sessionDataSource.updateSession(this);
+      return this.timerId_ts;
+    }
+    finally {
+      sendAndStateLock.unlock();
+    }
+  }
+
+  private void cancelTsTimer() {
+    try{
+      sendAndStateLock.lock();
+      if(this.timerId_ts != null) {
+        super.timerFacility.cancel(timerId_ts);
+        this.timerId_ts = null;
+        super.sessionDataSource.updateSession(this);
       }
-    }, tsTimeout, TimeUnit.MILLISECONDS);
+    }
+    finally {
+      sendAndStateLock.unlock();
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see org.jdiameter.common.impl.app.AppSessionImpl#onTimer(java.lang.String)
+   */
+  @Override
+  public void onTimer(String timerName) {
+    if(timerName.equals(TIMER_NAME_TS)) {
+      if (context != null) {
+        try {
+          context.sessionTimeoutElapses(ServerAccSessionImpl.this);
+        }
+        catch (InternalException e) {
+          logger.debug("Failure on processing expired Ts", e);
+        }
+      }
+      setState(IDLE);
+    }
+    else {
+      super.onTimer(timerName);
+    }
   }
 
   protected Answer createStopAnswer(Request request) {
@@ -328,6 +392,7 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
     return answer;
   }
 
+  @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> eClass) {
     return eClass == ServerAccSessionState.class ? (E) state : null;
   }
@@ -383,11 +448,34 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
       catch (Exception e) {
         logger.debug("Can not handle event", e);
       }
-    }      
+    }
   }
 
   public void timeoutExpired(Request request) {
     // FIXME: alexandre: We don't do anything here... are we even getting this on server?      
+  }
+
+  /* (non-Javadoc)
+   * @see org.jdiameter.common.impl.app.AppSessionImpl#isReplicable()
+   */
+  @Override
+  public boolean isReplicable() {
+    return true;
+  }
+  /* (non-Javadoc)
+   * 
+   * @see org.jdiameter.common.impl.app.AppSessionImpl#relink(org.jdiameter.client.api.IContainer)
+   */
+  @Override
+  public void relink(IContainer stack) {
+    if(super.sf == null) {
+      super.relink(stack);
+      IAccSessionFactory fct = (IAccSessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(ServerAccSession.class);
+
+      this.listener = fct.getServerSessionListener();
+      this.context = fct.getServerContextListener();
+
+    }
   }
 
 }

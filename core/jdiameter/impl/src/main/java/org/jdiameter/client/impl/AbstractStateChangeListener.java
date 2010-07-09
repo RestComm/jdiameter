@@ -19,33 +19,35 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
-package org.jdiameter.api.app;
+package org.jdiameter.client.impl;
+
+import org.jdiameter.api.app.StateChangeListener;
 
 /**
- * Interface used to inform about changes in the state for a FSM.
+ * Implementation of state change methods.
+ * Developer can provide implementation of particular methods required.
  * 
- * @author erick.svenson@yahoo.com
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public interface StateChangeListener<T> {
+public abstract class AbstractStateChangeListener<T> implements StateChangeListener<T> {
 
-  /**
-   * @deprecated
-   * A change of state has occurred for a FSM.
-   * @param oldState Old state of FSM
-   * @param newState New state of FSM
+  /*
+   * (non-Javadoc)
+   * @see org.jdiameter.api.app.StateChangeListener#stateChanged(java.lang.Enum, java.lang.Enum)
    */
   @SuppressWarnings("unchecked")
-  void stateChanged(Enum oldState, Enum newState);
+  public void stateChanged(Enum oldState, Enum newState) {
+    // Stub method
+  }
 
-  /**
-   * A change of state has occurred for a FSM.
-   * 
-   * @param source the App Session that generated the change. 
-   * @param oldState Old state of FSM
-   * @param newState New state of FSM
+  /*
+   * (non-Javadoc)
+   * @see org.jdiameter.api.app.StateChangeListener#stateChanged(java.lang.Object, java.lang.Enum, java.lang.Enum)
    */
   @SuppressWarnings("unchecked")
-  void stateChanged(T source, Enum oldState, Enum newState);
+  public void stateChanged(T source, Enum oldState, Enum newState) {
+    // Stub method
+  }
+
 }

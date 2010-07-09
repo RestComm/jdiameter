@@ -183,6 +183,8 @@ public class XMLConfiguration extends EmptyConfiguration {
             else if (nodeName.equals("ThreadPool")) { addThreadPool(c.item(i));                               }
             else if (nodeName.equals("StatisticLogger")) { addStatisticLogger(StatisticLogger, c.item(i));    }
             else if (nodeName.equals("Concurrent")) { addConcurrent(Concurrent, c.item(i));                   }
+            else if (nodeName.equals("SessionDatasource")) { add(SessionDatasource, getValue(c.item(i)));     }
+            else if (nodeName.equals("TimerFacility")) { add(TimerFacility, getValue(c.item(i)));             }
             else 
             {    appendOtherParameter(c.item(i)); }
         }

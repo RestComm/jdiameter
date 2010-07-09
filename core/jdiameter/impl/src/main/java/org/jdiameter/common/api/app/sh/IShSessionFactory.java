@@ -19,33 +19,36 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
-package org.jdiameter.api.app;
+package org.jdiameter.common.api.app.sh;
+
+import org.jdiameter.api.app.AppSession;
+import org.jdiameter.api.app.StateChangeListener;
+import org.jdiameter.api.sh.ClientShSessionListener;
+import org.jdiameter.api.sh.ServerShSessionListener;
+import org.jdiameter.common.api.app.IAppSessionFactory;
 
 /**
- * Interface used to inform about changes in the state for a FSM.
+ * Diameter Sh Session Factory
  * 
- * @author erick.svenson@yahoo.com
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public interface StateChangeListener<T> {
+public interface IShSessionFactory extends IAppSessionFactory {
 
-  /**
-   * @deprecated
-   * A change of state has occurred for a FSM.
-   * @param oldState Old state of FSM
-   * @param newState New state of FSM
-   */
-  @SuppressWarnings("unchecked")
-  void stateChanged(Enum oldState, Enum newState);
+  public void setClientShSessionListener(ClientShSessionListener v);
 
-  /**
-   * A change of state has occurred for a FSM.
-   * 
-   * @param source the App Session that generated the change. 
-   * @param oldState Old state of FSM
-   * @param newState New state of FSM
-   */
-  @SuppressWarnings("unchecked")
-  void stateChanged(T source, Enum oldState, Enum newState);
+  public ClientShSessionListener getClientShSessionListener();
+
+  public void setServerShSessionListener(ServerShSessionListener v);
+
+  public ServerShSessionListener getServerShSessionListener();
+
+  public void setStateChangeListener(StateChangeListener<AppSession> v);
+
+  public StateChangeListener<AppSession> getStateChangeListener();
+
+  public void setMessageFactory(IShMessageFactory factory);
+
+  public IShMessageFactory getMessageFactory();
+
 }

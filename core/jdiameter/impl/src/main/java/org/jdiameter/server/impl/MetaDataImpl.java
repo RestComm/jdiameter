@@ -1,3 +1,24 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2010, Red Hat Middleware LLC, and individual contributors
+ * as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
 package org.jdiameter.server.impl;
 
 import static org.jdiameter.client.impl.helpers.Parameters.OwnIPAddress;
@@ -32,10 +53,16 @@ import org.jdiameter.server.api.INetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * @author erick.svenson@yahoo.com
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl implements IMetaData {
 
   private static final Logger logger = LoggerFactory.getLogger(MetaDataImpl.class);
-  
+
   private final Object lock = new Object();
 
   public MetaDataImpl(IContainer s) {
@@ -85,7 +112,7 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
     protected INetwork net = null;
     protected IMutablePeerTable manager = null;
     protected ISessionFactory factory = null;
-    protected Map<String, NetworkReqListener> slc = null;
+    // XXX: FT/HA // protected Map<String, NetworkReqListener> slc = null;
     Map<Long, IMessage> peerRequests = new ConcurrentHashMap<Long, IMessage>();
 
     public ServerLocalPeer(IStatisticFactory statisticFactory) {
@@ -167,6 +194,7 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
     }
 
     // Local processing message
+    @SuppressWarnings("unchecked")
     public boolean sendMessage(IMessage message) throws TransportException, OverloadException {
       try {
         if (net == null || manager == null) {
@@ -174,7 +202,7 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
             net = (INetwork) stack.unwrap(Network.class);
             manager = (IMutablePeerTable) stack.unwrap(PeerTable.class);
             factory = manager.getSessionFactory();
-            slc = manager.getSessionReqListeners();
+            // XXX: FT/HA // slc = manager.getSessionReqListeners();
           }
           catch (Exception e) {
             logger.debug("Error initialising for message send", e);
@@ -200,7 +228,8 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
             else {
               String avpSessionId = message.getSessionId();
               if (avpSessionId != null) {
-                NetworkReqListener sessionListener = slc.get(avpSessionId);
+                // XXX: FT/HA // NetworkReqListener sessionListener = slc.get(avpSessionId);
+                NetworkReqListener sessionListener = (NetworkReqListener) sessionDataSource.getSessionListener(avpSessionId);
                 if (sessionListener != null) {
                   answer = (IMessage) sessionListener.processRequest(message);
                 }
@@ -217,7 +246,6 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
                 }
               }
             }
-
           }
           else {
             logger.debug("Can not find handler {} for message {}", message.getSingleApplicationId(), message);

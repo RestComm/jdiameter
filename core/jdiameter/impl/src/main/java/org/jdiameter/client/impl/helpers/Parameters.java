@@ -307,6 +307,16 @@ public class Parameters extends Ordinal {
     public static final Parameters ConcurrentEntityPoolSize = new Parameters("ConcurrentEntityPoolSize", Integer.class, 4);
     
     /**
+     * Session Datasource class name
+     */
+    public static final Parameters SessionDatasource = new Parameters("SessionDatasource", String.class, "org.jdiameter.common.impl.data.LocalDataSource");
+
+    /**
+     * Timer Facility class name
+     */
+    public static final Parameters TimerFacility = new Parameters("TimerFacility", String.class, "org.jdiameter.common.impl.timer.LocalTimerFacilityImpl");
+
+    /**
      * Return all parameters as iterator
      * 
      * @return all parameters as iterator

@@ -1,7 +1,27 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2010, Red Hat Middleware LLC, and individual contributors
+ * as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
 package org.jdiameter.client.impl.app.sh;
 
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.io.Serializable;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -23,13 +43,17 @@ import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.api.sh.ClientShSession;
 import org.jdiameter.api.sh.ClientShSessionListener;
+import org.jdiameter.api.sh.ServerShSession;
 import org.jdiameter.api.sh.events.ProfileUpdateRequest;
 import org.jdiameter.api.sh.events.PushNotificationAnswer;
 import org.jdiameter.api.sh.events.PushNotificationRequest;
 import org.jdiameter.api.sh.events.SubscribeNotificationsRequest;
 import org.jdiameter.api.sh.events.UserDataRequest;
+import org.jdiameter.client.api.IContainer;
+import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.sh.IShMessageFactory;
+import org.jdiameter.common.api.app.sh.IShSessionFactory;
 import org.jdiameter.common.api.app.sh.ShSessionState;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
@@ -50,8 +74,6 @@ import org.slf4j.LoggerFactory;
  * If ShSession moves to ShSessionState.TERMINATED - it means that no further
  * messages can be received via it and it should be discarded. <br>
  * <br>
- * Super project: mobicents-jainslee-server <br>
- * 10:53:02 2008-09-05 <br>
  * 
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
@@ -68,12 +90,13 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
   protected Lock sendAndStateLock = new ReentrantLock();
 
   // Factories and Listeners --------------------------------------------------
-  protected IShMessageFactory factory = null;
-  protected ClientShSessionListener listener;
+  protected transient IShMessageFactory factory = null;
+  protected transient ClientShSessionListener listener;
 
   // Subscription Timer -------------------------------------------------------
-  protected ScheduledFuture sft = null;
-
+  //protected ScheduledFuture sft = null;
+  protected Serializable timerId_sft;
+  protected static final String _TIMER_NAME_SFT= "SFT";
   protected long appId = -1;
   protected String destHost, destRealm;
 
@@ -82,7 +105,7 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
   }
 
   public ShClientSessionImpl(String sessionId, IShMessageFactory fct, SessionFactory sf, ClientShSessionListener lst) {
-    super(sf);
+    super(sf,sessionId);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
@@ -92,18 +115,18 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
     appId = fct.getApplicationId();
     listener = lst;
     factory = fct;
-    try {
-      if (sessionId == null) {
-        session = sf.getNewSession();
-      }
-      else {
-        session = sf.getNewSession(sessionId);
-      }
-      session.setRequestListener(this);
-    }
-    catch (InternalException e) {
-      throw new IllegalArgumentException(e);
-    }
+    //    try {
+    //      if (sessionId == null) {
+    //        session = sf.getNewSession();
+    //      }
+    //      else {
+    //        session = sf.getNewSession(sessionId);
+    //      }
+    //      session.setRequestListener(this);
+    //    }
+    //    catch (InternalException e) {
+    //      throw new IllegalArgumentException(e);
+    //    }
   }
 
   public Answer processRequest(Request request) {
@@ -114,6 +137,7 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
     return null;
   }
 
+  @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> stateType) {
     return stateType == ShSessionState.class ? (E) state : null;
   }
@@ -235,22 +259,24 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
       if (resultCode >= 2000 && resultCode < 3000) {
         long expiryTime = extractExpiryTime(answer.getMessage());
         if (expiryTime >= 0) {
-          if (this.sft != null) {
-            this.sft.cancel(true);
-          }
-          this.sft = scheduler.schedule(new Runnable() {
-            public void run() {
-              try {
-                sendAndStateLock.lock();
-                if (state != ShSessionState.TERMINATED) {
-                  setState(ShSessionState.TERMINATED);
-                }
-              }
-              finally {
-                sendAndStateLock.unlock();
-              }
-            }
-          }, expiryTime, TimeUnit.SECONDS);
+          //          if (this.sft != null) {
+          //            this.sft.cancel(true);
+          //          }
+          stopSftTimer();
+          startSftTimer(expiryTime);
+          //          this.sft = scheduler.schedule(new Runnable() {
+          //            public void run() {
+          //              try {
+          //                sendAndStateLock.lock();
+          //                if (state != ShSessionState.TERMINATED) {
+          //                  setState(ShSessionState.TERMINATED);
+          //                }
+          //              }
+          //              finally {
+          //                sendAndStateLock.unlock();
+          //              }
+          //            }
+          //          }, expiryTime, TimeUnit.SECONDS);
         }
         newState = ShSessionState.SUBSCRIBED;
       }
@@ -350,20 +376,76 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
     setState(newState, true);
   }
 
+  @SuppressWarnings("unchecked")
   protected void setState(ShSessionState newState, boolean release) {
     IAppSessionState oldState = state;
     state = newState;
+    super.sessionDataSource.updateSession(this);
     for (StateChangeListener i : stateListeners) {
-      i.stateChanged((Enum) oldState, (Enum) newState);
+      i.stateChanged(this,(Enum) oldState, (Enum) newState);
     }
+
     if (newState == ShSessionState.TERMINATED) {
       if (release) {
         this.release();
       }
-      if (sft != null) {
-        sft.cancel(true);
-        sft = null;
+      //      if (sft != null) {
+      //        sft.cancel(true);
+      //        sft = null;
+      //      }
+
+      stopSftTimer();
+    }
+  }
+
+  protected void stopSftTimer() {
+    try {
+      sendAndStateLock.lock();
+      if (this.timerId_sft != null) {
+        super.timerFacility.cancel(timerId_sft);
+        this.timerId_sft = null;
+        super.sessionDataSource.updateSession(this);
       }
+    }
+    finally {
+      sendAndStateLock.unlock();
+    }
+  }
+
+  protected void startSftTimer(long time) {
+    try {
+      sendAndStateLock.lock();
+      this.timerId_sft = this.timerFacility.schedule(super.sessionId, _TIMER_NAME_SFT, time);
+      super.sessionDataSource.updateSession(this);
+    }
+    finally {
+      sendAndStateLock.unlock();
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see org.jdiameter.common.impl.app.AppSessionImpl#onTimer(java.lang.String)
+   */
+  @Override
+  public void onTimer(String timerName) {
+    if (timerName.equals(_TIMER_NAME_SFT)) {
+
+      try {
+        sendAndStateLock.lock();
+        timerId_sft = null;
+        if (state != ShSessionState.TERMINATED) {
+          setState(ShSessionState.TERMINATED);
+        }
+        else {
+          super.sessionDataSource.updateSession(this);
+        }
+      }
+      finally {
+        sendAndStateLock.unlock();
+      }
+    }
+    else {
+      super.onTimer(timerName);
     }
   }
 
@@ -380,6 +462,7 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
     return -1;
   }
 
+  @SuppressWarnings("unchecked")
   public void release() {
     try {
       sendAndStateLock.lock();
@@ -406,6 +489,22 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
     }
     finally {
       sendAndStateLock.unlock();
+    }
+  }
+  /* (non-Javadoc)
+   * @see org.jdiameter.common.impl.app.AppSessionImpl#isReplicable()
+   */
+  @Override
+  public boolean isReplicable() {
+    return true;
+  }
+  @Override
+  public void relink(IContainer stack) {
+    if (super.sf == null) {
+      super.relink(stack);
+      IShSessionFactory fct = (IShSessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(ServerShSession.class);
+      this.listener = fct.getClientShSessionListener();
+      this.factory = fct.getMessageFactory();
     }
   }
 

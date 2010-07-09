@@ -1,14 +1,25 @@
-package org.jdiameter.client.impl.controller;
-
 /*
- * Copyright (c) 2006 jDiameter.
- * https://jdiameter.dev.java.net/
- *
- * License: GPL v3
- *
- * e-mail: erick.svenson@yahoo.com
- *
+ * JBoss, Home of Professional Open Source
+ * Copyright 2010, Red Hat Middleware LLC, and individual contributors
+ * as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
  */
+package org.jdiameter.client.impl.controller;
 
 import static org.jdiameter.client.impl.helpers.Parameters.PeerIp;
 import static org.jdiameter.client.impl.helpers.Parameters.PeerLocalPortRange;
@@ -23,10 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.jdiameter.api.Avp;
@@ -40,6 +48,7 @@ import org.jdiameter.api.Peer;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.URI;
 import org.jdiameter.client.api.IAssembler;
+import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IMetaData;
 import org.jdiameter.client.api.controller.IPeer;
@@ -51,33 +60,22 @@ import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.api.router.IRouter;
 import org.jdiameter.client.impl.helpers.Parameters;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
+import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.api.statistic.IStatistic;
 import org.jdiameter.common.api.statistic.IStatisticFactory;
 import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * @author erick.svenson@yahoo.com
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ */
 public class PeerTableImpl implements IPeerTable {
 
   private static final Logger logger = LoggerFactory.getLogger(PeerTableImpl.class);
-  
-//  /**
-//   * determines core pool size, those threads are always there, so if there is no traffic stack wont take much time to act.
-//   */
-//  private static final int _THREAD_POOL_CORE_SIZE = 1;
-//  /**
-//   * determines in seconds keep alive time for thread in pool.
-//   */
-//  private static final int _THREAD_POOL_KEEP_ALIVE_TIME = 60;
-//  /**
-//   * determines how many thread pool can have.
-//   */
-//  protected int maximumThreadPoolSize = 5;
-//  /**
-//   * determines thread priority for executor.
-//   */
-//  protected int threadPoolPriority = Thread.NORM_PRIORITY;
-//  protected ThreadFactory threadFactory;
 
   // Peer table
   protected ConcurrentHashMap<URI, Peer> peerTable = new ConcurrentHashMap<URI, Peer>();
@@ -87,38 +85,27 @@ public class PeerTableImpl implements IPeerTable {
   protected IRouter router;
   protected MetaData metaData;
   protected IConcurrentFactory concurrentFactory;
-  protected ConcurrentHashMap<String, NetworkReqListener> sessionReqListeners = new ConcurrentHashMap<String, NetworkReqListener>();
+  // XXX: FT/HA // protected ConcurrentHashMap<String, NetworkReqListener> sessionReqListeners = new ConcurrentHashMap<String, NetworkReqListener>();
+  protected ISessionDatasource sessionDatasource;
 
   protected PeerTableImpl() {
   }
 
-  public PeerTableImpl(Configuration globalConfig, MetaData metaData, IRouter router, IFsmFactory fsmFactory,
+  public PeerTableImpl(Configuration globalConfig, MetaData metaData, IContainer stack,IRouter router, IFsmFactory fsmFactory,
       ITransportLayerFactory transportFactory, IStatisticFactory statisticFactory,
       IConcurrentFactory concurrentFactory, IMessageParser parser) {
-    init(router, globalConfig, metaData, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser);
+    init(stack,router, globalConfig, metaData, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser);
   }
 
-  protected void init(IRouter router, Configuration globalConfig, MetaData metaData, IFsmFactory fsmFactory,
+  protected void init( IContainer stack,IRouter router, Configuration globalConfig, MetaData metaData, IFsmFactory fsmFactory,
       ITransportLayerFactory transportFactory, IStatisticFactory statisticFactory,
       IConcurrentFactory concurrentFactory, IMessageParser parser) {
     this.router = router;
     this.metaData = metaData;
     this.concurrentFactory = concurrentFactory;
     this.stopTimeOut = globalConfig.getLongValue(StopTimeOut.ordinal(), (Long) StopTimeOut.defValue());
+    this.sessionDatasource = stack.getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
 
-//    // Mobicents jDiameter Thread Pool Configuration
-//    Configuration[] threadPoolConf = globalConfig.getChildren(Parameters.ThreadPool.ordinal());
-//    if(threadPoolConf != null && threadPoolConf.length > 0) {
-//    	Configuration tpc = threadPoolConf[0];
-//    	this.maximumThreadPoolSize = tpc.getIntValue(Parameters.ThreadPoolSize.ordinal(), (Integer)Parameters.ThreadPoolSize.defValue());
-//    	this.threadPoolPriority = tpc.getIntValue(Parameters.ThreadPoolPriority.ordinal(), (Integer)Parameters.ThreadPoolPriority.defValue());
-//    }
-//    
-//    this.threadFactory = new PeerTableThreadFactory(this.threadPoolPriority);
-    //this.peerTaskExecutor = Executors.newCachedThreadPool();
-    
-    // XXX: WHAT ABOUT THIS????
-    //this.peerTaskExecutor = new ThreadPoolExecutor(_THREAD_POOL_CORE_SIZE, this.maximumThreadPoolSize, _THREAD_POOL_KEEP_ALIVE_TIME, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), this.threadFactory);
 
     Configuration[] peers = globalConfig.getChildren(Parameters.PeerTable.ordinal());
     if (peers != null && peers.length > 0) {
@@ -138,7 +125,7 @@ public class PeerTableImpl implements IPeerTable {
             }
           }
           catch (Exception e) {
-               logger.warn("Can not create peer {} due to {}", uri, e);
+            logger.warn("Can not create peer {} due to {}", uri, e);
           }
         }
       }
@@ -147,8 +134,8 @@ public class PeerTableImpl implements IPeerTable {
 
   protected Peer createPeer(int rating, String uri, String ip, String portRange, MetaData metaData, Configuration config, Configuration peerConfig, 
       IFsmFactory fsmFactory, ITransportLayerFactory transportFactory, IStatisticFactory statisticFactory, IConcurrentFactory concurrentFactory, IMessageParser parser)  
-      throws InternalException, TransportException, URISyntaxException, UnknownServiceException {
-    return new PeerImpl(this, rating, new URI(uri), ip, portRange, metaData.unwrap(IMetaData.class), config,
+  throws InternalException, TransportException, URISyntaxException, UnknownServiceException {
+    return new PeerImpl(this,this.sessionDatasource, rating, new URI(uri), ip, portRange, metaData.unwrap(IMetaData.class), config,
         peerConfig, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser);
   }
 
@@ -174,12 +161,12 @@ public class PeerTableImpl implements IPeerTable {
           message.getAvps().getAvp(Avp.DESTINATION_HOST) != null ? message.getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString() : "",
               message.getAvps().getAvp(Avp.DESTINATION_REALM) != null ? message.getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString() : ""}
       );
-      
+
       // Check local request
       peer = router.getPeer(message, this);
       logger.debug( "Selected peer {} for sending message {}", new Object[] {peer, message});
       if (peer == metaData.getLocalPeer()) {
-    	  logger.debug("Request {} will be processed by local service", message);
+        logger.debug("Request {} will be processed by local service", message);
       }
       else {
         message.setHopByHopIdentifier(peer.getHopByHopIdentifier());
@@ -205,38 +192,40 @@ public class PeerTableImpl implements IPeerTable {
       else {
         if (message.isRequest()) {
           peer.getStatistic().getRecordByName(IStatistic.Counters.AppGenRequest.name()).inc();
-          }
+        }
         else {
           peer.getStatistic().getRecordByName(IStatistic.Counters.AppGenResponse.name()).inc();
         }
       }
     }catch(JAvpNotAllowedException j)
     {
-    	throw j;
+      throw j;
     }
     catch (Exception e) {
-        logger.error("Can not send message", e);
-        if (message.isRequest()) {
-          peer.getStatistic().getRecordByName(IStatistic.Counters.AppGenRejectedRequest.name()).inc();
-        }
-        else {
-          peer.getStatistic().getRecordByName(IStatistic.Counters.AppGenRejectedResponse.name()).inc();
-        }
+      logger.error("Can not send message", e);
+      if (message.isRequest()) {
+        peer.getStatistic().getRecordByName(IStatistic.Counters.AppGenRejectedRequest.name()).inc();
+      }
+      else {
+        peer.getStatistic().getRecordByName(IStatistic.Counters.AppGenRejectedResponse.name()).inc();
+      }
       throw new IOException(e.getMessage());
     }
   }
 
   public void addSessionReqListener(String sessionId, NetworkReqListener listener) {
-    sessionReqListeners.put(sessionId, listener);
+    // XXX: FT/HA // sessionReqListeners.put(sessionId, listener);
+    sessionDatasource.setSessionListener(sessionId, listener);
   }
 
   public Map<String, NetworkReqListener> getSessionReqListeners() {
-    return sessionReqListeners;
+    // XXX: FT/HA // return sessionReqListeners;
+    return null;
   }
 
   public IPeer getPeerByName(String peerName) {
     for (Peer p : peerTable.values()) {
-      if (p.getUri().getFQDN().equals(peerName)) {
+      if (p.getUri().toString().equals(peerName) || p.getUri().getFQDN().equals(peerName)) {
         return (IPeer) p;
       }
     }
@@ -260,7 +249,8 @@ public class PeerTableImpl implements IPeerTable {
   }
 
   public void removeSessionListener(String sessionId) {
-    sessionReqListeners.remove(sessionId);
+    // XXX: FT/HA // sessionReqListeners.remove(sessionId);
+    sessionDatasource.removeSessionListener(sessionId);
   }
 
   public void setAssembler(IAssembler assembler) {
@@ -282,9 +272,9 @@ public class PeerTableImpl implements IPeerTable {
   }
 
   public void stopped() {
-    if (sessionReqListeners != null) {
-      sessionReqListeners.clear();
-    }
+    // XXX: FT/HA // if (sessionReqListeners != null) {
+    // XXX: FT/HA // sessionReqListeners.clear();
+    // XXX: FT/HA // }
     for (Peer p : peerTable.values()) {
       for (IMessage m : ((IPeer) p).remAllMessage()) {
         try {
@@ -299,7 +289,8 @@ public class PeerTableImpl implements IPeerTable {
       try {
         concurrentFactory.getThreadGroup().interrupt();
         concurrentFactory.getThreadGroup().destroy();
-      } catch (Exception e) {
+      }
+      catch (Exception e) {
         logger.warn("Can not stop executor");
       }
     }
@@ -335,28 +326,23 @@ public class PeerTableImpl implements IPeerTable {
   public <T> T unwrap(Class<T> aClass) throws InternalException {
     return null; 
   }
-  
+
   protected class PeerTableThreadFactory implements ThreadFactory {
 
-	    public final AtomicLong sequence = new AtomicLong(0);
-	    private int priority = Thread.NORM_PRIORITY;
-	    private ThreadGroup factoryThreadGroup = new ThreadGroup("JDiameterThreadGroup[" + sequence.incrementAndGet() + "]");
+    public final AtomicLong sequence = new AtomicLong(0);
+    private int priority = Thread.NORM_PRIORITY;
+    private ThreadGroup factoryThreadGroup = new ThreadGroup("JDiameterThreadGroup[" + sequence.incrementAndGet() + "]");
 
-	    
-	    
-	    public PeerTableThreadFactory(int priority) {
-			super();
-			this.priority = priority;
-		}
+    public PeerTableThreadFactory(int priority) {
+      super();
+      this.priority = priority;
+    }
 
-
-
-		public Thread newThread(Runnable r) {
-	        Thread t = new Thread(this.factoryThreadGroup, r);
-	        t.setPriority(this.priority);
-	        // ??
-	        //t.start();
-	        return t;
-	    }
+    public Thread newThread(Runnable r) {
+      Thread t = new Thread(this.factoryThreadGroup, r);
+      t.setPriority(this.priority);
+      // TODO ? t.start(); 
+      return t;
+    }
   }
 }
