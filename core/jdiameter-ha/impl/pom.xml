@@ -1,0 +1,49 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.mobicents.servers.diameter</groupId>
+		<artifactId>jdiameter-ha-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>jdiameter-ha-impl</artifactId>
+	<name>Mobicents :: Diameter Stack HA :: ${pom.artifactId}</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>${pom.groupId}</groupId>
+			<artifactId>jdiameter-ha-api</artifactId>
+			<version>${pom.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${pom.groupId}</groupId>
+			<artifactId>jdiameter-impl</artifactId>
+			<version>${jdiameter.version}</version>
+		</dependency>
+		
+		<!--  cache  -->
+		<dependency>
+			<groupId>org.jboss.logging</groupId>
+			<artifactId>jboss-logging-log4j</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		
+		<!-- clustering deps -->
+		<dependency>
+			<groupId>org.jboss.cache</groupId>
+			<artifactId>jbosscache-core</artifactId>
+			<scope>provided</scope>
+		</dependency>	
+		
+		<dependency>
+			<groupId>org.jboss.cluster</groupId>
+			<artifactId>jboss-ha-server-cache-jbc</artifactId>
+		</dependency>
+		<dependency>
+				<groupId>org.mobicents.cluster</groupId>
+				<artifactId>timers</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>
