@@ -60,7 +60,7 @@
   <define entity="traffic-param" name="select-timeout-ms" value="50"></define>
 
 
-  <define entity="traffic-param" name="number-calls" value="100000"></define>
+  <!--define entity="traffic-param" name="number-calls" value="1"></define-->
 
 
 

@@ -23,6 +23,7 @@ import net.java.slee.resource.diameter.sh.events.SubscribeNotificationsAnswer;
 import net.java.slee.resource.diameter.sh.events.UserDataAnswer;
 import net.java.slee.resource.diameter.sh.events.avp.DiameterShAvpCodes;
 
+import org.jdiameter.api.Session;
 import org.jdiameter.api.Stack;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
 import org.junit.Test;
@@ -72,10 +73,19 @@ public class ShServerFactoriesTest {
       throw new RuntimeException("Failed to initialize the stack.");
     }
     
+    Session session = null;
+    try {
+      session = stack.getSessionFactory().getNewSession();
+    }
+    catch (Exception e) {
+      // let's go with null
+      e.printStackTrace();
+    }
+    
     DiameterMessageFactoryImpl baseMessageFactory = new DiameterMessageFactoryImpl(stack);
     shAvpFactory = new DiameterShAvpFactoryImpl(new DiameterAvpFactoryImpl());
-    shServerFactory = new ShServerMessageFactoryImpl(baseMessageFactory, null, stack, shAvpFactory);
-    shClientFactory = new ShClientMessageFactoryImpl(stack);
+    shServerFactory = new ShServerMessageFactoryImpl(baseMessageFactory, session, stack, shAvpFactory);
+    shClientFactory = new ShClientMessageFactoryImpl(session, stack);
   }
   
   @Test

@@ -86,6 +86,7 @@ import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.Stack;
 import org.jdiameter.api.acc.ClientAccSession;
 import org.jdiameter.api.acc.ServerAccSession;
+import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.auth.ClientAuthSession;
 import org.jdiameter.api.auth.ServerAuthSession;
 import org.jdiameter.client.api.ISessionFactory;
@@ -1599,4 +1600,7 @@ public class RfFactoriesTest implements BaseSessionCreationListener {
     return new ApplicationId[]{ApplicationId.createByAccAppId(0L, 3L)};
   }
 
+  public void stateChanged(AppSession source, Enum oldState, Enum newState) {
+    // TODO Auto-generated method stub
+  }
 }

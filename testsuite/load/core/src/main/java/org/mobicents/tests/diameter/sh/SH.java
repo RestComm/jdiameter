@@ -1,6 +1,5 @@
 package org.mobicents.tests.diameter.sh;
 
-
 import java.io.InputStream;
 
 import org.apache.log4j.Level;
@@ -39,6 +38,7 @@ import org.jdiameter.common.impl.app.sh.ProfileUpdateAnswerImpl;
 import org.jdiameter.common.impl.app.sh.ProfileUpdateRequestImpl;
 import org.jdiameter.common.impl.app.sh.PushNotificationAnswerImpl;
 import org.jdiameter.common.impl.app.sh.PushNotificationRequestImpl;
+import org.jdiameter.common.impl.app.sh.ShSessionFactoryImpl;
 import org.jdiameter.common.impl.app.sh.SubscribeNotificationsAnswerImpl;
 import org.jdiameter.common.impl.app.sh.SubscribeNotificationsRequestImpl;
 import org.jdiameter.common.impl.app.sh.UserDataAnswerImpl;
@@ -46,10 +46,11 @@ import org.jdiameter.common.impl.app.sh.UserDataRequestImpl;
 import org.jdiameter.server.impl.app.sh.ShServerSessionImpl;
 import org.mobicents.tests.diameter.AbstractStackRunner;
 
-public class SH extends AbstractStackRunner implements IAppSessionFactory, ServerShSessionListener, ClientShSessionListener, StateChangeListener,
-		IShMessageFactory {
+public class SH extends AbstractStackRunner implements ServerShSessionListener, ClientShSessionListener,
+		StateChangeListener<AppSession>, IShMessageFactory {
 
 	private ApplicationId shAuthApplicationId = ApplicationId.createByAuthAppId(10415, 16777217);
+	private ShSessionFactoryImpl shSessionFactory;
 
 	public SH() {
 		super();
@@ -61,10 +62,14 @@ public class SH extends AbstractStackRunner implements IAppSessionFactory, Serve
 		// TODO Auto-generated method stub
 		super.configure(f);
 
+		this.shSessionFactory = new ShSessionFactoryImpl(super.factory);
+		this.shSessionFactory.setClientShSessionListener(this);
+		this.shSessionFactory.setServerShSessionListener(this);
+
 		Network network = stack.unwrap(Network.class);
 		network.addNetworkReqListener(this, shAuthApplicationId);
-		((ISessionFactory) super.factory).registerAppFacory(ServerShSession.class, this);
-		((ISessionFactory) super.factory).registerAppFacory(ClientShSession.class, this);
+		((ISessionFactory) super.factory).registerAppFacory(ServerShSession.class, this.shSessionFactory);
+		((ISessionFactory) super.factory).registerAppFacory(ClientShSession.class, this.shSessionFactory);
 	}
 
 	public Answer processRequest(Request request) {
@@ -73,16 +78,17 @@ public class SH extends AbstractStackRunner implements IAppSessionFactory, Serve
 		if (commandCode != 308 && commandCode != 306 && commandCode != 309) {
 			if (log.isEnabledFor(Level.ERROR)) {
 				log.error("Received command with wrong code: " + commandCode);
-				super.dumpMessage(request,false);
+				super.dumpMessage(request, false);
 			}
 			return null;
 		}
 
 		if (commandCode == 308 || commandCode == 306) {
 			try {
-				ShServerSessionImpl session = ((ISessionFactory) super.factory).getNewAppSession(request.getSessionId(), shAuthApplicationId,
-						ServerShSession.class, null);
+				ShServerSessionImpl session = ((ISessionFactory) super.factory).getNewAppSession(request.getSessionId(),
+						shAuthApplicationId, ServerShSession.class, null);
 				// session.
+				session.addStateChangeNotification(this);
 				session.processRequest(request);
 			} catch (InternalException e) {
 				// TODO Auto-generated catch block
@@ -90,10 +96,11 @@ public class SH extends AbstractStackRunner implements IAppSessionFactory, Serve
 			}
 		} else {
 			try {
-				ShClientSessionImpl session = ((ISessionFactory) super.factory).getNewAppSession(request.getSessionId(), shAuthApplicationId,
-						ClientShSession.class, null);
+				ShClientSessionImpl session = ((ISessionFactory) super.factory).getNewAppSession(request.getSessionId(),
+						shAuthApplicationId, ClientShSession.class, null);
 				// session.
 				session.processRequest(request);
+				session.addStateChangeNotification(this);
 			} catch (InternalException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -104,56 +111,31 @@ public class SH extends AbstractStackRunner implements IAppSessionFactory, Serve
 	}
 
 	public void receivedSuccessMessage(Request arg0, Answer arg1) {
-		//we should not do that
-		if(super.log.isEnabledFor(Level.ERROR))
-		{
+		// we should not do that
+		if (super.log.isEnabledFor(Level.ERROR)) {
 			super.log.error("Received answer");
-			dumpMessage(arg1,false);
+			dumpMessage(arg1, false);
 			new Exception().printStackTrace();
 		}
-		
+
 	}
 
 	public void timeoutExpired(Request arg0) {
-		if(super.log.isInfoEnabled())
-		{
+		if (super.log.isInfoEnabled()) {
 			super.log.info("Timeout expired");
-			dumpMessage(arg0,true);
-		}
-		
-	}
-
-	public AppSession getNewSession(String sessionId, Class<? extends AppSession> aClass, ApplicationId arg2, Object[] arg3) {
-		if (aClass == ServerShSession.class) {
-			ShServerSessionImpl serverSession = null;
-
-			// This shouldnt happen but just in case
-
-			serverSession = new ShServerSessionImpl(sessionId, this, super.factory, this);
-			serverSession.addStateChangeNotification(this);
-
-			return serverSession;
-		} else if (aClass == ClientShSession.class) {
-
-			ShClientSessionImpl clientSession = null;
-			clientSession = new ShClientSessionImpl(sessionId, this, super.factory, this);
-
-			clientSession.addStateChangeNotification(this);
-			return clientSession;
-		} else {
-			throw new RuntimeException("Wrong app session class: " + aClass);
+			dumpMessage(arg0, true);
 		}
 
 	}
 
-	public void doOtherEvent(AppSession arg0, AppRequestEvent arg1, AppAnswerEvent arg2) throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
+	public void doOtherEvent(AppSession arg0, AppRequestEvent arg1, AppAnswerEvent arg2) throws InternalException,
+			IllegalDiameterStateException, RouteException, OverloadException {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void doProfileUpdateRequestEvent(ServerShSession arg0, ProfileUpdateRequest arg1) throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
+	public void doProfileUpdateRequestEvent(ServerShSession arg0, ProfileUpdateRequest arg1) throws InternalException,
+			IllegalDiameterStateException, RouteException, OverloadException {
 		// TODO Auto-generated method stub
 
 	}
@@ -163,12 +145,12 @@ public class SH extends AbstractStackRunner implements IAppSessionFactory, Serve
 
 		if (log.isEnabledFor(Level.DEBUG)) {
 			log.error("Received PNA");
-			super.dumpMessage(arg1.getMessage(),false);
+			super.dumpMessage(arg1.getMessage(), false);
 		}
 	}
 
-	public void doSubscribeNotificationsRequestEvent(ServerShSession appSession, SubscribeNotificationsRequest request) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
+	public void doSubscribeNotificationsRequestEvent(ServerShSession appSession, SubscribeNotificationsRequest request)
+			throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
 		try {
 
 			// create answer, we will do that always
@@ -180,9 +162,9 @@ public class SH extends AbstractStackRunner implements IAppSessionFactory, Serve
 
 			if (log.isDebugEnabled()) {
 				log.info("Recievend SNR in App Session.");
-				super.dumpMessage(request.getMessage(),false);
+				super.dumpMessage(request.getMessage(), false);
 				log.info("Sending SNA in App Session.");
-				super.dumpMessage(answer,true);
+				super.dumpMessage(answer, true);
 			}
 
 			appSession.sendSubscribeNotificationsAnswer((SubscribeNotificationsAnswer) this.createSubscribeNotificationsAnswer(answer));
@@ -229,8 +211,8 @@ public class SH extends AbstractStackRunner implements IAppSessionFactory, Serve
 		}
 	}
 
-	public void doUserDataRequestEvent(ServerShSession appSession, UserDataRequest request) throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
+	public void doUserDataRequestEvent(ServerShSession appSession, UserDataRequest request) throws InternalException,
+			IllegalDiameterStateException, RouteException, OverloadException {
 		try {
 
 			// create answer, we will do that always
@@ -242,9 +224,9 @@ public class SH extends AbstractStackRunner implements IAppSessionFactory, Serve
 
 			if (log.isDebugEnabled()) {
 				log.info("Recievend UDR in App Session.");
-				super.dumpMessage(request.getMessage(),false);
+				super.dumpMessage(request.getMessage(), false);
 				log.info("Sending UDA in App Session.");
-				super.dumpMessage(answer,true);
+				super.dumpMessage(answer, true);
 			}
 
 			appSession.sendUserDataAnswer((UserDataAnswer) this.createUserDataAnswer(answer));
@@ -258,8 +240,8 @@ public class SH extends AbstractStackRunner implements IAppSessionFactory, Serve
 	// //////////////////
 	// Client methods //
 	// //////////////////
-	public void doProfileUpdateAnswerEvent(ClientShSession arg0, ProfileUpdateRequest arg1, ProfileUpdateAnswer arg2) throws InternalException,
-			IllegalDiameterStateException, RouteException, OverloadException {
+	public void doProfileUpdateAnswerEvent(ClientShSession arg0, ProfileUpdateRequest arg1, ProfileUpdateAnswer arg2)
+			throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
 		// TODO Auto-generated method stub
 
 	}
@@ -277,9 +259,9 @@ public class SH extends AbstractStackRunner implements IAppSessionFactory, Serve
 
 			if (log.isDebugEnabled()) {
 				log.info("Recievend PNR in App Session.");
-				super.dumpMessage(request.getMessage(),false);
+				super.dumpMessage(request.getMessage(), false);
 				log.info("Sending PNA in App Session.");
-				super.dumpMessage(answer,true);
+				super.dumpMessage(answer, true);
 			}
 
 			appSession.sendPushNotificationAnswer((PushNotificationAnswer) this.createPushNotificationAnswer(answer));
@@ -289,8 +271,8 @@ public class SH extends AbstractStackRunner implements IAppSessionFactory, Serve
 		}
 	}
 
-	public void doSubscribeNotificationsAnswerEvent(ClientShSession arg0, SubscribeNotificationsRequest arg1, SubscribeNotificationsAnswer arg2)
-			throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+	public void doSubscribeNotificationsAnswerEvent(ClientShSession arg0, SubscribeNotificationsRequest arg1,
+			SubscribeNotificationsAnswer arg2) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
 		// TODO Auto-generated method stub
 
 	}
@@ -307,6 +289,10 @@ public class SH extends AbstractStackRunner implements IAppSessionFactory, Serve
 
 		}
 
+	}
+
+	public void stateChanged(AppSession source, Enum arg0, Enum arg1) {
+		this.stateChanged(arg0, arg1);
 	}
 
 	public AppAnswerEvent createProfileUpdateAnswer(Answer answer) {

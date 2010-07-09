@@ -26,6 +26,7 @@ import net.java.slee.resource.diameter.sh.events.PushNotificationAnswer;
 import net.java.slee.resource.diameter.sh.events.SubscribeNotificationsRequest;
 import net.java.slee.resource.diameter.sh.events.UserDataRequest;
 
+import org.jdiameter.api.Session;
 import org.jdiameter.api.Stack;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
 import org.junit.Assert;
@@ -78,10 +79,18 @@ public class ShClientFactoriesTest {
     }
 
     DiameterMessageFactoryImpl baseMessageFactory = new DiameterMessageFactoryImpl(stack);
+    Session session = null;
     
+    try {
+      session = stack.getSessionFactory().getNewSession();
+    }
+    catch (Exception e) {
+      // let's go with null
+      e.printStackTrace();
+    }
     shClientFactory = new ShClientMessageFactoryImpl(stack);
-    shServerFactory = new ShServerMessageFactoryImpl(baseMessageFactory, null, stack, shAvpFactory);
     shAvpFactory = new DiameterShAvpFactoryImpl(new DiameterAvpFactoryImpl());
+    shServerFactory = new ShServerMessageFactoryImpl(baseMessageFactory, session, stack, shAvpFactory);
   }
 
   @Test

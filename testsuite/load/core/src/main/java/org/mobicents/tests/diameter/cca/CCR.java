@@ -1,6 +1,5 @@
 package org.mobicents.tests.diameter.cca;
 
-
 import java.io.InputStream;
 import java.util.concurrent.ScheduledFuture;
 
@@ -36,16 +35,17 @@ import org.jdiameter.common.api.app.IAppSessionFactory;
 import org.jdiameter.common.api.app.cca.ICCAMessageFactory;
 import org.jdiameter.common.api.app.cca.IClientCCASessionContext;
 import org.jdiameter.common.api.app.cca.IServerCCASessionContext;
+import org.jdiameter.common.api.app.cca.ServerCCASessionState;
 import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
 import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
+import org.jdiameter.common.impl.app.cca.CCASessionFactoryImpl;
 import org.jdiameter.common.impl.app.cca.JCreditControlAnswerImpl;
 import org.jdiameter.common.impl.app.cca.JCreditControlRequestImpl;
 import org.jdiameter.server.impl.app.cca.ServerCCASessionImpl;
 import org.mobicents.tests.diameter.AbstractStackRunner;
 
-public class CCR extends AbstractStackRunner implements NetworkReqListener, EventListener<Request, Answer>, IAppSessionFactory,
-		ClientCCASessionListener, ServerCCASessionListener, StateChangeListener, ICCAMessageFactory, IServerCCASessionContext,
-		IClientCCASessionContext {
+public class CCR extends AbstractStackRunner implements NetworkReqListener, EventListener<Request, Answer>, 
+		ServerCCASessionListener, IServerCCASessionContext, StateChangeListener<AppSession> {
 
 	protected boolean isEventBased = true;
 	protected ApplicationId authApplicationId = ApplicationId.createByAuthAppId(0, 4);
@@ -59,6 +59,8 @@ public class CCR extends AbstractStackRunner implements NetworkReqListener, Even
 	protected long defaultValidityTime = 30;
 	protected long defaultTxTimerValue = 10;
 
+	protected CCASessionFactoryImpl ccaSessionFactory;
+
 	public CCR() {
 		super();
 
@@ -68,11 +70,12 @@ public class CCR extends AbstractStackRunner implements NetworkReqListener, Even
 	public void configure(InputStream f) throws Exception {
 		// TODO Auto-generated method stub
 		super.configure(f);
-
-		// we must add ourselves
+		this.ccaSessionFactory = new CCASessionFactoryImpl(super.factory);
+		this.ccaSessionFactory.setServerSessionListener(this);
+		this.ccaSessionFactory.setServerContextListener(this);
 		Network network = stack.unwrap(Network.class);
 		network.addNetworkReqListener(this, authApplicationId);
-		((ISessionFactory) super.factory).registerAppFacory(ServerCCASession.class, this);
+		((ISessionFactory) super.factory).registerAppFacory(ServerCCASession.class, ccaSessionFactory);
 	}
 
 	public void doCreditControlRequest(ServerCCASession session, JCreditControlRequest request) throws InternalException,
@@ -80,8 +83,9 @@ public class CCR extends AbstractStackRunner implements NetworkReqListener, Even
 
 		if (log.isInfoEnabled()) {
 			log.info("Received Request: " + ((Request) request.getMessage()).getCommandCode() + "\nE2E:"
-					+ ((Request) request.getMessage()).getEndToEndIdentifier() + "\nHBH:" + ((Request) request.getMessage()).getHopByHopIdentifier()
-					+ "\nAppID:" + ((Request) request.getMessage()).getApplicationId());
+					+ ((Request) request.getMessage()).getEndToEndIdentifier() + "\nHBH:"
+					+ ((Request) request.getMessage()).getHopByHopIdentifier() + "\nAppID:"
+					+ ((Request) request.getMessage()).getApplicationId());
 			log.info("Request AVPS: \n");
 			try {
 				printAvps(((Request) request.getMessage()).getAvps());
@@ -116,8 +120,9 @@ public class CCR extends AbstractStackRunner implements NetworkReqListener, Even
 
 					if (log.isInfoEnabled()) {
 
-						log.info("Created answer: " + answer.getCommandCode() + "\nE2E:" + answer.getMessage().getEndToEndIdentifier() + "\nHBH:"
-								+ answer.getMessage().getHopByHopIdentifier() + "\nAppID:" + answer.getMessage().getApplicationId());
+						log.info("Created answer: " + answer.getCommandCode() + "\nE2E:" + answer.getMessage().getEndToEndIdentifier()
+								+ "\nHBH:" + answer.getMessage().getHopByHopIdentifier() + "\nAppID:"
+								+ answer.getMessage().getApplicationId());
 						log.info("Answer AVPS: \n");
 						try {
 							printAvps(answer.getMessage().getAvps());
@@ -152,8 +157,9 @@ public class CCR extends AbstractStackRunner implements NetworkReqListener, Even
 				if (answer != null) {
 					if (log.isInfoEnabled()) {
 
-						log.info("Created answer: " + answer.getCommandCode() + "\nE2E:" + answer.getMessage().getEndToEndIdentifier() + "\nHBH:"
-								+ answer.getMessage().getHopByHopIdentifier() + "\nAppID:" + answer.getMessage().getApplicationId());
+						log.info("Created answer: " + answer.getCommandCode() + "\nE2E:" + answer.getMessage().getEndToEndIdentifier()
+								+ "\nHBH:" + answer.getMessage().getHopByHopIdentifier() + "\nAppID:"
+								+ answer.getMessage().getApplicationId());
 						log.info("Answer AVPS: \n");
 						try {
 							printAvps(answer.getMessage().getAvps());
@@ -187,8 +193,9 @@ public class CCR extends AbstractStackRunner implements NetworkReqListener, Even
 				if (answer != null) {
 					if (log.isInfoEnabled()) {
 
-						log.info("Created answer: " + answer.getCommandCode() + "\nE2E:" + answer.getMessage().getEndToEndIdentifier() + "\nHBH:"
-								+ answer.getMessage().getHopByHopIdentifier() + "\nAppID:" + answer.getMessage().getApplicationId());
+						log.info("Created answer: " + answer.getCommandCode() + "\nE2E:" + answer.getMessage().getEndToEndIdentifier()
+								+ "\nHBH:" + answer.getMessage().getHopByHopIdentifier() + "\nAppID:"
+								+ answer.getMessage().getApplicationId());
 						log.info("Answer AVPS: \n");
 						try {
 							printAvps(answer.getMessage().getAvps());
@@ -222,8 +229,9 @@ public class CCR extends AbstractStackRunner implements NetworkReqListener, Even
 				if (answer != null) {
 					if (log.isInfoEnabled()) {
 
-						log.info("Created answer: " + answer.getCommandCode() + "\nE2E:" + answer.getMessage().getEndToEndIdentifier() + "\nHBH:"
-								+ answer.getMessage().getHopByHopIdentifier() + "\nAppID:" + answer.getMessage().getApplicationId());
+						log.info("Created answer: " + answer.getCommandCode() + "\nE2E:" + answer.getMessage().getEndToEndIdentifier()
+								+ "\nHBH:" + answer.getMessage().getHopByHopIdentifier() + "\nAppID:"
+								+ answer.getMessage().getApplicationId());
 						log.info("Answer AVPS: \n");
 						try {
 							printAvps(answer.getMessage().getAvps());
@@ -240,7 +248,7 @@ public class CCR extends AbstractStackRunner implements NetworkReqListener, Even
 			default:
 				if (log.isEnabledFor(Level.ERROR)) {
 
-					log.error("No REQ type present?: "+request.getRequestTypeAVPValue());
+					log.error("No REQ type present?: " + request.getRequestTypeAVPValue());
 
 				}
 			}
@@ -251,55 +259,21 @@ public class CCR extends AbstractStackRunner implements NetworkReqListener, Even
 
 	}
 
-	public AppSession getNewSession(String sessionId, Class<? extends AppSession> aClass, ApplicationId applicationId, Object[] args) {
 
-		AppSession value = null;
-		try {
-			if (aClass == ClientCCASession.class) {
+	/* (non-Javadoc)
+	 * @see org.jdiameter.api.app.StateChangeListener#stateChanged(java.lang.Object, java.lang.Enum, java.lang.Enum)
+	 */
+	public void stateChanged(AppSession source, Enum oldState, Enum newState) {
+		this.stateChanged(oldState, newState);
 
-				ClientCCASessionImpl clientSession = null;
-				if (args != null && args.length > 1 && args[0] instanceof Request) {
-					Request request = (Request) args[0];
-					clientSession = new ClientCCASessionImpl(request.getSessionId(), this, super.factory, this);
-
-				} else {
-					clientSession = new ClientCCASessionImpl(sessionId, this, super.factory, this);
-				}
-
-				clientSession.addStateChangeNotification(this);
-
-				value = clientSession;
-
-			} else if (aClass == ServerCCASession.class) {
-				ServerCCASessionImpl serverSession = null;
-				if (args != null && args.length > 1 && args[0] instanceof Request) {
-					// This shouldnt happen but just in case
-					Request request = (Request) args[0];
-					serverSession = new ServerCCASessionImpl(request.getSessionId(), this, super.factory, this);
-
-				} else {
-					serverSession = new ServerCCASessionImpl(sessionId, this, super.factory, this);
-				}
-				serverSession.addStateChangeNotification(this);
-
-				value = serverSession;
-			} else {
-				throw new IllegalArgumentException("Wrong session class!![" + aClass + "]. Supported[" + ClientCCASession.class + ","
-						+ ServerCCASession.class + "]");
-			}
-
-		} catch (Exception e) {
-			log.error("Failure to obtain new Accounting Session.", e);
-		}
-
-		return value;
 	}
 
 	public void stateChanged(Enum oldState, Enum newState) {
 		if (log.isInfoEnabled()) {
 			log.info("Diameter CCA SessionFactory :: stateChanged :: oldState[" + oldState + "], newState[" + newState + "]");
 		}
-
+		
+		
 	}
 
 	// ////////////////////
@@ -310,16 +284,16 @@ public class CCR extends AbstractStackRunner implements NetworkReqListener, Even
 
 		if (request.getCommandCode() != 272) {
 			if (super.log.isEnabledFor(Level.ERROR)) {
-				//super.log.error("Received non CCR message, discarding: " + toString(request));
-				super.dumpMessage(request,false);
+				// super.log.error("Received non CCR message, discarding: " +
+				// toString(request));
+				super.dumpMessage(request, false);
 			}
 			return null;
 		}
-		
+
 		if (log.isInfoEnabled()) {
-			log.info("===Received=== Request: " + request.getCommandCode() + "\nE2E:"
-					+ request.getEndToEndIdentifier() + "\nHBH:" + request.getHopByHopIdentifier()
-					+ "\nAppID:" + request.getApplicationId());
+			log.info("===Received=== Request: " + request.getCommandCode() + "\nE2E:" + request.getEndToEndIdentifier() + "\nHBH:"
+					+ request.getHopByHopIdentifier() + "\nAppID:" + request.getApplicationId());
 			log.info("Request AVPS: \n");
 			try {
 				printAvps(request.getAvps());
@@ -333,6 +307,7 @@ public class CCR extends AbstractStackRunner implements NetworkReqListener, Even
 			ServerCCASessionImpl session = ((ISessionFactory) super.factory).getNewAppSession(request.getSessionId(), ApplicationId
 					.createByAuthAppId(0, 4), ServerCCASession.class, null);
 			// session.
+			session.addStateChangeNotification(this);
 			session.processRequest(request);
 		} catch (InternalException e) {
 			// TODO Auto-generated catch block
@@ -442,30 +417,26 @@ public class CCR extends AbstractStackRunner implements NetworkReqListener, Even
 
 	}
 
+	public void doCreditControlAnswer(ClientCCASession arg0, JCreditControlRequest arg1, JCreditControlAnswer arg2)
+			throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+		// TODO Auto-generated method stub
 
+	}
 
-	public void doCreditControlAnswer(ClientCCASession arg0, JCreditControlRequest arg1, JCreditControlAnswer arg2) throws InternalException,
+	public void doOtherEvent(AppSession arg0, AppRequestEvent arg1, AppAnswerEvent arg2) throws InternalException,
 			IllegalDiameterStateException, RouteException, OverloadException {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void doOtherEvent(AppSession arg0, AppRequestEvent arg1, AppAnswerEvent arg2) throws InternalException, IllegalDiameterStateException,
+	public void doReAuthRequest(ClientCCASession arg0, ReAuthRequest arg1) throws InternalException, IllegalDiameterStateException,
 			RouteException, OverloadException {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void doReAuthRequest(ClientCCASession arg0, ReAuthRequest arg1) throws InternalException, IllegalDiameterStateException, RouteException,
-			OverloadException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-
-	public void doReAuthAnswer(ServerCCASession arg0, ReAuthRequest arg1, ReAuthAnswer arg2) throws InternalException, IllegalDiameterStateException,
-			RouteException, OverloadException {
+	public void doReAuthAnswer(ServerCCASession arg0, ReAuthRequest arg1, ReAuthAnswer arg2) throws InternalException,
+			IllegalDiameterStateException, RouteException, OverloadException {
 		// TODO Auto-generated method stub
 
 	}

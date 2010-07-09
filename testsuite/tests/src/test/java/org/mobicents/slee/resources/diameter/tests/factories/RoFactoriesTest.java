@@ -123,7 +123,7 @@ public class RoFactoriesTest implements ICCAMessageFactory, ServerCCASessionList
   {
     try
     {
-      session = new ServerCCASessionImpl(null, this, stack.getSessionFactory(), this);
+      session = new ServerCCASessionImpl(this, stack.getSessionFactory(), this, null, null);
       roServerSession = new RoServerSessionActivityImpl((CreditControlMessageFactory) roMessageFactory, roAvpFactory, session, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), null, stack);
       ((RoServerSessionActivityImpl)roServerSession).fetchCurrentState(roMessageFactory.createRoCreditControlRequest());
     }
