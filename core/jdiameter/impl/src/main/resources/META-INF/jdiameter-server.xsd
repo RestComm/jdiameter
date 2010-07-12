@@ -286,11 +286,17 @@
                 <xsi:annotation>
                     <xsi:documentation>Datasource class name to be used for storing Session data.</xsi:documentation>
                 </xsi:annotation>
+                <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:string" use="required"/>
+                </xsi:complexType>
             </xsi:element>
             <xsi:element name="TimerFacility" minOccurs="0" maxOccurs="1">
                 <xsi:annotation>
                     <xsi:documentation>Timer Facility class name to be used for setting timers.</xsi:documentation>
                 </xsi:annotation>
+                <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:string" use="required"/>
+                </xsi:complexType>
             </xsi:element>
             <!--
             <xsi:element name="ThreadPool" minOccurs="1" maxOccurs="1">
