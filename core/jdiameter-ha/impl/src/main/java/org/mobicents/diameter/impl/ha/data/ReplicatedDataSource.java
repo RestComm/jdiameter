@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 public class ReplicatedDataSource implements ISessionDatasource {
 
   private static final Logger logger = LoggerFactory.getLogger(ReplicatedDataSource.class);
-  public static final String CLUSTER_DS_DEFAULT_FILE = "jdiameter-jbc.xml";
+  public static final String CLUSTER_DS_DEFAULT_FILE = "config/jdiameter-jbc.xml";
   private IContainer container;
 
   private ISessionDatasource localDataSource;

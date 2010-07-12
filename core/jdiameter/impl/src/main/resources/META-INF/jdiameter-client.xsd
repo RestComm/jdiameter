@@ -184,7 +184,7 @@
             </xsi:element>
             <xsi:element name="IacTimeOut" minOccurs="1" maxOccurs="1">
                 <xsi:annotation>
-                    <xsi:documentation>Vlue of inactive time in milliseconds.</xsi:documentation>
+                    <xsi:documentation>Value of inactive time in milliseconds.</xsi:documentation>
                 </xsi:annotation>
                 <xsi:complexType>
                    <xsi:attribute name="value" type="xsi:long"/>
@@ -235,6 +235,16 @@
                 </xsi:complexType>
             </xsi:element>
             <xsi:element name="Concurrent" minOccurs="0" maxOccurs="1"/>
+            <xsi:element name="SessionDatasource" minOccurs="0" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Datasource class name to be used for storing Session data.</xsi:documentation>
+                </xsi:annotation>
+            </xsi:element>
+            <xsi:element name="TimerFacility" minOccurs="0" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Timer Facility class name to be used for setting timers.</xsi:documentation>
+                </xsi:annotation>
+            </xsi:element>
         </xsi:sequence>
     </xsi:complexType>
 

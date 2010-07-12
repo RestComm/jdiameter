@@ -44,10 +44,9 @@
       <Entity name="ConnectionTimer" size="1"/>
       <Entity name="StatisticTimer" size="1"/>
     </Concurrent>
-    <!-- To enable clustering uncomment the following lines
-    <SessionDatasource>org.mobicents.diameter.impl.ha.data.ReplicatedData</SessionDatasource>
-    <TimerFacility>org.mobicents.diameter.impl.ha.timer.ReplicatedTimerFacilityImpl</TimerFacility>
-    -->
+    <!-- To enable clustering uncomment the following lines -->
+    <SessionDatasource value="org.mobicents.diameter.impl.ha.data.ReplicatedDataSource"/>
+    <TimerFacility value="org.mobicents.diameter.impl.ha.timer.ReplicatedTimerFacilityImpl"/>
     </Parameters>
 
   <Network>
