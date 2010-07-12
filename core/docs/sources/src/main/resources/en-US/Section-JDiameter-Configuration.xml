@@ -534,9 +534,7 @@
   <locking isolationLevel="REPEATABLE_READ"
     lockParentForChildInsertRemove="false" lockAcquisitionTimeout="20000"
     nodeLockingScheme="mvcc" writeSkewCheck="false" concurrencyLevel="500" />
-  <transaction
-    transactionManagerLookupClass="org.jboss.cache.transaction.JBossTransactionManagerLookup"
-    syncRollbackPhase="false" syncCommitPhase="false" />
+ 
   <jmxStatistics enabled="false" />
   <startup regionsInactiveOnStartup="false" />
   <shutdown hookBehavior="DEFAULT" />
