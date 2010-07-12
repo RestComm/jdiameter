@@ -9,8 +9,8 @@
 	<section id="jdiameter-design_extensibility">
 		<title>&THIS.PLATFORM; Diameter Stack Extensibility</title>
 		<para>
-			&THIS.PLATFORM; Diameter Stack has been designed to be extensible. In order to achieve that, two set of <acronym>API</acronym> are implemented by the stack:
-			One that defines basic contracts between user application and stack. A second which defines contracts allowing for instance to inject custom objects into stack, to perform certain tasks, as <classname>SessionFactory</classname> is an example of, which defines basic methods to create <classname>Sessions</classname>.
+			&THIS.PLATFORM; Diameter Stack has been designed to be extensible. In order to achieve that, two set of <acronym>API</acronym> are defined by the stack:
+			one which defines basic contracts between user application and stack, second which defines contracts allowing for instance to inject custom objects into stack to perform certain tasks( <classname>SessionFactory</classname> for instance).
 			<classname>ISessionFactory</classname> declares additional methods which allow developer to declare custom behaviour (custom application sessions, please refer to <xref linkend="jdiameter-source_overview-session_factory" /> for more detailed information).
 		</para>
 		<figure>
@@ -29,13 +29,16 @@
 
 	<section id="jdiameter-design_model">
 		<title>&THIS.PLATFORM; Diameter Stack Model</title>
-		<para>&THIS.PLATFORM; Diameter Stack operates in a different way than regular stacks. It does not maintain references to handles (sessions) used by application, nor does it maintain state of those handles. It performs the following tasks:</para>
+		<para>&THIS.PLATFORM; Diameter Stack  performs the following tasks:</para>
 		<itemizedlist>
 			<listitem>
 				<para>Manage connections to remote peers</para>
 			</listitem>
 			<listitem>
-				<para>Send messages on behalf of sessions</para>
+				<para>Manage sessions objects</para>
+			</listitem>
+			<listitem>
+				<para>Route messages on behalf of sessions</para>
 			</listitem>
 			<listitem>
 				<para>Receive and deliver messages to assigned listeners (usually session object)</para>
@@ -54,5 +57,69 @@
 				</textobject>
 			</mediaobject>
 		</figure>
+	</section>
+	<section id="jdiameter-app_session_factories">
+		<title>Application session factories</title>
+		<para>Application session factories perform two tasks: </para>
+		<itemizedlist>
+			<listitem>
+				<para>server stack as factory for sessions</para>
+			</listitem>
+			<listitem>
+				<para>server session objects as holders for session related
+					resources, like state change listener, event listeners, context
+				</para>
+			</listitem>
+		</itemizedlist>
+		<para>Generally application session factory and user application relation can be imagined as follows:</para>
+		<figure>
+			<title>&THIS.PLATFORM; Application session factory and user application</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata scalefit="1" width="100%" contentdepth="100%" align="center"
+						fileref="images/DIA_2_x_JD_stack_appsession_1.png" format="PNG" />
+				</imageobject>
+				<textobject>
+					<para>&THIS.PLATFORM; Application session factory and user application</para>
+				</textobject>
+			</mediaobject>
+		</figure>
+		
+		<note>
+			<para>Session context is callback interface defined by some sessions.
+			</para>
+		</note>
+	</section>
+	<section>
+		<title>Session Replication</title>
+		<para>&THIS.PLATFORM; Diameter Stack supports replication of session data and state. Clustered stack instances can perform operations on session regardless of physical location.
+		Logicaly clustered stack can be imagined as follows: 
+		</para>
+		<figure>
+			<title>&THIS.PLATFORM; Diameter Cluster</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata scalefit="1" width="100%" contentdepth="100%" align="center"
+						fileref="images/DIA_2_x_JD_stack_cluster_1.png" format="PNG" />
+				</imageobject>
+				<textobject>
+					<para>&THIS.PLATFORM; Diameter Cluster</para>
+				</textobject>
+			</mediaobject>
+		</figure>
+		<para>Stack replicates only non simple sessions. Thats because simple session do not hold state and can be simply recreated by application. Simple sessions include:</para>
+		<itemizedlist>
+			<listitem>	
+				<para>RawSession</para>
+			</listitem>
+			<listitem>	
+				<para>Session</para>
+			</listitem>
+		</itemizedlist>
+		<para>&THIS.PLATFORM; Diameter Cluster replicates full state of sessions, however it does not replicated resources which are entirely local to stack instance, like session listeners.
+		Local resources references are recreated once session is being preparepared to be uses in stack instance. Listeners(state and events) are fetched from respective session factory instance. See
+		<xref linkend="jdiameter-app_session_factories"/> for more details.
+		</para>
+		
 	</section>
 </section>

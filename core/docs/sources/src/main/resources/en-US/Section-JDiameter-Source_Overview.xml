@@ -257,4 +257,83 @@ public interface RawSession extends BaseSession {
 		RouteException, OverloadException;
 }</programlisting>
 	</section>
+	<section>
+		<title>Application Session Factories</title>
+		<para>In table below you can find session factories provided by current implementatiotion, along with short description:</para>
+		<table frame="all" pgwide="1" id="table-app_session_factories">
+		<title>Application Factories</title>
+		<tgroup cols="3" colsep="1">
+			<colspec colname="c1"/>
+			<colspec colname="c2"/>
+			<colspec colname="c3"/>
+			<thead>
+				<row>
+					<entry>Factory class</entry>
+					<entry>Application type &amp; id</entry>
+					<entry>Application</entry>
+					<entry>Reference</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry>org.jdiameter.common .impl.app.acc. AccSessionFactoryImpl</entry>
+					<entry>AccountingId[0:3]</entry>
+					<entry>Acc</entry>
+					<entry><link linkend="http://tools.ietf.org/html/rfc3588">RFC3588</link>  </entry>
+				</row>
+				<row>
+					<entry>org.jdiameter.common .impl.app.auth. AuthSessionFactoryImpl</entry>
+					<entry>Specific</entry>
+					<entry>Auth</entry>
+					<entry><link linkend="http://tools.ietf.org/html/rfc3588">RFC3588</link></entry>
+				</row>
+				<row>
+					<entry>org.jdiameter.common .impl.app.cca. CCASessionFactoryImpl</entry>
+					<entry>AuthId[0:4]</entry>
+					<entry>CCA</entry>
+					<entry><link linkend="http://tools.ietf.org/html/rfc4006">RFC4006</link></entry>
+				</row>
+				<row>
+					<entry>org.jdiameter.common .impl.app.sh. ShSessionFactoryImpl</entry>
+					<entry>AuthId[10415:16777217]</entry>
+					<entry>Sh</entry>
+					<entry><link linkend="http://www.3gpp.org/ftp/Specs/html-info/29328.htm">TS.29328</link>, <link linkend="http://www.3gpp.org/ftp/Specs/html-info/29329.htm">TS.29329</link></entry>
+				</row>
+				<row>
+					<entry>org.jdiameter.common .impl.app.cxdx. CxDxSessionFactoryImpl</entry>
+					<entry>AuthId[13019:16777216]</entry>
+					<entry>Cx</entry>
+					<entry><link linkend="http://www.3gpp.org/ftp/Specs/html-info/29228.htm">TS.29228</link>, <link linkend="http://www.3gpp.org/ftp/Specs/html-info/29229.htm">TS.29229</link></entry>
+				</row>
+				<row>
+					<entry>org.jdiameter.common .impl.app.cxdx. CxDxSessionFactoryImpl</entry>
+					<entry>AuthId[10415:16777216]</entry>
+					<entry>Dx</entry>
+					<entry><link linkend="http://www.3gpp.org/ftp/Specs/html-info/29228.htm">TS.29228</link>, <link linkend="http://www.3gpp.org/ftp/Specs/html-info/29229.htm">TS.29229</link></entry>
+				</row>
+				<row>
+					<entry>org.jdiameter.common .impl.app.acc. AccSessionFactoryImpl</entry>
+					<entry>AccountingId[10415:3]</entry>
+					<entry>Rf</entry>
+					<entry><link linkend="http://www.3gpp.org/ftp/Specs/html-info/32240.htm">TS.32240</link></entry>
+				</row>
+				<row>
+					<entry>org.jdiameter.common .impl.app.cca. CCASessionFactoryImpl</entry>
+					<entry>AuthId[10415:4]</entry>
+					<entry>Ro</entry>
+					<entry><link linkend="http://www.3gpp.org/ftp/Specs/html-info/32240.htm">TS.32240</link></entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</table>
+	<note>
+		<para>There is no specific factory for Ro and Rf, those application reuse respective session and session factories.</para>
+	</note>
+	<note>
+		<para>Application id contains two numbers - [VendorId:ApplicationId].</para>
+	</note>
+	<important>
+		<para>Spaces where introduced in <literal>Factory class</literal> column values, to correctly render the table. Please remove them when using copy/paste.</para>
+	</important>
+	</section>
 </section>

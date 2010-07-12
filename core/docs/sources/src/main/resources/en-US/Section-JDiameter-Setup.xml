@@ -23,6 +23,16 @@
 					<para>slf4j</para>
 				</listitem>
 			</itemizedlist>
+			<para>Clustered setup also requires following:</para>
+			<itemizedlist>
+				<listitem>
+					<para>JDiameter HA</para>
+				</listitem>
+				<listitem>
+					<!-- Doc: Pavel/Tom is this ok? -->
+					<para>JBoss Cache</para>
+				</listitem>
+			</itemizedlist>
 		</section>
 	</section>	
 	<section id="jdiameter-source_code">
