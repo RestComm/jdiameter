@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 public class ReplicatedDataSource implements ISessionDatasource {
 
   private static final Logger logger = LoggerFactory.getLogger(ReplicatedDataSource.class);
-
+  public static final String CLUSTER_DS_DEFAULT_FILE = "jdiameter-jbc.xml";
   private IContainer container;
 
   private ISessionDatasource localDataSource;
@@ -62,7 +62,7 @@ public class ReplicatedDataSource implements ISessionDatasource {
   final static Fqn SESSIONS = Fqn.fromString(_SESSIONS);
 
   public ReplicatedDataSource(IContainer container) {
-    this(container, new LocalDataSource(), "");
+    this(container, new LocalDataSource(), CLUSTER_DS_DEFAULT_FILE);
   }
 
   @SuppressWarnings("unchecked")
@@ -73,7 +73,7 @@ public class ReplicatedDataSource implements ISessionDatasource {
     Cache cache = factory.createCache(cacheConffileName, false);
     cache.start();
 
-    MobicentsCache mcCache = new MobicentsCache(cache, "ALEX_DRIVING_HIS_SMART_LIGHT_CAR");
+    MobicentsCache mcCache = new MobicentsCache(cache, "MC_JDiameter");
     // this requires JTA
     this.mobicentsCluster = new DefaultMobicentsCluster(mcCache, null, new DefaultClusterElector());
     this.container = container;
