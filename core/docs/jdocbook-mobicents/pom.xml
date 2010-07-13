@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.mobicents.servers.diameter</groupId>
 		<artifactId>mobicents-diameter-core-docs</artifactId>
-		<version>1.3.0.FINAL</version>
+		<version>1.3.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>mobicents-diameter-core-docs-jdocbook-mobicents</artifactId>
