@@ -6,13 +6,13 @@
 	<parent>
 		<groupId>org.mobicents.servers.diameter</groupId>
 		<artifactId>mobicents-diameter-core-docs</artifactId>
-		<version>1.2.2.GA-SNAPSHOT</version>
+		<version>1.3.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>mobicents-diameter-core-docs-sources-mobicents</artifactId>
 
 	<properties>
-		<version.jdiameter>1.5.3.1-build354</version.jdiameter>
+		<version.jdiameter>1.5.4.0-build354</version.jdiameter>
 		<THIS.PLATFORM>Mobicents</THIS.PLATFORM>
 		<JEE.PLATFORM>JBoss Application Server</JEE.PLATFORM>
 		<MANAGEMENT.PLATFORM>Jopr</MANAGEMENT.PLATFORM>
@@ -26,7 +26,7 @@
 
 		<THIS.TESTSUITE_TRUNK_SOURCE_CODE_URL>http://mobicents.googlecode.com/svn/trunk/servers/${docs.dirname}/testsuite/load</THIS.TESTSUITE_TRUNK_SOURCE_CODE_URL>
 		
-		<author.email.bartosz>bbaranow (at) gmail.com</author.email.bartosz>
+		<author.email.bartosz>baranowb (at) gmail.com</author.email.bartosz>
 		<author.email.alex>brainslog (at) gmail.com</author.email.alex>
 	</properties>
 

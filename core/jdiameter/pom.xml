@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.mobicents</groupId>
 		<artifactId>mobicents-parent</artifactId>
-		<version>2.5</version>
+		<version>2.9</version>
 	</parent>
 
 	<groupId>org.mobicents.servers.diameter</groupId>
@@ -14,7 +14,7 @@
 
 	<name>Mobicents :: Diameter Stack :: ${pom.artifactId}</name>
 
-	<version>1.5.3.1-build354-SNAPSHOT</version>
+	<version>1.5.4.0-build354-SNAPSHOT</version>
 
 	<modules>
 		<module>api</module>
