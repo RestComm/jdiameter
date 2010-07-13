@@ -36,6 +36,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.jdiameter.api.AvpDataException;
+import org.jdiameter.api.BaseSession;
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
@@ -353,6 +354,15 @@ public class StackImpl implements IContainer, StackImplMBean {
       throw new IllegalAccessError("Meta data not defined");
     }
     return (MetaData) assembler.getComponentInstance(IMetaData.class);
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T extends BaseSession> T getSession(String sessionId, Class<T> clazz) throws InternalException {
+    if (getState() == StackState.IDLE) {
+      throw new InternalException("Illegal state of stack");
+    }
+    BaseSession bs = assembler.getComponentInstance(ISessionDatasource.class).getSession(sessionId);
+    return bs != null ? (T) bs : null;
   }
 
   public boolean isWrapperFor(Class<?> aClass) throws InternalException {

@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.jdiameter.api.AvpDataException;
+import org.jdiameter.api.BaseSession;
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
@@ -44,6 +45,10 @@ public class DiameterStackProxy implements Stack, IContainer {
 
   public SessionFactory getSessionFactory() throws IllegalDiameterStateException {
     return this.realStack.getSessionFactory();
+  }
+
+  public <T extends BaseSession> T getSession(String sessionId, Class<T> clazz) throws InternalException {
+    return this.realStack.getSession(sessionId, clazz);
   }
 
   public SessionFactory init( Configuration config ) throws IllegalDiameterStateException, InternalException {

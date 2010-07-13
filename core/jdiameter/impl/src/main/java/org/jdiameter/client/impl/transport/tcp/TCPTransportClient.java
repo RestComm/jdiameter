@@ -128,9 +128,11 @@ class TCPTransportClient implements Runnable {
       logger.debug("Transport exception ", e);
     }
     finally {
+      String remoteAddress = "unknown_host";
       try {
         clearBuffer();
         if (socketChannel != null && socketChannel.isOpen()) {
+          remoteAddress = socketChannel.socket().getRemoteSocketAddress().toString();
           socketChannel.close();
         }
         getParent().onDisconnect();
@@ -139,7 +141,7 @@ class TCPTransportClient implements Runnable {
         logger.debug("Error", e);                    
       }
       stop = false;
-      logger.info("Read thread is stopped");
+      logger.info("Read thread is stopped ({})", remoteAddress);
     }
   }
 

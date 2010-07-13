@@ -38,33 +38,33 @@ public interface Stack extends Wrapper {
      * Configuration stack and allocation system resources.
      * @param config Object with configuration parameters
      * @return instance of session factory (DataSource equals)
-     * @throws IllegalDiameterStateException if a stack already configured or destroed
+     * @throws IllegalDiameterStateException if a stack already configured or destroyed
      * @throws InternalException if a stack can not processing initial procedure
      */
     SessionFactory init(Configuration config) throws IllegalDiameterStateException, InternalException;
 
     /**
      * Start activity of stack (Thread and Network connections), not
-     * waiting swith ANY peer to OKEY state
-     * @throws IllegalDiameterStateException if a stack is not confgured or stopped
+     * waiting switch ANY peer to OKEY state
+     * @throws IllegalDiameterStateException if a stack is not configured or stopped
      * @throws InternalException if a stack can not processing start procedure
      */
     void start() throws IllegalDiameterStateException, InternalException;
 
     /**
      * Start activity of stack (Thread and Network connections),
-     * waiting specified wait time swith peers to OKEY state.
+     * waiting specified wait time switch peers to OKEY state.
      * @param  mode specified type of wait procedure
      * @param  timeout how long to wait before giving up, in units of unit
      * @param  unit a TimeUnit determining how to interpret the timeout parameter
-     * @throws IllegalDiameterStateException if a stack is not confgured or stopped
+     * @throws IllegalDiameterStateException if a stack is not configured or stopped
      * @throws InternalException if a stack can not processing start procedure
      */
     void start(Mode mode, long timeout, TimeUnit unit) throws IllegalDiameterStateException, InternalException;
 
     /**
      * Stop any activity of stack (Thread and Network connections),
-     * waiting if necessary up to the specified wait time swith peers to DOWN state.
+     * waiting if necessary up to the specified wait time switch peers to DOWN state.
      * @param timeout how long to wait before giving up, in units of unit
      * @param unit a TimeUnit determining how to interpret the timeout parameter
      * @throws IllegalDiameterStateException if a stack is not started
@@ -73,7 +73,7 @@ public interface Stack extends Wrapper {
     void stop(long timeout, TimeUnit unit) throws IllegalDiameterStateException, InternalException;
 
     /**
-     * Destroy any resource append to this instacne of stack
+     * Destroy any resource append to this instance of stack
      */
     void destroy();
 
@@ -92,7 +92,7 @@ public interface Stack extends Wrapper {
     /**
      * Return SessionFactory instance
      * @return SessionFactory instance
-     * @throws IllegalDiameterStateException if stack is not configure
+     * @throws IllegalDiameterStateException if stack is not configured
      */
     SessionFactory getSessionFactory()  throws IllegalDiameterStateException;
 
@@ -100,4 +100,14 @@ public interface Stack extends Wrapper {
      * @return stack meta information
      */
     MetaData getMetaData();
+    
+    /**
+     * Return an existing session, if present
+     * 
+     * @param sessionId the session identifier
+     * @param clazz the class of the session object
+     * @return the session object if it exists, null otherwise
+     * @throws InternalException if stack is not configured
+     */
+    <T extends BaseSession> T getSession(String sessionId, Class<T> clazz) throws InternalException;
 }
