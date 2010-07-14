@@ -15,6 +15,7 @@
 		<checkout.password></checkout.password>
 
 		<diameter.core.jdiameter.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter/jdiameter</diameter.core.jdiameter.connectionURL>
+		<diameter.core.jdiameter-ha.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter-ha/jdiameter-ha</diameter.core.jdiameter-ha.connectionURL>
 		<diameter.core.mux.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/diameter/core/mux/mobicents-diameter-mux</diameter.core.mux.connectionURL>
 		<diameter.core.docs.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/diameter/core/docs/mobicents-diameter-core-docs</diameter.core.docs.connectionURL>
 		<diameter.resource.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/jain-slee/2.x.y/resources/diameter</diameter.resource.connectionURL>
@@ -45,6 +46,22 @@
 									<skipCheckoutIfExists>false</skipCheckoutIfExists>
 									<checkoutDirectory>${checkout.basedir}/core/jdiameter</checkoutDirectory>
 									<connectionUrl>${diameter.core.jdiameter.connectionURL}-${jdiam_version}</connectionUrl>
+									<username>${checkout.username}</username>
+									<password>${checkout.password}</password>
+								</configuration>
+							</execution>
+							<execution>
+								<id>diameter-core-jdiameter-ha-checkout</id>
+								<goals>
+									<goal>checkout</goal>
+								</goals>
+								<phase>validate</phase>
+								<configuration>
+									<scmVersion>HEAD</scmVersion>
+									<scmVersionType>revision</scmVersionType>
+									<skipCheckoutIfExists>false</skipCheckoutIfExists>
+									<checkoutDirectory>${checkout.basedir}/core/jdiameter-ha</checkoutDirectory>
+									<connectionUrl>${diameter.core.jdiameter-ha.connectionURL}-${jdiam-ha_version}</connectionUrl>
 									<username>${checkout.username}</username>
 									<password>${checkout.password}</password>
 								</configuration>

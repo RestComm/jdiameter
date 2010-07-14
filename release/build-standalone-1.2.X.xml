@@ -2,28 +2,32 @@
 <project name="diameter.release.sf" default="package" basedir=".">
 
 	<!-- Diameter Components Versions -->
-	<property name="RELEASE_VERSION" value="1.2.1.GA" />
+	<property name="RELEASE_VERSION" value="1.3.0.FINAL" />
 
-	<property name="CORE_JDIAMETER_VERSION" value="1.5.3.1-build353" />
-	<property name="CORE_MUX_VERSION" value="1.2.1.GA" />
-	<property name="CORE_DOCS_VERSION" value="1.2.0.GA" />
+	<property name="CORE_JDIAMETER_VERSION" value="1.5.4.0-build401" />
+	<property name="CORE_JDIAMETER-HA_VERSION" value="1.0.0.BETA1" />
+	<property name="CORE_MUX_VERSION" value="1.3.0.FINAL" />
+	<property name="CORE_DOCS_VERSION" value="1.3.0.FINAL" />
 
 	<property name="TOOLS_JOPR_PLUGIN_VERSION" value="1.0.0.BETA2" />
 
-	<property name="RA_base_VERSION" value="2.0.1.GA" />
-	<property name="RA_cca_VERSION" value="2.0.1.GA" />
-	<property name="RA_sh-client_VERSION" value="2.0.0.GA" />
-	<property name="RA_sh-server_VERSION" value="2.0.1.GA" />
-	<property name="RA_ro_VERSION" value="2.0.0.GA" />
-	<property name="RA_rf_VERSION" value="2.0.0.GA" />
-	<property name="RA_cx-dx_VERSION" value="2.0.0.GA" />
+	<property name="RA_base_VERSION" value="2.1.0.FINAL" />
+	<property name="RA_cca_VERSION" value="2.1.0.FINAL" />
+	<property name="RA_sh-client_VERSION" value="2.1.0.FINAL" />
+	<property name="RA_sh-server_VERSION" value="2.1.0.FINAL" />
+	<property name="RA_ro_VERSION" value="2.1.0.FINAL" />
+	<property name="RA_rf_VERSION" value="2.1.0.FINAL" />
+	<property name="RA_cx-dx_VERSION" value="2.1.0.FINAL" />
 
 	<property name="EXAMPLE_JAINSLEE_base_VERSION" value="2.0.0.GA" />
 	<property name="EXAMPLE_JAINSLEE_openims_VERSION" value="2.0.0.GA" />
 
 	<!-- Dependencies Components Versions -->
-	<property name="JAINSLEE_VERSION" value="2.0.0.GA" />
+	<property name="JAINSLEE_VERSION" value="2.1.1.GA" />
+	<property name="JAINSLEE_SIP11_RA_VERSION" value="2.1.1.GA" />
+	<property name="JAINSLEE_SIP_SERVICES_VERSION" value="2.0.0.GA" />
 	<property name="JBOSS_VERSION" value="5.1.0.GA" />
+
 	
 	<!-- jboss-x. to be used as building profile -->
 	<property name="DEFAULT_SAR_CONFIGURATION" value="5" />
@@ -69,9 +73,9 @@
 	<!-- Checkout section -->
 
 	<target name="checkout-core">
-		<echo>Checkout Diameter Core (jDiameter v${CORE_JDIAMETER_VERSION}, MUX v${CORE_MUX_VERSION}, Docs v${CORE_DOCS_VERSION})</echo>
+		<echo>Checkout Diameter Core (jDiameter v${CORE_JDIAMETER_VERSION}, jDiameter HA v${CORE_JDIAMETER-HA_VERSION}, MUX v${CORE_MUX_VERSION}, Docs v${CORE_DOCS_VERSION})</echo>
 		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
-			<arg line="-f internal-components-checkout-standalone-1.2.X.xml validate -P checkout -Djdiam_version=${CORE_JDIAMETER_VERSION} -Dmux_version=${CORE_MUX_VERSION} -Ddocs_version=${CORE_DOCS_VERSION}" />
+			<arg line="-f internal-components-checkout-standalone-1.2.X.xml validate -P checkout -Djdiam_version=${CORE_JDIAMETER_VERSION} -Djdiam-ha_version=${CORE_JDIAMETER-HA_VERSION} -Dmux_version=${CORE_MUX_VERSION} -Ddocs_version=${CORE_DOCS_VERSION}" />
 		</exec>
 	</target>
 
@@ -108,6 +112,9 @@
 
 	<target name="build-src-core">
 		<exec executable="${mvn.executable}" dir="${checkout_base_dir}/core/jdiameter">
+			<arg line="-f pom.xml clean install" />
+		</exec>
+		<exec executable="${mvn.executable}" dir="${checkout_base_dir}/core/jdiameter-ha">
 			<arg line="-f pom.xml clean install" />
 		</exec>
 		<exec executable="${mvn.executable}" dir="${checkout_base_dir}/core/mux">
@@ -164,6 +171,12 @@
 			</fileset>
 			<fileset dir="${checkout_base_dir}/core/jdiameter/impl/target">
 				<include name="jdiameter-impl-${CORE_JDIAMETER_VERSION}.jar" />
+			</fileset>
+			<fileset dir="${checkout_base_dir}/core/jdiameter-ha/api/target">
+				<include name="jdiameter-ha-api-${CORE_JDIAMETER-HA_VERSION}.jar" />
+			</fileset>
+			<fileset dir="${checkout_base_dir}/core/jdiameter-ha/impl/target">
+				<include name="jdiameter-ha-impl-${CORE_JDIAMETER-HA_VERSION}.jar" />
 			</fileset>
 		</copy>
 
@@ -228,7 +241,7 @@
 	</target>
 
 	<target name="copy-jars-additional-resources">
-	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${jainslee.folder.path}/resources/sip11/sip11-ra-DU-${JAINSLEE_VERSION}.jar" failonerror="${failoncopy}" />
+	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${jainslee.folder.path}/resources/sip11/sip11-ra-DU-${JAINSLEE_SIP11_RA_VERSION}.jar" failonerror="${failoncopy}" />
 	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${jainslee.folder.path}/resources/sip11/du-management.xml" failonerror="${failoncopy}">
 			<filterchain>
 				<replacetokens>
@@ -238,7 +251,7 @@
 	  </copy>
 	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${checkout_base_dir}/examples/openims/release/thirdparty/sip11/build.xml" failonerror="${failoncopy}" />
 
-	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip-services-proxy-with-initial-invite" file="${jainslee.folder.path}/examples/sip-services/sip-services-proxy-with-initial-invite-DU-${JAINSLEE_VERSION}.jar" failonerror="${failoncopy}" />
+	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip-services-proxy-with-initial-invite" file="${jainslee.folder.path}/examples/sip-services/sip-services-proxy-with-initial-invite-DU-${JAINSLEE_SIP_SERVICES_VERSION}.jar" failonerror="${failoncopy}" />
 	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip-services-proxy-with-initial-invite" file="${jainslee.folder.path}/examples/sip-services/proxy-with-initial-invite-du-management.xml" failonerror="${failoncopy}">
 			<filterchain>
 				<replacetokens>
@@ -257,6 +270,7 @@
 				<replacetokens>
 					<token key="VERSION" value="${RELEASE_VERSION}" />
 					<token key="JDIAM_VERSION" value="${CORE_JDIAMETER_VERSION}" />
+					<token key="JDIAM-HA_VERSION" value="${CORE_JDIAMETER-HA_VERSION}" />
 					<token key="MUX_VERSION" value="${CORE_MUX_VERSION}" />
 					<token key="base_VERSION" value="${RA_base_VERSION}" />
 					<token key="cca_VERSION" value="${RA_cca_VERSION}" />
@@ -276,6 +290,7 @@
 				</replacetokens>
 			</filterchain>
 		</copy>
+		<!-- TODO: Add jdiameter-ha README.TXT ? -->
 		<copy todir="${zip_dir}/core/mux" file="${checkout_base_dir}/core/mux/release/README.TXT" failonerror="${failoncopy}">
 			<filterchain>
 				<replacetokens>
