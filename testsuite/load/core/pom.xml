@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.mobicents.servers.diameter.testsuite</groupId>
 		<artifactId>testsuite-load-parent</artifactId>
-		<version>1.3.0-SNAPSHOT</version>
+		<version>1.3.1-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.mobicents.servers.diameter.testsuite</groupId>

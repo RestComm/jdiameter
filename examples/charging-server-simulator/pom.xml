@@ -17,8 +17,8 @@
 
 	<properties>
 		<!-- Mobicents Diameter Components Versions -->
-		<mobicents.diameter.jdiameter.version>1.5.4.0-build354-SNAPSHOT</mobicents.diameter.jdiameter.version>
-		<mobicents.diameter.mux.version>1.3.0.GA-SNAPSHOT</mobicents.diameter.mux.version>
+		<mobicents.diameter.jdiameter.version>1.5.4.0-build402-SNAPSHOT</mobicents.diameter.jdiameter.version>
+		<mobicents.diameter.mux.version>1.3.1-SNAPSHOT</mobicents.diameter.mux.version>
 		<!-- Thirdparty Dependencies Versions -->
 		<slf4j.version>1.5.8</slf4j.version>
 		<jbosscache.version>3.2.5.GA</jbosscache.version>
