@@ -116,8 +116,8 @@
 				<para>Session</para>
 			</listitem>
 		</itemizedlist>
-		<para>&THIS.PLATFORM; Diameter Cluster replicates full state of sessions, however it does not replicated resources which are entirely local to stack instance, like session listeners.
-		Local resources references are recreated once session is being preparepared to be uses in stack instance. Listeners(state and events) are fetched from respective session factory instance. See
+		<para>&THIS.PLATFORM; Diameter Cluster replicates full state of sessions, however it does not replicate resources which are entirely local to stack instance, like session listeners.
+		Local resources references are recreated once session is being prepared to be used in stack instance. Listeners (state and events) are fetched from respective session factory instance. See
 		<xref linkend="jdiameter-app_session_factories"/> for more details.
 		</para>
 		

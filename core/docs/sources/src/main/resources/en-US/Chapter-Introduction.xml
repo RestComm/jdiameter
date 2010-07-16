@@ -9,7 +9,7 @@
 	<para>Diameter is a computer networking protocol for AAA
 		(Authentication, Authorization and Accounting) defined in RFC 3588. It
 		is a successor to RADIUS (and its name is a reference to it, a
-		diameter is twice the radius). Diameter has been desgined to overcome
+		diameter is twice the radius). Diameter has been designed to overcome
 		certain RADIUS limitations:</para>
 	<itemizedlist>
 		<listitem>

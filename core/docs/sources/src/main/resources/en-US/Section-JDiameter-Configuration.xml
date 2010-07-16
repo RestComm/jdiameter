@@ -182,7 +182,7 @@
 		<varlistentry>
 			<term>&lt;AcceptUndefinedPeer&gt;</term>
 			<listitem>
-				<para> Specifies whether the stack will accept connections from unidentified peers. The default value is <literal>false</literal>.</para>
+				<para> Specifies whether the stack will accept connections from undefined peers. The default value is <literal>false</literal>.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>

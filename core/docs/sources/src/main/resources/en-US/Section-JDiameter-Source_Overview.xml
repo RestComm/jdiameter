@@ -197,7 +197,7 @@ public interface RawSession extends BaseSession {
 			</varlistentry>
 			<varlistentry>		
 				<term><methodname>long getLastAccessedTime();</methodname></term>
-				<listitem><para>Returns last time stamp indicating send or receive operation</para></listitem>
+				<listitem><para>Returns the time stamp indicating last send or receive operation.</para></listitem>
 			</varlistentry>
 			<varlistentry>		
 				<term><methodname>boolean isValid();</methodname></term>
@@ -225,7 +225,7 @@ public interface RawSession extends BaseSession {
 			</varlistentry>
 			<varlistentry>		
 				<term><methodname>Message createMessage(Message message, boolean copyAvps);</methodname></term>
-				<listitem><para>Clones message and returns created object</para></listitem>
+				<listitem><para>Clones message and returns created object. The copyAvps parameter defines if basic AVPs (Session, Route and Proxy information) should be copied to the new object.</para></listitem>
 			</varlistentry>
 			<varlistentry>
 				<term><methodname>void send(Message message, EventListener&lt;Message, Message&gt; listener)</methodname></term>
