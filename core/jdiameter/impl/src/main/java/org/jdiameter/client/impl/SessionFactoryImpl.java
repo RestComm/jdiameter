@@ -46,7 +46,7 @@ public class SessionFactoryImpl implements ISessionFactory {
 
   private IContainer stack;
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
   private Map<Class, IAppSessionFactory> appFactories = new ConcurrentHashMap<Class, IAppSessionFactory>();
   private ISessionDatasource dataSource;
 
@@ -104,7 +104,7 @@ public class SessionFactoryImpl implements ISessionFactory {
     if (appFactories.containsKey(aClass)) {
       session = (T) ((IAppSessionFactory) appFactories.get(aClass)).getNewSession(sessionId, aClass, applicationId, args);
       // FIXME: add check if it exists already!
-      dataSource.addSession(session);
+      //dataSource.addSession(session);
     }
     return session;
   }

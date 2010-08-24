@@ -365,39 +365,13 @@ public class CxDxClientSessionImpl extends CxDxSession implements ClientCxDxSess
     }
   }
 
-  // FIXME: Why is timeout removed?
-  //private class TimeoutTimerTask implements Runnable {
-  //    private Request request;
-  //
-  //    public TimeoutTimerTask(Request request) {
-  //      super();
-  //      this.request = request;
-  //    }
-  //
-  //    public void run() {
-  //      try {
-  //        handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, new AppRequestEventImpl(request), null));
-  //      }
-  //      catch (Exception e) {
-  //        logger.debug("Failure handling Timeout event.");
-  //      }
-  //    }
-  //
-  //  }
-
-  /* (non-Javadoc)
-   * @see org.jdiameter.common.impl.app.AppSessionImpl#isReplicable()
-   */
-  @Override
-  public boolean isReplicable() {
-    return true;
-  }
   
   /* (non-Javadoc)
    * @see org.jdiameter.common.impl.app.cxdx.CxDxSession#relink(org.jdiameter.client.api.IContainer)
    */
   @Override
   public void relink(IContainer stack) {
+	  // JIC: in case someone needs that replicable.
     if(super.sf == null) {
       super.relink(stack);
       ICxDxSessionFactory fct = (ICxDxSessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(ClientCxDxSession.class);

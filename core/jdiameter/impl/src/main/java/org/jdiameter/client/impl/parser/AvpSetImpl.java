@@ -29,10 +29,10 @@ class AvpSetImpl implements AvpSet {
   // FIXME: by default 3588.x says: if grouped has at least on AVP with 'M' set, it also has to have 'M' set! - TODO: add backmapping.
   
   private static final long serialVersionUID = 1L;
-  
+
+    //TODO: Can parser be removed ?
     MessageParser parser;
-    // why copy? app should ensure only one object modifies...
-    // CopyOnWriteArrayList<Avp> avps = new CopyOnWriteArrayList<Avp>();
+
     List<Avp> avps = new ArrayList<Avp>();
 
     AvpSetImpl(MessageParser parser) {

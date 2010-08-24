@@ -27,7 +27,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.IllegalDiameterStateException;
@@ -51,10 +50,8 @@ import org.jdiameter.api.sh.events.SubscribeNotificationsRequest;
 import org.jdiameter.api.sh.events.UserDataRequest;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.ISessionFactory;
-import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.sh.IShMessageFactory;
 import org.jdiameter.common.api.app.sh.IShSessionFactory;
-import org.jdiameter.common.api.app.sh.ShSessionState;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.jdiameter.common.impl.app.sh.ProfileUpdateAnswerImpl;
@@ -85,18 +82,12 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
   private Logger logger = LoggerFactory.getLogger(ShClientSessionImpl.class);
 
   // Session State Handling ---------------------------------------------------
-  protected boolean stateless = false;
-  protected ShSessionState state = ShSessionState.NOTSUBSCRIBED;
   protected Lock sendAndStateLock = new ReentrantLock();
 
   // Factories and Listeners --------------------------------------------------
   protected transient IShMessageFactory factory = null;
   protected transient ClientShSessionListener listener;
 
-  // Subscription Timer -------------------------------------------------------
-  //protected ScheduledFuture sft = null;
-  protected Serializable timerId_sft;
-  protected static final String _TIMER_NAME_SFT= "SFT";
   protected long appId = -1;
   protected String destHost, destRealm;
 
@@ -139,160 +130,61 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
 
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> stateType) {
-    return stateType == ShSessionState.class ? (E) state : null;
+    return null;
   }
 
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
     try {
       sendAndStateLock.lock();
-      ShSessionState oldState = this.state;
-      ShSessionState newState = this.state;
-      try {
-        Event localEvent = (Event) event;
-        AppEvent answer = localEvent.getAnswer();
-        switch (state) {
-        case NOTSUBSCRIBED:
-          if (event.getType() == Event.Type.RECEIVE_SUBSCRIBE_NOTIFICATIONS_ANSWER) {
-            newState = doSNX(answer);
-          }
-          else if (event.getType() == Event.Type.RECEIVE_PUSH_NOTIFICATION_REQUEST) {
-            newState = ShSessionState.SUBSCRIBED;
-          }
-          else if (event.getType() == Event.Type.TIMEOUT_EXPIRES) {
-            newState = ShSessionState.TERMINATED;
-          }
-          else if(event.getType() != Event.Type.SEND_USER_DATA_REQUEST && event.getType() != Event.Type.SEND_PROFILE_UPDATE_REQUEST && event.getType() != Event.Type.SEND_SUBSCRIBE_NOTIFICATIONS_REQUEST && event.getType()!= Event.Type.RECEIVE_PUSH_NOTIFICATION_REQUEST) {
-            // Other messages just make it go into terminated state and release
-            newState = ShSessionState.TERMINATED;
-          }
-          break;
+      Event localEvent = (Event) event;
 
-        case SUBSCRIBED:
-          if (event.getType() == Event.Type.RECEIVE_SUBSCRIBE_NOTIFICATIONS_ANSWER) {
-            newState = doSNX(answer);
-          }
-          else if (event.getType() == Event.Type.TIMEOUT_EXPIRES) {
-            if (localEvent.getRequest().getCommandCode() == SubscribeNotificationsRequest.code) {
-              newState = ShSessionState.TERMINATED;
-            }
-          }
-          else {
-            // FIXME: What about timeout here?
-          }
-          break;
+      // Do the delivery
+      switch ((Event.Type) localEvent.getType()) {
+      case RECEIVE_PUSH_NOTIFICATION_REQUEST:
+        listener.doPushNotificationRequestEvent(this, new PushNotificationRequestImpl( (Request) localEvent.getRequest().getMessage() ));
+        break;
 
-        case TERMINATED:
-          // We shouldn't receive anything here
-          break;
-        }
+      case RECEIVE_PROFILE_UPDATE_ANSWER:
+        listener.doProfileUpdateAnswerEvent(this, null, new ProfileUpdateAnswerImpl( (Answer) localEvent.getAnswer().getMessage()));
+        break;
 
-        // Do the delivery
-        // FIXME: Should we look if we are in terminated state?
-        try {
-          switch ((Event.Type) localEvent.getType()) {
-          case RECEIVE_PUSH_NOTIFICATION_REQUEST:
-            listener.doPushNotificationRequestEvent(this, new PushNotificationRequestImpl( (Request) localEvent.getRequest().getMessage() ));
-            break;
+      case RECEIVE_USER_DATA_ANSWER:
+        listener.doUserDataAnswerEvent(this, null, new UserDataAnswerImpl((Answer) localEvent.getAnswer().getMessage()));
+        break;
 
-          case RECEIVE_PROFILE_UPDATE_ANSWER:
-            listener.doProfileUpdateAnswerEvent(this, null, new ProfileUpdateAnswerImpl( (Answer) localEvent.getAnswer().getMessage()));
-            break;
+      case RECEIVE_SUBSCRIBE_NOTIFICATIONS_ANSWER:
+        listener.doSubscribeNotificationsAnswerEvent(this, null, new SubscribeNotificationsAnswerImpl( (Answer) localEvent.getAnswer().getMessage()));
+        break;
 
-          case RECEIVE_USER_DATA_ANSWER:
-            listener.doUserDataAnswerEvent(this, null, new UserDataAnswerImpl((Answer) localEvent.getAnswer().getMessage()));
-            break;
+      case SEND_PROFILE_UPDATE_REQUEST:
+      case SEND_PUSH_NOTIFICATION_ANSWER:
+      case SEND_SUBSCRIBE_NOTIFICATIONS_REQUEST:
+      case SEND_USER_DATA_REQUEST:
+        Message m = null;
+        Object data = event.getData();
+        m = data instanceof AppEvent ? ((AppEvent)data).getMessage() : (Message) event.getData();
+        session.send(m, this);
+        break;
 
-          case RECEIVE_SUBSCRIBE_NOTIFICATIONS_ANSWER:
-            listener.doSubscribeNotificationsAnswerEvent(this, null, new SubscribeNotificationsAnswerImpl( (Answer) localEvent.getAnswer().getMessage()));
-            break;
+      case TIMEOUT_EXPIRES:
+        // TODO Anything here?
+        break;
 
-          case SEND_PROFILE_UPDATE_REQUEST:
-          case SEND_PUSH_NOTIFICATION_ANSWER:
-          case SEND_SUBSCRIBE_NOTIFICATIONS_REQUEST:
-          case SEND_USER_DATA_REQUEST:
-            Message m = null;
-            Object data = event.getData();
-            m = data instanceof AppEvent ? ((AppEvent)data).getMessage() : (Message) event.getData();
-            session.send(m, this);
-            break;
-
-          case TIMEOUT_EXPIRES:
-            // TODO Anything here?
-            break;
-
-          default:
-            logger.error("Wrong message type={} req={} ans={}", new Object[]{localEvent.getType(), localEvent.getRequest(), localEvent.getAnswer()});
-          }
-        }
-        catch (IllegalDiameterStateException idse) {
-          throw new InternalException(idse);
-        }
-        catch (RouteException re) {
-          throw new InternalException(re);
-        }
+      default:
+        logger.error("Wrong message type={} req={} ans={}", new Object[]{localEvent.getType(), localEvent.getRequest(), localEvent.getAnswer()});
       }
-      finally {
-        if (newState != oldState) {
-          setState(newState);
-        }
-      }
+    }
+    catch (IllegalDiameterStateException idse) {
+      throw new InternalException(idse);
+    }
+    catch (RouteException re) {
+      throw new InternalException(re);
     }
     finally {
       sendAndStateLock.unlock();
     }
 
     return true;
-  }
-
-  protected ShSessionState doSNX(AppEvent answer) throws InternalException {
-    ShSessionState newState = state;
-    AvpSet set = answer.getMessage().getAvps();
-    long resultCode = -1;
-
-    try {
-      Avp avp = set.getAvp(Avp.RESULT_CODE);
-      if(avp == null) {
-        avp = set.getAvp(Avp.EXPERIMENTAL_RESULT).getGrouped().getAvp(Avp.EXPERIMENTAL_RESULT_CODE);
-      }
-      resultCode = avp.getUnsigned32();
-
-      if (resultCode >= 2000 && resultCode < 3000) {
-        long expiryTime = extractExpiryTime(answer.getMessage());
-        if (expiryTime >= 0) {
-          //          if (this.sft != null) {
-          //            this.sft.cancel(true);
-          //          }
-          stopSftTimer();
-          startSftTimer(expiryTime);
-          //          this.sft = scheduler.schedule(new Runnable() {
-          //            public void run() {
-          //              try {
-          //                sendAndStateLock.lock();
-          //                if (state != ShSessionState.TERMINATED) {
-          //                  setState(ShSessionState.TERMINATED);
-          //                }
-          //              }
-          //              finally {
-          //                sendAndStateLock.unlock();
-          //              }
-          //            }
-          //          }, expiryTime, TimeUnit.SECONDS);
-        }
-        newState = ShSessionState.SUBSCRIBED;
-      }
-      else {
-        newState = ShSessionState.TERMINATED;
-      }
-    }
-    catch (AvpDataException e) {
-      logger.debug("Could not retrieve Result-Code from Message", e);
-    }
-
-    return newState;
-  }
-
-  public boolean isStateless() {
-    return stateless;
   }
 
   public void sendProfileUpdateRequest(ProfileUpdateRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
@@ -372,104 +264,13 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
     }
   }
 
-  protected void setState(ShSessionState newState) {
-    setState(newState, true);
-  }
 
-  @SuppressWarnings("unchecked")
-  protected void setState(ShSessionState newState, boolean release) {
-    IAppSessionState oldState = state;
-    state = newState;
-    super.sessionDataSource.updateSession(this);
-    for (StateChangeListener i : stateListeners) {
-      i.stateChanged(this,(Enum) oldState, (Enum) newState);
-    }
-
-    if (newState == ShSessionState.TERMINATED) {
-      if (release) {
-        this.release();
-      }
-      //      if (sft != null) {
-      //        sft.cancel(true);
-      //        sft = null;
-      //      }
-
-      stopSftTimer();
-    }
-  }
-
-  protected void stopSftTimer() {
-    try {
-      sendAndStateLock.lock();
-      if (this.timerId_sft != null) {
-        super.timerFacility.cancel(timerId_sft);
-        this.timerId_sft = null;
-        super.sessionDataSource.updateSession(this);
-      }
-    }
-    finally {
-      sendAndStateLock.unlock();
-    }
-  }
-
-  protected void startSftTimer(long time) {
-    try {
-      sendAndStateLock.lock();
-      this.timerId_sft = this.timerFacility.schedule(super.sessionId, _TIMER_NAME_SFT, time);
-      super.sessionDataSource.updateSession(this);
-    }
-    finally {
-      sendAndStateLock.unlock();
-    }
-  }
-
-  /* (non-Javadoc)
-   * @see org.jdiameter.common.impl.app.AppSessionImpl#onTimer(java.lang.String)
-   */
-  @Override
-  public void onTimer(String timerName) {
-    if (timerName.equals(_TIMER_NAME_SFT)) {
-
-      try {
-        sendAndStateLock.lock();
-        timerId_sft = null;
-        if (state != ShSessionState.TERMINATED) {
-          setState(ShSessionState.TERMINATED);
-        }
-        else {
-          super.sessionDataSource.updateSession(this);
-        }
-      }
-      finally {
-        sendAndStateLock.unlock();
-      }
-    }
-    else {
-      super.onTimer(timerName);
-    }
-  }
-
-  protected long extractExpiryTime(Message answer) {
-    try {
-      // FIXME: Replace 709 by Avp.EXPIRY_TIME
-      Avp expiryTimeAvp = answer.getAvps().getAvp(709);
-      return expiryTimeAvp != null ? expiryTimeAvp.getTime().getTime() : -1;
-    }
-    catch (AvpDataException ade) {
-      logger.debug("Failure trying to extract Expiry-Time AVP value", ade);
-    }
-
-    return -1;
-  }
-
+  
   @SuppressWarnings("unchecked")
   public void release() {
     try {
       sendAndStateLock.lock();
-      if (state != ShSessionState.TERMINATED) {
-        setState(ShSessionState.TERMINATED, false);
-      }
-
+      
       if(super.isValid()) {
         super.release();
       }
@@ -491,6 +292,12 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
       sendAndStateLock.unlock();
     }
   }
+  
+  @Override
+  public boolean isStateless() {
+    return true;
+  }
+
   /* (non-Javadoc)
    * @see org.jdiameter.common.impl.app.AppSessionImpl#isReplicable()
    */
@@ -502,7 +309,7 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
   public void relink(IContainer stack) {
     if (super.sf == null) {
       super.relink(stack);
-      IShSessionFactory fct = (IShSessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(ServerShSession.class);
+      IShSessionFactory fct = (IShSessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(ClientShSession.class);
       this.listener = fct.getClientShSessionListener();
       this.factory = fct.getMessageFactory();
     }
@@ -561,5 +368,6 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
       }
     }
   }
+
 
 }

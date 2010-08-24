@@ -85,22 +85,29 @@ public class ReplicatedDataSource implements ISessionDatasource {
    * @see org.jdiameter.common.api.ha.ISessionDatasource#addSession(org.jdiameter .api.BaseSession)
    */
   public void addSession(BaseSession session) {
+	  SessionClusteredData scd = new SessionClusteredData(session.getSessionId(), mobicentsCluster);
     if (session.isReplicable()) {
-      SessionClusteredData scd = new SessionClusteredData(session.getSessionId(), mobicentsCluster);
       if (scd.exists()) {
         // ups?
         logger.warn("Session with id {} already present in clustered data.", session.getSessionId());
       }
       else {
-        logger.debug("addSession({}) in Replicated DataSource", session.getSessionId());
+        logger.debug("addSession({}) -\"{}\" in Replicated DataSource", new Object[]{session.getSessionId(),session});
+
         scd.create();
         scd.setSession(session);
       }
       this.localDataSource.removeSession(session.getSessionId());
     }
     else {
-      logger.debug("addSession({}) in Local DataSource", session.getSessionId());
-      this.localDataSource.addSession(session);
+    	//check if there is such session in replicable source, this will hapen on recreating of replicable session.
+    	if(scd.exists()) {
+    		logger.debug("addSession({}) in Local DataSource, skipping, since replicable DS has this session.", session.getSessionId());
+    	}
+    	else {
+    		logger.debug("addSession({}) in Local DataSource", session.getSessionId());
+    		this.localDataSource.addSession(session);
+    	}
     }
   }
 
@@ -232,13 +239,15 @@ public class ReplicatedDataSource implements ISessionDatasource {
 
   public void updateSession(BaseSession session) {
     SessionClusteredData scd = new SessionClusteredData(session.getSessionId(), mobicentsCluster);
-    // FIXME: Shouldn't it be the inverse... if !exists?
+
     if (scd.exists()) {
-      // ups?
+      // scd.create();
+      logger.debug("Update called on existing session: {}, Session: {}",new Object[]{session.getSessionId(),session});
+      scd.setSession(session);
     }
     else {
-      // scd.create();
-      scd.setSession(session);
+      // ups?
+      logger.warn("Update called on non existing session: {}",session.getSessionId());
     }
   }
 

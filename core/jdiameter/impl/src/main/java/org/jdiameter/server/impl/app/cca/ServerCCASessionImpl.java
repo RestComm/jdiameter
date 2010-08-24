@@ -60,6 +60,8 @@ import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
 import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
 import org.jdiameter.common.impl.app.cca.AppCCASessionImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Credit Control Application Server session implementation
@@ -70,6 +72,7 @@ import org.jdiameter.common.impl.app.cca.AppCCASessionImpl;
 public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCASession, NetworkReqListener, EventListener<Request, Answer> {
 
   private static final long serialVersionUID = 1L;
+  private static final Logger logger = LoggerFactory.getLogger(ServerCCASessionImpl.class);
 
   // Session State Handling ---------------------------------------------------
   protected boolean stateless = true;
@@ -203,6 +206,17 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
       case OPEN:
         switch(eventType)
         {
+        /* This should not happen, it should be silently discarded, right?
+        case RECEIVED_INITIAL:
+          // only for rtr
+          if(((JCreditControlRequest)localEvent.getRequest()).getMessage().isReTransmitted()) {
+            listener.doCreditControlRequest(this, (JCreditControlRequest)localEvent.getRequest());
+          }
+          else {
+            //do nothing?
+          }
+          break;
+        */
         case RECEIVED_UPDATE:
           listener.doCreditControlRequest(this, (JCreditControlRequest)localEvent.getRequest());
           break;
@@ -434,7 +448,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
   protected void setState(ServerCCASessionState newState, boolean release) {
     IAppSessionState oldState = state;
     state = newState;
-    super.sessionDataSource.updateSession(this);
+
     for (StateChangeListener i : stateListeners) {
       i.stateChanged(this, (Enum) oldState, (Enum) newState);
     }
@@ -443,6 +457,9 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
         this.release();
       }
       stopTcc(false);
+    }
+    else {
+      super.sessionDataSource.updateSession(this);
     }
   }
 
@@ -609,5 +626,8 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
 
     return true;
   }
-
+ public String toString()
+ {
+   return super.toString()+" State[ "+state+" ] Timer[ "+tccTimerId+" ] Stateless[ "+stateless+" ]";
+ }
 }

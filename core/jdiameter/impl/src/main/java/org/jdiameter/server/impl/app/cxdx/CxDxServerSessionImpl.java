@@ -91,18 +91,6 @@ public class CxDxServerSessionImpl extends CxDxSession implements ServerCxDxSess
 
     listener = lst;
     super.messageFactory = fct;
-    //    try {
-    //      if (sessionId == null) {
-    //        session = sf.getNewSession();
-    //      }
-    //      else {
-    //        session = sf.getNewSession(sessionId);
-    //      }
-    //      session.setRequestListener(this);
-    //    }
-    //    catch (InternalException e) {
-    //      throw new IllegalArgumentException(e);
-    //    }
   }
 
   /* (non-Javadoc)
@@ -308,19 +296,13 @@ public class CxDxServerSessionImpl extends CxDxSession implements ServerCxDxSess
     }
   }
 
-  /* (non-Javadoc)
-   * @see org.jdiameter.common.impl.app.AppSessionImpl#isReplicable()
-   */
-  @Override
-  public boolean isReplicable() {
-    return true;
-  }
   
   /* (non-Javadoc)
    * @see org.jdiameter.common.impl.app.cxdx.CxDxSession#relink(org.jdiameter.client.api.IContainer)
    */
   @Override
   public void relink(IContainer stack) {
+	  // JIC: if someone needs that replicated.
     if(super.sf == null) {
       super.relink(stack);
       ICxDxSessionFactory fct = (ICxDxSessionFactory) ((ISessionFactory)super.sf).getAppSessionFactory(ServerCxDxSession.class);

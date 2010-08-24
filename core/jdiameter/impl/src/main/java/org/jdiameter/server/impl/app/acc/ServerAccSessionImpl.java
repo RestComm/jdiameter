@@ -127,13 +127,14 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
     return stateless ? handleEventForStatelessMode(event) : handleEventForStatefulMode(event);
   }
 
-  public boolean handleEventForStatelessMode(StateEvent event) throws InternalException, OverloadException {       
+  public boolean handleEventForStatelessMode(StateEvent event) throws InternalException, OverloadException {
     try {
+      //this will handle RTRs as well, no need to alter.
       switch (state) {
       case IDLE: {
         switch ((Event.Type) event.getType()) {
         case RECEIVED_START_RECORD:
-          // Current State: IDLE    
+          // Current State: IDLE
           // Event: Accounting start request received, and successfully processed.
           // Action: Send accounting start answer
           // New State: IDLE
@@ -160,7 +161,8 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
               logger.debug("Can not handle event", e);
             }
           }
-          // TODO: This is unnecessary state change: setState(IDLE);
+          // FIXME: it is required, so we know it ends up again in IDLE!
+          setState(IDLE);
           break;
         case RECEIVED_INTERIM_RECORD:
           // Current State: IDLE
@@ -212,15 +214,75 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
 
   public boolean handleEventForStatefulMode(StateEvent event) throws InternalException, OverloadException {
     try {
-      switch (state) {
-      case IDLE: {
-        switch ((Event.Type) event.getType()) {
-        case RECEIVED_START_RECORD:
-          // Current State: IDLE
-          // Event: Accounting start request received, and successfully processed.
-          // Action: Send accounting start answer, Start Ts
-          // New State: OPEN
-          if (listener != null) {
+      if (((AccountRequest) event.getData()).getMessage().isReTransmitted()) {
+        // FIXME: Alex is this ok?
+        try {
+          listener.doAccRequestEvent(this, (AccountRequest) event.getData());
+          // FIXME: should we do this before passing to lst?
+          cancelTsTimer();
+          timerId_ts = startTsTimer();
+          if (context != null) {
+            context.sessionTimerStarted(this, null);
+          }
+          setState(OPEN);
+        }
+        catch (Exception e) {
+          logger.debug("Can not handle event", e);
+          setState(IDLE);
+        }
+        return true;
+      }
+      else {
+        switch (state) {
+        case IDLE: {
+          switch ((Event.Type) event.getType()) {
+          case RECEIVED_START_RECORD:
+            // Current State: IDLE
+            // Event: Accounting start request received, and successfully processed.
+            // Action: Send accounting start answer, Start Ts
+            // New State: OPEN
+            if (listener != null) {
+              try {
+                listener.doAccRequestEvent(this, (AccountRequest) event.getData());
+                cancelTsTimer();
+                timerId_ts = startTsTimer();
+                if (context != null) {
+                  context.sessionTimerStarted(this, null);
+                }
+                setState(OPEN);
+              }
+              catch (Exception e) {
+                logger.debug("Can not handle event", e);
+                setState(IDLE);
+              }
+            }
+            break;
+          case RECEIVED_EVENT_RECORD:
+            // Current State: IDLE
+            // Event: Accounting event request received, and
+            // successfully processed.
+            // Action: Send accounting event answer
+            // New State: IDLE
+            if (listener != null) {
+              try {
+                listener.doAccRequestEvent(this, (AccountRequest) event.getData());
+              }
+              catch (Exception e) {
+                logger.debug("Can not handle event", e);
+              }
+            }
+            break;
+          }
+          break;
+        }
+        case OPEN: {
+          switch ((Event.Type) event.getType()) {
+          case RECEIVED_INTERIM_RECORD:
+            // Current State: OPEN
+            // Event: Interim record received, and successfully
+            // processed.
+            // Action: Send accounting interim answer, Restart Ts
+            // New State: OPEN
             try {
               listener.doAccRequestEvent(this, (AccountRequest) event.getData());
               cancelTsTimer();
@@ -228,72 +290,37 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
               if (context != null) {
                 context.sessionTimerStarted(this, null);
               }
-              setState(OPEN);
             }
             catch (Exception e) {
               logger.debug("Can not handle event", e);
               setState(IDLE);
             }
-          }
-          break;
-        case RECEIVED_EVENT_RECORD:
-          // Current State: IDLE
-          // Event: Accounting event request received, and successfully processed.
-          // Action: Send accounting event answer
-          // New State: IDLE
-          if (listener != null) {
+            break;
+          case RECEIVED_STOP_RECORD:
+            // Current State: OPEN
+            // Event: Accounting stop request received, and
+            // successfully
+            // processed
+            // Action: Send accounting stop answer, Stop Ts
+            // New State: IDLE
             try {
-              listener.doAccRequestEvent(this, (AccountRequest) event.getData());
+              listener.doAccRequestEvent(this,
+                  (AccountRequest) event.getData());
+              cancelTsTimer();
+              if (context != null) {
+                context.sessionTimerCanceled(this, null);
+              }
+              setState(IDLE);
             }
             catch (Exception e) {
               logger.debug("Can not handle event", e);
+              setState(IDLE);
             }
+            break;
           }
           break;
         }
-        break;
-      }
-      case OPEN: {
-        switch ((Event.Type) event.getType()) {
-        case RECEIVED_INTERIM_RECORD:
-          // Current State: OPEN
-          // Event: Interim record received, and successfully processed.
-          // Action: Send accounting interim answer, Restart Ts
-          // New State: OPEN
-          try {
-            listener.doAccRequestEvent(this, (AccountRequest) event.getData());
-            cancelTsTimer();
-            timerId_ts = startTsTimer();
-            if (context != null) {
-              context.sessionTimerStarted(this, null);
-            }
-          }
-          catch (Exception e) {
-            logger.debug("Can not handle event", e);
-            setState(IDLE);
-          }
-          break;
-        case RECEIVED_STOP_RECORD:
-          // Current State: OPEN
-          // Event: Accounting stop request received, and successfully processed
-          // Action: Send accounting stop answer, Stop Ts
-          // New State: IDLE
-          try {
-            listener.doAccRequestEvent(this, (AccountRequest) event.getData());
-            cancelTsTimer();
-            if (context != null) {
-              context.sessionTimerCanceled(this, null);
-            }
-            setState(IDLE);
-          }
-          catch (Exception e) {
-            logger.debug("Can not handle event", e);
-            setState(IDLE);
-          }
-          break;
         }
-        break;
-      }
       }
     }
     catch (Exception e) {

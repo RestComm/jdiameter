@@ -548,42 +548,42 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
   }
 
   protected void processInterimIntervalAvp(StateEvent event) throws InternalException {
-    Avp interval = ((AppEvent) event.getData()).getMessage().getAvps().getAvp(Avp.ACCT_INTERIM_INTERVAL);
-    if (interval != null) {
-      // create timer
-      try {
-        long v = interval.getUnsigned32();
-        if (v != 0) {
-          //          scheduler.schedule(
-          //              new Runnable() {
-          //                public void run() {
-          //                  if (context != null) {
-          //                    try {
-          //                      Request interimRecord = createInterimRecord();
-          //                      context.interimIntervalElapses(interimRecord);
-          //                      sendAndStateLock.lock();
-          //                      session.send(interimRecord, ClientAccSessionImpl.this);
-          //                      setState(PENDING_INTERIM);
-          //                    }
-          //                    catch (Exception e) {
-          //                      logger.debug("Can not process Interim Interval AVP", e);
-          //                    }
-          //                    finally {
-          //                      sendAndStateLock.unlock();
-          //                    }
-          //                  }
-          //                }
-          //              },
-          //              v, TimeUnit.SECONDS
-          //          );
-          cancelInterimTimer();
-          this.timerId_interim = startInterimTimer(v);
-        }
-      }
-      catch (AvpDataException e) {
-        logger.debug("Unable to retrieve Acct-Interim-Interval AVP value", e);
-      }
-    }
+//    Avp interval = ((AppEvent) event.getData()).getMessage().getAvps().getAvp(Avp.ACCT_INTERIM_INTERVAL);
+//    if (interval != null) {
+//      // create timer
+//      try {
+//        long v = interval.getUnsigned32();
+//        if (v != 0) {
+//          //          scheduler.schedule(
+//          //              new Runnable() {
+//          //                public void run() {
+//          //                  if (context != null) {
+//          //                    try {
+//          //                      Request interimRecord = createInterimRecord();
+//          //                      context.interimIntervalElapses(interimRecord);
+//          //                      sendAndStateLock.lock();
+//          //                      session.send(interimRecord, ClientAccSessionImpl.this);
+//          //                      setState(PENDING_INTERIM);
+//          //                    }
+//          //                    catch (Exception e) {
+//          //                      logger.debug("Can not process Interim Interval AVP", e);
+//          //                    }
+//          //                    finally {
+//          //                      sendAndStateLock.unlock();
+//          //                    }
+//          //                  }
+//          //                }
+//          //              },
+//          //              v, TimeUnit.SECONDS
+//          //          );
+//          cancelInterimTimer();
+//          this.timerId_interim = startInterimTimer(v);
+//        }
+//      }
+//      catch (AvpDataException e) {
+//        logger.debug("Unable to retrieve Acct-Interim-Interval AVP value", e);
+//      }
+//    }
   }
 
   /* (non-Javadoc)

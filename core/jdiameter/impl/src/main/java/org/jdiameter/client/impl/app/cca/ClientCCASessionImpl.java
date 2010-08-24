@@ -22,6 +22,7 @@
 package org.jdiameter.client.impl.app.cca;
 
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -53,7 +54,10 @@ import org.jdiameter.api.cca.ClientCCASessionListener;
 import org.jdiameter.api.cca.events.JCreditControlAnswer;
 import org.jdiameter.api.cca.events.JCreditControlRequest;
 import org.jdiameter.client.api.IContainer;
+import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.ISessionFactory;
+import org.jdiameter.client.api.parser.IMessageParser;
+import org.jdiameter.client.api.parser.ParseException;
 import org.jdiameter.client.impl.app.cca.Event.Type;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.cca.ClientCCASessionState;
@@ -64,6 +68,8 @@ import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
 import org.jdiameter.common.impl.app.cca.AppCCASessionImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Client Credit-Control Application session implementation
@@ -74,6 +80,7 @@ import org.jdiameter.common.impl.app.cca.AppCCASessionImpl;
 public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCASession, NetworkReqListener, EventListener<Request, Answer> {
 
   private static final long serialVersionUID = 1L;
+  private static final Logger logger = LoggerFactory.getLogger(ClientCCASessionImpl.class);
 
   // Session State Handling ---------------------------------------------------
   protected boolean isEventBased = true;
@@ -85,14 +92,17 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   protected transient ICCAMessageFactory factory;
   protected transient ClientCCASessionListener listener;
   protected transient IClientCCASessionContext context;
+  protected transient IMessageParser parser;
 
   // Tx Timer -----------------------------------------------------------------
   //protected transient ScheduledFuture txFuture = null; //FIXME: HA/FT
   protected Serializable txTimerId;
-  protected JCreditControlRequest txTimerRequest;
+  //protected JCreditControlRequest txTimerRequest;
+  protected byte[] txTimerRequest;
 
   // Event Based Buffer
-  protected Message buffer = null;
+  //protected Message buffer = null;
+  protected byte[] buffer;
 
   protected final static String TX_TIMER_NAME = "CCA_CLIENT_TX_TIMER";
   protected static final long TX_TIMER_DEFAULT_VALUE = 30 * 60 * 1000; // miliseconds
@@ -162,6 +172,10 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     authAppIds = fct.getApplicationIds();
     listener = lst;
     factory = fct;
+    ISessionFactory isf = (ISessionFactory) sf;
+    IContainer icontainer = isf.getContainer();
+    this.parser = icontainer.getAssemblerFacility().getComponentInstance(IMessageParser.class);
+
     super.addStateChangeNotification(stLst);
     //    try {
     //      session = sessionId == null ? sf.getNewSession() : sf.getNewSession(sessionId);
@@ -591,7 +605,12 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
     logger.debug("Scheduling TX Timer {}", txTimerValue);
     //this.txFuture = scheduler.schedule(new TxTimerTask(this, request), txTimerValue, TimeUnit.SECONDS);
-    this.txTimerRequest = request;
+    try {
+      this.txTimerRequest = this.parser.encodeMessage((IMessage) request.getMessage()).array();
+    }
+    catch (Exception e) {
+      throw new IllegalArgumentException("Failed to store request.", e);
+    }
     this.txTimerId = this.timerFacility.schedule(this.sessionId, TX_TIMER_NAME, TX_TIMER_DEFAULT_VALUE);
   }
 
@@ -685,8 +704,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Event: Failure to send; request action DIRECT_DEBITING; DDFH equal to TERMINATE_OR_BUFFER
               // Action: Store request with T-flag
               // New State: IDLE
-              buffer = request;
-              buffer.setReTransmitted(true);
+              request.setReTransmitted(true);
+              buffer = messageToBuffer((IMessage) request).array();
+
               setState(ClientCCASessionState.IDLE, false);
               break;
             case DDFH_CONTINUE:
@@ -706,8 +726,8 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
             // Action: Store request with T-flag
             // New State: IDLE
             setState(ClientCCASessionState.IDLE, false);
-            buffer = request;
-            buffer.setReTransmitted(true);
+            request.setReTransmitted(true);
+            buffer = messageToBuffer((IMessage) request).array();
           }
           else {
             logger.warn("Invalid Requested-Action AVP value {}", gatheredRequestedAction);
@@ -833,7 +853,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Event: Temporary error, and requested action REFUND_ACCOUNT
               // Action: Store request
               // New State: IDLE
-              buffer = request.getMessage();
+              buffer = messageToBuffer((IMessage) request).array();
               setState(ClientCCASessionState.IDLE, false);
             }
             else {
@@ -996,7 +1016,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     }
     catch (Exception e) {
       if(logger.isDebugEnabled()) {
-        logger.debug("Failure handling failure message for Event " + event + " (" + eventType + ") and Request " + request, e);			  
+        logger.debug("Failure handling failure message for Event " + event + " (" + eventType + ") and Request " + request, e);
       }
     }
   }
@@ -1018,7 +1038,12 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           // Event: Temporary error; requested action DIRECT_DEBITING; DDFH equal to TERMINATE_OR_BUFFER; Tx expired
           // Action: Store request
           // New State: IDLE
-          buffer = message;
+          try {
+            buffer = messageToBuffer((IMessage) message).array();
+          }
+          catch (InternalException e) {
+            logger.debug("Failed to store request.", e);
+          }
           setState(ClientCCASessionState.IDLE, false);
         }
         else {
@@ -1035,8 +1060,13 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         // Event: Failure to send or Tx expired; requested action REFUND_ACCOUNT
         // Action: Store request with T-flag
         // New State: IDLE
-        buffer = message;
-        buffer.setReTransmitted(true);
+        message.setReTransmitted(true);
+        try {
+          buffer = messageToBuffer((IMessage) message).array();
+        }
+        catch (InternalException e) {
+          throw new IllegalArgumentException("Failed to store request.", e);
+        }
         setState(ClientCCASessionState.IDLE, false);
       }
     }
@@ -1116,11 +1146,11 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       if (buffer != null) {
         setState(ClientCCASessionState.PENDING_BUFFERED);
         try {
-          dispatchEvent(new AppRequestEventImpl(buffer));
+          dispatchEvent(new AppRequestEventImpl(messageFromBuffer(ByteBuffer.wrap(buffer))));
         }
         catch (Exception e) {
           try {
-            handleSendFailure(e, Event.Type.SEND_EVENT_REQUEST, buffer);
+            handleSendFailure(e, Event.Type.SEND_EVENT_REQUEST, messageFromBuffer(ByteBuffer.wrap(buffer)));
           }
           catch (Exception e1) {
             logger.error("Failure handling buffer send failure", e1);
@@ -1233,9 +1263,10 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     // Check if some transient field is null
     if(super.sf == null) {
       super.relink(stack);
+      this.parser = stack.getAssemblerFacility().getComponentInstance(IMessageParser.class);
 
       //hack this will change
-      ICCASessionFactory fct = (ICCASessionFactory) ((ISessionFactory)super.sf).getAppSessionFactory(this.getClass());
+      ICCASessionFactory fct = (ICCASessionFactory) ((ISessionFactory)super.sf).getAppSessionFactory(ClientCCASession.class);
 
       this.listener = fct.getClientSessionListener();
       this.context = fct.getClientContextListener();
@@ -1245,9 +1276,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
   private class TxTimerTask implements Runnable {
     private ClientCCASession session = null;
-    private JCreditControlRequest request = null;
+    private byte[] request = null;
 
-    private TxTimerTask(ClientCCASession session, JCreditControlRequest request) {
+    private TxTimerTask(ClientCCASession session, byte[] request) {
       super();
       this.session = session;
       this.request = request;
@@ -1264,7 +1295,8 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         catch (Exception e) {
           logger.debug("Failure handling TX Timer Expired", e);
         }
-        handleEvent(new Event(Event.Type.Tx_TIMER_FIRED, request, null));
+        JCreditControlRequest req = factory.createCreditControlRequest((Request) messageFromBuffer(ByteBuffer.wrap(request)));
+        handleEvent(new Event(Event.Type.Tx_TIMER_FIRED, req, null));
       }
       catch (InternalException e) {
         logger.error("Internal Exception", e);
@@ -1272,9 +1304,35 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       catch (OverloadException e) {
         logger.error("Overload Exception", e);
       }
+      catch (Exception e) {
+        logger.error("Exception", e);
+      }
       finally {
         sendAndStateLock.unlock();
       }
+    }
+  }
+
+  private final Message messageFromBuffer(ByteBuffer request) throws InternalException {
+    if (request != null) {
+      Message m;
+      try {
+        m = parser.createMessage(request);
+        return m;
+      }
+      catch (AvpDataException e) {
+        throw new InternalException("Failed to decode message.", e);
+      }
+    }
+    return null;
+  }
+
+  private ByteBuffer messageToBuffer(IMessage msg) throws InternalException {
+    try {
+      return parser.encodeMessage(msg);
+    }
+    catch (ParseException e) {
+      throw new InternalException("Failed to encode message.",e);
     }
   }
 

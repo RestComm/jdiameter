@@ -66,8 +66,8 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
   protected int defaultCreditControlFailureHandling = 0;
 
   // its seconds
-  protected long defaultValidityTime = 30;
-  protected long defaultTxTimerValue = 10;
+  protected long defaultValidityTime = 60;
+  protected long defaultTxTimerValue = 30;
 
   // local not replicated listeners:
   protected ClientCCASessionListener clientSessionListener;

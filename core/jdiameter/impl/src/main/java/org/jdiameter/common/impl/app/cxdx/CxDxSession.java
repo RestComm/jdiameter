@@ -87,6 +87,15 @@ public abstract class CxDxSession extends AppSessionImpl implements NetworkReqLi
     return true;
   }
 
+  /* (non-Javadoc)
+   * @see org.jdiameter.common.impl.app.AppSessionImpl#isReplicable()
+   */
+  @Override
+  public boolean isReplicable() {
+    //Cx/Dx is event based..
+    return false;
+  }
+
   protected void startMsgTimer() {
     try {
       sendAndStateLock.lock();
@@ -102,7 +111,7 @@ public abstract class CxDxSession extends AppSessionImpl implements NetworkReqLi
     try {
       sendAndStateLock.lock();
       if(this.timerId_timeout == null) {
-    	  return;
+        return;
       }
       super.timerFacility.cancel(timerId_timeout);
       this.timerId_timeout = null;

@@ -35,8 +35,6 @@ import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.cca.ICCASessionFactory;
 import org.jdiameter.common.impl.app.AppSessionImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -48,8 +46,6 @@ public abstract class AppCCASessionImpl extends AppSessionImpl implements Networ
   private static final long serialVersionUID = 1L;
 
   protected Lock sendAndStateLock = new ReentrantLock();
-
-  protected transient Logger logger = LoggerFactory.getLogger(getClass());
 
   //FIXME: those must be recreated from local resources!
   //FIXME: change this to single ref!

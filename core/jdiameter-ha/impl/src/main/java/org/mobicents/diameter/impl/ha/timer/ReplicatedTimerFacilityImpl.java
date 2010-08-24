@@ -60,7 +60,7 @@ public class ReplicatedTimerFacilityImpl implements ITimerFacility {
     ReplicatedDataSource rds = (ReplicatedDataSource) this.sessionDataSource;
     MobicentsCache mcCache = new MobicentsCache(rds.getJBossCache(), null);
     MobicentsCluster cluster = new DefaultMobicentsCluster(mcCache, null, new DefaultClusterElector());
-    this.ftScheduler = new FaultTolerantScheduler("XXX", 5, cluster, (byte) 12, null, this.taskFactory);
+    this.ftScheduler = new FaultTolerantScheduler("DiameterTimer", 5, cluster, (byte) 12, null, this.taskFactory);
   }
 
   /*
@@ -106,7 +106,7 @@ public class ReplicatedTimerFacilityImpl implements ITimerFacility {
     }
 
     @Override
-    public void run() {
+    public void runTask() {
       try {
         DiameterTimerTaskData data = (DiameterTimerTaskData) getData();
         BaseSession bSession = sessionDataSource.getSession(data.getSessionId());

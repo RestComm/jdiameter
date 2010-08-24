@@ -21,14 +21,12 @@
  */
 package org.jdiameter.server.impl.app.sh;
 
-import java.io.Serializable;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
-import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
@@ -36,7 +34,6 @@ import org.jdiameter.api.Message;
 import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
-import org.jdiameter.api.ResultCode;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppEvent;
@@ -54,10 +51,8 @@ import org.jdiameter.api.sh.events.UserDataAnswer;
 import org.jdiameter.api.sh.events.UserDataRequest;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.ISessionFactory;
-import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.sh.IShMessageFactory;
 import org.jdiameter.common.api.app.sh.IShSessionFactory;
-import org.jdiameter.common.api.app.sh.ShSessionState;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.jdiameter.common.impl.app.sh.ShSession;
@@ -84,8 +79,6 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
   private Logger logger = LoggerFactory.getLogger(ShServerSessionImpl.class);
 
   // Session State Handling ---------------------------------------------------
-  protected boolean stateless = false;
-  protected ShSessionState state = ShSessionState.NOTSUBSCRIBED;
   protected Lock sendAndStateLock = new ReentrantLock();
   protected boolean receivedSubTerm = false;
 
@@ -93,26 +86,8 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
   protected transient IShMessageFactory factory = null;
   protected transient ServerShSessionListener listener;
 
-  // Subscription Timer -------------------------------------------------------
-  private static final String _TIMER_NAME_SFT = "SFT";
-  private static final String _TIMER_NAME_TXSFT = "TXSFT";
-  //protected ScheduledFuture sft = null;
-  //protected ScheduledFuture txSft = null;
-  protected Serializable timerId_sft;
-  protected Serializable timerId_txsft; //FIXME: move this to stack?
-  protected AppEvent txRequest;
-
-  //protected TxTimerTask txTimerTask = null;
-
   protected String destHost, destRealm;
   protected long appId = -1;
-
-  // Subs-Req-Type AVP Constants ----------------------------------------------
-  // The Subs-Req-Type AVP is of type Enumerated, and indicates the type of the subscription-to-notifications request.
-  // Subscribe (0) This value is used by an AS to subscribe to notifications of changes in data.
-  private final int SUBS_REQ_TYPE_SUBSCRIBE = 0;
-  // Unsubscribe (1) This value is used by an AS to unsubscribe to notifications of changes in data.
-  private final int SUBS_REQ_TYPE_UNSUBSCRIBE = 1;
 
   public ShServerSessionImpl(IShMessageFactory fct, SessionFactory sf, ServerShSessionListener lst) {
     this(null, fct, sf, lst);
@@ -195,121 +170,49 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> stateType) {
-    return stateType == ShSessionState.class ? (E) state : null;
+    return null;
   }
 
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
     try {
       sendAndStateLock.lock();
-      ShSessionState oldState = this.state;
-      ShSessionState newState = this.state;
-      try {
-        Event localEvent = (Event) event;
-        AppEvent request = localEvent.getRequest();
-        switch (state) {
-        case NOTSUBSCRIBED:
-          if (event.getType() == Event.Type.RECEIVE_SUBSCRIBE_NOTIFICATIONS_REQUEST) {
-            // Do nothing, we have to wait for response send callback
-            startTxTimer(request);
-            // We use newState in case of first request, it can be unsubscribe or bad
-            newState = doSNX(request);
-          }
-          else if (event.getType() == Event.Type.RECEIVE_PROFILE_UPDATE_REQUEST) {
-            startTxTimer(request);
-          }
-          else if (event.getType() == Event.Type.RECEIVE_USER_DATA_REQUEST) {
-            startTxTimer(request);
-          }
-          else if(event.getType() == Event.Type.SEND_SUBSCRIBE_NOTIFICATIONS_ANSWER) {
-            newState = doSNX(localEvent.getAnswer());
-            stopTxTimer();
-          }
-          else if (event.getType() == Event.Type.TIMEOUT_EXPIRES) {
-            newState = ShSessionState.TERMINATED;
-            //FIXME: What happens here?
-          }
-          else if(event.getType() == Event.Type.TX_TIMER_EXPIRED) {
-            newState = ShSessionState.TERMINATED;
-            //FIXME Result code ???
-            try {
-              Answer answer =  ((Request)request.getMessage()).createAnswer(ResultCode.TOO_BUSY);
-              session.send(answer);
-            }
-            catch (Exception e) {
-              logger.debug("Unable to send failure answer", e);
-            }
-          }
-          else {
-            // Other messages just make it go into terminated state and release send: UDA
-            stopTxTimer();
-            newState = ShSessionState.TERMINATED;
-          }
-
-          break;
-        case SUBSCRIBED:
-          if(event.getType() == Event.Type.SEND_SUBSCRIBE_NOTIFICATIONS_ANSWER) {
-            newState = doSNX(localEvent.getAnswer());
-            stopTxTimer();
-          }
-          else if(event.getType() == Event.Type.RECEIVE_SUBSCRIBE_NOTIFICATIONS_REQUEST) {
-            newState = doSNX(request);
-            //startTxTimer(request);
-          }
-          //FIXME: Any change here - even on timeout?
-          break;
-        case TERMINATED:
-          break;
-        }
-
-        // Do the delivery
-        // FIXME: Should we look if we are in terminated state?
-        try {
-          switch ((Event.Type) localEvent.getType()) {
-          case RECEIVE_PROFILE_UPDATE_REQUEST:
-            listener.doProfileUpdateRequestEvent(this, (ProfileUpdateRequest) localEvent.getRequest());
-            break;
-          case RECEIVE_PUSH_NOTIFICATION_ANSWER:
-            listener.doPushNotificationAnswerEvent(this, (PushNotificationRequest) localEvent.getRequest(), (PushNotificationAnswer) localEvent.getAnswer());
-            break;
-          case RECEIVE_SUBSCRIBE_NOTIFICATIONS_REQUEST:
-            listener.doSubscribeNotificationsRequestEvent(this, (SubscribeNotificationsRequest) localEvent.getRequest());
-            break;
-          case RECEIVE_USER_DATA_REQUEST:
-            listener.doUserDataRequestEvent(this, (UserDataRequest) localEvent.getRequest());
-            break;
-          case SEND_PROFILE_UPDATE_ANSWER:
-            dispatchEvent(localEvent.getAnswer());
-            stopTxTimer();
-            break;
-          case SEND_PUSH_NOTIFICATION_REQUEST:
-            dispatchEvent(localEvent.getRequest());
-            break;
-          case SEND_SUBSCRIBE_NOTIFICATIONS_ANSWER:
-            dispatchEvent(localEvent.getAnswer());
-            stopTxTimer();
-            break;
-          case SEND_USER_DATA_ANSWER:
-            dispatchEvent(localEvent.getAnswer());
-            stopTxTimer();
-            break;
-          case TIMEOUT_EXPIRES:
-            break;
-          default:
-            logger.error("Wrong message type = {} req = {} ans = {}", new Object[]{localEvent.getType(), localEvent.getRequest(), localEvent.getAnswer()});
-          }
-        }
-        catch (IllegalDiameterStateException idse) {
-          throw new InternalException(idse);
-        }
-        catch (RouteException re) {
-          throw new InternalException(re);
-        }
+      Event localEvent = (Event) event;
+      switch ((Event.Type) localEvent.getType()) {
+      case RECEIVE_PROFILE_UPDATE_REQUEST:
+        listener.doProfileUpdateRequestEvent(this, (ProfileUpdateRequest) localEvent.getRequest());
+        break;
+      case RECEIVE_PUSH_NOTIFICATION_ANSWER:
+        listener.doPushNotificationAnswerEvent(this, (PushNotificationRequest) localEvent.getRequest(), (PushNotificationAnswer) localEvent.getAnswer());
+        break;
+      case RECEIVE_SUBSCRIBE_NOTIFICATIONS_REQUEST:
+        listener.doSubscribeNotificationsRequestEvent(this, (SubscribeNotificationsRequest) localEvent.getRequest());
+        break;
+      case RECEIVE_USER_DATA_REQUEST:
+        listener.doUserDataRequestEvent(this, (UserDataRequest) localEvent.getRequest());
+        break;
+      case SEND_PROFILE_UPDATE_ANSWER:
+        dispatchEvent(localEvent.getAnswer());
+        break;
+      case SEND_PUSH_NOTIFICATION_REQUEST:
+        dispatchEvent(localEvent.getRequest());
+        break;
+      case SEND_SUBSCRIBE_NOTIFICATIONS_ANSWER:
+        dispatchEvent(localEvent.getAnswer());
+        break;
+      case SEND_USER_DATA_ANSWER:
+        dispatchEvent(localEvent.getAnswer());
+        break;
+      case TIMEOUT_EXPIRES:
+        break;
+      default:
+        logger.error("Wrong message type = {} req = {} ans = {}", new Object[]{localEvent.getType(), localEvent.getRequest(), localEvent.getAnswer()});
       }
-      finally {
-        if (newState != oldState) {
-          setState(newState, true);
-        }
-      }
+    }
+    catch (IllegalDiameterStateException idse) {
+      throw new InternalException(idse);
+    }
+    catch (RouteException re) {
+      throw new InternalException(re);
     }
     finally {
       sendAndStateLock.unlock();
@@ -319,7 +222,7 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
   }
 
   public boolean isStateless() {
-    return stateless;
+    return true;
   }
 
   protected void send(Event.Type type, AppEvent request, AppEvent answer) throws InternalException {
@@ -348,35 +251,11 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
     }
   }
 
-  protected void setState(ShSessionState newState) {
-    setState(newState, true);
-  }
-
-  @SuppressWarnings("unchecked")
-  protected void setState(ShSessionState newState, boolean release) {
-    IAppSessionState oldState = state;
-    state = newState;
-    super.sessionDataSource.updateSession(this);
-    for (StateChangeListener i : stateListeners) {
-      i.stateChanged(this,(Enum) oldState, (Enum) newState);
-    }
-    if (newState == ShSessionState.TERMINATED) {
-      if (release) {
-        this.release();
-      }
-      stopSubscriptionTimer();
-      stopTxTimer();
-    }
-  }
-
   @SuppressWarnings("unchecked")
   public void release() {
     try {
       sendAndStateLock.lock();
-      if (state != ShSessionState.TERMINATED) {
-        setState(ShSessionState.TERMINATED, false);
-        //session.release();
-      }
+      
       if(super.isValid()) {
         super.release();
       }
@@ -411,225 +290,6 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
     return -1;
   }
 
-  protected ShSessionState doSNX(AppEvent message) throws InternalException {
-    ShSessionState newState = state;
-    AvpSet set = message.getMessage().getAvps();
-    long resultCode = -1;
-    Avp avp = null;
-
-    try{
-      if(message.getMessage().isRequest()) {
-        Avp subsReqTypeAvp = set.getAvp(705);
-        int subsReqType = -1;
-        if(subsReqTypeAvp != null) {
-          subsReqType = subsReqTypeAvp.getInteger32();
-        }
-        if(subsReqType != SUBS_REQ_TYPE_SUBSCRIBE && subsReqType != SUBS_REQ_TYPE_UNSUBSCRIBE) {
-          newState = ShSessionState.TERMINATED;
-        }
-        else {
-          switch(subsReqType)
-          {
-          case SUBS_REQ_TYPE_SUBSCRIBE:
-            startSubscriptionTimer(message.getMessage());
-            break;
-          case SUBS_REQ_TYPE_UNSUBSCRIBE:
-            receivedSubTerm = true;
-            break;
-          }
-        }
-      }
-      else {
-        if(receivedSubTerm) {
-          newState = ShSessionState.TERMINATED;
-          stopSubscriptionTimer();
-        }
-        else {
-          avp = set.getAvp(Avp.RESULT_CODE);
-          if(avp == null) {
-            avp = set.getAvp(Avp.EXPERIMENTAL_RESULT).getGrouped().getAvp(Avp.EXPERIMENTAL_RESULT_CODE);
-          }
-          try {
-            resultCode = avp.getUnsigned32();
-            if (isSuccess(resultCode)) {
-              startSubscriptionTimer(message.getMessage());
-              newState = ShSessionState.SUBSCRIBED;
-            }
-            else {
-              // its a failure?
-              newState =  ShSessionState.TERMINATED;
-            }
-          }
-          catch (AvpDataException e) {
-            logger.debug("Could not retrieve Result-Code from message", e);
-          }
-        }
-      }
-    }
-    catch(Exception e) {
-      logger.debug("Unable to process event", e);
-      newState = ShSessionState.TERMINATED;
-    }
-    return newState;
-  }
-
-  /* (non-Javadoc)
-   * @see org.jdiameter.common.impl.app.AppSessionImpl#onTimer(java.lang.String)
-   */
-  @Override
-  public void onTimer(String timerName) {
-    if (timerName.equals(_TIMER_NAME_SFT)) {
-      try {
-        sendAndStateLock.lock();
-        timerId_sft = null;
-        if (state != ShSessionState.TERMINATED) {
-          setState(ShSessionState.TERMINATED);
-        }
-      }
-      finally {
-        sendAndStateLock.unlock();
-      }
-    }
-    else if (timerName.equals(_TIMER_NAME_TXSFT)) {
-      try {
-        sendAndStateLock.lock();
-        timerId_txsft = null;
-        handleEvent(new Event(Event.Type.TX_TIMER_EXPIRED, this.txRequest, null));
-      }
-      catch (InternalException e) {
-        logger.error("Internal Exception", e);
-      }
-      catch (OverloadException e) {
-        logger.error("Overload Exception", e);
-      }
-      finally {
-        this.txRequest = null;
-        sendAndStateLock.unlock();
-      }
-    }
-    else {
-      super.onTimer(timerName);
-    }
-  }
-
-  private void startSubscriptionTimer(Message message) {
-    long expiryTime = extractExpiryTime(message);
-    if (expiryTime >= 0) {
-      stopSubscriptionTimer();
-      //this.sft = scheduler.schedule(new Runnable() {
-      this.timerId_sft = super.timerFacility.schedule(super.sessionId, _TIMER_NAME_SFT, expiryTime* 1000);
-      //        public void run() {
-      //          try {
-      //            sendAndStateLock.lock();
-      //            if (state != ShSessionState.TERMINATED) {
-      //              setState(ShSessionState.TERMINATED);
-      //            }
-      //          }
-      //          finally {
-      //            sendAndStateLock.unlock();
-      //          }
-      //        }
-      //      }, expiryTime, TimeUnit.SECONDS);
-      super.sessionDataSource.updateSession(this);
-    }
-  }
-
-  private void stopSubscriptionTimer() {
-    //    if(this.sft != null) {
-    //      this.sft.cancel(false);
-    //      this.sft = null;
-    //    }
-
-    if(this.timerId_sft != null) {
-      super.timerFacility.cancel(timerId_sft);
-      this.timerId_sft = null;
-    }
-    super.sessionDataSource.updateSession(this);
-  }
-
-  private void startTxTimer(AppEvent request) {
-    try {
-      sendAndStateLock.lock();
-      this.stopTxTimer();
-      this.txRequest = request;
-      this.timerId_txsft = super.timerFacility.schedule(super.sessionId, _TIMER_NAME_TXSFT, this.factory.getMessageTimeout());
-      super.sessionDataSource.updateSession(this);
-      //this.txTimerTask = new TxTimerTask(request);
-      //this.txSft = super.scheduler.schedule(this.txTimerTask, this.factory.getMessageTimeout(), TimeUnit.MILLISECONDS);
-    }
-    catch (Exception e) {
-      logger.debug("Error while setting up TxTimer", e);
-    }
-    finally {
-      sendAndStateLock.unlock();
-    }
-  }
-
-  private void stopTxTimer() {
-    try {
-      sendAndStateLock.lock();
-      //      if (this.txTimerTask != null) {
-      //        this.txSft.cancel(false);
-      //        this.txSft = null;
-      //        this.txTimerTask.cancel();
-      //        this.txTimerTask = null;
-      //      }
-      if (this.timerId_txsft != null) {
-        super.timerFacility.cancel(timerId_txsft);
-        this.timerId_txsft = null;
-        this.txRequest = null;
-        super.sessionDataSource.updateSession(this);
-      }
-    }
-    catch (Exception e) {
-      logger.debug("Error while stopping TxTimer", e);
-    }
-    finally {
-      sendAndStateLock.unlock();
-    }
-  }
-
-  //  private class TxTimerTask extends TimerTask {
-  //    private AppEvent request = null;
-  //
-  //    public TxTimerTask(AppEvent request2) {
-  //      super();
-  //      this.request = request2;
-  //    }
-  //
-  //    @Override
-  //    public boolean cancel() {
-  //      this.request = null;
-  //      return super.cancel();
-  //    }
-  //
-  //    @Override
-  //    public void run() {
-  //      try {
-  //        sendAndStateLock.lock();
-  //        handleEvent(new Event(Event.Type.TX_TIMER_EXPIRED, request, null));
-  //      }
-  //      catch (InternalException e) {
-  //        logger.error("Internal Exception", e);
-  //      }
-  //      catch (OverloadException e) {
-  //        logger.error("Overload Exception", e);
-  //      }
-  //      finally {
-  //        this.request = null;
-  //        sendAndStateLock.unlock();
-  //      }
-  //    }
-  //  }
-
-  protected  boolean isProvisional(long result) {
-    return result >= 1000 && result < 2000;
-  }
-
-  protected boolean isSuccess(long result) {
-    return result >= 2000 && result < 3000;
-  }
-
   /* (non-Javadoc)
    * @see org.jdiameter.common.impl.app.AppSessionImpl#isReplicable()
    */
@@ -662,9 +322,6 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
     result = prime * result + ((destHost == null) ? 0 : destHost.hashCode());
     result = prime * result + ((destRealm == null) ? 0 : destRealm.hashCode());
     result = prime * result + (receivedSubTerm ? 1231 : 1237);
-    result = prime * result + ((state == null) ? 0 : state.hashCode());
-    result = prime * result + (stateless ? 1231 : 1237);
-    result = prime * result + ((txRequest == null) ? 0 : txRequest.hashCode());
     return result;
   }
 
@@ -705,25 +362,7 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
     if (receivedSubTerm != other.receivedSubTerm) {
       return false;
     }
-    if (state == null) {
-      if (other.state != null) {
-        return false;
-      }
-    }
-    else if (!state.equals(other.state)) {
-      return false;
-    }
-    if (stateless != other.stateless) {
-      return false;
-    }
-    if (txRequest == null) {
-      if (other.txRequest != null) {
-        return false;
-      }
-    }
-    else if (!txRequest.equals(other.txRequest)) {
-      return false;
-    }
+
     return true;
   }
 
