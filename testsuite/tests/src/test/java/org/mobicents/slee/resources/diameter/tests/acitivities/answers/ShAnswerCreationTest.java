@@ -102,7 +102,7 @@ public class ShAnswerCreationTest {
 		PushNotificationRequest pnr = factory.createPushNotificationRequest();
 		ArrayList<DiameterMessage> list = new ArrayList<DiameterMessage>();
 		list.add(pnr);
-		ShClientSubscriptionActivityImpl activity = new ShClientSubscriptionActivityImpl(new ShClientMessageFactoryImpl(session.getSessions().get(0), stack), new DiameterShAvpFactoryImpl(diameterAvpFactory), session, null, null, null);
+		ShClientSubscriptionActivityImpl activity = new ShClientSubscriptionActivityImpl(new ShClientMessageFactoryImpl(session.getSessions().get(0), stack), new DiameterShAvpFactoryImpl(diameterAvpFactory), session, null, null);
 
 		DiameterActivityAnswerCreationHelper.testAnswerCreation(activity, "stateMessages", list);
 	}
@@ -120,7 +120,7 @@ public class ShAnswerCreationTest {
 		list.add(pur);
 		list.add(snr);
 
-		ShServerActivityImpl activity = new ShServerActivityImpl(new ShServerMessageFactoryImpl(msgFactory, session.getSessions().get(0), stack, diameterShAvpFactory), diameterShAvpFactory, session, null, null, null);
+		ShServerActivityImpl activity = new ShServerActivityImpl(new ShServerMessageFactoryImpl(msgFactory, session.getSessions().get(0), stack, diameterShAvpFactory), diameterShAvpFactory, session, null, null);
 
 		DiameterActivityAnswerCreationHelper.testAnswerCreation(activity, "stateMessages", list);
 	}
@@ -140,7 +140,7 @@ public class ShAnswerCreationTest {
 		list.add(snr);
 
 		ShServerSubscriptionActivityImpl activity = new ShServerSubscriptionActivityImpl(new ShServerMessageFactoryImpl(msgFactory, session.getSessions().get(0), stack, diameterShAvpFactory),
-				diameterShAvpFactory, session, null, null, null);
+				diameterShAvpFactory, session, null, null);
 
 		DiameterActivityAnswerCreationHelper.testAnswerCreation(activity, "stateMessages", list);
 

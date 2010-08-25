@@ -40,6 +40,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import net.java.slee.resource.diameter.base.DiameterActivity;
 import net.java.slee.resource.diameter.base.events.AccountingAnswer;
 import net.java.slee.resource.diameter.base.events.AccountingRequest;
 import net.java.slee.resource.diameter.base.events.avp.AccountingRecordType;
@@ -77,10 +78,8 @@ import net.java.slee.resource.diameter.ro.events.avp.TimeStamps;
 import net.java.slee.resource.diameter.ro.events.avp.TrunkGroupId;
 import net.java.slee.resource.diameter.ro.events.avp.WlanInformation;
 
-import org.jdiameter.api.Answer;
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Message;
-import org.jdiameter.api.Request;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.Stack;
@@ -94,11 +93,12 @@ import org.jdiameter.client.impl.helpers.EmptyConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
+import org.mobicents.slee.resource.diameter.base.DiameterActivityHandle;
 import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.base.handlers.AccountingSessionFactory;
-import org.mobicents.slee.resource.diameter.base.handlers.BaseSessionCreationListener;
+import org.mobicents.slee.resource.diameter.base.handlers.DiameterRAInterface;
 import org.mobicents.slee.resource.diameter.rf.RfMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.rf.RfServerSessionImpl;
 import org.mobicents.slee.resource.diameter.ro.RoAvpFactoryImpl;
@@ -112,7 +112,7 @@ import org.mobicents.slee.resource.diameter.ro.RoAvpFactoryImpl;
  * <br>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public class RfFactoriesTest implements BaseSessionCreationListener {
+public class RfFactoriesTest implements DiameterRAInterface {
   
   private static String clientHost = "127.0.0.1";
   private static String clientPort = "21812";
@@ -176,7 +176,7 @@ public class RfFactoriesTest implements BaseSessionCreationListener {
       acr.setAccountingRecordNumber( 5L );
       
       session = ((ISessionFactory) sf).getNewAppSession(null, null, ServerAccSession.class, ((DiameterMessageImpl)acr).getGenericData());
-      rfServerSession = new RfServerSessionImpl((DiameterMessageFactoryImpl)rfMessageFactory.getBaseMessageFactory(), (DiameterAvpFactoryImpl)rfAvpFactory.getBaseFactory(), session, null, null, null, stack);
+      rfServerSession = new RfServerSessionImpl((DiameterMessageFactoryImpl)rfMessageFactory.getBaseMessageFactory(), (DiameterAvpFactoryImpl)rfAvpFactory.getBaseFactory(), session, null, null, stack);
       
       ((RfServerSessionImpl)rfServerSession).fetchSessionData( acr, true );
     }
@@ -1601,6 +1601,14 @@ public class RfFactoriesTest implements BaseSessionCreationListener {
   }
 
   public void stateChanged(AppSession source, Enum oldState, Enum newState) {
+    // TODO Auto-generated method stub
+  }
+
+  public void endActivity(DiameterActivityHandle arg0) {
+    // TODO Auto-generated method stub
+  }
+
+  public void update(DiameterActivityHandle arg0, DiameterActivity arg1) {
     // TODO Auto-generated method stub
   }
 }
