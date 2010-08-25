@@ -361,7 +361,7 @@ public class MessageValidatorTest {
     }
     catch (JAvpNotAllowedException ex) {
       // we are ok,
-      ex.printStackTrace();
+      // ex.printStackTrace();
     }
   }
 
