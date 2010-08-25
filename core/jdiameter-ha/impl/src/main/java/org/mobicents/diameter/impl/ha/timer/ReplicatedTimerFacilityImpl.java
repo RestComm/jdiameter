@@ -105,7 +105,6 @@ public class ReplicatedTimerFacilityImpl implements ITimerFacility {
       super(data);
     }
 
-    @Override
     public void runTask() {
       try {
         DiameterTimerTaskData data = (DiameterTimerTaskData) getData();
