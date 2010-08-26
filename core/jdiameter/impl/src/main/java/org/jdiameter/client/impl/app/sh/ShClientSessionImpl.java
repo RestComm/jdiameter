@@ -293,7 +293,6 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
     }
   }
   
-  @Override
   public boolean isStateless() {
     return true;
   }
