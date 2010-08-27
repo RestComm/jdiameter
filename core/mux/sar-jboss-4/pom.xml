@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.mobicents.servers.diameter</groupId>
     <artifactId>mobicents-diameter-mux-parent</artifactId>
-    <version>1.3.1-SNAPSHOT</version> 
+    <version>1.3.1.FINAL</version> 
   </parent>
   
   <artifactId>mobicents-diameter-mux-sar-jboss-4</artifactId>
