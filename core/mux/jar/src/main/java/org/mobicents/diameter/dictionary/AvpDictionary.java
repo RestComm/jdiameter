@@ -68,7 +68,7 @@ public class AvpDictionary
     // Exists only to defeat instantiation.
   }
 
-  public void parseDictionart(String filename) throws Exception {
+  public void parseDictionary(String filename) throws Exception {
     parseDictionary( new FileInputStream( filename ) );  
   }
 
