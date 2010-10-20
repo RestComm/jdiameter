@@ -1,7 +1,6 @@
 package org.jdiameter.common.api.app.sh;
 
 import org.jdiameter.api.Answer;
-import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
