@@ -390,11 +390,14 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
         Network network = stack.unwrap(Network.class);
 
         for (; curAppIdIndex >= 0; curAppIdIndex--) {
+          ApplicationId appId = appIds[curAppIdIndex];
+          Long appIdValue = appId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE ? appId.getAcctAppId() : appId.getAuthAppId(); 
+
           // Remove the app id from map
-          this.appIdToListener.remove(appIds[curAppIdIndex]);
+          this.appIdToListener.remove(appIdValue);
 
           // Unregister it from stack listener
-          network.removeNetworkReqListener(appIds[curAppIdIndex]);
+          network.removeNetworkReqListener(appId);
         }
       }
       catch (Exception e) {
@@ -438,8 +441,10 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
             logger.info("Diameter Stack Mux :: unregisterListener :: Unregistering AppId [" + appId + "]");
           }
 
+          Long appIdValue = appId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE ? appId.getAcctAppId() : appId.getAuthAppId(); 
+
           // Remove the appid from map
-          this.appIdToListener.remove(appId);
+          this.appIdToListener.remove(appIdValue);
 
           // and unregister the listener from stack
           network.removeNetworkReqListener(appId);
@@ -527,11 +532,12 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   public void _LocalPeer_removeIPAddress(String ipAddress) throws MBeanException {
     Configuration[] oldIPAddressesConfig = getMutableConfiguration().getChildren(OwnIPAddresses.ordinal());
 
-    AppConfiguration ipAddressToRemove = null;
+    Configuration ipAddressToRemove = null;
 
     List<Configuration> newIPAddressesConfig  = Arrays.asList(oldIPAddressesConfig);
     for(Configuration curIPAddress : newIPAddressesConfig) {
       if(curIPAddress.getStringValue(OwnIPAddress.ordinal(), DEFAULT_STRING).equals(ipAddress)) {
+        ipAddressToRemove = curIPAddress;
         break;
       }
     }
