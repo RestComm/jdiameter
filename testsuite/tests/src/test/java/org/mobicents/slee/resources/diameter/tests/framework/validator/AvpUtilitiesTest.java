@@ -544,11 +544,11 @@ public class AvpUtilitiesTest {
     }
 
     if(set.size() > 0) {
-      String s="";
+      StringBuffer buf = new StringBuffer();
       for(Avp a: set) {
-        s += "Code[" + a.getCode() + "] Vendor[" + a.getVendorId() + "], ";
+        buf.append("Code[").append(a.getCode()).append("] Vendor[").append("], ");
       }
-      fail("Wrong count of avps, removed all expected, left overs: " + set.size() + " -- " + s);
+      fail("Wrong count of avps, removed all expected, left overs: " + set.size() + " -- " + buf.toString());
     }
   }
 

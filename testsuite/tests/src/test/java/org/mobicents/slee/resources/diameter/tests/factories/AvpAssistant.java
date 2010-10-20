@@ -195,19 +195,19 @@ import org.mobicents.slee.resource.diameter.sh.events.avp.UserIdentityAvpImpl;
  */
 public class AvpAssistant {
 
-  private static HashMap<Class, Object> typeValues = new HashMap<Class, Object>(); 
+  private static final HashMap<Class, Object> typeValues = new HashMap<Class, Object>(); 
 
-  public static Collection methodsToIgnore = new ArrayList<String>();
+  public static final Collection<String> methodsToIgnore = new ArrayList<String>();
 
-  public static Collection methodsToIgnoreInRequest = new ArrayList<String>();
+  public static final Collection<String> methodsToIgnoreInRequest = new ArrayList<String>();
 
-  public static Collection methodsToIgnoreInAnswer = new ArrayList<String>();
+  public static final Collection<String> methodsToIgnoreInAnswer = new ArrayList<String>();
 
-  public static Collection methodsToIgnoreInCEX = new ArrayList<String>();
+  public static final Collection<String> methodsToIgnoreInCEX = new ArrayList<String>();
 
-  public static Collection methodsToIgnoreInDPX = new ArrayList<String>();
+  public static final Collection<String> methodsToIgnoreInDPX = new ArrayList<String>();
 
-  public static Collection methodsToIgnoreInDWX = new ArrayList<String>();
+  public static final Collection<String> methodsToIgnoreInDWX = new ArrayList<String>();
 
 
   public static AvpAssistant INSTANCE;

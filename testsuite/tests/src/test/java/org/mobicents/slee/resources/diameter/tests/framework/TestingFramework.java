@@ -338,7 +338,9 @@ public class TestingFramework
         {
           synchronized(TestingFramework.this)
           {
-            TestingFramework.this.wait(timeout + 1000);
+            if(!listener.hasAnswer()) {
+              TestingFramework.this.wait(timeout + 1000);
+            }
           }
         }
         catch (InterruptedException e)
@@ -490,28 +492,30 @@ public class TestingFramework
         
         AvpRepresentation avpRep = null; 
         
-        if( !avpCode.equals("") )
-        {
+        if( !avpCode.equals("") ) {
           int code = Integer.valueOf(avpCode);
           long vendorId = avpVendor.equals("") ? 0 : Long.valueOf(avpVendor);
           
           avpRep = AvpDictionary.INSTANCE.getAvp( code, vendorId );
         }
-        else if( !avpName.equals( "" ) )
-        {
+        else if( !avpName.equals( "" ) ) {
           avpRep = AvpDictionary.INSTANCE.getAvp(avpName);
         }
+        else {
+          throw new IllegalArgumentException("AVP Definition missing 'code' and 'name' attribute. At least one must be present.");
+        }
 
-        if(avpRep.getType().equals("Grouped"))
-        {
+        if(avpRep == null) {
+          logError("Unable to find AVP with code [" + avpCode + "] and/or name [" + avpName + "] in dictionary. Can't add.");
+        }
+        else if(avpRep.getType().equals("Grouped")) {
           boolean isMandatory = !(avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot"));
           boolean isProtected = avpRep.getRuleProtected().equals("must");
 
           AvpSet gAvp = avpSet.addGroupedAvp(avpRep.getCode(), Long.valueOf(avpRep.getVendorId()), isMandatory, isProtected);
           addAvps( gAvp, avpNode.getChildNodes() );
         }
-        else
-        {
+        else {
           avpSet.addAvp( avpRep.getCode(), valueToBytes( avpRep, avpValue ), Long.valueOf(avpRep.getVendorId()), true, false );
         }
       }
@@ -795,32 +799,34 @@ public class TestingFramework
   {
     String prefix = "                      ".substring( 0, level*2 );
     
-    for(Avp avp : avpSet)
-    {
+    for(Avp avp : avpSet) {
       AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp( avp.getCode(), avp.getVendorId() );
 
-      if(avpRep != null && avpRep.getType().equals("Grouped"))
-      {
-        log(prefix + "<avp name=\"" + avpRep.getName() + "\" code=\"" + avp.getCode() + "\" vendor=\"" + avp.getVendorId() + "\">");
-        printAvpsAux( avp.getGrouped(), level+1 );
-        log(prefix + "</avp>");
+      if(avpRep != null) {
+        if(avpRep.getType().equals("Grouped")) {
+          log(prefix + "<avp name=\"" + avpRep.getName() + "\" code=\"" + avp.getCode() + "\" vendor=\"" + avp.getVendorId() + "\">");
+          printAvpsAux( avp.getGrouped(), level+1 );
+          log(prefix + "</avp>");
+        }
+        else {
+          String value = "";
+          
+          if(avpRep.getType().equals("Integer32"))
+            value = String.valueOf(avp.getInteger32());
+          else if(avpRep.getType().equals("Integer64") || avpRep.getType().equals("Unsigned64"))
+            value = String.valueOf(avp.getInteger64());
+          else if(avpRep.getType().equals("Unsigned32"))
+            value = String.valueOf(avp.getUnsigned32());
+          else if(avpRep.getType().equals("Float32"))
+            value = String.valueOf(avp.getFloat32());
+          else
+            value = avp.getOctetString();
+          
+          log(prefix + "<avp name=\"" + avpRep.getName() + "\" code=\"" + avp.getCode() + "\" vendor=\"" + avp.getVendorId() + "\" value=\"" + value + "\" />");
+        }
       }
-      else
-      {
-        String value = "";
-        
-        if(avpRep.getType().equals("Integer32"))
-          value = String.valueOf(avp.getInteger32());
-        else if(avpRep.getType().equals("Integer64") || avpRep.getType().equals("Unsigned64"))
-          value = String.valueOf(avp.getInteger64());
-        else if(avpRep.getType().equals("Unsigned32"))
-          value = String.valueOf(avp.getUnsigned32());
-        else if(avpRep.getType().equals("Float32"))
-          value = String.valueOf(avp.getFloat32());
-        else
-          value = avp.getOctetString();
-        
-        log(prefix + "<avp name=\"" + avpRep.getName() + "\" code=\"" + avp.getCode() + "\" vendor=\"" + avp.getVendorId() + "\" value=\"" + value + "\" />");
+      else {
+        log(prefix + "<avp name=\"?\" code=\"" + avp.getCode() + "\" vendor=\"" + avp.getVendorId() + "\" value=\"" + avp.getOctetString() + "\" />");
       }
     }
   }

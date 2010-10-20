@@ -30,7 +30,7 @@ public class NetworkPeerImpl implements NetworkPeer {
   private String securityRef;
 
   // Helpers
-  private final String DEFAULT_STRING = "default_string";
+  private static final String DEFAULT_STRING = "default_string";
 
   private HashMap<String, DiameterStatistic> statistics;
 
@@ -143,7 +143,13 @@ public class NetworkPeerImpl implements NetworkPeer {
         //System.out.println("-----");
       }
     }
-    catch (Exception e) {
+    catch (ClassNotFoundException e) {
+      // ignore
+    }
+    catch (IllegalArgumentException e) {
+      // ignore
+    }
+    catch (IllegalAccessException e) {
       // ignore
     }
 

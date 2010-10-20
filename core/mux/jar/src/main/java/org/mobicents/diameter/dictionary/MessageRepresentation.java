@@ -11,16 +11,14 @@ import org.jdiameter.common.impl.validation.VMessageRepresentation;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski</a>
  */
-public class MessageRepresentation extends VMessageRepresentation implements Cloneable {
+public class MessageRepresentation extends VMessageRepresentation {
 
 	public MessageRepresentation(int commandCode, long applicationId, boolean isRequest, String name) {
 		super(commandCode, applicationId, isRequest, name);
-		// TODO Auto-generated constructor stub
 	}
 
 	public MessageRepresentation(int commandCode, long applicationId, boolean isRequest) {
 		super(commandCode, applicationId, isRequest);
-		// TODO Auto-generated constructor stub
 	}
 
 	public MessageRepresentation(VMessageRepresentation clone) {

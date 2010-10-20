@@ -118,7 +118,13 @@ public class LocalPeerImpl implements LocalPeer {
         //System.out.println("-----");
       }
     }
-    catch (Exception e) {
+    catch (ClassNotFoundException e) {
+      // ignore
+    }
+    catch (IllegalArgumentException e) {
+      // ignore
+    }
+    catch (IllegalAccessException e) {
       // ignore
     }
 

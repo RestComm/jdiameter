@@ -193,7 +193,7 @@ public abstract class DiameterTestsSbb implements javax.slee.Sbb {
         logger.info( "Provider [" + provider + "]" );
         logger.info( "Message Factory [" + messageFactory + "]" );
         logger.info( "AVP Factory [" + avpFactory + "]" );
-        logger.info( "# Check completed. Result: " + ((provider != null ? 1 : 0) + (messageFactory != null ? 1 : 0) + (avpFactory != null ? 1 : 0)) + "/3" );
+        //logger.info( "# Check completed. Result: " + ((provider != null ? 1 : 0) + (messageFactory != null ? 1 : 0) + (avpFactory != null ? 1 : 0)) + "/3" );
 
         logger.info( "Connected to " + provider.getPeerCount() + " peers." );
       }
@@ -379,14 +379,11 @@ public abstract class DiameterTestsSbb implements javax.slee.Sbb {
             
             case SERVICE_PARAMETER_TYPE:
               // We can discard this...
-            break;
             case SERVICE_PARAMETER_VALUE:
               // We can discard this...
-            break;
             case SERVICE_PARAMETER_INFO:
               // We can discard this...
-            break;
-              default:
+            default:
                 
             }
           }
@@ -403,7 +400,8 @@ public abstract class DiameterTestsSbb implements javax.slee.Sbb {
           // Aditional AVPs container
           List<DiameterAvp> avps = new ArrayList<DiameterAvp>();
 
-          AccountingAnswer ans = null;          
+          // By default, let's consider it's OK and create answer with 2001
+          AccountingAnswer ans = assa.createAccountAnswer( acr, ResultCode.SUCCESS );          
           
           double chargingValue = valueDigits * Math.pow( 10, exponent );
           
@@ -471,9 +469,6 @@ public abstract class DiameterTestsSbb implements javax.slee.Sbb {
               
               if(!isError)
               {
-                // It's OK. Let's answer with 2001
-                ans = assa.createAccountAnswer( acr, ResultCode.SUCCESS );
-                
                 // Subscription ID
                 DiameterAvp subscriptionIdTypeAvp = avpFactory.createAvp( 193, 555, subscriptionIdType );
                 DiameterAvp subscriptionIdDataAvp = avpFactory.createAvp( 193, 554, subscriptionIdData );

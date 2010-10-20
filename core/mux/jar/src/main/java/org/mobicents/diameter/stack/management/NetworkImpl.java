@@ -90,15 +90,16 @@ public class NetworkImpl implements Network {
 
   @Override
   public String toString() {
-    String toString = "  ## PEERS ##\r\n";
+    StringBuffer buf = new StringBuffer();
+    buf.append("  ## PEERS ##\r\n");
     for(NetworkPeer peer : peers.values()) {
-      toString += peer.toString();
+      buf.append(peer.toString());
     }
-    toString += "  ## REALMS ##\r\n";
+    buf.append("  ## REALMS ##\r\n");
       for(Realm realm : realms.values()) {
-        toString += realm.toString();
+        buf.append(realm.toString());
     }
 
-    return toString;
+    return buf.toString();
   }
 }

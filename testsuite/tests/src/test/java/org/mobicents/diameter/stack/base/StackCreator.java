@@ -2,19 +2,16 @@ package org.mobicents.diameter.stack.base;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.jdiameter.api.Answer;
-import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.MetaData;
 import org.jdiameter.api.Mode;
-import org.jdiameter.api.Network;
 import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.SessionFactory;
@@ -22,7 +19,7 @@ import org.jdiameter.api.Stack;
 import org.jdiameter.server.impl.StackImpl;
 import org.jdiameter.server.impl.helpers.XMLConfiguration;
 
-public class StackCreator extends StackImpl implements Stack {
+public class StackCreator extends StackImpl {
 
   private static Logger logger = Logger.getLogger(StackCreator.class);
 

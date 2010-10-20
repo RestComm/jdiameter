@@ -116,7 +116,10 @@ public class MessageFlagsTest {
           "E[rcv " + received_E + "; exp " + expected_E + "], T[rcv " + received_T + "; exp " + expected_T + "]", 
           (expected_R == received_R) && (expected_P == received_P) && (expected_E == received_E) && (expected_T == received_T));
     }
-    catch (Exception e) {
+    catch (InternalException e) {
+      fail(e.getMessage());
+    }
+    catch (IllegalDiameterStateException e) {
       fail(e.getMessage());
     }
   }

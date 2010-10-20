@@ -24,6 +24,7 @@
 package org.mobicents.diameter.dictionary;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -69,7 +70,22 @@ public class AvpDictionary
   }
 
   public void parseDictionary(String filename) throws Exception {
-    parseDictionary( new FileInputStream( filename ) );  
+    FileInputStream fis = null;
+    try {
+      fis = new FileInputStream(filename);
+      parseDictionary(fis);      
+    }
+    finally {
+      if(fis != null) {
+        try {
+          fis.close();
+        }
+        catch (IOException e) {
+          logger.error("Failed to close FileInputStream", e);
+        }
+        fis = null;
+      }
+    }
   }
 
   public void parseDictionary(InputStream is) throws Exception {
