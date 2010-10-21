@@ -90,11 +90,11 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
       if (destRealm != null) {
         m.getAvps().addAvp(Avp.DESTINATION_REALM, destRealm, true, false, true);
       }
-
+      MessageUtility.addOriginAvps(m, container.getMetaData());
       return m;
     }
     else {
-      throw new IllegalAccessError("Session already released");
+      throw new IllegalStateException("Session already released");
     }
   }
 
@@ -112,11 +112,11 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
       if (destHost != null) {
         m.getAvps().addAvp(Avp.DESTINATION_HOST, destHost, true, false, true);
       }
-
+      MessageUtility.addOriginAvps(m, container.getMetaData());
       return m;
     }
     else {
-      throw new IllegalAccessError("Session already released");
+      throw new IllegalStateException("Session already released");
     }
   }
 
@@ -126,10 +126,11 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
       IRequest request = parser.createEmptyMessage(Request.class, (IMessage) prevRequest);
       request.setRequest(true);
       request.setNetworkRequest(false);
+      MessageUtility.addOriginAvps(request, container.getMetaData());
       return request;
     }
     else {
-      throw new IllegalAccessError("Session already released");
+      throw new IllegalStateException("Session already released");
     }
   }
 
@@ -153,4 +154,5 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
   public <T> T unwrap(Class<T> iface) throws InternalException {
     return (T) (iface == RawSession.class ?  new RawSessionImpl(container) : null);
   }
+   
 }

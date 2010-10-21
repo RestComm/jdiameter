@@ -33,7 +33,7 @@ public class RawSessionImpl extends BaseSessionImpl implements RawSession {
             appendAppId(appId, m);
             return m;
         } else {
-           throw new IllegalAccessError("Session already released");
+           throw new IllegalStateException("Session already released");
         }
     }
 
@@ -49,7 +49,7 @@ public class RawSessionImpl extends BaseSessionImpl implements RawSession {
             appendAppId(appId, m);
             return m;
         } else {
-           throw new IllegalAccessError("Session already released");
+           throw new IllegalStateException("Session already released");
         }
     }
 
@@ -60,6 +60,7 @@ public class RawSessionImpl extends BaseSessionImpl implements RawSession {
             IMessage inner = (IMessage) message;
             if (copyAvps) {
                 newMessage = parser.createEmptyMessage(inner);
+                MessageUtility.addOriginAvps(newMessage, container.getMetaData());
             } else {
                 newMessage = (IMessage) createMessage(
                     inner.getCommandCode(),
@@ -75,7 +76,7 @@ public class RawSessionImpl extends BaseSessionImpl implements RawSession {
             return newMessage;
 
         } else {
-            throw new IllegalAccessError("Session already released");
+            throw new IllegalStateException("Session already released");
         }
     }
 

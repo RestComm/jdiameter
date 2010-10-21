@@ -123,6 +123,9 @@ public abstract class BaseSessionImpl implements BaseSession {
         }
       }
 
+      //Add Origin-Host/Realm AVPs if not present
+      MessageUtility.addOriginAvps(aMessage, container.getMetaData());
+
       if (message.getState() != IMessage.STATE_NOT_SENT && message.getState() != IMessage.STATE_ANSWERED) {
         throw new IllegalDiameterStateException("Illegal state");
       }

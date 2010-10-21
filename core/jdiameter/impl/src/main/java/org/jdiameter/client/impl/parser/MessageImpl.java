@@ -23,7 +23,6 @@ import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.InternalException;
-import org.jdiameter.api.MetaData;
 import org.jdiameter.client.api.IEventListener;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.controller.IPeer;
@@ -35,7 +34,7 @@ public class MessageImpl implements IMessage {
   private static final long serialVersionUID = 1L;
 
   private static final Logger logger = LoggerFactory.getLogger(MessageImpl.class);
-
+  private static final MessageParser parser = new MessageParser();
   int state = STATE_NOT_SENT;
 
   short version = 1, flags;
@@ -50,7 +49,6 @@ public class MessageImpl implements IMessage {
   boolean isNetworkRequest = false;
 
   transient IPeer peer;
-  transient MessageParser parser;
   transient TimerTask timerTask;
   transient IEventListener listener;
 
@@ -65,11 +63,11 @@ public class MessageImpl implements IMessage {
    * @param commandCode
    * @param appId
    */
-  MessageImpl(MessageParser parser, int commandCode, long appId) {
+  MessageImpl(int commandCode, long appId) {
     this.commandCode = commandCode;
     this.applicationId = appId;
-    this.parser = parser;
-    this.avpSet = new AvpSetImpl(parser);
+   
+    this.avpSet = new AvpSetImpl();
     this.endToEndId = parser.getNextEndToEndId();
   }
 
@@ -84,8 +82,8 @@ public class MessageImpl implements IMessage {
    * @param endToEndId
    * @param avpSet
    */
-  MessageImpl(MessageParser parser, int commandCode, long applicationId, short flags, long hopByHopId, long endToEndId, AvpSetImpl avpSet) {
-    this(parser, commandCode, applicationId);
+  MessageImpl(int commandCode, long applicationId, short flags, long hopByHopId, long endToEndId, AvpSetImpl avpSet) {
+    this(commandCode, applicationId);
     this.flags = flags;
     this.hopByHopId = hopByHopId;
     this.endToEndId = endToEndId;
@@ -94,24 +92,24 @@ public class MessageImpl implements IMessage {
     }
   }
 
-  /**
-   * Create empty message
-   * 
-   * @param metaData
-   * @param parser
-   * @param commandCode
-   * @param appId
-   */
-  MessageImpl(MetaData metaData, MessageParser parser, int commandCode, long appId) {
-    this(parser, commandCode, appId);
-    try {
-      getAvps().addAvp(Avp.ORIGIN_HOST, metaData.getLocalPeer().getUri().getFQDN(), true, false, true);
-      getAvps().addAvp(Avp.ORIGIN_REALM, metaData.getLocalPeer().getRealmName(), true, false, true);
-    }
-    catch (Exception e) {
-      logger.debug("Can not create message", e);
-    }
-  }
+//  /**
+//   * Create empty message
+//   * 
+//   * @param metaData
+//   * @param parser
+//   * @param commandCode
+//   * @param appId
+//   */
+//  MessageImpl(MetaData metaData, MessageParser parser, int commandCode, long appId) {
+//    this(commandCode, appId);
+//    try {
+//      getAvps().addAvp(Avp.ORIGIN_HOST, metaData.getLocalPeer().getUri().getFQDN(), true, false, true);
+//      getAvps().addAvp(Avp.ORIGIN_REALM, metaData.getLocalPeer().getRealmName(), true, false, true);
+//    }
+//    catch (Exception e) {
+//      logger.debug("Can not create message", e);
+//    }
+//  }
 
   /**
    * Create Answer
@@ -119,7 +117,7 @@ public class MessageImpl implements IMessage {
    * @param request parent request
    */
   private MessageImpl(MessageImpl request) {
-    this(request.parser, request.getCommandCode(), request.getHeaderApplicationId());
+    this(request.getCommandCode(), request.getHeaderApplicationId());
     copyHeader(request);
     setRequest(false);
     parser.copyBasicAvps(this, request, true);
@@ -191,6 +189,10 @@ public class MessageImpl implements IMessage {
       return avpSessionId != null ? avpSessionId.getUTF8String() : null;
     }
     catch (AvpDataException exc) {
+    	if(logger.isErrorEnabled())
+    	{
+    		logger.error("Failed to fetch Session-Id", exc);
+    	}
       return null;
     }
   }
@@ -203,7 +205,8 @@ public class MessageImpl implements IMessage {
     catch (Exception e) {
       logger.debug("Can not create answer message", e);
     }
-    answer.setRequest(false);
+    //Its set in constructor.
+    //answer.setRequest(false);
     return answer;
   }
 

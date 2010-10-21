@@ -19,19 +19,17 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
-import org.jdiameter.api.MetaData;
 import org.jdiameter.api.Request;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IRequest;
-import org.jdiameter.client.api.parser.ParseException;
 import org.jdiameter.client.api.parser.IMessageParser;
+import org.jdiameter.client.api.parser.ParseException;
 import org.jdiameter.client.impl.helpers.UIDGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,10 +42,10 @@ public class MessageParser extends ElementParser implements IMessageParser {
       (int) (TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) & 0xFFF) << 20
   );
 
-  MetaData metaData;
+ 
 
-  public MessageParser(MetaData metaData) {
-    this.metaData = metaData;
+  public MessageParser() {
+
   }
 
   public IMessage createMessage(ByteBuffer data) throws AvpDataException {
@@ -79,60 +77,11 @@ public class MessageParser extends ElementParser implements IMessageParser {
       // AvpSetImpl avpSet = decodeAvpSet(body);
       AvpSetImpl avpSet = decodeAvpSet(message, 20);
 
-      return new MessageImpl(this, commandCode, applicationId, flags, hopByHopId, endToEndId, avpSet);
+      return new MessageImpl(commandCode, applicationId, flags, hopByHopId, endToEndId, avpSet);
     }
     catch (Exception exc) {
       throw new AvpDataException(exc);
     }
-  }
-
-  public AvpSetImpl decodeAvpSet(byte[] buffer) throws IOException, AvpDataException {
-    return this.decodeAvpSet(buffer, 0);
-  }
-
-  /**
-   * 
-   * @param buffer
-   * @param shift - shift in buffer, for instance for whole message it will have non zero value
-   * @return
-   * @throws IOException
-   * @throws AvpDataException
-   */
-  public AvpSetImpl decodeAvpSet(byte[] buffer, int shift) throws IOException, AvpDataException {
-    AvpSetImpl avps = new AvpSetImpl(this);
-    int tmp, counter = shift;
-    DataInputStream in = new DataInputStream(new ByteArrayInputStream(buffer, shift, buffer.length /* - shift ? */));
-
-    while (counter < buffer.length) {
-      int code = in.readInt();
-      tmp = in.readInt();
-      int flags = (tmp >> 24) & 0xFF;
-      int length  = tmp & 0xFFFFFF;
-      // TODO: Removed by Alex: we should move this to receive/send level 
-      // Proper AVPs have length of 4xn octets
-      //if (length % 4 != 0) {
-      //  // http://tools.ietf.org/html/rfc3588#section-4.1 wrong avp, we choose to ignore message
-      //  throw new AvpDataException("Wrong length (" + length + ") of AVP code=" + code);
-      //}
-      long vendor = 0;
-      if ((flags & 0x80) != 0) {
-        vendor = in.readInt();
-      }
-      // Determine body L = length - 4(code) -1(flags) -3(length) [-4(vendor)]
-      byte[] rawData = new byte[length - (8 + (vendor == 0 ? 0 : 4))];
-      in.read(rawData);
-      // skip remaining.
-      // TODO: Do we need to padd everything? Or on send stack should properly fill byte[] ... ?
-      if (length % 4 != 0) {
-        for (int i; length % 4 != 0; length += i) {
-          i = (int) in.skip((4 - length % 4));
-        }
-      }
-      AvpImpl avp = new AvpImpl(this, code, (short) flags, (int) vendor, rawData);
-      avps.addAvp(avp);
-      counter += length;
-    }
-    return avps;  
   }
 
   public <T> T createMessage(Class<?> iface, ByteBuffer data) throws AvpDataException {
@@ -158,7 +107,6 @@ public class MessageParser extends ElementParser implements IMessageParser {
   public IMessage createEmptyMessage(IMessage prnMessage, int commandCode) {
     //
     MessageImpl newMessage = new MessageImpl(
-        this,
         commandCode,
         prnMessage.getHeaderApplicationId(),
         (short) prnMessage.getFlags(),
@@ -172,39 +120,40 @@ public class MessageParser extends ElementParser implements IMessageParser {
   }
 
   void copyBasicAvps(IMessage newMessage, IMessage prnMessage, boolean invertPoints) {
+	  //left it here, but 
     Avp avp;
     // Copy session id's information
     {
       avp = prnMessage.getAvps().getAvp(SESSION_ID);
       if (avp != null) {
-        newMessage.getAvps().addAvp(new AvpImpl(this, avp));
+        newMessage.getAvps().addAvp(new AvpImpl(avp));
       }
       avp = prnMessage.getAvps().getAvp(Avp.ACC_SESSION_ID);
       if (avp != null) {
-        newMessage.getAvps().addAvp(new AvpImpl(this, avp));
+        newMessage.getAvps().addAvp(new AvpImpl(avp));
       }
       avp = prnMessage.getAvps().getAvp(Avp.ACC_SUB_SESSION_ID);
       if (avp != null) {
-        newMessage.getAvps().addAvp(new AvpImpl(this, avp));
+        newMessage.getAvps().addAvp(new AvpImpl(avp));
       }
       avp = prnMessage.getAvps().getAvp(Avp.ACC_MULTI_SESSION_ID);
       if (avp != null) {
-        newMessage.getAvps().addAvp(new AvpImpl(this, avp));
+        newMessage.getAvps().addAvp(new AvpImpl(avp));
       }
     }
     // Copy Applicatio id's information
     {
       avp = prnMessage.getAvps().getAvp(VENDOR_SPECIFIC_APPLICATION_ID);
       if (avp != null) {
-        newMessage.getAvps().addAvp(new AvpImpl(this, avp));
+        newMessage.getAvps().addAvp(new AvpImpl(avp));
       }
       avp = prnMessage.getAvps().getAvp(ACCT_APPLICATION_ID);
       if (avp != null) {
-        newMessage.getAvps().addAvp(new AvpImpl(this, avp));
+        newMessage.getAvps().addAvp(new AvpImpl(avp));
       }
       avp = prnMessage.getAvps().getAvp(AUTH_APPLICATION_ID);
       if (avp != null) {
-        newMessage.getAvps().addAvp(new AvpImpl(this, avp));
+        newMessage.getAvps().addAvp(new AvpImpl(avp));
       }
     }
     // Copy proxy information
@@ -215,7 +164,7 @@ public class MessageParser extends ElementParser implements IMessageParser {
         try {
           avps = avp.getGrouped();
           for (Avp avpp : avps) {
-            newMessage.getAvps().addAvp(new AvpImpl(this, avpp));
+            newMessage.getAvps().addAvp(new AvpImpl(avpp));
           }
         }
         catch (AvpDataException e) {
@@ -230,12 +179,12 @@ public class MessageParser extends ElementParser implements IMessageParser {
           // set Dest host
           avp = prnMessage.getAvps().getAvp(Avp.ORIGIN_HOST);
           if (avp != null) {
-            newMessage.getAvps().addAvp(new AvpImpl(this, Avp.DESTINATION_HOST, avp));
+            newMessage.getAvps().addAvp(new AvpImpl(Avp.DESTINATION_HOST, avp));
           }
           // set Dest realm
           avp = prnMessage.getAvps().getAvp(Avp.ORIGIN_REALM);
           if (avp != null) {
-            newMessage.getAvps().addAvp(new AvpImpl(this, Avp.DESTINATION_REALM, avp));
+            newMessage.getAvps().addAvp(new AvpImpl(Avp.DESTINATION_REALM, avp));
           }
         }
         else {
@@ -251,14 +200,14 @@ public class MessageParser extends ElementParser implements IMessageParser {
           }
         }
       }
-      // set Orig host and realm
-      try {
-        newMessage.getAvps().addAvp(Avp.ORIGIN_HOST, metaData.getLocalPeer().getUri().getFQDN(), true, false, true);
-        newMessage.getAvps().addAvp(Avp.ORIGIN_REALM, metaData.getLocalPeer().getRealmName(), true, false, true);
-      }
-      catch (Exception e) {
-        logger.debug("Error copying Origin-Host/Realm AVPs", e);
-      }
+//      // set Orig host and realm
+//      try {
+//        newMessage.getAvps().addAvp(Avp.ORIGIN_HOST, metaData.getLocalPeer().getUri().getFQDN(), true, false, true);
+//        newMessage.getAvps().addAvp(Avp.ORIGIN_REALM, metaData.getLocalPeer().getRealmName(), true, false, true);
+//      }
+//      catch (Exception e) {
+//        logger.debug("Error copying Origin-Host/Realm AVPs", e);
+//      }
     }
   }
 
@@ -298,66 +247,17 @@ public class MessageParser extends ElementParser implements IMessageParser {
     return data;
   }
 
-  public byte[] encodeAvpSet(AvpSet avps) {
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    try {
-      DataOutputStream data = new DataOutputStream(out);
-      for (Avp a : avps) {
-        if (a instanceof AvpImpl) {
-          AvpImpl aImpl = (AvpImpl) a;
-          if (aImpl.rawData.length == 0 && aImpl.groupedData != null) {
-            aImpl.rawData = encodeAvpSet(a.getGrouped());
-          }
-          data.write(encodeAvp(aImpl));
-        }
-      }
-    }
-    catch (Exception e) {
-      logger.debug("Error during encode avps", e);
-    }
-    return out.toByteArray();
-  }
-
   public IMessage createEmptyMessage(int commandCode, long headerAppId) {
-    return new MessageImpl(this, commandCode, headerAppId);
+    return new MessageImpl(commandCode, headerAppId);
   }
 
   public <T> T createEmptyMessage(Class<?> iface, int commandCode, long headerAppId) {
     if (iface == IRequest.class) {
-      return (T) new MessageImpl(metaData, this, commandCode, headerAppId);
+      return (T) new MessageImpl(commandCode, headerAppId);
     }
     return null;
   }
 
-  public byte[] encodeAvp(AvpImpl avp) {
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    try {
-      DataOutputStream data = new DataOutputStream(out);
-      data.writeInt(avp.getCode());
-      int flags = (byte) ((avp.getVendorId() != 0 ? 0x80 : 0) |
-          (avp.isMandatory() ? 0x40 : 0) | (avp.isEncrypted() ? 0x20 : 0));
-      int origLength = avp.getRaw().length + 8 + (avp.getVendorId() != 0 ? 4 : 0);
-      // newLength is never used. Should it?
-      //int newLength  = origLength;
-      //if (newLength % 4 != 0) {
-      //  newLength += 4 - (newLength % 4);
-      //}
-      data.writeInt(((flags << 24) & 0xFF000000) + origLength);
-      if (avp.getVendorId() != 0) {
-        data.writeInt((int) avp.getVendorId());
-      }
-      data.write(avp.getRaw());
-      if (avp.getRaw().length % 4 != 0) {
-        for(int i = 0; i < 4 - avp.getRaw().length % 4; i++) {
-          data.write(0);
-        }
-      }
-    }
-    catch (Exception e) {
-      logger.debug("Error during encode avp", e);
-    }
-    return out.toByteArray();
-  }
 
   public int getNextEndToEndId() {
     return endToEndGen.nextInt();

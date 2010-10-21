@@ -351,7 +351,7 @@ public class StackImpl implements IContainer, StackImplMBean {
 
   public MetaData getMetaData() {
     if (state == StackState.IDLE) {
-      throw new IllegalAccessError("Meta data not defined");
+      throw new IllegalStateException("Meta data not defined");
     }
     return (MetaData) assembler.getComponentInstance(IMetaData.class);
   }

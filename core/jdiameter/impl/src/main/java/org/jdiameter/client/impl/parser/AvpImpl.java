@@ -26,9 +26,7 @@ import org.slf4j.LoggerFactory;
 class AvpImpl implements Avp {
 
   private static final long serialVersionUID = 1L;
-
-  final MessageParser parser;
-
+  private static final ElementParser parser = new ElementParser();
   int avpCode;
   long vendorID;
 
@@ -41,8 +39,8 @@ class AvpImpl implements Avp {
 
   private static final Logger logger = LoggerFactory.getLogger(AvpImpl.class);
 
-  AvpImpl(MessageParser messageParser, int code, int flags, long vnd, byte[] data) {
-    parser   = messageParser;
+  AvpImpl(int code, int flags, long vnd, byte[] data) {
+   
     avpCode  = code;
     //
     isMandatory = (flags & 0x40) != 0;
@@ -53,8 +51,8 @@ class AvpImpl implements Avp {
     rawData  = data;
   }
 
-  AvpImpl(MessageParser messageParser, Avp avp) {
-    parser      = messageParser;
+  AvpImpl(Avp avp) {
+  
     avpCode     = avp.getCode();
     vendorID    = avp.getVendorId();
     isMandatory = avp.isMandatory();
@@ -71,8 +69,8 @@ class AvpImpl implements Avp {
     }
   }
 
-  public AvpImpl(MessageParser messageParser, int newCode, Avp avp) {
-    this(messageParser, avp);
+  public AvpImpl(int newCode, Avp avp) {
+    this(avp);
     avpCode = newCode;
   }
 

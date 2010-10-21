@@ -10,10 +10,19 @@ package org.jdiameter.client.impl.parser;
  *
  */
 
+import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
+import org.jdiameter.api.AvpSet;
 import org.jdiameter.client.api.parser.ParseException;
 import org.jdiameter.client.api.parser.IElementParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -22,7 +31,7 @@ import java.nio.ByteBuffer;
 import java.util.Date;
 
 public class ElementParser implements IElementParser {
-
+	private static final Logger logger = LoggerFactory.getLogger(ElementParser.class);
     /**
      * This is seconds shift (70 years in seconds) applied to date, 
      * since NTP date starts since 1900, not 1970.
@@ -90,7 +99,7 @@ public class ElementParser implements IElementParser {
         try {
             byte[] tmp = new byte[8];
             System.arraycopy(rawData, 0 , tmp, 4, 4);
-            return new Date( ((bytesToLong(tmp) - SECOND_SHIFT) * 1000L));
+            return new Date(((bytesToLong(tmp) - SECOND_SHIFT) * 1000L));
         } catch (Exception e) {
             throw new AvpDataException(e);
         }
@@ -199,7 +208,7 @@ public class ElementParser implements IElementParser {
 
     public byte[] dateToBytes(Date date) {
         byte[] data = new byte[4];
-        System.arraycopy(int64ToBytes( (date.getTime()/1000L) + SECOND_SHIFT  ), 4, data, 0, 4);
+        System.arraycopy(int64ToBytes((date.getTime()/1000L) + SECOND_SHIFT), 4, data, 0, 4);
         return data;
     }
 
@@ -210,4 +219,103 @@ public class ElementParser implements IElementParser {
     public byte [] objectToBytes(Object data) throws ParseException {
         return null;
     }
+
+    public AvpSetImpl decodeAvpSet(byte[] buffer) throws IOException, AvpDataException {
+      return this.decodeAvpSet(buffer, 0);
+    }
+
+    /**
+     * 
+     * @param buffer
+     * @param shift - shift in buffer, for instance for whole message it will have non zero value
+     * @return
+     * @throws IOException
+     * @throws AvpDataException
+     */
+    public AvpSetImpl decodeAvpSet(byte[] buffer, int shift) throws IOException, AvpDataException {
+      AvpSetImpl avps = new AvpSetImpl();
+      int tmp, counter = shift;
+      DataInputStream in = new DataInputStream(new ByteArrayInputStream(buffer, shift, buffer.length /* - shift ? */));
+
+      while (counter < buffer.length) {
+        int code = in.readInt();
+        tmp = in.readInt();
+        int flags = (tmp >> 24) & 0xFF;
+        int length  = tmp & 0xFFFFFF;
+        // TODO: Removed by Alex: we should move this to receive/send level 
+        // Proper AVPs have length of 4xn octets
+        //if (length % 4 != 0) {
+        //  // http://tools.ietf.org/html/rfc3588#section-4.1 wrong avp, we choose to ignore message
+        //  throw new AvpDataException("Wrong length (" + length + ") of AVP code=" + code);
+        //}
+        long vendor = 0;
+        if ((flags & 0x80) != 0) {
+          vendor = in.readInt();
+        }
+        // Determine body L = length - 4(code) -1(flags) -3(length) [-4(vendor)]
+        byte[] rawData = new byte[length - (8 + (vendor == 0 ? 0 : 4))];
+        in.read(rawData);
+        // skip remaining.
+        // TODO: Do we need to padd everything? Or on send stack should properly fill byte[] ... ?
+        if (length % 4 != 0) {
+          for (int i; length % 4 != 0; length += i) {
+            i = (int) in.skip((4 - length % 4));
+          }
+        }
+        AvpImpl avp = new AvpImpl(code, (short) flags, (int) vendor, rawData);
+        avps.addAvp(avp);
+        counter += length;
+      }
+      return avps;  
+    }
+    
+    public byte[] encodeAvpSet(AvpSet avps) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+          DataOutputStream data = new DataOutputStream(out);
+          for (Avp a : avps) {
+            if (a instanceof AvpImpl) {
+              AvpImpl aImpl = (AvpImpl) a;
+              if (aImpl.rawData.length == 0 && aImpl.groupedData != null) {
+                aImpl.rawData = encodeAvpSet(a.getGrouped());
+              }
+              data.write(encodeAvp(aImpl));
+            }
+          }
+        }
+        catch (Exception e) {
+          logger.debug("Error during encode avps", e);
+        }
+        return out.toByteArray();
+      }
+    
+    public byte[] encodeAvp(AvpImpl avp) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+          DataOutputStream data = new DataOutputStream(out);
+          data.writeInt(avp.getCode());
+          int flags = (byte) ((avp.getVendorId() != 0 ? 0x80 : 0) |
+              (avp.isMandatory() ? 0x40 : 0) | (avp.isEncrypted() ? 0x20 : 0));
+          int origLength = avp.getRaw().length + 8 + (avp.getVendorId() != 0 ? 4 : 0);
+          // newLength is never used. Should it?
+          //int newLength  = origLength;
+          //if (newLength % 4 != 0) {
+          //  newLength += 4 - (newLength % 4);
+          //}
+          data.writeInt(((flags << 24) & 0xFF000000) + origLength);
+          if (avp.getVendorId() != 0) {
+            data.writeInt((int) avp.getVendorId());
+          }
+          data.write(avp.getRaw());
+          if (avp.getRaw().length % 4 != 0) {
+            for(int i = 0; i < 4 - avp.getRaw().length % 4; i++) {
+              data.write(0);
+            }
+          }
+        }
+        catch (Exception e) {
+          logger.debug("Error during encode avp", e);
+        }
+        return out.toByteArray();
+      }
 }
