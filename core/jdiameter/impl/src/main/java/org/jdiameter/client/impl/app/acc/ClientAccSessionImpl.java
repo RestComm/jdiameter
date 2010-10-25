@@ -720,7 +720,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
   public void relink(IContainer stack) {
     if(super.sf == null) {
       super.relink(stack);
-      IAccSessionFactory fct = (IAccSessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(ServerAccSession.class);
+      IAccSessionFactory fct = (IAccSessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(ClientAccSession.class);
 
       this.listener = fct.getClientSessionListener();
       this.context = fct.getClientContextListener();
