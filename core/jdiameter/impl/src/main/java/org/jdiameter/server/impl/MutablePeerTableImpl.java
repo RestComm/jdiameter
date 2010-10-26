@@ -540,7 +540,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     String key = request.getDuplicationKey();
     if (key != null && storageAnswers != null) {
       StorageEntry entry = storageAnswers.get(key);
-      return entry != null ? entry.getMessage() : null;
+      return entry != null ? (IMessage) entry.getMessage().clone() : null;
     }
     return null;
   }
