@@ -27,16 +27,19 @@ public interface IMessage extends IRequest, IAnswer {
    * The message is not sent to the network
    */
   int STATE_NOT_SENT = 0;
+
   /**
-   * 	The message is ent to the network
+   * 	The message has been sent to the network
    */
   int STATE_SENT = 1;
+
   /**
-   * The message is biffered ( not use yet )
+   * The message is buffered ( not use yet )
    */
   int STATE_BUFFERED = 2;
+
   /**
-   * 	Stack received answer to this message
+   *  Stack received answer to this message
    */
   int STATE_ANSWERED = 3;
 

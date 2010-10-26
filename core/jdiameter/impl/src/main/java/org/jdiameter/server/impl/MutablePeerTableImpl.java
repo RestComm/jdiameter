@@ -548,7 +548,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   public void saveToDuplicate(String key, IMessage answer) {
     if (storageAnswers != null && storageAnswers.size() < MAX_DUPLICATE_ANSWERS) {
       if (key != null) {
-        storageAnswers.put(key, new StorageEntry(answer));
+        storageAnswers.put(key, new StorageEntry((IMessage) answer.clone()));
       }
     } 
   }

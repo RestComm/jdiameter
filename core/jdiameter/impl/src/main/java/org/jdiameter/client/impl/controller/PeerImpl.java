@@ -113,6 +113,7 @@ import org.jdiameter.common.api.statistic.IStatistic;
 import org.jdiameter.common.api.statistic.IStatisticFactory;
 import org.jdiameter.common.impl.controller.AbstractPeer;
 import org.jdiameter.common.impl.validation.DiameterMessageValidator;
+import org.jdiameter.server.impl.MutablePeerTableImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -617,11 +618,25 @@ public class PeerImpl extends AbstractPeer implements IPeer {
         logger.debug("Message {} already sent", message);
         return false;
       }
-      // Remove destionation information from answer messages
+      // Remove destination information from answer messages
       if (!message.isRequest()) {
         message.getAvps().removeAvp(DESTINATION_HOST);
         message.getAvps().removeAvp(DESTINATION_REALM);
+
+        int commandCode = message.getCommandCode();
+        // We don't want this for CEx/DWx/DPx
+        if(commandCode != 257 && commandCode != 280 && commandCode != 282) {
+          MutablePeerTableImpl peerTable = (MutablePeerTableImpl) table;
+          if(peerTable.isDuplicateProtection()) {
+            String[] originInfo = router.getRequestRouteInfo(message.getHopByHopIdentifier());
+            if(originInfo != null) {
+              // message.getDuplicationKey() doesn't work because it's answer
+              peerTable.saveToDuplicate(message.getDuplicationKey(originInfo[0], message.getEndToEndIdentifier()), message);
+            }
+          }
+        }
       }
+
       // Send to network
       message.setState(IMessage.STATE_SENT);
       connection.sendMessage(message);

@@ -94,9 +94,10 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
   }
 
   protected void preProcessRequest(IMessage message) {
-    if (isDuplicateProtection && message.isRequest()) {
-      peerTable.saveToDuplicate(message.getDuplicationKey(), message);
-    }
+    // ammendonca: this is non-sense, we don't want to save requests
+    //if (isDuplicateProtection && message.isRequest()) {
+    //  peerTable.saveToDuplicate(message.getDuplicationKey(), message);
+    //}
   }
 
   public boolean isAttemptConnection() {
