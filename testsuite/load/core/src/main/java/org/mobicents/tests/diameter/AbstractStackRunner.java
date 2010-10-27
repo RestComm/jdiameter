@@ -57,7 +57,7 @@ public abstract class AbstractStackRunner implements NetworkReqListener, EventLi
 	protected final int[] prefilledAVPs = new int[] { Avp.DESTINATION_HOST, Avp.DESTINATION_REALM, Avp.ORIGIN_HOST, Avp.ORIGIN_REALM, Avp.SESSION_ID,
 			Avp.VENDOR_SPECIFIC_APPLICATION_ID };
 
-	protected MessageParser parser = new MessageParser(null);
+	protected MessageParser parser = new MessageParser();
 	protected Stack stack;
 	protected SessionFactory factory;
 	protected InputStream configFile;
