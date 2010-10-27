@@ -4,7 +4,6 @@ import org.jdiameter.api.Configuration;
 import org.jdiameter.api.ConfigurationListener;
 import org.jdiameter.api.MutableConfiguration;
 import org.jdiameter.api.ResultCode;
-import org.jdiameter.api.Statistic;
 import org.jdiameter.api.app.State;
 import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.client.api.IMessage;
@@ -58,7 +57,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                   context.sendDwrMessage();
                   setTimer(DWA_TIMEOUT);
                   if (watchdogSent) {
-                    swithToNextState(SUSPECT);
+                    switchToNextState(SUSPECT);
                   }
                   else {
                     watchdogSent = true;
@@ -74,12 +73,12 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 try { // TODO: send user code;
                   context.sendDprMessage(ResultCode.SUCCESS);
                   setTimer(DPA_TIMEOUT);
-                  swithToNextState(STOPPING);
+                  switchToNextState(STOPPING);
                 }
                 catch (Throwable e) {
                   logger.debug("Can not send DPR", e);
                   doDisconnect();
-                  swithToNextState(DOWN);
+                  switchToNextState(DOWN);
                 }
                 break;
               case RECEIVE_MSG_EVENT:
@@ -106,7 +105,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                   logger.debug("Can not send DPA", e);
                 }
                 doDisconnect();
-                swithToNextState(DOWN);
+                switchToNextState(DOWN);
                 break;
               case DWR_EVENT:
                 setInActiveTimer();
@@ -116,7 +115,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 catch (Throwable e) {
                   logger.debug("Can not send DWA", e);
                   doDisconnect();
-                  swithToNextState(DOWN);
+                  switchToNextState(DOWN);
                 }
                 break;
               case DWA_EVENT:
@@ -155,19 +154,19 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 try {
                   context.sendDprMessage(ResultCode.SUCCESS);
                   setInActiveTimer();
-                  swithToNextState(STOPPING);
+                  switchToNextState(STOPPING);
                 }
                 catch (Throwable e) {
                   logger.debug("Can not send DPR", e);
                   doDisconnect();
-                  swithToNextState(DOWN);
+                  switchToNextState(DOWN);
                 }
                 break;
               case CER_EVENT:
               case CEA_EVENT:
               case DWA_EVENT:
                 clearTimer();
-                swithToNextState(OKAY);
+                switchToNextState(OKAY);
                 break;
               case DPR_EVENT:
                 try {
@@ -178,24 +177,24 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                   logger.debug("Can not send DPA", e);
                 }
                 doDisconnect();
-                swithToNextState(DOWN);
+                switchToNextState(DOWN);
                 break;
               case DWR_EVENT:
                 try {
                   int code = context.processDwrMessage((IMessage) event.getData());
                   context.sendDwaMessage(message(event),code, null);
-                  swithToNextState(OKAY);
+                  switchToNextState(OKAY);
                 }
                 catch (Throwable e) {
                   logger.debug("Can not send DWA", e);
                   doDisconnect();
-                  swithToNextState(DOWN);
+                  switchToNextState(DOWN);
                 }
                 break;
               case RECEIVE_MSG_EVENT:
                 clearTimer();
                 context.receiveMessage(message(event));
-                swithToNextState(OKAY);
+                switchToNextState(OKAY);
                 break;
               case SEND_MSG_EVENT: // todo buffering
                 throw new IllegalStateException("Connection is down");
@@ -221,7 +220,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                   }
                   context.sendCerMessage();
                   setTimer(CEA_TIMEOUT);
-                  swithToNextState(INITIAL);
+                  switchToNextState(INITIAL);
                 }
                 catch (Throwable e) {
                   logger.debug("Connect error", e);
@@ -233,7 +232,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 if (resultCode == ResultCode.SUCCESS) {
                   try {
                     context.sendCeaMessage(resultCode, message(event), null);
-                    swithToNextState(OKAY);
+                    switchToNextState(OKAY);
                   }
                   catch (Exception e) {
                     logger.debug("Failed to send CEA.", e);
@@ -274,7 +273,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 try {
                   context.sendCerMessage();
                   setTimer(CEA_TIMEOUT);
-                  swithToNextState(INITIAL);
+                  switchToNextState(INITIAL);
                 }
                 catch (Throwable e) {
                   logger.debug("Can not send CER", e);
@@ -293,7 +292,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
               case STOP_EVENT:
                 setTimer(0);
                 doDisconnect();
-                swithToNextState(DOWN);
+                switchToNextState(DOWN);
                 break;
               case DISCONNECT_EVENT:
                 break;
@@ -326,12 +325,12 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
               case STOP_EVENT:
                 setTimer(0);
                 doDisconnect();
-                swithToNextState(DOWN);
+                switchToNextState(DOWN);
                 break;
               case CEA_EVENT:
                 setTimer(0);
                 if (context.processCeaMessage(key(event), message(event))) {
-                  swithToNextState(OKAY);
+                  switchToNextState(OKAY);
                 }
                 else {
                   doDisconnect(); // !
@@ -343,7 +342,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 if (resultCode == ResultCode.SUCCESS) {
                   try {
                     context.sendCeaMessage(resultCode, message(event), null);
-                    swithToNextState(OKAY); // if other connection is win
+                    switchToNextState(OKAY); // if other connection is win
                   }
                   catch (Exception e) {
                     logger.debug("Can not send CEA", e);
@@ -372,7 +371,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
               switch (type(event)) {
               case TIMEOUT_EVENT:
               case DPA_EVENT:
-                swithToNextState(DOWN);
+                switchToNextState(DOWN);
                 break;
               case RECEIVE_MSG_EVENT:
                 context.receiveMessage(message(event));
