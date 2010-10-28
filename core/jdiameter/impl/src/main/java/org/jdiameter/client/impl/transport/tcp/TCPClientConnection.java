@@ -220,7 +220,7 @@ public class TCPClientConnection implements IConnection {
     onEvent(new Event(EventType.DISCONNECTED));
   }
 
-  protected void onMessageReveived(ByteBuffer message) throws AvpDataException {
+  protected void onMessageReceived(ByteBuffer message) throws AvpDataException {
     if (log.isDebugEnabled()) {
       log.debug("Received message");
     }

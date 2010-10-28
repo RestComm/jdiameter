@@ -274,7 +274,7 @@ class TCPTransportClient implements Runnable {
     localStorage.compact();
 
     try {
-      getParent().onMessageReveived(ByteBuffer.wrap(data));
+      getParent().onMessageReceived(ByteBuffer.wrap(data));
     }
     catch (AvpDataException e) {
       logger.debug("Garbage was received from server");
