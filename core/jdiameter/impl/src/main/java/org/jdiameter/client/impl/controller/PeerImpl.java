@@ -700,6 +700,8 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       message.setEndToEndIdentifier(dwr.getEndToEndIdentifier());
       // Set content
       message.getAvps().addAvp(RESULT_CODE, resultCode, true, false, true);
+      message.getAvps().addAvp(ORIGIN_HOST, metaData.getLocalPeer().getUri().getFQDN(), true, false, true);
+      message.getAvps().addAvp(ORIGIN_REALM, metaData.getLocalPeer().getRealmName(), true, false, true);
       if (errorMessage != null) {
         message.getAvps().addAvp(ERROR_MESSAGE, errorMessage, false);
       }
@@ -732,6 +734,8 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       message.setHopByHopIdentifier(dpr.getHopByHopIdentifier());
       message.setEndToEndIdentifier(dpr.getEndToEndIdentifier());
       message.getAvps().addAvp(RESULT_CODE,  resultCode, true, false, true);
+      message.getAvps().addAvp(ORIGIN_HOST, metaData.getLocalPeer().getUri().getFQDN(), true, false, true);
+      message.getAvps().addAvp(ORIGIN_REALM, metaData.getLocalPeer().getRealmName(), true, false, true);
       if (errorMessage != null) {
         message.getAvps().addAvp(ERROR_MESSAGE, errorMessage, false);
       }
