@@ -9,10 +9,13 @@
  */
 package org.jdiameter.api.auth.events;
 
+import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.app.AppAnswerEvent;
 
 /**
- * A Answer message is sent by a recipient of Request once it has received and interpreted the Request.
+ * A Answer message is sent by a recipient of Request once it has received and
+ * interpreted the Request.
+ * 
  * @version 1.5.1 Final
  */
 
@@ -23,4 +26,21 @@ public interface AbortSessionAnswer extends AppAnswerEvent {
 
   public static final int code = 274;
 
+  long getOriginStateId() throws AvpDataException;
+
+  boolean hasOriginStateId();
+
+  void setOriginStateId(long val);
+
+  boolean hasTerminationCause();
+
+  int getTerminationCause() throws AvpDataException;
+
+  void setTerminationCause(int val);
+
+  boolean hasUserName();
+
+  String getUserName() throws AvpDataException;
+
+  void setUserName(String val);
 }

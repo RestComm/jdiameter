@@ -10,30 +10,93 @@
 package org.jdiameter.api.acc.events;
 
 import org.jdiameter.api.AvpDataException;
+import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.app.AppAnswerEvent;
 
 /**
- * A Answer message is sent by a recipient of Request once it has
- * received and interpreted the Request.
+ * An Answer message is sent by a recipient of Request once it has received and
+ * interpreted the Request.
+ * 
  * @version 1.5.1 Final
  */
 public interface AccountAnswer extends AppAnswerEvent {
-
 
   public static final String _SHORT_NAME = "ACA";
   public static final String _LONG_NAME = "Accounting-Answer";
 
   public static final int code = 271;
 
-  /**
-   * @return Record type of answer
-   * @throws org.jdiameter.api.AvpDataException if result code avp is not integer
-   */
+  boolean hasAccountingRecordType();
+
   int getAccountingRecordType() throws AvpDataException;
 
-  /**
-   * @return record number
-   * @throws AvpDataException if result code avp is not integer
-   */
+  void setAccountingRecordType(int val);
+
+  boolean hasAccountingRecordNumber();
+
   long getAccountingRecordNumber() throws AvpDataException;
+
+  void setAccountingRecordNumber(long val);
+
+  boolean hasAcctApplicationId();
+
+  long getAcctApplicationId() throws AvpDataException;
+
+  void setAcctApplicationId(long val);
+
+  boolean hasVendorSpecificApplicationId();
+
+  AvpSet getVendorSpecificApplicationId() throws AvpDataException;
+
+  void setVendorSpecificApplicationId(long vendorId, long appId, boolean isAuthApp);
+
+  boolean hasUserName();
+
+  String getUserName() throws AvpDataException;
+
+  void setUserName(String val);
+
+  boolean hasAcctSubSessionId();
+
+  long getAcctSubSessionId() throws AvpDataException;
+
+  void setAcctSubSessionId(long val);
+
+  boolean hasAcctSessionId();
+
+  String getAcctSessionId() throws AvpDataException;
+
+  void setAcctSessionId(String val);
+
+  boolean hasAcctMultiSessionId();
+
+  String getAcctMultiSessionId() throws AvpDataException;
+
+  void setAcctMultiSessionId(String val);
+
+  boolean hasAcctInterimInterval();
+
+  long getAcctInterimInterval() throws AvpDataException;
+
+  void setAcctInterimInterval(long val);
+
+  boolean hasAccountingRealtimeRequired();
+
+  int getAccountingRealtimeRequired() throws AvpDataException;
+
+  void setAccountingRealtimeRequired(int val);
+
+  long getOriginStateId() throws AvpDataException;
+
+  boolean hasOriginStateId();
+
+  void setOriginStateId(long val);
+
+  // octet string
+  boolean hasEventTimestamp();
+
+  String getEventTimestamp() throws AvpDataException;
+
+  void setEventTimestamp(String val);
+
 }
