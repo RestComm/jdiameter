@@ -41,10 +41,6 @@ public interface AppEvent extends Serializable {
    */
   public String getOriginHost() throws AvpDataException;
 
-  public boolean hasOriginHost();
-
-  public void setOriginHost(String originHost);
-
   /**
    * Return origination realm avp value ( null if avp is empty )
    * 
@@ -52,21 +48,5 @@ public interface AppEvent extends Serializable {
    * @throws AvpDataException if avp is not string
    */
   public String getOriginRealm() throws AvpDataException;
-
-  public boolean hasOriginRealm();
-
-  public void setOriginRealm(String originRealm);
-
-  /**
-   * Return session id avp value ( null if avp is empty )
-   * 
-   * @return session id  avp value
-   * @throws AvpDataException if avp is not string
-   */
-  public String getSessionId() throws AvpDataException;
-
-  public boolean hasSessionId();
-
-  public void setSessionId(String sessionId);
 
 }

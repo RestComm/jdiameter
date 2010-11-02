@@ -91,7 +91,7 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
   // Session State Handling ---------------------------------------------------
   protected boolean stateless = false;
   protected ClientAuthSessionState state = IDLE;
-  private Lock sendAndStateLock = new ReentrantLock();
+  protected Lock sendAndStateLock = new ReentrantLock();
 
   // Factories and Listeners --------------------------------------------------
   protected transient IAuthMessageFactory factory;

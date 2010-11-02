@@ -25,10 +25,6 @@ public interface AppRequestEvent extends AppEvent {
    */
   public String getDestinationHost() throws AvpDataException;
 
-  public boolean hasDestinationHost();
-
-  public void setDestinationHost(String destinationHost);
-
   /**
    * Return destination realm avp value ( null if avp is empty )
    * 
@@ -36,9 +32,5 @@ public interface AppRequestEvent extends AppEvent {
    * @throws AvpDataException if avp is not string
    */
   public String getDestinationRealm() throws AvpDataException;
-
-  public boolean hasDestinationRealm();
-
-  public void setDestinationRealm(String destinationRealm);
 
 }
