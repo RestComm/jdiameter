@@ -16,25 +16,25 @@ package org.jdiameter.api;
 
 public interface Request extends Message {
 
-    /**
-     * @return true if it is network request
-     */
-    boolean isNetworkRequest();
+  /**
+   * @return true if it is network request
+   */
+  boolean isNetworkRequest();
 
-    /**
-     * Creates a response for this request with the specifies result code.
-     * Header and system avps from request has copy to answer.
-     * @param resultCode result code of answer
-     * @return answer object instance
-     */
-    Answer createAnswer(long resultCode);
+  /**
+   * Creates an answer for this request with the specified result code.
+   * Header and system AVPs from request are copied to answer.
+   * @param resultCode result code of answer
+   * @return answer object instance
+   */
+  Answer createAnswer(long resultCode);
 
-    /**
-     * Creates a response for this request with the specifies experement result code.
-     * Header and system avps from request has copy to answer.
-     * @param vendorId vendorId
-     * @param experementalResultCode experement result code of answer
-     * @return answer object instance
-     */
-    Answer createAnswer(long vendorId, long experementalResultCode);
+  /**
+   * Creates an answer for this request with the specified experimental result code.
+   * Header and system AVPs from request are copied to answer.
+   * @param vendorId vendorId
+   * @param experimentalResultCode experimental result code of answer
+   * @return answer object instance
+   */
+  Answer createAnswer(long vendorId, long experementalResultCode);
 }

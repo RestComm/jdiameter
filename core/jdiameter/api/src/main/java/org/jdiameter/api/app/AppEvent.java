@@ -17,32 +17,56 @@ import java.io.Serializable;
 
 /**
  * Basic class for application specific event (Sx, Rx, Gx)
+ * 
  * @version 1.5.1 Final
  */
 public interface AppEvent extends Serializable {
 
-    /**
-     * @return commCode of parent message
-     */
-    int getCommandCode(); 
+  /**
+   * @return commCode of parent message
+   */
+  public int getCommandCode();
 
-    /**
-     * @return set of associated message
-     * @throws InternalException signals that internal message is not set.
-     */
-    Message getMessage() throws InternalException;
+  /**
+   * @return set of associated message
+   * @throws InternalException signals that internal message is not set.
+   */
+  public Message getMessage() throws InternalException;
 
-    /**
-      * Return origination host avp value ( null if avp is empty )
-      * @return origination host avp value
-      * @throws org.jdiameter.api.AvpDataException if avp is not string
-      */
-    String getOriginHost() throws AvpDataException;
+  /**
+   * Return origination host avp value ( null if avp is empty )
+   * 
+   * @return origination host avp value
+   * @throws AvpDataException if avp is not string
+   */
+  public String getOriginHost() throws AvpDataException;
 
-    /**
-      * Return origination realm avp value ( null if avp is empty )
-      * @return origination realm avp value
-      * @throws org.jdiameter.api.AvpDataException if avp is not string
-      */
-    String getOriginRealm() throws AvpDataException;    
+  public boolean hasOriginHost();
+
+  public void setOriginHost(String originHost);
+
+  /**
+   * Return origination realm avp value ( null if avp is empty )
+   * 
+   * @return origination realm avp value
+   * @throws AvpDataException if avp is not string
+   */
+  public String getOriginRealm() throws AvpDataException;
+
+  public boolean hasOriginRealm();
+
+  public void setOriginRealm(String originRealm);
+
+  /**
+   * Return session id avp value ( null if avp is empty )
+   * 
+   * @return session id  avp value
+   * @throws AvpDataException if avp is not string
+   */
+  public String getSessionId() throws AvpDataException;
+
+  public boolean hasSessionId();
+
+  public void setSessionId(String sessionId);
+
 }
