@@ -9,7 +9,6 @@
  */
 package org.jdiameter.api.auth.events;
 
-import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.app.AppAnswerEvent;
 
 /**
@@ -26,21 +25,4 @@ public interface AbortSessionAnswer extends AppAnswerEvent {
 
   public static final int code = 274;
 
-  long getOriginStateId() throws AvpDataException;
-
-  boolean hasOriginStateId();
-
-  void setOriginStateId(long val);
-
-  boolean hasTerminationCause();
-
-  int getTerminationCause() throws AvpDataException;
-
-  void setTerminationCause(int val);
-
-  boolean hasUserName();
-
-  String getUserName() throws AvpDataException;
-
-  void setUserName(String val);
 }

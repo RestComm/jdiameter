@@ -27,32 +27,8 @@ public interface AbortSessionRequest extends AppRequestEvent {
 
   /**
    * Return Auth-Application-Id value of request
-   * 
    * @return Auth-Application-Id value of request
-   * @throws org.jdiameter.api.AvpDataException
-   *             if avp is not integer
+   * @throws org.jdiameter.api.AvpDataException if avp is not integer
    */
-  long getAuthApplicationId() throws AvpDataException;
-
-  boolean hasAuthApplicationId();
-
-  void setAuthApplicationId(long val);
-
-  long getOriginStateId() throws AvpDataException;
-
-  boolean hasOriginStateId();
-
-  void setOriginStateId(long val);
-
-  boolean hasTerminationCause();
-
-  int getTerminationCause() throws AvpDataException;
-
-  void setTerminationCause(int val);
-
-  boolean hasUserName();
-
-  String getUserName() throws AvpDataException;
-
-  void setUserName(String val);
+  long getAuthApplicationId()  throws AvpDataException;
 }

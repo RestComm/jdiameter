@@ -25,27 +25,16 @@ public interface SessionTermRequest extends AppRequestEvent {
 
   public static final int code = 275;
 
+  /**
+   * @return Auth-Application-Id value of request
+   * @throws AvpDataException if result code avp is not integer
+   */
   long getAuthApplicationId() throws AvpDataException;
 
-  boolean hasAuthApplicationId();
-
-  void setAuthApplicationId(long val);
-
-  long getOriginStateId() throws AvpDataException;
-
-  boolean hasOriginStateId();
-
-  void setOriginStateId(long val);
-
-  boolean hasTerminationCause();
-
+  /**
+   * @return termination cause
+   * @throws AvpDataException if result code avp is not integer
+   */
   int getTerminationCause() throws AvpDataException;
 
-  void setTerminationCause(int val);
-
-  boolean hasUserName();
-
-  String getUserName() throws AvpDataException;
-
-  void setUserName(String val);
 }

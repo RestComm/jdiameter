@@ -1,6 +1,6 @@
 package org.jdiameter.api.cca.events;
 
-import org.jdiameter.api.AvpDataException;
+import org.jdiameter.api.Avp;
 import org.jdiameter.api.app.AppAnswerEvent;
 
 /**
@@ -22,77 +22,18 @@ public interface JCreditControlAnswer extends AppAnswerEvent {
 
   public static final int code = 272;
 
-  boolean hasAcctMultiSessionId();
+  boolean isCreditControlFailureHandlingAVPPresent();
 
-  String getAcctMultiSessionId() throws AvpDataException;
+  int getCredidControlFailureHandlingAVPValue();
 
-  void setAcctMultiSessionId(String val);
+  boolean isDirectDebitingFailureHandlingAVPPresent();
 
-  long getAuthApplicationId() throws AvpDataException;
+  int getDirectDebitingFailureHandlingAVPValue();
 
-  boolean hasAuthApplicationId();
+  boolean isRequestTypeAVPPresent();
 
-  void setAuthApplicationId(long val);
+  int getRequestTypeAVPValue();
 
-  long getCCRequestNumber() throws AvpDataException;
-
-  boolean hasCCRequestNumber();
-
-  void setCCRequestNumber(long val);
-
-  int getCCRequestType() throws AvpDataException;
-
-  boolean hasCCRequestType();
-
-  void setCCRequestType(int val);
-
-  long getCCSubSessionId() throws AvpDataException;
-
-  boolean hasCCSubSessionId();
-
-  void setCCSubSessionId(long val);
-
-  int getCheckBalanceResult() throws AvpDataException;
-
-  boolean hasCheckBalanceResult();
-
-  void setCheckBalanceResult(int val);
-
-  int getCCFailureHandling() throws AvpDataException;
-
-  boolean hasCCFailureHandling();
-
-  void setCCFailureHandling(int val);
-
-  int getDDFailureHandling() throws AvpDataException;
-
-  boolean hasDDFailureHandling();
-
-  void setDDFailureHandling(int val);
-
-  boolean hasEventTimestamp();
-
-  String getEventTimestamp() throws AvpDataException;
-
-  void setEventTimestamp(String val);
-
-  long getOriginStateId() throws AvpDataException;
-
-  boolean hasOriginStateId();
-
-  void setOriginStateId(long val);
-
-  boolean hasUserName();
-
-  String getUserName() throws AvpDataException;
-
-  void setUserName(String val);
-
-  //unsigned32
-  boolean hasValidityTime();
-
-  long getValidityTime() throws AvpDataException;
-
-  void setValidityTime(long val);
+  Avp getValidityTimeAvp();
 
 }
