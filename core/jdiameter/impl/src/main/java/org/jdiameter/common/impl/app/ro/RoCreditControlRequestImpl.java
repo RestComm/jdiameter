@@ -36,20 +36,20 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
  */
-public class RoRequestImpl extends AppRequestEventImpl implements RoCreditControlRequest {
+public class RoCreditControlRequestImpl extends AppRequestEventImpl implements RoCreditControlRequest {
 
   private static final long serialVersionUID = 1L;
 
-  protected Logger logger = LoggerFactory.getLogger(RoRequestImpl.class);
+  protected Logger logger = LoggerFactory.getLogger(RoCreditControlRequestImpl.class);
 
   private static final int REQUESTED_ACTION_AVP_CODE = 436;
   private static final int CC_REQUEST_TYPE_AVP_CODE = 416;
 
-  public RoRequestImpl(AppSession session, String destRealm, String destHost) {
+  public RoCreditControlRequestImpl(AppSession session, String destRealm, String destHost) {
     super(session.getSessions().get(0).createRequest(code, session.getSessionAppId(), destRealm, destHost));
   }
 
-  public RoRequestImpl(Request request) {
+  public RoCreditControlRequestImpl(Request request) {
     super(request);
   }
 

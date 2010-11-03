@@ -318,11 +318,11 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   // Message Factory Methods --------------------------------------------------
 
   public RoCreditControlAnswer createCreditControlAnswer(Answer answer) {
-    return new RoAnswerImpl(answer);
+    return new RoCreditControlAnswerImpl(answer);
   }
 
   public RoCreditControlRequest createCreditControlRequest(Request req) {
-    return new RoRequestImpl(req);
+    return new RoCreditControlRequestImpl(req);
   }
 
   public ReAuthAnswer createReAuthAnswer(Answer answer) {

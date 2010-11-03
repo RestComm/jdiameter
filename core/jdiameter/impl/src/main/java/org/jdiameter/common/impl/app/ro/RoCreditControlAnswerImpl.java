@@ -36,11 +36,11 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
  */
-public class RoAnswerImpl extends AppAnswerEventImpl implements RoCreditControlAnswer {
+public class RoCreditControlAnswerImpl extends AppAnswerEventImpl implements RoCreditControlAnswer {
 
   private static final long serialVersionUID = 1L;
 
-  protected Logger logger = LoggerFactory.getLogger(RoAnswerImpl.class);
+  protected Logger logger = LoggerFactory.getLogger(RoCreditControlAnswerImpl.class);
 
   private static final int CREDIT_CONTROL_FAILURE_HANDLING_AVP_CODE = 427; 
   private static final int DIRECT_DEBITING_FAILURE_HANDLING_AVP_CODE = 428;
@@ -48,11 +48,11 @@ public class RoAnswerImpl extends AppAnswerEventImpl implements RoCreditControlA
   private static final int CC_REQUEST_TYPE_AVP_CODE = 416;
   private static final int VALIDITY_TIME_AVP_CODE = 448;
 
-  public RoAnswerImpl(Request message, long resultCode) {
+  public RoCreditControlAnswerImpl(Request message, long resultCode) {
     super(message.createAnswer(resultCode));
   }
 
-  public RoAnswerImpl(Answer message) {
+  public RoCreditControlAnswerImpl(Answer message) {
     super(message);
   }
 
