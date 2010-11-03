@@ -46,8 +46,8 @@ import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.api.auth.events.ReAuthRequest;
 import org.jdiameter.api.ro.ServerRoSession;
 import org.jdiameter.api.ro.ServerRoSessionListener;
-import org.jdiameter.api.ro.events.RoAnswer;
-import org.jdiameter.api.ro.events.RoRequest;
+import org.jdiameter.api.ro.events.RoCreditControlAnswer;
+import org.jdiameter.api.ro.events.RoCreditControlRequest;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.IAppSessionState;
@@ -114,7 +114,7 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
     super.addStateChangeNotification(stLst);
   }
 
-  public void sendCreditControlAnswer(RoAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void sendCreditControlAnswer(RoCreditControlAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     try {
       handleEvent(new Event(false, null, answer));
     } catch (AvpDataException e) {
@@ -154,7 +154,7 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
         switch(eventType)
         {
         case RECEIVED_INITIAL:
-          listener.doCreditControlRequest(this, (RoRequest)localEvent.getRequest());
+          listener.doCreditControlRequest(this, (RoCreditControlRequest)localEvent.getRequest());
           break;
 
         case RECEIVED_EVENT:
@@ -162,7 +162,7 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
           // Event: CC event request received and successfully processed
           // Action: Send CC event answer
           // New State: IDLE
-          listener.doCreditControlRequest(this, (RoRequest)localEvent.getRequest());
+          listener.doCreditControlRequest(this, (RoCreditControlRequest)localEvent.getRequest());
           break;
 
         case SENT_EVENT_RESPONSE:
@@ -180,7 +180,7 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
           break;
 
         case SENT_INITIAL_RESPONSE:
-          RoAnswer answer = (RoAnswer) localEvent.getAnswer();
+          RoCreditControlAnswer answer = (RoCreditControlAnswer) localEvent.getAnswer();
           try {
             long resultCode = answer.getResultCodeAvp().getUnsigned32();
             // Current State: IDLE
@@ -223,11 +223,11 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
           break;
          */
         case RECEIVED_UPDATE:
-          listener.doCreditControlRequest(this, (RoRequest)localEvent.getRequest());
+          listener.doCreditControlRequest(this, (RoCreditControlRequest)localEvent.getRequest());
           break;
 
         case SENT_UPDATE_RESPONSE:
-          RoAnswer answer = (RoAnswer) localEvent.getAnswer();
+          RoCreditControlAnswer answer = (RoCreditControlAnswer) localEvent.getAnswer();
           try {
             if(isSuccess(answer.getResultCodeAvp().getUnsigned32())) {
               // Current State: OPEN
@@ -251,10 +251,10 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
           dispatchEvent(localEvent.getAnswer());
           break;
         case RECEIVED_TERMINATE:
-          listener.doCreditControlRequest(this, (RoRequest)localEvent.getRequest());
+          listener.doCreditControlRequest(this, (RoCreditControlRequest)localEvent.getRequest());
           break;
         case SENT_TERMINATE_RESPONSE:
-          answer = (RoAnswer) localEvent.getAnswer();
+          answer = (RoCreditControlAnswer) localEvent.getAnswer();
           try {
             // Current State: OPEN
             // Event: CC termination request received and successfully processed
@@ -527,7 +527,7 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
     public void run() {
       try {
         switch (request.getCommandCode()) {
-        case RoAnswer.code:
+        case RoCreditControlAnswer.code:
           handleEvent(new Event(true, factory.createCreditControlRequest(request), null));
           break;
 

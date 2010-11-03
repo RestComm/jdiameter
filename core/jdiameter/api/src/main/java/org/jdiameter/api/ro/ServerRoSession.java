@@ -28,7 +28,7 @@ import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateMachine;
 import org.jdiameter.api.auth.events.ReAuthRequest;
-import org.jdiameter.api.ro.events.RoAnswer;
+import org.jdiameter.api.ro.events.RoCreditControlAnswer;
 
 /**
  * Basic class for server credit-control application specific session
@@ -47,7 +47,7 @@ public interface ServerRoSession extends AppSession, StateMachine {
    * @throws RouteException The NoRouteException signals that no route exist for a given realm.
    * @throws OverloadException The OverloadException signals that destination host is overloaded.
    **/
-  public void sendCreditControlAnswer(RoAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  public void sendCreditControlAnswer(RoCreditControlAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
   /**
    * Send re-authentication request to client

@@ -30,7 +30,7 @@ import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.auth.events.ReAuthAnswer;
 import org.jdiameter.api.auth.events.ReAuthRequest;
-import org.jdiameter.api.ro.events.RoRequest;
+import org.jdiameter.api.ro.events.RoCreditControlRequest;
 
 /**
  * This interface defines the possible actions for the different states in the server
@@ -51,7 +51,7 @@ public interface ServerRoSessionListener {
    * @throws RouteException The NoRouteException signals that no route exist for a given realm.
    * @throws OverloadException The OverloadException signals that destination host is overloaded.
    */
-  void doCreditControlRequest(ServerRoSession session, RoRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doCreditControlRequest(ServerRoSession session, RoCreditControlRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
   /**
    * Notifies this ServerRoSessionListener that the ServerRoSession has received a RAA message.

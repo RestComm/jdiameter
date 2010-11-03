@@ -51,8 +51,8 @@ import org.jdiameter.api.auth.events.ReAuthAnswer;
 import org.jdiameter.api.auth.events.ReAuthRequest;
 import org.jdiameter.api.ro.ClientRoSession;
 import org.jdiameter.api.ro.ClientRoSessionListener;
-import org.jdiameter.api.ro.events.RoAnswer;
-import org.jdiameter.api.ro.events.RoRequest;
+import org.jdiameter.api.ro.events.RoCreditControlAnswer;
+import org.jdiameter.api.ro.events.RoCreditControlRequest;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.ISessionFactory;
@@ -194,7 +194,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     return gatheredDDFH >= 0 ? gatheredDDFH : context.getDefaultDDFHValue();
   }
 
-  public void sendCreditControlRequest(RoRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void sendCreditControlRequest(RoCreditControlRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
    
     try {
     	 extractFHAVPs(request, null);
@@ -239,7 +239,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
           // Event: Client or device requests a one-time service
           // Action: Send CC event request, start Tx
           // New State: PENDING_E
-          startTx((RoRequest) localEvent.getRequest());
+          startTx((RoCreditControlRequest) localEvent.getRequest());
           setState(ClientRoSessionState.PENDING_EVENT);
           try {
             dispatchEvent(localEvent.getRequest());
@@ -270,10 +270,10 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               setState(ClientRoSessionState.IDLE, false);
             }
             if (isProvisional(resultCode) || isFailure(resultCode)) {
-              handleFailureMessage((RoAnswer) answer, (RoRequest) localEvent.getRequest(), eventType);
+              handleFailureMessage((RoCreditControlAnswer) answer, (RoCreditControlRequest) localEvent.getRequest(), eventType);
             }
 
-            deliverRonswer((RoRequest) localEvent.getRequest(), (RoAnswer) localEvent.getAnswer());
+            deliverRonswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
           }
           catch (AvpDataException e) {
             logger.debug("Failure handling received answer event", e);
@@ -298,7 +298,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
           // New State: IDLE
           setState(ClientRoSessionState.IDLE, false);
           buffer = null;
-          deliverRonswer((RoRequest) localEvent.getRequest(), (RoAnswer) localEvent.getAnswer());
+          deliverRonswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
           break;
         default:
           logger.warn("Wrong event type ({}) on state {}", eventType, state);
@@ -336,7 +336,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
           // Event: Client or device requests access/service
           // Action: Send CC initial request, start Tx
           // New State: PENDING_I
-          startTx((RoRequest) localEvent.getRequest());
+          startTx((RoCreditControlRequest) localEvent.getRequest());
           setState(ClientRoSessionState.PENDING_INITIAL);
           try {
             dispatchEvent(localEvent.getRequest());
@@ -366,9 +366,9 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
             setState(ClientRoSessionState.OPEN);
           }
           else if (isProvisional(resultCode) || isFailure(resultCode)) {
-            handleFailureMessage((RoAnswer) answer, (RoRequest) localEvent.getRequest(), eventType);
+            handleFailureMessage((RoCreditControlAnswer) answer, (RoCreditControlRequest) localEvent.getRequest(), eventType);
           }
-          deliverRonswer((RoRequest) localEvent.getRequest(), (RoAnswer) localEvent.getAnswer());
+          deliverRonswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
           break;
         case Tx_TIMER_FIRED:
           handleTxExpires(localEvent.getRequest().getMessage());
@@ -414,7 +414,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
           // Event: RAR received
           // Action: Send RAA followed by CC update request, start Tx
           // New State: PENDING_U
-          startTx((RoRequest) localEvent.getRequest());
+          startTx((RoCreditControlRequest) localEvent.getRequest());
           setState(ClientRoSessionState.PENDING_UPDATE);
           try {
             dispatchEvent(localEvent.getRequest());
@@ -479,9 +479,9 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
             setState(ClientRoSessionState.OPEN);
           }
           else if (isProvisional(resultCode) || isFailure(resultCode)) {
-            handleFailureMessage((RoAnswer) answer, (RoRequest) localEvent.getRequest(), eventType);
+            handleFailureMessage((RoCreditControlAnswer) answer, (RoCreditControlRequest) localEvent.getRequest(), eventType);
           }
-          deliverRonswer((RoRequest) localEvent.getRequest(), (RoAnswer) localEvent.getAnswer());
+          deliverRonswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
           break;
         case Tx_TIMER_FIRED:
           handleTxExpires(localEvent.getRequest().getMessage());
@@ -548,7 +548,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
 
           //FIXME: Alex broke this, setting back "true" ? 
           setState(ClientRoSessionState.IDLE, false);
-          deliverRonswer((RoRequest) localEvent.getRequest(), (RoAnswer) localEvent.getAnswer());
+          deliverRonswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
           setState(ClientRoSessionState.IDLE, true);
           break;
         default:
@@ -591,7 +591,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   }
 
   public void timeoutExpired(Request request) {
-    if(request.getCommandCode()== RoAnswer.code) {
+    if(request.getCommandCode()== RoCreditControlAnswer.code) {
       try {
         handleSendFailure(null, null, request);
       }
@@ -601,7 +601,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     }
   }
 
-  protected void startTx(RoRequest request) {
+  protected void startTx(RoCreditControlRequest request) {
     long txTimerValue = context.getDefaultTxTimerValue();
     if (txTimerValue < 0) {
       txTimerValue = TX_TIMER_DEFAULT_VALUE;
@@ -789,7 +789,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     }
   }
 
-  protected void handleFailureMessage(RoAnswer event, RoRequest request, Event.Type eventType) {
+  protected void handleFailureMessage(RoCreditControlAnswer event, RoCreditControlRequest request, Event.Type eventType) {
     try {
       // Event Based ----------------------------------------------------------
       long resultCode = event.getResultCodeAvp().getUnsigned32();
@@ -1176,7 +1176,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     }
   }
 
-  protected void deliverRonswer(RoRequest request, RoAnswer answer) {
+  protected void deliverRonswer(RoCreditControlRequest request, RoCreditControlAnswer answer) {
     try {
       listener.doCreditControlAnswer(this, request, answer);
     }
@@ -1185,7 +1185,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     }
   }
 
-  protected void extractFHAVPs(RoRequest request, RoAnswer answer) throws AvpDataException {
+  protected void extractFHAVPs(RoCreditControlRequest request, RoCreditControlAnswer answer) throws AvpDataException {
     if (answer != null) {
       try {
         if (answer.isCreditControlFailureHandlingAVPPresent()) {
@@ -1300,7 +1300,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
         catch (Exception e) {
           logger.debug("Failure handling TX Timer Expired", e);
         }
-        RoRequest req = factory.createCreditControlRequest((Request) messageFromBuffer(ByteBuffer.wrap(request)));
+        RoCreditControlRequest req = factory.createCreditControlRequest((Request) messageFromBuffer(ByteBuffer.wrap(request)));
         handleEvent(new Event(Event.Type.Tx_TIMER_FIRED, req, null));
       }
       catch (InternalException e) {
@@ -1372,9 +1372,9 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
       try{
         switch(request.getCommandCode())
         {
-        case RoAnswer.code:
-          RoRequest _request = factory.createCreditControlRequest(request);
-          RoAnswer _answer = factory.createCreditControlAnswer(answer);
+        case RoCreditControlAnswer.code:
+          RoCreditControlRequest _request = factory.createCreditControlRequest(request);
+          RoCreditControlAnswer _answer = factory.createCreditControlAnswer(answer);
           extractFHAVPs(null, _answer );
           handleEvent(new Event(false, _request, _answer));
           break;

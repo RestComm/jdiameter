@@ -25,7 +25,7 @@ import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.app.AppSession;
-import org.jdiameter.api.ro.events.RoRequest;
+import org.jdiameter.api.ro.events.RoCreditControlRequest;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
  */
-public class RoRequestImpl extends AppRequestEventImpl implements RoRequest {
+public class RoRequestImpl extends AppRequestEventImpl implements RoCreditControlRequest {
 
   private static final long serialVersionUID = 1L;
 

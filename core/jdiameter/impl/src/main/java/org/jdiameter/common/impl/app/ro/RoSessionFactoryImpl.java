@@ -39,8 +39,8 @@ import org.jdiameter.api.ro.ClientRoSession;
 import org.jdiameter.api.ro.ClientRoSessionListener;
 import org.jdiameter.api.ro.ServerRoSession;
 import org.jdiameter.api.ro.ServerRoSessionListener;
-import org.jdiameter.api.ro.events.RoAnswer;
-import org.jdiameter.api.ro.events.RoRequest;
+import org.jdiameter.api.ro.events.RoCreditControlAnswer;
+import org.jdiameter.api.ro.events.RoCreditControlRequest;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.impl.app.ro.ClientRoSessionImpl;
 import org.jdiameter.common.api.app.ro.IClientRoSessionContext;
@@ -295,11 +295,11 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
 
   // Message Handlers ---------------------------------------------------------
 
-  public void doCreditControlRequest(ServerRoSession session, RoRequest request) throws InternalException {
+  public void doCreditControlRequest(ServerRoSession session, RoCreditControlRequest request) throws InternalException {
 
   }
 
-  public void doCreditControlAnswer(ClientRoSession session, RoRequest request, RoAnswer answer) throws InternalException {
+  public void doCreditControlAnswer(ClientRoSession session, RoCreditControlRequest request, RoCreditControlAnswer answer) throws InternalException {
 
   }
 
@@ -317,11 +317,11 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
 
   // Message Factory Methods --------------------------------------------------
 
-  public RoAnswer createCreditControlAnswer(Answer answer) {
+  public RoCreditControlAnswer createCreditControlAnswer(Answer answer) {
     return new RoAnswerImpl(answer);
   }
 
-  public RoRequest createCreditControlRequest(Request req) {
+  public RoCreditControlRequest createCreditControlRequest(Request req) {
     return new RoRequestImpl(req);
   }
 

@@ -19,31 +19,37 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
-package org.jdiameter.common.api.app.ro;
+package org.jdiameter.api.ro.events;
 
-import org.jdiameter.api.Answer;
-import org.jdiameter.api.Request;
-import org.jdiameter.api.auth.events.ReAuthAnswer;
-import org.jdiameter.api.auth.events.ReAuthRequest;
-import org.jdiameter.api.ro.events.RoCreditControlAnswer;
-import org.jdiameter.api.ro.events.RoCreditControlRequest;
+import org.jdiameter.api.Avp;
+import org.jdiameter.api.app.AppAnswerEvent;
 
 /**
- * Diameter Credit-Control Application Message Factory
- *
- * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
+ * The Credit-Control-Answer (CCA) messages, indicated by the Command-Code field set to 272 is sent
+ * by the OCF to the CTF in order to reply to the CCR. 
+ * 
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public interface IRoMessageFactory {
+public interface RoCreditControlAnswer extends AppAnswerEvent {
 
-  public ReAuthRequest createReAuthRequest(Request request);
+  public static final String _SHORT_NAME = "CCA";
+  public static final String _LONG_NAME = "Credit-Control-Answer";
 
-  public ReAuthAnswer createReAuthAnswer(Answer answer);
+  public static final int code = 272;
 
-  public RoCreditControlRequest createCreditControlRequest(Request request);
+  boolean isCreditControlFailureHandlingAVPPresent();
 
-  public RoCreditControlAnswer createCreditControlAnswer(Answer answer);
+  int getCredidControlFailureHandlingAVPValue();
 
-  public long[] getApplicationIds();
+  boolean isDirectDebitingFailureHandlingAVPPresent();
+
+  int getDirectDebitingFailureHandlingAVPValue();
+
+  boolean isRequestTypeAVPPresent();
+
+  int getRequestTypeAVPValue();
+
+  Avp getValidityTimeAvp();
 
 }

@@ -19,31 +19,30 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
-package org.jdiameter.common.api.app.ro;
+package org.jdiameter.api.ro.events;
 
-import org.jdiameter.api.Answer;
-import org.jdiameter.api.Request;
-import org.jdiameter.api.auth.events.ReAuthAnswer;
-import org.jdiameter.api.auth.events.ReAuthRequest;
-import org.jdiameter.api.ro.events.RoCreditControlAnswer;
-import org.jdiameter.api.ro.events.RoCreditControlRequest;
+import org.jdiameter.api.app.AppRequestEvent;
 
 /**
- * Diameter Credit-Control Application Message Factory
- *
- * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
+ * The CCR messages, indicated by the Command-Code field set to 272 is sent by the CTF to the OCF
+ * in order to request credits for the request bearer / subsystem / service. 
+ * 
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public interface IRoMessageFactory {
+public interface RoCreditControlRequest extends AppRequestEvent {
 
-  public ReAuthRequest createReAuthRequest(Request request);
+  public static final String _SHORT_NAME = "CCR";
+  public static final String _LONG_NAME = "Credit-Control-Request";
 
-  public ReAuthAnswer createReAuthAnswer(Answer answer);
+  public static final int code = 272;
 
-  public RoCreditControlRequest createCreditControlRequest(Request request);
+  boolean isRequestedActionAVPPresent();
 
-  public RoCreditControlAnswer createCreditControlAnswer(Answer answer);
+  int getRequestedActionAVPValue();
 
-  public long[] getApplicationIds();
+  boolean isRequestTypeAVPPresent();
+
+  int getRequestTypeAVPValue();
 
 }

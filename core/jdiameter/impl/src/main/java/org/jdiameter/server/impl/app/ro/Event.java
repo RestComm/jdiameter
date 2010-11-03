@@ -5,8 +5,8 @@ import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.StateEvent;
-import org.jdiameter.api.ro.events.RoAnswer;
-import org.jdiameter.api.ro.events.RoRequest;
+import org.jdiameter.api.ro.events.RoCreditControlAnswer;
+import org.jdiameter.api.ro.events.RoCreditControlRequest;
 
 public class Event implements StateEvent {
 
@@ -38,7 +38,7 @@ public class Event implements StateEvent {
     this.request = request;
   }
 
-  Event(boolean isRequest, RoRequest request, RoAnswer answer) throws AvpDataException {
+  Event(boolean isRequest, RoCreditControlRequest request, RoCreditControlAnswer answer) throws AvpDataException {
 
     this.answer = answer;
     this.request = request;

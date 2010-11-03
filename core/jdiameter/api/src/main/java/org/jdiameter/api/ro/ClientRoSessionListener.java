@@ -8,8 +8,8 @@ import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.auth.events.ReAuthRequest;
-import org.jdiameter.api.ro.events.RoAnswer;
-import org.jdiameter.api.ro.events.RoRequest;
+import org.jdiameter.api.ro.events.RoCreditControlAnswer;
+import org.jdiameter.api.ro.events.RoCreditControlRequest;
 
 /**
  * This interface defines the possible actions for the different states in the client 
@@ -31,7 +31,7 @@ public interface ClientRoSessionListener {
    * @throws RouteException The NoRouteException signals that no route exist for a given realm.
    * @throws OverloadException The OverloadException signals that destination host is overloaded.
    */
-  void doCreditControlAnswer(ClientRoSession session, RoRequest request, RoAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doCreditControlAnswer(ClientRoSession session, RoCreditControlRequest request, RoCreditControlAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
   /**
    * Notifies this ClientRoSessionListener that the ClientRoSession has received a RAR message.
