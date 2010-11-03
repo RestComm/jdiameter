@@ -130,7 +130,7 @@ public class PeerFSMImpl implements IStateMachine {
     "FSM-" + context.getPeerDescription(),
         new Runnable() {
           public void run() {
-            while (true) {
+            while (executor != null) {
               StateEvent event;
               try {
                 event = eventQueue.poll(100, TimeUnit.MILLISECONDS);
@@ -202,24 +202,24 @@ public class PeerFSMImpl implements IStateMachine {
   }
 
   public boolean handleEvent(StateEvent event) throws InternalError, OverloadException {
-    if (state.getPublicState() == PeerState.DOWN && event.encodeType(EventTypes.class) == EventTypes.START_EVENT) {
+    //if (state.getPublicState() == PeerState.DOWN && event.encodeType(EventTypes.class) == EventTypes.START_EVENT) {
+    if(executor == null) {
       runQueueProcessing();
     }
     
     if (event.getData() != null && DiameterMessageValidator.getInstance().isOn()) {
       boolean incoming = event.getType() == EventTypes.RECEIVE_MSG_EVENT;
-      		if(incoming)
-      		{
-      			//outgoing are done elswhere: see BaseSessionImpl
-      			try{
-      			DiameterMessageValidator.getInstance().validate((Message) event.getData(), incoming);
-      			}catch(JAvpNotAllowedException e)
-      			{
-      				logger.error("Failed to validate incoming message.", e);
-      				return false;
-      			}
-      		}
-		}
+      if(incoming) {
+        // outgoing are done elsewhere: see BaseSessionImpl
+        try{
+          DiameterMessageValidator.getInstance().validate((Message) event.getData(), incoming);
+        }
+        catch(JAvpNotAllowedException e) {
+          logger.error("Failed to validate incoming message.", e);
+          return false;
+        }
+      }
+    }
 
     boolean rc;
     try {

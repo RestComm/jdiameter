@@ -209,6 +209,9 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
           {
             public void entryAction() {
               setTimer(0);
+              if(!context.isRestoreConnection()) {
+                executor = null;
+              }
             }
 
             public boolean processEvent(StateEvent event) {
