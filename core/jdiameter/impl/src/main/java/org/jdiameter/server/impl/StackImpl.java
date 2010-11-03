@@ -7,7 +7,7 @@ public class StackImpl extends org.jdiameter.client.impl.StackImpl implements St
 
     public MetaData getMetaData() {
         if (state == StackState.IDLE)
-            throw new IllegalAccessError("Meta data not defined");
+            throw new IllegalStateException("Meta data not defined");
         return (MetaData) assembler.getComponentInstance(MetaDataImpl.class);
     }
 
