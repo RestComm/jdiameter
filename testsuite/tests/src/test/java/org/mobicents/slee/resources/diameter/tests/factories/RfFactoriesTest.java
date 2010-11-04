@@ -41,11 +41,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import net.java.slee.resource.diameter.base.DiameterActivity;
-import net.java.slee.resource.diameter.base.events.AccountingAnswer;
-import net.java.slee.resource.diameter.base.events.AccountingRequest;
 import net.java.slee.resource.diameter.base.events.avp.AccountingRecordType;
 import net.java.slee.resource.diameter.rf.RfMessageFactory;
-import net.java.slee.resource.diameter.rf.RfServerSession;
+import net.java.slee.resource.diameter.rf.RfServerSessionActivity;
+import net.java.slee.resource.diameter.rf.events.RfAccountingAnswer;
+import net.java.slee.resource.diameter.rf.events.RfAccountingRequest;
 import net.java.slee.resource.diameter.ro.RoAvpFactory;
 import net.java.slee.resource.diameter.ro.events.avp.AdditionalContentInformation;
 import net.java.slee.resource.diameter.ro.events.avp.AddressDomain;
@@ -83,11 +83,10 @@ import org.jdiameter.api.Message;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.Stack;
-import org.jdiameter.api.acc.ClientAccSession;
-import org.jdiameter.api.acc.ServerAccSession;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.auth.ClientAuthSession;
 import org.jdiameter.api.auth.ServerAuthSession;
+import org.jdiameter.api.rf.ServerRfSession;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
 import org.junit.Assert;
@@ -97,10 +96,10 @@ import org.mobicents.slee.resource.diameter.base.DiameterActivityHandle;
 import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
-import org.mobicents.slee.resource.diameter.base.handlers.AccountingSessionFactory;
 import org.mobicents.slee.resource.diameter.base.handlers.DiameterRAInterface;
 import org.mobicents.slee.resource.diameter.rf.RfMessageFactoryImpl;
-import org.mobicents.slee.resource.diameter.rf.RfServerSessionImpl;
+import org.mobicents.slee.resource.diameter.rf.RfServerSessionActivityImpl;
+import org.mobicents.slee.resource.diameter.rf.handlers.RfSessionFactory;
 import org.mobicents.slee.resource.diameter.ro.RoAvpFactoryImpl;
 
 /**
@@ -129,7 +128,7 @@ public class RfFactoriesTest implements DiameterRAInterface {
   
   private static Stack stack;
   
-  private static ServerAccSession session; 
+  private static ServerRfSession session; 
 
   
   static
@@ -146,7 +145,7 @@ public class RfFactoriesTest implements DiameterRAInterface {
     DiameterMessageFactoryImpl baseFactory = new DiameterMessageFactoryImpl(stack);
     DiameterAvpFactoryImpl baseAvpFactory = new DiameterAvpFactoryImpl();
     
-    rfMessageFactory = new RfMessageFactoryImpl(baseFactory, stack);
+    rfMessageFactory = new RfMessageFactoryImpl(baseFactory, "", stack);
     rfAvpFactory = new RoAvpFactoryImpl(baseAvpFactory);
     
     try
@@ -158,27 +157,29 @@ public class RfFactoriesTest implements DiameterRAInterface {
     }
   }
   
-  private RfServerSession rfServerSession = null;
-  private AccountingSessionFactory accSessionFactory;
+  private RfServerSessionActivity rfServerSession = null;
+  private RfSessionFactory accSessionFactory;
   
   public RfFactoriesTest()
   {
     try
     {
       SessionFactory sf = stack.getSessionFactory();
-      this.accSessionFactory = AccountingSessionFactory.INSTANCE;
-      this.accSessionFactory.registerListener(this, 5000L, sf);
+      this.accSessionFactory = new RfSessionFactory(this, sf);
+      //this.accSessionFactory.registerListener(this, 5000L, sf);
       
-      ((ISessionFactory) sf).registerAppFacory(ServerAccSession.class, accSessionFactory);
+      ((ISessionFactory) sf).registerAppFacory(ServerRfSession.class, accSessionFactory);
 
-      AccountingRequest acr = rfMessageFactory.createRfAccountingRequest( AccountingRecordType.EVENT_RECORD );
+      RfAccountingRequest acr = rfMessageFactory.createRfAccountingRequest( AccountingRecordType.EVENT_RECORD );
       
       acr.setAccountingRecordNumber( 5L );
       
-      session = ((ISessionFactory) sf).getNewAppSession(null, null, ServerAccSession.class, ((DiameterMessageImpl)acr).getGenericData());
-      rfServerSession = new RfServerSessionImpl((DiameterMessageFactoryImpl)rfMessageFactory.getBaseMessageFactory(), (DiameterAvpFactoryImpl)rfAvpFactory.getBaseFactory(), session, null, null, stack);
+      session = ((ISessionFactory) sf).getNewAppSession(null, null, ServerRfSession.class, ((DiameterMessageImpl)acr).getGenericData());
+      rfServerSession = new RfServerSessionActivityImpl((DiameterMessageFactoryImpl)rfMessageFactory.getBaseMessageFactory(), (DiameterAvpFactoryImpl)rfAvpFactory.getBaseFactory(), session, null, null, stack);
       
-      ((RfServerSessionImpl)rfServerSession).fetchSessionData( acr, true );
+      // FIXME: ammendonca: this is needed?
+      ((RfServerSessionActivityImpl)rfServerSession).fetchSessionData( acr, true );
+      //((RfServerSessionActivityImpl)rfServerSession).setSession(session);
     }
     catch ( Exception e ) {
       e.printStackTrace();
@@ -188,16 +189,16 @@ public class RfFactoriesTest implements DiameterRAInterface {
   @Test
   public void isRequestACR() throws Exception
   {
-    AccountingRequest acr = rfMessageFactory.createRfAccountingRequest( AccountingRecordType.EVENT_RECORD );
+    RfAccountingRequest acr = rfMessageFactory.createRfAccountingRequest( AccountingRecordType.EVENT_RECORD );
     assertTrue("Request Flag in Accounting-Request is not set.", acr.getHeader().isRequest());
   }
   
   @Test
   public void testGettersAndSettersACR() throws Exception
   {
-    AccountingRequest acr = rfMessageFactory.createRfAccountingRequest( AccountingRecordType.EVENT_RECORD );
+    RfAccountingRequest acr = rfMessageFactory.createRfAccountingRequest( AccountingRecordType.EVENT_RECORD );
     
-    int nFailures = AvpAssistant.testMethods(acr, AccountingRequest.class);
+    int nFailures = AvpAssistant.testMethods(acr, RfAccountingRequest.class);
     
     assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
   }  
@@ -205,23 +206,23 @@ public class RfFactoriesTest implements DiameterRAInterface {
   @Test
   public void hasRfApplicationIdACR() throws Exception
   {
-    AccountingRequest acr = rfMessageFactory.createRfAccountingRequest( AccountingRecordType.EVENT_RECORD );
+    RfAccountingRequest acr = rfMessageFactory.createRfAccountingRequest( AccountingRecordType.EVENT_RECORD );
     assertTrue("Acct-Application-Id AVP in Rf ACR must be 3, it is " + acr.getAcctApplicationId(), acr.getAcctApplicationId() == 3);
   }
   
   @Test
   public void isAnswerACA() throws Exception
   {
-    AccountingAnswer aca = rfServerSession.createRfAccountingAnswer();
+    RfAccountingAnswer aca = rfServerSession.createRfAccountingAnswer();
     assertFalse("Request Flag in Accounting-Answer is set.", aca.getHeader().isRequest());
   }
   
   @Test
   public void testGettersAndSettersACA() throws Exception
   {
-    AccountingAnswer aca = rfServerSession.createRfAccountingAnswer();
+    RfAccountingAnswer aca = rfServerSession.createRfAccountingAnswer();
     
-    int nFailures = AvpAssistant.testMethods(aca, AccountingAnswer.class);
+    int nFailures = AvpAssistant.testMethods(aca, RfAccountingAnswer.class);
     
     assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
   }  
@@ -229,21 +230,21 @@ public class RfFactoriesTest implements DiameterRAInterface {
  @Test
   public void hasRfApplicationIdACA() throws Exception
   {
-    AccountingAnswer aca = rfServerSession.createRfAccountingAnswer();
+    RfAccountingAnswer aca = rfServerSession.createRfAccountingAnswer();
     assertTrue("Acct-Application-Id AVP in Ro ACA must be 3, it is " + aca.getAcctApplicationId(), aca.getAcctApplicationId() == 3);
   }
   
   @Test
   public void hasDestinationHostACA() throws Exception
   {
-    AccountingAnswer aca = rfServerSession.createRfAccountingAnswer();
+    RfAccountingAnswer aca = rfServerSession.createRfAccountingAnswer();
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", aca.getDestinationHost());    
   }
 
   @Test
   public void hasDestinationRealmACA() throws Exception
   {
-    AccountingAnswer aca = rfServerSession.createRfAccountingAnswer();
+    RfAccountingAnswer aca = rfServerSession.createRfAccountingAnswer();
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", aca.getDestinationRealm());    
   }
 
@@ -1553,12 +1554,6 @@ public class RfFactoriesTest implements DiameterRAInterface {
     
   }
 
-  public void sessionCreated( ServerAccSession session )
-  {
-    // TODO Auto-generated method stub
-    
-  }
-
   public void sessionCreated( ServerAuthSession session )
   {
     // TODO Auto-generated method stub
@@ -1566,12 +1561,6 @@ public class RfFactoriesTest implements DiameterRAInterface {
   }
 
   public void sessionCreated( ClientAuthSession session )
-  {
-    // TODO Auto-generated method stub
-    
-  }
-
-  public void sessionCreated( ClientAccSession session )
   {
     // TODO Auto-generated method stub
     

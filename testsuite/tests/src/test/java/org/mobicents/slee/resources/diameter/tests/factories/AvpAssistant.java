@@ -48,6 +48,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 
+import net.java.slee.resource.diameter.base.events.AccountingRequest;
 import net.java.slee.resource.diameter.base.events.CapabilitiesExchangeRequest;
 import net.java.slee.resource.diameter.base.events.DeviceWatchdogRequest;
 import net.java.slee.resource.diameter.base.events.DiameterMessage;
@@ -110,6 +111,7 @@ import net.java.slee.resource.diameter.ro.events.avp.PsInformation;
 import net.java.slee.resource.diameter.ro.events.avp.RecipientAddress;
 import net.java.slee.resource.diameter.ro.events.avp.SdpMediaComponent;
 import net.java.slee.resource.diameter.ro.events.avp.ServerCapabilities;
+import net.java.slee.resource.diameter.ro.events.avp.ServiceInformation;
 import net.java.slee.resource.diameter.ro.events.avp.TalkBurstExchange;
 import net.java.slee.resource.diameter.ro.events.avp.TimeStamps;
 import net.java.slee.resource.diameter.ro.events.avp.TrunkGroupId;
@@ -178,6 +180,7 @@ import org.mobicents.slee.resource.diameter.ro.events.avp.PsInformationImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.RecipientAddressImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.SdpMediaComponentImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.ServerCapabilitiesImpl;
+import org.mobicents.slee.resource.diameter.ro.events.avp.ServiceInformationImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.TalkBurstExchangeImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.TimeStampsImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.TrunkGroupIdImpl;
@@ -208,6 +211,8 @@ public class AvpAssistant {
   public static final Collection<String> methodsToIgnoreInDPX = new ArrayList<String>();
 
   public static final Collection<String> methodsToIgnoreInDWX = new ArrayList<String>();
+
+  public static final Collection<String> methodsToIgnoreInRfACR = new ArrayList<String>();
 
 
   public static AvpAssistant INSTANCE;
@@ -256,6 +261,10 @@ public class AvpAssistant {
     methodsToIgnoreInDWX.add("getDestinationHost");
     methodsToIgnoreInDWX.add("getDestinationRealm");
     methodsToIgnoreInDWX.add("getSessionId");
+    
+    methodsToIgnoreInRfACR.add("getLocationType");
+    methodsToIgnoreInRfACR.add("setLocationType");
+    methodsToIgnoreInRfACR.add("hasLocationType");
     
     Stack stack = new org.jdiameter.client.impl.StackImpl();
     stack.init( new MyConfiguration() );
@@ -381,7 +390,7 @@ public class AvpAssistant {
     typeValues.put( UnitValueAvp.class, new UnitValueAvpImpl(CreditControlAVPCodes.Unit_Value, 0L, 0, 1, dummyAvpBytes) );
     typeValues.put( UnitValueAvp[].class, new UnitValueAvpImpl[]{new UnitValueAvpImpl(CreditControlAVPCodes.Unit_Value, 0L, 0, 1, dummyAvpBytes)});
     
-    // Ro/Rf AVP Factory
+    // Ro AVP Factory
     
     typeValues.put( ApplicationServerInformation.class, new ApplicationServerInformationImpl(DiameterRoAvpCodes.APPLICATION_SERVER_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
     typeValues.put( ApplicationServerInformation[].class, new ApplicationServerInformationImpl[]{new ApplicationServerInformationImpl(DiameterRoAvpCodes.APPLICATION_SERVER_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
@@ -466,6 +475,98 @@ public class AvpAssistant {
 
     typeValues.put( ServerCapabilities.class, new ServerCapabilitiesImpl(DiameterRoAvpCodes.SERVER_CAPABILITIES, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
     typeValues.put( ServerCapabilities[].class, new ServerCapabilitiesImpl[]{new ServerCapabilitiesImpl(DiameterRoAvpCodes.SERVER_CAPABILITIES, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( ServiceInformation.class, new ServiceInformationImpl(DiameterRoAvpCodes.SERVICE_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( ServiceInformation[].class, new ServiceInformationImpl[]{new ServiceInformationImpl(DiameterRoAvpCodes.SERVICE_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    // Rf AVP Factory
+
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.ApplicationServerInformation.class, new org.mobicents.slee.resource.diameter.rf.events.avp.ApplicationServerInformationImpl(DiameterRoAvpCodes.APPLICATION_SERVER_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.ApplicationServerInformation[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.ApplicationServerInformationImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.ApplicationServerInformationImpl(DiameterRoAvpCodes.APPLICATION_SERVER_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.EventType.class, new org.mobicents.slee.resource.diameter.rf.events.avp.EventTypeImpl(DiameterRoAvpCodes.EVENT_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.EventType[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.EventTypeImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.EventTypeImpl(DiameterRoAvpCodes.EVENT_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.InterOperatorIdentifier.class, new org.mobicents.slee.resource.diameter.rf.events.avp.InterOperatorIdentifierImpl(DiameterRoAvpCodes.INTER_OPERATOR_IDENTIFIER, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.InterOperatorIdentifier[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.InterOperatorIdentifierImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.InterOperatorIdentifierImpl(DiameterRoAvpCodes.INTER_OPERATOR_IDENTIFIER, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.MessageBody.class, new org.mobicents.slee.resource.diameter.rf.events.avp.MessageBodyImpl(DiameterRoAvpCodes.MESSAGE_BODY, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.MessageBody[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.MessageBodyImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.MessageBodyImpl(DiameterRoAvpCodes.MESSAGE_BODY, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.SdpMediaComponent.class, new org.mobicents.slee.resource.diameter.rf.events.avp.SdpMediaComponentImpl(DiameterRoAvpCodes.SDP_MEDIA_COMPONENT, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.SdpMediaComponent[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.SdpMediaComponentImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.SdpMediaComponentImpl(DiameterRoAvpCodes.SDP_MEDIA_COMPONENT, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.TimeStamps.class, new org.mobicents.slee.resource.diameter.rf.events.avp.TimeStampsImpl(DiameterRoAvpCodes.TIME_STAMPS, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.TimeStamps[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.TimeStampsImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.TimeStampsImpl(DiameterRoAvpCodes.TIME_STAMPS, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.TrunkGroupId.class, new org.mobicents.slee.resource.diameter.rf.events.avp.TrunkGroupIdImpl(DiameterRoAvpCodes.TRUNK_GROUP_ID, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.TrunkGroupId[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.TrunkGroupIdImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.TrunkGroupIdImpl(DiameterRoAvpCodes.TRUNK_GROUP_ID, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.LcsClientName.class, new org.mobicents.slee.resource.diameter.rf.events.avp.LcsClientNameImpl(DiameterRoAvpCodes.LCS_CLIENT_NAME, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.LcsClientName[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.LcsClientNameImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.LcsClientNameImpl(DiameterRoAvpCodes.LCS_CLIENT_NAME, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.LcsRequestorId.class, new org.mobicents.slee.resource.diameter.rf.events.avp.LcsRequestorIdImpl(DiameterRoAvpCodes.LCS_REQUESTOR_ID, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.LcsRequestorId[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.LcsRequestorIdImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.LcsRequestorIdImpl(DiameterRoAvpCodes.LCS_REQUESTOR_ID, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.LcsClientId.class, new org.mobicents.slee.resource.diameter.rf.events.avp.LcsClientIdImpl(DiameterRoAvpCodes.LCS_CLIENT_ID, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.LcsClientId[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.LcsClientIdImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.LcsClientIdImpl(DiameterRoAvpCodes.LCS_CLIENT_ID, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.LocationType.class, new org.mobicents.slee.resource.diameter.rf.events.avp.LocationTypeImpl(DiameterRoAvpCodes.LOCATION_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.LocationType[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.LocationTypeImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.LocationTypeImpl(DiameterRoAvpCodes.LOCATION_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.AdditionalContentInformation.class, new org.mobicents.slee.resource.diameter.rf.events.avp.AdditionalContentInformationImpl(DiameterRoAvpCodes.ADDITIONAL_CONTENT_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.AdditionalContentInformation[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.AdditionalContentInformationImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.AdditionalContentInformationImpl(DiameterRoAvpCodes.ADDITIONAL_CONTENT_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.MessageClass.class, new org.mobicents.slee.resource.diameter.rf.events.avp.MessageClassImpl(DiameterRoAvpCodes.MESSAGE_CLASS, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.MessageClass[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.MessageClassImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.MessageClassImpl(DiameterRoAvpCodes.MESSAGE_CLASS, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.MmContentType.class, new org.mobicents.slee.resource.diameter.rf.events.avp.MmContentTypeImpl(DiameterRoAvpCodes.MM_CONTENT_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.MmContentType[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.MmContentTypeImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.MmContentTypeImpl(DiameterRoAvpCodes.MM_CONTENT_TYPE, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.OriginatorAddress.class, new org.mobicents.slee.resource.diameter.rf.events.avp.OriginatorAddressImpl(DiameterRoAvpCodes.ORIGINATOR_ADDRESS, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.OriginatorAddress[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.OriginatorAddressImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.OriginatorAddressImpl(DiameterRoAvpCodes.ORIGINATOR_ADDRESS, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.RecipientAddress.class, new org.mobicents.slee.resource.diameter.rf.events.avp.RecipientAddressImpl(DiameterRoAvpCodes.ORIGINATOR_ADDRESS, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.RecipientAddress[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.RecipientAddressImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.RecipientAddressImpl(DiameterRoAvpCodes.ORIGINATOR_ADDRESS, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.AddressDomain.class, new org.mobicents.slee.resource.diameter.rf.events.avp.AddressDomainImpl(DiameterRoAvpCodes.ADDRESS_DOMAIN, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.AddressDomain[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.AddressDomainImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.AddressDomainImpl(DiameterRoAvpCodes.ADDRESS_DOMAIN, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.TalkBurstExchange.class, new org.mobicents.slee.resource.diameter.rf.events.avp.TalkBurstExchangeImpl(DiameterRoAvpCodes.TALK_BURST_EXCHANGE, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.TalkBurstExchange[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.TalkBurstExchangeImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.TalkBurstExchangeImpl(DiameterRoAvpCodes.TALK_BURST_EXCHANGE, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.PsFurnishChargingInformation.class, new org.mobicents.slee.resource.diameter.rf.events.avp.PsFurnishChargingInformationImpl(DiameterRoAvpCodes.PS_FURNISH_CHARGING_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.PsFurnishChargingInformation[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.PsFurnishChargingInformationImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.PsFurnishChargingInformationImpl(DiameterRoAvpCodes.PS_FURNISH_CHARGING_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.ImsInformation.class, new org.mobicents.slee.resource.diameter.rf.events.avp.ImsInformationImpl(DiameterRoAvpCodes.IMS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.ImsInformation[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.ImsInformationImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.ImsInformationImpl(DiameterRoAvpCodes.IMS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.LcsInformation.class, new org.mobicents.slee.resource.diameter.rf.events.avp.LcsInformationImpl(DiameterRoAvpCodes.LCS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.LcsInformation[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.LcsInformationImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.LcsInformationImpl(DiameterRoAvpCodes.LCS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.MbmsInformation.class, new org.mobicents.slee.resource.diameter.rf.events.avp.MbmsInformationImpl(DiameterRoAvpCodes.MBMS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.MbmsInformation[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.MbmsInformationImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.MbmsInformationImpl(DiameterRoAvpCodes.MBMS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.MmsInformation.class, new org.mobicents.slee.resource.diameter.rf.events.avp.MmsInformationImpl(DiameterRoAvpCodes.MMS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.MmsInformation[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.MmsInformationImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.MmsInformationImpl(DiameterRoAvpCodes.MMS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.PocInformation.class, new org.mobicents.slee.resource.diameter.rf.events.avp.PocInformationImpl(DiameterRoAvpCodes.POC_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.PocInformation[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.PocInformationImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.PocInformationImpl(DiameterRoAvpCodes.POC_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.PsInformation.class, new org.mobicents.slee.resource.diameter.rf.events.avp.PsInformationImpl(DiameterRoAvpCodes.PS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.PsInformation[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.PsInformationImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.PsInformationImpl(DiameterRoAvpCodes.PS_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.WlanInformation.class, new org.mobicents.slee.resource.diameter.rf.events.avp.WlanInformationImpl(DiameterRoAvpCodes.WLAN_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.WlanInformation[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.WlanInformationImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.WlanInformationImpl(DiameterRoAvpCodes.WLAN_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.WlanRadioContainer.class, new org.mobicents.slee.resource.diameter.rf.events.avp.WlanRadioContainerImpl(DiameterRoAvpCodes.WLAN_RADIO_CONTAINER, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.WlanRadioContainer[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.WlanRadioContainerImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.WlanRadioContainerImpl(DiameterRoAvpCodes.WLAN_RADIO_CONTAINER, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.ServerCapabilities.class, new org.mobicents.slee.resource.diameter.rf.events.avp.ServerCapabilitiesImpl(DiameterRoAvpCodes.SERVER_CAPABILITIES, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.ServerCapabilities[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.ServerCapabilitiesImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.ServerCapabilitiesImpl(DiameterRoAvpCodes.SERVER_CAPABILITIES, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.ServiceInformation.class, new org.mobicents.slee.resource.diameter.rf.events.avp.ServiceInformationImpl(DiameterRoAvpCodes.SERVICE_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rf.events.avp.ServiceInformation[].class, new org.mobicents.slee.resource.diameter.rf.events.avp.ServiceInformationImpl[]{new org.mobicents.slee.resource.diameter.rf.events.avp.ServiceInformationImpl(DiameterRoAvpCodes.SERVICE_INFORMATION, DiameterRoAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
 
     // Cx/Dx AVP Factory
     
@@ -572,6 +673,9 @@ public class AvpAssistant {
         continue;
       }
       else if(commandCode == DisconnectPeerRequest.commandCode && AvpAssistant.methodsToIgnoreInDPX.contains( methodName )) {
+        continue;
+      }
+      else if(commandCode == AccountingRequest.commandCode && AvpAssistant.methodsToIgnoreInRfACR.contains( methodName )) {
         continue;
       }
       else if(methodName.startsWith( "get" ))

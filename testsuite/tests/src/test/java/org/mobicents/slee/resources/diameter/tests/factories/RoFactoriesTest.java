@@ -17,12 +17,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
-import net.java.slee.resource.diameter.cca.CreditControlMessageFactory;
-import net.java.slee.resource.diameter.cca.events.CreditControlAnswer;
-import net.java.slee.resource.diameter.cca.events.CreditControlRequest;
 import net.java.slee.resource.diameter.ro.RoAvpFactory;
 import net.java.slee.resource.diameter.ro.RoMessageFactory;
 import net.java.slee.resource.diameter.ro.RoServerSessionActivity;
+import net.java.slee.resource.diameter.ro.events.RoCreditControlAnswer;
+import net.java.slee.resource.diameter.ro.events.RoCreditControlRequest;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.IllegalDiameterStateException;
@@ -43,12 +42,12 @@ import org.jdiameter.api.auth.events.ReAuthRequest;
 import org.jdiameter.api.auth.events.SessionTermAnswer;
 import org.jdiameter.api.auth.events.SessionTermRequest;
 import org.jdiameter.api.cca.ServerCCASession;
-import org.jdiameter.api.cca.ServerCCASessionListener;
-import org.jdiameter.api.cca.events.JCreditControlAnswer;
 import org.jdiameter.api.cca.events.JCreditControlRequest;
+import org.jdiameter.api.ro.ServerRoSession;
+import org.jdiameter.api.ro.ServerRoSessionListener;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
-import org.jdiameter.common.api.app.cca.ICCAMessageFactory;
-import org.jdiameter.server.impl.app.cca.ServerCCASessionImpl;
+import org.jdiameter.common.api.app.ro.IRoMessageFactory;
+import org.jdiameter.server.impl.app.ro.ServerRoSessionImpl;
 import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
@@ -66,7 +65,7 @@ import org.mobicents.slee.resource.diameter.ro.RoServerSessionActivityImpl;
  * <br>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public class RoFactoriesTest implements ICCAMessageFactory, ServerCCASessionListener {
+public class RoFactoriesTest implements IRoMessageFactory, ServerRoSessionListener {
   
   private static String clientHost = "127.0.0.1";
   private static String clientPort = "21812";
@@ -83,7 +82,7 @@ public class RoFactoriesTest implements ICCAMessageFactory, ServerCCASessionList
   
   private static Stack stack;
   
-  private static ServerCCASession session; 
+  private static ServerRoSession session; 
 
   
   static
@@ -102,7 +101,7 @@ public class RoFactoriesTest implements ICCAMessageFactory, ServerCCASessionList
     
     roAvpFactory = new RoAvpFactoryImpl(baseAvpFactory);
     try {
-      roMessageFactory = new RoMessageFactoryImpl(baseFactory, stack.getSessionFactory().getNewSession(), stack, roAvpFactory);
+      roMessageFactory = new RoMessageFactoryImpl(baseFactory, stack.getSessionFactory().getNewSession().getSessionId(), stack);
     }
     catch ( Exception e ) {
       e.printStackTrace();
@@ -121,30 +120,29 @@ public class RoFactoriesTest implements ICCAMessageFactory, ServerCCASessionList
   
   public RoFactoriesTest()
   {
-    try
-    {
-      session = new ServerCCASessionImpl(this, stack.getSessionFactory(), this, null, null);
-      roServerSession = new RoServerSessionActivityImpl((CreditControlMessageFactory) roMessageFactory, roAvpFactory, session, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), stack);
+    try {
+      session = new ServerRoSessionImpl(this, stack.getSessionFactory(), this, null, null);
+      roServerSession = new RoServerSessionActivityImpl(roMessageFactory.getBaseMessageFactory(), roAvpFactory.getBaseFactory(), session, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), stack);
       ((RoServerSessionActivityImpl)roServerSession).fetchCurrentState(roMessageFactory.createRoCreditControlRequest());
     }
-    catch ( IllegalDiameterStateException e ) {
-      e.printStackTrace();
+    catch (IllegalDiameterStateException e) {
+      throw new RuntimeException("Failed to parse dictionary file.");
     }
   }
   
   @Test
   public void isRequestCCR() throws Exception
   {
-    CreditControlRequest ccr = roMessageFactory.createRoCreditControlRequest();
+    RoCreditControlRequest ccr = roMessageFactory.createRoCreditControlRequest();
     assertTrue("Request Flag in Credit-Control-Request is not set.", ccr.getHeader().isRequest());
   }
   
   @Test
   public void testGettersAndSettersCCR() throws Exception
   {
-    CreditControlRequest ccr = roMessageFactory.createRoCreditControlRequest();
+    RoCreditControlRequest ccr = roMessageFactory.createRoCreditControlRequest();
     
-    int nFailures = AvpAssistant.testMethods(ccr, CreditControlRequest.class);
+    int nFailures = AvpAssistant.testMethods(ccr, RoCreditControlRequest.class);
     
     assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
   }  
@@ -152,23 +150,23 @@ public class RoFactoriesTest implements ICCAMessageFactory, ServerCCASessionList
   @Test
   public void hasRoApplicationIdCCR() throws Exception
   {
-    CreditControlRequest ccr = roMessageFactory.createRoCreditControlRequest();
+    RoCreditControlRequest ccr = roMessageFactory.createRoCreditControlRequest();
     assertTrue("Auth-Application-Id AVP in Ro CCR must be 4, it is " + ccr.getAuthApplicationId(), ccr.getAuthApplicationId() == 4);
   }
   
   @Test
   public void isAnswerCCA() throws Exception
   {
-    CreditControlAnswer cca = roServerSession.createRoCreditControlAnswer();
+    RoCreditControlAnswer cca = roServerSession.createRoCreditControlAnswer();
     assertFalse("Request Flag in Credit-Control-Answer is set.", cca.getHeader().isRequest());
   }
 
   @Test
   public void testGettersAndSettersCCA() throws Exception
   {
-    CreditControlAnswer cca = roServerSession.createRoCreditControlAnswer();
+    RoCreditControlAnswer cca = roServerSession.createRoCreditControlAnswer();
     
-    int nFailures = AvpAssistant.testMethods(cca, CreditControlAnswer.class);
+    int nFailures = AvpAssistant.testMethods(cca, RoCreditControlAnswer.class);
     
     assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
   }  
@@ -176,21 +174,21 @@ public class RoFactoriesTest implements ICCAMessageFactory, ServerCCASessionList
   @Test
   public void hasRoApplicationIdCCA() throws Exception
   {
-    CreditControlAnswer cca = roServerSession.createRoCreditControlAnswer();
+    RoCreditControlAnswer cca = roServerSession.createRoCreditControlAnswer();
     assertTrue("Auth-Application-Id AVP in Ro CCA must be 4, it is " + cca.getAuthApplicationId(), cca.getAuthApplicationId() == 4);
   }
   
   @Test
   public void hasDestinationHostCCA() throws Exception
   {
-    CreditControlAnswer cca = roServerSession.createRoCreditControlAnswer();
+    RoCreditControlAnswer cca = roServerSession.createRoCreditControlAnswer();
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", cca.getDestinationHost());    
   }
 
   @Test
   public void hasDestinationRealmCCA() throws Exception
   {
-    CreditControlAnswer cca = roServerSession.createRoCreditControlAnswer();
+    RoCreditControlAnswer cca = roServerSession.createRoCreditControlAnswer();
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", cca.getDestinationRealm());    
   }
 
@@ -231,18 +229,6 @@ public class RoFactoriesTest implements ICCAMessageFactory, ServerCCASessionList
           add(RealmEntry, realmName + ":" + clientHost + "," + serverHost)
       );
     }
-  }
-
-  public JCreditControlAnswer createCreditControlAnswer( Answer answer )
-  {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  public JCreditControlRequest createCreditControlRequest( Request req )
-  {
-    // TODO Auto-generated method stub
-    return null;
   }
 
   public ReAuthAnswer createReAuthAnswer( Answer answer )
@@ -314,6 +300,34 @@ public class RoFactoriesTest implements ICCAMessageFactory, ServerCCASessionList
   {
     // TODO Auto-generated method stub
     
+  }
+
+  public void doCreditControlRequest(ServerRoSession session, RoCreditControlRequest request) throws InternalException, IllegalDiameterStateException, RouteException,
+      OverloadException {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public void doReAuthAnswer(ServerRoSession session, ReAuthRequest request, ReAuthAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException,
+      OverloadException {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public void doCreditControlRequest(ServerRoSession session, org.jdiameter.api.ro.events.RoCreditControlRequest request) throws InternalException, IllegalDiameterStateException,
+      RouteException, OverloadException {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public org.jdiameter.api.ro.events.RoCreditControlRequest createCreditControlRequest(Request request) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public org.jdiameter.api.ro.events.RoCreditControlAnswer createCreditControlAnswer(Answer answer) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }
