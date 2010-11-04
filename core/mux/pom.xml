@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.mobicents</groupId>
 		<artifactId>mobicents-parent</artifactId>
-		<version>2.9</version>
+		<version>2.14</version>
 	</parent>
 
 	<groupId>org.mobicents.servers.diameter</groupId>
@@ -15,7 +15,7 @@
 
 	<properties>
 		<!-- Mobicents Diameter Components Versions -->
-		<mobicents.diameter.jdiameter.version>1.5.4.0-build403-SNAPSHOT</mobicents.diameter.jdiameter.version>
+		<mobicents.diameter.jdiameter.version>1.5.4.0-build403</mobicents.diameter.jdiameter.version>
 		<mobicents.diameter.jdiameter-ha.version>1.0.0.BETA2</mobicents.diameter.jdiameter-ha.version>
 
 		<!-- Other Mobicents Components Versions -->
