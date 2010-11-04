@@ -48,7 +48,7 @@ public interface ServerRfSessionListener {
    * @throws RouteException The NoRouteException signals that no route exist for a given realm.
    * @throws OverloadException The OverloadException signals that destination host is overloaded.
    */
-  void doRfRequestEvent(ServerRfSession appSession, RfAccountingRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doRfAccountingRequestEvent(ServerRfSession appSession, RfAccountingRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
   /**
    * Notifies this AuthSessionEventListener that the ServerAuthSesssion has recived not authentication message.

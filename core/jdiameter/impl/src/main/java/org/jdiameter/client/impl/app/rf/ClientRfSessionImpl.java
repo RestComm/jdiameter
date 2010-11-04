@@ -646,7 +646,7 @@ public class ClientRfSessionImpl extends AppRfSessionImpl implements EventListen
     if (request.getCommandCode() == RfAccountingRequest.code) {
       //FIXME: any reason for this to be after handle?
       try {
-        listener.doRfAnswerEvent(this, createAccountRequest(request), createAccountAnswer(answer));
+        listener.doRfAccountingAnswerEvent(this, createAccountRequest(request), createAccountAnswer(answer));
       }
       catch (Exception e) {
         logger.debug("Unable to deliver message to listener.", e);
@@ -685,7 +685,7 @@ public class ClientRfSessionImpl extends AppRfSessionImpl implements EventListen
     if (request.getCommandCode() == RfAccountingRequest.code) {
       try {
         // FIXME Is this wrong?
-        listener.doRfAnswerEvent(this, createAccountRequest(request), null);
+        listener.doRfAccountingAnswerEvent(this, createAccountRequest(request), null);
       }
       catch (Exception e) {
         logger.debug("Can not process received request", e);

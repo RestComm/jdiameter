@@ -50,7 +50,7 @@ public interface ClientRfSessionListener {
    * @throws RouteException The NoRouteException signals that no route exist for a given realm.
    * @throws OverloadException The OverloadException signals that destination host is overloaded.
    */
-  void doRfAnswerEvent(ClientRfSession appSession, RfAccountingRequest request, RfAccountingAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doRfAccountingAnswerEvent(ClientRfSession appSession, RfAccountingRequest request, RfAccountingAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
   /**
    * Notifies this AccSessionEventListener that the ClientAccSesssion has received not account message.

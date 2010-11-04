@@ -289,11 +289,11 @@ public class RfSessionFactoryImpl implements IRfSessionFactory, ServerRfSessionL
 	// Event listeners //
 	// ///////////////////
 
-	public void doRfRequestEvent(ServerRfSession appSession, RfAccountingRequest acr) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+	public void doRfAccountingRequestEvent(ServerRfSession appSession, RfAccountingRequest acr) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
 		logger.info("Diameter Base RfSessionFactory :: doAccRequestEvent :: appSession[" + appSession + "], Request[" + acr + "]");
 	}
 
-	public void doRfAnswerEvent(ClientRfSession appSession, RfAccountingRequest acr, RfAccountingAnswer aca) throws InternalException, IllegalDiameterStateException, RouteException,
+	public void doRfAccountingAnswerEvent(ClientRfSession appSession, RfAccountingRequest acr, RfAccountingAnswer aca) throws InternalException, IllegalDiameterStateException, RouteException,
 			OverloadException {
 		logger.info("doRfAnswerEvent :: appSession[" + appSession + "], Request[" + acr + "], Answer[" + aca + "]");
 	}
