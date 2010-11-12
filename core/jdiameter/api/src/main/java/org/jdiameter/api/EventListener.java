@@ -16,7 +16,7 @@ package org.jdiameter.api;
 public interface EventListener<R extends Message, A extends Message> {
 
     /**
-     * Notifies this Listener that stack has recived diameter answer message.
+     * Notifies this Listener that stack has received diameter answer message.
      * For network requests - answer parameter is null
      *
      * @param request the request message
