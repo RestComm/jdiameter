@@ -14,7 +14,7 @@
 	<name>Mobicents :: Diameter Testsuite :: ${pom.artifactId}</name>
 
 	<properties>
-		<mobicents.diameter.jdiameter.version>1.5.4.0-build403-SNAPSHOT</mobicents.diameter.jdiameter.version>
+		<mobicents.diameter.jdiameter.version>1.5.4.0-build404-SNAPSHOT</mobicents.diameter.jdiameter.version>
 		<mobicents.diameter.mux.version>1.4.0-SNAPSHOT</mobicents.diameter.mux.version>
 		<get.opt.version>1.0.9</get.opt.version>
 		<picocontainer.version>1.2</picocontainer.version>
