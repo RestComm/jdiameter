@@ -279,12 +279,12 @@ public class Parameters extends Ordinal {
     /**
      * Statistic logger start pause
      */
-    public static final Parameters StatisticLoggerPause = new Parameters("StatisticLoggerPause", Long.class, 5000L);
+    public static final Parameters StatisticLoggerPause = new Parameters("StatisticLoggerPause", Long.class, 30000L);
 
     /**
      * Statistic logger delay between save statistic information
      */
-    public static final Parameters StatisticLoggerDelay = new Parameters("StatisticLoggerDelay", Long.class, 5000L);
+    public static final Parameters StatisticLoggerDelay = new Parameters("StatisticLoggerDelay", Long.class, 30000L);
 
     /**
      * Concurrent configuration root point

@@ -22,7 +22,6 @@ public class StatisticFactory implements IStatisticFactory {
 
   public IStatisticRecord newCounterRecord(IStatistic.Counters recordDescription, IStatisticRecord.ValueHolder counter, IStatisticRecord... rec) {
     return new StatisticRecordImpl(recordDescription.name(), recordDescription.getDescription(), recordDescription.getId(), counter, rec);
-
   }
 
   public IStatisticRecord newCounterRecord(String name, String description, int id) {

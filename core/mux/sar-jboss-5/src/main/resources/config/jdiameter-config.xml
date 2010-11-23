@@ -35,6 +35,10 @@
     <DwaTimeOut value="10000" />
     <DpaTimeOut value="5000" />
     <RecTimeOut value="10000" />
+
+    <!-- Statistics Logger Configuration -->
+    <StatisticLogger pause="30000" delay="30000" />
+
     <Concurrent>
       <Entity name="ThreadGroup" size="64"/> // Common Thread Pool
       <Entity name="ProcessingMessageTimer" size="1"/>
