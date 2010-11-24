@@ -24,6 +24,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -63,7 +64,7 @@ public class RouterImpl implements IRouter {
     public static final int REQUEST_TABLE_CLEAR_SIZE = 5 * 1024;
     protected ReadWriteLock requestLock = new ReentrantReadWriteLock();
     protected Map<Long, AnswerEntry> requestEntryTable = new ConcurrentHashMap<Long, AnswerEntry>(REQUEST_TABLE_SIZE);
-    protected List<Long> requestSortedEntryTable = new java.util.concurrent.CopyOnWriteArrayList<Long>();
+    protected List<Long> requestSortedEntryTable = new CopyOnWriteArrayList<Long>();
     protected boolean isStopped = true;
 
     public RouterImpl(IConcurrentFactory concurrentFactory, Configuration config, MetaData aMetaData) {
@@ -110,10 +111,16 @@ public class RouterImpl implements IRouter {
             requestEntryTable.put(hopByHopId, entry);
             requestSortedEntryTable.add(hopByHopId);
             if (requestEntryTable.size() > REQUEST_TABLE_SIZE) {
-              for (int i = 0; i < REQUEST_TABLE_CLEAR_SIZE; i++) {
-                Long lastKey = requestSortedEntryTable.remove(0);
-                requestEntryTable.remove(lastKey);
-              }
+              concurrentFactory.getThread("jDiameterRouterCleaning", new Runnable() {
+                public void run() {
+                  List<Long> toRemove = requestSortedEntryTable.subList(0, REQUEST_TABLE_CLEAR_SIZE);
+                  // removing from keyset removes from hashmap too
+                  requestEntryTable.keySet().removeAll(toRemove);
+                  // instead of wasting time removing, just make a new one, much faster
+                  requestSortedEntryTable = new CopyOnWriteArrayList<Long>(requestSortedEntryTable.subList(REQUEST_TABLE_CLEAR_SIZE, requestSortedEntryTable.size()));
+                  toRemove = null;
+                }
+              }).run();
             }
         }
         catch (Exception e) {
