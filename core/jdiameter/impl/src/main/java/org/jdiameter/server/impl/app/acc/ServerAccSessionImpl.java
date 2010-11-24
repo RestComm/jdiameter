@@ -98,11 +98,10 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
   public void sendAccountAnswer(AccountAnswer accountAnswer) throws InternalException, IllegalStateException, RouteException, OverloadException {
     try {
       session.send(accountAnswer.getMessage());
-      /* TODO: Need to notify state change...
+      /* TODO: Do we need to notify state change ? */
       if(isStateless() && isValid()) {
         session.release();
       }
-      */
     }
     catch (IllegalDiameterStateException e) {
       throw new IllegalStateException(e);
