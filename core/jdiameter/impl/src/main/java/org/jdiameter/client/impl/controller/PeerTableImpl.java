@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Configuration;
@@ -47,6 +46,8 @@ import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.Peer;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.URI;
+import org.jdiameter.api.validation.AvpNotAllowedException;
+import org.jdiameter.api.validation.Dictionary;
 import org.jdiameter.client.api.IAssembler;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
@@ -58,12 +59,12 @@ import org.jdiameter.client.api.io.ITransportLayerFactory;
 import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.api.router.IRouter;
+import org.jdiameter.client.impl.DictionarySingleton;
 import org.jdiameter.client.impl.helpers.Parameters;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.api.statistic.IStatistic;
 import org.jdiameter.common.api.statistic.IStatisticFactory;
-import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,6 +88,8 @@ public class PeerTableImpl implements IPeerTable {
   protected IConcurrentFactory concurrentFactory;
   // XXX: FT/HA // protected ConcurrentHashMap<String, NetworkReqListener> sessionReqListeners = new ConcurrentHashMap<String, NetworkReqListener>();
   protected ISessionDatasource sessionDatasource;
+  
+  protected final Dictionary dictionary = DictionarySingleton.getDictionary();
 
   protected PeerTableImpl() {
   }
@@ -105,7 +108,6 @@ public class PeerTableImpl implements IPeerTable {
     this.concurrentFactory = concurrentFactory;
     this.stopTimeOut = globalConfig.getLongValue(StopTimeOut.ordinal(), (Long) StopTimeOut.defValue());
     this.sessionDatasource = stack.getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
-
 
     Configuration[] peers = globalConfig.getChildren(Parameters.PeerTable.ordinal());
     if (peers != null && peers.length > 0) {
@@ -135,8 +137,8 @@ public class PeerTableImpl implements IPeerTable {
   protected Peer createPeer(int rating, String uri, String ip, String portRange, MetaData metaData, Configuration config, Configuration peerConfig, 
       IFsmFactory fsmFactory, ITransportLayerFactory transportFactory, IStatisticFactory statisticFactory, IConcurrentFactory concurrentFactory, IMessageParser parser)  
   throws InternalException, TransportException, URISyntaxException, UnknownServiceException {
-    return new PeerImpl(this,this.sessionDatasource, rating, new URI(uri), ip, portRange, metaData.unwrap(IMetaData.class), config,
-        peerConfig, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser);
+    return new PeerImpl(this, rating, new URI(uri), ip, portRange, metaData.unwrap(IMetaData.class), config,
+        peerConfig, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser, this.sessionDatasource);
   }
 
   public List<Peer> getPeerTable() {
@@ -197,9 +199,6 @@ public class PeerTableImpl implements IPeerTable {
           peer.getStatistic().getRecordByName(IStatistic.Counters.AppGenResponse.name()).inc();
         }
       }
-    }catch(JAvpNotAllowedException j)
-    {
-      throw j;
     }
     catch (Exception e) {
       logger.error("Can not send message", e);
@@ -209,7 +208,13 @@ public class PeerTableImpl implements IPeerTable {
       else {
         peer.getStatistic().getRecordByName(IStatistic.Counters.AppGenRejectedResponse.name()).inc();
       }
-      throw new IOException(e.getMessage());
+
+      if(e instanceof AvpNotAllowedException) {
+        throw (AvpNotAllowedException) e;
+      }
+      else {
+       throw new IOException(e.getMessage());
+      }
     }
   }
 

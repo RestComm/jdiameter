@@ -32,153 +32,102 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
-import org.jdiameter.common.impl.validation.DiameterMessageValidator;
-import org.jdiameter.common.impl.validation.VAvpRepresentation;
-import org.jdiameter.common.impl.validation.VMessageRepresentation;
+import org.jdiameter.client.impl.DictionarySingleton;
+import org.jdiameter.common.impl.validation.AvpRepresentationImpl;
+import org.jdiameter.common.impl.validation.DictionaryImpl;
 
 /**
  * 
  * AvpDictionary.java
- *
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
+ * 
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
- * @version 1.0 
+ * @version 1.1
  */
-public class AvpDictionary
-{
-  private static transient Logger logger = Logger.getLogger( AvpDictionary.class );
+public class AvpDictionary {
+	
+	private static transient Logger logger = Logger.getLogger(AvpDictionary.class);
 
-  public final static AvpDictionary INSTANCE = new AvpDictionary();
+	public final static AvpDictionary INSTANCE = new AvpDictionary();
 
-  private HashMap<AvpRepresentation, AvpRepresentation> avpMap = new HashMap<AvpRepresentation, AvpRepresentation>();
+	//dont like that, this is not the same instance as in AvpUtils... ech.
+	private DictionaryImpl stackDictionary;
 
-  private HashMap<String, String> vendorMap = new HashMap<String, String>();
+	private HashMap<AvpRepresentation, AvpRepresentation> avpMap = new HashMap<AvpRepresentation, AvpRepresentation>();
 
-  private HashMap<MessageRepresentation, MessageRepresentation> commandMap = new HashMap<MessageRepresentation, MessageRepresentation>();
+	private Map<String, AvpRepresentation> nameToCodeMap = new TreeMap<String, AvpRepresentation>(new Comparator<String>() {
 
-  private HashMap<String, String> typedefMap = new HashMap<String, String>();
+		public int compare(String o1, String o2) {
+			return (o1 == null) ? 1 : (o2 == null) ? -1 : o1.compareTo(o2);
+		}
+	});
 
-  private Map<String, AvpRepresentation> nameToCodeMap = new TreeMap<String, AvpRepresentation>(new Comparator<String>(){
+	private AvpDictionary() {
+		// Exists only to defeat instantiation.
+	}
 
-    public int compare(String o1, String o2) {
-      return (o1 == null) ? 1 : (o2 == null) ? -1 : o1.compareTo(o2); 
-    }
-  });
+	public void parseDictionary(String filename) throws Exception {
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream(filename);
+			parseDictionary(fis);
+		} finally {
+			if (fis != null) {
+				try {
+					fis.close();
+				} catch (IOException e) {
+					logger.error("Failed to close FileInputStream", e);
+				}
+				fis = null;
+			}
+		}
+	}
 
-  private AvpDictionary() {
-    // Exists only to defeat instantiation.
-  }
+	public void parseDictionary(InputStream is) throws Exception {
+		// we override default conf here.
+		this.stackDictionary = (DictionaryImpl) DictionarySingleton.getDictionary();
+		this.avpMap.clear();
+		this.nameToCodeMap.clear();
 
-  public void parseDictionary(String filename) throws Exception {
-    FileInputStream fis = null;
-    try {
-      fis = new FileInputStream(filename);
-      parseDictionary(fis);      
-    }
-    finally {
-      if(fis != null) {
-        try {
-          fis.close();
-        }
-        catch (IOException e) {
-          logger.error("Failed to close FileInputStream", e);
-        }
-        fis = null;
-      }
-    }
-  }
+		//dont like that....
+		// fill AVP Map
+		Map<org.jdiameter.api.validation.AvpRepresentation, org.jdiameter.api.validation.AvpRepresentation> map = this.stackDictionary.getAvpMap();
+		for(org.jdiameter.api.validation.AvpRepresentation key:map.keySet())
+		{
+			AvpRepresentationImpl value = (AvpRepresentationImpl) map.get(key);
+			AvpRepresentation avp = new AvpRepresentation(value);
+			this.avpMap.put(avp, avp);
+			this.nameToCodeMap.put(avp.getName(),avp);
+		}
+	}
 
-  public void parseDictionary(InputStream is) throws Exception {
-    long startTime = System.currentTimeMillis();
+	public AvpRepresentation getAvp(int code) {
+		return getAvp(code, 0);
+	}
 
-    DiameterMessageValidator instance = DiameterMessageValidator.getInstance();
-    //we override default conf here.
-    instance.parseConfiguration(is,true);
-    this.commandMap.clear();
-    this.avpMap.clear();
-    this.vendorMap.clear();
-    this.typedefMap.clear();
-    this.nameToCodeMap.clear();
-    //now we have to change some things a bit, since validator stores everything as: VxxxRepresentation, our user expect classes from dictionary package
-    this.vendorMap.putAll(instance.getVendorMap());
-    this.typedefMap.putAll(instance.getTypedefMap());
+	public AvpRepresentation getAvp(int code, long vendorId) {
+		AvpRepresentation avp = avpMap.get(getMapKey(code, vendorId));
 
-    Map<VMessageRepresentation,VMessageRepresentation> validatorCommandMap = instance.getCommandMap();
-    for(VMessageRepresentation key:validatorCommandMap.keySet())
-    {
-      VMessageRepresentation value = validatorCommandMap.get(key);
-      this.commandMap.put(new MessageRepresentation((VMessageRepresentation) key.clone()), new MessageRepresentation((VMessageRepresentation) value.clone()));
-    }
+		if (avp == null) {
+			logger.warn("AVP with code " + code + " and Vendor-Id " + vendorId + " not present in dictionary!");
+		}
 
-    Map<String, VAvpRepresentation> validatorNameToCodeMap = instance.getNameToCodeMap();
-    for(String key:validatorNameToCodeMap.keySet()) {
-      VAvpRepresentation value = validatorNameToCodeMap.get(key);
-      this.nameToCodeMap.put(key, new AvpRepresentation((VAvpRepresentation)value.clone()));
-    }
+		return avp;
+	}
 
-    Map<VAvpRepresentation, VAvpRepresentation> validatorAvpMap = instance.getAvpMap();
-    for(VAvpRepresentation key:validatorAvpMap.keySet()) {
-      VAvpRepresentation value = validatorAvpMap.get(key);
-      this.avpMap.put(new AvpRepresentation((VAvpRepresentation) key.clone()), new AvpRepresentation((VAvpRepresentation) value.clone()));
-    }
+	public AvpRepresentation getAvp(String avpName) {
+		AvpRepresentation avpKey = nameToCodeMap.get(avpName);
 
-    long endTime = System.currentTimeMillis();
+		return avpKey != null ? avpMap.get(avpKey) : null;
+	}
 
-    logger.info("AVP Dictionary :: Loaded in " + (endTime - startTime) + "ms == Vendors[" + vendorMap.size() + "] Commands[" + commandMap.size() + "] Types[" + typedefMap.size() + "] AVPs[" + avpMap.size() + "]");
+	/**
+	 * @param code
+	 * @param vendorId
+	 * @return
+	 */
+	private Object getMapKey(int code, long vendorId) {
+		return new AvpRepresentation(code, vendorId);
+	}
 
-    if (logger.isInfoEnabled()) {
-      StringBuffer sb = new StringBuffer();
-      int c = 0;
-      for (AvpRepresentation key : this.avpMap.keySet()) {
-        if (this.avpMap.get(key).isWeak()) {
-          c++;
-          sb.append("---------------------------------\n").append("Found incomplete AVP definition:\n").append(this.avpMap.get(key)).append("\n");
-        }
-      }
-
-      if(c > 0) {
-        sb.append("------- TOTAL INCOMPLETE AVPS COUNT: " + c + " -------");
-        logger.info(sb.toString());
-      }
-    }
-  }
-
-  public AvpRepresentation getAvp(int code) {
-    return getAvp( code, 0 );
-  }
-
-  public AvpRepresentation getAvp(int code, long vendorId) {
-    AvpRepresentation avp = avpMap.get(getMapKey(code, vendorId));
-
-    if(avp == null) {
-      logger.warn("AVP with code " + code + " and Vendor-Id "  + vendorId + " not present in dictionary!");
-    }
-
-    return avp;
-  }
-
-  public AvpRepresentation getAvp(String avpName) {
-    AvpRepresentation avpKey = nameToCodeMap.get(avpName);
-
-    return avpKey != null ? avpMap.get(avpKey) : null;
-  }
-
-  private long getVendorCode(String vendorId) {
-    long value = -1;
-
-    if(vendorId == null) {
-      value = 0;
-    }
-    else {
-      String vendorCode = vendorMap.get(vendorId);
-
-      value = vendorCode == null ? 0 : Long.parseLong(vendorCode); 
-    }
-
-    return value;
-  }
-
-  private AvpRepresentation getMapKey(int avpCode, long vendorId) {
-    return new AvpRepresentation(avpCode, vendorId); 
-  }
 }

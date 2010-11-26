@@ -2,7 +2,7 @@
 <Configuration xmlns="http://www.jdiameter.org/jdiameter-server">
 
   <LocalPeer>
-    <URI value="aaa://127.0.0.1:1812" />
+    <URI value="aaa://127.0.0.1:3868" />
     <!-- URI value="aaa://mobicents.open-ims.test:1812" /-->
     <IPAddresses>
       <IPAddress value="127.0.0.1" />
@@ -48,6 +48,7 @@
       <Entity name="ConnectionTimer" size="1"/>
       <Entity name="StatisticTimer" size="1"/>
     </Concurrent>
+    <Dictionary enabled="false" sendLevel="MESSAGE" receiveLevel="OFF" />    
     <!-- To enable clustering uncomment the following lines
     <SessionDatasource value="org.mobicents.diameter.impl.ha.data.ReplicatedDataSource"/>
     <TimerFacility value="org.mobicents.diameter.impl.ha.timer.ReplicatedTimerFacilityImpl"/>

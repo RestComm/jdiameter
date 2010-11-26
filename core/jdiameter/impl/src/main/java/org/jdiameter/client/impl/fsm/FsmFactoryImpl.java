@@ -24,6 +24,7 @@ public class FsmFactoryImpl implements IFsmFactory { // TODO: please redesign th
 
   public FsmFactoryImpl(IStatisticFactory statisticFactory) {
     this.statisticFactory = statisticFactory;
+
   }
 
   public IStateMachine createInstanceFsm(IContext context, IConcurrentFactory concurrentFactory, Configuration config) throws InternalException {

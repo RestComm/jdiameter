@@ -25,6 +25,7 @@ import static org.jdiameter.client.impl.helpers.ExtensionPoint.ControllerLayer;
 import static org.jdiameter.client.impl.helpers.ExtensionPoint.StackLayer;
 import static org.jdiameter.client.impl.helpers.ExtensionPoint.TransportLayer;
 import static org.jdiameter.client.impl.helpers.Parameters.Assembler;
+import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.ProcessingMessageTimer;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -49,6 +50,8 @@ import org.jdiameter.api.PeerTable;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.StateChangeListener;
+import org.jdiameter.api.validation.Dictionary;
+import org.jdiameter.api.validation.ValidatorLevel;
 import org.jdiameter.client.api.IAssembler;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
@@ -57,15 +60,11 @@ import org.jdiameter.client.api.StackState;
 import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.controller.IPeerTable;
 import org.jdiameter.client.impl.helpers.Parameters;
-import org.jdiameter.common.impl.data.LocalDataSource;
-import org.jdiameter.common.impl.timer.LocalTimerFacilityImpl;
-import org.jdiameter.common.impl.validation.DiameterMessageValidator;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.data.ISessionDatasource;
-
-import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.ProcessingMessageTimer;
 import org.jdiameter.common.api.statistic.IStatisticProcessor;
 import org.jdiameter.common.api.timer.ITimerFacility;
+import org.jdiameter.common.impl.timer.LocalTimerFacilityImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,8 +85,8 @@ public class StackImpl implements IContainer, StackImplMBean {
   protected IPeerTable peerManager;
   protected StackState state = StackState.IDLE;
   protected Lock lock = new ReentrantLock();
-  //This will create validator with basic validator xml
-  protected DiameterMessageValidator validator = DiameterMessageValidator.getInstance();
+
+
   /**
    * Use for processing request time-out tasks (for all active peers)
    */
@@ -120,6 +119,24 @@ public class StackImpl implements IContainer, StackImplMBean {
         createISessionDataSource(sessionDataSourceClass);
         Class timerFacilityClass = Class.forName(config.getStringValue(Parameters.TimerFacility.ordinal(), (String) Parameters.TimerFacility.defValue()));
         createITimerFacility(timerFacilityClass);
+
+        Configuration[] dictionaryConfigs = config.getChildren(Parameters.Dictionary.ordinal());
+
+        // Initialize with default values
+        String dictionaryClassName = (String) Parameters.DictionaryClass.defValue();
+        Boolean validatorEnabled = (Boolean) Parameters.DictionaryEnabled.defValue();
+        ValidatorLevel validatorSendLevel = ValidatorLevel.fromString((String) Parameters.DictionarySendLevel.defValue());
+        ValidatorLevel validatorReceiveLevel = ValidatorLevel.fromString((String) Parameters.DictionaryReceiveLevel.defValue());
+
+        if(dictionaryConfigs != null && dictionaryConfigs.length > 0) {
+        	Configuration dictionaryConfiguration = dictionaryConfigs[0];
+        	dictionaryClassName = dictionaryConfiguration.getStringValue(Parameters.DictionaryClass.ordinal(), (String) Parameters.DictionaryClass.defValue());
+          validatorEnabled = dictionaryConfiguration.getBooleanValue(Parameters.DictionaryEnabled.ordinal(), (Boolean) Parameters.DictionaryEnabled.defValue());
+          validatorSendLevel = ValidatorLevel.fromString(dictionaryConfiguration.getStringValue(Parameters.DictionaryClass.ordinal(), (String) Parameters.DictionaryClass.defValue()));
+          validatorReceiveLevel = ValidatorLevel.fromString( dictionaryConfiguration.getStringValue(Parameters.DictionaryClass.ordinal(), (String) Parameters.DictionaryClass.defValue()));
+        }
+        
+        createDictionary(dictionaryClassName, validatorEnabled, validatorSendLevel, validatorReceiveLevel);
       }
       catch (Exception e) {
         throw new InternalException(e);
@@ -157,7 +174,7 @@ public class StackImpl implements IContainer, StackImplMBean {
 
   @SuppressWarnings("unchecked")
   private void createISessionDataSource(Class clazz) throws InternalException {
-    ISessionDatasource isd = new LocalDataSource();
+    ISessionDatasource isd = null;
     try {
       Constructor<ISessionDatasource> con = clazz.getConstructor(IContainer.class);
       isd = con.newInstance(this);
@@ -169,15 +186,31 @@ public class StackImpl implements IContainer, StackImplMBean {
     assembler.registerComponentInstance(isd);
   }
 
+  private void createDictionary(String clazz, boolean validatorEnabled, ValidatorLevel validatorSendLevel, ValidatorLevel validatorReceiveLevel) throws InternalException {
+    // Defer call to singleton
+    DictionarySingleton.init(clazz, validatorEnabled, validatorSendLevel, validatorReceiveLevel);
+  }
+
   public SessionFactory getSessionFactory() throws IllegalDiameterStateException {
     if (state == StackState.CONFIGURED || state == StackState.STARTED) {
+    	// FIXME: When possible, get rid of IoC here.
       return (SessionFactory) assembler.getComponentInstance(SessionFactory.class);
     }
     else {
       throw new IllegalDiameterStateException();
     }
   }
-
+  
+	@Override
+	public Dictionary getDictionary() throws IllegalDiameterStateException {
+		if (state == StackState.CONFIGURED || state == StackState.STARTED) {
+			return DictionarySingleton.getDictionary();
+		}
+		else {
+			throw new IllegalDiameterStateException();
+		}
+	}
+	
   public void start() throws IllegalDiameterStateException, InternalException {
     lock.lock();
     try {

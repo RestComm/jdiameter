@@ -34,24 +34,28 @@ import org.jdiameter.api.ResultCode;
 import org.jdiameter.api.app.State;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
+import org.jdiameter.api.validation.AvpNotAllowedException;
+import org.jdiameter.api.validation.Dictionary;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.fsm.EventTypes;
 import org.jdiameter.client.api.fsm.FsmEvent;
 import org.jdiameter.client.api.fsm.IContext;
 import org.jdiameter.client.api.fsm.IStateMachine;
+import org.jdiameter.client.impl.DictionarySingleton;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.statistic.IStatistic;
 import org.jdiameter.common.api.statistic.IStatisticFactory;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
-import org.jdiameter.common.impl.validation.DiameterMessageValidator;
-import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PeerFSMImpl implements IStateMachine {
 
   private static final Logger logger = LoggerFactory.getLogger(PeerFSMImpl.class);
-
+  
+  //TODO: set me
+  protected final Dictionary dictionary = DictionarySingleton.getDictionary();
+  
   protected ConcurrentLinkedQueue<StateChangeListener> listeners;
   protected LinkedBlockingQueue<StateEvent> eventQueue;
 
@@ -73,9 +77,10 @@ public class PeerFSMImpl implements IStateMachine {
   protected IStatistic queueStat;
   protected IStatisticRecord timeSumm;
   protected IStatisticRecord timeCount;
-
+  
   public PeerFSMImpl(IContext aContext, IConcurrentFactory concurrentFactory, Configuration config, IStatisticFactory statisticFactory) {
     this.context = aContext;
+    
     this.predefSize = config.getIntValue(QueueSize.ordinal(), (Integer) QueueSize.defValue());
     this.eventQueue = new LinkedBlockingQueue<StateEvent>(predefSize);
     this.listeners = new ConcurrentLinkedQueue<StateChangeListener>();
@@ -114,6 +119,7 @@ public class PeerFSMImpl implements IStateMachine {
           }
         }, timeSumm, timeCount
         );          
+   
     queueStat = statisticFactory.newStatistic(IStatistic.Groups.PeerFSM, queueSize, messagePrcAverageTime);
   }
   
@@ -207,14 +213,14 @@ public class PeerFSMImpl implements IStateMachine {
       runQueueProcessing();
     }
     
-    if (event.getData() != null && DiameterMessageValidator.getInstance().isOn()) {
+    if (event.getData() != null && dictionary!= null && dictionary.isEnabled()) {
       boolean incoming = event.getType() == EventTypes.RECEIVE_MSG_EVENT;
       if(incoming) {
         // outgoing are done elsewhere: see BaseSessionImpl
         try{
-          DiameterMessageValidator.getInstance().validate((Message) event.getData(), incoming);
+        	dictionary.validate((Message) event.getData(), incoming);
         }
-        catch(JAvpNotAllowedException e) {
+        catch(AvpNotAllowedException e) {
           logger.error("Failed to validate incoming message.", e);
           return false;
         }

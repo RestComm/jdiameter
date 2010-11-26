@@ -214,17 +214,6 @@
                    <xsi:attribute name="value" type="xsi:long" use="required"/>
                </xsi:complexType>
             </xsi:element>
-            <!-- 
-            <xsi:element name="ThreadPool" minOccurs="1" maxOccurs="1">
-                <xsi:annotation>
-                    <xsi:documentation>Determines thread pool configuration.</xsi:documentation>
-                </xsi:annotation>
-               <xsi:complexType>
-                   <xsi:attribute name="priority" type="xsi:string" default="5"/>
-                   <xsi:attribute name="size" type="xsi:integer" default="16"/>
-               </xsi:complexType>               
-            </xsi:element>
-             -->
             <xsi:element name="StatisticLogger" minOccurs="0" maxOccurs="1">
                 <xsi:annotation>
                     <xsi:documentation>Statistic logger configuration</xsi:documentation>
@@ -235,6 +224,17 @@
                 </xsi:complexType>
             </xsi:element>
             <xsi:element name="Concurrent" minOccurs="0" maxOccurs="1"/>
+            <xsi:element name="Dictionary" minOccurs="0" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Dictionary and Validator configuration</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                    <xsi:attribute name="class" type="xsi:string" use="optional"/>
+                    <xsi:attribute name="enabled" type="xsi:string" use="optional"/>
+                    <xsi:attribute name="sendLevel" type="xsi:string" use="optional"/>
+                    <xsi:attribute name="receiveLevel" type="xsi:string" use="optional"/>
+                </xsi:complexType>
+            </xsi:element>
             <xsi:element name="SessionDatasource" minOccurs="0" maxOccurs="1">
                 <xsi:annotation>
                     <xsi:documentation>Datasource class name to be used for storing Session data.</xsi:documentation>

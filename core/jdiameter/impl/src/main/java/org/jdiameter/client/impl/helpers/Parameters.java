@@ -317,6 +317,31 @@ public class Parameters extends Ordinal {
     public static final Parameters TimerFacility = new Parameters("TimerFacility", String.class, "org.jdiameter.common.impl.timer.LocalTimerFacilityImpl");
 
     /**
+     * Dictionary root
+     */
+    public static final Parameters Dictionary = new Parameters("Dictionary", Object.class);
+
+    /**
+     * Dictionary Class name
+     */
+    public static final Parameters DictionaryClass = new Parameters("DictionaryClass", String.class, "org.jdiameter.common.impl.validation.DictionaryImpl");
+
+    /**
+     * Dictionary Validation enabled
+     */
+    public static final Parameters DictionaryEnabled = new Parameters("DictionaryEnabled", Boolean.class, false);
+
+    /**
+     * Dictionary Send Level Validation
+     */
+    public static final Parameters DictionarySendLevel = new Parameters("DictionarySendLevel", String.class, "MESSAGE");
+
+    /**
+     * Dictionary Receive Level Validation
+     */
+    public static final Parameters DictionaryReceiveLevel = new Parameters("DictionaryReceiveLevel", String.class, "OFF");
+    
+    /**
      * Return all parameters as iterator
      * 
      * @return all parameters as iterator

@@ -15,14 +15,6 @@
 		"gqpolicy.xml"> <!ENTITY etsie2e4 SYSTEM "etsie2e4.xml"> <!ENTITY Ericsson SYSTEM "Ericsson.xml"> ]
 	-->
 <dictionary>
-	<!-- LEVEL: 
-	  ** OFF - no validation
-	  ** MESSAGE - only message level is validate, no grouped avp check
-	  ** ALL - full validation, message level avps and grouped structure
-	  
-	  sendX,receiveX - control level of validation in certain direction.
-	-->  
-	<validator enabled="false" sendLevel="ALL" receiveLevel="OFF"/>
 	<!-- <base uri="http://www.ietf.org/rfc/rfc3588.txt">  -->
 	<application id="19302" name="Ericsson ACC">
 		<command name="Accounting" code="271" request="false">
@@ -48,12 +40,11 @@
 			<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Class" code="25" vendor="0" multiplicity="0+" index="-1" />
 
+
 			<!-- FORBBIDEN -->
 			<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
-
-
 		</command>
 		
 		<command name="Accounting" code="271" request="true">
@@ -84,8 +75,6 @@
 			<avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
-
-
 		</command>
 	</application>
 	
@@ -140,6 +129,7 @@
 			<avp name="Termination-Cause" code="295" vendor="0" multiplicity="0" index="-1" />
 			<avp name="User-Name" code="1" vendor="0" multiplicity="0" index="-1" />
 		</command>
+
 		<command name="Capabilities-Exchange" code="257" request="true">
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
@@ -182,6 +172,7 @@
 			<avp name="User-Name" code="1" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
 		</command>
+
 		<command name="Re-Auth" code="258" request="true">
 			<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
@@ -191,8 +182,6 @@
 			<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Re-Auth-Request-Type" code="285" vendor="0" multiplicity="1" index="-1" />
 
-
-
 			<avp name="Acct-Interim-Interval" code="85" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Accounting-Realtime-Required" code="483" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
@@ -200,7 +189,6 @@
 			<avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
-
 
 
 			<!-- FORBBIDEN -->
@@ -231,10 +219,9 @@
 			<avp name="Supported-Vendor-Id" code="265" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Termination-Cause" code="295" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Vendor-Id" code="266" vendor="0" multiplicity="0" index="-1" />
-
-
 			<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
 		</command>
+
 		<command name="Re-Auth" code="258" request="false">
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
@@ -284,7 +271,6 @@
 			<avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Accounting-Record-Type" code="480" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Accounting-Record-Number" code="485" vendor="0" multiplicity="1" index="-1" />
-
 			<avp name="Acct-Application-Id" code="259" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
@@ -305,8 +291,6 @@
 			<avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
-
-
 		</command>
 
 		<command name="Accounting" code="271" request="false" >
@@ -316,7 +300,7 @@
 			<avp name="Origin-Realm" 				code="296" vendor="0" multiplicity="1" index="-1"/>
 			<avp name="Accounting-Record-Type" 		code="480" vendor="0" multiplicity="1" index="-1"/>
 			<avp name="Accounting-Record-Number" 	code="485" vendor="0" multiplicity="1" index="-1"/>
-	
+
 			<avp name="Acct-Application-Id" 			code="259" 	vendor="0" multiplicity="0-1" index="-1"/>
 			<avp name="Vendor-Specific-Application-Id" 	code="260" 	vendor="0" multiplicity="0-1" index="-1"/>
 			<avp name="User-Name" 						code="1" 	vendor="0" multiplicity="0-1" index="-1"/>
@@ -331,14 +315,14 @@
 			<avp name="Proxy-Info" 						code="284" 	vendor="0" multiplicity="0+"  index="-1"/>
 			<avp name="Route-Record" 					code="282" 	vendor="0" multiplicity="0+"  index="-1"/>
 			<avp name="Class"		 					code="25" 	vendor="0" multiplicity="0+"  index="-1"/>
-	
+
+
 			<!-- FORBBIDEN -->
 			<avp name="Auth-Application-Id" 	code="258" 	vendor="0" multiplicity="0"  index="-1"/>
 			<avp name="Experimental-Result" 	code="297" 	vendor="0" multiplicity="0"  index="-1"/>
 			<avp name="Destination-Realm" 		code="283" 	vendor="0" multiplicity="0"  index="-1"/>
-	
-
 		</command>
+
 		<command name="Abort-Session" code="274" request="false">
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
@@ -380,6 +364,7 @@
 			<avp name="Vendor-Id" code="266" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
 		</command>
+
 		<command name="Abort-Session" code="274" request="true" application="0">
 			<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Destination-Host" code="293" vendor="0" multiplicity="1" index="-1" />
@@ -422,6 +407,7 @@
 			<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
 		</command>
+
 		<command name="Session-Termination" code="275" request="true">
 			<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
@@ -464,6 +450,7 @@
 			<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
 		</command>
+
 		<command name="Session-Termination" code="275" request="false">
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
@@ -505,6 +492,7 @@
 			<avp name="Vendor-Id" code="266" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
 		</command>
+
 		<command name="Device-Watchdog" code="280" request="false" >
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
@@ -546,6 +534,7 @@
 			<avp name="Vendor-Id" code="266" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
 		</command>
+
 		<command name="Disconnect-Peer" code="282" request="false" >
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
@@ -587,6 +576,7 @@
 			<avp name="Vendor-Id" code="266" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
 		</command>
+
 		<command name="Disconnect-Peer" code="282" request="true" >
 			<avp name="Disconnect-Cause" code="273" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
@@ -629,6 +619,7 @@
 			<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
 		</command>
+
 		<command name="Device-Watchdog" code="280" request="true" >
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />

@@ -21,14 +21,7 @@
  */
 package org.jdiameter.client.impl.controller;
 
-/*
- * https://jdiameter.dev.java.net/
- *
- * License: GPL v3
- *
- * e-mail: erick.svenson@yahoo.com
- *
- */
+
 import static org.jdiameter.api.Avp.ACCT_APPLICATION_ID;
 import static org.jdiameter.api.Avp.AUTH_APPLICATION_ID;
 import static org.jdiameter.api.Avp.DESTINATION_HOST;
@@ -91,6 +84,7 @@ import org.jdiameter.api.ResultCode;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.URI;
 import org.jdiameter.api.app.StateChangeListener;
+import org.jdiameter.api.validation.Dictionary;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IMetaData;
 import org.jdiameter.client.api.controller.IPeer;
@@ -107,12 +101,12 @@ import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.api.router.IRouter;
 import org.jdiameter.client.impl.AbstractStateChangeListener;
+import org.jdiameter.client.impl.DictionarySingleton;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.api.statistic.IStatistic;
 import org.jdiameter.common.api.statistic.IStatisticFactory;
 import org.jdiameter.common.impl.controller.AbstractPeer;
-import org.jdiameter.common.impl.validation.DiameterMessageValidator;
 import org.jdiameter.server.impl.MutablePeerTableImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,7 +121,7 @@ import org.slf4j.LoggerFactory;
 public class PeerImpl extends AbstractPeer implements IPeer {
 
   private static final Logger logger = LoggerFactory.getLogger(PeerImpl.class);
-  protected static final DiameterMessageValidator VALIDATOR = DiameterMessageValidator.getInstance();
+
   // Properties
   protected InetAddress[] addresses;
   protected String realmName;
@@ -145,6 +139,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   protected IRouter router;
   // XXX: FT/HA // protected Map<String, NetworkReqListener> slc;
   protected final Map<Long, IMessage> peerRequests = new ConcurrentHashMap<Long, IMessage>();
+  protected final Dictionary dictionary = DictionarySingleton.getDictionary();
   // FSM layer
   protected IStateMachine fsm;
   protected IMessageParser parser;
@@ -239,17 +234,17 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
   };
 
-  public PeerImpl(final PeerTableImpl table, final ISessionDatasource sessionDataSource,int rating, URI remotePeer, String ip,  String portRange, IMetaData metaData, Configuration config,
+  public PeerImpl(final PeerTableImpl table, int rating, URI remotePeer, String ip,  String portRange, IMetaData metaData, Configuration config,
       Configuration peerConfig, IFsmFactory fsmFactory, ITransportLayerFactory trFactory, IStatisticFactory statisticFactory,
-      IConcurrentFactory concurrentFactory, IMessageParser parser) throws InternalException, TransportException {
-    this(table,sessionDataSource, rating, remotePeer, ip, portRange, metaData, config, peerConfig, fsmFactory, trFactory, parser, statisticFactory, concurrentFactory, null);
+      IConcurrentFactory concurrentFactory, IMessageParser parser, final ISessionDatasource sessionDataSource) throws InternalException, TransportException {
+    this(table, rating, remotePeer, ip, portRange, metaData, config, peerConfig, fsmFactory, trFactory, parser, statisticFactory, concurrentFactory, null, sessionDataSource);
   }
 
   @SuppressWarnings("unchecked")
-  protected PeerImpl(final PeerTableImpl table,final ISessionDatasource sessionDataSource, int rating, URI remotePeer, String ip, String portRange, IMetaData metaData,
+  protected PeerImpl(final PeerTableImpl table, int rating, URI remotePeer, String ip, String portRange, IMetaData metaData,
       Configuration config, Configuration peerConfig, IFsmFactory fsmFactory, ITransportLayerFactory trFactory,
       IMessageParser parser, IStatisticFactory statisticFactory, IConcurrentFactory concurrentFactory,
-      IConnection connection) throws InternalException, TransportException {
+      IConnection connection, final ISessionDatasource sessionDataSource) throws InternalException, TransportException {
     super(remotePeer, statisticFactory);
     this.table = table;
     this.rating = rating;
@@ -491,8 +486,8 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   }
 
   public boolean sendMessage(IMessage message) throws TransportException, OverloadException, InternalException {
-    if(PeerImpl.VALIDATOR.isOn()) {
-      PeerImpl.VALIDATOR.validate(message,false);
+    if(dictionary != null && dictionary.isEnabled()) {
+    	dictionary.validate(message, false);
     }
     return !stopping && fsm.handleEvent(new FsmEvent(EventTypes.SEND_MSG_EVENT, message));
   }

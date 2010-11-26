@@ -38,9 +38,10 @@ import org.jdiameter.api.Request;
 import org.jdiameter.api.ResultCode;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.Stack;
+import org.jdiameter.client.impl.DictionarySingleton;
 import org.jdiameter.client.impl.controller.PeerImpl;
 import org.jdiameter.client.impl.helpers.AppConfiguration;
-import org.jdiameter.common.impl.validation.DiameterMessageValidator;
+import org.jdiameter.common.impl.validation.DictionaryImpl;
 import org.jdiameter.server.impl.NetworkImpl;
 import org.jdiameter.server.impl.StackImpl;
 import org.jdiameter.server.impl.helpers.XMLConfiguration;
@@ -108,7 +109,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
         if(logger.isInfoEnabled()) {
           logger.info("Parsing AVP Dictionary file...");
         }
-        AvpDictionary.INSTANCE.parseDictionary(AvpDictionary.class.getResourceAsStream("dictionary.xml"));
+        AvpDictionary.INSTANCE.parseDictionary(Thread.currentThread().getContextClassLoader().getResourceAsStream("dictionary.xml"));
         if(logger.isInfoEnabled()) {
           logger.info("AVP Dictionary file successfuly parsed!");
         }
@@ -752,7 +753,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   }
 
   public void _Validation_setEnabled(boolean enableValidation) throws MBeanException {
-    DiameterMessageValidator.setOn(enableValidation);
+    ((DictionaryImpl)DictionarySingleton.getDictionary()).setEnabled(enableValidation) ;
   }
 
   public String dumpStackConfiguration() throws MBeanException {

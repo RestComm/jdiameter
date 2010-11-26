@@ -12,6 +12,8 @@ package org.jdiameter.api;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import org.jdiameter.api.validation.Dictionary;
+
 /**
  * The interface that every stack class must implement. The Java Diameter framework allows for multiple database stacks.
  * Each stack should supply a class that implements the Stack interface.
@@ -96,6 +98,13 @@ public interface Stack extends Wrapper {
      */
     SessionFactory getSessionFactory()  throws IllegalDiameterStateException;
 
+    /**
+     * Return Dictionary instance
+     * @return Dictionary instance
+     * @throws IllegalDiameterStateException if stack is not configured
+     */
+    Dictionary getDictionary()  throws IllegalDiameterStateException;
+    
     /**
      * @return stack meta information
      */

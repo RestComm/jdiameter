@@ -22,6 +22,7 @@
 package org.jdiameter.server.impl;
 
 import org.jdiameter.api.*;
+
 import static org.jdiameter.api.PeerState.DOWN;
 import static org.jdiameter.api.PeerState.INITIAL;
 import org.jdiameter.client.api.IMessage;
@@ -72,12 +73,12 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
    */
   public PeerImpl(int rating, URI remotePeer, String ip, String portRange, boolean attCnn, IConnection connection,
       MutablePeerTableImpl peerTable, IMetaData metaData, Configuration config, Configuration peerConfig,
-      ISessionDatasource sessionDataSource,ISessionFactory sessionFactory, IFsmFactory fsmFactory, ITransportLayerFactory trFactory,
+      ISessionFactory sessionFactory, IFsmFactory fsmFactory, ITransportLayerFactory trFactory,
       IStatisticFactory statisticFactory, IConcurrentFactory concurrentFactory,
-      IMessageParser parser, INetwork nWork, IOverloadManager oManager)
+      IMessageParser parser, INetwork nWork, IOverloadManager oManager, final ISessionDatasource sessionDataSource)
   throws InternalException, TransportException {
-    super(peerTable, sessionDataSource,rating, remotePeer, ip, portRange, metaData, config, peerConfig, fsmFactory, trFactory, parser,
-        statisticFactory, concurrentFactory, connection);
+    super(peerTable, rating, remotePeer, ip, portRange, metaData, config, peerConfig, fsmFactory, trFactory, parser,
+        statisticFactory, concurrentFactory, connection, sessionDataSource);
     // Create specific action context
     this.peerTable = peerTable;
     this.isDuplicateProtection = this.peerTable.isDuplicateProtection();

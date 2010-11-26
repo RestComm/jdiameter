@@ -182,8 +182,8 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       IStatisticFactory statisticFactory, IConcurrentFactory concurrentFactory) throws URISyntaxException, UnknownServiceException, InternalException, TransportException {
     return new org.jdiameter.server.impl.PeerImpl(
         rating, uri, ip, portRange, attCnn, connection,
-        this, (org.jdiameter.server.api.IMetaData) metaData, globalConfig, peerConfig, sessionDatasource, sessionFactory,
-        fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser, network, ovrManager
+        this, (org.jdiameter.server.api.IMetaData) metaData, globalConfig, peerConfig, sessionFactory,
+        fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser, network, ovrManager, sessionDatasource
     );
   }
 

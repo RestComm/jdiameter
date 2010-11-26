@@ -11,6 +11,11 @@ package org.jdiameter.server.impl.helpers;
 
 import org.jdiameter.api.Configuration;
 import org.jdiameter.client.impl.helpers.AppConfiguration;
+
+import static org.jdiameter.client.impl.helpers.Parameters.DictionaryClass;
+import static org.jdiameter.client.impl.helpers.Parameters.DictionaryEnabled;
+import static org.jdiameter.client.impl.helpers.Parameters.DictionaryReceiveLevel;
+import static org.jdiameter.client.impl.helpers.Parameters.DictionarySendLevel;
 import static org.jdiameter.server.impl.helpers.Parameters.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -185,6 +190,7 @@ public class XMLConfiguration extends EmptyConfiguration {
             else if (nodeName.equals("Concurrent")) { addConcurrent(Concurrent, c.item(i));                   }
             else if (nodeName.equals("SessionDatasource")) { add(SessionDatasource, getValue(c.item(i)));     }
             else if (nodeName.equals("TimerFacility")) { add(TimerFacility, getValue(c.item(i)));             }
+            else if (nodeName.equals("Dictionary")) { addDictionary(Dictionary, c.item(i));                   }
             else 
             {    appendOtherParameter(c.item(i)); }
         }
@@ -251,7 +257,37 @@ public class XMLConfiguration extends EmptyConfiguration {
 	  );
 	}
 
-	protected void addNetwork(Node node) {
+	protected void addDictionary(org.jdiameter.client.impl.helpers.Parameters name, Node node) {
+    AppConfiguration dicConfiguration = getInstance();
+
+    Node param = node.getAttributes().getNamedItem("class");
+    if(param != null) {
+      String clazz = param.getNodeValue();
+      dicConfiguration.add(DictionaryClass, clazz);
+    }
+
+    param =  node.getAttributes().getNamedItem("enabled");
+    if(param != null) {
+      String enabled = param.getNodeValue();
+      dicConfiguration.add(DictionaryEnabled, enabled);
+    }
+    
+    param =  node.getAttributes().getNamedItem("sendLevel");
+    if(param != null) {
+      String sendLevel = param.getNodeValue();
+      dicConfiguration.add(DictionarySendLevel, sendLevel);
+    }
+    
+    param =  node.getAttributes().getNamedItem("receiveLevel");
+    if(param != null) {
+      String receiveLevel = param.getNodeValue();
+      dicConfiguration.add(DictionaryReceiveLevel, receiveLevel);
+    }
+    
+    add(name, dicConfiguration);
+  }
+
+  protected void addNetwork(Node node) {
         NodeList c = node.getChildNodes();
         for (int i = 0; i < c.getLength(); i++) {
             String nodeName = c.item(i).getNodeName();
