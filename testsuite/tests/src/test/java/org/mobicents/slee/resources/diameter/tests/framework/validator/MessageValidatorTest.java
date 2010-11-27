@@ -60,7 +60,7 @@ public class MessageValidatorTest extends TestCase {
 	public void setUp() {
 
 		this.instance = (DictionaryImpl) DictionaryImpl.INSTANCE;
-		InputStream is = MessageValidatorTest.class.getClassLoader().getResourceAsStream("sdictionary.xml"); //use smaller file, so its easier to check contents.
+		InputStream is = MessageValidatorTest.class.getClassLoader().getResourceAsStream("dictionary.xml"); //use smaller file, so its easier to check contents.
 
 		try {
 			this.instance.configure(is);
@@ -84,16 +84,16 @@ public class MessageValidatorTest extends TestCase {
 	@Test
 	public void testBasicOperations() {
 
-		Message answer = new MessageParser().createEmptyMessage(271, 0);
+		Message answer = new MessageParser().createEmptyMessage(271, 19302);
 		answer.setRequest(false);
 		AvpSet set = answer.getAvps();
 		set.addAvp(263, "SESSION-ID;246t13461346713rfg@#$SD$@#6", false);
 		// nooooow, lets try some tests
-		MessageRepresentation msgRep = this.instance.getMessage(271, 0, false);
+		MessageRepresentation msgRep = this.instance.getMessage(271, 19302, false);
 
 		// <avp name="Session-Id" code="263" vendor="0" multiplicity="1"
 		// index="0"/>
-		assertTrue("Session-Id is not allowed in this message, it should be.", this.instance.getMessage(271, 0, false).isAllowed(263, 0));
+		assertTrue("Session-Id is not allowed in this message, it should be.", msgRep.isAllowed(263, 0));
 
 		assertTrue("We should allow to add ONE (1) Session-Id AVP, operation indicates that it could not be done.",
 				msgRep.isCountValidForMultiplicity(set, 263, 0L));
@@ -970,7 +970,7 @@ public class MessageValidatorTest extends TestCase {
 	 */
 	protected Message createMessage()
 	{
-		Message msg = new MessageParser().createEmptyMessage(272, 0);
+		Message msg = new MessageParser().createEmptyMessage(272, 4);
 		AvpSet set = msg.getAvps();
 
 		// nooooow, lets try some tests
