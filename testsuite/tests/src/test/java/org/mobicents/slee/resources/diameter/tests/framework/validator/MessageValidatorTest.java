@@ -60,7 +60,7 @@ public class MessageValidatorTest extends TestCase {
 	public void setUp() {
 
 		this.instance = (DictionaryImpl) DictionaryImpl.INSTANCE;
-		InputStream is = MessageValidatorTest.class.getClassLoader().getResourceAsStream("dictionary.xml");
+		InputStream is = MessageValidatorTest.class.getClassLoader().getResourceAsStream("sdictionary.xml"); //use smaller file, so its easier to check contents.
 
 		try {
 			this.instance.configure(is);
