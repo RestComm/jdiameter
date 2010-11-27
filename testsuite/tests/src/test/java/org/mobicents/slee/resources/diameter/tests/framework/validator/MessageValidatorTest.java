@@ -25,49 +25,23 @@
  */
 package org.mobicents.slee.resources.diameter.tests.framework.validator;
 
-import static org.jdiameter.client.impl.helpers.Parameters.AcctApplId;
-import static org.jdiameter.client.impl.helpers.Parameters.ApplicationId;
-import static org.jdiameter.client.impl.helpers.Parameters.Assembler;
-import static org.jdiameter.client.impl.helpers.Parameters.AuthApplId;
-import static org.jdiameter.client.impl.helpers.Parameters.OwnDiameterURI;
-import static org.jdiameter.client.impl.helpers.Parameters.OwnRealm;
-import static org.jdiameter.client.impl.helpers.Parameters.OwnVendorID;
-import static org.jdiameter.client.impl.helpers.Parameters.PeerName;
-import static org.jdiameter.client.impl.helpers.Parameters.PeerRating;
-import static org.jdiameter.client.impl.helpers.Parameters.PeerTable;
-import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
-import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
-import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import net.java.slee.resource.diameter.base.events.AccountingAnswer;
-import net.java.slee.resource.diameter.base.events.AccountingRequest;
-import net.java.slee.resource.diameter.base.events.avp.DiameterAvpType;
-import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
-import net.java.slee.resource.diameter.cca.events.avp.CcMoneyAvp;
-import net.java.slee.resource.diameter.cca.events.avp.CcRequestType;
-import net.java.slee.resource.diameter.cca.events.avp.GrantedServiceUnitAvp;
-import net.java.slee.resource.diameter.cca.events.avp.UnitValueAvp;
+import java.io.IOException;
+import java.io.InputStream;
 
+import junit.framework.TestCase;
+
+import org.apache.log4j.Logger;
+import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
-import org.jdiameter.api.IllegalDiameterStateException;
-import org.jdiameter.api.InternalException;
-import org.jdiameter.api.Stack;
-import org.jdiameter.client.impl.helpers.EmptyConfiguration;
-import org.jdiameter.common.impl.validation.DiameterMessageValidator;
-import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
+import org.jdiameter.api.Message;
+import org.jdiameter.api.validation.AvpNotAllowedException;
+import org.jdiameter.api.validation.MessageRepresentation;
+import org.jdiameter.api.validation.ValidatorLevel;
+import org.jdiameter.client.impl.parser.MessageParser;
+import org.jdiameter.common.impl.validation.DictionaryImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mobicents.diameter.dictionary.AvpDictionary;
-import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
-import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
-import org.mobicents.slee.resource.diameter.base.events.AccountingAnswerImpl;
-import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
-import org.mobicents.slee.resource.diameter.cca.CreditControlAVPFactoryImpl;
-import org.mobicents.slee.resource.diameter.cca.CreditControlMessageFactoryImpl;
-import org.mobicents.slee.resource.diameter.cca.events.CreditControlAnswerImpl;
 
 /**
  * Start time:14:15:19 2009-05-27<br>
@@ -76,349 +50,1007 @@ import org.mobicents.slee.resource.diameter.cca.events.CreditControlAnswerImpl;
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public class MessageValidatorTest {
+public class MessageValidatorTest extends TestCase {
+	
+	private static Logger logger = Logger.getLogger(MessageValidatorTest.class);
 
-  private static String clientHost = "127.0.0.1";
-  private static String clientPort = "21812";
-  private static String clientURI = "aaa://" + clientHost + ":" + clientPort;
+	private DictionaryImpl instance = null;
+	
+	@Before
+	public void setUp() {
 
-  private static String serverHost = "localhost";
-  private static String serverPort = "21812";
-  private static String serverURI = "aaa://" + serverHost + ":" + serverPort;
+		this.instance = (DictionaryImpl) DictionaryImpl.INSTANCE;
+		InputStream is = MessageValidatorTest.class.getClassLoader().getResourceAsStream("dictionary.xml");
 
-  private static String realmName = "mobicents.org";
+		try {
+			this.instance.configure(is);
+		} finally {
+			if (is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 
-  private static DiameterMessageFactoryImpl baseFactory;
-  private static CreditControlMessageFactoryImpl ccaFactory;
-  private DiameterMessageValidator instance = null;
+	@After
+	public void tearDown() {
+		this.instance = null;
+	}
 
-  @Before
-  public void setUp() {
-    this.instance = DiameterMessageValidator.getInstance();
-  }
+	@Test
+	public void testBasicOperations() {
 
-  @After
-  public void tearDown() {
-    this.instance = null;
-  }
+		Message answer = new MessageParser().createEmptyMessage(271, 0);
+		answer.setRequest(false);
+		AvpSet set = answer.getAvps();
+		set.addAvp(263, "SESSION-ID;246t13461346713rfg@#$SD$@#6", false);
+		// nooooow, lets try some tests
+		MessageRepresentation msgRep = this.instance.getMessage(271, 0, false);
 
-  @Test
-  public void testBasicOperations() {
-    // Yeah, its awkward :) - it already should have session id.
-    DiameterAvpImpl sessionIdAvp = new DiameterAvpImpl(263, 0L, 0, 1, "xxx".getBytes(), DiameterAvpType.UTF8_STRING);
-    AccountingRequest request = baseFactory.createAccountingRequest(new DiameterAvpImpl[] { sessionIdAvp });
-    AccountingAnswerImpl answer = (AccountingAnswerImpl) baseFactory.createAccountingAnswer(request);
+		// <avp name="Session-Id" code="263" vendor="0" multiplicity="1"
+		// index="0"/>
+		assertTrue("Session-Id is not allowed in this message, it should be.", this.instance.getMessage(271, 0, false).isAllowed(263, 0));
 
-    AvpSet set = answer.getGenericData().getAvps();
+		assertTrue("We should allow to add ONE (1) Session-Id AVP, operation indicates that it could not be done.",
+				msgRep.isCountValidForMultiplicity(set, 263, 0L));
 
-    // nooooow, lets try some tests
+		// <avp name="Origin-Host" code="264" vendor="0" multiplicity="1"
+		// index="-1"/>
+		assertTrue("Origin-Host is not allowed in this message, it should be.", msgRep.isAllowed(264, 0));
 
-    // <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0"/>
-    assertTrue("Session-Id is not allowed in this message, it should be.",
-        this.instance.isAllowed(AccountingAnswer.commandCode, answer.getHeader().getApplicationId(), false, 263, 0));
+		assertFalse("We should allow to add more Origin-Host than zero, operation indicates that it could not be done.",
+				msgRep.isCountValidForMultiplicity(set, 264, 0L));
 
-    if (answer.hasSessionId()) {
-      assertFalse("We should not allow to add more SessionIds than one, operation indicates that it could be done.",
-          this.instance.isCountValidForMultiplicity(AccountingAnswer.commandCode, answer.getHeader().getApplicationId(), false, set, 263, 0L));
-    }
-    else {
-      assertTrue("We should allow to add ONE (1) Session-Id AVP, operation indicates that it could not be done.",
-          this.instance.isCountValidForMultiplicity(AccountingAnswer.commandCode, answer.getHeader().getApplicationId(), false, set, 263, 0L));
-    }
+		// <avp name="Event-Timestamp" code="55" vendor="0" multiplicity="0-1"
+		// index="-1"/>
+		assertTrue("Event-Timestamp is not allowed in this message, it should be.", msgRep.isAllowed(55, 0));
+		assertTrue("We should allow to add more Event-Timestamp than zero, operation indicates that it could not be done.",
+				msgRep.isCountValidForMultiplicity(set, 55, 0L));
 
-    // <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1"/>
-    assertTrue("Origin-Host is not allowed in this message, it should be.",
-        this.instance.isAllowed(AccountingAnswer.commandCode, answer.getHeader().getApplicationId(), false, 264, 0));
-    if (answer.hasOriginHost()) {
-      assertFalse("We should allow to add more Origin-Host than zero, operation indicates that it could not be done.",
-          this.instance.isCountValidForMultiplicity(AccountingAnswer.commandCode, answer.getHeader().getApplicationId(), false, set, 264, 0L));
-    }
-    else {
-      assertTrue("We should not allow to add more than one Origin-Host, operation indicates that it could be done.",
-          this.instance.isCountValidForMultiplicity(AccountingAnswer.commandCode, answer.getHeader().getApplicationId(), false, set, 264, 0L));
-    }
+		set.addAvp(55, 55L, 0L, true, false);
+		assertFalse("We should not allow to add more Event-Timestamp than one, operation indicates that it could be done.",
+				msgRep.isCountValidForMultiplicity(set, 55, 0L, 1));
 
-    // <avp name="Event-Timestamp" code="55" vendor="0" multiplicity="0-1"
-    // index="-1"/>
-    assertTrue("Event-Timestamp is not allowed in this message, it should be.",
-        this.instance.isAllowed(AccountingAnswer.commandCode, answer.getHeader().getApplicationId(), false, 55, 0));
-    assertTrue("We should allow to add more Event-Timestamp than zero, operation indicates that it could not be done.",
-        this.instance.isCountValidForMultiplicity(AccountingAnswer.commandCode, answer.getHeader().getApplicationId(), false, set, 55, 0L));
+		// <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+"
+		// index="-1"/>
+		assertTrue("Proxy-Info is not allowed in this message, it should be.", msgRep.isAllowed(284, 0));
+		assertTrue("We should allow to add more Proxy-Info than zero, operation indicates that it could not note be done.",
+				msgRep.isCountValidForMultiplicity(set, 284, 0L));
 
-    set.addAvp(55, 55L, 0L, true, false);
-    assertFalse("We should not allow to add more Event-Timestamp than one, operation indicates that it could be done.",
-        this.instance.isCountValidForMultiplicity(AccountingAnswer.commandCode, answer.getHeader().getApplicationId(), false, set, 55, 0L));
+		set.addAvp(284, 284L, 0L, true, false);
 
-    // <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+"
-    // index="-1"/>
-    assertTrue("Proxy-Info is not allowed in this message, it should be.",
-        this.instance.isAllowed(AccountingAnswer.commandCode, answer.getHeader().getApplicationId(), false, 284, 0));
-    assertTrue("We should allow to add more Proxy-Info than zero, operation indicates that it could not note be done.",
-        this.instance.isCountValidForMultiplicity(AccountingAnswer.commandCode, answer.getHeader().getApplicationId(), false, set, 284, 0L));
+		assertTrue("We should  allow to add more Proxy-Info than one, operation indicates that it could note be done.",
+				msgRep.isCountValidForMultiplicity(set, 284, 0L));
 
-    set.addAvp(284, 284L, 0L, true, false);
+		set.addAvp(284, 284L, 0L, true, false);
+		assertTrue("We should  allow to add more Proxy-Info than two, operation indicates that it could note be done.",
+				msgRep.isCountValidForMultiplicity(set, 284, 0L));
 
-    assertTrue("We should  allow to add more Proxy-Info than one, operation indicates that it could note be done.",
-        this.instance.isCountValidForMultiplicity(AccountingAnswer.commandCode, answer.getHeader().getApplicationId(), false, set, 284, 0L));
+		// <!-- FORBBIDEN -->
+		// <avp name="Auth-Application-Id" code="258" vendor="0"
+		// multiplicity="0" index="-1"/>
+		assertFalse("Auth-Application-Id is  allowed in this message, it should not be.", msgRep.isAllowed(258, 0));
+		assertTrue("We should not  allow to add more Auth-Application-Id than zero, operation indicates that it could be done.",
+				msgRep.isCountValidForMultiplicity(set, 258, 0L));
+		assertFalse("We should not  allow to add more Auth-Application-Id than zero, operation indicates that it could be done.",
+				msgRep.isCountValidForMultiplicity(set, 258, 0L, 1));
 
-    set.addAvp(284, 284L, 0L, true, false);
-    assertTrue("We should  allow to add more Proxy-Info than two, operation indicates that it could note be done.",
-        this.instance.isCountValidForMultiplicity(AccountingAnswer.commandCode, answer.getHeader().getApplicationId(), false, set, 284, 0L));
+		// <avp name="Destination-Realm" code="283" vendor="0" multiplicity="0"
+		// index="-1"/>
+		assertFalse("Auth-Application-Id is  allowed in this message, it should not be.", msgRep.isAllowed(258, 0));
+		assertTrue("We should not  allow to add more Auth-Application-Id than zero, operation indicates that it could be done.",
+				msgRep.isCountValidForMultiplicity(set, 258, 0L));
+		assertFalse("We should not  allow to add more Auth-Application-Id than zero, operation indicates that it could be done.",
+				msgRep.isCountValidForMultiplicity(set, 258, 0L, 1));
+	}
 
-    // <!-- FORBBIDEN -->
-    // <avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1"/>
-    assertFalse("Auth-Application-Id is  allowed in this message, it should not be.",
-        this.instance.isAllowed(AccountingAnswer.commandCode, answer.getHeader().getApplicationId(), false, 258, 0));
-    assertFalse("We should not  allow to add more Auth-Application-Id than zero, operation indicates that it could be done.",
-        this.instance.isCountValidForMultiplicity(AccountingAnswer.commandCode, answer.getHeader().getApplicationId(), false, set, 258, 0L));
+	@Test
+	public void testGroupedAvpValidationFail() {
+		// Yeah, its awkward :) - it already should have session id.
+		Message msg = createMessage();
 
-    // <avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1"/>
-    assertFalse("Auth-Application-Id is  allowed in this message, it should not be.",
-        this.instance.isAllowed(AccountingAnswer.commandCode, answer.getHeader().getApplicationId(), false, 258, 0));
-    assertFalse("We should not  allow to add more Auth-Application-Id than zero, operation indicates that it could be done.",
-        this.instance.isCountValidForMultiplicity(AccountingAnswer.commandCode, answer.getHeader().getApplicationId(), false, set, 258, 0L));
-  }
+		try {
+			instance.validate(msg, false);
+			fail("Validation of message should fail: " + msg);
+		} catch (AvpNotAllowedException ex) {
+			// we are ok
+			logger.info("[*]Valdiation failed properly with: ", ex);
+		}
 
-  @Test
-  public void testGroupedAvpValidationFail() {
-    // Yeah, its awkward :) - it already should have session id.
-    CreditControlAnswerImpl answer = (CreditControlAnswerImpl) ccaFactory.createCreditControlAnswer(ccaFactory.createCreditControlRequest("xxxxxxxxxxxx"));
-    DiameterMessageValidator instance = DiameterMessageValidator.getInstance();
-    /*AvpSet set = */answer.getGenericData().getAvps();
+		fillTopLevelAvps(msg);
 
-    // nooooow, lets try some tests
-    // we should test grouped AVPs bad behavior.
-    // Must
-    // avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="1" index="-1" />
+		try {
+			instance.validate(msg, false);
 
-    // This is set by factory.
-    // answer.setAuthApplicationId(5);
-    // <avp name="CC-Request-Number" code="415" vendor="0" multiplicity="1" index="-1" />
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
 
-    // <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
-    if (!answer.hasOriginRealm()) {
-      answer.setOriginRealm(new DiameterIdentity("aaa://mobicents.org"));
-    }
-    // <avp name="Result-Code" code="268" vendor="0" multiplicity="1" index="-1" />
-    answer.setResultCode(2066);
-    // <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
-    // should be there
+		addTopLevelGroupedAvp(msg);
+		try {
+			instance.validate(msg, false);
+			fail("Validation of message should fail: " + msg);
+		} catch (AvpNotAllowedException ex) {
+			// we are ok,
+			logger.info("[*]Valdiation failed properly with: ", ex);
+		}
+		// This should pass.
+		try {
+			instance.validate(msg, true);
 
-    // MAY, but we add this, since its multi grouped avp
-    // <avp name="Granted-Service-Unit" code="431" vendor="0" multiplicity="0-1" index="-1" />
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
 
-    // here we should fail.
-    try {
-      instance.validate(answer.getGenericData(), false);
-      fail("Validation of message should fails: " + answer);
-    }
-    catch (JAvpNotAllowedException ex) {
-      // we are ok,
-      // ex.printStackTrace();
-    }
-    answer.setCcRequestNumber(1);
-    // <avp name="CC-Request-Type" code="416" vendor="0" multiplicity="1" index="-1" />
-    answer.setCcRequestType(CcRequestType.EVENT_REQUEST);
-    // <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
-    if (!answer.hasOriginHost()) {
-      answer.setOriginHost(new DiameterIdentity("aaa://127.0.0.1:1818"));
-    }
+		fillTopLevelGroupedAvp(msg);
 
-    // here we should not fail.
-    try {
-      instance.validate(answer.getGenericData(), false);
+		try {
+			// this should pass
+			instance.validate(msg, false);
 
-    }
-    catch (JAvpNotAllowedException ex) {
-      ex.printStackTrace();
-      fail("Validation of message should not fails: " + answer);
-      return;
-    }
-    // MAY - but we will add this, since its multi gropued avp.
-    // <avp name="Granted-Service-Unit" code="431" vendor="0" multiplicity="0-1" index="-1" />
-    CreditControlAVPFactoryImpl ccaAvpFactory = new CreditControlAVPFactoryImpl(new DiameterAvpFactoryImpl());
-    GrantedServiceUnitAvp gsuAVP = ccaAvpFactory.createGrantedServiceUnit();
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+		// This should pass.
+		try {
+			instance.validate(msg, true);
 
-    // <avp name="Granted-Service-Unit" code="431" mandatory="must" vendor-bit="mustnot" vendor-id="None" may-encrypt="yes" protected="may">
-    // <grouped>
-    // <gavp name="Tariff-Time-Change" multiplicity="0-1"/>
-    // <gavp name="CC-Time" multiplicity="0-1"/>
-    // <gavp name="CC-Money" multiplicity="0-1"/>
-    // <gavp name="CC-Total-Octets" multiplicity="0-1"/>
-    // <gavp name="CC-Input-Octets" multiplicity="0-1"/>
-    // <gavp name="CC-Output-Octets" multiplicity="0-1"/>
-    // <gavp name="Cost-Unit" multiplicity="0-1"/>
-    // </grouped>
-    // </avp>
-    // However CC-Money has mandatory field, which should be present - Unit-Value, which is grouped avp which also has mandatory Value-Digits
-    gsuAVP.setCreditControlInputOctets(8);
-    UnitValueAvp unitValue = ccaAvpFactory.createUnitValue();
-    unitValue.setExponent(12);
-    CcMoneyAvp ccMoney = ccaAvpFactory.createCcMoney(unitValue);
-    ccMoney.setCurrencyCode(1);
-    gsuAVP.setCreditControlMoneyAvp(ccMoney);
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
 
-    // this avp is bad, unit value does not have defined all fields.
-    answer.setGrantedServiceUnit(gsuAVP);
+	}
 
-    try {
-      instance.validate(answer.getGenericData(), false);
-      fail("Validation of message should fails: " + answer);
-    }
-    catch (JAvpNotAllowedException ex) {
-      // we are ok,
-      // ex.printStackTrace();
-    }
-  }
+	@Test
+	public void testIncomingValidationLevels() {
+		// here lets test how different levels affect
+		Message msg = createMessage();
 
-  @Test
-  public void testGroupedAvpValidationSuccess() {
-    // Yeah, its awkward :) - it already should have session id.
-    CreditControlAnswerImpl answer = (CreditControlAnswerImpl) ccaFactory.createCreditControlAnswer(ccaFactory.createCreditControlRequest("xxxxxxxxxxxx"));
-    DiameterMessageValidator instance = DiameterMessageValidator.getInstance();
-    /*AvpSet set = */answer.getGenericData().getAvps();
+		// here we will fail on all levels
 
-    // nooooow, lets try some tests
-    // we should test grouped AVPs bad behavior.
-    // Must
-    // avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="1" index="-1" />
+		// set all to off.
+		this.instance.setReceiveLevel(ValidatorLevel.OFF);
+		this.instance.setSendLevel(ValidatorLevel.OFF);
+		this.instance.setConfigured(false);
+		this.instance.setEnabled(false);
+		try {
+			instance.validate(msg, false);
 
-    // This is set by factory.
-    // answer.setAuthApplicationId(5);
-    // <avp name="CC-Request-Number" code="415" vendor="0" multiplicity="1" index="-1" />
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
 
-    // <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
-    if (!answer.hasOriginRealm()) {
-      answer.setOriginRealm(new DiameterIdentity("aaa://mobicents.org"));
-    }
-    // <avp name="Result-Code" code="268" vendor="0" multiplicity="1" index="-1" />
-    answer.setResultCode(2066);
-    // <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
-    // should be there
+		try {
+			instance.validate(msg, true);
 
-    // MAY, but we add this, since its multi grouped avp
-    // <avp name="Granted-Service-Unit" code="431" vendor="0" multiplicity="0-1" index="-1" />
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
 
-    // here we should fail.
-    try {
-      instance.validate(answer.getGenericData(), false);
-      fail("Validation of message should fails: " + answer);
-    }
-    catch (JAvpNotAllowedException ex) {
-      // we are ok,
-      // ex.printStackTrace();
-    }
-    answer.setCcRequestNumber(1);
-    // <avp name="CC-Request-Type" code="416" vendor="0" multiplicity="1"
-    // index="-1" />
-    answer.setCcRequestType(CcRequestType.EVENT_REQUEST);
-    // <avp name="Origin-Host" code="264" vendor="0" multiplicity="1"
-    // index="-1" />
-    if (!answer.hasOriginHost()) {
-      answer.setOriginHost(new DiameterIdentity("aaa://127.0.0.1:1818"));
-    }
+		// enable
+		this.instance.setEnabled(true);
+		try {
+			instance.validate(msg, false);
 
-    // here we should not fail.
-    try {
-      instance.validate(answer.getGenericData(), false);
-    }
-    catch (JAvpNotAllowedException ex) {
-      ex.printStackTrace();
-      fail("Validation of message should not fails: " + answer);
-      return;
-    }
-    // MAY - but we will add this, since its multi gropued avp.
-    // <avp name="Granted-Service-Unit" code="431" vendor="0" multiplicity="0-1" index="-1" />
-    CreditControlAVPFactoryImpl ccaAvpFactory = new CreditControlAVPFactoryImpl(new DiameterAvpFactoryImpl());
-    GrantedServiceUnitAvp gsuAVP = ccaAvpFactory.createGrantedServiceUnit();
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
 
-    // <avp name="Granted-Service-Unit" code="431" mandatory="must" vendor-bit="mustnot" vendor-id="None" may-encrypt="yes" protected="may">
-    // <grouped>
-    // <gavp name="Tariff-Time-Change" multiplicity="0-1"/>
-    // <gavp name="CC-Time" multiplicity="0-1"/>
-    // <gavp name="CC-Money" multiplicity="0-1"/>
-    // <gavp name="CC-Total-Octets" multiplicity="0-1"/>
-    // <gavp name="CC-Input-Octets" multiplicity="0-1"/>
-    // <gavp name="CC-Output-Octets" multiplicity="0-1"/>
-    // <gavp name="Cost-Unit" multiplicity="0-1"/>
-    // </grouped>
-    // </avp>
-    // However CC-Money has mandatory field, which should be present - Unit-Value, which is grouped avp which also has mandatory
-    // Value-Digits
-    gsuAVP.setCreditControlInputOctets(8);
-    UnitValueAvp unitValue = ccaAvpFactory.createUnitValue();
-    unitValue.setExponent(12);
-    CcMoneyAvp ccMoney = ccaAvpFactory.createCcMoney(unitValue);
-    ccMoney.setCurrencyCode(1);
-    gsuAVP.setCreditControlMoneyAvp(ccMoney);
+		try {
+			instance.validate(msg, true);
 
-    // this avp is bad, unit value does not have defined all fields.
-    answer.setGrantedServiceUnit(gsuAVP);
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
 
-    try {
-      instance.validate(answer.getGenericData(), false);
-      fail("Validation of message should fails: " + answer);
-    }
-    catch (JAvpNotAllowedException ex) {
-      // we are ok,
-      // ex.printStackTrace();
-    }
-  }
+		// configure
+		this.instance.setConfigured(true);
+		try {
+			instance.validate(msg, false);
 
-  static {
-    Stack stack = new org.jdiameter.client.impl.StackImpl();
-    try {
-      stack.init(new MyConfiguration());
-    }
-    catch (Exception e) {
-      throw new RuntimeException("Failed to initialize the stack.");
-    }
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
 
-    baseFactory = new DiameterMessageFactoryImpl(stack);
-    // DiameterAvpFactoryImpl baseAvpFactory = new DiameterAvpFactoryImpl();
-    try {
-      ccaFactory = new CreditControlMessageFactoryImpl(baseFactory, stack.getSessionFactory().getNewSession(), stack, new CreditControlAVPFactoryImpl(new DiameterAvpFactoryImpl()));
-    }
-    catch (InternalException ie) {
-      throw new RuntimeException("Failed to create new sesson from session factory.", ie);
-    }
-    catch (IllegalDiameterStateException idse) {
-      throw new RuntimeException("Failed to get sesson factory from stack.", idse);
-    }
-    try {
-      AvpDictionary.INSTANCE.parseDictionary(MessageValidatorTest.class.getClassLoader().getResourceAsStream("dictionary.xml"));
-    }
-    catch (Exception e) {
-      throw new RuntimeException("Failed to parse dictionary file.", e);
-    }
-  }
+		try {
+			instance.validate(msg, true);
 
-  /**
-   * Class representing the Diameter Configuration
-   */
-  public static class MyConfiguration extends EmptyConfiguration {
-    public MyConfiguration() {
-      super();
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
 
-      add(Assembler, Assembler.defValue());
-      add(OwnDiameterURI, clientURI);
-      add(OwnRealm, realmName);
-      add(OwnVendorID, 193L);
-      // Set Ericsson SDK feature
-      // add(UseUriAsFqdn, true);
-      // Set Common Applications
-      add(ApplicationId,
-      // AppId 1
-          getInstance().add(VendorId, 193L).add(AuthApplId, 0L).add(AcctApplId, 19302L));
-      // Set peer table
-      add(PeerTable,
-      // Peer 1
-          getInstance().add(PeerRating, 1).add(PeerName, serverURI));
-      // Set realm table
-      add(RealmTable,
-      // Realm 1
-          getInstance().add(RealmEntry, realmName + ":" + clientHost + "," + serverHost));
-    }
-  }
+		// now lets do level magic
+		this.instance.setReceiveLevel(ValidatorLevel.MESSAGE);
+		try {
+			instance.validate(msg, false);
 
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+			fail("Validation of message should fail: " + msg);
+		} catch (AvpNotAllowedException ex) {
+
+		}
+
+		// now ALL
+		this.instance.setReceiveLevel(ValidatorLevel.ALL);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+			fail("Validation of message should fail: " + msg);
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[*]Valdiation failed properly with: ", ex);
+		}
+
+		fillTopLevelAvps(msg);
+		// set all to off.
+		this.instance.setReceiveLevel(ValidatorLevel.OFF);
+		this.instance.setConfigured(false);
+		this.instance.setEnabled(false);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// enable
+		this.instance.setEnabled(true);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// configure
+		this.instance.setConfigured(true);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// now lets do level magic
+		this.instance.setReceiveLevel(ValidatorLevel.MESSAGE);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// now ALL
+		this.instance.setReceiveLevel(ValidatorLevel.ALL);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		addTopLevelGroupedAvp(msg);
+
+		// set all to off.
+		this.instance.setReceiveLevel(ValidatorLevel.OFF);
+		this.instance.setConfigured(false);
+		this.instance.setEnabled(false);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// enable
+		this.instance.setEnabled(true);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// configure
+		this.instance.setConfigured(true);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// now lets do level magic
+		this.instance.setReceiveLevel(ValidatorLevel.MESSAGE);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// now ALL
+		this.instance.setReceiveLevel(ValidatorLevel.ALL);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+			fail("Validation of message should fail: " + msg);
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[*]Valdiation failed properly with: ", ex);
+		}
+
+		fillTopLevelGroupedAvp(msg);
+
+		// set all to off.
+		this.instance.setReceiveLevel(ValidatorLevel.OFF);
+		this.instance.setConfigured(false);
+		this.instance.setEnabled(false);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// enable
+		this.instance.setEnabled(true);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// configure
+		this.instance.setConfigured(true);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// now lets do level magic
+		this.instance.setReceiveLevel(ValidatorLevel.MESSAGE);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// now ALL
+		this.instance.setReceiveLevel(ValidatorLevel.ALL);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+	}
+	
+	@Test
+	public void testOutgoingValidationLevels() {
+		// here lets test how different levels affect
+		Message msg = createMessage();
+
+		// here we will fail on all levels
+
+		// set all to off.
+		this.instance.setReceiveLevel(ValidatorLevel.OFF);
+		this.instance.setSendLevel(ValidatorLevel.OFF);
+		this.instance.setConfigured(false);
+		this.instance.setEnabled(false);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// enable
+		this.instance.setEnabled(true);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// configure
+		this.instance.setConfigured(true);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// now lets do level magic
+		this.instance.setSendLevel(ValidatorLevel.MESSAGE);
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, false);
+			fail("Validation of message should fail: " + msg);
+		} catch (AvpNotAllowedException ex) {
+
+		}
+
+		// now ALL
+		this.instance.setSendLevel(ValidatorLevel.ALL);
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, false);
+			fail("Validation of message should fail: " + msg);
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[*]Valdiation failed properly with: ", ex);
+		}
+
+		fillTopLevelAvps(msg);
+		// set all to off.
+		this.instance.setSendLevel(ValidatorLevel.OFF);
+		this.instance.setConfigured(false);
+		this.instance.setEnabled(false);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// enable
+		this.instance.setEnabled(true);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// configure
+		this.instance.setConfigured(true);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// now lets do level magic
+		this.instance.setSendLevel(ValidatorLevel.MESSAGE);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// now ALL
+		this.instance.setSendLevel(ValidatorLevel.ALL);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		addTopLevelGroupedAvp(msg);
+
+		// set all to off.
+		this.instance.setSendLevel(ValidatorLevel.OFF);
+		this.instance.setConfigured(false);
+		this.instance.setEnabled(false);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// enable
+		this.instance.setEnabled(true);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// configure
+		this.instance.setConfigured(true);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// now lets do level magic
+		this.instance.setSendLevel(ValidatorLevel.MESSAGE);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// now ALL
+		this.instance.setSendLevel(ValidatorLevel.ALL);
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, false);
+			fail("Validation of message should fail: " + msg);
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[*]Valdiation failed properly with: ", ex);
+		}
+
+		fillTopLevelGroupedAvp(msg);
+
+		// set all to off.
+		this.instance.setSendLevel(ValidatorLevel.OFF);
+		this.instance.setConfigured(false);
+		this.instance.setEnabled(false);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// enable
+		this.instance.setEnabled(true);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// configure
+		this.instance.setConfigured(true);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// now lets do level magic
+		this.instance.setSendLevel(ValidatorLevel.MESSAGE);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		// now ALL
+		this.instance.setSendLevel(ValidatorLevel.ALL);
+		try {
+			instance.validate(msg, false);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+		try {
+			instance.validate(msg, true);
+
+		} catch (AvpNotAllowedException ex) {
+			logger.info("[x]Valdiation failed with: ", ex);
+			fail("Validation of message should not fail: " + msg);
+		}
+
+	}
+	
+	
+	//helper methods, to manipulate msg content.
+	/**
+	 * Creates message which lack some top level AVPs
+	 */
+	protected Message createMessage()
+	{
+		Message msg = new MessageParser().createEmptyMessage(272, 0);
+		AvpSet set = msg.getAvps();
+
+		// nooooow, lets try some tests
+		// we should test grouped AVPs bad behavior.
+		// Must
+		// avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="1" index="-1" />
+		set.addAvp(258, 5);
+		// This is set by factory.
+		// answer.setAuthApplicationId(5);
+		// <avp name="CC-Request-Number" code="415" vendor="0" multiplicity="1" index="-1" />
+		set.addAvp(415, 0);
+		// <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+		set.addAvp(296, "ALALAL", false);
+		// <avp name="Result-Code" code="268" vendor="0" multiplicity="1" index="-1" />
+		set.addAvp(268, 2006);
+		// <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+		set.addAvp(263, "asdqw64ds", false);
+		
+		return msg;
+
+	}
+	
+	protected void fillTopLevelAvps(Message msg)
+	{
+		AvpSet set = msg.getAvps();
+		// <avp name="CC-Request-Type" code="416" vendor="0" multiplicity="1" index="-1" />
+		set.addAvp(416, 1);
+		// <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+		set.addAvp(264, "124121235", false);
+	}
+	
+	protected void addTopLevelGroupedAvp(Message msg)
+	{
+		
+		AvpSet set = msg.getAvps();
+		// MAY - but we will add this, since its multi gropued avp.
+		// <avp name="Granted-Service-Unit" code="431" vendor="0" multiplicity="0-1" index="-1" />
+		AvpSet gsuAvp = set.addGroupedAvp(431);
+		// <avp name="Granted-Service-Unit" code="431" mandatory="must" vendor-bit="mustnot" vendor-id="None" may-encrypt="yes"
+		// protected="may">
+		// <grouped>
+		// <gavp name="Tariff-Time-Change" multiplicity="0-1"/>
+		// <gavp name="CC-Time" multiplicity="0-1"/>
+		// <gavp name="CC-Money" multiplicity="0-1"/>
+		// <gavp name="CC-Total-Octets" multiplicity="0-1"/>
+		// <gavp name="CC-Input-Octets" multiplicity="0-1"/>
+		// <gavp name="CC-Output-Octets" multiplicity="0-1"/>
+		// <gavp name="Cost-Unit" multiplicity="0-1"/>
+		// </grouped>
+		// </avp>
+		// However CC-Money has mandatory field, which should be present -
+		
+		// gsuAVP.setCreditControlInputOctets(8);
+		gsuAvp.addAvp(412, 8);
+		// CcMoneyAvp ccMoney = ccaAvpFactory.createCcMoney(unitValue);
+		AvpSet ccMoneyAvp = gsuAvp.addGroupedAvp(413);
+		// ccMoney.setCurrencyCode(1);
+		ccMoneyAvp.addAvp(425, 124);
+
+		// Unit-Value, which is grouped avp which also has mandatory
+		// Value-Digits
+		// unitValue.setExponent(12);
+		AvpSet unitValueAvp = ccMoneyAvp.addGroupedAvp(445);
+		unitValueAvp.addAvp(429, 12);
+		// this avp is bad, unit value does not have defined all fields.
+	}
+	
+	protected void fillTopLevelGroupedAvp(Message msg)
+	{
+		try {
+			AvpSet set = msg.getAvps();
+			AvpSet gsuAvp = set.getAvp(431).getGrouped();
+			AvpSet ccMoneyAvp = gsuAvp.getAvp(413).getGrouped();
+			AvpSet unitValueAvp = ccMoneyAvp.getAvp(445).getGrouped();
+			unitValueAvp.addAvp(447,142L);
+		} catch (AvpDataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
 }

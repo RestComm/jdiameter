@@ -251,7 +251,7 @@ public class DictionaryImpl implements Dictionary {
     this.enabled = enabled;
   }
 
-  void setConfigured(boolean configured) {
+  public void setConfigured(boolean configured) {
     this.configured = configured;
   }
 

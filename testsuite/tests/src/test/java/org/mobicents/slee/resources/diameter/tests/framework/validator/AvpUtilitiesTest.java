@@ -5,6 +5,7 @@ import static org.jdiameter.server.impl.helpers.Parameters.*;
 
 import static org.junit.Assert.fail;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -19,9 +20,9 @@ import org.jdiameter.api.Mode;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.Stack;
+import org.jdiameter.api.validation.Dictionary;
+import org.jdiameter.client.impl.DictionarySingleton;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
-import org.jdiameter.common.impl.validation.DiameterMessageValidator;
-import org.jdiameter.common.impl.validation.JAvpNotAllowedException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +53,7 @@ public class AvpUtilitiesTest {
 
   private static DiameterMessageFactoryImpl baseFactory;
 
-  private DiameterMessageValidator instance = null;
+  private Dictionary instance = null;
   private static Stack stack = null;
   private static Stack serverStack = null;
   private final static String validatorOnFile = "dictionary.xml";
@@ -61,7 +62,11 @@ public class AvpUtilitiesTest {
   static {
     stack = new org.jdiameter.client.impl.StackImpl();
     serverStack = new org.jdiameter.client.impl.StackImpl();
+    InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(validatorOnFile);
     try {
+
+    	
+    	
       MyConfigurationClient clientConf= new MyConfigurationClient();
       MyConfigurationServer serverConf = new MyConfigurationServer();
 
@@ -73,18 +78,31 @@ public class AvpUtilitiesTest {
 
       System.out.println("[CLIENT] Configured. Starting ...");
       stack.init(clientConf);
+      //conf dict, after stack.
+      DictionarySingleton.getDictionary().configure(is);
       stack.start(Mode.ANY_PEER, 5000, TimeUnit.MILLISECONDS);
       System.out.println("[CLIENT] Started");
     }
     catch (Exception e) {
       throw new RuntimeException("Failed to initialize the stack.", e);
+    }finally
+    {
+    	if(is!=null)
+    	{
+    		try{
+    			is.close();
+    		}catch(Exception e)
+    		{
+    			e.printStackTrace();
+    		}
+    	}
     }
 
     baseFactory = new DiameterMessageFactoryImpl(stack);
     // DiameterAvpFactoryImpl baseAvpFactory = new DiameterAvpFactoryImpl();
 
     try {
-      AvpDictionary.INSTANCE.parseDictionary(AvpUtilitiesTest.class.getClassLoader().getResourceAsStream("dictionary.xml"));
+      AvpDictionary.INSTANCE.parseDictionary(AvpUtilitiesTest.class.getClassLoader().getResourceAsStream(validatorOnFile));
     }
     catch (Exception e) {
       throw new RuntimeException("Failed to parse dictionary file.");
@@ -93,7 +111,7 @@ public class AvpUtilitiesTest {
 
   @Before
   public void setUp() {
-    this.instance = DiameterMessageValidator.getInstance();
+    this.instance = DictionarySingleton.getDictionary();
   }
 
   @After
@@ -104,7 +122,9 @@ public class AvpUtilitiesTest {
   @Test
   public void testOperationsAddWithValidatorOnAndRemovalAllowed() {
     AvpUtilities.allowRemove(true);
-    instance.parseConfiguration(this.getClass().getClassLoader().getResourceAsStream(validatorOnFile), true);
+    instance.configure(this.getClass().getClassLoader().getResourceAsStream(validatorOnFile));
+    instance.setEnabled(true);
+    
     // It has session id
     AccountingRequestImpl request = (AccountingRequestImpl) baseFactory.createAccountingRequest();
 
@@ -134,7 +154,7 @@ public class AvpUtilitiesTest {
       System.out.println(request);
       fail("Should not send this message. Message MUST contain Accounting-Record-Number AVP (485), and it is not present.");
     }
-    catch (JAvpNotAllowedException e) {
+    catch (org.jdiameter.api.validation.AvpNotAllowedException e) {
       if (e.getAvpCode() != 485 && e.getVendorId() != 0) {
         fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (485:0), Received (" + e.getAvpCode() + ":" + e.getVendorId() + ").");
       }
@@ -144,9 +164,9 @@ public class AvpUtilitiesTest {
       boolean wasAvpNotAllowed = false;
 
       while((cause = cause.getCause()) != null) {
-        if(cause instanceof JAvpNotAllowedException) {
+        if(cause instanceof org.jdiameter.api.validation.AvpNotAllowedException) {
           wasAvpNotAllowed = true;
-          JAvpNotAllowedException exc = (JAvpNotAllowedException)cause;
+          org.jdiameter.api.validation.AvpNotAllowedException exc = (org.jdiameter.api.validation.AvpNotAllowedException)cause;
           if (exc.getAvpCode() != 485 && exc.getVendorId() != 0) {
             fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (485:0), Received (" + exc.getAvpCode() + ":" + exc.getVendorId() + ").");
           }
@@ -239,7 +259,10 @@ public class AvpUtilitiesTest {
   @Test
   public void testOperationsAddWithValidatorOnAndRemovalNotAllowed() {
     AvpUtilities.allowRemove(false);
-    instance.parseConfiguration(this.getClass().getClassLoader().getResourceAsStream(validatorOnFile), true);
+
+    instance.configure(this.getClass().getClassLoader().getResourceAsStream(validatorOnFile));
+    instance.setEnabled(true);
+    
     // It has session id
     AccountingRequestImpl request = (AccountingRequestImpl) baseFactory.createAccountingRequest(new DiameterAvpImpl[]{new DiameterAvpImpl(263, 0L, 0, 1, "xxx".getBytes(), DiameterAvpType.UTF8_STRING)});
 
@@ -280,7 +303,7 @@ public class AvpUtilitiesTest {
 
       fail("Should not send this message. Message MUST contain Accounting-Record-Number AVP (485), and it is not present.");
     }
-    catch (JAvpNotAllowedException e) {
+    catch (org.jdiameter.api.validation.AvpNotAllowedException e) {
       if (e.getAvpCode() != 485 && e.getVendorId() != 0) {
         fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (485:0), Received (" + e.getAvpCode() + ":" + e.getVendorId() + ").");
       }
@@ -290,9 +313,9 @@ public class AvpUtilitiesTest {
       boolean wasAvpNotAllowed = false;
 
       while((cause = cause.getCause()) != null) {
-        if(cause instanceof JAvpNotAllowedException) {
+        if(cause instanceof org.jdiameter.api.validation.AvpNotAllowedException) {
           wasAvpNotAllowed = true;
-          JAvpNotAllowedException exc = (JAvpNotAllowedException)cause;
+          org.jdiameter.api.validation.AvpNotAllowedException exc = (org.jdiameter.api.validation.AvpNotAllowedException)cause;
           if (exc.getAvpCode() != 485 && exc.getVendorId() != 0) {
             fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (485:0), Received (" + exc.getAvpCode() + ":" + exc.getVendorId() + ").");
           }
@@ -394,8 +417,8 @@ public class AvpUtilitiesTest {
   @Test
   public void testOperationsAddWithValidatorOffAndRemovalAllowed() {
     AvpUtilities.allowRemove(true);
-    instance.parseConfiguration(this.getClass().getClassLoader().getResourceAsStream(validatorOffFile), true);
-
+    instance.configure(this.getClass().getClassLoader().getResourceAsStream(validatorOffFile));
+    instance.setEnabled(false);
     // It has session id
     AccountingRequestImpl request = (AccountingRequestImpl) baseFactory.createAccountingRequest(new DiameterAvpImpl[]{new DiameterAvpImpl(263, 0L, 0, 1, "xxx".getBytes(), DiameterAvpType.UTF8_STRING)});
 
