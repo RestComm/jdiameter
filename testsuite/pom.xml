@@ -16,7 +16,7 @@
 
   <properties>
     <!-- Mobicents Diameter Components Versions -->
-    <mobicents.diameter.jdiameter.version>1.5.4.0-build403-SNAPSHOT</mobicents.diameter.jdiameter.version>
+    <mobicents.diameter.jdiameter.version>1.5.4.0-build404-SNAPSHOT</mobicents.diameter.jdiameter.version>
     <mobicents.diameter.mux.version>1.4.0-SNAPSHOT</mobicents.diameter.mux.version>
     <mobicents.diameter.resources.base.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.base.version>
     <mobicents.diameter.resources.cca.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.cca.version>
@@ -26,7 +26,7 @@
     <mobicents.diameter.resources.rf.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.rf.version>
     <mobicents.diameter.resources.cx-dx.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.cx-dx.version>
     <!-- Other Mobicents Components Versions -->
-    <mobicents.servers.jainslee.version>2.2.0.FINAL</mobicents.servers.jainslee.version>
+    <mobicents.servers.jainslee.version>2.2.1.FINAL</mobicents.servers.jainslee.version>
     <mobicents.tools.mavenplugin.du.version>2.0.0.BETA3</mobicents.tools.mavenplugin.du.version>
     <mobicents.tools.mavenplugin.library.version>1.0.0.BETA1</mobicents.tools.mavenplugin.library.version>
     <mobicents.tools.mavenplugin.eclipse.version>1.0.0.BETA2</mobicents.tools.mavenplugin.eclipse.version>
