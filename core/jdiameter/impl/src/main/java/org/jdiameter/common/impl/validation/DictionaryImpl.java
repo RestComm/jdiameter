@@ -73,15 +73,15 @@ public class DictionaryImpl implements Dictionary {
   public static final String _VALIDATOR_NODE_SEND_LEVEL_ATTR = "sendLevel";
   public static final String _VALIDATOR_NODE_RECEIVE_LEVEL_ATTR = "receiveLevel";
 
-  private Map<AvpRepresentation, AvpRepresentation> avpMap;
+  private Map<AvpRepresentation, AvpRepresentation> avpMap = new HashMap<AvpRepresentation, AvpRepresentation>();
 
-  private Map<String, String> vendorMap;
+  private Map<String, String> vendorMap = new HashMap<String, String>();
 
-  private Map<MessageRepresentation, MessageRepresentation> commandMap;
+  private Map<MessageRepresentation, MessageRepresentation> commandMap = new HashMap<MessageRepresentation, MessageRepresentation>();
 
-  private Map<String, String> typedefMap;
+  private Map<String, String> typedefMap = new HashMap<String, String>();
 
-  private Map<String, AvpRepresentation> nameToCodeMap;
+  private Map<String, AvpRepresentation> nameToCodeMap = new HashMap<String, AvpRepresentation>();
 
   private boolean configured = false;
 
@@ -95,22 +95,41 @@ public class DictionaryImpl implements Dictionary {
     try {
       is = DictionarySingleton.class.getResourceAsStream(confFile);
       if(is == null) {
-        logger.debug("Failed to locate dictionary configuration file: {}, in class classloader. Trying thread context class loader.",confFile);         
+        logger.debug("Failed to locate dictionary configuration file: {}, in class classloader. Trying thread context class loader.", confFile);         
         is = Thread.currentThread().getContextClassLoader().getResourceAsStream(confFile);  
       }
 
       if(is == null) {
-        logger.debug("Failed to locate dictionary configuration file: {}, in thread context class classloader. Trying regular file.",confFile);
-        //try FIS
-        File f = new File(confFile);
-        is = new FileInputStream(f);
+        logger.debug("Failed to locate dictionary configuration file: {}, in thread context class loader. Trying using 'config/' prefix.", confFile);         
+        is = Thread.currentThread().getContextClassLoader().getResourceAsStream("config/" + confFile);  
       }
-      this.configure(is);
 
+      if(is == null) {
+        logger.debug("Failed to locate dictionary configuration file: {}, in thread context class loader. Trying regular file.", confFile);
+        File fDict = new File(confFile);
+        if(fDict.exists()) {
+          is = new FileInputStream(fDict);
+        }
+        else {
+          logger.debug("Failed to locate dictionary configuration file: {}, from regular file. Trying using 'config/' prefix.", confFile);
+          fDict = new File("config/" + confFile);
+          if(fDict.exists()) {
+            is = new FileInputStream(fDict);
+          }
+        }
+      }
+
+      if(is != null) {
+        this.configure(is);        
+      }
+      else {
+        this.setEnabled(false);
+        logger.warn("Failed to initialize and configure Diameter Dictionary since configuration file was not found. Validator is disabled.");
+      }
     }
     catch(FileNotFoundException fnfe) {
-      //normal, maybe its configured elsewhere?
-      logger.debug("Could not load configuration file: {}, from any known location, dictionary is ", confFile);
+      // normal, maybe its configured elsewhere?
+      logger.debug("Could not load configuration file: {}, from any known location.", confFile);
     }
     finally {
       if(is != null) {

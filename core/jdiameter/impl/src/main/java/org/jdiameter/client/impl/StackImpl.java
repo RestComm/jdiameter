@@ -132,8 +132,8 @@ public class StackImpl implements IContainer, StackImplMBean {
         	Configuration dictionaryConfiguration = dictionaryConfigs[0];
         	dictionaryClassName = dictionaryConfiguration.getStringValue(Parameters.DictionaryClass.ordinal(), (String) Parameters.DictionaryClass.defValue());
           validatorEnabled = dictionaryConfiguration.getBooleanValue(Parameters.DictionaryEnabled.ordinal(), (Boolean) Parameters.DictionaryEnabled.defValue());
-          validatorSendLevel = ValidatorLevel.fromString(dictionaryConfiguration.getStringValue(Parameters.DictionaryClass.ordinal(), (String) Parameters.DictionaryClass.defValue()));
-          validatorReceiveLevel = ValidatorLevel.fromString( dictionaryConfiguration.getStringValue(Parameters.DictionaryClass.ordinal(), (String) Parameters.DictionaryClass.defValue()));
+          validatorSendLevel = ValidatorLevel.fromString(dictionaryConfiguration.getStringValue(Parameters.DictionarySendLevel.ordinal(), (String) Parameters.DictionarySendLevel.defValue()));
+          validatorReceiveLevel = ValidatorLevel.fromString( dictionaryConfiguration.getStringValue(Parameters.DictionaryReceiveLevel.ordinal(), (String) Parameters.DictionaryReceiveLevel.defValue()));
         }
         
         createDictionary(dictionaryClassName, validatorEnabled, validatorSendLevel, validatorReceiveLevel);

@@ -53,7 +53,7 @@ public class MessageRepresentationImpl implements MessageRepresentation {
   private long applicationId = 0;
 
   private boolean isRequest = false;
-  protected Map<AvpRepresentation, AvpRepresentation> unmuttableMessageAvps;
+  protected Map<AvpRepresentation, AvpRepresentation> unmuttableMessageAvps = new HashMap<AvpRepresentation, AvpRepresentation>();
   private String name = null;
 
   public MessageRepresentationImpl(int commandCode, long applicationId, boolean isRequest) {

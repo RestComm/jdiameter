@@ -275,7 +275,7 @@ public class XMLConfiguration extends EmptyConfiguration {
       param =  node.getAttributes().getNamedItem("enabled");
       if(param != null) {
         String enabled = param.getNodeValue();
-        dicConfiguration.add(DictionaryEnabled, enabled);
+        dicConfiguration.add(DictionaryEnabled, Boolean.valueOf(enabled));
       }
       
       param =  node.getAttributes().getNamedItem("sendLevel");
