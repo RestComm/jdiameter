@@ -158,16 +158,15 @@ public class MessageValidatorTest extends TestCase {
 			fail("Validation of message should fail: " + msg);
 		} catch (AvpNotAllowedException ex) {
 			// we are ok
-			logger.info("[*]Valdiation failed properly with: ", ex);
+			logger.info("[*] Validation failed properly with: " + ex.getMessage());
 		}
 
 		fillTopLevelAvps(msg);
 
 		try {
 			instance.validate(msg, false);
-
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -177,14 +176,14 @@ public class MessageValidatorTest extends TestCase {
 			fail("Validation of message should fail: " + msg);
 		} catch (AvpNotAllowedException ex) {
 			// we are ok,
-			logger.info("[*]Valdiation failed properly with: ", ex);
+			logger.info("[*] Validation failed properly with: " + ex.getMessage());
 		}
 		// This should pass.
 		try {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -195,7 +194,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 		// This should pass.
@@ -203,7 +202,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -225,7 +224,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -233,7 +232,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -243,7 +242,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -251,7 +250,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -261,7 +260,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -269,7 +268,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -279,7 +278,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -296,7 +295,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -304,7 +303,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 			fail("Validation of message should fail: " + msg);
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[*]Valdiation failed properly with: ", ex);
+			logger.info("[*] Validation failed properly with: " + ex.getMessage());
 		}
 
 		fillTopLevelAvps(msg);
@@ -316,7 +315,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -324,7 +323,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -334,7 +333,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -342,7 +341,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -352,7 +351,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -360,7 +359,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -370,14 +369,14 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
 		try {
 			instance.validate(msg, true);
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -387,7 +386,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -395,7 +394,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -409,7 +408,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -417,7 +416,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -427,7 +426,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -435,7 +434,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -445,7 +444,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -453,7 +452,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -463,14 +462,14 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
 		try {
 			instance.validate(msg, true);
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -480,7 +479,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -488,7 +487,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 			fail("Validation of message should fail: " + msg);
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[*]Valdiation failed properly with: ", ex);
+			logger.info("[*] Validation failed properly with: " + ex.getMessage());
 		}
 
 		fillTopLevelGroupedAvp(msg);
@@ -501,7 +500,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -509,7 +508,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -519,7 +518,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -527,7 +526,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -537,7 +536,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -545,7 +544,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -555,14 +554,14 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
 		try {
 			instance.validate(msg, true);
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -572,7 +571,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -580,7 +579,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -602,7 +601,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -610,7 +609,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -620,7 +619,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -628,7 +627,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -638,7 +637,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -646,7 +645,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -656,7 +655,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -673,7 +672,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -681,7 +680,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 			fail("Validation of message should fail: " + msg);
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[*]Valdiation failed properly with: ", ex);
+			logger.info("[*] Validation failed properly with: " + ex.getMessage());
 		}
 
 		fillTopLevelAvps(msg);
@@ -693,7 +692,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -701,7 +700,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -711,7 +710,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -719,7 +718,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -729,7 +728,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -737,7 +736,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -747,14 +746,14 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
 		try {
 			instance.validate(msg, true);
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -764,7 +763,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -772,7 +771,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -786,7 +785,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -794,7 +793,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -804,7 +803,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -812,7 +811,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -822,7 +821,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -830,7 +829,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -840,14 +839,14 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
 		try {
 			instance.validate(msg, true);
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -857,7 +856,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -865,7 +864,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 			fail("Validation of message should fail: " + msg);
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[*]Valdiation failed properly with: ", ex);
+			logger.info("[*] Validation failed properly with: " + ex.getMessage());
 		}
 
 		fillTopLevelGroupedAvp(msg);
@@ -878,7 +877,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -886,7 +885,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -896,7 +895,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -904,7 +903,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -914,7 +913,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -922,7 +921,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -932,14 +931,14 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
 		try {
 			instance.validate(msg, true);
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -949,7 +948,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, false);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 
@@ -957,7 +956,7 @@ public class MessageValidatorTest extends TestCase {
 			instance.validate(msg, true);
 
 		} catch (AvpNotAllowedException ex) {
-			logger.info("[x]Valdiation failed with: ", ex);
+			logger.info("[x] Validation failed with: ", ex);
 			fail("Validation of message should not fail: " + msg);
 		}
 

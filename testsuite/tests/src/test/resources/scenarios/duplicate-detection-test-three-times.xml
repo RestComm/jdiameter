@@ -5,11 +5,11 @@
   <configuration>
     <!-- Local Peer Configuration -->
     <local-host>localhost</local-host>
-    <local-port>21812</local-port>
+    <local-port>13868</local-port>
     
     <!-- Remote Peer Configuration -->
     <!-- remote-host>localhost</remote-host>
-    <remote-port>1812</remote-port-->
+    <remote-port>3868</remote-port-->
     
     <!-- Realm Name (equal for local and remote) -->
     <realm-name>mobicents.org</realm-name>

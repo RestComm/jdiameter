@@ -232,6 +232,7 @@ public class AvpAssistant {
     methodsToIgnore.add("getCommand");
     methodsToIgnore.add("getExtensionAvps");
     methodsToIgnore.add("setExtensionAvps");
+    methodsToIgnore.add("getGenericData");
     
     methodsToIgnore.add("getHeader");
     methodsToIgnore.add("getClass");
@@ -798,8 +799,8 @@ public class AvpAssistant {
         }
 
         if(expected == null) {
-          System.out.println("Could not find value for " + rType);
-          throw new NullPointerException("Could not find value for " + rType);
+          System.out.println("Could not find value for " + rType + " in method " + m.getName());
+          throw new NullPointerException("Could not find value for " + rType + " in method " + m.getName());
         }
 
         Object obtained = m.invoke(object);

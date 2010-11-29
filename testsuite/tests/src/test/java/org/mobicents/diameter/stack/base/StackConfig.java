@@ -23,11 +23,11 @@ import org.jdiameter.client.impl.helpers.EmptyConfiguration;
 public class StackConfig extends EmptyConfiguration {
 
   private static String clientHost = "127.0.0.1";
-  private static String clientPort = "21812";
+  private static String clientPort = "13868";
   private static String clientURI  = "aaa://" + clientHost + ":" + clientPort;
   
   private static String serverHost = "127.0.0.1";
-  private static String serverPort = "1812";
+  private static String serverPort = "3868";
   private static String serverURI = "aaa://" + serverHost + ":" + serverPort;
   
   private static String realmName = "mobicents.org";

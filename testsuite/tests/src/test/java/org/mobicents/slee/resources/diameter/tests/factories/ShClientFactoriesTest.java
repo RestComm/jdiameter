@@ -52,11 +52,11 @@ import org.mobicents.slee.resource.diameter.sh.server.ShServerMessageFactoryImpl
 public class ShClientFactoriesTest {
 
   private static String clientHost = "127.0.0.1";
-  private static String clientPort = "21812";
+  private static String clientPort = "13868";
   private static String clientURI  = "aaa://" + clientHost + ":" + clientPort;
 
   private static String serverHost = "localhost";
-  private static String serverPort = "1812";
+  private static String serverPort = "3868";
   private static String serverURI = "aaa://" + serverHost + ":" + serverPort;
 
   private static String realmName = "mobicents.org";

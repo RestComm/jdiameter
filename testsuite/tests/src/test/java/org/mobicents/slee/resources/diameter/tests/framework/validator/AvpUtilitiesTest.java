@@ -42,11 +42,11 @@ import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
 public class AvpUtilitiesTest {
 
   private static String clientHost = "127.0.0.1";
-  private static String clientPort = "31812";
+  private static String clientPort = "23868";
   private static String clientURI = "aaa://" + clientHost + ":" + clientPort;
 
   private static String serverHost = "127.0.0.1";
-  private static String serverPort = "41812";
+  private static String serverPort = "33868";
   private static String serverURI = "aaa://" + serverHost + ":" + serverPort;
 
   private static String realmName = "mobicentsXYZ.org";
