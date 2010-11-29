@@ -349,6 +349,11 @@ public interface Avp extends Wrapper, Serializable {
   public static final int COST_UNIT = 424;
 
   /**
+   * CCA (RFC4006) Currency Code AVP code
+   */
+  public static final int CURRENCY_CODE = 425;
+
+  /**
    * CCA (RFC4006) Credit Control AVP code
    */
   public static final int CREDIT_CONTROL = 426;
@@ -481,7 +486,7 @@ public interface Avp extends Wrapper, Serializable {
   /**
    * CCA (RFC4006) Used Service Unit AVP code
    */
-  public static final int USER_SERVICE_UNIT = 446;
+  public static final int USED_SERVICE_UNIT = 446;
 
   /**
    * CCA (RFC4006) User Equipment Info AVP code
