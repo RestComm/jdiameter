@@ -148,7 +148,6 @@ public class DictionaryImpl implements Dictionary {
    * 
    * @see org.jdiameter.api.validation.Dictionary#isConfigured()
    */
-  @Override
   public boolean isConfigured() {
     return this.configured;
   }
@@ -203,7 +202,6 @@ public class DictionaryImpl implements Dictionary {
    * 
    * @see org.jdiameter.api.validation.Dictionary#getMessage(int, boolean)
    */
-  @Override
   public MessageRepresentation getMessage(int commandCode, boolean isRequest) {
     return this.getMessage(commandCode, 0, isRequest);
   }
@@ -213,7 +211,6 @@ public class DictionaryImpl implements Dictionary {
    * 
    * @see org.jdiameter.api.validation.Dictionary#getMessage(int, long, boolean)
    */
-  @Override
   public MessageRepresentation getMessage(int commandCode, long applicationId, boolean isRequest) {
     if (!this.configured) {
       return null;
@@ -233,7 +230,6 @@ public class DictionaryImpl implements Dictionary {
    * 
    * @see org.jdiameter.api.validation.Dictionary#isValidate()
    */
-  @Override
   public boolean isEnabled() {
     return this.enabled;
   }
@@ -243,7 +239,6 @@ public class DictionaryImpl implements Dictionary {
    * 
    * @see org.jdiameter.api.validation.Dictionary#getSendLevel()
    */
-  @Override
   public ValidatorLevel getSendLevel() {
     return this.sendValidationLevel;
   }
@@ -253,7 +248,6 @@ public class DictionaryImpl implements Dictionary {
    * 
    * @see org.jdiameter.api.validation.Dictionary#getReceiveLevel()
    */
-  @Override
   public ValidatorLevel getReceiveLevel() {
     return this.receiveValidationLevel;
   }
@@ -298,7 +292,6 @@ public class DictionaryImpl implements Dictionary {
    * 
    * @see org.jdiameter.api.validation.Dictionary#configure(java.io.InputStream)
    */
-  @Override
   public void configure(InputStream is) {
     if (is == null) {
       logger.error("No input stream to configure dictionary from?");

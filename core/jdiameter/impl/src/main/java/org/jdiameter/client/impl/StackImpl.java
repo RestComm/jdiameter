@@ -201,7 +201,6 @@ public class StackImpl implements IContainer, StackImplMBean {
     }
   }
   
-	@Override
 	public Dictionary getDictionary() throws IllegalDiameterStateException {
 		if (state == StackState.CONFIGURED || state == StackState.STARTED) {
 			return DictionarySingleton.getDictionary();

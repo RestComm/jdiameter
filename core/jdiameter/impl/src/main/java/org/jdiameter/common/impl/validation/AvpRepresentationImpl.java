@@ -262,7 +262,6 @@ public class AvpRepresentationImpl implements AvpRepresentation {
     return allowed;
   }
 
-  @Override
   public boolean isAllowed(int avpCode, long vendorId) {
     if (this.isGrouped()) {
       // make better get ?
@@ -282,7 +281,6 @@ public class AvpRepresentationImpl implements AvpRepresentation {
     }
   }
 
-  @Override
   public boolean isAllowed(int avpCode) {
     return this.isAllowed(avpCode, 0L);
   }
@@ -386,7 +384,6 @@ public class AvpRepresentationImpl implements AvpRepresentation {
     return _mandatory;
   }
 
-  @Override
   public void validate(Avp avp) throws AvpNotAllowedException {
     if (isGrouped()) {
       try {
