@@ -44,12 +44,12 @@ public abstract class AbstractStackRunner implements NetworkReqListener, EventLi
 
 	protected final Logger log = Logger.getLogger(getClass());
 	//protected static String clientHost = "uac.mobicents.org";
-	//protected static String clientPort = "21812";
+	//protected static String clientPort = "13868";
 	//protected static String clientURI = "aaa://" + clientHost + ":" + clientPort;
 
 	// protected static String serverHost = "127.0.0.1";
 	protected static String serverHost = "uas.mobicents.org";
-	protected static String serverPort = "1812";
+	protected static String serverPort = "3868";
 	protected static String serverURI = "aaa://" + serverHost + ":" + serverPort;
 
 	protected static String realmName = "mobicents.org";

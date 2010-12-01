@@ -49,7 +49,7 @@
   <Network>
     <Peers>
       <!-- Testsuite -->
-      <Peer name="aaa://127.0.0.1:21812" attempt_connect="false" rating="1" />
+      <Peer name="aaa://127.0.0.1:13868" attempt_connect="false" rating="1" />
       
       <!-- Ericsson SDK Client -->
       <Peer name="aaa://uac.mobicents.org" attempt_connect="false" rating="1"/>

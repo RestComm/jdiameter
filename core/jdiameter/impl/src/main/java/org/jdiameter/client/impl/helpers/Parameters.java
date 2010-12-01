@@ -35,7 +35,7 @@ public class Parameters extends Ordinal {
     /**
      * Local peer URI property
      */
-    public static final Parameters OwnDiameterURI = new Parameters("OwnDiameterURI", String.class, "aaa://localhost:1812");
+    public static final Parameters OwnDiameterURI = new Parameters("OwnDiameterURI", String.class, "aaa://localhost:3868");
     /**
      * Local peer ip address property
      */

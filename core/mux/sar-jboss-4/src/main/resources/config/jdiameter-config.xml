@@ -2,7 +2,7 @@
 <Configuration xmlns="http://www.jdiameter.org/jdiameter-server">
 
   <LocalPeer>
-    <URI value="aaa://127.0.0.1:1812" />
+    <URI value="aaa://127.0.0.1:3868" />
     <!--URI value="aaa://uas.mobicents.org:3868" /-->
     <!--IPAddresses>
       <IPAddress value="127.0.0.1" />

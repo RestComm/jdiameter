@@ -108,7 +108,7 @@ public class DiameterConfiguration implements Serializable {
     try {
       MutablePeerTable peerTable;
       peerTable = (MutablePeerTable) stack.unwrap(MutablePeerTable.class);
-      //Peer p = n.addPeer("aaa://127.0.0.1:21812", "mobicents.org", true);
+      //Peer p = n.addPeer("aaa://127.0.0.1:13868", "mobicents.org", true);
       for(Peer peer : peerTable.getPeerTable()) {
         PeerImpl p = (PeerImpl) peer;
         NetworkPeerImpl nPeer = new NetworkPeerImpl(p.getUri().toString(), p.isAttemptConnection(), p.getRating(), null, null, null, null);

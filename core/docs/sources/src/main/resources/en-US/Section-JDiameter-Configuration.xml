@@ -16,7 +16,7 @@
 </Configuration>]]></programlisting>
 
 	<programlisting role="XML"><![CDATA[<LocalPeer>
-	<URI value="aaa://localhost:1812"/>
+	<URI value="aaa://localhost:3868"/>
 	<IPAddresses>
 		<IPAddress value="127.0.0.1"/>
 	</IPAddresses>

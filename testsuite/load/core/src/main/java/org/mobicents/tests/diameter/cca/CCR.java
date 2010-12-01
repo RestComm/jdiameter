@@ -113,7 +113,7 @@ public class CCR extends AbstractStackRunner implements NetworkReqListener, Even
 				// set.removeAvp(296);
 				// set.removeAvp(264);
 				// set.addAvp(296,"mobicents.org",true);
-				// set.addAvp(264,"aaa://192.168.1.103:1812",true);
+				// set.addAvp(264,"aaa://192.168.1.103:3868",true);
 				set.addAvp(reqSet.getAvp(416), reqSet.getAvp(415), reqSet.getAvp(258));
 
 				if (answer != null) {
@@ -151,7 +151,7 @@ public class CCR extends AbstractStackRunner implements NetworkReqListener, Even
 				// set.removeAvp(296);
 				// set.removeAvp(264);
 				// set.addAvp(296,"mobicents.org",true);
-				// set.addAvp(264,"aaa://192.168.1.103:1812",true);
+				// set.addAvp(264,"aaa://192.168.1.103:3868",true);
 				set.addAvp(reqSet.getAvp(416), reqSet.getAvp(415), reqSet.getAvp(258));
 
 				if (answer != null) {
@@ -187,7 +187,7 @@ public class CCR extends AbstractStackRunner implements NetworkReqListener, Even
 				// set.removeAvp(296);
 				// set.removeAvp(264);
 				// set.addAvp(296,"mobicents.org",true);
-				// set.addAvp(264,"aaa://192.168.1.103:1812",true);
+				// set.addAvp(264,"aaa://192.168.1.103:3868",true);
 				set.addAvp(reqSet.getAvp(416), reqSet.getAvp(415), reqSet.getAvp(258));
 
 				if (answer != null) {
@@ -223,7 +223,7 @@ public class CCR extends AbstractStackRunner implements NetworkReqListener, Even
 				// set.removeAvp(296);
 				// set.removeAvp(264);
 				// set.addAvp(296,"mobicents.org",true);
-				// set.addAvp(264,"aaa://192.168.1.103:1812",true);
+				// set.addAvp(264,"aaa://192.168.1.103:3868",true);
 				set.addAvp(reqSet.getAvp(416), reqSet.getAvp(415), reqSet.getAvp(258));
 
 				if (answer != null) {
