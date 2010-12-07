@@ -135,6 +135,7 @@ public abstract class BaseSessionImpl implements BaseSession {
         container.sendMessage(message);
       }
       catch(RouteException e) {
+    	message.clearTimer();
         throw e;
       }
       catch (Exception e) {
