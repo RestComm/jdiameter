@@ -115,7 +115,6 @@ public class DiameterStackProxy implements Stack, IContainer {
   /* (non-Javadoc)
    * @see org.jdiameter.api.Stack#getDictionary()
    */
-  @Override
   public Dictionary getDictionary() throws IllegalDiameterStateException {
     return realStack.getDictionary();
   }
