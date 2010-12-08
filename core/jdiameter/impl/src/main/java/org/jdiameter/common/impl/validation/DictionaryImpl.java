@@ -376,8 +376,10 @@ public class DictionaryImpl implements Dictionary {
 
       long endTime = System.currentTimeMillis();
 
-      logger.info("AVP Validator :: Loaded in {}ms == Vendors[{}] Commands[{}] Types[{}] AVPs[{}]",
-          new Object[] { (endTime - startTime), vendorMap.size(), commandMap.size(), typedefMap.size(), avpMap.size() });
+      if(logger.isInfoEnabled()) {
+        logger.info("AVP Validator :: Loaded in {}ms == Vendors[{}] Commands[{}] Types[{}] AVPs[{}]",
+            new Object[] { (endTime - startTime), vendorMap.size(), commandMap.size(), typedefMap.size(), avpMap.size() });
+      }
 
       if (logger.isInfoEnabled()) {
         StringBuffer sb = new StringBuffer();
@@ -390,7 +392,7 @@ public class DictionaryImpl implements Dictionary {
         }
 
         if (c > 0) {
-          sb.append("------- TOTAL INCOMPLETE AVPS COUNT: " + c + " -------");
+          sb.append("------- TOTAL INCOMPLETE AVPS COUNT: ").append(c).append(" -------");
           logger.info(sb.toString());
         }
       }
@@ -610,10 +612,10 @@ public class DictionaryImpl implements Dictionary {
 
                     if (!groupedChildWeakElement.hasAttribute("name")) {
                       if (logger.isDebugEnabled()) {
-                        logger.debug("[ERROR] Grouped child does not have name, grouped avp:  Name[" + avpName + "] Description["
-                            + avpDescription + "] Code[" + avpCode + "] May-Encrypt[" + avpMayEncrypt + "] Mandatory["
-                            + avpMandatory + "] Protected [" + avpProtected + "] Vendor-Bit [" + avpVendorBit + "] Vendor-Id ["
-                            + avpVendorId + "] Constrained[" + avpConstrained + "] Type [" + avpType + "]");
+                        logger.debug(new StringBuffer("[ERROR] Grouped child does not have name, grouped avp:  Name[").append(avpName).append("] Description[").
+                            append(avpDescription).append("] Code[").append(avpCode).append("] May-Encrypt[").append(avpMayEncrypt).append("] Mandatory[").
+                            append(avpMandatory).append("] Protected [").append(avpProtected).append("] Vendor-Bit [").append(avpVendorBit).append("] Vendor-Id [").
+                            append(avpVendorId).append("] Constrained[").append(avpConstrained).append("] Type [").append(avpType).append("]").toString());
                       }
                       continue;
                     }
@@ -654,10 +656,12 @@ public class DictionaryImpl implements Dictionary {
             }
           }
 
-          if (logger.isDebugEnabled()) {
-            logger.debug("Parsed AVP: Name[" + avpName + "] Description[" + avpDescription + "] Code[" + avpCode + "] May-Encrypt[" + avpMayEncrypt
-                + "] Mandatory[" + avpMandatory + "] Protected [" + avpProtected + "] Vendor-Bit [" + avpVendorBit + "] Vendor-Id ["
-                + avpVendorId + "] Constrained[" + avpConstrained + "] Type [" + avpType + "]");
+          if (logger.isTraceEnabled()) {
+            logger.trace(new StringBuffer("Parsed AVP: Name[").append(avpName).append("] Description[").append(avpDescription).
+                append("] Code[").append(avpCode).append("] May-Encrypt[").append(avpMayEncrypt).append("] Mandatory[").
+                append(avpMandatory).append("] Protected [").append(avpProtected).append("] Vendor-Bit [").append(avpVendorBit).
+                append("] Vendor-Id [").append(avpVendorId).append("] Constrained[").append(avpConstrained).append("] Type [").
+                append(avpType).append("]").toString());
           }
 
           try {
@@ -685,9 +689,7 @@ public class DictionaryImpl implements Dictionary {
           }
           catch (Exception e) {
             if (logger.isDebugEnabled()) {
-              logger.debug("[ERROR] Failed Parsing AVP: Name[" + avpName + "] Description[" + avpDescription + "] Code[" + avpCode
-                  + "] May-Encrypt[" + avpMayEncrypt + "] Mandatory[" + avpMandatory + "] Protected [" + avpProtected + "] Vendor-Bit ["
-                  + avpVendorBit + "] Vendor-Id [" + avpVendorId + "] Constrained[" + avpConstrained + "] Type [" + avpType + "]", e);
+              logger.debug(new StringBuffer("[ERROR] Failed Parsing AVP: Name[").append(avpName).append("] Description[").append(avpDescription).append("] Code[").append(avpCode).append("] May-Encrypt[").append(avpMayEncrypt).append("] Mandatory[").append(avpMandatory).append("] Protected [").append(avpProtected).append("] Vendor-Bit [").append(avpVendorBit).append("] Vendor-Id [").append(avpVendorId).append("] Constrained[").append(avpConstrained).append("] Type [").append(avpType).append("]").toString(), e);
             }
           }
         }
@@ -827,8 +829,7 @@ public class DictionaryImpl implements Dictionary {
         strongRep = (AvpRepresentationImpl) avpMap.get(strongKey);
 
         if (strongRep == null || strongRep.isWeak()) {
-          logger.debug("Resolving weak link for: {}; Strong representation for name: {} does not exist V:[{}]!",
-              new Object[] { groupedAvp, local.getName(), strongRep });
+          logger.trace("Resolving weak link for: {}; Strong representation for name: {} does not exist V:[{}]!", new Object[] { groupedAvp, local.getName(), strongRep });
           hasWeaklings = true;
         }
         else {
