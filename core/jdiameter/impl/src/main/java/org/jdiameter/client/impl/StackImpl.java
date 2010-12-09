@@ -352,6 +352,12 @@ public class StackImpl implements IContainer, StackImplMBean {
   }
 
   public void destroy() {
+    // Be friendly
+    if(state == StackState.STARTED) {
+      log.warn("Calling destroy() with Stack in STARTED state. Calling stop() before, please do it yourself.");
+      stop();
+    }
+
     lock.lock();
     try {
       if (peerManager != null) {

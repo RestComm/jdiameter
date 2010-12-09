@@ -293,7 +293,14 @@ public class PeerTableImpl implements IPeerTable {
     if (concurrentFactory  != null) {
       try {
         concurrentFactory.getThreadGroup().interrupt();
-        concurrentFactory.getThreadGroup().destroy();
+        // Wait for some threads which may take longer...
+        // FIXME: Change this once we get rid of ThreadGroup and hard interrupting threads.
+        long remWaitTime = 2500;
+        while(concurrentFactory.getThreadGroup().activeCount() > 0 && remWaitTime > 0) {
+            long waitTime = 250;
+            Thread.sleep(waitTime);
+            remWaitTime -= waitTime;
+        }
       }
       catch (Exception e) {
         logger.warn("Can not stop executor");
@@ -315,6 +322,14 @@ public class PeerTableImpl implements IPeerTable {
   }
 
   public void destroy() {
+    if (concurrentFactory != null) {
+      try {
+        concurrentFactory.getThreadGroup().destroy();
+      }
+      catch (IllegalThreadStateException itse) {
+        logger.debug("Failure trying to destroy ThreadGroup probably due to existing active threads. Use stop() before destroy(). (nr_threads={})", concurrentFactory.getThreadGroup().activeCount());
+      }
+    }
     if (router != null) {
       router.destroy();
     }
