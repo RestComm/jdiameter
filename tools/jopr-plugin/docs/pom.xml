@@ -15,8 +15,10 @@
 		-->
 	</parent>
 	
+	<groupId>org.mobicents.servers.diameter.tools</groupId>
 	<artifactId>mobicents-diameter-jopr-plugin-docs</artifactId>
-		
+	<version>1.0.0-SNAPSHOT</version>
+	
 	<packaging>pom</packaging>
 	
 	<modules>
