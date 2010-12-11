@@ -9,19 +9,17 @@
 	<name>Mobicents :: Diameter :: ${pom.artifactId}</name>
 
 	<properties>
-
-	<checkout.basedir>${basedir}/diameter</checkout.basedir>
+		<checkout.basedir>${basedir}/diameter</checkout.basedir>
 		<checkout.username>mobicents-read-only</checkout.username>
 		<checkout.password></checkout.password>
 
-		<diameter.core.jdiameter.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter/jdiameter</diameter.core.jdiameter.connectionURL>
-		<diameter.core.jdiameter-ha.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter-ha/jdiameter-ha</diameter.core.jdiameter-ha.connectionURL>
-		<diameter.core.mux.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/diameter/core/mux/mobicents-diameter-mux</diameter.core.mux.connectionURL>
-		<diameter.core.docs.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/diameter/core/docs/mobicents-diameter-core-docs</diameter.core.docs.connectionURL>
-		<diameter.resource.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/jain-slee/2.x.y/resources/diameter</diameter.resource.connectionURL>
-		<diameter.example.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/jain-slee/2.x.y/examples/diameter</diameter.example.connectionURL>
-		<diameter.tools.jopr-plugin.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/diameter/tools/jopr-plugin/mobicents-diameter-jopr-plugin</diameter.tools.jopr-plugin.connectionURL>
-
+		<diameter.core.jdiameter.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter/jdiameter-</diameter.core.jdiameter.connectionURL>
+		<diameter.core.jdiameter-ha.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter-ha/jdiameter-ha-</diameter.core.jdiameter-ha.connectionURL>
+		<diameter.core.mux.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/diameter/core/mux/mobicents-diameter-mux-</diameter.core.mux.connectionURL>
+		<diameter.core.docs.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/diameter/core/docs/mobicents-diameter-core-docs-</diameter.core.docs.connectionURL>
+		<diameter.resource.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/jain-slee/2.x.y/resources/diameter-</diameter.resource.connectionURL>
+		<diameter.example.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/jain-slee/2.x.y/examples/diameter-</diameter.example.connectionURL>
+		<diameter.tools.jopr-plugin.connectionURL>scm:svn:http://mobicents.googlecode.com/svn/tags/servers/diameter/tools/jopr-plugin/mobicents-diameter-jopr-plugin-</diameter.tools.jopr-plugin.connectionURL>
 	</properties>
 
 	<profiles>
@@ -45,7 +43,7 @@
 									<scmVersionType>revision</scmVersionType>
 									<skipCheckoutIfExists>false</skipCheckoutIfExists>
 									<checkoutDirectory>${checkout.basedir}/core/jdiameter</checkoutDirectory>
-									<connectionUrl>${diameter.core.jdiameter.connectionURL}-${jdiam_version}</connectionUrl>
+									<connectionUrl>${diameter.core.jdiameter.connectionURL}${jdiam_version}</connectionUrl>
 									<username>${checkout.username}</username>
 									<password>${checkout.password}</password>
 								</configuration>
@@ -61,7 +59,7 @@
 									<scmVersionType>revision</scmVersionType>
 									<skipCheckoutIfExists>false</skipCheckoutIfExists>
 									<checkoutDirectory>${checkout.basedir}/core/jdiameter-ha</checkoutDirectory>
-									<connectionUrl>${diameter.core.jdiameter-ha.connectionURL}-${jdiam-ha_version}</connectionUrl>
+									<connectionUrl>${diameter.core.jdiameter-ha.connectionURL}${jdiam-ha_version}</connectionUrl>
 									<username>${checkout.username}</username>
 									<password>${checkout.password}</password>
 								</configuration>
@@ -77,7 +75,7 @@
 									<scmVersionType>revision</scmVersionType>
 									<skipCheckoutIfExists>false</skipCheckoutIfExists>
 									<checkoutDirectory>${checkout.basedir}/core/mux</checkoutDirectory>
-									<connectionUrl>${diameter.core.mux.connectionURL}-${mux_version}</connectionUrl>
+									<connectionUrl>${diameter.core.mux.connectionURL}${mux_version}</connectionUrl>
 									<username>${checkout.username}</username>
 									<password>${checkout.password}</password>
 								</configuration>
@@ -93,7 +91,7 @@
 									<scmVersionType>revision</scmVersionType>
 									<skipCheckoutIfExists>false</skipCheckoutIfExists>
 									<checkoutDirectory>${checkout.basedir}/core/docs</checkoutDirectory>
-									<connectionUrl>${diameter.core.docs.connectionURL}-${docs_version}</connectionUrl>
+									<connectionUrl>${diameter.core.docs.connectionURL}${docs_version}</connectionUrl>
 									<username>${checkout.username}</username>
 									<password>${checkout.password}</password>
 								</configuration>
@@ -123,7 +121,7 @@
 									<scmVersionType>revision</scmVersionType>
 									<skipCheckoutIfExists>false</skipCheckoutIfExists>
 									<checkoutDirectory>${checkout.basedir}/resources/${resource_name}</checkoutDirectory>
-									<connectionUrl>${diameter.resource.connectionURL}-${resource_name}/${resource_version}</connectionUrl>
+									<connectionUrl>${diameter.resource.connectionURL}${resource_name}/${resource_version}</connectionUrl>
 									<username>${checkout.username}</username>
 									<password>${checkout.password}</password>
 								</configuration>
@@ -154,7 +152,7 @@
 									<scmVersionType>revision</scmVersionType>
 									<skipCheckoutIfExists>false</skipCheckoutIfExists>
 									<checkoutDirectory>${checkout.basedir}/examples/${example_name}</checkoutDirectory>
-									<connectionUrl>${diameter.example.connectionURL}-${example_name}/${example_version}</connectionUrl>
+									<connectionUrl>${diameter.example.connectionURL}${example_name}/${example_version}</connectionUrl>
 									<username>${checkout.username}</username>
 									<password>${checkout.password}</password>
 								</configuration>
@@ -216,7 +214,7 @@
 									<scmVersionType>revision</scmVersionType>
 									<skipCheckoutIfExists>false</skipCheckoutIfExists>
 									<checkoutDirectory>${checkout.basedir}/diameter-jopr-plugin</checkoutDirectory>
-									<connectionUrl>${diameter.tools.jopr-plugin.connectionURL}-${jopr_plugin_version}</connectionUrl>
+									<connectionUrl>${diameter.tools.jopr-plugin.connectionURL}${jopr_plugin_version}</connectionUrl>
 									<username>${checkout.username}</username>
 									<password>${checkout.password}</password>
 								</configuration>
