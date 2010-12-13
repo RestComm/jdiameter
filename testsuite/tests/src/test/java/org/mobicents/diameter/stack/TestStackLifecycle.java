@@ -51,7 +51,7 @@ public class TestStackLifecycle {
 
     try {
       InputStream is;
-      String configFile = "jdiameter-server-one.xml";
+      String configFile = "jdiameter-server-two.xml";
 
       is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Assert.assertNotNull("InputStream for configuration file should not be null", is);
@@ -82,7 +82,7 @@ public class TestStackLifecycle {
 
     try {
       InputStream is;
-      String configFile = "jdiameter-server-one.xml";
+      String configFile = "jdiameter-server-two.xml";
 
       is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Assert.assertNotNull("InputStream for configuration file should not be null", is);
@@ -142,7 +142,7 @@ public class TestStackLifecycle {
 
     try {
       InputStream is;
-      String configFile = "jdiameter-server-one.xml";
+      String configFile = "jdiameter-server-two.xml";
 
       is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Assert.assertNotNull("InputStream for configuration file should not be null", is);
@@ -168,7 +168,7 @@ public class TestStackLifecycle {
 
     try {
       InputStream is;
-      String configFile = "jdiameter-server-one.xml";
+      String configFile = "jdiameter-server-two.xml";
 
       is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Assert.assertNotNull("InputStream for configuration file should not be null", is);
@@ -196,7 +196,7 @@ public class TestStackLifecycle {
 
     try {
       InputStream is;
-      String configFile = "jdiameter-server-one.xml";
+      String configFile = "jdiameter-server-two.xml";
 
       is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Assert.assertNotNull("InputStream for configuration file should not be null", is);
@@ -229,7 +229,7 @@ public class TestStackLifecycle {
 
     try {
       InputStream is;
-      String configFile = "jdiameter-server-one.xml";
+      String configFile = "jdiameter-server-two.xml";
 
       is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Assert.assertNotNull("InputStream for configuration file should not be null", is);
@@ -262,7 +262,7 @@ public class TestStackLifecycle {
 
     try {
       InputStream is;
-      String configFile = "jdiameter-server-one.xml";
+      String configFile = "jdiameter-server-two.xml";
 
       is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Assert.assertNotNull("InputStream for configuration file should not be null", is);
@@ -297,7 +297,7 @@ public class TestStackLifecycle {
 
     try {
       InputStream is;
-      String configFile = "jdiameter-server-one.xml";
+      String configFile = "jdiameter-server-two.xml";
 
       is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Assert.assertNotNull("InputStream for configuration file should not be null", is);
@@ -327,7 +327,7 @@ public class TestStackLifecycle {
 
     try {
       InputStream is;
-      String configFile = "jdiameter-server-one.xml";
+      String configFile = "jdiameter-server-two.xml";
 
       is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Assert.assertNotNull("InputStream for configuration file should not be null", is);
@@ -395,7 +395,7 @@ public class TestStackLifecycle {
     try {
       clientStack = new org.jdiameter.server.impl.StackImpl();
       InputStream is;
-      String configFile = "jdiameter-client-one.xml";
+      String configFile = "jdiameter-client-two.xml";
       is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Configuration config;
       config = new org.jdiameter.server.impl.helpers.XMLConfiguration(is);
@@ -424,6 +424,13 @@ public class TestStackLifecycle {
 
   private void shutdownStack(StackImpl stack) {
     if(stack != null) {
+      try {
+        Thread.sleep(1000);
+      }
+      catch (InterruptedException e) {
+        // ignore
+      }
+
       StackState curState = stack.getState();
       if (curState == StackState.IDLE) {
         // We are good. let's return
@@ -434,6 +441,10 @@ public class TestStackLifecycle {
         // It's configured, just destroy it
         try {
           stack.destroy();
+          Thread.sleep(500);
+        }
+        catch (InterruptedException e) {
+          // ignore
         }
         finally {
           stack = null;
@@ -443,10 +454,18 @@ public class TestStackLifecycle {
         // It's started, stop and destroy it
         try {
           stack.stop();
+          Thread.sleep(500);
+        }
+        catch (InterruptedException e) {
+          // ignore
         }
         finally {
           try {          
             stack.destroy();
+            Thread.sleep(500);
+          }
+          catch (InterruptedException e) {
+            // ignore
           }
           finally {
             stack = null;
@@ -457,10 +476,20 @@ public class TestStackLifecycle {
         // It's stopped, just destroy it
         try {
           stack.destroy();
+          Thread.sleep(500);
+        }
+        catch (InterruptedException e) {
+          // ignore
         }
         finally {
           stack = null;
         }
+      }
+      try {
+        Thread.sleep(1000);
+      }
+      catch (InterruptedException e) {
+        // ignore
       }
     }
   }
