@@ -4955,6 +4955,74 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 		</avp>
 
 	</application>
+
+    <application name="3GPP Gx (Rel6)" id="16777224" uri="http://www.3gpp.org/ftp/Specs/archive/29_series/29.210/29210-670.zip">
+    
+        <command name="Credit-Control-Request" code="272" request="true" application="16777224">
+            <!-- mandatory -->
+            <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+            <avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
+            <avp name="CC-Request-Type" code="416" vendor="0" multiplicity="1" index="-1" />
+            <avp name="CC-Request-Number" code="415" vendor="0" multiplicity="1" index="-1" />
+
+            <!-- optional -->
+            <avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" />
+            <avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+            <avp name="Subscription-Id" code="443" vendor="0" multiplicity="0+" index="-1" />
+            <avp name="Framed-IP-Address" code="8" vendor="0" multiplicity="0-1" index="-1" />
+            <avp name="Framed-IPv6-Prefix" code="97" vendor="0" multiplicity="0-1" index="-1" />
+            <avp name="3GPP-RAT-Type" code="21" vendor="10415" multiplicity="0-1" index="-1" />
+            <avp name="Termination-Cause" code="295" vendor="0" multiplicity="0-1" index="-1" />
+            <avp name="User-Equipment-Info" code="458" vendor="0" multiplicity="0-1" index="-1" />
+            <avp name="3GPP-GPRS-Negotiated-QoS-Profile" code="5" vendor="10415" multiplicity="0-1" index="-1" />
+            <avp name="3GPP-SGSN-MCC-MNC" code="18" vendor="10415" multiplicity="0-1" index="-1" />
+            <avp name="3GPP-SGSN-Address" code="6" vendor="10415" multiplicity="0-1" index="-1" />
+            <avp name="3GPP-SGSN-IPv6-Address" code="15" vendor="10415" multiplicity="0-1" index="-1" />
+            <avp name="Called-Station-ID" code="30" vendor="0" multiplicity="0-1" index="-1" />
+            <avp name="Bearer-Usage" code="1000" vendor="10415" multiplicity="0-1" index="-1" />
+            <avp name="PDP-Session-Operation" code="1015" vendor="10415" multiplicity="0-1" index="-1" />
+            <avp name="TFT-Packet-Filter-Information" code="1013" vendor="10415" multiplicity="0+" index="-1" />
+            <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+            <avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
+
+            <!-- forbidden -->
+            <avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
+            <avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
+        </command>
+
+        <command name="Credit-Control-Answer" code="272" request="false" application="16777224">
+            <!-- mandatory -->
+            <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+            <avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+            <avp name="CC-Request-Type" code="416" vendor="0" multiplicity="1" index="-1" />
+            <avp name="CC-Request-Number" code="415" vendor="0" multiplicity="1" index="-1" />
+
+            <!-- optional -->
+            <avp name="Result-Code" code="268" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Experimental-Result" code="297" vendor="0" multiplicity="0-1" index="-1"/>
+            <avp name="Event-Trigger" code="1006" vendor="10415" multiplicity="0+" index="-1"/>
+            <avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+            <avp name="Charging-Rule-Remove" code="1002" vendor="10415" multiplicity="0+" index="-1"/>
+            <avp name="Charging-Rule-Install" code="1001" vendor="10415" multiplicity="0+" index="-1"/>
+            <avp name="Charging-Information" code="618" vendor="10415" multiplicity="0-1" index="-1"/>
+            <avp name="Error-Message" code="281" vendor="0" multiplicity="0-1" index="-1" />
+            <avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0-1" index="-1" />
+            <avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
+            <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+            <avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
+
+            <!-- forbidden -->
+            <avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
+            <avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
+        </command>
+        
+    </application>
+
 	<!--
 	&nasreq;
 	&mobileipv4;
