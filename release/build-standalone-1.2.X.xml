@@ -2,28 +2,29 @@
 <project name="diameter.release.sf" default="package" basedir=".">
 
 	<!-- Diameter Components Versions -->
-	<property name="RELEASE_VERSION" value="1.3.2.FINAL" />
+	<property name="RELEASE_VERSION" value="1.3.3.FINAL" />
 
-	<property name="CORE_JDIAMETER_VERSION" value="1.5.4.0-build403" />
+	<property name="CORE_JDIAMETER_VERSION" value="1.5.4.1-build415" />
 	<property name="CORE_JDIAMETER-HA_VERSION" value="1.0.0.BETA2" />
-	<property name="CORE_MUX_VERSION" value="1.3.2.FINAL" />
+	<property name="CORE_MUX_VERSION" value="1.3.3.FINAL" />
 	<property name="CORE_DOCS_VERSION" value="1.3.1.FINAL" />
 
 	<property name="TOOLS_JOPR_PLUGIN_VERSION" value="1.0.0.BETA2" />
 
-	<property name="RA_base_VERSION" value="2.2.1.FINAL" />
-	<property name="RA_cca_VERSION" value="2.2.1.FINAL" />
-	<property name="RA_sh-client_VERSION" value="2.2.0.FINAL" />
-	<property name="RA_sh-server_VERSION" value="2.2.0.FINAL" />
-	<property name="RA_ro_VERSION" value="2.2.1.FINAL" />
-	<property name="RA_rf_VERSION" value="2.2.1.FINAL" />
-	<property name="RA_cx-dx_VERSION" value="2.2.0.FINAL" />
+	<property name="RA_base_VERSION" value="2.2.2.FINAL" />
+	<property name="RA_cca_VERSION" value="2.2.2.FINAL" />
+	<property name="RA_sh-client_VERSION" value="2.2.1.FINAL" />
+	<property name="RA_sh-server_VERSION" value="2.2.1.FINAL" />
+	<property name="RA_ro_VERSION" value="2.2.2.FINAL" />
+	<property name="RA_rf_VERSION" value="2.2.2.FINAL" />
+	<property name="RA_cx-dx_VERSION" value="2.2.1.FINAL" />
+	<property name="RA_gx_VERSION" value="1.0.0.BETA1" />
 
 	<property name="EXAMPLE_JAINSLEE_base_VERSION" value="2.1.2.FINAL" />
 	<property name="EXAMPLE_JAINSLEE_openims_VERSION" value="2.1.2.FINAL" />
 
 	<!-- Dependencies Components Versions -->
-	<property name="JAINSLEE_VERSION" value="2.2.0.FINAL" />
+	<property name="JAINSLEE_VERSION" value="2.2.1.FINAL" />
 	<property name="JAINSLEE_SIP11_RA_VERSION" value="2.2.0.FINAL" />
 	<property name="JAINSLEE_SIP_SERVICES_VERSION" value="2.2.0.FINAL" />
 	<property name="JBOSS_VERSION" value="5.1.0.GA" />
@@ -33,7 +34,7 @@
 	<property name="DEFAULT_SAR_CONFIGURATION" value="5" />
 	<property name="ALTERNATIVE_SAR_CONFIGURATION" value="4" />
 	
-	<property name="JAINSLEE_RA_LIST" value="base,cca,sh-client,sh-server,ro,rf,cx-dx" />
+	<property name="JAINSLEE_RA_LIST" value="base,cca,sh-client,sh-server,ro,rf,cx-dx,gx" />
 	<property name="JAINSLEE_EXAMPLE_LIST" value="base,openims" />
 
 	<!-- Directories Configuration -->
@@ -100,7 +101,6 @@
 			</sequential>
 		</for>
 	</target>
-
 	<target name="checkout-jopr-plugin">
 		<echo>Checkout Diameter Jopr Plugin</echo>
 		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
@@ -239,7 +239,6 @@
 			</fileset>
 		</copy>
 	</target>
-
 	<target name="copy-jars-additional-resources">
 	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${jainslee.folder.path}/resources/sip11/sip11-ra-DU-${JAINSLEE_SIP11_RA_VERSION}.jar" failonerror="${failoncopy}" />
 	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${jainslee.folder.path}/resources/sip11/du-management.xml" failonerror="${failoncopy}">
