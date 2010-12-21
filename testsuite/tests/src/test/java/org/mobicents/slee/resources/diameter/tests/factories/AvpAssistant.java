@@ -88,6 +88,9 @@ import net.java.slee.resource.diameter.cxdx.events.avp.SCSCFRestorationInfo;
 import net.java.slee.resource.diameter.cxdx.events.avp.SIPAuthDataItem;
 import net.java.slee.resource.diameter.cxdx.events.avp.SIPDigestAuthenticate;
 import net.java.slee.resource.diameter.cxdx.events.avp.SubscriptionInfo;
+import net.java.slee.resource.diameter.gx.events.avp.ChargingRuleInstall;
+import net.java.slee.resource.diameter.gx.events.avp.ChargingRuleRemove;
+import net.java.slee.resource.diameter.gx.events.avp.TFTPacketFilterInformation;
 import net.java.slee.resource.diameter.ro.events.avp.AdditionalContentInformation;
 import net.java.slee.resource.diameter.ro.events.avp.AddressDomain;
 import net.java.slee.resource.diameter.ro.events.avp.ApplicationServerInformation;
@@ -156,6 +159,10 @@ import org.mobicents.slee.resource.diameter.cxdx.events.avp.SCSCFRestorationInfo
 import org.mobicents.slee.resource.diameter.cxdx.events.avp.SIPAuthDataItemImpl;
 import org.mobicents.slee.resource.diameter.cxdx.events.avp.SIPDigestAuthenticateImpl;
 import org.mobicents.slee.resource.diameter.cxdx.events.avp.SubscriptionInfoImpl;
+import org.mobicents.slee.resource.diameter.gx.events.avp.ChargingRuleInstallImpl;
+import org.mobicents.slee.resource.diameter.gx.events.avp.ChargingRuleRemoveImpl;
+import org.mobicents.slee.resource.diameter.gx.events.avp.DiameterGxAvpCodes;
+import org.mobicents.slee.resource.diameter.gx.events.avp.TFTPacketFilterInformationImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.AdditionalContentInformationImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.AddressDomainImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.ApplicationServerInformationImpl;
@@ -597,6 +604,20 @@ public class AvpAssistant {
 
     typeValues.put( RestorationInfo.class, new RestorationInfoImpl(DiameterCxDxAvpCodes.RESTORATION_INFO, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
     typeValues.put( RestorationInfo[].class, new RestorationInfoImpl[]{new RestorationInfoImpl(DiameterCxDxAvpCodes.RESTORATION_INFO, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    // Gx AVP Factory
+    
+    typeValues.put( TFTPacketFilterInformation.class, new TFTPacketFilterInformationImpl(DiameterGxAvpCodes.TFT_PACKET_FILTER_INFORMATION, DiameterGxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( TFTPacketFilterInformation[].class, new TFTPacketFilterInformationImpl[]{new TFTPacketFilterInformationImpl(DiameterGxAvpCodes.TFT_PACKET_FILTER_INFORMATION, DiameterGxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( ChargingRuleRemove.class, new ChargingRuleRemoveImpl(DiameterGxAvpCodes.CHARGING_RULE_REMOVE, DiameterGxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( ChargingRuleRemove[].class, new ChargingRuleRemoveImpl[]{new ChargingRuleRemoveImpl(DiameterGxAvpCodes.CHARGING_RULE_REMOVE, DiameterGxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( ChargingRuleInstall.class, new ChargingRuleInstallImpl(DiameterGxAvpCodes.CHARGING_RULE_INSTALL, DiameterGxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( ChargingRuleInstall[].class, new ChargingRuleInstallImpl[]{new ChargingRuleInstallImpl(DiameterGxAvpCodes.CHARGING_RULE_INSTALL, DiameterGxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( net.java.slee.resource.diameter.gx.events.avp.ChargingInformation.class, new org.mobicents.slee.resource.diameter.gx.events.avp.ChargingInformationImpl(DiameterGxAvpCodes.CHARGING_INFORMATION, DiameterGxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.gx.events.avp.ChargingInformation[].class, new org.mobicents.slee.resource.diameter.gx.events.avp.ChargingInformationImpl[]{new org.mobicents.slee.resource.diameter.gx.events.avp.ChargingInformationImpl(DiameterGxAvpCodes.CHARGING_INFORMATION, DiameterGxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
 
     typeValues.put( DiameterAvp.class, new DiameterAvpImpl(0, 0, 0, 1, dummyAvpBytes, null) );
     typeValues.put( DiameterAvp[].class, new DiameterAvpImpl[]{new DiameterAvpImpl(0, 0, 0, 1, dummyAvpBytes, null)});
