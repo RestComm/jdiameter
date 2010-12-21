@@ -25,6 +25,7 @@
     <mobicents.diameter.resources.ro.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.ro.version>
     <mobicents.diameter.resources.rf.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.rf.version>
     <mobicents.diameter.resources.cx-dx.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.cx-dx.version>
+    <mobicents.diameter.resources.gx.version>1.0.0-SNAPSHOT</mobicents.diameter.resources.gx.version>
     <!-- Other Mobicents Components Versions -->
     <mobicents.servers.jainslee.version>2.2.1.FINAL</mobicents.servers.jainslee.version>
     <mobicents.tools.mavenplugin.du.version>2.0.0.BETA3</mobicents.tools.mavenplugin.du.version>
@@ -45,6 +46,11 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.mobicents.servers.diameter.resources</groupId>
+        <artifactId>gx-ra</artifactId>
+        <version>${mobicents.diameter.resources.gx.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.mobicents.servers.diameter.resources</groupId>
         <artifactId>rf-ra</artifactId>
