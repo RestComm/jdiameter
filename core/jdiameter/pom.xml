@@ -14,7 +14,7 @@
 
 	<name>Mobicents :: Diameter Stack :: ${pom.artifactId}</name>
 
-	<version>1.5.4.0-build404-SNAPSHOT</version>
+	<version>1.5.4.1-build415</version>
 
 	<modules>
 		<module>api</module>
@@ -84,9 +84,9 @@
 	</profiles>
 
 	<scm>
-		<connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/jdiameter</connection>
-		<developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/jdiameter</developerConnection>
-		<url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/jdiameter</url>
+		<connection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter/jdiameter-1.5.4.1-build415</connection>
+		<developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter/jdiameter-1.5.4.1-build415</developerConnection>
+		<url>http://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter/jdiameter-1.5.4.1-build415</url>
 	</scm>
 
 	<!-- dupe info from parent, but it's only way to retrieve the parent without checkout -->
