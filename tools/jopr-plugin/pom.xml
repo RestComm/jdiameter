@@ -22,7 +22,7 @@
     <jbossas.version>5.1.0.GA</jbossas.version>
     <jopr-version>2.2.0.GA</jopr-version>
     <rhq-version>1.4.0.B01</rhq-version>
-    <mobicents.jdiameter.version>1.5.3.1-build353</mobicents.jdiameter.version>
+    <mobicents.jdiameter.version>1.5.4.1-build415</mobicents.jdiameter.version>
     <mobicents.diameter.version>1.2.1.GA</mobicents.diameter.version>
     <getopt.version>1.0.13</getopt.version>
   </properties>

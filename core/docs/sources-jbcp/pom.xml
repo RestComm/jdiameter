@@ -12,7 +12,7 @@
 	<artifactId>mobicents-diameter-core-docs-sources-jbcp</artifactId>
 
 	<properties>
-		<version.jdiameter>1.5.4.0-build354</version.jdiameter>
+		<version.jdiameter>1.5.4.1-build415</version.jdiameter>
 		<THIS.PLATFORM>JBoss Communications</THIS.PLATFORM>
 		<JEE.PLATFORM>JBoss Enterprise Application Platform</JEE.PLATFORM>
 		<MANAGEMENT.PLATFORM>JBoss Operations Network</MANAGEMENT.PLATFORM>
