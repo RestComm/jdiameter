@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 <project name="diameter.release.sf" default="package" basedir=".">
 
+	<tstamp>
+		<format property="TSTAMP" pattern="yyyyMMddHHmm" />
+	</tstamp>
+
 	<!-- Diameter Components Versions -->
 	<property name="RELEASE_VERSION" value="1.4.0-SNAPSHOT" />
 
@@ -44,10 +48,10 @@
 	<property name="mux_zip_dir" value="${basedir}/diameter/mux-zip" />
 	<property name="alt_mux_zip_dir" value="${basedir}/diameter/alt-mux-zip" />
 
-	<property name="zip_file_name" value="mobicents-diameter-${RELEASE_VERSION}" />
+	<property name="zip_file_name" value="mobicents-diameter-${RELEASE_VERSION}-${TSTAMP}" />
 
-	<property name="mux_zip_file_name" value="mobicents-diameter-mux-jboss${DEFAULT_SAR_CONFIGURATION}-${RELEASE_VERSION}.sar.zip" />
-	<property name="alt_mux_zip_file_name" value="mobicents-diameter-mux-jboss${ALTERNATIVE_SAR_CONFIGURATION}-${RELEASE_VERSION}.sar.zip" />
+	<property name="mux_zip_file_name" value="mobicents-diameter-mux-jboss${DEFAULT_SAR_CONFIGURATION}-${RELEASE_VERSION}-${TSTAMP}.sar.zip" />
+	<property name="alt_mux_zip_file_name" value="mobicents-diameter-mux-jboss${ALTERNATIVE_SAR_CONFIGURATION}-${RELEASE_VERSION}-${TSTAMP}.sar.zip" />
 
 	<property name="failoncopy" value="true" />
 	
@@ -63,7 +67,9 @@
 		</classpath>
 	</taskdef>
 
-	<target name="init" />
+	<target name="init">
+		<echo>Building MOBICENTS DIAMETER SNAPSHOT RELEASE build.${TSTAMP}</echo>
+	</target>
 
 	<target name="checkout" depends="init,checkout-core,checkout-resources,checkout-examples,checkout-jopr-plugin,download-jainslee" />
 	<target name="build-src" depends="build-src-core,build-src-resources,build-src-examples,build-jopr-plugin,unzip-jainslee" />
@@ -239,25 +245,25 @@
 		</copy>
 	</target>
 	<target name="copy-jars-additional-resources">
-	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${jainslee.folder.path}/resources/sip11/sip11-ra-DU-${JAINSLEE_SIP11_RA_VERSION}.jar" failonerror="${failoncopy}" />
-	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${jainslee.folder.path}/resources/sip11/du-management.xml" failonerror="${failoncopy}">
+		<copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${jainslee.folder.path}/resources/sip11/sip11-ra-DU-${JAINSLEE_SIP11_RA_VERSION}.jar" failonerror="${failoncopy}" />
+		<copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${jainslee.folder.path}/resources/sip11/du-management.xml" failonerror="${failoncopy}">
 			<filterchain>
 				<replacetokens>
 					<token key="JAINSLEE_VERSION" value="${JAINSLEE_VERSION}" />
 				</replacetokens>
 			</filterchain>
-	  </copy>
-	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${checkout_base_dir}/examples/openims/release/thirdparty/sip11/build.xml" failonerror="${failoncopy}" />
+		</copy>
+		<copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${checkout_base_dir}/examples/openims/release/thirdparty/sip11/build.xml" failonerror="${failoncopy}" />
 
-	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip-services-proxy-with-initial-invite" file="${jainslee.folder.path}/examples/sip-services/sip-services-proxy-with-initial-invite-DU-${JAINSLEE_SIP_SERVICES_VERSION}.jar" failonerror="${failoncopy}" />
-	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip-services-proxy-with-initial-invite" file="${jainslee.folder.path}/examples/sip-services/proxy-with-initial-invite-du-management.xml" failonerror="${failoncopy}">
+		<copy todir="${zip_dir}/examples/openims/thirdparty/sip-services-proxy-with-initial-invite" file="${jainslee.folder.path}/examples/sip-services/sip-services-proxy-with-initial-invite-DU-${JAINSLEE_SIP_SERVICES_VERSION}.jar" failonerror="${failoncopy}" />
+		<copy todir="${zip_dir}/examples/openims/thirdparty/sip-services-proxy-with-initial-invite" file="${jainslee.folder.path}/examples/sip-services/proxy-with-initial-invite-du-management.xml" failonerror="${failoncopy}">
 			<filterchain>
 				<replacetokens>
 					<token key="JAINSLEE_VERSION" value="${JAINSLEE_VERSION}" />
 				</replacetokens>
 			</filterchain>
-	  </copy>
-	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip-services-proxy-with-initial-invite" file="${checkout_base_dir}/examples/openims/release/thirdparty/sip-services-proxy-with-initial-invite/build.xml" failonerror="${failoncopy}" />
+		</copy>
+		<copy todir="${zip_dir}/examples/openims/thirdparty/sip-services-proxy-with-initial-invite" file="${checkout_base_dir}/examples/openims/release/thirdparty/sip-services-proxy-with-initial-invite/build.xml" failonerror="${failoncopy}" />
 	</target>
 
 	<!-- Prepare text content section -->
@@ -438,7 +444,7 @@
 	</target>
 
 	<target name="checksum">
-	  <checksum file="${source.file}" algorithm="${algorithm}" fileext=".${algorithm}.asc" forceOverwrite="yes"/>
+		<checksum file="${source.file}" algorithm="${algorithm}" fileext=".${algorithm}.asc" forceOverwrite="yes"/>
 	</target>
 
 	<target name="clean" description="Remove everything that we created.">
