@@ -2,6 +2,7 @@ package org.jdiameter.server.impl.fsm;
 
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.ConfigurationListener;
+import org.jdiameter.api.DisconnectCause;
 import org.jdiameter.api.MutableConfiguration;
 import org.jdiameter.api.ResultCode;
 import org.jdiameter.api.app.State;
@@ -71,7 +72,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 break;
               case STOP_EVENT:
                 try { // TODO: send user code;
-                  context.sendDprMessage(ResultCode.SUCCESS);
+                  context.sendDprMessage(DisconnectCause.DO_NOT_WANT_TO_TALK_TO_YOU);
                   setTimer(DPA_TIMEOUT);
                   switchToNextState(STOPPING);
                 }
@@ -152,7 +153,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 break;
               case STOP_EVENT:
                 try {
-                  context.sendDprMessage(ResultCode.SUCCESS);
+                  context.sendDprMessage(DisconnectCause.DO_NOT_WANT_TO_TALK_TO_YOU);
                   setInActiveTimer();
                   switchToNextState(STOPPING);
                 }

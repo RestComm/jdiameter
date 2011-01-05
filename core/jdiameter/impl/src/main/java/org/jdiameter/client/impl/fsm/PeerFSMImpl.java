@@ -27,10 +27,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.jdiameter.api.Configuration;
+import org.jdiameter.api.DisconnectCause;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.PeerState;
-import org.jdiameter.api.ResultCode;
 import org.jdiameter.api.app.State;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
@@ -338,7 +338,7 @@ public class PeerFSMImpl implements IStateMachine {
                 break;
               case STOP_EVENT:
                 try {
-                  context.sendDprMessage(ResultCode.SUCCESS);
+                  context.sendDprMessage(DisconnectCause.DO_NOT_WANT_TO_TALK_TO_YOU);
                   setTimer(DPA_TIMEOUT);
                   switchToNextState(FsmState.STOPPING);
                 }
@@ -413,7 +413,7 @@ public class PeerFSMImpl implements IStateMachine {
                 break;
               case STOP_EVENT:
                 try {
-                  context.sendDprMessage(ResultCode.SUCCESS);
+                  context.sendDprMessage(DisconnectCause.DO_NOT_WANT_TO_TALK_TO_YOU);
                   setInActiveTimer();
                   switchToNextState(FsmState.STOPPING);
                 }
