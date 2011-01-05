@@ -281,7 +281,7 @@ public class RouterImpl implements IRouter {
         // Balancing procedure
         IPeer c = destHost != null ? manager.getPeerByName(destHost) : null;
         if (c != null && c.hasValidConnection()) {
-            logger.debug("Select peer by destination host avp [{}] peer {}", new Object[] {destHost, message.getPeer()});
+            logger.debug("Select peer by destination host avp [{}] peer {}", new Object[] {destHost, c});
             return c;
         }
         else {
