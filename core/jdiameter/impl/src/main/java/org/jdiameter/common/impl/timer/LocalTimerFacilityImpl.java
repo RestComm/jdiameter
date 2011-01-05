@@ -21,8 +21,14 @@
  */
 package org.jdiameter.common.impl.timer;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -49,7 +55,7 @@ public class LocalTimerFacilityImpl implements ITimerFacility {
   private ScheduledExecutorService executor;
 
   @SuppressWarnings("unchecked")
-  private HashMap<String, ScheduledFuture> idToFutureMapping;
+//  private ConcurrentHashMap<String, ScheduledFuture> idToFutureMapping;
 
   private ISessionDatasource sessionDataSource;
 
@@ -57,7 +63,7 @@ public class LocalTimerFacilityImpl implements ITimerFacility {
   public LocalTimerFacilityImpl(IContainer container) {
     super();
     this.executor = container.getConcurrentFactory().getScheduledExecutorService(IConcurrentFactory.ScheduledExecServices.ApplicationSession.name());
-    this.idToFutureMapping = new HashMap<String, ScheduledFuture>();
+//    this.idToFutureMapping = new ConcurrentHashMap<String, ScheduledFuture>();
     this.sessionDataSource = container.getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
   }
 
@@ -67,12 +73,15 @@ public class LocalTimerFacilityImpl implements ITimerFacility {
    * @see org.jdiameter.common.api.timer.ITimerFacility#cancel(java.io.Serializable)
    */
   @SuppressWarnings("unchecked")
-  public void cancel(Serializable id) {
-    logger.debug("Cancelling timer with id {}", id);
-    ScheduledFuture f = this.idToFutureMapping.remove(id);
-    if (f != null) {
-      f.cancel(false);
-    }
+  public void cancel(Serializable f) {
+
+	  if( f!= null && f instanceof TimerTaskHandle)
+	  {
+		  TimerTaskHandle timerTaskHandle = (TimerTaskHandle)f;
+		  timerTaskHandle.future.cancel(false);
+	  }
+	  
+    
   }
 
   /*
@@ -84,25 +93,23 @@ public class LocalTimerFacilityImpl implements ITimerFacility {
   public Serializable schedule(String sessionId, String timerName, long milliseconds) throws IllegalArgumentException {
     String id = sessionId + "/" + timerName;
     logger.debug("Scheduling timer with id {}", id);
-    if (this.idToFutureMapping.containsKey(id)) {
-      throw new IllegalArgumentException("Timer already running: " + id);
-    }
-    InternalRunner ir = new InternalRunner();
+    TimerTaskHandle ir = new TimerTaskHandle();
     ir.id = id;
     ir.sessionId = sessionId;
     ir.timerName = timerName;
-    ScheduledFuture future = this.executor.schedule(ir, milliseconds, TimeUnit.MILLISECONDS);
-    this.idToFutureMapping.put(id, future);
-    return id;
+    ir.future = this.executor.schedule(ir, milliseconds, TimeUnit.MILLISECONDS);
+   return ir;
+
   }
 
-  private final class InternalRunner implements Runnable {
+  private final class TimerTaskHandle implements Runnable, Externalizable {
+	  //its not realy serializable;
     private String sessionId;
     private String timerName;
     private String id;
-
+    private transient ScheduledFuture<?> future;
     public void run() {
-      idToFutureMapping.remove(id);
+
       try {
         BaseSession bSession = sessionDataSource.getSession(sessionId);
         if (bSession == null || !bSession.isAppSession()) {
@@ -110,14 +117,37 @@ public class LocalTimerFacilityImpl implements ITimerFacility {
           return;
         }
         else {
-          AppSessionImpl impl = (AppSessionImpl) bSession;
-          impl.onTimer(timerName);
+        	try{
+        		AppSessionImpl impl = (AppSessionImpl) bSession;
+        		impl.onTimer(timerName);
+        	}catch(Exception e)
+        	{
+        		logger.error("Caught exception from app session object!",e);
+        	}
         }
       }
       catch (Exception e) {
         logger.error("Failure executing timer task", e);
       }
     }
+	/* (non-Javadoc)
+	 * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
+	 */
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		throw new IOException("Failed to serialize local timer!");
+		
+	}
+	/* (non-Javadoc)
+	 * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
+	 */
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		throw new IOException("Failed to deserialize local timer!");
+		
+	}
+    
+    
   }
 
 }
