@@ -1,35 +1,58 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2010, Red Hat Middleware LLC, and individual contributors
+ * as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
 package org.jdiameter.client.impl.router;
 
-/*
- * Copyright (c) 2006 jDiameter.
- * https://jdiameter.dev.java.net/
- *
- * License: GPL v3
- *
- * e-mail: erick.svenson@yahoo.com
- *
- */
-
-import org.jdiameter.api.*;
-import org.jdiameter.client.api.IMessage;
-import org.jdiameter.client.api.controller.IPeer;
-import org.jdiameter.client.api.controller.IPeerTable;
-import org.jdiameter.client.api.router.IRouter;
-import org.jdiameter.common.api.concurrent.IConcurrentFactory;
-import org.slf4j.LoggerFactory;
-
-import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.RedirectMessageTimer;import org.slf4j.Logger;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
+import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.RedirectMessageTimer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import org.jdiameter.api.ApplicationId;
+import org.jdiameter.api.Avp;
+import org.jdiameter.api.AvpDataException;
+import org.jdiameter.api.AvpSet;
+import org.jdiameter.api.Configuration;
+import org.jdiameter.api.InternalException;
+import org.jdiameter.api.MetaData;
+import org.jdiameter.api.RouteException;
+import org.jdiameter.client.api.IMessage;
+import org.jdiameter.client.api.controller.IPeer;
+import org.jdiameter.client.api.controller.IPeerTable;
+import org.jdiameter.client.api.router.IRouter;
+import org.jdiameter.common.api.concurrent.IConcurrentFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RouterImpl implements IRouter {
 
@@ -45,6 +68,7 @@ public class RouterImpl implements IRouter {
     protected MetaData metaData;
     //
     private ConcurrentHashMap<String, String[]> network = new ConcurrentHashMap<String, String[]>();
+
     // Redirection feature
     public final int REDIRECT_TABLE_SIZE = 1024;
     protected ConcurrentHashMap<RedirectEntry, RedirectEntry> redirectTable = new ConcurrentHashMap<RedirectEntry, RedirectEntry>(REDIRECT_TABLE_SIZE);
@@ -59,12 +83,13 @@ public class RouterImpl implements IRouter {
         }
     };
     protected ScheduledFuture redirectEntryHandler;
+
     // Answer routing feature
     public static final int REQUEST_TABLE_SIZE = 10 * 1024;
     public static final int REQUEST_TABLE_CLEAR_SIZE = 5 * 1024;
     protected ReadWriteLock requestLock = new ReentrantReadWriteLock();
-    protected Map<Long, AnswerEntry> requestEntryTable = new ConcurrentHashMap<Long, AnswerEntry>(REQUEST_TABLE_SIZE);
-    protected List<Long> requestSortedEntryTable = new CopyOnWriteArrayList<Long>();
+    protected Map<Long, AnswerEntry> requestEntryTable = new HashMap<Long, AnswerEntry>(REQUEST_TABLE_SIZE);
+    protected List<Long> requestSortedEntryTable = new ArrayList<Long>();
     protected boolean isStopped = true;
 
     public RouterImpl(IConcurrentFactory concurrentFactory, Configuration config, MetaData aMetaData) {
@@ -101,7 +126,7 @@ public class RouterImpl implements IRouter {
 
     public void registerRequestRouteInfo(IMessage request) {
         try {
-            requestLock.readLock().lock();
+            requestLock.writeLock().lock();
             long hopByHopId = request.getHopByHopIdentifier();
             Avp hostAvp = request.getAvps().getAvp(Avp.ORIGIN_HOST);
             Avp realmAvp = request.getAvps().getAvp(Avp.ORIGIN_REALM);
@@ -110,32 +135,28 @@ public class RouterImpl implements IRouter {
                             realmAvp != null ? realmAvp.getOctetString() : null);
             requestEntryTable.put(hopByHopId, entry);
             requestSortedEntryTable.add(hopByHopId);
-            if (requestEntryTable.size() > REQUEST_TABLE_SIZE) {
-              concurrentFactory.getThread("jDiameterRouterCleaning", new Runnable() {
-                public void run() {
-                  List<Long> toRemove = requestSortedEntryTable.subList(0, REQUEST_TABLE_CLEAR_SIZE);
-                  // removing from keyset removes from hashmap too
-                  requestEntryTable.keySet().removeAll(toRemove);
-                  // instead of wasting time removing, just make a new one, much faster
-                  requestSortedEntryTable = new CopyOnWriteArrayList<Long>(requestSortedEntryTable.subList(REQUEST_TABLE_CLEAR_SIZE, requestSortedEntryTable.size()));
-                  toRemove = null;
-                }
-              }).run();
+            if ( requestEntryTable.size() > REQUEST_TABLE_SIZE) {
+            	 List<Long> toRemove = requestSortedEntryTable.subList(0, REQUEST_TABLE_CLEAR_SIZE);
+               // removing from keyset removes from hashmap too
+               requestEntryTable.keySet().removeAll(toRemove);
+               // instead of wasting time removing, just make a new one, much faster
+               requestSortedEntryTable = new ArrayList<Long>(requestSortedEntryTable.subList(REQUEST_TABLE_CLEAR_SIZE, requestSortedEntryTable.size()));
+               // help garbage collector
+               toRemove = null;
             }
         }
         catch (Exception e) {
           logger.warn("Can not store route info", e);
         }
         finally {
-          requestLock.readLock().unlock();
+          requestLock.writeLock().unlock();
         }
     }
 
     public String[] getRequestRouteInfo(long hopByHopIdentifier) {
-        requestLock.writeLock().lock();
+        requestLock.readLock().lock();
         AnswerEntry ans = requestEntryTable.get(hopByHopIdentifier);
-        
-        requestLock.writeLock().unlock();
+        requestLock.readLock().unlock();
         if (ans != null) {
         	return new String[] {ans.getHost(), ans.getRealm()};
         }
@@ -359,8 +380,9 @@ public class RouterImpl implements IRouter {
     protected IPeer selectPeer(List<IPeer> avaliblePeers) {
         IPeer p = null;
         for (IPeer c : avaliblePeers) {
-            if (p == null || c.getRating() >= p.getRating())
+            if (p == null || c.getRating() >= p.getRating()) {
                 p = c;
+            }
         }
         return p;
     }
