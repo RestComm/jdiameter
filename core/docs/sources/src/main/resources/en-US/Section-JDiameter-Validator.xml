@@ -3,9 +3,9 @@
 
 <section id="jdiameter-validator">
 
-	<title>&THIS.PLATFORM; Diameter Stack Validator</title>
+	<title>Diameter Stack Validator</title>
 
-	<para>Validator is one of the Stack features. The primary purpose of the Validator is to detect malformed messages, such as an Answer message containing a Destination-Host Attribute Value Pair (<acronym>AVP</acronym>).</para>
+	<para>Validator is one of the Stack features. The primary purpose of the Validator is to detect malformed messages, such as an Answer message containing a Destination-Host Attribute Value Pair (AVP).</para>
 
 	<para>The Validator is capable of validating multi-leveled, grouped AVPs, excluding the following content types:</para>
 	<itemizedlist>
@@ -16,21 +16,25 @@
 			<para>Enumerated types against defined values.</para>
 		</listitem>
 	</itemizedlist>
-	<para>That is, it is capable of checking structural integrity, not content.</para>
-	<para>Validator performs the following checks:</para>
+	<para>The Validator is only capable of checking structural integrity, not the content of the message.</para>
+	<para>The Validator performs the following checks:</para>
 	<variablelist>
 		<varlistentry>
 			<term>Index</term>
-			<listitem><para>Checks if <acronym>AVP</acronym>s are in correct place, eg, <parameter>Session-Id</parameter> must always be encoded before any other <acronym>AVP</acronym>.</para></listitem>
+			<listitem><para>Checks that the AVPs are in the correct place. For example, <literal>Session-Id</literal> must always be encoded before any other AVP.</para></listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>Multiplicity</term>
-			<listitem><para>Checks if message <acronym>AVP</acronym>s occurs the correct number of times, eg, if Session-Id is present one and only one time.</para></listitem>
+			<listitem><para>Checks that the message AVPs occur the proper number of times. For example, the Session-ID should only be present once.</para></listitem>
 		</varlistentry>
 		<!-- TODO: add more checks :) -->
 	</variablelist>
-	<para>Validator is called by stack implementation. It is invoked after message is received and before it is dispatched to remote peer. Note that latter means that if peer does not exist in local peer table validator is not called, as stack fails before calling it.</para>
-
+	<para>The <literal>Validator</literal> is called by the stack implementation. It is invoked after the message is received, but before it is dispatched to a remote peer.</para>
+  <note>
+    <para>
+    This means that if the peer does not exist in the local peer table, the validator is not called, as the stack fails before calling it.
+    </para>
+  </note>  
 	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
 		href="Section-JDiameter-Validator-Configuration.xml" encoding="UTF-8" />
 	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"

@@ -5,8 +5,8 @@
 <section id="mf-Message_Format">
 	<title>Message Format</title>
 	<para>Diameter is a byte based protocol. Each message has a fixed structure, which consists of two parts: header and payload.</para>
-	<para>Message header structure is common for all messages, it has a fixed length and content. It identifies message (by code, application and certain bit flags) in Diameter scope.</para>
-	<para>Payload is the message part built of carried AVPs. Its content differs for each command and application (however ALL define Session-Id AVP as mandatory).</para>
+	<para>The message header structure is common for every message. The content is fixed, as is the length. Message header content includes the code, application and certain bit flags, which helps identify the message in Diameter scope.</para>
+	<para>The message payload is built up of AVPs. Its content differs for each command and application, though they all define the Session-ID AVP as mandatory.</para>
 	<figure>
 		<title>Diameter Message Structure</title>
 		<mediaobject>
@@ -15,7 +15,7 @@
 			</imageobject>
 		</mediaobject>
 	</figure>
-	<para>Header has following fields:</para>
+	<para>The header has the following fields:</para>
 	<variablelist>
 		<title>Message Headers</title>
 		<varlistentry>
@@ -33,19 +33,19 @@
 		<varlistentry>
 			<term>Flags</term>
 			<listitem>
-				<para>Composed by eight bits, to provide information regarding message. First four bits in Flags octet have following meaning:</para>
+				<para>Composed by eight bits, to provide information regarding the message. The first four bits in the flags octet have the following meaning:</para>
 				<itemizedlist>
 					<listitem>
-						<para>R = Message is a request <literal>(1)</literal> or an answer <literal>(0)</literal>;</para>
+						<para>R = The message is a request (<literal>1</literal>) or an answer (<literal>0</literal>).</para>
 					</listitem>
 					<listitem>
-						<para>P = Message is proxiable <literal>(1)</literal> and may be proxied, relayed or redirected, otherwise it must be processed locally <literal>(0)</literal>;</para>
+						<para>P = The message is proxiable (<literal>1</literal>) and may be proxied, relayed or redirected, or it must be processed locally (<literal>0</literal>).</para>
 					</listitem>
 					<listitem>
-						<para>E = Message is an error message <literal>(1)</literal> or a regular message<literal>(0)</literal>;</para>
+						<para>E = The message is an error message (<literal>1</literal>) or a regular message (<literal>0</literal>).</para>
 					</listitem>
 					<listitem>
-						<para>T = Message is being potentially re-transmitted <literal>(1)</literal> or being sent for the first time <literal>(0)</literal></para>
+						<para>T = The message is potentially being re-transmitted (<literal>1</literal>) or being sent for the first time (<literal>0</literal>).</para>
 					</listitem>
 				</itemizedlist>
 				<para>The last four bits are reserved for future use, and should be set to <literal>0</literal>.</para>
@@ -60,23 +60,23 @@
 		<varlistentry>
 			<term>Application-ID</term>
 			<listitem>
-				<para>Identifies application to which the message is applicable for. The application can be an authentication, accounting, or vendor specific application. The application-id in the header must be the same as what is contained in any relevant AVPs contained in the message.</para>
+				<para>Identifies the application to which the message is applicable for. The application is an authentication, accounting, or vendor specific application. The <literal>application-id</literal> in the header must be the same as what is contained in any relevant AVPs in the message.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>Hop-by-Hop ID</term>
 			<listitem>
-				<para>Unique ID that is used to match requests and answer. The Answer message must ensure this header field contains the same value present in the corresponding request. This is how answers are routed back to peer which sent message.</para>
+				<para>A unique ID that is used to match requests and answers. The header field of the answer message must contain the same value present in the corresponding request. This is how answers are routed back to the peer that sent the message.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>End-to-End ID</term>
 			<listitem>
-				<para>Time-limited unique ID that is used to to detect duplicate messages. The ID must be unique for at least four minutes. The Answer message originator must ensure that this header contains the same value present in the corresponding request.</para>
+				<para>A time-limited unique ID that is used to to detect duplicate messages. The ID must be unique for at least four minutes. The answer message originator must ensure that this header contains the same value present in the corresponding request.</para>
 			</listitem>
 		</varlistentry>
 	</variablelist>
-	<para>Message payload is built up from AVPs. Each AVP has similar structure: header and encoded data. Data can be simple (eg, integer, long) or complex (another encoded AVP).</para>
+	<para>The message payload is built up from AVPs. Each AVP has a similar structure: a header, and encoded data. Data can be simple (eg, integer, long) or complex (another encoded AVP).</para>
 	<figure>
 		<title>Payload Structure</title>
 		<mediaobject>
@@ -95,22 +95,31 @@
 			</listitem>
 		</varlistentry>
 		<varlistentry>
-			<term> Flags</term>
+			<term>Flags</term>
 			<listitem>
-				<para>Bit flags, which specify how each attribute must be handled. Flags octet has following structure: V M P r r r r r.</para>
-				<para>Full description can be found in <ulink url="http://tools.ietf.org/html/rfc3588#section-4.1">Section 4.1 of RFC3588</ulink>.</para>
-				<para>First three bits have the following meaning:</para>
-				<itemizedlist>
-					<listitem>
-						<para>V = If set, indicates that optional octets (Vendor-ID) is present in AVP header.</para>
-					</listitem>
-					<listitem>
-						<para>M = If set, it indicates that receiveing peer must understand this AVP or send error answer.</para>
-					</listitem>
-					<listitem>
-						<para>P = If set, it indicates the need for encryption for end-to-end security.</para>
-					</listitem>
-				</itemizedlist>
+				<para>Bit flags that specify how each attribute must be handled. Flags octets have the following structure: V M P r r r r r.</para>
+				<para>A full description is available in <ulink url="http://tools.ietf.org/html/rfc3588#section-4.1">Section 4.1 of RFC3588</ulink>.</para>
+				<para>The first three bits have the following meaning:</para>
+				<variablelist>
+          <varlistentry>
+            <term>V</term>
+            <listitem>
+              <para>If set, indicates that optional octets (Vendor-ID) is present in AVP header.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>M</term>
+            <listitem>
+              <para>If set, it indicates that receiveing peer must understand this AVP or send error answer.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>P</term>
+            <listitem>
+              <para>If set, it indicates the need for encryption for end-to-end security.</para>
+            </listitem>
+          </varlistentry>
+				</variablelist>
 				<para>The last 5 bits are reserved for future use, and should be set to <literal>0</literal>.</para>
 			</listitem>
 		</varlistentry>
@@ -140,7 +149,7 @@
 		<varlistentry>
 			<term>Vendor-ID</term>
 			<listitem>
-				<para>Optional octet identifying AVP in application space. AVP code and AVP Vendor-ID create unique identifier for AVP.</para>
+				<para>An optional octet that identifies the AVP in application space. AVP code and AVP Vendor-ID create a unique identifier for the AVP.</para>
 			</listitem>
 		</varlistentry>
 	</variablelist>

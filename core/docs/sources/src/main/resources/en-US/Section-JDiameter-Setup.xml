@@ -67,7 +67,7 @@
 		
 		<section id="jdiameter-trunk_source_building">
 			<title>Development Trunk Source Building</title>
-			<para>Similar process as for <xref linkend="jdiameter-release_source_building"/>, the only change is the SVN source code URL, which is &THIS.JDIAMETER_TRUNK_SOURCE_CODE_URL;.</para>
+			<para>Follow the process in <xref linkend="jdiameter-release_source_building"/>, replacing the SVN source code URL with &THIS.JDIAMETER_TRUNK_SOURCE_CODE_URL;.</para>
 		</section>
 		
 	</section>

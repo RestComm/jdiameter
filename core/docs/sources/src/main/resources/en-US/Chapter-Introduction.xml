@@ -6,44 +6,39 @@
 
 	<title>Introduction to &THIS.PLATFORM; Diameter</title>
 
-	<para>Diameter is a computer networking protocol for AAA
-		(Authentication, Authorization and Accounting) defined in RFC 3588. It
-		is a successor to RADIUS (and its name is a reference to it, a
-		diameter is twice the radius). Diameter has been designed to overcome
-		certain RADIUS limitations:</para>
+	<para>Diameter is a computer networking protocol for Authentication, Authorization and Accounting (<acronym>AAA</acronym>), as defined in RFC3588. It is a successor to RADIUS, and has been designed to overcome certain RADIUS limitations:</para>
 	<itemizedlist>
 		<listitem>
-			<para>No transport reliability and flexibility (Diameter uses TCP/SCTP instead of UDP)</para>
+			<para>No transport reliability and flexibility (Diameter uses TCP/SCTP instead of UDP).</para>
 		</listitem>
 		<listitem>
-			<para>No security within protocol (Diameter supports IPSec (mandatory) and TLS (optional))</para>
+			<para>No security within protocol (Diameter supports IPSec (mandatory) and TLS (optional)).</para>
 		</listitem>
 		<listitem>
-			<para>Limited address space for AVPs (Diameter uses 32-bit address space instead of 8-bit)
+			<para>Limited address space for AVPs (Diameter uses 32-bit address space instead of 8-bit).
 			</para>
 		</listitem>
 		<listitem>
-			<para>Only stateless mode is possible (Diameter supports both stateful and stateless modes)</para>
+			<para>Only stateless mode is possible (Diameter supports both stateful and stateless modes).</para>
 		</listitem>
 		<listitem>
-			<para>Static peers (Diameter offers dynamic discovery, using DNS SRV and NAPTR)</para>
+			<para>Static peers (Diameter offers dynamic discovery, using DNS, SRV and NAPTR).</para>
 		</listitem>
 		<listitem>
-			<para>No peer alignment capabilities (Diameter introduce capabilities negotiation)</para>
+			<para>No peer alignment capabilities (Diameter introduces capabilities negotiation).</para>
 		</listitem>
 		<listitem>
-			<para>No support for transport layer failover (Diameter follows <ulink url="http://tools.ietf.org/html/rfc3539">RFC3539</ulink>, which introduces proper procedures)</para>
+			<para>No support for transport layer failover. Diameter follows <ulink url="http://tools.ietf.org/html/rfc3539">RFC3539</ulink>, which introduces correct procedures.</para>
 		</listitem>
 		<listitem>
-			<para>Limited support for roaming (Diameter introduces mechanisms for secure and scalable roaming)</para>
+			<para>Limited support for roaming (Diameter introduces mechanisms for secure and scalable roaming).</para>
 		</listitem>
 		<listitem>
-			<para>No extension possible (Diameter allows extension - new commands and avps to be defined)</para>
+			<para>No extension possible (Diameter allows extension - new commands and AVPs to be defined).</para>
 		</listitem>
 	</itemizedlist>
-	<para>Diameter offers all capabilities of RADIUS protocol. Also as a logical successor, it is comptibile with RADIUS. </para>
-	<para>Diameter also allows to define extensions. Each extension is called &quot;Application&quot;.</para>
-	<para>Each application may introduce new types of messages, AVP codes, and state machines. The Message and AVP codes are assigned by the IANA. Furthermore, each application has its own Application ID and Vendor ID	that is used to distinguish between applications. In addition,	application code is used to signal to other peers which operations are supported by connecting peer (Capabilities Exchange / Negotiation).</para>
+	<para>Diameter offers all of the capabilities of the RADIUS protocol, and is compatible with RADIUS. It can also define extensions, or "Applications".</para>
+	<para>Each application may introduce new types of messages, AVP codes, and state machines. The Message and AVP codes are assigned by the <acronym>IANA</acronym>. Each application has its own Application ID and Vendor ID that is used to distinguish between applications. Application code is used to signal to other peers which operations are supported by the connecting peer (Capabilities Exchange / Negotiation).</para>
 
 	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
 		href="Section-Introduction-Message_Format.xml" encoding="UTF-8" />
@@ -55,7 +50,7 @@
 			<varlistentry>
 				<term>Stack</term>
 				<listitem>
-					<para>Extensible Diameter stack. It provides basic session support along with application specific sessions.</para>
+					<para>Extensible Diameter Stack. It provides basic session support along with application specific sessions.</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
@@ -67,7 +62,7 @@
 			<varlistentry>
 				<term>Dictionary</term>
 				<listitem>
-					<para>Diameter Message and <acronym>AVP</acronym> dictionary. Provides an <acronym>API</acronym> to access information about <acronym>AVP</acronym>: Flags, Type, assigned values, etc. Dictionary is embeded in the <acronym>MUX</acronym>.</para>
+					<para>Diameter Message and AVP Dictionary. Provides an API to access information about AVPs. Dictionary is embeded in the MUX.</para>
 				</listitem>
 			</varlistentry>
 		</variablelist>

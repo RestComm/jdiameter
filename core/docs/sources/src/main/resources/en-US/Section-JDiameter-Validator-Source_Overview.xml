@@ -4,45 +4,44 @@
 <section id="jdiameter-validator-source_overview">
 
 	<title>Validator Source Overview</title>
-	<para>Validator	<acronym>API</acronym> defines methods to access its data base of <acronym>AVP</acronym> and check if <acronym>AVP</acronym> and message has proper structure.</para>
-	<para>Currently	Validator is message oriented, that is it declared methods which center on message consitency checks. Class containing all validation logic is <classname>org.jdiameter.common.impl.validation.DiameterMessageValidator</classname>. It exposes the following methods:</para>
+	<para>The Validator	API defines methods to access its database of AVPs and check if the AVP and message have the proper structure.</para>
+	<para>The Validator is currently message oriented. This means that it declares methods that center on message consistency checks. The class containing all validation logic is <classname>org.jdiameter.common.impl.validation.DiameterMessageValidator</classname>. It exposes the following methods:</para>
 	<variablelist>
 		<varlistentry>
 			<term>public boolean isOn();</term>
 			<listitem>
-				<para>Simple method to determine if <literal>Validator</literal> is enabled.</para>
+				<para>Simple method to determine if the <literal>Validator</literal> is enabled.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>public ValidatorLevel getSendLevel();
 			</term>
 			<listitem>
-				<para>Returns validation level for outgoing messages. It can have one of following values: <literal>OFF</literal>, <literal>MESSAGE</literal>, <literal>ALL</literal></para>
+				<para>Returns the validation level of outgoing messages. It can have one of the following values: <literal>OFF</literal>, <literal>MESSAGE</literal>, <literal>ALL</literal>.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>public ValidatorLevel getReceiveLevel()</term>
 			<listitem>
-				<para>Returns validation level for incoming messages. It can have one of following values: <literal>OFF</literal>, <literal>MESSAGE</literal>, <literal>ALL</literal></para>
+				<para>Returns the validation level of incoming messages. It can have one of the following values: <literal>OFF</literal>, <literal>MESSAGE</literal>, <literal>ALL</literal>.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
-			<term> public void validate(Message msg, boolean incoming) throws JAvpNotAllowedException</term>
+			<term>public void validate(Message msg, boolean incoming) throws JAvpNotAllowedException</term>
 			<listitem>
-				<para>Performs validation on message. Based on <parameter>incoming</parameter> flag, the correct validation level is applied. If validation fails, an exception with details is thrown.</para>
+				<para>Performs validation on a message. Based on the <parameter>incoming</parameter> flag, the correct validation level is applied. If validation fails, an exception with details is thrown.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>public void validate(Message msg, ValidatorLevel validatorLevel) throws JAvpNotAllowedException</term>
 			<listitem>
-				<para>Performs validation on message with the specified level. It is a programatical way to allow different level of validation different than configured. If validation fails, a <classname>JAvpNotAllowedException</classname> with details is thrown.</para>
+				<para>Performs validation on messages with a specified level. It is a programatical way to allow different levels of validation from those configured. If validation fails, a <classname>JAvpNotAllowedException</classname> with details is thrown.</para>
 			</listitem>
 		</varlistentry>
 	</variablelist>
 
-
-	<para>Current implementation provides more methods, however those are out of scope for this documentation.</para>
-	<para>Simple example of validator use case look as follows:</para>
+  <note><para>The current implementation provides more methods, however those are out of scope for this documentation.</para></note>
+	<para>A simple example of a Validator use case is shown below:</para>
 
 	<example id="example-Validator_Message_Check_Example">
 		<title>Validator Message Check Example</title>

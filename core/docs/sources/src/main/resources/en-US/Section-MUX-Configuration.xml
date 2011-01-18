@@ -3,15 +3,15 @@
 
 <section id="mux-configuration">
 
-	<title>&THIS.PLATFORM; Diameter Multiplexer (MUX) Configuration</title>
-	<para><acronym>MUX</acronym> requires has three configuration files:</para>
+	<title>Diameter Multiplexer (MUX) Configuration</title>
+	<para>MUX requires three configuration files:</para>
 	<variablelist>
 		<varlistentry>
 			<term>
 				<filename>jboss-service.xml</filename>
 			</term>
 			<listitem>
-				<para>This file is specific to <acronym>SAR</acronym>, please refer to <application>&JEE.PLATFORM;</application> manual for explanation. By default this file binds &THIS.PLATFORM; Diameter <acronym>MUX</acronym> under following JMX object name: <literal>diameter.mobicents:service=DiameterStackMultiplexer</literal>.</para>
+				<para>This file is specific to SAR. Please refer to the <application>&JEE.PLATFORM;</application> manual for explanation. The file binds Diameter MUX under the following JMX object name by default: <literal>diameter.mobicents:service=DiameterStackMultiplexer</literal>.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
@@ -19,7 +19,7 @@
 				<filename>jdiameter-config.xml</filename>
 			</term>
 			<listitem>
-				<para>This file configures stack exposed by <acronym>MUX</acronym>, please refer to <xref linkend="jdiameter-configuration" /> for details. It is located in <filename>mobicents-diameter-mux-&THIS.VERSION;.sar/config</filename></para>
+				<para>This file configures the stack exposed by MUX. Please refer to <xref linkend="jdiameter-configuration" /> for details. It is located in <filename>mobicents-diameter-mux-&THIS.VERSION;.sar/config</filename>.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
@@ -27,7 +27,7 @@
 				<filename>dictionary.xml</filename>
 			</term>
 			<listitem>
-				<para>This file configures dictionary. Its structure and content is identical to file described in <xref linkend="jdiameter-validator-configuration" />.</para>
+				<para>This file configures the dictionary. Its structure and content is identical to the file described in <xref linkend="jdiameter-validator-configuration" />.</para>
 			</listitem>
 		</varlistentry>
 	</variablelist>

@@ -4,19 +4,19 @@
 
 <chapter id="mux">
 
-	<title>&THIS.PLATFORM; Diameter Multiplexer</title>
-	<para>The &THIS.PLATFORM; Diameter Multiplexer (<acronym>MUX</acronym>) is designed as a stack wrapper. It serves two purposes:</para>
+	<title>Multiplexer (MUX)</title>
+	<para>The Multiplexer (MUX) is designed as a stack wrapper. It serves two purposes:</para>
 	<variablelist>
 		<varlistentry>
-			<term>Expose stack</term>
+			<term>Expose Stack</term>
 			<listitem>
-				<para>It exposes the Diameter Stack and allows it to be shared between multiple listeners. The stack follows the <acronym>MUX</acronym> life cycle, ie, it is created and destroyed with the <acronym>MUX</acronym>.</para>
+				<para>It exposes the stack and allows it to be shared between multiple listeners. The stack follows the life cycle of the MUX. It is created and destroyed with MUX.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
-			<term>Expose management operations</term>
+			<term>Expose Management Operations</term>
 			<listitem>
-				<para>It exposes management operations for <acronym>JMX</acronym> clients, one of them being the &MANAGEMENT.PLATFORM; Console. For specifc information please refer to the &THIS.PLATFORM; Diameter Management Console User Guide.</para>
+				<para>Exposes the management operations for <acronym>JMX</acronym> clients, one of them being the &MANAGEMENT.PLATFORM; Console. For specific information please refer to the &THIS.PLATFORM; Diameter Management Console User Guide.</para>
 			</listitem>
 		</varlistentry>
 	</variablelist>
