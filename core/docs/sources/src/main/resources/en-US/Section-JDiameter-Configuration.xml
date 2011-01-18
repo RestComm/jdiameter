@@ -3,9 +3,9 @@
 
 <section id="jdiameter-configuration">
 
-	<title>&THIS.PLATFORM; Diameter Stack Configuration</title>
+	<title>Diameter Stack Configuration</title>
 
-	<para>The stack is initially configured by parsing an XML file. The top level structure of the file is described below. Further explanation of each child element, and the applicable attributes is provided later in this section.</para>
+	<para>The stack is initially configured by parsing an XML file. The top level structure of the file is described below. Further explanation of each child element, and the applicable attributes, is provided later in this section.</para>
 	<programlisting language="XML" role="XML"><![CDATA[<Configuration xmlns="http://www.jdiameter.org/jdiameter-server">
 
 	<LocalPeer></LocalPeer>
@@ -44,19 +44,19 @@
 	</Applications>
 </LocalPeer>]]></programlisting>
 
-	<para>The &lt;LocalPeer&gt; element contains parameters which affect the local Diameter peer. The available elements and attributes are listed for reference.</para>
+	<para>The &lt;LocalPeer&gt; element contains parameters that affect the local Diameter peer. The available elements and attributes are listed for reference.</para>
 	<variablelist>
 		<title>&lt;LocalPeer&gt; Elements and Attributes</title>
 		<varlistentry>
 			<term>&lt;URI&gt;</term>
 			<listitem>
-				<para>Specifies the URI for the local peer. URI has following format: &quot;aaa://FQDN:port&quot;.</para>
+				<para>Specifies the URI for the local peer. The URI has the following format: &quot;aaa://FQDN:port&quot;.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>&lt;IPAddresses&gt;</term>
 			<listitem>
-				<para>Contains one or more child &lt;IPAddress&gt; elements which contain a single, valid IP address for the local peer, stored in the <parameter>value</parameter> attribute of IPAddress.</para>
+				<para>Contains one or more child &lt;IPAddress&gt; element, which contain a single, valid IP address for the local peer, stored in the <parameter>value</parameter> attribute of the IPAddress.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
@@ -74,7 +74,7 @@
 		<varlistentry>
 			<term>&lt;ProductName&gt;</term>
 			<listitem>
-				<para>Specifies the name of the local peer product name.</para>
+				<para>Specifies the name of the local peer product.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
@@ -86,64 +86,66 @@
 		<varlistentry>
 			<term>&lt;OverloadMonitor&gt;</term>
 			<listitem>
-				<para>Optional parent element containing child elements which specify settings relating to the Overload Monitor.</para>
+				<para>Optional parent element containing child elements that specify settings relating to the Overload Monitor.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>&lt;Entry&gt;</term>
 			<listitem>
-				<para>Supports child elements of type &lt;ApplicationID&gt;, which specify the id of the tracked application(s). It also supports following properties:
-					<variablelist>
-						<varlistentry>
-							<term>index</term>
-							<listitem>
-								<para>Defines the index of this overload monitor, so priorities/orders can be specified.</para>
-							</listitem>
-						</varlistentry>
-						<varlistentry>
-							<term>lowThreshold</term>
-							<listitem>
-								<para>The low threshold for activation of the overload monitor.</para>
-							</listitem>
-						</varlistentry>
-						<varlistentry>
-							<term>highThreshold</term>
-							<listitem>
-								<para>The high threshold for activation of the overload monitor.</para>
-							</listitem>
-						</varlistentry>
-					</variablelist>
-				</para>
+				<para>Supports &lt;ApplicationID&gt; child elements that specify the ID of the tracked application(s). It also supports the following properties:
+        </para>
+        <variablelist>
+          <varlistentry>
+            <term>index</term>
+            <listitem>
+              <para>Defines the index of this overload monitor, so priorities/orders can be specified.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>lowThreshold</term>
+            <listitem>
+              <para>The low threshold for activation of the overload monitor.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>highThreshold</term>
+            <listitem>
+              <para>The high threshold for activation of the overload monitor.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>&lt;ApplicationID&gt;</term>
 			<listitem>
-				<para>Parent element containing child elements which specify information about the application. Child elements are: VendorId, AuthAppId and AcctAppId. Together they create an unique application identifier.</para>
-			</listitem>
-		</varlistentry>
-		<varlistentry>
-			<term>&lt;VendorId&gt;</term>
-			<listitem>
-				<para>Specifies vendor id for application definition. It supports a single property: &quot;value&quot;</para>
-			</listitem>
-		</varlistentry>
-		<varlistentry>
-			<term>&lt;AuthAppId&gt;</term>
-			<listitem>
-				<para>The Authentication Application ID for application definition. It supports a single property: &quot;value&quot;</para>
-			</listitem>
-		</varlistentry>
-		<varlistentry>
-			<term>&lt;AcctAplId&gt;</term>
-			<listitem>
-				<para>The Account Application ID for application defitniion. It supports a single property: &quot;value&quot;</para>
-			</listitem>
+				<para>Parent element containing child elements that specify information about the application. The child elements create a unique application identifier. The child elements are:</para>
+        <variablelist>
+          <varlistentry>
+            <term>&lt;VendorId&gt;</term>
+            <listitem>
+              <para>Specifies the vendor ID for application definition. It supports a single property: &quot;value&quot;.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>&lt;AuthAppId&gt;</term>
+            <listitem>
+              <para>The Authentication Application ID for application definition. It supports a single property: &quot;value&quot;.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>&lt;AcctAplId&gt;</term>
+            <listitem>
+              <para>The Account Application ID for application definition. It supports a single property: &quot;value&quot;.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>&lt;Applications&gt;</term>
 			<listitem>
-				<para>Contains a child element &lt;ApplicationID&gt;, which defines the list of default supported applications. It is used for server side. When stack is configured to accept incoming calls and there is empty list of preconfigured peers (server is configured to accept any connection).</para>
+				<para>Contains a child element &lt;ApplicationID&gt;, which defines the list of default supported applications. It is used for the server side, when the stack is configured to accept incoming calls and there is an empty list of preconfigured peers (server is configured to accept any connection).</para>
 			</listitem>
 		</varlistentry>
 	</variablelist>
@@ -175,87 +177,86 @@
 
 </Parameters>]]></programlisting>
 
-	<para>The &lt;Parameters&gt; element contains elements which specify parameters for the Diameter stack. The available elements and attributes are listed for reference. If not specified otherwise each tag supports a single property &quot;value&quot; which indicates value of tag.</para>
+	<para>The &lt;Parameters&gt; element contains elements that specify parameters for the Diameter stack. The available elements and attributes are listed for reference. If not specified otherwise, each tag supports a single property - &quot;value&quot;, which indicates the value of the tag.</para>
 	<!--TODO: Developer: Need to obtain better definitions for the Parameter Elements and Attributes. Information present at the moment is not that helpful to readers.-->
 	<variablelist>
 		<title>&lt;Parameters&gt; Elements and Attributes</title>
 		<varlistentry>
 			<term>&lt;AcceptUndefinedPeer&gt;</term>
 			<listitem>
-				<para> Specifies whether the stack will accept connections from undefined peers. The default value is <literal>false</literal>.</para>
+				<para>Specifies whether the stack will accept connections from undefined peers. The default value is <literal>false</literal>.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>&lt;DuplicateProtection&gt;</term>
 			<listitem>
-				<para> Specifies whether duplicate message protection is enabled. The default value is <literal>false</literal>.</para>
+				<para>Specifies whether duplicate message protection is enabled. The default value is <literal>false</literal>.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>&lt;DuplicateTimer&gt;</term>
 			<listitem>
-				<para> Specifies the time each duplicate message is valid for. The default, minimum value is <literal>240000</literal> (4 minutes in milliseconds)</para>
+				<para>Specifies the time each duplicate message is valid for. The default, minimum value is <literal>240000</literal> (4 minutes in milliseconds).</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>&lt;UseUriAsFqdn&gt;</term>
 			<listitem>
-				<para> Determines as URI should be used as FQDN, if set to <literal>true</literal> stack expects destination/origin host in format of &quot;aaa://isdn.domain.com:3868&quot; instead of proper &quot;isdn.domain.com&quot;. Default value is <literal>false</literal>.</para>
+				<para>Determines whether the URI should be used as FQDN. If it is set to <literal>true</literal>, the stack expects the destination/origin host to be in the format of &quot;aaa://isdn.domain.com:3868&quot; rather than the normal &quot;isdn.domain.com&quot;. The default value is <literal>false</literal>.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>&lt;QueueSize&gt;</term>
 			<listitem>
-				<para> Determines how many tasks peer state machine can have before rejecting next task. This queue contains FSM event and messaging.</para>
+				<para>Determines how many tasks the peer state machine can have before rejecting the next task. This queue contains FSM events and messaging.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>&lt;MessageTimeOut&gt;</term>
 			<listitem>
-				<para>Determines timeout for other than protocol FSM messages. Delay is in milliseconds.</para>
+				<para>Determines the timeout for messages other than protocol FSM messages. The delay is in milliseconds.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>&lt;StopTimeOut&gt;</term>
 			<listitem>
-				<para>Determines how long stack waits for all resources to stop gracefully. Delays is in milliseconds.</para>
+				<para>Determines how long the stack waits for all resources to stop. The delays are in milliseconds.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>&lt;CeaTimeOut&gt;</term>
 			<listitem>
-				<para>Determines how long it takes for CER/CEA exchange to timeout if there is no response. Delay is in milliseconds.</para>
+				<para>Determines how long it takes for CER/CEA exchanges to timeout if there is no response. The delays are in milliseconds.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>&lt;IacTimeOut&gt;</term>
 			<listitem>
-				<para>Determines how long to retry communication with a peer that stopped answering DWR messages. The delay is in milliseconds</para>
+				<para>Determines how long the stack waits to retry the communication with a peer that has stopped answering DWR messages. The delay is in milliseconds.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>&lt;DwaTimeOut&gt;</term>
 			<listitem>
-				<para>Determines how long it takes for DWR/DWA exchange to timeout if there is no response. Delay is in milliseconds.</para>
+				<para>Determines how long it takes for a DWR/DWA exchange to timeout if there is no response. The delay is in milliseconds.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>&lt;DpaTimeOut&gt;</term>
 			<listitem>
-				<para>Determines how long it takes for DPR/DPA exchange to timeout if there is no response. Delay is in milliseconds.</para>
+				<para>Determines how long it takes for a DPR/DPA exchange to timeout if there is no response. The delay is in milliseconds.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>&lt;RecTimeOut&gt;</term>
 			<listitem>
-				<para> Determines how long it takes for reconnection procedure to timeout. Delay is in milliseconds.</para>
+				<para>Determines how long it takes for the reconnection procedure to timeout. The delay is in milliseconds.</para>
 			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>&lt;Concurrent /&gt;</term>
 			<listitem>
-				<para>Controls thread pool sizes for different aspects of stack. Supports multiple <parameter>Entity</parameter> child elements. <parameter>Entity</parameter> elements configure thread groups</para>
-				<para>Entity element supports following properties:</para>
+				<para>Controls the thread pool sizes for different aspects of the stack. It supports multiple <parameter>Entity</parameter> child elements. <parameter>Entity</parameter> elements configure thread groups. These elements support the following properties:</para>
 			<variablelist>
 				<varlistentry>
 					<term>name</term>
@@ -266,58 +267,58 @@
 				<varlistentry>
 					<term>size</term>
 				<listitem>
-					<para>Thread pool size of entity.</para>
+					<para>Specifies the thread pool size of the entity.</para>
 				</listitem>
 				</varlistentry>
 			</variablelist>
-			<para>Default supported entities are as follows:</para>
+			<para>The default supported entities are:</para>
 			<variablelist>
 				<varlistentry>
 					<term>ThreadGroup</term>
 					<listitem>
-						<para>Specifies maximum thread count in other entities</para>
+						<para>Determines the maximum thread count in other entities.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
 					<term>ProcessingMessageTimer</term>
 					<listitem>
-						<para>Specifies thread count for message processing task.</para>
+						<para>Determines the thread count for message processing tasks.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
 					<term>DuplicationMessageTimer</term>
 					<listitem>
-						<para>Specifies thread pool for identifying duplicate messages.</para>
+						<para>Specifies the thread pool for identifying duplicate messages.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
 					<term>RedirectMessageTimer</term>
 					<listitem>
-						<para>Specifies thread pool for redirecting messages, which do not need any further processing (ie, relaying).</para>
+						<para>Specifies the thread pool for redirecting messages that do not need any further processing.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
 					<term>PeerOverloadTimer</term>
 					<listitem>
-						<para>Specifies thread pool for overload monitor tasks.</para>
+						<para>Determines the thread pool for managing the overload monitor.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
 					<term>ConnectionTimer</term>
 					<listitem>
-						<para>Specifies thread pool for managing tasks regarding peer connection <acronym>FSM</acronym>.</para>
+						<para>Determines the thread pool for managing tasks regarding peer connection <acronym>FSM</acronym>.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
 					<term>StatisticTimer</term>
 					<listitem>
-						<para>Specifies thread pool for statistic gathering tasks.</para>
+						<para>Determines the thread pool for statistic gathering tasks.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
 					<term>ApplicationSession</term>
 					<listitem>
-						<para>Specifies thread pool for managing invocation of application session <acronym>FSM</acronym>, which will invoke listeners.</para>
+						<para>Determines the thread pool for managing the invocation of application session <acronym>FSM</acronym>s, which will invoke listeners.</para>
 					</listitem>
 				</varlistentry>
 			</variablelist>
@@ -344,83 +345,71 @@
 
 </Network>]]></programlisting>
 
-	<para>The &lt;Network&gt; element contains elements which specify parameters for external peers. The available elements and attributes are listed for reference.</para>
+	<para>The &lt;Network&gt; element contains elements that specify parameters for external peers. The available elements and attributes are listed for reference.</para>
 	<variablelist>
 		<title>&lt;Network&gt; Elements and Attributes</title>
 		<varlistentry>
 			<term>&lt;Peers&gt;</term>
 			<listitem>
-				<para>Parent element containing child elements which specify external peers and the way they connect.</para>
-			</listitem>
-		</varlistentry>
-		<varlistentry>
-			<term>&lt;Peer&gt;</term>
-			<listitem>
-				<para>Specifies the name of the external peer, whether the peer should be treated as a server or client, and what rating the peer has externally.</para>
-				<para>Peer supports following properties:<variablelist>
-						<varlistentry>
-							<term>name</term>
-							<listitem>
-								<para>Specifies name of peer in for of URI. structure looks as follows &quot;aaa://[fqdn|ip]:port&quot;, for example &quot;aaa://192.168.1.1:3868&quot;</para>
-							</listitem>
-						</varlistentry>
-						<varlistentry>
-							<term>attempt_connect</term>
-							<listitem>
-								<para>Determines if stack should try to connect to this peer. This property accepts boolean values.</para>
-							</listitem>
-						</varlistentry>
-						<varlistentry>
-							<term>rating</term>
-							<listitem>
-								<para>Specifies the rating of this peer, in order to achiever peer priorities/sorting.</para>
-							</listitem>
-						</varlistentry>
-					</variablelist>
-				</para>
-			</listitem>
+				<para>Parent element containing the child element &lt;Peer&gt;, which specifies external peers and the way they connect. &lt;Peer&gt; specifies the name of external peers, whether they should be treated as a server or client, and what rating the peer has externally.</para>
+        <para>&lt;Peer&gt; supports the following properties:</para>
+        <variablelist>
+          <varlistentry>
+            <term>name</term>
+            <listitem>
+              <para>Specifies the name of the peer in the form of a URI. The structure is &quot;aaa://[fqdn|ip]:port&quot; (for example, &quot;aaa://192.168.1.1:3868&quot;).</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>attempt_connect</term>
+            <listitem>
+              <para>Determines if the stack should try to connect to this peer. This property accepts boolean values.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>rating</term>
+            <listitem>
+              <para>Specifies the rating of this peer in order to achieve peer priorities/sorting.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>&lt;Realms&gt;</term>
 			<listitem>
-				<para>Parent element containing child elements which specify all realms that connect into the Diameter network.</para>
-			</listitem>
-		</varlistentry>
-		<varlistentry>
-			<term>&lt;Realm&gt;</term>
-			<listitem>
-				<para>Child element containing attributes and elements which describe different realms configured for the Core. It supports &lt;ApplicationID&gt; child elements, which define applications supported. </para>
-				<para>Realm supports following parameters:</para>
-				<variablelist>
-					<varlistentry>
-						<term>peers</term>
-						<listitem>
-							<para>Comma separated list of peers, each peer is represented by IP Address or FQDN.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry>
-						<term>local_action</term>
-						<listitem>
-							<para>Determines the action the Local Peer will play on the specified realm: Act as a LOCAL peer</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry>
-						<term>dynamic</term>
-						<listitem>
-							<para>Specifies if this realm is dynamic, ie, peers connecting to local peer with this realm name, will be added to the realm peer list if not present already.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry>
-						<term>exp_time</term>
-						<listitem>
-							<para>The expire time for a peer belonging to this realm to be removed from it, if no connection is available.</para>
-						</listitem>
-					</varlistentry>
-				</variablelist>
-			</listitem>
-		</varlistentry>
+				<para>Parent element containing the child element &lt;Realm&gt;, which specifies all realms that connect into the Diameter network. &lt;Realm&gt; contains attributes and elements that describe different realms configured for the Core. It supports &lt;ApplicationID&gt; child elements, which define the applications supported.</para>
+        <para>&lt;Realm&gt; supports the following parameters:</para>
+        <variablelist>
+          <varlistentry>
+            <term>peers</term>
+            <listitem>
+              <para>Comma separated list of peers. Each peer is represented by an IP Address or FQDN.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>local_action</term>
+            <listitem>
+              <para>Determines the action the Local Peer will play on the specified realm: Act as a LOCAL peer.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>dynamic</term>
+            <listitem>
+              <para>Specifies if this realm is dynamic. That is, peers that connect to peers with this realm name will be added to the realm peer list if not present already.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>exp_time</term>
+            <listitem>
+              <para>The time before a peer belonging to this realm is removed if no connection is available.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </listitem>
+    </varlistentry>
 	</variablelist>
- 	<para>An example configuration file for a server supporting the CCA, Sh and Ro Applications: </para>
+ 	<para>Below is an example configuration file for a server supporting the CCA, Sh and Ro Applications:</para>
  	<programlisting language="XML" role="XML"><![CDATA[<?xml version="1.0"?>
 <Configuration xmlns="http://www.jdiameter.org/jdiameter-server">
 
@@ -509,11 +498,11 @@
 
 	<section id="jdiameter-cluster-configuration">
 		<title>Cluster configuration</title>
-		<para>To enable stack clsuter mode you need following: </para>
+		<para>The following list defines the requirements for enabling stack cluster mode</para>
 		<itemizedlist>
 			<listitem>	
 				<para>
-					Add the following entries in <literal>Parameters</literal> section of <filename>jdiameter-config.xml</filename>:
+					Add the following entries to the <literal>Parameters</literal> section of <filename>jdiameter-config.xml</filename>:
 				</para>
 				<programlisting lang="XML" role="XML">
 				<![CDATA[
@@ -523,7 +512,10 @@
 				</programlisting>
 			</listitem>
 			<listitem>
-				<para>Proper <literal>JBoss Cache</literal> configuration file: <filename>jdiameter-jbc.xml</filename> (located under <filename>config</filename> directory). For instance following content is enough:</para>
+				<para>A proper <literal>JBoss Cache</literal> configuration file: <filename>jdiameter-jbc.xml</filename> (located in the <filename>config</filename> directory).</para>
+        <para>
+        The following content is sufficient for the JBoss Cache configuration file:
+        </para>
 				<programlisting lang="XML" role="XML">
 				<![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
