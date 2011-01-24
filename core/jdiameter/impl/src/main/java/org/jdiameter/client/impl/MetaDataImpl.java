@@ -86,7 +86,7 @@ public class MetaDataImpl implements IMetaData {
   protected List<MemoryPoolMXBean> beans = ManagementFactory.getMemoryPoolMXBeans();
 
   protected IContainer stack;
-  protected int state;
+  protected long state;
   protected IPeer peer;
   protected Set<ApplicationId> appIds = new LinkedHashSet<ApplicationId>();
   protected final ISessionDatasource sessionDataSource;
@@ -167,10 +167,10 @@ public class MetaDataImpl implements IMetaData {
   }
 
   public void updateLocalHostStateId() {
-    state = Math.abs((int) System.currentTimeMillis());
+    state = System.currentTimeMillis();
   }
 
-  public int getLocalHostStateId() {
+  public long getLocalHostStateId() {
     return state;
   }
 

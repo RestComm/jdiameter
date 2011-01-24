@@ -28,5 +28,5 @@ public interface IMetaData extends MetaData {
      * Return host state value
      * @return host state value
      */
-    int getLocalHostStateId();
+    long getLocalHostStateId();
 }
