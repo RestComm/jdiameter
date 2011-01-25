@@ -877,7 +877,22 @@ public class PeerImpl extends AbstractPeer implements IPeer {
         }
       }
       else {
-        message.getAvps().addAvp(SUPPORTED_VENDOR_ID, appId.getVendorId(), true, false, true);
+        // Avoid duplicates 
+        boolean vendorIdPresent = false;
+        for(Avp avp : message.getAvps().getAvps(SUPPORTED_VENDOR_ID)) {
+          try {
+            if(avp.getUnsigned32() == appId.getVendorId()) {
+              vendorIdPresent = true;
+              break;
+            }
+          }
+          catch (Exception e) {
+            logger.debug("Failed to read Supported-Vendor-Id.", e);
+          }
+        }
+        if(!vendorIdPresent) {
+          message.getAvps().addAvp(SUPPORTED_VENDOR_ID, appId.getVendorId(), true, false, true);
+        }
         AvpSet vendorApp = message.getAvps().addGroupedAvp(VENDOR_SPECIFIC_APPLICATION_ID, true, false);
         vendorApp.addAvp(VENDOR_ID, appId.getVendorId(), true, false, true);
         if (appId.getAuthAppId() != 0) {
