@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">%BOOK_ENTITIES;]>
-<bookinfo id="&BOOK_ID;">
-	<title>&THIS.PLATFORM; Diameter User Guide</title>
+<bookinfo id="Diameter-User-Guide">
+	<title>Diameter User Guide</title>
 	<subtitle></subtitle>
 	<productname>&THIS.PLATFORM; Diameter</productname>
 	<productnumber>&THIS.VERSION;</productnumber>

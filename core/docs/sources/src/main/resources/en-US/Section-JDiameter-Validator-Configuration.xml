@@ -415,30 +415,32 @@
         <para>
         Specifies the command for the application. The element supports the &lt;avp&gt; element, which specifies the structure of the command. The element supports the following attributes:
         </para>
-        <varlistentry>
-          <term>name</term>
-          <listitem>
-            <para>
-            Optional parameter that specifies the message name for descriptive purposes.
-            </para>
-          </listitem>
-        </varlistentry>
-        <varlistentry>
-          <term>code</term>
-          <listitem>
-            <para>
-            Mandatory parameter that specifies the integer code of the message.
-            </para>
-          </listitem>
-        </varlistentry>
-        <varlistentry>
-          <term>request</term>
-          <listitem>
-            <para>
-            Mandatory parameter that specifies whether the declared command is a request or answer. The available values are &quot;true&quot; (request) or &quot;false&quot; (answer).
-            </para>
-          </listitem>
-        </varlistentry>
+        <variablelist>
+          <varlistentry>
+            <term>name</term>
+            <listitem>
+              <para>
+              Optional parameter that specifies the message name for descriptive purposes.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>code</term>
+            <listitem>
+              <para>
+              Mandatory parameter that specifies the integer code of the message.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>request</term>
+            <listitem>
+              <para>
+              Mandatory parameter that specifies whether the declared command is a request or answer. The available values are &quot;true&quot; (request) or &quot;false&quot; (answer).
+              </para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
       </listitem>
     </varlistentry>
   </variablelist>
