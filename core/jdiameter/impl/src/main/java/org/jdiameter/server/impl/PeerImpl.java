@@ -36,13 +36,16 @@ import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.api.statistic.IStatistic;
-import org.jdiameter.common.api.statistic.IStatisticFactory;
+import org.jdiameter.common.api.statistic.IStatisticManager;
+import org.jdiameter.common.api.statistic.IStatisticRecord;
 import org.jdiameter.server.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -74,7 +77,7 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
   public PeerImpl(int rating, URI remotePeer, String ip, String portRange, boolean attCnn, IConnection connection,
       MutablePeerTableImpl peerTable, IMetaData metaData, Configuration config, Configuration peerConfig,
       ISessionFactory sessionFactory, IFsmFactory fsmFactory, ITransportLayerFactory trFactory,
-      IStatisticFactory statisticFactory, IConcurrentFactory concurrentFactory,
+      IStatisticManager statisticFactory, IConcurrentFactory concurrentFactory,
       IMessageParser parser, INetwork nWork, IOverloadManager oManager, final ISessionDatasource sessionDataSource)
   throws InternalException, TransportException {
     super(peerTable, rating, remotePeer, ip, portRange, metaData, config, peerConfig, fsmFactory, trFactory, parser,
@@ -90,7 +93,15 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
     this.ovrManager = oManager;
     // Append fsm statistic
     if (this.fsm instanceof IStateMachine) {
-      this.statistic.appendCounter(((IStateMachine) fsm).getStatistic().getRecords());
+    	
+    	StatisticRecord[] records = ((IStateMachine) fsm).getStatistic().getRecords(); 
+    	IStatisticRecord[] recordsArray = new IStatisticRecord[records.length];
+    	int count = 0;
+    	for(StatisticRecord st: records)
+    	{
+    		recordsArray[count++] = (IStatisticRecord) st;
+    	}
+    	this.statistic.appendCounter(recordsArray);
     }
   }
 
@@ -262,7 +273,8 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
       boolean isProcessed = super.receiveMessage(request);
       if (request.isRequest()) {
         if (!isProcessed) {
-          statistic.getRecordByName(IStatistic.Counters.NetGenRejectedRequest.name()).dec();
+        	if(statistic.isEnabled())
+        		statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedRequest.name()).dec();
           int resultCode = ResultCode.SUCCESS;
           ApplicationId appId = request.getSingleApplicationId();
           if (appId == null) {
@@ -282,7 +294,8 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                   answer.getAvps().addAvp(avp);
                 }
                 answer.setHopByHopIdentifier(request.getHopByHopIdentifier());
-                statistic.getRecordByName(IStatistic.Counters.SysGenResponse.name()).inc();
+                if(statistic.isEnabled())
+                	statistic.getRecordByName(IStatisticRecord.Counters.SysGenResponse.name()).inc();
                 isProcessed = true;
               }
               else {
@@ -308,7 +321,8 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
               try {
                 if (answer != null && isProcessed) {
                   sendMessage(answer);
-                  statistic.getRecordByName(IStatistic.Counters.AppGenResponse.name()).inc();
+                  if(statistic.isEnabled())
+                  	statistic.getRecordByName(IStatisticRecord.Counters.AppGenResponse.name()).inc();
                 }
               }
               catch (Exception e) {
@@ -328,15 +342,18 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
             request.getAvps().addAvp(Avp.RESULT_CODE, resultCode, true, false, true);
             try {
               sendMessage(request);
-              statistic.getRecordByName(IStatistic.Counters.SysGenResponse.name()).inc();
+              if(statistic.isEnabled())
+              	statistic.getRecordByName(IStatisticRecord.Counters.SysGenResponse.name()).inc();
             }
             catch (Exception e) {
               logger.debug("Can not send answer", e);
             }
-            statistic.getRecordByName(IStatistic.Counters.NetGenRejectedRequest.name()).inc();
+            if(statistic.isEnabled())
+            	statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedRequest.name()).inc();
           }
           else {
-            statistic.getRecordByName(IStatistic.Counters.NetGenRequest.name()).inc();
+        	  if(statistic.isEnabled())
+              	statistic.getRecordByName(IStatisticRecord.Counters.NetGenRequest.name()).inc();
 
           }
         }

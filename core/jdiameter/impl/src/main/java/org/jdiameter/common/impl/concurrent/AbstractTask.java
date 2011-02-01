@@ -25,15 +25,18 @@ abstract class AbstractTask<L> {
     this.statistic = statistic;
   }
 
-  protected IStatisticRecord getCounter(IStatistic.Counters counter) {
+  protected IStatisticRecord getCounter(IStatisticRecord.Counters counter) {
     return statistic.getRecordByName(counter.name());
   }
 
   protected void updateTimeStatistic(long time, long waitTime) {
-    execTimeSumm.inc((System.nanoTime() - time) / 999999);
-    execTimeCount.inc();
-    waitTimeSumm.inc(waitTime / 999999);
-    waitTimeCount.inc();
+	  if(statistic.isEnabled())
+	  {
+		  execTimeSumm.inc((System.nanoTime() - time) / 999999);
+		  execTimeCount.inc();
+		  waitTimeSumm.inc(waitTime / 999999);
+		  waitTimeCount.inc();
+	  }
   }
 
   @Override
@@ -46,18 +49,19 @@ abstract class AbstractTask<L> {
     return parentTask.hashCode();
   }
 
-  public static class AverajeValueHolder implements IStatisticRecord.ValueHolder {
+  public static class AverageValueHolder implements IStatisticRecord.ValueHolder {
     private IStatistic statistic;
-    private IStatistic.Counters counter;
+    private IStatisticRecord.Counters counter;
 
-    public AverajeValueHolder(IStatistic statistic, IStatistic.Counters counter) {
+    public AverageValueHolder(IStatistic statistic, IStatisticRecord.Counters counter) {
       this.statistic = statistic;
       this.counter = counter;
     }
 
     public double getValueAsDouble() {
+    	
       IStatisticRecord record = statistic.getRecordByName(counter.name());
-      if (record.getChilds().length == 2 || record.getChilds()[1].getValueAsLong() != 0) {
+      if (statistic.isEnabled() && (record.getChilds().length == 2 || record.getChilds()[1].getValueAsLong() != 0) ) {
         long count = record.getChilds()[1].getValueAsLong();
         return ((float) record.getChilds()[0].getValueAsLong()) / ((float) (count != 0 ? count : 1));
       }

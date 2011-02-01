@@ -16,13 +16,13 @@ import org.jdiameter.client.api.fsm.IContext;
 import org.jdiameter.client.api.fsm.IFsmFactory;
 import org.jdiameter.client.api.fsm.IStateMachine;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
-import org.jdiameter.common.api.statistic.IStatisticFactory;
+import org.jdiameter.common.api.statistic.IStatisticManager;
 
 public class FsmFactoryImpl implements IFsmFactory { // TODO: please redesign this code "duplicate"
 
-  protected IStatisticFactory statisticFactory;
+  protected IStatisticManager statisticFactory;
 
-  public FsmFactoryImpl(IStatisticFactory statisticFactory) {
+  public FsmFactoryImpl(IStatisticManager statisticFactory) {
     this.statisticFactory = statisticFactory;
 
   }

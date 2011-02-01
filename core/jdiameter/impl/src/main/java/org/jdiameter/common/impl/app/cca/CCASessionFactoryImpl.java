@@ -81,11 +81,21 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
   protected ISessionDatasource iss;
   protected ISessionFactory sessionFactory = null;
 
+  protected void init(SessionFactory sessionFactory)
+  {
+	  this.sessionFactory = (ISessionFactory) sessionFactory;
+	    this.iss = this.sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
+  }
+  
+  public CCASessionFactoryImpl() {
+	    super();
+	   
+  }
+  
   public CCASessionFactoryImpl(SessionFactory sessionFactory) {
     super();
-
-    this.sessionFactory = (ISessionFactory) sessionFactory;
-    this.iss = this.sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
+    this.init(sessionFactory);
+   
   }
 
   public CCASessionFactoryImpl(SessionFactory sessionFactory, int defaultDirectDebitingFailureHandling, int defaultCreditControlFailureHandling, long defaultValidityTime, long defaultTxTimerValue) {

@@ -37,7 +37,7 @@ public interface IConcurrentFactory {
   // Common
   IStatistic getStatistic();
 
-  IStatistic[] getStatistics();
+  List<IStatistic> getStatistics();
 
   void shutdownAllNow();
 }

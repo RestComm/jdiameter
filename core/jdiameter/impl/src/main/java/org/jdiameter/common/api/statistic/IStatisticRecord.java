@@ -9,11 +9,59 @@
  */
 package org.jdiameter.common.api.statistic;
 
+import org.jdiameter.api.StatisticRecord;
+
 /**
  * This interface describe extends methods of base class
  */
-public interface IStatisticRecord {
+public interface IStatisticRecord extends StatisticRecord{
 
+	 enum Counters {
+
+		    AppGenRequest("Count of app generated requests"),
+		    AppGenRejectedRequest("Count of rejected app generated requests"),
+		    AppGenResponse("Count of app generated responses"),
+		    AppGenRejectedResponse("Count of rejected app generated responses"),
+		    NetGenRequest("Count of network generated processed requests"),
+		    NetGenRejectedRequest("Count of network generated rejected requests"),
+		    NetGenResponse("Count of network generated processed responses"),
+		    NetGenRejectedResponse("Count of network generated rejected responses"),
+		    SysGenResponse("Count of platform generated responses"),
+
+		    AppGenRequestPerSecond("Count of app generated request per second"),
+		    AppGenResponsePerSecond("Count of app generated responses per second"),
+		    NetGenResponsePerSecond("Count of network generated responses per second"),
+		    NetGenRequestPerSecond("Count of network generated request per second"),
+
+		    RequestListenerCount("Count of network request appIdToNetListener"),
+		    SelectorCount("Count of network request selectorToNetListener"),
+
+		    HeapMemory("Heap memory usage"),
+		    NoHeapMemory("No-heap memory usage"),
+		    MessageProcessingTime("Average time of processing message"),
+
+		    ConcurrentThread("Count thread in default thread group"),
+		    ConcurrentScheduledExecutedServices("Count of ScheduledExecutorServices"),
+
+		    WorkingThread("Count of working thread"),
+		    CanceledTasks("Count of canceled thread"),
+		    ExecTimeTask("Average execution time of task"),
+		    WaitTimeTask("Average waiting time for execution task"),
+		    BrokenTasks("Count of broken thread"),
+		    RejectedTasks("Count of rejected tasks"),
+		    QueueSize("Peer FSM queue size");
+
+		    private String description;
+
+		    Counters(String description) {
+		      this.description = description;
+		    }
+
+		    public String getDescription() {
+		      return description;
+		    }
+		  }
+	
   /**
    * Increment counter
    */
@@ -36,20 +84,13 @@ public interface IStatisticRecord {
    */
   void setLongValue(long value);
 
+
   /**
    * Set value of statistic
    *
    * @param value new value of record
    */
   void setDoubleValue(double value);
-
-  /**
-   * Enable/Disable counter
-   *
-   * @param e on/off parameter
-   */
-  public void enable(boolean e);
-
   /**
    * ValueHolder for external statistics
    */
@@ -87,57 +128,4 @@ public interface IStatisticRecord {
 
   //===========================
 
-  /**
-   * Return name of counter
-   *
-   * @return name of counter
-   */
-  String getName();
-
-  /**
-   * Retrurn description of counter
-   *
-   * @return description of counter
-   */
-  String getDescription();
-
-  /**
-   * Return value of counter as integer
-   *
-   * @return value of counter
-   */
-  int getValueAsInt();
-
-  /**
-   * Return value of counter as double
-   *
-   * @return value of counter
-   */
-  double getValueAsDouble();
-
-  /**
-   * Return value of counter as long
-   *
-   * @return value of counter
-   */
-  long getValueAsLong();
-
-  /**
-   * Return code of counter
-   *
-   * @return code of counter
-   */
-  int getType();
-
-  /**
-   * Return childs counters
-   *
-   * @return array of childs countres
-   */
-  IStatisticRecord[] getChilds();
-
-  /**
-   * Reset counter and all child counters
-   */
-  void reset();
 }

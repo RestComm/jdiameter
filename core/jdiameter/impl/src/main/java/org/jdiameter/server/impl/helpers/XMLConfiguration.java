@@ -16,6 +16,10 @@ import static org.jdiameter.client.impl.helpers.Parameters.DictionaryClass;
 import static org.jdiameter.client.impl.helpers.Parameters.DictionaryEnabled;
 import static org.jdiameter.client.impl.helpers.Parameters.DictionaryReceiveLevel;
 import static org.jdiameter.client.impl.helpers.Parameters.DictionarySendLevel;
+import static org.jdiameter.client.impl.helpers.Parameters.StatisticsActiveList;
+import static org.jdiameter.client.impl.helpers.Parameters.StatisticsEnabled;
+import static org.jdiameter.client.impl.helpers.Parameters.StatisticsLoggerDelay;
+import static org.jdiameter.client.impl.helpers.Parameters.StatisticsLoggerPause;
 import static org.jdiameter.server.impl.helpers.Parameters.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -186,7 +190,7 @@ public class XMLConfiguration extends EmptyConfiguration {
             else if (nodeName.equals("DpaTimeOut")) { add(DpaTimeOut, getLongValue(c.item(i)));               }
             else if (nodeName.equals("RecTimeOut")) { add(RecTimeOut, getLongValue(c.item(i)));               }
             else if (nodeName.equals("ThreadPool")) { addThreadPool(c.item(i));                               }
-            else if (nodeName.equals("StatisticLogger")) { addStatisticLogger(StatisticLogger, c.item(i));    }
+            else if (nodeName.equals("Statistics")) { addStatisticLogger(Statistics, c.item(i));    }
             else if (nodeName.equals("Concurrent")) { addConcurrent(Concurrent, c.item(i));                   }
             else if (nodeName.equals("SessionDatasource")) { add(SessionDatasource, getValue(c.item(i)));     }
             else if (nodeName.equals("TimerFacility")) { add(TimerFacility, getValue(c.item(i)));             }
@@ -249,12 +253,21 @@ public class XMLConfiguration extends EmptyConfiguration {
 
 
 	protected void addStatisticLogger(org.jdiameter.client.impl.helpers.Parameters name, Node node) {
-	  String pause = node.getAttributes().getNamedItem("pause").getNodeValue();
-	  String delay = node.getAttributes().getNamedItem("delay").getNodeValue();
-	  add(name, getInstance().
-	      add(StatisticLoggerPause, Long.parseLong(pause)).
-	      add(StatisticLoggerDelay, Long.parseLong(delay))
-	  );
+		String pause = node.getAttributes().getNamedItem("pause").getNodeValue();
+		String delay = node.getAttributes().getNamedItem("delay").getNodeValue();
+		String enabled = node.getAttributes().getNamedItem("enabled").getNodeValue();
+		String active_records;
+		if (node.getAttributes().getNamedItem("active_records") != null) {
+			active_records = node.getAttributes().getNamedItem("active_records").getNodeValue();
+		} else {
+			active_records = (String) StatisticsActiveList.defValue();
+		}
+		add(name,
+				getInstance().
+				add(StatisticsLoggerPause, Long.parseLong(pause)).
+				add(StatisticsLoggerDelay, Long.parseLong(delay)).
+				add(StatisticsEnabled, Boolean.parseBoolean(enabled)).
+				add(StatisticsActiveList, active_records));
 	}
 
 	protected void addDictionary(org.jdiameter.client.impl.helpers.Parameters name, Node node) {

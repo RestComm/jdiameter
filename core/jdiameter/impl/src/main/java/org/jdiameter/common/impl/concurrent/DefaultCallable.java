@@ -1,7 +1,7 @@
 package org.jdiameter.common.impl.concurrent;
 
 import org.jdiameter.common.api.statistic.IStatistic;
-import static org.jdiameter.common.api.statistic.IStatistic.Counters.*;
+import static org.jdiameter.common.api.statistic.IStatisticRecord.Counters.*;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
 
 import java.util.concurrent.Callable;
@@ -14,22 +14,32 @@ class DefaultCallable<L> extends AbstractTask<Callable<L>> implements Callable<L
   }
 
   public L call() throws Exception {
-    getCounter(WorkingThread).inc();
-    long time = System.nanoTime();
+	  long time = 0;
+	  if(statistic.isEnabled())
+	  {
+		  getCounter(WorkingThread).inc();
+		  time = System.nanoTime();
+	  }
     try {
       return parentTask.call();
     }
     catch (CancellationException e) {
-      getCounter(CanceledTasks).inc();
+    	if(statistic.isEnabled())
+    		getCounter(CanceledTasks).inc();
       throw e;
     }
     catch (Exception e) {
-      getCounter(BrokenTasks).inc();
+    	if(statistic.isEnabled())
+    		getCounter(BrokenTasks).inc();
       throw e;
     }
     finally {
-      updateTimeStatistic(time, time - createdTime);
-      getCounter(WorkingThread).dec();
+    	if(statistic.isEnabled())
+    	{
+    		updateTimeStatistic(time, time - createdTime);
+    		getCounter(WorkingThread).dec();
+    	}
+      
     }
   }
 }

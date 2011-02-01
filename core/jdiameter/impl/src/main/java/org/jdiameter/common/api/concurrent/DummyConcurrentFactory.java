@@ -41,10 +41,12 @@ public class DummyConcurrentFactory implements IConcurrentFactory {
     return null;
   }
 
-  public IStatistic[] getStatistics() {
-    return new IStatistic[0];
-  }
+  @Override
+   public List<IStatistic> getStatistics() {
+	// TODO Auto-generated method stub
+	return new ArrayList<IStatistic>();
+}
 
-  public void shutdownAllNow() {
+public void shutdownAllNow() {
   }
 }

@@ -745,11 +745,11 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     }
   }
   public void _Parameters_setStatisticLoggerDelay(long delay)  throws MBeanException {
-    getMutableConfiguration().setLongValue(StatisticLoggerDelay.ordinal(), delay);
+    getMutableConfiguration().setLongValue(StatisticsLoggerDelay.ordinal(), delay);
   }
 
   public void _Parameters_setStatisticLoggerPause(long pause) throws MBeanException {
-    getMutableConfiguration().setLongValue(StatisticLoggerPause.ordinal(), pause);
+    getMutableConfiguration().setLongValue(StatisticsLoggerPause.ordinal(), pause);
   }
 
   public void _Validation_setEnabled(boolean enableValidation) throws MBeanException {

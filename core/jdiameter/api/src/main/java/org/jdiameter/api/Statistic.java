@@ -9,15 +9,14 @@
  */
 package org.jdiameter.api;
 
-import java.util.Set;
 
 /**
- * This class is conntainer for statistics information.
+ * This class is container for statistics information.
  * For example: Count Request/Answer messages
  * @version 1.5.1 Final
  */
 
-public interface Statistic extends Wrapper {
+public interface Statistic {
 
     /**
      * Return name of statistic
@@ -41,7 +40,7 @@ public interface Statistic extends Wrapper {
      * Return true is statistic is collecting
      * @return  true is statistic is collecting
      */
-    boolean isEnable();
+    boolean isEnabled();
 
     /**
      * Reset all counter in statistic
@@ -52,5 +51,5 @@ public interface Statistic extends Wrapper {
      * Return counters of statistics
      * @return counters of statistics
      */
-    Set<StatisticRecord> getRecords();
+    StatisticRecord[] getRecords();
 }

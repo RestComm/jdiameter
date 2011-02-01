@@ -11,6 +11,7 @@ package org.jdiameter.client.api.fsm;
 
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateMachine;
+import org.jdiameter.common.api.statistic.IStatistic;
 
 /**
  * This interface extends StateMachine interface
@@ -25,4 +26,6 @@ public interface IStateMachine extends StateMachine {
     double getQueueInfo();
 
     void remStateChangeNotification(StateChangeListener listener);
+    
+    public IStatistic getStatistic();
 }

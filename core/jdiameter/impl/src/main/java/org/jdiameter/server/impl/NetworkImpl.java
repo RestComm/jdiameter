@@ -12,17 +12,15 @@ import org.jdiameter.api.Peer;
 import org.jdiameter.api.Realm;
 import org.jdiameter.api.Selector;
 import org.jdiameter.api.Statistic;
-import org.jdiameter.api.StatisticRecord;
 import org.jdiameter.api.URI;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.common.api.statistic.IStatistic;
-import org.jdiameter.common.api.statistic.IStatisticFactory;
+import org.jdiameter.common.api.statistic.IStatisticManager;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
 import org.jdiameter.server.api.IMetaData;
 import org.jdiameter.server.api.IMutablePeerTable;
 import org.jdiameter.server.api.INetwork;
 import org.jdiameter.server.api.IRouter;
-import org.jdiameter.server.impl.helpers.StatisticAdaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,11 +38,11 @@ public class NetworkImpl implements INetwork {
 
   protected IStatistic statistic;
 
-  public NetworkImpl(IStatisticFactory statisticFactory, IMetaData metaData, IRouter router) {
+  public NetworkImpl(IStatisticManager statisticFactory, IMetaData metaData, IRouter router) {
     this.router = router;
     this.metaData = metaData;
     this.router.setNetWork(this);
-    IStatisticRecord nrlStat = statisticFactory.newCounterRecord(IStatistic.Counters.RequestListenerCount, new IStatisticRecord.IntegerValueHolder() {
+    IStatisticRecord nrlStat = statisticFactory.newCounterRecord(IStatisticRecord.Counters.RequestListenerCount, new IStatisticRecord.IntegerValueHolder() {
       public int getValueAsInt() {
         return appIdToNetListener.size();
       }
@@ -54,7 +52,7 @@ public class NetworkImpl implements INetwork {
       }
 
     });
-    IStatisticRecord nslStat = statisticFactory.newCounterRecord(IStatistic.Counters.SelectorCount, new IStatisticRecord.IntegerValueHolder() {
+    IStatisticRecord nslStat = statisticFactory.newCounterRecord(IStatisticRecord.Counters.SelectorCount, new IStatisticRecord.IntegerValueHolder() {
       public int getValueAsInt() {
         return selectorToNetListener.size();
       }
@@ -64,7 +62,8 @@ public class NetworkImpl implements INetwork {
       }
 
     });
-    statistic = statisticFactory.newStatistic(IStatistic.Groups.Network, nrlStat, nslStat);
+    //no need to remove, this class lives with whole stack, until its destroyed.
+    statistic = statisticFactory.newStatistic("network",IStatistic.Groups.Network, nrlStat, nslStat);
   }
 
   public void addNetworkReqListener(NetworkReqListener networkReqListener, ApplicationId... applicationId) throws ApplicationAlreadyUseException {
@@ -143,7 +142,7 @@ public class NetworkImpl implements INetwork {
   }
 
   public Statistic getStatistic() {
-    return StatisticAdaptor.adapt(statistic);
+	  return this.statistic;
   }
 
   public NetworkReqListener getListener(IMessage message) {

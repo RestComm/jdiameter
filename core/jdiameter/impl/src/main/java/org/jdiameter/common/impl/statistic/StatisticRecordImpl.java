@@ -1,49 +1,56 @@
 package org.jdiameter.common.impl.statistic;
 
-import org.jdiameter.common.api.statistic.IStatisticRecord;
-
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.jdiameter.api.StatisticRecord;
+import org.jdiameter.common.api.statistic.IStatisticRecord;
 
 class StatisticRecordImpl implements IStatisticRecord {
 
   protected boolean enable = true;
   protected String name;
   protected String description;
-  protected int type;
+  protected Counters counter;
+  
   protected AtomicLong value;
-  protected ConcurrentLinkedQueue<IStatisticRecord> childs = new ConcurrentLinkedQueue<IStatisticRecord>();
+  protected ConcurrentLinkedQueue<StatisticRecord> childs = new ConcurrentLinkedQueue<StatisticRecord>();
   protected ValueHolder valueHolder;
 
-  public StatisticRecordImpl(String name, int type) {
+  public StatisticRecordImpl(String name) {
     this.name = name;
-    this.type = type;
     this.value = new AtomicLong(0);
   }
 
-  public StatisticRecordImpl(String name, String description, int type) {
-    this(name, type);
-    this.description = description;
-  }
+  public StatisticRecordImpl(String name, String description) {
+	    this(name);
+	    this.description = description;
+	  }
+  
+  public StatisticRecordImpl(String name, Counters counter) {
+	    this(counter.name()+"."+name);
+	    this.counter = counter;
+	    this.description = counter.getDescription();
+	  }
 
-  public StatisticRecordImpl(String name, String description, int type, IStatisticRecord... childs) {
-    this(name, description, type);
+  public StatisticRecordImpl(String name, String description,  IStatisticRecord... childs) {
+    this(name, description);
     this.childs.addAll(Arrays.asList(childs));
   }
 
-  public StatisticRecordImpl(String name, String description, int type, ValueHolder valueHolder) {
-    this(name, description, type);
+  public StatisticRecordImpl(String name, String description,  ValueHolder valueHolder) {
+    this(name, description);
     this.valueHolder = valueHolder;
   }
 
-  public StatisticRecordImpl(String name, String description, int type, ValueHolder valueHolder, IStatisticRecord... childs) {
-    this(name, description, type, valueHolder);
+  public StatisticRecordImpl(String name, String description,  ValueHolder valueHolder, IStatisticRecord... childs) {
+    this(name, description, valueHolder);
     this.childs.addAll(Arrays.asList(childs));
   }
 
-  public StatisticRecordImpl(String name, String description, int type, long value) {
-    this(name, description, type);
+  public StatisticRecordImpl(String name, String description,  long value) {
+    this(name, description);
     this.value = new AtomicLong(value);
   }
 
@@ -68,9 +75,6 @@ class StatisticRecordImpl implements IStatisticRecord {
     return valueHolder != null ? ((LongValueHolder) valueHolder).getValueAsLong() : value.get();
   }
 
-  public int getType() {
-    return type;
-  }
 
   public void inc() {
     if (enable) {
@@ -102,8 +106,8 @@ class StatisticRecordImpl implements IStatisticRecord {
     }
   }
 
-  public IStatisticRecord[] getChilds() {
-    return childs.toArray(new IStatisticRecord[childs.size()]);
+  public  StatisticRecord[] getChilds() {
+    return childs.toArray(new StatisticRecord[0]);
   }
 
   public void reset() {
@@ -111,13 +115,48 @@ class StatisticRecordImpl implements IStatisticRecord {
   }
 
   public void enable(boolean e) {
-    for (IStatisticRecord r : childs) {
+    for (StatisticRecord r : childs) {
       r.enable(e);
     }
     enable = e;
   }
 
+  public boolean isEnabled()
+  {
+	  return this.enable;
+  }
+  
   public String toString() {
     return String.valueOf(valueHolder != null ? valueHolder.getValueAsString() : value.get());
   }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((counter == null) ? 0 : counter.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		StatisticRecordImpl other = (StatisticRecordImpl) obj;
+		if (counter != other.counter)
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
+	}
+  
+  
 }

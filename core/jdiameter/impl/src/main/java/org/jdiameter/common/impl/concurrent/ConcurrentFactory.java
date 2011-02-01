@@ -2,9 +2,10 @@ package org.jdiameter.common.impl.concurrent;
 
 import org.jdiameter.api.Configuration;
 import org.jdiameter.client.impl.helpers.Parameters;
+import org.jdiameter.common.api.concurrent.IConcurrentEntityFactory;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.statistic.IStatistic;
-import org.jdiameter.common.api.statistic.IStatisticFactory;
+import org.jdiameter.common.api.statistic.IStatisticManager;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
 
 import java.util.ArrayList;
@@ -23,24 +24,23 @@ public class ConcurrentFactory implements IConcurrentFactory {
   //private CopyOnWriteArrayList<CommonScheduledExecutorService> scheduledExecutorServices;
   private Map<String, CommonScheduledExecutorService> scheduledExecutorServices;
   private Configuration[] config;
-  private IStatisticFactory statisticFactory;
+  private IStatisticManager statisticFactory;
   private IStatistic statistic;
-
-  public ConcurrentFactory(Configuration config, IStatisticFactory statisticFactory) {
+  private IConcurrentEntityFactory entityFactory; 
+  public ConcurrentFactory(Configuration config, IStatisticManager statisticFactory, IConcurrentEntityFactory entityFactory) {
 
     this.config = config.getChildren(Parameters.Concurrent.ordinal());
+    this.entityFactory = entityFactory;
     Configuration dgConfig = getConfigByName(BaseThreadFactory.ENTITY_NAME);
     String defThreadGroupName = dgConfig != null ?
         dgConfig.getStringValue(Parameters.ConcurrentEntityDescription.ordinal(), (String) Parameters.ConcurrentEntityDescription.defValue()) :
           (String) Parameters.ConcurrentEntityDescription.defValue();
 
-        int size = dgConfig != null ? dgConfig.getIntValue(Parameters.ConcurrentEntityPoolSize.ordinal(), Integer.MAX_VALUE) : Integer.MAX_VALUE;
+        threadFactory = (BaseThreadFactory) entityFactory.newThreadFactory(defThreadGroupName);
 
-        threadFactory = new BaseThreadFactory(defThreadGroupName, size);
-        //scheduledExecutorServices = new CopyOnWriteArrayList<CommonScheduledExecutorService>();
         scheduledExecutorServices = new ConcurrentHashMap<String, CommonScheduledExecutorService>();
         IStatisticRecord threadCount = statisticFactory.newCounterRecord(
-            IStatistic.Counters.ConcurrentThread,
+            IStatisticRecord.Counters.ConcurrentThread,
             new IStatisticRecord.IntegerValueHolder() {
               public String getValueAsString() {
                 return getValueAsInt() + "";
@@ -50,8 +50,10 @@ public class ConcurrentFactory implements IConcurrentFactory {
                 return getThreadGroup().activeCount();
               }
             });
+        
+        //TODO: make use of this stat....
         IStatisticRecord schedExeServiceCount = statisticFactory.newCounterRecord(
-            IStatistic.Counters.ConcurrentScheduledExecutedServices,
+            IStatisticRecord.Counters.ConcurrentScheduledExecutedServices,
             new IStatisticRecord.IntegerValueHolder() {
               public String getValueAsString() {
                 return getValueAsInt() + "";
@@ -61,11 +63,15 @@ public class ConcurrentFactory implements IConcurrentFactory {
                 return scheduledExecutorServices.size();
               }
             });
-        
-        statistic = statisticFactory.newStatistic(IStatistic.Groups.Concurrent, threadCount, schedExeServiceCount);
+      //XXX: YYY: no need to remove, it lives as long as stack does.
+        statistic = statisticFactory.newStatistic("scheduled",IStatistic.Groups.Concurrent, threadCount, schedExeServiceCount);
         this.statisticFactory = statisticFactory;
   }
-
+  /**
+   * fetch configuration for executor
+   * @param name
+   * @return
+   */
   private Configuration getConfigByName(String name) {
     if (config != null) {
       for (Configuration c : config) {
@@ -99,7 +105,8 @@ public class ConcurrentFactory implements IConcurrentFactory {
 	  CommonScheduledExecutorService service = null;
 	  if(!scheduledExecutorServices.containsKey(name))
 	  { 
-		  service = new CommonScheduledExecutorService(name, getConfigByName(name), new EntityFactory(statistic), statisticFactory);
+		  //xx
+		  service = new CommonScheduledExecutorService(name, getConfigByName(name), this.entityFactory, statisticFactory);
 		  scheduledExecutorServices.put(name,service);
 	  }else
 	  {
@@ -132,13 +139,13 @@ public class ConcurrentFactory implements IConcurrentFactory {
     return statistic;
   }
 
-  public IStatistic[] getStatistics() {
+  public List<IStatistic> getStatistics() {
     List<IStatistic> statistics = new ArrayList<IStatistic>();
 
     for (CommonScheduledExecutorService e : scheduledExecutorServices.values()) {
       statistics.add(e.getStatistic());
     }
-    return statistics.toArray(new IStatistic[statistics.size()]);
+    return statistics;
   }
 
   public void shutdownAllNow() {

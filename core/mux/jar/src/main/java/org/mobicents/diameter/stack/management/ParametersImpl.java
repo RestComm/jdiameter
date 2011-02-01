@@ -8,8 +8,8 @@ import static org.jdiameter.client.impl.helpers.Parameters.IacTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.MessageTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.QueueSize;
 import static org.jdiameter.client.impl.helpers.Parameters.RecTimeOut;
-import static org.jdiameter.client.impl.helpers.Parameters.StatisticLoggerDelay;
-import static org.jdiameter.client.impl.helpers.Parameters.StatisticLoggerPause;
+import static org.jdiameter.client.impl.helpers.Parameters.StatisticsLoggerDelay;
+import static org.jdiameter.client.impl.helpers.Parameters.StatisticsLoggerPause;
 import static org.jdiameter.client.impl.helpers.Parameters.StopTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.UseUriAsFqdn;
 import static org.jdiameter.server.impl.helpers.Parameters.AcceptUndefinedPeer;
@@ -87,8 +87,8 @@ public class ParametersImpl implements Parameters {
     }
 
     // Statistic Logger
-    this.statisticLogger_Delay = config.getLongValue(StatisticLoggerDelay.ordinal(), 5000L);
-    this.statisticLogger_Pause = config.getLongValue(StatisticLoggerPause.ordinal(), 5000L);
+    this.statisticLogger_Delay = config.getLongValue(StatisticsLoggerDelay.ordinal(), 5000L);
+    this.statisticLogger_Pause = config.getLongValue(StatisticsLoggerPause.ordinal(), 5000L);
   }
 
   public boolean getAcceptUndefinedPeer() {
@@ -218,7 +218,7 @@ public class ParametersImpl implements Parameters {
   }
   
   public void setStatisticLogger_Delay(Long statisticLoggerDelay) {
-    DiameterConfiguration.getMutableConfiguration().setLongValue(StatisticLoggerDelay.ordinal(), statisticLoggerDelay);
+    DiameterConfiguration.getMutableConfiguration().setLongValue(StatisticsLoggerDelay.ordinal(), statisticLoggerDelay);
   }
   
   public Long getStatisticLogger_Pause() {
@@ -226,7 +226,7 @@ public class ParametersImpl implements Parameters {
   }
   
   public void setStatisticLogger_Pause(Long statisticLoggerPause) {
-    DiameterConfiguration.getMutableConfiguration().setLongValue(StatisticLoggerPause.ordinal(), statisticLoggerPause);
+    DiameterConfiguration.getMutableConfiguration().setLongValue(StatisticsLoggerPause.ordinal(), statisticLoggerPause);
   }
   
   @Override

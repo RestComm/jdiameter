@@ -35,6 +35,7 @@
     <DwaTimeOut value="10000" />
     <DpaTimeOut value="5000" />
     <RecTimeOut value="10000" />
+    <Statistics pause="30000" delay="30000" enabled="false" active_records="Concurrent,ScheduledExecService,Network,ScheduledExecService,AppGenRequestPerSecond,NetGenRequestPerSecond,Peer,Peer.local,PeerFSM"/>
     <Concurrent>
        <Entity name="ThreadGroup" size="64"/>
        <Entity name="ProcessingMessageTimer" size="1"/>

@@ -64,7 +64,8 @@ import org.jdiameter.client.impl.helpers.Parameters;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.api.statistic.IStatistic;
-import org.jdiameter.common.api.statistic.IStatisticFactory;
+import org.jdiameter.common.api.statistic.IStatisticManager;
+import org.jdiameter.common.api.statistic.IStatisticRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,13 +96,13 @@ public class PeerTableImpl implements IPeerTable {
   }
 
   public PeerTableImpl(Configuration globalConfig, MetaData metaData, IContainer stack,IRouter router, IFsmFactory fsmFactory,
-      ITransportLayerFactory transportFactory, IStatisticFactory statisticFactory,
+      ITransportLayerFactory transportFactory, IStatisticManager statisticFactory,
       IConcurrentFactory concurrentFactory, IMessageParser parser) {
     init(stack,router, globalConfig, metaData, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser);
   }
 
   protected void init( IContainer stack,IRouter router, Configuration globalConfig, MetaData metaData, IFsmFactory fsmFactory,
-      ITransportLayerFactory transportFactory, IStatisticFactory statisticFactory,
+      ITransportLayerFactory transportFactory, IStatisticManager statisticFactory,
       IConcurrentFactory concurrentFactory, IMessageParser parser) {
     this.router = router;
     this.metaData = metaData;
@@ -127,7 +128,7 @@ public class PeerTableImpl implements IPeerTable {
             }
           }
           catch (Exception e) {
-            logger.warn("Can not create peer {} due to {}", uri, e);
+            logger.warn("Can not create peer "+uri+" due to ", e);
           }
         }
       }
@@ -135,7 +136,7 @@ public class PeerTableImpl implements IPeerTable {
   }
 
   protected Peer createPeer(int rating, String uri, String ip, String portRange, MetaData metaData, Configuration config, Configuration peerConfig, 
-      IFsmFactory fsmFactory, ITransportLayerFactory transportFactory, IStatisticFactory statisticFactory, IConcurrentFactory concurrentFactory, IMessageParser parser)  
+      IFsmFactory fsmFactory, ITransportLayerFactory transportFactory, IStatisticManager statisticFactory, IConcurrentFactory concurrentFactory, IMessageParser parser)  
   throws InternalException, TransportException, URISyntaxException, UnknownServiceException {
     return new PeerImpl(this, rating, new URI(uri), ip, portRange, metaData.unwrap(IMetaData.class), config,
         peerConfig, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser, this.sessionDatasource);
@@ -193,20 +194,24 @@ public class PeerTableImpl implements IPeerTable {
       }
       else {
         if (message.isRequest()) {
-          peer.getStatistic().getRecordByName(IStatistic.Counters.AppGenRequest.name()).inc();
+        	if(peer.getStatistic().isEnabled())
+        		peer.getStatistic().getRecordByName(IStatisticRecord.Counters.AppGenRequest.name()).inc();
         }
         else {
-          peer.getStatistic().getRecordByName(IStatistic.Counters.AppGenResponse.name()).inc();
+        	if(peer.getStatistic().isEnabled())
+        		peer.getStatistic().getRecordByName(IStatisticRecord.Counters.AppGenResponse.name()).inc();
         }
       }
     }
     catch (Exception e) {
       logger.error("Can not send message", e);
       if (message.isRequest()) {
-        peer.getStatistic().getRecordByName(IStatistic.Counters.AppGenRejectedRequest.name()).inc();
+    	  if(peer.getStatistic().isEnabled())
+    		  peer.getStatistic().getRecordByName(IStatisticRecord.Counters.AppGenRejectedRequest.name()).inc();
       }
       else {
-        peer.getStatistic().getRecordByName(IStatistic.Counters.AppGenRejectedResponse.name()).inc();
+    	  if(peer.getStatistic().isEnabled())
+    		  peer.getStatistic().getRecordByName(IStatisticRecord.Counters.AppGenRejectedResponse.name()).inc();
       }
 
       if(e instanceof AvpNotAllowedException) {

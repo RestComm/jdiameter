@@ -105,7 +105,8 @@ import org.jdiameter.client.impl.DictionarySingleton;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.api.statistic.IStatistic;
-import org.jdiameter.common.api.statistic.IStatisticFactory;
+import org.jdiameter.common.api.statistic.IStatisticManager;
+import org.jdiameter.common.api.statistic.IStatisticRecord;
 import org.jdiameter.common.impl.controller.AbstractPeer;
 import org.jdiameter.server.impl.MutablePeerTableImpl;
 import org.slf4j.Logger;
@@ -235,7 +236,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   };
 
   public PeerImpl(final PeerTableImpl table, int rating, URI remotePeer, String ip,  String portRange, IMetaData metaData, Configuration config,
-      Configuration peerConfig, IFsmFactory fsmFactory, ITransportLayerFactory trFactory, IStatisticFactory statisticFactory,
+      Configuration peerConfig, IFsmFactory fsmFactory, ITransportLayerFactory trFactory, IStatisticManager statisticFactory,
       IConcurrentFactory concurrentFactory, IMessageParser parser, final ISessionDatasource sessionDataSource) throws InternalException, TransportException {
     this(table, rating, remotePeer, ip, portRange, metaData, config, peerConfig, fsmFactory, trFactory, parser, statisticFactory, concurrentFactory, null, sessionDataSource);
   }
@@ -243,7 +244,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   @SuppressWarnings("unchecked")
   protected PeerImpl(final PeerTableImpl table, int rating, URI remotePeer, String ip, String portRange, IMetaData metaData,
       Configuration config, Configuration peerConfig, IFsmFactory fsmFactory, ITransportLayerFactory trFactory,
-      IMessageParser parser, IStatisticFactory statisticFactory, IConcurrentFactory concurrentFactory,
+      IMessageParser parser, IStatisticManager statisticFactory, IConcurrentFactory concurrentFactory,
       IConnection connection, final ISessionDatasource sessionDataSource) throws InternalException, TransportException {
     super(remotePeer, statisticFactory);
     this.table = table;
@@ -349,6 +350,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
 
   @SuppressWarnings("unchecked")
   public void removePeerStateListener(final PeerStateListener listener) {
+	  //FIXME: fix this... cmon
     if (listener != null) {
       fsm.remStateChangeNotification(new AbstractStateChangeListener() {
         public void stateChanged(Enum oldState, Enum newState) {
@@ -419,6 +421,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   }
 
   public void disconnect() throws InternalException, IllegalDiameterStateException {
+	super.disconnect();
     if (getState(PeerState.class) != PeerState.DOWN) {
       stopping = true;
       try {
@@ -810,17 +813,24 @@ public class PeerImpl extends AbstractPeer implements IPeer {
             if (answer != null) {
               try {
                 sendMessage(answer);
-                statistic.getRecordByName(IStatistic.Counters.AppGenResponse.name()).inc();
+                if(statistic.isEnabled())
+                {
+                	statistic.getRecordByName(IStatisticRecord.Counters.AppGenResponse.name()).inc();
+                }
               }
               catch (Exception e) {
                 logger.warn("Can not send immediate answer {}", answer);
               }
             }
-            statistic.getRecordByName(IStatistic.Counters.NetGenRequest.name()).inc();
+           
+            if(statistic.isEnabled()){
+            	statistic.getRecordByName(IStatisticRecord.Counters.NetGenRequest.name()).inc();
+            }
             isProcessed = true;
           }
           else {
-            statistic.getRecordByName(IStatistic.Counters.NetGenRejectedRequest.name()).inc();
+        	  if(statistic.isEnabled())
+        		  statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedRequest.name()).inc();
           }
         }
       }
@@ -842,18 +852,22 @@ public class PeerImpl extends AbstractPeer implements IPeer {
             }
             else {
               logger.debug("Can not call answer listener for request {} because listener not set", message);
-              statistic.getRecordByName(IStatistic.Counters.NetGenRejectedResponse.name()).inc();
+              if(statistic.isEnabled())
+            	  statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedResponse.name()).inc();
             }
 
             isProcessed = true;
-            statistic.getRecordByName(IStatistic.Counters.NetGenResponse.name()).inc();
+            if(statistic.isEnabled())
+            	statistic.getRecordByName(IStatisticRecord.Counters.NetGenResponse.name()).inc();
           }
           else {
-            statistic.getRecordByName(IStatistic.Counters.NetGenRejectedResponse.name()).inc();
+        	  if(statistic.isEnabled())
+        		  statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedResponse.name()).inc();
           }
         }
         else {
-          statistic.getRecordByName(IStatistic.Counters.NetGenRejectedResponse.name()).inc();
+        	if(statistic.isEnabled())
+        		statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedResponse.name()).inc();
         }
       }
       return isProcessed;

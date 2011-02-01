@@ -44,7 +44,7 @@ import org.jdiameter.client.api.fsm.IStateMachine;
 import org.jdiameter.client.impl.DictionarySingleton;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.statistic.IStatistic;
-import org.jdiameter.common.api.statistic.IStatisticFactory;
+import org.jdiameter.common.api.statistic.IStatisticManager;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +52,7 @@ import org.slf4j.LoggerFactory;
 public class PeerFSMImpl implements IStateMachine {
 
   private static final Logger logger = LoggerFactory.getLogger(PeerFSMImpl.class);
-  
-  //TODO: set me
+ 
   protected final Dictionary dictionary = DictionarySingleton.getDictionary();
   
   protected ConcurrentLinkedQueue<StateChangeListener> listeners;
@@ -74,20 +73,21 @@ public class PeerFSMImpl implements IStateMachine {
   protected int predefSize;
   private Lock lock = new ReentrantLock();
 
+  protected IStatisticManager statisticFactory;
   protected IStatistic queueStat;
   protected IStatisticRecord timeSumm;
   protected IStatisticRecord timeCount;
   
-  public PeerFSMImpl(IContext aContext, IConcurrentFactory concurrentFactory, Configuration config, IStatisticFactory statisticFactory) {
+  public PeerFSMImpl(IContext aContext, IConcurrentFactory concurrentFactory, Configuration config, IStatisticManager statisticFactory) {
     this.context = aContext;
-    
+    this.statisticFactory = statisticFactory;
     this.predefSize = config.getIntValue(QueueSize.ordinal(), (Integer) QueueSize.defValue());
     this.eventQueue = new LinkedBlockingQueue<StateEvent>(predefSize);
     this.listeners = new ConcurrentLinkedQueue<StateChangeListener>();
     loadTimeOuts(config);
     this.concurrentFactory = concurrentFactory;
     runQueueProcessing();
-    IStatisticRecord queueSize = statisticFactory.newCounterRecord(IStatistic.Counters.QueueSize,
+    IStatisticRecord queueSize = statisticFactory.newCounterRecord(IStatisticRecord.Counters.QueueSize,
       new IStatisticRecord.IntegerValueHolder() {
         public int getValueAsInt() {
           return eventQueue.size();
@@ -98,16 +98,17 @@ public class PeerFSMImpl implements IStateMachine {
         }
       });
     
-    this.timeSumm = statisticFactory.newCounterRecord("TimeSumm", "TimeSumm", 0);
-    this.timeCount = statisticFactory.newCounterRecord("TimeSumm", "TimeSumm", 0);
+    this.timeSumm = statisticFactory.newCounterRecord("TimeSumm", "TimeSumm");
+    this.timeCount = statisticFactory.newCounterRecord("TimeCount", "TimeCount");
     final IStatisticRecord messagePrcAverageTime = statisticFactory.newCounterRecord(
-        IStatistic.Counters.MessageProcessingTime,
+        IStatisticRecord.Counters.MessageProcessingTime,
         new IStatisticRecord.DoubleValueHolder() {
           public double getValueAsDouble() {
-            IStatisticRecord mpta = queueStat.getRecordByName(IStatistic.Counters.MessageProcessingTime.name());
-            if (mpta.getChilds().length == 2 || mpta.getChilds()[1].getValueAsLong() != 0) {
-              long count = mpta.getChilds()[1].getValueAsLong();
-              return ((float) mpta.getChilds()[0].getValueAsLong()) / ((float) (count != 0 ? count : 1));
+            IStatisticRecord mpta = queueStat.getRecordByName(IStatisticRecord.Counters.MessageProcessingTime.name());
+            org.jdiameter.api.StatisticRecord[] children = mpta.getChilds(); 
+            if (children.length == 2 && children[1].getValueAsLong() != 0) {
+              long count = children[1].getValueAsLong();
+              return ((float) children[0].getValueAsLong()) / ((float) (count != 0 ? count : 1));
             }
             else {
               return 0;
@@ -119,11 +120,11 @@ public class PeerFSMImpl implements IStateMachine {
           }
         }, timeSumm, timeCount
         );          
-   
-    queueStat = statisticFactory.newStatistic(IStatistic.Groups.PeerFSM, queueSize, messagePrcAverageTime);
+    queueStat = statisticFactory.newStatistic(context.getPeerDescription(),IStatistic.Groups.PeerFSM, queueSize, messagePrcAverageTime);
   }
   
   public IStatistic getStatistic() {
+	  //
     return queueStat;
   }
 
@@ -149,7 +150,7 @@ public class PeerFSMImpl implements IStateMachine {
               lock.lock();
               try {
                 if (event != null) {
-                  if (event instanceof FsmEvent) {
+                  if (event instanceof FsmEvent && queueStat.isEnabled()) {
                     timeSumm.inc(System.currentTimeMillis() - ((FsmEvent) event).getCreatedTime());
                     timeCount.inc();
                   }
@@ -168,6 +169,9 @@ public class PeerFSMImpl implements IStateMachine {
                 lock.unlock();
               }
             }
+            //this happens when peer FSM is down, lets remove stat
+            statisticFactory.removeStatistic(queueStat);
+            queueStat = null;
           }
         }
     );

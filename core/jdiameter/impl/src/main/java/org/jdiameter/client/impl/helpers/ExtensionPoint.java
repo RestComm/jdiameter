@@ -68,18 +68,21 @@ public class ExtensionPoint extends Ordinal {
     /**
      * Statistic factory implementation class name
      */
-    public static final ExtensionPoint InternalStatisticFactory = new ExtensionPoint("InternalStatisticFactory", "org.jdiameter.common.impl.statistic.StatisticFactory");
+    public static final ExtensionPoint InternalStatisticFactory = new ExtensionPoint("InternalStatisticFactory", "org.jdiameter.common.impl.statistic.StatisticManagerImpl");
 
     /**
      * Statistic factory implementation class name
      */
-    public static final ExtensionPoint InternalStatisticProcessor = new ExtensionPoint("InternalStatisticProcessor", "org.jdiameter.common.impl.statistic.StatisticProcessor");
+    public static final ExtensionPoint InternalStatisticProcessor = new ExtensionPoint("InternalStatisticProcessor", "org.jdiameter.common.impl.statistic.StatisticProcessorImpl");
 
     /**
      * Concurrent factory implementation class name
      */
     public static final ExtensionPoint InternalConcurrentFactory = new ExtensionPoint("InternalConcurrentFactory", "org.jdiameter.common.impl.concurrent.ConcurrentFactory");
-
+    /**
+     * Concurrent factory implementation class name
+     */
+    public static final ExtensionPoint InternalConcurrentEntityFactory = new ExtensionPoint("InternalConcurrentEntityFactory", "org.jdiameter.common.impl.concurrent.ConcurrentEntityFactory");
     /**
      * List of internal extension point
      */
@@ -95,6 +98,7 @@ public class ExtensionPoint extends Ordinal {
             InternalPeerFsmFactory,
             InternalStatisticFactory,
             InternalConcurrentFactory,
+            InternalConcurrentEntityFactory,
             InternalStatisticProcessor
     );
 

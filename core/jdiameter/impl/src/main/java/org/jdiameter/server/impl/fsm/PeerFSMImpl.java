@@ -12,7 +12,7 @@ import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.fsm.IContext;
 import static org.jdiameter.client.impl.fsm.FsmState.*;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
-import org.jdiameter.common.api.statistic.IStatisticFactory;
+import org.jdiameter.common.api.statistic.IStatisticManager;
 import org.jdiameter.server.api.IStateMachine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
 
   private static final Logger logger = LoggerFactory.getLogger(org.jdiameter.server.impl.fsm.PeerFSMImpl.class);
 
-  public PeerFSMImpl(IContext context, IConcurrentFactory concurrentFactory, Configuration config, IStatisticFactory statisticFactory) {
+  public PeerFSMImpl(IContext context, IConcurrentFactory concurrentFactory, Configuration config, IStatisticManager statisticFactory) {
     super(context, concurrentFactory, config, statisticFactory);
   }
 

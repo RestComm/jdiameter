@@ -21,7 +21,47 @@
  */
 package org.jdiameter.server.impl;
 
-import org.jdiameter.api.*;
+import static org.jdiameter.client.impl.helpers.Parameters.PeerName;
+import static org.jdiameter.client.impl.helpers.Parameters.PeerTable;
+import static org.jdiameter.client.impl.helpers.Parameters.StopTimeOut;
+import static org.jdiameter.client.impl.helpers.Parameters.UseUriAsFqdn;
+import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.ConnectionTimer;
+import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.DuplicationMessageTimer;
+import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.PeerOverloadTimer;
+import static org.jdiameter.server.impl.helpers.Parameters.AcceptUndefinedPeer;
+import static org.jdiameter.server.impl.helpers.Parameters.DuplicateProtection;
+import static org.jdiameter.server.impl.helpers.Parameters.DuplicateTimer;
+import static org.jdiameter.server.impl.helpers.Parameters.PeerAttemptConnection;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.UnknownServiceException;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import org.jdiameter.api.Avp;
+import org.jdiameter.api.AvpDataException;
+import org.jdiameter.api.Configuration;
+import org.jdiameter.api.ConfigurationListener;
+import org.jdiameter.api.IllegalDiameterStateException;
+import org.jdiameter.api.InternalException;
+import org.jdiameter.api.Message;
+import org.jdiameter.api.MetaData;
+import org.jdiameter.api.MutableConfiguration;
+import org.jdiameter.api.MutablePeerTable;
+import org.jdiameter.api.Network;
+import org.jdiameter.api.Peer;
+import org.jdiameter.api.PeerTableListener;
+import org.jdiameter.api.Realm;
+import org.jdiameter.api.Statistic;
+import org.jdiameter.api.URI;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.ISessionFactory;
@@ -32,25 +72,18 @@ import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.impl.controller.PeerTableImpl;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
-import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.*;
-import org.jdiameter.common.api.statistic.IStatisticFactory;
-import org.jdiameter.server.api.*;
+import org.jdiameter.common.api.statistic.IStatisticManager;
+import org.jdiameter.server.api.IFsmFactory;
+import org.jdiameter.server.api.IMutablePeerTable;
+import org.jdiameter.server.api.INetwork;
+import org.jdiameter.server.api.IOverloadManager;
+import org.jdiameter.server.api.IPeer;
 import org.jdiameter.server.api.io.INetworkConnectionListener;
 import org.jdiameter.server.api.io.INetworkGuard;
 import org.jdiameter.server.api.io.ITransportLayerFactory;
 import org.jdiameter.server.impl.helpers.EmptyConfiguration;
-import static org.jdiameter.server.impl.helpers.Parameters.*;
-import org.jdiameter.server.impl.helpers.StatisticAdaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.UnknownServiceException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.*;
 
 /**
  * 
@@ -99,7 +132,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   @SuppressWarnings("unchecked")
   protected ScheduledFuture overloadHandler = null;
   protected PeerTableListener peerTableListener = null;
-  protected IStatisticFactory statisticFactory;
+  protected IStatisticManager statisticFactory;
 
   protected class StorageEntry {
 
@@ -128,7 +161,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   public MutablePeerTableImpl(Configuration config, MetaData metaData,IContainer stack, org.jdiameter.server.api.IRouter router,
       ISessionFactory sessionFactory, IFsmFactory fsmFactory, ITransportLayerFactory trFactory,
       IMessageParser parser, INetwork network, IOverloadManager ovrManager,
-      IStatisticFactory statisticFactory, IConcurrentFactory concurrentFactory) {
+      IStatisticManager statisticFactory, IConcurrentFactory concurrentFactory) {
     this.metaData = metaData;
     this.config = config;
     this.router = router;
@@ -160,7 +193,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   protected Peer createPeer(int rating, String uri, String ip, String portRange, MetaData metaData, Configuration globalConfig,
       Configuration peerConfig, org.jdiameter.client.api.fsm.IFsmFactory fsmFactory,
       org.jdiameter.client.api.io.ITransportLayerFactory transportFactory,
-      IStatisticFactory statisticFactory, IConcurrentFactory concurrentFactory,
+      IStatisticManager statisticFactory, IConcurrentFactory concurrentFactory,
       IMessageParser parser) throws InternalException, TransportException, URISyntaxException, UnknownServiceException {
     if (predefinedPeerTable == null) {
       predefinedPeerTable = new CopyOnWriteArraySet<URI>();
@@ -179,7 +212,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   protected IPeer newPeerInstance(int rating, URI uri, String ip, String portRange, boolean attCnn, IConnection connection,
       MetaData metaData, Configuration globalConfig, Configuration peerConfig, IFsmFactory fsmFactory,
       ITransportLayerFactory transportFactory, IMessageParser parser,
-      IStatisticFactory statisticFactory, IConcurrentFactory concurrentFactory) throws URISyntaxException, UnknownServiceException, InternalException, TransportException {
+      IStatisticManager statisticFactory, IConcurrentFactory concurrentFactory) throws URISyntaxException, UnknownServiceException, InternalException, TransportException {
     return new org.jdiameter.server.impl.PeerImpl(
         rating, uri, ip, portRange, attCnn, connection,
         this, (org.jdiameter.server.api.IMetaData) metaData, globalConfig, peerConfig, sessionFactory,
@@ -530,7 +563,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   public Statistic getStatistic(String name) {
     for (Peer p : peerTable.values()) {
       if (p.getUri().getFQDN().equals(name)) {
-        return StatisticAdaptor.adapt(((IPeer) p).getStatistic());
+    	  return ((IPeer) p).getStatistic();
       }
     }
     return null;

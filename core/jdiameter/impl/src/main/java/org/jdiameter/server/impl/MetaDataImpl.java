@@ -46,7 +46,7 @@ import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.impl.helpers.IPConverter;
-import org.jdiameter.common.api.statistic.IStatisticFactory;
+import org.jdiameter.common.api.statistic.IStatisticManager;
 import org.jdiameter.server.api.IMetaData;
 import org.jdiameter.server.api.IMutablePeerTable;
 import org.jdiameter.server.api.INetwork;
@@ -69,7 +69,7 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
     super(s);
   }
 
-  public MetaDataImpl(IContainer s, IStatisticFactory factory) {
+  public MetaDataImpl(IContainer s, IStatisticManager factory) {
     super(s, factory);
   }
 
@@ -77,7 +77,7 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
     return StackType.TYPE_SERVER;
   }
 
-  protected IPeer newLocalPeer(IStatisticFactory statisticFactory) {
+  protected IPeer newLocalPeer(IStatisticManager statisticFactory) {
     return new ServerLocalPeer(statisticFactory);
   }
 
@@ -115,7 +115,7 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
     // XXX: FT/HA // protected Map<String, NetworkReqListener> slc = null;
     Map<Long, IMessage> peerRequests = new ConcurrentHashMap<Long, IMessage>();
 
-    public ServerLocalPeer(IStatisticFactory statisticFactory) {
+    public ServerLocalPeer(IStatisticManager statisticFactory) {
       super(statisticFactory);
     }
 

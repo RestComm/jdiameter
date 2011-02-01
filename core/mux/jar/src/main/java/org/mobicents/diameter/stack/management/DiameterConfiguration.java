@@ -21,6 +21,7 @@ import org.jdiameter.api.MutablePeerTable;
 import org.jdiameter.api.Peer;
 import org.jdiameter.api.PeerTable;
 import org.jdiameter.api.Stack;
+import org.jdiameter.api.StatisticRecord;
 import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
 import org.jdiameter.server.impl.MutablePeerTableImpl;
@@ -75,7 +76,7 @@ public class DiameterConfiguration implements Serializable {
       }
     }
     HashMap<String, DiameterStatistic> lpStats = new HashMap<String, DiameterStatistic>();
-    for(IStatisticRecord stat : ((IPeer)sLocalPeer).getStatistic().getRecords()) {
+    for(StatisticRecord stat : ((IPeer)sLocalPeer).getStatistic().getRecords()) {
       lpStats.put(stat.getName(), new DiameterStatistic(stat.getName(), stat.getDescription(), stat.toString()));
     }
     localPeer.setStatistics(lpStats);
@@ -113,7 +114,7 @@ public class DiameterConfiguration implements Serializable {
         PeerImpl p = (PeerImpl) peer;
         NetworkPeerImpl nPeer = new NetworkPeerImpl(p.getUri().toString(), p.isAttemptConnection(), p.getRating(), null, null, null, null);
         HashMap<String, DiameterStatistic> npStats = new HashMap<String, DiameterStatistic>();
-        for(IStatisticRecord stat : p.getStatistic().getRecords()) {
+        for(StatisticRecord stat : p.getStatistic().getRecords()) {
           npStats.put(stat.getName(), new DiameterStatistic(stat.getName(), stat.getDescription(), stat.toString()));
         }
         nPeer.setStatistics(npStats);

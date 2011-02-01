@@ -9,6 +9,9 @@
  */
 package org.jdiameter.api;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * This class implements counter of statistic
  * @version 1.5.1 Final
@@ -47,12 +50,6 @@ public interface StatisticRecord {
     long getValueAsLong();
 
     /**
-     * Return code of counter
-     * @return code of counter
-     */
-    int getType();
-
-    /**
      * Return childs counters
      * @return array of childs countres
      */
@@ -62,4 +59,13 @@ public interface StatisticRecord {
      * Reset counter and all child counters
      */
     void reset();
+    
+    /**
+     * Enable/Disable counter
+     *
+     * @param e on/off parameter
+     */
+    public void enable(boolean e);
+    
+    public boolean isEnabled();
 }

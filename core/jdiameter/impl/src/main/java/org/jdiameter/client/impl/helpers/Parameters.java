@@ -274,17 +274,27 @@ public class Parameters extends Ordinal {
     /**
      * Statistic logger properties
      */
-    public static final Parameters StatisticLogger = new Parameters("StatisticLogger", Object.class);
+    public static final Parameters Statistics = new Parameters("Statistics", Object.class);
 
     /**
      * Statistic logger start pause
      */
-    public static final Parameters StatisticLoggerPause = new Parameters("StatisticLoggerPause", Long.class, 30000L);
+    public static final Parameters StatisticsLoggerPause = new Parameters("StatisticsLoggerPause", Long.class, 30000L);
 
     /**
      * Statistic logger delay between save statistic information
      */
-    public static final Parameters StatisticLoggerDelay = new Parameters("StatisticLoggerDelay", Long.class, 30000L);
+    public static final Parameters StatisticsLoggerDelay = new Parameters("StatisticsLoggerDelay", Long.class, 30000L);
+
+    /**
+     * Statistic flag controlling if statistics are on/off - ie. timer tasks to display are created. 
+     */
+    public static final Parameters StatisticsEnabled = new Parameters("StatisticsEnabled", Boolean.class, false);
+    
+    /**
+     * List of statistics names which should be enabled. 
+     */
+    public static final Parameters StatisticsActiveList = new Parameters("StatisticsActiveList", String.class, false);
 
     /**
      * Concurrent configuration root point

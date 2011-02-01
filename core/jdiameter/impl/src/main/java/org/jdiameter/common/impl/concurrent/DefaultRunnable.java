@@ -1,8 +1,8 @@
 package org.jdiameter.common.impl.concurrent;
 
 import org.jdiameter.common.api.statistic.IStatistic;
-import static org.jdiameter.common.api.statistic.IStatistic.Counters.BrokenTasks;
-import static org.jdiameter.common.api.statistic.IStatistic.Counters.WorkingThread;
+import static org.jdiameter.common.api.statistic.IStatisticRecord.Counters.BrokenTasks;
+import static org.jdiameter.common.api.statistic.IStatisticRecord.Counters.WorkingThread;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
 
 class DefaultRunnable extends AbstractTask<Runnable> implements Runnable {

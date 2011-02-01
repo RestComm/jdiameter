@@ -67,7 +67,7 @@ import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.impl.helpers.IPConverter;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.api.statistic.IStatistic;
-import org.jdiameter.common.api.statistic.IStatisticFactory;
+import org.jdiameter.common.api.statistic.IStatisticManager;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
 import org.jdiameter.common.impl.controller.AbstractPeer;
 import org.slf4j.Logger;
@@ -96,10 +96,10 @@ public class MetaDataImpl implements IMetaData {
     this.sessionDataSource = s.getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
   }
 
-  public MetaDataImpl(IContainer s, IStatisticFactory statisticFactory) {
+  public MetaDataImpl(IContainer s, IStatisticManager statisticFactory) {
     this(s);
     this.peer = newLocalPeer(statisticFactory);
-    IStatisticRecord heapMemory = statisticFactory.newCounterRecord(IStatistic.Counters.HeapMemory,
+    IStatisticRecord heapMemory = statisticFactory.newCounterRecord(IStatisticRecord.Counters.HeapMemory,
         new IStatisticRecord.LongValueHolder() {
       public long getValueAsLong() {
         for (MemoryPoolMXBean bean : beans) {
@@ -117,7 +117,7 @@ public class MetaDataImpl implements IMetaData {
       }
     }
     );
-    IStatisticRecord noHeapMemory = statisticFactory.newCounterRecord(IStatistic.Counters.NoHeapMemory,
+    IStatisticRecord noHeapMemory = statisticFactory.newCounterRecord(IStatisticRecord.Counters.NoHeapMemory,
         new IStatisticRecord.LongValueHolder() {
       public long getValueAsLong() {
         for (MemoryPoolMXBean bean : beans) {
@@ -138,7 +138,7 @@ public class MetaDataImpl implements IMetaData {
     peer.getStatistic().appendCounter(heapMemory, noHeapMemory);
   }
 
-  protected IPeer newLocalPeer(IStatisticFactory statisticFactory) {
+  protected IPeer newLocalPeer(IStatisticManager statisticFactory) {
     return new ClientLocalPeer(statisticFactory);
   }
 
@@ -204,7 +204,8 @@ public class MetaDataImpl implements IMetaData {
       throw new IllegalDiameterStateException("Illegal operation");
     }
 
-    public ClientLocalPeer(IStatisticFactory statisticFactory) {
+    public ClientLocalPeer(IStatisticManager statisticFactory) {
+      //FIXME: remove NULL?
       super(null, statisticFactory);
     }
 

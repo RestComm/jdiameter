@@ -4,90 +4,71 @@ import org.jdiameter.api.Configuration;
 import org.jdiameter.client.impl.helpers.Parameters;
 import org.jdiameter.common.api.concurrent.IConcurrentEntityFactory;
 import org.jdiameter.common.api.statistic.IStatistic;
-import static org.jdiameter.common.api.statistic.IStatistic.Counters.*;
+import static org.jdiameter.common.api.statistic.IStatisticRecord.Counters.*;
 import static org.jdiameter.common.api.statistic.IStatistic.Groups.ScheduledExecService;
-import org.jdiameter.common.api.statistic.IStatisticFactory;
+import org.jdiameter.common.api.statistic.IStatisticManager;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
 
 import java.util.concurrent.*;
 
 class CommonScheduledExecutorService extends ScheduledThreadPoolExecutor {
 
-  private IStatistic statistic;
-  private IConcurrentEntityFactory entityFactory;
-  IStatisticRecord execTimeSumm;
-  IStatisticRecord execTimeCount;
-  IStatisticRecord waitTimeSumm;
-  IStatisticRecord waitTimeCount;
+	private IStatistic statistic;
+	private IConcurrentEntityFactory entityFactory;
+	IStatisticRecord execTimeSumm;
+	IStatisticRecord execTimeCount;
+	IStatisticRecord waitTimeSumm;
+	IStatisticRecord waitTimeCount;
 
-  public CommonScheduledExecutorService(String name, Configuration config, final IConcurrentEntityFactory entityFactory, IStatisticFactory statisticFactory) {
-    super(config == null ? (Integer) Parameters.ConcurrentEntityPoolSize.defValue() : 
-      config.getIntValue(Parameters.ConcurrentEntityPoolSize.ordinal(), (Integer) Parameters.ConcurrentEntityPoolSize.defValue()));
+	public CommonScheduledExecutorService(String name, Configuration config, final IConcurrentEntityFactory entityFactory, IStatisticManager statisticFactory) {
+		super(config == null ? (Integer) Parameters.ConcurrentEntityPoolSize.defValue() : config.getIntValue(Parameters.ConcurrentEntityPoolSize.ordinal(),
+				(Integer) Parameters.ConcurrentEntityPoolSize.defValue()));
 
-    this.entityFactory = entityFactory;
-    final IStatisticRecord rejectedCount = statisticFactory.newCounterRecord(RejectedTasks);
-    execTimeSumm = statisticFactory.newCounterRecord("TimeSumm", "TimeSumm", 0);
-    execTimeCount = statisticFactory.newCounterRecord("TimeSumm", "TimeSumm", 0);
-    waitTimeSumm = statisticFactory.newCounterRecord("TimeSumm", "TimeSumm", 0);
-    waitTimeCount = statisticFactory.newCounterRecord("TimeSumm", "TimeSumm", 0);
+		this.entityFactory = entityFactory;
+		final IStatisticRecord rejectedCount = statisticFactory.newCounterRecord(RejectedTasks);
+		execTimeSumm = statisticFactory.newCounterRecord("TimeSumm", "TimeSumm");
+		execTimeCount = statisticFactory.newCounterRecord("TimeCount", "TimeCount");
+		waitTimeSumm = statisticFactory.newCounterRecord("TimeSumm", "TimeSumm");
+		waitTimeCount = statisticFactory.newCounterRecord("TimeCount", "TimeCount");
+		//XXX: YYY: no need to remove? it lives as long stack does.
+		statistic = statisticFactory.newStatistic(name,ScheduledExecService, rejectedCount);
 
-    statistic = statisticFactory.newStatistic(ScheduledExecService.name() + "." + name, ScheduledExecService.getDescription(), rejectedCount);
-    
-    final IStatisticRecord execTimeCounter = statisticFactory.newCounterRecord(IStatistic.Counters.ExecTimeTask, 
-        new AbstractTask.AverajeValueHolder(statistic, IStatistic.Counters.ExecTimeTask), execTimeSumm, execTimeCount);
+		final IStatisticRecord execTimeCounter = statisticFactory.newCounterRecord(IStatisticRecord.Counters.ExecTimeTask, new AbstractTask.AverageValueHolder(
+				statistic, IStatisticRecord.Counters.ExecTimeTask), execTimeSumm, execTimeCount);
 
-    final IStatisticRecord waitTimeCounter = statisticFactory.newCounterRecord(IStatistic.Counters.WaitTimeTask, 
-        new AbstractTask.AverajeValueHolder(statistic, IStatistic.Counters.WaitTimeTask), waitTimeSumm, waitTimeCount);
+		final IStatisticRecord waitTimeCounter = statisticFactory.newCounterRecord(IStatisticRecord.Counters.WaitTimeTask, new AbstractTask.AverageValueHolder(
+				statistic, IStatisticRecord.Counters.WaitTimeTask), waitTimeSumm, waitTimeCount);
 
-    statistic.appendCounter(
-        statisticFactory.newCounterRecord(WorkingThread),
-        statisticFactory.newCounterRecord(CanceledTasks),
-        statisticFactory.newCounterRecord(BrokenTasks),
-        execTimeCounter,
-        waitTimeCounter,
-        statisticFactory.newCounterRecord(WaitTimeTask)
-    );
+		statistic.appendCounter(statisticFactory.newCounterRecord(WorkingThread), statisticFactory.newCounterRecord(CanceledTasks),
+				statisticFactory.newCounterRecord(BrokenTasks), execTimeCounter, waitTimeCounter, statisticFactory.newCounterRecord(WaitTimeTask));
 
-    if (config == null) {
-      this.setThreadFactory(entityFactory.newThreadFactory(name));
-    }
-    else {
-      this.setThreadFactory(entityFactory.newThreadFactory(config.getStringValue(Parameters.ConcurrentEntityDescription.ordinal(), name)));
-    }
-    this.setRejectedExecutionHandler(new RejectedExecutionHandler() {
-      public void rejectedExecution(Runnable task, ThreadPoolExecutor executor) {
-        rejectedCount.inc();
-        entityFactory.newRejectedExecutionHandler().rejectedExecution(task, executor);
-      }
-    });
-  }
+		if (config == null) {
+			this.setThreadFactory(entityFactory.newThreadFactory(name));
+		} else {
+			this.setThreadFactory(entityFactory.newThreadFactory(config.getStringValue(Parameters.ConcurrentEntityDescription.ordinal(), name)));
+		}
+		
+		super.setRejectedExecutionHandler(entityFactory.newRejectedExecutionHandler(rejectedCount));
+	}
 
-  public IStatistic getStatistic() {
-    return statistic;
-  }
+	
+	 @Override
+	  public ScheduledFuture<?> schedule(Runnable runnable, long delay, TimeUnit unit) {
+	    return super.schedule(this.entityFactory.newDefaultRunnable(runnable, statistic,execTimeSumm, execTimeCount, waitTimeSumm, waitTimeCount), delay, unit);
+	  }
 
-  @Override
-  public ScheduledFuture<?> schedule(Runnable runnable, long delay, TimeUnit unit) {
-    return super.schedule(entityFactory.newDefaultRunnable(runnable, execTimeSumm, execTimeCount, waitTimeSumm, waitTimeCount), delay, unit);
-  }
+	  @Override
+	  public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
+	    return super.schedule(this.entityFactory.newDefaultCallable(callable, statistic,execTimeSumm, execTimeCount, waitTimeSumm, waitTimeCount), delay, unit);
+	  }
 
-  @Override
-  public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
-    return super.schedule(entityFactory.newDefaultCallable(callable, execTimeSumm, execTimeCount, waitTimeSumm, waitTimeCount), delay, unit);
-  }
+	  @Override
+	  public ScheduledFuture<?> scheduleAtFixedRate(Runnable runnable, long initialDelay, long period, TimeUnit unit) {
+	    return super.scheduleAtFixedRate(this.entityFactory.newDefaultRunnable(runnable, statistic, execTimeSumm, execTimeCount, waitTimeSumm, waitTimeCount), initialDelay, period, unit);
+	  }
+	
+	public IStatistic getStatistic() {
+		return statistic;
+	}
 
-  @Override
-  public ScheduledFuture<?> scheduleAtFixedRate(Runnable runnable, long initialDelay, long period, TimeUnit unit) {
-    return super.scheduleAtFixedRate(entityFactory.newDefaultRunnable(runnable, execTimeSumm, execTimeCount, waitTimeSumm, waitTimeCount), initialDelay, period, unit);
-  }
-
-  @Override
-  public ScheduledFuture<?> scheduleWithFixedDelay(Runnable runnable, long initialDelay, long delay, TimeUnit unit) {
-    return super.scheduleWithFixedDelay(entityFactory.newDefaultRunnable(runnable, execTimeSumm, execTimeCount, waitTimeSumm, waitTimeCount), initialDelay, delay, unit);
-  }
-
-  @Override
-  public void execute(Runnable runnable) {
-    super.execute(entityFactory.newDefaultRunnable(runnable, execTimeSumm, execTimeCount, waitTimeSumm, waitTimeCount));
-  }
 }
