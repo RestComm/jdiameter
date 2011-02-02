@@ -59,7 +59,7 @@
 					</dependency>
 				</dependencies>
 				<configuration>
-					<sourceDocumentName>User_Guide.xml</sourceDocumentName>
+					<sourceDocumentName>Diameter_User_Guide.xml</sourceDocumentName>
 					<sourceDirectory>${project.build.directory}/docbook/resources</sourceDirectory>
 					<imageResource>
 						<directory>${project.build.directory}/docbook/resources/en-US</directory>
