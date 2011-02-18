@@ -2605,7 +2605,7 @@ Note: The AVP codes from 920 to 999 are reserved for TS 29.061
 				<gavp name="Reporting-Level" multiplicity="0-1" />
 				<gavp name="Online" multiplicity="0-1" />
 				<gavp name="Offline" multiplicity="0-1" />
-				<gavp name="Metering-Method " multiplicity="0-1" />
+				<gavp name="Metering-Method" multiplicity="0-1" />
 				<gavp name="Precedence" multiplicity="0-1" />
 				<gavp name="AF-Charging-Identifier" multiplicity="0-1" />
 				<gavp name="Flows" multiplicity="0+" />
