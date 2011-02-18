@@ -152,7 +152,7 @@ public class MessageRepresentationImpl implements MessageRepresentation {
     AvpRepresentation avp = unmuttableMessageAvps.get(new AvpRepresentationImpl(code, vendorId));
 
     if (avp == null) {
-      logger.warn("AVP with code " + code + " and Vendor-Id " + vendorId + " not present in dictionary!");
+      logger.warn("AVP with code " + code + " and Vendor-Id " + vendorId + " not present in Message Representation!");
     }
 
     return avp;

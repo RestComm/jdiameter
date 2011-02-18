@@ -47,7 +47,6 @@ public class AvpRepresentationImpl implements AvpRepresentation {
   protected String ruleProtected;
   protected String ruleVendorBit;
   protected String type; // String, in case user defines his own type
-  protected boolean constrained;
 
   // Usually this will be -1, as only SessionId has fixed position
   private int positionIndex = _FIX_POSITION_INDEX;
@@ -74,7 +73,6 @@ public class AvpRepresentationImpl implements AvpRepresentation {
 
     this._mandatory = clone._mandatory;
     this._protected = clone._protected;
-    this.constrained = clone.constrained;
     this.description = clone.description;
     this.mayEncrypt = clone.mayEncrypt;
     this.ruleMandatory = clone.ruleMandatory;
@@ -156,7 +154,7 @@ public class AvpRepresentationImpl implements AvpRepresentation {
   }
 
   public AvpRepresentationImpl(String name, String description, int code, boolean mayEncrypt, String ruleMandatory, String ruleProtected,
-      String ruleVendorBit, long vendorId, boolean constrained, String type) {
+      String ruleVendorBit, long vendorId, String type) {
 
     // zero and more, since its definition.
     this(-1, code, vendorId, _MP_ZERO_OR_MORE, name);
@@ -178,7 +176,6 @@ public class AvpRepresentationImpl implements AvpRepresentation {
       this.ruleVendorBit = _DEFAULT_VENDOR;
     }
 
-    this.constrained = constrained;
     this.type = type;
     this._mandatory = this.ruleMandatory.equals("must");
     this._protected = this.ruleProtected.equals("must");
@@ -368,10 +365,6 @@ public class AvpRepresentationImpl implements AvpRepresentation {
     return Rule.valueOf(ruleVendorBit).ordinal();
   }
 
-  public boolean isConstrained() {
-    return constrained;
-  }
-
   public String getType() {
     return type;
   }
@@ -483,7 +476,6 @@ public class AvpRepresentationImpl implements AvpRepresentation {
 
     clone._mandatory = this._mandatory;
     clone._protected = this._protected;
-    clone.constrained = this.constrained;
     clone.description = this.description;
     clone.mayEncrypt = this.mayEncrypt;
     clone.ruleMandatory = this.ruleMandatory;

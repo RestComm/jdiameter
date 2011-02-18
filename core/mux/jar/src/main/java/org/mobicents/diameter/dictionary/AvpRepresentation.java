@@ -73,7 +73,6 @@ public class AvpRepresentation {
 	protected String ruleProtected;
 	protected String ruleVendorBit;
 	protected String type; // String, in case user defines his own type
-	protected boolean constrained;
 
 	// ususally this will be -1, as only SessionId has fixed position
 	private int positionIndex = _FIX_POSITION_INDEX;
@@ -108,7 +107,6 @@ public class AvpRepresentation {
 
 		this._mandatory = clone.isMandatory();
 		this._protected = clone.isProtected();
-		this.constrained = clone.isConstrained();
 		this.description = clone.getDescription();
 		this.mayEncrypt = clone.isMayEncrypt();
 		this.ruleMandatory = clone.getRuleMandatory();
@@ -240,10 +238,6 @@ public class AvpRepresentation {
 
 	public int getRuleVendorBitAsInt() {
 		return Rule.valueOf(ruleVendorBit).ordinal();
-	}
-
-	public boolean isConstrained() {
-		return constrained;
 	}
 
 	public String getType() {

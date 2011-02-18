@@ -153,8 +153,6 @@ public interface AvpRepresentation{
 
   public int getRuleVendorBitAsInt();
 
-  public boolean isConstrained();
-
   public String getType();
 
   public boolean isProtected();
