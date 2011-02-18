@@ -16,7 +16,7 @@
 	-->
 <dictionary>
 	<!-- <base uri="http://www.ietf.org/rfc/rfc3588.txt">  -->
-	<application id="19302" name="Ericsson SCAP (Service Charging Application Protocol)">
+	<application id="19302" vendor-id="Ericsson" name="Ericsson SCAP (Service Charging Application Protocol)">
 <!--
 <Accounting-Request>::= < Diameter Header: 271, REQ, PXY> 
 						< Session-Id >
@@ -131,7 +131,7 @@
 		</command>
 	</application>
 	
-	<application id="0" name="Base" uri="http://www.ietf.org/rfc/rfc3588.txt?number=3588">
+	<application id="0" vendor-id="None" name="Base" uri="http://www.ietf.org/rfc/rfc3588.txt?number=3588">
 		<!--
 			$Log: dictionary.xml,v $ Revision 1.1 2001/11/01 21:52:44 guy From David Frascone: duUpdate to Diameter dissector to load the dictionary as an XML file rather than building it in, and various
 			Diameter updates. Revision 1.8 2008/01/06 02:49:24 grzegorz Added missing RFC 3588 AVP 299 by Grzegorz Szczytowski Revision 1.7 2001/08/24 18:03:24 chaos Mark's Changes Revision 1.6 2001/07/31
@@ -1080,7 +1080,7 @@
 			<type type-name="Integer32" />
 		</avp>
 		-->
-		<avp name="Accounting-Input-Octets" code="364" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot">
+		<avp name="Accounting-Output-Octets" code="364" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot">
 			<type type-name="Unsigned64" />
 		</avp>
 		<avp name="Acct-Session-Id" code="44" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot">
@@ -1093,15 +1093,6 @@
 			<enum name="Local" code="2" />
 			<enum name="Remote" code="3" />
 			<enum name="Diameter" code="4" />
-		</avp>
-		<avp name="Accounting-Auth-Method" code="406" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot">
-			<type type-name="Enumerated" />
-			<enum name="PAP" code="1" />
-			<enum name="CHAP" code="2" />
-			<enum name="MS-CHAP-1" code="3" />
-			<enum name="MS-CHAP-2" code="4" />
-			<enum name="EAP" code="5" />
-			<enum name="None" code="7" />
 		</avp>
 		<avp name="Acct-Session-Time" code="46" mandatory="may">
 			<type type-name="Integer32" />
@@ -1339,6 +1330,23 @@
 		<avp name="Framed-IPv6-Prefix" code="97" mandatory="may">
 			<type type-name="OctetString" />
 		</avp>
+		
+		<avp name="Login-IPv6-Host" code="98" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot">
+			<type type-name="OctetString" />
+		</avp>
+		
+		<avp name="Framed-IPv6-Route" code="99" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot">
+			<type type-name="UTF8String" />
+		</avp>
+		
+		<avp name="Framed-IPv6-Pool" code="100" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot">
+			<type type-name="OctetString" />
+		</avp>
+		
+		<avp name="NAS-Filter-Rule" code="400" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot" >
+			<type type-name="IPFilterRule" />
+		</avp>
+		
 		<avp name="Tunneling" code="401" mandatory="must" protected="may" may-encrypt="no" vendor-bit="mustnot">
 			<grouped>
 				<gavp name="Tunnel-Type" multiplicity="1" />
@@ -1352,6 +1360,46 @@
 				<gavp name="Tunnel-Password" multiplicity="0-1" />
 				<gavp name="Tunnel-Private-Group-Id" multiplicity="0-1" />
 			</grouped>
+		</avp>
+		
+		<avp name="CHAP-Auth" code="402" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot">
+			<grouped>
+				<gavp name="CHAP-Algorithm" multiplicity="1" />
+				<gavp name="CHAP-Ident" multiplicity="1" />
+				<gavp name="CHAP-Response" multiplicity="0-1" />
+			</grouped>
+		</avp>
+		
+		<avp name="CHAP-Algorithm" code="403" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot">
+			<type type-name="Enumerated" />
+			<enum name="CHAP with MD5" code="5" />
+		</avp>
+		
+		<avp name="CHAP-Ident" code="404" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot">
+			<type type-name="OctetString" />
+		</avp>
+		
+		<avp name="CHAP-Response" code="405" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot">
+			<type type-name="OctetString" />
+		</avp>
+		
+		<avp name="Accounting-Auth-Method" code="406" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot">
+			<type type-name="Enumerated" />
+			<enum name="PAP" code="1" />
+			<enum name="CHAP" code="2" />
+			<enum name="MS-CHAP-1" code="3" />
+			<enum name="MS-CHAP-2" code="4" />
+			<enum name="EAP" code="5" />
+			<enum name="None" code="7" />
+		</avp>
+		
+		<avp name="QoS-Filter-Rule" code="407" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot">
+			<type type-name="QOSFilterRule" />
+		</avp>
+		
+		<avp name="Origin-AAA-Protocol" code="408" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot">
+			<type type-name="Enumerated" />
+			<enum name="RADIUS" code="1" />
 		</avp>
 		<!-- RFC 5580 -->
 		<avp name="Operator-Name" code="126" mandatory="may">
@@ -3182,7 +3230,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 	</application>
 
 	
-	<application id="3" name="Diameter Base Accounting" uri="http://www.ietf.org/rfc/rfc3588.txt?number=3588">
+	<application id="3" vendor-id="None" name="Diameter Base Accounting" uri="http://www.ietf.org/rfc/rfc3588.txt?number=3588">
 <!--
       <ACR> ::= < Diameter Header: 271, REQ, PXY >
                 < Session-Id >
@@ -3265,7 +3313,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 		</command>
 
 	</application>
-	<application id="6" name="Diameter SIP" uri="http://tools.ietf.org/html/rfc4740;http://tools.ietf.org/html/rfc4590">
+	<application id="6" vendor-id="None" name="Diameter SIP" uri="http://tools.ietf.org/html/rfc4740;http://tools.ietf.org/html/rfc4590">
 		<!--  DAMN RFC, there is no definition of types..... for those -->
 		<avp name="Digest-Realm" code="104" vendor-bit="mustnot" vendor-id="None">
 			<type type-name="OctetString" />
@@ -3288,7 +3336,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 		</avp>
 	</application>
 
-	<application id="16777217" name="3GPP Sh" uri="http://webapp.etsi.org/exchangefolder/ts_129329v060600p.pdf">
+	<application id="16777217" vendor-id="TGPP" name="3GPP Sh" uri="http://webapp.etsi.org/exchangefolder/ts_129329v060600p.pdf">
 		<!-- 3GPP TS 29.329 version 6.6.0 Release 6, ETSI TS 129 329 V6.6.0 (2005-09)-->
 		<!-- Note: The AVP codes from 709 to799 are reserved for TS 29.329. -->
 
@@ -3687,7 +3735,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 		<!-- ************************ END 3GPP Sh AVPS ******************* -->
 
 	</application>
-	<application id="16777216" name="3GPP Cx/Dx" uri="...">
+	<application id="16777216" vendor-id="TGPP" name="3GPP Cx/Dx" uri="...">
 		<!-- 3GPP Cx/Dx Application -->
 		<!-- 
 		< User-Authorization-Request> ::=			< Diameter Header: 300, REQ, PXY, 16777216 >
@@ -4458,7 +4506,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 		
 
 	</application>
-	<application name="RFC 4006 CCA" id="4" uri="http://www.ietf.org/rfc/rfc3588.txt?number=3588">
+	<application name="RFC 4006 CCA" vendor-id="None" id="4" uri="http://www.ietf.org/rfc/rfc3588.txt?number=3588">
 
 		<command name="Credit-Control" code="272" request="true">
 			<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="1" index="-1" />
@@ -4471,7 +4519,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 			<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
 
 			<!-- MAY -->
-			<avp name="Acct-Multi-Session-Id" code="-2" vendor="0" multiplicity="0-1" index="-1" />
+			<avp name="Acct-Multi-Session-Id" code="50" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="CC-Correlation-Id" code="411" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="CC-Sub-Session-Id" code="419" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" />
@@ -4505,7 +4553,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 			<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Validity-Time" code="-2" vendor="0" multiplicity="0" index="-1" />
+			<avp name="Validity-Time" code="448" vendor="0" multiplicity="0" index="-1" />
 		</command>
 		<command name="Credit-Control" code="272" request="false">
 			<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="1" index="-1" />
@@ -4517,7 +4565,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 			<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
 
 			<!-- MAY -->
-			<avp name="Acct-Multi-Session-Id" code="-2" vendor="0" multiplicity="0-1" index="-1" />
+			<avp name="Acct-Multi-Session-Id" code="50" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="CC-Session-Failover" code="418" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="CC-Sub-Session-Id" code="419" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Check-Balance-Result" code="422" vendor="0" multiplicity="0-1" index="-1" />
@@ -4531,7 +4579,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 			<avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
-			<avp name="Validity-Time" code="-2" vendor="0" multiplicity="0-1" index="-1" />
+			<avp name="Validity-Time" code="448" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Multiple-Services-Credit-Control" code="456" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
@@ -4849,7 +4897,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 
 	</application>
 
-    <application name="3GPP Gx (Rel6)" id="16777224" uri="http://www.3gpp.org/ftp/Specs/archive/29_series/29.210/29210-670.zip">
+    <application name="3GPP Gx (Rel6)" vendor-id="TGPP" id="16777224" uri="http://www.3gpp.org/ftp/Specs/archive/29_series/29.210/29210-670.zip">
     
         <command name="Credit-Control-Request" code="272" request="true" application="16777224">
             <!-- mandatory -->
@@ -4916,7 +4964,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
         
     </application>
 
-	<application name="3GPP Rf (Rel7 v7.1.0)" id="3" vendor="10415">
+	<application id="3" vendor-id="TGPP" name="3GPP Rf (Rel7 v7.1.0)">
 		 <!-- 3GPP Rf: offline charging. -->
 		 <command name="Accounting" code="271" request="true" >
 			<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
@@ -4981,7 +5029,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 		</command>
 	</application>
 	
-	<application name="3GPP Ro (Rel7 v7.1.0)" id="4" vendor="10415">
+	<application id="4" vendor-id="TGPP" name="3GPP Ro (Rel7 v7.1.0)">
 		 <!-- 3GPP Ro: online charging. -->
 		 <!-- CC App -->
 		<command name="Credit-Control" code="272" request="true">
@@ -5011,7 +5059,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 			
 			<!-- NOT USED -->
 			<avp name="CC-Sub-Session-Id" code="419" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Acct-Multi-Session-Id" code="-2" vendor="0" multiplicity="0" index="-1" />
+			<avp name="Acct-Multi-Session-Id" code="50" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Service-Identifier" code="439" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Requested-Service-Unit" code="437" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Used-Service-Unit" code="446" vendor="0" multiplicity="0" index="-1" />
@@ -5032,7 +5080,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 			<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Validity-Time" code="-2" vendor="0" multiplicity="0" index="-1" />
+			<avp name="Validity-Time" code="448" vendor="0" multiplicity="0" index="-1" />
 		</command>
 
 		<command name="Credit-Control" code="272" request="false">
@@ -5060,7 +5108,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 			<!-- NOT USED -->
 			<avp name="User-Name" code="1" vendor="0" multiplicity="0" index="-1" />
 			<avp name="CC-Sub-Session-Id" code="419" vendor="0" multiplicity="0" index="-1" />		
-			<avp name="Acct-Multi-Session-Id" code="-2" vendor="0" multiplicity="0" index="-1" />
+			<avp name="Acct-Multi-Session-Id" code="50" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Check-Balance-Result" code="422" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Event-Timestamp" code="55" vendor="0" multiplicity="0" index="-1" />
@@ -5068,7 +5116,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 			<avp name="Final-Unit-Indication" code="430" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Check-Balance-Result" code="422" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Direct-Debiting-Failure-Handling" code="428" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Validity-Time" code="-2" vendor="0" multiplicity="0" index="-1" />
+			<avp name="Validity-Time" code="448" vendor="0" multiplicity="0" index="-1" />
 			
 			<!-- FORBBIDEN -->
 			<avp name="CC-Correlation-Id" code="411" vendor="0" multiplicity="0" index="-1" />
@@ -5187,7 +5235,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 		</command>
 	</application>
 	
-	<application name="3GPP MM10 (Rel6)" id="16777226" vendor="10415" uri="http://www.3gpp.org/ftp/Specs/archive/29_series/29.140/29140-640.zip">
+	<application id="16777226" vendor-id="TGPP" name="3GPP MM10 (Rel6)" uri="http://www.3gpp.org/ftp/Specs/archive/29_series/29.140/29140-640.zip">
 <!--
 <Message-Process-Request> ::= < Diameter Header: 311, REQ, PXY, 16777226 >
 							  < Session-Id >
@@ -5271,7 +5319,7 @@ http://www.3gcn.org/3gpp2/TSGX/Projects/X.P0013-B%20IP%20Network%20-%20MMD/X.S00
 		</command>
 	</application>
 	
-	<application id="1" name="NASREQ Application" uri="http://www.ietf.org/rfc/rfc4005.txt">
+	<application id="1"  vendor-id="None" name="NASREQ Application" uri="http://www.ietf.org/rfc/rfc4005.txt">
 <!--
       <AA-Request> ::= < Diameter Header: 265, REQ, PXY >
                        < Session-Id >
