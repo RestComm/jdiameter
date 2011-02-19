@@ -1,27 +1,30 @@
 <dictionary>
 
 	<!-- Basic AVP Data Formats -->
+	<typedefn type-name="OctetString"  />
+	<typedefn type-name="Integer32"  />
 	<typedefn type-name="Integer64"  />
 	<typedefn type-name="Unsigned32"  />
-	<typedefn type-name="Integer32"  />
 	<typedefn type-name="Unsigned64"  />
-	<typedefn type-name="OctetString"  />
 	<typedefn type-name="Float32"  />
 	<typedefn type-name="Float64"  />
 
 	<!-- Derived AVP Data Formats -->
-	<typedefn type-name="MIPRegistrationRequest" type-parent="OctetString" />
-	<typedefn type-name="IPFilterRule" type-parent="OctetString" />
-	<typedefn type-name="AppId" type-parent="Unsigned32" />
-	<typedefn type-name="Time" type-parent="OctetString" />
-	<typedefn type-name="VendorId" type-parent="Unsigned32" />
-	<typedefn type-name="IPAddress" type-parent="OctetString" />
 	<typedefn type-name="Address" type-parent="OctetString" />
+	<typedefn type-name="Time" type-parent="OctetString" />
 	<typedefn type-name="UTF8String" type-parent="OctetString" />
+	<typedefn type-name="DiameterIdentity" type-parent="OctetString" />
 	<typedefn type-name="DiameterURI" type-parent="UTF8String" />
 	<typedefn type-name="Enumerated" type-parent="Integer32" />
+	<typedefn type-name="IPFilterRule" type-parent="OctetString" />
 	<typedefn type-name="QOSFilterRule" type-parent="OctetString" />
-	<typedefn type-name="DiameterIdentity" type-parent="OctetString" />
+
+	<!-- Other AVP Data Formats -->
+	<typedefn type-name="Unsigned32Enumerated" type-parent="Unsigned32" />
+	<typedefn type-name="MIPRegistrationRequest" type-parent="OctetString" />
+	<typedefn type-name="AppId" type-parent="Unsigned32" />
+	<typedefn type-name="VendorId" type-parent="Unsigned32" />
+	<typedefn type-name="IPAddress" type-parent="OctetString" />
 
 	<!-- Diameter Vendor-ID Values -->
 	<vendor vendor-id="None" code="0" name="None" />
@@ -251,7 +254,7 @@
 	</avpdefn>
 
 	<avpdefn name="Inband-Security-Id" code="299" mandatory="must" protected="may" may-encrypt="no" vendor-bit="mustnot" >
-		<type type-name="Enumerated">
+		<type type-name="Unsigned32Enumerated">
 			<enum code="0" name="NO_INBAND_SECURITY" />
 			<enum code="1" name="TLS" />
 		</type>

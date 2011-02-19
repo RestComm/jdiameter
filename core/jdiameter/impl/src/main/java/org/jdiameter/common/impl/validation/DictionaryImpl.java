@@ -61,7 +61,7 @@ public class DictionaryImpl implements Dictionary {
 
   private static transient Logger logger = LoggerFactory.getLogger(DictionaryImpl.class);
 
-  public static final Dictionary INSTANCE = new DictionaryImpl("/Users/ammendonca/Desktop/newD.xml");
+  public static final Dictionary INSTANCE = new DictionaryImpl("dictionary.xml");
 
   private static final String UNDEFINED_AVP_TYPE = "UNDEFINED";
 
@@ -264,8 +264,8 @@ public class DictionaryImpl implements Dictionary {
         String typeName = typedefElement.getAttribute("type-name");
         String typeParent = typedefElement.getAttribute("type-parent");
 
-        // UTF8String is special situation.
-        if (typeParent == null || typeParent.equals("") || typeName.equals("UTF8String")) {
+        // UTF8String and Time are special situations, we don't want to convert these.
+        if (typeParent == null || typeParent.equals("") || typeName.equals("UTF8String") || typeName.equals("Time")) {
           typeParent = typeName;
         }
 
