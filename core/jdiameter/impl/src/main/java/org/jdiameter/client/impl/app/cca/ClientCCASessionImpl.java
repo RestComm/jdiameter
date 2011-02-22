@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -22,9 +22,7 @@
 package org.jdiameter.client.impl.app.cca;
 
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -41,7 +39,6 @@ import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
-import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppSession;
@@ -53,18 +50,14 @@ import org.jdiameter.api.cca.ClientCCASession;
 import org.jdiameter.api.cca.ClientCCASessionListener;
 import org.jdiameter.api.cca.events.JCreditControlAnswer;
 import org.jdiameter.api.cca.events.JCreditControlRequest;
-import org.jdiameter.client.api.IContainer;
-import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.ISessionFactory;
-import org.jdiameter.client.api.parser.IMessageParser;
-import org.jdiameter.client.api.parser.ParseException;
 import org.jdiameter.client.impl.app.cca.Event.Type;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.cca.ClientCCASessionState;
 import org.jdiameter.common.api.app.cca.ICCAMessageFactory;
-import org.jdiameter.common.api.app.cca.ICCASessionFactory;
 import org.jdiameter.common.api.app.cca.IClientCCASessionContext;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
+import org.jdiameter.common.impl.app.AppEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
 import org.jdiameter.common.impl.app.cca.AppCCASessionImpl;
@@ -82,41 +75,45 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   private static final long serialVersionUID = 1L;
   private static final Logger logger = LoggerFactory.getLogger(ClientCCASessionImpl.class);
 
-  // Session State Handling ---------------------------------------------------
-  protected boolean isEventBased = true;
-  protected boolean requestTypeSet = false;
-  protected ClientCCASessionState state = ClientCCASessionState.IDLE;
-  protected Lock sendAndStateLock = new ReentrantLock();
+  // session data pojo, local reference so we dont have to cast super.data to IClientCCASessionData
+  protected IClientCCASessionData sessionData;
 
+  // Session State Handling ---------------------------------------------------
+  //protected boolean isEventBased = true;
+  //protected boolean requestTypeSet = false;
+  //protected ClientCCASessionState state = ClientCCASessionState.IDLE;
+  protected Lock sendAndStateLock = new ReentrantLock();
+  // Session Based Queue
+  protected ArrayList<Event> eventQueue = new ArrayList<Event>(); //FIXME: this is not replicable?
   // Factories and Listeners --------------------------------------------------
   protected transient ICCAMessageFactory factory;
   protected transient ClientCCASessionListener listener;
   protected transient IClientCCASessionContext context;
-  protected transient IMessageParser parser;
+
 
   // Tx Timer -----------------------------------------------------------------
   //protected transient ScheduledFuture txFuture = null; //FIXME: HA/FT
-  protected Serializable txTimerId;
+  //protected Serializable txTimerId;
   //protected JCreditControlRequest txTimerRequest;
-  protected byte[] txTimerRequest;
+  //protected byte[] txTimerRequest;
 
   // Event Based Buffer
   //protected Message buffer = null;
-  protected byte[] buffer;
+  //protected byte[] buffer;
 
   protected final static String TX_TIMER_NAME = "CCA_CLIENT_TX_TIMER";
   protected static final long TX_TIMER_DEFAULT_VALUE = 30 * 60 * 1000; // miliseconds
 
-  protected String originHost, originRealm;
+
   protected long[] authAppIds = new long[] { 4 };
 
   // Requested Action + Credit-Control and Direct-Debiting Failure-Handling ---
-  private static final int NON_INITIALIZED = -300;
+  public static final int NON_INITIALIZED = -300;
 
-  protected int gatheredRequestedAction = NON_INITIALIZED;
+  //protected int gatheredRequestedAction = NON_INITIALIZED;
 
-  protected int gatheredCCFH = NON_INITIALIZED;
-  protected int gatheredDDFH = NON_INITIALIZED;
+  //protected int gatheredCCFH = NON_INITIALIZED;
+  //protected int gatheredDDFH = NON_INITIALIZED;
 
   protected static final int CCFH_TERMINATE = 0;
   protected static final int CCFH_CONTINUE = 1;
@@ -151,47 +148,35 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     temporaryErrorCodes = Collections.unmodifiableSet(tmp);
   }
 
-  // Session Based Queue
-  protected ArrayList<Event> eventQueue = new ArrayList<Event>();
-
-  public ClientCCASessionImpl(ICCAMessageFactory fct, SessionFactory sf, ClientCCASessionListener lst,IClientCCASessionContext ctx, StateChangeListener<AppSession> stLst) {
-    this(null, fct, sf, lst,ctx,stLst);
-  }
-
-  public ClientCCASessionImpl(String sessionId, ICCAMessageFactory fct, SessionFactory sf, ClientCCASessionListener lst,IClientCCASessionContext ctx, StateChangeListener<AppSession> stLst) {
-    super(sf,sessionId);
+  public ClientCCASessionImpl(IClientCCASessionData data, ICCAMessageFactory fct, ISessionFactory sf, ClientCCASessionListener lst,IClientCCASessionContext ctx, StateChangeListener<AppSession> stLst) {
+    super(sf,data);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
+    }
+    if (data == null) {
+      throw new IllegalArgumentException("SessionData can not be null");
     }
     if (fct.getApplicationIds() == null) {
       throw new IllegalArgumentException("ApplicationId can not be less than zero");
     }
 
+    sessionData = data;
     context = (IClientCCASessionContext)ctx;
 
     authAppIds = fct.getApplicationIds();
     listener = lst;
     factory = fct;
-    ISessionFactory isf = (ISessionFactory) sf;
-    IContainer icontainer = isf.getContainer();
-    this.parser = icontainer.getAssemblerFacility().getComponentInstance(IMessageParser.class);
 
     super.addStateChangeNotification(stLst);
-    //    try {
-    //      session = sessionId == null ? sf.getNewSession() : sf.getNewSession(sessionId);
-    //      //session.setRequestListener(this);
-    //    }
-    //    catch (InternalException e) {
-    //      throw new IllegalArgumentException(e);
-    //    }
+
   }
 
   protected int getLocalCCFH() {
-    return gatheredCCFH >= 0 ? gatheredCCFH : context.getDefaultCCFHValue();
+    return sessionData.getGatheredCCFH() >= 0 ? sessionData.getGatheredCCFH() : context.getDefaultCCFHValue();
   }
 
   protected int getLocalDDFH() {
-    return gatheredDDFH >= 0 ? gatheredDDFH : context.getDefaultDDFHValue();
+    return sessionData.getGatheredDDFH() >= 0 ? sessionData.getGatheredDDFH() : context.getDefaultDDFHValue();
   }
 
   public void sendCreditControlRequest(JCreditControlRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
@@ -208,12 +193,12 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   }
 
   public boolean isEventBased() {
-    return this.isEventBased;
+    return this.sessionData.isEventBased();
   }
 
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> stateType) {
-    return stateType == ClientCCASessionState.class ? (E) state : null;
+    return stateType == ClientCCASessionState.class ? (E) this.sessionData.getClientCCASessionState() : null;
   }
 
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
@@ -225,7 +210,8 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       sendAndStateLock.lock();
       Event localEvent = (Event) event;
       Event.Type eventType = (Type) localEvent.getType();
-      switch (this.state) {
+      ClientCCASessionState state = this.sessionData.getClientCCASessionState(); 
+      switch (state) {
 
       case IDLE:
         switch (eventType) {
@@ -292,7 +278,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           // Action: Delete request
           // New State: IDLE
           setState(ClientCCASessionState.IDLE, false);
-          buffer = null;
+          sessionData.setBuffer(null);
           deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
           break;
         default:
@@ -322,7 +308,8 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       sendAndStateLock.lock();
       Event localEvent = (Event) event;
       Event.Type eventType = (Type) localEvent.getType();
-      switch (this.state) {
+      ClientCCASessionState state = this.sessionData.getClientCCASessionState(); 
+      switch (state) {
 
       case IDLE:
         switch (eventType) {
@@ -606,23 +593,20 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     logger.debug("Scheduling TX Timer {}", txTimerValue);
     //this.txFuture = scheduler.schedule(new TxTimerTask(this, request), txTimerValue, TimeUnit.SECONDS);
     try {
-      this.txTimerRequest = this.parser.encodeMessage((IMessage) request.getMessage()).array();
+      this.sessionData.setTxTimerRequest((Request) ((AppEventImpl)request).getMessage());
     }
     catch (Exception e) {
       throw new IllegalArgumentException("Failed to store request.", e);
     }
-    this.txTimerId = this.timerFacility.schedule(this.sessionId, TX_TIMER_NAME, TX_TIMER_DEFAULT_VALUE);
+    this.sessionData.setTxTimerId(this.timerFacility.schedule(this.getSessionId(), TX_TIMER_NAME, TX_TIMER_DEFAULT_VALUE));
   }
 
   protected void stopTx() {
-    //    if (this.txFuture != null) {
-    //      this.txFuture.cancel(true);
-    //      this.txFuture = null;
-    //    }
-    if(this.txTimerId != null) {
-      this.txTimerRequest = null;
-      this.timerFacility.cancel(this.txTimerId);
-      this.txTimerId = null;
+    Serializable txTimerId = this.sessionData.getTxTimerId(); 
+    if(txTimerId!= null) {
+      this.sessionData.setTxTimerRequest(null);
+      this.timerFacility.cancel(txTimerId);
+      this.sessionData.setTxTimerId(null);
     }
   }
 
@@ -632,7 +616,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   @Override
   public void onTimer(String timerName) {
     if(timerName.equals(TX_TIMER_NAME)) {
-      new TxTimerTask(this, this.txTimerRequest).run();
+      new TxTimerTask(this, this.sessionData.getTxTimerRequest()).run();
     }
   }
 
@@ -643,9 +627,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   @SuppressWarnings("unchecked")
   protected void setState(ClientCCASessionState newState, boolean release) {
     try {
-      IAppSessionState oldState = state;
-      state = newState;
-      super.sessionDataSource.updateSession(this);
+      IAppSessionState oldState = this.sessionData.getClientCCASessionState();
+      this.sessionData.setClientCCASessionState(newState);
+
       for (StateChangeListener i : stateListeners) {
         i.stateChanged(this,(Enum) oldState, (Enum) newState);
       }
@@ -659,7 +643,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     }
     catch (Exception e) {
       if(logger.isDebugEnabled()) {
-        logger.debug("Failure switching to state " + state + " (release=" + release + ")", e);
+        logger.debug("Failure switching to state " + this.sessionData.getClientCCASessionState() + " (release=" + release + ")", e);
       }
     }
   }
@@ -685,6 +669,8 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   protected void handleSendFailure(Exception e, Event.Type eventType, Message request) throws Exception {
     logger.debug("Failed to send message, type: {} message: {}, failure: {}", new Object[]{eventType, request, e != null ? e.getLocalizedMessage() : ""});
     try {
+      ClientCCASessionState state = this.sessionData.getClientCCASessionState();
+      int gatheredRequestedAction = this.sessionData.getGatheredRequestedAction();
       // Event Based ----------------------------------------------------------
       if (isEventBased()) {
         switch (state) {
@@ -705,7 +691,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Action: Store request with T-flag
               // New State: IDLE
               request.setReTransmitted(true);
-              buffer = messageToBuffer((IMessage) request).array();
+              this.sessionData.setBuffer((Request) ((AppEventImpl)request).getMessage());
 
               setState(ClientCCASessionState.IDLE, false);
               break;
@@ -727,7 +713,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
             // New State: IDLE
             setState(ClientCCASessionState.IDLE, false);
             request.setReTransmitted(true);
-            buffer = messageToBuffer((IMessage) request).array();
+            this.sessionData.setBuffer((Request) ((AppEventImpl)request).getMessage());
           }
           else {
             logger.warn("Invalid Requested-Action AVP value {}", gatheredRequestedAction);
@@ -739,7 +725,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           // Action: -
           // New State: IDLE
           setState(ClientCCASessionState.IDLE, false);
-          buffer = null; // FIXME: Action does not mention, but ...
+          this.sessionData.setBuffer(null); // FIXME: Action does not mention, but ...
           break;
         default:
           logger.warn("Wrong event type ({}) on state {}", eventType, state);
@@ -788,6 +774,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     try {
       // Event Based ----------------------------------------------------------
       long resultCode = event.getResultCodeAvp().getUnsigned32();
+      ClientCCASessionState state = this.sessionData.getClientCCASessionState();
+      Serializable txTimerId = this.sessionData.getTxTimerId();
+      int gatheredRequestedAction = this.sessionData.getGatheredRequestedAction();
       if (isEventBased()) {
         switch (state) {
         case PENDING_EVENT:
@@ -853,7 +842,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Event: Temporary error, and requested action REFUND_ACCOUNT
               // Action: Store request
               // New State: IDLE
-              buffer = messageToBuffer((IMessage) request).array();
+              this.sessionData.setBuffer((Request) ((AppEventImpl)request).getMessage());
               setState(ClientCCASessionState.IDLE, false);
             }
             else {
@@ -895,7 +884,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Event: Failed CC event answer received; requested action REFUND_ACCOUNT
               // Action: Indicate service error and delete request
               // New State: IDLE
-              buffer = null;
+              this.sessionData.setBuffer(null);
               context.indicateServiceError(this);
               deliverCCAnswer(request, event);
               setState(ClientCCASessionState.IDLE);
@@ -911,7 +900,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           // Event: Failed CC answer received
           // Action: Delete request
           // New State: IDLE
-          buffer = null;
+          this.sessionData.setBuffer(null);
           setState(ClientCCASessionState.IDLE, false);
           break;
         default:
@@ -1023,6 +1012,10 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
   protected void handleTxExpires(Message message) {
     // Event Based ----------------------------------------------------------
+    ClientCCASessionState state = this.sessionData.getClientCCASessionState();
+    Serializable txTimerId = this.sessionData.getTxTimerId();
+    int gatheredRequestedAction = this.sessionData.getGatheredRequestedAction();
+    int gatheredDDFH = this.sessionData.getGatheredDDFH();
     if (isEventBased()) {
       if (gatheredRequestedAction == CHECK_BALANCE || gatheredRequestedAction == PRICE_ENQUIRY) {
         // Current State: PENDING_E
@@ -1038,12 +1031,8 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           // Event: Temporary error; requested action DIRECT_DEBITING; DDFH equal to TERMINATE_OR_BUFFER; Tx expired
           // Action: Store request
           // New State: IDLE
-          try {
-            buffer = messageToBuffer((IMessage) message).array();
-          }
-          catch (InternalException e) {
-            logger.debug("Failed to store request.", e);
-          }
+
+          this.sessionData.setBuffer((Request) message);
           setState(ClientCCASessionState.IDLE, false);
         }
         else {
@@ -1061,12 +1050,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         // Action: Store request with T-flag
         // New State: IDLE
         message.setReTransmitted(true);
-        try {
-          buffer = messageToBuffer((IMessage) message).array();
-        }
-        catch (InternalException e) {
-          throw new IllegalArgumentException("Failed to store request.", e);
-        }
+        this.sessionData.setBuffer((Request) message);
         setState(ClientCCASessionState.IDLE, false);
       }
     }
@@ -1143,14 +1127,15 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       // Event: Request in storage
       // Action: Send stored request
       // New State: PENDING_B
+      Request buffer = this.sessionData.getBuffer();
       if (buffer != null) {
         setState(ClientCCASessionState.PENDING_BUFFERED);
         try {
-          dispatchEvent(new AppRequestEventImpl(messageFromBuffer(ByteBuffer.wrap(buffer))));
+          dispatchEvent(new AppRequestEventImpl(buffer));
         }
         catch (Exception e) {
           try {
-            handleSendFailure(e, Event.Type.SEND_EVENT_REQUEST, messageFromBuffer(ByteBuffer.wrap(buffer)));
+            handleSendFailure(e, Event.Type.SEND_EVENT_REQUEST, buffer);
           }
           catch (Exception e1) {
             logger.error("Failure handling buffer send failure", e1);
@@ -1160,7 +1145,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     }
     // Session Based --------------------------------------------------------
     else {
-      if (state == ClientCCASessionState.OPEN && eventQueue.size() > 0) {
+      if (this.sessionData.getClientCCASessionState() == ClientCCASessionState.OPEN && eventQueue.size() > 0) {
         try {
           this.handleEvent(eventQueue.remove(0));
         }
@@ -1184,7 +1169,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     if (answer != null) {
       try {
         if (answer.isCreditControlFailureHandlingAVPPresent()) {
-          this.gatheredCCFH = answer.getCredidControlFailureHandlingAVPValue();
+          this.sessionData.setGatheredCCFH(answer.getCredidControlFailureHandlingAVPValue());
         }
       }
       catch (Exception e) {
@@ -1192,32 +1177,32 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       }
       try {
         if (answer.isDirectDebitingFailureHandlingAVPPresent()) {
-          this.gatheredDDFH = answer.getDirectDebitingFailureHandlingAVPValue();
+          this.sessionData.setGatheredDDFH(answer.getDirectDebitingFailureHandlingAVPValue());
         }
       }
       catch (Exception e) {
         logger.debug("Failure trying to obtain Direct-Debit-Failure-Handling AVP value", e);
       }
-      if(!requestTypeSet) {
-        requestTypeSet = true;
+      if(!this.sessionData.isRequestTypeSet()) {
+        this.sessionData.setRequestTypeSet(true);
         // No need to check if it exists.. it must, if not fail with exception
-        isEventBased = (answer.getRequestTypeAVPValue() == EVENT_REQUEST);
+        this.sessionData.setEventBased(answer.getRequestTypeAVPValue() == EVENT_REQUEST);
       }
     }
     else if (request != null) {
       try {
         if (request.isRequestedActionAVPPresent()) {
-          this.gatheredRequestedAction = request.getRequestedActionAVPValue();
+          this.sessionData.setGatheredRequestedAction(request.getRequestedActionAVPValue());
         }
       }
       catch (Exception e) {
         logger.debug("Failure trying to obtain Request-Action AVP value", e);
       }
 
-      if(!requestTypeSet) {
-        requestTypeSet = true;
+      if(!this.sessionData.isRequestTypeSet()) {
+        this.sessionData.setRequestTypeSet(true);
         // No need to check if it exists.. it must, if not fail with exception
-        isEventBased = (request.getRequestTypeAVPValue() == EVENT_REQUEST);
+        this.sessionData.setEventBased(request.getRequestTypeAVPValue() == EVENT_REQUEST);
       }
     }
   }
@@ -1255,30 +1240,11 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     return true;
   }
 
-  /* (non-Javadoc)
-   * @see org.jdiameter.common.impl.app.AppSessionImpl#relink(org.jdiameter.client.api.IContainer)
-   */
-  @Override
-  public void relink(IContainer stack) {
-    // Check if some transient field is null
-    if(super.sf == null) {
-      super.relink(stack);
-      this.parser = stack.getAssemblerFacility().getComponentInstance(IMessageParser.class);
-
-      //hack this will change
-      ICCASessionFactory fct = (ICCASessionFactory) ((ISessionFactory)super.sf).getAppSessionFactory(ClientCCASession.class);
-
-      this.listener = fct.getClientSessionListener();
-      this.context = fct.getClientContextListener();
-      this.factory = fct.getMessageFactory();
-    }
-  }
-
   private class TxTimerTask implements Runnable {
     private ClientCCASession session = null;
-    private byte[] request = null;
+    private Request request = null;
 
-    private TxTimerTask(ClientCCASession session, byte[] request) {
+    private TxTimerTask(ClientCCASession session, Request request) {
       super();
       this.session = session;
       this.request = request;
@@ -1288,14 +1254,14 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       try {
         sendAndStateLock.lock();
         logger.debug("Fired TX Timer");
-        txTimerId = null;
+        sessionData.setTxTimerId(null);
         try {
           context.txTimerExpired(session);
         }
         catch (Exception e) {
           logger.debug("Failure handling TX Timer Expired", e);
         }
-        JCreditControlRequest req = factory.createCreditControlRequest((Request) messageFromBuffer(ByteBuffer.wrap(request)));
+        JCreditControlRequest req = factory.createCreditControlRequest(request);
         handleEvent(new Event(Event.Type.Tx_TIMER_FIRED, req, null));
       }
       catch (InternalException e) {
@@ -1310,29 +1276,6 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       finally {
         sendAndStateLock.unlock();
       }
-    }
-  }
-
-  private final Message messageFromBuffer(ByteBuffer request) throws InternalException {
-    if (request != null) {
-      Message m;
-      try {
-        m = parser.createMessage(request);
-        return m;
-      }
-      catch (AvpDataException e) {
-        throw new InternalException("Failed to decode message.", e);
-      }
-    }
-    return null;
-  }
-
-  private ByteBuffer messageToBuffer(IMessage msg) throws InternalException {
-    try {
-      return parser.encodeMessage(msg);
-    }
-    catch (ParseException e) {
-      throw new InternalException("Failed to encode message.",e);
     }
   }
 
@@ -1385,84 +1328,30 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     }
   }
 
-  /* (non-Javadoc)
-   * @see java.lang.Object#hashCode()
-   */
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + Arrays.hashCode(authAppIds);
-    result = prime * result + gatheredCCFH;
-    result = prime * result + gatheredDDFH;
-    result = prime * result + gatheredRequestedAction;
-    result = prime * result + (isEventBased ? 1231 : 1237);
-    result = prime * result + ((originHost == null) ? 0 : originHost.hashCode());
-    result = prime * result + ((originRealm == null) ? 0 : originRealm.hashCode());
-    result = prime * result + (requestTypeSet ? 1231 : 1237);
-    result = prime * result + ((state == null) ? 0 : state.hashCode());
+    result = prime * result + ((sessionData == null) ? 0 : sessionData.hashCode());
     return result;
   }
 
-  /* (non-Javadoc)
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) {
+    if (this == obj)
       return true;
-    }
-    if (obj == null) {
+    if (obj == null)
       return false;
-    }
-    if (getClass() != obj.getClass()) {
+    if (getClass() != obj.getClass())
       return false;
-    }
-
     ClientCCASessionImpl other = (ClientCCASessionImpl) obj;
-    if (!Arrays.equals(authAppIds, other.authAppIds)) {
-      return false;
-    }
-    if (gatheredCCFH != other.gatheredCCFH) {
-      return false;
-    }
-    if (gatheredDDFH != other.gatheredDDFH) {
-      return false;
-    }
-    if (gatheredRequestedAction != other.gatheredRequestedAction) {
-      return false;
-    }
-    if (isEventBased != other.isEventBased) {
-      return false;
-    }
-    if (originHost == null) {
-      if (other.originHost != null) {
+    if (sessionData == null) {
+      if (other.sessionData != null)
         return false;
-      }
     }
-    else if (!originHost.equals(other.originHost)) {
+    else if (!sessionData.equals(other.sessionData))
       return false;
-    }
-    if (originRealm == null) {
-      if (other.originRealm != null) {
-        return false;
-      }
-    }
-    else if (!originRealm.equals(other.originRealm)) {
-      return false;
-    }
-    if (requestTypeSet != other.requestTypeSet) {
-      return false;
-    }
-    if (state == null) {
-      if (other.state != null) {
-        return false;
-      }
-    }
-    else if (!state.equals(other.state)) {
-      return false;
-    }
-
     return true;
   }
+
 }

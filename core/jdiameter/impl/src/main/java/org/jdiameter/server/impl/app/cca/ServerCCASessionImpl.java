@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -22,7 +22,6 @@
 package org.jdiameter.server.impl.app.cca;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -36,7 +35,6 @@ import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
-import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppRequestEvent;
@@ -48,11 +46,9 @@ import org.jdiameter.api.cca.ServerCCASession;
 import org.jdiameter.api.cca.ServerCCASessionListener;
 import org.jdiameter.api.cca.events.JCreditControlAnswer;
 import org.jdiameter.api.cca.events.JCreditControlRequest;
-import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.cca.ICCAMessageFactory;
-import org.jdiameter.common.api.app.cca.ICCASessionFactory;
 import org.jdiameter.common.api.app.cca.IServerCCASessionContext;
 import org.jdiameter.common.api.app.cca.ServerCCASessionState;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
@@ -74,9 +70,10 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
   private static final long serialVersionUID = 1L;
   private static final Logger logger = LoggerFactory.getLogger(ServerCCASessionImpl.class);
 
+  protected IServerCCASessionData sessionData;
   // Session State Handling ---------------------------------------------------
-  protected boolean stateless = true;
-  protected ServerCCASessionState state = ServerCCASessionState.IDLE;
+  //protected boolean stateless = true;
+  //protected ServerCCASessionState state = ServerCCASessionState.IDLE;
   protected Lock sendAndStateLock = new ReentrantLock();
 
   // Factories and Listeners --------------------------------------------------
@@ -87,25 +84,25 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
   //  Tcc timer (supervises an ongoing credit-control
   //             session in the credit-control server) ------------------------
   //protected transient ScheduledFuture tccFuture = null;
-  protected Serializable tccTimerId;
+  //protected Serializable tccTimerId;
   protected static final String TCC_TIMER_NAME = "TCC_CCASERVER_TIMER";
 
   protected long[] authAppIds = new long[]{4};
-  protected String originHost, originRealm;
+  //protected String originHost, originRealm;
 
-  public ServerCCASessionImpl(ICCAMessageFactory fct, SessionFactory sf, ServerCCASessionListener lst, IServerCCASessionContext ctx,StateChangeListener<AppSession> stLst) {
-    this(null, fct, sf, lst,ctx,stLst);
-  }
-
-  public ServerCCASessionImpl(String sessionId, ICCAMessageFactory fct, SessionFactory sf, ServerCCASessionListener lst, IServerCCASessionContext ctx, StateChangeListener<AppSession> stLst) {
-    super(sf,sessionId);
+  public ServerCCASessionImpl(IServerCCASessionData data, ICCAMessageFactory fct, ISessionFactory sf, ServerCCASessionListener lst, IServerCCASessionContext ctx, StateChangeListener<AppSession> stLst) {
+    super(sf,data);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
+    if (data == null) {
+      throw new IllegalArgumentException("IServerCCASessionData can not be null");
+    }
+
     if (fct.getApplicationIds() == null) {
       throw new IllegalArgumentException("ApplicationId can not be less than zero");
     }
-
+    sessionData = data;
     context = ctx;
 
     authAppIds = fct.getApplicationIds();
@@ -123,12 +120,12 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
   }
 
   public boolean isStateless() {
-    return stateless;
+    return sessionData.isStateless();
   }
 
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> stateType) {
-    return stateType == ServerCCASessionState.class ? (E) state : null;
+    return stateType == ServerCCASessionState.class ? (E) sessionData.getServerCCASessionState() : null;
   }
 
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
@@ -136,7 +133,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
 
     try {
       sendAndStateLock.lock();
-
+      ServerCCASessionState state = this.sessionData.getServerCCASessionState();
       // Can be null if there is no state transition, transition to IDLE state should terminate this app session
       Event localEvent = (Event) event;
 
@@ -216,7 +213,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
             //do nothing?
           }
           break;
-        */
+         */
         case RECEIVED_UPDATE:
           listener.doCreditControlRequest(this, (JCreditControlRequest)localEvent.getRequest());
           break;
@@ -307,25 +304,6 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
     return true;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.jdiameter.common.impl.app.AppSessionImpl#relink(org.jdiameter.client.api.IContainer)
-   */
-  @Override
-  public void relink(IContainer stack) {
-    if (super.sf == null) {
-      super.relink(stack);
-
-      // hack this will change
-      ICCASessionFactory fct = (ICCASessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(ServerCCASession.class);
-
-      this.listener = fct.getServerSessionListener();
-      this.context = fct.getServerContextListener();
-      this.factory = fct.getMessageFactory();
-    }
-  }
-
   private class TccScheduledTask implements Runnable {
     ServerCCASession session = null;
 
@@ -343,7 +321,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
       try {
         sendAndStateLock.lock();
         // tccFuture = null;
-        tccTimerId = null;
+        sessionData.setTccTimerId(null);
         setState(ServerCCASessionState.IDLE);
       }
       finally {
@@ -390,21 +368,19 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
       tccTimeout = 2 * context.getDefaultValidityTime();
     }
 
-    if(tccTimerId != null) {
+    if(sessionData.getTccTimerId() != null) {
       stopTcc(true);
       //tccFuture = super.scheduler.schedule(new TccScheduledTask(this), defaultValue, TimeUnit.SECONDS);
-      tccTimerId = super.timerFacility.schedule(this.sessionId, TCC_TIMER_NAME, tccTimeout * 1000);
+      this.sessionData.setTccTimerId(super.timerFacility.schedule(this.getSessionId(), TCC_TIMER_NAME, tccTimeout * 1000));
       // FIXME: this accepts Future!
       context.sessionSupervisionTimerReStarted(this, null);
-
     }
     else {
       //tccFuture = super.scheduler.schedule(new TccScheduledTask(this), defaultValue, TimeUnit.SECONDS);
-      tccTimerId = super.timerFacility.schedule(this.sessionId, TCC_TIMER_NAME, tccTimeout * 1000);
+      this.sessionData.setTccTimerId(super.timerFacility.schedule(this.getSessionId(),  TCC_TIMER_NAME, tccTimeout * 1000));
       //FIXME: this accepts Future!
       context.sessionSupervisionTimerStarted(this, null);
     }
-    super.sessionDataSource.updateSession(this);
   }
 
   /*
@@ -420,15 +396,15 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
   }
 
   private void stopTcc(boolean willRestart) {
+    Serializable tccTimerId = this.sessionData.getTccTimerId();
     if (tccTimerId != null) {
       // tccFuture.cancel(false);
       super.timerFacility.cancel(tccTimerId);
       // ScheduledFuture f = tccFuture;
-      tccTimerId = null;
+      this.sessionData.setTccTimerId(null);
       if (!willRestart) {
         context.sessionSupervisionTimerStopped(this, null);
       }
-      super.sessionDataSource.updateSession(this);
     }
   }
 
@@ -446,20 +422,18 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
 
   @SuppressWarnings("unchecked")
   protected void setState(ServerCCASessionState newState, boolean release) {
-    IAppSessionState oldState = state;
-    state = newState;
+    IAppSessionState oldState = this.sessionData.getServerCCASessionState();
+    this.sessionData.setServerCCASessionState(newState);
 
     for (StateChangeListener i : stateListeners) {
       i.stateChanged(this, (Enum) oldState, (Enum) newState);
     }
     if (newState == ServerCCASessionState.IDLE) {
+      // do EVERYTHING before this!
+      stopTcc(false);
       if (release) {
         this.release();
       }
-      stopTcc(false);
-    }
-    else {
-      super.sessionDataSource.updateSession(this);
     }
   }
 
@@ -506,8 +480,8 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
       session.send(event.getMessage(), this);
       // Store last destination information
       // FIXME: add differentiation on server/client request
-      originRealm = event.getMessage().getAvps().getAvp(Avp.ORIGIN_REALM).getOctetString();
-      originHost = event.getMessage().getAvps().getAvp(Avp.ORIGIN_HOST).getOctetString();
+      //originRealm = event.getMessage().getAvps().getAvp(Avp.ORIGIN_REALM).getOctetString();
+      //originHost = event.getMessage().getAvps().getAvp(Avp.ORIGIN_HOST).getOctetString();
     }
     catch(Exception e) {
       //throw new InternalException(e);
@@ -562,72 +536,35 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
     }
   }
 
-  /* (non-Javadoc)
-   * @see java.lang.Object#hashCode()
-   */
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + Arrays.hashCode(authAppIds);
-    result = prime * result + ((originHost == null) ? 0 : originHost.hashCode());
-    result = prime * result + ((originRealm == null) ? 0 : originRealm.hashCode());
-    result = prime * result + ((state == null) ? 0 : state.hashCode());
-    result = prime * result + (stateless ? 1231 : 1237);
+    result = prime * result + ((sessionData == null) ? 0 : sessionData.hashCode());
     return result;
   }
 
-  /* (non-Javadoc)
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) {
+    if (this == obj)
       return true;
-    }
-    if (obj == null) {
+    if (obj == null)
       return false;
-    }
-    if (getClass() != obj.getClass()) {
+    if (getClass() != obj.getClass())
       return false;
-    }
-
     ServerCCASessionImpl other = (ServerCCASessionImpl) obj;
-    if (!Arrays.equals(authAppIds, other.authAppIds)) {
-      return false;
-    }
-    if (originHost == null) {
-      if (other.originHost != null) {
+    if (sessionData == null) {
+      if (other.sessionData != null)
         return false;
-      }
     }
-    else if (!originHost.equals(other.originHost)) {
+    else if (!sessionData.equals(other.sessionData))
       return false;
-    }
-    if (originRealm == null) {
-      if (other.originRealm != null) {
-        return false;
-      }
-    }
-    else if (!originRealm.equals(other.originRealm)) {
-      return false;
-    }
-    if (state == null) {
-      if (other.state != null) {
-        return false;
-      }
-    }
-    else if (!state.equals(other.state)) {
-      return false;
-    }
-    if (stateless != other.stateless) {
-      return false;
-    }
-
     return true;
   }
- public String toString()
- {
-   return super.toString()+" State[ "+state+" ] Timer[ "+tccTimerId+" ] Stateless[ "+stateless+" ]";
- }
+
+  @Override
+  public String toString() {
+    return "ServerCCASessionImpl [sessionData=" + sessionData + "]";
+  }
+
 }

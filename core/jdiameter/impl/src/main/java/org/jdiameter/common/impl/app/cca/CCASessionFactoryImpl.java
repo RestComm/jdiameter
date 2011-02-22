@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -43,13 +43,17 @@ import org.jdiameter.api.cca.events.JCreditControlAnswer;
 import org.jdiameter.api.cca.events.JCreditControlRequest;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.impl.app.cca.ClientCCASessionImpl;
+import org.jdiameter.client.impl.app.cca.IClientCCASessionData;
+import org.jdiameter.common.api.app.IAppSessionDataFactory;
 import org.jdiameter.common.api.app.cca.ICCAMessageFactory;
+import org.jdiameter.common.api.app.cca.ICCASessionData;
 import org.jdiameter.common.api.app.cca.ICCASessionFactory;
 import org.jdiameter.common.api.app.cca.IClientCCASessionContext;
 import org.jdiameter.common.api.app.cca.IServerCCASessionContext;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
 import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
+import org.jdiameter.server.impl.app.cca.IServerCCASessionData;
 import org.jdiameter.server.impl.app.cca.ServerCCASessionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,25 +81,31 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
   protected IClientCCASessionContext clientContextListener;
   protected ICCAMessageFactory messageFactory;
 
+
   protected Logger logger = LoggerFactory.getLogger(CCASessionFactoryImpl.class);
   protected ISessionDatasource iss;
   protected ISessionFactory sessionFactory = null;
+  protected IAppSessionDataFactory<ICCASessionData> sessionDataFactory;
+  public CCASessionFactoryImpl(){};
 
-  protected void init(SessionFactory sessionFactory)
-  {
-	  this.sessionFactory = (ISessionFactory) sessionFactory;
-	    this.iss = this.sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
-  }
-  
-  public CCASessionFactoryImpl() {
-	    super();
-	   
-  }
-  
   public CCASessionFactoryImpl(SessionFactory sessionFactory) {
     super();
-    this.init(sessionFactory);
-   
+
+    init(sessionFactory);
+  }
+
+  /**
+   * @param sessionFactory2
+   */
+  public void init(SessionFactory sessionFactory) {
+    this.sessionFactory = (ISessionFactory) sessionFactory;
+    this.iss = this.sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
+
+    this.sessionDataFactory = (IAppSessionDataFactory<ICCASessionData>) this.iss.getDataFactory(ICCASessionData.class);
+    if(this.sessionDataFactory == null) {
+      logger.debug("No factory for CCA Application data, using default/local.");
+      this.sessionDataFactory = new CCALocalSessionDataFactory();
+    }
   }
 
   public CCASessionFactoryImpl(SessionFactory sessionFactory, int defaultDirectDebitingFailureHandling, int defaultCreditControlFailureHandling, long defaultValidityTime, long defaultTxTimerValue) {
@@ -242,53 +252,87 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
     this.stateListener = stateListener;
   }
 
+  @Override
+  public AppSession getSession(String sessionId, Class<? extends AppSession> aClass) {
+    if (sessionId == null) {
+      throw new IllegalArgumentException("SessionId must not be null");
+    }
+    if(!this.iss.exists(sessionId)) {
+      return null;
+    }
+    AppSession appSession = null;
+    try {
+      if (aClass == ClientCCASession.class) {
+        ClientCCASessionImpl clientSession = null;
+        IClientCCASessionData data = (IClientCCASessionData) this.sessionDataFactory.getAppSessionData(ClientCCASession.class, sessionId);
+
+        clientSession = new ClientCCASessionImpl(data, this.getMessageFactory(), sessionFactory, this.getClientSessionListener(),
+            this.getClientContextListener(), this.getStateListener());
+        clientSession.getSessions().get(0).setRequestListener(clientSession);
+        appSession = clientSession;
+      }
+      else if (aClass == ServerCCASession.class) {
+        ServerCCASessionImpl serverSession = null;
+        IServerCCASessionData data = (IServerCCASessionData) this.sessionDataFactory.getAppSessionData(ServerCCASession.class, sessionId);
+
+        serverSession = new ServerCCASessionImpl(data, this.getMessageFactory(), sessionFactory, this.getServerSessionListener(),
+            this.getServerContextListener(), this.getStateListener());
+        serverSession.getSessions().get(0).setRequestListener(serverSession);
+        appSession = serverSession;
+      }
+      else {
+        throw new IllegalArgumentException("Wrong session class: " + aClass + ". Supported[" + ClientCCASession.class + "," + ServerCCASession.class + "]");
+      }
+    }
+    catch (Exception e) {
+      logger.error("Failure to obtain new Credit-Control Session.", e);
+    }
+
+    return appSession;
+  }
+  @Override
   public AppSession getNewSession(String sessionId, Class<? extends AppSession> aClass, ApplicationId applicationId, Object[] args) {
     AppSession appSession = null;
     try {
-      // FIXME:
+      //TODO: add check to test if session exists.
       if (aClass == ClientCCASession.class) {
         ClientCCASessionImpl clientSession = null;
-        if (args != null && args.length > 0 && args[0] instanceof Request) {
-          Request request = (Request) args[0];
-          clientSession = new ClientCCASessionImpl(request.getSessionId(), this.getMessageFactory(), sessionFactory, this.getClientSessionListener(), this.getClientContextListener(), this.getStateListener());
+        if (sessionId == null) {
+          if (args != null && args.length > 0 && args[0] instanceof Request) {
+            Request request = (Request) args[0];
+            sessionId = request.getSessionId();
+          }
+          else {
+            sessionId = this.sessionFactory.getSessionId();
+          }
         }
-        else {
-          clientSession = new ClientCCASessionImpl(sessionId, this.getMessageFactory(), sessionFactory, this.getClientSessionListener(), this.getClientContextListener(), this.getStateListener());
-        }
+        IClientCCASessionData data = (IClientCCASessionData) this.sessionDataFactory.getAppSessionData(ClientCCASession.class, sessionId);
+        clientSession = new ClientCCASessionImpl(data, this.getMessageFactory(), sessionFactory, this.getClientSessionListener(), this.getClientContextListener(), this.getStateListener());
         // this goes first!
         iss.addSession(clientSession);
-        // iss.setSessionListener(clientSession.getSessionId(),
-        // (NetworkReqListener) appSession);
         clientSession.getSessions().get(0).setRequestListener(clientSession);
-        // clientSession.addStateChangeNotification(this);
-
-        // this.resourceAdaptor.sessionCreated(clientSession);
-
         appSession = clientSession;
       }
       else if (aClass == ServerCCASession.class) {
         ServerCCASessionImpl serverSession = null;
 
-        if (args != null && args.length > 0 && args[0] instanceof Request) {
-          // This shouldnt happen but just in case
-          Request request = (Request) args[0];
-          serverSession = new ServerCCASessionImpl(request.getSessionId(), this.getMessageFactory(), sessionFactory, this.getServerSessionListener(), this.getServerContextListener(), this.getStateListener());
+        if (sessionId == null) {
+          if (args != null && args.length > 0 && args[0] instanceof Request) {
+            Request request = (Request) args[0];
+            sessionId = request.getSessionId();
+          }
+          else {
+            sessionId = this.sessionFactory.getSessionId();
+          }
         }
-        else {
-          serverSession = new ServerCCASessionImpl(sessionId, this.getMessageFactory(), sessionFactory, this.getServerSessionListener(), this.getServerContextListener(), this.getStateListener());
-        }
+        IServerCCASessionData data = (IServerCCASessionData) this.sessionDataFactory.getAppSessionData(ServerCCASession.class, sessionId);
+        serverSession = new ServerCCASessionImpl(data, this.getMessageFactory(), sessionFactory, this.getServerSessionListener(), this.getServerContextListener(), this.getStateListener());
         iss.addSession(serverSession);
-        // iss.setSessionListener(serverSession.getSessionId(),
-        // (NetworkReqListener) appSession);
         serverSession.getSessions().get(0).setRequestListener(serverSession);
-        // serverSession.addStateChangeNotification(this);
-
-        // this.resourceAdaptor.sessionCreated(serverSession);
-
         appSession = serverSession;
       }
       else {
-        throw new IllegalArgumentException("Wrong session class!![" + aClass + "]. Supported[" + ClientCCASession.class + "," + ServerCCASession.class + "]");
+        throw new IllegalArgumentException("Wrong session class: " + aClass + ". Supported[" + ClientCCASession.class + "," + ServerCCASession.class + "]");
       }
     }
     catch (Exception e) {
@@ -393,8 +437,6 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
   }
 
   public void denyAccessOnTxExpire(ClientCCASession clientCCASessionImpl) {
-    // this.resourceAdaptor.sessionDestroyed(clientCCASessionImpl.getSessions().get(0).getSessionId(),
-    // clientCCASessionImpl);
     clientCCASessionImpl.release();
   }
 

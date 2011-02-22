@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -31,9 +31,10 @@ import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateMachine;
-import org.jdiameter.client.api.IContainer;
+import org.jdiameter.api.cca.CCASession;
 import org.jdiameter.client.api.ISessionFactory;
-import org.jdiameter.common.api.app.cca.ICCASessionFactory;
+
+import org.jdiameter.common.api.app.IAppSessionData;
 import org.jdiameter.common.impl.app.AppSessionImpl;
 
 /**
@@ -41,7 +42,7 @@ import org.jdiameter.common.impl.app.AppSessionImpl;
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
  */
-public abstract class AppCCASessionImpl extends AppSessionImpl implements NetworkReqListener, StateMachine {
+public abstract class AppCCASessionImpl extends AppSessionImpl implements CCASession,NetworkReqListener {
 
   private static final long serialVersionUID = 1L;
 
@@ -49,11 +50,12 @@ public abstract class AppCCASessionImpl extends AppSessionImpl implements Networ
 
   //FIXME: those must be recreated from local resources!
   //FIXME: change this to single ref!
+  //FIXME: use FastList ?
   @SuppressWarnings("unchecked")
-  protected transient List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
+  protected List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
 
-  public AppCCASessionImpl(SessionFactory sf, String sessionId)  {
-    super(sf,sessionId);
+  public AppCCASessionImpl(ISessionFactory sf, IAppSessionData data)  {
+    super(sf, data);
   }
 
   @SuppressWarnings("unchecked")
@@ -70,32 +72,6 @@ public abstract class AppCCASessionImpl extends AppSessionImpl implements Networ
 
   public void release() {
     super.release();
-  }
-
-  /* (non-Javadoc)
-   * @see org.jdiameter.common.impl.app.AppSessionImpl#relink(org.jdiameter.client.api.IContainer)
-   */
-  @SuppressWarnings("unchecked")
-  @Override
-  public void relink(IContainer stack) {
-    super.relink(stack);
-
-    // FIXME Any better way to do this?
-    Class interfaze = null;
-    for(Class possibleInterface : this.getClass().getInterfaces()) {
-      if(interfaze != null) {
-        break;
-      }
-      for(Class appSessionInterface : possibleInterface.getInterfaces()) {
-        if (appSessionInterface.equals(AppSession.class)) {
-          interfaze = possibleInterface;
-          break;
-        }
-      }
-    }
-    ICCASessionFactory fct = (ICCASessionFactory) ((ISessionFactory)super.sf).getAppSessionFactory(interfaze);
-    this.stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
-    this.addStateChangeNotification(fct.getStateListener());
   }
 
 }
