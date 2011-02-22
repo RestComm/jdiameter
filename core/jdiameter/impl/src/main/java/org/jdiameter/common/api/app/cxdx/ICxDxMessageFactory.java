@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -23,8 +23,18 @@ package org.jdiameter.common.api.app.cxdx;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.Request;
-import org.jdiameter.api.app.AppAnswerEvent;
-import org.jdiameter.api.app.AppRequestEvent;
+import org.jdiameter.api.cxdx.events.JLocationInfoAnswer;
+import org.jdiameter.api.cxdx.events.JLocationInfoRequest;
+import org.jdiameter.api.cxdx.events.JMultimediaAuthAnswer;
+import org.jdiameter.api.cxdx.events.JMultimediaAuthRequest;
+import org.jdiameter.api.cxdx.events.JPushProfileAnswer;
+import org.jdiameter.api.cxdx.events.JPushProfileRequest;
+import org.jdiameter.api.cxdx.events.JRegistrationTerminationAnswer;
+import org.jdiameter.api.cxdx.events.JRegistrationTerminationRequest;
+import org.jdiameter.api.cxdx.events.JServerAssignmentAnswer;
+import org.jdiameter.api.cxdx.events.JServerAssignmentRequest;
+import org.jdiameter.api.cxdx.events.JUserAuthorizationAnswer;
+import org.jdiameter.api.cxdx.events.JUserAuthorizationRequest;
 
 /**
  * Message Factory for Diameter Cx/Dx application.
@@ -40,7 +50,7 @@ public interface ICxDxMessageFactory {
    * @param request the request to create the LIR from
    * @return an AppRequestEvent wrapping the LIR
    */
-  AppRequestEvent createLocationInfoRequest(Request request);
+  JLocationInfoRequest createLocationInfoRequest(Request request);
 
   /**
    * Creates a User-Authorization-Request event.
@@ -48,7 +58,7 @@ public interface ICxDxMessageFactory {
    * @param request the request to create the UAR from
    * @return an AppRequestEvent wrapping the UAR
    */
-  AppRequestEvent createUserAuthorizationRequest(Request request);
+  JUserAuthorizationRequest createUserAuthorizationRequest(Request request);
 
   /**
    * Creates a Server-Assignment-Request event.
@@ -56,7 +66,7 @@ public interface ICxDxMessageFactory {
    * @param request the request to create the SAR from
    * @return an AppRequestEvent wrapping the SAR
    */
-  AppRequestEvent createServerAssignmentRequest(Request request);
+  JServerAssignmentRequest createServerAssignmentRequest(Request request);
 
   /**
    * Creates a Registration-Termination-Request event.
@@ -64,7 +74,7 @@ public interface ICxDxMessageFactory {
    * @param request the request to create the RTR from
    * @return an AppRequestEvent wrapping the RTR
    */
-  AppRequestEvent createRegistrationTerminationRequest(Request request);
+  JRegistrationTerminationRequest createRegistrationTerminationRequest(Request request);
 
   /**
    * Creates a Multimedia-Auth-Request event.
@@ -72,7 +82,7 @@ public interface ICxDxMessageFactory {
    * @param request the request to create the MAR from
    * @return an AppRequestEvent wrapping the MAR
    */
-  AppRequestEvent createMultimediaAuthRequest(Request request);
+  JMultimediaAuthRequest createMultimediaAuthRequest(Request request);
 
   /**
    * Creates a Push-Profile-Request event.
@@ -80,7 +90,7 @@ public interface ICxDxMessageFactory {
    * @param request the request to create the PPR from
    * @return an AppRequestEvent wrapping the PPR
    */
-  AppRequestEvent createPushProfileRequest(Request request);
+  JPushProfileRequest createPushProfileRequest(Request request);
 
   /**
    * Creates a Push-Profile-Answer event.
@@ -88,7 +98,7 @@ public interface ICxDxMessageFactory {
    * @param answer the answer to create the PPA from
    * @return an AppAnswerEvent wrapping the PPA
    */
-  AppAnswerEvent createPushProfileAnswer(Answer answer);
+  JPushProfileAnswer createPushProfileAnswer(Answer answer);
 
   /**
    * Creates a Location-Info-Answer event.
@@ -96,7 +106,7 @@ public interface ICxDxMessageFactory {
    * @param answer the answer to create the LIA from
    * @return an AppAnswerEvent wrapping the LIA
    */
-  AppAnswerEvent createLocationInfoAnswer(Answer answer);
+  JLocationInfoAnswer createLocationInfoAnswer(Answer answer);
 
   /**
    * Creates a User-Authorization-Answer event.
@@ -104,7 +114,7 @@ public interface ICxDxMessageFactory {
    * @param answer the answer to create the UAA from
    * @return an AppAnswerEvent wrapping the UAA
    */
-  AppAnswerEvent createUserAuthorizationAnswer(Answer answer);
+  JUserAuthorizationAnswer createUserAuthorizationAnswer(Answer answer);
 
   /**
    * Creates a Server-Assignment-Answer event.
@@ -112,7 +122,7 @@ public interface ICxDxMessageFactory {
    * @param answer the answer to create the SAA from
    * @return an AppAnswerEvent wrapping the SAA
    */
-  AppAnswerEvent createServerAssignmentAnswer(Answer answer);
+  JServerAssignmentAnswer createServerAssignmentAnswer(Answer answer);
 
   /**
    * Creates a Registration-Termination-Answer event.
@@ -120,7 +130,7 @@ public interface ICxDxMessageFactory {
    * @param answer the answer to create the RTA from
    * @return an AppAnswerEvent wrapping the RTA
    */
-  AppAnswerEvent createRegistrationTerminationAnswer(Answer answer);
+  JRegistrationTerminationAnswer createRegistrationTerminationAnswer(Answer answer);
 
   /**
    * Creates a Multimedia-Auth-Answer event.
@@ -128,7 +138,7 @@ public interface ICxDxMessageFactory {
    * @param answer the answer to create the MAA from
    * @return an AppAnswerEvent wrapping the MAA
    */
-  AppAnswerEvent createMultimediaAuthAnswer(Answer answer);
+  JMultimediaAuthAnswer createMultimediaAuthAnswer(Answer answer);
 
   /**
    * Returns the Application-Id that this message factory is related to

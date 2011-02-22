@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -27,17 +27,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.jdiameter.api.Message;
 import org.jdiameter.api.NetworkReqListener;
-import org.jdiameter.api.SessionFactory;
-import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateMachine;
-import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.ISessionFactory;
-import org.jdiameter.common.api.app.cxdx.CxDxSessionState;
 import org.jdiameter.common.api.app.cxdx.ICxDxMessageFactory;
-import org.jdiameter.common.api.app.cxdx.ICxDxSessionFactory;
+import org.jdiameter.common.api.app.cxdx.ICxDxSessionData;
 import org.jdiameter.common.impl.app.AppSessionImpl;
 
 /**
@@ -59,15 +54,17 @@ public abstract class CxDxSession extends AppSessionImpl implements NetworkReqLi
   protected transient List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
   protected transient ICxDxMessageFactory messageFactory;
 
-  protected CxDxSessionState state = CxDxSessionState.IDLE;
+  //protected CxDxSessionState state = CxDxSessionState.IDLE;
   // protected Future timeoutTaskFuture;
   // this can be weird
-  protected Serializable timerId_timeout;
+  //protected Serializable timerId_timeout;
   protected static final String TIMER_NAME_MSG_TIMEOUT = "MSG_TIMEOUT";
-  protected Message buffer;
+  //protected Message buffer;
+  protected ICxDxSessionData sessionData;
 
-  public CxDxSession(SessionFactory sf, String sessionId) {
-    super(sf, sessionId);
+  public CxDxSession(ISessionFactory sf, ICxDxSessionData sessionData) {
+    super(sf, sessionData);
+    this.sessionData = sessionData;
   }
 
   @SuppressWarnings("unchecked")
@@ -92,15 +89,15 @@ public abstract class CxDxSession extends AppSessionImpl implements NetworkReqLi
    */
   @Override
   public boolean isReplicable() {
-    //Cx/Dx is event based..
+    // Cx/Dx is event based..
     return false;
   }
 
   protected void startMsgTimer() {
     try {
       sendAndStateLock.lock();
-      this.timerId_timeout = super.timerFacility.schedule(sessionId, TIMER_NAME_MSG_TIMEOUT, _TX_TIMEOUT);
-      super.sessionDataSource.updateSession(this);
+      sessionData.setTsTimerId(super.timerFacility.schedule(getSessionId(), TIMER_NAME_MSG_TIMEOUT, _TX_TIMEOUT));
+
     }
     finally {
       sendAndStateLock.unlock();
@@ -110,106 +107,45 @@ public abstract class CxDxSession extends AppSessionImpl implements NetworkReqLi
   protected void cancelMsgTimer() {
     try {
       sendAndStateLock.lock();
-      if(this.timerId_timeout == null) {
+      final Serializable timerId = this.sessionData.getTsTimerId();
+      if(timerId == null) {
         return;
       }
-      super.timerFacility.cancel(timerId_timeout);
-      this.timerId_timeout = null;
-      super.sessionDataSource.updateSession(this);
+      super.timerFacility.cancel(timerId);
+      this.sessionData.setTsTimerId(null);
+
     }
     finally {
       sendAndStateLock.unlock();
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see java.lang.Object#hashCode()
-   */
   @Override
   public int hashCode() {
     final int prime = 31;
-    int result = 1;
-    result = prime * result + ((buffer == null) ? 0 : buffer.hashCode());
-    result = prime * result + ((state == null) ? 0 : state.hashCode());
-    result = prime * result + ((timerId_timeout == null) ? 0 : timerId_timeout.hashCode());
+    int result = super.hashCode();
+    result = prime * result + ((sessionData == null) ? 0 : sessionData.hashCode());
     return result;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) {
+    if (this == obj)
       return true;
-    }
-    if (obj == null) {
+    if (!super.equals(obj))
       return false;
-    }
-    if (getClass() != obj.getClass()) {
+    if (getClass() != obj.getClass())
       return false;
-    }
-
     CxDxSession other = (CxDxSession) obj;
-    if (buffer == null) {
-      if (other.buffer != null) {
+    if (sessionData == null) {
+      if (other.sessionData != null)
         return false;
-      }
     }
-    else if (!buffer.equals(other.buffer)) {
+    else if (!sessionData.equals(other.sessionData))
       return false;
-    }
-    if (state == null) {
-      if (other.state != null) {
-        return false;
-      }
-    }
-    else if (!state.equals(other.state)) {
-      return false;
-    }
-    if (timerId_timeout == null) {
-      if (other.timerId_timeout != null) {
-        return false;
-      }
-    }
-    else if (!timerId_timeout.equals(other.timerId_timeout)) {
-      return false;
-    }
     return true;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.jdiameter.common.impl.app.AppSessionImpl#relink(org.jdiameter.client.api.IContainer)
-   */
-  @SuppressWarnings("unchecked")
-  @Override
-  public void relink(IContainer stack) {
-    super.relink(stack);
 
-    // FIXME Any better way to do this?
-    Class interfaze = null;
-    for (Class possibleInterface : this.getClass().getInterfaces()) {
-      if (interfaze != null) {
-        break;
-      }
-      for (Class appSessionInterface : possibleInterface.getInterfaces()) {
-        if (appSessionInterface.equals(AppSession.class)) {
-          interfaze = possibleInterface;
-          break;
-        }
-      }
-    }
-
-    ICxDxSessionFactory fct = (ICxDxSessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(interfaze);
-    this.stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
-    this.addStateChangeNotification(fct.getStateListener());
-    this.messageFactory = fct.getMessageFactory();
-  }
 
 }

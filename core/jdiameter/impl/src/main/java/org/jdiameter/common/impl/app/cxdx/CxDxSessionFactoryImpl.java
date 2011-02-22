@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -29,6 +29,8 @@ import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.SessionFactory;
+import org.jdiameter.api.acc.ClientAccSession;
+import org.jdiameter.api.acc.ServerAccSession;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
@@ -51,9 +53,14 @@ import org.jdiameter.api.cxdx.events.JUserAuthorizationAnswer;
 import org.jdiameter.api.cxdx.events.JUserAuthorizationRequest;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.impl.app.cxdx.CxDxClientSessionImpl;
+import org.jdiameter.client.impl.app.cxdx.IClientCxDxSessionData;
+import org.jdiameter.common.api.app.IAppSessionDataFactory;
 import org.jdiameter.common.api.app.cxdx.ICxDxMessageFactory;
+import org.jdiameter.common.api.app.cxdx.ICxDxSessionData;
 import org.jdiameter.common.api.app.cxdx.ICxDxSessionFactory;
 import org.jdiameter.common.api.data.ISessionDatasource;
+import org.jdiameter.server.impl.app.cxdx.CxDxServerSessionImpl;
+import org.jdiameter.server.impl.app.cxdx.IServerCxDxSessionData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,11 +86,14 @@ ICxDxMessageFactory, StateChangeListener<AppSession> {
 
   protected ISessionDatasource iss;
 
+  protected IAppSessionDataFactory<ICxDxSessionData> sessionDataFactory;
+
   public CxDxSessionFactoryImpl(SessionFactory sessionFactory) {
     super();
 
     this.sessionFactory = (ISessionFactory) sessionFactory;
     this.iss = this.sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
+    this.sessionDataFactory = (IAppSessionDataFactory<ICxDxSessionData>) this.iss.getDataFactory(ICxDxSessionData.class);
   }
 
   /**
@@ -166,6 +176,43 @@ ICxDxMessageFactory, StateChangeListener<AppSession> {
     this.stateListener = stateListener;
   }
 
+  @Override
+  public AppSession getSession(String sessionId, Class<? extends AppSession> aClass) {
+    if (sessionId == null) {
+      throw new IllegalArgumentException("SessionId must not be null");
+    }
+    if (!this.iss.exists(sessionId)) {
+      return null;
+    }
+    AppSession appSession = null;
+    try {
+      if (aClass == ClientCxDxSession.class) {
+        IClientCxDxSessionData sessionData = (IClientCxDxSessionData) this.sessionDataFactory.getAppSessionData(ClientCxDxSession.class, sessionId);
+        CxDxClientSessionImpl clientSession = new CxDxClientSessionImpl(sessionData, this.getMessageFactory(), this.sessionFactory,
+            this.getClientSessionListener());
+
+        clientSession.getSessions().get(0).setRequestListener(clientSession);
+        appSession = clientSession;
+      }
+      else if (aClass == ServerCxDxSession.class) {
+        IServerCxDxSessionData sessionData = (IServerCxDxSessionData) this.sessionDataFactory.getAppSessionData(ServerCxDxSession.class, sessionId);
+        CxDxServerSessionImpl serverSession = new CxDxServerSessionImpl(sessionData, getMessageFactory(), sessionFactory,
+            this.getServerSessionListener());
+
+        serverSession.getSessions().get(0).setRequestListener(serverSession);
+        appSession = serverSession;
+      }
+      else {
+        throw new IllegalArgumentException("Wrong session class: " + aClass + ". Supported[" + ClientAccSession.class + "," + ServerAccSession.class + "]");
+      }
+    }
+    catch (Exception e) {
+      logger.error("Failure to obtain new Cx/Dx Session.", e);
+    }
+
+    return appSession;
+  }
+
   /*
    * (non-Javadoc)
    * 
@@ -178,45 +225,43 @@ ICxDxMessageFactory, StateChangeListener<AppSession> {
     AppSession appSession = null;
 
     if (aClass == ClientCxDxSession.class) {
-      CxDxClientSessionImpl clientSession = null;
-      if (args != null && args.length > 0 && args[0] instanceof Request) {
-        Request request = (Request) args[0];
-        clientSession = new CxDxClientSessionImpl(request.getSessionId(), this.getMessageFactory(), this.sessionFactory, this
-            .getClientSessionListener());
-      } else {
-        clientSession = new CxDxClientSessionImpl(sessionId, this.getMessageFactory(), this.sessionFactory, this
-            .getClientSessionListener());
+      if (sessionId == null) {
+        if (args != null && args.length > 0 && args[0] instanceof Request) {
+          Request request = (Request) args[0];
+          sessionId = request.getSessionId();
+        }
+        else {
+          sessionId = this.sessionFactory.getSessionId();
+        }
       }
 
-      // clientSession.getSessions().get(0).setRequestListener(clientSession);
-      // clientSession.addStateChangeNotification(this);
+      IClientCxDxSessionData sessionData = (IClientCxDxSessionData) this.sessionDataFactory.getAppSessionData(ClientCxDxSession.class, sessionId);
+      CxDxClientSessionImpl clientSession = new CxDxClientSessionImpl(sessionData, this.getMessageFactory(), this.sessionFactory, this
+          .getClientSessionListener());
+
       iss.addSession(clientSession);
       clientSession.getSessions().get(0).setRequestListener(clientSession);
-
       appSession = clientSession;
     }
     else if (aClass == ServerCxDxSession.class) {
-      org.jdiameter.server.impl.app.cxdx.CxDxServerSessionImpl serverSession = null;
-      if (args != null && args.length > 0 && args[0] instanceof Request) {
-        // This shouldn't happen but just in case
-        Request request = (Request) args[0];
-        serverSession = new org.jdiameter.server.impl.app.cxdx.CxDxServerSessionImpl(request.getSessionId(),
-            getMessageFactory(), sessionFactory, this.getServerSessionListener());
+      if (sessionId == null) {
+        if (args != null && args.length > 0 && args[0] instanceof Request) {
+          Request request = (Request) args[0];
+          sessionId = request.getSessionId();
+        }
+        else {
+          sessionId = this.sessionFactory.getSessionId();
+        }
       }
-      else {
-        serverSession = new org.jdiameter.server.impl.app.cxdx.CxDxServerSessionImpl(sessionId, getMessageFactory(),
-            sessionFactory, this.getServerSessionListener());
-      }
+      IServerCxDxSessionData sessionData = (IServerCxDxSessionData) this.sessionDataFactory.getAppSessionData(ServerCxDxSession.class, sessionId);
+      CxDxServerSessionImpl serverSession = new CxDxServerSessionImpl(sessionData, getMessageFactory(),sessionFactory, this.getServerSessionListener());
 
-      // serverSession.addStateChangeNotification(this);
-      // serverSession.getSessions().get(0).setRequestListener(serverSession);
       iss.addSession(serverSession);
       serverSession.getSessions().get(0).setRequestListener(serverSession);
-
       appSession = serverSession;
     }
     else {
-      throw new IllegalArgumentException("Wrong session class!![" + aClass + "]. Supported[" + ServerCxDxSession.class + "," + ClientCxDxSession.class + "]");
+      throw new IllegalArgumentException("Wrong session class: " + aClass + ". Supported[" + ServerCxDxSession.class + "," + ClientCxDxSession.class + "]");
     }
 
     return appSession;
@@ -229,7 +274,7 @@ ICxDxMessageFactory, StateChangeListener<AppSession> {
    * 
    * @see org.jdiameter.common.api.app.cxdx.ICxDxMessageFactory#createLocationInfoAnswer(org.jdiameter.api.Answer)
    */
-  public AppAnswerEvent createLocationInfoAnswer(Answer answer) {
+  public JLocationInfoAnswer createLocationInfoAnswer(Answer answer) {
     return new JLocationInfoAnswerImpl(answer);
   }
 
@@ -238,7 +283,7 @@ ICxDxMessageFactory, StateChangeListener<AppSession> {
    * 
    * @see org.jdiameter.common.api.app.cxdx.ICxDxMessageFactory#createLocationInfoRequest(org.jdiameter.api.Request)
    */
-  public AppRequestEvent createLocationInfoRequest(Request request) {
+  public JLocationInfoRequest createLocationInfoRequest(Request request) {
     return new JLocationInfoRequestImpl(request);
   }
 
@@ -247,7 +292,7 @@ ICxDxMessageFactory, StateChangeListener<AppSession> {
    * 
    * @see org.jdiameter.common.api.app.cxdx.ICxDxMessageFactory#createMultimediaAuthAnswer(org.jdiameter.api.Answer)
    */
-  public AppAnswerEvent createMultimediaAuthAnswer(Answer answer) {
+  public JMultimediaAuthAnswer createMultimediaAuthAnswer(Answer answer) {
     return new JMultimediaAuthAnswerImpl(answer);
   }
 
@@ -256,7 +301,7 @@ ICxDxMessageFactory, StateChangeListener<AppSession> {
    * 
    * @see org.jdiameter.common.api.app.cxdx.ICxDxMessageFactory#createMultimediaAuthRequest(org.jdiameter.api.Request)
    */
-  public AppRequestEvent createMultimediaAuthRequest(Request request) {
+  public JMultimediaAuthRequest createMultimediaAuthRequest(Request request) {
     return new JMultimediaAuthRequestImpl(request);
   }
 
@@ -265,7 +310,7 @@ ICxDxMessageFactory, StateChangeListener<AppSession> {
    * 
    * @see org.jdiameter.common.api.app.cxdx.ICxDxMessageFactory#createPushProfileAnswer(org.jdiameter.api.Answer)
    */
-  public AppAnswerEvent createPushProfileAnswer(Answer answer) {
+  public JPushProfileAnswer createPushProfileAnswer(Answer answer) {
     return new JPushProfileAnswerImpl(answer);
   }
 
@@ -274,7 +319,7 @@ ICxDxMessageFactory, StateChangeListener<AppSession> {
    * 
    * @seeorg.jdiameter.common.api.app.cxdx.ICxDxMessageFactory#createPushProfileRequest(org.jdiameter.api.Request)
    */
-  public AppRequestEvent createPushProfileRequest(Request request) {
+  public JPushProfileRequest createPushProfileRequest(Request request) {
     return new JPushProfileRequestImpl(request);
   }
 
@@ -283,7 +328,7 @@ ICxDxMessageFactory, StateChangeListener<AppSession> {
    * 
    * @see org.jdiameter.common.api.app.cxdx.ICxDxMessageFactory#createRegistrationTerminationAnswer(org.jdiameter.api.Answer)
    */
-  public AppAnswerEvent createRegistrationTerminationAnswer(Answer answer) {
+  public JRegistrationTerminationAnswer createRegistrationTerminationAnswer(Answer answer) {
     return new JRegistrationTerminationAnswerImpl(answer);
   }
 
@@ -292,7 +337,7 @@ ICxDxMessageFactory, StateChangeListener<AppSession> {
    * 
    * @see org.jdiameter.common.api.app.cxdx.ICxDxMessageFactory#createRegistrationTerminationRequest(org.jdiameter.api.Request)
    */
-  public AppRequestEvent createRegistrationTerminationRequest(Request request) {
+  public JRegistrationTerminationRequest createRegistrationTerminationRequest(Request request) {
     return new JRegistrationTerminationRequestImpl(request);
   }
 
@@ -301,7 +346,7 @@ ICxDxMessageFactory, StateChangeListener<AppSession> {
    * 
    * @see org.jdiameter.common.api.app.cxdx.ICxDxMessageFactory#createServerAssignmentAnswer(org.jdiameter.api.Answer)
    */
-  public AppAnswerEvent createServerAssignmentAnswer(Answer answer) {
+  public JServerAssignmentAnswer createServerAssignmentAnswer(Answer answer) {
     return new JServerAssignmentAnswerImpl(answer);
   }
 
@@ -310,7 +355,7 @@ ICxDxMessageFactory, StateChangeListener<AppSession> {
    * 
    * @see org.jdiameter.common.api.app.cxdx.ICxDxMessageFactory#createServerAssignmentRequest(org.jdiameter.api.Request)
    */
-  public AppRequestEvent createServerAssignmentRequest(Request request) {
+  public JServerAssignmentRequest createServerAssignmentRequest(Request request) {
     return new JServerAssignmentRequestImpl(request);
   }
 
@@ -319,7 +364,7 @@ ICxDxMessageFactory, StateChangeListener<AppSession> {
    * 
    * @see org.jdiameter.common.api.app.cxdx.ICxDxMessageFactory#createUserAuthorizationAnswer(org.jdiameter.api.Answer)
    */
-  public AppAnswerEvent createUserAuthorizationAnswer(Answer answer) {
+  public JUserAuthorizationAnswer createUserAuthorizationAnswer(Answer answer) {
     return new JUserAuthorizationAnswerImpl(answer);
   }
 
@@ -328,7 +373,7 @@ ICxDxMessageFactory, StateChangeListener<AppSession> {
    * 
    * @see org.jdiameter.common.api.app.cxdx.ICxDxMessageFactory#createUserAuthorizationRequest(org.jdiameter.api.Request)
    */
-  public AppRequestEvent createUserAuthorizationRequest(Request request) {
+  public JUserAuthorizationRequest createUserAuthorizationRequest(Request request) {
     return new JUserAuthorizationRequestImpl(request);
   }
 
