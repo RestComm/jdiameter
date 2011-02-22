@@ -126,7 +126,7 @@ public class AvpDictionary {
 	 * @param vendorId
 	 * @return
 	 */
-	private Object getMapKey(int code, long vendorId) {
+	private AvpRepresentation getMapKey(int code, long vendorId) {
 		return new AvpRepresentation(code, vendorId);
 	}
 
