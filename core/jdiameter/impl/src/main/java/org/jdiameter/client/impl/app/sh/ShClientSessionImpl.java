@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -21,13 +21,10 @@
  */
 package org.jdiameter.client.impl.app.sh;
 
-import java.io.Serializable;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.jdiameter.api.Answer;
-import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
@@ -36,22 +33,18 @@ import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
-import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.api.sh.ClientShSession;
 import org.jdiameter.api.sh.ClientShSessionListener;
-import org.jdiameter.api.sh.ServerShSession;
 import org.jdiameter.api.sh.events.ProfileUpdateRequest;
 import org.jdiameter.api.sh.events.PushNotificationAnswer;
 import org.jdiameter.api.sh.events.PushNotificationRequest;
 import org.jdiameter.api.sh.events.SubscribeNotificationsRequest;
 import org.jdiameter.api.sh.events.UserDataRequest;
-import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.sh.IShMessageFactory;
-import org.jdiameter.common.api.app.sh.IShSessionFactory;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.jdiameter.common.impl.app.sh.ProfileUpdateAnswerImpl;
@@ -88,36 +81,19 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
   protected transient IShMessageFactory factory = null;
   protected transient ClientShSessionListener listener;
 
-  protected long appId = -1;
-  protected String destHost, destRealm;
+  protected IShClientSessionData sessionData;
 
-  public ShClientSessionImpl(IShMessageFactory fct, SessionFactory sf, ClientShSessionListener lst) {
-    this(null, fct, sf, lst);
-  }
-
-  public ShClientSessionImpl(String sessionId, IShMessageFactory fct, SessionFactory sf, ClientShSessionListener lst) {
-    super(sf,sessionId);
+  public ShClientSessionImpl(IShClientSessionData sessionData, IShMessageFactory fct, ISessionFactory sf, ClientShSessionListener lst) {
+    super(sf,sessionData);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
     if (fct.getApplicationId() < 0) {
       throw new IllegalArgumentException("ApplicationId can not be less than zero");
     }
-    appId = fct.getApplicationId();
-    listener = lst;
-    factory = fct;
-    //    try {
-    //      if (sessionId == null) {
-    //        session = sf.getNewSession();
-    //      }
-    //      else {
-    //        session = sf.getNewSession(sessionId);
-    //      }
-    //      session.setRequestListener(this);
-    //    }
-    //    catch (InternalException e) {
-    //      throw new IllegalArgumentException(e);
-    //    }
+    this.listener = lst;
+    this.factory = fct;
+    this.sessionData = sessionData;
   }
 
   public Answer processRequest(Request request) {
@@ -210,17 +186,6 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
         handleEvent(new Event(type, request, answer));
       }
 
-      if(request != null) {
-        AvpSet avps = request.getMessage().getAvps();
-        Avp a = null;
-        // Store last destination information
-        if((a = avps.getAvp(Avp.DESTINATION_REALM)) != null) {
-          destRealm = a.getOctetString();         
-        }
-        if((a = avps.getAvp(Avp.DESTINATION_HOST)) != null) {
-          destHost = a.getOctetString();         
-        }
-      }
     }
     catch (Exception e) {
       throw new InternalException(e);
@@ -265,12 +230,12 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
   }
 
 
-  
+
   @SuppressWarnings("unchecked")
   public void release() {
     try {
       sendAndStateLock.lock();
-      
+
       if(super.isValid()) {
         super.release();
       }
@@ -292,7 +257,7 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
       sendAndStateLock.unlock();
     }
   }
-  
+
   public boolean isStateless() {
     return true;
   }
@@ -304,14 +269,10 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
   public boolean isReplicable() {
     return true;
   }
+
   @Override
-  public void relink(IContainer stack) {
-    if (super.sf == null) {
-      super.relink(stack);
-      IShSessionFactory fct = (IShSessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(ClientShSession.class);
-      this.listener = fct.getClientShSessionListener();
-      this.factory = fct.getMessageFactory();
-    }
+  public void onTimer(String timerName) {
+    // TODO ...
   }
 
   private class RequestDelivery implements Runnable {
@@ -367,6 +328,5 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
       }
     }
   }
-
 
 }

@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -35,7 +35,6 @@ import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
-import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
@@ -49,10 +48,8 @@ import org.jdiameter.api.sh.events.SubscribeNotificationsAnswer;
 import org.jdiameter.api.sh.events.SubscribeNotificationsRequest;
 import org.jdiameter.api.sh.events.UserDataAnswer;
 import org.jdiameter.api.sh.events.UserDataRequest;
-import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.sh.IShMessageFactory;
-import org.jdiameter.common.api.app.sh.IShSessionFactory;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.jdiameter.common.impl.app.sh.ShSession;
@@ -80,42 +77,28 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 
   // Session State Handling ---------------------------------------------------
   protected Lock sendAndStateLock = new ReentrantLock();
-  protected boolean receivedSubTerm = false;
 
   // Factories and Listeners --------------------------------------------------
   protected transient IShMessageFactory factory = null;
   protected transient ServerShSessionListener listener;
 
-  protected String destHost, destRealm;
-  protected long appId = -1;
-
-  public ShServerSessionImpl(IShMessageFactory fct, SessionFactory sf, ServerShSessionListener lst) {
-    this(null, fct, sf, lst);
-  }
-
-  public ShServerSessionImpl(String sessionId, IShMessageFactory fct, SessionFactory sf, ServerShSessionListener lst) {
-    super(sf,sessionId);
+  protected IShServerSessionData sessionData;
+  protected long appId;
+  public ShServerSessionImpl(IShServerSessionData sessionData, IShMessageFactory fct, ISessionFactory sf, ServerShSessionListener lst) {
+    super(sf, sessionData);
+    if(sessionData == null) {
+      throw new NullPointerException("SessionData must not be null");
+    }
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
     if (fct.getApplicationId() < 0) {
       throw new IllegalArgumentException("ApplicationId can not be less than zero");
     }
-    appId = fct.getApplicationId();
-    listener = lst;
-    factory = fct;
-    //    try {
-    //      if (sessionId == null) {
-    //        session = sf.getNewSession();
-    //      }
-    //      else {
-    //        session = sf.getNewSession(sessionId);
-    //      }
-    //      session.setRequestListener(this);
-    //    }
-    //    catch (InternalException e) {
-    //      throw new IllegalArgumentException(e);
-    //    }
+    this.sessionData = sessionData;
+    this.appId = fct.getApplicationId();
+    this.listener = lst;
+    this.factory = fct;
   }
 
   public void sendProfileUpdateAnswer(ProfileUpdateAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
@@ -255,7 +238,7 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
   public void release() {
     try {
       sendAndStateLock.lock();
-      
+
       if(super.isValid()) {
         super.release();
       }
@@ -297,73 +280,40 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
   public boolean isReplicable() {
     return true;
   }
-  
-  /* (non-Javadoc)
-   * @see org.jdiameter.common.impl.app.sh.ShSessionImpl#relink(org.jdiameter.client.api.IContainer)
-   */
-  @Override
-  public void relink(IContainer stack) {
-    if (super.sf == null) {
-      super.relink(stack);
-      IShSessionFactory fct = (IShSessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(ServerShSession.class);
-      this.listener = fct.getServerShSessionListener();
-      this.factory = fct.getMessageFactory();
-    }
-  }
 
-  /* (non-Javadoc)
-   * @see java.lang.Object#hashCode()
-   */
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
     result = prime * result + (int) (appId ^ (appId >>> 32));
-    result = prime * result + ((destHost == null) ? 0 : destHost.hashCode());
-    result = prime * result + ((destRealm == null) ? 0 : destRealm.hashCode());
-    result = prime * result + (receivedSubTerm ? 1231 : 1237);
+    result = prime * result + ((sessionData == null) ? 0 : sessionData.hashCode());
     return result;
   }
 
-  /* (non-Javadoc)
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) {
+    if (this == obj)
       return true;
-    }
-    if (obj == null) {
+    if (obj == null)
       return false;
-    }
-    if (getClass() != obj.getClass()) {
+    if (getClass() != obj.getClass())
       return false;
-    }
-
     ShServerSessionImpl other = (ShServerSessionImpl) obj;
-    if (appId != other.appId) {
+    if (appId != other.appId)
       return false;
-    }
-    if (destHost == null) {
-      if (other.destHost != null)
+    if (sessionData == null) {
+      if (other.sessionData != null)
         return false;
     }
-    else if (!destHost.equals(other.destHost)) {
+    else if (!sessionData.equals(other.sessionData))
       return false;
-    }
-    if (destRealm == null) {
-      if (other.destRealm != null) {
-        return false;
-      }
-    }
-    else if (!destRealm.equals(other.destRealm)) {
-      return false;
-    }
-    if (receivedSubTerm != other.receivedSubTerm) {
-      return false;
-    }
-
     return true;
+  }
+
+
+  @Override
+  public void onTimer(String timerName) {
+    logger.trace("onTimer({})", timerName);
   }
 
   private class RequestDelivery implements Runnable {

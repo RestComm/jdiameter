@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -25,7 +25,7 @@ import org.jdiameter.api.Answer;
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
-import org.jdiameter.api.Message;
+import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
@@ -47,13 +47,17 @@ import org.jdiameter.api.sh.events.SubscribeNotificationsRequest;
 import org.jdiameter.api.sh.events.UserDataAnswer;
 import org.jdiameter.api.sh.events.UserDataRequest;
 import org.jdiameter.client.api.ISessionFactory;
+import org.jdiameter.client.impl.app.sh.IShClientSessionData;
 import org.jdiameter.client.impl.app.sh.ShClientSessionImpl;
+import org.jdiameter.common.api.app.IAppSessionDataFactory;
 import org.jdiameter.common.api.app.sh.IShMessageFactory;
+import org.jdiameter.common.api.app.sh.IShSessionData;
 import org.jdiameter.common.api.app.sh.IShSessionFactory;
 import org.jdiameter.common.api.data.ISessionDatasource;
+import org.jdiameter.server.impl.app.sh.IShServerSessionData;
+import org.jdiameter.server.impl.app.sh.ShServerSessionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.jdiameter.server.impl.app.sh.ShServerSessionImpl;
 
 /**
  * 
@@ -68,12 +72,13 @@ public class ShSessionFactoryImpl implements IShSessionFactory, StateChangeListe
   protected ClientShSessionListener clientShSessionListener;
   protected ServerShSessionListener serverShSessionListener;
   protected IShMessageFactory messageFactory;
+  //not used.
   protected StateChangeListener<AppSession> stateChangeListener;
 
   // Our magic --------------------------------------------------------------
   protected ISessionFactory sessionFactory;
   protected ISessionDatasource sessionDataSource;
-
+  protected IAppSessionDataFactory<IShSessionData> sessionDataFactory;
   protected long messageTimeout = 10000; // 10s default timeout
   protected static final long applicationId = 16777217;
 
@@ -81,6 +86,11 @@ public class ShSessionFactoryImpl implements IShSessionFactory, StateChangeListe
     super();
     this.sessionFactory = (ISessionFactory) sessionFactory;
     this.sessionDataSource = this.sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
+    this.sessionDataFactory = (IAppSessionDataFactory<IShSessionData>) this.sessionDataSource.getDataFactory(IShSessionData.class);
+    if(this.sessionDataFactory == null) {
+      logger.debug("No factory for Sh Application data, using default/local.");
+      this.sessionDataFactory = new ShLocalSessionDataFactory();
+    }
   }
 
   /**
@@ -172,16 +182,18 @@ public class ShSessionFactoryImpl implements IShSessionFactory, StateChangeListe
       if (aClass == ClientShSession.class) {
         ShClientSessionImpl clientSession = null;
 
-        if (args != null && args.length > 0
-            && (args[0] instanceof Request || (args[0] instanceof Message && ((Message) args[0]).isRequest()))) {
-          Message request = (Message) args[0];
-          clientSession = new ShClientSessionImpl(request.getSessionId(), this.getMessageFactory(), sessionFactory, this
-              .getClientShSessionListener());
-        }
-        else {
-          clientSession = new ShClientSessionImpl(null, this.getMessageFactory(), sessionFactory, this.getClientShSessionListener());
+        if (sessionId == null) {
+          if (args != null && args.length > 0 && args[0] instanceof Request) {
+            Request request = (Request) args[0];
+            sessionId = request.getSessionId();
+          }
+          else {
+            sessionId = this.sessionFactory.getSessionId();
+          }
         }
 
+        IShClientSessionData sessionData = (IShClientSessionData) this.sessionDataFactory.getAppSessionData(ClientShSession.class, sessionId);
+        clientSession = new ShClientSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, this.getClientShSessionListener());
         sessionDataSource.addSession(clientSession);
         clientSession.getSessions().get(0).setRequestListener(clientSession);
         return clientSession;
@@ -189,16 +201,17 @@ public class ShSessionFactoryImpl implements IShSessionFactory, StateChangeListe
       else if (aClass == ServerShSession.class) {
         ShServerSessionImpl serverSession = null;
 
-        if (args != null && args.length > 0
-            && (args[0] instanceof Request || (args[0] instanceof Message && ((Message) args[0]).isRequest()))) {
-          Message request = (Message) args[0];
-          serverSession = new ShServerSessionImpl(request.getSessionId(), this.getMessageFactory(), sessionFactory, this
-              .getServerShSessionListener());
+        if (sessionId == null) {
+          if (args != null && args.length > 0 && args[0] instanceof Request) {
+            Request request = (Request) args[0];
+            sessionId = request.getSessionId();
+          }
+          else {
+            sessionId = this.sessionFactory.getSessionId();
+          }
         }
-        else {
-          serverSession = new ShServerSessionImpl(null, this.getMessageFactory(), sessionFactory, getServerShSessionListener());
-        }
-
+        IShServerSessionData sessionData = (IShServerSessionData) this.sessionDataFactory.getAppSessionData(ServerShSession.class, sessionId);
+        serverSession = new ShServerSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, getServerShSessionListener());
         sessionDataSource.addSession(serverSession);
         serverSession.getSessions().get(0).setRequestListener(serverSession);
         return serverSession;
@@ -217,8 +230,39 @@ public class ShSessionFactoryImpl implements IShSessionFactory, StateChangeListe
     return null;
   }
 
-  // Methods to handle default values for user listeners --------------------
+  @Override
+  public AppSession getSession(String sessionId, Class<? extends AppSession> aClass) {
+    if (sessionId == null) {
+      throw new IllegalArgumentException("Session-Id must not be null");
+    }
+    if(!this.sessionDataSource.exists(sessionId)) {
+      return null;
+    }
 
+    AppSession appSession = null;
+    try {
+      if(aClass == ServerShSession.class) {
+        IShServerSessionData sessionData = (IShServerSessionData) this.sessionDataFactory.getAppSessionData(ServerShSession.class, sessionId);
+        appSession = new ShServerSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, getServerShSessionListener());
+        appSession.getSessions().get(0).setRequestListener((NetworkReqListener) appSession);
+      }
+      else if (aClass == ClientShSession.class) {
+        IShClientSessionData sessionData = (IShClientSessionData) this.sessionDataFactory.getAppSessionData(ClientShSession.class, sessionId);
+        appSession = new ShClientSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, this.getClientShSessionListener());
+        appSession.getSessions().get(0).setRequestListener((NetworkReqListener) appSession);
+      }
+      else {
+        throw new IllegalArgumentException("Wrong session class: " + aClass + ". Supported[" + ServerShSession.class + "," + ClientShSession.class + "]");
+      }
+    }
+    catch (Exception e) {
+      logger.error("Failure to obtain new Sh Session.", e);
+    }
+
+    return appSession;
+  }
+
+  // Methods to handle default values for user listeners --------------------
   @SuppressWarnings("unchecked")
   public void stateChanged(Enum oldState, Enum newState) {
     logger.info("Diameter Sh SessionFactory :: stateChanged :: oldState[{}], newState[{}]", oldState, newState);
