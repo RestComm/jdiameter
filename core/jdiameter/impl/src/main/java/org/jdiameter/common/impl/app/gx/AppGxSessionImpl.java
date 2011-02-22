@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -27,13 +27,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.jdiameter.api.NetworkReqListener;
-import org.jdiameter.api.SessionFactory;
-import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateMachine;
-import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.ISessionFactory;
-import org.jdiameter.common.api.app.cca.ICCASessionFactory;
+import org.jdiameter.common.api.app.gx.IGxSessionData;
 import org.jdiameter.common.impl.app.AppSessionImpl;
 
 /**
@@ -41,56 +38,30 @@ import org.jdiameter.common.impl.app.AppSessionImpl;
  */
 public abstract class AppGxSessionImpl extends AppSessionImpl implements NetworkReqListener, StateMachine {
 
-    private static final long serialVersionUID = 1L;
-    protected Lock sendAndStateLock = new ReentrantLock();
-    //FIXME: those must be recreated from local resources!
-    //FIXME: change this to single ref!
-    @SuppressWarnings("unchecked")
-    protected transient List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
+  private static final long serialVersionUID = 1L;
+  protected Lock sendAndStateLock = new ReentrantLock();
+  //FIXME: those must be recreated from local resources!
+  //FIXME: change this to single ref!
+  @SuppressWarnings("unchecked")
+  protected transient List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
 
-    public AppGxSessionImpl(SessionFactory sf, String sessionId) {
-        super(sf, sessionId);
+  public AppGxSessionImpl(ISessionFactory sf, IGxSessionData sessionData) {
+    super(sf, sessionData);
+  }
+
+  @SuppressWarnings("unchecked")
+  public void addStateChangeNotification(StateChangeListener listener) {
+    if (!stateListeners.contains(listener)) {
+      stateListeners.add(listener);
     }
+  }
 
-    @SuppressWarnings("unchecked")
-    public void addStateChangeNotification(StateChangeListener listener) {
-        if (!stateListeners.contains(listener)) {
-            stateListeners.add(listener);
-        }
-    }
+  @SuppressWarnings("unchecked")
+  public void removeStateChangeNotification(StateChangeListener listener) {
+    stateListeners.remove(listener);
+  }
 
-    @SuppressWarnings("unchecked")
-    public void removeStateChangeNotification(StateChangeListener listener) {
-        stateListeners.remove(listener);
-    }
-
-    public void release() {
-        super.release();
-    }
-
-    /* (non-Javadoc)
-     * @see org.jdiameter.common.impl.app.AppSessionImpl#relink(org.jdiameter.client.api.IContainer)
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public void relink(IContainer stack) {
-        super.relink(stack);
-
-        // FIXME Any better way to do this?
-        Class interfaze = null;
-        for (Class possibleInterface : this.getClass().getInterfaces()) {
-            if (interfaze != null) {
-                break;
-            }
-            for (Class appSessionInterface : possibleInterface.getInterfaces()) {
-                if (appSessionInterface.equals(AppSession.class)) {
-                    interfaze = possibleInterface;
-                    break;
-                }
-            }
-        }
-        ICCASessionFactory fct = (ICCASessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(interfaze);
-        this.stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
-        this.addStateChangeNotification(fct.getStateListener());
-    }
+  public void release() {
+    super.release();
+  }
 }

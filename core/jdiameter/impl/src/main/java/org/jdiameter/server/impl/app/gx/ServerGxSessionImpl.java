@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -22,7 +22,6 @@
 package org.jdiameter.server.impl.app.gx;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -36,7 +35,6 @@ import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
-import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppRequestEvent;
@@ -48,11 +46,9 @@ import org.jdiameter.api.gx.ServerGxSession;
 import org.jdiameter.api.gx.ServerGxSessionListener;
 import org.jdiameter.api.gx.events.GxCreditControlAnswer;
 import org.jdiameter.api.gx.events.GxCreditControlRequest;
-import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.gx.IGxMessageFactory;
-import org.jdiameter.common.api.app.gx.IGxSessionFactory;
 import org.jdiameter.common.api.app.gx.IServerGxSessionContext;
 import org.jdiameter.common.api.app.gx.ServerGxSessionState;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
@@ -76,8 +72,8 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
   private static final Logger logger = LoggerFactory.getLogger(ServerGxSessionImpl.class);
 
   // Session State Handling ---------------------------------------------------
-  protected boolean stateless = true;
-  protected ServerGxSessionState state = ServerGxSessionState.IDLE;
+  //protected boolean stateless = true;
+  //protected ServerGxSessionState state = ServerGxSessionState.IDLE;
   protected Lock sendAndStateLock = new ReentrantLock();
 
   // Factories and Listeners --------------------------------------------------
@@ -88,18 +84,15 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
   //  Tcc timer (supervises an ongoing credit-control
   //             session in the credit-control server) ------------------------
   //protected transient ScheduledFuture tccFuture = null;
-  protected Serializable tccTimerId;
+  //protected Serializable tccTimerId;
   protected static final String TCC_TIMER_NAME = "TCC_GxSERVER_TIMER";
 
   protected long[] authAppIds = new long[]{4};
-  protected String originHost, originRealm;
+  //protected String originHost, originRealm;
+  protected IServerGxSessionData sessionData;
 
-  public ServerGxSessionImpl(IGxMessageFactory fct, SessionFactory sf, ServerGxSessionListener lst, IServerGxSessionContext ctx,StateChangeListener<AppSession> stLst) {
-    this(null, fct, sf, lst,ctx,stLst);
-  }
-
-  public ServerGxSessionImpl(String sessionId, IGxMessageFactory fct, SessionFactory sf, ServerGxSessionListener lst, IServerGxSessionContext ctx, StateChangeListener<AppSession> stLst) {
-    super(sf,sessionId);
+  public ServerGxSessionImpl(IServerGxSessionData sessionData, IGxMessageFactory fct, ISessionFactory sf, ServerGxSessionListener lst, IServerGxSessionContext ctx, StateChangeListener<AppSession> stLst) {
+    super(sf,sessionData);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
@@ -112,16 +105,12 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
     authAppIds = fct.getApplicationIds();
     listener = lst;
     factory = fct;
+    this.sessionData = sessionData;
     super.addStateChangeNotification(stLst);
   }
 
   public void sendCreditControlAnswer(GxCreditControlAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    try {
-      handleEvent(new Event(false, null, answer));
-    } catch (AvpDataException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    handleEvent(new Event(false, null, answer));
   }
 
   public void sendReAuthRequest(ReAuthRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
@@ -129,12 +118,12 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
   }
 
   public boolean isStateless() {
-    return stateless;
+    return this.sessionData.isStateless();
   }
 
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> stateType) {
-    return stateType == ServerGxSessionState.class ? (E) state : null;
+    return stateType == ServerGxSessionState.class ? (E) this.sessionData.getServerGxSessionState() : null;
   }
 
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
@@ -144,11 +133,11 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
       sendAndStateLock.lock();
 
       // Can be null if there is no state transition, transition to IDLE state should terminate this app session
-      Event localEvent = (Event) event;
-
+      final Event localEvent = (Event) event;
+      final ServerGxSessionState state = this.sessionData.getServerGxSessionState();
       //Its kind of awkward, but with two state on server side its easier to go through event types?
       //but for sake of FSM readability
-      Event.Type eventType = (Event.Type) localEvent.getType();
+      final Event.Type eventType = (Event.Type) localEvent.getType();
       switch(state)
       {
       case IDLE:
@@ -313,25 +302,6 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
     return true;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.jdiameter.common.impl.app.AppSessionImpl#relink(org.jdiameter.client.api.IContainer)
-   */
-  @Override
-  public void relink(IContainer stack) {
-    if (super.sf == null) {
-      super.relink(stack);
-
-      // hack this will change
-      IGxSessionFactory fct = (IGxSessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(ServerGxSession.class);
-
-      this.listener = fct.getServerSessionListener();
-      this.context = fct.getServerContextListener();
-      this.factory = fct.getMessageFactory();
-    }
-  }
-
   private class TccScheduledTask implements Runnable {
     ServerGxSession session = null;
 
@@ -349,7 +319,7 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
       try {
         sendAndStateLock.lock();
         // tccFuture = null;
-        tccTimerId = null;
+        sessionData.setTccTimerId(null);
         setState(ServerGxSessionState.IDLE);
       }
       finally {
@@ -426,15 +396,14 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
   }
 
   private void stopTcc(boolean willRestart) {
+    final Serializable tccTimerId = this.sessionData.getTccTimerId();
     if (tccTimerId != null) {
-      // tccFuture.cancel(false);
       super.timerFacility.cancel(tccTimerId);
-      // ScheduledFuture f = tccFuture;
-      tccTimerId = null;
-      if (!willRestart) {
+
+      this.sessionData.setTccTimerId(null);
+      if (!willRestart && context!=null) {
         context.sessionSupervisionTimerStopped(this, null);
       }
-      super.sessionDataSource.updateSession(this);
     }
   }
 
@@ -452,20 +421,18 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
 
   @SuppressWarnings("unchecked")
   protected void setState(ServerGxSessionState newState, boolean release) {
-    IAppSessionState oldState = state;
-    state = newState;
+    IAppSessionState oldState = this.sessionData.getServerGxSessionState();
+    this.sessionData.setServerGxSessionState(newState);
 
     for (StateChangeListener i : stateListeners) {
       i.stateChanged(this, (Enum) oldState, (Enum) newState);
     }
     if (newState == ServerGxSessionState.IDLE) {
+      stopTcc(false);
       if (release) {
+        // NOTE: do EVERYTHING before release.
         this.release();
       }
-      stopTcc(false);
-    }
-    else {
-      super.sessionDataSource.updateSession(this);
     }
   }
 
@@ -511,15 +478,40 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
     try {
       session.send(event.getMessage(), this);
       // Store last destination information
-      // FIXME: add differentiation on server/client request
-      originRealm = event.getMessage().getAvps().getAvp(Avp.ORIGIN_REALM).getOctetString();
-      originHost = event.getMessage().getAvps().getAvp(Avp.ORIGIN_HOST).getOctetString();
+
     }
     catch(Exception e) {
       //throw new InternalException(e);
       logger.debug("Failure trying to dispatch event", e);
     }
   }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((sessionData == null) ? 0 : sessionData.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (!super.equals(obj))
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    ServerGxSessionImpl other = (ServerGxSessionImpl) obj;
+    if (sessionData == null) {
+      if (other.sessionData != null)
+        return false;
+    }
+    else if (!sessionData.equals(other.sessionData))
+      return false;
+    return true;
+  }
+
 
   private class RequestDelivery implements Runnable {
     ServerGxSession session;
@@ -560,7 +552,6 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
           listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
           break;
         }
-
       }
       catch (Exception e) {
         logger.debug("Failed to process success message", e);
@@ -568,72 +559,4 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
     }
   }
 
-  /* (non-Javadoc)
-   * @see java.lang.Object#hashCode()
-   */
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + Arrays.hashCode(authAppIds);
-    result = prime * result + ((originHost == null) ? 0 : originHost.hashCode());
-    result = prime * result + ((originRealm == null) ? 0 : originRealm.hashCode());
-    result = prime * result + ((state == null) ? 0 : state.hashCode());
-    result = prime * result + (stateless ? 1231 : 1237);
-    return result;
-  }
-
-  /* (non-Javadoc)
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-
-    ServerGxSessionImpl other = (ServerGxSessionImpl) obj;
-    if (!Arrays.equals(authAppIds, other.authAppIds)) {
-      return false;
-    }
-    if (originHost == null) {
-      if (other.originHost != null) {
-        return false;
-      }
-    }
-    else if (!originHost.equals(other.originHost)) {
-      return false;
-    }
-    if (originRealm == null) {
-      if (other.originRealm != null) {
-        return false;
-      }
-    }
-    else if (!originRealm.equals(other.originRealm)) {
-      return false;
-    }
-    if (state == null) {
-      if (other.state != null) {
-        return false;
-      }
-    }
-    else if (!state.equals(other.state)) {
-      return false;
-    }
-    if (stateless != other.stateless) {
-      return false;
-    }
-
-    return true;
-  }
-  public String toString()
-  {
-    return super.toString()+" State[ "+state+" ] Timer[ "+tccTimerId+" ] Stateless[ "+stateless+" ]";
-  }
 }

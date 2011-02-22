@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -22,9 +22,7 @@
 package org.jdiameter.client.impl.app.gx;
 
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -41,7 +39,6 @@ import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
-import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppSession;
@@ -54,16 +51,13 @@ import org.jdiameter.api.gx.ClientGxSessionListener;
 import org.jdiameter.api.gx.events.GxCreditControlAnswer;
 import org.jdiameter.api.gx.events.GxCreditControlRequest;
 import org.jdiameter.client.api.IContainer;
-import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.api.parser.IMessageParser;
-import org.jdiameter.client.api.parser.ParseException;
 import org.jdiameter.client.impl.app.gx.Event.Type;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.gx.ClientGxSessionState;
 import org.jdiameter.common.api.app.gx.IClientGxSessionContext;
 import org.jdiameter.common.api.app.gx.IGxMessageFactory;
-import org.jdiameter.common.api.app.gx.IGxSessionFactory;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
@@ -82,10 +76,11 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(ClientGxSessionImpl.class);
+    protected IClientGxSessionData sessionData;
     // Session State Handling ---------------------------------------------------
-    protected boolean isEventBased = true;
-    protected boolean requestTypeSet = false;
-    protected ClientGxSessionState state = ClientGxSessionState.IDLE;
+    //protected boolean isEventBased = true;
+    //protected boolean requestTypeSet = false;
+    //protected ClientGxSessionState state = ClientGxSessionState.IDLE;
     protected Lock sendAndStateLock = new ReentrantLock();
     // Factories and Listeners --------------------------------------------------
     protected transient IGxMessageFactory factory;
@@ -94,21 +89,21 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
     protected transient IMessageParser parser;
     // Tx Timer -----------------------------------------------------------------
     //protected transient ScheduledFuture txFuture = null; //FIXME: HA/FT
-    protected Serializable txTimerId;
+    //protected Serializable txTimerId;
     //protected RoRequest txTimerRequest;
-    protected byte[] txTimerRequest;
+    //protected byte[] txTimerRequest;
     // Event Based Buffer
     //protected Message buffer = null;
-    protected byte[] buffer;
+    //protected byte[] buffer;
     protected final static String TX_TIMER_NAME = "Gx_CLIENT_TX_TIMER";
     protected static final long TX_TIMER_DEFAULT_VALUE = 30 * 60 * 1000; // miliseconds
-    protected String originHost, originRealm;
+   // protected String originHost, originRealm;
     protected long[] authAppIds = new long[]{4};
     // Requested Action + Credit-Control and Direct-Debiting Failure-Handling ---
-    private static final int NON_INITIALIZED = -300;
-    protected int gatheredRequestedAction = NON_INITIALIZED;
-    protected int gatheredCCFH = NON_INITIALIZED;
-    protected int gatheredDDFH = NON_INITIALIZED;
+    static final int NON_INITIALIZED = -300;
+    //protected int gatheredRequestedAction = NON_INITIALIZED;
+    //protected int gatheredCCFH = NON_INITIALIZED;
+   // protected int gatheredDDFH = NON_INITIALIZED;
     protected static final int CCFH_TERMINATE = 0;
     protected static final int CCFH_CONTINUE = 1;
     protected static final int CCFH_RETRY_AND_TERMINATE = 2;
@@ -139,14 +134,10 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
     // Session Based Queue
     protected ArrayList<Event> eventQueue = new ArrayList<Event>();
 
-    public ClientGxSessionImpl(IGxMessageFactory fct, SessionFactory sf, ClientGxSessionListener lst, IClientGxSessionContext ctx,
-                               StateChangeListener<AppSession> stLst) {
-        this(null, fct, sf, lst, ctx, stLst);
-    }
 
-    public ClientGxSessionImpl(String sessionId, IGxMessageFactory fct, SessionFactory sf, ClientGxSessionListener lst, IClientGxSessionContext ctx,
+    public ClientGxSessionImpl(IClientGxSessionData sessionData, IGxMessageFactory fct, ISessionFactory sf, ClientGxSessionListener lst, IClientGxSessionContext ctx,
                                StateChangeListener<AppSession> stLst) {
-        super(sf, sessionId);
+        super(sf, sessionData);
         if (lst == null) {
             throw new IllegalArgumentException("Listener can not be null");
         }
@@ -154,31 +145,25 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
             throw new IllegalArgumentException("ApplicationId can not be less than zero");
         }
 
-        context = (IClientGxSessionContext) ctx;
+        this.context = (IClientGxSessionContext) ctx;
 
-        authAppIds = fct.getApplicationIds();
-        listener = lst;
-        factory = fct;
-        ISessionFactory isf = (ISessionFactory) sf;
-        IContainer icontainer = isf.getContainer();
+        this.authAppIds = fct.getApplicationIds();
+        this.listener = lst;
+        this.factory = fct;
+
+        IContainer icontainer = sf.getContainer();
         this.parser = icontainer.getAssemblerFacility().getComponentInstance(IMessageParser.class);
-
+        this.sessionData = sessionData;
         super.addStateChangeNotification(stLst);
-        //    try {
-        //      session = sessionId == null ? sf.getNewSession() : sf.getNewSession(sessionId);
-        //      //session.setRequestListener(this);
-        //    }
-        //    catch (InternalException e) {
-        //      throw new IllegalArgumentException(e);
-        //    }
+
     }
 
     protected int getLocalCCFH() {
-        return gatheredCCFH >= 0 ? gatheredCCFH : context.getDefaultCCFHValue();
+        return this.sessionData.getGatheredCCFH() >= 0 ? this.sessionData.getGatheredCCFH() : context.getDefaultCCFHValue();
     }
 
     protected int getLocalDDFH() {
-        return gatheredDDFH >= 0 ? gatheredDDFH : context.getDefaultDDFHValue();
+        return this.sessionData.getGatheredDDFH() >= 0 ? this.sessionData.getGatheredDDFH() : context.getDefaultDDFHValue();
     }
 
     public void sendCreditControlRequest(GxCreditControlRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
@@ -200,12 +185,12 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
     }
 
     public boolean isEventBased() {
-        return this.isEventBased;
+        return this.sessionData.isEventBased();
     }
 
     @SuppressWarnings("unchecked")
     public <E> E getState(Class<E> stateType) {
-        return stateType == ClientGxSessionState.class ? (E) state : null;
+        return stateType == ClientGxSessionState.class ? (E) this.sessionData.getClientGxSessionState() : null;
     }
 
     public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
@@ -215,9 +200,10 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
     protected boolean handleEventForEventBased(StateEvent event) throws InternalException, OverloadException {
         try {
             sendAndStateLock.lock();
+            final ClientGxSessionState state = this.sessionData.getClientGxSessionState();
             Event localEvent = (Event) event;
             Event.Type eventType = (Type) localEvent.getType();
-            switch (this.state) {
+            switch (state) {
 
                 case IDLE:
                     switch (eventType) {
@@ -282,7 +268,7 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
                             // Action: Delete request
                             // New State: IDLE
                             setState(ClientGxSessionState.IDLE, false);
-                            buffer = null;
+                            this.sessionData.setBuffer(null);
                             deliverGxAnswer((GxCreditControlRequest) localEvent.getRequest(), (GxCreditControlAnswer) localEvent.getAnswer());
                             break;
                         default:
@@ -308,9 +294,10 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
     protected boolean handleEventForSessionBased(StateEvent event) throws InternalException, OverloadException {
         try {
             sendAndStateLock.lock();
-            Event localEvent = (Event) event;
-            Event.Type eventType = (Type) localEvent.getType();
-            switch (this.state) {
+            final ClientGxSessionState state = this.sessionData.getClientGxSessionState();
+            final Event localEvent = (Event) event;
+            final Event.Type eventType = (Type) localEvent.getType();
+            switch (state) {
 
                 case IDLE:
                     switch (eventType) {
@@ -583,23 +570,20 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
         logger.debug("Scheduling TX Timer {}", txTimerValue);
         //this.txFuture = scheduler.schedule(new TxTimerTask(this, request), txTimerValue, TimeUnit.SECONDS);
         try {
-            this.txTimerRequest = this.parser.encodeMessage((IMessage) request.getMessage()).array();
+           this.sessionData.setTxTimerRequest((Request) request.getMessage());
         } catch (Exception e) {
             throw new IllegalArgumentException("Failed to store request.", e);
         }
-        this.txTimerId = this.timerFacility.schedule(this.sessionId, TX_TIMER_NAME, TX_TIMER_DEFAULT_VALUE);
+        this.sessionData.setTxTimerId(this.timerFacility.schedule(this.getSessionId(), TX_TIMER_NAME, TX_TIMER_DEFAULT_VALUE));
     }
 
     protected void stopTx() {
-        //    if (this.txFuture != null) {
-        //      this.txFuture.cancel(true);
-        //      this.txFuture = null;
-        //    }
-        if (this.txTimerId != null) {
-            this.txTimerRequest = null;
-            this.timerFacility.cancel(this.txTimerId);
-            this.txTimerId = null;
-        }
+      Serializable txTimerId = this.sessionData.getTxTimerId();
+      if (txTimerId != null) {
+        this.timerFacility.cancel(txTimerId);
+        this.sessionData.setTxTimerRequest(null);
+        this.sessionData.setTxTimerId(null);
+      }
     }
 
     /* (non-Javadoc)
@@ -608,7 +592,7 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
     @Override
     public void onTimer(String timerName) {
         if (timerName.equals(TX_TIMER_NAME)) {
-            new TxTimerTask(this, this.txTimerRequest).run();
+            new TxTimerTask(this, this.sessionData.getTxTimerRequest()).run();
         }
     }
 
@@ -619,9 +603,8 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
     @SuppressWarnings("unchecked")
     protected void setState(ClientGxSessionState newState, boolean release) {
         try {
-            IAppSessionState oldState = state;
-            state = newState;
-            super.sessionDataSource.updateSession(this);
+            IAppSessionState oldState = this.sessionData.getClientGxSessionState();
+            this.sessionData.setClientGxSessionState(newState);
             for (StateChangeListener i : stateListeners) {
                 i.stateChanged(this, (Enum) oldState, (Enum) newState);
             }
@@ -634,7 +617,7 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
             }
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Failure switching to state " + state + " (release=" + release + ")", e);
+                logger.debug("Failure switching to state " + this.sessionData.getClientGxSessionState() + " (release=" + release + ")", e);
             }
         }
     }
@@ -661,6 +644,8 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
         logger.debug("Failed to send message, type: {} message: {}, failure: {}", new Object[]{eventType, request, e != null ? e.getLocalizedMessage() : ""});
         try {
             // Event Based ----------------------------------------------------------
+          final ClientGxSessionState state = this.sessionData.getClientGxSessionState();
+          final int gatheredRequestedAction = sessionData.getGatheredRequestedAction();
             if (isEventBased()) {
                 switch (state) {
                     case PENDING_EVENT:
@@ -679,7 +664,7 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
                                     // Action: Store request with T-flag
                                     // New State: IDLE
                                     request.setReTransmitted(true);
-                                    buffer = messageToBuffer((IMessage) request).array();
+                                    this.sessionData.setBuffer((Request) request);
 
                                     setState(ClientGxSessionState.IDLE, false);
                                     break;
@@ -700,7 +685,7 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
                             // New State: IDLE
                             setState(ClientGxSessionState.IDLE, false);
                             request.setReTransmitted(true);
-                            buffer = messageToBuffer((IMessage) request).array();
+                            this.sessionData.setBuffer((Request) request);
                         } else {
                             logger.warn("Invalid Requested-Action AVP value {}", gatheredRequestedAction);
                         }
@@ -711,7 +696,7 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
                         // Action: -
                         // New State: IDLE
                         setState(ClientGxSessionState.IDLE, false);
-                        buffer = null; // FIXME: Action does not mention, but ...
+                        this.sessionData.setBuffer(null); // FIXME: Action does not mention, but ...
                         break;
                     default:
                         logger.warn("Wrong event type ({}) on state {}", eventType, state);
@@ -757,12 +742,15 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
     protected void handleFailureMessage(final GxCreditControlAnswer event, final GxCreditControlRequest request, final Event.Type eventType) {
         try {
             // Event Based ----------------------------------------------------------
+          final ClientGxSessionState state = this.sessionData.getClientGxSessionState();
+          final int gatheredRequestedAction = sessionData.getGatheredRequestedAction();
+          final Serializable txTimerId = sessionData.getTxTimerId();
             final long resultCode = event.getResultCodeAvp().getUnsigned32();
             if (isEventBased()) {
                 switch (state) {
                     case PENDING_EVENT:
                         if (resultCode == END_USER_SERVICE_DENIED || resultCode == USER_UNKNOWN) {
-                            if (txTimerId != null) {
+                            if (sessionData.getTxTimerId() != null) {
                                 // Current State: PENDING_E
                                 // Event: CC event answer received with result code END_USER_SERVICE_DENIED or USER_UNKNOWN and Tx running
                                 // Action: Terminate end user�s service
@@ -817,7 +805,7 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
                                 // Event: Temporary error, and requested action REFUND_ACCOUNT
                                 // Action: Store request
                                 // New State: IDLE
-                                buffer = messageToBuffer((IMessage) request).array();
+                              this.sessionData.setBuffer((Request)  request.getMessage());
                                 setState(ClientGxSessionState.IDLE, false);
                             } else {
                                 logger.warn("Invalid combination for Ro Client FSM: State {}, Result-Code {}, Requested-Action {}, DDFH {}, Tx {}", new Object[]{state, resultCode, gatheredRequestedAction, getLocalDDFH(), txTimerId});
@@ -854,7 +842,7 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
                                 // Event: Failed CC event answer received; requested action REFUND_ACCOUNT
                                 // Action: Indicate service error and delete request
                                 // New State: IDLE
-                                buffer = null;
+                                this.sessionData.setBuffer(null);
                                 context.indicateServiceError(this);
                                 deliverGxAnswer(request, event);
                                 setState(ClientGxSessionState.IDLE);
@@ -869,7 +857,7 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
                         // Event: Failed CC answer received
                         // Action: Delete request
                         // New State: IDLE
-                        buffer = null;
+                      this.sessionData.setBuffer(null);
                         setState(ClientGxSessionState.IDLE, false);
                         break;
                     default:
@@ -975,6 +963,9 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
 
     protected void handleTxExpires(Message message) {
         // Event Based ----------------------------------------------------------
+      final ClientGxSessionState state = this.sessionData.getClientGxSessionState();
+      final int gatheredRequestedAction = this.sessionData.getGatheredRequestedAction();
+      final int gatheredDDFH = this.sessionData.getGatheredDDFH();
         if (isEventBased()) {
             if (gatheredRequestedAction == CHECK_BALANCE || gatheredRequestedAction == PRICE_ENQUIRY) {
                 // Current State: PENDING_E
@@ -989,11 +980,7 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
                     // Event: Temporary error; requested action DIRECT_DEBITING; DDFH equal to TERMINATE_OR_BUFFER; Tx expired
                     // Action: Store request
                     // New State: IDLE
-                    try {
-                        buffer = messageToBuffer((IMessage) message).array();
-                    } catch (InternalException e) {
-                        logger.debug("Failed to store request.", e);
-                    }
+                  this.sessionData.setBuffer((Request) message);
                     setState(ClientGxSessionState.IDLE, false);
                 } else {
                     // Current State: PENDING_E
@@ -1009,11 +996,8 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
                 // Action: Store request with T-flag
                 // New State: IDLE
                 message.setReTransmitted(true);
-                try {
-                    buffer = messageToBuffer((IMessage) message).array();
-                } catch (InternalException e) {
-                    throw new IllegalArgumentException("Failed to store request.", e);
-                }
+                this.sessionData.setBuffer((Request) message);
+               
                 setState(ClientGxSessionState.IDLE, false);
             }
         } // Session Based --------------------------------------------------------
@@ -1089,13 +1073,14 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
             // Event: Request in storage
             // Action: Send stored request
             // New State: PENDING_B
+          final Request buffer = this.sessionData.getBuffer();
             if (buffer != null) {
                 setState(ClientGxSessionState.PENDING_BUFFERED);
                 try {
-                    dispatchEvent(new AppRequestEventImpl(messageFromBuffer(ByteBuffer.wrap(buffer))));
+                    dispatchEvent(new AppRequestEventImpl(buffer));
                 } catch (Exception e) {
                     try {
-                        handleSendFailure(e, Event.Type.SEND_EVENT_REQUEST, messageFromBuffer(ByteBuffer.wrap(buffer)));
+                        handleSendFailure(e, Event.Type.SEND_EVENT_REQUEST, buffer);
                     } catch (Exception e1) {
                         logger.error("Failure handling buffer send failure", e1);
                     }
@@ -1103,7 +1088,7 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
             }
         } // Session Based --------------------------------------------------------
         else {
-            if (state == ClientGxSessionState.OPEN && eventQueue.size() > 0) {
+            if (this.sessionData.getClientGxSessionState() == ClientGxSessionState.OPEN && eventQueue.size() > 0) {
                 try {
                     this.handleEvent(eventQueue.remove(0));
                 } catch (Exception e) {
@@ -1125,36 +1110,36 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
         if (answer != null) {
             try {
                 if (answer.isCreditControlFailureHandlingAVPPresent()) {
-                    this.gatheredCCFH = answer.getCredidControlFailureHandlingAVPValue();
+                    this.sessionData.setGatheredCCFH(answer.getCredidControlFailureHandlingAVPValue());
                 }
             } catch (Exception e) {
                 logger.debug("Failure trying to obtain Credit-Control-Failure-Handling AVP value", e);
             }
             try {
                 if (answer.isDirectDebitingFailureHandlingAVPPresent()) {
-                    this.gatheredDDFH = answer.getDirectDebitingFailureHandlingAVPValue();
+                  this.sessionData.setGatheredDDFH(answer.getDirectDebitingFailureHandlingAVPValue());
                 }
             } catch (Exception e) {
                 logger.debug("Failure trying to obtain Direct-Debit-Failure-Handling AVP value", e);
             }
-            if (!requestTypeSet) {
-                requestTypeSet = true;
+            if (!sessionData.isRequestTypeSet()) {
+                this.sessionData.setRequestTypeSet(true);
                 // No need to check if it exists.. it must, if not fail with exception
-                isEventBased = (answer.getRequestTypeAVPValue() == EVENT_REQUEST);
+                this.sessionData.setEventBased(answer.getRequestTypeAVPValue() == EVENT_REQUEST);
             }
         } else if (request != null) {
             try {
                 if (request.isRequestedActionAVPPresent()) {
-                    this.gatheredRequestedAction = request.getRequestedActionAVPValue();
+                    this.sessionData.setGatheredRequestedAction(request.getRequestedActionAVPValue());
                 }
             } catch (Exception e) {
                 logger.debug("Failure trying to obtain Request-Action AVP value", e);
             }
 
-            if (!requestTypeSet) {
-                requestTypeSet = true;
+            if (!sessionData.isRequestTypeSet()) {
+                this.sessionData.setRequestTypeSet(true);
                 // No need to check if it exists.. it must, if not fail with exception
-                isEventBased = (request.getRequestTypeAVPValue() == EVENT_REQUEST);
+                this.sessionData.setEventBased(request.getRequestTypeAVPValue() == EVENT_REQUEST);
             }
         }
     }
@@ -1191,31 +1176,13 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see org.jdiameter.common.impl.app.AppSessionImpl#relink(org.jdiameter.client.api.IContainer)
-     */
-    @Override
-    public void relink(IContainer stack) {
-        // Check if some transient field is null
-        if (super.sf == null) {
-            super.relink(stack);
-            this.parser = stack.getAssemblerFacility().getComponentInstance(IMessageParser.class);
-
-            //hack this will change
-            IGxSessionFactory fct = (IGxSessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(ClientGxSession.class);
-
-            this.listener = fct.getClientSessionListener();
-            this.context = fct.getClientContextListener();
-            this.factory = fct.getMessageFactory();
-        }
-    }
-
+   
     private class TxTimerTask implements Runnable {
 
         private ClientGxSession session = null;
-        private byte[] request = null;
+        private Request request = null;
 
-        private TxTimerTask(ClientGxSession session, byte[] request) {
+        private TxTimerTask(ClientGxSession session, Request request) {
             super();
             this.session = session;
             this.request = request;
@@ -1225,13 +1192,14 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
             try {
                 sendAndStateLock.lock();
                 logger.debug("Fired TX Timer");
-                txTimerId = null;
+                sessionData.setTxTimerId(null);
+                sessionData.setTxTimerRequest(null); //??
                 try {
                     context.txTimerExpired(session);
                 } catch (Exception e) {
                     logger.debug("Failure handling TX Timer Expired", e);
                 }
-                GxCreditControlRequest req = factory.createCreditControlRequest((Request) messageFromBuffer(ByteBuffer.wrap(request)));
+                GxCreditControlRequest req = factory.createCreditControlRequest(request);
                 handleEvent(new Event(Event.Type.Tx_TIMER_FIRED, req, null));
             } catch (InternalException e) {
                 logger.error("Internal Exception", e);
@@ -1245,28 +1213,36 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
         }
     }
 
-    private final Message messageFromBuffer(ByteBuffer request) throws InternalException {
-        if (request != null) {
-            Message m;
-            try {
-                m = parser.createMessage(request);
-                return m;
-            } catch (AvpDataException e) {
-                throw new InternalException("Failed to decode message.", e);
-            }
-        }
-        return null;
-    }
+  
 
-    private ByteBuffer messageToBuffer(IMessage msg) throws InternalException {
-        try {
-            return parser.encodeMessage(msg);
-        } catch (ParseException e) {
-            throw new InternalException("Failed to encode message.", e);
-        }
-    }
+    @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((sessionData == null) ? 0 : sessionData.hashCode());
+    return result;
+  }
 
-    private class RequestDelivery implements Runnable {
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (!super.equals(obj))
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    ClientGxSessionImpl other = (ClientGxSessionImpl) obj;
+    if (sessionData == null) {
+      if (other.sessionData != null)
+        return false;
+    }
+    else if (!sessionData.equals(other.sessionData))
+      return false;
+    return true;
+  }
+
+
+  private class RequestDelivery implements Runnable {
 
         ClientGxSession session;
         Request request;
@@ -1314,81 +1290,4 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + Arrays.hashCode(authAppIds);
-        result = prime * result + gatheredCCFH;
-        result = prime * result + gatheredDDFH;
-        result = prime * result + gatheredRequestedAction;
-        result = prime * result + (isEventBased ? 1231 : 1237);
-        result = prime * result + ((originHost == null) ? 0 : originHost.hashCode());
-        result = prime * result + ((originRealm == null) ? 0 : originRealm.hashCode());
-        result = prime * result + (requestTypeSet ? 1231 : 1237);
-        result = prime * result + ((state == null) ? 0 : state.hashCode());
-        return result;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-
-        ClientGxSessionImpl other = (ClientGxSessionImpl) obj;
-        if (!Arrays.equals(authAppIds, other.authAppIds)) {
-            return false;
-        }
-        if (gatheredCCFH != other.gatheredCCFH) {
-            return false;
-        }
-        if (gatheredDDFH != other.gatheredDDFH) {
-            return false;
-        }
-        if (gatheredRequestedAction != other.gatheredRequestedAction) {
-            return false;
-        }
-        if (isEventBased != other.isEventBased) {
-            return false;
-        }
-        if (originHost == null) {
-            if (other.originHost != null) {
-                return false;
-            }
-        } else if (!originHost.equals(other.originHost)) {
-            return false;
-        }
-        if (originRealm == null) {
-            if (other.originRealm != null) {
-                return false;
-            }
-        } else if (!originRealm.equals(other.originRealm)) {
-            return false;
-        }
-        if (requestTypeSet != other.requestTypeSet) {
-            return false;
-        }
-        if (state == null) {
-            if (other.state != null) {
-                return false;
-            }
-        } else if (!state.equals(other.state)) {
-            return false;
-        }
-
-        return true;
-    }
 }
