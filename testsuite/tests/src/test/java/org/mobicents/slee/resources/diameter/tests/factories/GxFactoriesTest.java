@@ -1,22 +1,21 @@
 /*
  * JBoss, Home of Professional Open Source
- *
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
- *
+ * 
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License, v. 2.0.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
  * General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free
+ * v. 2.0 along with this distribution; if not, write to the Free 
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
@@ -67,8 +66,10 @@ import org.jdiameter.api.cca.ServerCCASession;
 import org.jdiameter.api.cca.events.JCreditControlRequest;
 import org.jdiameter.api.gx.ServerGxSession;
 import org.jdiameter.api.gx.ServerGxSessionListener;
+import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
 import org.jdiameter.common.api.app.gx.IGxMessageFactory;
+import org.jdiameter.server.impl.app.gx.ServerGxSessionDataLocalImpl;
 import org.jdiameter.server.impl.app.gx.ServerGxSessionImpl;
 import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
@@ -136,7 +137,7 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
 
   public GxFactoriesTest() {
     try {
-      session = new ServerGxSessionImpl(this, stack.getSessionFactory(), this, null, null);
+      session = new ServerGxSessionImpl(new ServerGxSessionDataLocalImpl(), this, (ISessionFactory) stack.getSessionFactory(), this, null, null);
       gxServerSession = new GxServerSessionActivityImpl(gxMessageFactory.getBaseMessageFactory(), gxAvpFactory.getBaseFactory(), session, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), stack);
       ((GxServerSessionActivityImpl)gxServerSession).fetchCurrentState(gxMessageFactory.createGxCreditControlRequest());
     }

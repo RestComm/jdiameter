@@ -45,8 +45,10 @@ import org.jdiameter.api.cca.ServerCCASession;
 import org.jdiameter.api.cca.events.JCreditControlRequest;
 import org.jdiameter.api.ro.ServerRoSession;
 import org.jdiameter.api.ro.ServerRoSessionListener;
+import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
 import org.jdiameter.common.api.app.ro.IRoMessageFactory;
+import org.jdiameter.server.impl.app.ro.ServerRoSessionDataLocalImpl;
 import org.jdiameter.server.impl.app.ro.ServerRoSessionImpl;
 import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
@@ -121,7 +123,7 @@ public class RoFactoriesTest implements IRoMessageFactory, ServerRoSessionListen
   public RoFactoriesTest()
   {
     try {
-      session = new ServerRoSessionImpl(this, stack.getSessionFactory(), this, null, null);
+      session = new ServerRoSessionImpl(new ServerRoSessionDataLocalImpl(), this, (ISessionFactory) stack.getSessionFactory(), this, null, null);
       roServerSession = new RoServerSessionActivityImpl(roMessageFactory.getBaseMessageFactory(), roAvpFactory.getBaseFactory(), session, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), stack);
       ((RoServerSessionActivityImpl)roServerSession).fetchCurrentState(roMessageFactory.createRoCreditControlRequest());
     }

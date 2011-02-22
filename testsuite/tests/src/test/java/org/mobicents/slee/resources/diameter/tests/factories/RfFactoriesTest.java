@@ -1,27 +1,23 @@
 /*
- * Mobicents, Communications Middleware
+ * JBoss, Home of Professional Open Source
+ * Copyright 2008, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
  * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
- * indicated by the @author tags or express copyright attribution
- * statements applied by the authors.  All third-party contributions are
- * distributed under license by Red Hat Middleware LLC.
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
- * for more details.
- *
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- *
- * Boston, MA  02110-1301  USA
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
  */
 package org.mobicents.slee.resources.diameter.tests.factories;
 
@@ -83,7 +79,6 @@ import org.jdiameter.api.Message;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.Stack;
-import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.auth.ClientAuthSession;
 import org.jdiameter.api.auth.ServerAuthSession;
 import org.jdiameter.api.rf.ServerRfSession;
@@ -104,11 +99,6 @@ import org.mobicents.slee.resource.diameter.ro.RoAvpFactoryImpl;
 
 /**
  * 
- * RfFactoriesTest.java
- *
- * <br>Project:  mobicents
- * <br>2:10:37 PM Apr 14, 2009 
- * <br>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class RfFactoriesTest implements DiameterRAInterface {
@@ -1587,10 +1577,6 @@ public class RfFactoriesTest implements DiameterRAInterface {
   public ApplicationId[] getSupportedApplications()
   {
     return new ApplicationId[]{ApplicationId.createByAccAppId(0L, 3L)};
-  }
-
-  public void stateChanged(AppSession source, Enum oldState, Enum newState) {
-    // TODO Auto-generated method stub
   }
 
   public void endActivity(DiameterActivityHandle arg0) {

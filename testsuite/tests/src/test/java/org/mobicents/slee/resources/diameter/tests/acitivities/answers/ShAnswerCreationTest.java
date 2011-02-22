@@ -1,9 +1,23 @@
-/**
- * Start time:22:26:45 2009-07-07<br>
- * Project: diameter-auto<br>
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2009, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
  * 
- * @author <a href="mailto:baranowb@gmail.com">Bartosz Baranowski </a>
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
  */
 package org.mobicents.slee.resources.diameter.tests.acitivities.answers;
 
@@ -20,20 +34,9 @@ import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.Stack;
-import org.jdiameter.api.acc.events.AccountAnswer;
-import org.jdiameter.api.acc.events.AccountRequest;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
-import org.jdiameter.api.auth.events.AbortSessionAnswer;
-import org.jdiameter.api.auth.events.AbortSessionRequest;
-import org.jdiameter.api.auth.events.ReAuthAnswer;
-import org.jdiameter.api.auth.events.ReAuthRequest;
-import org.jdiameter.api.auth.events.SessionTermAnswer;
-import org.jdiameter.api.auth.events.SessionTermRequest;
-import org.jdiameter.api.cca.ServerCCASession;
-import org.jdiameter.api.cca.ServerCCASessionListener;
-import org.jdiameter.api.cca.events.JCreditControlRequest;
 import org.jdiameter.api.sh.ClientShSession;
 import org.jdiameter.api.sh.ClientShSessionListener;
 import org.jdiameter.api.sh.ServerShSession;
@@ -44,8 +47,11 @@ import org.jdiameter.api.sh.events.PushNotificationAnswer;
 import org.jdiameter.api.sh.events.SubscribeNotificationsAnswer;
 import org.jdiameter.api.sh.events.SubscribeNotificationsRequest;
 import org.jdiameter.api.sh.events.UserDataAnswer;
+import org.jdiameter.client.api.ISessionFactory;
+import org.jdiameter.client.impl.app.sh.ShClientSessionDataLocalImpl;
 import org.jdiameter.client.impl.app.sh.ShClientSessionImpl;
 import org.jdiameter.common.api.app.sh.IShMessageFactory;
+import org.jdiameter.server.impl.app.sh.ShServerSessionDataLocalImpl;
 import org.jdiameter.server.impl.app.sh.ShServerSessionImpl;
 import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
@@ -67,16 +73,6 @@ import org.mobicents.slee.resources.diameter.tests.factories.ShClientFactoriesTe
  */
 public class ShAnswerCreationTest {
 
-	private static String clientHost = "127.0.0.1";
-	private static String clientPort = "13868";
-	private static String clientURI = "aaa://" + clientHost + ":" + clientPort;
-
-	private static String serverHost = "localhost";
-	private static String serverPort = "3868";
-	private static String serverURI = "aaa://" + serverHost + ":" + serverPort;
-
-	private static String realmName = "mobicents.org";
-
 	private static DiameterAvpFactoryImpl diameterAvpFactory = new DiameterAvpFactoryImpl();
 	private static DiameterShAvpFactoryImpl diameterShAvpFactory = new DiameterShAvpFactoryImpl(diameterAvpFactory);
 
@@ -90,13 +86,11 @@ public class ShAnswerCreationTest {
 		catch (Exception e) {
 			throw new RuntimeException("Failed to initialize the stack.");
 		}
-
-		DiameterMessageFactoryImpl baseMessageFactory = new DiameterMessageFactoryImpl(stack);
 	}
 
 	@Test
 	public void testShClientActivityAnswerCreation() throws Exception {
-		ClientShSession session = new ShClientSessionImpl(new IShMessageFactoryImpl(), stack.getSessionFactory(), new ClientShSessionListenerImpl());
+	  ClientShSession session = new ShClientSessionImpl(new ShClientSessionDataLocalImpl(), new IShMessageFactoryImpl(), (ISessionFactory) stack.getSessionFactory(), new ClientShSessionListenerImpl());
 		DiameterMessageFactoryImpl msgFactory = new DiameterMessageFactoryImpl(session.getSessions().get(0), stack, null, null);
 		ShServerMessageFactoryImpl factory = new ShServerMessageFactoryImpl(msgFactory, session.getSessions().get(0), stack, diameterShAvpFactory);
 		PushNotificationRequest pnr = factory.createPushNotificationRequest();
@@ -109,7 +103,7 @@ public class ShAnswerCreationTest {
 
 	@Test
 	public void testShServerActivityAnswerCreation() throws Exception {
-		ServerShSession session = new ShServerSessionImpl(new IShMessageFactoryImpl(), stack.getSessionFactory(), new ServerShSessionListenerImpl());
+		ServerShSession session = new ShServerSessionImpl(new ShServerSessionDataLocalImpl(), new IShMessageFactoryImpl(), (ISessionFactory) stack.getSessionFactory(), new ServerShSessionListenerImpl());
 		DiameterMessageFactoryImpl msgFactory = new DiameterMessageFactoryImpl(session.getSessions().get(0), stack, null, null);
 		ShClientMessageFactoryImpl factory = new ShClientMessageFactoryImpl(session.getSessions().get(0), stack);
 		UserDataRequest udr = factory.createUserDataRequest();
@@ -127,7 +121,7 @@ public class ShAnswerCreationTest {
 
 	@Test
 	public void testShServerSubscriptionActivityAnswerCreation() throws Exception {
-		ServerShSession session = new ShServerSessionImpl(new IShMessageFactoryImpl(), stack.getSessionFactory(), new ServerShSessionListenerImpl());
+		ServerShSession session = new ShServerSessionImpl(new ShServerSessionDataLocalImpl(), new IShMessageFactoryImpl(), (ISessionFactory) stack.getSessionFactory(), new ServerShSessionListenerImpl());
 		DiameterMessageFactoryImpl msgFactory = new DiameterMessageFactoryImpl(session.getSessions().get(0), stack, null, null);
 		ShClientMessageFactoryImpl factory = new ShClientMessageFactoryImpl(session.getSessions().get(0), stack);
 		UserDataRequest udr = factory.createUserDataRequest();
@@ -143,7 +137,6 @@ public class ShAnswerCreationTest {
 				diameterShAvpFactory, session, null, null);
 
 		DiameterActivityAnswerCreationHelper.testAnswerCreation(activity, "stateMessages", list);
-
 	}
 }
 
