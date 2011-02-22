@@ -22,7 +22,6 @@
 package org.jdiameter.server.impl.app.ro;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -36,7 +35,6 @@ import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
-import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppRequestEvent;
@@ -48,11 +46,9 @@ import org.jdiameter.api.ro.ServerRoSession;
 import org.jdiameter.api.ro.ServerRoSessionListener;
 import org.jdiameter.api.ro.events.RoCreditControlAnswer;
 import org.jdiameter.api.ro.events.RoCreditControlRequest;
-import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.ro.IRoMessageFactory;
-import org.jdiameter.common.api.app.ro.IRoSessionFactory;
 import org.jdiameter.common.api.app.ro.IServerRoSessionContext;
 import org.jdiameter.common.api.app.ro.ServerRoSessionState;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
@@ -75,8 +71,8 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
   private static final Logger logger = LoggerFactory.getLogger(ServerRoSessionImpl.class);
 
   // Session State Handling ---------------------------------------------------
-  protected boolean stateless = true;
-  protected ServerRoSessionState state = ServerRoSessionState.IDLE;
+  //protected boolean stateless = true;
+  //protected ServerRoSessionState state = ServerRoSessionState.IDLE;
   protected Lock sendAndStateLock = new ReentrantLock();
 
   // Factories and Listeners --------------------------------------------------
@@ -87,40 +83,36 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
   //  Tcc timer (supervises an ongoing credit-control
   //             session in the credit-control server) ------------------------
   //protected transient ScheduledFuture tccFuture = null;
-  protected Serializable tccTimerId;
+  //protected Serializable tccTimerId;
   protected static final String TCC_TIMER_NAME = "TCC_RoSERVER_TIMER";
 
   protected long[] authAppIds = new long[]{4};
-  protected String originHost, originRealm;
+  //protected String originHost, originRealm;
 
-  public ServerRoSessionImpl(IRoMessageFactory fct, SessionFactory sf, ServerRoSessionListener lst, IServerRoSessionContext ctx,StateChangeListener<AppSession> stLst) {
-    this(null, fct, sf, lst,ctx,stLst);
-  }
+  protected IServerRoSessionData sessionData;
 
-  public ServerRoSessionImpl(String sessionId, IRoMessageFactory fct, SessionFactory sf, ServerRoSessionListener lst, IServerRoSessionContext ctx, StateChangeListener<AppSession> stLst) {
-    super(sf,sessionId);
+  public ServerRoSessionImpl(IServerRoSessionData sessionData, IRoMessageFactory fct, ISessionFactory sf, ServerRoSessionListener lst, IServerRoSessionContext ctx, StateChangeListener<AppSession> stLst) {
+    super(sf,sessionData);
+    if(sessionData == null) {
+      throw new IllegalArgumentException("SessionData can not be null");
+    }
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
     if (fct.getApplicationIds() == null) {
       throw new IllegalArgumentException("ApplicationId can not be less than zero");
     }
+    this.sessionData = sessionData;
+    this.context = ctx;
 
-    context = ctx;
-
-    authAppIds = fct.getApplicationIds();
-    listener = lst;
-    factory = fct;
+    this.authAppIds = fct.getApplicationIds();
+    this.listener = lst;
+    this.factory = fct;
     super.addStateChangeNotification(stLst);
   }
 
   public void sendCreditControlAnswer(RoCreditControlAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    try {
-      handleEvent(new Event(false, null, answer));
-    } catch (AvpDataException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    handleEvent(new Event(false, null, answer));
   }
 
   public void sendReAuthRequest(ReAuthRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
@@ -128,17 +120,17 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
   }
 
   public boolean isStateless() {
-    return stateless;
+    return this.sessionData.isStateless();
   }
 
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> stateType) {
-    return stateType == ServerRoSessionState.class ? (E) state : null;
+    return stateType == ServerRoSessionState.class ? (E) this.sessionData.getServerRoSessionState() : null;
   }
 
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
     ServerRoSessionState newState = null;
-
+    ServerRoSessionState state = sessionData.getServerRoSessionState();
     try {
       sendAndStateLock.lock();
 
@@ -312,25 +304,6 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
     return true;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.jdiameter.common.impl.app.AppSessionImpl#relink(org.jdiameter.client.api.IContainer)
-   */
-  @Override
-  public void relink(IContainer stack) {
-    if (super.sf == null) {
-      super.relink(stack);
-
-      // hack this will change
-      IRoSessionFactory fct = (IRoSessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(ServerRoSession.class);
-
-      this.listener = fct.getServerSessionListener();
-      this.context = fct.getServerContextListener();
-      this.factory = fct.getMessageFactory();
-    }
-  }
-
   private class TccScheduledTask implements Runnable {
     ServerRoSession session = null;
 
@@ -344,14 +317,22 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
       // Event: Session supervision timer Tcc expired
       // Action: Release reserved units
       // New State: IDLE
-      context.sessionSupervisionTimerExpired(session);
+
       try {
         sendAndStateLock.lock();
-        // tccFuture = null;
-        tccTimerId = null;
-        setState(ServerRoSessionState.IDLE);
+
+        if(context != null) {
+          context.sessionSupervisionTimerExpired(session);
+        }
       }
       finally {
+        try{
+          sessionData.setTccTimerId(null);
+          setState(ServerRoSessionState.IDLE);
+        }
+        catch (Exception e) {
+          logger.error("",e);
+        }
         sendAndStateLock.unlock();
       }
     }
@@ -425,15 +406,15 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
   }
 
   private void stopTcc(boolean willRestart) {
+    Serializable tccTimerId = sessionData.getTccTimerId();
     if (tccTimerId != null) {
       // tccFuture.cancel(false);
       super.timerFacility.cancel(tccTimerId);
       // ScheduledFuture f = tccFuture;
-      tccTimerId = null;
+      sessionData.setTccTimerId(null);
       if (!willRestart) {
         context.sessionSupervisionTimerStopped(this, null);
       }
-      super.sessionDataSource.updateSession(this);
     }
   }
 
@@ -451,20 +432,17 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
 
   @SuppressWarnings("unchecked")
   protected void setState(ServerRoSessionState newState, boolean release) {
-    IAppSessionState oldState = state;
-    state = newState;
+    IAppSessionState oldState = sessionData.getServerRoSessionState();
+    sessionData.setServerRoSessionState(newState);
 
     for (StateChangeListener i : stateListeners) {
       i.stateChanged(this, (Enum) oldState, (Enum) newState);
     }
     if (newState == ServerRoSessionState.IDLE) {
+      stopTcc(false);
       if (release) {
         this.release();
       }
-      stopTcc(false);
-    }
-    else {
-      super.sessionDataSource.updateSession(this);
     }
   }
 
@@ -509,10 +487,7 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
   protected void dispatchEvent(AppEvent event) throws InternalException {
     try {
       session.send(event.getMessage(), this);
-      // Store last destination information
-      // FIXME: add differentiation on server/client request
-      originRealm = event.getMessage().getAvps().getAvp(Avp.ORIGIN_REALM).getOctetString();
-      originHost = event.getMessage().getAvps().getAvp(Avp.ORIGIN_HOST).getOctetString();
+
     }
     catch(Exception e) {
       //throw new InternalException(e);
@@ -559,7 +534,6 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
           listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
           break;
         }
-
       }
       catch (Exception e) {
         logger.debug("Failed to process success message", e);
@@ -567,72 +541,4 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
     }
   }
 
-  /* (non-Javadoc)
-   * @see java.lang.Object#hashCode()
-   */
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + Arrays.hashCode(authAppIds);
-    result = prime * result + ((originHost == null) ? 0 : originHost.hashCode());
-    result = prime * result + ((originRealm == null) ? 0 : originRealm.hashCode());
-    result = prime * result + ((state == null) ? 0 : state.hashCode());
-    result = prime * result + (stateless ? 1231 : 1237);
-    return result;
-  }
-
-  /* (non-Javadoc)
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-
-    ServerRoSessionImpl other = (ServerRoSessionImpl) obj;
-    if (!Arrays.equals(authAppIds, other.authAppIds)) {
-      return false;
-    }
-    if (originHost == null) {
-      if (other.originHost != null) {
-        return false;
-      }
-    }
-    else if (!originHost.equals(other.originHost)) {
-      return false;
-    }
-    if (originRealm == null) {
-      if (other.originRealm != null) {
-        return false;
-      }
-    }
-    else if (!originRealm.equals(other.originRealm)) {
-      return false;
-    }
-    if (state == null) {
-      if (other.state != null) {
-        return false;
-      }
-    }
-    else if (!state.equals(other.state)) {
-      return false;
-    }
-    if (stateless != other.stateless) {
-      return false;
-    }
-
-    return true;
-  }
-  public String toString()
-  {
-    return super.toString()+" State[ "+state+" ] Timer[ "+tccTimerId+" ] Stateless[ "+stateless+" ]";
-  }
 }

@@ -38,7 +38,7 @@ public class Event implements StateEvent {
     this.request = request;
   }
 
-  Event(boolean isRequest, RoCreditControlRequest request, RoCreditControlAnswer answer) throws AvpDataException {
+  Event(boolean isRequest, RoCreditControlRequest request, RoCreditControlAnswer answer) {
 
     this.answer = answer;
     this.request = request;

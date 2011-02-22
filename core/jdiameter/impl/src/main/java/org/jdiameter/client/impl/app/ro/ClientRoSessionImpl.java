@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -24,7 +24,6 @@ package org.jdiameter.client.impl.app.ro;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -41,7 +40,6 @@ import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
-import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppSession;
@@ -63,7 +61,6 @@ import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.ro.ClientRoSessionState;
 import org.jdiameter.common.api.app.ro.IClientRoSessionContext;
 import org.jdiameter.common.api.app.ro.IRoMessageFactory;
-import org.jdiameter.common.api.app.ro.IRoSessionFactory;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
@@ -83,9 +80,10 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   private static final Logger logger = LoggerFactory.getLogger(ClientRoSessionImpl.class);
 
   // Session State Handling ---------------------------------------------------
-  protected boolean isEventBased = true;
-  protected boolean requestTypeSet = false;
-  protected ClientRoSessionState state = ClientRoSessionState.IDLE;
+  //protected boolean isEventBased = true;
+  //protected boolean requestTypeSet = false;
+  //protected ClientRoSessionState state = ClientRoSessionState.IDLE;
+  protected IClientRoSessionData sessionData;
   protected Lock sendAndStateLock = new ReentrantLock();
 
   // Factories and Listeners --------------------------------------------------
@@ -95,28 +93,14 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   protected transient IMessageParser parser;
 
   // Tx Timer -----------------------------------------------------------------
-  //protected transient ScheduledFuture txFuture = null; //FIXME: HA/FT
-  protected Serializable txTimerId;
-  //protected RoRequest txTimerRequest;
-  protected byte[] txTimerRequest;
-
-  // Event Based Buffer
-  //protected Message buffer = null;
-  protected byte[] buffer;
 
   protected final static String TX_TIMER_NAME = "Ro_CLIENT_TX_TIMER";
   protected static final long TX_TIMER_DEFAULT_VALUE = 30 * 60 * 1000; // miliseconds
 
-  protected String originHost, originRealm;
   protected long[] authAppIds = new long[] { 4 };
 
   // Requested Action + Credit-Control and Direct-Debiting Failure-Handling ---
-  private static final int NON_INITIALIZED = -300;
-
-  protected int gatheredRequestedAction = NON_INITIALIZED;
-
-  protected int gatheredCCFH = NON_INITIALIZED;
-  protected int gatheredDDFH = NON_INITIALIZED;
+  public static final int NON_INITIALIZED = -300;
 
   protected static final int CCFH_TERMINATE = 0;
   protected static final int CCFH_CONTINUE = 1;
@@ -154,54 +138,46 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   // Session Based Queue
   protected ArrayList<Event> eventQueue = new ArrayList<Event>();
 
-  public ClientRoSessionImpl(IRoMessageFactory fct, SessionFactory sf, ClientRoSessionListener lst,IClientRoSessionContext ctx, StateChangeListener<AppSession> stLst) {
-    this(null, fct, sf, lst,ctx,stLst);
-  }
-
-  public ClientRoSessionImpl(String sessionId, IRoMessageFactory fct, SessionFactory sf, ClientRoSessionListener lst,IClientRoSessionContext ctx, StateChangeListener<AppSession> stLst) {
-    super(sf,sessionId);
+  public ClientRoSessionImpl(IClientRoSessionData sessionData, IRoMessageFactory fct, ISessionFactory sf, ClientRoSessionListener lst,IClientRoSessionContext ctx, StateChangeListener<AppSession> stLst) {
+    super(sf,sessionData);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
     if (fct.getApplicationIds() == null) {
       throw new IllegalArgumentException("ApplicationId can not be less than zero");
     }
+    if (sessionData == null) {
+      throw new IllegalArgumentException("SessionData can not be null");
+    }
+    this.context = (IClientRoSessionContext)ctx;
+    this.sessionData = sessionData;
+    this.authAppIds = fct.getApplicationIds();
+    this.listener = lst;
+    this.factory = fct;
 
-    context = (IClientRoSessionContext)ctx;
-
-    authAppIds = fct.getApplicationIds();
-    listener = lst;
-    factory = fct;
-    ISessionFactory isf = (ISessionFactory) sf;
-    IContainer icontainer = isf.getContainer();
+    IContainer icontainer = sf.getContainer();
     this.parser = icontainer.getAssemblerFacility().getComponentInstance(IMessageParser.class);
 
     super.addStateChangeNotification(stLst);
-    //    try {
-    //      session = sessionId == null ? sf.getNewSession() : sf.getNewSession(sessionId);
-    //      //session.setRequestListener(this);
-    //    }
-    //    catch (InternalException e) {
-    //      throw new IllegalArgumentException(e);
-    //    }
+
   }
 
   protected int getLocalCCFH() {
-    return gatheredCCFH >= 0 ? gatheredCCFH : context.getDefaultCCFHValue();
+    return sessionData.getGatheredCCFH() >= 0 ? sessionData.getGatheredCCFH() : context.getDefaultCCFHValue();
   }
 
   protected int getLocalDDFH() {
-    return gatheredDDFH >= 0 ? gatheredDDFH : context.getDefaultDDFHValue();
+    return sessionData.getGatheredDDFH() >= 0 ? sessionData.getGatheredDDFH() : context.getDefaultDDFHValue();
   }
 
   public void sendCreditControlRequest(RoCreditControlRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-   
     try {
-    	 extractFHAVPs(request, null);
-		this.handleEvent(new Event(true, request, null));
-	} catch (AvpDataException e) {
-		throw new InternalException(e);
-	}
+      extractFHAVPs(request, null);
+      this.handleEvent(new Event(true, request, null));
+    }
+    catch (AvpDataException e) {
+      throw new InternalException(e);
+    }
   }
 
   public void sendReAuthAnswer(ReAuthAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
@@ -213,12 +189,12 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   }
 
   public boolean isEventBased() {
-    return this.isEventBased;
+    return sessionData.isEventBased();
   }
 
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> stateType) {
-    return stateType == ClientRoSessionState.class ? (E) state : null;
+    return stateType == ClientRoSessionState.class ? (E) sessionData.getClientRoSessionState() : null;
   }
 
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
@@ -228,9 +204,10 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   protected boolean handleEventForEventBased(StateEvent event) throws InternalException, OverloadException {
     try {
       sendAndStateLock.lock();
+      ClientRoSessionState state = sessionData.getClientRoSessionState();
       Event localEvent = (Event) event;
       Event.Type eventType = (Type) localEvent.getType();
-      switch (this.state) {
+      switch (state) {
 
       case IDLE:
         switch (eventType) {
@@ -297,7 +274,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
           // Action: Delete request
           // New State: IDLE
           setState(ClientRoSessionState.IDLE, false);
-          buffer = null;
+          sessionData.setBuffer(null);
           deliverRonswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
           break;
         default:
@@ -325,9 +302,10 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   protected boolean handleEventForSessionBased(StateEvent event) throws InternalException, OverloadException {
     try {
       sendAndStateLock.lock();
+      ClientRoSessionState state = sessionData.getClientRoSessionState();
       Event localEvent = (Event) event;
       Event.Type eventType = (Type) localEvent.getType();
-      switch (this.state) {
+      switch (state) {
 
       case IDLE:
         switch (eventType) {
@@ -611,23 +589,20 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     logger.debug("Scheduling TX Timer {}", txTimerValue);
     //this.txFuture = scheduler.schedule(new TxTimerTask(this, request), txTimerValue, TimeUnit.SECONDS);
     try {
-      this.txTimerRequest = this.parser.encodeMessage((IMessage) request.getMessage()).array();
+      sessionData.setTxTimerRequest((Request) request.getMessage());
+      sessionData.setTxTimerId(this.timerFacility.schedule(this.sessionData.getSessionId(), TX_TIMER_NAME, TX_TIMER_DEFAULT_VALUE));
     }
     catch (Exception e) {
       throw new IllegalArgumentException("Failed to store request.", e);
     }
-    this.txTimerId = this.timerFacility.schedule(this.sessionId, TX_TIMER_NAME, TX_TIMER_DEFAULT_VALUE);
   }
 
   protected void stopTx() {
-    //    if (this.txFuture != null) {
-    //      this.txFuture.cancel(true);
-    //      this.txFuture = null;
-    //    }
-    if(this.txTimerId != null) {
-      this.txTimerRequest = null;
-      this.timerFacility.cancel(this.txTimerId);
-      this.txTimerId = null;
+    Serializable txTimerId = this.sessionData.getTxTimerId();
+    if(txTimerId != null) {
+      timerFacility.cancel(txTimerId);
+      sessionData.setTxTimerId(null);
+      sessionData.setTxTimerRequest(null);
     }
   }
 
@@ -637,7 +612,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   @Override
   public void onTimer(String timerName) {
     if(timerName.equals(TX_TIMER_NAME)) {
-      new TxTimerTask(this, this.txTimerRequest).run();
+      new TxTimerTask(this, sessionData.getTxTimerRequest()).run();
     }
   }
 
@@ -648,9 +623,9 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   @SuppressWarnings("unchecked")
   protected void setState(ClientRoSessionState newState, boolean release) {
     try {
+      IAppSessionState state = sessionData.getClientRoSessionState();
       IAppSessionState oldState = state;
-      state = newState;
-      super.sessionDataSource.updateSession(this);
+      sessionData.setClientRoSessionState(newState);
       for (StateChangeListener i : stateListeners) {
         i.stateChanged(this,(Enum) oldState, (Enum) newState);
       }
@@ -664,7 +639,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     }
     catch (Exception e) {
       if(logger.isDebugEnabled()) {
-        logger.debug("Failure switching to state " + state + " (release=" + release + ")", e);
+        logger.debug("Failure switching to state " + sessionData.getClientRoSessionState() + " (release=" + release + ")", e);
       }
     }
   }
@@ -690,6 +665,8 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   protected void handleSendFailure(Exception e, Event.Type eventType, Message request) throws Exception {
     logger.debug("Failed to send message, type: {} message: {}, failure: {}", new Object[]{eventType, request, e != null ? e.getLocalizedMessage() : ""});
     try {
+      ClientRoSessionState state = sessionData.getClientRoSessionState();
+      int gatheredRequestedAction = sessionData.getGatheredRequestedAction();
       // Event Based ----------------------------------------------------------
       if (isEventBased()) {
         switch (state) {
@@ -710,7 +687,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               // Action: Store request with T-flag
               // New State: IDLE
               request.setReTransmitted(true);
-              buffer = messageToBuffer((IMessage) request).array();
+              sessionData.setBuffer((Request) request);
 
               setState(ClientRoSessionState.IDLE, false);
               break;
@@ -732,7 +709,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
             // New State: IDLE
             setState(ClientRoSessionState.IDLE, false);
             request.setReTransmitted(true);
-            buffer = messageToBuffer((IMessage) request).array();
+            sessionData.setBuffer((Request) request);
           }
           else {
             logger.warn("Invalid Requested-Action AVP value {}", gatheredRequestedAction);
@@ -744,7 +721,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
           // Action: -
           // New State: IDLE
           setState(ClientRoSessionState.IDLE, false);
-          buffer = null; // FIXME: Action does not mention, but ...
+          sessionData.setBuffer(null);// FIXME: Action does not mention, but ...
           break;
         default:
           logger.warn("Wrong event type ({}) on state {}", eventType, state);
@@ -793,6 +770,9 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     try {
       // Event Based ----------------------------------------------------------
       long resultCode = event.getResultCodeAvp().getUnsigned32();
+      ClientRoSessionState state = sessionData.getClientRoSessionState();
+      int gatheredRequestedAction = sessionData.getGatheredRequestedAction();
+      Serializable txTimerId = sessionData.getTxTimerId();
       if (isEventBased()) {
         switch (state) {
         case PENDING_EVENT:
@@ -858,7 +838,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               // Event: Temporary error, and requested action REFUND_ACCOUNT
               // Action: Store request
               // New State: IDLE
-              buffer = messageToBuffer((IMessage) request).array();
+              sessionData.setBuffer((Request) request);
               setState(ClientRoSessionState.IDLE, false);
             }
             else {
@@ -900,7 +880,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               // Event: Failed CC event answer received; requested action REFUND_ACCOUNT
               // Action: Indicate service error and delete request
               // New State: IDLE
-              buffer = null;
+              sessionData.setBuffer(null);
               context.indicateServiceError(this);
               deliverRonswer(request, event);
               setState(ClientRoSessionState.IDLE);
@@ -916,7 +896,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
           // Event: Failed CC answer received
           // Action: Delete request
           // New State: IDLE
-          buffer = null;
+          sessionData.setBuffer(null);
           setState(ClientRoSessionState.IDLE, false);
           break;
         default:
@@ -1028,6 +1008,9 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
 
   protected void handleTxExpires(Message message) {
     // Event Based ----------------------------------------------------------
+    ClientRoSessionState state = sessionData.getClientRoSessionState();
+    int gatheredRequestedAction = sessionData.getGatheredRequestedAction();
+
     if (isEventBased()) {
       if (gatheredRequestedAction == CHECK_BALANCE || gatheredRequestedAction == PRICE_ENQUIRY) {
         // Current State: PENDING_E
@@ -1038,17 +1021,12 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
         setState(ClientRoSessionState.IDLE);
       }
       else if (gatheredRequestedAction == DIRECT_DEBITING) {
-        if(gatheredDDFH == DDFH_TERMINATE_OR_BUFFER) {
+        if(sessionData.getGatheredDDFH() == DDFH_TERMINATE_OR_BUFFER) {
           // Current State: PENDING_E
           // Event: Temporary error; requested action DIRECT_DEBITING; DDFH equal to TERMINATE_OR_BUFFER; Tx expired
           // Action: Store request
           // New State: IDLE
-          try {
-            buffer = messageToBuffer((IMessage) message).array();
-          }
-          catch (InternalException e) {
-            logger.debug("Failed to store request.", e);
-          }
+          sessionData.setBuffer((Request) message);
           setState(ClientRoSessionState.IDLE, false);
         }
         else {
@@ -1066,12 +1044,8 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
         // Action: Store request with T-flag
         // New State: IDLE
         message.setReTransmitted(true);
-        try {
-          buffer = messageToBuffer((IMessage) message).array();
-        }
-        catch (InternalException e) {
-          throw new IllegalArgumentException("Failed to store request.", e);
-        }
+        sessionData.setBuffer((Request) message);
+
         setState(ClientRoSessionState.IDLE, false);
       }
     }
@@ -1131,7 +1105,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
         break;
 
       default:
-        logger.error("Unknown state (" + state + ") on txExpire");
+        logger.error("Unknown state (" + sessionData.getClientRoSessionState() + ") on txExpire");
         break;
       }
     }
@@ -1148,14 +1122,15 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
       // Event: Request in storage
       // Action: Send stored request
       // New State: PENDING_B
+      Request buffer = sessionData.getBuffer();
       if (buffer != null) {
         setState(ClientRoSessionState.PENDING_BUFFERED);
         try {
-          dispatchEvent(new AppRequestEventImpl(messageFromBuffer(ByteBuffer.wrap(buffer))));
+          dispatchEvent(new AppRequestEventImpl(buffer));
         }
         catch (Exception e) {
           try {
-            handleSendFailure(e, Event.Type.SEND_EVENT_REQUEST, messageFromBuffer(ByteBuffer.wrap(buffer)));
+            handleSendFailure(e, Event.Type.SEND_EVENT_REQUEST,buffer);
           }
           catch (Exception e1) {
             logger.error("Failure handling buffer send failure", e1);
@@ -1165,7 +1140,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     }
     // Session Based --------------------------------------------------------
     else {
-      if (state == ClientRoSessionState.OPEN && eventQueue.size() > 0) {
+      if (sessionData.getClientRoSessionState() == ClientRoSessionState.OPEN && eventQueue.size() > 0) {
         try {
           this.handleEvent(eventQueue.remove(0));
         }
@@ -1189,7 +1164,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     if (answer != null) {
       try {
         if (answer.isCreditControlFailureHandlingAVPPresent()) {
-          this.gatheredCCFH = answer.getCredidControlFailureHandlingAVPValue();
+          sessionData.setGatheredCCFH(answer.getCredidControlFailureHandlingAVPValue());
         }
       }
       catch (Exception e) {
@@ -1197,32 +1172,32 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
       }
       try {
         if (answer.isDirectDebitingFailureHandlingAVPPresent()) {
-          this.gatheredDDFH = answer.getDirectDebitingFailureHandlingAVPValue();
+          sessionData.setGatheredDDFH(answer.getDirectDebitingFailureHandlingAVPValue());
         }
       }
       catch (Exception e) {
         logger.debug("Failure trying to obtain Direct-Debit-Failure-Handling AVP value", e);
       }
-      if(!requestTypeSet) {
-        requestTypeSet = true;
+      if(!sessionData.isRequestTypeSet()) {
+        sessionData.setRequestTypeSet(true);
         // No need to check if it exists.. it must, if not fail with exception
-        isEventBased = (answer.getRequestTypeAVPValue() == EVENT_REQUEST);
+        sessionData.setEventBased(answer.getRequestTypeAVPValue() == EVENT_REQUEST);
       }
     }
     else if (request != null) {
       try {
         if (request.isRequestedActionAVPPresent()) {
-          this.gatheredRequestedAction = request.getRequestedActionAVPValue();
+          sessionData.setGatheredRequestedAction(request.getRequestedActionAVPValue());
         }
       }
       catch (Exception e) {
         logger.debug("Failure trying to obtain Request-Action AVP value", e);
       }
 
-      if(!requestTypeSet) {
-        requestTypeSet = true;
+      if(!sessionData.isRequestTypeSet()) {
+        sessionData.setRequestTypeSet(true);
         // No need to check if it exists.. it must, if not fail with exception
-        isEventBased = (request.getRequestTypeAVPValue() == EVENT_REQUEST);
+        sessionData.setEventBased(request.getRequestTypeAVPValue() == EVENT_REQUEST);
       }
     }
   }
@@ -1260,30 +1235,12 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     return true;
   }
 
-  /* (non-Javadoc)
-   * @see org.jdiameter.common.impl.app.AppSessionImpl#relink(org.jdiameter.client.api.IContainer)
-   */
-  @Override
-  public void relink(IContainer stack) {
-    // Check if some transient field is null
-    if(super.sf == null) {
-      super.relink(stack);
-      this.parser = stack.getAssemblerFacility().getComponentInstance(IMessageParser.class);
-
-      //hack this will change
-      IRoSessionFactory fct = (IRoSessionFactory) ((ISessionFactory)super.sf).getAppSessionFactory(ClientRoSession.class);
-
-      this.listener = fct.getClientSessionListener();
-      this.context = fct.getClientContextListener();
-      this.factory = fct.getMessageFactory();
-    }
-  }
 
   private class TxTimerTask implements Runnable {
     private ClientRoSession session = null;
-    private byte[] request = null;
+    private Request request = null;
 
-    private TxTimerTask(ClientRoSession session, byte[] request) {
+    private TxTimerTask(ClientRoSession session, Request request) {
       super();
       this.session = session;
       this.request = request;
@@ -1293,14 +1250,15 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
       try {
         sendAndStateLock.lock();
         logger.debug("Fired TX Timer");
-        txTimerId = null;
+        sessionData.setTxTimerId(null);
+        sessionData.setTxTimerRequest(null);
         try {
           context.txTimerExpired(session);
         }
         catch (Exception e) {
           logger.debug("Failure handling TX Timer Expired", e);
         }
-        RoCreditControlRequest req = factory.createCreditControlRequest((Request) messageFromBuffer(ByteBuffer.wrap(request)));
+        RoCreditControlRequest req = factory.createCreditControlRequest(request);
         handleEvent(new Event(Event.Type.Tx_TIMER_FIRED, req, null));
       }
       catch (InternalException e) {
@@ -1390,84 +1348,4 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     }
   }
 
-  /* (non-Javadoc)
-   * @see java.lang.Object#hashCode()
-   */
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + Arrays.hashCode(authAppIds);
-    result = prime * result + gatheredCCFH;
-    result = prime * result + gatheredDDFH;
-    result = prime * result + gatheredRequestedAction;
-    result = prime * result + (isEventBased ? 1231 : 1237);
-    result = prime * result + ((originHost == null) ? 0 : originHost.hashCode());
-    result = prime * result + ((originRealm == null) ? 0 : originRealm.hashCode());
-    result = prime * result + (requestTypeSet ? 1231 : 1237);
-    result = prime * result + ((state == null) ? 0 : state.hashCode());
-    return result;
-  }
-
-  /* (non-Javadoc)
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-
-    ClientRoSessionImpl other = (ClientRoSessionImpl) obj;
-    if (!Arrays.equals(authAppIds, other.authAppIds)) {
-      return false;
-    }
-    if (gatheredCCFH != other.gatheredCCFH) {
-      return false;
-    }
-    if (gatheredDDFH != other.gatheredDDFH) {
-      return false;
-    }
-    if (gatheredRequestedAction != other.gatheredRequestedAction) {
-      return false;
-    }
-    if (isEventBased != other.isEventBased) {
-      return false;
-    }
-    if (originHost == null) {
-      if (other.originHost != null) {
-        return false;
-      }
-    }
-    else if (!originHost.equals(other.originHost)) {
-      return false;
-    }
-    if (originRealm == null) {
-      if (other.originRealm != null) {
-        return false;
-      }
-    }
-    else if (!originRealm.equals(other.originRealm)) {
-      return false;
-    }
-    if (requestTypeSet != other.requestTypeSet) {
-      return false;
-    }
-    if (state == null) {
-      if (other.state != null) {
-        return false;
-      }
-    }
-    else if (!state.equals(other.state)) {
-      return false;
-    }
-
-    return true;
-  }
 }

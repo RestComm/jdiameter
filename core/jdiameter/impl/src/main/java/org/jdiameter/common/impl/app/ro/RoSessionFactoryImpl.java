@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -43,15 +43,18 @@ import org.jdiameter.api.ro.events.RoCreditControlAnswer;
 import org.jdiameter.api.ro.events.RoCreditControlRequest;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.impl.app.ro.ClientRoSessionImpl;
+import org.jdiameter.client.impl.app.ro.IClientRoSessionData;
+import org.jdiameter.common.api.app.IAppSessionDataFactory;
 import org.jdiameter.common.api.app.ro.IClientRoSessionContext;
 import org.jdiameter.common.api.app.ro.IRoMessageFactory;
+import org.jdiameter.common.api.app.ro.IRoSessionData;
 import org.jdiameter.common.api.app.ro.IRoSessionFactory;
 import org.jdiameter.common.api.app.ro.IServerRoSessionContext;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
 import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
+import org.jdiameter.server.impl.app.ro.IServerRoSessionData;
 import org.jdiameter.server.impl.app.ro.ServerRoSessionImpl;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +84,7 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
 
   protected Logger logger = LoggerFactory.getLogger(RoSessionFactoryImpl.class);
   protected ISessionDatasource iss;
+  protected IAppSessionDataFactory<IRoSessionData> sessionDataFactory;
   protected ISessionFactory sessionFactory = null;
 
   public RoSessionFactoryImpl(SessionFactory sessionFactory) {
@@ -88,6 +92,7 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
 
     this.sessionFactory = (ISessionFactory) sessionFactory;
     this.iss = this.sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
+    this.sessionDataFactory = (IAppSessionDataFactory<IRoSessionData>) this.iss.getDataFactory(IRoSessionData.class);
   }
 
   public RoSessionFactoryImpl(SessionFactory sessionFactory, int defaultDirectDebitingFailureHandling, int defaultCreditControlFailureHandling, long defaultValidityTime, long defaultTxTimerValue) {
@@ -237,50 +242,81 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   public AppSession getNewSession(String sessionId, Class<? extends AppSession> aClass, ApplicationId applicationId, Object[] args) {
     AppSession appSession = null;
     try {
-      // FIXME:
+      //TODO:check for existence
       if (aClass == ClientRoSession.class) {
+        if (sessionId == null) {
+          if (args != null && args.length > 0 && args[0] instanceof Request) {
+            Request request = (Request) args[0];
+            sessionId = request.getSessionId();
+          }
+          else {
+            sessionId = this.sessionFactory.getSessionId();
+          }
+        }
         ClientRoSessionImpl clientSession = null;
-        if (args != null && args.length > 0 && args[0] instanceof Request) {
-          Request request = (Request) args[0];
-          clientSession = new ClientRoSessionImpl(request.getSessionId(), this.getMessageFactory(), sessionFactory, this.getClientSessionListener(), this.getClientContextListener(), this.getStateListener());
-        }
-        else {
-          clientSession = new ClientRoSessionImpl(sessionId, this.getMessageFactory(), sessionFactory, this.getClientSessionListener(), this.getClientContextListener(), this.getStateListener());
-        }
+
+        IClientRoSessionData sessionData = (IClientRoSessionData) this.sessionDataFactory.getAppSessionData(ClientRoSession.class, sessionId);
+        clientSession = new ClientRoSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, this.getClientSessionListener(), this.getClientContextListener(), this.getStateListener()); 
         // this goes first!
         iss.addSession(clientSession);
-        // iss.setSessionListener(clientSession.getSessionId(),
-        // (NetworkReqListener) appSession);
         clientSession.getSessions().get(0).setRequestListener(clientSession);
-        // clientSession.addStateChangeNotification(this);
-
-        // this.resourceAdaptor.sessionCreated(clientSession);
-
         appSession = clientSession;
       }
       else if (aClass == ServerRoSession.class) {
-        ServerRoSessionImpl serverSession = null;
+        if (sessionId == null) {
+          if (args != null && args.length > 0 && args[0] instanceof Request) {
+            Request request = (Request) args[0];
+            sessionId = request.getSessionId();
+          }
+          else {
+            sessionId = this.sessionFactory.getSessionId();
+          }
+        }
+        IServerRoSessionData sessionData = (IServerRoSessionData) this.sessionDataFactory.getAppSessionData(ServerRoSession.class, sessionId);
+        ServerRoSessionImpl serverSession = new ServerRoSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, this.getServerSessionListener(), this.getServerContextListener(), this.getStateListener());
 
-        if (args != null && args.length > 0 && args[0] instanceof Request) {
-          // This shouldnt happen but just in case
-          Request request = (Request) args[0];
-          serverSession = new ServerRoSessionImpl(request.getSessionId(), this.getMessageFactory(), sessionFactory, this.getServerSessionListener(), this.getServerContextListener(), this.getStateListener());
-        }
-        else {
-          serverSession = new ServerRoSessionImpl(sessionId, this.getMessageFactory(), sessionFactory, this.getServerSessionListener(), this.getServerContextListener(), this.getStateListener());
-        }
         iss.addSession(serverSession);
-        // iss.setSessionListener(serverSession.getSessionId(),
-        // (NetworkReqListener) appSession);
         serverSession.getSessions().get(0).setRequestListener(serverSession);
-        // serverSession.addStateChangeNotification(this);
-
-        // this.resourceAdaptor.sessionCreated(serverSession);
-
         appSession = serverSession;
       }
       else {
-        throw new IllegalArgumentException("Wrong session class!![" + aClass + "]. Supported[" + ClientRoSession.class + "," + ServerRoSession.class + "]");
+        throw new IllegalArgumentException("Wrong session class: " + aClass + ". Supported[" + ClientRoSession.class + "," + ServerRoSession.class + "]");
+      }
+    }
+    catch (Exception e) {
+      logger.error("Failure to obtain new Ro Session.", e);
+    }
+
+    return appSession;
+  }
+
+  @Override
+  public AppSession getSession(String sessionId, Class<? extends AppSession> aClass) {
+    AppSession appSession = null;
+    if (sessionId == null) {
+      throw new IllegalArgumentException("Session-Id must not be null");
+    }
+    if(!this.iss.exists(sessionId)) {
+      return null;
+    }
+
+    try {
+      if (aClass == ClientRoSession.class) {
+        IClientRoSessionData sessionData = (IClientRoSessionData) this.sessionDataFactory.getAppSessionData(ClientRoSession.class, sessionId);
+        ClientRoSessionImpl clientSession = new ClientRoSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, this.getClientSessionListener(), this.getClientContextListener(), this.getStateListener()); 
+        // this goes first!
+        clientSession.getSessions().get(0).setRequestListener(clientSession);
+        appSession = clientSession;
+      }
+      else if (aClass == ServerRoSession.class) {
+        IServerRoSessionData sessionData = (IServerRoSessionData) this.sessionDataFactory.getAppSessionData(ServerRoSession.class, sessionId);
+        ServerRoSessionImpl serverSession = new ServerRoSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, this.getServerSessionListener(), this.getServerContextListener(), this.getStateListener());    
+
+        serverSession.getSessions().get(0).setRequestListener(serverSession);
+        appSession = serverSession;
+      }
+      else {
+        throw new IllegalArgumentException("Wrong session class: " + aClass + ". Supported[" + ClientRoSession.class + "," + ServerRoSession.class + "]");
       }
     }
     catch (Exception e) {
@@ -289,9 +325,6 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
 
     return appSession;
   }
-
-  // default implementation of methods so there are no exception!
-  // ------------------------------------------------
 
   // Message Handlers ---------------------------------------------------------
 

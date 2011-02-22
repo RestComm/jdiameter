@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -36,7 +36,6 @@ import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.ResultCode;
 import org.jdiameter.api.RouteException;
-import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
@@ -44,10 +43,8 @@ import org.jdiameter.api.rf.ServerRfSession;
 import org.jdiameter.api.rf.ServerRfSessionListener;
 import org.jdiameter.api.rf.events.RfAccountingAnswer;
 import org.jdiameter.api.rf.events.RfAccountingRequest;
-import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.IAppSessionState;
-import org.jdiameter.common.api.app.rf.IRfSessionFactory;
 import org.jdiameter.common.api.app.rf.IServerRfActionContext;
 import org.jdiameter.common.api.app.rf.ServerRfSessionState;
 import org.jdiameter.common.impl.app.rf.AppRfSessionImpl;
@@ -68,29 +65,30 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
   private static final Logger logger = LoggerFactory.getLogger(ServerRfSessionImpl.class);
 
   // Session State Handling ---------------------------------------------------
-  protected boolean stateless = false;
-  protected ServerRfSessionState state = ServerRfSessionState.IDLE;
+  //protected boolean stateless = false;
+  //protected ServerRfSessionState state = ServerRfSessionState.IDLE;
 
   // Factories and Listeners --------------------------------------------------
   protected transient IServerRfActionContext context;
   protected transient  ServerRfSessionListener listener;
 
   // Ts Timer -----------------------------------------------------------------
-  protected long tsTimeout;
+  //protected long tsTimeout;
   //protected ScheduledFuture tsTask;
-  protected Serializable timerId_ts;
+  //protected Serializable timerId_ts;
   protected static final String TIMER_NAME_TS = "TS";
-
+  protected IServerRfSessionData sessionData;
   // Constructors -------------------------------------------------------------
-  public ServerRfSessionImpl(String sessionId, SessionFactory sessionFactory, Request request,
+  public ServerRfSessionImpl(IServerRfSessionData sessionData, ISessionFactory sessionFactory, 
       ServerRfSessionListener serverSessionListener, 
       IServerRfActionContext serverContextListener,StateChangeListener<AppSession> stLst, long tsTimeout, boolean stateless) {
     // TODO Auto-generated constructor stub
-    super(sessionFactory,sessionId);
+    super(sessionFactory,sessionData);
     this.listener = serverSessionListener;
     this.context = serverContextListener;
-    this.tsTimeout = tsTimeout;
-    this.stateless = stateless;
+    this.sessionData = sessionData;
+    this.sessionData.setTsTimeout(tsTimeout);
+    this.sessionData.setStateless(stateless);
     super.addStateChangeNotification(stLst);
   }
 
@@ -101,7 +99,7 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
       if(isStateless() && isValid()) {
         session.release();
       }
-      */
+       */
     }
     catch (IllegalDiameterStateException e) {
       throw new IllegalStateException(e);
@@ -109,26 +107,27 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
   }
 
   public boolean isStateless() {
-    return stateless;
+    return this.sessionData.isStateless();
   }
 
   @SuppressWarnings("unchecked")
   protected void setState(IAppSessionState newState) {
-    IAppSessionState oldState = state;
-    state = (ServerRfSessionState) newState;
-    super.sessionDataSource.updateSession(this);
+    IAppSessionState oldState = this.sessionData.getServerRfSessionState();
+    this.sessionData.setServerRfSessionState((ServerRfSessionState) newState);
+
     for (StateChangeListener i : stateListeners) {
       i.stateChanged(this,(Enum) oldState, (Enum) newState);
     }
   }
 
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
-    return stateless ? handleEventForStatelessMode(event) : handleEventForStatefulMode(event);
+    return isStateless() ? handleEventForStatelessMode(event) : handleEventForStatefulMode(event);
   }
 
   public boolean handleEventForStatelessMode(StateEvent event) throws InternalException, OverloadException {
     try {
       //this will handle RTRs as well, no need to alter.
+      final ServerRfSessionState state = this.sessionData.getServerRfSessionState();
       switch (state) {
       case IDLE: {
         switch ((Event.Type) event.getType()) {
@@ -219,7 +218,7 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
           listener.doRfAccountingRequestEvent(this, (RfAccountingRequest) event.getData());
           // FIXME: should we do this before passing to lst?
           cancelTsTimer();
-          timerId_ts = startTsTimer();
+          startTsTimer();
           if (context != null) {
             context.sessionTimerStarted(this, null);
           }
@@ -232,6 +231,7 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
         return true;
       }
       else {
+        final ServerRfSessionState state = this.sessionData.getServerRfSessionState();
         switch (state) {
         case IDLE: {
           switch ((Event.Type) event.getType()) {
@@ -244,7 +244,7 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
               try {
                 listener.doRfAccountingRequestEvent(this, (RfAccountingRequest) event.getData());
                 cancelTsTimer();
-                timerId_ts = startTsTimer();
+                startTsTimer();
                 if (context != null) {
                   context.sessionTimerStarted(this, null);
                 }
@@ -285,7 +285,7 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
             try {
               listener.doRfAccountingRequestEvent(this, (RfAccountingRequest) event.getData());
               cancelTsTimer();
-              timerId_ts = startTsTimer();
+              startTsTimer();
               if (context != null) {
                 context.sessionTimerStarted(this, null);
               }
@@ -329,7 +329,7 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
     return true;
   }
 
-  private Serializable startTsTimer() {
+  private void startTsTimer() {
     //    return scheduler.schedule(new Runnable() {
     //      public void run() {
     //        logger.debug("Ts timer expired");
@@ -344,11 +344,9 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
     //        setState(IDLE);
     //      }
     //    }, tsTimeout, TimeUnit.MILLISECONDS);
-    try{
+    try {
       sendAndStateLock.lock();
-      this.timerId_ts = super.timerFacility.schedule(sessionId, TIMER_NAME_TS, tsTimeout);
-      super.sessionDataSource.updateSession(this);
-      return this.timerId_ts;
+      this.sessionData.setTsTimerId(super.timerFacility.schedule(getSessionId(), TIMER_NAME_TS, this.sessionData.getTsTimeout()));
     }
     finally {
       sendAndStateLock.unlock();
@@ -358,10 +356,10 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
   private void cancelTsTimer() {
     try{
       sendAndStateLock.lock();
-      if(this.timerId_ts != null) {
-        super.timerFacility.cancel(timerId_ts);
-        this.timerId_ts = null;
-        super.sessionDataSource.updateSession(this);
+      final Serializable tsTimerId = this.sessionData.getTsTimerId();
+      if(tsTimerId != null) {
+        super.timerFacility.cancel(tsTimerId);
+        this.sessionData.setTsTimerId(null);
       }
     }
     finally {
@@ -384,9 +382,6 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
         }
       }
       setState(IDLE);
-    }
-    else {
-      super.onTimer(timerName);
     }
   }
 
@@ -420,7 +415,7 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
 
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> eClass) {
-    return eClass == ServerRfSessionState.class ? (E) state : null;
+    return eClass == ServerRfSessionState.class ? (E) this.sessionData.getServerRfSessionState() : null;
   }
 
   public Answer processRequest(Request request) {        
@@ -487,21 +482,6 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
   @Override
   public boolean isReplicable() {
     return true;
-  }
-  /* (non-Javadoc)
-   * 
-   * @see org.jdiameter.common.impl.app.AppSessionImpl#relink(org.jdiameter.client.api.IContainer)
-   */
-  @Override
-  public void relink(IContainer stack) {
-    if(super.sf == null) {
-      super.relink(stack);
-      IRfSessionFactory fct = (IRfSessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(ServerRfSession.class);
-
-      this.listener = fct.getServerSessionListener();
-      this.context = fct.getServerContextListener();
-
-    }
   }
 
 }
