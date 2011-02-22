@@ -36,4 +36,18 @@ public interface AccountRequest extends AppRequestEvent {
    */
   long getAccountingRecordNumber() throws AvpDataException;
 
+  /**
+   * 
+   * @param recordType
+   * @throws AvpDataException
+   */
+  void setAccountingRecordType(int recordType) throws AvpDataException;
+
+  /**
+   * 
+   * @param number
+   * @throws AvpDataException
+   */
+  void setAccountingRecordNumber(long number) throws AvpDataException;
+
 }

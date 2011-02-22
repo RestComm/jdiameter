@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -21,12 +21,32 @@
  */
 package org.jdiameter.common.impl.data;
 
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jdiameter.api.BaseSession;
 import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.client.api.IContainer;
+import org.jdiameter.client.api.ISession;
+import org.jdiameter.common.api.app.IAppSessionData;
+import org.jdiameter.common.api.app.IAppSessionDataFactory;
+import org.jdiameter.common.api.app.acc.IAccSessionData;
+import org.jdiameter.common.api.app.auth.IAuthSessionData;
+import org.jdiameter.common.api.app.cca.ICCASessionData;
+import org.jdiameter.common.api.app.cxdx.ICxDxSessionData;
+import org.jdiameter.common.api.app.gx.IGxSessionData;
+import org.jdiameter.common.api.app.rf.IRfSessionData;
+import org.jdiameter.common.api.app.ro.IRoSessionData;
+import org.jdiameter.common.api.app.sh.IShSessionData;
 import org.jdiameter.common.api.data.ISessionDatasource;
+import org.jdiameter.common.impl.app.acc.AccLocalSessionDataFactory;
+import org.jdiameter.common.impl.app.auth.AuthLocalSessionDataFactory;
+import org.jdiameter.common.impl.app.cca.CCALocalSessionDataFactory;
+import org.jdiameter.common.impl.app.cxdx.CxDxLocalSessionDataFactory;
+import org.jdiameter.common.impl.app.gx.GxLocalSessionDataFactory;
+import org.jdiameter.common.impl.app.rf.RfLocalSessionDataFactory;
+import org.jdiameter.common.impl.app.ro.RoLocalSessionDataFactory;
+import org.jdiameter.common.impl.app.sh.ShLocalSessionDataFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,68 +58,111 @@ import org.slf4j.LoggerFactory;
  */
 public class LocalDataSource implements ISessionDatasource {
 
-  private ConcurrentHashMap<String, BaseSession> sessionData = new ConcurrentHashMap<String, BaseSession>();
-  private ConcurrentHashMap<String, NetworkReqListener> sessionListeners = new ConcurrentHashMap<String, NetworkReqListener>();
+  //provided by impl, no way to change that, no conf! :)
+  protected HashMap<Class<? extends IAppSessionData>, IAppSessionDataFactory<? extends IAppSessionData>> appSessionDataFactories = new HashMap<Class<? extends IAppSessionData>, IAppSessionDataFactory<? extends IAppSessionData>>();
+
+  private ConcurrentHashMap<String, SessionEntry> sessionIdToEntry = new ConcurrentHashMap<String, LocalDataSource.SessionEntry>();
 
   private static final Logger logger = LoggerFactory.getLogger(LocalDataSource.class);
 
   public LocalDataSource() {
-    // NOP
+    appSessionDataFactories.put(ICCASessionData.class, new CCALocalSessionDataFactory());
+    appSessionDataFactories.put(IRoSessionData.class, new RoLocalSessionDataFactory());
+    appSessionDataFactories.put(IRfSessionData.class, new RfLocalSessionDataFactory());
+    appSessionDataFactories.put(IGxSessionData.class, new GxLocalSessionDataFactory());
+    appSessionDataFactories.put(IAccSessionData.class, new AccLocalSessionDataFactory());
+    appSessionDataFactories.put(IAuthSessionData.class, new AuthLocalSessionDataFactory());
+    appSessionDataFactories.put(IShSessionData.class, new ShLocalSessionDataFactory());
+    appSessionDataFactories.put(ICxDxSessionData.class, new CxDxLocalSessionDataFactory());
   }
 
   public LocalDataSource(IContainer container) {
-    // NOP
+    this();
+  }
+
+  public boolean exists(String sessionId) {
+    return this.sessionIdToEntry.containsKey(sessionId);
   }
 
   public void setSessionListener(String sessionId, NetworkReqListener data) {
-    if(logger.isDebugEnabled()) {
-      logger.debug("setSessionListener({}, {})", sessionId, data);
+    logger.debug("setSessionListener({}, {})", sessionId, data);
+
+    SessionEntry e = sessionIdToEntry.get(sessionId);
+    if(e != null) {
+      e.listener = data;
     }
-    sessionListeners.put(sessionId, data);
+    else {
+      throw new IllegalArgumentException("No Session entry for id: " + sessionId);
+    }
   }
 
   public NetworkReqListener getSessionListener(String sessionId) {
-    if(logger.isDebugEnabled()) {
-      logger.debug("getSessionListener({}) => {}", sessionId, sessionListeners.get(sessionId));
+    logger.debug("getSessionListener({}) => {}", sessionId, sessionIdToEntry.get(sessionId));
+    SessionEntry e = sessionIdToEntry.get(sessionId);
+    if(e != null) {
+      return e.listener;
     }
-    return sessionListeners.get(sessionId);
+    else {
+      return null;
+    }
   }
 
   public NetworkReqListener removeSessionListener(String sessionId) {
-    if(logger.isDebugEnabled()) {
-      logger.debug("removeSessionListener({}) => {}", sessionId, sessionListeners.get(sessionId));
+    logger.debug("removeSessionListener({}) => {}", sessionId, sessionIdToEntry.get(sessionId));
+    SessionEntry e = sessionIdToEntry.get(sessionId);
+    if(e != null) {
+      NetworkReqListener lst = e.listener;
+      e.listener = null;
+      return lst;
     }
-    return sessionListeners.remove(sessionId);
+    else {
+      return null;
+    }
   }
 
   public void addSession(BaseSession session) {
-    if(logger.isDebugEnabled()) {
-      logger.debug("addSession({})", session);
+    logger.debug("addSession({})", session);
+    SessionEntry se = null;
+
+    String sessionId = session.getSessionId();
+    //FIXME: check here replicable vs not replicable?
+    if(this.sessionIdToEntry.containsKey(sessionId)) {
+      se = this.sessionIdToEntry.get(sessionId);
+      if( !(se.session instanceof ISession) || se.session.isReplicable()) { //must be not replicable so we can "overwrite"
+        throw new IllegalArgumentException("Sessin with id: "+sessionId+", already exists!");
+      }
+      else {
+        this.sessionIdToEntry.put(sessionId, se);
+      }
     }
-    this.sessionData.put(session.getSessionId(), session);
+    else {
+      se = new SessionEntry();
+    }
+    se.session = session;
+    this.sessionIdToEntry.put(session.getSessionId(), se);
   }
 
   public BaseSession getSession(String sessionId) {
     if(logger.isDebugEnabled()) {
-      logger.debug("getSession({}) => {}", sessionId, sessionData.get(sessionId));
+      logger.debug("getSession({}) => {}", sessionId, sessionIdToEntry.get(sessionId));
     }
-    return this.sessionData.get(sessionId);
+    SessionEntry e = sessionIdToEntry.get(sessionId);
+
+    if(e!=null) {
+      return e.session;
+    }
+    else {
+      return null;
+    }
   }
 
   public void removeSession(String sessionId) {
     if(logger.isDebugEnabled()) {
-      logger.debug("removeSession({}) => {}", sessionId, sessionData.get(sessionId));
+      logger.debug("removeSession({}) => {}", sessionId, sessionIdToEntry.get(sessionId));
     }
-    this.sessionData.remove(sessionId);
-    removeSessionListener(sessionId);
+    this.sessionIdToEntry.remove(sessionId);
   }
 
-  /* (non-Javadoc)
-   * @see org.jdiameter.common.api.data.ISessionDatasource#updateSession(org.jdiameter.api.BaseSession)
-   */
-  public void updateSession(BaseSession session) {
-    // NOP, it's local
-  }
 
   /* (non-Javadoc)
    * @see org.jdiameter.common.api.data.ISessionDatasource#start()
@@ -120,6 +183,34 @@ public class LocalDataSource implements ISessionDatasource {
    */
   public boolean isClustered() {
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return "LocalDataSource [sessionIdToEntry=" + sessionIdToEntry + "]";
+  }
+
+  //simple class to reduce collections overhead.
+  private class SessionEntry {
+    BaseSession session;
+    NetworkReqListener listener;
+
+    @Override
+    public String toString() {
+      return "SessionEntry [session=" + session + ", listener=" + listener + "]";
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.jdiameter.common.api.data.ISessionDatasource#getDataFactory(java.
+   * lang.Class)
+   */
+  @Override
+  public IAppSessionDataFactory<? extends IAppSessionData> getDataFactory(Class<? extends IAppSessionData> x) {
+    return this.appSessionDataFactories.get(x);
   }
 
 }

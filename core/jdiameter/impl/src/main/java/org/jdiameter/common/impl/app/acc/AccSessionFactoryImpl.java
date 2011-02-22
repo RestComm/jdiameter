@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -42,10 +42,14 @@ import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.impl.app.acc.ClientAccSessionImpl;
+import org.jdiameter.client.impl.app.acc.IClientAccSessionData;
+import org.jdiameter.common.api.app.IAppSessionDataFactory;
+import org.jdiameter.common.api.app.acc.IAccSessionData;
 import org.jdiameter.common.api.app.acc.IAccSessionFactory;
 import org.jdiameter.common.api.app.acc.IClientAccActionContext;
 import org.jdiameter.common.api.app.acc.IServerAccActionContext;
 import org.jdiameter.common.api.data.ISessionDatasource;
+import org.jdiameter.server.impl.app.acc.IServerAccSessionData;
 import org.jdiameter.server.impl.app.acc.ServerAccSessionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,17 +72,21 @@ public class AccSessionFactoryImpl implements IAccSessionFactory, ServerAccSessi
 
   protected ISessionDatasource iss;
   protected ISessionFactory sessionFactory = null;
-  protected long messageTimeout = 5000;
   protected ApplicationId applicationId;
-
+  protected IAppSessionDataFactory<IAccSessionData> sessionDataFactory;
   protected AccSessionFactoryImpl() {
   }
-  
+
   public AccSessionFactoryImpl(SessionFactory sessionFactory) {
     super();
 
     this.sessionFactory = (ISessionFactory) sessionFactory;
     this.iss = this.sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
+    this.sessionDataFactory = (IAppSessionDataFactory<IAccSessionData>) this.iss.getDataFactory(IAccSessionData.class);
+    if(this.sessionDataFactory == null) {
+      logger.debug("No factory for Accounting Application data, using default/local.");
+      this.sessionDataFactory = new AccLocalSessionDataFactory();
+    }
   }
 
   // ACC Factory Methods ------------------------------------------------------
@@ -184,21 +192,6 @@ public class AccSessionFactoryImpl implements IAccSessionFactory, ServerAccSessi
   }
 
   /**
-   * @return the messageTimeout
-   */
-  public long getMessageTimeout() {
-    return messageTimeout;
-  }
-
-  /**
-   * @param messageTimeout
-   *          the messageTimeout to set
-   */
-  public void setMessageTimeout(long messageTimeout) {
-    this.messageTimeout = messageTimeout;
-  }
-
-  /**
    * @return the sessionFactory
    */
   public ISessionFactory getSessionFactory() {
@@ -235,21 +228,82 @@ public class AccSessionFactoryImpl implements IAccSessionFactory, ServerAccSessi
 
   // App Session Factory ------------------------------------------------------
 
+  @Override
+  public AppSession getSession(String sessionId, Class<? extends AppSession> aClass) {
+    if (sessionId == null) {
+      throw new IllegalArgumentException("SessionId must not be null");
+    }
+    if(!this.iss.exists(sessionId)) {
+      return null;
+    }
+    AppSession appSession = null;
+    try {
+      if (aClass == ClientAccSession.class) {
+        IClientAccSessionData data = (IClientAccSessionData) this.sessionDataFactory.getAppSessionData(ClientAccSession.class, sessionId);
+        ClientAccSessionImpl clientSession = new ClientAccSessionImpl(data, sessionFactory, getClientSessionListener(), getClientContextListener(), getStateListener(), this.getApplicationId());
+
+        clientSession.getSessions().get(0).setRequestListener(clientSession);
+        appSession = clientSession;
+      }
+      else if (aClass == ServerAccSession.class) {
+        ServerAccSessionImpl serverSession = null;
+        IServerAccSessionData data = (IServerAccSessionData) this.sessionDataFactory.getAppSessionData(ServerAccSession.class, sessionId);
+
+        //here we use shorter con, since some data is already present.
+        serverSession = new ServerAccSessionImpl(data,sessionFactory,  getServerSessionListener(), getServerContextListener(), getStateListener());
+        serverSession.getSessions().get(0).setRequestListener(serverSession);
+        appSession = serverSession;
+      }
+      else {
+        throw new IllegalArgumentException("Wrong session class: " + aClass + ". Supported[" + ClientAccSession.class + "," + ServerAccSession.class + "]");
+      }
+    }
+    catch (Exception e) {
+      logger.error("Failure to obtain new Accounting Session.", e);
+    }
+
+    return appSession;
+  }
+
   public AppSession getNewSession(String sessionId, Class<? extends AppSession> aClass, ApplicationId applicationId, Object[] args) {
     try {
       if (aClass == ServerAccSession.class) {
-        Request request = null;
-        if (args != null && args.length > 0) {
-          request = (Request) args[0];
+        if (sessionId == null) {
+          if (args != null && args.length > 0 && args[0] instanceof Request) {
+            Request request = (Request) args[0];
+            sessionId = request.getSessionId();
+          }
+          else {
+            sessionId = this.sessionFactory.getSessionId();
+          }
         }
-        // FIXME: determine how to get boolean flag!
-        ServerAccSessionImpl session = new ServerAccSessionImpl(sessionId, sessionFactory, request, getServerSessionListener(), getServerContextListener(), getStateListener(), messageTimeout, true);
+        boolean stateless = true;
+        if(args != null && args.length > 0) {
+          for(Object o:args) {
+            if(o instanceof Boolean) {
+              stateless = (Boolean)o;
+            }
+          }
+        }
+
+        IServerAccSessionData data = (IServerAccSessionData) this.sessionDataFactory.getAppSessionData(ServerAccSession.class, sessionId);
+        ServerAccSessionImpl session = new ServerAccSessionImpl(data, sessionFactory,  getServerSessionListener(), getServerContextListener(), getStateListener(), stateless);
         iss.addSession(session);
         session.getSessions().get(0).setRequestListener(session);
         return session;
       }
       else if (aClass == ClientAccSession.class) {
-        ClientAccSessionImpl session = new ClientAccSessionImpl(sessionId, sessionFactory, getClientSessionListener(), getClientContextListener(), getStateListener(), this.getApplicationId());
+        if (sessionId == null) {
+          if (args != null && args.length > 0 && args[0] instanceof Request) {
+            Request request = (Request) args[0];
+            sessionId = request.getSessionId();
+          }
+          else {
+            sessionId = this.sessionFactory.getSessionId();
+          }
+        }
+        IClientAccSessionData data = (IClientAccSessionData) this.sessionDataFactory.getAppSessionData(ClientAccSession.class, sessionId);
+        ClientAccSessionImpl session = new ClientAccSessionImpl(data, sessionFactory, getClientSessionListener(), getClientContextListener(), getStateListener(), this.getApplicationId());
 
         iss.addSession(session);
         session.getSessions().get(0).setRequestListener(session);

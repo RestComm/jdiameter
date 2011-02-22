@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -82,9 +82,11 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
 
   protected static final Logger logger = LoggerFactory.getLogger(ServerAuthSessionImpl.class);
 
+  protected IServerAuthSessionData sessionData;
+
   // Session State Handling ---------------------------------------------------
-  protected boolean stateless = false;
-  protected ServerAuthSessionState state = IDLE;
+  //protected boolean stateless = false;
+  //protected ServerAuthSessionState state = IDLE;
   private Lock sendAndStateLock = new ReentrantLock();
 
   // Factories and Listeners --------------------------------------------------
@@ -93,23 +95,22 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
   protected transient ServerAuthSessionListener listener;
 
   // Ts Timer -----------------------------------------------------------------
-  protected long tsTimeout;
-  //protected ScheduledFuture tsTask;
-  protected Serializable timerId_ts;
+  //protected long tsTimeout;
+  //protected Serializable timerId_ts;
   protected final static String TIMER_NAME_TS="AUTH_TS";
 
   // Constructors -------------------------------------------------------------
 
-  public ServerAuthSessionImpl(String sessionId,SessionFactory sf, Request initialRequest, ServerAuthSessionListener lst, IAuthMessageFactory fct, StateChangeListener<AppSession> scListener,IServerAuthActionContext context, long tsTimeout, boolean stateless) {
-    super(sf,sessionId);  
+  public ServerAuthSessionImpl(IServerAuthSessionData sessionData,ISessionFactory sf, ServerAuthSessionListener lst, IAuthMessageFactory fct, StateChangeListener<AppSession> scListener,IServerAuthActionContext context, long tsTimeout, boolean stateless) {
+    super(sf,sessionData);  
 
-
-    appId = fct.getApplicationId();
-    listener = lst;
-    factory = fct;
+    super.appId = fct.getApplicationId();
+    this.listener = lst;
+    this.factory = fct;
     this.context = context;
-    this.tsTimeout = tsTimeout;
-    this.stateless = stateless;
+    this.sessionData = sessionData;
+    this.sessionData.setStateless(stateless);
+    this.sessionData.setTsTimeout(tsTimeout);
     super.addStateChangeNotification(scListener);
   }
 
@@ -148,14 +149,13 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
   }
 
   public boolean isStateless() {
-    return stateless;
+    return sessionData.isStateless();
   }
 
   @SuppressWarnings("unchecked")
   protected void setState(ServerAuthSessionState newState) {
-    IAppSessionState oldState = state;
-    state = newState;
-    super.sessionDataSource.updateSession(this);
+    IAppSessionState oldState = sessionData.getServerAuthSessionState();
+    sessionData.setServerAuthSessionState(newState);
     for (StateChangeListener i : stateListeners) {
       i.stateChanged(this,(Enum) oldState, (Enum) newState);
     }
@@ -163,16 +163,16 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
 
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> eClass) {
-    return eClass == ClientAuthSessionState.class ? (E) state : null;
+    return eClass == ServerAuthSessionState.class ? (E) sessionData.getServerAuthSessionState() : null;
   }
 
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
-    return stateless ? handleEventForStatelessSession(event) : handleEventForStatefullSession(event);
+    return isStateless() ? handleEventForStatelessSession(event) : handleEventForStatefullSession(event);
   }
 
   public boolean handleEventForStatelessSession(StateEvent event) throws InternalException, OverloadException {
     try {
-      switch (state) {
+      switch (sessionData.getServerAuthSessionState()) {
       case IDLE:
         switch ((Event.Type) event.getType()) {
         case RECEIVE_AUTH_REQUEST:
@@ -198,6 +198,7 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
   }
 
   public boolean handleEventForStatefullSession(StateEvent event) throws InternalException, OverloadException {
+    ServerAuthSessionState state = sessionData.getServerAuthSessionState(); 
     ServerAuthSessionState oldState = state;
     try {
       switch (state) {
@@ -385,7 +386,7 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
     super.scheduler.execute(rd);
     return null;
   }
-  
+
   /* (non-Javadoc)
    * @see org.jdiameter.common.impl.app.AppSessionImpl#isReplicable()
    */
@@ -394,26 +395,10 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
     return true;
   }
 
-  /* (non-Javadoc)
-   * @see org.jdiameter.common.impl.app.auth.AppAuthSessionImpl#relink(org.jdiameter.client.api.IContainer)
-   */
-  @Override
-  public void relink(IContainer stack) {
-    if(super.sf == null) {
-      super.relink(stack);
-      IAuthSessionFactory fct = (IAuthSessionFactory) ((ISessionFactory)super.sf).getAppSessionFactory(ServerAuthSession.class);
-      this.listener = fct.getServerSessionListener();
-      this.context = fct.getServerSessionContext();
-      this.factory = fct.getMessageFactory();
-    }
-  }
-
-
   protected void startTsTimer() {
     try {
       sendAndStateLock.lock();
-      this.timerId_ts=super.timerFacility.schedule(sessionId, TIMER_NAME_TS, tsTimeout);
-      super.sessionDataSource.updateSession(this);
+      sessionData.setTsTimerId(super.timerFacility.schedule(sessionData.getSessionId(), TIMER_NAME_TS, sessionData.getTsTimeout()));
     }
     finally {
       sendAndStateLock.unlock();
@@ -423,9 +408,11 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
   protected void cancelTsTimer() {
     try {
       sendAndStateLock.lock();
-      super.timerFacility.cancel(timerId_ts);
-      this.timerId_ts = null;
-      super.sessionDataSource.updateSession(this);
+      Serializable tsTimerId = sessionData.getTsTimerId();
+      if(tsTimerId != null) {
+        super.timerFacility.cancel(tsTimerId);
+        sessionData.setTsTimerId(null);
+      }
     }
     finally {
       sendAndStateLock.unlock();
@@ -437,10 +424,10 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
    */
   @Override
   public void onTimer(String timerName) {
-    if(timerName.equals(TIMER_NAME_TS)) {	
+    if(timerName.equals(TIMER_NAME_TS)) {
       try {
         sendAndStateLock.lock();
-        this.timerId_ts = null;
+        sessionData.setTsTimerId(null);
         handleEvent(new Event(TIMEOUT_EXPIRES, null));
       }
       catch (Exception e) {
@@ -450,67 +437,34 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
         sendAndStateLock.unlock();
       }
     }
-    else {
-      super.onTimer(timerName);
-    }
   }
 
-
-
-  /* (non-Javadoc)
-   * @see java.lang.Object#hashCode()
-   */
   @Override
   public int hashCode() {
     final int prime = 31;
-    int result = 1;
-    result = prime * result + ((state == null) ? 0 : state.hashCode());
-    result = prime * result + (stateless ? 1231 : 1237);
-    result = prime * result + ((timerId_ts == null) ? 0 : timerId_ts.hashCode());
-    result = prime * result + (int) (tsTimeout ^ (tsTimeout >>> 32));
+    int result = super.hashCode();
+    result = prime * result + ((sessionData == null) ? 0 : sessionData.hashCode());
     return result;
   }
 
-  /* (non-Javadoc)
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) {
+    if (this == obj)
       return true;
-    }
-    if (obj == null) {
+    if (!super.equals(obj))
       return false;
-    }
-    if (getClass() != obj.getClass()) {
+    if (getClass() != obj.getClass())
       return false;
-    }
-
     ServerAuthSessionImpl other = (ServerAuthSessionImpl) obj;
-    if (state == null) {
-      if (other.state != null) {
+    if (sessionData == null) {
+      if (other.sessionData != null)
         return false;
-      }
     }
-    else if (!state.equals(other.state)) {
+    else if (!sessionData.equals(other.sessionData))
       return false;
-    }
-    if (stateless != other.stateless) {
-      return false;
-    }
-    if (timerId_ts == null) {
-      if (other.timerId_ts != null) {
-        return false;
-      }
-    }
-    else if (!timerId_ts.equals(other.timerId_ts)) {
-      return false;
-    }
-    if (tsTimeout != other.tsTimeout) {
-      return false;
-    }
     return true;
   }
+
 
   private class RequestDelivery implements Runnable {
     ServerAuthSession session;

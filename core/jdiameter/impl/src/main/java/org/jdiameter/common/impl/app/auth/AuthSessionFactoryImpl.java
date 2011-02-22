@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -46,13 +46,17 @@ import org.jdiameter.api.auth.events.SessionTermAnswer;
 import org.jdiameter.api.auth.events.SessionTermRequest;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.impl.app.auth.ClientAuthSessionImpl;
+import org.jdiameter.client.impl.app.auth.IClientAuthSessionData;
+import org.jdiameter.common.api.app.IAppSessionDataFactory;
 import org.jdiameter.common.api.app.auth.IAuthMessageFactory;
+import org.jdiameter.common.api.app.auth.IAuthSessionData;
 import org.jdiameter.common.api.app.auth.IAuthSessionFactory;
 import org.jdiameter.common.api.app.auth.IClientAuthActionContext;
 import org.jdiameter.common.api.app.auth.IServerAuthActionContext;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
+import org.jdiameter.server.impl.app.auth.IServerAuthSessionData;
 import org.jdiameter.server.impl.app.auth.ServerAuthSessionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,24 +83,21 @@ ClientAuthSessionListener, IClientAuthActionContext, IServerAuthActionContext, S
   protected ISessionFactory sessionFactory = null;
   protected IServerAuthActionContext serverSessionContext;
   protected IClientAuthActionContext clientSessionContext;
+  protected IAppSessionDataFactory<IAuthSessionData> sessionDataFactory;
 
   public AuthSessionFactoryImpl(SessionFactory sessionFactory) {
     super();
 
     this.sessionFactory = (ISessionFactory) sessionFactory;
     this.iss = this.sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
+    this.sessionDataFactory = (IAppSessionDataFactory<IAuthSessionData>) this.iss.getDataFactory(IAuthSessionData.class);
   }
 
   /**
    * @return the clientSessionContext
    */
   public IClientAuthActionContext getClientSessionContext() {
-    if (this.clientSessionContext != null) {
-      return clientSessionContext;
-    }
-    else {
-      return this;
-    }
+    return clientSessionContext != null ? clientSessionContext : this;
   }
 
   /**
@@ -111,12 +112,7 @@ ClientAuthSessionListener, IClientAuthActionContext, IServerAuthActionContext, S
    * @return the serverSessionContext
    */
   public IServerAuthActionContext getServerSessionContext() {
-    if (this.serverSessionContext != null) {
-      return serverSessionContext;
-    }
-    else {
-      return this;
-    }
+    return serverSessionContext != null ? serverSessionContext : this;
   }
 
   /**
@@ -146,12 +142,7 @@ ClientAuthSessionListener, IClientAuthActionContext, IServerAuthActionContext, S
    * @return the messageFactory
    */
   public IAuthMessageFactory getMessageFactory() {
-    if (this.messageFactory != null) {
-      return messageFactory;
-    }
-    else {
-      return this;
-    }
+    return messageFactory != null ? messageFactory : this;
   }
 
   /**
@@ -166,12 +157,7 @@ ClientAuthSessionListener, IClientAuthActionContext, IServerAuthActionContext, S
    * @return the serverSessionListener
    */
   public ServerAuthSessionListener getServerSessionListener() {
-    if (this.serverSessionListener != null) {
-      return serverSessionListener;
-    }
-    else {
-      return this;
-    }
+    return serverSessionListener != null ? serverSessionListener : this;
   }
 
   /**
@@ -186,12 +172,7 @@ ClientAuthSessionListener, IClientAuthActionContext, IServerAuthActionContext, S
    * @return the stateListener
    */
   public StateChangeListener<AppSession> getStateListener() {
-    if (this.stateListener != null) {
-      return stateListener;
-    }
-    else {
-      return this;
-    }
+    return stateListener != null ? stateListener : this;
   }
 
   /**
@@ -206,12 +187,7 @@ ClientAuthSessionListener, IClientAuthActionContext, IServerAuthActionContext, S
    * @return the clientSessionListener
    */
   public ClientAuthSessionListener getClientSessionListener() {
-    if (this.clientSessionListener != null) {
-      return clientSessionListener;
-    }
-    else {
-      return this;
-    }
+    return clientSessionListener != null ? clientSessionListener : this;
   }
 
   /**
@@ -230,31 +206,80 @@ ClientAuthSessionListener, IClientAuthActionContext, IServerAuthActionContext, S
     this.stateles = stateles;
   }
 
-  public AppSession getNewSession(String sessionId, Class<? extends AppSession> aClass, ApplicationId applicationId, Object[] args) {
+  @Override
+  public AppSession getSession(String sessionId, Class<? extends AppSession> aClass) {
+    if (sessionId == null) {
+      throw new IllegalArgumentException("SessionId must not be null");
+    }
+    if(!this.iss.exists(sessionId)) {
+      return null;
+    }
     try {
       if (aClass == ServerAuthSession.class) {
-        Request request = null;
-        if (args != null && args.length > 0) {
-          request = (Request) args[0];
-        }
+        IServerAuthSessionData sessionData = (IServerAuthSessionData) this.sessionDataFactory.getAppSessionData(ServerAuthSession.class, sessionId);
+        ServerAuthSessionImpl session = new ServerAuthSessionImpl(sessionData, sessionFactory, getServerSessionListener(), getMessageFactory(),
+            getStateListener(), getServerSessionContext(), messageTimeout, isStateles());
 
-        ServerAuthSessionImpl session = new ServerAuthSessionImpl(sessionId, sessionFactory, request, getServerSessionListener(),
-            getMessageFactory(), getStateListener(), getServerSessionContext(), messageTimeout, isStateles());
-
-        iss.addSession(session);
-        // iss.setSessionListener(clientSession.getSessionId(),
-        // (NetworkReqListener) appSession);
         session.getSessions().get(0).setRequestListener(session);
         return session;
       }
       else {
         if (aClass == ClientAuthSession.class) {
-          ClientAuthSessionImpl session = new ClientAuthSessionImpl(sessionId, sessionFactory, getClientSessionListener(),
-              getMessageFactory(), getStateListener(), getClientSessionContext(), isStateles());
+          IClientAuthSessionData sessionData = (IClientAuthSessionData) this.sessionDataFactory.getAppSessionData(ClientAuthSession.class, sessionId);
+          ClientAuthSessionImpl session = new ClientAuthSessionImpl(sessionData, sessionFactory, getClientSessionListener(), getMessageFactory(),
+              getStateListener(), getClientSessionContext(), isStateles());
+
+          session.getSessions().get(0).setRequestListener(session);
+          return session;
+        }
+      }
+    }
+    catch (Exception e) {
+      logger.error("Failure trying to obtain new authorization session", e);
+    }
+
+    return null;
+  }
+
+  public AppSession getNewSession(String sessionId, Class<? extends AppSession> aClass, ApplicationId applicationId, Object[] args) {
+    try {
+      if (aClass == ServerAuthSession.class) {
+
+        if (sessionId == null) {
+          if (args != null && args.length > 0 && args[0] instanceof Request) {
+            Request request = (Request) args[0];
+            sessionId = request.getSessionId();
+          }
+          else {
+            sessionId = this.sessionFactory.getSessionId();
+          }
+        }
+
+        IServerAuthSessionData sessionData = (IServerAuthSessionData) this.sessionDataFactory.getAppSessionData(ServerAuthSession.class, sessionId);
+        ServerAuthSessionImpl session = new ServerAuthSessionImpl(sessionData, sessionFactory, getServerSessionListener(), getMessageFactory(),
+            getStateListener(), getServerSessionContext(), messageTimeout, isStateles());
+
+        iss.addSession(session);
+        session.getSessions().get(0).setRequestListener(session);
+        return session;
+      }
+      else {
+        if (aClass == ClientAuthSession.class) {
+          if (sessionId == null) {
+            if (args != null && args.length > 0 && args[0] instanceof Request) {
+              Request request = (Request) args[0];
+              sessionId = request.getSessionId();
+            }
+            else {
+              sessionId = this.sessionFactory.getSessionId();
+            }
+          }
+          IClientAuthSessionData sessionData = (IClientAuthSessionData) this.sessionDataFactory.getAppSessionData(ClientAuthSession.class, sessionId);
+          ClientAuthSessionImpl session = new ClientAuthSessionImpl(sessionData, sessionFactory, getClientSessionListener(), getMessageFactory(),
+              getStateListener(), getClientSessionContext(), isStateles());
 
           iss.addSession(session);
-          // iss.setSessionListener(clientSession.getSessionId(),
-          // (NetworkReqListener) appSession);
+          // iss.setSessionListener(clientSession.getSessionId(), (NetworkReqListener) appSession);
           session.getSessions().get(0).setRequestListener(session);
           return session;
         }
@@ -302,12 +327,10 @@ ClientAuthSessionListener, IClientAuthActionContext, IServerAuthActionContext, S
 
   public void doSessionTerminationRequestEvent(ServerAuthSession appSession, SessionTermRequest str) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     logger.info("Diameter Base AuthorizationSessionFactory :: doSessionTerminationRequestEvent :: appSession[{}], STR[{}]", appSession, str);
-
   }
 
   public void doSessionTerminationAnswerEvent(ClientAuthSession appSession, SessionTermAnswer sta) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     logger.info("Diameter Base AuthorizationSessionFactory :: doSessionTerminationAnswerEvent :: appSession[{}], STA[{}]", appSession, sta);
-
   }
 
   public void doAuthRequestEvent(ServerAuthSession appSession, AppRequestEvent request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {

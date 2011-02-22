@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -26,7 +26,6 @@ import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IEventListener;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.parser.IMessageParser;
-import org.jdiameter.client.impl.helpers.UIDGenerator;
 
 import static org.jdiameter.client.impl.helpers.Parameters.MessageTimeOut;
 
@@ -45,7 +44,6 @@ public abstract class BaseSessionImpl implements BaseSession {
 
   private static final long serialVersionUID = 1L;
 
-  protected static UIDGenerator uid = new UIDGenerator();
   protected final long creationTime = System.currentTimeMillis();
   protected long lastAccessedTime = creationTime;
   protected boolean isValid = true;
@@ -83,15 +81,6 @@ public abstract class BaseSessionImpl implements BaseSession {
    */
   public boolean isReplicable() {
     return false;
-  }
-
-  public String generateSessionId() {
-    long id = uid.nextLong();
-    long high32 = (id & 0xffffffff00000000L) >> 32;
-    long low32 = (id & 0xffffffffL);
-
-    return new StringBuffer().append(container.getMetaData().getLocalPeer().getUri().getFQDN()).
-    append(";").append(high32).append(";").append(low32).toString();
   }
 
   @SuppressWarnings("unchecked")
@@ -135,7 +124,7 @@ public abstract class BaseSessionImpl implements BaseSession {
         container.sendMessage(message);
       }
       catch(RouteException e) {
-    	message.clearTimer();
+        message.clearTimer();
         throw e;
       }
       catch (Exception e) {

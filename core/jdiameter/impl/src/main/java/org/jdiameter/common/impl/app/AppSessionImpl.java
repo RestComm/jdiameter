@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -21,20 +21,18 @@
  */
 package org.jdiameter.common.impl.app;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.jdiameter.api.ApplicationId;
-import org.jdiameter.api.InternalException;
 import org.jdiameter.api.Session;
-import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.client.api.IAssembler;
-import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.ISessionFactory;
+import org.jdiameter.common.api.app.IAppSessionData;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
-import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.api.timer.ITimerFacility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,51 +49,40 @@ public abstract class AppSessionImpl implements AppSession {
 
   private static final Logger logger = LoggerFactory.getLogger(AppSessionImpl.class);
 
-  protected String sessionId;
+  protected IAppSessionData appSessionData;
 
-  protected ApplicationId appId;
+  protected List<Session> sessions;
 
-  protected transient Session session;
+  protected Session session;
 
-  protected transient SessionFactory sf = null;
+  protected ISessionFactory sf = null;
 
-  protected transient ScheduledExecutorService scheduler = null;
+  protected ScheduledExecutorService scheduler = null;
 
-  protected transient ISessionDatasource sessionDataSource;
+  protected ITimerFacility timerFacility;
 
-  protected transient ITimerFacility timerFacility;
-
-  /**
-   * @deprecated
-   */
-  public AppSessionImpl() {
-
-  }
-
-  public AppSessionImpl(SessionFactory sf, String sessionId) {
+  public AppSessionImpl(ISessionFactory sf, IAppSessionData appSessionData) {
     if (sf == null) {
       throw new IllegalArgumentException("SessionFactory must not be null");
     }
+    if (appSessionData == null) {
+      throw new IllegalArgumentException("IAppSessionData must not be null");
+    }
     try {
       this.sf = sf;
-      IAssembler assembler = ((ISessionFactory) this.sf).getContainer().getAssemblerFacility();
-      this.sessionDataSource = assembler.getComponentInstance(ISessionDatasource.class);
-      this.scheduler = assembler.getComponentInstance(IConcurrentFactory.class).getScheduledExecutorService(
-          IConcurrentFactory.ScheduledExecServices.ApplicationSession.name());
+      this.appSessionData = appSessionData;
+      IAssembler assembler = ( this.sf).getContainer().getAssemblerFacility();
+      this.scheduler = assembler.getComponentInstance(IConcurrentFactory.class).getScheduledExecutorService(IConcurrentFactory.ScheduledExecServices.ApplicationSession.name());
       this.timerFacility = assembler.getComponentInstance(ITimerFacility.class);
-      if (sessionId == null) {
-        session = sf.getNewSession();
-        this.sessionId = session.getSessionId();
-      }
-      else {
-        this.sessionId = sessionId;
-        this.session = this.sf.getNewSession(this.sessionId);
-      }
+      this.session = this.sf.getNewSession(this.appSessionData.getSessionId());
+      //annoying ;[
+      ArrayList<Session> list = new ArrayList<Session>();
+      list.add(this.session);
+      this.sessions = Collections.unmodifiableList(list);
     }
     catch (Exception e) {
       throw new IllegalArgumentException(e);
     }
-
   }
 
   public long getCreationTime() {
@@ -111,15 +98,16 @@ public abstract class AppSessionImpl implements AppSession {
   }
 
   public ApplicationId getSessionAppId() {
-    return appId;
+    return this.appSessionData.getApplicationId();
   }
 
   public List<Session> getSessions() {
-    return Arrays.asList(session);
+    return this.sessions; //....
   }
 
   public void release() {
-    session.release();
+    this.session.release();
+    this.appSessionData.remove();
   }
 
   /*
@@ -128,7 +116,8 @@ public abstract class AppSessionImpl implements AppSession {
    * @see org.jdiameter.api.BaseSession#getSessionId()
    */
   public String getSessionId() {
-    return this.sessionId;
+    //use local object, its faster :)
+    return this.session.getSessionId();
   }
 
   /*
@@ -150,35 +139,31 @@ public abstract class AppSessionImpl implements AppSession {
     return false;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.jdiameter.api.app.AppSession#relink(org.jdiameter.client.api.IContainer
-   * )
-   */
-  public void relink(IContainer stack) {
-    if(stack == null) {
-      throw new NullPointerException("Can not link session to not defined stack: " + stack);
-    }
-    IAssembler assembler = stack.getAssemblerFacility();
-    this.sf = assembler.getComponentInstance(ISessionFactory.class);
-    this.scheduler = ((ISessionFactory) this.sf).getContainer().getAssemblerFacility().getComponentInstance(IConcurrentFactory.class).getScheduledExecutorService(
-        IConcurrentFactory.ScheduledExecServices.ApplicationSession.name());
-    this.sessionDataSource = assembler.getComponentInstance(ISessionDatasource.class);
-    this.timerFacility = assembler.getComponentInstance(ITimerFacility.class);
-
-    try {
-      this.session = this.sf.getNewSession(sessionId);
-    }
-    catch (InternalException e) {
-      logger.error("Failure relinking app session.", e);
-    }
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((appSessionData == null) ? 0 : appSessionData.hashCode());
+    return result;
   }
 
-  // FIXME: make this abstract!
-  public void onTimer(String timerName) {
-    // TODO Auto-generated method stub
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    AppSessionImpl other = (AppSessionImpl) obj;
+    if (appSessionData == null) {
+      if (other.appSessionData != null)
+        return false;
+    } else if (!appSessionData.equals(other.appSessionData))
+      return false;
+    return true;
   }
+
+  public abstract void onTimer(String timerName);
 
 }

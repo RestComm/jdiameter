@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2011, Red Hat, Inc. and/or its affiliates, and individual
  * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
@@ -19,19 +19,15 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
-package org.jdiameter.common.api.app;
+package org.jdiameter.common.api.app.auth;
 
-import org.jdiameter.api.ApplicationId;
-import org.jdiameter.api.app.AppSession;
+import org.jdiameter.common.api.app.IAppSessionData;
 
 /**
- * 
+ *
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public interface IAppSessionFactory {
-
-  AppSession getNewSession(String sessionId, Class<? extends AppSession> aClass, ApplicationId applicationId, Object[] args);
-
-  AppSession getSession(String sessionId, Class<? extends AppSession> aClass);
+public interface IAuthSessionData extends IAppSessionData {
+  //marker interface
 }

@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2011, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -19,23 +19,38 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
-package org.mobicents.diameter.impl.ha.data;
+package org.jdiameter.client.impl.app.acc;
 
 import java.io.Serializable;
 
-import org.jdiameter.api.NetworkReqListener;
+import org.jdiameter.api.ApplicationId;
+import org.jdiameter.api.Request;
+import org.jdiameter.common.api.app.acc.ClientAccSessionState;
+import org.jdiameter.common.api.app.acc.IAccSessionData;
 
 /**
- * Listener reference class
  * 
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-class ListenerRef implements Serializable {
+public interface IClientAccSessionData extends IAccSessionData {
 
-  private static final long serialVersionUID = 3547069215714022048L;
+  public void setClientAccSessionState(ClientAccSessionState state);
+  public ClientAccSessionState getClientAccSessionState();
 
-  public NetworkReqListener getListener(SessionClusteredData sessionClusteredData) {
-    return (NetworkReqListener) sessionClusteredData.getSession();
-  }
+  public void setInterimTimerId(Serializable tid);
+  public Serializable getInterimTimerId();
+
+  public void setDestinationHost(String destHost);
+  public String getDestinationHost();
+
+  public void setDestinationRealm(String destRealm);
+  public String getDestinationRealm();
+
+  public void setBuffer(Request event);
+  public Request getBuffer();
+
+  public void setApplicationId(ApplicationId aid);
+  public ApplicationId getApplicationId();
+
 }

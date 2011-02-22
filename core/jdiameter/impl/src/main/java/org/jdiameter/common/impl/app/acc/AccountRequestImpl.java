@@ -27,8 +27,7 @@ public class AccountRequestImpl extends AppRequestEventImpl implements AccountRe
     try {
       getMessage().getAvps().addAvp(Avp.ACC_RECORD_TYPE, accountRecordType);
       getMessage().getAvps().addAvp(Avp.ACC_RECORD_NUMBER, accReqNumber);
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new IllegalArgumentException(e);
     }
   }
@@ -56,4 +55,15 @@ public class AccountRequestImpl extends AppRequestEventImpl implements AccountRe
       throw new AvpDataException("Avp ACC_RECORD_NUMBER not found");
     }
   }
+
+  public void setAccountingRecordType(int recordType) throws AvpDataException {
+    message.getAvps().removeAvp(Avp.ACC_RECORD_TYPE);
+    message.getAvps().addAvp(Avp.ACC_RECORD_TYPE, recordType);
+  }
+
+  public void setAccountingRecordNumber(long recordNum) throws AvpDataException {
+    message.getAvps().removeAvp(Avp.ACC_RECORD_NUMBER);
+    message.getAvps().addAvp(Avp.ACC_RECORD_NUMBER, ACC_RECORD_NUMBER, true);
+  }
+
 }

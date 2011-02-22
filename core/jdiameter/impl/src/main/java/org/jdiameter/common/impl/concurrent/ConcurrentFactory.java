@@ -1,3 +1,24 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
 package org.jdiameter.common.impl.concurrent;
 
 import org.jdiameter.api.Configuration;
@@ -17,11 +38,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
+/**
+ * 
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 public class ConcurrentFactory implements IConcurrentFactory {
 
   private BaseThreadFactory threadFactory;
 
-  //private CopyOnWriteArrayList<CommonScheduledExecutorService> scheduledExecutorServices;
   private Map<String, CommonScheduledExecutorService> scheduledExecutorServices;
   private Configuration[] config;
   private IStatisticManager statisticFactory;
@@ -50,7 +75,7 @@ public class ConcurrentFactory implements IConcurrentFactory {
                 return getThreadGroup().activeCount();
               }
             });
-        
+
         //TODO: make use of this stat....
         IStatisticRecord schedExeServiceCount = statisticFactory.newCounterRecord(
             IStatisticRecord.Counters.ConcurrentScheduledExecutedServices,
@@ -63,7 +88,6 @@ public class ConcurrentFactory implements IConcurrentFactory {
                 return scheduledExecutorServices.size();
               }
             });
-      //XXX: YYY: no need to remove, it lives as long as stack does.
         statistic = statisticFactory.newStatistic("scheduled",IStatistic.Groups.Concurrent, threadCount, schedExeServiceCount);
         this.statisticFactory = statisticFactory;
   }
@@ -102,37 +126,34 @@ public class ConcurrentFactory implements IConcurrentFactory {
   }
 
   public ScheduledExecutorService getScheduledExecutorService(String name) {
-	  CommonScheduledExecutorService service = null;
-	  if(!scheduledExecutorServices.containsKey(name))
-	  { 
-		  //xx
-		  service = new CommonScheduledExecutorService(name, getConfigByName(name), this.entityFactory, statisticFactory);
-		  scheduledExecutorServices.put(name,service);
-	  }else
-	  {
-		  service = scheduledExecutorServices.get(name);
-	  }
-	   
+    CommonScheduledExecutorService service = null;
+    if(!scheduledExecutorServices.containsKey(name)) {
+      service = new CommonScheduledExecutorService(name, getConfigByName(name), this.entityFactory, statisticFactory);
+      scheduledExecutorServices.put(name,service);
+    }
+    else {
+      service = scheduledExecutorServices.get(name);
+    }
+
     return service;
   }
 
   public Collection<ScheduledExecutorService> getScheduledExecutorServices() {
     List<ScheduledExecutorService> external = new ArrayList<ScheduledExecutorService>(scheduledExecutorServices.values());
-    
+
     return external;
   }
 
   public void shutdownNow(ScheduledExecutorService service) {
-    
-	  for (String name : scheduledExecutorServices.keySet()) {
-	    	ExecutorService e = scheduledExecutorServices.get(name);
-	    	 if (e == service) {
-	    	        e.shutdownNow();
-	    	        scheduledExecutorServices.remove(name);
-	    	        break;
-	    	      }
-	      
-	    }
+    for (String name : scheduledExecutorServices.keySet()) {
+      ExecutorService e = scheduledExecutorServices.get(name);
+      if (e == service) {
+        e.shutdownNow();
+        scheduledExecutorServices.remove(name);
+        break;
+      }
+
+    }
   }
 
   public IStatistic getStatistic() {
@@ -150,9 +171,8 @@ public class ConcurrentFactory implements IConcurrentFactory {
 
   public void shutdownAllNow() {
     for (String name : scheduledExecutorServices.keySet()) {
-    	ExecutorService e = scheduledExecutorServices.remove(name);
-        e.shutdownNow();
-      
+      ExecutorService e = scheduledExecutorServices.remove(name);
+      e.shutdownNow();
     }
 
   }

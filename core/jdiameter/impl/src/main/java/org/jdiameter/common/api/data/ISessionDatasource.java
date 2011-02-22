@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -23,6 +23,8 @@ package org.jdiameter.common.api.data;
 
 import org.jdiameter.api.BaseSession;
 import org.jdiameter.api.NetworkReqListener;
+import org.jdiameter.common.api.app.IAppSessionData;
+import org.jdiameter.common.api.app.IAppSessionDataFactory;
 
 /**
  * 
@@ -34,6 +36,8 @@ public interface ISessionDatasource {
   void start();
 
   void stop();
+
+  public boolean exists(String sessionId);
 
   public NetworkReqListener getSessionListener(String sessionId);
 
@@ -47,7 +51,8 @@ public interface ISessionDatasource {
 
   public BaseSession getSession(String sessionId);
 
-  public void updateSession(BaseSession session);
-
   public boolean isClustered();
+
+  public  IAppSessionDataFactory<? extends IAppSessionData> getDataFactory(Class<? extends IAppSessionData> x);
+
 }

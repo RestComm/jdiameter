@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -28,6 +28,8 @@ import java.io.Serializable;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.Avp;
+import org.jdiameter.api.AvpDataException;
+import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
@@ -36,7 +38,6 @@ import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.ResultCode;
 import org.jdiameter.api.RouteException;
-import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.acc.ServerAccSession;
 import org.jdiameter.api.acc.ServerAccSessionListener;
 import org.jdiameter.api.acc.events.AccountAnswer;
@@ -44,10 +45,8 @@ import org.jdiameter.api.acc.events.AccountRequest;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
-import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.IAppSessionState;
-import org.jdiameter.common.api.app.acc.IAccSessionFactory;
 import org.jdiameter.common.api.app.acc.IServerAccActionContext;
 import org.jdiameter.common.api.app.acc.ServerAccSessionState;
 import org.jdiameter.common.impl.app.acc.AccountRequestImpl;
@@ -68,35 +67,52 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
 
   private static final Logger logger = LoggerFactory.getLogger(ServerAccSessionImpl.class);
 
-  // Session State Handling ---------------------------------------------------
-  protected boolean stateless = false;
-  protected ServerAccSessionState state = ServerAccSessionState.IDLE;
-
   // Factories and Listeners --------------------------------------------------
   protected transient IServerAccActionContext context;
   protected transient  ServerAccSessionListener listener;
 
   // Ts Timer -----------------------------------------------------------------
-  protected long tsTimeout;
-  //protected ScheduledFuture tsTask;
-  protected Serializable timerId_ts;
   protected static final String TIMER_NAME_TS = "TS";
 
+  protected IServerAccSessionData sessionData;
+
   // Constructors -------------------------------------------------------------
-  public ServerAccSessionImpl(String sessionId, SessionFactory sessionFactory, Request request,
+  public ServerAccSessionImpl(IServerAccSessionData sessionData, ISessionFactory sessionFactory,
       ServerAccSessionListener serverSessionListener, 
-      IServerAccActionContext serverContextListener,StateChangeListener<AppSession> stLst, long tsTimeout, boolean stateless) {
+      IServerAccActionContext serverContextListener,StateChangeListener<AppSession> stLst,boolean stateless) {
     // TODO Auto-generated constructor stub
-    super(sessionFactory,sessionId);
+    this(sessionData,sessionFactory,serverSessionListener,serverContextListener,stLst);
+
+    this.sessionData.setTsTimeout(0); // 0 == turn off
+    this.sessionData.setStateless(stateless);
+
+  }
+
+  public ServerAccSessionImpl(IServerAccSessionData sessionData, ISessionFactory sessionFactory, ServerAccSessionListener serverSessionListener, 
+      IServerAccActionContext serverContextListener,StateChangeListener<AppSession> stLst) {
+    // TODO Auto-generated constructor stub
+    super(sessionFactory,sessionData);
+    this.sessionData = sessionData;
     this.listener = serverSessionListener;
     this.context = serverContextListener;
-    this.tsTimeout = tsTimeout;
-    this.stateless = stateless;
+
     super.addStateChangeNotification(stLst);
   }
 
   public void sendAccountAnswer(AccountAnswer accountAnswer) throws InternalException, IllegalStateException, RouteException, OverloadException {
     try {
+      AvpSet avpSet = accountAnswer.getMessage().getAvps();
+      Avp acctInterimIntervalAvp = avpSet.getAvp(Avp.ACCT_INTERIM_INTERVAL); //Unsigned32
+      if(acctInterimIntervalAvp != null) {
+        try {
+          this.sessionData.setTsTimeout(acctInterimIntervalAvp.getUnsigned32());
+        }
+        catch (AvpDataException e) {
+          throw new InternalException(e);
+        }
+      }
+      cancelTsTimer();
+      startTsTimer();
       session.send(accountAnswer.getMessage());
       /* TODO: Do we need to notify state change ? */
       if(isStateless() && isValid()) {
@@ -109,26 +125,28 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
   }
 
   public boolean isStateless() {
-    return stateless;
+    return sessionData.isStateless();
   }
 
   @SuppressWarnings("unchecked")
   protected void setState(IAppSessionState newState) {
-    IAppSessionState oldState = state;
-    state = (ServerAccSessionState) newState;
-    super.sessionDataSource.updateSession(this);
+    IAppSessionState oldState = sessionData.getServerAccSessionState();
+    sessionData.setServerAccSessionState((ServerAccSessionState) newState);
+
     for (StateChangeListener i : stateListeners) {
       i.stateChanged(this,(Enum) oldState, (Enum) newState);
     }
   }
 
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
-    return stateless ? handleEventForStatelessMode(event) : handleEventForStatefulMode(event);
+    return sessionData.isStateless() ? handleEventForStatelessMode(event) : handleEventForStatefulMode(event);
   }
 
   public boolean handleEventForStatelessMode(StateEvent event) throws InternalException, OverloadException {
     try {
+      //NOTE: NO Ts Timer here
       //this will handle RTRs as well, no need to alter.
+      ServerAccSessionState state = sessionData.getServerAccSessionState();
       switch (state) {
       case IDLE: {
         switch ((Event.Type) event.getType()) {
@@ -216,10 +234,10 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
       if (((AccountRequest) event.getData()).getMessage().isReTransmitted()) {
         // FIXME: Alex is this ok?
         try {
-          listener.doAccRequestEvent(this, (AccountRequest) event.getData());
-          // FIXME: should we do this before passing to lst?
           cancelTsTimer();
-          timerId_ts = startTsTimer();
+          startTsTimer();
+          listener.doAccRequestEvent(this, (AccountRequest) event.getData());
+
           if (context != null) {
             context.sessionTimerStarted(this, null);
           }
@@ -232,6 +250,14 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
         return true;
       }
       else {
+        ServerAccSessionState state = sessionData.getServerAccSessionState();
+        AccountRequest request =  (AccountRequest) event.getData();
+        AvpSet avpSet = request.getMessage().getAvps();
+        Avp acctInterimIntervalAvp = avpSet.getAvp(85);//Unsigned32
+        if(acctInterimIntervalAvp!=null)
+        {
+          this.sessionData.setTsTimeout(acctInterimIntervalAvp.getUnsigned32());
+        }
         switch (state) {
         case IDLE: {
           switch ((Event.Type) event.getType()) {
@@ -244,7 +270,7 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
               try {
                 listener.doAccRequestEvent(this, (AccountRequest) event.getData());
                 cancelTsTimer();
-                timerId_ts = startTsTimer();
+                startTsTimer();
                 if (context != null) {
                   context.sessionTimerStarted(this, null);
                 }
@@ -285,7 +311,7 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
             try {
               listener.doAccRequestEvent(this, (AccountRequest) event.getData());
               cancelTsTimer();
-              timerId_ts = startTsTimer();
+              startTsTimer();
               if (context != null) {
                 context.sessionTimerStarted(this, null);
               }
@@ -329,26 +355,15 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
     return true;
   }
 
-  private Serializable startTsTimer() {
-    //    return scheduler.schedule(new Runnable() {
-    //      public void run() {
-    //        logger.debug("Ts timer expired");
-    //        if (context != null) {
-    //          try {
-    //            context.sessionTimeoutElapses(ServerAccSessionImpl.this);
-    //          }
-    //          catch (InternalException e) {
-    //            logger.debug("Failure on processing expired Ts", e);
-    //          }
-    //        }
-    //        setState(IDLE);
-    //      }
-    //    }, tsTimeout, TimeUnit.MILLISECONDS);
+  private void startTsTimer() {
+
     try{
       sendAndStateLock.lock();
-      this.timerId_ts = super.timerFacility.schedule(sessionId, TIMER_NAME_TS, tsTimeout);
-      super.sessionDataSource.updateSession(this);
-      return this.timerId_ts;
+      if(sessionData.getTsTimeout() != 0) {
+        Serializable tsTid = super.timerFacility.schedule(sessionData.getSessionId(), TIMER_NAME_TS, sessionData.getTsTimeout());
+        sessionData.setTsTimerId(tsTid);
+      }
+      return;
     }
     finally {
       sendAndStateLock.unlock();
@@ -358,10 +373,10 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
   private void cancelTsTimer() {
     try{
       sendAndStateLock.lock();
-      if(this.timerId_ts != null) {
-        super.timerFacility.cancel(timerId_ts);
-        this.timerId_ts = null;
-        super.sessionDataSource.updateSession(this);
+      Serializable tsTid = sessionData.getTsTimerId();
+      if(tsTid != null) {
+        super.timerFacility.cancel(tsTid);
+        sessionData.setTsTimerId(null);
       }
     }
     finally {
@@ -386,7 +401,7 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
       setState(IDLE);
     }
     else {
-      super.onTimer(timerName);
+      // FIXME: ???
     }
   }
 
@@ -420,7 +435,7 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
 
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> eClass) {
-    return eClass == ServerAccSessionState.class ? (E) state : null;
+    return eClass == ServerAccSessionState.class ? (E) sessionData.getServerAccSessionState() : null;
   }
 
   public Answer processRequest(Request request) {        
@@ -487,21 +502,6 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
   @Override
   public boolean isReplicable() {
     return true;
-  }
-  /* (non-Javadoc)
-   * 
-   * @see org.jdiameter.common.impl.app.AppSessionImpl#relink(org.jdiameter.client.api.IContainer)
-   */
-  @Override
-  public void relink(IContainer stack) {
-    if(super.sf == null) {
-      super.relink(stack);
-      IAccSessionFactory fct = (IAccSessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(ServerAccSession.class);
-
-      this.listener = fct.getServerSessionListener();
-      this.context = fct.getServerContextListener();
-
-    }
   }
 
 }

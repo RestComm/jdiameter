@@ -19,58 +19,78 @@ import org.jdiameter.api.app.AppSession;
 
 public interface SessionFactory {
 
-    /**
-     * Create new raw session instance
-     *
-     * @return session instance of session
-     * @throws InternalException if a error occurs
-     */
-    RawSession getNewRawSession() throws InternalException;
+  /**
+   * Generates new session id which can be used as argument in
+   * {@link #getNewSession(String)} or
+   * {@link #getNewAppSession(String, ApplicationId, Class)}.
+   * 
+   * @return new id for session.
+   * @since 1.5.4.1-build416
+   */
+  public String getSessionId();
 
-    /**
-     * Create new session with new session id
-     *
-     * @return session instance of session
-     * @throws InternalException if a error occurs
-     */
-    Session getNewSession() throws InternalException;
+  /**
+   * See {@link #getSessionId()}. This method has similar semantics, it adds
+   * custom part to id.
+   * 
+   * @param customPart
+   * @return
+   * @since 1.5.4.1-build416
+   */
+  public String getSessionId(String customPart);
+
+  /**
+   * Create new raw session instance
+   *
+   * @return session instance of session
+   * @throws InternalException if a error occurs
+   */
+  RawSession getNewRawSession() throws InternalException;
+
+  /**
+   * Create new session with new session id
+   *
+   * @return session instance of session
+   * @throws InternalException if a error occurs
+   */
+  Session getNewSession() throws InternalException;
 
 
-    /**
-     * Create new session with predefined sessionId
-     * You can create special sessions to work on distributed systems
-     *
-     * @param sessionId  instance of session
-     * @return session instance of session
-     * @throws InternalException if a error occurs
-     */
-    Session getNewSession(String sessionId) throws InternalException;
+  /**
+   * Create new session with predefined sessionId
+   * You can create special sessions to work on distributed systems
+   *
+   * @param sessionId  instance of session
+   * @return session instance of session
+   * @throws InternalException if a error occurs
+   */
+  Session getNewSession(String sessionId) throws InternalException;
 
-    /**
-     * Create new vendor specific application session
-     * Use this method for create specific application sessions
-     * Example: ClientShSession session = factory.getNewSession(appId, ClientShSession.class)
-     *
-     * @param applicationId predefined application id
-     * @param userSession   A Class defining an interface that the result must implement.
-     * @return session instance
-     * @throws InternalException if a error occurs
-     */
+  /**
+   * Create new vendor specific application session
+   * Use this method for create specific application sessions
+   * Example: ClientShSession session = factory.getNewSession(appId, ClientShSession.class)
+   *
+   * @param applicationId predefined application id
+   * @param userSession   A Class defining an interface that the result must implement.
+   * @return session instance
+   * @throws InternalException if a error occurs
+   */
 
-    <T extends AppSession> T getNewAppSession(ApplicationId applicationId, Class<? extends AppSession> userSession) throws InternalException;
+  <T extends AppSession> T getNewAppSession(ApplicationId applicationId, Class<? extends AppSession> userSession) throws InternalException;
 
-    /**
-     * Create new vendor specific application session with predefined sessionId, origination host/realm names.
-     * You can create special sessions to work on distributed systems
-     * Use this method for create specific application sessions
-     * Example: ClientShSession session = factory.getNewSession(appId, ClientShSession.class)
-     *
-     * @param sessionId instance of session
-     * @param applicationId predefined application id
-     * @param userSession A Class defining an interface that the result must implement.
-     * @return session instance
-     * @throws InternalException if a error occurs
-     */
+  /**
+   * Create new vendor specific application session with predefined sessionId, origination host/realm names.
+   * You can create special sessions to work on distributed systems
+   * Use this method for create specific application sessions
+   * Example: ClientShSession session = factory.getNewSession(appId, ClientShSession.class)
+   *
+   * @param sessionId instance of session
+   * @param applicationId predefined application id
+   * @param userSession A Class defining an interface that the result must implement.
+   * @return session instance
+   * @throws InternalException if a error occurs
+   */
 
-    <T extends AppSession> T getNewAppSession(String sessionId, ApplicationId applicationId, Class<? extends AppSession> userSession) throws InternalException;
+  <T extends AppSession> T getNewAppSession(String sessionId, ApplicationId applicationId, Class<? extends AppSession> userSession) throws InternalException;
 }

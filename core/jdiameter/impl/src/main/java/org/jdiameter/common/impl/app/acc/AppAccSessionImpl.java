@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -29,14 +29,11 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.Request;
-import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.acc.events.AccountAnswer;
 import org.jdiameter.api.acc.events.AccountRequest;
-import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
-import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.ISessionFactory;
-import org.jdiameter.common.api.app.acc.IAccSessionFactory;
+import org.jdiameter.common.api.app.IAppSessionData;
 import org.jdiameter.common.impl.app.AppSessionImpl;
 
 /**
@@ -53,9 +50,8 @@ public abstract class AppAccSessionImpl extends AppSessionImpl implements  Netwo
   @SuppressWarnings("unchecked")
   protected transient List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
   
-
-  public AppAccSessionImpl(SessionFactory sf, String sessionId) {
-   super(sf, sessionId);
+  public AppAccSessionImpl(ISessionFactory sf, IAppSessionData appSessionData) {
+   super(sf, appSessionData);
   }
 
   @SuppressWarnings("unchecked")
@@ -83,29 +79,4 @@ public abstract class AppAccSessionImpl extends AppSessionImpl implements  Netwo
     super.release();
   }
   
-  /* (non-Javadoc)
-   * @see org.jdiameter.common.impl.app.AppSessionImpl#relink(org.jdiameter.client.api.IContainer)
-   */
-  @SuppressWarnings("unchecked")
-  @Override
-  public void relink(IContainer stack) {
-  	super.relink(stack);
-  	
-  	// FIXME Any better way to do this?
-    Class interfaze = null;
-  	for(Class possibleInterface : this.getClass().getInterfaces()) {
-  	  if(interfaze != null) {
-  	    break;
-  	  }
-  	  for(Class appSessionInterface : possibleInterface.getInterfaces()) {
-  	    if (appSessionInterface.equals(AppSession.class)) {
-  	      interfaze = possibleInterface;
-  	      break;
-  	    }
-  	  }
-  	}
-  	IAccSessionFactory fct = (IAccSessionFactory) ((ISessionFactory)super.sf).getAppSessionFactory(interfaze);
-  	this.stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
-  	this.addStateChangeNotification(fct.getStateListener());
-  }
 }

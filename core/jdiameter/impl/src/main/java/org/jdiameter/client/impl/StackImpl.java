@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -129,13 +129,13 @@ public class StackImpl implements IContainer, StackImplMBean {
         ValidatorLevel validatorReceiveLevel = ValidatorLevel.fromString((String) Parameters.DictionaryReceiveLevel.defValue());
 
         if(dictionaryConfigs != null && dictionaryConfigs.length > 0) {
-        	Configuration dictionaryConfiguration = dictionaryConfigs[0];
-        	dictionaryClassName = dictionaryConfiguration.getStringValue(Parameters.DictionaryClass.ordinal(), (String) Parameters.DictionaryClass.defValue());
+          Configuration dictionaryConfiguration = dictionaryConfigs[0];
+          dictionaryClassName = dictionaryConfiguration.getStringValue(Parameters.DictionaryClass.ordinal(), (String) Parameters.DictionaryClass.defValue());
           validatorEnabled = dictionaryConfiguration.getBooleanValue(Parameters.DictionaryEnabled.ordinal(), (Boolean) Parameters.DictionaryEnabled.defValue());
           validatorSendLevel = ValidatorLevel.fromString(dictionaryConfiguration.getStringValue(Parameters.DictionarySendLevel.ordinal(), (String) Parameters.DictionarySendLevel.defValue()));
           validatorReceiveLevel = ValidatorLevel.fromString( dictionaryConfiguration.getStringValue(Parameters.DictionaryReceiveLevel.ordinal(), (String) Parameters.DictionaryReceiveLevel.defValue()));
         }
-        
+
         createDictionary(dictionaryClassName, validatorEnabled, validatorSendLevel, validatorReceiveLevel);
       }
       catch (Exception e) {
@@ -193,23 +193,18 @@ public class StackImpl implements IContainer, StackImplMBean {
 
   public SessionFactory getSessionFactory() throws IllegalDiameterStateException {
     if (state == StackState.CONFIGURED || state == StackState.STARTED) {
-    	// FIXME: When possible, get rid of IoC here.
+      // FIXME: When possible, get rid of IoC here.
       return (SessionFactory) assembler.getComponentInstance(SessionFactory.class);
     }
     else {
       throw new IllegalDiameterStateException();
     }
   }
-  
-	public Dictionary getDictionary() throws IllegalDiameterStateException {
-		if (state == StackState.CONFIGURED || state == StackState.STARTED) {
-			return DictionarySingleton.getDictionary();
-		}
-		else {
-			throw new IllegalDiameterStateException();
-		}
-	}
-	
+
+  public Dictionary getDictionary() throws IllegalDiameterStateException {
+    return DictionarySingleton.getDictionary();
+  }
+
   public void start() throws IllegalDiameterStateException, InternalException {
     lock.lock();
     try {

@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -300,7 +300,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
         catch (Exception exc) {
           logger.warn("Can not get local port", exc);
         }
-        logger.debug("Create conn with localAddress={}; localPort={}", localAddress, localPort);	
+        logger.debug("Create conn with localAddress={}; localPort={}", localAddress, localPort);
       }
       this.connection = trFactory.createConnection(remoteAddress, concurrentFactory, port, localAddress, localPort, connListener, ref);
     }
@@ -350,7 +350,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
 
   @SuppressWarnings("unchecked")
   public void removePeerStateListener(final PeerStateListener listener) {
-	  //FIXME: fix this... cmon
+    //FIXME: fix this... cmon
     if (listener != null) {
       fsm.remStateChangeNotification(new AbstractStateChangeListener() {
         public void stateChanged(Enum oldState, Enum newState) {
@@ -421,7 +421,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   }
 
   public void disconnect() throws InternalException, IllegalDiameterStateException {
-	super.disconnect();
+    super.disconnect();
     if (getState(PeerState.class) != PeerState.DOWN) {
       stopping = true;
       try {
@@ -490,7 +490,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
 
   public boolean sendMessage(IMessage message) throws TransportException, OverloadException, InternalException {
     if(dictionary != null && dictionary.isEnabled()) {
-    	dictionary.validate(message, false);
+      dictionary.validate(message, false);
     }
     return !stopping && fsm.handleEvent(new FsmEvent(EventTypes.SEND_MSG_EVENT, message));
   }
@@ -800,6 +800,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     @SuppressWarnings("unchecked")
     public boolean receiveMessage(IMessage message) {
       boolean isProcessed = false;
+
       if (message.isRequest()) {
         // Server request
         String avpSessionId = message.getSessionId();
@@ -815,22 +816,22 @@ public class PeerImpl extends AbstractPeer implements IPeer {
                 sendMessage(answer);
                 if(statistic.isEnabled())
                 {
-                	statistic.getRecordByName(IStatisticRecord.Counters.AppGenResponse.name()).inc();
+                  statistic.getRecordByName(IStatisticRecord.Counters.AppGenResponse.name()).inc();
                 }
               }
               catch (Exception e) {
                 logger.warn("Can not send immediate answer {}", answer);
               }
             }
-           
+
             if(statistic.isEnabled()){
-            	statistic.getRecordByName(IStatisticRecord.Counters.NetGenRequest.name()).inc();
+              statistic.getRecordByName(IStatisticRecord.Counters.NetGenRequest.name()).inc();
             }
             isProcessed = true;
           }
           else {
-        	  if(statistic.isEnabled())
-        		  statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedRequest.name()).inc();
+            if(statistic.isEnabled())
+              statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedRequest.name()).inc();
           }
         }
       }
@@ -853,21 +854,21 @@ public class PeerImpl extends AbstractPeer implements IPeer {
             else {
               logger.debug("Can not call answer listener for request {} because listener not set", message);
               if(statistic.isEnabled())
-            	  statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedResponse.name()).inc();
+                statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedResponse.name()).inc();
             }
 
             isProcessed = true;
             if(statistic.isEnabled())
-            	statistic.getRecordByName(IStatisticRecord.Counters.NetGenResponse.name()).inc();
+              statistic.getRecordByName(IStatisticRecord.Counters.NetGenResponse.name()).inc();
           }
           else {
-        	  if(statistic.isEnabled())
-        		  statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedResponse.name()).inc();
+            if(statistic.isEnabled())
+              statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedResponse.name()).inc();
           }
         }
         else {
-        	if(statistic.isEnabled())
-        		statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedResponse.name()).inc();
+          if(statistic.isEnabled())
+            statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedResponse.name()).inc();
         }
       }
       return isProcessed;

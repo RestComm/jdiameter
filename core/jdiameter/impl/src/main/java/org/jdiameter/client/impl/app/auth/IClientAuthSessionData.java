@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2011, Red Hat, Inc. and/or its affiliates, and individual
  * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
@@ -19,19 +19,33 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
-package org.jdiameter.common.api.app;
+package org.jdiameter.client.impl.app.auth;
 
-import org.jdiameter.api.ApplicationId;
-import org.jdiameter.api.app.AppSession;
+import java.io.Serializable;
+
+import org.jdiameter.common.api.app.auth.ClientAuthSessionState;
+import org.jdiameter.common.api.app.auth.IAuthSessionData;
 
 /**
  * 
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public interface IAppSessionFactory {
+public interface IClientAuthSessionData extends IAuthSessionData {
 
-  AppSession getNewSession(String sessionId, Class<? extends AppSession> aClass, ApplicationId applicationId, Object[] args);
+  public void setClientAuthSessionState(ClientAuthSessionState state);
+  public ClientAuthSessionState getClientAuthSessionState();
 
-  AppSession getSession(String sessionId, Class<? extends AppSession> aClass);
+  public boolean isStateless();
+  public void setStateless(boolean b);
+
+  public String getDestinationHost();
+  public void setDestinationHost(String host);
+
+  public String getDestinationRealm();
+  public void setDestinationRealm(String realm);
+
+  public Serializable getTsTimerId();
+  public void setTsTimerId(Serializable realm);
+
 }

@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2011, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -40,7 +40,6 @@ import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
-import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppRequestEvent;
@@ -49,19 +48,16 @@ import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.api.auth.ClientAuthSession;
 import org.jdiameter.api.auth.ClientAuthSessionListener;
-import org.jdiameter.api.auth.ServerAuthSession;
 import org.jdiameter.api.auth.events.AbortSessionAnswer;
 import org.jdiameter.api.auth.events.AbortSessionRequest;
 import org.jdiameter.api.auth.events.ReAuthAnswer;
 import org.jdiameter.api.auth.events.ReAuthRequest;
 import org.jdiameter.api.auth.events.SessionTermAnswer;
 import org.jdiameter.api.auth.events.SessionTermRequest;
-import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.auth.ClientAuthSessionState;
 import org.jdiameter.common.api.app.auth.IAuthMessageFactory;
-import org.jdiameter.common.api.app.auth.IAuthSessionFactory;
 import org.jdiameter.common.api.app.auth.IClientAuthActionContext;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
@@ -89,8 +85,8 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
   protected static final Logger logger = LoggerFactory.getLogger(ClientAuthSessionImpl.class);
 
   // Session State Handling ---------------------------------------------------
-  protected boolean stateless = false;
-  protected ClientAuthSessionState state = IDLE;
+  //protected boolean stateless = false;
+  //protected ClientAuthSessionState state = IDLE;
   protected Lock sendAndStateLock = new ReentrantLock();
 
   // Factories and Listeners --------------------------------------------------
@@ -98,27 +94,28 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
   protected transient IClientAuthActionContext context;
   protected transient ClientAuthSessionListener listener;
 
-  protected String destHost, destRealm;
+  //protected String destHost, destRealm;
   //protected ScheduledFuture sessionTimer;
-  protected Serializable timerId_ts;
+  //protected Serializable timerId_ts;
   protected static final String TIMER_NAME_TS="AUTH_TS";
-  //protected AppEvent buffer;
+  protected IClientAuthSessionData sessionData;
 
   // Constructors -------------------------------------------------------------
 
-  public ClientAuthSessionImpl(String sessionId,SessionFactory sf,ClientAuthSessionListener lst, IAuthMessageFactory fct, StateChangeListener<AppSession> scListener,IClientAuthActionContext context,  boolean stateless) {
-    super(sf, sessionId);
+  public ClientAuthSessionImpl(IClientAuthSessionData sessionData,ISessionFactory sf,ClientAuthSessionListener lst, IAuthMessageFactory fct, StateChangeListener<AppSession> scListener,IClientAuthActionContext context,  boolean stateless) {
+    super(sf, sessionData);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
     if (fct.getApplicationId() == null) {
       throw new IllegalArgumentException("ApplicationId can not be null");
     }
-    appId = fct.getApplicationId();
-    listener = lst;
-    factory = fct;
-    this.stateless = stateless;
+    super.appId = fct.getApplicationId();
+    this.listener = lst;
+    this.factory = fct;
     this.context = context;
+    this.sessionData = sessionData;
+    this.sessionData.setStateless(stateless);
     super.addStateChangeNotification(scListener);
   }
 
@@ -149,8 +146,8 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
       }
       session.send(event.getMessage(), this);
       // Store last destination information
-      destRealm = event.getMessage().getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString();
-      destHost = event.getMessage().getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString();
+      sessionData.setDestinationRealm(event.getMessage().getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString());
+      sessionData.setDestinationHost(event.getMessage().getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString());
     }
     catch (Exception e) {
       throw new InternalException(e);
@@ -161,14 +158,13 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
   }
 
   public boolean isStateless() {
-    return stateless;
+    return this.sessionData.isStateless();
   }
 
   @SuppressWarnings("unchecked")
   protected void setState(ClientAuthSessionState newState) {
-    IAppSessionState oldState = state;
-    state = newState;
-    super.sessionDataSource.updateSession(this);
+    IAppSessionState oldState = sessionData.getClientAuthSessionState();
+    sessionData.setClientAuthSessionState(newState);
     for (StateChangeListener i : stateListeners) {
       i.stateChanged(this,(Enum) oldState, (Enum) newState);
     }
@@ -176,15 +172,16 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
 
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> eClass) {
-    return eClass == ClientAuthSessionState.class ? (E) state : null;
+    return eClass == ClientAuthSessionState.class ? (E) sessionData.getClientAuthSessionState() : null;
   }
 
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
-    return stateless ? handleEventForStatelessSession(event) : handleEventForStatefulSession(event);
+    return sessionData.isStateless() ? handleEventForStatelessSession(event) : handleEventForStatefulSession(event);
   }
 
   public boolean handleEventForStatelessSession(StateEvent event) throws InternalException, OverloadException {
     try {
+      ClientAuthSessionState state = sessionData.getClientAuthSessionState();
       ClientAuthSessionState oldState = state;
 
       switch (state) {
@@ -288,6 +285,7 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
   }
 
   public boolean handleEventForStatefulSession(StateEvent event) throws InternalException, OverloadException {
+    ClientAuthSessionState state = sessionData.getClientAuthSessionState();
     ClientAuthSessionState oldState = state;
 
     try {
@@ -501,7 +499,7 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
 
     return null;
   }
-  
+
   /* (non-Javadoc)
    * @see org.jdiameter.common.impl.app.AppSessionImpl#isReplicable()
    */
@@ -510,25 +508,10 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
     return true;
   }
 
-  /* (non-Javadoc)
-   * @see org.jdiameter.common.impl.app.auth.AppAuthSessionImpl#relink(org.jdiameter.client.api.IContainer)
-   */
-  @Override
-  public void relink(IContainer stack) {
-    if(super.sf == null) {
-      super.relink(stack);
-      IAuthSessionFactory fct = (IAuthSessionFactory) ((ISessionFactory)super.sf).getAppSessionFactory(ServerAuthSession.class);
-      this.listener = fct.getClientSessionListener();
-      this.context = fct.getClientSessionContext();
-      this.factory = fct.getMessageFactory();
-    }
-  }
-
   protected void startTsTimer() throws IllegalArgumentException, InternalException {
     try {
       sendAndStateLock.lock();
-      this.timerId_ts = super.timerFacility.schedule(sessionId, TIMER_NAME_TS, context.getAccessTimeout());
-      super.sessionDataSource.updateSession(this);
+      sessionData.setTsTimerId(super.timerFacility.schedule(sessionData.getSessionId(), TIMER_NAME_TS, context.getAccessTimeout()));
     }
     finally {
       sendAndStateLock.unlock();
@@ -538,10 +521,10 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
   protected void cancelTsTimer() {
     try {
       sendAndStateLock.lock();
-      if(this.timerId_ts != null) {
-        super.timerFacility.cancel(timerId_ts);
-        this.timerId_ts = null;
-        super.sessionDataSource.updateSession(this);
+      Serializable timerId = sessionData.getTsTimerId();
+      if(timerId != null) {
+        super.timerFacility.cancel(timerId);
+        sessionData.setTsTimerId(null);
       }
     }
     finally {
@@ -557,6 +540,7 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
     if(timerName.equals(TIMER_NAME_TS)) {
       try {
         sendAndStateLock.lock();
+        sessionData.setTsTimerId(null);
         if (context != null) {
           try {
             handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, null));
@@ -572,74 +556,7 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
     }
   }
 
-  /* (non-Javadoc)
-   * @see java.lang.Object#hashCode()
-   */
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((destHost == null) ? 0 : destHost.hashCode());
-    result = prime * result + ((destRealm == null) ? 0 : destRealm.hashCode());
-    result = prime * result + ((state == null) ? 0 : state.hashCode());
-    result = prime * result + (stateless ? 1231 : 1237);
-    result = prime * result + ((timerId_ts == null) ? 0 : timerId_ts.hashCode());
-    return result;
-  }
 
-  /* (non-Javadoc)
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-
-    ClientAuthSessionImpl other = (ClientAuthSessionImpl) obj;
-    if (destHost == null) {
-      if (other.destHost != null) {
-        return false;
-      }
-    }
-    else if (!destHost.equals(other.destHost)) {
-      return false;
-    }
-    if (destRealm == null) {
-      if (other.destRealm != null) {
-        return false;
-      }
-    }
-    else if (!destRealm.equals(other.destRealm)) {
-      return false;
-    }
-    if (state == null) {
-      if (other.state != null) {
-        return false;
-      }
-    }
-    else if (!state.equals(other.state)) {
-      return false;
-    }
-    if (stateless != other.stateless) {
-      return false;
-    }
-    if (timerId_ts == null) {
-      if (other.timerId_ts != null) {
-        return false;
-      }
-    }
-    else if (!timerId_ts.equals(other.timerId_ts)) {
-      return false;
-    }
-    return true;
-  }
 
   protected AbortSessionAnswer createAbortSessionAnswer(Answer answer) {
     return new AbortSessionAnswerImpl(answer);
@@ -666,7 +583,33 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
   }
 
   protected Request createSessionTermRequest() {
-    return session.createRequest(SESSION_TERMINATION_REQUEST, appId, destRealm, destHost);
+    return session.createRequest(SESSION_TERMINATION_REQUEST, appId, sessionData.getDestinationRealm(), sessionData.getDestinationHost());
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((sessionData == null) ? 0 : sessionData.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (!super.equals(obj))
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    ClientAuthSessionImpl other = (ClientAuthSessionImpl) obj;
+    if (sessionData == null) {
+      if (other.sessionData != null)
+        return false;
+    }
+    else if (!sessionData.equals(other.sessionData))
+      return false;
+    return true;
   }
 
   private class RequestDelivery implements Runnable {
@@ -677,14 +620,9 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
       try {
         if (request.getCommandCode() == AbortSessionRequestImpl.code) {
           handleEvent(new Event(Event.Type.RECEIVE_ABORT_SESSION_REQUEST, createAbortSessionRequest(request)));
-        }
-        else if (request.getCommandCode() == ReAuthRequestImpl.code) {
+        } else if (request.getCommandCode() == ReAuthRequestImpl.code) {
           listener.doReAuthRequestEvent(session, createReAuthRequest(request));
-        }
-        else if (request.getCommandCode() == AbortSessionRequestImpl.code) {
-          handleEvent(new Event(Event.Type.RECEIVE_ABORT_SESSION_REQUEST, createAbortSessionRequest(request)));
-        }
-        else {
+        } else {
           listener.doOtherEvent(session, factory.createAuthRequest(request), null);
         }
       }
@@ -705,8 +643,7 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
         // FIXME: baranowb: this shouldn't be like that?
         if (answer.getCommandCode() == factory.getAuthMessageCommandCode()) {
           handleEvent(new Event(Event.Type.RECEIVE_AUTH_ANSWER, factory.createAuthAnswer(answer)));
-        }
-        else if (answer.getCommandCode() == SessionTermAnswerImpl.code) {
+        } else if (answer.getCommandCode() == SessionTermAnswerImpl.code) {
           handleEvent(new Event(Event.Type.RECEIVE_SESSION_TERINATION_ANSWER, createSessionTermAnswer(answer)));
         }
         else {

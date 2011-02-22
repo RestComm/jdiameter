@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -35,7 +35,6 @@ import java.io.Serializable;
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.Message;
@@ -44,19 +43,16 @@ import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.acc.ClientAccSession;
 import org.jdiameter.api.acc.ClientAccSessionListener;
-import org.jdiameter.api.acc.ServerAccSession;
 import org.jdiameter.api.acc.events.AccountAnswer;
 import org.jdiameter.api.acc.events.AccountRequest;
-import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
-import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.acc.ClientAccSessionState;
-import org.jdiameter.common.api.app.acc.IAccSessionFactory;
 import org.jdiameter.common.api.app.acc.IClientAccActionContext;
+import org.jdiameter.common.impl.app.AppEventImpl;
 import org.jdiameter.common.impl.app.acc.AppAccSessionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,24 +75,26 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
   public static final int GRANT_AND_LOSE = 3;
 
   // Session State Handling ---------------------------------------------------
-  protected ClientAccSessionState state = IDLE;
+  //protected ClientAccSessionState state = IDLE;
 
   // Factories and Listeners --------------------------------------------------
-  protected transient IClientAccActionContext context;
-  protected transient ClientAccSessionListener listener;
-
-  protected Serializable timerId_interim;
+  protected IClientAccActionContext context;
+  protected ClientAccSessionListener listener;
+  //protected transient IMessageParser parser;
+  //protected Serializable timerId_interim;
   protected static final String TIMER_NAME_INTERIM = "CLIENT_INTERIM";
 
-  protected String destHost, destRealm;
-  protected AppEvent buffer;
-
-  public ClientAccSessionImpl(String sessionId, ISessionFactory sessionFactory,ClientAccSessionListener clientAccSessionListener, IClientAccActionContext iClientAccActionContext,
+  //protected String destHost, destRealm;
+  //protected AccountRequest buffer;
+  protected IClientAccSessionData sessionData;
+  public ClientAccSessionImpl(IClientAccSessionData sessionData, ISessionFactory sessionFactory,ClientAccSessionListener clientAccSessionListener, IClientAccActionContext iClientAccActionContext,
       StateChangeListener<AppSession> stateChangeListener, ApplicationId applicationId) {
-    super(sessionFactory,sessionId);
-    appId = applicationId;
-    listener = clientAccSessionListener;
+    super(sessionFactory,sessionData);
+    this.sessionData = sessionData;
+    this.sessionData.setApplicationId(applicationId);
+    this.listener = clientAccSessionListener;
     this.context = iClientAccActionContext;
+
     super.addStateChangeNotification(stateChangeListener);
   }
 
@@ -107,10 +105,10 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
       try {
         session.send(accountRequest.getMessage(), this);
         // Store last destination information
-        destRealm = accountRequest.getMessage().getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString();
+        sessionData.setDestinationRealm(accountRequest.getMessage().getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString());
         Avp destHostAvp = accountRequest.getMessage().getAvps().getAvp(Avp.DESTINATION_HOST);
         if(destHostAvp != null) {
-          destHost = destHostAvp.getOctetString();
+          sessionData.setDestinationHost(destHostAvp.getOctetString());
         }
       }
       catch (Throwable t) {
@@ -126,20 +124,21 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
     }
   }
 
-  protected synchronized void storeToBuffer(AccountRequest accountRequest) {
-    buffer = accountRequest;
-    super.sessionDataSource.updateSession(this);
+  protected synchronized void storeToBuffer(Request accountRequest) {
+    sessionData.setBuffer(accountRequest);
+
   }
 
   protected synchronized boolean checkBufferSpace() {
-    return buffer == null;
+    //TODO: make this different op, so it does not have to fetch data. 
+    return sessionData.getBuffer() == null;
   }
 
   @SuppressWarnings("unchecked")
   protected void setState(IAppSessionState newState) {
-    IAppSessionState oldState = state;
-    state = (ClientAccSessionState) newState;
-    super.sessionDataSource.updateSession(this);
+    IAppSessionState oldState = sessionData.getClientAccSessionState();
+    sessionData.setClientAccSessionState((ClientAccSessionState) newState);
+
     for (StateChangeListener i : stateListeners) {
       i.stateChanged(this,(Enum) oldState, (Enum) newState);
     }
@@ -151,10 +150,10 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
 
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
 
-    ClientAccSessionState oldState = state;
+    ClientAccSessionState oldState = sessionData.getClientAccSessionState();
 
     try {
-      switch (state) {
+      switch (oldState) {
       // Idle ==========
       case IDLE: {
         switch ((Event.Type) event.getType()) {
@@ -175,7 +174,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
           break;
           // Send buffered message action in other section of this method see below
         default:
-          throw new IllegalStateException("Current state " + state + " action " + event.getType());
+          throw new IllegalStateException("Current state " + oldState + " action " + event.getType());
         }
         break;
       }
@@ -191,7 +190,8 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
           // Action: Store Start Record
           // New State: OPEN
           if (checkBufferSpace() && accRtReq != null && accRtReq.getInteger32() != DELIVER_AND_GRANT) {
-            storeToBuffer(request);
+            //... cast overkill...
+            storeToBuffer((Request) ((AppEventImpl)request).getMessage());
             setState(OPEN);
           }
           else {
@@ -269,7 +269,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
           if (context != null) {
             Request str = createSessionTermRequest();
             context.disconnectUserOrDev(this,str);
-            storeToBuffer(createAccountRequest(str));
+            storeToBuffer(str);
           }
           break;
         }
@@ -323,7 +323,8 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
           // Action: Store interim record
           // New State: OPEN
           if (checkBufferSpace() && accRtReq != null && accRtReq.getInteger32() != DELIVER_AND_GRANT) {
-            storeToBuffer(request);
+            //... cast overkill...
+            storeToBuffer((Request) ((AppEventImpl)request).getMessage());
             setState(OPEN);
           }
           else {
@@ -394,7 +395,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
           if (context != null) {
             Request str = createSessionTermRequest();
             context.disconnectUserOrDev(this,str);
-            storeToBuffer(createAccountRequest(str));
+            storeToBuffer(str);
           }
           break;
         }
@@ -417,7 +418,8 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
             // Action: Store event record
             // New State: IDLE
             AccountRequest data = (AccountRequest) event.getData();
-            storeToBuffer(data);
+            //... cast overkill...
+            storeToBuffer((Request) ((AppEventImpl)data).getMessage());
           }
 
           // Current State: PENDING_E
@@ -488,7 +490,8 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
             // Action: Store stop record
             // New State: IDLE
             AccountRequest data = (AccountRequest) event.getData();
-            storeToBuffer(data);
+            //... cast overkill...
+            storeToBuffer((Request) ((AppEventImpl)data).getMessage());
           }
           // Current State: PENDING_L
           // Event: Failure to send and no buffer space available
@@ -508,7 +511,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
         break;
       }
       }
-
+      ClientAccSessionState state = sessionData.getClientAccSessionState();
       // Post processing
       if (oldState != state) {
         switch (state) {
@@ -521,8 +524,8 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
           // New State: PENDING_B
           try {
             synchronized (this) {
-              if (buffer != null) {
-                session.send(buffer.getMessage(), this);
+              if (!checkBufferSpace()) {
+                session.send(sessionData.getBuffer(), this);
                 setState(PENDING_BUFFERED);
               }
             }
@@ -530,8 +533,8 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
           catch (Exception e) {
             logger.debug("can not send buffered message", e);
             synchronized (this) {
-              if (context != null && buffer != null) {
-                if (!context.failedSendRecord(this,(Request) buffer.getMessage())) {
+              if (context != null && !checkBufferSpace()) {
+                if (!context.failedSendRecord(this,(Request) sessionData.getBuffer())) {
                   storeToBuffer(null);
                 }
               }
@@ -548,42 +551,42 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
   }
 
   protected void processInterimIntervalAvp(StateEvent event) throws InternalException {
-//    Avp interval = ((AppEvent) event.getData()).getMessage().getAvps().getAvp(Avp.ACCT_INTERIM_INTERVAL);
-//    if (interval != null) {
-//      // create timer
-//      try {
-//        long v = interval.getUnsigned32();
-//        if (v != 0) {
-//          //          scheduler.schedule(
-//          //              new Runnable() {
-//          //                public void run() {
-//          //                  if (context != null) {
-//          //                    try {
-//          //                      Request interimRecord = createInterimRecord();
-//          //                      context.interimIntervalElapses(interimRecord);
-//          //                      sendAndStateLock.lock();
-//          //                      session.send(interimRecord, ClientAccSessionImpl.this);
-//          //                      setState(PENDING_INTERIM);
-//          //                    }
-//          //                    catch (Exception e) {
-//          //                      logger.debug("Can not process Interim Interval AVP", e);
-//          //                    }
-//          //                    finally {
-//          //                      sendAndStateLock.unlock();
-//          //                    }
-//          //                  }
-//          //                }
-//          //              },
-//          //              v, TimeUnit.SECONDS
-//          //          );
-//          cancelInterimTimer();
-//          this.timerId_interim = startInterimTimer(v);
-//        }
-//      }
-//      catch (AvpDataException e) {
-//        logger.debug("Unable to retrieve Acct-Interim-Interval AVP value", e);
-//      }
-//    }
+    //    Avp interval = ((AppEvent) event.getData()).getMessage().getAvps().getAvp(Avp.ACCT_INTERIM_INTERVAL);
+    //    if (interval != null) {
+    //      // create timer
+    //      try {
+    //        long v = interval.getUnsigned32();
+    //        if (v != 0) {
+    //          //          scheduler.schedule(
+    //          //              new Runnable() {
+    //          //                public void run() {
+    //          //                  if (context != null) {
+    //          //                    try {
+    //          //                      Request interimRecord = createInterimRecord();
+    //          //                      context.interimIntervalElapses(interimRecord);
+    //          //                      sendAndStateLock.lock();
+    //          //                      session.send(interimRecord, ClientAccSessionImpl.this);
+    //          //                      setState(PENDING_INTERIM);
+    //          //                    }
+    //          //                    catch (Exception e) {
+    //          //                      logger.debug("Can not process Interim Interval AVP", e);
+    //          //                    }
+    //          //                    finally {
+    //          //                      sendAndStateLock.unlock();
+    //          //                    }
+    //          //                  }
+    //          //                }
+    //          //              },
+    //          //              v, TimeUnit.SECONDS
+    //          //          );
+    //          cancelInterimTimer();
+    //          this.timerId_interim = startInterimTimer(v);
+    //        }
+    //      }
+    //      catch (AvpDataException e) {
+    //        logger.debug("Unable to retrieve Acct-Interim-Interval AVP value", e);
+    //      }
+    //    }
   }
 
   /* (non-Javadoc)
@@ -599,7 +602,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
           sendAndStateLock.lock();
           session.send(interimRecord, ClientAccSessionImpl.this);
           setState(PENDING_INTERIM);
-          this.timerId_interim = null;
+          sessionData.setInterimTimerId(null);
         }
         catch (Exception e) {
           logger.debug("Can not process Interim Interval AVP", e);
@@ -610,16 +613,17 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
       }
     }
     else {
-      super.onTimer(timerName);
+      //....?
     }
   }
 
   private Serializable startInterimTimer(long v) {
     try{
       sendAndStateLock.lock();
-      this.timerId_interim = super.timerFacility.schedule(sessionId, TIMER_NAME_INTERIM, v);
-      super.sessionDataSource.updateSession(this);
-      return this.timerId_interim;
+      Serializable interimTimerId = super.timerFacility.schedule(sessionData.getSessionId(), TIMER_NAME_INTERIM, v);
+      sessionData.setInterimTimerId(interimTimerId);
+
+      return interimTimerId;
     }
     finally {
       sendAndStateLock.unlock();
@@ -629,10 +633,10 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
   private void cancelInterimTimer() {
     try{
       sendAndStateLock.lock();
-      if(this.timerId_interim != null) {
-        super.timerFacility.cancel(timerId_interim);
-        this.timerId_interim = null;
-        super.sessionDataSource.updateSession(this);
+      Serializable interimTimerId = sessionData.getInterimTimerId();
+      if(interimTimerId != null) {
+        super.timerFacility.cancel(interimTimerId);
+        sessionData.setInterimTimerId(null);
       }
     }
     finally {
@@ -642,7 +646,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
 
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> eClass) {
-    return eClass == ClientAccSessionState.class ? (E) state : null;
+    return eClass == ClientAccSessionState.class ? (E) sessionData.getClientAccSessionState() : null;
   }
 
   public void receivedSuccessMessage(Request request, Answer answer) {
@@ -653,7 +657,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
       }
       catch (Exception e) {
         logger.debug("Unable to deliver message to listener.", e);
-      }	
+      }
       try {
         sendAndStateLock.lock();
         handleEvent(new Event(createAccountAnswer(answer)));
@@ -713,100 +717,39 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
     return true;
   }
 
-  /* (non-Javadoc)
-   * @see org.jdiameter.common.impl.app.AppSessionImpl#relink(org.jdiameter.client.api.IContainer)
-   */
-  @Override
-  public void relink(IContainer stack) {
-    if(super.sf == null) {
-      super.relink(stack);
-      IAccSessionFactory fct = (IAccSessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(ClientAccSession.class);
-
-      this.listener = fct.getClientSessionListener();
-      this.context = fct.getClientContextListener();
-    }
-  }
-
   protected Request createInterimRecord() {
-    Request interimRecord = session.createRequest(AccountRequest.code, appId, destRealm, destHost);
+    Request interimRecord = session.createRequest(AccountRequest.code, sessionData.getApplicationId(), sessionData.getDestinationRealm(), sessionData.getDestinationHost());
     interimRecord.getAvps().addAvp(Avp.ACC_RECORD_TYPE, 3);
     return interimRecord;
   }
 
   protected Request createSessionTermRequest() {
-    return session.createRequest(Message.SESSION_TERMINATION_REQUEST, appId, destRealm, destHost);
+    return session.createRequest(Message.SESSION_TERMINATION_REQUEST, sessionData.getApplicationId(), sessionData.getDestinationRealm(), sessionData.getDestinationHost());
   }
 
-  /* (non-Javadoc)
-   * @see java.lang.Object#hashCode()
-   */
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((buffer == null) ? 0 : buffer.hashCode());
-    result = prime * result + ((destHost == null) ? 0 : destHost.hashCode());
-    result = prime * result + ((destRealm == null) ? 0 : destRealm.hashCode());
-    result = prime * result + ((state == null) ? 0 : state.hashCode());
-    result = prime * result + ((timerId_interim == null) ? 0 : timerId_interim.hashCode());
+    result = prime * result + ((sessionData == null) ? 0 : sessionData.hashCode());
     return result;
   }
 
-  /* (non-Javadoc)
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) {
+    if (this == obj)
       return true;
-    }
-    if (obj == null) {
+    if (obj == null)
       return false;
-    }
-    if (getClass() != obj.getClass()) {
+    if (getClass() != obj.getClass())
       return false;
-    }
-
     ClientAccSessionImpl other = (ClientAccSessionImpl) obj;
-    if (buffer == null) {
-      if (other.buffer != null)
+    if (sessionData == null) {
+      if (other.sessionData != null)
         return false;
     }
-    else if (!buffer.equals(other.buffer)) {
+    else if (!sessionData.equals(other.sessionData))
       return false;
-    }
-    if (destHost == null) {
-      if (other.destHost != null) {
-        return false;
-      }
-    }
-    else if (!destHost.equals(other.destHost)) {
-      return false;
-    }
-    if (destRealm == null) {
-      if (other.destRealm != null) {
-        return false;
-      }
-    }
-    else if (!destRealm.equals(other.destRealm)) {
-      return false;
-    }
-    if (state == null) {
-      if (other.state != null) {
-        return false;
-      }
-    }
-    else if (!state.equals(other.state)) {
-      return false;
-    }
-    if (timerId_interim == null) {
-      if (other.timerId_interim != null) {
-        return false;
-      }
-    }
-    else if (!timerId_interim.equals(other.timerId_interim)) {
-      return false;
-    }
     return true;
   }
 

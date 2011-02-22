@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -52,7 +52,12 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
 
   SessionImpl(IContainer container) {
     setContainer(container);
-    sessionId = generateSessionId();
+    try {
+      sessionId = container.getSessionFactory().getSessionId();
+    }
+    catch (IllegalDiameterStateException idse) {
+      throw new IllegalStateException("Unable to generate Session-Id", idse);
+    }
   }
 
   void setContainer(IContainer container) {
@@ -154,5 +159,5 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
   public <T> T unwrap(Class<T> iface) throws InternalException {
     return (T) (iface == RawSession.class ?  new RawSessionImpl(container) : null);
   }
-   
+
 }

@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -26,13 +26,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.NetworkReqListener;
-import org.jdiameter.api.SessionFactory;
-import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
-import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.ISessionFactory;
-import org.jdiameter.common.api.app.auth.IAuthSessionFactory;
+import org.jdiameter.common.api.app.auth.IAuthSessionData;
 import org.jdiameter.common.impl.app.AppSessionImpl;
 
 /**
@@ -45,15 +43,14 @@ public abstract class AppAuthSessionImpl extends AppSessionImpl implements Netwo
   private static final long serialVersionUID = 1L;
 
   protected Lock sendAndStateLock = new ReentrantLock();
-  // protected ScheduledExecutorService scheduler = null;
-
+  protected ApplicationId appId;
   @SuppressWarnings("unchecked")
   protected transient List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
 
   // protected SessionFactory sf = null;
 
-  public AppAuthSessionImpl(SessionFactory sf, String sessionId) {
-    super(sf, sessionId);
+  public AppAuthSessionImpl(ISessionFactory sf, IAuthSessionData sessionData) {
+    super(sf, sessionData);
   }
 
   @SuppressWarnings("unchecked")
@@ -73,34 +70,31 @@ public abstract class AppAuthSessionImpl extends AppSessionImpl implements Netwo
     super.release();
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.jdiameter.common.impl.app.AppSessionImpl#relink(org.jdiameter.client
-   * .api.IContainer)
-   */
-  @SuppressWarnings("unchecked")
   @Override
-  public void relink(IContainer stack) {
-    super.relink(stack);
-
-    // FIXME Any better way to do this?
-    Class interfaze = null;
-    for (Class possibleInterface : this.getClass().getInterfaces()) {
-      if (interfaze != null) {
-        break;
-      }
-      for (Class appSessionInterface : possibleInterface.getInterfaces()) {
-        if (appSessionInterface.equals(AppSession.class)) {
-          interfaze = possibleInterface;
-          break;
-        }
-      }
-    }
-    IAuthSessionFactory fct = (IAuthSessionFactory) ((ISessionFactory) super.sf).getAppSessionFactory(interfaze);
-    this.stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
-    this.addStateChangeNotification(fct.getStateListener());
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((appId == null) ? 0 : appId.hashCode());
+    return result;
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (!super.equals(obj))
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    AppAuthSessionImpl other = (AppAuthSessionImpl) obj;
+    if (appId == null) {
+      if (other.appId != null)
+        return false;
+    }
+    else if (!appId.equals(other.appId))
+      return false;
+    return true;
+  }
+
 
 }

@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2011, Red Hat, Inc. and/or its affiliates, and individual
  * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
@@ -19,19 +19,34 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
-package org.jdiameter.common.api.app;
+package org.jdiameter.server.impl.app.acc;
 
-import org.jdiameter.api.ApplicationId;
-import org.jdiameter.api.app.AppSession;
+import java.io.Serializable;
+
+import org.jdiameter.common.api.app.acc.IAccSessionData;
+import org.jdiameter.common.api.app.acc.ServerAccSessionState;
 
 /**
  * 
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public interface IAppSessionFactory {
+public interface IServerAccSessionData extends IAccSessionData {
 
-  AppSession getNewSession(String sessionId, Class<? extends AppSession> aClass, ApplicationId applicationId, Object[] args);
+  public void setServerAccSessionState(ServerAccSessionState value);
+  public ServerAccSessionState getServerAccSessionState();
 
-  AppSession getSession(String sessionId, Class<? extends AppSession> aClass);
+  public void setStateless(boolean value);
+  public boolean isStateless();
+
+  /**
+   * Seconds value, its taken from either request or answer. Contained in Acct-Interim-Interval AVP
+   * @param value
+   */
+  public void setTsTimeout(long value);
+  public long getTsTimeout();
+
+  public void setTsTimerId(Serializable value);
+  public Serializable getTsTimerId();
+
 }

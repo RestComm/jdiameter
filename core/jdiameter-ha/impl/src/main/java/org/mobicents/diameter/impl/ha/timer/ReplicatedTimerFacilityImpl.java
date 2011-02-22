@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -32,7 +32,7 @@ import org.mobicents.cache.MobicentsCache;
 import org.mobicents.cluster.DefaultMobicentsCluster;
 import org.mobicents.cluster.MobicentsCluster;
 import org.mobicents.cluster.election.DefaultClusterElector;
-import org.mobicents.diameter.impl.ha.data.ReplicatedDataSource;
+import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 import org.mobicents.timers.FaultTolerantScheduler;
 import org.mobicents.timers.TimerTask;
 import org.mobicents.timers.TimerTaskData;
@@ -57,8 +57,8 @@ public class ReplicatedTimerFacilityImpl implements ITimerFacility {
     super();
     this.sessionDataSource = container.getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
     this.taskFactory = new TimerTaskFactory();
-    ReplicatedDataSource rds = (ReplicatedDataSource) this.sessionDataSource;
-    MobicentsCache mcCache = new MobicentsCache(rds.getJBossCache(), null);
+    ReplicatedSessionDatasource rsds = (ReplicatedSessionDatasource) this.sessionDataSource;
+    MobicentsCache mcCache = new MobicentsCache(rsds.getJBossCache(), null);
     MobicentsCluster cluster = new DefaultMobicentsCluster(mcCache, null, new DefaultClusterElector());
     this.ftScheduler = new FaultTolerantScheduler("DiameterTimer", 5, cluster, (byte) 12, null, this.taskFactory);
   }

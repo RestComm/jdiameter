@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -21,8 +21,6 @@
  */
 package org.jdiameter.api;
 
-import java.io.Serializable;
-
 /**
  * The session delivery objects are responsible for delivering all incoming Message to a specific session.
  * It determines the Diameter Session object that the message belongs to by querying the message's session id AVP.
@@ -41,7 +39,7 @@ import java.io.Serializable;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
-public interface BaseSession extends Serializable {
+public interface BaseSession {
 
   /**
    * Returns the time when this session was created (milliseconds)
