@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -25,8 +25,6 @@ import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.RouteException;
-import org.jdiameter.api.app.AppSession;
-import org.jdiameter.api.app.StateMachine;
 import org.jdiameter.api.auth.events.ReAuthRequest;
 import org.jdiameter.api.cca.events.JCreditControlAnswer;
 
@@ -37,7 +35,7 @@ import org.jdiameter.api.cca.events.JCreditControlAnswer;
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
  */
-public interface ServerCCASession extends AppSession, StateMachine {
+public interface ServerCCASession extends CCASession {
 
   /**
    * Send credit-control answer to client
