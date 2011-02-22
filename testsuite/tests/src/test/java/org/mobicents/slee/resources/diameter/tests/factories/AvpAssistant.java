@@ -123,6 +123,7 @@ import net.java.slee.resource.diameter.ro.events.avp.WlanRadioContainer;
 import net.java.slee.resource.diameter.sh.events.avp.DiameterShAvpCodes;
 import net.java.slee.resource.diameter.sh.events.avp.SupportedFeaturesAvp;
 import net.java.slee.resource.diameter.sh.events.avp.UserIdentityAvp;
+import net.java.slee.resource.diameter.sh.events.avp.userdata.ShData;
 
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Avp;
@@ -195,6 +196,8 @@ import org.mobicents.slee.resource.diameter.ro.events.avp.WlanInformationImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.WlanRadioContainerImpl;
 import org.mobicents.slee.resource.diameter.sh.events.avp.SupportedFeaturesAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.events.avp.UserIdentityAvpImpl;
+import org.mobicents.slee.resource.diameter.sh.events.avp.userdata.ObjectFactory;
+import org.mobicents.slee.resource.diameter.sh.events.avp.userdata.UserDataObjectFactoryImpl;
 
 /**
  *
@@ -333,6 +336,9 @@ public class AvpAssistant {
 
     typeValues.put( UserIdentityAvp.class, new UserIdentityAvpImpl(DiameterShAvpCodes.USER_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID, 0, 1, dummyAvpBytes) );
     typeValues.put( UserIdentityAvp[].class, new UserIdentityAvpImpl[]{new UserIdentityAvpImpl(DiameterShAvpCodes.USER_IDENTITY, DiameterShAvpCodes.SH_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( ShData.class, new UserDataObjectFactoryImpl(new ObjectFactory()).createShData() );
+    typeValues.put( ShData[].class, new ShData[]{new UserDataObjectFactoryImpl(new ObjectFactory()).createShData()});
 
     typeValues.put( SupportedFeaturesAvp.class, new SupportedFeaturesAvpImpl(DiameterShAvpCodes.SUPPORTED_FEATURES, DiameterShAvpCodes.SH_VENDOR_ID, 0, 1, dummyAvpBytes) );
     typeValues.put( SupportedFeaturesAvp[].class, new SupportedFeaturesAvpImpl[]{new SupportedFeaturesAvpImpl(DiameterShAvpCodes.SUPPORTED_FEATURES, DiameterShAvpCodes.SH_VENDOR_ID, 0, 1, dummyAvpBytes)});
