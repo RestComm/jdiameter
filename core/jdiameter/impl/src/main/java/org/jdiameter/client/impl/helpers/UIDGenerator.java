@@ -17,7 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class UIDGenerator {  // todo remove or redesign
 
-  private static long value;
+  private /*static*/ long value; // static causes repetitions
   private final static Lock mutex = new ReentrantLock();
   private final static ThreadLocal<Delta> ranges = new ThreadLocal<Delta>() {
         protected synchronized Delta initialValue() {
