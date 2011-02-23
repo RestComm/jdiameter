@@ -135,7 +135,7 @@ public class RfFactoriesTest implements DiameterRAInterface {
     DiameterMessageFactoryImpl baseFactory = new DiameterMessageFactoryImpl(stack);
     DiameterAvpFactoryImpl baseAvpFactory = new DiameterAvpFactoryImpl();
     
-    rfMessageFactory = new RfMessageFactoryImpl(baseFactory, "", stack);
+    rfMessageFactory = new RfMessageFactoryImpl(baseFactory, null, stack);
     rfAvpFactory = new RoAvpFactoryImpl(baseAvpFactory);
     
     try
@@ -173,6 +173,7 @@ public class RfFactoriesTest implements DiameterRAInterface {
     }
     catch ( Exception e ) {
       e.printStackTrace();
+      Assert.fail(e.getMessage());
     }
   }
   
