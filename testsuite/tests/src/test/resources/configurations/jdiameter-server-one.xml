@@ -36,7 +36,7 @@
     <RecTimeOut value="10000" />
 
     <!-- Statistics Logger Configuration -->
-    <StatisticLogger pause="30000" delay="30000" />
+    <Statistics pause="30000" delay="30000" enabled="true" active_records="Concurrent,ScheduledExecService,Network,ScheduledExecService,AppGenRequestPerSecond,NetGenRequestPerSecond,Peer,Peer.local,PeerFSM"/>
 
     <Concurrent>
       <Entity name="ThreadGroup" size="64"/> // Common Thread Pool

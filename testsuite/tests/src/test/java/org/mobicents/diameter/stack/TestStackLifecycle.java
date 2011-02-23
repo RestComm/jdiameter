@@ -38,6 +38,7 @@ public class TestStackLifecycle {
       // We are OK. This is what was expected.
     }
     catch (Exception e) {
+      e.printStackTrace();
       fail("Expected different exception (IllegalDiameterStateException), got " + e.getClass().getName());
     }
     finally {
@@ -69,6 +70,7 @@ public class TestStackLifecycle {
       // We are OK. This is what was expected.
     }
     catch (Exception e) {
+      e.printStackTrace();
       fail("Expected different exception (IllegalDiameterStateException), got " + e.getClass().getName());
     }
     finally {
@@ -249,6 +251,7 @@ public class TestStackLifecycle {
       // We are OK. This is what was expected.
     }
     catch (Exception e) {
+      e.printStackTrace();
       fail("Expected different exception (IllegalDiameterStateException), got " + e.getClass().getName());
     }
     finally {
@@ -284,6 +287,7 @@ public class TestStackLifecycle {
       // We are OK. This is what was expected.
     }
     catch (Exception e) {
+      e.printStackTrace();
       fail("Expected different exception (IllegalDiameterStateException), got " + e.getClass().getName());
     }
     finally {
@@ -314,6 +318,7 @@ public class TestStackLifecycle {
       stack.stop();
     }
     catch (Exception e) {
+      e.printStackTrace();
       fail("Should have been successful calling stop() with stack in STOPPED state. Failed with: " + e.getMessage());
     }
     finally {
