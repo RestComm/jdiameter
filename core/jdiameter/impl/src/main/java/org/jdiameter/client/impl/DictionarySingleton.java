@@ -24,6 +24,7 @@ package org.jdiameter.client.impl;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.validation.Dictionary;
 import org.jdiameter.api.validation.ValidatorLevel;
+import org.jdiameter.common.impl.validation.DictionaryImpl;
 
 /**
  * Util class. Makes it easier to access Dictionary instance as singleton.
@@ -34,7 +35,7 @@ import org.jdiameter.api.validation.ValidatorLevel;
  */
 public class DictionarySingleton {
 
-  private static Dictionary SINGLETON;
+  private static Dictionary SINGLETON = DictionaryImpl.INSTANCE; // default
 
   private DictionarySingleton() {
     // defeat instantiation

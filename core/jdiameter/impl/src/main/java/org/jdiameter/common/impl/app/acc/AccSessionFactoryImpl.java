@@ -74,19 +74,14 @@ public class AccSessionFactoryImpl implements IAccSessionFactory, ServerAccSessi
   protected ISessionFactory sessionFactory = null;
   protected ApplicationId applicationId;
   protected IAppSessionDataFactory<IAccSessionData> sessionDataFactory;
+
   protected AccSessionFactoryImpl() {
   }
 
   public AccSessionFactoryImpl(SessionFactory sessionFactory) {
     super();
 
-    this.sessionFactory = (ISessionFactory) sessionFactory;
-    this.iss = this.sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
-    this.sessionDataFactory = (IAppSessionDataFactory<IAccSessionData>) this.iss.getDataFactory(IAccSessionData.class);
-    if(this.sessionDataFactory == null) {
-      logger.debug("No factory for Accounting Application data, using default/local.");
-      this.sessionDataFactory = new AccLocalSessionDataFactory();
-    }
+    setSessionFactory((ISessionFactory) sessionFactory);
   }
 
   // ACC Factory Methods ------------------------------------------------------
@@ -203,8 +198,13 @@ public class AccSessionFactoryImpl implements IAccSessionFactory, ServerAccSessi
    */
   public void setSessionFactory(ISessionFactory sessionFactory) {
     this.sessionFactory = sessionFactory;
-    if(this.iss == null) {
+    if (this.iss == null) {
       this.iss = this.sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
+      this.sessionDataFactory = (IAppSessionDataFactory<IAccSessionData>) this.iss.getDataFactory(IAccSessionData.class);
+      if (this.sessionDataFactory == null) {
+        logger.debug("No factory for Accounting Application data, using default/local.");
+        this.sessionDataFactory = new AccLocalSessionDataFactory();
+      }
     }
   }
 
