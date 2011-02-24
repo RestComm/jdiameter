@@ -133,13 +133,17 @@ public class StatisticProcessorImpl implements IStatisticProcessor {
     if (!this.statisticFactory.isOn()) {
       return;
     }
-
-    this.processorFuture.cancel(false);
-    this.processorFuture = null;
-
-    this.logFuture.cancel(false);
-    this.logFuture = null;
-
+    if(this.processorFuture!=null)
+    {
+    	this.processorFuture.cancel(false);
+    	this.processorFuture = null;
+    }
+    
+    if(this.logFuture != null)
+    {
+    	this.logFuture.cancel(false);
+    	this.logFuture = null;
+    }
     this.concurrentFactory.shutdownNow(executorService);
   }
 
