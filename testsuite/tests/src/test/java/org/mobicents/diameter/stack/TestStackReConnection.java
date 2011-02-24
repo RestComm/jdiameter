@@ -337,6 +337,9 @@ public class TestStackReConnection {
         }
       }, ApplicationId.createByAccAppId(193, 19302));
       client.start(Mode.ALL_PEERS, 5000, TimeUnit.MILLISECONDS);
+      
+      Thread.currentThread().sleep(1500);
+      
       client2.init(clientConfig2);
       clientConfigInputStream2.close();
       network = client2.unwrap(Network.class);
@@ -351,7 +354,7 @@ public class TestStackReConnection {
       assertEquals("Wrong num of connections, initial setup did not succeed. ", 2, peers.size());
 
       assertTrue("Peer1 not connected. State[" + ((IPeer) peers.get(0)).getState(PeerState.class) + "]", ((IPeer) peers.get(0)).isConnected());
-      assertTrue("Peer2 not connected. State[" + ((IPeer) peers.get(1)).getState(PeerState.class) + "]", ((IPeer) peers.get(0)).isConnected());
+      assertTrue("Peer2 not connected. State[" + ((IPeer) peers.get(1)).getState(PeerState.class) + "]", ((IPeer) peers.get(1)).isConnected());
 
       client.stop();
       _wait();
@@ -378,7 +381,7 @@ public class TestStackReConnection {
       assertEquals("Wrong num of connections, initial setup did not succeed. ", 2, peers.size());
 
       assertTrue("Peer1 not connected. State[" + ((IPeer) peers.get(0)).getState(PeerState.class) + "]", ((IPeer) peers.get(0)).isConnected());
-      assertTrue("Peer2 not connected. State[" + ((IPeer) peers.get(1)).getState(PeerState.class) + "]", ((IPeer) peers.get(0)).isConnected());
+      assertTrue("Peer2 not connected. State[" + ((IPeer) peers.get(1)).getState(PeerState.class) + "]", ((IPeer) peers.get(1)).isConnected());
 
     }
     finally {
