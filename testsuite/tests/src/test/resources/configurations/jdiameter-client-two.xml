@@ -25,7 +25,7 @@
     <AcceptUndefinedPeer value="true" />
     <DuplicateProtection value="true" />
     <DuplicateTimer value="240000" />
-    <UseUriAsFqdn value="false" />
+    <UseUriAsFqdn value="true" />
     <QueueSize value="10000" />
     <MessageTimeOut value="60000" />
     <StopTimeOut value="10000" />
