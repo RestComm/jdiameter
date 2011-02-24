@@ -1,27 +1,23 @@
 /*
- * Mobicents, Communications Middleware
- *
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
- * indicated by the @author tags or express copyright attribution
- * statements applied by the authors. All third-party contributions are
- * distributed under license by Red Hat Middleware LLC.
- *
- * This copyrighted material is made available to anyone wishing to use, modify, 
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
- * for more details.
- *
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- *
- * Boston, MA  02110-1301  USA
+ * JBoss, Home of Professional Open Source
+ * Copyright 2008, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
  */
 package org.mobicents.diameter.stack.dictionary;
 
@@ -42,8 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Start time:14:15:19 2009-05-27<br>
- * Project: diameter-parent<br>
+ * Testsuite for Diameter Dictionary and Validator
  * 
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
@@ -66,6 +61,12 @@ public class MessageValidatorTest extends TestCase {
 
   @Test
   public void testBasicOperations() {
+
+    // Set defaults
+    instance.setEnabled(true);
+    instance.setReceiveLevel(ValidatorLevel.OFF);
+    instance.setSendLevel(ValidatorLevel.ALL);
+
     Message answer = new MessageParser().createEmptyMessage(271, 19302);
     answer.setRequest(false);
     AvpSet set = answer.getAvps();
@@ -126,6 +127,12 @@ public class MessageValidatorTest extends TestCase {
 
   @Test
   public void testGroupedAvpValidationFail() {
+
+    // Set defaults
+    instance.setEnabled(true);
+    instance.setReceiveLevel(ValidatorLevel.OFF);
+    instance.setSendLevel(ValidatorLevel.ALL);
+
     // Yeah, its awkward :) - it already should have session id.
     Message msg = createMessage();
 
@@ -191,6 +198,12 @@ public class MessageValidatorTest extends TestCase {
 
   @Test
   public void testIncomingValidationLevels() {
+
+    // Set defaults
+    instance.setEnabled(true);
+    instance.setReceiveLevel(ValidatorLevel.OFF);
+    instance.setSendLevel(ValidatorLevel.ALL);
+
     // here lets test how different levels affect
     Message msg = createMessage();
 
@@ -587,6 +600,12 @@ public class MessageValidatorTest extends TestCase {
 
   @Test
   public void testOutgoingValidationLevels() {
+
+    // Set defaults
+    instance.setEnabled(true);
+    instance.setReceiveLevel(ValidatorLevel.OFF);
+    instance.setSendLevel(ValidatorLevel.ALL);
+
     // here lets test how different levels affect
     Message msg = createMessage();
 
