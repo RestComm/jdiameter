@@ -1,3 +1,24 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
 package org.jdiameter.common.impl.concurrent;
 
 import org.jdiameter.api.Configuration;
@@ -9,21 +30,27 @@ import static org.jdiameter.common.api.statistic.IStatistic.Groups.ScheduledExec
 import org.jdiameter.common.api.statistic.IStatisticManager;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
 
+import java.util.List;
 import java.util.concurrent.*;
 
+/**
+ * 
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 class CommonScheduledExecutorService extends ScheduledThreadPoolExecutor {
 
 	private IStatistic statistic;
 	private IConcurrentEntityFactory entityFactory;
-	IStatisticRecord execTimeSumm;
-	IStatisticRecord execTimeCount;
-	IStatisticRecord waitTimeSumm;
-	IStatisticRecord waitTimeCount;
-
+	private IStatisticRecord execTimeSumm;
+	private IStatisticRecord execTimeCount;
+	private IStatisticRecord waitTimeSumm;
+	private IStatisticRecord waitTimeCount;
+	private IStatisticManager statisticFactory;
 	public CommonScheduledExecutorService(String name, Configuration config, final IConcurrentEntityFactory entityFactory, IStatisticManager statisticFactory) {
 		super(config == null ? (Integer) Parameters.ConcurrentEntityPoolSize.defValue() : config.getIntValue(Parameters.ConcurrentEntityPoolSize.ordinal(),
 				(Integer) Parameters.ConcurrentEntityPoolSize.defValue()));
-
+		this.statisticFactory = statisticFactory;
 		this.entityFactory = entityFactory;
 		final IStatisticRecord rejectedCount = statisticFactory.newCounterRecord(RejectedTasks);
 		execTimeSumm = statisticFactory.newCounterRecord("TimeSumm", "TimeSumm");
@@ -69,6 +96,16 @@ class CommonScheduledExecutorService extends ScheduledThreadPoolExecutor {
 	
 	public IStatistic getStatistic() {
 		return statistic;
+	}
+
+	public void shutdown() {
+	  this.statisticFactory.removeStatistic(statistic);	
+	  super.shutdown();
+	}
+
+	public List<Runnable> shutdownNow() {
+	  this.statisticFactory.removeStatistic(statistic);
+	  return super.shutdownNow();
 	}
 
 }

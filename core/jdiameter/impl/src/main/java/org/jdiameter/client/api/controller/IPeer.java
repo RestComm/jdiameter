@@ -24,105 +24,112 @@ import org.jdiameter.common.api.statistic.IStatistic;
  */
 public interface IPeer extends Peer {
 
-    /**
-     * Return rating of peer
-     * 
-     * @return int value
-     */
-    int getRating();
+  /**
+   * Return rating of peer
+   * 
+   * @return int value
+   */
+  int getRating();
 
-    /**
-     * Return new hop by hop id for new message
-     * 
-     * @return new hop by hop id
-     */
-    long getHopByHopIdentifier();
+  /**
+   * Return new hop by hop id for new message
+   * 
+   * @return new hop by hop id
+   */
+  long getHopByHopIdentifier();
 
-    /**
-     * Append request to peer request storage map
-     * 
-     * @param message request instance
-     */
-    void addMessage(IMessage message);
+  /**
+   * Append request to peer request storage map
+   * 
+   * @param message request instance
+   */
+  void addMessage(IMessage message);
 
-    /**
-     * Remove request from request storage map
-     * 
-     * @param message request instance
-     */
-    void remMessage(IMessage message);
+  /**
+   * Remove request from request storage map
+   * 
+   * @param message request instance
+   */
+  void remMessage(IMessage message);
 
-    /**
-     * Clear request storage map
-     */
-    IMessage[] remAllMessage();
+  /**
+   * Clear request storage map
+   */
+  IMessage[] remAllMessage();
 
-    /**
-     * Put message to peer fsm
-     * 
-     * @param message request instance
-     * @return true if message will be set to FSM
-     * @throws TransportException
-     * @throws OverloadException
-     */
-    public boolean handleMessage(EventTypes type, IMessage message, String key) throws TransportException, OverloadException, InternalException;
-    
-    /**
-     * Send message to diameter network
-     * 
-     * @param message request instance
-     * @return true if message will be set to FSM
-     * @throws TransportException
-     * @throws OverloadException
-     */
-    boolean sendMessage(IMessage message) throws TransportException, OverloadException, InternalException;
+  /**
+   * Put message to peer fsm
+   * 
+   * @param message request instance
+   * @return true if message will be set to FSM
+   * @throws TransportException
+   * @throws OverloadException
+   */
+  public boolean handleMessage(EventTypes type, IMessage message, String key) throws TransportException, OverloadException, InternalException;
 
-    /**
-     * Return true if peer has valid connection
-     * 
-     * @return true if peer has valid connection
-     */
-    boolean hasValidConnection();
+  /**
+   * Send message to diameter network
+   * 
+   * @param message request instance
+   * @return true if message will be set to FSM
+   * @throws TransportException
+   * @throws OverloadException
+   */
+  boolean sendMessage(IMessage message) throws TransportException, OverloadException, InternalException;
 
-    /**
-     * Attach peer to realm
-     * 
-     * @param realm realm name
-     */
-    void setRealm(String realm);
+  /**
+   * Return true if peer has valid connection
+   * 
+   * @return true if peer has valid connection
+   */
+  boolean hasValidConnection();
 
-    /**
-     * Add state change listener
-     * 
-     * @param listener listener instance
-     */
-    void addStateChangeListener(StateChangeListener listener);
+  /**
+   * Attach peer to realm
+   * 
+   * @param realm realm name
+   */
+  void setRealm(String realm);
 
-    /**
-     * Remove state change listener
-     * 
-     * @param listener listener instance
-     */
-    void remStateChangeListener(StateChangeListener listener);
+  /**
+   * Add state change listener
+   * 
+   * @param listener listener instance
+   */
+  void addStateChangeListener(StateChangeListener listener);
 
-    /**
-     * Add connection state change listener
-     * 
-     * @param listener listener instance
-     */
-    void addConnectionListener(IConnectionListener listener);
+  /**
+   * Remove state change listener
+   * 
+   * @param listener listener instance
+   */
+  void remStateChangeListener(StateChangeListener listener);
 
-    /**
-     * Remove connection state change listener
-     * 
-     * @param listener listener instance
-     */
-    void remConnectionListener(IConnectionListener listener);
+  /**
+   * Add connection state change listener
+   * 
+   * @param listener listener instance
+   */
+  void addConnectionListener(IConnectionListener listener);
 
-    /**
-     * Return peer statistic
-     *
-     * @return peer statistic
-     */
-    IStatistic getStatistic();
+  /**
+   * Remove connection state change listener
+   * 
+   * @param listener listener instance
+   */
+  void remConnectionListener(IConnectionListener listener);
+
+  /**
+   * Return peer statistic
+   *
+   * @return peer statistic
+   */
+  IStatistic getStatistic();
+
+  /**
+   * Return if peer is connected
+   * 
+   * @return is peer connected
+   */
+  boolean isConnected();
 }

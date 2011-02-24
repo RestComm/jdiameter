@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -63,7 +63,6 @@ import org.jdiameter.client.impl.DictionarySingleton;
 import org.jdiameter.client.impl.helpers.Parameters;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.data.ISessionDatasource;
-import org.jdiameter.common.api.statistic.IStatistic;
 import org.jdiameter.common.api.statistic.IStatisticManager;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
 import org.slf4j.Logger;
@@ -297,14 +296,22 @@ public class PeerTableImpl implements IPeerTable {
     }
     if (concurrentFactory  != null) {
       try {
-        concurrentFactory.getThreadGroup().interrupt();
         // Wait for some threads which may take longer...
         // FIXME: Change this once we get rid of ThreadGroup and hard interrupting threads.
-        long remWaitTime = 2500;
+        boolean interrupted = false;
+        long remWaitTime = 2000;
         while(concurrentFactory.getThreadGroup().activeCount() > 0 && remWaitTime > 0) {
-            long waitTime = 250;
-            Thread.sleep(waitTime);
-            remWaitTime -= waitTime;
+          long waitTime = 250;
+          Thread.sleep(waitTime);
+          remWaitTime -= waitTime;
+          // it did not terminated, let's interrupt
+          // FIXME: remove ASAP, this is very bad, it kills threads in middle of op,
+          //        killing FSM of peer for instance, after that its not usable.
+          if(remWaitTime <= 0 && !interrupted) {
+            interrupted = true;
+            remWaitTime = 2000;
+            concurrentFactory.getThreadGroup().interrupt();
+          }
         }
       }
       catch (Exception e) {

@@ -1,3 +1,24 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2011, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a full listing
+ * of individual contributors.
+ * 
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU General Public License, v. 2.0.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License,
+ * v. 2.0 along with this distribution; if not, write to the Free 
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
 package org.jdiameter.server.impl.fsm;
 
 import org.jdiameter.api.Configuration;
@@ -17,6 +38,11 @@ import org.jdiameter.server.api.IStateMachine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl implements IStateMachine, ConfigurationListener {
 
   private static final Logger logger = LoggerFactory.getLogger(org.jdiameter.server.impl.fsm.PeerFSMImpl.class);
@@ -210,15 +236,20 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
           {
             public void entryAction() {
               setTimer(0);
-              if(!context.isRestoreConnection()) {
-                executor = null;
-              }
+              //FIXME: baranowb: removed this, cause this breaks peers as
+              //       it seems, if peer is not removed, it will linger
+              //       without any way to process messages
+              // if(context.isRestoreConnection()) { 
+              executor = null;
+              // }
+              context.removeStatistics();
             }
 
             public boolean processEvent(StateEvent event) {
               switch (type(event)) {
               case START_EVENT:
                 try {
+                  context.createStatistics();
                   if (!context.isConnected()) {
                     context.connect();                              
                   }
@@ -231,7 +262,8 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                   doEndConnection();
                 }
                 break;
-              case CER_EVENT:
+              case CER_EVENT: 
+                context.createStatistics();
                 int resultCode = context.processCerMessage(key(event), message(event));
                 if (resultCode == ResultCode.SUCCESS) {
                   try {
@@ -261,6 +293,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
               case STOP_EVENT:
               case TIMEOUT_EVENT:    
               case DISCONNECT_EVENT:
+                // those are ~legal, ie. DISCONNECT_EVENT is sent back from connection
                 break;
               default:
                 logger.debug("Unknown event type {} in state {}", type(event), state);                          

@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -240,7 +240,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     router.start();
     // Start overload manager
     overloadScheduler = concurrentFactory.getScheduledExecutorService(PeerOverloadTimer.name());
-    Executors.newScheduledThreadPool(1);
+
     Runnable overloadTask = new Runnable() {
       public void run() {
         if (ovrManager != null) {

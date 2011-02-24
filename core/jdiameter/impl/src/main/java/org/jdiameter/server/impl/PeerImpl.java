@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -21,10 +21,25 @@
  */
 package org.jdiameter.server.impl;
 
-import org.jdiameter.api.*;
-
 import static org.jdiameter.api.PeerState.DOWN;
 import static org.jdiameter.api.PeerState.INITIAL;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.util.Map;
+import java.util.Set;
+
+import org.jdiameter.api.ApplicationId;
+import org.jdiameter.api.Avp;
+import org.jdiameter.api.Configuration;
+import org.jdiameter.api.InternalException;
+import org.jdiameter.api.Message;
+import org.jdiameter.api.NetworkReqListener;
+import org.jdiameter.api.OverloadException;
+import org.jdiameter.api.PeerState;
+import org.jdiameter.api.ResultCode;
+import org.jdiameter.api.StatisticRecord;
+import org.jdiameter.api.URI;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IMetaData;
 import org.jdiameter.client.api.ISessionFactory;
@@ -35,19 +50,15 @@ import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.data.ISessionDatasource;
-import org.jdiameter.common.api.statistic.IStatistic;
 import org.jdiameter.common.api.statistic.IStatisticManager;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
-import org.jdiameter.server.api.*;
+import org.jdiameter.server.api.IFsmFactory;
+import org.jdiameter.server.api.INetwork;
+import org.jdiameter.server.api.IOverloadManager;
+import org.jdiameter.server.api.IPeer;
+import org.jdiameter.server.api.IStateMachine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * 
@@ -91,14 +102,17 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
     this.predefinedPeerTable = this.peerTable.getPredefinedPeerTable();
     this.network = nWork;
     this.ovrManager = oManager;
+  }
+
+  protected void createPeerStatistics() {
+    super.createPeerStatistics();
+
     // Append fsm statistic
     if (this.fsm instanceof IStateMachine) {
-    	
     	StatisticRecord[] records = ((IStateMachine) fsm).getStatistic().getRecords(); 
     	IStatisticRecord[] recordsArray = new IStatisticRecord[records.length];
     	int count = 0;
-    	for(StatisticRecord st: records)
-    	{
+    	for(StatisticRecord st: records) {
     		recordsArray[count++] = (IStatisticRecord) st;
     	}
     	this.statistic.appendCounter(recordsArray);
@@ -158,8 +172,20 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
   }
 
   protected class LocalActionConext extends ActionContext {
+  
+    @Override
+	public String toString() {
+    	try{
+		return "LocalActionConext [isRestoreConnection()=" + isRestoreConnection() + ", getPeerDescription()=" + getPeerDescription() + ", isConnected()="
+				+ isConnected() + ", LocalPeer="+metaData.getLocalPeer().getUri()+" ]";
+    	}catch(Exception e)
+    	{
+    		e.printStackTrace();
+    		return "LocalActionContext: No data available...";
+    	}
+	}
 
-    public void sendCeaMessage(int resultCode, Message cer,  String errMessage) throws TransportException, OverloadException {
+	public void sendCeaMessage(int resultCode, Message cer,  String errMessage) throws TransportException, OverloadException {
       logger.debug("Send CEA message");
 
       IMessage message = parser.createEmptyMessage(Message.CAPABILITIES_EXCHANGE_ANSWER, 0);

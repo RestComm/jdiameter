@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
+ * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
  * 
@@ -207,6 +207,7 @@ public class MetaDataImpl implements IMetaData {
     public ClientLocalPeer(IStatisticManager statisticFactory) {
       //FIXME: remove NULL?
       super(null, statisticFactory);
+      createPeerStatistics();
     }
 
     @SuppressWarnings("unchecked")
@@ -361,11 +362,9 @@ public class MetaDataImpl implements IMetaData {
     public void setRealm(String realm) {
     }
 
-    @SuppressWarnings("unchecked")
     public void addStateChangeListener(StateChangeListener listener) {
     }
 
-    @SuppressWarnings("unchecked")
     public void remStateChangeListener(StateChangeListener listener) {
     }
 
@@ -373,6 +372,13 @@ public class MetaDataImpl implements IMetaData {
     }
 
     public void remConnectionListener(IConnectionListener listener) {
+    }
+
+    /* (non-Javadoc)
+     * @see org.jdiameter.client.api.controller.IPeer#isConnected()
+     */
+    public boolean isConnected() {
+      return true; // it's own peer
     }
   }
 }

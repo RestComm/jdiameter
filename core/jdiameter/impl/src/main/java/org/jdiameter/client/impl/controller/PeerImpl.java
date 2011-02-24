@@ -529,6 +529,11 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     return rating;
   }
 
+  @Override
+  public boolean isConnected() {
+    return getState(PeerState.class) == PeerState.OKAY;
+  }
+
   public String toString() {
     return "Peer{" + "Uri=" + uri + "; State=" + fsm.getState(PeerState.class).toString() + "}";
   }
@@ -573,6 +578,10 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   }    
 
   protected class ActionContext implements IContext {
+
+    public String toString() {
+      return new StringBuilder("ActionContext [getPeerDescription()=").append(getPeerDescription()).append(", isConnected()=").append(isConnected()).append(", isRestoreConnection()=").append(isRestoreConnection()).append("]").toString();
+    }
 
     public void connect() throws InternalException, IOException, IllegalDiameterStateException {
       try {            
@@ -917,6 +926,20 @@ public class PeerImpl extends AbstractPeer implements IPeer {
           vendorApp.addAvp(ACCT_APPLICATION_ID, appId.getAcctAppId(), true, false, true);
         }
       }
+    }
+
+    /* (non-Javadoc)
+     * @see org.jdiameter.client.api.fsm.IContext#removePeerStatistics()
+     */
+    public void removeStatistics() {
+      removePeerStatistics();
+    }
+
+    /* (non-Javadoc)
+     * @see org.jdiameter.client.api.fsm.IContext#createPeerStatistics()
+     */
+    public void createStatistics() {
+      createPeerStatistics();
     }
 
   }
