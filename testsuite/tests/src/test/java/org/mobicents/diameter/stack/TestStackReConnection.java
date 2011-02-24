@@ -62,8 +62,8 @@ public class TestStackReConnection {
     StackImpl server = new StackImpl();
     StackImpl client = new StackImpl();
     try {
-      String serverConfigName = "jdiameter-server-one.xml";
-      String clientConfigName = "jdiameter-client-one.xml";
+      String serverConfigName = "jdiameter-server-two.xml";
+      String clientConfigName = "jdiameter-client-two.xml";
 
       InputStream serverConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
       InputStream clientConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
@@ -148,8 +148,8 @@ public class TestStackReConnection {
     StackImpl server = new StackImpl();
     StackImpl client = new StackImpl();
     try {
-      String serverConfigName = "jdiameter-server-one.xml";
-      String clientConfigName = "jdiameter-client-one.xml";
+      String serverConfigName = "jdiameter-server-two.xml";
+      String clientConfigName = "jdiameter-client-two.xml";
 
       InputStream serverConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
       InputStream clientConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
@@ -223,9 +223,9 @@ public class TestStackReConnection {
     StackImpl client = new StackImpl();
     StackImpl client2 = new StackImpl();
     try {
-      String serverConfigName = "jdiameter-server-one.xml";
-      String clientConfigName = "jdiameter-client-one.xml";
-      String clientConfigName2 = "jdiameter-client-one-second.xml";
+      String serverConfigName = "jdiameter-server-two.xml";
+      String clientConfigName = "jdiameter-client-two.xml";
+      String clientConfigName2 = "jdiameter-client-two-second.xml";
 
       InputStream serverConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
       InputStream clientConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
@@ -304,9 +304,9 @@ public class TestStackReConnection {
     StackImpl client = new StackImpl();
     StackImpl client2 = new StackImpl();
     try {
-      String serverConfigName = "jdiameter-server-one.xml";
-      String clientConfigName = "jdiameter-client-one.xml";
-      String clientConfigName2 = "jdiameter-client-one-second.xml";
+      String serverConfigName = "jdiameter-server-two.xml";
+      String clientConfigName = "jdiameter-client-two.xml";
+      String clientConfigName2 = "jdiameter-client-two-second.xml";
 
       InputStream serverConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
       InputStream clientConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
