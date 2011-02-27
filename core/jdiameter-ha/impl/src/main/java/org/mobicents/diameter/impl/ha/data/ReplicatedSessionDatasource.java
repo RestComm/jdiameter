@@ -73,7 +73,7 @@ import org.slf4j.LoggerFactory;
 public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemovalListener {
 
   private static final Logger logger = LoggerFactory.getLogger(ReplicatedSessionDatasource.class);
-  public static final String CLUSTER_DS_DEFAULT_FILE = "config/jdiameter-jbc.xml";
+  public static final String CLUSTER_DS_DEFAULT_FILE = "jdiameter-jbc.xml";
   private IContainer container;
   private ISessionDatasource localDataSource;
 
@@ -90,7 +90,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
   public final static Fqn SESSIONS_FQN = Fqn.fromString(SESSIONS);
 
   public ReplicatedSessionDatasource(IContainer container) {
-    this(container, new LocalDataSource(), CLUSTER_DS_DEFAULT_FILE);
+    this(container, new LocalDataSource(), ReplicatedSessionDatasource.class.getClassLoader().getResource(CLUSTER_DS_DEFAULT_FILE) == null ? "config/" + CLUSTER_DS_DEFAULT_FILE : CLUSTER_DS_DEFAULT_FILE);
   }
 
   @SuppressWarnings("unchecked")
