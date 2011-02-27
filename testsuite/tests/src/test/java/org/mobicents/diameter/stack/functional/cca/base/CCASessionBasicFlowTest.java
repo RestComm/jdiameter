@@ -209,17 +209,17 @@ public class CCASessionBasicFlowTest {
 
   @Parameters
   public static Collection<Object[]> data() {
-    String client = "config-client.xml";
-    String server1 = "config-server-node1.xml";
+    String client = "configurations/functional-cca/config-client.xml";
+    String server1 = "configurations/functional-cca/config-server-node1.xml";
 
-    String replicatedClient = "replicated-config-client.xml";
-    String replicatedServer1 = "replicated-config-server-node1.xml";
+    String replicatedClient = "configurations/functional-cca/replicated-config-client.xml";
+    String replicatedServer1 = "configurations/functional-cca/replicated-config-server-node1.xml";
 
     Class<CCASessionBasicFlowTest> t = CCASessionBasicFlowTest.class;
-    client = t.getResource(client).toString();
-    server1 = t.getResource(server1).toString();
-    replicatedClient = t.getResource(replicatedClient).toString();
-    replicatedServer1 = t.getResource(replicatedServer1).toString();
+    client = t.getClassLoader().getResource(client).toString();
+    server1 = t.getClassLoader().getResource(server1).toString();
+    replicatedClient = t.getClassLoader().getResource(replicatedClient).toString();
+    replicatedServer1 = t.getClassLoader().getResource(replicatedServer1).toString();
 
     return Arrays.asList(new Object[][] { { client, server1 }, { replicatedClient, replicatedServer1 } });
   }

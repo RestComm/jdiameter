@@ -266,15 +266,15 @@ public class GxSessionFTFlowTest {
   @Parameters
   public static Collection<Object[]> data() {
 
-    String replicatedClient = "replicated-config-client.xml";
-    String replicatedServer1 = "replicated-config-server-node1.xml";
-    String replicatedServer2 = "replicated-config-server-node2.xml";
+    String replicatedClient = "configurations/functional-gx/replicated-config-client.xml";
+    String replicatedServer1 = "configurations/functional-gx/replicated-config-server-node1.xml";
+    String replicatedServer2 = "configurations/functional-gx/replicated-config-server-node2.xml";
 
     Class<GxSessionFTFlowTest> t = GxSessionFTFlowTest.class;
 
-    replicatedClient = t.getResource(replicatedClient).toString();
-    replicatedServer1 = t.getResource(replicatedServer1).toString();
-    replicatedServer2 = t.getResource(replicatedServer2).toString();
+    replicatedClient = t.getClassLoader().getResource(replicatedClient).toString();
+    replicatedServer1 = t.getClassLoader().getResource(replicatedServer1).toString();
+    replicatedServer2 = t.getClassLoader().getResource(replicatedServer2).toString();
 
     return Arrays.asList(new Object[][] { { replicatedClient, replicatedServer1, replicatedServer2 } });
   }

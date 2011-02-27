@@ -208,12 +208,12 @@ public class AccSessionStatefulBasicFlowTest {
 
   @Parameters
   public static Collection<Object[]> data() {
-    String client = "config-client.xml";
-    String server1 = "config-server-node1.xml";
+    String client = "configurations/functional-acc/config-client.xml";
+    String server1 = "configurations/functional-acc/config-server-node1.xml";
 
     Class<AccSessionStatefulBasicFlowTest> t = AccSessionStatefulBasicFlowTest.class;
-    client = t.getResource(client).toString();
-    server1 = t.getResource(server1).toString();
+    client = t.getClassLoader().getResource(client).toString();
+    server1 = t.getClassLoader().getResource(server1).toString();
 
     return Arrays.asList(new Object[][] { { client, server1 } });
   }

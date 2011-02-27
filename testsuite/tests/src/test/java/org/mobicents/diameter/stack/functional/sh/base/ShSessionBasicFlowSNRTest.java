@@ -167,17 +167,17 @@ public class ShSessionBasicFlowSNRTest {
 
   @Parameters
   public static Collection<Object[]> data() {
-    String client = "config-client.xml";
-    String server1 = "config-server-node1.xml";
+    String client = "configurations/functional-sh/config-client.xml";
+    String server1 = "configurations/functional-sh/config-server-node1.xml";
 
-    String replicatedClient = "replicated-config-client.xml";
-    String replicatedServer1 = "replicated-config-server-node1.xml";
+    String replicatedClient = "configurations/functional-sh/replicated-config-client.xml";
+    String replicatedServer1 = "configurations/functional-sh/replicated-config-server-node1.xml";
 
     Class<ShSessionBasicFlowSNRTest> t = ShSessionBasicFlowSNRTest.class;
-    client = t.getResource(client).toString();
-    server1 = t.getResource(server1).toString();
-    replicatedClient = t.getResource(replicatedClient).toString();
-    replicatedServer1 = t.getResource(replicatedServer1).toString();
+    client = t.getClassLoader().getResource(client).toString();
+    server1 = t.getClassLoader().getResource(server1).toString();
+    replicatedClient = t.getClassLoader().getResource(replicatedClient).toString();
+    replicatedServer1 = t.getClassLoader().getResource(replicatedServer1).toString();
 
     return Arrays.asList(new Object[][] { { client, server1 }, { replicatedClient, replicatedServer1 } });
   }
