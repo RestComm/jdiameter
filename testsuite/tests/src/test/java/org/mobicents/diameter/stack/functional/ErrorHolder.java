@@ -22,8 +22,7 @@
 package org.mobicents.diameter.stack.functional;
 
 import java.io.PrintWriter;
-
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
+import java.io.StringWriter;
 
 /**
  * 
@@ -81,10 +80,10 @@ public class ErrorHolder {
 
     if (error != null) {
       error.fillInStackTrace();
-      ByteOutputStream bos = new ByteOutputStream();
-      PrintWriter pw = new PrintWriter(bos);
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
       error.printStackTrace(pw);
-      sb.append(new String(bos.getBytes()));
+      sb.append(sw.getBuffer().toString());
     }
 
     return sb.toString();
