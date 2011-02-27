@@ -61,6 +61,11 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
+      <groupId>org.mobicents.servers.diameter</groupId>
+      <artifactId>jdiameter-ha-impl</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <artifactId>picocontainer</artifactId>
       <groupId>picocontainer</groupId>
     </dependency>
