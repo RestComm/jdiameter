@@ -91,7 +91,7 @@ public class MessageValidatorTest extends TestCase {
     assertTrue("We should allow to add more Acct-Session-Id than zero, operation indicates that it could not be done.",
         msgRep.isCountValidForMultiplicity(set, Avp.ACC_SESSION_ID, 0L));
 
-    set.addAvp(44, 55L, 0L, true, false);
+    set.addAvp(Avp.ACC_SESSION_ID, 55L, 0L, true, false);
     assertFalse("We should not allow to add more Acct-Session-Id than one, operation indicates that it could be done.",
         msgRep.isCountValidForMultiplicity(set, Avp.ACC_SESSION_ID, 0L, 1));
 
