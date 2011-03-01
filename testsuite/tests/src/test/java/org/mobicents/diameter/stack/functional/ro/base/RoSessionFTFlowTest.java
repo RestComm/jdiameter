@@ -98,7 +98,8 @@ public class RoSessionFTFlowTest {
         throw new Exception("Wrong number of connected peers: " + peers);
       }
       // give a wait time for cluster, it should be up and running without that, but... :)
-      Thread.currentThread().wait(15000);
+      // ammendonca: commented, was throwing java.lang.IllegalMonitorStateException
+      // Thread.currentThread().wait(15000);
     }
     catch (Throwable e) {
       e.printStackTrace();

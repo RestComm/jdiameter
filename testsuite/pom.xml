@@ -1,121 +1,125 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.mobicents.servers.diameter</groupId>
-    <artifactId>diameter-parent</artifactId>
-    <version>1.4.0-SNAPSHOT</version>
-  </parent>
+	<parent>
+		<groupId>org.mobicents.servers.diameter</groupId>
+		<artifactId>diameter-parent</artifactId>
+		<version>1.4.0-SNAPSHOT</version>
+	</parent>
 
-  <packaging>pom</packaging>
+	<packaging>pom</packaging>
 
-  <groupId>org.mobicents.servers.diameter.testsuite</groupId>
-  <artifactId>testsuite-parent</artifactId>
+	<groupId>org.mobicents.servers.diameter.testsuite</groupId>
+	<artifactId>testsuite-parent</artifactId>
 
-  <name>Mobicents :: Diameter Testsuite :: ${pom.artifactId}</name>
+	<name>Mobicents :: Diameter Testsuite :: ${pom.artifactId}</name>
 
-  <properties>
-    <!-- Mobicents Diameter Components Versions -->
-    <mobicents.diameter.jdiameter.version>1.5.4.1-build416-SNAPSHOT</mobicents.diameter.jdiameter.version>
-    <mobicents.diameter.jdiameter-ha.version>1.0.0-SNAPSHOT</mobicents.diameter.jdiameter-ha.version>
-    <mobicents.diameter.mux.version>1.4.0-SNAPSHOT</mobicents.diameter.mux.version>
-    <mobicents.diameter.resources.base.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.base.version>
-    <mobicents.diameter.resources.cca.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.cca.version>
-    <mobicents.diameter.resources.sh-client.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.sh-client.version>
-    <mobicents.diameter.resources.sh-server.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.sh-server.version>
-    <mobicents.diameter.resources.ro.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.ro.version>
-    <mobicents.diameter.resources.rf.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.rf.version>
-    <mobicents.diameter.resources.cx-dx.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.cx-dx.version>
-    <mobicents.diameter.resources.gx.version>1.0.0-SNAPSHOT</mobicents.diameter.resources.gx.version>
-    <!-- Other Mobicents Components Versions -->
-    <mobicents.servers.jainslee.version>2.2.1.FINAL</mobicents.servers.jainslee.version>
-    <mobicents.tools.mavenplugin.du.version>2.0.0.BETA3</mobicents.tools.mavenplugin.du.version>
-    <mobicents.tools.mavenplugin.library.version>1.0.0.BETA1</mobicents.tools.mavenplugin.library.version>
-    <mobicents.tools.mavenplugin.eclipse.version>1.0.0.BETA2</mobicents.tools.mavenplugin.eclipse.version>
-    <!-- Third party -->
-    <get.opt.version>1.0.9</get.opt.version>
-    <picocontainer.version>1.2</picocontainer.version>
-	<slf4j.version>1.5.8</slf4j.version>
-	<version.jboss.microcontainer>2.2.0.M2</version.jboss.microcontainer>
-	<version.jboss.aop>2.1.8.GA</version.jboss.aop>
-	<version.aop.asintegration.mc>2.1.8.GA</version.aop.asintegration.mc>
-	<version.aop.asintegration.jmx>2.1.8.GA</version.aop.asintegration.jmx>
-	<version.aop.asintegration.core>2.1.8.GA</version.aop.asintegration.core>
-	<version.jboss.sx.client>2.0.1-BETA</version.jboss.sx.client>
-	<version.jboss.naming.jnp-client>5.0.4.GA</version.jboss.naming.jnp-client>
-  </properties>
+	<properties>
+		<!-- Mobicents Diameter Components Versions -->
+		<mobicents.diameter.jdiameter.version>1.5.4.1-build416-SNAPSHOT</mobicents.diameter.jdiameter.version>
+		<mobicents.diameter.jdiameter-ha.version>1.0.0-SNAPSHOT</mobicents.diameter.jdiameter-ha.version>
+		<mobicents.diameter.mux.version>1.4.0-SNAPSHOT</mobicents.diameter.mux.version>
+		<mobicents.diameter.resources.base.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.base.version>
+		<mobicents.diameter.resources.cca.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.cca.version>
+		<mobicents.diameter.resources.sh-client.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.sh-client.version>
+		<mobicents.diameter.resources.sh-server.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.sh-server.version>
+		<mobicents.diameter.resources.ro.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.ro.version>
+		<mobicents.diameter.resources.rf.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.rf.version>
+		<mobicents.diameter.resources.cx-dx.version>3.0.0-SNAPSHOT</mobicents.diameter.resources.cx-dx.version>
+		<mobicents.diameter.resources.gx.version>1.0.0-SNAPSHOT</mobicents.diameter.resources.gx.version>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.mobicents.servers.diameter.resources</groupId>
-        <artifactId>gx-ra</artifactId>
-        <version>${mobicents.diameter.resources.gx.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mobicents.servers.diameter.resources</groupId>
-        <artifactId>rf-ra</artifactId>
-        <version>${mobicents.diameter.resources.rf.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mobicents.servers.diameter.resources</groupId>
-        <artifactId>ro-ra</artifactId>
-        <version>${mobicents.diameter.resources.ro.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mobicents.servers.diameter.resources</groupId>
-        <artifactId>sh-server-ra</artifactId>
-        <version>${mobicents.diameter.resources.sh-server.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mobicents.servers.diameter.resources</groupId>
-        <artifactId>sh-client-ra</artifactId>
-        <version>${mobicents.diameter.resources.sh-client.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mobicents.servers.diameter.resources</groupId>
-        <artifactId>cca-ra</artifactId>
-        <version>${mobicents.diameter.resources.cca.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mobicents.servers.diameter.resources</groupId>
-        <artifactId>cx-dx-ra</artifactId>
-        <version>${mobicents.diameter.resources.cx-dx.version}</version>
-      </dependency>
+		<!-- Other Mobicents Components Versions -->
+		<mobicents.servers.jainslee.version>2.2.1.FINAL</mobicents.servers.jainslee.version>
+		<mobicents.tools.mavenplugin.du.version>2.0.0.BETA3</mobicents.tools.mavenplugin.du.version>
+		<mobicents.tools.mavenplugin.library.version>1.0.0.BETA1</mobicents.tools.mavenplugin.library.version>
+		<mobicents.tools.mavenplugin.eclipse.version>1.0.0.BETA2</mobicents.tools.mavenplugin.eclipse.version>
 
-      <dependency>
-        <groupId>org.mobicents.servers.diameter.resources</groupId>
-        <artifactId>base-ra</artifactId>
-        <version>${mobicents.diameter.resources.base.version}</version>
-      </dependency>
+		<!-- Third party -->
+		<get.opt.version>1.0.9</get.opt.version>
+		<picocontainer.version>1.2</picocontainer.version>
+		<slf4j.version>1.5.8</slf4j.version>
+		<version.jboss.microcontainer>2.2.0.M2</version.jboss.microcontainer>
+		<version.jboss.aop>2.1.8.GA</version.jboss.aop>
+		<version.aop.asintegration.mc>2.1.8.GA</version.aop.asintegration.mc>
+		<version.aop.asintegration.jmx>2.1.8.GA</version.aop.asintegration.jmx>
+		<version.aop.asintegration.core>2.1.8.GA</version.aop.asintegration.core>
+		<version.jboss.sx.client>2.0.1-BETA</version.jboss.sx.client>
+		<version.jboss.naming.jnp-client>5.0.4.GA</version.jboss.naming.jnp-client>
+	</properties>
 
-      <dependency>
-        <groupId>org.mobicents.servers.diameter</groupId>
-        <artifactId>mobicents-diameter-mux-jar</artifactId>
-        <version>${mobicents.diameter.mux.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mobicents.servers.diameter</groupId>
-        <artifactId>jdiameter-ha-api</artifactId>
-        <version>${mobicents.diameter.jdiameter-ha.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mobicents.servers.diameter</groupId>
-        <artifactId>jdiameter-ha-impl</artifactId>
-        <version>${mobicents.diameter.jdiameter-ha.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mobicents.servers.diameter</groupId>
-        <artifactId>jdiameter-api</artifactId>
-        <version>${mobicents.diameter.jdiameter.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mobicents.servers.diameter</groupId>
-        <artifactId>jdiameter-impl</artifactId>
-        <version>${mobicents.diameter.jdiameter.version}</version>
-      </dependency>
-
-      <dependency>
+	<dependencyManagement>
+		<dependencies>
+			<!-- CORE DEPENDENCIES -->
+			<dependency>
+				<groupId>org.mobicents.servers.diameter</groupId>
+				<artifactId>jdiameter-api</artifactId>
+				<version>${mobicents.diameter.jdiameter.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mobicents.servers.diameter</groupId>
+				<artifactId>jdiameter-impl</artifactId>
+				<version>${mobicents.diameter.jdiameter.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mobicents.servers.diameter</groupId>
+				<artifactId>jdiameter-ha-api</artifactId>
+				<version>${mobicents.diameter.jdiameter-ha.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mobicents.servers.diameter</groupId>
+				<artifactId>jdiameter-ha-impl</artifactId>
+				<version>${mobicents.diameter.jdiameter-ha.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mobicents.servers.diameter</groupId>
+				<artifactId>mobicents-diameter-mux-jar</artifactId>
+				<version>${mobicents.diameter.mux.version}</version>
+			</dependency>
+		
+			<!-- JAIN SLEE RESOURCE ADAPTORS DEPENDENCIES -->
+			<dependency>
+				<groupId>org.mobicents.servers.diameter.resources</groupId>
+				<artifactId>gx-ra</artifactId>
+				<version>${mobicents.diameter.resources.gx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mobicents.servers.diameter.resources</groupId>
+				<artifactId>rf-ra</artifactId>
+				<version>${mobicents.diameter.resources.rf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mobicents.servers.diameter.resources</groupId>
+				<artifactId>ro-ra</artifactId>
+				<version>${mobicents.diameter.resources.ro.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mobicents.servers.diameter.resources</groupId>
+				<artifactId>sh-server-ra</artifactId>
+				<version>${mobicents.diameter.resources.sh-server.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mobicents.servers.diameter.resources</groupId>
+				<artifactId>sh-client-ra</artifactId>
+				<version>${mobicents.diameter.resources.sh-client.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mobicents.servers.diameter.resources</groupId>
+				<artifactId>cca-ra</artifactId>
+				<version>${mobicents.diameter.resources.cca.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mobicents.servers.diameter.resources</groupId>
+				<artifactId>cx-dx-ra</artifactId>
+				<version>${mobicents.diameter.resources.cx-dx.version}</version>
+			</dependency>
+		
+			<dependency>
+				<groupId>org.mobicents.servers.diameter.resources</groupId>
+				<artifactId>base-ra</artifactId>
+				<version>${mobicents.diameter.resources.base.version}</version>
+			</dependency>
+	
+			<dependency>
 				<artifactId>picocontainer</artifactId>
 				<groupId>picocontainer</groupId>
 				<version>${picocontainer.version}</version>
@@ -192,10 +196,9 @@
 				<groupId>org.jboss.naming</groupId>
 				<artifactId>jnp-client</artifactId>
 				<version>${version.jboss.naming.jnp-client}</version>
-				<!-- <scope>provided</scope> -->
 			</dependency>
-    </dependencies>
-  </dependencyManagement>
+		</dependencies>
+	</dependencyManagement>
 
 	<profiles>
 		<profile>
@@ -221,21 +224,19 @@
 		</profile>
 	</profiles>
 
-  
-
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <groupId>org.mobicents.tools</groupId>
-        <version>${mobicents.tools.mavenplugin.eclipse.version}</version>
-        <inherited>false</inherited>
-        <executions />
-        <configuration>
-          <eclipseProjectName>${pom.artifactId}</eclipseProjectName>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+	<build>
+		<plugins>
+		<plugin>
+			<artifactId>maven-eclipse-plugin</artifactId>
+			<groupId>org.mobicents.tools</groupId>
+			<version>${mobicents.tools.mavenplugin.eclipse.version}</version>
+			<inherited>false</inherited>
+			<executions />
+			<configuration>
+			<eclipseProjectName>${pom.artifactId}</eclipseProjectName>
+			</configuration>
+		</plugin>
+		</plugins>
+	</build>
 
 </project>
