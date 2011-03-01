@@ -22,11 +22,21 @@
 
 	<properties>
 		<jdiameter.version>1.5.4.1-build416-SNAPSHOT</jdiameter.version>
-		<mobicents.cluster.version>1.6</mobicents.cluster.version>
+		<mobicents.cluster.version>1.8-SNAPSHOT</mobicents.cluster.version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>org.mobicents.cluster</groupId>
+				<artifactId>core</artifactId>
+				<version>${mobicents.cluster.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mobicents.cluster</groupId>
+				<artifactId>cache</artifactId>
+				<version>${mobicents.cluster.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.mobicents.cluster</groupId>
 				<artifactId>timers</artifactId>

@@ -23,11 +23,7 @@ package org.mobicents.diameter.impl.ha.data;
 
 import java.util.HashMap;
 
-import org.jboss.cache.Cache;
-import org.jboss.cache.CacheFactory;
-import org.jboss.cache.DefaultCacheFactory;
 import org.jboss.cache.Fqn;
-import org.jboss.cache.config.Configuration.CacheMode;
 import org.jdiameter.api.BaseSession;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.NetworkReqListener;
@@ -86,25 +82,24 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
   // Constants
   // ----------------------------------------------------------------
   public final static String SESSIONS = "/diameter/appsessions";
-  @SuppressWarnings("unchecked")
   public final static Fqn SESSIONS_FQN = Fqn.fromString(SESSIONS);
 
   public ReplicatedSessionDatasource(IContainer container) {
     this(container, new LocalDataSource(), ReplicatedSessionDatasource.class.getClassLoader().getResource(CLUSTER_DS_DEFAULT_FILE) == null ? "config/" + CLUSTER_DS_DEFAULT_FILE : CLUSTER_DS_DEFAULT_FILE);
   }
 
-  @SuppressWarnings("unchecked")
-  public ReplicatedSessionDatasource(IContainer container, ISessionDatasource localDataSource, String cacheConffileName) {
+  public ReplicatedSessionDatasource(IContainer container, ISessionDatasource localDataSource, String cacheConfigFilename) {
     super();
     this.localDataSource = localDataSource;
-    CacheFactory factory = new DefaultCacheFactory();
-    Cache cache = factory.createCache(cacheConffileName, false);
-    cache.start();
 
-    MobicentsCache mcCache = new MobicentsCache(cache, "MC_JDiameter");
+    MobicentsCache mcCache = new MobicentsCache(cacheConfigFilename);
+    mcCache.startCache();
+
     // this requires JTA
     this.mobicentsCluster = new DefaultMobicentsCluster(mcCache, null, new DefaultClusterElector());
     this.mobicentsCluster.addDataRemovalListener(this); // register, so we know WHEN some other node removes session.
+    this.mobicentsCluster.startCluster();
+
     this.container = container;
     // this is coded, its tied to specific impl of SessionDatasource
     appSessionDataFactories.put(IAuthSessionData.class, new AuthReplicatedSessionDataFactory(this));
@@ -130,37 +125,6 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
   public void addSession(BaseSession session) {
     // Simple as is, if its replicated, it will be already there :)
     this.localDataSource.addSession(session);
-
-    //    SessionClusteredData scd = new
-    //    SessionClusteredData(session.getSessionId(), mobicentsCluster);
-    //    if (session.isReplicable()) {
-    //      if (scd.exists()) {
-    //        // ups?
-    //        logger.warn("Session with id {} already present in clustered data.",
-    //            session.getSessionId());
-    //      }
-    //      else {
-    //        logger.debug("addSession({}) -\"{}\" in Replicated DataSource", new
-    //            Object[]{session.getSessionId(),session});
-    //
-    //        scd.create();
-    //        scd.setSession(session);
-    //      }
-    //      this.localDataSource.removeSession(session.getSessionId());
-    //    }
-    //    else {
-    //      //check if there is such session in replicable source, this will
-    //      hapen on recreating of replicable session.
-    //      if(scd.exists()) {
-    //        logger.debug("addSession({}) in Local DataSource, skipping, since replicable DS has this session.",
-    //            session.getSessionId());
-    //      }
-    //      else {
-    //        logger.debug("addSession({}) in Local DataSource",
-    //            session.getSessionId());
-    //        this.localDataSource.addSession(session);
-    //      }
-    //    }
   }
 
   /*
@@ -169,20 +133,6 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
    * @see org.jdiameter.common.api.ha.ISessionDatasource#getSession(java.lang.String )
    */
   public BaseSession getSession(String sessionId) {
-    // if(inLocal) {
-    //   return from local
-    // }
-    // else if(inReplicated) {
-    //   get session interface
-    //   get factory
-    //   ask to create
-    //   this.addSession(); // should happen from factory ? grrr
-    //   return instance
-    // }
-    // else {
-    //   return null;
-    // }
-
     if (this.localDataSource.exists(sessionId)) {
       return this.localDataSource.getSession(sessionId);
     }
@@ -190,28 +140,6 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
       this.makeLocal(sessionId);
       return this.localDataSource.getSession(sessionId);
     }
-
-    //// first check local?
-    //BaseSession session = this.localDataSource.getSession(sessionId);
-    //if (session == null) {
-    //  SessionClusteredData scd = new SessionClusteredData(sessionId,
-    //      mobicentsCluster);
-    //  if (scd.exists()) {
-    //    logger.debug("getSession({}) in Replicated DataSource", sessionId);
-    //    session = scd.getSession();
-    //    logger.debug("getSession({}) in Replicated DataSource retrieved {}",
-    //        sessionId, session);
-    //  }
-    //  else {
-    //    logger.debug("getSession({}) in Replicated DataSource not found, returning null.",
-    //        sessionId);
-    //    return null;
-    //  }
-    //  if (session != null && session.isAppSession()) {
-    //    AppSessionImpl appSession = (AppSessionImpl) session;
-    //    appSession.relink(container);
-    //  }
-    //}
 
     return null;
   }
@@ -222,20 +150,6 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
    * @see org.jdiameter.common.api.ha.ISessionDatasource#getSessionListener(java .lang.String)
    */
   public NetworkReqListener getSessionListener(String sessionId) {
-    // if(inLocal) {
-    //   return from local
-    // }
-    // else if(inReplicated) {
-    //   get session interface
-    //   get factory
-    //   ask to create
-    //   this.addSession(); // should happen from factory ? grrr
-    //   repeat this call
-    // }
-    // else {
-    //   return null;
-    // }
-
     if (this.localDataSource.exists(sessionId)) {
       return this.localDataSource.getSessionListener(sessionId);
     }
@@ -243,35 +157,6 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
       this.makeLocal(sessionId);
       return this.localDataSource.getSessionListener(sessionId);
     }
-
-    //logger.debug("getSessionListener({}) in Local DataSource",
-    //    sessionId);
-    //NetworkReqListener lst =
-    //  this.localDataSource.getSessionListener(sessionId);
-    //if (lst == null) {
-    //  logger.debug("getSessionListener({}) in Replicated DataSource",
-    //      sessionId);
-    //  SessionClusteredData scd = new SessionClusteredData(sessionId,
-    //      mobicentsCluster);
-    //  if (scd.exists()) {
-    //    lst = scd.getSessionListener();
-    //    logger.debug("getSessionListener({}) in Replicated DataSource retrieved {}",
-    //        sessionId, lst);
-    //  }
-    //  else {
-    //    logger.debug("getSessionListener({}) in Replicated DataSource not found. Returning null.",
-    //        sessionId);
-    //    return null;
-    //  }
-    //
-    //  // now we must ensure session this listener points to is properly
-    //  linked to local stack
-    //  // this is expensive...
-    //  if (lst != null && lst instanceof AppSessionImpl) {
-    //    AppSessionImpl as = (AppSessionImpl) lst;
-    //    as.relink(container);
-    //  }
-    //}
 
     return null;
   }
@@ -283,14 +168,6 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
    */
   public void removeSession(String sessionId) {
     logger.debug("removeSession({}) in Local DataSource", sessionId);
-
-    // if(inLocal) {
-    //   local.remove
-    //   //no need to remove from replicated, app session will call clear on data.
-    // }
-    // else if(inReplicated) {
-    //   replicated.remove
-    // }
 
     if (this.localDataSource.exists(sessionId)) {
       this.localDataSource.removeSession(sessionId);
@@ -306,18 +183,6 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
    * @see org.jdiameter.common.api.ha.ISessionDatasource#removeSessionListener( java.lang.String)
    */
   public NetworkReqListener removeSessionListener(String sessionId) {
-
-    // if(inLocal) {
-    //   remove.listener
-    //   // Dunno about this.
-    //   if(replicable) {
-    //     replicated.removeListener
-    //   }
-    // }
-    // else if(inReplicated) {
-    //   replicated.removeListener
-    // }
-
     if (this.localDataSource.exists(sessionId)) {
       return this.localDataSource.removeSessionListener(sessionId);
     }
@@ -326,26 +191,6 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
       this.makeLocal(sessionId);
       return this.localDataSource.removeSessionListener(sessionId);
     }
-
-    //logger.debug("removeSessionListener({}) in Local DataSource",
-    //    sessionId);
-    //NetworkReqListener lst =
-    //  this.localDataSource.removeSessionListener(sessionId);
-    //if (lst == null) {
-    //  SessionClusteredData scd = new SessionClusteredData(sessionId,
-    //      mobicentsCluster);
-    //  if (scd.exists()) {
-    //    logger.debug("removeSessionListener({}) in Replicated DataSource",
-    //        sessionId);
-    //    lst = scd.getSessionListener();
-    //    scd.setSessionListener(null);
-    //  }
-    //  else {
-    //    // ups?
-    //    logger.debug("removeSessionListener({}) in Replicated DataSource. Not found.",
-    //        sessionId);
-    //  }
-    //}
 
     return null;
   }
@@ -356,16 +201,6 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
    * @see org.jdiameter.common.api.ha.ISessionDatasource#setSessionListener(java .lang.String, org.jdiameter.api.NetworkReqListener)
    */
   public void setSessionListener(String sessionId, NetworkReqListener data) {
-
-    // if(inLocal) {
-    //   setListener
-    // }
-    // else if(inReplicated) {
-    //   //thats weird :)
-    //   get session from replicated
-    //   setListener
-    // }
-
     if (this.localDataSource.exists(sessionId)) {
       this.localDataSource.setSessionListener(sessionId, data);
     }
@@ -374,37 +209,15 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
       this.makeLocal(sessionId);
       this.localDataSource.setSessionListener(sessionId, data);
     }
-
-    //if (localDataSource.getSession(sessionId) != null) {
-    //  logger.debug("setSessionListener({}, {}) in Local DataSource",
-    //      sessionId, data);
-    //  this.localDataSource.setSessionListener(sessionId, data);
-    //}
-    //else {
-    //  logger.debug("setSessionListener({}, {}) in Replicated DataSource",
-    //      sessionId, data);
-    //  SessionClusteredData scd = new SessionClusteredData(sessionId,
-    //      mobicentsCluster);
-    //  if (scd.exists()) {
-    //    scd.setSessionListener(data);
-    //  }
-    //  else {
-    //    // ups?
-    //    logger.warn("setSessionListener({}, {}) in Replicated DataSource. Session not found.",
-    //        sessionId, data);
-    //  }
-    //}
   }
 
   public void start() {
-    getJBossCache().start();
-    if (getJBossCache().getConfiguration().getCacheMode() == CacheMode.LOCAL) {
-      localMode = true;
-    }
+    mobicentsCluster.getMobicentsCache().startCache();
+    localMode = mobicentsCluster.getMobicentsCache().isLocalMode();
   }
 
   public void stop() {
-    getJBossCache().stop();
+    mobicentsCluster.getMobicentsCache().stopCache();
   }
 
   /*
@@ -428,22 +241,15 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
 
   // remove lst;
 
-  @SuppressWarnings("unchecked")
-  public Cache getJBossCache() {
-    return this.mobicentsCluster.getMobicentsCache().getJBossCache();
-  }
-
   public MobicentsCluster getMobicentsCluster() {
     return this.mobicentsCluster;
   }
 
-  @SuppressWarnings("unchecked")
   public void dataRemoved(Fqn sessionFqn) {
     String sessionId = (String) sessionFqn.getLastElement();
     this.localDataSource.removeSession(sessionId);
   }
 
-  @SuppressWarnings("unchecked")
   public Fqn getBaseFqn() {
     return SESSIONS_FQN;
   }

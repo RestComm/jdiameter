@@ -32,7 +32,6 @@
 			<groupId>org.mobicents.cluster</groupId>
 			<artifactId>timers</artifactId>
 		</dependency>
-
 	</dependencies>
 
 </project>

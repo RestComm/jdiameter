@@ -28,10 +28,7 @@ import org.jdiameter.client.api.IContainer;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.api.timer.ITimerFacility;
 import org.jdiameter.common.impl.app.AppSessionImpl;
-import org.mobicents.cache.MobicentsCache;
-import org.mobicents.cluster.DefaultMobicentsCluster;
 import org.mobicents.cluster.MobicentsCluster;
-import org.mobicents.cluster.election.DefaultClusterElector;
 import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 import org.mobicents.timers.FaultTolerantScheduler;
 import org.mobicents.timers.TimerTask;
@@ -57,9 +54,7 @@ public class ReplicatedTimerFacilityImpl implements ITimerFacility {
     super();
     this.sessionDataSource = container.getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
     this.taskFactory = new TimerTaskFactory();
-    ReplicatedSessionDatasource rsds = (ReplicatedSessionDatasource) this.sessionDataSource;
-    MobicentsCache mcCache = new MobicentsCache(rsds.getJBossCache(), null);
-    MobicentsCluster cluster = new DefaultMobicentsCluster(mcCache, null, new DefaultClusterElector());
+    MobicentsCluster cluster = ((ReplicatedSessionDatasource) this.sessionDataSource).getMobicentsCluster();
     this.ftScheduler = new FaultTolerantScheduler("DiameterTimer", 5, cluster, (byte) 12, null, this.taskFactory);
   }
 
