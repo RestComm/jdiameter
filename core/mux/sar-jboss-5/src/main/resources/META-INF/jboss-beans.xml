@@ -4,6 +4,7 @@
   <!-- Mobicents Diameter Mux MBean -->
   <bean name="Mobicents.Diameter.StackMuxMBean" class="org.mobicents.diameter.stack.DiameterStackMultiplexer">
     <annotation>@org.jboss.aop.microcontainer.aspects.jmx.JMX(name="diameter.mobicents:service=DiameterStackMultiplexer", exposedInterface=org.mobicents.diameter.stack.DiameterStackMultiplexerMBean.class, registerDirectly=true)</annotation>
+    <demand>TransactionManager</demand>
   </bean>
 
 </deployment>

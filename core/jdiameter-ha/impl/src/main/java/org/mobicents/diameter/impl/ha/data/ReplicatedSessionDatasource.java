@@ -23,6 +23,8 @@ package org.mobicents.diameter.impl.ha.data;
 
 import java.util.HashMap;
 
+import javax.transaction.TransactionManager;
+
 import org.jboss.cache.Fqn;
 import org.jdiameter.api.BaseSession;
 import org.jdiameter.api.IllegalDiameterStateException;
@@ -93,10 +95,18 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
     this.localDataSource = localDataSource;
 
     MobicentsCache mcCache = new MobicentsCache(cacheConfigFilename);
-    mcCache.startCache();
+    TransactionManager txMgr = null;
+    try {
+      Class<?> txMgrClass = Class.forName(mcCache.getJBossCache().getConfiguration().getTransactionManagerLookupClass());
+      Object txMgrLookup = txMgrClass.getConstructor(new Class[]{}).newInstance(new Object[]{});
+      txMgr = (TransactionManager) txMgrClass.getMethod("getTransactionManager", new Class[]{}).invoke(txMgrLookup, new Object[]{});
+    }
+    catch (Exception e) {
+      logger.debug("Could not fetch TxMgr. Not using one.", e);
+      // let's not have Tx Manager than...
+    }
 
-    // this requires JTA
-    this.mobicentsCluster = new DefaultMobicentsCluster(mcCache, null, new DefaultClusterElector());
+    this.mobicentsCluster = new DefaultMobicentsCluster(mcCache, txMgr, new DefaultClusterElector());
     this.mobicentsCluster.addDataRemovalListener(this); // register, so we know WHEN some other node removes session.
     this.mobicentsCluster.startCluster();
 

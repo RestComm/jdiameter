@@ -50,9 +50,9 @@
     </Concurrent>
     <Dictionary enabled="false" sendLevel="MESSAGE" receiveLevel="OFF" />    
     <!-- To enable clustering uncomment the following lines
-    <SessionDatasource value="org.mobicents.diameter.impl.ha.data.ReplicatedDataSource"/>
+    <SessionDatasource value="org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource"/>
     <TimerFacility value="org.mobicents.diameter.impl.ha.timer.ReplicatedTimerFacilityImpl"/>
-	-->
+    -->
     </Parameters>
 
   <Network>
