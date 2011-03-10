@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -8,10 +10,10 @@
 		<version>1.4.0-SNAPSHOT</version>
 	</parent>
 
-	<groupId>org.mobicents.servers.diameter.testsuite</groupId>
-	<artifactId>testsuite-load</artifactId>
+	<groupId>org.mobicents.servers.diameter.guide</groupId>
+	<artifactId>example1</artifactId>
 
-	<name>Mobicents :: Diameter Testsuite :: ${pom.artifactId}</name>
+	<name>Mobicents :: Guide :: Example 1 :: ${pom.artifactId}</name>
 
 	<properties>
 		<mobicents.diameter.jdiameter.version>1.5.4.0-build404-SNAPSHOT</mobicents.diameter.jdiameter.version>
@@ -76,7 +78,7 @@
 		</profile>
 
 		<profile>
-			<id>runload</id>
+			<id>build</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>
 			</activation>
@@ -104,10 +106,10 @@
 											<overWrite>true</overWrite>
 											<outputDirectory>
 												${project.build.directory}/run
-                  </outputDirectory>
+                  							</outputDirectory>
 											<destFileName>
 												jdiameter-api.jar
-                  </destFileName>
+                  							</destFileName>
 										</artifactItem>
 										<artifactItem>
 											<groupId>org.mobicents.servers.diameter</groupId>
@@ -116,10 +118,10 @@
 											<overWrite>true</overWrite>
 											<outputDirectory>
 												${project.build.directory}/run
-                  </outputDirectory>
+                  							</outputDirectory>
 											<destFileName>
 												jdiameter-impl.jar
-                  </destFileName>
+                  							</destFileName>
 										</artifactItem>
 										<artifactItem>
 											<artifactId>picocontainer</artifactId>
@@ -128,10 +130,10 @@
 											<overWrite>true</overWrite>
 											<outputDirectory>
 												${project.build.directory}/run
-                  </outputDirectory>
+                  							</outputDirectory>
 											<destFileName>
 												picocontainer.jar
-                  </destFileName>
+                  							</destFileName>
 										</artifactItem>
 										<artifactItem>
 											<groupId>junit</groupId>
@@ -140,10 +142,10 @@
 											<overWrite>true</overWrite>
 											<outputDirectory>
 												${project.build.directory}/run
-                  </outputDirectory>
+                  							</outputDirectory>
 											<destFileName>
 												junit.jar
-                  </destFileName>
+                  							</destFileName>
 										</artifactItem>
 										<artifactItem>
 											<groupId>org.slf4j</groupId>
@@ -152,10 +154,10 @@
 											<overWrite>true</overWrite>
 											<outputDirectory>
 												${project.build.directory}/run
-                  </outputDirectory>
+                  							</outputDirectory>
 											<destFileName>
 												slf4j-api.jar
-                  </destFileName>
+                  							</destFileName>
 										</artifactItem>
 										<artifactItem>
 											<groupId>org.slf4j</groupId>
@@ -164,10 +166,10 @@
 											<overWrite>true</overWrite>
 											<outputDirectory>
 												${project.build.directory}/run
-                  </outputDirectory>
+                  							</outputDirectory>
 											<destFileName>
 												slf4j-log4j12.jar
-                  </destFileName>
+                  							</destFileName>
 										</artifactItem>
 
 										<artifactItem>
@@ -177,10 +179,10 @@
 											<overWrite>true</overWrite>
 											<outputDirectory>
 												${project.build.directory}/run
-                  </outputDirectory>
+                  							</outputDirectory>
 											<destFileName>
 												java-getopt.jar
-                  </destFileName>
+                  							</destFileName>
 										</artifactItem>
 										<artifactItem>
 											<groupId>log4j</groupId>
@@ -189,10 +191,10 @@
 											<overWrite>true</overWrite>
 											<outputDirectory>
 												${project.build.directory}/run
-                  </outputDirectory>
+                  							</outputDirectory>
 											<destFileName>
 												log4j.jar
-                  </destFileName>
+                  							</destFileName>
 										</artifactItem>
 
 										<artifactItem>
@@ -205,17 +207,17 @@
 										</artifactItem>
 										<!-- This requires default profile to run once -->
 										<artifactItem>
-											<groupId>org.mobicents.servers.diameter.testsuite</groupId>
-											<artifactId>testsuite-load</artifactId>
-											<version>1.4.0-SNAPSHOT</version>
+											<groupId>${pom.groupId}</groupId>
+											<artifactId>${pom.artifactId}</artifactId>
+											<version>${pom.version}</version>
 											<type>jar</type>
 											<overWrite>true</overWrite>
 											<outputDirectory>
 												${project.build.directory}/run
-                  </outputDirectory>
+                  							</outputDirectory>
 											<destFileName>
-												testsuite-load.jar
-                  </destFileName>
+												example1.jar
+                  							</destFileName>
 										</artifactItem>
 									</artifactItems>
 								</configuration>
