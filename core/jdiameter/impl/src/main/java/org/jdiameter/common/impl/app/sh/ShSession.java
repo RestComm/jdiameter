@@ -69,14 +69,6 @@ public abstract class ShSession extends AppSessionImpl implements NetworkReqList
     stateListeners.remove(listener);
   }
 
-  protected AccountRequest createAccountRequest(Request request) {
-    return new AccountRequestImpl(request);
-  }
-
-  protected AccountAnswer createAccountAnswer(Answer answer) {
-    return new AccountAnswerImpl(answer);
-  }
-
   public void release() {
     //scheduler.shutdown();
     super.release();
