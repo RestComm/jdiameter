@@ -184,7 +184,7 @@ public class DictionaryImpl implements Dictionary {
       long endTime = System.currentTimeMillis();
 
       if(logger.isInfoEnabled()) {
-        logger.info("AVP Validator :: Loaded in {}ms == Vendors[{}] Commands[{}] Types[{}] AVPs[{}]",
+        logger.info("Mobicents Diameter Dictionary loaded in {}ms -- Vendors[{}] Commands[{}] Types[{}] AVPs[{}]",
             new Object[] { (endTime - startTime), vendorMap.size(), commandMap.size(), typedefMap.size(), avpMap.size() });
       }
 
