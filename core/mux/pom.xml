@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.mobicents</groupId>
 		<artifactId>mobicents-parent</artifactId>
-		<version>2.16</version>
+		<version>2.17</version>
 	</parent>
 
 	<groupId>org.mobicents.servers.diameter</groupId>
@@ -15,8 +15,8 @@
 
 	<properties>
 		<!-- Mobicents Diameter Components Versions -->
-		<mobicents.diameter.jdiameter.version>1.5.4.1-build416-SNAPSHOT</mobicents.diameter.jdiameter.version>
-		<mobicents.diameter.jdiameter-ha.version>1.0.0-SNAPSHOT</mobicents.diameter.jdiameter-ha.version>
+		<mobicents.diameter.jdiameter.version>1.5.5.0-build440</mobicents.diameter.jdiameter.version>
+		<mobicents.diameter.jdiameter-ha.version>1.0.0.BETA3</mobicents.diameter.jdiameter-ha.version>
 
 		<!-- Other Mobicents Components Versions -->
 		<mobicents.tools.mavenplugin.eclipse.version>1.0.0.BETA2</mobicents.tools.mavenplugin.eclipse.version>
