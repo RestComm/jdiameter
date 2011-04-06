@@ -275,7 +275,7 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
           listener.doReAuthAnswer(this, new ReAuthRequestImpl(localEvent.getRequest().getMessage()), new ReAuthAnswerImpl(localEvent.getAnswer().getMessage()));
           break;
         case SENT_RAR:
-          dispatchEvent(localEvent.getAnswer());
+          dispatchEvent(localEvent.getRequest());
           break;
         }
       }
