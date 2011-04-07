@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.mobicents</groupId>
 		<artifactId>mobicents-parent</artifactId>
-		<version>2.16</version>
+		<version>2.17</version>
 	</parent>
 
 	<groupId>org.mobicents.servers.diameter</groupId>
@@ -19,5 +19,20 @@
 		<module>jdiameter-ha</module>
 		<module>mux</module>
 	</modules>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<groupId>org.mobicents.tools</groupId>
+				<inherited>false</inherited>
+				<executions />
+				<configuration>
+					<eclipseProjectName>${pom.artifactId}</eclipseProjectName>
+					<generateProjectsForModules>false</generateProjectsForModules>
+				</configuration>
+			</plugin>
+		</plugins>       
+	</build>
 
 </project>

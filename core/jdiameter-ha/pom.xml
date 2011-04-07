@@ -21,7 +21,7 @@
 	</modules>
 
 	<properties>
-		<jdiameter.version>1.5.5.0-build440</jdiameter.version>
+		<jdiameter.version>1.5.5.0-build441-SNAPSHOT</jdiameter.version>
 		<mobicents.cluster.version>1.8</mobicents.cluster.version>
 	</properties>
 
@@ -64,10 +64,7 @@
 		<profile>
 			<id>maven-release</id>
 			<modules>
-				<!--
-					any module not bound to default modules, such as the ones for test,
-					release, etc...
-				-->
+				<!-- any module not bound to default modules, such as the ones for test, release, etc... -->
 			</modules>
 			<build>
 				<plugins>
