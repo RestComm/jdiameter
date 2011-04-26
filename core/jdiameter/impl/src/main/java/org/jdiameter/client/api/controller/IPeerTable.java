@@ -15,7 +15,6 @@ import org.jdiameter.client.api.IMessage;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
 /**
  *  This interface provide additional methods for PeerTable interface
@@ -65,7 +64,7 @@ public interface IPeerTable extends PeerTable {
     void addSessionReqListener(String sessionId, NetworkReqListener listener);
 
     /**
-     * Return peer from peer table by peerURI
+     * Return peer from peer table by identity - FQDN host name.
      * 
      * @param peerHost peer host
      * @return peer instance
