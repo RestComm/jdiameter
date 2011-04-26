@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.concurrent.ScheduledExecutorService;
 
 /**
- * This interface extends behaviour of stack interface
+ * This interface extends behavior of stack interface
  * Data: $Date: 2008/07/03 19:43:10 $
  * Revision: $Revision: 1.1 $
  * @version 1.5.0.1
@@ -53,7 +53,7 @@ public interface IContainer extends Stack {
      */
     IConcurrentFactory getConcurrentFactory();
     /**
-     * Send messahe
+     * Send message
      * @param session session instance
      * @throws RouteException
      * @throws AvpDataException
