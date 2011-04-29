@@ -1,14 +1,25 @@
-package org.jdiameter.client.impl.parser;
-
 /*
- * Copyright (c) 2006 jDiameter.
- * https://jdiameter.dev.java.net/
+ * JBoss, Home of Professional Open Source
+ * Copyright 2011, Red Hat, Inc. and individual contributors by the
+ * @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
  *
- * License: GPL v3
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
  *
- * e-mail: erick.svenson@yahoo.com
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package org.jdiameter.client.impl.parser;
 
 import java.net.InetAddress;
 import java.net.URISyntaxException;
@@ -23,6 +34,12 @@ import org.jdiameter.api.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *  
+ * @author erick.svenson@yahoo.com
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 class AvpImpl implements Avp {
 
   private static final long serialVersionUID = 1L;
@@ -40,7 +57,6 @@ class AvpImpl implements Avp {
   private static final Logger logger = LoggerFactory.getLogger(AvpImpl.class);
 
   AvpImpl(int code, int flags, long vnd, byte[] data) {
-   
     avpCode  = code;
     //
     isMandatory = (flags & 0x40) != 0;
@@ -52,7 +68,6 @@ class AvpImpl implements Avp {
   }
 
   AvpImpl(Avp avp) {
-  
     avpCode     = avp.getCode();
     vendorID    = avp.getVendorId();
     isMandatory = avp.isMandatory();
@@ -99,43 +114,93 @@ class AvpImpl implements Avp {
   }
 
   public String getOctetString() throws AvpDataException {
-    return parser.bytesToOctetString(rawData);
+    try {
+      return parser.bytesToOctetString(rawData);
+    }
+    catch (Exception e) {
+      throw new AvpDataException(this);
+    }
   }
 
   public String getUTF8String() throws AvpDataException {
-    return parser.bytesToUtf8String(rawData);
-  }    
+    try {
+      return parser.bytesToUtf8String(rawData);
+    }
+    catch (Exception e) {
+      throw new AvpDataException(this);
+    }
+  }
 
   public int getInteger32() throws AvpDataException {
-    return parser.bytesToInt(rawData);
+    try {
+      return parser.bytesToInt(rawData);
+    }
+    catch (Exception e) {
+      throw new AvpDataException(this);
+    }
   }
 
   public long getInteger64() throws AvpDataException {
-    return parser.bytesToLong(rawData);
+    try {
+      return parser.bytesToLong(rawData);
+    }
+    catch (Exception e) {
+      throw new AvpDataException(this);
+    }
   }
 
   public long getUnsigned32() throws AvpDataException {
-    return parser.bytesToInt(rawData);
+    try {
+      return parser.bytesToInt(rawData);
+    }
+    catch (Exception e) {
+      throw new AvpDataException(this);
+    }
   }
 
   public long getUnsigned64() throws AvpDataException {
-    return parser.bytesToLong(rawData);
+    try {
+      return parser.bytesToLong(rawData);
+    }
+    catch (Exception e) {
+      throw new AvpDataException(this);
+    }
   }
 
   public float getFloat32() throws AvpDataException {
-    return parser.bytesToFloat(rawData);
+    try {
+      return parser.bytesToFloat(rawData);
+    }
+    catch (Exception e) {
+      throw new AvpDataException(this);
+    }
   }
 
   public double getFloat64() throws AvpDataException {
-    return parser.bytesToDouble(rawData);
+    try {
+      return parser.bytesToDouble(rawData);
+    }
+    catch (Exception e) {
+      throw new AvpDataException(this);
+    }
   }
 
   public InetAddress getAddress() throws AvpDataException {
-    return parser.bytesToAddress(rawData);
+    try {
+      return parser.bytesToAddress(rawData);
+    }
+    catch (Exception e) {
+      throw new AvpDataException(this);
+    }
   }
 
   public Date getTime() throws AvpDataException {
-    return parser.bytesToDate(rawData);   
+    try {
+      return parser.bytesToDate(rawData);
+    }
+    catch (Exception e) {
+      throw new AvpDataException(this);
+    }
   }
 
   public String getDiameterIdentity() throws AvpDataException {
@@ -147,10 +212,10 @@ class AvpImpl implements Avp {
       return new URI(getOctetString());
     }
     catch (URISyntaxException e) {
-      throw new AvpDataException(e);
+      throw new AvpDataException(e, this);
     }
     catch (UnknownServiceException e) {
-      throw new AvpDataException(e);
+      throw new AvpDataException(e, this);
     }
   }
 
@@ -163,7 +228,7 @@ class AvpImpl implements Avp {
       return groupedData;
     }
     catch (Exception e) {
-      throw new AvpDataException(e);
+      throw new AvpDataException(e, this);
     }
   }
 
