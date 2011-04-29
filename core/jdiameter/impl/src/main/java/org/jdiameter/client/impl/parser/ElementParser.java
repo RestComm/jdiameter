@@ -1,14 +1,25 @@
-package org.jdiameter.client.impl.parser;
-
 /*
- * Copyright (c) 2006 jDiameter.
- * https://jdiameter.dev.java.net/
+ * JBoss, Home of Professional Open Source
+ * Copyright 2011, Red Hat, Inc. and individual contributors by the
+ * @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
  *
- * License: GPL v3
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
  *
- * e-mail: erick.svenson@yahoo.com
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package org.jdiameter.client.impl.parser;
 
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
@@ -30,8 +41,15 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Date;
 
+/**
+ * 
+ * erick.svenson@yahoo.com
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 public class ElementParser implements IElementParser {
-	private static final Logger logger = LoggerFactory.getLogger(ElementParser.class);
+
+  private static final Logger logger = LoggerFactory.getLogger(ElementParser.class);
     /**
      * This is seconds shift (70 years in seconds) applied to date, 
      * since NTP date starts since 1900, not 1970.
@@ -62,9 +80,9 @@ public class ElementParser implements IElementParser {
          return prepareBuffer(rawData, FLOAT64_SIZE).getDouble();
     }
 
-    protected ByteBuffer prepareBuffer(byte [] bytes, int len)  {
+    protected ByteBuffer prepareBuffer(byte [] bytes, int len) throws AvpDataException  {
         if (bytes.length != len)
-            throw new IllegalArgumentException("Incorrect data length");
+            throw new AvpDataException("Incorrect data length");
         //ByteBuffer buffer = ByteBuffer.allocate(bytes.length);
         //buffer.put(bytes);
         //buffer.flip();

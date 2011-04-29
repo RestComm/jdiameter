@@ -235,7 +235,12 @@ public class MessageParser extends ElementParser implements IMessageParser {
       //logger.debug("Error during encode message", e);
       throw new ParseException("Failed to encode message.", e);
     }
-    return prepareBuffer(out.toByteArray(), out.size());
+    try{
+    	return prepareBuffer(out.toByteArray(), out.size());
+    }
+    catch(AvpDataException ade) {
+    	throw new ParseException(ade);
+    }
   }
 
   private byte[] toBytes(long value) {
