@@ -1,35 +1,50 @@
 /*
- * Copyright (c) 2006 jDiameter.
- * https://jdiameter.dev.java.net/
+ * JBoss, Home of Professional Open Source
+ * Copyright 2011, Red Hat, Inc. and individual contributors by the
+ * @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
  *
- * License: GPL v3
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
  *
- * e-mail: erick.svenson@yahoo.com
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package org.jdiameter.client.impl.helpers;
 
 import org.jdiameter.api.Configuration;
 
 /**
  * This interface provide methods for change configuration object
+ * 
+ * @author erick.svenson@yahoo.com
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
 public interface AppConfiguration extends Configuration {
 
-    /**
-     * Add elements to configuration
-     * @param e elements identifier
-     * @param value array of elements
-     * @return instance of configuration
-     */
-    public AppConfiguration add(Ordinal e, Configuration... value);
+  /**
+   * Add elements to configuration
+   * @param e elements identifier
+   * @param value array of elements
+   * @return instance of configuration
+   */
+  public AppConfiguration add(Ordinal e, Configuration... value);
 
-    /**
-     *
-     * @param e element identifier
-     * @param value parameter value
-     * @return instance of configuration
-     */
-    public AppConfiguration add(Ordinal e, Object value);
+  /**
+   *
+   * @param e element identifier
+   * @param value parameter value
+   * @return instance of configuration
+   */
+  public AppConfiguration add(Ordinal e, Object value);
 }
