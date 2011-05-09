@@ -46,7 +46,7 @@
       <Peer name="aaa://127.0.0.1:13868" attempt_connect="false" rating="1" />
     </Peers>
     <Realms>
-      <Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+      <Realm name="client.mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
         <ApplicationID>
           <VendorId value="0" />
           <AuthApplId value="4" />

@@ -59,7 +59,7 @@ public class ServerRTR extends AbstractServer {
   @Override
   public void init(InputStream configStream, String clientID) throws Exception {
     try {
-      super.init(configStream, clientID, ApplicationId.createByAccAppId(10415, 16777216));
+      super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777216));
       CxDxSessionFactoryImpl cxDxSessionFactory = new CxDxSessionFactoryImpl(this.sessionFactory);
       ((ISessionFactory) sessionFactory).registerAppFacory(ServerCxDxSession.class, cxDxSessionFactory);
       ((ISessionFactory) sessionFactory).registerAppFacory(ClientCxDxSession.class, cxDxSessionFactory);

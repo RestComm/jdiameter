@@ -176,17 +176,17 @@ public class CxDxSessionBasicFlowLIRTest {
 
     String client = "configurations/functional-cxdx/config-client.xml";
     String server1 = "configurations/functional-cxdx/config-server-node1.xml";
-
-    String replicatedClient = "configurations/functional-cxdx/replicated-config-client.xml";
-    String replicatedServer1 = "configurations/functional-cxdx/replicated-config-server-node1.xml";
+    
+    //String replicatedClient = "configurations/functional-cxdx/replicated-config-client.xml";
+    //String replicatedServer1 = "configurations/functional-cxdx/replicated-config-server-node1.xml";
 
     Class<CxDxSessionBasicFlowLIRTest> t = CxDxSessionBasicFlowLIRTest.class;
     client = t.getClassLoader().getResource(client).toString();
     server1 = t.getClassLoader().getResource(server1).toString();
-    replicatedClient = t.getClassLoader().getResource(replicatedClient).toString();
-    replicatedServer1 = t.getClassLoader().getResource(replicatedServer1).toString();
+   // replicatedClient = t.getClassLoader().getResource(replicatedClient).toString();
+    //replicatedServer1 = t.getClassLoader().getResource(replicatedServer1).toString();
 
-    return Arrays.asList(new Object[][] { { client, server1 }, { replicatedClient, replicatedServer1 } });
+    return Arrays.asList(new Object[][] { { client, server1 }/*, { replicatedClient, replicatedServer1 } */});
   }
 
   private void waitForMessage() {

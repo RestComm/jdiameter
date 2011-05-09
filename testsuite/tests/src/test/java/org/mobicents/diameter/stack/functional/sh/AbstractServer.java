@@ -49,7 +49,7 @@ public abstract class AbstractServer extends TBase implements ServerShSessionLis
 
   public void init(InputStream configStream, String clientID) throws Exception {
     try {
-      super.init(configStream, clientID, ApplicationId.createByAccAppId(10415, 16777217));
+      super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777217));
       ShSessionFactoryImpl shSessionFactory = new ShSessionFactoryImpl(this.sessionFactory);
       ((ISessionFactory) sessionFactory).registerAppFacory(ServerShSession.class, shSessionFactory);
       ((ISessionFactory) sessionFactory).registerAppFacory(ClientShSession.class, shSessionFactory);

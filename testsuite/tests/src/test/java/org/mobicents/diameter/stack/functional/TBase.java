@@ -59,7 +59,7 @@ public abstract class TBase implements EventListener<Request, Answer>, NetworkRe
   protected static final String serverURINode2 = "aaa://" + serverHost2 + ":" + serverPortNode2;
 
   protected static final String serverRealm = "server.mobicents.org";
-  protected static final String clientRealm = "mobicents.org";
+  protected static final String clientRealm = "client.mobicents.org";
 
   protected StackCreator stack;
   protected ISessionFactory sessionFactory;

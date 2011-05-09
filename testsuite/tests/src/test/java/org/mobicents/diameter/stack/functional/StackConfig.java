@@ -81,10 +81,10 @@ public class StackConfig extends EmptyConfiguration {
         add(PeerRating, 1).
         add(PeerName, serverURI));
     // Set realm table
-    add(RealmTable,
-        // Realm 1
-        getInstance().
-        add(RealmEntry, realmName + ":" + clientHost + "," + serverHost)
-    );
+//    add(RealmTable,
+//        // Realm 1
+//        getInstance().
+//        add(RealmEntry, realmName + ":" + clientHost + "," + serverHost)
+//    );
   }
 }

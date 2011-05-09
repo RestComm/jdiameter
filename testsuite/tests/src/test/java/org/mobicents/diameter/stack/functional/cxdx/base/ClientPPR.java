@@ -63,7 +63,7 @@ public class ClientPPR extends AbstractClient {
 
   public void init(InputStream configStream, String clientID) throws Exception {
     try {
-      super.init(configStream, clientID, ApplicationId.createByAccAppId(10415, 16777216));
+      super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777216));
       CxDxSessionFactoryImpl cxdxSessionFactory = new CxDxSessionFactoryImpl(this.sessionFactory);
       ((ISessionFactory) sessionFactory).registerAppFacory(ServerCxDxSession.class, cxdxSessionFactory);
       ((ISessionFactory) sessionFactory).registerAppFacory(ClientCxDxSession.class, cxdxSessionFactory);

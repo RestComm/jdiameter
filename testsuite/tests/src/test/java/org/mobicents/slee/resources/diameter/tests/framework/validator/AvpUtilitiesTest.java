@@ -452,6 +452,7 @@ public class AvpUtilitiesTest {
       // We want to come here, since we lack Destination-Realm AVP (283).
     }
     catch (Exception e) {
+    	e.printStackTrace();
       fail("Message failed to be sent for wrong reason. Expected RouteException due to lack of Destination-Realm AVP (283), Received " + e);
     }
 
@@ -603,8 +604,14 @@ public class AvpUtilitiesTest {
           getInstance().add(PeerRating, 1).add(PeerName, serverURI).add(PeerAttemptConnection, true));
       // Set realm table
       add(RealmTable, 
-          // Realm 1
-          getInstance().add(RealmEntry, realmName + ":" + clientHost + ", " + serverHost));
+              // Realm 1
+              getInstance().add(RealmEntry, getInstance().
+                  add(RealmName, realmName).
+                  add(ApplicationId, getInstance().add(VendorId, 0L).add(AuthApplId, 0L).add(AcctApplId, 3L)).
+                  add(RealmHosts, clientHost + ", " + serverHost).
+                  add(RealmLocalAction, "LOCAL").
+                  add(RealmEntryIsDynamic, false).
+                  add(RealmEntryExpTime, 1000L)));
     }
   }
 

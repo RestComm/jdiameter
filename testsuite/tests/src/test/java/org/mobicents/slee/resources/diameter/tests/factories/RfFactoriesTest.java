@@ -22,6 +22,7 @@
 package org.mobicents.slee.resources.diameter.tests.factories;
 
 import static org.jdiameter.client.impl.helpers.Parameters.AcctApplId;
+import static org.jdiameter.client.impl.helpers.Parameters.ApplicationId;
 import static org.jdiameter.client.impl.helpers.Parameters.Assembler;
 import static org.jdiameter.client.impl.helpers.Parameters.AuthApplId;
 import static org.jdiameter.client.impl.helpers.Parameters.OwnDiameterURI;
@@ -33,6 +34,11 @@ import static org.jdiameter.client.impl.helpers.Parameters.PeerTable;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryExpTime;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryIsDynamic;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmHosts;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmLocalAction;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmName;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -1531,11 +1537,15 @@ public class RfFactoriesTest implements DiameterRAInterface {
           add(PeerRating, 1).
           add(PeerName, serverURI));
       // Set realm table
-      add(RealmTable,
-          // Realm 1
-          getInstance().
-          add(RealmEntry, realmName + ":" + clientHost + "," + serverHost)
-      );
+      add(RealmTable, 
+              // Realm 1
+              getInstance().add(RealmEntry, getInstance().
+                  add(RealmName, realmName).
+                  add(ApplicationId, getInstance().add(VendorId, 0L).add(AuthApplId, 0L).add(AcctApplId, 3L)).
+                  add(RealmHosts, clientHost + ", " + serverHost).
+                  add(RealmLocalAction, "LOCAL").
+                  add(RealmEntryIsDynamic, false).
+                  add(RealmEntryExpTime, 1000L)));
     }
   }
 
@@ -1577,7 +1587,7 @@ public class RfFactoriesTest implements DiameterRAInterface {
 
   public ApplicationId[] getSupportedApplications()
   {
-    return new ApplicationId[]{ApplicationId.createByAccAppId(0L, 3L)};
+    return new ApplicationId[]{org.jdiameter.api.ApplicationId.createByAccAppId(0L, 3L)};
   }
 
   public void endActivity(DiameterActivityHandle arg0) {

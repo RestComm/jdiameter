@@ -113,6 +113,9 @@
                 <exclude>**/*$*</exclude>
                 <exclude>**/TestingFramework.java</exclude>
                 <exclude>**/TestingFrameworkValidator.java</exclude>
+                <!-- 
+                <exclude>org/mobicents/slee/**/*.java</exclude>
+                 -->
               </excludes>
             </configuration>
           </plugin>

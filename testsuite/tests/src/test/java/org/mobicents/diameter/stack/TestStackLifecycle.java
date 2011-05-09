@@ -430,7 +430,7 @@ public class TestStackLifecycle {
   private void shutdownStack(StackImpl stack) {
     if(stack != null) {
       try {
-        Thread.sleep(1000);
+        Thread.sleep(2000);
       }
       catch (InterruptedException e) {
         // ignore

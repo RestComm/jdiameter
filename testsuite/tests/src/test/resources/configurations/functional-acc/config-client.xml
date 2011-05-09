@@ -6,7 +6,7 @@
     <IPAddresses>
       <IPAddress value="127.0.0.1" />
     </IPAddresses>
-    <Realm value="mobicents.org" />
+    <Realm value="client.mobicents.org" />
     <VendorID value="0" />
     <ProductName value="jDiameter" />
     <FirmwareRevision value="1" />
@@ -42,6 +42,13 @@
     </Peers>
     <Realms>
       <Realm name="server.mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+        <ApplicationID>
+          <VendorId value="0" />
+          <AuthApplId value="0" />
+          <AcctApplId value="300" />
+        </ApplicationID>
+      </Realm>
+      <Realm name="client.mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
         <ApplicationID>
           <VendorId value="0" />
           <AuthApplId value="0" />

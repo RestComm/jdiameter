@@ -14,6 +14,11 @@ import static org.jdiameter.client.impl.helpers.Parameters.PeerTable;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryExpTime;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryIsDynamic;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmHosts;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmLocalAction;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmName;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
@@ -672,10 +677,15 @@ public class TestingFramework
           add(PeerRating, 1).
           add(PeerName, serverURI));
       // Set realm table
-      add(RealmTable,
+      add(RealmTable, 
           // Realm 1
-          getInstance().
-          add(RealmEntry, realmName + ":" + clientHost + "," + serverHost)
+          getInstance().add(RealmEntry, getInstance().
+              add(RealmName, realmName).
+              add(ApplicationId, getInstance().add(VendorId, 193L).add(AuthApplId, 0L).add(AcctApplId, 19302L)).
+              add(RealmHosts, clientHost + ", " + serverHost).
+              add(RealmLocalAction, "LOCAL").
+              add(RealmEntryIsDynamic, false).
+              add(RealmEntryExpTime, 1000L))
       );
     }
   }

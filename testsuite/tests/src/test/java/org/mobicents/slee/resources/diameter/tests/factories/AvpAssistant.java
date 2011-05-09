@@ -26,6 +26,7 @@
 package org.mobicents.slee.resources.diameter.tests.factories;
 
 import static org.jdiameter.client.impl.helpers.Parameters.AcctApplId;
+import static org.jdiameter.client.impl.helpers.Parameters.ApplicationId;
 import static org.jdiameter.client.impl.helpers.Parameters.Assembler;
 import static org.jdiameter.client.impl.helpers.Parameters.AuthApplId;
 import static org.jdiameter.client.impl.helpers.Parameters.OwnDiameterURI;
@@ -37,6 +38,11 @@ import static org.jdiameter.client.impl.helpers.Parameters.PeerTable;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryExpTime;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryIsDynamic;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmHosts;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmLocalAction;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmName;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -208,6 +214,16 @@ import org.mobicents.slee.resource.diameter.sh.events.avp.userdata.UserDataObjec
  */
 public class AvpAssistant {
 
+  private static String clientHost = "127.0.0.1";
+  private static String clientPort = "13868";
+  private static String clientURI  = "aaa://" + clientHost + ":" + clientPort;
+
+  private static String serverHost = "localhost";
+  private static String serverPort = "3868";
+  private static String serverURI = "aaa://" + serverHost + ":" + serverPort;
+
+  private static String realmName = "mobicents.org";
+
   private static final HashMap<Class, Object> typeValues = new HashMap<Class, Object>(); 
 
   public static final Collection<String> methodsToIgnore = new ArrayList<String>();
@@ -279,7 +295,7 @@ public class AvpAssistant {
     
     Stack stack = new org.jdiameter.client.impl.StackImpl();
     stack.init( new MyConfiguration() );
-    Message createMessage = stack.getSessionFactory().getNewRawSession().createMessage( 0, ApplicationId.createByAccAppId( 0 ));
+    Message createMessage = stack.getSessionFactory().getNewRawSession().createMessage( 0, org.jdiameter.api.ApplicationId.createByAccAppId( 0L ));
     AvpSet rawAvp = createMessage.getAvps();
     rawAvp.addGroupedAvp(0).addAvp( 666, "pwning_more", true );
     byte[] dummyAvpBytes = rawAvp.getAvp(0).getRawData();
@@ -947,11 +963,15 @@ public class AvpAssistant {
           add(PeerRating, 1).
           add(PeerName, "aaa://localhost"));
       // Set realm table
-      add(RealmTable,
+      add(RealmTable, 
           // Realm 1
-          getInstance().
-          add(RealmEntry, "dummy" + ":" + "dummy" + "," + "dummy")
-      );
+          getInstance().add(RealmEntry, getInstance().
+              add(RealmName, realmName).
+              add(ApplicationId, getInstance().add(VendorId, 193L).add(AuthApplId, 0L).add(AcctApplId, 19302L)).
+              add(RealmHosts, clientHost + ", " + serverHost).
+              add(RealmLocalAction, "LOCAL").
+              add(RealmEntryIsDynamic, false).
+              add(RealmEntryExpTime, 1000L)));
     }
   }
 
