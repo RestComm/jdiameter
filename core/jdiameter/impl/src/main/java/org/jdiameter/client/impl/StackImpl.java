@@ -28,7 +28,6 @@ import static org.jdiameter.client.impl.helpers.Parameters.Assembler;
 import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.ProcessingMessageTimer;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledExecutorService;
@@ -63,8 +62,6 @@ import org.jdiameter.client.impl.helpers.Parameters;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.api.statistic.IStatisticProcessor;
-import org.jdiameter.common.api.timer.ITimerFacility;
-import org.jdiameter.common.impl.timer.LocalTimerFacilityImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,11 +111,11 @@ public class StackImpl implements IContainer, StackImplMBean {
       this.concurrentFactory = (IConcurrentFactory) assembler.getComponentInstance(IConcurrentFactory.class);
 
       try {
-        // Create and register Session DS and Timer Facility 
-        Class sessionDataSourceClass = Class.forName(config.getStringValue(Parameters.SessionDatasource.ordinal(), (String) Parameters.SessionDatasource.defValue()));
-        createISessionDataSource(sessionDataSourceClass);
-        Class timerFacilityClass = Class.forName(config.getStringValue(Parameters.TimerFacility.ordinal(), (String) Parameters.TimerFacility.defValue()));
-        createITimerFacility(timerFacilityClass);
+//        // Create and register Session DS and Timer Facility 
+//        Class sessionDataSourceClass = Class.forName(config.getStringValue(Parameters.SessionDatasource.ordinal(), (String) Parameters.SessionDatasource.defValue()));
+//        createISessionDataSource(sessionDataSourceClass);
+//        Class timerFacilityClass = Class.forName(config.getStringValue(Parameters.TimerFacility.ordinal(), (String) Parameters.TimerFacility.defValue()));
+//        createITimerFacility(timerFacilityClass);
 
         Configuration[] dictionaryConfigs = config.getChildren(Parameters.Dictionary.ordinal());
 
@@ -154,37 +151,37 @@ public class StackImpl implements IContainer, StackImplMBean {
     return (SessionFactory) assembler.getComponentInstance(SessionFactory.class);
   }
 
-  @SuppressWarnings("unchecked")
-  private void createITimerFacility(Class clazz) throws InternalException {
-    ITimerFacility itf;
-    if(assembler.getComponentInstance(ISessionDatasource.class).isClustered()) {
-      try{
-        Constructor<ITimerFacility> con = clazz.getConstructor(IContainer.class);
-        itf = con.newInstance(this);
-      }
-      catch(Exception e) {
-        throw new InternalException(e);
-      }
-    }
-    else {
-      itf = new LocalTimerFacilityImpl(this);
-    }
-    assembler.registerComponentInstance(itf);
-  }
-
-  @SuppressWarnings("unchecked")
-  private void createISessionDataSource(Class clazz) throws InternalException {
-    ISessionDatasource isd = null;
-    try {
-      Constructor<ISessionDatasource> con = clazz.getConstructor(IContainer.class);
-      isd = con.newInstance(this);
-    }
-    catch (Exception e) {
-      throw new InternalException(e);
-    }
-    // finally register, so other components can be created.
-    assembler.registerComponentInstance(isd);
-  }
+//  @SuppressWarnings("unchecked")
+//  private void createITimerFacility(Class clazz) throws InternalException {
+//    ITimerFacility itf;
+//    if(assembler.getComponentInstance(ISessionDatasource.class).isClustered()) {
+//      try{
+//        Constructor<ITimerFacility> con = clazz.getConstructor(IContainer.class);
+//        itf = con.newInstance(this);
+//      }
+//      catch(Exception e) {
+//        throw new InternalException(e);
+//      }
+//    }
+//    else {
+//      itf = new LocalTimerFacilityImpl(this);
+//    }
+//    assembler.registerComponentInstance(itf);
+//  }
+//
+//  @SuppressWarnings("unchecked")
+//  private void createISessionDataSource(Class clazz) throws InternalException {
+//    ISessionDatasource isd = null;
+//    try {
+//      Constructor<ISessionDatasource> con = clazz.getConstructor(IContainer.class);
+//      isd = con.newInstance(this);
+//    }
+//    catch (Exception e) {
+//      throw new InternalException(e);
+//    }
+//    // finally register, so other components can be created.
+//    assembler.registerComponentInstance(isd);
+//  }
 
   private void createDictionary(String clazz, boolean validatorEnabled, ValidatorLevel validatorSendLevel, ValidatorLevel validatorReceiveLevel) throws InternalException {
     // Defer call to singleton
@@ -418,6 +415,7 @@ public class StackImpl implements IContainer, StackImplMBean {
     if (aClass == PeerTable.class) {
       unwrapObject = assembler.getComponentInstance(aClass);
     }
+    //TODO: "layers" should be removed....
     if (unwrapObject == null) {
       unwrapObject = assembler.getChilds()[StackLayer.id()].getComponentInstance(aClass);
     }

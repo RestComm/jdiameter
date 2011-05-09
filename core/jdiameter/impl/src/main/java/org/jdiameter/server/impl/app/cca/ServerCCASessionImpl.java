@@ -274,7 +274,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
           break;
 
         case RECEIVED_RAA:
-          listener.doReAuthAnswer(this, new ReAuthRequestImpl(localEvent.getRequest().getMessage()), new ReAuthAnswerImpl(localEvent.getAnswer().getMessage()));
+          listener.doReAuthAnswer(this, new ReAuthRequestImpl(localEvent.getRequest().getMessage()), new ReAuthAnswerImpl((Answer)localEvent.getAnswer().getMessage()));
           break;
         case SENT_RAR:
           dispatchEvent(localEvent.getRequest());

@@ -52,6 +52,7 @@ import org.jdiameter.client.api.IAssembler;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IMetaData;
+import org.jdiameter.client.api.IRequest;
 import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.controller.IPeerTable;
 import org.jdiameter.client.api.fsm.IFsmFactory;
@@ -121,7 +122,9 @@ public class PeerTableImpl implements IPeerTable {
             // create predefined peer
             IPeer peer = (IPeer) createPeer(rating, uri, ip, portRange, metaData, globalConfig, peerConfig, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser);
             if (peer != null) {
-              peer.setRealm(router.getRealmForPeer(peer.getUri().getFQDN()));
+              //NOTE: this depends on conf, in normal case realm is younger part of FQDN, but in some cases
+              //conf peers may contain IPs only... sucks.
+              peer.setRealm(router.getRealmTable().getRealmForPeer(peer.getUri().getFQDN()));
               peerTable.put(peer.getUri(), peer);
               logger.debug("Append peer {} to peer table", peer);
             }
@@ -147,9 +150,6 @@ public class PeerTableImpl implements IPeerTable {
     return p;
   }
 
-  public Peer getPeer(String name) {
-    return getPeerByName(name);
-  }
 
   public void sendMessage(IMessage message)
   throws IllegalDiameterStateException, RouteException, AvpDataException, IOException {
@@ -165,6 +165,14 @@ public class PeerTableImpl implements IPeerTable {
       );
 
       // Check local request
+      if(router.updateRoute((IRequest)message)) {
+        if(logger.isDebugEnabled()) {
+          logger.debug("Updated route on message {} [destHost={}; destRealm={}]", new Object[] {message, 
+              message.getAvps().getAvp(Avp.DESTINATION_HOST) != null ? message.getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString() : "",
+              message.getAvps().getAvp(Avp.DESTINATION_REALM) != null ? message.getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString() : ""}
+    	      );
+        }
+      }
       peer = router.getPeer(message, this);
       logger.debug( "Selected peer {} for sending message {}", new Object[] {peer, message});
       if (peer == metaData.getLocalPeer()) {
@@ -232,9 +240,23 @@ public class PeerTableImpl implements IPeerTable {
     return null;
   }
 
+  //NOTE: METHOD BODY MUST MATCH JDOC.....!!!
+  //TODO: add  DNS lookup ?
+  public Peer getPeer(String name) {
+	  logger.info("getPeer( "+ name +" ) --- >"+peerTable);
+	  for (Peer p : peerTable.values()) {
+		  logger.info("getPeer( "+ name +" ) --- >"+p.getUri().getFQDN());
+	      if (p.getUri().toString().equals(name) || p.getUri().getFQDN().equals(name)) {
+	        return (IPeer) p;
+	      }
+	    }
+	    return null;
+  }
+
   public IPeer getPeerByName(String peerName) {
+	  logger.info("getPeerByName( "+ peerName +" ) --- >"+peerTable);
     for (Peer p : peerTable.values()) {
-      if (p.getUri().toString().equals(peerName) || p.getUri().getFQDN().equals(peerName)) {
+      if (p.getUri().getFQDN().equals(peerName)) {
         return (IPeer) p;
       }
     }
@@ -242,6 +264,8 @@ public class PeerTableImpl implements IPeerTable {
   }
 
   public IPeer getPeerByUri(String peerUri) {
+	  logger.info("getPeerByUri( "+ peerUri +" ) --- >"+peerTable);
+	  //FIXME: why it creates URI ?....?
     URI otherUri;
     try {
       otherUri = new URI(peerUri);
@@ -336,6 +360,7 @@ public class PeerTableImpl implements IPeerTable {
   public void destroy() {
     if (concurrentFactory != null) {
       try {
+    	  concurrentFactory.getThreadGroup().stop(); //had to add it to make testStartStopStart pass....
         concurrentFactory.getThreadGroup().destroy();
       }
       catch (IllegalThreadStateException itse) {

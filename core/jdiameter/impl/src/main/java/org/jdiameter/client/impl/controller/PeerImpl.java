@@ -85,8 +85,10 @@ import org.jdiameter.api.RouteException;
 import org.jdiameter.api.URI;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.validation.Dictionary;
+import org.jdiameter.client.api.IAnswer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IMetaData;
+import org.jdiameter.client.api.IRequest;
 import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.fsm.EventTypes;
 import org.jdiameter.client.api.fsm.FsmEvent;
@@ -368,36 +370,48 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
   }
 
-  private IMessage processRedirectAnswer(IMessage answer) {
+  private IMessage processRedirectAnswer(IMessage request,IMessage answer) {
     int resultCode  = ResultCode.SUCCESS;
-    // Update redirect information
+    
     try {
-      router.updateRedirectInformation(answer);
+    	//it will try to find next hope and send it...
+      router.processRedirectAnswer((IRequest)request,(IAnswer)answer,table);
+      return null;
     }
     catch (RouteException exc) {
       // Loop detected (may be stack must send error response to redirect host)
+      if(logger.isDebugEnabled()) {
+        logger.debug("Failed to process redirect!",exc);
+      }
       resultCode = ResultCode.LOOP_DETECTED;
+      
     }
     catch (Throwable exc) {
+
       // Incorrect redirect message
+    	if(logger.isDebugEnabled())
+    	{
+    		logger.debug("Failed to process redirect!",exc);
+    	}
       resultCode = ResultCode.UNABLE_TO_DELIVER;
     }
-    // Update destination avps
-    if (resultCode == ResultCode.SUCCESS) {
-      // Clear avps
-      answer.getAvps().removeAvp(RESULT_CODE);
-      // Update flags
-      answer.setRequest(true);
-      answer.setError(false);
-      try {
-        table.sendMessage(answer);
-        answer = null;
-      }
-      catch (Exception e) {
-        logger.warn("Unable to deliver due to error", e);
-        resultCode = ResultCode.UNABLE_TO_DELIVER;
-      }
-    }
+    	//why, oh why, peer works as router?....
+//    // Update destination avps
+//    if (resultCode == ResultCode.SUCCESS) {
+//      // Clear avps
+//      answer.getAvps().removeAvp(RESULT_CODE);
+//      // Update flags
+//      answer.setRequest(true);
+//      answer.setError(false);
+//      try {
+//        table.sendMessage(answer);
+//        answer = null;
+//      }
+//      catch (Exception e) {
+//        logger.warn("Unable to deliver due to error", e);
+//        resultCode = ResultCode.UNABLE_TO_DELIVER;
+//      }
+//    }
     if (resultCode != ResultCode.SUCCESS) {
       // Restore answer flag
       answer.setRequest(false);
@@ -555,9 +569,11 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   }
 
   protected Set<ApplicationId> getCommonApplicationIds(IMessage message) {
+	  //TODO: fix this, its not correct lookup. It should check realm!
+	  //it does not include application Ids for which listeners register - and on this  basis it consume message!
     Set<ApplicationId> newAppId = new HashSet<ApplicationId>();
     Set<ApplicationId> locAppId = metaData.getLocalPeer().getCommonApplications();
-    Set<ApplicationId> remAppId = message.getApplicationIdAvps();
+    List<ApplicationId> remAppId = message.getApplicationIdAvps();
     logger.debug("Checking common applications. Remote applications: {}. Local applications: {}",new Object[]{remAppId,locAppId});
     // check common application
     for (ApplicationId l : locAppId) {
@@ -574,8 +590,43 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     return newAppId;
   }
 
-  protected void preProcessRequest(IMessage answer) {
-  }    
+  protected void sendErrorAnswer(IRequest request, String errorMessage, int resultCode,Avp ...avpsToAdd)
+  {
+	  request.setRequest(false); //dont like this...
+	  request.setError(true);
+	  request.getAvps().addAvp(RESULT_CODE, resultCode, true, false, true);
+	  
+	  //add before removal actions
+	  if(avpsToAdd != null)
+	  {
+		  for(Avp a: avpsToAdd)
+		  {
+			  request.getAvps().addAvp(a);
+		  }
+	  }
+	  
+	  request.getAvps().removeAvp(ORIGIN_HOST);
+	  request.getAvps().removeAvp(ORIGIN_REALM);
+	  request.getAvps().addAvp(ORIGIN_HOST, metaData.getLocalPeer().getUri().getFQDN(), true, false, true);
+	  request.getAvps().addAvp(ORIGIN_REALM, metaData.getLocalPeer().getRealmName(), true, false, true);
+      if (errorMessage != null) {
+    	  request.getAvps().addAvp(ERROR_MESSAGE, errorMessage, false);
+      }
+      // Remove trash avp 
+      request.getAvps().removeAvp(DESTINATION_HOST);
+      request.getAvps().removeAvp(DESTINATION_REALM);
+      try {
+        sendMessage((IMessage) request);  //yeah, super.....
+        if(statistic.isEnabled())
+        	statistic.getRecordByName(IStatisticRecord.Counters.SysGenResponse.name()).inc();
+      }
+      catch (Exception e) {
+        logger.debug("Can not send answer", e);
+      }
+      if(statistic.isEnabled())
+      	statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedRequest.name()).inc();
+  }
+
 
   protected class ActionContext implements IContext {
 
@@ -627,12 +678,14 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       }
       // Remove destination information from answer messages
       if (!message.isRequest()) {
+    	  // 6.2.  Diameter Answer Processing asnwers and Error messages DONT have those.... pffff.
         message.getAvps().removeAvp(DESTINATION_HOST);
         message.getAvps().removeAvp(DESTINATION_REALM);
 
         int commandCode = message.getCommandCode();
         // We don't want this for CEx/DWx/DPx
         if(commandCode != 257 && commandCode != 280 && commandCode != 282) {
+        	//TODO: check if this is correct.
           MutablePeerTableImpl peerTable = (MutablePeerTableImpl) table;
           if(peerTable.isDuplicateProtection()) {
             String[] originInfo = router.getRequestRouteInfo(message.getHopByHopIdentifier());
@@ -810,15 +863,18 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     public boolean receiveMessage(IMessage message) {
       boolean isProcessed = false;
 
+      // TODO: this might not be proper, since there might be no session
+      // present in case of stateless traffic
       if (message.isRequest()) {
-        // Server request
+    	  
+        // checks in server side make sure we are legit, now lets check if there is session present
         String avpSessionId = message.getSessionId();
         if (avpSessionId != null) {
           // XXX: FT/HA // NetworkReqListener listener = slc.get(avpSessionId);
           NetworkReqListener listener = (NetworkReqListener) sessionDataSource.getSessionListener(avpSessionId);
           if (listener != null) {
             router.registerRequestRouteInfo(message);
-            preProcessRequest(message);
+  
             IMessage answer = (IMessage) listener.processRequest(message);
             if (answer != null) {
               try {
@@ -845,6 +901,8 @@ public class PeerImpl extends AbstractPeer implements IPeer {
         }
       }
       else {
+    	  
+    	  //TODO: check REALMs here?
         IMessage request = peerRequests.remove(message.getHopByHopIdentifier());
         if (request != null && !request.isTimeOut()) {
           request.clearTimer();
@@ -852,7 +910,8 @@ public class PeerImpl extends AbstractPeer implements IPeer {
           Avp avpResCode = message.getAvps().getAvp(RESULT_CODE);
           if (isRedirectAnswer(avpResCode, message)) {
             message.setListener(request.getEventListener());
-            message = processRedirectAnswer(message);
+            message = processRedirectAnswer(request,message);
+            //if return value is not null, there was some error, lets try to invoke listener if it exists...
             isProcessed = message == null;
           }
 

@@ -19,7 +19,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package org.mobicents.diameter.stack.management;
 
 import java.lang.reflect.Field;
@@ -28,7 +27,13 @@ import java.util.Collection;
 
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.LocalAction;
+import org.jdiameter.client.api.controller.IRealm;
 
+/**
+ * 
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 public class RealmImpl implements Realm {
 
   private static final long serialVersionUID = 1L;
@@ -157,7 +162,7 @@ public class RealmImpl implements Realm {
       for(ApplicationIdJMX appId : this.applicationIds) {
         org.jdiameter.api.Realm r = n.addRealm(this.name, appId.asApplicationId(), LocalAction.valueOf(this.localAction), this.dynamic, this.expTime);
         for(String host : this.peers) {
-          r.addPeerName(host);
+          ((IRealm)r).addPeerName(host);
         }
       }
       if(this.originalName != null) {

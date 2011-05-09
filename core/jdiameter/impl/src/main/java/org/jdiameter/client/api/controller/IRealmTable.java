@@ -19,51 +19,43 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jdiameter.common.impl.app.auth;
+package org.jdiameter.client.api.controller;
 
-import org.jdiameter.api.Answer;
-import org.jdiameter.api.Request;
-import org.jdiameter.api.auth.events.SessionTermAnswer;
-import org.jdiameter.common.impl.app.AppAnswerEventImpl;
+import java.util.Collection;
+
+import org.jdiameter.api.ApplicationId;
+import org.jdiameter.api.Realm;
+import org.jdiameter.api.RealmTable;
+import org.jdiameter.client.api.IAnswer;
+import org.jdiameter.client.api.IRequest;
 
 /**
  * 
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public class SessionTermAnswerImpl extends AppAnswerEventImpl implements SessionTermAnswer {
+public interface IRealmTable extends RealmTable {
 
-  private static final long serialVersionUID = 1L;
+  public Realm matchRealm(IRequest request);
 
-  /**
-   * @param answer
-   */
-  public SessionTermAnswerImpl(Answer answer) {
-    super(answer);
-  }
+  public Realm matchRealm(IAnswer message, String destRealm);
 
-  /**
-   * @param request
-   * @param vendorId
-   * @param resultCode
-   */
-  public SessionTermAnswerImpl(Request request, long vendorId, long resultCode) {
-    super(request, vendorId, resultCode);
-  }
+  public Realm getRealm(String realmName, ApplicationId applicationId);
 
-  /**
-   * @param request
-   * @param resultCode
-   */
-  public SessionTermAnswerImpl(Request request, long resultCode) {
-    super(request, resultCode);
-  }
+  public Realm removeRealmApplicationId(String realmName, ApplicationId appId);
 
-  /**
-   * @param request
-   */
-  public SessionTermAnswerImpl(Request request) {
-    super(request);
-  }
+  public Collection<Realm> removeRealm(String realmName);
+
+  public Collection<Realm> getRealms(String realm);
+
+  public Collection<Realm> getRealms();
+
+  public String getRealmForPeer(String fqdn);
+
+  public void addLocalApplicationId(ApplicationId ap);
+
+  public void removeLocalApplicationId(ApplicationId a);
+
+  public void addLocalRealm(String localRealm, String fqdn);
 
 }

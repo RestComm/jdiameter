@@ -1,3 +1,24 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2011, Red Hat, Inc. and individual contributors by the
+ * @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.jdiameter.common.impl.app.cca;
 
 import org.jdiameter.api.Answer;
@@ -32,15 +53,38 @@ public class JCreditControlAnswerImpl extends AppAnswerEventImpl implements JCre
   private static final int CC_REQUEST_TYPE_AVP_CODE = 416;
   private static final int VALIDITY_TIME_AVP_CODE = 448;
 
-  public JCreditControlAnswerImpl(Request message, long resultCode) {
-    super(message.createAnswer(resultCode));
-  }
+	/**
+	 * @param answer
+	 */
+	public JCreditControlAnswerImpl(Answer answer) {
+		super(answer);
+	}
 
-  public JCreditControlAnswerImpl(Answer message) {
-    super(message);
-  }
+	/**
+	 * @param request
+	 * @param vendorId
+	 * @param resultCode
+	 */
+	public JCreditControlAnswerImpl(Request request, long vendorId, long resultCode) {
+		super(request, vendorId, resultCode);
+	}
 
-  public boolean isCreditControlFailureHandlingAVPPresent() {
+	/**
+	 * @param request
+	 * @param resultCode
+	 */
+	public JCreditControlAnswerImpl(Request request, long resultCode) {
+		super(request, resultCode);
+	}
+
+	/**
+	 * @param request
+	 */
+	public JCreditControlAnswerImpl(Request request) {
+		super(request);
+	}
+
+public boolean isCreditControlFailureHandlingAVPPresent() {
     return super.message.getAvps().getAvp(CREDIT_CONTROL_FAILURE_HANDLING_AVP_CODE) != null;
   }
 

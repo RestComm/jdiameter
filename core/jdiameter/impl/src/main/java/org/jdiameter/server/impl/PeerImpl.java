@@ -26,23 +26,31 @@ import static org.jdiameter.api.PeerState.INITIAL;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Avp;
+import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.InternalException;
+import org.jdiameter.api.LocalAction;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.PeerState;
+import org.jdiameter.api.Realm;
+import org.jdiameter.api.Request;
 import org.jdiameter.api.ResultCode;
 import org.jdiameter.api.StatisticRecord;
 import org.jdiameter.api.URI;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IMetaData;
+import org.jdiameter.client.api.IRequest;
 import org.jdiameter.client.api.ISessionFactory;
+import org.jdiameter.client.api.controller.IRealm;
+import org.jdiameter.client.api.controller.IRealmTable;
 import org.jdiameter.client.api.fsm.IContext;
 import org.jdiameter.client.api.io.IConnection;
 import org.jdiameter.client.api.io.ITransportLayerFactory;
@@ -295,97 +303,310 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
       return PeerImpl.this.toString();
     }
 
-    public boolean receiveMessage(IMessage request) {
-      boolean isProcessed = super.receiveMessage(request);
-      if (request.isRequest()) {
-        if (!isProcessed) {
-        	if(statistic.isEnabled())
-        		statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedRequest.name()).dec();
-          int resultCode = ResultCode.SUCCESS;
-          ApplicationId appId = request.getSingleApplicationId();
-          if (appId == null) {
-            resultCode = ResultCode.NO_COMMON_APPLICATION;
-          }
-          else {
-            NetworkReqListener listener = network.getListener(request);
-            if (listener != null) {
-              IMessage answer = null;
-              if (isDuplicateProtection) {
-                answer = peerTable.isDuplicate(request);
-              }
-              if (answer != null) {
-                answer.setProxiable(request.isProxiable());
-                answer.getAvps().removeAvp(Avp.PROXY_INFO);
-                for (Avp avp : request.getAvps().getAvps(Avp.PROXY_INFO)) {
-                  answer.getAvps().addAvp(avp);
-                }
-                answer.setHopByHopIdentifier(request.getHopByHopIdentifier());
-                if(statistic.isEnabled())
-                	statistic.getRecordByName(IStatisticRecord.Counters.SysGenResponse.name()).inc();
-                isProcessed = true;
-              }
-              else {
-                if (ovrManager != null && ovrManager.isParenAppOverload(request.getSingleApplicationId())) {
-                  logger.debug("Request {} skipped, because server application has overload", request);
-                  resultCode = ResultCode.TOO_BUSY;
-                }
-                else {
-                  try {
-                    router.registerRequestRouteInfo(request);
-                    answer = (IMessage) listener.processRequest(request);
-                    if (isDuplicateProtection && answer != null) {
-                      peerTable.saveToDuplicate(request.getDuplicationKey(), answer);
-                    }
-                    isProcessed = true;
-                  }
-                  catch (Exception exc) {
-                    resultCode = ResultCode.APPLICATION_UNSUPPORTED;
-                    logger.warn("Error during processing message by listener", exc);
-                  }
-                }
-              }
-              try {
-                if (answer != null && isProcessed) {
-                  sendMessage(answer);
-                  if(statistic.isEnabled())
-                  	statistic.getRecordByName(IStatisticRecord.Counters.AppGenResponse.name()).inc();
-                }
-              }
-              catch (Exception e) {
-                logger.warn("Can not send answer", e);
-              }
-            }
-            else {
-              logger.warn("Received message for unsupported Application-Id {}", appId);
-              resultCode = ResultCode.APPLICATION_UNSUPPORTED;
-            }
-          }
-          //
-          if (!isProcessed) { // send error answer
-            request.setRequest(false);
-            request.setError(true);
-            request.getAvps().removeAvp(Avp.RESULT_CODE);
-            request.getAvps().addAvp(Avp.RESULT_CODE, resultCode, true, false, true);
-            try {
-              sendMessage(request);
-              if(statistic.isEnabled())
-              	statistic.getRecordByName(IStatisticRecord.Counters.SysGenResponse.name()).inc();
-            }
-            catch (Exception e) {
-              logger.debug("Can not send answer", e);
-            }
-            if(statistic.isEnabled())
-            	statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedRequest.name()).inc();
-          }
-          else {
-        	  if(statistic.isEnabled())
-              	statistic.getRecordByName(IStatisticRecord.Counters.NetGenRequest.name()).inc();
+		public boolean receiveMessage(IMessage message) {
+			boolean isProcessed = false;
 
-          }
-        }
-      }
-      return isProcessed;
-    }
+			if (message.isRequest()) {
+				IRequest req = message;
+				Avp destRealmAvp = req.getAvps().getAvp(Avp.DESTINATION_REALM);
+				String destRealm = null;
+				if (destRealmAvp == null) {
+					// TODO: add that missing avp in "Failed-AVP" avp...
+					sendErrorAnswer(message, "No destination REALM!!!", ResultCode.MISSING_AVP);
+					return true;
+				} else {
+					try{
+						destRealm = destRealmAvp.getDiameterIdentity();
+					}catch(AvpDataException ade)
+					{
+						sendErrorAnswer(message, "Failed to parse Destination-Realm avp!", ResultCode.INVALID_AVP_VALUE,destRealmAvp);
+						return true;
+					}
+					
+				}
+				IRealmTable realmTable = router.getRealmTable();
+	
+				if (!realmTable.realmExists(destRealm)) {
+					// send no such realm answer.
+					sendErrorAnswer(message, null, ResultCode.REALM_NOT_SERVED);
+					return true;
+				}
+				ApplicationId appId = message.getSingleApplicationId();
+				if (appId == null) {
+					sendErrorAnswer(message, "No ApplicationId AVP!!!", ResultCode.MISSING_AVP,null); 
+					//TODO: add Auth-Application-Id,Acc-Application-Id and Vendor-Specific-Application-Id, can be empty
+					return true;
+				}
+
+				// check condition for local processing.
+				Avp destHostAvp = req.getAvps().getAvp(Avp.DESTINATION_HOST);
+				
+				//messages for local stack:
+//				-  The Destination-Host AVP contains the local host's identity,
+//  			    -  The Destination-Host AVP is not present, the Destination-Realm AVP
+//				   contains a realm the server is configured to process locally, and
+//				   the Diameter application is locally supported, or
+				//check conditions for immediate consumption.
+				//this includes
+				if (destHostAvp != null) {
+					try{
+						String destHost = destHostAvp.getDiameterIdentity();
+						//FIXME: add check with DNS/names to check 127 vs localhost
+						if (destHost.equals(metaData.getLocalPeer().getUri().getFQDN())) {
+				
+							// this is for handling possible REDIRECT, destRealm!=local.realm
+							LocalAction action = null;
+							IRealm matched = null;
+					
+								matched = (IRealm) realmTable.matchRealm(req);
+								if(matched!=null)
+								{
+									action = matched.getLocalAction();
+								}else{
+									// hmm, we dont support it localy, its not defined as
+									// remote... soooooo
+									// send no such realm answer.
+									sendErrorAnswer(message, null, ResultCode.APPLICATION_UNSUPPORTED); 
+									// or REALM_NOT_SERVED ?
+									return true;
+								}	
+							
+
+							
+							
+							switch (action) {
+							case LOCAL: // always call listener - this covers realms
+										// configured as localy processed and
+										// LocalPeer.realm
+							case PROXY: // might be complicated, lets make it listener
+										// now
+							case RELAY: // might be complicated, lets make it listener
+										// now
+								isProcessed = consumeMessage(message); //if its not redirected its 
+								break;
+							case REDIRECT:
+								//TODO: change this its almost the same as above, make it sync, so no router code involved
+								if (ovrManager != null && ovrManager.isParenAppOverload(message.getSingleApplicationId())) {
+									logger.debug("Request {} skipped, because server application has overload", message);
+									sendErrorAnswer(message, "Too Busy!!!", ResultCode.TOO_BUSY);
+									return true;
+								} else {
+									try {
+										
+										router.registerRequestRouteInfo(message);
+										IMessage answer = (IMessage)matched.getAgent().processRequest(req,matched);
+										if (isDuplicateProtection && answer != null) {
+											peerTable.saveToDuplicate(message.getDuplicationKey(), answer);
+										}
+										isProcessed = true;
+										if(answer!=null)
+											sendMessage(answer);
+										if (statistic.isEnabled())
+											statistic.getRecordByName(IStatisticRecord.Counters.SysGenResponse.name()).inc();
+									} catch (Exception exc) {
+										// TODO: check this!!
+										logger.warn("Error during processing message by redirect agent", exc);
+										sendErrorAnswer(message, "Cant process!!!", ResultCode.UNABLE_TO_COMPLY);
+										return true;
+
+									}
+								}
+								if (isProcessed) {
+									// NOTE: done to inc stat whcih informs on net work request consumption :)... 
+									if (statistic.isEnabled())
+										statistic.getRecordByName(IStatisticRecord.Counters.NetGenRequest.name()).inc();
+
+								}
+
+								break;
+
+							}
+						} else {
+							//NOTE: this check should be improved, it checks if there is connection to peer, otherwise we cant serve it.
+							//possibly also match realm.
+							IPeer p = (IPeer) peerTable.getPeer(destHost);
+							if(p!=null && p.hasValidConnection())
+							{	
+								isProcessed = consumeMessage(message);
+							}else
+							{
+								sendErrorAnswer(req, "No connection to peer", ResultCode.UNABLE_TO_DELIVER);
+								isProcessed = true;
+							}
+						}
+					}catch(AvpDataException ade)
+					{
+						sendErrorAnswer(message, "Failed to parse Destination-Host avp!", ResultCode.INVALID_AVP_VALUE,destHostAvp);
+						return true;
+					}
+					
+				} else {
+					// we have to match realms :) this MUST include local realm
+					LocalAction action = null;
+					IRealm matched = null;
+			
+						matched = (IRealm) realmTable.matchRealm(req);
+						if(matched!=null)
+						{
+							action = matched.getLocalAction();
+						}else{
+							// hmm, we dont support it localy, its not defined as
+							// remote... soooooo
+							// send no such realm answer.
+							sendErrorAnswer(message, null, ResultCode.APPLICATION_UNSUPPORTED); 
+							// or REALM_NOT_SERVED ?
+							return true;
+						}	
+					
+
+					
+					
+					switch (action) {
+					case LOCAL: // always call listener - this covers realms
+								// configured as localy processed and
+								// LocalPeer.realm
+					case PROXY: // might be complicated, lets make it listener
+								// now
+					case RELAY: // might be complicated, lets make it listener
+								// now
+						isProcessed = consumeMessage(message);
+						break;
+					case REDIRECT:
+						//TODO: change this its almost the same as above, make it sync, so no router code involved
+						if (ovrManager != null && ovrManager.isParenAppOverload(message.getSingleApplicationId())) {
+							logger.debug("Request {} skipped, because server application has overload", message);
+							sendErrorAnswer(message, "Too Busy!!!", ResultCode.TOO_BUSY);
+							return true;
+						} else {
+							try {
+								
+								router.registerRequestRouteInfo(message);
+								IMessage answer = (IMessage)matched.getAgent().processRequest(req,matched);
+								if (isDuplicateProtection && answer != null) {
+									peerTable.saveToDuplicate(message.getDuplicationKey(), answer);
+								}
+								isProcessed = true;
+								if(answer!=null)
+									sendMessage(answer);
+								if (statistic.isEnabled())
+									statistic.getRecordByName(IStatisticRecord.Counters.SysGenResponse.name()).inc();
+							} catch (Exception exc) {
+								// TODO: check this!!
+								logger.warn("Error during processing message by redirect agent", exc);
+								sendErrorAnswer(message, "Cant process!!!", ResultCode.UNABLE_TO_COMPLY);
+								return true;
+
+							}
+						}
+						if (isProcessed) {
+							// NOTE: done to inc stat whcih informs on net work request consumption :)... 
+							if (statistic.isEnabled())
+								statistic.getRecordByName(IStatisticRecord.Counters.NetGenRequest.name()).inc();
+
+						}
+
+						break;
+
+					}
+				
+
+				}
+
+			} else {
+				// answer, let client ... pfff, do it work
+				isProcessed = super.receiveMessage(message);
+			}
+
+			return isProcessed;
+		}
+
+
+		/**
+		 * @param message
+		 * @return
+		 */
+		private boolean consumeMessage(IMessage message) {
+			// now its safe to call stupid client code....
+			boolean isProcessed = super.receiveMessage(message);
+			IMessage answer = null;
+			// this will process if session exists.
+			if (!isProcessed) {
+				if (statistic.isEnabled())
+					statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedRequest.name()).dec(); 
+				// why its net gen rejected :/
+
+				NetworkReqListener listener = network.getListener(message);
+				if (listener != null) {
+					
+					if (isDuplicateProtection) {
+						answer = peerTable.isDuplicate(message);
+					}
+					if (answer != null) {
+						answer.setProxiable(message.isProxiable());
+						answer.getAvps().removeAvp(Avp.PROXY_INFO);
+						for (Avp avp : message.getAvps().getAvps(Avp.PROXY_INFO)) {
+							answer.getAvps().addAvp(avp);
+						}
+						answer.setHopByHopIdentifier(message.getHopByHopIdentifier());
+						
+						isProcessed = true;
+						try{
+							sendMessage(answer);
+						if (statistic.isEnabled())
+							statistic.getRecordByName(IStatisticRecord.Counters.SysGenResponse.name()).inc();
+						}catch(Exception e)
+						{
+							// TODO: check this!!
+							logger.warn("Error during processing message by duplicate protection", e);
+							sendErrorAnswer(message, "Cant process!!!", ResultCode.UNABLE_TO_COMPLY);
+							return true;
+						}
+					} else {
+						if (ovrManager != null && ovrManager.isParenAppOverload(message.getSingleApplicationId())) {
+							logger.debug("Request {} skipped, because server application has overload", message);
+							sendErrorAnswer(message, "Too Busy!!!", ResultCode.TOO_BUSY);
+							return true;
+						} else {
+							try {
+								router.registerRequestRouteInfo(message);
+								answer = (IMessage) listener.processRequest(message);
+								if (isDuplicateProtection && answer != null) {
+									peerTable.saveToDuplicate(message.getDuplicationKey(), answer);
+								}
+								isProcessed = true;
+								if(isProcessed && answer != null)
+									sendMessage(answer);
+								if (statistic.isEnabled())
+									statistic.getRecordByName(IStatisticRecord.Counters.AppGenResponse.name()).inc();
+							} catch (Exception exc) {
+								// TODO: check this!!
+								logger.warn("Error during processing message by listener", exc);
+								sendErrorAnswer(message, "Cant process!!!", ResultCode.UNABLE_TO_COMPLY);
+								return true;
+
+							}
+						}
+					}
+
+					
+				} else {
+					// NOTE: no listener defined for messages apps,
+					// response with "bad peer" stuff.
+					logger.warn("Received message for unsupported Application-Id {}", message.getSingleApplicationId());
+					sendErrorAnswer(message, "Cant process!!!", ResultCode.APPLICATION_UNSUPPORTED);
+					return true;
+				}
+
+			}
+			
+			if (isProcessed) {
+				// NOTE: done to inc stat whcih informs on net work request consumption :)... 
+				if (statistic.isEnabled())
+					statistic.getRecordByName(IStatisticRecord.Counters.NetGenRequest.name()).inc();
+
+			}
+			return isProcessed;
+		}
   }
 
 }

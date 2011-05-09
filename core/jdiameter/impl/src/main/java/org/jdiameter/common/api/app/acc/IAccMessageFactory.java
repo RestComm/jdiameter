@@ -19,51 +19,27 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jdiameter.common.impl.app.auth;
+package org.jdiameter.common.api.app.acc;
 
 import org.jdiameter.api.Answer;
+import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Request;
-import org.jdiameter.api.auth.events.SessionTermAnswer;
-import org.jdiameter.common.impl.app.AppAnswerEventImpl;
+import org.jdiameter.api.acc.events.AccountAnswer;
+import org.jdiameter.api.acc.events.AccountRequest;
 
 /**
  * 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
-public class SessionTermAnswerImpl extends AppAnswerEventImpl implements SessionTermAnswer {
+public interface IAccMessageFactory {
 
-  private static final long serialVersionUID = 1L;
+  public ApplicationId getApplicationId();
 
-  /**
-   * @param answer
-   */
-  public SessionTermAnswerImpl(Answer answer) {
-    super(answer);
-  }
+  public int getAccMessageCommandCode();
 
-  /**
-   * @param request
-   * @param vendorId
-   * @param resultCode
-   */
-  public SessionTermAnswerImpl(Request request, long vendorId, long resultCode) {
-    super(request, vendorId, resultCode);
-  }
+  public AccountRequest createAccRequest(Request request);
 
-  /**
-   * @param request
-   * @param resultCode
-   */
-  public SessionTermAnswerImpl(Request request, long resultCode) {
-    super(request, resultCode);
-  }
-
-  /**
-   * @param request
-   */
-  public SessionTermAnswerImpl(Request request) {
-    super(request);
-  }
+  public AccountAnswer createAccAnswer(Answer answer);
 
 }

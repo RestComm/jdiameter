@@ -158,10 +158,6 @@ public class MetaDataImpl implements IMetaData {
     return StackType.TYPE_CLIENT;
   }
 
-  public Peer getLocalPeerInfo() {
-    return peer;
-  }
-
   public Configuration getConfiguration() {
     return stack.getConfiguration();
   }
@@ -254,6 +250,7 @@ public class MetaDataImpl implements IMetaData {
     }
 
     public Set<ApplicationId> getCommonApplications() {
+    	//FIXME: this does not make ANY sense...
       if (appIds.size() == 0) {
         Configuration[] apps = stack.getConfiguration().getChildren(ApplicationId.ordinal());
         if (apps != null) {

@@ -19,51 +19,27 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jdiameter.common.impl.app.auth;
+package org.jdiameter.server.api.agent;
 
 import org.jdiameter.api.Answer;
+import org.jdiameter.api.EventListener;
 import org.jdiameter.api.Request;
-import org.jdiameter.api.auth.events.SessionTermAnswer;
-import org.jdiameter.common.impl.app.AppAnswerEventImpl;
+import org.jdiameter.client.api.IRequest;
+import org.jdiameter.client.api.controller.IRealm;
 
 /**
  * 
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public class SessionTermAnswerImpl extends AppAnswerEventImpl implements SessionTermAnswer {
-
-  private static final long serialVersionUID = 1L;
+public interface IAgent extends /*NetworkReqListener,*/ EventListener<Request, Answer> {
 
   /**
-   * @param answer
+   * This method use for process new network requests.
+   * @param request request message
+   * @return answer immediate answer messsage. Method may return null and an
+   * Answer will be sent later on
    */
-  public SessionTermAnswerImpl(Answer answer) {
-    super(answer);
-  }
-
-  /**
-   * @param request
-   * @param vendorId
-   * @param resultCode
-   */
-  public SessionTermAnswerImpl(Request request, long vendorId, long resultCode) {
-    super(request, vendorId, resultCode);
-  }
-
-  /**
-   * @param request
-   * @param resultCode
-   */
-  public SessionTermAnswerImpl(Request request, long resultCode) {
-    super(request, resultCode);
-  }
-
-  /**
-   * @param request
-   */
-  public SessionTermAnswerImpl(Request request) {
-    super(request);
-  }
+  Answer processRequest(IRequest request, IRealm matchedRealm);  //realm should be matched for all agents iirc, soooo :)
 
 }

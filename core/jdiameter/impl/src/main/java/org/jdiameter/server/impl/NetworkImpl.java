@@ -1,5 +1,27 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2011, Red Hat, Inc. and individual contributors by the
+ * @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.jdiameter.server.impl;
 
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jdiameter.api.ApplicationAlreadyUseException;
@@ -24,6 +46,11 @@ import org.jdiameter.server.api.IRouter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 public class NetworkImpl implements INetwork {
 
   private static final Logger logger = LoggerFactory.getLogger(NetworkImpl.class);
@@ -41,7 +68,7 @@ public class NetworkImpl implements INetwork {
   public NetworkImpl(IStatisticManager statisticFactory, IMetaData metaData, IRouter router) {
     this.router = router;
     this.metaData = metaData;
-    this.router.setNetWork(this);
+    
     IStatisticRecord nrlStat = statisticFactory.newCounterRecord(IStatisticRecord.Counters.RequestListenerCount, new IStatisticRecord.IntegerValueHolder() {
       public int getValueAsInt() {
         return appIdToNetListener.size();
@@ -75,7 +102,8 @@ public class NetworkImpl implements INetwork {
         throw new ApplicationAlreadyUseException(a + " already use");
 
       appIdToNetListener.put(a, networkReqListener);
-      metaData.addApplicationId(a);
+      metaData.addApplicationId(a); // this has ALL config declared, we need currently deployed
+      router.getRealmTable().addLocalApplicationId(a);
     }
   }
 
@@ -84,6 +112,7 @@ public class NetworkImpl implements INetwork {
       selectorToNetListener.put(s, listener);
       ApplicationId ap = s.getMetaData();
       metaData.addApplicationId(ap);
+      router.getRealmTable().addLocalApplicationId(ap);
     }
   }
 
@@ -94,6 +123,7 @@ public class NetworkImpl implements INetwork {
         if (s.getMetaData().equals(a)) return;
       }
       metaData.remApplicationId(a);
+      router.getRealmTable().removeLocalApplicationId(a);
     }
   }
 
@@ -110,6 +140,7 @@ public class NetworkImpl implements INetwork {
         }
       }
       metaData.remApplicationId(s.getMetaData());
+      router.getRealmTable().removeLocalApplicationId(s.getMetaData());
     }
   }
 
@@ -134,11 +165,18 @@ public class NetworkImpl implements INetwork {
   }
 
   public Realm addRealm(String name, ApplicationId applicationId, LocalAction localAction,  boolean dynamic, long expirationTime) {
-    return router.addRealm(name, applicationId, localAction, dynamic, expirationTime);
+    try {
+      //TODO: why oh why this method exists?
+      return router.getRealmTable().addRealm(name, applicationId, localAction, dynamic, expirationTime,null);
+    }
+    catch (InternalException e) {
+      logger.error("Failure on add realm operation.",e);
+      return null;
+    }
   }
 
-  public Realm remRealm(String name) {
-    return router.remRealm(name);
+  public Collection<Realm> remRealm(String name) {
+    return router.getRealmTable().removeRealm(name);
   }
 
   public Statistic getStatistic() {

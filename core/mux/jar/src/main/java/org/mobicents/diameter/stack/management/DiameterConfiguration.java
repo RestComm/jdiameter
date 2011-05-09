@@ -19,7 +19,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package org.mobicents.diameter.stack.management;
 
 import static org.jdiameter.client.impl.helpers.Parameters.PeerIp;
@@ -45,12 +44,18 @@ import org.jdiameter.api.PeerTable;
 import org.jdiameter.api.Stack;
 import org.jdiameter.api.StatisticRecord;
 import org.jdiameter.client.api.controller.IPeer;
-import org.jdiameter.common.api.statistic.IStatisticRecord;
+import org.jdiameter.client.api.controller.IRealm;
+
 import org.jdiameter.server.impl.MutablePeerTableImpl;
 import org.jdiameter.server.impl.PeerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 public class DiameterConfiguration implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -182,7 +187,7 @@ public class DiameterConfiguration implements Serializable {
       for(org.jdiameter.api.Realm realm : mpt.getAllRealms()) {
         ArrayList<ApplicationIdJMX> x = new ArrayList<ApplicationIdJMX>();
         x.add(ApplicationIdJMX.fromApplicationId(realm.getApplicationId()));
-        network.addRealm(new RealmImpl(x, realm.getName(), new ArrayList<String>(Arrays.asList(realm.getPeerHosts())), realm.getLocalAction().toString(), realm.isDynamic(), realm.getExpirationTime()));
+        network.addRealm(new RealmImpl(x, realm.getName(), new ArrayList<String>(Arrays.asList(((IRealm)realm).getPeerNames())), realm.getLocalAction().toString(), realm.isDynamic(), realm.getExpirationTime()));
       }
     }
     catch (Exception e) {

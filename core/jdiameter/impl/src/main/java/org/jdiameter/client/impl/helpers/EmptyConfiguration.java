@@ -11,7 +11,7 @@ package org.jdiameter.client.impl.helpers;
 
 import org.jdiameter.api.Configuration;
 import static org.jdiameter.client.impl.helpers.ExtensionPoint.*;
-import static org.jdiameter.client.impl.helpers.Parameters.ExtensioinName;
+import static org.jdiameter.client.impl.helpers.Parameters.ExtensionName;
 import static org.jdiameter.client.impl.helpers.Parameters.Extensions;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,7 +49,7 @@ public class EmptyConfiguration implements AppConfiguration {
     private EmptyConfiguration(boolean callInit) {
         if (callInit)
             add(Extensions, getInstance(). // Internal extension point
-                                add(ExtensioinName, ExtensionPoint.Internal.name()).
+                                add(ExtensionName, ExtensionPoint.Internal.name()).
                                 add(InternalMetaData, InternalMetaData.defValue()).
                                 add(InternalRouterEngine, InternalRouterEngine.defValue()).
                                 add(InternalMessageParser, InternalMessageParser.defValue()).
@@ -58,14 +58,19 @@ public class EmptyConfiguration implements AppConfiguration {
                                 add(InternalPeerFsmFactory, InternalPeerFsmFactory.defValue()).
                                 add(InternalSessionFactory, InternalSessionFactory.defValue()).
                                 add(InternalPeerController, InternalPeerController.defValue()).
+                                add(InternalRealmController, InternalRealmController.defValue()).
+                                add(InternalAgentRedirect, InternalAgentRedirect.defValue()).
+                                add(InternalSessionDatasource, InternalSessionDatasource.defValue()).
+                                add(InternalTimerFacility, InternalTimerFacility.defValue()).
                                 add(InternalStatisticFactory, InternalStatisticFactory.defValue()
+                          
                             ),
                             getInstance().  // StackLayer extension point
-                                add(ExtensioinName, ExtensionPoint.StackLayer.name()),
+                                add(ExtensionName, ExtensionPoint.StackLayer.name()),
                             getInstance().  // ControllerLayer extension point
-                                add(ExtensioinName, ExtensionPoint.ControllerLayer.name()),
+                                add(ExtensionName, ExtensionPoint.ControllerLayer.name()),
                             getInstance().  // TransportLayer extension point
-                                add(ExtensioinName, ExtensionPoint.TransportLayer.name())
+                                add(ExtensionName, ExtensionPoint.TransportLayer.name())
             );
     }
 
@@ -207,5 +212,25 @@ public class EmptyConfiguration implements AppConfiguration {
             if (p.ordinal() == index) return p;
         }
         return null;
+    }
+    
+    public static void main(String[] args)
+    {
+    	EmptyConfiguration ec = new EmptyConfiguration();
+    	try {
+    		Configuration[] confs = ec.getChildren(Parameters.Extensions.ordinal());
+			AssemblerImpl ass = new AssemblerImpl(ec);
+			Configuration con = confs[ExtensionPoint.Internal.id()]; //OMG, oridnal, id ....
+			System.err.println(ass);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		for(ExtensionPoint ep:ExtensionPoint.Internal.getExtensionPoints())
+		{
+			System.err.println(ep.name().replace("Internal", ""));
+		}
+    	
     }
 }

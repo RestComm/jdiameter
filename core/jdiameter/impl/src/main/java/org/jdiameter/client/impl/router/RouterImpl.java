@@ -1,40 +1,47 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @authors tag. All rights reserved.
- * See the copyright.txt in the distribution for a full listing
- * of individual contributors.
- * 
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License, v. 2.0.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
+ * Copyright 2010, Red Hat, Inc. and individual contributors by the
+ * @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package org.jdiameter.client.impl.router;
 
+import static org.jdiameter.client.impl.helpers.Parameters.AcctApplId;
+import static org.jdiameter.client.impl.helpers.Parameters.ApplicationId;
+import static org.jdiameter.client.impl.helpers.Parameters.AuthApplId;
+import static org.jdiameter.client.impl.helpers.Parameters.OwnRealm;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
-import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.RedirectMessageTimer;
+import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryExpTime;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryIsDynamic;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmHosts;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmLocalAction;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmName;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.UnknownServiceException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -43,13 +50,21 @@ import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Configuration;
+import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
+import org.jdiameter.api.LocalAction;
 import org.jdiameter.api.MetaData;
 import org.jdiameter.api.RouteException;
+import org.jdiameter.api.URI;
+import org.jdiameter.client.api.IAnswer;
 import org.jdiameter.client.api.IMessage;
+import org.jdiameter.client.api.IRequest;
 import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.controller.IPeerTable;
+import org.jdiameter.client.api.controller.IRealm;
+import org.jdiameter.client.api.controller.IRealmTable;
 import org.jdiameter.client.api.router.IRouter;
+import org.jdiameter.client.impl.helpers.Parameters;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,106 +82,252 @@ public class RouterImpl implements IRouter {
     private static final Logger logger = LoggerFactory.getLogger(RouterImpl.class);
     protected MetaData metaData;
     //
-    private ConcurrentHashMap<String, String[]> network = new ConcurrentHashMap<String, String[]>();
-
+    //private ConcurrentHashMap<String, String[]> network = new ConcurrentHashMap<String, String[]>();
+    protected IRealmTable realmTable;
     // Redirection feature
     public final int REDIRECT_TABLE_SIZE = 1024;
-    protected ConcurrentHashMap<RedirectEntry, RedirectEntry> redirectTable = new ConcurrentHashMap<RedirectEntry, RedirectEntry>(REDIRECT_TABLE_SIZE);
+    //TODO: index it differently.
+    protected List<RedirectEntry> redirectTable = new ArrayList<RedirectEntry>(REDIRECT_TABLE_SIZE);
     protected IConcurrentFactory concurrentFactory;
-    protected ScheduledExecutorService redirectScheduler;
-    protected Runnable redirectTask = new Runnable() {
-        public void run() {
-            for (RedirectEntry entry : redirectTable.values()) {
-                if (entry.getExpiredTime() <= System.currentTimeMillis())
-                    redirectTable.remove(entry);
-            }
-        }
-    };
-    protected ScheduledFuture redirectEntryHandler;
+
 
     // Answer routing feature
     public static final int REQUEST_TABLE_SIZE = 10 * 1024;
     public static final int REQUEST_TABLE_CLEAR_SIZE = 5 * 1024;
-    protected ReadWriteLock requestLock = new ReentrantReadWriteLock();
+    protected ReadWriteLock requestEntryTableLock = new ReentrantReadWriteLock();
+    protected ReadWriteLock redirectTableLock = new ReentrantReadWriteLock();
     protected Map<Long, AnswerEntry> requestEntryTable = new HashMap<Long, AnswerEntry>(REQUEST_TABLE_SIZE);
     protected List<Long> requestSortedEntryTable = new ArrayList<Long>();
     protected boolean isStopped = true;
 
-    public RouterImpl(IConcurrentFactory concurrentFactory, Configuration config, MetaData aMetaData) {
+    public RouterImpl(IConcurrentFactory concurrentFactory, IRealmTable realmTable,Configuration config, MetaData aMetaData) {
         this.concurrentFactory = concurrentFactory;
         this.metaData = aMetaData;
-        init();
+        this.realmTable = realmTable;
         loadConfiguration(config);
     }
 
-    protected void init() {
-    }
-
     protected void loadConfiguration(Configuration config) {
-        // load realm entry
-        Configuration[] items = config.getChildren(RealmTable.ordinal());
-        if (items != null & items.length > 0) {
-            String entry;
-            for (Configuration c : items) {
-                entry = c.getStringValue(RealmEntry.ordinal(), null);
-                if (entry != null) {
-                    try {
-                        int pos = entry.indexOf(':');
-                        String realm = entry.substring(0, pos).trim();
-                        String[] hosts = entry.substring(pos + 1).split(",");
-                        network.put(realm, hosts);
-                    }
-                    catch (Exception e) {
-                      logger.warn("Can not append realm entry", e);
-                    }
-                }
-            }
-        }
+    	//add local realm : this might not be good
+    	String localRealm = config.getStringValue(OwnRealm.ordinal(),null);
+    	String localHost = config.getStringValue(Parameters.OwnDiameterURI.ordinal(),null);
+    	try {
+			this.realmTable.addLocalRealm(localRealm,new URI(localHost).getFQDN());
+		} catch (UnknownServiceException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+    	
+    	//add realms based on realm table.
+    	 if (config.getChildren(RealmTable.ordinal()) != null) {
+    	      for (Configuration items : config.getChildren(RealmTable.ordinal())) {
+    	        if (items != null) {
+    	          Configuration[] m = items.getChildren(RealmEntry.ordinal());
+    	          for (Configuration c : m) {
+    	            try {
+    	              String name = c.getStringValue(RealmName.ordinal(), "");
+    	              ApplicationId appId = null;
+    	              {
+    	                Configuration[] apps = c.getChildren(ApplicationId.ordinal());
+    	                if (apps != null) {
+    	                  for (Configuration a : apps) {
+    	                    if (a != null) {
+    	                      long vnd = a.getLongValue(VendorId.ordinal(),   0);
+    	                      long auth = a.getLongValue(AuthApplId.ordinal(), 0);
+    	                      long acc = a.getLongValue(AcctApplId.ordinal(), 0);
+    	                      if (auth != 0) {
+    	                        appId = org.jdiameter.api.ApplicationId.createByAuthAppId(vnd, auth);
+    	                      }
+    	                      else {
+    	                        appId = org.jdiameter.api.ApplicationId.createByAccAppId(vnd, acc);
+    	                      }
+    	                      break;
+    	                    }
+    	                  }
+    	                }
+    	              }
+    	              String[] hosts = c.getStringValue(RealmHosts.ordinal(), (String) RealmHosts.defValue()).split(",");
+    	              LocalAction locAction = LocalAction.valueOf(c.getStringValue(RealmLocalAction.ordinal(), "0"));
+    	              boolean isDynamic = c.getBooleanValue(RealmEntryIsDynamic.ordinal(), false);
+    	              long expirationTime = c.getLongValue(RealmEntryExpTime.ordinal(), 0);
+    	              this.realmTable.addRealm(name, appId, locAction, isDynamic, expirationTime, hosts);
+    	            }
+    	            catch (Exception e) {
+    	              logger.warn("Can not append realm entry", e);
+    	            }
+    	          }
+    	        }
+    	      }
+    	    }
     }
-
-    public void registerRequestRouteInfo(IMessage request) {
+    public void registerRequestRouteInfo(IRequest request) {
         try {
-            requestLock.writeLock().lock();
+            
             long hopByHopId = request.getHopByHopIdentifier();
             Avp hostAvp = request.getAvps().getAvp(Avp.ORIGIN_HOST);
             Avp realmAvp = request.getAvps().getAvp(Avp.ORIGIN_REALM);
             AnswerEntry entry = new AnswerEntry(
                             hopByHopId, hostAvp != null ? hostAvp.getOctetString() : null,
                             realmAvp != null ? realmAvp.getOctetString() : null);
+            
             requestEntryTable.put(hopByHopId, entry);
             requestSortedEntryTable.add(hopByHopId);
+            
             if ( requestEntryTable.size() > REQUEST_TABLE_SIZE) {
-            	 List<Long> toRemove = requestSortedEntryTable.subList(0, REQUEST_TABLE_CLEAR_SIZE);
-               // removing from keyset removes from hashmap too
-               requestEntryTable.keySet().removeAll(toRemove);
-               // instead of wasting time removing, just make a new one, much faster
-               requestSortedEntryTable = new ArrayList<Long>(requestSortedEntryTable.subList(REQUEST_TABLE_CLEAR_SIZE, requestSortedEntryTable.size()));
-               // help garbage collector
-               toRemove = null;
+            	try{
+	            	requestEntryTableLock.writeLock().lock();
+	            	 List<Long> toRemove = requestSortedEntryTable.subList(0, REQUEST_TABLE_CLEAR_SIZE/4);
+	               // removing from keyset removes from hashmap too
+	               requestEntryTable.keySet().removeAll(toRemove);
+	               // instead of wasting time removing, just make a new one, much faster
+	               requestSortedEntryTable = new ArrayList<Long>(requestSortedEntryTable.subList(REQUEST_TABLE_CLEAR_SIZE, requestSortedEntryTable.size()));
+	               // help garbage collector
+	               toRemove = null;
+            	}finally {
+                     requestEntryTableLock.writeLock().unlock();
+                }
             }
         }
         catch (Exception e) {
           logger.warn("Can not store route info", e);
         }
-        finally {
-          requestLock.writeLock().unlock();
-        }
+       
     }
 
     public String[] getRequestRouteInfo(long hopByHopIdentifier) {
-        requestLock.readLock().lock();
-        AnswerEntry ans = requestEntryTable.get(hopByHopIdentifier);
-        requestLock.readLock().unlock();
-        if (ans != null) {
-        	return new String[] {ans.getHost(), ans.getRealm()};
+    	try{
+	        requestEntryTableLock.readLock().lock();
+	        AnswerEntry ans = requestEntryTable.get(hopByHopIdentifier);
+	        //requestLock.readLock().unlock();
+	        if (ans != null) {
+	        	return new String[] {ans.getHost(), ans.getRealm()};
+	        }
+	        else {
+	            return null;
+	        }
+    	}finally
+    	{
+    		
+    	}
+    }
+
+   
+    public IPeer getPeer(IMessage message, IPeerTable manager) throws RouteException, AvpDataException {
+    	//FIXME: add ability to send without matching realm+peer pair?, that is , route based on peer table entries?
+    	//that is, if msg.destHost != null > getPeer(msg.destHost).sendMessage(msg);
+        String destRealm = null;
+        String destHost = null;
+        IRealm matchedRealm = null;
+        String[] info = null;
+        // Get destination information
+        if(message.isRequest())
+        {
+        	 Avp avpRealm = message.getAvps().getAvp(Avp.DESTINATION_REALM);
+             if (avpRealm == null) {
+                 throw new RouteException("Destination realm avp is empty");
+             }
+             destRealm = avpRealm.getOctetString();
+
+             Avp avpHost = message.getAvps().getAvp(Avp.DESTINATION_HOST);
+             if (avpHost != null) {
+                 destHost = avpHost.getOctetString();
+             }
+             logger.info("Looking up peer for request: {}, DestHost={}, DestRealm={}", new Object[] {message,destHost, destRealm});
+             
+             matchedRealm = (IRealm) this.realmTable.matchRealm(message); 
+             
+             
+        }else
+        {
+        	//answer, search
+      	  info = getRequestRouteInfo(message.getHopByHopIdentifier());
+            if (info != null) {
+            	destHost = info[0];
+            	destRealm = info[1];
+        	 }
+            //FIXME: if no info, should not send it ?
+            //FIXME: add strict deff in route back table so stack does not have to lookup?
+            logger.info("Looking up peer for answer: {}, DestHost={}, DestRealm={}", new Object[] {message,destHost, destRealm});
+            matchedRealm = (IRealm) this.realmTable.matchRealm((IAnswer)message,destRealm);
+        }
+        
+//        IPeer peer = getPeerPredProcessing(message, destRealm, destHost);
+//
+//        if (peer != null) {
+//          logger.debug("Found during preprocessing...{}", peer);
+//          return peer;
+//        }
+        
+        //
+
+        // Check realm name
+        //TODO: check only if it exists?
+        if (matchedRealm == null)
+            throw new RouteException("Unknown realm name [" + destRealm + "]");
+
+        
+        // THIS IS GET PEER, NOT ROUTE!!!!!!!
+        // Redirect processing
+        //redirectProcessing(message, destRealm, destHost);
+        // Check previous context information, this takes care of most answers.
+        if (message.getPeer() != null && destHost != null && destHost.equals(message.getPeer().getUri().getFQDN()) &&
+                message.getPeer().hasValidConnection()) {
+
+            logger.info("Select previous message usage peer {}", message.getPeer());
+            return message.getPeer();
+        }
+
+        // Balancing procedure
+        
+        IPeer c = (IPeer) (destHost != null ? manager.getPeer(destHost) : null);
+        
+        if (c != null && c.hasValidConnection()) {
+            logger.info("Select peer by destination host avp [{}] peer {}", new Object[] {destHost, c});
+            //here matchedRealm MAY
+            return c;
         }
         else {
-            return null;
+            if (destHost != null) {
+              logger.info("Peer by destination host avp [host={},peer={}] has no valid connection ", destHost, c);
+            }
+            String peers[] = matchedRealm.getPeerNames();
+            if (peers == null || peers.length == 0)
+                throw new RouteException("Can not find context by route information [" + destRealm + " ," + destHost + "]");
+            // Collect peers
+            ArrayList<IPeer> availablePeers = new ArrayList<IPeer>(5);
+            for (String peerName : peers) {
+                IPeer localPeer = (IPeer) manager.getPeer(peerName);
+                if (localPeer != null && localPeer.hasValidConnection())
+                    availablePeers.add(localPeer);
+            }
+            logger.info("Realm {} has avaliable following peers {} from list {}", new Object[] {destRealm  , availablePeers, Arrays.asList(peers)});
+            
+            // Balancing
+            IPeer peer = selectPeer(availablePeers);
+            if (peer == null)
+                throw new RouteException("Can not find valid connection to peer[" + destHost + "] in realm[" + destRealm + "]");
+            
+            
+            return peer;
         }
     }
 
-    public void updateRedirectInformation(IMessage answer) throws InternalException, RouteException {
-        try {
+	public IRealmTable getRealmTable() {
+		return this.realmTable;
+	}
+	
+	public void processRedirectAnswer(IRequest request, IAnswer answer, IPeerTable table) throws InternalException, RouteException {
+		try {
+			
+			Avp destinationRealmAvp = request.getAvps().getAvp(Avp.DESTINATION_REALM);
+			if(destinationRealmAvp == null)
+			{
+				throw new RouteException("Request to be routed has no Destination-Realm AVP!"); // sanity check... if user messes with us
+			}
+			String destinationRealm = destinationRealmAvp.getDiameterIdentity();
             String[] redirectHosts = null;
             if (answer.getAvps().getAvps(Avp.REDIRECT_HOST) != null) {
                 AvpSet avps = answer.getAvps().getAvps(Avp.REDIRECT_HOST);
@@ -195,157 +356,207 @@ public class RouterImpl implements IRouter {
                 ApplicationId secondaryKey = null;
                 switch (redirectUsage) {
                     case ALL_SESSION:
-                        if (answer.getSessionId() != null)
-                            primaryKey = answer.getSessionId();
+                            primaryKey = request.getSessionId();
                         break;
                     case ALL_REALM:
-                        Avp destinationRealmAvp = answer.getAvps().getAvp(Avp.DESTINATION_REALM);
-                        if (destinationRealmAvp != null)
-                            primaryKey = destinationRealmAvp.getOctetString();
+                            primaryKey = destinationRealm;
                         break;
                     case REALM_AND_APPLICATION:
-                        destinationRealmAvp = answer.getAvps().getAvp(Avp.DESTINATION_REALM);
-                        if (destinationRealmAvp != null)
-                            primaryKey = destinationRealmAvp.getOctetString();
-                        secondaryKey = answer.getSingleApplicationId();
+                        
+                        primaryKey = destinationRealm;
+                        secondaryKey = ((IMessage)request).getSingleApplicationId();
                         break;
                     case ALL_APPLICATION:
-                        secondaryKey = answer.getSingleApplicationId();
+                        secondaryKey = ((IMessage)request).getSingleApplicationId();
                         break;
                     case ALL_HOST:
-                        Avp destinationHostAvp = answer.getAvps().getAvp(Avp.DESTINATION_HOST);
-                        if (destinationHostAvp != null)
-                            primaryKey = destinationHostAvp.getOctetString();
+                        Avp destinationHostAvp = ((IRequest)request).getAvps().getAvp(Avp.DESTINATION_HOST);
+                        if(destinationHostAvp == null)
+                        {
+                        	throw new RouteException("Request to be routed has no Destination-Host AVP!"); // sanity check... if user messes with us
+                        }
+                        primaryKey = destinationHostAvp.getDiameterIdentity();
                         break;
                     case ALL_USER:
                         Avp userNameAvp = answer.getAvps().getAvp(Avp.USER_NAME);
-                        if (userNameAvp != null)
+                        if (userNameAvp == null)
+                        {
+                        	throw new RouteException("Request to be routed has no User-Name AVP!"); // sanity check... if user messes with us
+                        }
                             primaryKey = userNameAvp.getUTF8String();
                         break;
                 }
                 //
+                if(redirectTable.size()> REDIRECT_TABLE_SIZE)
+                {
+                	try{
+                		//yes, possible that this will trigger this procedure twice, but thats worst than
+                		//locking always.
+                		redirectTableLock.writeLock().lock();
+                		trimRedirectTable();
+                	}finally
+                	{
+                		redirectTableLock.writeLock().unlock();
+                	}
+                }
                 if (REDIRECT_TABLE_SIZE > redirectTable.size()) {
                     RedirectEntry e = new RedirectEntry(
-                            primaryKey, secondaryKey, redirectCacheTime, redirectUsage, redirectHosts
+                            primaryKey, secondaryKey, redirectCacheTime, redirectUsage, redirectHosts,destinationRealm  //REALM DOES NOT CHANGE!!!!
                     );
-                    redirectTable.put(e, e);
-                    redirectProcessing(
-                            answer,
-                            answer.getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString(),
-                            answer.getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString()
-                    );
+                    redirectTable.add(e);
+                    //redirectProcessing(answer,destRealm.getOctetString(),destHost !=null ? destHost.getOctetString():null);
+                    //we dont have to elect?
+                    updateRoute(request,e.getRedirectHost());
                 } else {
                      if (redirectHosts != null && redirectHosts.length > 0) {
                         String destHost = redirectHosts[0];
-                        setRouteInfo(answer, getRealmForPeer(destHost), destHost);                                                                                
-                    }
+                        //setRouteInfo(answer, getRealmForPeer(destHost), destHost);
+                        updateRoute(request,destHost);
+                        }
                 }
             } else {
                 if (redirectHosts != null && redirectHosts.length > 0) {
                     String destHost = redirectHosts[0];
-                    setRouteInfo(answer, getRealmForPeer(destHost), destHost);
+                    //setRouteInfo(answer, getRealmForPeer(destHost), destHost);
+                	updateRoute(request,destHost);
+           
                 }
             }
+          //now send
+            table.sendMessage((IMessage)request);
         } catch (AvpDataException exc) {
+        	//FIXME: make it throw AvpDataException ?
             throw new InternalException(exc);
-        }
-    }
-
-    public IPeer getPeer(IMessage message, IPeerTable manager) throws RouteException, AvpDataException {
-
-        String destRealm = null;
-        String destHost = null;
-        // Get destination information
-        String[] info = null;
-        if (!message.isRequest())
-        {
-            info = getRequestRouteInfo(message.getHopByHopIdentifier());
-            if (info != null) {
-            	destHost = info[0];
-            	destRealm = info[1];
-        	}
-        }else {
-            Avp avpRealm = message.getAvps().getAvp(Avp.DESTINATION_REALM);
-            if (avpRealm == null) {
-                throw new RouteException("Destination realm avp is empty");
-            }
-            destRealm = avpRealm.getOctetString();
-
-            Avp avpHost = message.getAvps().getAvp(Avp.DESTINATION_HOST);
-            if (avpHost != null) {
-                destHost = avpHost.getOctetString();
-            }
-            logger.debug("DestHost={}, DestRealm={}", new Object[] {destHost, destRealm});
-        }
+        } catch (IllegalDiameterStateException e) {
+        	 throw new InternalException(e);
+		} catch (IOException e) {
+			throw new InternalException(e);
+		}
         
-        IPeer peer = getPeerPredProcessing(message, destRealm, destHost);
+        
+        return;
+		
+	}
+	
+	/**
+	 * 
+	 */
+	private void trimRedirectTable() {
+		for(int index = 0;index<redirectTable.size();index++)
+    	{
+    		try{
+    		if(redirectTable.get(index).getExpiredTime()<=System.currentTimeMillis())
+    		{
+    			redirectTable.remove(index);
+    			index--; //a trick :)
+    		}
+    		}catch(Exception e)
+    		{
+    			logger.debug("Error in redirect task cleanup.",e);
+    			break;
+    		}
+    	}
+		
+	}
 
-        if (peer != null) {
-          logger.debug("Found during preprocessing...{}", peer);
-          return peer;
-        }
+	/**
+	 * @param request
+	 * @param destHost
+	 */
+	private void updateRoute(IRequest request, String destHost) {
+		//Realm does not change I think... :)
+		request.getAvps().removeAvp(Avp.DESTINATION_HOST);
+		request.getAvps().addAvp(Avp.DESTINATION_HOST, destHost, true, false,  true);
+		
+	}
 
-        // Check realm name
-        if (!checkRealm(destRealm))
-            throw new RouteException("Unknown realm name [" + destRealm + "]");
+	public boolean updateRoute(IRequest message) throws RouteException, AvpDataException {
+		
+		AvpSet set = message.getAvps();
+		Avp destRealmAvp = set.getAvp(Avp.DESTINATION_REALM);
+		Avp destHostAvp = set.getAvp(Avp.DESTINATION_HOST);
+		if(destRealmAvp == null)
+		{
+			throw new RouteException("Request does not have Destination-Realm AVP!");
+		}
+		String destRealm = destRealmAvp.getDiameterIdentity();
+		String destHost = null;
+		if(destHostAvp!=null)
+		{
+			destHost = destHostAvp.getDiameterIdentity();
+		}
+		boolean matchedEntry = false;
+		String userName = null;
+		// get Session id
+		String sessionId = message.getSessionId();
+		//
+		Avp avpUserName = message.getAvps().getAvp(Avp.USER_NAME);
+		// Get application id
+		ApplicationId appId = ((IMessage)message).getSingleApplicationId();
+		// User name
+		if (avpUserName != null)
+			userName = avpUserName.getUTF8String();
+		// Processing table
+		try{
+			redirectTableLock.readLock().lock();
+		
+		for (int index = 0;index<redirectTable.size();index++) {
+			RedirectEntry e = redirectTable.get(index);
+			switch (e.getUsageType()) {
+			case ALL_SESSION: // Usage type: ALL SESSION
+				matchedEntry = sessionId != null && e.primaryKey != null & sessionId.equals(e.primaryKey);
+				break;
+			case ALL_REALM: // Usage type: ALL REALM
+				matchedEntry = destRealm != null && e.primaryKey != null & destRealm.equals(e.primaryKey);
+				break;
+			case REALM_AND_APPLICATION: // Usage type: REALM AND APPLICATION
+				matchedEntry = destRealm != null & appId != null & e.primaryKey != null & e.secondaryKey != null & destRealm.equals(e.primaryKey)
+						& appId.equals(e.secondaryKey);
+				break;
+			case ALL_APPLICATION: // Usage type: ALL APPLICATION
+				matchedEntry = appId != null & e.secondaryKey != null & appId.equals(e.secondaryKey);
+				break;
+			case ALL_HOST: // Usage type: ALL HOST
+				matchedEntry = destHost != null & e.primaryKey != null & destHost.equals(e.primaryKey);
+				break;
+			case ALL_USER: // Usage type: ALL USER
+				matchedEntry = userName != null & e.primaryKey != null & userName.equals(e.primaryKey);
+				break;
+			}
+			// Update message redirect information
+			if (matchedEntry) {
+				String newDestHost = e.getRedirectHost();
+				//String newDestRealm = getRealmForPeer(destHost);
+				//setRouteInfo(message, destRealm, newDestHost);
+				updateRoute(message, newDestHost);
+				logger.debug("Redirect message from host={}; to new-host={}, realm={} ", new Object[] { destHost, newDestHost,destRealm});
+				return true;
+			}
+		}
+		}finally
+		{
+			redirectTableLock.readLock().unlock();
+		}
+		return false;
+	}
 
-        // Redirect processing
-        redirectProcessing(message, destRealm, destHost);
-        // Check previous context information
-        if (message.getPeer() != null && destHost != null && destHost.equals(message.getPeer().getUri().getFQDN()) &&
-                message.getPeer().hasValidConnection()) {
-
-            logger.debug("Select previous message usage peer {}", message.getPeer());
-            return message.getPeer();
-        }
-
-        // Balancing procedure
-        IPeer c = destHost != null ? manager.getPeerByName(destHost) : null;
-        if (c != null && c.hasValidConnection()) {
-            logger.debug("Select peer by destination host avp [{}] peer {}", new Object[] {destHost, c});
-            return c;
-        }
-        else {
-            if (destHost != null) {
-              logger.debug("Peer by destination host avp [host={},peer={}] has no valid connection ", destHost, c);
-            }
-            String peers[] = getRealmPeers(destRealm);
-            if (peers == null || peers.length == 0)
-                throw new RouteException("Can not find context by route information [" + destRealm + " ," + destHost + "]");
-            // Collect peers
-            ArrayList<IPeer> availablePeers = new ArrayList<IPeer>(5);
-            for (String peerName : peers) {
-                IPeer localPeer = manager.getPeerByName(peerName);
-                if (localPeer != null && localPeer.hasValidConnection())
-                    availablePeers.add(localPeer);
-            }
-            logger.debug("Realm {} has avaliable following peers {} from list {}", new Object[] {destRealm  , availablePeers, Arrays.asList(peers)});
-            
-            // Balancing
-            peer = selectPeer(availablePeers);
-            if (peer == null)
-                throw new RouteException("Can not find valid connection to peer[" + destHost + "] in realm[" + destRealm + "]");
-            return peer;
-        }
-    }
-
-    protected IPeer getPeerPredProcessing(IMessage message, String destRealm, String destHost) {
+	protected IPeer getPeerPredProcessing(IMessage message, String destRealm, String destHost) {
         return null;
     }
 
     public void start() {
       if (isStopped) {
-        redirectScheduler = concurrentFactory.getScheduledExecutorService(RedirectMessageTimer.name());
-        redirectEntryHandler = redirectScheduler.scheduleAtFixedRate(redirectTask, 1, 1, TimeUnit.SECONDS);
+        //redirectScheduler = concurrentFactory.getScheduledExecutorService(RedirectMessageTimer.name());
+        //redirectEntryHandler = redirectScheduler.scheduleAtFixedRate(redirectTask, 1, 1, TimeUnit.SECONDS);
         isStopped = false;
       }
     }
 
     public void stop() {
       isStopped = true;
-      if (redirectEntryHandler != null) {
-        redirectEntryHandler.cancel(true);
-      }
+     // if (redirectEntryHandler != null) {
+      //  redirectEntryHandler.cancel(true);
+      //}
       if (redirectTable != null) {
         redirectTable.clear();
       }
@@ -355,9 +566,9 @@ public class RouterImpl implements IRouter {
       if (requestSortedEntryTable != null) {
         requestSortedEntryTable.clear();
       }
-      if (redirectScheduler != null) {
-        concurrentFactory.shutdownNow(redirectScheduler);
-      }
+      //if (redirectScheduler != null) {
+      //  concurrentFactory.shutdownNow(redirectScheduler);
+      //}
     }
 
     public void destroy() {
@@ -370,8 +581,8 @@ public class RouterImpl implements IRouter {
         logger.error("Can not stop router", exc);
       }
       
-      redirectEntryHandler = null;
-      redirectScheduler = null;
+     // redirectEntryHandler = null;
+      //redirectScheduler = null;
       redirectTable = null;
       requestEntryTable = null;
       requestEntryTable = null;
@@ -387,88 +598,79 @@ public class RouterImpl implements IRouter {
         return p;
     }
 
-    protected void redirectProcessing(IMessage message, final String destRealm, final String destHost) throws AvpDataException {
-        String userName = null;
-        // get Session id
-        String sessionId = message.getSessionId();
-        //
-        Avp avpUserName = message.getAvps().getAvp(Avp.USER_NAME);
-        // Get application id
-        ApplicationId appId = message.getSingleApplicationId();
-        // User name
-        if (avpUserName != null)
-            userName = avpUserName.getUTF8String();
-        // Processing table
-        for (RedirectEntry e : redirectTable.values()) {
-            boolean isContinue = false;
-            switch (e.getUsageType()) {
-                case 1: // Usage type: ALL SESSION
-                    isContinue = sessionId != null && e.primaryKey != null &
-                            sessionId.equals(e.primaryKey);
-                    break;
-                case 2: // Usage type: ALL REALM
-                    isContinue = destRealm != null && e.primaryKey != null &
-                            destRealm.equals(e.primaryKey);
-                    break;
-                case 3: // Usage type: REALM AND APPLICATION
-                    isContinue = destRealm != null & appId != null & e.primaryKey != null & e.secondaryKey != null &
-                            destRealm.equals(e.primaryKey) & appId.equals(e.secondaryKey);
-                    break;
-                case 4: // Usage type: ALL APPLICATION
-                    isContinue = appId != null & e.secondaryKey != null &
-                            appId.equals(e.secondaryKey);
-                    break;
-                case 5: // Usage type: ALL HOST
-                    isContinue = destHost != null & e.primaryKey != null &
-                            destHost.equals(e.primaryKey);
-                    break;
-                case 6: // Usage type: ALL USER
-                    isContinue = userName != null & e.primaryKey != null &
-                            userName.equals(e.primaryKey);
-                    break;
-            }
-            // Update message redirect information
-            if (isContinue) {
-              String newDestHost  = e.getRedirectHost();
-              // FIXME: Alexandre: Should use newDestHost? 
-              String newDestRealm = getRealmForPeer(destHost);
-              setRouteInfo(message, destRealm, newDestHost);
-              logger.debug("Redirect message from host={}; realm={} to new-host={}; new-realm={}",
-              new Object[] {destHost, destRealm, newDestHost, newDestRealm});
-            }
-        }
-    }
+//    
+//    protected void redirectProcessing(IMessage message, final String destRealm, final String destHost) throws AvpDataException {
+//        String userName = null;
+//        // get Session id
+//        String sessionId = message.getSessionId();
+//        //
+//        Avp avpUserName = message.getAvps().getAvp(Avp.USER_NAME);
+//        // Get application id
+//        ApplicationId appId = message.getSingleApplicationId();
+//        // User name
+//        if (avpUserName != null)
+//            userName = avpUserName.getUTF8String();
+//        // Processing table
+//        for (RedirectEntry e : redirectTable.values()) {
+//            boolean matchedEntry = false;
+//            switch (e.getUsageType()) {
+//                case ALL_SESSION: // Usage type: ALL SESSION
+//                	matchedEntry = sessionId != null && e.primaryKey != null &
+//                            sessionId.equals(e.primaryKey);
+//                    break;
+//                case ALL_REALM: // Usage type: ALL REALM
+//                	matchedEntry = destRealm != null && e.primaryKey != null &
+//                            destRealm.equals(e.primaryKey);
+//                    break;
+//                case REALM_AND_APPLICATION: // Usage type: REALM AND APPLICATION
+//                	matchedEntry = destRealm != null & appId != null & e.primaryKey != null & e.secondaryKey != null &
+//                            destRealm.equals(e.primaryKey) & appId.equals(e.secondaryKey);
+//                    break;
+//                case ALL_APPLICATION: // Usage type: ALL APPLICATION
+//                	matchedEntry = appId != null & e.secondaryKey != null &
+//                            appId.equals(e.secondaryKey);
+//                    break;
+//                case ALL_HOST: // Usage type: ALL HOST
+//                	matchedEntry = destHost != null & e.primaryKey != null &
+//                            destHost.equals(e.primaryKey);
+//                    break;
+//                case ALL_USER: // Usage type: ALL USER
+//                	matchedEntry = userName != null & e.primaryKey != null &
+//                            userName.equals(e.primaryKey);
+//                    break;
+//            }
+//            // Update message redirect information
+//            if (matchedEntry) {
+//              String newDestHost  = e.getRedirectHost();
+//              // FIXME: Alexandre: Should use newDestHost? 
+//              String newDestRealm = getRealmForPeer(destHost);
+//              setRouteInfo(message, destRealm, newDestHost);
+//              logger.debug("Redirect message from host={}; realm={} to new-host={}; new-realm={}",
+//              new Object[] {destHost, destRealm, newDestHost, newDestRealm});
+//              return;
+//            }
+//        }
+//    }
+//
+//    private void setRouteInfo(IMessage message, String destRealm, String destHost) {
+//        message.getAvps().removeAvp(Avp.DESTINATION_REALM);
+//        message.getAvps().removeAvp(Avp.DESTINATION_HOST);
+//        if (destRealm != null)
+//            message.getAvps().addAvp(Avp.DESTINATION_REALM, destRealm, true, false, true);
+//        if (destHost != null)
+//            message.getAvps().addAvp(Avp.DESTINATION_HOST, destHost, true, false,  true);
+//    }
+//does not make sense, there can be multple realms :/
+//    public String  getRealmForPeer(String destHost) {
+//        for (String key : getRealmsName()) {
+//            for (String h : getRealmPeers(key)) {
+//                if (h.trim().equals(destHost.trim()))
+//                    return key;
+//            }
+//        }
+//        return null;
+//    }
 
-    private void setRouteInfo(IMessage message, String destRealm, String destHost) {
-        message.getAvps().removeAvp(Avp.DESTINATION_REALM);
-        message.getAvps().removeAvp(Avp.DESTINATION_HOST);
-        if (destRealm != null)
-            message.getAvps().addAvp(Avp.DESTINATION_REALM, destRealm, true, false, true);
-        if (destHost != null)
-            message.getAvps().addAvp(Avp.DESTINATION_HOST, destHost, true, false,  true);
-    }
-
-    public String  getRealmForPeer(String destHost) {
-        for (String key : getRealmsName()) {
-            for (String h : getRealmPeers(key)) {
-                if (h.trim().equals(destHost.trim()))
-                    return key;
-            }
-        }
-        return null;
-    }
-
-    protected boolean checkRealm(String name) {
-      return name == null ? false : network.containsKey(name);
-    }
-
-    protected Set<String> getRealmsName() {
-        return network.keySet();
-    }
-
-    protected String[] getRealmPeers(String key) {
-        return network.get(key);
-    }
 
     protected class RedirectEntry {
 
@@ -479,19 +681,20 @@ public class RouterImpl implements IRouter {
         long liveTime;
         int usageType;
         String[] hosts;
-
-        public RedirectEntry(String key1, ApplicationId key2, long time, int usage, String[] aHosts) throws InternalError {
+        String destinationRealm;
+        public RedirectEntry(String key1, ApplicationId key2, long time, int usage, String[] aHosts, String destinationRealm) throws InternalError {
             // Check arguments
             if (key1 == null && key2 == null)
                 throw new InternalError("Incorrect redirection key.");
             if (aHosts == null || aHosts.length == 0)
                 throw new InternalError("Incorrect redirection hosts.");
             // Set values
-            primaryKey = key1;
-            secondaryKey = key2;
-            liveTime = time * 1000;
-            usageType = usage;
-            hosts = aHosts;
+            this.primaryKey = key1;
+            this.secondaryKey = key2;
+            this.liveTime = time * 1000;
+            this.usageType = usage;
+            this.hosts = aHosts;
+            this.destinationRealm = destinationRealm;
         }
 
         public int getUsageType() {

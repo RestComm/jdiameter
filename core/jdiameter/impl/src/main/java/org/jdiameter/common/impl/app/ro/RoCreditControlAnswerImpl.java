@@ -28,7 +28,6 @@ import org.jdiameter.api.Request;
 import org.jdiameter.api.ro.events.RoCreditControlAnswer;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * ...
@@ -40,7 +39,7 @@ public class RoCreditControlAnswerImpl extends AppAnswerEventImpl implements RoC
 
   private static final long serialVersionUID = 1L;
 
-  protected Logger logger = LoggerFactory.getLogger(RoCreditControlAnswerImpl.class);
+  protected Logger logger = org.slf4j.LoggerFactory.getLogger(RoCreditControlAnswerImpl.class);
 
   private static final int CREDIT_CONTROL_FAILURE_HANDLING_AVP_CODE = 427; 
   private static final int DIRECT_DEBITING_FAILURE_HANDLING_AVP_CODE = 428;
@@ -48,15 +47,42 @@ public class RoCreditControlAnswerImpl extends AppAnswerEventImpl implements RoC
   private static final int CC_REQUEST_TYPE_AVP_CODE = 416;
   private static final int VALIDITY_TIME_AVP_CODE = 448;
 
-  public RoCreditControlAnswerImpl(Request message, long resultCode) {
-    super(message.createAnswer(resultCode));
-  }
+	/**
+	 * @param answer
+	 */
+	public RoCreditControlAnswerImpl(Answer answer) {
+		super(answer);
+		// TODO Auto-generated constructor stub
+	}
 
-  public RoCreditControlAnswerImpl(Answer message) {
-    super(message);
-  }
+	/**
+	 * @param request
+	 * @param vendorId
+	 * @param resultCode
+	 */
+	public RoCreditControlAnswerImpl(Request request, long vendorId, long resultCode) {
+		super(request, vendorId, resultCode);
+		// TODO Auto-generated constructor stub
+	}
 
-  public boolean isCreditControlFailureHandlingAVPPresent() {
+	/**
+	 * @param request
+	 * @param resultCode
+	 */
+	public RoCreditControlAnswerImpl(Request request, long resultCode) {
+		super(request, resultCode);
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @param request
+	 */
+	public RoCreditControlAnswerImpl(Request request) {
+		super(request);
+		// TODO Auto-generated constructor stub
+	}
+
+public boolean isCreditControlFailureHandlingAVPPresent() {
     return super.message.getAvps().getAvp(CREDIT_CONTROL_FAILURE_HANDLING_AVP_CODE) != null;
   }
 

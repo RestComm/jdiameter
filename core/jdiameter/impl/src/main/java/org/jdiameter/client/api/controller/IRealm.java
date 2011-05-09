@@ -19,51 +19,54 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jdiameter.common.impl.app.auth;
+package org.jdiameter.client.api.controller;
 
-import org.jdiameter.api.Answer;
-import org.jdiameter.api.Request;
-import org.jdiameter.api.auth.events.SessionTermAnswer;
-import org.jdiameter.common.impl.app.AppAnswerEventImpl;
+import org.jdiameter.api.Realm;
+import org.jdiameter.server.api.agent.IAgent;
 
 /**
  * 
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public class SessionTermAnswerImpl extends AppAnswerEventImpl implements SessionTermAnswer {
-
-  private static final long serialVersionUID = 1L;
+public interface IRealm extends Realm {
 
   /**
-   * @param answer
+   * Return list of real peers
+   * 
+   * @return array of realm peers
    */
-  public SessionTermAnswerImpl(Answer answer) {
-    super(answer);
-  }
+  public String[] getPeerNames();
 
   /**
-   * @param request
-   * @param vendorId
-   * @param resultCode
+   * Append new host (peer) to this realm
+   * 
+   * @param host
+   *            name of peer host
    */
-  public SessionTermAnswerImpl(Request request, long vendorId, long resultCode) {
-    super(request, vendorId, resultCode);
-  }
+  public void addPeerName(String name);
 
   /**
-   * @param request
-   * @param resultCode
+   * Remove peer from this realm
+   * 
+   * @param host
+   *            name of peer host
    */
-  public SessionTermAnswerImpl(Request request, long resultCode) {
-    super(request, resultCode);
-  }
+  public void removePeerName(String name);
 
   /**
-   * @param request
+   * Checks if a peer name belongs to this realm
+   * 
+   * @param name name of peer host
+   * @return true if the the peer belongs to this realm, false otherwise
    */
-  public SessionTermAnswerImpl(Request request) {
-    super(request);
-  }
+  public boolean hasPeerName(String name);
+
+  /**
+   * Get the processing agent for this realm
+   * 
+   * @return the agent for this realm, if any
+   */
+  public IAgent getAgent();
 
 }

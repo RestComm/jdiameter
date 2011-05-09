@@ -1,23 +1,23 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
- * contributors as indicated by the @authors tag. All rights reserved.
- * See the copyright.txt in the distribution for a full listing
- * of individual contributors.
- * 
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License, v. 2.0.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
+ * Copyright 2010, Red Hat, Inc. and individual contributors by the
+ * @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package org.jdiameter.server.impl;
 
@@ -36,12 +36,13 @@ import static org.jdiameter.server.impl.helpers.Parameters.PeerAttemptConnection
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.UnknownServiceException;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -490,6 +491,8 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   }
 
   public Peer addPeer(URI peerURI, String realm, boolean connecting) {
+	  //TODO: add sKey here, now it adds peer to all realms.
+	  //TODO: better, separate addPeer from realm!
     try {
       Configuration peerConfig = null;
       Configuration[] peers = config.getChildren(PeerTable.ordinal());
@@ -508,13 +511,14 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       peer.setRealm(realm);
       appendPeerToPeerTable(peer);
       boolean found = false;
-      for (Realm r : router.getRealms()) {
-        if (r.getName().equals(realm)) {
-          r.addPeerName(peerURI.toString());
-          found = true;
-          break;
-        }
-      }
+//      for (Realm r : router.getgetRealms()) {
+//        if (r.getName().equals(realm)) {
+//          ((IRealm)r).addPeerName(peerURI.toString());
+//          found = true;
+//          break;
+//        }
+//      }
+      Collection<Realm> realms =  this.router.getRealmTable().getRealms(realm);
       if (!found) {
         throw new IllegalArgumentException("Incorrect realm name");
       }
@@ -530,7 +534,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   }
 
   public Set<Realm> getAllRealms() {
-    return router.getRealms();
+    return new HashSet<Realm>(router.getRealmTable().getRealms());
   }
 
   public Peer removePeer(String host) {

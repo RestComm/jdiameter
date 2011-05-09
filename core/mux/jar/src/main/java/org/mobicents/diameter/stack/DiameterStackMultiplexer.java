@@ -19,7 +19,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package org.mobicents.diameter.stack;
 
 import static org.jdiameter.server.impl.helpers.Parameters.*;
@@ -55,11 +54,12 @@ import org.jdiameter.api.MutablePeerTable;
 import org.jdiameter.api.Network;
 import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.PeerTable;
-import org.jdiameter.api.RealmTable;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.ResultCode;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.Stack;
+import org.jdiameter.client.api.controller.IRealm;
+import org.jdiameter.client.api.controller.IRealmTable;
 import org.jdiameter.client.impl.DictionarySingleton;
 import org.jdiameter.client.impl.controller.PeerImpl;
 import org.jdiameter.client.impl.helpers.AppConfiguration;
@@ -74,8 +74,13 @@ import org.mobicents.diameter.stack.management.DiameterConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DiameterStackMultiplexer extends ServiceMBeanSupport implements DiameterStackMultiplexerMBean, DiameterProvider, NetworkReqListener, EventListener<Request, Answer>, DiameterMessageFactory
-{
+/**
+ * 
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
+public class DiameterStackMultiplexer extends ServiceMBeanSupport implements DiameterStackMultiplexerMBean, DiameterProvider, NetworkReqListener, EventListener<Request, Answer>, DiameterMessageFactory {
+
   private static final Logger logger = LoggerFactory.getLogger(DiameterStackMultiplexer.class);
 
   protected Stack stack = null;
@@ -174,7 +179,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   }
 
   private DiameterListener findListener(Message message) {
-    Set<org.jdiameter.api.ApplicationId> appIds = message.getApplicationIdAvps();
+    List<org.jdiameter.api.ApplicationId> appIds = message.getApplicationIdAvps();
 
     if(appIds.size() > 0) {
       for(org.jdiameter.api.ApplicationId appId : appIds) {
@@ -680,7 +685,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       ApplicationId appId = appAcctId == 0 ? org.jdiameter.api.ApplicationId.createByAuthAppId(appVendorId, appAuthId) : org.jdiameter.api.ApplicationId.createByAccAppId(appVendorId, appAcctId);
       org.jdiameter.api.Realm r = n.addRealm(name, appId, LocalAction.valueOf(localAction), isDynamic, expTime);
       for(String peer : peers.split(",")) {
-        r.addPeerName(peer);
+        ((IRealm)r).addPeerName(peer);
       }
     }
     catch (InternalException e) {
@@ -694,10 +699,10 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
   public void _Network_Realms_removePeerFromRealm(String realmName, String peerName) throws MBeanException {
     try {
-      RealmTable rt = (RealmTable) stack.unwrap(RealmTable.class);
-      for(org.jdiameter.api.Realm r : rt.getAllRealms()) {
+      IRealmTable rt = (IRealmTable) stack.unwrap(IRealmTable.class);
+      for(org.jdiameter.api.Realm r : rt.getRealms()) {
         if(r.getName().equals(realmName)) {
-          r.removePeerName(peerName);
+          ((IRealm)r).removePeerName(peerName);
         }
       }
     }

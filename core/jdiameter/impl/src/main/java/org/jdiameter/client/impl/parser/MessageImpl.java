@@ -1,17 +1,28 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2011, Red Hat, Inc. and individual contributors by the
+ * @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.jdiameter.client.impl.parser;
 
-/*
- * Copyright (c) 2006 jDiameter.
- * https://jdiameter.dev.java.net/
- *
- * License: GPL v3
- *
- * e-mail: erick.svenson@yahoo.com
- *
- */
-
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -29,6 +40,13 @@ import org.jdiameter.client.api.controller.IPeer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Represents a Diameter message.
+ * 
+ * @author erick.svenson@yahoo.com
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 public class MessageImpl implements IMessage {
 
   private static final long serialVersionUID = 1L;
@@ -54,7 +72,7 @@ public class MessageImpl implements IMessage {
 
   // Cached result for getApplicationIdAvps() method. It is called extensively and takes some time.
   // Potential place for dirt, but Application IDs don't change during message life time.
-  transient Set<ApplicationId> applicationIds;
+  transient List<ApplicationId> applicationIds;
 
   /**
    * Create empty message
@@ -188,13 +206,15 @@ public class MessageImpl implements IMessage {
       Avp avpSessionId = avpSet.getAvp(Avp.SESSION_ID);
       return avpSessionId != null ? avpSessionId.getUTF8String() : null;
     }
-    catch (AvpDataException exc) {
-    	if(logger.isErrorEnabled())
-    	{
-    		logger.error("Failed to fetch Session-Id", exc);
-    	}
+    catch (AvpDataException ade) {
+    	logger.error("Failed to fetch Session-Id", ade);
       return null;
     }
+  }
+
+  public Answer createAnswer() {
+	    MessageImpl answer = new MessageImpl(this);
+	    return answer;
   }
 
   public Answer createAnswer(long resultCode) {
@@ -233,7 +253,7 @@ public class MessageImpl implements IMessage {
   }
 
   public ApplicationId getSingleApplicationId(long applicationId) {      
-    Set<ApplicationId> appIds = getApplicationIdAvps();
+    List<ApplicationId> appIds = getApplicationIdAvps();
     ApplicationId first = null;
     for (ApplicationId id : appIds) {
       if (first == null) {
@@ -252,12 +272,12 @@ public class MessageImpl implements IMessage {
     return first;
   }
 
-  public Set<ApplicationId> getApplicationIdAvps() {
+  public List<ApplicationId> getApplicationIdAvps() {
     if (this.applicationIds != null) {
       return this.applicationIds;
     }
 
-    Set<ApplicationId> rc = new LinkedHashSet<ApplicationId>();
+    List<ApplicationId> rc = new ArrayList<ApplicationId>();
     try {
       AvpSet authAppId = avpSet.getAvps(Avp.AUTH_APPLICATION_ID);
       for (Avp anAuthAppId : authAppId) {
@@ -291,7 +311,7 @@ public class MessageImpl implements IMessage {
       }
     }
     catch (Exception exception) {
-      return new LinkedHashSet<ApplicationId>();
+      return new ArrayList<ApplicationId>();
     }
 
     this.applicationIds = rc;

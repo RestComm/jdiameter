@@ -10,7 +10,7 @@
 package org.jdiameter.api;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
 
 /**
  * A Diameter message is either a request from a client to a server, or a response from a server to a client.
@@ -147,10 +147,10 @@ public interface Message extends Wrapper, Serializable {
     long getApplicationId();
 
     /**
-     * Returns set of Application-Id avps (Auth-Application-Id, Acc-Appplication-Id and Vendor-Specific-Application-Id avps) from message
-     * @return set of Application-Id avps
+     * Returns ordered list of Application-Id avps (Auth-Application-Id, Acc-Appplication-Id and Vendor-Specific-Application-Id avps) from message
+     * @return list of Application-Id avps
      */    
-    Set<ApplicationId> getApplicationIdAvps();
+    List<ApplicationId> getApplicationIdAvps();
 
     /**
      * The Hop-by-Hop Identifier is an unsigned 32-bit integer field (in
@@ -158,7 +158,7 @@ public interface Message extends Wrapper, Serializable {
      * sender MUST ensure that the Hop-by-Hop identifier in a request is
      * unique on a given connection at any given time, and MAY attempt to
      * ensure that the number is unique across reboots. 
-     * @return hop by hop indentifier from header of message
+     * @return hop by hop identifier from header of message
      */
     long getHopByHopIdentifier();
 
@@ -169,7 +169,7 @@ public interface Message extends Wrapper, Serializable {
      * the low order 12 bits of current time, and the low order 20 bits
      * to a random value. Senders of request messages MUST insert a
      * unique identifier on each message.
-     * @return end to end indentifier from header of message
+     * @return end to end identifier from header of message
      */
     long getEndToEndIdentifier();
 

@@ -90,6 +90,10 @@ public interface IAccSessionFactory extends IAppSessionFactory {
    */
   public void setServerContextListener(IServerAccActionContext serverContextListener);
 
+  public void setMessageFactory(IAccMessageFactory messageFactory);
+
+  public IAccMessageFactory getMessageFactory();
+
   public ApplicationId getApplicationId();
 
   public void setApplicationId(ApplicationId id);

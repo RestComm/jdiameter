@@ -38,15 +38,34 @@ public class JLocationInfoAnswerImpl extends AppAnswerEventImpl implements JLoca
   private static final long serialVersionUID = 1L;
 
   /**
-   * 
-   * @param message
+   * @param answer
    */
-  public JLocationInfoAnswerImpl(Answer message) {
-    super(message);
+  public JLocationInfoAnswerImpl(Answer answer) {
+    super(answer);
   }
 
-  public JLocationInfoAnswerImpl(Request message, int resultCode) {
-    super(message.createAnswer(resultCode));
+  /**
+   * @param request
+   * @param vendorId
+   * @param resultCode
+   */
+  public JLocationInfoAnswerImpl(Request request, long vendorId, long resultCode) {
+    super(request, vendorId, resultCode);
+  }
+
+  /**
+   * @param request
+   * @param resultCode
+   */
+  public JLocationInfoAnswerImpl(Request request, long resultCode) {
+    super(request, resultCode);
+  }
+
+  /**
+   * @param request
+   */
+  public JLocationInfoAnswerImpl(Request request) {
+    super(request);
   }
 
 }
