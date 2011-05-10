@@ -14,14 +14,14 @@
 		<para><application>The &THIS.PLATFORM; Diameter</application> solution provides &THIS.PLATFORM; Platform with Authentication, Authorization, and Accounting (<acronym>AAA</acronym>) capabilities.</para>
 	</abstract>
 	<corpauthor>
-		<inlinemediaobject>
+		<!--inlinemediaobject>
 			<imageobject>
 				<imagedata format="SVG" fileref="images/icon.svg" />
 			</imageobject>
 			<textobject>
 				<phrase>Logo</phrase>
 			</textobject>
-		</inlinemediaobject>
+		</inlinemediaobject-->
 	</corpauthor>
 	<copyright>
 		<year>&YEAR;</year>
