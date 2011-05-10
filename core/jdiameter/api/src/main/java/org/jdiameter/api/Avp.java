@@ -965,6 +965,16 @@ public interface Avp extends Wrapper, Serializable {
   public static final int ALTERNATE_CHARGED_PARTY_ADDRESS = 1280;
 
   /**
+   * Gx/Gxx (3GPP TS 29.212) APN aggregate max bitrate DL AVP code
+   */
+  public static final int APN_AGGREGATE_MAX_BITRATE_DL = 1040;
+
+  /**
+   * Gx/Gxx (3GPP TS 29.212) APN aggregate max bitrate UL AVP code
+   */
+  public static final int APN_AGGREGATE_MAX_BITRATE_UL = 1041;
+
+  /**
    * Ro/Rf (3GPP TS 32.299) AoC Cost Information AVP code
    */
   public static final int AOC_COST_INFORMATION = 2053;
@@ -1038,6 +1048,11 @@ public interface Avp extends Wrapper, Serializable {
    * Ro/Rf (3GPP TS 32.299) Base Time Interval AVP code
    */
   public static final int BASE_TIME_INTERVAL = 1265;
+
+  /**
+   * Gx/Gxx (3GPP TS 29.212) Bearer Identifier AVP code
+   */
+  public static final int BEARER_IDENTIFIER = 1020;
 
   /**
    * Ro/Rf (3GPP TS 32.299) Bearer Service AVP code
@@ -1258,6 +1273,11 @@ public interface Avp extends Wrapper, Serializable {
    * Ro/Rf (3GPP TS 32.299) Guaranteed Bitrate UL AVP code
    */
   public static final int GUARANTEED_BITRATE_UL = 1026;
+  
+  /**
+   * Ro/Rf (3GPP TS 32.299) Guaranteed Bitrate UL AVP code
+   */
+  public static final int GUARANTEED_BITRATE_DL = 1025;
 
   /**
    * Ro/Rf (3GPP TS 32.299) IM Information AVP code
