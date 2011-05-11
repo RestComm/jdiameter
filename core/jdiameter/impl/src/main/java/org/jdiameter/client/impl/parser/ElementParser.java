@@ -260,12 +260,9 @@ public class ElementParser implements IElementParser {
         tmp = in.readInt();
         int flags = (tmp >> 24) & 0xFF;
         int length  = tmp & 0xFFFFFF;
-        // TODO: Removed by Alex: we should move this to receive/send level 
-        // Proper AVPs have length of 4xn octets
-        //if (length % 4 != 0) {
-        //  // http://tools.ietf.org/html/rfc3588#section-4.1 wrong avp, we choose to ignore message
-        //  throw new AvpDataException("Wrong length (" + length + ") of AVP code=" + code);
-        //}
+        if(length < 0 || counter + length > buffer.length) {
+          throw new AvpDataException("Not enough data in buffer!");
+        }
         long vendor = 0;
         if ((flags & 0x80) != 0) {
           vendor = in.readInt();
