@@ -5,14 +5,15 @@ import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Message;
-import org.mobicents.diameter.dictionary.AvpDictionary;
-import org.mobicents.diameter.dictionary.AvpRepresentation;
+import org.jdiameter.api.validation.AvpRepresentation;
+import org.jdiameter.api.validation.Dictionary;
+import org.jdiameter.common.impl.validation.DictionaryImpl;
 
 public class DiameterUtilities {
 
   private static Logger logger = Logger.getLogger(DiameterUtilities.class);
 
-  public static AvpDictionary AVP_DICTIONARY = AvpDictionary.INSTANCE;
+  public static Dictionary AVP_DICTIONARY = DictionaryImpl.INSTANCE;
 
   public static void printMessage(Message message) {
     String reqFlag = message.isRequest() ? "R" : "A";
@@ -37,7 +38,7 @@ public class DiameterUtilities {
       boolean isGrouped = false;
 
       try {
-        String avpType = AvpDictionary.INSTANCE.getAvp(avp.getCode(), avp.getVendorId()).getType();
+        String avpType = AVP_DICTIONARY.getAvp(avp.getCode(), avp.getVendorId()).getType();
 
         if("Integer32".equals(avpType) || "AppId".equals(avpType)) {
           avpValue = avp.getInteger32();

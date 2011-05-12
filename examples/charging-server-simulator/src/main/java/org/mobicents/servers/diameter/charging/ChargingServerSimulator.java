@@ -7,24 +7,18 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import org.jboss.cache.Cache;
-import org.jboss.cache.CacheFactory;
-import org.jboss.cache.DefaultCacheFactory;
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.EventListener;
-import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.Mode;
 import org.jdiameter.api.Network;
 import org.jdiameter.api.NetworkReqListener;
-import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Peer;
 import org.jdiameter.api.Request;
-import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
@@ -35,10 +29,10 @@ import org.jdiameter.api.cca.ServerCCASession;
 import org.jdiameter.api.cca.events.JCreditControlAnswer;
 import org.jdiameter.api.cca.events.JCreditControlRequest;
 import org.jdiameter.client.api.ISessionFactory;
+import org.jdiameter.common.impl.app.cca.CCASessionFactoryImpl;
 import org.jdiameter.common.impl.app.cca.JCreditControlAnswerImpl;
 import org.jdiameter.server.impl.app.cca.ServerCCASessionImpl;
 import org.mobicents.diameter.dictionary.AvpDictionary;
-import org.mobicents.servers.diameter.charging.factories.CreditControlSessionFactory;
 import org.mobicents.servers.diameter.utils.DiameterUtilities;
 import org.mobicents.servers.diameter.utils.StackCreator;
 import org.slf4j.Logger;
@@ -49,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public class ChargingServerSimulator extends CreditControlSessionFactory implements NetworkReqListener, EventListener<Request, Answer> {
+public class ChargingServerSimulator extends CCASessionFactoryImpl implements NetworkReqListener, EventListener<Request, Answer> {
 
   private static final Logger logger = LoggerFactory.getLogger(ChargingServerSimulator.class);
 
@@ -65,24 +59,19 @@ public class ChargingServerSimulator extends CreditControlSessionFactory impleme
    * @throws Exception 
    */
   public static void main(String[] args) throws Exception {
-    CacheFactory factory = new DefaultCacheFactory();
-    Cache cache = factory.createCache();
-    
     new ChargingServerSimulator();
   }
 
   StackCreator stackCreator = null;
 
   public ChargingServerSimulator() throws Exception {
-    super(null, 5000);
+    super();
 
     AvpDictionary.INSTANCE.parseDictionary(this.getClass().getClassLoader().getResourceAsStream("dictionary.xml"));
 
     try {
       String config = readFile(this.getClass().getClassLoader().getResourceAsStream("config-server.xml"));
       this.stackCreator = new StackCreator(config, this, this, "Server", true);
-
-      super.sessionFactory = this.stackCreator.getSessionFactory();
 
       Network network = this.stackCreator.unwrap(Network.class);
       network.addNetworkReqListener(this, roAppId);
@@ -91,6 +80,9 @@ public class ChargingServerSimulator extends CreditControlSessionFactory impleme
       this.stackCreator.start(Mode.ALL_PEERS, 30000, TimeUnit.MILLISECONDS);
 
       printLogo();
+
+      sessionFactory = (ISessionFactory) stackCreator.getSessionFactory();
+      init(sessionFactory); // damn.. this doesn't looks good
 
       ((ISessionFactory) sessionFactory).registerAppFacory(ServerCCASession.class, this);
       ((ISessionFactory) sessionFactory).registerAppFacory(ClientCCASession.class, this);
@@ -150,7 +142,7 @@ public class ChargingServerSimulator extends CreditControlSessionFactory impleme
       logger.info("<< Received Request [" + request + "]");
     }
     try {
-      ServerCCASessionImpl session = ((ISessionFactory) super.sessionFactory).getNewAppSession(request.getSessionId(), ApplicationId.createByAuthAppId(0, 4), ServerCCASession.class, EMPTY_ARRAY);
+      ServerCCASessionImpl session = (sessionFactory).getNewAppSession(request.getSessionId(), ApplicationId.createByAuthAppId(0, 4), ServerCCASession.class, EMPTY_ARRAY);
       session.processRequest(request);
     }
     catch (InternalException e) {
@@ -173,19 +165,20 @@ public class ChargingServerSimulator extends CreditControlSessionFactory impleme
     }
   }
 
-  public void doCreditControlAnswer(ClientCCASession session, JCreditControlRequest request, JCreditControlAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void doCreditControlAnswer(ClientCCASession session, JCreditControlRequest request, JCreditControlAnswer answer) throws InternalException {
     // Do nothing.
   }
 
-  public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException {
     // Do nothing.
   }
 
-  public void doReAuthRequest(ClientCCASession session, ReAuthRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void doReAuthRequest(ClientCCASession session, ReAuthRequest request) throws InternalException {
     // Do nothing.
   }
 
-  public void doCreditControlRequest(ServerCCASession session, JCreditControlRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void doCreditControlRequest(ServerCCASession session, JCreditControlRequest request) throws InternalException {
     AvpSet ccrAvps = request.getMessage().getAvps();
 
     switch (request.getRequestTypeAVPValue()) {
@@ -451,7 +444,7 @@ public class ChargingServerSimulator extends CreditControlSessionFactory impleme
     }
   }
 
-  public void doReAuthAnswer(ServerCCASession session, ReAuthRequest request, ReAuthAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void doReAuthAnswer(ServerCCASession session, ReAuthRequest request, ReAuthAnswer answer) throws InternalException {
     // Do Nothing.
   }
 
