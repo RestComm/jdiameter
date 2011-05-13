@@ -475,11 +475,11 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
 
     //  { CC-Request-Type }
     // Using the same as the one present in request
-    ccaAvps.addAvp(416, ccrAvps.getAvp(416).getInteger32());
+    ccaAvps.addAvp(ccrAvps.getAvp(416));
 
     //  { CC-Request-Number }
     // Using the same as the one present in request
-    ccaAvps.addAvp(415, ccrAvps.getAvp(416).getUnsigned32());
+    ccaAvps.addAvp(ccrAvps.getAvp(415));
 
     //  [ User-Name ]
     //  [ CC-Session-Failover ]
