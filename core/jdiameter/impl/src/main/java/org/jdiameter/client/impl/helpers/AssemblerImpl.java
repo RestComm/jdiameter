@@ -94,6 +94,7 @@ public class AssemblerImpl implements IAssembler {
   }
 
   private void fill(ExtensionPoint[] codes, Configuration e, boolean check) throws Exception {
+    //NOTE: this installs components, but no instances created!
     for (ExtensionPoint c : codes) {
       String value = e.getStringValue(c.ordinal(), c.defValue());
       if (!check && (value == null || value.trim().length() == 0)) {

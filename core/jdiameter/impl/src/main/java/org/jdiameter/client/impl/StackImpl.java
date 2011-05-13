@@ -62,6 +62,7 @@ import org.jdiameter.client.impl.helpers.Parameters;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.api.statistic.IStatisticProcessor;
+import org.jdiameter.common.api.timer.ITimerFacility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,12 +112,6 @@ public class StackImpl implements IContainer, StackImplMBean {
       this.concurrentFactory = (IConcurrentFactory) assembler.getComponentInstance(IConcurrentFactory.class);
 
       try {
-//        // Create and register Session DS and Timer Facility 
-//        Class sessionDataSourceClass = Class.forName(config.getStringValue(Parameters.SessionDatasource.ordinal(), (String) Parameters.SessionDatasource.defValue()));
-//        createISessionDataSource(sessionDataSourceClass);
-//        Class timerFacilityClass = Class.forName(config.getStringValue(Parameters.TimerFacility.ordinal(), (String) Parameters.TimerFacility.defValue()));
-//        createITimerFacility(timerFacilityClass);
-
         Configuration[] dictionaryConfigs = config.getChildren(Parameters.Dictionary.ordinal());
 
         // Initialize with default values
@@ -151,38 +146,6 @@ public class StackImpl implements IContainer, StackImplMBean {
     return (SessionFactory) assembler.getComponentInstance(SessionFactory.class);
   }
 
-//  @SuppressWarnings("unchecked")
-//  private void createITimerFacility(Class clazz) throws InternalException {
-//    ITimerFacility itf;
-//    if(assembler.getComponentInstance(ISessionDatasource.class).isClustered()) {
-//      try{
-//        Constructor<ITimerFacility> con = clazz.getConstructor(IContainer.class);
-//        itf = con.newInstance(this);
-//      }
-//      catch(Exception e) {
-//        throw new InternalException(e);
-//      }
-//    }
-//    else {
-//      itf = new LocalTimerFacilityImpl(this);
-//    }
-//    assembler.registerComponentInstance(itf);
-//  }
-//
-//  @SuppressWarnings("unchecked")
-//  private void createISessionDataSource(Class clazz) throws InternalException {
-//    ISessionDatasource isd = null;
-//    try {
-//      Constructor<ISessionDatasource> con = clazz.getConstructor(IContainer.class);
-//      isd = con.newInstance(this);
-//    }
-//    catch (Exception e) {
-//      throw new InternalException(e);
-//    }
-//    // finally register, so other components can be created.
-//    assembler.registerComponentInstance(isd);
-//  }
-
   private void createDictionary(String clazz, boolean validatorEnabled, ValidatorLevel validatorSendLevel, ValidatorLevel validatorReceiveLevel) throws InternalException {
     // Defer call to singleton
     DictionarySingleton.init(clazz, validatorEnabled, validatorSendLevel, validatorReceiveLevel);
@@ -212,6 +175,7 @@ public class StackImpl implements IContainer, StackImplMBean {
       scheduledFacility = concurrentFactory.getScheduledExecutorService(ProcessingMessageTimer.name());
       assembler.getComponentInstance(ISessionDatasource.class).start();
       assembler.getComponentInstance(IStatisticProcessor.class).start();
+      assembler.getComponentInstance(ITimerFacility.class);
       startPeerManager();
       state = StackState.STARTED;
     }
@@ -230,6 +194,7 @@ public class StackImpl implements IContainer, StackImplMBean {
       scheduledFacility = concurrentFactory.getScheduledExecutorService(ProcessingMessageTimer.name());
       assembler.getComponentInstance(IStatisticProcessor.class).start();
       assembler.getComponentInstance(ISessionDatasource.class).start();
+      assembler.getComponentInstance(ITimerFacility.class);
       List<Peer> peerTable = peerManager.getPeerTable();
       final CountDownLatch barrier = new CountDownLatch(Mode.ANY_PEER.equals(mode) ? 1 : peerTable.size());
       StateChangeListener listener = new AbstractStateChangeListener() {

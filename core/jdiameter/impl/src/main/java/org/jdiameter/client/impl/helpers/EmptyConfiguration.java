@@ -214,23 +214,4 @@ public class EmptyConfiguration implements AppConfiguration {
         return null;
     }
     
-    public static void main(String[] args)
-    {
-    	EmptyConfiguration ec = new EmptyConfiguration();
-    	try {
-    		Configuration[] confs = ec.getChildren(Parameters.Extensions.ordinal());
-			AssemblerImpl ass = new AssemblerImpl(ec);
-			Configuration con = confs[ExtensionPoint.Internal.id()]; //OMG, oridnal, id ....
-			System.err.println(ass);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		for(ExtensionPoint ep:ExtensionPoint.Internal.getExtensionPoints())
-		{
-			System.err.println(ep.name().replace("Internal", ""));
-		}
-    	
-    }
 }
