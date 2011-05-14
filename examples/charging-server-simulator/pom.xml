@@ -22,6 +22,7 @@
 		<!-- Thirdparty Dependencies Versions -->
 		<slf4j.version>1.5.8</slf4j.version>
 		<jbosscache.version>3.2.5.GA</jbosscache.version>
+		<commons-pool.version>1.5.5</commons-pool.version>
 	</properties>
 
 	<dependencyManagement>
@@ -41,6 +42,11 @@
 				<artifactId>jbosscache-core</artifactId>
 				<version>${jbosscache.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>commons-pool</groupId>
+				<artifactId>commons-pool</artifactId>
+				<version>${commons-pool.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -56,6 +62,10 @@
 		<dependency>
 			<groupId>org.jboss.cache</groupId>
 			<artifactId>jbosscache-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-pool</groupId>
+			<artifactId>commons-pool</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.mobicents.servers.diameter</groupId>
@@ -101,37 +111,28 @@
 		</profile>
 	</profiles>
 
-	<!--build>
-	  <plugins>
-		<plugin>
-		  <artifactId>maven-assembly-plugin</artifactId>
-		  <configuration>
-			<descriptorRefs>
-			  <descriptorRef>jar-with-dependencies</descriptorRef>
-			</descriptorRefs>
-			<archive>
-			  <manifest>
-				<addClasspath>true</addClasspath>
-				<classpathPrefix>lib/</classpathPrefix>
-				<mainClass>org.mobicents.servlet.sip.example.diameter.rorf.server.DiameterServerSimulator</mainClass>
-			  </manifest>
-			</archive>
-		  </configuration>
-		  <executions>
-			<execution>
-			  <phase>install</phase>
-			  <goals>
-				<goal>single</goal>
-			  </goals>
-			</execution>
-		  </executions>
-		</plugin>
-	  </plugins>
-	</build-->
-
 	<build>
-		<finalName>mobicents-dcs-${version}</finalName>
+		<finalName>mobicents-dcs-b${buildNumber}</finalName>
 		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<format>{0,date,yyyyMMdd.HHmm}</format>
+					<items>
+						<item>timestamp</item>
+					</items>
+				</configuration>
+			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
@@ -142,7 +143,7 @@
 						<manifest>
 							<addClasspath>false</addClasspath>
 							<!--classpathPrefix>lib/</classpathPrefix-->
-							<mainClass>org.mobicents.servers.diameter.charging.BaseAccountingServerSimulator</mainClass>
+							<mainClass>org.mobicents.servers.diameter.charging.ChargingServerSimulator</mainClass>
 						</manifest>
 						<manifestEntries>
 							<Class-Path>config/</Class-Path>
