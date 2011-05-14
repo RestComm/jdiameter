@@ -243,18 +243,21 @@ public class PeerTableImpl implements IPeerTable {
   //NOTE: METHOD BODY MUST MATCH JDOC.....!!!
   //TODO: add  DNS lookup ?
   public Peer getPeer(String name) {
-	  logger.info("getPeer( "+ name +" ) --- >"+peerTable);
-	  for (Peer p : peerTable.values()) {
-		  logger.info("getPeer( "+ name +" ) --- >"+p.getUri().getFQDN());
-	      if (p.getUri().toString().equals(name) || p.getUri().getFQDN().equals(name)) {
-	        return (IPeer) p;
-	      }
-	    }
-	    return null;
+    if(logger.isDebugEnabled()) {
+      logger.debug("Looking for Peer '{}' in Peer Table: {}", name, peerTable);
+    }
+    for (Peer p : peerTable.values()) {
+      if (p.getUri().toString().equals(name) || p.getUri().getFQDN().equals(name)) {
+        return (IPeer) p;
+      }
+    }
+    return null;
   }
 
   public IPeer getPeerByName(String peerName) {
-	  logger.info("getPeerByName( "+ peerName +" ) --- >"+peerTable);
+    if(logger.isDebugEnabled()) {
+      logger.debug("Looking for Peer by name '{}' in Peer Table: {}", peerName, peerTable);
+    }
     for (Peer p : peerTable.values()) {
       if (p.getUri().getFQDN().equals(peerName)) {
         return (IPeer) p;
@@ -264,7 +267,9 @@ public class PeerTableImpl implements IPeerTable {
   }
 
   public IPeer getPeerByUri(String peerUri) {
-	  logger.info("getPeerByUri( "+ peerUri +" ) --- >"+peerTable);
+    if(logger.isDebugEnabled()) {
+      logger.debug("Looking for Peer by URI '{}' in Peer Table: {}", peerUri, peerTable);
+    }
 	  //FIXME: why it creates URI ?....?
     URI otherUri;
     try {
