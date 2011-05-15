@@ -33,6 +33,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.Avp;
+import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
@@ -145,9 +146,17 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
         handleEvent(new Event(type, event));
       }
       session.send(event.getMessage(), this);
+
       // Store last destination information
-      sessionData.setDestinationRealm(event.getMessage().getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString());
-      sessionData.setDestinationHost(event.getMessage().getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString());
+      AvpSet avps = event.getMessage().getAvps();
+      Avp destRealmAvp = avps.getAvp(Avp.DESTINATION_REALM);
+      if(destRealmAvp != null) {
+        sessionData.setDestinationRealm(destRealmAvp.getOctetString());
+      }
+      Avp destHostAvp = avps.getAvp(Avp.DESTINATION_HOST);
+      if(destHostAvp != null) {
+        sessionData.setDestinationHost(destHostAvp.getOctetString());
+      }
     }
     catch (Exception e) {
       throw new InternalException(e);
