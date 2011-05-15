@@ -76,7 +76,7 @@
 	<target name="build-mobicents-jain-slee" depends="get-mobicents-jain-slee">
 		<echo>Building Mobicents JAIN-SLEE</echo>
 		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../servers/jain-slee">
-			<arg line="clean install -Djboss.home=${jboss.home} -Dnode=${jboss.config} -P set-svn-revision,validate-source-headers" />
+			<arg line="clean install -Djboss.home=${jboss.home} -Dnode=${jboss.config} -P set-svn-revision" />
 		</exec>
 		
 		<copy failonerror="true" file="${ant.file.diameter.release}/../servers/jain-slee/release/jbossjta-properties.xml" tofile="${jboss.home}/server/${jboss.config}/conf/jbossjta-properties.xml" overwrite="true" />
@@ -115,7 +115,7 @@
 			<sequential>
 				<echo>Packaging RA for release from DIR[${resources.location}/@{dir.name}]</echo>
 				<exec executable="${mvn.executable}" dir="${resources.location}/@{dir.name}">
-					<arg line="clean install -Djboss.home=${release.dir}/tmp -Dnode=${jboss.config} -P set-svn-revision,validate-source-headers" />
+					<arg line="clean install -Djboss.home=${release.dir}/tmp -Dnode=${jboss.config} -P set-svn-revision" />
 				</exec>
 				<exec executable="${mvn.executable}" dir="${resources.location}/@{dir.name}">
 					<arg line="-o install -P release,set-svn-revision -Drelease.name=target -Djboss.home=${release.dir}/tmp -Djboss.path=../../${jboss.home.relative.path} -Dnode=${jboss.config.default}" />
@@ -131,7 +131,7 @@
 			<sequential>
 				<echo>Packaging example for release from DIR[${examples.location}/@{dir.name}]</echo>
 				<exec executable="${mvn.executable}" dir="${examples.location}/@{dir.name}">
-					<arg line="clean install -Djboss.home=${release.dir}/tmp -Dnode=${jboss.config} -P set-svn-revision,validate-source-headers" />
+					<arg line="clean install -Djboss.home=${release.dir}/tmp -Dnode=${jboss.config} -P set-svn-revision" />
 				</exec>
 				<exec executable="${mvn.executable}" dir="${examples.location}/@{dir.name}">
 					<arg line="-o install -P release,set-svn-revision -Drelease.name=target -Djboss.home=${release.dir}/tmp -Djboss.path=../../${jboss.home.relative.path} -Dnode=${jboss.config.default}" />
@@ -184,10 +184,10 @@
 			<sequential>
 				<echo>Installing diameter core in '@{config.name}' configuration</echo>
 				<exec executable="${mvn.executable}" dir="${core.jdiameter.location}">
-					<arg line="clean install -P set-svn-revision,validate-source-headers -Djboss.home=${jboss.home} -Dnode=@{config.name}"/>
+					<arg line="clean install -P set-svn-revision -Djboss.home=${jboss.home} -Dnode=@{config.name}"/>
 				</exec>
 				<exec executable="${mvn.executable}" dir="${core.mux.location}">
-					<arg line="clean install -P set-svn-revision,validate-source-headers -Djboss.home=${jboss.home} -Dnode=@{config.name}"/>
+					<arg line="clean install -P set-svn-revision -Djboss.home=${jboss.home} -Dnode=@{config.name}"/>
 				</exec>
 			</sequential>
 		</for>
