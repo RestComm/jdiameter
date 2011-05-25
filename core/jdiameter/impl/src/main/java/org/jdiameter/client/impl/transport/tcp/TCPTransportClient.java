@@ -1,23 +1,23 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and/or its affiliates, and individual
- * contributors as indicated by the @authors tag. All rights reserved.
- * See the copyright.txt in the distribution for a full listing
- * of individual contributors.
- * 
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License, v. 2.0.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
+ * Copyright 2011, Red Hat, Inc. and individual contributors by the
+ * @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package org.jdiameter.client.impl.transport.tcp;
 
@@ -67,6 +67,8 @@ class TCPTransportClient implements Runnable {
   protected int storageSize = DEFAULT_STORAGE_SIZE;
   protected ByteBuffer storage = ByteBuffer.allocate(storageSize);
 
+  private String socketDescription = null;
+
   private static final Logger logger = LoggerFactory.getLogger(TCPTransportClient.class);
 
   TCPTransportClient() {
@@ -87,6 +89,7 @@ class TCPTransportClient implements Runnable {
    *  Network init socket 
    */
   public void initialize() throws IOException, NotInitializedException {
+    logger.debug("Initialising TCPTransportClient. Origin address is [{}] and destination address is [{}]", origAddress, destAddress);
     if (destAddress == null) {
       throw new NotInitializedException("Destination address is not set");
     }
@@ -104,15 +107,20 @@ class TCPTransportClient implements Runnable {
   }
 
   public void initialize(Socket socket) throws IOException, NotInitializedException  {
+    logger.debug("Initialising TCPTransportClient for a socket on [{}]", socket);
+    socketDescription = socket.toString();
     socketChannel = socket.getChannel();
     socketChannel.configureBlocking(true);
     destAddress = new InetSocketAddress(socket.getInetAddress(), socket.getPort());
   }
 
   public void start() throws Exception {
-    if(logger.isDebugEnabled()) {
-      logger.debug("Starting transport to {}", socketChannel.socket().getRemoteSocketAddress());
+    // for client
+    if(socketDescription == null && socketChannel != null) {
+      socketDescription = socketChannel.socket().toString();
     }
+    logger.debug("Starting transport. Socket is {}", socketDescription);
+
     if (socketChannel == null) {
       throw new NotInitializedException("Transport is not initialized");
     }
@@ -132,10 +140,11 @@ class TCPTransportClient implements Runnable {
   }
 
   public void run() {
-    logger.debug("Transport is started");
+    logger.debug("Transport is started. Socket is [{}]", socketDescription);
     try {
       while (!stop) {
         int dataLength = socketChannel.read(buffer);
+        logger.debug("Just read [{}] bytes on [{}]", dataLength, socketDescription);
         if (dataLength == -1) {
           break;
         }
@@ -156,11 +165,9 @@ class TCPTransportClient implements Runnable {
       logger.debug("Transport exception ", e);
     }
     finally {
-      String remoteAddress = "unknown_host";
       try {
         clearBuffer();
         if (socketChannel != null && socketChannel.isOpen()) {
-          remoteAddress = socketChannel.socket().getRemoteSocketAddress().toString();
           socketChannel.close();
         }
         getParent().onDisconnect();
@@ -169,12 +176,12 @@ class TCPTransportClient implements Runnable {
         logger.debug("Error", e);                    
       }
       stop = false;
-      logger.info("Read thread is stopped ({})", remoteAddress);
+      logger.info("Read thread is stopped for socket [{}]", socketDescription);
     }
   }
 
   public void stop() throws Exception {
-    logger.debug("Stopping transport");
+    logger.debug("Stopping transport. Socket is [{}]", socketDescription);
     stop = true;
     if (socketChannel != null && socketChannel.isOpen()) {
       socketChannel.close();
@@ -183,7 +190,7 @@ class TCPTransportClient implements Runnable {
       selfThread.join(100);
     }
     clearBuffer();
-    logger.debug("Transport is stopped");
+    logger.debug("Transport is stopped. Socket is [{}]", socketDescription);
   }
 
   public void release() throws Exception {
@@ -202,7 +209,9 @@ class TCPTransportClient implements Runnable {
 
   public void setDestAddress(InetSocketAddress address) {
     destAddress = address;
-    logger.debug("Destination address is set to {} : {}",destAddress.getHostName(), destAddress.getPort());
+    if(logger.isDebugEnabled()) {
+      logger.debug("Destination address is set to [{}] : [{}]", destAddress.getHostName(), destAddress.getPort());
+    }
   }
 
   public void setOrigAddress(InetSocketAddress address) {
@@ -210,13 +219,16 @@ class TCPTransportClient implements Runnable {
   }
 
   public void sendMessage(ByteBuffer bytes) throws IOException {
+    if (logger.isDebugEnabled()) {
+      logger.debug("About to send a byte buffer of size [{}] over the TCP nio socket [{}]", bytes.array().length, socketDescription);
+    }
     int rc;
     lock.lock();   
     try {
       rc = socketChannel.write(bytes);
     }
     catch (Exception e) {
-      logger.debug("Can not send message", e);
+      logger.debug("Unable to send message", e);
       throw new IOException("Error while sending message: " + e);
     }
     finally {
@@ -224,6 +236,9 @@ class TCPTransportClient implements Runnable {
     }
     if (rc == -1) {
       throw new IOException("Connection closed");
+    }
+    if (logger.isDebugEnabled()) {
+      logger.debug("Sent a byte buffer of size [{}] over the TCP nio socket [{}]", bytes.array().length, socketDescription);
     }
   }
 
@@ -305,7 +320,7 @@ class TCPTransportClient implements Runnable {
       getParent().onMessageReceived(ByteBuffer.wrap(data));
     }
     catch (AvpDataException e) {
-      logger.debug("Garbage was received from server");
+      logger.debug("Garbage was received. Discarding.");
       storage.clear();
       getParent().onAvpDataException(e);
     }
