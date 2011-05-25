@@ -88,11 +88,17 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
       }
       appIds.add(applicationId);
     }
+    if(logger.isDebugEnabled()) {
+      logger.debug("Adding application id of auth [{}] acct [{}] vendor [{}]", new Object[]{applicationId.getAuthAppId(), applicationId.getAcctAppId(), applicationId.getVendorId()});
+    }
   }
 
   public void remApplicationId(ApplicationId applicationId) {
     synchronized (lock) {
       appIds.remove(applicationId);
+    }
+    if(logger.isDebugEnabled()) {
+      logger.debug("Removing application id of auth [{}] acct [{}] vendor [{}]", new Object[]{applicationId.getAuthAppId(), applicationId.getAcctAppId(), applicationId.getVendorId()});
     }
   }
 
@@ -100,6 +106,7 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
     // Reload common application ids from configuration
     synchronized (lock) {
       appIds.clear();
+      logger.debug("Clearing out application ids");
       getLocalPeer().getCommonApplications();
       // Reload ip addresses from configuration
       ((ServerLocalPeer) peer).resetAddresses();
@@ -164,7 +171,7 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
           rc = InetAddress.getByName(address);
         }
         catch (UnknownHostException e) {
-          logger.debug("Can not get ip by address {}", address, e);
+          logger.debug("Unable to retrieve IP by Address [{}]", address, e);
           rc = IPConverter.InetAddressByIPv4(address);
           if (rc == null) {
             rc = IPConverter.InetAddressByIPv6(address);
@@ -182,12 +189,12 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
         return InetAddress.getByName(getLocalPeer().getUri().getFQDN());
       }
       catch (Exception e1) {
-        logger.debug("Can not get ip by uri", e1);
+        logger.debug("Unable to retrieve IP by URI [{}]", getLocalPeer().getUri().getFQDN(), e1);
         try {
           return InetAddress.getLocalHost();
         }
         catch (Exception e2) {
-          logger.debug("Can not get ip localhost", e2);
+          logger.debug("Unable to retrieve IP for localhost", e2);
         }
       }
       return null;
@@ -196,21 +203,24 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
     // Local processing message
     @SuppressWarnings("unchecked")
     public boolean sendMessage(IMessage message) throws TransportException, OverloadException {
+      logger.debug("Sending Message in Server Local Peer");
       try {
         if (net == null || manager == null) {
           try {
+            logger.debug("Unwrapping network and manager");
             net = (INetwork) stack.unwrap(Network.class);
             manager = (IMutablePeerTable) stack.unwrap(PeerTable.class);
             factory = manager.getSessionFactory();
             // XXX: FT/HA // slc = manager.getSessionReqListeners();
           }
           catch (Exception e) {
-            logger.debug("Error initialising for message send", e);
+            logger.warn("Error initialising for message send", e);
           }
         }
 
         IMessage answer = null;
         if (message.isRequest()) {
+          logger.debug("Message is a request");
           message.setHopByHopIdentifier(peer.getHopByHopIdentifier());
           peerRequests.put(message.getHopByHopIdentifier(), message);
           NetworkReqListener listener = net.getListener(message);
@@ -218,6 +228,7 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
             // This is duplicate code from PeerImpl
             answer = manager.isDuplicate(message);
             if (answer != null) {
+              logger.debug("Found message in duplicates. No need to invoke listener, will send previous answer.");
               answer.setProxiable(message.isProxiable());
               answer.getAvps().removeAvp(Avp.PROXY_INFO);
               for (Avp avp : message.getAvps().getAvps(Avp.PROXY_INFO)) {
@@ -231,10 +242,12 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
                 // XXX: FT/HA // NetworkReqListener sessionListener = slc.get(avpSessionId);
                 NetworkReqListener sessionListener = (NetworkReqListener) sessionDataSource.getSessionListener(avpSessionId);
                 if (sessionListener != null) {
+                  logger.debug("Giving message to sessionListener to process as Session-Id AVP existed in message and was used to get a session from Session DataSource");
                   answer = (IMessage) sessionListener.processRequest(message);
                 }
                 else {
                   try {
+                    logger.debug("Giving message to listener to process. Listener was retrieved from net");
                     answer = (IMessage) listener.processRequest(message);
                     if (answer != null) {
                       manager.saveToDuplicate(message.getDuplicationKey(), answer);
@@ -248,18 +261,27 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
             }
           }
           else {
-            logger.debug("Can not find handler {} for message {}", message.getSingleApplicationId(), message);
+            if(logger.isDebugEnabled()) {
+              logger.debug("Unable to find handler {} for message {}", message.getSingleApplicationId(), message);
+            }
           }
           if (answer != null) {
+            if(logger.isDebugEnabled()) {
+              logger.debug("Removing message with HbH Identifier [{}] from Peer Requests Map", message.getHopByHopIdentifier());
+            }
             peerRequests.remove(message.getHopByHopIdentifier());
           }
         }
         else {
+          if(logger.isDebugEnabled()) {
+            logger.debug("Message is an answer. Setting answer to the message and fetching message from Peer Requests Map using HbH Identifier [{}]", message.getHopByHopIdentifier());
+          }
           answer = message;
           message = peerRequests.get(answer.getHopByHopIdentifier());
         }
         // Process answer
         if (message != null && !message.isTimeOut() && answer != null) {
+          logger.debug("Clearing timer on message and notifying event listeners of receiving success message");
           message.clearTimer();
           message.setState(IMessage.STATE_ANSWERED);
           message.getEventListener().receivedSuccessMessage(message, answer);
@@ -267,7 +289,7 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
         return true;
       }
       catch (Exception e) {
-        logger.debug("Can not processed message {}", message, e);
+        logger.warn("Unable to process message {}", message, e);
       }
       return false;
     }
