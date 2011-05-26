@@ -87,9 +87,9 @@ public class LocalDataSource implements ISessionDatasource {
   public void setSessionListener(String sessionId, NetworkReqListener data) {
     logger.debug("setSessionListener({}, {})", sessionId, data);
 
-    SessionEntry e = sessionIdToEntry.get(sessionId);
-    if(e != null) {
-      e.listener = data;
+    SessionEntry se = sessionIdToEntry.get(sessionId);
+    if(se != null) {
+      se.listener = data;
     }
     else {
       throw new IllegalArgumentException("No Session entry for id: " + sessionId);
@@ -97,22 +97,17 @@ public class LocalDataSource implements ISessionDatasource {
   }
 
   public NetworkReqListener getSessionListener(String sessionId) {
-    logger.debug("getSessionListener({}) => {}", sessionId, sessionIdToEntry.get(sessionId));
-    SessionEntry e = sessionIdToEntry.get(sessionId);
-    if(e != null) {
-      return e.listener;
-    }
-    else {
-      return null;
-    }
+    SessionEntry se = sessionIdToEntry.get(sessionId);
+    logger.debug("getSessionListener({}) => {}", sessionId, se);
+    return se != null ? se.listener : null;
   }
 
   public NetworkReqListener removeSessionListener(String sessionId) {
-    logger.debug("removeSessionListener({}) => {}", sessionId, sessionIdToEntry.get(sessionId));
-    SessionEntry e = sessionIdToEntry.get(sessionId);
-    if(e != null) {
-      NetworkReqListener lst = e.listener;
-      e.listener = null;
+    SessionEntry se = sessionIdToEntry.get(sessionId);
+    logger.debug("removeSessionListener({}) => {}", sessionId, se);
+    if(se != null) {
+      NetworkReqListener lst = se.listener;
+      se.listener = null;
       return lst;
     }
     else {
@@ -143,24 +138,14 @@ public class LocalDataSource implements ISessionDatasource {
   }
 
   public BaseSession getSession(String sessionId) {
-    if(logger.isDebugEnabled()) {
-      logger.debug("getSession({}) => {}", sessionId, sessionIdToEntry.get(sessionId));
-    }
-    SessionEntry e = sessionIdToEntry.get(sessionId);
-
-    if(e!=null) {
-      return e.session;
-    }
-    else {
-      return null;
-    }
+    SessionEntry se = sessionIdToEntry.get(sessionId);
+    logger.debug("getSession({}) => {}", sessionId, se);
+    return se != null ? se.session : null;
   }
 
   public void removeSession(String sessionId) {
-    if(logger.isDebugEnabled()) {
-      logger.debug("removeSession({}) => {}", sessionId, sessionIdToEntry.get(sessionId));
-    }
-    this.sessionIdToEntry.remove(sessionId);
+    SessionEntry se = this.sessionIdToEntry.remove(sessionId);
+    logger.debug("removeSession({}) => {}", sessionId, se);
   }
 
 

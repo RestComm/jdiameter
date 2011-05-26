@@ -1,23 +1,23 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
- * contributors as indicated by the @authors tag. All rights reserved.
- * See the copyright.txt in the distribution for a full listing
- * of individual contributors.
- * 
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License, v. 2.0.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
+ * Copyright 2010, Red Hat, Inc. and individual contributors by the
+ * @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package org.jdiameter.client.impl.controller;
 
@@ -89,7 +89,7 @@ public class PeerTableImpl implements IPeerTable {
   protected IConcurrentFactory concurrentFactory;
   // XXX: FT/HA // protected ConcurrentHashMap<String, NetworkReqListener> sessionReqListeners = new ConcurrentHashMap<String, NetworkReqListener>();
   protected ISessionDatasource sessionDatasource;
-  
+
   protected final Dictionary dictionary = DictionarySingleton.getDictionary();
 
   protected PeerTableImpl() {
@@ -104,12 +104,14 @@ public class PeerTableImpl implements IPeerTable {
   protected void init( IContainer stack,IRouter router, Configuration globalConfig, MetaData metaData, IFsmFactory fsmFactory,
       ITransportLayerFactory transportFactory, IStatisticManager statisticFactory,
       IConcurrentFactory concurrentFactory, IMessageParser parser) {
+    logger.debug("Initializing Peer Table.");
     this.router = router;
     this.metaData = metaData;
     this.concurrentFactory = concurrentFactory;
     this.stopTimeOut = globalConfig.getLongValue(StopTimeOut.ordinal(), (Long) StopTimeOut.defValue());
     this.sessionDatasource = stack.getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
 
+    logger.debug("Populating peerTable from configuration");
     Configuration[] peers = globalConfig.getChildren(Parameters.PeerTable.ordinal());
     if (peers != null && peers.length > 0) {
       for (Configuration peerConfig : peers) {
@@ -126,11 +128,11 @@ public class PeerTableImpl implements IPeerTable {
               //conf peers may contain IPs only... sucks.
               peer.setRealm(router.getRealmTable().getRealmForPeer(peer.getUri().getFQDN()));
               peerTable.put(peer.getUri(), peer);
-              logger.debug("Append peer {} to peer table", peer);
+              logger.debug("Appended peer [{}] to peer table", peer);
             }
           }
           catch (Exception e) {
-            logger.warn("Can not create peer "+uri+" due to ", e);
+            logger.warn("Unable to create peer [" + uri + "]", e);
           }
         }
       }
@@ -150,33 +152,32 @@ public class PeerTableImpl implements IPeerTable {
     return p;
   }
 
-
-  public void sendMessage(IMessage message)
-  throws IllegalDiameterStateException, RouteException, AvpDataException, IOException {
-    if (!isStarted)
+  public void sendMessage(IMessage message) throws IllegalDiameterStateException, RouteException, AvpDataException, IOException {
+    if (!isStarted) {
       throw new IllegalDiameterStateException("Stack is down");
+    }
 
     // Get context
     IPeer peer;
     if (message.isRequest()) {
-      logger.debug("Send request {} [destHost={}; destRealm={}]", new Object[] {message, 
-          message.getAvps().getAvp(Avp.DESTINATION_HOST) != null ? message.getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString() : "",
-              message.getAvps().getAvp(Avp.DESTINATION_REALM) != null ? message.getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString() : ""}
-      );
+      if (logger.isDebugEnabled()) {
+        logger.debug("Send request {} [destHost={}; destRealm={}]", new Object[] {message, 
+            message.getAvps().getAvp(Avp.DESTINATION_HOST) != null ? message.getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString() : "",
+                message.getAvps().getAvp(Avp.DESTINATION_REALM) != null ? message.getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString() : ""});
+      }
 
       // Check local request
       if(router.updateRoute((IRequest)message)) {
         if(logger.isDebugEnabled()) {
           logger.debug("Updated route on message {} [destHost={}; destRealm={}]", new Object[] {message, 
               message.getAvps().getAvp(Avp.DESTINATION_HOST) != null ? message.getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString() : "",
-              message.getAvps().getAvp(Avp.DESTINATION_REALM) != null ? message.getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString() : ""}
-    	      );
+                  message.getAvps().getAvp(Avp.DESTINATION_REALM) != null ? message.getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString() : ""});
         }
       }
       peer = router.getPeer(message, this);
-      logger.debug( "Selected peer {} for sending message {}", new Object[] {peer, message});
+      logger.debug("Selected peer [{}] for sending message [{}]", peer, message);
       if (peer == metaData.getLocalPeer()) {
-        logger.debug("Request {} will be processed by local service", message);
+        logger.debug("Request [{}] will be processed by local service", message);
       }
       else {
         message.setHopByHopIdentifier(peer.getHopByHopIdentifier());
@@ -185,53 +186,59 @@ public class PeerTableImpl implements IPeerTable {
       }
     }
     else {
+      logger.debug("Message is an answer");
       peer = message.getPeer();
       if (peer == null) {
+        logger.debug("Peer is null so we will use router.getPeer to find a peer");
         peer = router.getPeer(message, this);
         if (peer == null) {
           throw new RouteException( "Cannot found remote context for sending message" );
         }
+        logger.debug("Found a peer [{}] and setting it as the peer in the message", peer);
         message.setPeer(peer);
       }
     }
 
     try {
+      logger.debug("Calling sendMessage on peer [{}]", peer);
       if (!peer.sendMessage(message)) {
         throw new IOException("Can not send message");
       }
       else {
+        logger.debug("Message was submitted to be sent, now adding statistics");
         if (message.isRequest()) {
-        	if(peer.getStatistic().isEnabled())
-        		peer.getStatistic().getRecordByName(IStatisticRecord.Counters.AppGenRequest.name()).inc();
+          if(peer.getStatistic().isEnabled())
+            peer.getStatistic().getRecordByName(IStatisticRecord.Counters.AppGenRequest.name()).inc();
         }
         else {
-        	if(peer.getStatistic().isEnabled())
-        		peer.getStatistic().getRecordByName(IStatisticRecord.Counters.AppGenResponse.name()).inc();
+          if(peer.getStatistic().isEnabled())
+            peer.getStatistic().getRecordByName(IStatisticRecord.Counters.AppGenResponse.name()).inc();
         }
       }
     }
     catch (Exception e) {
       logger.error("Can not send message", e);
       if (message.isRequest()) {
-    	  if(peer.getStatistic().isEnabled())
-    		  peer.getStatistic().getRecordByName(IStatisticRecord.Counters.AppGenRejectedRequest.name()).inc();
+        if(peer.getStatistic().isEnabled())
+          peer.getStatistic().getRecordByName(IStatisticRecord.Counters.AppGenRejectedRequest.name()).inc();
       }
       else {
-    	  if(peer.getStatistic().isEnabled())
-    		  peer.getStatistic().getRecordByName(IStatisticRecord.Counters.AppGenRejectedResponse.name()).inc();
+        if(peer.getStatistic().isEnabled())
+          peer.getStatistic().getRecordByName(IStatisticRecord.Counters.AppGenRejectedResponse.name()).inc();
       }
 
       if(e instanceof AvpNotAllowedException) {
         throw (AvpNotAllowedException) e;
       }
       else {
-       throw new IOException(e.getMessage());
+        throw new IOException(e.getMessage());
       }
     }
   }
 
   public void addSessionReqListener(String sessionId, NetworkReqListener listener) {
     // XXX: FT/HA // sessionReqListeners.put(sessionId, listener);
+    logger.debug("Adding sessionId [{}] to sessionDatasource", sessionId);
     sessionDatasource.setSessionListener(sessionId, listener);
   }
 
@@ -243,26 +250,26 @@ public class PeerTableImpl implements IPeerTable {
   //NOTE: METHOD BODY MUST MATCH JDOC.....!!!
   //TODO: add  DNS lookup ?
   public Peer getPeer(String name) {
-    if(logger.isDebugEnabled()) {
-      logger.debug("Looking for Peer '{}' in Peer Table: {}", name, peerTable);
-    }
+    logger.debug("Looking for Peer by name [{}] in Peer Table: [{}]", name, peerTable);
     for (Peer p : peerTable.values()) {
       if (p.getUri().toString().equals(name) || p.getUri().getFQDN().equals(name)) {
         return (IPeer) p;
       }
     }
+
+    logger.debug("No peer found in getPeerByName for peer [{}] will return null", name);
     return null;
   }
 
   public IPeer getPeerByName(String peerName) {
-    if(logger.isDebugEnabled()) {
-      logger.debug("Looking for Peer by name '{}' in Peer Table: {}", peerName, peerTable);
-    }
+    logger.debug("Looking for Peer by name [{}] in Peer Table: [{}]", peerName, peerTable);
     for (Peer p : peerTable.values()) {
       if (p.getUri().getFQDN().equals(peerName)) {
         return (IPeer) p;
       }
     }
+
+    logger.debug("No peer found in getPeerByName for peer [{}] will return null", peerName);
     return null;
   }
 
@@ -270,7 +277,7 @@ public class PeerTableImpl implements IPeerTable {
     if(logger.isDebugEnabled()) {
       logger.debug("Looking for Peer by URI '{}' in Peer Table: {}", peerUri, peerTable);
     }
-	  //FIXME: why it creates URI ?....?
+    // Creating URI for validation and easy FQDN retrieval
     URI otherUri;
     try {
       otherUri = new URI(peerUri);
@@ -283,6 +290,8 @@ public class PeerTableImpl implements IPeerTable {
         return (IPeer) p;
       }
     }
+
+    logger.debug("No peer found in getPeerByUrifor peer [{}] will return null", peerUri);
     return null;
   }
 
@@ -297,19 +306,22 @@ public class PeerTableImpl implements IPeerTable {
 
   // Life cycle
   public void start() throws IllegalDiameterStateException, IOException {
+    logger.debug("Starting PeerTable. Going to call connect on all peers in the peerTable");
     for(Peer peer : peerTable.values()) {
       try {
         peer.connect();
       }
       catch (Exception e) {
-        logger.debug("Can not start connect procedure to peer {}", peer, e);
+        logger.warn("Can not start connect procedure to peer [" + peer + "]", e);
       }
     }
+    logger.debug("Calling start on the router");
     router.start();
     isStarted = true;
   }
 
   public void stopped() {
+    logger.debug("Calling stopped() on PeerTableImpl");
     // XXX: FT/HA // if (sessionReqListeners != null) {
     // XXX: FT/HA // sessionReqListeners.clear();
     // XXX: FT/HA // }
@@ -319,7 +331,7 @@ public class PeerTableImpl implements IPeerTable {
           m.runTimer();
         }
         catch(Exception e) {
-          logger.debug("Can not stop timer", e);
+          logger.debug("Unable to stop timer on message", e);
         }
       }
     }
@@ -329,6 +341,7 @@ public class PeerTableImpl implements IPeerTable {
         // FIXME: Change this once we get rid of ThreadGroup and hard interrupting threads.
         boolean interrupted = false;
         long remWaitTime = 2000;
+        logger.debug("Stopping thread group and waiting a max of {}ms for all threads to finish", remWaitTime);
         while(concurrentFactory.getThreadGroup().activeCount() > 0 && remWaitTime > 0) {
           long waitTime = 250;
           Thread.sleep(waitTime);
@@ -339,40 +352,46 @@ public class PeerTableImpl implements IPeerTable {
           if(remWaitTime <= 0 && !interrupted) {
             interrupted = true;
             remWaitTime = 2000;
+            logger.debug("Stopping thread group did not work. Interrupting and waiting a max of {}ms for all threads to finish", remWaitTime);
             concurrentFactory.getThreadGroup().interrupt();
           }
         }
       }
       catch (Exception e) {
-        logger.warn("Can not stop executor");
+        logger.warn("Unable to stop executor");
       }
     }
     router.stop();
   }
 
   public void stopping() {
+    logger.debug("In stopping. Going to disconnect all peers in peer table");
     isStarted = false;
     for (Peer peer : peerTable.values()) {
       try {
         peer.disconnect();
       }
       catch (Exception e) {
-        logger.warn("Can not stopping peer table", e);
+        logger.warn("Failure disconnecting peer [" + peer.getUri().toString() + "]", e);
       }
     }
   }
 
   public void destroy() {
+    logger.debug("In destroy. Going to destroy concurrentFactory's thread group");
     if (concurrentFactory != null) {
       try {
-    	  concurrentFactory.getThreadGroup().stop(); //had to add it to make testStartStopStart pass....
+        concurrentFactory.getThreadGroup().stop(); //had to add it to make testStartStopStart pass....
         concurrentFactory.getThreadGroup().destroy();
       }
       catch (IllegalThreadStateException itse) {
-        logger.debug("Failure trying to destroy ThreadGroup probably due to existing active threads. Use stop() before destroy(). (nr_threads={})", concurrentFactory.getThreadGroup().activeCount());
+        if(logger.isDebugEnabled()) {
+          logger.debug("Failure trying to destroy ThreadGroup probably due to existing active threads. Use stop() before destroy(). (nr_threads={})", concurrentFactory.getThreadGroup().activeCount());
+        }
       }
     }
     if (router != null) {
+      logger.debug("Calling destroy on router");
       router.destroy();
     }
     router    = null;
@@ -402,6 +421,9 @@ public class PeerTableImpl implements IPeerTable {
 
     public Thread newThread(Runnable r) {
       Thread t = new Thread(this.factoryThreadGroup, r);
+      if(logger.isDebugEnabled()) {
+        logger.debug("Creating new thread in thread group JDiameterThreadGroup. Thread name is [{}]", t.getName());
+      }
       t.setPriority(this.priority);
       // TODO ? t.start(); 
       return t;
