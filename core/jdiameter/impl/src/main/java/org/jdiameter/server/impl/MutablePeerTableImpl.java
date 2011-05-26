@@ -157,12 +157,13 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     public String getDuplicationKey() {
       return duplicationKey;
     }
-  }    
+  }
 
   public MutablePeerTableImpl(Configuration config, MetaData metaData,IContainer stack, org.jdiameter.server.api.IRouter router,
       ISessionFactory sessionFactory, IFsmFactory fsmFactory, ITransportLayerFactory trFactory,
       IMessageParser parser, INetwork network, IOverloadManager ovrManager,
       IStatisticManager statisticFactory, IConcurrentFactory concurrentFactory) {
+    logger.debug("MutablePeerTableImpl is being created");
     this.metaData = metaData;
     this.config = config;
     this.router = router;
@@ -187,7 +188,9 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       ((MutableConfiguration) config).addChangeListener(this);
     }
 
+    logger.debug("MutablePeerTableImpl is starting initialisation by calling init on super class");
     init(stack,router, config, metaData, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser);
+    logger.debug("MutablePeerTableImpl has finished initialisation");
   }
 
   @Override
@@ -196,16 +199,21 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       org.jdiameter.client.api.io.ITransportLayerFactory transportFactory,
       IStatisticManager statisticFactory, IConcurrentFactory concurrentFactory,
       IMessageParser parser) throws InternalException, TransportException, URISyntaxException, UnknownServiceException {
+    logger.debug("Creating Peer for URI [{}]", uri);
     if (predefinedPeerTable == null) {
+      logger.debug("Creating new empty predefined peer table");
       predefinedPeerTable = new CopyOnWriteArraySet<URI>();
     }
+    logger.debug("Adding URI [{}] to predefinedPeerTable", uri);
     predefinedPeerTable.add(new URI(uri));
     if (peerConfig.getBooleanValue(PeerAttemptConnection.ordinal(), false)) {
+      logger.debug("Peer at URI [{}] is configured to attempt a connection (i.e. acting as a client) and a new peer instance will be created and returned", uri);
       return newPeerInstance(rating, new URI(uri), ip, portRange, true, null,
           metaData, globalConfig, peerConfig, (IFsmFactory) fsmFactory,
           (ITransportLayerFactory) transportFactory, parser, statisticFactory, concurrentFactory);
     }
     else {
+      logger.debug("Peer at URI [{}] is configured to NOT attempt a connection (i.e. acting as a server) and null will be returned", uri);
       return null;
     }
   }
@@ -214,6 +222,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       MetaData metaData, Configuration globalConfig, Configuration peerConfig, IFsmFactory fsmFactory,
       ITransportLayerFactory transportFactory, IMessageParser parser,
       IStatisticManager statisticFactory, IConcurrentFactory concurrentFactory) throws URISyntaxException, UnknownServiceException, InternalException, TransportException {
+    logger.debug("Creating and returning a new Peer Instance for URI [{}].", uri);
     return new org.jdiameter.server.impl.PeerImpl(
         rating, uri, ip, portRange, attCnn, connection,
         this, (org.jdiameter.server.api.IMetaData) metaData, globalConfig, peerConfig, sessionFactory,
@@ -238,6 +247,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   }
 
   public void start() throws IllegalDiameterStateException, IOException { // TODO: use parent method
+    logger.debug("Starting MutablePeerTableImpl. Starting router, overload scheduler, connection check timer, etc.");
     router.start();
     // Start overload manager
     overloadScheduler = concurrentFactory.getScheduledExecutorService(PeerOverloadTimer.name());
@@ -274,13 +284,13 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
         Map<String, IConnection> connections = getIncConnections();
         for (IConnection connection : connections.values()) {
           if (System.currentTimeMillis() - connection.getCreatedTime() <= CONN_INVALIDATE_PERIOD) {
-            logger.debug("External connection released by timeout {}", connection);
+            logger.debug("External connection released by timeout [{}]", connection);
             try {
               connection.remAllConnectionListener();
               connection.release();
             }
             catch (IOException e) {
-              logger.debug("Can not release connection", e);
+              logger.debug("Unable to release connection", e);
             }
             connections.remove(connection.getKey());
           }
@@ -290,10 +300,11 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     connHandler = connScheduler.scheduleAtFixedRate(connectionCheckTask, CONN_INVALIDATE_PERIOD, CONN_INVALIDATE_PERIOD, TimeUnit.MILLISECONDS);
     // Start server socket
     try {
+      logger.debug("Creating network guard");
       networkGuard = createNetworkGuard(transportFactory);
     }
     catch (TransportException e) {
-      logger.debug("Can not create server socket", e);
+      logger.debug("Unable to create server socket", e);
     }
     // Connect to predefined peers
     for (Peer p : peerTable.values()) {
@@ -301,7 +312,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
         p.connect();
       }
       catch (Exception e) {
-        logger.warn("Can not start connect procedure for peer {}", p, e);
+        logger.warn("Unable to start connect procedure for peer [" + p + "]", e);
       }
     }
     isStarted = true;
@@ -331,41 +342,57 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
               final IConnectionListener listener = new IConnectionListener() {
 
                 public void connectionOpened(String connKey) {
-                  logger.debug("Connection {} opened", connKey);
+                  logger.debug("Connection [{}] opened", connKey);
                 }
 
                 @SuppressWarnings("unchecked")
                 public void connectionClosed(String connKey, List notSended) {
-                  logger.debug("Connection {} closed", connKey);
+                  logger.debug("Connection [{}] closed", connKey);
                   unregister(true);
                 }
 
                 public void messageReceived(String connKey, IMessage message) {
-                  logger.debug("Message {} received to peer {}", new Object[]{message, connKey});
+                  logger.debug("Message [{}] received to peer [{}]", message, connKey);
                   if (message.isRequest() && message.getCommandCode() == Message.CAPABILITIES_EXCHANGE_REQUEST) {
                     connection.remConnectionListener(this);
                     IPeer peer = null;
                     String host;
                     try {
                       host = message.getAvps().getAvp(Avp.ORIGIN_HOST).getOctetString();
+                      logger.debug("Origin-Host in new received message is [{}]", host);
                     }
                     catch (AvpDataException e) {
-                      logger.warn("Can not find ORIG_HOST avp in CER", e);
+                      logger.warn("Unable to retrieve find Origin-Host AVP in CER", e);
                       unregister(true);
                       return;
                     }
                     boolean foundInpredefinedTable = false;
                     // find into predefined table
                     for (URI uri : predefinedPeerTable) {
+                      if(logger.isDebugEnabled()) {
+                        logger.debug("Checking against entry in predefinedPeerTable with URI [{}]", uri.toString());
+                      }
                       if (uri.getFQDN().equals(host)) {
+                        if(logger.isDebugEnabled()) {
+                          logger.debug("{} == {}", uri.getFQDN(), host);
+                        }
                         peer = (IPeer) peerTable.get(uri);
                         foundInpredefinedTable = true; // found but not init
                         break;
                       }
+                      else {
+                        if(logger.isDebugEnabled()) {
+                          logger.debug("{} != {}", uri.getFQDN(), host);
+                        }
+                      }
                     }
-                    // find in peertable for peer already connected to server but not removed
+                    // find in peer table for peer already connected to server but not removed
                     if (peer == null) {
+                      logger.debug("Peer is still null [{}]", host);
                       for (URI uri : peerTable.keySet()) {
+                        if (logger.isDebugEnabled()) {
+                          logger.debug("PeerTable contains a uri of [{}]", uri.toString());
+                        }
                         if (uri.getFQDN().equals(host)) {
                           peer = (IPeer) peerTable.get(uri);
                           break;
@@ -374,14 +401,14 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                     }
 
                     if (peer != null) {
-                      logger.debug("Add {} connection to peer {}", new Object[]{connection, peer});
+                      logger.debug("Add [{}] connection to peer [{}]", connection, peer);
                       peer.addIncomingConnection(connection);
                       try {
-                        logger.debug("Handle {} message on peer {}", new Object[]{message, peer});
+                        logger.debug("Handle [{}] message on peer [{}]", message, peer);
                         peer.handleMessage(message.isRequest() ? EventTypes.CER_EVENT : EventTypes.CER_EVENT, message, connKey);
                       }
                       catch (Exception e) {
-                        logger.debug("Can not process CER message", e);
+                        logger.debug("Unable to process CER message", e);
                       }
                     }
                     else {
@@ -400,30 +427,30 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
 
                           peer = newPeerInstance(0, uri, connection.getRemoteAddress().getHostAddress(), null, false, connection,
                               metaData, config, null, fsmFactory, transportFactory, parser, statisticFactory, concurrentFactory);
-                          logger.debug("Add {} peer {}", peer);
+                          logger.debug("Created new peer instance [{}] and addding to peer table", peer);
                           appendPeerToPeerTable(peer);
-                          logger.debug("Handle {} message on peer {}", new Object[]{message, peer});
+                          logger.debug("Handle [{}] message on peer [{}]", message, peer);
                           peer.handleMessage(message.isRequest() ? EventTypes.CER_EVENT : EventTypes.CER_EVENT, message, connKey);
                         }
                         catch (Exception e) {
-                          logger.warn("Can not create peer", e);
+                          logger.warn("Unable to create peer", e);
                           unregister(true);
                         }
                       }
                       else {
-                        logger.info("Skip anonymous connection {}", connection.toString());                              
+                        logger.info("Skip anonymous connection [{}]", connection);                              
                         unregister(true);
                       }
                     }
                   }
                   else {
-                    logger.debug("Unknown message {} by connection {}", new Object[]{message, connKey});
+                    logger.debug("Unknown message [{}] by connection [{}]", message, connKey);
                     unregister(true);
                   }
                 }
 
                 public void internalError(String connKey, IMessage message, TransportException cause) {
-                  logger.debug("Connection {} internalError {}", new Object[]{connKey, cause});
+                  logger.debug("Connection [{}] internalError [{}]", connKey, cause);
                   unregister(true);
                 }
 
@@ -435,7 +462,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                       connection.release();
                     }
                     catch (IOException e) {
-                      logger.debug("Can not release connection {}", connection);
+                      logger.debug("Unable to release connection [{}]", connection);
                     }
                   }
                 }
@@ -491,8 +518,8 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   }
 
   public Peer addPeer(URI peerURI, String realm, boolean connecting) {
-	  //TODO: add sKey here, now it adds peer to all realms.
-	  //TODO: better, separate addPeer from realm!
+    //TODO: add sKey here, now it adds peer to all realms.
+    //TODO: better, separate addPeer from realm!
     try {
       Configuration peerConfig = null;
       Configuration[] peers = config.getChildren(PeerTable.ordinal());
@@ -511,13 +538,13 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       peer.setRealm(realm);
       appendPeerToPeerTable(peer);
       boolean found = false;
-//      for (Realm r : router.getgetRealms()) {
-//        if (r.getName().equals(realm)) {
-//          ((IRealm)r).addPeerName(peerURI.toString());
-//          found = true;
-//          break;
-//        }
-//      }
+      //      for (Realm r : router.getgetRealms()) {
+      //        if (r.getName().equals(realm)) {
+      //          ((IRealm)r).addPeerName(peerURI.toString());
+      //          found = true;
+      //          break;
+      //        }
+      //      }
       Collection<Realm> realms =  this.router.getRealmTable().getRealms(realm);
       if (!found) {
         throw new IllegalArgumentException("Incorrect realm name");
@@ -528,7 +555,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       return peer;
     }
     catch(Exception e) {
-      logger.debug("Can not add peer", e);
+      logger.debug("Unable to add peer", e);
       return null;
     }
   }
@@ -557,9 +584,10 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       }
       else {
         return null;
-      }       
-    } catch (Exception e) {
-      logger.debug("Can not remove peer", e);
+      }
+    }
+    catch (Exception e) {
+      logger.debug("Unable to remove peer", e);
       return null;
     }
   }
@@ -567,7 +595,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   public Statistic getStatistic(String name) {
     for (Peer p : peerTable.values()) {
       if (p.getUri().getFQDN().equals(name)) {
-    	  return ((IPeer) p).getStatistic();
+        return ((IPeer) p).getStatistic();
       }
     }
     return null;
@@ -587,7 +615,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       if (key != null) {
         storageAnswers.put(key, new StorageEntry((IMessage) answer.clone()));
       }
-    } 
+    }
   }
 
   public ISessionFactory getSessionFactory() {
