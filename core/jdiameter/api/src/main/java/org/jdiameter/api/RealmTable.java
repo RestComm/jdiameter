@@ -56,6 +56,7 @@ public interface RealmTable extends Wrapper {
    * @throws InternalException - when realm definition under pKey and sKey exist
    */
   public Realm addRealm(String realmName, ApplicationId applicationId, LocalAction action, boolean dynamic, long expirationTime, String[] hosts) throws InternalException;
+
   /**
    * Checks if there is such realm entry.
    * @param realmName

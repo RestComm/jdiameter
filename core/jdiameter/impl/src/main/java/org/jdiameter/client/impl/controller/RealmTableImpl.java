@@ -77,6 +77,7 @@ public class RealmTableImpl implements IRealmTable {
   }
 
   public Realm addRealm(String realmName, ApplicationId applicationId, LocalAction action, boolean dynamic, long expirationTime, String[] hosts) throws InternalException {
+    logger.debug("Adding realm [{}] into network map", realmName);
     IAgent agent = null;
     switch (action) {
       case LOCAL:

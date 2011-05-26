@@ -114,6 +114,7 @@ public class RouterImpl implements IRouter {
   }
 
   protected void loadConfiguration(Configuration config) {
+    logger.debug("Loading Router Configuration. Populating Realms, Application IDs, etc");
     //add local realm : this might not be good
     String localRealm = config.getStringValue(OwnRealm.ordinal(),null);
     String localHost = config.getStringValue(Parameters.OwnDiameterURI.ordinal(),null);
@@ -135,13 +136,14 @@ public class RouterImpl implements IRouter {
           for (Configuration c : m) {
             try {
               String name = c.getStringValue(RealmName.ordinal(), "");
+              logger.debug("Getting config for realm [{}]", name);
               ApplicationId appId = null;
               {
                 Configuration[] apps = c.getChildren(ApplicationId.ordinal());
                 if (apps != null) {
                   for (Configuration a : apps) {
                     if (a != null) {
-                      long vnd = a.getLongValue(VendorId.ordinal(),   0);
+                      long vnd = a.getLongValue(VendorId.ordinal(), 0);
                       long auth = a.getLongValue(AuthApplId.ordinal(), 0);
                       long acc = a.getLongValue(AcctApplId.ordinal(), 0);
                       if (auth != 0) {
@@ -150,12 +152,16 @@ public class RouterImpl implements IRouter {
                       else {
                         appId = org.jdiameter.api.ApplicationId.createByAccAppId(vnd, acc);
                       }
+                      if (logger.isDebugEnabled()) {
+                        logger.debug("Realm [{}] has application Acct [{}] Auth [{}] Vendor [{}]", new Object[]{name, appId.getAcctAppId(), appId.getAuthAppId(), appId.getVendorId()});
+                      }
                       break;
                     }
                   }
                 }
               }
               String[] hosts = c.getStringValue(RealmHosts.ordinal(), (String) RealmHosts.defValue()).split(",");
+              logger.debug("Realm [{}] has hosts [{}]", name, hosts);
               LocalAction locAction = LocalAction.valueOf(c.getStringValue(RealmLocalAction.ordinal(), "0"));
               boolean isDynamic = c.getBooleanValue(RealmEntryIsDynamic.ordinal(), false);
               long expirationTime = c.getLongValue(RealmEntryExpTime.ordinal(), 0);
