@@ -84,7 +84,7 @@ public class MessageImpl implements IMessage {
   MessageImpl(int commandCode, long appId) {
     this.commandCode = commandCode;
     this.applicationId = appId;
-   
+
     this.avpSet = new AvpSetImpl();
     this.endToEndId = parser.getNextEndToEndId();
   }
@@ -110,24 +110,24 @@ public class MessageImpl implements IMessage {
     }
   }
 
-//  /**
-//   * Create empty message
-//   * 
-//   * @param metaData
-//   * @param parser
-//   * @param commandCode
-//   * @param appId
-//   */
-//  MessageImpl(MetaData metaData, MessageParser parser, int commandCode, long appId) {
-//    this(commandCode, appId);
-//    try {
-//      getAvps().addAvp(Avp.ORIGIN_HOST, metaData.getLocalPeer().getUri().getFQDN(), true, false, true);
-//      getAvps().addAvp(Avp.ORIGIN_REALM, metaData.getLocalPeer().getRealmName(), true, false, true);
-//    }
-//    catch (Exception e) {
-//      logger.debug("Can not create message", e);
-//    }
-//  }
+  //  /**
+  //   * Create empty message
+  //   * 
+  //   * @param metaData
+  //   * @param parser
+  //   * @param commandCode
+  //   * @param appId
+  //   */
+  //  MessageImpl(MetaData metaData, MessageParser parser, int commandCode, long appId) {
+  //    this(commandCode, appId);
+  //    try {
+  //      getAvps().addAvp(Avp.ORIGIN_HOST, metaData.getLocalPeer().getUri().getFQDN(), true, false, true);
+  //      getAvps().addAvp(Avp.ORIGIN_REALM, metaData.getLocalPeer().getRealmName(), true, false, true);
+  //    }
+  //    catch (Exception e) {
+  //      logger.debug("Can not create message", e);
+  //    }
+  //  }
 
   /**
    * Create Answer
@@ -207,14 +207,14 @@ public class MessageImpl implements IMessage {
       return avpSessionId != null ? avpSessionId.getUTF8String() : null;
     }
     catch (AvpDataException ade) {
-    	logger.error("Failed to fetch Session-Id", ade);
+      logger.error("Failed to fetch Session-Id", ade);
       return null;
     }
   }
 
   public Answer createAnswer() {
-	    MessageImpl answer = new MessageImpl(this);
-	    return answer;
+    MessageImpl answer = new MessageImpl(this);
+    return answer;
   }
 
   public Answer createAnswer(long resultCode) {
@@ -250,26 +250,6 @@ public class MessageImpl implements IMessage {
 
   public ApplicationId getSingleApplicationId() {
     return getSingleApplicationId(this.applicationId);
-  }
-
-  public ApplicationId getSingleApplicationId(long applicationId) {      
-    List<ApplicationId> appIds = getApplicationIdAvps();
-    ApplicationId first = null;
-    for (ApplicationId id : appIds) {
-      if (first == null) {
-        first = id;
-      }
-      if (applicationId != 0 && id.getVendorId() == 0 && applicationId == id.getAuthAppId()) {
-        return id;
-      }
-      if (applicationId != 0 && id.getVendorId() == 0 && applicationId == id.getAcctAppId()) {
-        return id;
-      }
-      if (applicationId != 0 && (applicationId == id.getAuthAppId() || applicationId == id.getAcctAppId())) {
-        return id;
-      }
-    }
-    return first;
   }
 
   public List<ApplicationId> getApplicationIdAvps() {
@@ -316,6 +296,45 @@ public class MessageImpl implements IMessage {
 
     this.applicationIds = rc;
     return this.applicationIds;
+  }
+
+  public ApplicationId getSingleApplicationId(long applicationId) {
+    logger.debug("In getSingleApplicationId for application id [{}]", applicationId);
+    List<ApplicationId> appIds = getApplicationIdAvps();
+    logger.debug("Application Ids in this message are:");
+    ApplicationId firstOverall = null;
+    ApplicationId firstWithZeroVendor = null;
+    ApplicationId firstWithNonZeroVendor = null;
+    for (ApplicationId id : appIds) {
+      logger.debug("[{}]", id);
+      if (firstOverall == null) {
+        firstOverall = id;
+      }
+      if (applicationId != 0) {
+        if (firstWithZeroVendor == null && id.getVendorId() == 0 && (applicationId == id.getAuthAppId() || applicationId == id.getAcctAppId())) {
+          firstWithZeroVendor = id;
+        }
+        if (firstWithNonZeroVendor == null && id.getVendorId() != 0 && (applicationId == id.getAuthAppId() || applicationId == id.getAcctAppId())) {
+          firstWithNonZeroVendor = id;
+          break;
+        }
+      }
+    }
+    ApplicationId toReturn = null;
+    if (firstWithNonZeroVendor != null) {
+      toReturn = firstWithNonZeroVendor;
+      logger.debug("Returning [{}] as the first application id because its the first vendor specific one found", toReturn);
+    }
+    else if (firstWithZeroVendor != null) {
+      toReturn = firstWithZeroVendor;
+      logger.debug("Returning [{}] as the first application id because there are no vendor specific ones found", toReturn);
+    }
+    else {
+      toReturn = firstOverall;
+      logger.debug("Returning [{}] as the first application id because none with the requested app ids were found", toReturn);
+    }
+
+    return toReturn;
   }
 
   public long getHopByHopIdentifier() {
