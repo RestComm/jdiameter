@@ -580,8 +580,9 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     return newAppId;
   }
 
-  protected void sendErrorAnswer(IRequest request, String errorMessage, int resultCode,Avp ...avpsToAdd) {
-    request.setRequest(false); //dont like this...
+  protected void sendErrorAnswer(IRequest request, String errorMessage, int resultCode, Avp ...avpsToAdd) {
+    logger.debug("Could not process request. Result Code = [{}], Error Message: [{}]", resultCode, errorMessage);
+    request.setRequest(false);
     request.setError(true);
     request.getAvps().addAvp(RESULT_CODE, resultCode, true, false, true);
 
@@ -603,7 +604,8 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     request.getAvps().removeAvp(DESTINATION_HOST);
     request.getAvps().removeAvp(DESTINATION_REALM);
     try {
-      sendMessage((IMessage) request);  //yeah, super.....
+      logger.debug("Sending response indicating we could not process request");
+      sendMessage((IMessage) request);
       if(statistic.isEnabled()) {
         statistic.getRecordByName(IStatisticRecord.Counters.SysGenResponse.name()).inc();
       }
