@@ -1,23 +1,23 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
- * contributors as indicated by the @authors tag. All rights reserved.
- * See the copyright.txt in the distribution for a full listing
- * of individual contributors.
- * 
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License, v. 2.0.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
+ * Copyright 2011, Red Hat, Inc. and individual contributors by the
+ * @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package org.jdiameter.client.impl;
 
@@ -209,14 +209,14 @@ public class MetaDataImpl implements IMetaData {
     @SuppressWarnings("unchecked")
     public <E> E getState(Class<E> anEnum) {
       switch (stack.getState()) {
-      case IDLE:
-        return (E) PeerState.DOWN;
-      case CONFIGURED:
-        return (E) PeerState.INITIAL;
-      case STARTED:
-        return (E) PeerState.OKAY;
-      case STOPPED:
-        return (E) PeerState.SUSPECT;
+        case IDLE:
+          return (E) PeerState.DOWN;
+        case CONFIGURED:
+          return (E) PeerState.INITIAL;
+        case STARTED:
+          return (E) PeerState.OKAY;
+        case STOPPED:
+          return (E) PeerState.SUSPECT;
       }
       return (E) PeerState.DOWN;
     }
@@ -250,14 +250,22 @@ public class MetaDataImpl implements IMetaData {
     }
 
     public Set<ApplicationId> getCommonApplications() {
-    	//FIXME: this does not make ANY sense...
-      if (appIds.size() == 0) {
+      if(logger.isDebugEnabled()) {
+        logger.debug("In getCommonApplications appIds size is [{}]", appIds.size());
+      }
+      if (appIds.isEmpty()) {
         Configuration[] apps = stack.getConfiguration().getChildren(ApplicationId.ordinal());
         if (apps != null) {
+          if(logger.isDebugEnabled()) {
+            logger.debug("Stack configuration has apps list size of  [{}]. Looping through them", apps.length);
+          }
           for (Configuration a : apps) {
             long vnd = a.getLongValue(VendorId.ordinal(), 0L);
             long auth = a.getLongValue(AuthApplId.ordinal(), 0L);
             long acc = a.getLongValue(AcctApplId.ordinal(), 0L);
+            if (logger.isDebugEnabled()) {
+              logger.debug("Adding app id vendor [{}] auth [{}] acc [{}]", new Object[]{vnd, auth, acc});
+            }
             if (auth != 0) {
               appIds.add(org.jdiameter.api.ApplicationId.createByAuthAppId(vnd, auth));
             }
@@ -265,6 +273,9 @@ public class MetaDataImpl implements IMetaData {
               appIds.add(org.jdiameter.api.ApplicationId.createByAccAppId(vnd, acc));
             }
           }
+        }
+        else {
+          logger.debug("Apps is null - we have no apps in the stack configuration.");
         }
       }
       return appIds;
@@ -278,7 +289,7 @@ public class MetaDataImpl implements IMetaData {
             addresses = new InetAddress[]{InetAddress.getByName(getUri().getFQDN())};
           }
           catch (UnknownHostException e) {
-            logger.debug("Can not get ip by URI {}", e);
+            logger.debug("Can not get IP by URI {}", e);
             try {
               addresses = new InetAddress[]{InetAddress.getLocalHost()};
             }
