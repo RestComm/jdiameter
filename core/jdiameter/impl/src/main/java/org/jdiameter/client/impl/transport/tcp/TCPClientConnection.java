@@ -1,3 +1,24 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2011, Red Hat, Inc. and individual contributors by the
+ * @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.jdiameter.client.impl.transport.tcp;
 
 import org.jdiameter.api.AvpDataException;
@@ -25,9 +46,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * 
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 public class TCPClientConnection implements IConnection {
-  
-  private static Logger log = LoggerFactory.getLogger(TCPClientConnection.class);
+
+  private static Logger logger = LoggerFactory.getLogger(TCPClientConnection.class);
 
   private final long createdTime;
   private TCPTransportClient client;
@@ -72,7 +98,7 @@ public class TCPClientConnection implements IConnection {
   }
 
   public TCPClientConnection(Configuration config, IConcurrentFactory concurrentFactory, Socket socket,
-    IMessageParser parser, String ref) throws Exception {
+      IMessageParser parser, String ref) throws Exception {
     this(concurrentFactory, parser);
     client = new TCPTransportClient(concurrentFactory, this);
     client.initialize(socket);
@@ -103,9 +129,11 @@ public class TCPClientConnection implements IConnection {
     try {
       getClient().initialize();
       getClient().start();
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new TransportException("Cannot init transport: ", TransportError.NetWorkError, e);
-    } catch (Exception e) {
+    }
+    catch (Exception e) {
       throw new TransportException("Cannot init transport: ", TransportError.Internal, e);
     }
   }
@@ -115,7 +143,8 @@ public class TCPClientConnection implements IConnection {
       if (getClient() != null) {
         getClient().stop();
       }
-    } catch (Exception e) {
+    }
+    catch (Exception e) {
       throw new InternalError("Error while stopping transport: " + e.getMessage());
     }
   }
@@ -125,9 +154,11 @@ public class TCPClientConnection implements IConnection {
       if (getClient() != null) {
         getClient().release();
       }
-    } catch (Exception e) {
+    }
+    catch (Exception e) {
       throw new IOException(e.getMessage());
-    } finally {
+    }
+    finally {
       parser = null;
       buffer.clear();
       remAllConnectionListener();
@@ -139,7 +170,8 @@ public class TCPClientConnection implements IConnection {
       if (getClient() != null) {
         getClient().sendMessage(parser.encodeMessage(message));
       }
-    } catch (Exception e) {
+    }
+    catch (Exception e) {
       throw new TransportException("Cannot send message: ", TransportError.FailedSendMessage, e);
     }
   }
@@ -172,12 +204,15 @@ public class TCPClientConnection implements IConnection {
         for (Event e : buffer) {
           try {
             onEvent(e);
-          } catch (AvpDataException e1) {
+          }
+          catch (AvpDataException e1) {
+            // ignore
           }
         }
         buffer.clear();
       }
-    } finally {
+    }
+    finally {
       lock.unlock();
     }
   }
@@ -186,7 +221,8 @@ public class TCPClientConnection implements IConnection {
     lock.lock();
     try {
       listeners.clear();
-    } finally {
+    }
+    finally {
       lock.unlock();
     }
   }
@@ -195,7 +231,8 @@ public class TCPClientConnection implements IConnection {
     lock.lock();
     try {
       listeners.remove(listener);
-    } finally {
+    }
+    finally {
       lock.unlock();
     }
   }
@@ -221,8 +258,8 @@ public class TCPClientConnection implements IConnection {
   }
 
   protected void onMessageReceived(ByteBuffer message) throws AvpDataException {
-    if (log.isDebugEnabled()) {
-      log.debug("Received message");
+    if (logger.isDebugEnabled()) {
+      logger.debug("Received message of size [{}]", message.array().length);
     }
     onEvent(new Event(EventType.MESSAGE_RECEIVED, message));
   }
@@ -230,14 +267,18 @@ public class TCPClientConnection implements IConnection {
   protected void onAvpDataException(AvpDataException e) {
     try {
       onEvent(new Event(EventType.DATA_EXCEPTION, e));
-    } catch (AvpDataException e1) {
+    }
+    catch (AvpDataException e1) {
+      // ignore
     }
   }
 
   protected void onConnected() {
     try {
       onEvent(new Event(EventType.CONNECTED));
-    } catch (AvpDataException e1) {
+    }
+    catch (AvpDataException e1) {
+      // ignore
     }
   }
 
@@ -263,7 +304,8 @@ public class TCPClientConnection implements IConnection {
           }
         }
       }
-    } finally {
+    }
+    finally {
       lock.unlock();
     }
   }
@@ -272,15 +314,18 @@ public class TCPClientConnection implements IConnection {
     if (listeners.size() == 0) {
       try {
         buffer.add(event);
-      } catch (IllegalStateException e) {
+      }
+      catch (IllegalStateException e) {
         // FIXME : requires JDK6 : buffer.removeLast();
         Event[] tempBuffer = buffer.toArray(new Event[buffer.size()]);
         buffer.remove(tempBuffer[tempBuffer.length-1]);
         buffer.add(event);
       }
       return false;
-    } else {
+    }
+    else {
       return true;
     }
   }
+
 }
