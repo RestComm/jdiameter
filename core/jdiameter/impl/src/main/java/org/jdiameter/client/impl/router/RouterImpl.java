@@ -110,6 +110,7 @@ public class RouterImpl implements IRouter {
     this.concurrentFactory = concurrentFactory;
     this.metaData = aMetaData;
     this.realmTable = realmTable;
+    logger.debug("Constructor for RouterImpl: Calling loadConfiguration");
     loadConfiguration(config);
   }
 
@@ -130,6 +131,7 @@ public class RouterImpl implements IRouter {
 
     //add realms based on realm table.
     if (config.getChildren(RealmTable.ordinal()) != null) {
+      logger.debug("Going to loop through configured realms and add them into a network map");
       for (Configuration items : config.getChildren(RealmTable.ordinal())) {
         if (items != null) {
           Configuration[] m = items.getChildren(RealmEntry.ordinal());
@@ -161,14 +163,14 @@ public class RouterImpl implements IRouter {
                 }
               }
               String[] hosts = c.getStringValue(RealmHosts.ordinal(), (String) RealmHosts.defValue()).split(",");
-              logger.debug("Realm [{}] has hosts [{}]", name, hosts);
+              logger.debug("Adding realm [{}] with hosts [{}] to network map", name, hosts);
               LocalAction locAction = LocalAction.valueOf(c.getStringValue(RealmLocalAction.ordinal(), "0"));
               boolean isDynamic = c.getBooleanValue(RealmEntryIsDynamic.ordinal(), false);
               long expirationTime = c.getLongValue(RealmEntryExpTime.ordinal(), 0);
               this.realmTable.addRealm(name, appId, locAction, isDynamic, expirationTime, hosts);
             }
             catch (Exception e) {
-              logger.warn("Can not append realm entry", e);
+              logger.warn("Unable to append realm entry", e);
             }
           }
         }
@@ -177,6 +179,7 @@ public class RouterImpl implements IRouter {
   }
 
   public void registerRequestRouteInfo(IRequest request) {
+    logger.debug("Entering registerRequestRouteInfo");
     try {
       long hopByHopId = request.getHopByHopIdentifier();
       Avp hostAvp = request.getAvps().getAvp(Avp.ORIGIN_HOST);
@@ -184,6 +187,7 @@ public class RouterImpl implements IRouter {
       AnswerEntry entry = new AnswerEntry(hopByHopId, hostAvp != null ? hostAvp.getOctetString() : null,
           realmAvp != null ? realmAvp.getOctetString() : null);
 
+      logger.debug("Adding Hop-by-Hop id [{}] into request entry table for routing responses back to the requesting peer", hopByHopId);
       requestEntryTable.put(hopByHopId, entry);
       requestSortedEntryTable.add(hopByHopId);
 
@@ -197,6 +201,9 @@ public class RouterImpl implements IRouter {
           requestSortedEntryTable = new ArrayList<Long>(requestSortedEntryTable.subList(REQUEST_TABLE_CLEAR_SIZE, requestSortedEntryTable.size()));
           // help garbage collector
           toRemove = null;
+          if (logger.isDebugEnabled()) {
+            logger.debug("Request entry table has now [{}] entries.", requestEntryTable.size());
+          }
         }
         finally {
           requestEntryTableLock.writeLock().unlock();
@@ -204,7 +211,7 @@ public class RouterImpl implements IRouter {
       }
     }
     catch (Exception e) {
-      logger.warn("Can not store route info", e);
+      logger.warn("Unable to store route info", e);
     }
   }
 
@@ -213,14 +220,21 @@ public class RouterImpl implements IRouter {
     AnswerEntry ans = requestEntryTable.get(hopByHopIdentifier);
     //requestLock.readLock().unlock();
     if (ans != null) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("getRequestRouteInfo found host [{}] and realm [{}] for Hop-by-Hop Id [{}]", new Object[]{ans.getHost(), ans.getRealm(), hopByHopIdentifier});
+      }
       return new String[] {ans.getHost(), ans.getRealm()};
     }
     else {
+      if(logger.isWarnEnabled()) {
+        logger.warn("Could not find route info for Hop-by-Hop Id [{}]. Table size is [{}]", hopByHopIdentifier, requestEntryTable.size());
+      }
       return null;
     }
   }
 
   public IPeer getPeer(IMessage message, IPeerTable manager) throws RouteException, AvpDataException {
+    logger.debug("Getting a peer for message [{}]", message);
     //FIXME: add ability to send without matching realm+peer pair?, that is , route based on peer table entries?
     //that is, if msg.destHost != null > getPeer(msg.destHost).sendMessage(msg);
     String destRealm = null;
@@ -240,7 +254,7 @@ public class RouterImpl implements IRouter {
         destHost = avpHost.getOctetString();
       }
       if(logger.isDebugEnabled()) {
-        logger.debug("Looking up peer for request: {}, DestHost={}, DestRealm={}", new Object[] {message,destHost, destRealm});
+        logger.debug("Looking up peer for request: [{}], DestHost=[{}], DestRealm=[{}]", new Object[] {message,destHost, destRealm});
       }
 
       matchedRealm = (IRealm) this.realmTable.matchRealm(message); 
@@ -251,21 +265,28 @@ public class RouterImpl implements IRouter {
       if (info != null) {
         destHost = info[0];
         destRealm = info[1];
+        logger.debug("Message is an answer. Host is [{}] and Realm is [{}] as per hopbyhop info from request", destHost, destRealm);
+        if (destRealm == null) {
+          logger.warn("Destination-Realm was null for hopbyhop id " + message.getHopByHopIdentifier());
+        }
+      }
+      else {
+        logger.debug("No Host and realm found based on hopbyhop id of the answer associated request");
       }
       //FIXME: if no info, should not send it ?
       //FIXME: add strict deff in route back table so stack does not have to lookup?
       if(logger.isDebugEnabled()) {
-        logger.debug("Looking up peer for answer: {}, DestHost={}, DestRealm={}", new Object[] {message,destHost, destRealm});
+        logger.debug("Looking up peer for answer: [{}], DestHost=[{}], DestRealm=[{}]", new Object[] {message,destHost, destRealm});
       }
       matchedRealm = (IRealm) this.realmTable.matchRealm((IAnswer)message,destRealm);
     }
 
-    //        IPeer peer = getPeerPredProcessing(message, destRealm, destHost);
+    //  IPeer peer = getPeerPredProcessing(message, destRealm, destHost);
     //
-    //        if (peer != null) {
-    //          logger.debug("Found during preprocessing...{}", peer);
-    //          return peer;
-    //        }
+    //  if (peer != null) {
+    //    logger.debug("Found during preprocessing...[{}]", peer);
+    //    return peer;
+    //  }
 
     // Check realm name
     //TODO: check only if it exists?
@@ -279,7 +300,7 @@ public class RouterImpl implements IRouter {
     // Check previous context information, this takes care of most answers.
     if (message.getPeer() != null && destHost != null && destHost.equals(message.getPeer().getUri().getFQDN()) && message.getPeer().hasValidConnection()) {
       if(logger.isDebugEnabled()) {
-        logger.debug("Select previous message usage peer {}", message.getPeer());
+        logger.debug("Select previous message usage peer [{}]", message.getPeer());
       }
       return message.getPeer();
     }
@@ -289,41 +310,53 @@ public class RouterImpl implements IRouter {
     IPeer c = (IPeer) (destHost != null ? manager.getPeer(destHost) : null);
 
     if (c != null && c.hasValidConnection()) {
-      if(logger.isDebugEnabled()) {
-        logger.debug("Selected peer by Destination-Host AVP [{}] -- Peer {}", new Object[] {destHost, c});
-      }
+      logger.debug("Found a peer using destination host avp [{}] peer is [{}] with a valid connection.", destHost, c);
       //here matchedRealm MAY
       return c;
     }
     else {
-      if (destHost != null) {
-        if(logger.isDebugEnabled()) {
-          logger.debug("Peer by Destination-Host AVP [host={}, peer={}] has no valid connection.", destHost, c);
-        }
-      }
-
+      logger.debug("Finding peer by destination host avp [host={}] did not find anything. Now going to try finding one by destination realm [{}]", destRealm, destHost);
       String peers[] = matchedRealm.getPeerNames();
       if (peers == null || peers.length == 0) {
-        throw new RouteException("Can not find context by route information [" + destRealm + " ," + destHost + "]");
+        throw new RouteException("Unable to find context by route information [" + destRealm + " ," + destHost + "]");
       }
 
       // Collect peers
       ArrayList<IPeer> availablePeers = new ArrayList<IPeer>(5);
+      logger.debug("Looping through peers in realm [{}]", destRealm);
       for (String peerName : peers) {
         IPeer localPeer = (IPeer) manager.getPeer(peerName);
-        if (localPeer != null && localPeer.hasValidConnection()) {
-          availablePeers.add(localPeer);
+        if(logger.isDebugEnabled()) {
+          logger.debug("Checking peer with uri [{}]", localPeer.getUri().toString());
+        }
+        if (localPeer != null) {
+          if(localPeer.hasValidConnection()) {
+            if(logger.isDebugEnabled()) {
+              logger.debug("Found available peer to add to available peer list with uri [{}] with a valid connection", localPeer.getUri().toString());
+            }
+            availablePeers.add(localPeer);
+          }
+          else {
+            if(logger.isDebugEnabled()) {
+              logger.debug("Found a peer with uri [{}] with no valid connection", localPeer.getUri());
+            }
+          }
         }
       }
 
       if(logger.isDebugEnabled()) {
-        logger.debug("Performing Realm routing. Realm '{}' has the following peers available {} from list {}", new Object[] {destRealm, availablePeers, Arrays.asList(peers)});
+        logger.debug("Performing Realm routing. Realm [{}] has the following peers available [{}] from list [{}]", new Object[] {destRealm, availablePeers, Arrays.asList(peers)});
       }
 
       // Balancing
       IPeer peer = selectPeer(availablePeers);
       if (peer == null) {
-        throw new RouteException("Can not find valid connection to peer[" + destHost + "] in realm[" + destRealm + "]");
+        throw new RouteException("Unable to find valid connection to peer[" + destHost + "] in realm[" + destRealm + "]");
+      }
+      else {
+        if (logger.isDebugEnabled()) {
+          logger.debug("Load balancing selected peer with uri [{}]", peer.getUri());
+        }
       }
 
       return peer;
@@ -349,8 +382,9 @@ public class RouterImpl implements IRouter {
         // loop detected
         for (Avp avp : avps) {
           String r =  avp.getOctetString();
-          if (r.equals(metaData.getLocalPeer().getUri().getFQDN()))
+          if (r.equals(metaData.getLocalPeer().getUri().getFQDN())) {
             throw new RouteException("Loop detected");
+          }
           redirectHosts[i++] = r;
         }
       }
@@ -400,7 +434,7 @@ public class RouterImpl implements IRouter {
         }
         //
         if(redirectTable.size()> REDIRECT_TABLE_SIZE) {
-          try{
+          try {
             //yes, possible that this will trigger this procedure twice, but thats worst than locking always.
             redirectTableLock.writeLock().lock();
             trimRedirectTable();
@@ -449,15 +483,15 @@ public class RouterImpl implements IRouter {
    * 
    */
   private void trimRedirectTable() {
-    for(int index = 0;index<redirectTable.size();index++) {
+    for(int index = 0; index < redirectTable.size(); index++) {
       try{
-        if(redirectTable.get(index).getExpiredTime()<=System.currentTimeMillis()) {
+        if(redirectTable.get(index).getExpiredTime() <= System.currentTimeMillis()) {
           redirectTable.remove(index);
           index--; //a trick :)
         }
       }
       catch(Exception e) {
-        logger.debug("Error in redirect task cleanup.",e);
+        logger.debug("Error in redirect task cleanup.", e);
         break;
       }
     }
@@ -468,7 +502,7 @@ public class RouterImpl implements IRouter {
    * @param destHost
    */
   private void updateRoute(IRequest request, String destHost) {
-    //Realm does not change I think... :)
+    // Realm does not change I think... :)
     request.getAvps().removeAvp(Avp.DESTINATION_HOST);
     request.getAvps().addAvp(Avp.DESTINATION_HOST, destHost, true, false,  true);
   }
@@ -578,7 +612,7 @@ public class RouterImpl implements IRouter {
       }
     }
     catch (Exception exc) {
-      logger.error("Can not stop router", exc);
+      logger.error("Unable to stop router", exc);
     }
 
     //redirectEntryHandler = null;
@@ -588,9 +622,9 @@ public class RouterImpl implements IRouter {
     requestEntryTable = null;
   }
 
-  protected IPeer selectPeer(List<IPeer> avaliblePeers) {
+  protected IPeer selectPeer(List<IPeer> availablePeers) {
     IPeer p = null;
-    for (IPeer c : avaliblePeers) {
+    for (IPeer c : availablePeers) {
       if (p == null || c.getRating() >= p.getRating()) {
         p = c;
       }
@@ -745,7 +779,6 @@ public class RouterImpl implements IRouter {
 
     Long hopByHopId;
     String host, realm;
-
 
     public AnswerEntry(Long hopByHopId) {
       this.hopByHopId = hopByHopId;
