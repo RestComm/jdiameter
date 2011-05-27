@@ -181,6 +181,7 @@ public class RouterImpl implements IRouter {
   public void registerRequestRouteInfo(IRequest request) {
     logger.debug("Entering registerRequestRouteInfo");
     try {
+      requestEntryTableLock.writeLock().lock();
       long hopByHopId = request.getHopByHopIdentifier();
       Avp hostAvp = request.getAvps().getAvp(Avp.ORIGIN_HOST);
       Avp realmAvp = request.getAvps().getAvp(Avp.ORIGIN_REALM);
@@ -191,10 +192,8 @@ public class RouterImpl implements IRouter {
       requestEntryTable.put(hopByHopId, entry);
       requestSortedEntryTable.add(hopByHopId);
 
-      if ( requestEntryTable.size() > REQUEST_TABLE_SIZE) {
-        try{
-          requestEntryTableLock.writeLock().lock();
-          List<Long> toRemove = requestSortedEntryTable.subList(0, REQUEST_TABLE_CLEAR_SIZE/4);
+      if (requestEntryTable.size() > REQUEST_TABLE_SIZE) {
+          List<Long> toRemove = requestSortedEntryTable.subList(0, REQUEST_TABLE_CLEAR_SIZE);
           // removing from keyset removes from hashmap too
           requestEntryTable.keySet().removeAll(toRemove);
           // instead of wasting time removing, just make a new one, much faster
@@ -204,14 +203,13 @@ public class RouterImpl implements IRouter {
           if (logger.isDebugEnabled()) {
             logger.debug("Request entry table has now [{}] entries.", requestEntryTable.size());
           }
-        }
-        finally {
-          requestEntryTableLock.writeLock().unlock();
-        }
       }
     }
     catch (Exception e) {
       logger.warn("Unable to store route info", e);
+    }
+    finally {
+      requestEntryTableLock.writeLock().unlock();
     }
   }
 
