@@ -391,7 +391,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                       logger.debug("Peer is still null [{}]", host);
                       for (URI uri : peerTable.keySet()) {
                         if (logger.isDebugEnabled()) {
-                          logger.debug("PeerTable contains a uri of [{}]", uri.toString());
+                          logger.debug("PeerTable contains an URI of [{}]", uri.toString());
                         }
                         if (uri.getFQDN().equals(host)) {
                           peer = (IPeer) peerTable.get(uri);
