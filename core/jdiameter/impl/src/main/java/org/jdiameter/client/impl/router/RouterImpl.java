@@ -187,7 +187,7 @@ public class RouterImpl implements IRouter {
       AnswerEntry entry = new AnswerEntry(hopByHopId, hostAvp != null ? hostAvp.getOctetString() : null,
           realmAvp != null ? realmAvp.getOctetString() : null);
 
-      logger.debug("Adding Hop-by-Hop id [{}] into request entry table for routing responses back to the requesting peer", hopByHopId);
+      logger.debug("Adding Hop-by-Hop id [{}] into request entry table for routing answers back to the requesting peer", hopByHopId);
       requestEntryTable.put(hopByHopId, entry);
       requestSortedEntryTable.add(hopByHopId);
 
@@ -218,7 +218,7 @@ public class RouterImpl implements IRouter {
   public String[] getRequestRouteInfo(long hopByHopIdentifier) {
     requestEntryTableLock.readLock().lock();
     AnswerEntry ans = requestEntryTable.get(hopByHopIdentifier);
-    //requestLock.readLock().unlock();
+    requestEntryTableLock.readLock().unlock();
     if (ans != null) {
       if (logger.isDebugEnabled()) {
         logger.debug("getRequestRouteInfo found host [{}] and realm [{}] for Hop-by-Hop Id [{}]", new Object[]{ans.getHost(), ans.getRealm(), hopByHopIdentifier});
