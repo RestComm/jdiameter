@@ -393,9 +393,21 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                         if (logger.isDebugEnabled()) {
                           logger.debug("PeerTable contains an URI of [{}]", uri.toString());
                         }
+                        // PCB added additional check that peer is not down
                         if (uri.getFQDN().equals(host)) {
                           peer = (IPeer) peerTable.get(uri);
-                          break;
+                          if (peer.hasValidConnection()) {
+                            if (logger.isDebugEnabled()) {
+                              logger.debug("URI [{}] == [{}] and peer connection is open", uri.getFQDN(), host);
+                            }
+                            break;
+                          }
+                          else {
+                            if (logger.isDebugEnabled()) {
+                              logger.debug("URI [{}] == [{}] but peer connection is not open", uri.getFQDN(), host);
+                            }
+                            peer = null;
+                          }
                         }
                       }
                     }

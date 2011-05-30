@@ -250,14 +250,35 @@ public class PeerTableImpl implements IPeerTable {
   //NOTE: METHOD BODY MUST MATCH JDOC.....!!!
   //TODO: add  DNS lookup ?
   public Peer getPeer(String name) {
-    logger.debug("Looking for Peer by name [{}] in Peer Table: [{}]", name, peerTable);
+    logger.debug("In getPeerByName for peer name [{}]. going to loop through peerTable and find a matching entry", name);
+
     for (Peer p : peerTable.values()) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Checking to see if peer name [{}] matches peertable value of [{}] or [{}]", new Object[]{name, p.getUri().toString(), p.getUri().getFQDN()});
+      }
+
       if (p.getUri().toString().equals(name) || p.getUri().getFQDN().equals(name)) {
-        return (IPeer) p;
+        if (logger.isDebugEnabled()) {
+          logger.debug("Found matching peer value of [{}]. Connection valid? : [{}]", p.getUri().toString(), ((IPeer) p).hasValidConnection());
+        }
+        IPeer ret = (IPeer) p;
+        //PCB added validity check to ensure only open peer is returned
+        if (ret.hasValidConnection()) {
+          if (logger.isDebugEnabled()) {
+            logger.debug("Found matching peer [{}] and its connection is open. will return it", ret.getUri().toString());
+          }
+          return ret;
+        } else {
+          if (logger.isDebugEnabled()) {
+            logger.debug("Found matching peer [{}] but its connection is not open. Will ignore it and seek further", ret.getUri().toString());
+          }
+        }
       }
     }
+    if (logger.isDebugEnabled()) {
+      logger.debug("No peer found in getPeerByName for peer [{}] will return null", name);
+    }
 
-    logger.debug("No peer found in getPeerByName for peer [{}] will return null", name);
     return null;
   }
 
