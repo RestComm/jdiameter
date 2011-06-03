@@ -362,7 +362,13 @@ public class PeerFSMImpl implements IStateMachine {
                   break;
                 case STOP_EVENT:
                   try {
-                    context.sendDprMessage(DisconnectCause.DO_NOT_WANT_TO_TALK_TO_YOU);
+                    if(event.getData() == null) {
+                      context.sendDprMessage(DisconnectCause.REBOOTING);
+                    }
+                    else {
+                      Integer disconnectCause = (Integer) event.getData();
+                      context.sendDprMessage(disconnectCause);
+                    }
                     setTimer(DPA_TIMEOUT);
                     switchToNextState(FsmState.STOPPING);
                   }
@@ -436,7 +442,13 @@ public class PeerFSMImpl implements IStateMachine {
                   break;
                 case STOP_EVENT:
                   try {
-                    context.sendDprMessage(DisconnectCause.DO_NOT_WANT_TO_TALK_TO_YOU);
+                    if(event.getData() == null) {
+                      context.sendDprMessage(DisconnectCause.REBOOTING);
+                    }
+                    else {
+                      Integer disconnectCause = (Integer) event.getData();
+                      context.sendDprMessage(disconnectCause);
+                    }
                     setInActiveTimer();
                     switchToNextState(FsmState.STOPPING);
                   }

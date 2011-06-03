@@ -41,7 +41,7 @@ public interface StackImplMBean {
   /**
    * Run stop procedure
    */
-  void stop();
+  void stop(int disconnectCause);
 
   /**
    * Run startd procedure

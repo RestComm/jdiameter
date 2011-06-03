@@ -46,6 +46,7 @@ import org.jdiameter.api.ApplicationAlreadyUseException;
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.Configuration;
+import org.jdiameter.api.DisconnectCause;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.LocalAction;
@@ -160,13 +161,13 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     }
   }
 
-  private void doStopStack() throws Exception {
+  private void doStopStack(int disconnectCause) throws Exception {
     try {
       if(logger.isInfoEnabled()) {
         logger.info("Stopping Diameter Mux Stack...");
       }
 
-      stack.stop(10, TimeUnit.SECONDS);
+      stack.stop(10, TimeUnit.SECONDS, disconnectCause);
 
       if(logger.isInfoEnabled()) {
         logger.info("Diameter Mux Stack Stopped Successfully.");
@@ -280,7 +281,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   @Override
   protected void stopService() throws Exception {
     super.stopService();
-    doStopStack();
+    doStopStack(DisconnectCause.REBOOTING);
   }
 
   public String sendMessage(Message message) {
@@ -797,9 +798,9 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     }
   }
 
-  public void stopStack() throws MBeanException {
+  public void stopStack(int disconnectCause) throws MBeanException {
     try {
-      this.stack.stop(getMutableConfiguration().getLongValue(StopTimeOut.ordinal(), 10000L), TimeUnit.MILLISECONDS);
+      this.stack.stop(getMutableConfiguration().getLongValue(StopTimeOut.ordinal(), 10000L), TimeUnit.MILLISECONDS, disconnectCause);
     }
     catch (Exception e) {
       throw new MBeanException(e);

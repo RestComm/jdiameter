@@ -71,6 +71,7 @@ import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Configuration;
+import org.jdiameter.api.DisconnectCause;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.Message;
@@ -425,12 +426,14 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
   }
 
-  public void disconnect() throws InternalException, IllegalDiameterStateException {
-    super.disconnect();
+  public void disconnect(int disconnectCause) throws InternalException, IllegalDiameterStateException {
+    super.disconnect(disconnectCause);
     if (getState(PeerState.class) != PeerState.DOWN) {
       stopping = true;
       try {
-        fsm.handleEvent(new FsmEvent(STOP_EVENT));
+        FsmEvent event = new FsmEvent(STOP_EVENT);
+        event.setData(disconnectCause);
+        fsm.handleEvent(event);
       }
       catch (OverloadException e) {
         stopping = false;
@@ -773,7 +776,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
 
     public void sendDprMessage(int disconnectCause) throws TransportException, OverloadException {
-      logger.debug("Send DPR message");
+      logger.debug("Send DPR message with Disconnect-Cause [{}]", disconnectCause);
       IMessage message = parser.createEmptyMessage(DISCONNECT_PEER_REQUEST, 0);
       message.setRequest(true);
       message.setHopByHopIdentifier(getHopByHopIdentifier());

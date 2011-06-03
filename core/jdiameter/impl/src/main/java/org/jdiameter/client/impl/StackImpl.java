@@ -38,6 +38,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.BaseSession;
 import org.jdiameter.api.Configuration;
+import org.jdiameter.api.DisconnectCause;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.MetaData;
@@ -242,7 +243,7 @@ public class StackImpl implements IContainer, StackImplMBean {
   }
 
   @SuppressWarnings("unchecked")
-  public void stop(long timeOut, TimeUnit timeUnit) throws IllegalDiameterStateException, InternalException {
+  public void stop(long timeOut, TimeUnit timeUnit, int disconnectCause) throws IllegalDiameterStateException, InternalException {
     lock.lock();
     try {
       if (state == StackState.STARTED || state == StackState.CONFIGURED) {
@@ -265,7 +266,7 @@ public class StackImpl implements IContainer, StackImplMBean {
         }
         if (peerManager != null) {
           try {
-            peerManager.stopping();
+            peerManager.stopping(disconnectCause);
           }
           catch (Exception e) {
             log.warn("Stopping error", e);
@@ -311,8 +312,8 @@ public class StackImpl implements IContainer, StackImplMBean {
   public void destroy() {
     // Be friendly
     if(state == StackState.STARTED) {
-      log.warn("Calling destroy() with Stack in STARTED state. Calling stop() before, please do it yourself.");
-      stop();
+      log.warn("Calling destroy() with Stack in STARTED state. Calling stop(REBOOTING) before, please do it yourself with the proper cause.");
+      stop(DisconnectCause.REBOOTING);
     }
 
     lock.lock();
@@ -464,9 +465,9 @@ public class StackImpl implements IContainer, StackImplMBean {
     }
   }
 
-  public void stop() {
+  public void stop(int disconnectCause) {
     try {
-      stop(10, TimeUnit.SECONDS);
+      stop(10, TimeUnit.SECONDS, disconnectCause);
     }
     catch (Exception e) {
       log.debug("Exception", e);

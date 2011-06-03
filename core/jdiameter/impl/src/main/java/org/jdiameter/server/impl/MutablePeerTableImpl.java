@@ -51,6 +51,7 @@ import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.ConfigurationListener;
+import org.jdiameter.api.DisconnectCause;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.Message;
@@ -494,8 +495,8 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     }
   }
 
-  public void stopping() {
-    super.stopping();
+  public void stopping(int disconnectCause) {
+    super.stopping(disconnectCause);
     if (networkGuard != null) {
       networkGuard.destroy();
       networkGuard = null;
@@ -582,7 +583,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       for (URI u : peerTable.keySet()) {
         if (u.getFQDN().equals(host)) {
           peerUri = u;
-          peerTable.get(u).disconnect();
+          peerTable.get(u).disconnect(DisconnectCause.BUSY);
         }
       }
       if (peerUri != null) {

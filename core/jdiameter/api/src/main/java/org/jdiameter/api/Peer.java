@@ -31,10 +31,10 @@ public interface Peer {
      * Close the connection to the peer.
      * @throws IllegalDiameterStateException
      */
-    void disconnect() throws InternalException, IllegalDiameterStateException;
+    void disconnect(int disconnectCause) throws InternalException, IllegalDiameterStateException;
 
     /**
-     * All implementations must support PeerState intrface as argument
+     * All implementations must support PeerState interface as argument
      * @return state of peer
      */
     <E> E getState(Class<E> enumc);
@@ -55,17 +55,17 @@ public interface Peer {
     String getRealmName();
 
     /**
-     * @return vendor id of peer stack implimentation
+     * @return vendor id of peer stack implementation
      */
     long getVendorId(); 
 
     /**
-     * @return product name of peer stack implimentation
+     * @return product name of peer stack implementation
      */
     String getProductName();
 
     /**
-     * @return firmware version  of peer stack implimentation
+     * @return firmware version  of peer stack implementation
      */
     long getFirmware(); 
 

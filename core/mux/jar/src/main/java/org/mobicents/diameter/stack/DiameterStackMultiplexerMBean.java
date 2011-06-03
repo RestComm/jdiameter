@@ -259,7 +259,7 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * 
    * @throws MBeanException
    */
-  public void stopStack() throws MBeanException;
+  public void stopStack(int disconnectCause) throws MBeanException;
 
   /**
    * Operation to start the stack.

@@ -385,12 +385,12 @@ public class PeerTableImpl implements IPeerTable {
     router.stop();
   }
 
-  public void stopping() {
+  public void stopping(int disconnectCause) {
     logger.debug("In stopping. Going to disconnect all peers in peer table");
     isStarted = false;
     for (Peer peer : peerTable.values()) {
       try {
-        peer.disconnect();
+        peer.disconnect(disconnectCause);
       }
       catch (Exception e) {
         logger.warn("Failure disconnecting peer [" + peer.getUri().toString() + "]", e);

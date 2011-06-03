@@ -116,6 +116,6 @@ public class AbstractPeer implements Comparable<Peer> {
 	 * @throws InternalException 
 	 * 
 	 */
-	protected void disconnect() throws InternalException, IllegalDiameterStateException {
+	protected void disconnect(int disconnectCause) throws InternalException, IllegalDiameterStateException {
 	}
 }

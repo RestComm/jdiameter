@@ -90,8 +90,8 @@ public class DiameterStackProxy implements Stack, IContainer {
     this.realStack.start( mode, timeout, unit );
   }
 
-  public void stop( long timeout, TimeUnit unit ) throws IllegalDiameterStateException, InternalException {
-    this.realStack.stop( timeout, unit );    
+  public void stop( long timeout, TimeUnit unit, int disconnectCause ) throws IllegalDiameterStateException, InternalException {
+    this.realStack.stop( timeout, unit, disconnectCause );    
   }
 
   public boolean isWrapperFor( Class<?> iface ) throws InternalException {

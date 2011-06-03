@@ -196,7 +196,7 @@ public class MetaDataImpl implements IMetaData {
       throw new IllegalDiameterStateException("Illegal operation");
     }
 
-    public void disconnect() throws IllegalDiameterStateException {
+    public void disconnect(int disconnectCause) throws IllegalDiameterStateException {
       throw new IllegalDiameterStateException("Illegal operation");
     }
 

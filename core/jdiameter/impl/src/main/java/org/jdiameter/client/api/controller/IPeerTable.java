@@ -32,7 +32,7 @@ public interface IPeerTable extends PeerTable {
     /**
      * Run stopping procedure (unsynchronized)
      */
-    void stopping();
+    void stopping(int disconnectCause);
 
     /**
      * Release resources

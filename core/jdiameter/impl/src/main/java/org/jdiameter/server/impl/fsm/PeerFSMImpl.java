@@ -97,8 +97,14 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 }
                 break;
               case STOP_EVENT:
-                try { // TODO: send user code;
-                  context.sendDprMessage(DisconnectCause.DO_NOT_WANT_TO_TALK_TO_YOU);
+                try { 
+                  if(event.getData() == null) {
+                    context.sendDprMessage(DisconnectCause.BUSY);
+                  }
+                  else {
+                    Integer disconnectCause = (Integer) event.getData();
+                    context.sendDprMessage(disconnectCause);
+                  }
                   setTimer(DPA_TIMEOUT);
                   switchToNextState(STOPPING);
                 }
@@ -179,7 +185,13 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 break;
               case STOP_EVENT:
                 try {
-                  context.sendDprMessage(DisconnectCause.DO_NOT_WANT_TO_TALK_TO_YOU);
+                  if(event.getData() == null) {
+                    context.sendDprMessage(DisconnectCause.REBOOTING);
+                  }
+                  else {
+                    Integer disconnectCause = (Integer) event.getData();
+                    context.sendDprMessage(disconnectCause);
+                  }
                   setInActiveTimer();
                   switchToNextState(STOPPING);
                 }

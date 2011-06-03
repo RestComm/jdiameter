@@ -69,10 +69,11 @@ public interface Stack extends Wrapper {
      * waiting if necessary up to the specified wait time switch peers to DOWN state.
      * @param timeout how long to wait before giving up, in units of unit
      * @param unit a TimeUnit determining how to interpret the timeout parameter
+     * @param disconnectCause the disconnect-cause to be used in the DPR message(s)
      * @throws IllegalDiameterStateException if a stack is not started
      * @throws InternalException if a stack can not processing start procedure
      */
-    void stop(long timeout, TimeUnit unit) throws IllegalDiameterStateException, InternalException;
+    void stop(long timeout, TimeUnit unit, int disconnectCause) throws IllegalDiameterStateException, InternalException;
 
     /**
      * Destroy any resource append to this instance of stack
