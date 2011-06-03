@@ -91,12 +91,12 @@ public abstract class AbstractServer extends TBase implements ServerCxDxSessionL
     stack.start(mode, timeOut, timeUnit);
   }
 
-  public void stop(long timeOut, TimeUnit timeUnit) throws IllegalDiameterStateException, InternalException {
-    stack.stop(timeOut, timeUnit);
+  public void stop(long timeOut, TimeUnit timeUnit, int disconnectCause) throws IllegalDiameterStateException, InternalException {
+    stack.stop(timeOut, timeUnit, disconnectCause);
   }
 
-  public void stop() {
-    stack.stop();
+  public void stop(int disconnectCause) {
+    stack.stop(disconnectCause);
   }
 
   public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException,

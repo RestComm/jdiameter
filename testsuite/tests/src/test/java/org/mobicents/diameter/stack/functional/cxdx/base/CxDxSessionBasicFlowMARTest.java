@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.jdiameter.api.DisconnectCause;
 import org.jdiameter.api.Mode;
 import org.jdiameter.api.Peer;
 import org.jdiameter.api.PeerState;
@@ -109,7 +110,7 @@ public class CxDxSessionBasicFlowMARTest {
   public void tearDown() {
     if (this.serverNode1 != null) {
       try {
-        this.serverNode1.stop();
+        this.serverNode1.stop(DisconnectCause.REBOOTING);
       }
       catch (Exception e) {
 
@@ -119,7 +120,7 @@ public class CxDxSessionBasicFlowMARTest {
 
     if (this.clientNode != null) {
       try {
-        this.clientNode.stop();
+        this.clientNode.stop(DisconnectCause.REBOOTING);
       }
       catch (Exception e) {
 

@@ -97,12 +97,12 @@ public abstract class AbstractClient extends TBase implements ClientCxDxSessionL
     stack.start(mode, timeOut, timeUnit);
   }
 
-  public void stop(long timeOut, TimeUnit timeUnit) throws IllegalDiameterStateException, InternalException {
-    stack.stop(timeOut, timeUnit);
+  public void stop(long timeOut, TimeUnit timeUnit, int disconnectCause) throws IllegalDiameterStateException, InternalException {
+    stack.stop(timeOut, timeUnit, disconnectCause);
   }
 
-  public void stop() {
-    stack.stop();
+  public void stop(int disconnectCause) {
+    stack.stop(disconnectCause);
   }
 
   // ------- def methods, to fail :)

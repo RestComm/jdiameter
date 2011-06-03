@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.jdiameter.api.DisconnectCause;
 import org.jdiameter.api.Mode;
 import org.jdiameter.api.Peer;
 import org.jdiameter.api.PeerTable;
@@ -113,7 +114,7 @@ public class CCASessionFTFlowTest {
   public void tearDown() {
     if (this.serverNode2 != null) {
       try {
-        this.serverNode2.stop();
+        this.serverNode2.stop(DisconnectCause.REBOOTING);
       }
       catch (Exception e) {
 
@@ -123,7 +124,7 @@ public class CCASessionFTFlowTest {
 
     if (this.serverNode1 != null) {
       try {
-        this.serverNode1.stop();
+        this.serverNode1.stop(DisconnectCause.REBOOTING);
       }
       catch (Exception e) {
 
@@ -133,7 +134,7 @@ public class CCASessionFTFlowTest {
 
     if (this.clientNode != null) {
       try {
-        this.clientNode.stop();
+        this.clientNode.stop(DisconnectCause.REBOOTING);
       }
       catch (Exception e) {
 
@@ -165,7 +166,7 @@ public class CCASessionFTFlowTest {
       waitForMessage();
 
       // kill
-      serverToKill.stop(15, TimeUnit.SECONDS);
+      serverToKill.stop(15, TimeUnit.SECONDS, DisconnectCause.REBOOTING);
 
       // now we have to update second server, so it gets session;
       backupServer.fetchSession(clientNode.getSessionId());

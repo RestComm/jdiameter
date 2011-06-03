@@ -111,11 +111,11 @@ public class TestStackLifecycle {
     StackImpl stack = new StackImpl();
 
     try {
-      stack.stop();
+      stack.stop(DisconnectCause.REBOOTING);
     }
     catch (Exception e) {
       e.printStackTrace();
-      fail("Should have been successful calling stop() with stack in IDLE state. Failed with: " + e.getMessage());
+      fail("Should have been successful calling stop(DisconnectCause.REBOOTING) with stack in IDLE state. Failed with: " + e.getMessage());
     }
     finally {
       shutdownStack(stack);
@@ -153,11 +153,11 @@ public class TestStackLifecycle {
       config = new org.jdiameter.server.impl.helpers.XMLConfiguration(is);
       stack.init(config);
 
-      stack.stop();
+      stack.stop(DisconnectCause.REBOOTING);
     }
     catch (Exception e) {
       e.printStackTrace();
-      fail("Should have been successful calling stop() with stack in CONFIGURED state. Failed with: " + e.getMessage());
+      fail("Should have been successful calling stop(DisconnectCause.REBOOTING) with stack in CONFIGURED state. Failed with: " + e.getMessage());
     }
     finally {
       shutdownStack(stack);
@@ -276,7 +276,7 @@ public class TestStackLifecycle {
 
       stack.start();
 
-      stack.stop();
+      stack.stop(DisconnectCause.REBOOTING);
 
       // We should fail here, it's already configured, just stopped
       stack.init(config);
@@ -312,14 +312,14 @@ public class TestStackLifecycle {
 
       stack.start();
 
-      stack.stop();
+      stack.stop(DisconnectCause.REBOOTING);
 
       // We should fail here, it's already configured, just stopped
-      stack.stop();
+      stack.stop(DisconnectCause.REBOOTING);
     }
     catch (Exception e) {
       e.printStackTrace();
-      fail("Should have been successful calling stop() with stack in STOPPED state. Failed with: " + e.getMessage());
+      fail("Should have been successful calling stop(DisconnectCause.REBOOTING) with stack in STOPPED state. Failed with: " + e.getMessage());
     }
     finally {
       shutdownStack(stack);
@@ -359,9 +359,9 @@ public class TestStackLifecycle {
       boolean canConnect = tryToConnect();
       Assert.assertTrue("Should be able to connect to server after 1st 'start'.", canConnect);
 
-      stack.stop();
+      stack.stop(DisconnectCause.REBOOTING);
       //System.err.println(" ///////////////////////////////////////////////////////////////////// ");
-      //System.err.println(" // 2. stack.stop() called.");
+      //System.err.println(" // 2. stack.stop(DisconnectCause.REBOOTING) called.");
       //System.err.println(" ///////////////////////////////////////////////////////////////////// ");
 
       /** cannot connect to the stack here **/
@@ -377,7 +377,7 @@ public class TestStackLifecycle {
       canConnect = tryToConnect();
       Assert.assertTrue("Should be able to connect to server after 2nd 'start'.", canConnect);
 
-      stack.stop();
+      stack.stop(DisconnectCause.REBOOTING);
 
       stack.destroy();
     }
@@ -458,7 +458,7 @@ public class TestStackLifecycle {
       else if (curState == StackState.STARTED) {
         // It's started, stop and destroy it
         try {
-          stack.stop();
+          stack.stop(DisconnectCause.REBOOTING);
           Thread.sleep(500);
         }
         catch (InterruptedException e) {

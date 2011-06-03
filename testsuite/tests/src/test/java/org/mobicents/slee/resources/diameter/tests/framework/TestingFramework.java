@@ -40,6 +40,7 @@ import org.jdiameter.api.Answer;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
+import org.jdiameter.api.DisconnectCause;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
@@ -230,7 +231,7 @@ public class TestingFramework
     try
     {
       log("Stopping Stack...");
-      stack.stop(10, TimeUnit.SECONDS);
+      stack.stop(10, TimeUnit.SECONDS, DisconnectCause.REBOOTING);
       log("Stack Stopped Successfully.");
     }
     catch (Exception e)

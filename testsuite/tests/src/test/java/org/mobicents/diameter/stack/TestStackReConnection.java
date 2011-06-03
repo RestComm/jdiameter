@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Configuration;
+import org.jdiameter.api.DisconnectCause;
 import org.jdiameter.api.Mode;
 import org.jdiameter.api.Network;
 import org.jdiameter.api.NetworkReqListener;
@@ -98,7 +99,7 @@ public class TestStackReConnection {
 
       assertTrue("Peer not connected. State[" + ((IPeer) peers.get(0)).getState(PeerState.class) + "]", ((IPeer) peers.get(0)).isConnected());
 
-      client.stop();
+      client.stop(DisconnectCause.REBOOTING);
       _wait();
 
       peers = server.unwrap(PeerTable.class).getPeerTable();
@@ -126,7 +127,7 @@ public class TestStackReConnection {
     }
     finally {
       try {
-        client.stop();
+        client.stop(DisconnectCause.REBOOTING);
         client.destroy();
       }
       catch (Exception e) {
@@ -134,7 +135,7 @@ public class TestStackReConnection {
       }
 
       try {
-        server.stop();
+        server.stop(DisconnectCause.REBOOTING);
         server.destroy();
       }
       catch (Exception e) {
@@ -184,7 +185,7 @@ public class TestStackReConnection {
 
       assertTrue("Peer not connected. State[" + ((IPeer) peers.get(0)).getState(PeerState.class) + "]", ((IPeer) peers.get(0)).isConnected());
 
-      client.stop();
+      client.stop(DisconnectCause.REBOOTING);
       _wait();
 
       peers = server.unwrap(PeerTable.class).getPeerTable();
@@ -200,7 +201,7 @@ public class TestStackReConnection {
     }
     finally {
       try {
-        client.stop();
+        client.stop(DisconnectCause.REBOOTING);
         client.destroy();
       }
       catch (Exception e) {
@@ -208,7 +209,7 @@ public class TestStackReConnection {
       }
 
       try {
-        server.stop();
+        server.stop(DisconnectCause.REBOOTING);
         server.destroy();
       }
       catch (Exception e) {
@@ -275,21 +276,21 @@ public class TestStackReConnection {
     }
     finally {
       try {
-        client.stop();
+        client.stop(DisconnectCause.REBOOTING);
         client.destroy();
       }
       catch (Exception e) {
         logger.warn("Failed to stop/destroy CLIENT (1) stack.", e);
       }
       try {
-        client2.stop();
+        client2.stop(DisconnectCause.REBOOTING);
         client2.destroy();
       }
       catch (Exception e) {
         logger.warn("Failed to stop/destroy CLIENT (2) stack.", e);
       }
       try {
-        server.stop();
+        server.stop(DisconnectCause.REBOOTING);
         server.destroy();
       }
       catch (Exception e) {
@@ -356,7 +357,7 @@ public class TestStackReConnection {
       assertTrue("Peer1 not connected. State[" + ((IPeer) peers.get(0)).getState(PeerState.class) + "]", ((IPeer) peers.get(0)).isConnected());
       assertTrue("Peer2 not connected. State[" + ((IPeer) peers.get(1)).getState(PeerState.class) + "]", ((IPeer) peers.get(1)).isConnected());
 
-      client.stop();
+      client.stop(DisconnectCause.REBOOTING);
       _wait();
 
       peers = server.unwrap(PeerTable.class).getPeerTable();
@@ -386,21 +387,21 @@ public class TestStackReConnection {
     }
     finally {
       try {
-        client.stop();
+        client.stop(DisconnectCause.REBOOTING);
         client.destroy();
       }
       catch (Exception e) {
         logger.warn("Failed to stop/destroy CLIENT (1) stack.", e);
       }
       try {
-        client2.stop();
+        client2.stop(DisconnectCause.REBOOTING);
         client2.destroy();
       }
       catch (Exception e) {
         logger.warn("Failed to stop/destroy CLIENT (2) stack.", e);
       }
       try {
-        server.stop();
+        server.stop(DisconnectCause.REBOOTING);
         server.destroy();
       }
       catch (Exception e) {
