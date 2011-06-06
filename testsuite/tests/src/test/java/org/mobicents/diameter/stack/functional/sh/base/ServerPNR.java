@@ -77,7 +77,7 @@ public class ServerPNR extends org.mobicents.diameter.stack.functional.sh.Abstra
       fail("Did not receive SUBSCRIBE or answer already sent.", null);
       throw new Exception("Did not receive SUBSCRIBE or answer already sent. Request: " + this.subscribeNotificationsRequest);
     }
-    SubscribeNotificationsAnswer answer = new SubscribeNotificationsAnswerImpl((Request) this.subscribeNotificationsRequest.getMessage(), 2000);
+    SubscribeNotificationsAnswer answer = new SubscribeNotificationsAnswerImpl((Request) this.subscribeNotificationsRequest.getMessage(), 2001);
 
     AvpSet reqSet = subscribeNotificationsRequest.getMessage().getAvps();
 
@@ -96,7 +96,7 @@ public class ServerPNR extends org.mobicents.diameter.stack.functional.sh.Abstra
       fail("Did not receive UPDATE or answer already sent.", null);
       throw new Exception("Did not receive UPDATE or answer already sent. Request: " + this.profileUpdateRequest);
     }
-    ProfileUpdateAnswer answer = new ProfileUpdateAnswerImpl((Request) this.profileUpdateRequest.getMessage(), 2000);
+    ProfileUpdateAnswer answer = new ProfileUpdateAnswerImpl((Request) this.profileUpdateRequest.getMessage(), 2001);
 
     AvpSet reqSet = profileUpdateRequest.getMessage().getAvps();
 
@@ -115,7 +115,7 @@ public class ServerPNR extends org.mobicents.diameter.stack.functional.sh.Abstra
       fail("Did not receive USER DATA or answer already sent.", null);
       throw new Exception("Did not receive USER DATA or answer already sent. Request: " + this.userDataRequest);
     }
-    UserDataAnswer answer = new UserDataAnswerImpl((Request) this.userDataRequest.getMessage(), 2000);
+    UserDataAnswer answer = new UserDataAnswerImpl((Request) this.userDataRequest.getMessage(), 2001);
 
     AvpSet reqSet = userDataRequest.getMessage().getAvps();
 

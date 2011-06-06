@@ -62,7 +62,7 @@ public class ServerSAR extends AbstractServer {
       throw new Exception("Did not receive SAR or answer already sent. Request: " + this.request);
     }
 
-    JServerAssignmentAnswer answer = new JServerAssignmentAnswerImpl((Request) this.request.getMessage(), 2000);
+    JServerAssignmentAnswer answer = new JServerAssignmentAnswerImpl((Request) this.request.getMessage(), 2001);
 
     AvpSet reqSet = request.getMessage().getAvps();
     AvpSet set = answer.getMessage().getAvps();

@@ -85,7 +85,7 @@ public class ClientPPR extends AbstractClient {
       fail("Did not receive PPR or answer already sent.", null);
       throw new Exception("Did not receive PPR or answer already sent. Request: " + this.request);
     }
-    JPushProfileAnswer answer = new JPushProfileAnswerImpl((Request) this.request.getMessage(), 2000);
+    JPushProfileAnswer answer = new JPushProfileAnswerImpl((Request) this.request.getMessage(), 2001);
 
     AvpSet reqSet = request.getMessage().getAvps();
 

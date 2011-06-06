@@ -69,7 +69,7 @@ public class Server extends AbstractServer {
       fail("Did not receive INITIAL or answer already sent.", null);
       throw new Exception("Request: " + this.request);
     }
-    GxCreditControlAnswer answer = new GxCreditControlAnswerImpl((Request) request.getMessage(), 2000);
+    GxCreditControlAnswer answer = new GxCreditControlAnswerImpl((Request) request.getMessage(), 2001);
 
     AvpSet reqSet = request.getMessage().getAvps();
 
@@ -91,7 +91,7 @@ public class Server extends AbstractServer {
       throw new Exception("Request: " + this.request);
     }
 
-    GxCreditControlAnswerImpl answer = new GxCreditControlAnswerImpl((Request) request.getMessage(), 2000);
+    GxCreditControlAnswerImpl answer = new GxCreditControlAnswerImpl((Request) request.getMessage(), 2001);
 
     AvpSet reqSet = request.getMessage().getAvps();
 
@@ -111,7 +111,7 @@ public class Server extends AbstractServer {
       throw new Exception("Request: " + this.request);
     }
 
-    GxCreditControlAnswerImpl answer = new GxCreditControlAnswerImpl((Request) request.getMessage(), 2000);
+    GxCreditControlAnswerImpl answer = new GxCreditControlAnswerImpl((Request) request.getMessage(), 2001);
 
     AvpSet reqSet = request.getMessage().getAvps();
 
@@ -131,7 +131,7 @@ public class Server extends AbstractServer {
       fail("Did not receive EVENT or answer already sent.", null);
       throw new Exception("Request: " + this.request);
     }
-    GxCreditControlAnswerImpl answer = new GxCreditControlAnswerImpl((Request) request.getMessage(), 2000);
+    GxCreditControlAnswerImpl answer = new GxCreditControlAnswerImpl((Request) request.getMessage(), 2001);
 
     AvpSet reqSet = request.getMessage().getAvps();
 

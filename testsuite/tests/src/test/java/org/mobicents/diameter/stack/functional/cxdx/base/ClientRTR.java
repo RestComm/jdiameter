@@ -84,7 +84,7 @@ public class ClientRTR extends AbstractClient {
       fail("Did not receive RTR or answer already sent.", null);
       throw new Exception("Did not receive RTR or answer already sent. Request: " + this.request);
     }
-    JRegistrationTerminationAnswer answer = new JRegistrationTerminationAnswerImpl((Request) this.request.getMessage(), 2000);
+    JRegistrationTerminationAnswer answer = new JRegistrationTerminationAnswerImpl((Request) this.request.getMessage(), 2001);
 
     AvpSet reqSet = request.getMessage().getAvps();
 

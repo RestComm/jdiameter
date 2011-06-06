@@ -66,7 +66,7 @@ public class Server extends AbstractServer {
       fail("Did not receive INITIAL or answer already sent.", null);
       throw new Exception("Request: " + this.request);
     }
-    AccountAnswer answer = new AccountAnswerImpl((Request) request.getMessage(), request.getAccountingRecordType(), (int) request.getAccountingRecordNumber(), 2000);
+    AccountAnswer answer = new AccountAnswerImpl((Request) request.getMessage(), request.getAccountingRecordType(), (int) request.getAccountingRecordNumber(), 2001);
 
     AvpSet set = answer.getMessage().getAvps();
     set.removeAvp(Avp.DESTINATION_HOST);
@@ -85,7 +85,7 @@ public class Server extends AbstractServer {
       throw new Exception("Request: " + this.request);
     }
 
-    AccountAnswer answer = new AccountAnswerImpl((Request) request.getMessage(), request.getAccountingRecordType(), (int) request.getAccountingRecordNumber(), 2000);
+    AccountAnswer answer = new AccountAnswerImpl((Request) request.getMessage(), request.getAccountingRecordType(), (int) request.getAccountingRecordNumber(), 2001);
 
     AvpSet set = answer.getMessage().getAvps();
     set.removeAvp(Avp.DESTINATION_HOST);
@@ -103,7 +103,7 @@ public class Server extends AbstractServer {
       throw new Exception("Request: " + this.request);
     }
 
-    AccountAnswer answer = new AccountAnswerImpl((Request) request.getMessage(), request.getAccountingRecordType(), (int) request.getAccountingRecordNumber(), 2000);
+    AccountAnswer answer = new AccountAnswerImpl((Request) request.getMessage(), request.getAccountingRecordType(), (int) request.getAccountingRecordNumber(), 2001);
 
     AvpSet set = answer.getMessage().getAvps();
     set.removeAvp(Avp.DESTINATION_HOST);
@@ -120,7 +120,7 @@ public class Server extends AbstractServer {
       fail("Did not receive EVENT or answer already sent.", null);
       throw new Exception("Request: " + this.request);
     }
-    AccountAnswer answer = new AccountAnswerImpl((Request) request.getMessage(), request.getAccountingRecordType(), (int) request.getAccountingRecordNumber(), 2000);
+    AccountAnswer answer = new AccountAnswerImpl((Request) request.getMessage(), request.getAccountingRecordType(), (int) request.getAccountingRecordNumber(), 2001);
 
     AvpSet set = answer.getMessage().getAvps();
     set.removeAvp(Avp.DESTINATION_HOST);

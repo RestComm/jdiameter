@@ -70,7 +70,7 @@ public class ServerPUR extends org.mobicents.diameter.stack.functional.sh.Abstra
       fail("Did not receive UPDATE or answer already sent.", null);
       throw new Exception("Did not receive UPDATE or answer already sent. Request: " + this.profileUpdateRequest);
     }
-    ProfileUpdateAnswer answer = new ProfileUpdateAnswerImpl((Request) this.profileUpdateRequest.getMessage(), 2000);
+    ProfileUpdateAnswer answer = new ProfileUpdateAnswerImpl((Request) this.profileUpdateRequest.getMessage(), 2001);
 
     AvpSet reqSet = profileUpdateRequest.getMessage().getAvps();
 

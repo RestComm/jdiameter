@@ -70,7 +70,7 @@ public class ServerUDR extends org.mobicents.diameter.stack.functional.sh.Abstra
       fail("Did not receive USER DATA or answer already sent.", null);
       throw new Exception("Did not receive USER DATA or answer already sent. Request: " + this.userDataRequest);
     }
-    UserDataAnswer answer = new UserDataAnswerImpl((Request) this.userDataRequest.getMessage(), 2000);
+    UserDataAnswer answer = new UserDataAnswerImpl((Request) this.userDataRequest.getMessage(), 2001);
 
     AvpSet reqSet = userDataRequest.getMessage().getAvps();
 

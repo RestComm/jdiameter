@@ -101,7 +101,7 @@ public class ClientPNR extends AbstractClient {
       fail("Did not receive NOTIFICATION or answer already sent.", null);
       throw new Exception("Did not receive NOTIFICATION or answer already sent. Request: " + this.request);
     }
-    PushNotificationAnswer answer = new PushNotificationAnswerImpl((Request) request.getMessage(), 2000);
+    PushNotificationAnswer answer = new PushNotificationAnswerImpl((Request) request.getMessage(), 2001);
 
     AvpSet reqSet = request.getMessage().getAvps();
 

@@ -69,7 +69,7 @@ public class Server extends AbstractServer {
       fail("Did not receive INITIAL or answer already sent.", null);
       throw new Exception("Request: " + this.request);
     }
-    RoCreditControlAnswer answer = new RoCreditControlAnswerImpl((Request) request.getMessage(), 2000);
+    RoCreditControlAnswer answer = new RoCreditControlAnswerImpl((Request) request.getMessage(), 2001);
 
     AvpSet reqSet = request.getMessage().getAvps();
 
@@ -91,7 +91,7 @@ public class Server extends AbstractServer {
       throw new Exception("Request: " + this.request);
     }
 
-    RoCreditControlAnswerImpl answer = new RoCreditControlAnswerImpl((Request) request.getMessage(), 2000);
+    RoCreditControlAnswerImpl answer = new RoCreditControlAnswerImpl((Request) request.getMessage(), 2001);
 
     AvpSet reqSet = request.getMessage().getAvps();
 
@@ -111,7 +111,7 @@ public class Server extends AbstractServer {
       throw new Exception("Request: " + this.request);
     }
 
-    RoCreditControlAnswerImpl answer = new RoCreditControlAnswerImpl((Request) request.getMessage(), 2000);
+    RoCreditControlAnswerImpl answer = new RoCreditControlAnswerImpl((Request) request.getMessage(), 2001);
 
     AvpSet reqSet = request.getMessage().getAvps();
 
@@ -131,7 +131,7 @@ public class Server extends AbstractServer {
       fail("Did not receive EVENT or answer already sent.", null);
       throw new Exception("Request: " + this.request);
     }
-    RoCreditControlAnswerImpl answer = new RoCreditControlAnswerImpl((Request) request.getMessage(), 2000);
+    RoCreditControlAnswerImpl answer = new RoCreditControlAnswerImpl((Request) request.getMessage(), 2001);
 
     AvpSet reqSet = request.getMessage().getAvps();
 

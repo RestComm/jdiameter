@@ -62,7 +62,7 @@ public class ServerMAR extends AbstractServer {
       throw new Exception("Did not receive MAR or answer already sent. Request: " + this.request);
     }
 
-    JMultimediaAuthAnswer answer = new JMultimediaAuthAnswerImpl((Request) this.request.getMessage(), 2000);
+    JMultimediaAuthAnswer answer = new JMultimediaAuthAnswerImpl((Request) this.request.getMessage(), 2001);
 
     AvpSet reqSet = request.getMessage().getAvps();
     AvpSet set = answer.getMessage().getAvps();

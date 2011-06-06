@@ -62,7 +62,7 @@ public class ServerUAR extends AbstractServer {
       throw new Exception("Did not receive UAR or answer already sent. Request: " + this.request);
     }
 
-    JUserAuthorizationAnswer answer = new JUserAuthorizationAnswerImpl((Request) this.request.getMessage(), 2000);
+    JUserAuthorizationAnswer answer = new JUserAuthorizationAnswerImpl((Request) this.request.getMessage(), 2001);
 
     AvpSet reqSet = request.getMessage().getAvps();
     AvpSet set = answer.getMessage().getAvps();

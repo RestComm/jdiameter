@@ -62,7 +62,7 @@ public class ServerLIR extends AbstractServer {
       throw new Exception("Did not receive LIR or answer already sent. Request: " + this.request);
     }
 
-    JLocationInfoAnswer answer = new JLocationInfoAnswerImpl((Request) this.request.getMessage(), 2000);
+    JLocationInfoAnswer answer = new JLocationInfoAnswerImpl((Request) this.request.getMessage(), 2001);
 
     AvpSet reqSet = request.getMessage().getAvps();
     AvpSet set = answer.getMessage().getAvps();

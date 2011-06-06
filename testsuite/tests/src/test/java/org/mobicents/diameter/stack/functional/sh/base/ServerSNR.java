@@ -69,7 +69,7 @@ public class ServerSNR extends org.mobicents.diameter.stack.functional.sh.Abstra
       fail("Did not receive SUBSCRIBE or answer already sent.", null);
       throw new Exception("Did not receive SUBSCRIBE or answer already sent. Request: " + this.subscribeNotificationsRequest);
     }
-    SubscribeNotificationsAnswer answer = new SubscribeNotificationsAnswerImpl((Request) this.subscribeNotificationsRequest.getMessage(), 2000);
+    SubscribeNotificationsAnswer answer = new SubscribeNotificationsAnswerImpl((Request) this.subscribeNotificationsRequest.getMessage(), 2001);
 
     AvpSet reqSet = subscribeNotificationsRequest.getMessage().getAvps();
 
