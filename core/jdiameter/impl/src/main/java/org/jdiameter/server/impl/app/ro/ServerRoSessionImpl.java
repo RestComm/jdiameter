@@ -196,6 +196,12 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
             throw new InternalException(e);
           }
           break;
+          
+        case RECEIVED_UPDATE:
+        case RECEIVED_TERMINATE:
+          // just inform of what happened
+          logger.debug("Received an UPDATE or TERMINATE for session in IDLE state. Discarding it.");
+          // and let it throw exception anyway ...
         default:
           throw new InternalException("Wrong state: " + ServerRoSessionState.IDLE + " one event: " + eventType + " " + localEvent.getRequest() + " " + localEvent.getAnswer());
         }
