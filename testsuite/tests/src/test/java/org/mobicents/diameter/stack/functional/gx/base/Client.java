@@ -21,9 +21,12 @@
  */
 package org.mobicents.diameter.stack.functional.gx.base;
 
+import org.jdiameter.api.Avp;
+import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.OverloadException;
+import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
@@ -32,6 +35,8 @@ import org.jdiameter.api.auth.events.ReAuthRequest;
 import org.jdiameter.api.gx.ClientGxSession;
 import org.jdiameter.api.gx.events.GxCreditControlAnswer;
 import org.jdiameter.api.gx.events.GxCreditControlRequest;
+import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
+import org.jdiameter.common.impl.app.gx.GxCreditControlAnswerImpl;
 import org.mobicents.diameter.stack.functional.Utils;
 import org.mobicents.diameter.stack.functional.gx.AbstractClient;
 
@@ -47,10 +52,14 @@ public class Client extends AbstractClient {
   protected boolean sentINTERIM;
   protected boolean sentTERMINATE;
   protected boolean sentEVENT;
+  protected boolean sentREAUTH;
   protected boolean receiveINITIAL;
   protected boolean receiveINTERIM;
   protected boolean receiveTERMINATE;
   protected boolean receiveEVENT;
+  protected boolean receiveREAUTH;
+
+  protected ReAuthRequest reAuthRequest;
 
   /**
 	 * 
@@ -150,7 +159,19 @@ public class Client extends AbstractClient {
    * org.jdiameter.api.auth.events.ReAuthRequest)
    */
   public void doReAuthRequest(ClientGxSession session, ReAuthRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    fail("Received \"ReAuthRequest\" event, request[" + request + "], on session[" + session + "]", null);
+    try {
+      Utils.printMessage(log, super.stack.getDictionary(), request.getMessage(), false);
+      if (sentREAUTH) {
+        fail("Received REAUTH more than once!", null);
+      }
+      receiveREAUTH = true;
+      reAuthRequest = request;
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    //fail("Received \"ReAuthRequest\" event, request[" + request + "], on session[" + session + "]", null);
   }
 
   /*
@@ -208,6 +229,25 @@ public class Client extends AbstractClient {
   @Override
   protected String getServiceContextId() {
     return "tralalalal ID";
+  }
+
+  public void sendReAuth() throws Exception {
+    if (!this.receiveREAUTH || reAuthRequest == null) {
+      fail("Did not receive REAUTH or answer already sent.", null);
+      throw new Exception("Request: " + this.reAuthRequest);
+    }
+
+    ReAuthAnswerImpl answer = new ReAuthAnswerImpl((Request) reAuthRequest.getMessage(), 2001);
+
+    AvpSet set = answer.getMessage().getAvps();
+    set.removeAvp(Avp.DESTINATION_HOST);
+    set.removeAvp(Avp.DESTINATION_REALM);
+
+    super.clientGxSession.sendReAuthAnswer(answer);
+    sentREAUTH = true;
+    reAuthRequest = null;
+    Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), true);
+    
   }
 
 }

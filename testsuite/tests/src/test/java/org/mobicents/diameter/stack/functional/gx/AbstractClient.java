@@ -67,7 +67,7 @@ public abstract class AbstractClient extends TBase implements ClientGxSessionLis
 
   public void init(InputStream configStream, String clientID) throws Exception {
     try {
-      super.init(configStream, clientID, ApplicationId.createByAuthAppId(0, 4));
+      super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777224));
       GxSessionFactoryImpl creditControlSessionFactory = new GxSessionFactoryImpl(this.sessionFactory);
       ((ISessionFactory) sessionFactory).registerAppFacory(ServerGxSession.class, creditControlSessionFactory);
       ((ISessionFactory) sessionFactory).registerAppFacory(ClientGxSession.class, creditControlSessionFactory);

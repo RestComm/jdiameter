@@ -174,6 +174,12 @@ public class GxSessionFTFlowTest {
       backupServer.sendInterim();
       waitForMessage();
 
+      backupServer.sendReAuth();
+      waitForMessage();
+
+      clientNode.sendReAuth();
+      waitForMessage();
+
       clientNode.sendTermination();
       waitForMessage();
 

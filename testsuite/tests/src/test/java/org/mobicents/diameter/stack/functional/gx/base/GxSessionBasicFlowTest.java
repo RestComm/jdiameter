@@ -144,6 +144,12 @@ public class GxSessionBasicFlowTest {
 
       serverNode1.sendInterim();
       waitForMessage();
+      
+      serverNode1.sendReAuth();
+      waitForMessage();
+
+      clientNode.sendReAuth();
+      waitForMessage();
 
       clientNode.sendTermination();
       waitForMessage();

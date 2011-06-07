@@ -37,15 +37,16 @@ import org.jdiameter.api.validation.Dictionary;
 public class Utils {
 
   public static void printMessage(Logger log, Dictionary avpDictionary, Message message, boolean sending) {
-    log.info((sending ? "Sending " : "Received ") + (message.isRequest() ? "Request: " : "Answer: ") + message.getCommandCode() + "\nE2E:" + message.getEndToEndIdentifier()
-        + "\nHBH:" + message.getHopByHopIdentifier() + "\nAppID:" + message.getApplicationId());
-    log.info("Request AVPS: \n");
+    log.info((sending ? "Sending " : "Received ") + (message.isRequest() ? "Request: " : "Answer: ") + message.getCommandCode() + " [E2E:" + message.getEndToEndIdentifier()
+        + " -- HBH:" + message.getHopByHopIdentifier() + " -- AppID:" + message.getApplicationId() + "]");
+    log.info("Request AVPs:");
     try {
       printAvps(log, avpDictionary, message.getAvps());
     }
     catch (AvpDataException e) {
       e.printStackTrace();
     }
+    log.info("\n");
   }
 
   public static void printAvps(Logger log, Dictionary avpDictionary, AvpSet avpSet) throws AvpDataException {

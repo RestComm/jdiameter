@@ -28,15 +28,19 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.jdiameter.api.ApplicationId;
+import org.jdiameter.api.Avp;
+import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.Mode;
+import org.jdiameter.api.auth.events.ReAuthRequest;
 import org.jdiameter.api.gx.ClientGxSession;
 import org.jdiameter.api.gx.ServerGxSession;
 import org.jdiameter.api.gx.ServerGxSessionListener;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.gx.IServerGxSessionContext;
 import org.jdiameter.common.api.app.gx.ServerGxSessionState;
+import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
 import org.jdiameter.common.impl.app.gx.GxSessionFactoryImpl;
 import org.mobicents.diameter.stack.functional.StateChange;
 import org.mobicents.diameter.stack.functional.TBase;
@@ -63,7 +67,7 @@ public abstract class AbstractServer extends TBase implements ServerGxSessionLis
 
   public void init(InputStream configStream, String clientID) throws Exception {
     try {
-      super.init(configStream, clientID, ApplicationId.createByAuthAppId(0, 4));
+      super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777224));
       GxSessionFactoryImpl creditControlSessionFactory = new GxSessionFactoryImpl(this.sessionFactory);
       ((ISessionFactory) sessionFactory).registerAppFacory(ServerGxSession.class, creditControlSessionFactory);
       ((ISessionFactory) sessionFactory).registerAppFacory(ClientGxSession.class, creditControlSessionFactory);
@@ -122,6 +126,43 @@ public abstract class AbstractServer extends TBase implements ServerGxSessionLis
     return 120;
   }
 
+  protected ReAuthRequest createRAR(int reAuthRequestType, ServerGxSession gxSession) throws Exception {
+    //  <RA-Request> ::= < Diameter Header: 258, REQ, PXY >
+    ReAuthRequest rar = new ReAuthRequestImpl(gxSession.getSessions().get(0)
+        .createRequest(ReAuthRequest.code, getApplicationId(), getClientRealmName()));
+
+    // AVPs present by default: Origin-Host, Origin-Realm, Session-Id,
+    // Vendor-Specific-Application-Id, Destination-Realm
+    AvpSet rarAvps = rar.getMessage().getAvps();
+
+    //  < Session-Id >
+    //  { Auth-Application-Id }
+    //  { Origin-Host }
+    rarAvps.removeAvp(Avp.ORIGIN_HOST);
+    rarAvps.addAvp(Avp.ORIGIN_HOST, getServerURI(), true);
+
+    //  { Origin-Realm }
+    //  { Destination-Realm }
+    //  { Destination-Host }
+    //  { Re-Auth-Request-Type }
+    rarAvps.addAvp(Avp.RE_AUTH_REQUEST_TYPE, reAuthRequestType);
+    //  [ Session-Release-Cause ]
+    //  [ Origin-State-Id ]
+    // *[ Event-Trigger ]
+    //  [ Event-Report-Indication ]
+    // *[ Charging-Rule-Remove ]
+    // *[ Charging-Rule-Install ]
+    //  [ Default-EPS-Bearer-QoS ]
+    // *[ QoS-Information ]
+    //  [ Revalidation-Time ]
+    // *[ Usage-Monitoring-Information ]
+    // *[ Proxy-Info ]
+    // *[ Route-Record ]
+    // *[ AVP]
+    
+    return rar;
+  }
+  
   public String getSessionId() {
     return this.serverGxSession.getSessionId();
   }

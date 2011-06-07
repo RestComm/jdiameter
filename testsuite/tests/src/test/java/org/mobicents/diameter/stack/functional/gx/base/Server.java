@@ -39,6 +39,7 @@ import org.jdiameter.api.gx.ServerGxSession;
 import org.jdiameter.api.gx.events.GxCreditControlAnswer;
 import org.jdiameter.api.gx.events.GxCreditControlRequest;
 import org.jdiameter.client.api.ISessionFactory;
+import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
 import org.jdiameter.common.impl.app.gx.GxCreditControlAnswerImpl;
 import org.mobicents.diameter.stack.functional.Utils;
 import org.mobicents.diameter.stack.functional.gx.AbstractServer;
@@ -55,10 +56,12 @@ public class Server extends AbstractServer {
   protected boolean sentINTERIM;
   protected boolean sentTERMINATE;
   protected boolean sentEVENT;
+  protected boolean sentREAUTH;
   protected boolean receiveINITIAL;
   protected boolean receiveINTERIM;
   protected boolean receiveTERMINATE;
   protected boolean receiveEVENT;
+  protected boolean receiveREAUTH;
 
   protected GxCreditControlRequest request;
 
@@ -86,6 +89,38 @@ public class Server extends AbstractServer {
   }
 
   public void sendInterim() throws Exception {
+    if (!this.receiveINTERIM || this.request == null) {
+      fail("Did not receive INTERIM or answer already sent.", null);
+      throw new Exception("Request: " + this.request);
+    }
+
+    GxCreditControlAnswerImpl answer = new GxCreditControlAnswerImpl((Request) request.getMessage(), 2001);
+
+    AvpSet reqSet = request.getMessage().getAvps();
+
+    AvpSet set = answer.getMessage().getAvps();
+    set.removeAvp(Avp.DESTINATION_HOST);
+    set.removeAvp(Avp.DESTINATION_REALM);
+    set.addAvp(reqSet.getAvp(Avp.CC_REQUEST_TYPE), reqSet.getAvp(Avp.CC_REQUEST_NUMBER), reqSet.getAvp(Avp.AUTH_APPLICATION_ID));
+    super.serverGxSession.sendCreditControlAnswer(answer);
+    sentINTERIM = true;
+    request = null;
+    Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), true);
+  }
+
+  public void sendReAuth() throws Exception {
+    if (!(this.receiveINITIAL || this.receiveINTERIM) || this.request != null) {
+      fail("Did not receive INITIAL/INTERIM or pending request exists.", null);
+      throw new Exception("Request: " + this.request);
+    }
+
+    ReAuthRequest reAuthRequest = super.createRAR(0 /*AUTHORIZE_ONLY*/, super.serverGxSession);
+    super.serverGxSession.sendReAuthRequest(reAuthRequest);
+    Utils.printMessage(log, super.stack.getDictionary(), reAuthRequest.getMessage(), true);
+    this.sentREAUTH = true;
+  }
+
+  public void send() throws Exception {
     if (!this.receiveINTERIM || this.request == null) {
       fail("Did not receive INTERIM or answer already sent.", null);
       throw new Exception("Request: " + this.request);
@@ -241,7 +276,12 @@ public class Server extends AbstractServer {
    */
   public void doReAuthAnswer(ServerGxSession session, ReAuthRequest request, ReAuthAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException,
       OverloadException {
-    fail("Received \"ReAuthAnswer\" event, request[" + request + "], on session[" + session + "]", null);
+    Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), false);
+    if (receiveREAUTH) {
+      fail("Received REAUTH more than once!", null);
+    }
+    receiveREAUTH = true;
+    //fail("Received \"ReAuthAnswer\" event, request[" + request + "], on session[" + session + "]", null);
   }
 
   /*
@@ -267,16 +307,24 @@ public class Server extends AbstractServer {
     return sentTERMINATE;
   }
 
+  public boolean isSentREAUTH() {
+    return sentREAUTH;
+  }
+
   public boolean isReceiveINITIAL() {
     return receiveINITIAL;
   }
-
+  
   public boolean isReceiveINTERIM() {
     return receiveINTERIM;
   }
 
   public boolean isReceiveTERMINATE() {
     return receiveTERMINATE;
+  }
+
+  public boolean isReceiveREAUTH() {
+    return receiveREAUTH;
   }
 
   public boolean isSentEVENT() {
