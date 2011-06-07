@@ -478,11 +478,10 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
     try {
       session.send(event.getMessage(), this);
       // Store last destination information
-
     }
     catch(Exception e) {
-      //throw new InternalException(e);
-      logger.debug("Failure trying to dispatch event", e);
+      throw new InternalException(e);
+      // logger.debug("Failure trying to dispatch event", e);
     }
   }
 
