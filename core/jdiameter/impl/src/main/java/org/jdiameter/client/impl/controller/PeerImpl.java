@@ -683,13 +683,14 @@ public class PeerImpl extends AbstractPeer implements IPeer {
         int commandCode = message.getCommandCode();
         // We don't want this for CEx/DWx/DPx
         if(commandCode != 257 && commandCode != 280 && commandCode != 282) {
-          //TODO: check if this is correct.
-          MutablePeerTableImpl peerTable = (MutablePeerTableImpl) table;
-          if(peerTable.isDuplicateProtection()) {
-            String[] originInfo = router.getRequestRouteInfo(message.getHopByHopIdentifier());
-            if(originInfo != null) {
-              // message.getDuplicationKey() doesn't work because it's answer
-              peerTable.saveToDuplicate(message.getDuplicationKey(originInfo[0], message.getEndToEndIdentifier()), message);
+          if(table instanceof MutablePeerTableImpl) { // available only to server, client skip this step
+            MutablePeerTableImpl peerTable = (MutablePeerTableImpl) table;
+            if(peerTable.isDuplicateProtection()) {
+              String[] originInfo = router.getRequestRouteInfo(message.getHopByHopIdentifier());
+              if(originInfo != null) {
+                // message.getDuplicationKey() doesn't work because it's answer
+                peerTable.saveToDuplicate(message.getDuplicationKey(originInfo[0], message.getEndToEndIdentifier()), message);
+              }
             }
           }
         }
