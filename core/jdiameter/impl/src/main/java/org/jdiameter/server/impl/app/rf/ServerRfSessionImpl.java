@@ -65,17 +65,12 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
   private static final Logger logger = LoggerFactory.getLogger(ServerRfSessionImpl.class);
 
   // Session State Handling ---------------------------------------------------
-  //protected boolean stateless = false;
-  //protected ServerRfSessionState state = ServerRfSessionState.IDLE;
 
   // Factories and Listeners --------------------------------------------------
   protected transient IServerRfActionContext context;
   protected transient  ServerRfSessionListener listener;
 
   // Ts Timer -----------------------------------------------------------------
-  //protected long tsTimeout;
-  //protected ScheduledFuture tsTask;
-  //protected Serializable timerId_ts;
   protected static final String TIMER_NAME_TS = "TS";
   protected IServerRfSessionData sessionData;
   // Constructors -------------------------------------------------------------

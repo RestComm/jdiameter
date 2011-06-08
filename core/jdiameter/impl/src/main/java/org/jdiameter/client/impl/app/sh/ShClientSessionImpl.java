@@ -244,9 +244,6 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
         super.session.setRequestListener(null);
       }
       this.session = null;
-      if(listener != null) { 
-        this.removeStateChangeNotification((StateChangeListener) listener);
-      }
       this.listener = null;
       this.factory = null;
     }

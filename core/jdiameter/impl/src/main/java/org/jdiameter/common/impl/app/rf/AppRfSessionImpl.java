@@ -76,7 +76,7 @@ public abstract class AppRfSessionImpl extends AppSessionImpl implements  Networ
   }
 
   public void release() {
-    //scheduler.shutdownNow();
+	stateListeners.clear();
     super.release();
   }
 }

@@ -78,32 +78,19 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
     private static final Logger logger = LoggerFactory.getLogger(ClientGxSessionImpl.class);
     protected IClientGxSessionData sessionData;
     // Session State Handling ---------------------------------------------------
-    //protected boolean isEventBased = true;
-    //protected boolean requestTypeSet = false;
-    //protected ClientGxSessionState state = ClientGxSessionState.IDLE;
     protected Lock sendAndStateLock = new ReentrantLock();
     // Factories and Listeners --------------------------------------------------
-    protected transient IGxMessageFactory factory;
-    protected transient ClientGxSessionListener listener;
-    protected transient IClientGxSessionContext context;
-    protected transient IMessageParser parser;
+    protected IGxMessageFactory factory;
+    protected ClientGxSessionListener listener;
+    protected IClientGxSessionContext context;
+    protected IMessageParser parser;
     // Tx Timer -----------------------------------------------------------------
-    //protected transient ScheduledFuture txFuture = null; //FIXME: HA/FT
-    //protected Serializable txTimerId;
-    //protected RoRequest txTimerRequest;
-    //protected byte[] txTimerRequest;
-    // Event Based Buffer
-    //protected Message buffer = null;
-    //protected byte[] buffer;
     protected final static String TX_TIMER_NAME = "Gx_CLIENT_TX_TIMER";
     protected static final long TX_TIMER_DEFAULT_VALUE = 30 * 60 * 1000; // miliseconds
-   // protected String originHost, originRealm;
+
     protected long[] authAppIds = new long[]{4};
     // Requested Action + Credit-Control and Direct-Debiting Failure-Handling ---
     static final int NON_INITIALIZED = -300;
-    //protected int gatheredRequestedAction = NON_INITIALIZED;
-    //protected int gatheredCCFH = NON_INITIALIZED;
-   // protected int gatheredDDFH = NON_INITIALIZED;
     protected static final int CCFH_TERMINATE = 0;
     protected static final int CCFH_CONTINUE = 1;
     protected static final int CCFH_RETRY_AND_TERMINATE = 2;
@@ -154,6 +141,7 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
         IContainer icontainer = sf.getContainer();
         this.parser = icontainer.getAssemblerFacility().getComponentInstance(IMessageParser.class);
         this.sessionData = sessionData;
+
         super.addStateChangeNotification(stLst);
 
     }
@@ -633,9 +621,7 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
             super.session.setRequestListener(null);
         }
         super.session = null;
-        if (listener != null) {
-            this.removeStateChangeNotification((StateChangeListener) listener);
-        }
+        
         this.listener = null;
         this.factory = null;
     }

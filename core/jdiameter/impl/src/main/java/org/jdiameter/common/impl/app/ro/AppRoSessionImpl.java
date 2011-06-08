@@ -66,6 +66,7 @@ public abstract class AppRoSessionImpl extends AppSessionImpl implements Network
   }
 
   public void release() {
+	stateListeners.clear();
     super.release();
   }
 

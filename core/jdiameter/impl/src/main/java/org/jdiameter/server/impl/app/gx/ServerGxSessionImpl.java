@@ -72,8 +72,6 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
   private static final Logger logger = LoggerFactory.getLogger(ServerGxSessionImpl.class);
 
   // Session State Handling ---------------------------------------------------
-  //protected boolean stateless = true;
-  //protected ServerGxSessionState state = ServerGxSessionState.IDLE;
   protected Lock sendAndStateLock = new ReentrantLock();
 
   // Factories and Listeners --------------------------------------------------
@@ -81,10 +79,6 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
   protected transient IServerGxSessionContext context = null;
   protected transient ServerGxSessionListener listener = null;
 
-  //  Tcc timer (supervises an ongoing credit-control
-  //             session in the credit-control server) ------------------------
-  //protected transient ScheduledFuture tccFuture = null;
-  //protected Serializable tccTimerId;
   protected static final String TCC_TIMER_NAME = "TCC_GxSERVER_TIMER";
 
   protected long[] authAppIds = new long[]{4};
@@ -450,12 +444,7 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
     }
 
     this.session = null;
-
-    if(listener != null) {
-      this.removeStateChangeNotification((StateChangeListener) listener);
-      this.listener = null;
-    }
-
+    this.listener = null;
     this.factory = null;
   }
 

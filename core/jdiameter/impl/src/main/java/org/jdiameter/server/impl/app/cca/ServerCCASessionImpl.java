@@ -72,8 +72,6 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
 
   protected IServerCCASessionData sessionData;
   // Session State Handling ---------------------------------------------------
-  //protected boolean stateless = true;
-  //protected ServerCCASessionState state = ServerCCASessionState.IDLE;
   protected Lock sendAndStateLock = new ReentrantLock();
 
   // Factories and Listeners --------------------------------------------------
@@ -81,10 +79,6 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
   protected transient IServerCCASessionContext context = null;
   protected transient ServerCCASessionListener listener = null;
 
-  //  Tcc timer (supervises an ongoing credit-control
-  //             session in the credit-control server) ------------------------
-  //protected transient ScheduledFuture tccFuture = null;
-  //protected Serializable tccTimerId;
   protected static final String TCC_TIMER_NAME = "TCC_CCASERVER_TIMER";
 
   protected long[] authAppIds = new long[]{4};
@@ -451,12 +445,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
     }
 
     this.session = null;
-
-    if(listener != null) {
-      this.removeStateChangeNotification((StateChangeListener) listener);
-      this.listener = null;
-    }
-
+    this.listener = null;
     this.factory = null;
   }
 

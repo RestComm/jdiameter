@@ -80,9 +80,6 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   private static final Logger logger = LoggerFactory.getLogger(ClientRoSessionImpl.class);
 
   // Session State Handling ---------------------------------------------------
-  //protected boolean isEventBased = true;
-  //protected boolean requestTypeSet = false;
-  //protected ClientRoSessionState state = ClientRoSessionState.IDLE;
   protected IClientRoSessionData sessionData;
   protected Lock sendAndStateLock = new ReentrantLock();
 
@@ -655,9 +652,6 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
       super.session.setRequestListener(null);
     }
     super.session = null;
-    if(listener != null) { 
-      this.removeStateChangeNotification((StateChangeListener) listener);
-    }
     this.listener = null;
     this.factory = null;
   }

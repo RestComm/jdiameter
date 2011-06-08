@@ -75,7 +75,7 @@ public abstract class AppAccSessionImpl extends AppSessionImpl implements  Netwo
   }
 
   public void release() {
-    //scheduler.shutdownNow();
+	stateListeners.clear();
     super.release();
   }
   

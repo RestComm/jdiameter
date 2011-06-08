@@ -71,8 +71,6 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
   private static final Logger logger = LoggerFactory.getLogger(ServerRoSessionImpl.class);
 
   // Session State Handling ---------------------------------------------------
-  //protected boolean stateless = true;
-  //protected ServerRoSessionState state = ServerRoSessionState.IDLE;
   protected Lock sendAndStateLock = new ReentrantLock();
 
   // Factories and Listeners --------------------------------------------------
@@ -80,10 +78,6 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
   protected transient IServerRoSessionContext context = null;
   protected transient ServerRoSessionListener listener = null;
 
-  //  Tcc timer (supervises an ongoing credit-control
-  //             session in the credit-control server) ------------------------
-  //protected transient ScheduledFuture tccFuture = null;
-  //protected Serializable tccTimerId;
   protected static final String TCC_TIMER_NAME = "TCC_RoSERVER_TIMER";
 
   protected long[] authAppIds = new long[]{4};
@@ -466,12 +460,7 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
     }
 
     this.session = null;
-
-    if(listener != null) {
-      this.removeStateChangeNotification((StateChangeListener) listener);
-      this.listener = null;
-    }
-
+    this.listener = null;
     this.factory = null;
   }
 

@@ -79,27 +79,15 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   protected IClientCCASessionData sessionData;
 
   // Session State Handling ---------------------------------------------------
-  //protected boolean isEventBased = true;
-  //protected boolean requestTypeSet = false;
-  //protected ClientCCASessionState state = ClientCCASessionState.IDLE;
+
   protected Lock sendAndStateLock = new ReentrantLock();
   // Session Based Queue
   protected ArrayList<Event> eventQueue = new ArrayList<Event>(); //FIXME: this is not replicable?
   // Factories and Listeners --------------------------------------------------
-  protected transient ICCAMessageFactory factory;
-  protected transient ClientCCASessionListener listener;
-  protected transient IClientCCASessionContext context;
+  protected ICCAMessageFactory factory;
+  protected ClientCCASessionListener listener;
+  protected IClientCCASessionContext context;
 
-
-  // Tx Timer -----------------------------------------------------------------
-  //protected transient ScheduledFuture txFuture = null; //FIXME: HA/FT
-  //protected Serializable txTimerId;
-  //protected JCreditControlRequest txTimerRequest;
-  //protected byte[] txTimerRequest;
-
-  // Event Based Buffer
-  //protected Message buffer = null;
-  //protected byte[] buffer;
 
   protected final static String TX_TIMER_NAME = "CCA_CLIENT_TX_TIMER";
   protected static final long TX_TIMER_DEFAULT_VALUE = 30 * 60 * 1000; // miliseconds
@@ -109,11 +97,6 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
   // Requested Action + Credit-Control and Direct-Debiting Failure-Handling ---
   public static final int NON_INITIALIZED = -300;
-
-  //protected int gatheredRequestedAction = NON_INITIALIZED;
-
-  //protected int gatheredCCFH = NON_INITIALIZED;
-  //protected int gatheredDDFH = NON_INITIALIZED;
 
   protected static final int CCFH_TERMINATE = 0;
   protected static final int CCFH_CONTINUE = 1;
@@ -160,13 +143,12 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       throw new IllegalArgumentException("ApplicationId can not be less than zero");
     }
 
-    sessionData = data;
-    context = (IClientCCASessionContext)ctx;
+    this.sessionData = data;
+    this.context = (IClientCCASessionContext)ctx;
 
-    authAppIds = fct.getApplicationIds();
-    listener = lst;
-    factory = fct;
-
+    this.authAppIds = fct.getApplicationIds();
+    this.listener = lst;
+    this.factory = fct;
     super.addStateChangeNotification(stLst);
 
   }
@@ -659,9 +641,6 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       super.session.setRequestListener(null);
     }
     super.session = null;
-    if(listener != null) { 
-      this.removeStateChangeNotification((StateChangeListener) listener);
-    }
     this.listener = null;
     this.factory = null;
   }

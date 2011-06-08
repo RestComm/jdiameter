@@ -93,7 +93,13 @@ public abstract class CxDxSession extends AppSessionImpl implements NetworkReqLi
     return false;
   }
 
-  protected void startMsgTimer() {
+	@Override
+	public void release() {
+		stateListeners.clear();
+		super.release();
+	}
+
+protected void startMsgTimer() {
     try {
       sendAndStateLock.lock();
       sessionData.setTsTimerId(super.timerFacility.schedule(getSessionId(), TIMER_NAME_MSG_TIMEOUT, _TX_TIMEOUT));

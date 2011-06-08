@@ -71,6 +71,7 @@ public abstract class AppCCASessionImpl extends AppSessionImpl implements CCASes
   }
 
   public void release() {
+	stateListeners.clear();
     super.release();
   }
 

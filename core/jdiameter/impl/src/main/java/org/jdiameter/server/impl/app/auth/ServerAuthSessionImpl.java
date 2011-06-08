@@ -85,8 +85,6 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
   protected IServerAuthSessionData sessionData;
 
   // Session State Handling ---------------------------------------------------
-  //protected boolean stateless = false;
-  //protected ServerAuthSessionState state = IDLE;
   private Lock sendAndStateLock = new ReentrantLock();
 
   // Factories and Listeners --------------------------------------------------
@@ -95,8 +93,6 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
   protected transient ServerAuthSessionListener listener;
 
   // Ts Timer -----------------------------------------------------------------
-  //protected long tsTimeout;
-  //protected Serializable timerId_ts;
   protected final static String TIMER_NAME_TS="AUTH_TS";
 
   // Constructors -------------------------------------------------------------
