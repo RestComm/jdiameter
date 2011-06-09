@@ -247,7 +247,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               handleFailureMessage((RoCreditControlAnswer) answer, (RoCreditControlRequest) localEvent.getRequest(), eventType);
             }
 
-            deliverRonswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
+            deliverRoAnswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
           }
           catch (AvpDataException e) {
             logger.debug("Failure handling received answer event", e);
@@ -272,7 +272,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
           // New State: IDLE
           setState(ClientRoSessionState.IDLE, false);
           sessionData.setBuffer(null);
-          deliverRonswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
+          deliverRoAnswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
           break;
         default:
           logger.warn("Wrong event type ({}) on state {}", eventType, state);
@@ -343,7 +343,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
           else if (isProvisional(resultCode) || isFailure(resultCode)) {
             handleFailureMessage((RoCreditControlAnswer) answer, (RoCreditControlRequest) localEvent.getRequest(), eventType);
           }
-          deliverRonswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
+          deliverRoAnswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
           break;
         case Tx_TIMER_FIRED:
           handleTxExpires(localEvent.getRequest().getMessage());
@@ -456,7 +456,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
           else if (isProvisional(resultCode) || isFailure(resultCode)) {
             handleFailureMessage((RoCreditControlAnswer) answer, (RoCreditControlRequest) localEvent.getRequest(), eventType);
           }
-          deliverRonswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
+          deliverRoAnswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
           break;
         case Tx_TIMER_FIRED:
           handleTxExpires(localEvent.getRequest().getMessage());
@@ -523,7 +523,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
 
           //FIXME: Alex broke this, setting back "true" ? 
           setState(ClientRoSessionState.IDLE, false);
-          deliverRonswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
+          deliverRoAnswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
           setState(ClientRoSessionState.IDLE, true);
           break;
         default:
@@ -777,7 +777,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               // Action: Terminate end user�s service
               // New State: IDLE
               context.denyAccessOnFailureMessage(this);
-              deliverRonswer(request, event);
+              deliverRoAnswer(request, event);
               setState(ClientRoSessionState.IDLE);
             }
             else if(gatheredRequestedAction == DIRECT_DEBITING && txTimerId == null) {
@@ -794,7 +794,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
             // Action: Grant service to end user
             // New State: IDLE
             context.grantAccessOnFailureMessage(this);
-            deliverRonswer(request, event);
+            deliverRoAnswer(request, event);
             setState(ClientRoSessionState.IDLE);
           }
           else if (temporaryErrorCodes.contains(resultCode)) {
@@ -804,7 +804,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               // Action: Indicate service error
               // New State: IDLE
               context.indicateServiceError(this);
-              deliverRonswer(request, event);
+              deliverRoAnswer(request, event);
               setState(ClientRoSessionState.IDLE);
             }
             else if (gatheredRequestedAction == DIRECT_DEBITING) {
@@ -814,7 +814,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
                 // Action: Grant service to end user
                 // New State: IDLE
                 context.grantAccessOnFailureMessage(this);
-                deliverRonswer(request, event);
+                deliverRoAnswer(request, event);
                 setState(ClientRoSessionState.IDLE);
               }
               else if (getLocalDDFH() == DDFH_TERMINATE_OR_BUFFER && txTimerId != null) {
@@ -823,7 +823,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
                 // Action: Terminate end user�s service
                 // New State: IDLE
                 context.denyAccessOnFailureMessage(this);
-                deliverRonswer(request, event);
+                deliverRoAnswer(request, event);
                 setState(ClientRoSessionState.IDLE);
               }
             }
@@ -846,7 +846,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               // Action: Indicate service error
               // New State: IDLE
               context.indicateServiceError(this);
-              deliverRonswer(request, event);
+              deliverRoAnswer(request, event);
               setState(ClientRoSessionState.IDLE);
             }
             else if (gatheredRequestedAction == DIRECT_DEBITING) {
@@ -856,7 +856,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
                 // Action: Grant service to end user
                 // New State: IDLE
                 context.grantAccessOnFailureMessage(this);
-                deliverRonswer(request, event);
+                deliverRoAnswer(request, event);
                 setState(ClientRoSessionState.IDLE);
               }
               else if (getLocalDDFH() == DDFH_TERMINATE_OR_BUFFER && txTimerId != null) {
@@ -865,7 +865,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
                 // Action: Terminate end user�s service
                 // New State: IDLE
                 context.denyAccessOnFailureMessage(this);
-                deliverRonswer(request, event);
+                deliverRoAnswer(request, event);
                 setState(ClientRoSessionState.IDLE);
               }
             }
@@ -876,7 +876,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               // New State: IDLE
               sessionData.setBuffer(null);
               context.indicateServiceError(this);
-              deliverRonswer(request, event);
+              deliverRoAnswer(request, event);
               setState(ClientRoSessionState.IDLE);
             }
             else {
@@ -1145,7 +1145,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     }
   }
 
-  protected void deliverRonswer(RoCreditControlRequest request, RoCreditControlAnswer answer) {
+  protected void deliverRoAnswer(RoCreditControlRequest request, RoCreditControlAnswer answer) {
     try {
       listener.doCreditControlAnswer(this, request, answer);
     }
