@@ -210,7 +210,7 @@
 	</avpdefn>
 
 	<avpdefn name="Authorization-Lifetime" code="291" mandatory="must" protected="may" may-encrypt="no" vendor-bit="mustnot" >
-		<type type-name="Integer32" />
+		<type type-name="Unsigned32" />
 	</avpdefn>
 
 	<avpdefn name="Redirect-Host" code="292" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="mustnot" >
