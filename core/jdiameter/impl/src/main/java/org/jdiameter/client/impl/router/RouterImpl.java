@@ -325,7 +325,7 @@ public class RouterImpl implements IRouter {
       for (String peerName : peers) {
         IPeer localPeer = (IPeer) manager.getPeer(peerName);
         if(logger.isDebugEnabled()) {
-          logger.debug("Checking peer with uri [{}]", localPeer.getUri().toString());
+        	logger.debug("Checking peer [{}] for name [{}]", new Object[]{localPeer,peerName});
         }
         if (localPeer != null) {
           if(localPeer.hasValidConnection()) {
