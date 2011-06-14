@@ -199,7 +199,7 @@ public abstract class BaseSessionImpl implements BaseSession {
     }
 
     public Message get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-      try {                
+      try {
         block.await(timeout, unit);
       }
       catch (Exception e) {
