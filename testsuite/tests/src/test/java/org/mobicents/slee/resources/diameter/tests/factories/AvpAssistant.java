@@ -1,28 +1,25 @@
 /*
- * Mobicents, Communications Middleware
- * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
- * indicated by the @author tags or express copyright attribution
- * statements applied by the authors.  All third-party contributions are
- * distributed under license by Red Hat Middleware LLC.
+ * JBoss, Home of Professional Open Source
+ * Copyright 2008, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
  *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
- * for more details.
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- *
- * Boston, MA  02110-1301  USA
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.mobicents.slee.resources.diameter.tests.factories;
 
 import static org.jdiameter.client.impl.helpers.Parameters.AcctApplId;
@@ -94,6 +91,16 @@ import net.java.slee.resource.diameter.cxdx.events.avp.SCSCFRestorationInfo;
 import net.java.slee.resource.diameter.cxdx.events.avp.SIPAuthDataItem;
 import net.java.slee.resource.diameter.cxdx.events.avp.SIPDigestAuthenticate;
 import net.java.slee.resource.diameter.cxdx.events.avp.SubscriptionInfo;
+import net.java.slee.resource.diameter.gq.events.avp.BindingInformation;
+import net.java.slee.resource.diameter.gq.events.avp.BindingInputList;
+import net.java.slee.resource.diameter.gq.events.avp.BindingOutputList;
+import net.java.slee.resource.diameter.gq.events.avp.FlowGrouping;
+import net.java.slee.resource.diameter.gq.events.avp.Flows;
+import net.java.slee.resource.diameter.gq.events.avp.GloballyUniqueAddress;
+import net.java.slee.resource.diameter.gq.events.avp.MediaComponentDescription;
+import net.java.slee.resource.diameter.gq.events.avp.MediaSubComponent;
+import net.java.slee.resource.diameter.gq.events.avp.V4TransportAddress;
+import net.java.slee.resource.diameter.gq.events.avp.V6TransportAddress;
 import net.java.slee.resource.diameter.gx.events.avp.ChargingRuleInstall;
 import net.java.slee.resource.diameter.gx.events.avp.ChargingRuleRemove;
 import net.java.slee.resource.diameter.gx.events.avp.TFTPacketFilterInformation;
@@ -131,7 +138,6 @@ import net.java.slee.resource.diameter.sh.events.avp.SupportedFeaturesAvp;
 import net.java.slee.resource.diameter.sh.events.avp.UserIdentityAvp;
 import net.java.slee.resource.diameter.sh.events.avp.userdata.ShData;
 
-import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Message;
@@ -166,6 +172,17 @@ import org.mobicents.slee.resource.diameter.cxdx.events.avp.SCSCFRestorationInfo
 import org.mobicents.slee.resource.diameter.cxdx.events.avp.SIPAuthDataItemImpl;
 import org.mobicents.slee.resource.diameter.cxdx.events.avp.SIPDigestAuthenticateImpl;
 import org.mobicents.slee.resource.diameter.cxdx.events.avp.SubscriptionInfoImpl;
+import org.mobicents.slee.resource.diameter.gq.events.avp.BindingInformationImpl;
+import org.mobicents.slee.resource.diameter.gq.events.avp.BindingInputListImpl;
+import org.mobicents.slee.resource.diameter.gq.events.avp.BindingOutputListImpl;
+import org.mobicents.slee.resource.diameter.gq.events.avp.DiameterGqAvpCodes;
+import org.mobicents.slee.resource.diameter.gq.events.avp.FlowGroupingImpl;
+import org.mobicents.slee.resource.diameter.gq.events.avp.FlowsImpl;
+import org.mobicents.slee.resource.diameter.gq.events.avp.GloballyUniqueAddressImpl;
+import org.mobicents.slee.resource.diameter.gq.events.avp.MediaComponentDescriptionImpl;
+import org.mobicents.slee.resource.diameter.gq.events.avp.MediaSubComponentImpl;
+import org.mobicents.slee.resource.diameter.gq.events.avp.V4TransportAddressImpl;
+import org.mobicents.slee.resource.diameter.gq.events.avp.V6TransportAddressImpl;
 import org.mobicents.slee.resource.diameter.gx.events.avp.ChargingRuleInstallImpl;
 import org.mobicents.slee.resource.diameter.gx.events.avp.ChargingRuleRemoveImpl;
 import org.mobicents.slee.resource.diameter.gx.events.avp.DiameterGxAvpCodes;
@@ -204,6 +221,7 @@ import org.mobicents.slee.resource.diameter.sh.events.avp.SupportedFeaturesAvpIm
 import org.mobicents.slee.resource.diameter.sh.events.avp.UserIdentityAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.events.avp.userdata.ObjectFactory;
 import org.mobicents.slee.resource.diameter.sh.events.avp.userdata.UserDataObjectFactoryImpl;
+
 
 /**
  *
@@ -643,7 +661,39 @@ public class AvpAssistant {
 
     typeValues.put( DiameterAvp.class, new DiameterAvpImpl(0, 0, 0, 1, dummyAvpBytes, null) );
     typeValues.put( DiameterAvp[].class, new DiameterAvpImpl[]{new DiameterAvpImpl(0, 0, 0, 1, dummyAvpBytes, null)});
-    
+
+    // Gq AVP Factory
+
+    typeValues.put( BindingInformation.class, new BindingInformationImpl(DiameterGqAvpCodes.ETSI_BINDING_INFORMATION, DiameterGqAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( BindingInformation[].class, new BindingInformationImpl[]{new BindingInformationImpl(DiameterGqAvpCodes.ETSI_BINDING_INFORMATION, DiameterGqAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( BindingInputList.class, new BindingInputListImpl(DiameterGqAvpCodes.ETSI_BINDING_INPUT_LIST, DiameterGqAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( BindingInputList[].class, new BindingInputListImpl[]{new BindingInputListImpl(DiameterGqAvpCodes.ETSI_BINDING_INPUT_LIST, DiameterGqAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( BindingOutputList.class, new BindingOutputListImpl(DiameterGqAvpCodes.ETSI_BINDING_OUTPUT_LIST, DiameterGqAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( BindingOutputList[].class, new BindingOutputListImpl[]{new BindingOutputListImpl(DiameterGqAvpCodes.ETSI_BINDING_OUTPUT_LIST, DiameterGqAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( FlowGrouping.class, new FlowGroupingImpl(DiameterGqAvpCodes.TGPP_FLOW_GROUPING, DiameterGqAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( FlowGrouping[].class, new FlowGroupingImpl[]{new FlowGroupingImpl(DiameterGqAvpCodes.TGPP_FLOW_GROUPING, DiameterGqAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( Flows.class, new FlowsImpl(DiameterGqAvpCodes.TGPP_FLOWS, DiameterGqAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( Flows[].class, new FlowsImpl[]{new FlowsImpl(DiameterGqAvpCodes.TGPP_FLOWS, DiameterGqAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( GloballyUniqueAddress.class, new GloballyUniqueAddressImpl(DiameterGqAvpCodes.ETSI_GLOBALLY_UNIQUE_ADDRESS, DiameterGqAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( GloballyUniqueAddress[].class, new GloballyUniqueAddressImpl[]{new GloballyUniqueAddressImpl(DiameterGqAvpCodes.ETSI_GLOBALLY_UNIQUE_ADDRESS, DiameterGqAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( MediaComponentDescription.class, new MediaComponentDescriptionImpl(DiameterGqAvpCodes.TGPP_MEDIA_COMPONENT_DESCRIPTION, DiameterGqAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( MediaComponentDescription[].class, new MediaComponentDescriptionImpl[]{new MediaComponentDescriptionImpl(DiameterGqAvpCodes.TGPP_MEDIA_COMPONENT_DESCRIPTION, DiameterGqAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( MediaSubComponent.class, new MediaSubComponentImpl(DiameterGqAvpCodes.TGPP_MEDIA_SUB_COMPONENT, DiameterGqAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( MediaSubComponent[].class, new MediaSubComponentImpl[]{new MediaSubComponentImpl(DiameterGqAvpCodes.TGPP_MEDIA_SUB_COMPONENT, DiameterGqAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( V4TransportAddress.class, new V4TransportAddressImpl(DiameterGqAvpCodes.ETSI_V4_TRANSPORT_ADDRESS, DiameterGqAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( V4TransportAddress[].class, new V4TransportAddressImpl[]{new V4TransportAddressImpl(DiameterGqAvpCodes.ETSI_V4_TRANSPORT_ADDRESS, DiameterGqAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( V6TransportAddress.class, new V6TransportAddressImpl(DiameterGqAvpCodes.ETSI_V6_TRANSPORT_ADDRESS, DiameterGqAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( V6TransportAddress[].class, new V6TransportAddressImpl[]{new V6TransportAddressImpl(DiameterGqAvpCodes.ETSI_V6_TRANSPORT_ADDRESS, DiameterGqAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
   }
 
   public static Object getValueFromEnumerated(Class clazz) throws IllegalArgumentException, SecurityException, IllegalAccessException, InvocationTargetException, NoSuchMethodException
