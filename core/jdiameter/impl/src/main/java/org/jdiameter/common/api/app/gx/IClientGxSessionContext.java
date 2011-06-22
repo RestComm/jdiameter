@@ -42,17 +42,17 @@ public interface IClientGxSessionContext {
 
     int getDefaultDDFHValue();
 
-    void grantAccessOnDeliverFailure(ClientGxSession clientCCASessionImpl, Message request);
+    void grantAccessOnDeliverFailure(ClientGxSession clientGxSessionImpl, Message request);
 
-    void denyAccessOnDeliverFailure(ClientGxSession clientCCASessionImpl, Message request);
+    void denyAccessOnDeliverFailure(ClientGxSession clientGxSessionImpl, Message request);
 
-    void grantAccessOnTxExpire(ClientGxSession clientCCASessionImpl);
+    void grantAccessOnTxExpire(ClientGxSession clientGxSessionImpl);
 
-    void denyAccessOnTxExpire(ClientGxSession clientCCASessionImpl);
+    void denyAccessOnTxExpire(ClientGxSession clientGxSessionImpl);
 
-    void grantAccessOnFailureMessage(ClientGxSession clientCCASessionImpl);
+    void grantAccessOnFailureMessage(ClientGxSession clientGxSessionImpl);
 
-    void denyAccessOnFailureMessage(ClientGxSession clientCCASessionImpl);
+    void denyAccessOnFailureMessage(ClientGxSession clientGxSessionImpl);
 
-    void indicateServiceError(ClientGxSession clientCCASessionImpl);
+    void indicateServiceError(ClientGxSession clientGxSessionImpl);
 }
