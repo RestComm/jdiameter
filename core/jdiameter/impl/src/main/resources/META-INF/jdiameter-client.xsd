@@ -237,6 +237,15 @@
                     <xsi:attribute name="receiveLevel" type="xsi:string" use="optional"/>
                 </xsi:complexType>
             </xsi:element>
+            <xsi:element name="RequestTable" minOccurs="0" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Router Request Table cache configuration</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                    <xsi:attribute name="size" type="xsi:integer" use="required"/>
+                    <xsi:attribute name="clear_size" type="xsi:integer" use="required"/>
+                </xsi:complexType>
+            </xsi:element>
         </xsi:sequence>
     </xsi:complexType>
 

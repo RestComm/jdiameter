@@ -81,6 +81,15 @@ public class Parameters extends org.jdiameter.client.impl.helpers.Parameters {
      */
     public static final Parameters NeedClientAuth = new Parameters("NeedClientAuth", Boolean.class);
 
+    /**
+     *  RequestTable - specifies parameters of request table.
+     */
+    public static final Parameters RequestTable = new Parameters("RequestTable", Object.class, "");
+    
+    public static final Parameters RequestTableSize = new Parameters("RequestTableSize", Integer.class, new Integer(10240));
+    
+    public static final Parameters RequestTableClearSize = new Parameters("RequestTableClearSize", Integer.class, new Integer(2048));
+
     protected Parameters(String name, Class type) {
         super(name, type);
     }

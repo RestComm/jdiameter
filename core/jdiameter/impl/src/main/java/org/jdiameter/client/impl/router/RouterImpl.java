@@ -33,6 +33,9 @@ import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryIsDynamic;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmHosts;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmLocalAction;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmName;
+import static org.jdiameter.server.impl.helpers.Parameters.RequestTableSize;
+import static org.jdiameter.server.impl.helpers.Parameters.RequestTableClearSize;
+import static org.jdiameter.server.impl.helpers.Parameters.RequestTable;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -64,6 +67,7 @@ import org.jdiameter.client.api.controller.IPeerTable;
 import org.jdiameter.client.api.controller.IRealm;
 import org.jdiameter.client.api.controller.IRealmTable;
 import org.jdiameter.client.api.router.IRouter;
+import org.jdiameter.client.impl.helpers.AppConfiguration;
 import org.jdiameter.client.impl.helpers.Parameters;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.slf4j.Logger;
@@ -96,13 +100,13 @@ public class RouterImpl implements IRouter {
   protected List<RedirectEntry> redirectTable = new ArrayList<RedirectEntry>(REDIRECT_TABLE_SIZE);
   protected IConcurrentFactory concurrentFactory;
 
-
   // Answer routing feature
-  public static final int REQUEST_TABLE_SIZE = 10 * 1024;
-  public static final int REQUEST_TABLE_CLEAR_SIZE = 5 * 1024;
+  public static int REQUEST_TABLE_SIZE = 10 * 1024;
+  public static int REQUEST_TABLE_CLEAR_SIZE = 2 * 1024;
+
   protected ReadWriteLock requestEntryTableLock = new ReentrantReadWriteLock();
   protected ReadWriteLock redirectTableLock = new ReentrantReadWriteLock();
-  protected Map<Long, AnswerEntry> requestEntryTable = new HashMap<Long, AnswerEntry>(REQUEST_TABLE_SIZE);
+  protected Map<Long, AnswerEntry> requestEntryTable ;
   protected List<Long> requestSortedEntryTable = new ArrayList<Long>();
   protected boolean isStopped = true;
 
@@ -128,6 +132,21 @@ public class RouterImpl implements IRouter {
     catch (URISyntaxException use) {
       throw new RuntimeException("Unable to create URI from Own URI config value:" + localHost, use);
     }
+    if (config.getChildren(RequestTable.ordinal()) != null) {
+      AppConfiguration requestTableConfig = (AppConfiguration) config.getChildren(org.jdiameter.server.impl.helpers.Parameters.RequestTable.ordinal())[0];
+      int tSize = (int)requestTableConfig.getIntValue(RequestTableSize.ordinal(),(Integer) RequestTableSize.defValue());
+      int tClearSize = (int)requestTableConfig.getIntValue(RequestTableClearSize.ordinal(),(Integer) RequestTableClearSize.defValue());
+      if(tClearSize >= tSize) {
+        logger.warn("Configuration entry RequestTable, attribute 'clear_size' [{}] should not be greater than 'size' [{}]. Adjusting.", tSize, tClearSize);
+        while (tClearSize >= tSize) {
+          tSize *= 10;
+        }
+      }
+      REQUEST_TABLE_SIZE = (int) tSize;
+      REQUEST_TABLE_CLEAR_SIZE = (int) tClearSize;
+    }
+    this.requestEntryTable = new HashMap<Long, AnswerEntry>(REQUEST_TABLE_SIZE);
+    logger.debug("Configured Request Table with size[{}] and clear size[{}].", REQUEST_TABLE_SIZE, REQUEST_TABLE_CLEAR_SIZE);
 
     //add realms based on realm table.
     if (config.getChildren(RealmTable.ordinal()) != null) {

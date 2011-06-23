@@ -48,9 +48,13 @@
       <Entity name="ConnectionTimer" size="1"/>
       <Entity name="StatisticTimer" size="1"/>
     </Concurrent>
+
     <Dictionary enabled="false" sendLevel="MESSAGE" receiveLevel="OFF" />    
-    
-    </Parameters>
+
+    <!-- Router Request Table Cache Size and ClearSize -->
+    <RequestTable size="10240" clear_size="2048" />
+
+  </Parameters>
 
   <Network>
     <Peers>

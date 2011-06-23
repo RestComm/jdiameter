@@ -226,6 +226,7 @@ public class XMLConfiguration extends EmptyConfiguration {
       else if (nodeName.equals("Statistics")) { addStatisticLogger(Statistics, c.item(i));              }
       else if (nodeName.equals("Concurrent")) { addConcurrent(Concurrent, c.item(i));                   }
       else if (nodeName.equals("Dictionary")) { addDictionary(Dictionary, c.item(i));                   }
+      else if (nodeName.equals("RequestTable")) { addRequestTable(RequestTable, c.item(i));             }
       else {
         appendOtherParameter(c.item(i));
       }
@@ -331,6 +332,24 @@ public class XMLConfiguration extends EmptyConfiguration {
     }
 
     add(name, dicConfiguration);
+  }
+
+  protected void addRequestTable(org.jdiameter.client.impl.helpers.Parameters name, Node node) {
+    AppConfiguration tableConfiguration = getInstance();
+
+    Node param = node.getAttributes().getNamedItem("size");
+    if(param != null) {
+      String size = param.getNodeValue();
+      tableConfiguration.add(Parameters.RequestTableSize, Integer.parseInt(size));
+    }
+
+    param = node.getAttributes().getNamedItem("clear_size");
+    if(param != null) {
+      String size = param.getNodeValue();
+      tableConfiguration.add(Parameters.RequestTableClearSize,  Integer.parseInt(size));
+    }
+
+    add(name, tableConfiguration);
   }
 
   protected void addNetwork(Node node) {
@@ -506,4 +525,5 @@ public class XMLConfiguration extends EmptyConfiguration {
   protected String getAttrValue(Node node, String name) {
     return node.getAttributes().getNamedItem(name).getNodeValue();
   }
+  
 }
