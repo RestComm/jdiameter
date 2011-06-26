@@ -67,6 +67,8 @@ import org.jdiameter.api.URI;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.ISessionFactory;
+import org.jdiameter.client.api.StackState;
+import org.jdiameter.client.api.controller.IRealm;
 import org.jdiameter.client.api.fsm.EventTypes;
 import org.jdiameter.client.api.io.IConnection;
 import org.jdiameter.client.api.io.IConnectionListener;
@@ -136,6 +138,8 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   protected PeerTableListener peerTableListener = null;
   protected IStatisticManager statisticFactory;
 
+  private IContainer stack;
+
   protected class StorageEntry {
 
     private String duplicationKey;
@@ -177,6 +181,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     this.network = network;
     this.ovrManager = ovrManager;
     this.network.setPeerManager(this);
+    this.stack = stack;
     this.isAcceptUndefinedPeer = config.getBooleanValue(AcceptUndefinedPeer.ordinal(), false);
     this.duplicateProtection = config.getBooleanValue(DuplicateProtection.ordinal(), (Boolean) DuplicateProtection.defValue());
     if (this.duplicateProtection) {
@@ -559,10 +564,17 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       //        }
       //      }
       Collection<Realm> realms =  this.router.getRealmTable().getRealms(realm);
+      for (Realm r : realms) {
+        if (r.getName().equals(realm)) {
+          ((IRealm)r).addPeerName(peerURI.toString());
+          found = true;
+          break;
+        }
+      }
       if (!found) {
         throw new IllegalArgumentException("Incorrect realm name");
       }
-      if (connecting) {
+      if (StackState.STARTED.equals(stack.getState()) && connecting) {
         peer.connect();
       }
       return peer;

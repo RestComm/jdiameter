@@ -145,14 +145,19 @@ public class NetworkImpl implements INetwork {
   }
 
   public Peer addPeer(String name, String realm, boolean connecting) {
-    if (manager != null)
+    if (manager != null) {
       try {
         return manager.addPeer(new URI(name), realm, connecting);
-      } catch (Exception e) {
+      }
+      catch (Exception e) {
+        logger.error("Failed to add peer with name[" + name + "] and realm[" + realm + "] (connecting=" + connecting + ")", e);
         return null;
       }
-      else
-        return null;
+    }
+    else {
+      logger.debug("Failed to add peer with name[{}] and realm[{}] (connecting={}) as peer manager is null.", new Object[]{name, realm, connecting});
+      return null;
+    }
   }
 
 
@@ -167,7 +172,7 @@ public class NetworkImpl implements INetwork {
   public Realm addRealm(String name, ApplicationId applicationId, LocalAction localAction,  boolean dynamic, long expirationTime) {
     try {
       //TODO: why oh why this method exists?
-      return router.getRealmTable().addRealm(name, applicationId, localAction, dynamic, expirationTime,null);
+      return router.getRealmTable().addRealm(name, applicationId, localAction, dynamic, expirationTime, new String[0]);
     }
     catch (InternalException e) {
       logger.error("Failure on add realm operation.",e);
