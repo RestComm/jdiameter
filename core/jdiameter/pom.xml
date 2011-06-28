@@ -23,7 +23,7 @@
 
 	<properties>
 		<slf4j.version>1.5.8</slf4j.version>
-		<picocontainer.version>1.2</picocontainer.version>
+		<picocontainer.version>2.13.5</picocontainer.version>
 		<commons-pool.version>1.5.5</commons-pool.version>
 	</properties>	
 

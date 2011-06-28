@@ -18,7 +18,7 @@
 		</dependency>
 		<dependency>
 			<artifactId>picocontainer</artifactId>
-			<groupId>picocontainer</groupId>
+			<groupId>org.picocontainer</groupId>
 			<version>${picocontainer.version}</version>
 		</dependency>
 		<dependency>

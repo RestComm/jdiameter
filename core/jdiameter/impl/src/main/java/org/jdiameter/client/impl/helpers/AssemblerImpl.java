@@ -21,13 +21,25 @@
  */
 package org.jdiameter.client.impl.helpers;
 
-import org.jdiameter.api.Configuration;
-import org.jdiameter.client.api.IAssembler;
-import static org.jdiameter.client.impl.helpers.ExtensionPoint.*;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.ControllerLayer;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.Internal;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalElementParser;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalMessageParser;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalMetaData;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalPeerController;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalPeerFsmFactory;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalRouterEngine;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalSessionFactory;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalTransportFactory;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.StackLayer;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.TransportLayer;
 import static org.jdiameter.client.impl.helpers.Parameters.ExtensionName;
 import static org.jdiameter.client.impl.helpers.Parameters.Extensions;
+
+import org.jdiameter.api.Configuration;
+import org.jdiameter.client.api.IAssembler;
 import org.picocontainer.MutablePicoContainer;
-import org.picocontainer.defaults.DefaultPicoContainer;
+import org.picocontainer.PicoBuilder;
 
 /**
  * IoC for stack
@@ -40,7 +52,7 @@ public class AssemblerImpl implements IAssembler {
 
   AssemblerImpl parent;
   final AssemblerImpl[] childs = new AssemblerImpl[ExtensionPoint.COUNT];
-  final  MutablePicoContainer pico = new DefaultPicoContainer();
+  final MutablePicoContainer pico = new PicoBuilder().withCaching().build();
 
   /**
    * Create instance of class with predefined configuration
@@ -74,8 +86,8 @@ public class AssemblerImpl implements IAssembler {
       String oldValue = internalConf[Internal.id()].getStringValue(e.ordinal(), null);
       String newValue = internalConf[pointType.id()].getStringValue(e.ordinal(), null);
       if (oldValue != null && newValue != null) {
-        pico.unregisterComponent(Class.forName(oldValue));
-        pico.registerComponentImplementation(Class.forName(newValue));
+        pico.removeComponent(Class.forName(oldValue));
+        pico.addComponent(Class.forName(newValue));
       }
     }
   }
@@ -102,7 +114,7 @@ public class AssemblerImpl implements IAssembler {
       }
 
       try {
-        pico.registerComponentImplementation(Class.forName(value));
+        pico.addComponent(Class.forName(value));
       }
       catch (NoClassDefFoundError exc) {
         throw new Exception(exc);
@@ -114,29 +126,29 @@ public class AssemblerImpl implements IAssembler {
    * @see org.picocontainer.MutablePicoContainer
    */
    public <T> T getComponentInstance(Class<T> aClass) {
-     return (T) pico.getComponentInstanceOfType(aClass);
+     return (T) pico.getComponent(aClass);
    }
 
    /**
     * @see org.picocontainer.MutablePicoContainer
     */
    public void registerComponentInstance(Object object) {
-     pico.registerComponentInstance(object);
+     pico.addComponent(object);
    }
 
    public void registerComponentImplementation(Class aClass) {
-     pico.registerComponentImplementation(aClass);
+     pico.addComponent(aClass);
    }
 
    /**
     * @see org.picocontainer.MutablePicoContainer
     */
    public void registerComponentImplementation(Class<?> aClass, Object object) {
-     pico.registerComponentImplementation(object, aClass);
+     pico.addComponent(object, aClass);
    }
 
    public void unregister(Class aClass) {
-     pico.unregisterComponent(aClass);
+     pico.removeComponent(aClass);
    }
 
    /**
