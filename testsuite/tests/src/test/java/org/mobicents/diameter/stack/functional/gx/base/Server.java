@@ -33,13 +33,12 @@ import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
-import org.jdiameter.api.auth.events.ReAuthAnswer;
-import org.jdiameter.api.auth.events.ReAuthRequest;
 import org.jdiameter.api.gx.ServerGxSession;
 import org.jdiameter.api.gx.events.GxCreditControlAnswer;
 import org.jdiameter.api.gx.events.GxCreditControlRequest;
+import org.jdiameter.api.gx.events.GxReAuthAnswer;
+import org.jdiameter.api.gx.events.GxReAuthRequest;
 import org.jdiameter.client.api.ISessionFactory;
-import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
 import org.jdiameter.common.impl.app.gx.GxCreditControlAnswerImpl;
 import org.mobicents.diameter.stack.functional.Utils;
 import org.mobicents.diameter.stack.functional.gx.AbstractServer;
@@ -114,8 +113,8 @@ public class Server extends AbstractServer {
       throw new Exception("Request: " + this.request);
     }
 
-    ReAuthRequest reAuthRequest = super.createRAR(0 /*AUTHORIZE_ONLY*/, super.serverGxSession);
-    super.serverGxSession.sendReAuthRequest(reAuthRequest);
+    GxReAuthRequest reAuthRequest = super.createRAR(0 /*AUTHORIZE_ONLY*/, super.serverGxSession);
+    super.serverGxSession.sendGxReAuthRequest(reAuthRequest);
     Utils.printMessage(log, super.stack.getDictionary(), reAuthRequest.getMessage(), true);
     this.sentREAUTH = true;
   }
@@ -270,11 +269,9 @@ public class Server extends AbstractServer {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see org.jdiameter.api.cca.ServerGxSessionListener#doReAuthAnswer(org.jdiameter.api.cca.ServerGxSession,
-   * org.jdiameter.api.auth.events.ReAuthRequest, org.jdiameter.api.auth.events.ReAuthAnswer)
+   * @see org.jdiameter.api.gx.ServerGxSessionListener#doGxReAuthAnswer(org.jdiameter.api.gx.ServerGxSession, org.jdiameter.api.gx.events.GxReAuthRequest, org.jdiameter.api.gx.events.GxReAuthAnswer)
    */
-  public void doReAuthAnswer(ServerGxSession session, ReAuthRequest request, ReAuthAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException,
+  public void doGxReAuthAnswer(ServerGxSession session, GxReAuthRequest request, GxReAuthAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException,
       OverloadException {
     Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), false);
     if (receiveREAUTH) {

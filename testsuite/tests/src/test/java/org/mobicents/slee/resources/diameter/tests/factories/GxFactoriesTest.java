@@ -44,10 +44,13 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.gx.GxAvpFactory;
+import net.java.slee.resource.diameter.gx.GxClientSessionActivity;
 import net.java.slee.resource.diameter.gx.GxMessageFactory;
 import net.java.slee.resource.diameter.gx.GxServerSessionActivity;
 import net.java.slee.resource.diameter.gx.events.GxCreditControlAnswer;
 import net.java.slee.resource.diameter.gx.events.GxCreditControlRequest;
+import net.java.slee.resource.diameter.gx.events.GxReAuthAnswer;
+import net.java.slee.resource.diameter.gx.events.GxReAuthRequest;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.IllegalDiameterStateException;
@@ -56,22 +59,18 @@ import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.Stack;
-import org.jdiameter.api.acc.events.AccountAnswer;
-import org.jdiameter.api.acc.events.AccountRequest;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
-import org.jdiameter.api.auth.events.AbortSessionAnswer;
-import org.jdiameter.api.auth.events.AbortSessionRequest;
 import org.jdiameter.api.auth.events.ReAuthAnswer;
 import org.jdiameter.api.auth.events.ReAuthRequest;
-import org.jdiameter.api.auth.events.SessionTermAnswer;
-import org.jdiameter.api.auth.events.SessionTermRequest;
-import org.jdiameter.api.cca.ServerCCASession;
-import org.jdiameter.api.cca.events.JCreditControlRequest;
+import org.jdiameter.api.gx.ClientGxSession;
+import org.jdiameter.api.gx.ClientGxSessionListener;
 import org.jdiameter.api.gx.ServerGxSession;
 import org.jdiameter.api.gx.ServerGxSessionListener;
 import org.jdiameter.client.api.ISessionFactory;
+import org.jdiameter.client.impl.app.gx.ClientGxSessionDataLocalImpl;
+import org.jdiameter.client.impl.app.gx.ClientGxSessionImpl;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
 import org.jdiameter.common.api.app.gx.IGxMessageFactory;
 import org.jdiameter.server.impl.app.gx.ServerGxSessionDataLocalImpl;
@@ -81,6 +80,7 @@ import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.gx.GxAvpFactoryImpl;
+import org.mobicents.slee.resource.diameter.gx.GxClientSessionActivityImpl;
 import org.mobicents.slee.resource.diameter.gx.GxMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.gx.GxServerSessionActivityImpl;
 
@@ -89,7 +89,7 @@ import org.mobicents.slee.resource.diameter.gx.GxServerSessionActivityImpl;
  *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListener {
+public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListener, ClientGxSessionListener {
 
   private static String clientHost = "127.0.0.1";
   private static String clientPort = "13868";
@@ -106,8 +106,8 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
 
   private static Stack stack;
 
-  private static ServerGxSession session; 
-
+  private static ServerGxSession serverSession; 
+  private static ClientGxSession clientSession; 
 
   static
   {
@@ -139,11 +139,14 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
   }
 
   private GxServerSessionActivity gxServerSession = null;
+  private GxClientSessionActivity gxClientSession = null;
 
   public GxFactoriesTest() {
     try {
-      session = new ServerGxSessionImpl(new ServerGxSessionDataLocalImpl(), this, (ISessionFactory) stack.getSessionFactory(), this, null, null);
-      gxServerSession = new GxServerSessionActivityImpl(gxMessageFactory.getBaseMessageFactory(), gxAvpFactory.getBaseFactory(), session, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), stack);
+      serverSession = new ServerGxSessionImpl(new ServerGxSessionDataLocalImpl(), this, (ISessionFactory) stack.getSessionFactory(), this, null, null);
+      clientSession = new ClientGxSessionImpl(new ClientGxSessionDataLocalImpl(), this, (ISessionFactory) stack.getSessionFactory(), this, null, null);
+      gxServerSession = new GxServerSessionActivityImpl(gxMessageFactory.getBaseMessageFactory(), gxAvpFactory.getBaseFactory(), serverSession, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), stack);
+      gxClientSession = new GxClientSessionActivityImpl(gxMessageFactory.getBaseMessageFactory(), gxAvpFactory.getBaseFactory(), clientSession, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), stack);
       ((GxServerSessionActivityImpl)gxServerSession).fetchCurrentState(gxMessageFactory.createGxCreditControlRequest());
     }
     catch (IllegalDiameterStateException e) {
@@ -206,6 +209,60 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
   }
 
 
+  @Test
+  public void isRequestRAR() throws Exception {
+    GxReAuthRequest rar = gxMessageFactory.createGxReAuthRequest();
+    assertTrue("Request Flag in Gx Re-Auth-Request is not set.", rar.getHeader().isRequest());
+  }
+
+  @Test
+  public void testGettersAndSettersRAR() throws Exception {
+    GxReAuthRequest rar = gxMessageFactory.createGxReAuthRequest();
+
+    int nFailures = AvpAssistant.testMethods(rar, GxReAuthRequest.class);
+
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
+
+  @Test
+  public void hasGxApplicationIdRAR() throws Exception {
+    GxReAuthRequest rar = gxMessageFactory.createGxReAuthRequest();
+    assertTrue("Auth-Application-Id AVP in Gx RAR must be 16777224, it is " + rar.getAuthApplicationId(), rar.getAuthApplicationId() == 16777224);
+  }
+
+  @Test
+  public void isAnswerRAA() throws Exception {
+    GxReAuthAnswer raa = gxClientSession.createGxReAuthAnswer(gxMessageFactory.createGxReAuthRequest());
+    assertFalse("Request Flag in Gx Re-Auth-Answer is set.", raa.getHeader().isRequest());
+  }
+
+  @Test
+  public void testGettersAndSettersRAA() throws Exception {
+    GxReAuthAnswer raa = gxClientSession.createGxReAuthAnswer(gxMessageFactory.createGxReAuthRequest());
+
+    int nFailures = AvpAssistant.testMethods(raa, GxReAuthAnswer.class);
+
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }  
+
+  @Test
+  public void hasGxApplicationIdRAA() throws Exception {
+    GxReAuthAnswer raa = gxClientSession.createGxReAuthAnswer(gxMessageFactory.createGxReAuthRequest());
+    assertTrue("Auth-Application-Id AVP in Gx CCA must be 16777224, it is " + raa.getAuthApplicationId(), raa.getAuthApplicationId() == 16777224);
+  }
+
+  @Test
+  public void hasDestinationHostRAA() throws Exception {
+    GxReAuthAnswer raa = gxClientSession.createGxReAuthAnswer(gxMessageFactory.createGxReAuthRequest());
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", raa.getDestinationHost());    
+  }
+
+  @Test
+  public void hasDestinationRealmRAA() throws Exception {
+    GxReAuthAnswer raa = gxClientSession.createGxReAuthAnswer(gxMessageFactory.createGxReAuthRequest());
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", raa.getDestinationRealm());    
+  }
+
   /**
    * Class representing the Diameter Configuration  
    */
@@ -246,12 +303,12 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
     }
   }
 
-  public ReAuthAnswer createReAuthAnswer(Answer answer) {
+  public org.jdiameter.api.gx.events.GxReAuthAnswer createGxReAuthAnswer(Answer answer) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public ReAuthRequest createReAuthRequest(Request req) {
+  public org.jdiameter.api.gx.events.GxReAuthRequest createGxReAuthRequest(Request req) {
     // TODO Auto-generated method stub
     return null;
   }
@@ -260,43 +317,15 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
     return new long[]{GxMessageFactory._GX_AUTH_APP_ID};
   }
 
-  public void doAbortSessionAnswer(ServerCCASession session, AbortSessionRequest request, AbortSessionAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    // NO-OP
-  }
-
-  public void doAbortSessionRequest(ServerCCASession session, AbortSessionRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    // NO-OP
-  }
-
-  public void doAccountingAnswer(ServerCCASession session, AccountRequest request, AccountAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    // NO-OP
-  }
-
-  public void doAccountingRequest(ServerCCASession session, AccountRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    // NO-OP
-  }
-
-  public void doCreditControlRequest(ServerCCASession session, JCreditControlRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    // NO-OP
-  }
-
   public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     // NO-OP
   }
 
-  public void doReAuthAnswer(ServerCCASession session, ReAuthRequest request, ReAuthAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void doGxReAuthAnswer(ServerGxSession session, org.jdiameter.api.gx.events.GxReAuthRequest request, org.jdiameter.api.gx.events.GxReAuthAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     // NO-OP
   }
 
-  public void doSessionTerminationAnswer(ServerCCASession session, SessionTermRequest request, SessionTermAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    // NO-OP
-  }
-
-  public void doSessionTerminationRequest(ServerCCASession session, SessionTermRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    // NO-OP
-  }
-
-  public void doCreditControlRequest(ServerGxSession session, GxCreditControlRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void doGxReAuthRequest(ClientGxSession session, org.jdiameter.api.gx.events.GxReAuthRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     // NO-OP
   }
 
@@ -308,12 +337,28 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
     // NO-OP
   }
 
+  public void doCreditControlAnswer(ClientGxSession session, org.jdiameter.api.gx.events.GxCreditControlRequest request, org.jdiameter.api.gx.events.GxCreditControlAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+    // NO-OP
+  }
+
   public org.jdiameter.api.gx.events.GxCreditControlRequest createCreditControlRequest(Request request) {
     return null;
   }
 
   public org.jdiameter.api.gx.events.GxCreditControlAnswer createCreditControlAnswer(Answer answer) {
     return null;
+  }
+
+  @Override
+  public int getDefaultDDFHValue() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public int getDefaultCCFHValue() {
+    // TODO Auto-generated method stub
+    return 0;
   }
 
 }

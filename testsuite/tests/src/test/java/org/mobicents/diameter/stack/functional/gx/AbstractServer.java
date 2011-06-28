@@ -37,10 +37,11 @@ import org.jdiameter.api.auth.events.ReAuthRequest;
 import org.jdiameter.api.gx.ClientGxSession;
 import org.jdiameter.api.gx.ServerGxSession;
 import org.jdiameter.api.gx.ServerGxSessionListener;
+import org.jdiameter.api.gx.events.GxReAuthRequest;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.gx.IServerGxSessionContext;
 import org.jdiameter.common.api.app.gx.ServerGxSessionState;
-import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
+import org.jdiameter.common.impl.app.gx.GxReAuthRequestImpl;
 import org.jdiameter.common.impl.app.gx.GxSessionFactoryImpl;
 import org.mobicents.diameter.stack.functional.StateChange;
 import org.mobicents.diameter.stack.functional.TBase;
@@ -126,9 +127,9 @@ public abstract class AbstractServer extends TBase implements ServerGxSessionLis
     return 120;
   }
 
-  protected ReAuthRequest createRAR(int reAuthRequestType, ServerGxSession gxSession) throws Exception {
+  protected GxReAuthRequest createRAR(int reAuthRequestType, ServerGxSession gxSession) throws Exception {
     //  <RA-Request> ::= < Diameter Header: 258, REQ, PXY >
-    ReAuthRequest rar = new ReAuthRequestImpl(gxSession.getSessions().get(0)
+    GxReAuthRequest rar = new GxReAuthRequestImpl(gxSession.getSessions().get(0)
         .createRequest(ReAuthRequest.code, getApplicationId(), getClientRealmName()));
 
     // AVPs present by default: Origin-Host, Origin-Realm, Session-Id,

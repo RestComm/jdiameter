@@ -31,12 +31,11 @@ import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
-import org.jdiameter.api.auth.events.ReAuthRequest;
 import org.jdiameter.api.gx.ClientGxSession;
 import org.jdiameter.api.gx.events.GxCreditControlAnswer;
 import org.jdiameter.api.gx.events.GxCreditControlRequest;
-import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
-import org.jdiameter.common.impl.app.gx.GxCreditControlAnswerImpl;
+import org.jdiameter.api.gx.events.GxReAuthRequest;
+import org.jdiameter.common.impl.app.gx.GxReAuthAnswerImpl;
 import org.mobicents.diameter.stack.functional.Utils;
 import org.mobicents.diameter.stack.functional.gx.AbstractClient;
 
@@ -59,7 +58,7 @@ public class Client extends AbstractClient {
   protected boolean receiveEVENT;
   protected boolean receiveREAUTH;
 
-  protected ReAuthRequest reAuthRequest;
+  protected GxReAuthRequest reAuthRequest;
 
   /**
 	 * 
@@ -158,7 +157,7 @@ public class Client extends AbstractClient {
    * @see org.jdiameter.api.cca.ClientCCASessionListener#doReAuthRequest(org.jdiameter .api.cca.ClientCCASession,
    * org.jdiameter.api.auth.events.ReAuthRequest)
    */
-  public void doReAuthRequest(ClientGxSession session, ReAuthRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void doGxReAuthRequest(ClientGxSession session, GxReAuthRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     try {
       Utils.printMessage(log, super.stack.getDictionary(), request.getMessage(), false);
       if (sentREAUTH) {
@@ -237,13 +236,13 @@ public class Client extends AbstractClient {
       throw new Exception("Request: " + this.reAuthRequest);
     }
 
-    ReAuthAnswerImpl answer = new ReAuthAnswerImpl((Request) reAuthRequest.getMessage(), 2001);
+    GxReAuthAnswerImpl answer = new GxReAuthAnswerImpl((Request) reAuthRequest.getMessage(), 2001);
 
     AvpSet set = answer.getMessage().getAvps();
     set.removeAvp(Avp.DESTINATION_HOST);
     set.removeAvp(Avp.DESTINATION_REALM);
 
-    super.clientGxSession.sendReAuthAnswer(answer);
+    super.clientGxSession.sendGxReAuthAnswer(answer);
     sentREAUTH = true;
     reAuthRequest = null;
     Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), true);
