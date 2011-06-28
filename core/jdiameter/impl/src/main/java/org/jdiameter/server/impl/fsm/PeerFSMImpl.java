@@ -21,6 +21,8 @@
  */
 package org.jdiameter.server.impl.fsm;
 
+import org.jdiameter.api.Avp;
+import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.ConfigurationListener;
 import org.jdiameter.api.DisconnectCause;
@@ -137,8 +139,24 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 catch (Throwable e) {
                   logger.debug("Can not send DPA", e);
                 }
-                doDisconnect();
-                switchToNextState(DOWN);
+                IMessage message = (IMessage) event.getData();
+                try {
+					if(message.getAvps().getAvp(Avp.DISCONNECT_CAUSE)!=null && message.getAvps().getAvp(Avp.DISCONNECT_CAUSE).getInteger32()==DisconnectCause.REBOOTING)
+					{
+						doDisconnect();
+						doEndConnection();	
+					}
+					else
+					{
+						doDisconnect();
+						switchToNextState(DOWN);
+					}
+				} catch (AvpDataException e1) {
+					logger.warn("Disconnect cause is bad.",e1);
+					doDisconnect();
+            		switchToNextState(DOWN);
+				}
+
                 break;
               case DWR_EVENT:
                 setInActiveTimer();
@@ -215,8 +233,23 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 catch (Throwable e) {
                   logger.debug("Can not send DPA", e);
                 }
-                doDisconnect();
-                switchToNextState(DOWN);
+                IMessage message = (IMessage) event.getData();
+                try {
+					if(message.getAvps().getAvp(Avp.DISCONNECT_CAUSE)!=null && message.getAvps().getAvp(Avp.DISCONNECT_CAUSE).getInteger32()==DisconnectCause.REBOOTING)
+					{
+						doDisconnect();
+						doEndConnection();	
+					}
+					else
+					{
+						doDisconnect();
+						switchToNextState(DOWN);
+					}
+				} catch (AvpDataException e1) {
+					logger.warn("Disconnect cause is bad.",e1);
+					doDisconnect();
+            		switchToNextState(DOWN);
+				}
                 break;
               case DWR_EVENT:
                 try {
