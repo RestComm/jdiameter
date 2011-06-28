@@ -1,24 +1,25 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
- * contributors as indicated by the @authors tag. All rights reserved.
- * See the copyright.txt in the distribution for a full listing
- * of individual contributors.
- * 
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License, v. 2.0.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
+ * Copyright 2010, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.common.impl.app.gx;
 
 import java.util.concurrent.ScheduledFuture;
@@ -33,8 +34,8 @@ import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
-import org.jdiameter.api.auth.events.ReAuthAnswer;
-import org.jdiameter.api.auth.events.ReAuthRequest;
+import org.jdiameter.api.gx.events.GxReAuthAnswer;
+import org.jdiameter.api.gx.events.GxReAuthRequest;
 import org.jdiameter.api.gx.ClientGxSession;
 import org.jdiameter.api.gx.ClientGxSessionListener;
 import org.jdiameter.api.gx.ServerGxSession;
@@ -51,8 +52,8 @@ import org.jdiameter.common.api.app.gx.IGxSessionData;
 import org.jdiameter.common.api.app.gx.IGxSessionFactory;
 import org.jdiameter.common.api.app.gx.IServerGxSessionContext;
 import org.jdiameter.common.api.data.ISessionDatasource;
-import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
-import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
+import org.jdiameter.common.impl.app.gx.GxReAuthAnswerImpl;
+import org.jdiameter.common.impl.app.gx.GxReAuthRequestImpl;
 import org.jdiameter.server.impl.app.gx.IServerGxSessionData;
 import org.jdiameter.server.impl.app.gx.ServerGxSessionImpl;
 import org.slf4j.Logger;
@@ -92,6 +93,7 @@ IGxMessageFactory, IServerGxSessionContext, IClientGxSessionContext {
     this.sessionFactory = (ISessionFactory) sessionFactory;
     this.iss = this.sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
     this.sessionDataFactory = (IAppSessionDataFactory<IGxSessionData>) this.iss.getDataFactory(IGxSessionData.class);
+    
   }
 
   public GxSessionFactoryImpl(SessionFactory sessionFactory, int defaultDirectDebitingFailureHandling, int defaultCreditControlFailureHandling,
@@ -301,10 +303,10 @@ IGxMessageFactory, IServerGxSessionContext, IClientGxSessionContext {
    public void doCreditControlAnswer(ClientGxSession session, GxCreditControlRequest request, GxCreditControlAnswer answer) throws InternalException {
    }
 
-   public void doReAuthRequest(ClientGxSession session, ReAuthRequest request) throws InternalException {
+   public void doGxReAuthRequest(ClientGxSession session, GxReAuthRequest request) throws InternalException {
    }
 
-   public void doReAuthAnswer(ServerGxSession session, ReAuthRequest request, ReAuthAnswer answer) throws InternalException {
+   public void doGxReAuthAnswer(ServerGxSession session, GxReAuthRequest request, GxReAuthAnswer answer) throws InternalException {
    }
 
    public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException {
@@ -319,12 +321,12 @@ IGxMessageFactory, IServerGxSessionContext, IClientGxSessionContext {
      return new GxCreditControlRequestImpl(req);
    }
 
-   public ReAuthAnswer createReAuthAnswer(Answer answer) {
-     return new ReAuthAnswerImpl(answer);
+   public GxReAuthAnswer createGxReAuthAnswer(Answer answer) {
+     return new GxReAuthAnswerImpl(answer);
    }
 
-   public ReAuthRequest createReAuthRequest(Request req) {
-     return new ReAuthRequestImpl(req);
+   public GxReAuthRequest createGxReAuthRequest(Request req) {
+     return new GxReAuthRequestImpl(req);
    }
 
    // Context Methods ---------------------------------------------------------
@@ -417,7 +419,7 @@ IGxMessageFactory, IServerGxSessionContext, IClientGxSessionContext {
 
    public long[] getApplicationIds() {
      // FIXME: What should we do here?
-     return new long[] {16777224};
+     return new long[] {16777238, 16777238};
    }
 
    public long getDefaultValidityTime() {

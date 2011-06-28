@@ -1,24 +1,25 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
- * contributors as indicated by the @authors tag. All rights reserved.
- * See the copyright.txt in the distribution for a full listing
- * of individual contributors.
- * 
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License, v. 2.0.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
+ * Copyright 2010, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.client.impl.app.gx;
 
 import java.io.Serializable;
@@ -44,8 +45,8 @@ import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
-import org.jdiameter.api.auth.events.ReAuthAnswer;
-import org.jdiameter.api.auth.events.ReAuthRequest;
+import org.jdiameter.api.gx.events.GxReAuthAnswer;
+import org.jdiameter.api.gx.events.GxReAuthRequest;
 import org.jdiameter.api.gx.ClientGxSession;
 import org.jdiameter.api.gx.ClientGxSessionListener;
 import org.jdiameter.api.gx.events.GxCreditControlAnswer;
@@ -60,7 +61,7 @@ import org.jdiameter.common.api.app.gx.IClientGxSessionContext;
 import org.jdiameter.common.api.app.gx.IGxMessageFactory;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
-import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
+import org.jdiameter.common.impl.app.gx.GxReAuthAnswerImpl;
 import org.jdiameter.common.impl.app.gx.AppGxSessionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -164,7 +165,7 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
         }
     }
 
-    public void sendReAuthAnswer(ReAuthAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+    public void sendGxReAuthAnswer(GxReAuthAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
         this.handleEvent(new Event(Event.Type.SEND_RAA, null, answer));
     }
 
@@ -402,7 +403,7 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
                             }
                             break;
                         case RECEIVED_RAR:
-                            deliverRAR((ReAuthRequest) localEvent.getRequest());
+                            deliverRAR((GxReAuthRequest) localEvent.getRequest());
                             break;
                         case SEND_RAA:
                             try {
@@ -453,7 +454,7 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
                             eventQueue.add(localEvent);
                             break;
                         case RECEIVED_RAR:
-                            deliverRAR((ReAuthRequest) localEvent.getRequest());
+                            deliverRAR((GxReAuthRequest) localEvent.getRequest());
                             break;
                         case SEND_RAA:
                             // Current State: PENDING_U
@@ -1130,9 +1131,9 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
         }
     }
 
-    protected void deliverRAR(ReAuthRequest request) {
+    protected void deliverRAR(GxReAuthRequest request) {
         try {
-            listener.doReAuthRequest(this, request);
+            listener.doGxReAuthRequest(this, request);
         } catch (Exception e) {
             logger.debug("Failure delivering RAR", e);
         }
@@ -1236,8 +1237,8 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
         public void run() {
             try {
                 switch (request.getCommandCode()) {
-                    case ReAuthAnswerImpl.code:
-                        handleEvent(new Event(Event.Type.RECEIVED_RAR, factory.createReAuthRequest(request), null));
+                    case GxReAuthAnswerImpl.code:
+                        handleEvent(new Event(Event.Type.RECEIVED_RAR, factory.createGxReAuthRequest(request), null));
                         break;
 
                     default:

@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and individual contributors
+ * Copyright 2011, Red Hat, Inc. and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -20,32 +20,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.jdiameter.common.api.app.gx;
+package org.jdiameter.api.gx.events;
 
-import org.jdiameter.api.Answer;
-import org.jdiameter.api.Request;
-import org.jdiameter.api.gx.events.GxReAuthAnswer;
-import org.jdiameter.api.gx.events.GxReAuthRequest;
-import org.jdiameter.api.gx.events.GxCreditControlAnswer;
-import org.jdiameter.api.gx.events.GxCreditControlRequest;
+import org.jdiameter.api.app.AppAnswerEvent;
 
 /**
- * Diameter Credit-Control Application Message Factory
+ * The Credit-Control-Answer (CCA) messages, indicated by the Command-Code field set to 272 is sent
+ * by the OCF to the CTF in order to reply to the CCR.
  *
- * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
  * @author <a href="mailto:carl-magnus.bjorkell@emblacom.com"> Carl-Magnus Björkell </a>
  */
-public interface IGxMessageFactory {
+public interface GxReAuthAnswer extends AppAnswerEvent {
 
-  public GxReAuthRequest createGxReAuthRequest(Request request);
-
-  public GxReAuthAnswer createGxReAuthAnswer(Answer answer);
-
-  public GxCreditControlRequest createCreditControlRequest(Request request);
-
-  public GxCreditControlAnswer createCreditControlAnswer(Answer answer);
-
-  public long[] getApplicationIds();
-
+  public static final String _SHORT_NAME = "RAA";
+  public static final String _LONG_NAME = "Re-Auth-Answer";
+  public static final int code = 258;
 }

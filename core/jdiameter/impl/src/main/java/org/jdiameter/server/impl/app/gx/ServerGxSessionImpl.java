@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and individual contributors by the
- * @authors tag. See the copyright.txt in the distribution for a
+ * Copyright 2010, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -19,6 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.server.impl.app.gx;
 
 import java.io.Serializable;
@@ -41,7 +42,8 @@ import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
-import org.jdiameter.api.auth.events.ReAuthRequest;
+import org.jdiameter.api.gx.events.GxReAuthRequest;
+import org.jdiameter.api.gx.events.GxReAuthAnswer;
 import org.jdiameter.api.gx.ServerGxSession;
 import org.jdiameter.api.gx.ServerGxSessionListener;
 import org.jdiameter.api.gx.events.GxCreditControlAnswer;
@@ -53,8 +55,6 @@ import org.jdiameter.common.api.app.gx.IServerGxSessionContext;
 import org.jdiameter.common.api.app.gx.ServerGxSessionState;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
-import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
-import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
 import org.jdiameter.common.impl.app.gx.AppGxSessionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,7 +107,7 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
     handleEvent(new Event(false, null, answer));
   }
 
-  public void sendReAuthRequest(ReAuthRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void sendGxReAuthRequest(GxReAuthRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SENT_RAR, request, null);
   }
 
@@ -266,7 +266,7 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
           break;
 
         case RECEIVED_RAA:
-          listener.doReAuthAnswer(this, new ReAuthRequestImpl(localEvent.getRequest().getMessage()), new ReAuthAnswerImpl((Answer)localEvent.getAnswer().getMessage()));
+          listener.doGxReAuthAnswer(this, (GxReAuthRequest)localEvent.getRequest(), (GxReAuthAnswer)localEvent.getAnswer());
           break;
         case SENT_RAR:
           dispatchEvent(localEvent.getRequest());
@@ -533,8 +533,8 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
         // FIXME: baranowb: add message validation here!!!
         // We handle CCR, STR, ACR, ASR other go into extension
         switch (request.getCommandCode()) {
-        case ReAuthRequest.code:
-          handleEvent(new Event(Event.Type.RECEIVED_RAA, factory.createReAuthRequest(request), factory.createReAuthAnswer(answer)));
+        case GxReAuthRequest.code:
+          handleEvent(new Event(Event.Type.RECEIVED_RAA, factory.createGxReAuthRequest(request), factory.createGxReAuthAnswer(answer)));
           break;
         default:
           listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
