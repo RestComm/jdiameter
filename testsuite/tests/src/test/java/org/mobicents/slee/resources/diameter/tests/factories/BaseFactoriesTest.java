@@ -1,28 +1,25 @@
 /*
- * Mobicents, Communications Middleware
- * 
- * Copyright (c) 2008, Red Hat Middleware LLC or third-party contributors as
- * indicated by the @author tags or express copyright attribution
- * statements applied by the authors.  All third-party contributions are
- * distributed under license by Red Hat Middleware LLC.
+ * JBoss, Home of Professional Open Source
+ * Copyright 2008-2011, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
  *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
- * for more details.
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- *
- * Boston, MA  02110-1301  USA
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.mobicents.slee.resources.diameter.tests.factories;
 
 import static org.jdiameter.client.impl.helpers.Parameters.AcctApplId;
@@ -43,11 +40,7 @@ import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryIsDynamic;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmHosts;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmLocalAction;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmName;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,15 +73,11 @@ import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
+import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 
 /**
+ * Test class for JAIN SLEE Diameter Base RA Message and AVP Factories
  * 
- * <br>Project: mobicents-diameter-server
- * <br>3:37:56 PM Jun 1, 2009 
- * <br>
- *
- * BaseFactoriesTest.java
- *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -96,418 +85,510 @@ public class BaseFactoriesTest {
 
   private static String clientHost = "127.0.0.1";
   private static String clientPort = "13868";
-  private static String clientURI  = "aaa://" + clientHost + ":" + clientPort;
-  
+  private static String clientURI = "aaa://" + clientHost + ":" + clientPort;
+
   private static String serverHost = "localhost";
   private static String serverPort = "3868";
   private static String serverURI = "aaa://" + serverHost + ":" + serverPort;
-  
+
   private static String realmName = "mobicents.org";
 
   private static DiameterMessageFactoryImpl messageFactory;
   private static DiameterAvpFactoryImpl avpFactory;
-  
-  static
-  {
+
+  static {
     Stack stack = new org.jdiameter.client.impl.StackImpl();
-    try
-    {
+    try {
       stack.init(new MyConfiguration());
-      AvpDictionary.INSTANCE.parseDictionary( BaseFactoriesTest.class.getClassLoader().getResourceAsStream( "dictionary.xml" ) );
+      AvpDictionary.INSTANCE.parseDictionary(BaseFactoriesTest.class.getClassLoader().getResourceAsStream("dictionary.xml"));
     }
-    catch ( Exception e )
-    {
+    catch (Exception e) {
       throw new RuntimeException("");
     }
-    
+
     messageFactory = new DiameterMessageFactoryImpl(stack);
     avpFactory = new DiameterAvpFactoryImpl();
   }
-  
+
   @Test
-  public void isRequestASR() throws Exception
-  {
+  public void isRequestASR() throws Exception {
     AbortSessionRequest asr = messageFactory.createAbortSessionRequest();
     assertTrue("Request Flag in Abort-Session-Request is not set.", asr.getHeader().isRequest());
   }
-  
+
   @Test
-  public void testGettersAndSettersASR() throws Exception
-  {
+  public void isProxiableASR() throws Exception {
     AbortSessionRequest asr = messageFactory.createAbortSessionRequest();
-    
-    int nFailures = AvpAssistant.testMethods(asr, AbortSessionRequest.class);
-    
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
-  }  
-  
+    assertTrue("The 'P' bit is not set by default in Abort-Session-Request, it should.", asr.getHeader().isProxiable());
+  }
+
   @Test
-  public void isAnswerASA() throws Exception
-  {
+  public void testGettersAndSettersASR() throws Exception {
+    AbortSessionRequest asr = messageFactory.createAbortSessionRequest();
+
+    int nFailures = AvpAssistant.testMethods(asr, AbortSessionRequest.class);
+
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }
+
+  @Test
+  public void isAnswerASA() throws Exception {
     AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer(messageFactory.createAbortSessionRequest());
     assertFalse("Request Flag in Abort-Session-Answer is set.", asa.getHeader().isRequest());
   }
-  
+
   @Test
-  public void testGettersAndSettersASA() throws Exception
-  {
-    AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer(messageFactory.createAbortSessionRequest());
-    
-    int nFailures = AvpAssistant.testMethods(asa, AbortSessionAnswer.class);
-    
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
-  }  
-  
-  @Test
-  public void hasDestinationHostASA() throws Exception
-  {
-    AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer(messageFactory.createAbortSessionRequest());
-    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", asa.getDestinationHost());    
+  public void isProxiableCopiedASA() throws Exception {
+    AbortSessionRequest asr = messageFactory.createAbortSessionRequest();
+    AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer(asr);
+    assertEquals("The 'P' bit is not copied from request in Abort-Session-Answer, it should. [RFC3588/6.2]", asr.getHeader().isProxiable(), asa.getHeader().isProxiable());
+
+    // Reverse 'P' bit ...
+    ((DiameterMessageImpl) asr).getGenericData().setProxiable(!asr.getHeader().isProxiable());
+    assertTrue("The 'P' bit was not modified in Abort-Session-Request, it should.", asr.getHeader().isProxiable() != asa.getHeader().isProxiable());
+
+    asa = messageFactory.createAbortSessionAnswer(asr);
+    assertEquals("The 'P' bit is not copied from request in Abort-Session-Answer, it should. [RFC3588/6.2]", asr.getHeader().isProxiable(), asa.getHeader().isProxiable());
   }
 
   @Test
-  public void hasDestinationRealmASA() throws Exception
-  {
+  public void testGettersAndSettersASA() throws Exception {
     AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer(messageFactory.createAbortSessionRequest());
-    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", asa.getDestinationRealm());    
+
+    int nFailures = AvpAssistant.testMethods(asa, AbortSessionAnswer.class);
+
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
   }
-  
+
   @Test
-  public void isRequestACR() throws Exception
-  {
+  public void hasDestinationHostASA() throws Exception {
+    AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer(messageFactory.createAbortSessionRequest());
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", asa.getDestinationHost());
+  }
+
+  @Test
+  public void hasDestinationRealmASA() throws Exception {
+    AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer(messageFactory.createAbortSessionRequest());
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", asa.getDestinationRealm());
+  }
+
+  @Test
+  public void isRequestACR() throws Exception {
     AccountingRequest acr = messageFactory.createAccountingRequest();
     assertTrue("Request Flag in Accounting-Request is not set.", acr.getHeader().isRequest());
   }
-  
+
   @Test
-  public void testGettersAndSettersACR() throws Exception
-  {
+  public void isProxiableACR() throws Exception {
     AccountingRequest acr = messageFactory.createAccountingRequest();
-    
+    assertTrue("The 'P' bit is not set by default in Accounting-Request, it should.", acr.getHeader().isProxiable());
+  }
+
+  @Test
+  public void testGettersAndSettersACR() throws Exception {
+    AccountingRequest acr = messageFactory.createAccountingRequest();
+
     int nFailures = AvpAssistant.testMethods(acr, AccountingRequest.class);
-    
+
     assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
-  }  
-  
-  @Test
-  public void isAnswerACA() throws Exception
-  {
-    AccountingAnswer aca = messageFactory.createAccountingAnswer(messageFactory.createAccountingRequest());
-    assertFalse("Request Flag in Abort-Session-Answer is set.", aca.getHeader().isRequest());
   }
 
   @Test
-  public void testGettersAndSettersACA() throws Exception
-  {
+  public void isAnswerACA() throws Exception {
     AccountingAnswer aca = messageFactory.createAccountingAnswer(messageFactory.createAccountingRequest());
-    
+    assertFalse("Request Flag in Accounting-Answer is set.", aca.getHeader().isRequest());
+  }
+
+  @Test
+  public void isProxiableCopiedACA() throws Exception {
+    AccountingRequest acr = messageFactory.createAccountingRequest();
+    AccountingAnswer aca = messageFactory.createAccountingAnswer(acr);
+    assertEquals("The 'P' bit is not copied from request in Accounting-Answer, it should. [RFC3588/6.2]", acr.getHeader().isProxiable(), aca.getHeader().isProxiable());
+
+    // Reverse 'P' bit ...
+    ((DiameterMessageImpl) acr).getGenericData().setProxiable(!acr.getHeader().isProxiable());
+    assertTrue("The 'P' bit was not modified in Accounting-Request, it should.", acr.getHeader().isProxiable() != aca.getHeader().isProxiable());
+
+    aca = messageFactory.createAccountingAnswer(acr);
+    assertEquals("The 'P' bit is not copied from request in Accounting-Answer, it should. [RFC3588/6.2]", acr.getHeader().isProxiable(), aca.getHeader().isProxiable());
+  }
+
+  @Test
+  public void testGettersAndSettersACA() throws Exception {
+    AccountingAnswer aca = messageFactory.createAccountingAnswer(messageFactory.createAccountingRequest());
+
     int nFailures = AvpAssistant.testMethods(aca, AccountingAnswer.class);
-    
+
     assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
-  }  
-  
-  @Test
-  public void hasDestinationHostACA() throws Exception
-  {
-    AccountingAnswer aca = messageFactory.createAccountingAnswer(messageFactory.createAccountingRequest());
-    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", aca.getDestinationHost());    
   }
 
   @Test
-  public void hasDestinationRealmACA() throws Exception
-  {
+  public void hasDestinationHostACA() throws Exception {
     AccountingAnswer aca = messageFactory.createAccountingAnswer(messageFactory.createAccountingRequest());
-    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", aca.getDestinationRealm());    
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", aca.getDestinationHost());
   }
-  
+
   @Test
-  public void isRequestCER() throws Exception
-  {
+  public void hasDestinationRealmACA() throws Exception {
+    AccountingAnswer aca = messageFactory.createAccountingAnswer(messageFactory.createAccountingRequest());
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", aca.getDestinationRealm());
+  }
+
+  @Test
+  public void isRequestCER() throws Exception {
     CapabilitiesExchangeRequest cer = messageFactory.createCapabilitiesExchangeRequest();
     assertTrue("Request Flag in Capabilities-Exchange-Request is not set.", cer.getHeader().isRequest());
   }
-  
+
   @Test
-  public void testGettersAndSettersCER() throws Exception
-  {
+  public void isProxiableCER() throws Exception {
     CapabilitiesExchangeRequest cer = messageFactory.createCapabilitiesExchangeRequest();
-    
-    int nFailures = AvpAssistant.testMethods(cer, CapabilitiesExchangeRequest.class);
-    
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
-  }  
-  
+    assertFalse("The 'P' bit is set by default in Capabilities-Exchange-Request, it shouldn't.", cer.getHeader().isProxiable());
+  }
+
   @Test
-  public void isAnswerCEA() throws Exception
-  {
+  public void testGettersAndSettersCER() throws Exception {
+    CapabilitiesExchangeRequest cer = messageFactory.createCapabilitiesExchangeRequest();
+
+    int nFailures = AvpAssistant.testMethods(cer, CapabilitiesExchangeRequest.class);
+
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }
+
+  @Test
+  public void isAnswerCEA() throws Exception {
     CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer(messageFactory.createCapabilitiesExchangeRequest());
     assertFalse("Request Flag in Capabilities-Exchange-Answer is set.", cea.getHeader().isRequest());
   }
-  
+
   @Test
-  public void testGettersAndSettersCEA() throws Exception
-  {
+  public void isProxiableCopiedCEA() throws Exception {
+    CapabilitiesExchangeRequest cer = messageFactory.createCapabilitiesExchangeRequest();
+    CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer(cer);
+    assertEquals("The 'P' bit is not copied from request in Capabilities-Exchange-Answer, it should. [RFC3588/6.2]", cer.getHeader().isProxiable(), cea.getHeader().isProxiable());
+
+    // Reverse 'P' bit ...
+    ((DiameterMessageImpl) cer).getGenericData().setProxiable(!cer.getHeader().isProxiable());
+    assertTrue("The 'P' bit was not modified in Capabilities-Exchange-Request, it should.", cer.getHeader().isProxiable() != cea.getHeader().isProxiable());
+
+    cea = messageFactory.createCapabilitiesExchangeAnswer(cer);
+    assertEquals("The 'P' bit is not copied from request in Capabilities-Exchange-Answer, it should. [RFC3588/6.2]", cer.getHeader().isProxiable(), cea.getHeader().isProxiable());
+  }
+
+  @Test
+  public void testGettersAndSettersCEA() throws Exception {
     CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer(messageFactory.createCapabilitiesExchangeRequest());
-    
+
     int nFailures = AvpAssistant.testMethods(cea, CapabilitiesExchangeAnswer.class);
-    
+
     assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
-  }  
-  
-  @Test
-  public void hasDestinationHostCEA() throws Exception
-  {
-    CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer(messageFactory.createCapabilitiesExchangeRequest());
-    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", cea.getDestinationHost());    
   }
 
   @Test
-  public void hasDestinationRealmCEA() throws Exception
-  {
+  public void hasDestinationHostCEA() throws Exception {
     CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer(messageFactory.createCapabilitiesExchangeRequest());
-    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", cea.getDestinationRealm());    
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", cea.getDestinationHost());
   }
 
   @Test
-  public void isRequestDWR() throws Exception
-  {
+  public void hasDestinationRealmCEA() throws Exception {
+    CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer(messageFactory.createCapabilitiesExchangeRequest());
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", cea.getDestinationRealm());
+  }
+
+  @Test
+  public void isRequestDWR() throws Exception {
     DeviceWatchdogRequest dwr = messageFactory.createDeviceWatchdogRequest();
     assertTrue("Request Flag in Device-Watchdog-Request is not set.", dwr.getHeader().isRequest());
   }
-  
+
   @Test
-  public void testGettersAndSettersDWR() throws Exception
-  {
+  public void isProxiableDWR() throws Exception {
     DeviceWatchdogRequest dwr = messageFactory.createDeviceWatchdogRequest();
-    
-    int nFailures = AvpAssistant.testMethods(dwr, DeviceWatchdogRequest.class);
-    
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
-  }  
-  
+    assertFalse("The 'P' bit is set by default in Device-Watchdog-Request, it shouldn't.", dwr.getHeader().isProxiable());
+  }
+
   @Test
-  public void isAnswerDWA() throws Exception
-  {
+  public void testGettersAndSettersDWR() throws Exception {
+    DeviceWatchdogRequest dwr = messageFactory.createDeviceWatchdogRequest();
+
+    int nFailures = AvpAssistant.testMethods(dwr, DeviceWatchdogRequest.class);
+
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }
+
+  @Test
+  public void isAnswerDWA() throws Exception {
     DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer(messageFactory.createDeviceWatchdogRequest());
     assertFalse("Request Flag in Device-Watchdog-Answer is set.", dwa.getHeader().isRequest());
   }
-  
+
   @Test
-  public void testGettersAndSettersDWA() throws Exception
-  {
+  public void isProxiableCopiedDWA() throws Exception {
+    DeviceWatchdogRequest dwr = messageFactory.createDeviceWatchdogRequest();
+    DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer(dwr);
+    assertEquals("The 'P' bit is not copied from request in Device-Watchdog-Answer, it should. [RFC3588/6.2]", dwr.getHeader().isProxiable(), dwa.getHeader().isProxiable());
+
+    // Reverse 'P' bit ...
+    ((DiameterMessageImpl) dwr).getGenericData().setProxiable(!dwr.getHeader().isProxiable());
+    assertTrue("The 'P' bit was not modified in Device-Watchdog-Request, it should.", dwr.getHeader().isProxiable() != dwa.getHeader().isProxiable());
+
+    dwa = messageFactory.createDeviceWatchdogAnswer(dwr);
+    assertEquals("The 'P' bit is not copied from request in Device-Watchdog-Answer, it should. [RFC3588/6.2]", dwr.getHeader().isProxiable(), dwa.getHeader().isProxiable());
+  }
+
+  @Test
+  public void testGettersAndSettersDWA() throws Exception {
     DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer(messageFactory.createDeviceWatchdogRequest());
-    
+
     int nFailures = AvpAssistant.testMethods(dwa, DeviceWatchdogAnswer.class);
-    
+
     assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
-  }  
-  
-  @Test
-  public void hasDestinationHostDWA() throws Exception
-  {
-    DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer(messageFactory.createDeviceWatchdogRequest());
-    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", dwa.getDestinationHost());    
   }
 
   @Test
-  public void hasDestinationRealmDWA() throws Exception
-  {
+  public void hasDestinationHostDWA() throws Exception {
     DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer(messageFactory.createDeviceWatchdogRequest());
-    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", dwa.getDestinationRealm());    
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", dwa.getDestinationHost());
   }
 
   @Test
-  public void isRequestDPR() throws Exception
-  {
+  public void hasDestinationRealmDWA() throws Exception {
+    DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer(messageFactory.createDeviceWatchdogRequest());
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", dwa.getDestinationRealm());
+  }
+
+  @Test
+  public void isRequestDPR() throws Exception {
     DisconnectPeerRequest dpr = messageFactory.createDisconnectPeerRequest();
     assertTrue("Request Flag in Disconnect-Peer-Request is not set.", dpr.getHeader().isRequest());
   }
-  
+
   @Test
-  public void testGettersAndSettersDPR() throws Exception
-  {
+  public void isProxiableDPR() throws Exception {
     DisconnectPeerRequest dpr = messageFactory.createDisconnectPeerRequest();
-    
-    int nFailures = AvpAssistant.testMethods(dpr, DisconnectPeerRequest.class);
-    
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
-  }  
-  
+    assertFalse("The 'P' bit is set by default in Disconnect-Peer-Request, it shouldn't.", dpr.getHeader().isProxiable());
+  }
+
   @Test
-  public void isAnswerDPA() throws Exception
-  {
+  public void testGettersAndSettersDPR() throws Exception {
+    DisconnectPeerRequest dpr = messageFactory.createDisconnectPeerRequest();
+
+    int nFailures = AvpAssistant.testMethods(dpr, DisconnectPeerRequest.class);
+
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }
+
+  @Test
+  public void isAnswerDPA() throws Exception {
     DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer(messageFactory.createDisconnectPeerRequest());
     assertFalse("Request Flag in Disconnect-Peer-Answer is set.", dpa.getHeader().isRequest());
   }
-  
+
   @Test
-  public void testGettersAndSettersDPA() throws Exception
-  {
+  public void isProxiableCopiedDPA() throws Exception {
+    DisconnectPeerRequest dpr = messageFactory.createDisconnectPeerRequest();
+    DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer(dpr);
+    assertEquals("The 'P' bit is not copied from request in Disconnect-Peer-Answer, it should. [RFC3588/6.2]", dpr.getHeader().isProxiable(), dpa.getHeader().isProxiable());
+
+    // Reverse 'P' bit ...
+    ((DiameterMessageImpl) dpr).getGenericData().setProxiable(!dpr.getHeader().isProxiable());
+    assertTrue("The 'P' bit was not modified in Disconnect-Peer-Request, it should.", dpr.getHeader().isProxiable() != dpa.getHeader().isProxiable());
+
+    dpa = messageFactory.createDisconnectPeerAnswer(dpr);
+    assertEquals("The 'P' bit is not copied from request in Disconnect-Peer-Answer, it should. [RFC3588/6.2]", dpr.getHeader().isProxiable(), dpa.getHeader().isProxiable());
+  }
+
+  @Test
+  public void testGettersAndSettersDPA() throws Exception {
     DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer(messageFactory.createDisconnectPeerRequest());
-    
+
     int nFailures = AvpAssistant.testMethods(dpa, DisconnectPeerAnswer.class);
-    
+
     assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
-  }  
-  
-  @Test
-  public void hasDestinationHostDPA() throws Exception
-  {
-    DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer(messageFactory.createDisconnectPeerRequest());
-    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", dpa.getDestinationHost());    
   }
 
   @Test
-  public void hasDestinationRealmDPA() throws Exception
-  {
+  public void hasDestinationHostDPA() throws Exception {
     DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer(messageFactory.createDisconnectPeerRequest());
-    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", dpa.getDestinationRealm());    
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", dpa.getDestinationHost());
   }
 
   @Test
-  public void isRequestRAR() throws Exception
-  {
-    ReAuthRequest rar = messageFactory.createReAuthRequest();
-    assertTrue("Request Flag in Disconnect-Peer-Request is not set.", rar.getHeader().isRequest());
+  public void hasDestinationRealmDPA() throws Exception {
+    DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer(messageFactory.createDisconnectPeerRequest());
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", dpa.getDestinationRealm());
   }
-  
+
   @Test
-  public void testGettersAndSettersRAR() throws Exception
-  {
+  public void isRequestRAR() throws Exception {
     ReAuthRequest rar = messageFactory.createReAuthRequest();
-    
+    assertTrue("Request Flag in Re-Auth-Request is not set.", rar.getHeader().isRequest());
+  }
+
+  @Test
+  public void isProxiableRAR() throws Exception {
+    ReAuthRequest acr = messageFactory.createReAuthRequest();
+    assertTrue("The 'P' bit is not set by default in Re-Auth-Request, it should.", acr.getHeader().isProxiable());
+  }
+
+  @Test
+  public void testGettersAndSettersRAR() throws Exception {
+    ReAuthRequest rar = messageFactory.createReAuthRequest();
+
     int nFailures = AvpAssistant.testMethods(rar, ReAuthRequest.class);
-    
+
     assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
-  }  
-  
-  @Test
-  public void isAnswerRAA() throws Exception
-  {
-    ReAuthAnswer raa = messageFactory.createReAuthAnswer(messageFactory.createReAuthRequest());
-    assertFalse("Request Flag in Disconnect-Peer-Answer is set.", raa.getHeader().isRequest());
-  }
-  
-  @Test
-  public void testGettersAndSettersRAA() throws Exception
-  {
-    ReAuthAnswer raa = messageFactory.createReAuthAnswer(messageFactory.createReAuthRequest());
-    
-    int nFailures = AvpAssistant.testMethods(raa, ReAuthAnswer.class);
-    
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
-  }  
-  
-  @Test
-  public void hasDestinationHostRAA() throws Exception
-  {
-    ReAuthAnswer raa = messageFactory.createReAuthAnswer(messageFactory.createReAuthRequest());
-    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", raa.getDestinationHost());    
   }
 
   @Test
-  public void hasDestinationRealmRAA() throws Exception
-  {
+  public void isAnswerRAA() throws Exception {
     ReAuthAnswer raa = messageFactory.createReAuthAnswer(messageFactory.createReAuthRequest());
-    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", raa.getDestinationRealm());    
+    assertFalse("Request Flag in Re-Auth-Answer is set.", raa.getHeader().isRequest());
   }
-  
+
   @Test
-  public void isRequestSTR() throws Exception
-  {
+  public void isProxiableCopiedRAA() throws Exception {
+    ReAuthRequest asr = messageFactory.createReAuthRequest();
+    ReAuthAnswer asa = messageFactory.createReAuthAnswer(asr);
+    assertEquals("The 'P' bit is not copied from request in Re-Auth-Answer, it should. [RFC3588/6.2]", asr.getHeader().isProxiable(), asa.getHeader().isProxiable());
+
+    // Reverse 'P' bit ...
+    ((DiameterMessageImpl) asr).getGenericData().setProxiable(!asr.getHeader().isProxiable());
+    assertTrue("The 'P' bit was not modified in Re-Auth-Request, it should.", asr.getHeader().isProxiable() != asa.getHeader().isProxiable());
+
+    asa = messageFactory.createReAuthAnswer(asr);
+    assertEquals("The 'P' bit is not copied from request in Re-Auth-Answer, it should. [RFC3588/6.2]", asr.getHeader().isProxiable(), asa.getHeader().isProxiable());
+  }
+
+  @Test
+  public void testGettersAndSettersRAA() throws Exception {
+    ReAuthAnswer raa = messageFactory.createReAuthAnswer(messageFactory.createReAuthRequest());
+
+    int nFailures = AvpAssistant.testMethods(raa, ReAuthAnswer.class);
+
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+  }
+
+  @Test
+  public void hasDestinationHostRAA() throws Exception {
+    ReAuthAnswer raa = messageFactory.createReAuthAnswer(messageFactory.createReAuthRequest());
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", raa.getDestinationHost());
+  }
+
+  @Test
+  public void hasDestinationRealmRAA() throws Exception {
+    ReAuthAnswer raa = messageFactory.createReAuthAnswer(messageFactory.createReAuthRequest());
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", raa.getDestinationRealm());
+  }
+
+  @Test
+  public void isRequestSTR() throws Exception {
     SessionTerminationRequest str = messageFactory.createSessionTerminationRequest();
     assertTrue("Request Flag in Disconnect-Peer-Request is not set.", str.getHeader().isRequest());
   }
-  
+
   @Test
-  public void testGettersAndSettersSTR() throws Exception
-  {
+  public void isProxiableSTR() throws Exception {
+    SessionTerminationRequest acr = messageFactory.createSessionTerminationRequest();
+    assertTrue("The 'P' bit is not set by default in Session-Termination-Request, it should.", acr.getHeader().isProxiable());
+  }
+
+  @Test
+  public void testGettersAndSettersSTR() throws Exception {
     SessionTerminationRequest str = messageFactory.createSessionTerminationRequest();
-    
+
     int nFailures = AvpAssistant.testMethods(str, SessionTerminationRequest.class);
-    
+
     assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
-  }  
-  
+  }
+
   @Test
-  public void isAnswerSTA() throws Exception
-  {
+  public void isAnswerSTA() throws Exception {
     SessionTerminationAnswer sta = messageFactory.createSessionTerminationAnswer(messageFactory.createSessionTerminationRequest());
     assertFalse("Request Flag in Disconnect-Peer-Answer is set.", sta.getHeader().isRequest());
   }
-  
+
   @Test
-  public void testGettersAndSettersSTA() throws Exception
-  {
-    SessionTerminationAnswer str = messageFactory.createSessionTerminationAnswer(messageFactory.createSessionTerminationRequest());
-    
-    int nFailures = AvpAssistant.testMethods(str, SessionTerminationAnswer.class);
-    
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
-  }  
-  
-  @Test
-  public void hasDestinationHostSTA() throws Exception
-  {
-    SessionTerminationAnswer sta = messageFactory.createSessionTerminationAnswer(messageFactory.createSessionTerminationRequest());
-    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", sta.getDestinationHost());    
+  public void isProxiableCopiedSTA() throws Exception {
+    SessionTerminationRequest asr = messageFactory.createSessionTerminationRequest();
+    SessionTerminationAnswer asa = messageFactory.createSessionTerminationAnswer(asr);
+    assertEquals("The 'P' bit is not copied from request in Session-Termination-Answer, it should. [RFC3588/6.2]", asr.getHeader().isProxiable(), asa.getHeader().isProxiable());
+
+    // Reverse 'P' bit ...
+    ((DiameterMessageImpl) asr).getGenericData().setProxiable(!asr.getHeader().isProxiable());
+    assertTrue("The 'P' bit was not modified in Session-Termination-Request, it should.", asr.getHeader().isProxiable() != asa.getHeader().isProxiable());
+
+    asa = messageFactory.createSessionTerminationAnswer(asr);
+    assertEquals("The 'P' bit is not copied from request in Session-Termination-Answer, it should. [RFC3588/6.2]", asr.getHeader().isProxiable(), asa.getHeader().isProxiable());
   }
 
   @Test
-  public void hasDestinationRealmSTA() throws Exception
-  {
-    SessionTerminationAnswer sta = messageFactory.createSessionTerminationAnswer(messageFactory.createSessionTerminationRequest());
-    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", sta.getDestinationRealm());    
+  public void testGettersAndSettersSTA() throws Exception {
+    SessionTerminationAnswer str = messageFactory.createSessionTerminationAnswer(messageFactory.createSessionTerminationRequest());
+
+    int nFailures = AvpAssistant.testMethods(str, SessionTerminationAnswer.class);
+
+    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
   }
-  
+
   @Test
-  public void testAvpFactoryCreateExperimentalResult()
-  {
+  public void hasDestinationHostSTA() throws Exception {
+    SessionTerminationAnswer sta = messageFactory.createSessionTerminationAnswer(messageFactory.createSessionTerminationRequest());
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", sta.getDestinationHost());
+  }
+
+  @Test
+  public void hasDestinationRealmSTA() throws Exception {
+    SessionTerminationAnswer sta = messageFactory.createSessionTerminationAnswer(messageFactory.createSessionTerminationRequest());
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", sta.getDestinationRealm());
+  }
+
+  @Test
+  public void testAvpFactoryCreateExperimentalResult() {
     ExperimentalResultAvp erAvp1 = avpFactory.createExperimentalResult(10609L, 9999L);
-    
+
     Assert.assertNotNull("Created Experimental-Result AVP from objects should not be null.", erAvp1);
 
     ExperimentalResultAvp erAvp2 = avpFactory.createExperimentalResult(erAvp1.getExtensionAvps());
-    
+
     Assert.assertEquals("Created Experimental-Result AVP from extension avps should be equal to original.", erAvp1, erAvp2);
-    
+
     ExperimentalResultAvp erAvp3 = avpFactory.createExperimentalResult(erAvp2.getVendorIdAVP(), erAvp2.getExperimentalResultCode());
-    
-    Assert.assertEquals("Created Experimental-Result AVP from getters should be equal to original.", erAvp1, erAvp3);    
+
+    Assert.assertEquals("Created Experimental-Result AVP from getters should be equal to original.", erAvp1, erAvp3);
   }
-  
+
   @Test
-  public void testAvpFactoryCreateProxyInfo()
-  {
-    ProxyInfoAvp piAvp1 = avpFactory.createProxyInfo( new DiameterIdentity("diameter.mobicents.org"), "INITIALIZED" );
-    
+  public void testAvpFactoryCreateProxyInfo() {
+    ProxyInfoAvp piAvp1 = avpFactory.createProxyInfo(new DiameterIdentity("diameter.mobicents.org"), "INITIALIZED");
+
     Assert.assertNotNull("Created Proxy-Info AVP from objects should not be null.", piAvp1);
 
     ProxyInfoAvp piAvp2 = avpFactory.createProxyInfo(piAvp1.getExtensionAvps());
-    
+
     Assert.assertEquals("Created Proxy-Info AVP from extension avps should be equal to original.", piAvp1, piAvp2);
-    
+
     ProxyInfoAvp piAvp3 = avpFactory.createProxyInfo(piAvp2.getProxyHost(), piAvp2.getProxyState());
-    
-    Assert.assertEquals("Created Proxy-Info AVP from getters should be equal to original.", piAvp1, piAvp3);    
+
+    Assert.assertEquals("Created Proxy-Info AVP from getters should be equal to original.", piAvp1, piAvp3);
   }
-  
+
   @Test
-  public void testAvpFactoryCreateVendorSpecificApplicationId()
-  {
+  public void testAvpFactoryCreateVendorSpecificApplicationId() {
     VendorSpecificApplicationIdAvp vsaidAvp1 = avpFactory.createVendorSpecificApplicationId(10609L);
-    
+
     Assert.assertNotNull("Created Vendor-Specific-Application-Id AVP from objects should not be null.", vsaidAvp1);
 
     VendorSpecificApplicationIdAvp vsaidAvp2 = avpFactory.createVendorSpecificApplicationId(vsaidAvp1.getExtensionAvps());
-    
+
     Assert.assertEquals("Created Vendor-Specific-Application-Id AVP from extension avps should be equal to original.", vsaidAvp1, vsaidAvp2);
-    
+
     VendorSpecificApplicationIdAvp vsaidAvp3 = avpFactory.createVendorSpecificApplicationId(vsaidAvp2.getVendorIdsAvp()[0]);
-    
-    Assert.assertEquals("Created Vendor-Specific-Application-Id AVP from getters should be equal to original.", vsaidAvp1, vsaidAvp3);    
+
+    Assert.assertEquals("Created Vendor-Specific-Application-Id AVP from getters should be equal to original.", vsaidAvp1, vsaidAvp3);
   }
-  
+
   @Test
   public void testMessageCreationVendorSpecificApplicationIdAvp() {
     // Relates to Issue #1555 (http://code.google.com/p/mobicents/issues/detail?id=1555)
@@ -532,10 +613,10 @@ public class BaseFactoriesTest {
 
       // hack: vendor id is Avp vendor-id value, need to do this way.
       long msgAppVendorId = vsaidAvp.getVendorIdsAvp()[0];
-      assertTrue("Vendor-Specific-Application-Id / Vendor-Id should be [" + vendorId + "] it is ["  + msgAppVendorId + "]", vendorId == msgAppVendorId);
+      assertTrue("Vendor-Specific-Application-Id / Vendor-Id should be [" + vendorId + "] it is [" + msgAppVendorId + "]", vendorId == msgAppVendorId);
 
       long msgAppId = vsaidAvp.getAcctApplicationId();
-      assertTrue("Vendor-Specific-Application-Id / Acct-Application-Id should be [" + acctApplicationId + "] it is ["  + msgAppId + "]", acctApplicationId == msgAppId);
+      assertTrue("Vendor-Specific-Application-Id / Acct-Application-Id should be [" + acctApplicationId + "] it is [" + msgAppId + "]", acctApplicationId == msgAppId);
 
     }
     catch (Exception e) {
@@ -565,7 +646,7 @@ public class BaseFactoriesTest {
       assertNull("Vendor-Specific-Application-Id should not be present in message.", vsaidAvp);
 
       long msgAppId = acr.getAcctApplicationId();
-      assertTrue("Acct-Application-Id should be [" + acctApplicationId + "] it is ["  + msgAppId + "]", acctApplicationId == msgAppId);
+      assertTrue("Acct-Application-Id should be [" + acctApplicationId + "] it is [" + msgAppId + "]", acctApplicationId == msgAppId);
     }
     catch (Exception e) {
       e.printStackTrace();
@@ -574,44 +655,40 @@ public class BaseFactoriesTest {
   }
 
   /**
-   * Class representing the Diameter Configuration  
+   * Class representing the Diameter Configuration
    */
-  public static class MyConfiguration extends EmptyConfiguration 
-  {
-    public MyConfiguration() 
-    {
+  public static class MyConfiguration extends EmptyConfiguration {
+    public MyConfiguration() {
       super();
-      
+
       add(Assembler, Assembler.defValue());
       add(OwnDiameterURI, clientURI);
       add(OwnRealm, realmName);
       add(OwnVendorID, 193L);
       // Set Ericsson SDK feature
-      //add(UseUriAsFqdn, true);
+      // add(UseUriAsFqdn, true);
       // Set Common Applications
       add(ApplicationId,
-          // AppId 1
+      // AppId 1
           getInstance().
-          add(VendorId,   193L).
+          add(VendorId, 193L).
           add(AuthApplId, 0L).
-          add(AcctApplId, 19302L)
-      );
+          add(AcctApplId, 19302L));
       // Set peer table
       add(PeerTable,
-          // Peer 1
+      // Peer 1
           getInstance().
           add(PeerRating, 1).
           add(PeerName, serverURI));
       // Set realm table
-      add(RealmTable, 
-              // Realm 1
-              getInstance().add(RealmEntry, getInstance().
-                  add(RealmName, realmName).
-                  add(ApplicationId, getInstance().add(VendorId, 193L).add(AuthApplId, 0L).add(AcctApplId, 19302L)).
-                  add(RealmHosts, clientHost + ", " + serverHost).
-                  add(RealmLocalAction, "LOCAL").
-                  add(RealmEntryIsDynamic, false).
-                  add(RealmEntryExpTime, 1000L)));
+      add(RealmTable,
+          // Realm 1
+          getInstance().add(
+              RealmEntry,
+              getInstance().
+              add(RealmName, realmName).
+              add(ApplicationId, getInstance().add(VendorId, 193L).add(AuthApplId, 0L).add(AcctApplId, 19302L)).
+              add(RealmHosts, clientHost + ", " + serverHost).add(RealmLocalAction, "LOCAL").add(RealmEntryIsDynamic, false).add(RealmEntryExpTime, 1000L)));
     }
   }
 

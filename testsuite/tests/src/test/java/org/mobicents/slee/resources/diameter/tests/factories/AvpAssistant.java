@@ -645,6 +645,9 @@ public class AvpAssistant {
     typeValues.put( RestorationInfo.class, new RestorationInfoImpl(DiameterCxDxAvpCodes.RESTORATION_INFO, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
     typeValues.put( RestorationInfo[].class, new RestorationInfoImpl[]{new RestorationInfoImpl(DiameterCxDxAvpCodes.RESTORATION_INFO, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
 
+    typeValues.put( net.java.slee.resource.diameter.cxdx.events.avp.ServerCapabilities.class, new org.mobicents.slee.resource.diameter.cxdx.events.avp.ServerCapabilitiesImpl(DiameterCxDxAvpCodes.SERVER_CAPABILITIES, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.cxdx.events.avp.ServerCapabilities[].class, new org.mobicents.slee.resource.diameter.cxdx.events.avp.ServerCapabilitiesImpl[]{new org.mobicents.slee.resource.diameter.cxdx.events.avp.ServerCapabilitiesImpl(DiameterCxDxAvpCodes.SERVER_CAPABILITIES, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
     // Gx AVP Factory
     
     typeValues.put( TFTPacketFilterInformation.class, new TFTPacketFilterInformationImpl(DiameterGxAvpCodes.TFT_PACKET_FILTER_INFORMATION, DiameterGxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );

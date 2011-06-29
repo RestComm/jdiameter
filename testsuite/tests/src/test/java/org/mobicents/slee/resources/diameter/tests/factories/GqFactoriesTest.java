@@ -85,13 +85,13 @@ import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
+import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.gq.GqAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.gq.GqMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.gq.GqServerSessionActivityImpl;
 
-
 /**
- * Diameter Gq SLEE Factories Tests
+ * Test class for JAIN SLEE Diameter Gq' RA Message and AVP Factories
  *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
@@ -165,6 +165,12 @@ public class GqFactoriesTest {
   }
 
   @Test
+  public void isProxiableAAR() throws Exception {
+    GqAARequest rar = gqMessageFactory.createGqAARequest();
+    assertTrue("The 'P' bit is not set by default in Gq' AA-Request, it should.", rar.getHeader().isProxiable());
+  }
+
+  @Test
   public void testGettersAndSettersAAR() throws Exception {
     GqAARequest aar = gqMessageFactory.createGqAARequest();
 
@@ -185,6 +191,20 @@ public class GqFactoriesTest {
   public void isAnswerAAA() throws Exception {
     GqAAAnswer aaa = gqServerSession.createGqAAAnswer(gqMessageFactory.createGqAARequest());
     assertFalse("Request Flag in AA-Answer is set.", aaa.getHeader().isRequest());
+  }
+
+  @Test
+  public void isProxiableCopiedAAA() throws Exception {
+    GqAARequest rar = gqMessageFactory.createGqAARequest();
+    GqAAAnswer raa = gqMessageFactory.createGqAAAnswer(rar);
+    assertEquals("The 'P' bit is not copied from request in Gq' AA-Answer, it should. [RFC3588/6.2]", rar.getHeader().isProxiable(), raa.getHeader().isProxiable());
+
+    // Reverse 'P' bit ...
+    ((DiameterMessageImpl) rar).getGenericData().setProxiable(!rar.getHeader().isProxiable());
+    assertTrue("The 'P' bit was not modified in Gq' AA-Request, it should.", rar.getHeader().isProxiable() != raa.getHeader().isProxiable());
+
+    raa = gqMessageFactory.createGqAAAnswer(rar);
+    assertEquals("The 'P' bit is not copied from request in Gq' AA-Answer, it should. [RFC3588/6.2]", rar.getHeader().isProxiable(), raa.getHeader().isProxiable());
   }
 
   @Test
@@ -223,6 +243,12 @@ public class GqFactoriesTest {
   }
 
   @Test
+  public void isProxiableASR() throws Exception {
+    GqAbortSessionRequest rar = gqMessageFactory.createGqAbortSessionRequest();
+    assertTrue("The 'P' bit is not set by default in Gq' Abort-Session-Request, it should.", rar.getHeader().isProxiable());
+  }
+
+  @Test
   public void testGettersAndSettersASR() throws Exception {
     GqAbortSessionRequest asr = gqMessageFactory.createGqAbortSessionRequest();
 
@@ -243,6 +269,20 @@ public class GqFactoriesTest {
   public void isAnswerASA() throws Exception {
     GqAbortSessionAnswer asa = gqMessageFactory.createGqAbortSessionAnswer(gqMessageFactory.createGqAbortSessionRequest());
     assertFalse("Request Flag in Abort-Session-Answer is set.", asa.getHeader().isRequest());
+  }
+
+  @Test
+  public void isProxiableCopiedASA() throws Exception {
+    GqAbortSessionRequest rar = gqMessageFactory.createGqAbortSessionRequest();
+    GqAbortSessionAnswer raa = gqMessageFactory.createGqAbortSessionAnswer(rar);
+    assertEquals("The 'P' bit is not copied from request in Gq' Abort-Session-Answer, it should. [RFC3588/6.2]", rar.getHeader().isProxiable(), raa.getHeader().isProxiable());
+
+    // Reverse 'P' bit ...
+    ((DiameterMessageImpl) rar).getGenericData().setProxiable(!rar.getHeader().isProxiable());
+    assertTrue("The 'P' bit was not modified in Gq' Abort-Session-Request, it should.", rar.getHeader().isProxiable() != raa.getHeader().isProxiable());
+
+    raa = gqMessageFactory.createGqAbortSessionAnswer(rar);
+    assertEquals("The 'P' bit is not copied from request in Gq' Abort-Session-Answer, it should. [RFC3588/6.2]", rar.getHeader().isProxiable(), raa.getHeader().isProxiable());
   }
 
   @Test
@@ -275,6 +315,12 @@ public class GqFactoriesTest {
   }
 
   @Test
+  public void isProxiableRAR() throws Exception {
+    GqReAuthRequest rar = gqMessageFactory.createGqReAuthRequest();
+    assertTrue("The 'P' bit is not set by default in Gq' Re-Auth-Request, it should.", rar.getHeader().isProxiable());
+  }
+
+  @Test
   public void testGettersAndSettersRAR() throws Exception {
     GqReAuthRequest rar = gqMessageFactory.createGqReAuthRequest();
 
@@ -295,6 +341,20 @@ public class GqFactoriesTest {
   public void isAnswerRAA() throws Exception {
     GqReAuthAnswer raa = gqMessageFactory.createGqReAuthAnswer(gqMessageFactory.createGqReAuthRequest());
     assertFalse("Request Flag in Re-Auth-Answer is set.", raa.getHeader().isRequest());
+  }
+
+  @Test
+  public void isProxiableCopiedRAA() throws Exception {
+    GqReAuthRequest rar = gqMessageFactory.createGqReAuthRequest();
+    GqReAuthAnswer raa = gqMessageFactory.createGqReAuthAnswer(rar);
+    assertEquals("The 'P' bit is not copied from request in Gq' Re-Auth-Answer, it should. [RFC3588/6.2]", rar.getHeader().isProxiable(), raa.getHeader().isProxiable());
+
+    // Reverse 'P' bit ...
+    ((DiameterMessageImpl) rar).getGenericData().setProxiable(!rar.getHeader().isProxiable());
+    assertTrue("The 'P' bit was not modified in Gq' Re-Auth-Request, it should.", rar.getHeader().isProxiable() != raa.getHeader().isProxiable());
+
+    raa = gqMessageFactory.createGqReAuthAnswer(rar);
+    assertEquals("The 'P' bit is not copied from request in Gq' Re-Auth-Answer, it should. [RFC3588/6.2]", rar.getHeader().isProxiable(), raa.getHeader().isProxiable());
   }
 
   @Test
@@ -327,6 +387,12 @@ public class GqFactoriesTest {
   }
 
   @Test
+  public void isProxiableSTR() throws Exception {
+    GqSessionTerminationRequest str = gqMessageFactory.createGqSessionTerminationRequest();
+    assertTrue("The 'P' bit is not set by default in Session-Termination-Request, it should.", str.getHeader().isProxiable());
+  }
+
+  @Test
   public void testGettersAndSettersSTR() throws Exception {
     GqSessionTerminationRequest str = gqMessageFactory.createGqSessionTerminationRequest();
 
@@ -341,12 +407,26 @@ public class GqFactoriesTest {
     assertTrue("Auth-Application-Id AVP in Gq STR must be " + GqMessageFactory._GQ_AUTH_APP_ID + ", it is " + str.getAuthApplicationId(), str.getAuthApplicationId() == GqMessageFactory._GQ_AUTH_APP_ID);
   }
 
-  // Re-Auth-Answer
+  // Session-Termination-Answer
 
   @Test
   public void isAnswerSTA() throws Exception {
     GqSessionTerminationAnswer sta = gqMessageFactory.createGqSessionTerminationAnswer(gqMessageFactory.createGqSessionTerminationRequest());
     assertFalse("Request Flag in Re-Auth-Answer is set.", sta.getHeader().isRequest());
+  }
+
+  @Test
+  public void isProxiableCopiedSTA() throws Exception {
+    GqSessionTerminationRequest str = gqMessageFactory.createGqSessionTerminationRequest();
+    GqSessionTerminationAnswer sta = gqMessageFactory.createGqSessionTerminationAnswer(str);
+    assertEquals("The 'P' bit is not copied from request in Session-Termination-Answer, it should. [RFC3588/6.2]", str.getHeader().isProxiable(), sta.getHeader().isProxiable());
+
+    // Reverse 'P' bit ...
+    ((DiameterMessageImpl) str).getGenericData().setProxiable(!str.getHeader().isProxiable());
+    assertTrue("The 'P' bit was not modified in Session-Termination-Request, it should.", str.getHeader().isProxiable() != sta.getHeader().isProxiable());
+
+    sta = gqMessageFactory.createGqSessionTerminationAnswer(str);
+    assertEquals("The 'P' bit is not copied from request in Session-Termination-Answer, it should. [RFC3588/6.2]", str.getHeader().isProxiable(), sta.getHeader().isProxiable());
   }
 
   @Test

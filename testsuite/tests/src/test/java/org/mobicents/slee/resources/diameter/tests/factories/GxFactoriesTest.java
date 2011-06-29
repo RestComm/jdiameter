@@ -1,24 +1,25 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
- * contributors as indicated by the @authors tag. All rights reserved.
- * See the copyright.txt in the distribution for a full listing
- * of individual contributors.
- * 
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License, v. 2.0.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
+ * Copyright 2010, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.mobicents.slee.resources.diameter.tests.factories;
 
 import static org.jdiameter.client.impl.helpers.Parameters.AcctApplId;
@@ -39,6 +40,7 @@ import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryIsDynamic;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmHosts;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmLocalAction;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmName;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -62,8 +64,6 @@ import org.jdiameter.api.Stack;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
-import org.jdiameter.api.auth.events.ReAuthAnswer;
-import org.jdiameter.api.auth.events.ReAuthRequest;
 import org.jdiameter.api.gx.ClientGxSession;
 import org.jdiameter.api.gx.ClientGxSessionListener;
 import org.jdiameter.api.gx.ServerGxSession;
@@ -79,13 +79,14 @@ import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
+import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.gx.GxAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.gx.GxClientSessionActivityImpl;
 import org.mobicents.slee.resource.diameter.gx.GxMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.gx.GxServerSessionActivityImpl;
 
 /**
- * GxFactoriesTest.java
+ * Test class for JAIN SLEE Diameter Gx RA Message and AVP Factories
  *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
@@ -170,6 +171,12 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
   }  
 
   @Test
+  public void isProxiableCCR() throws Exception {
+    GxCreditControlRequest ccr = gxMessageFactory.createGxCreditControlRequest();
+    assertTrue("The 'P' bit is not set by default in Gx Credit-Control-Request, it should.", ccr.getHeader().isProxiable());
+  }
+
+  @Test
   public void hasGxApplicationIdCCR() throws Exception {
     GxCreditControlRequest ccr = gxMessageFactory.createGxCreditControlRequest();
     assertTrue("Auth-Application-Id AVP in Gx CCR must be 16777224, it is " + ccr.getAuthApplicationId(), ccr.getAuthApplicationId() == 16777224);
@@ -179,6 +186,22 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
   public void isAnswerCCA() throws Exception {
     GxCreditControlAnswer cca = gxServerSession.createGxCreditControlAnswer();
     assertFalse("Request Flag in Credit-Control-Answer is set.", cca.getHeader().isRequest());
+  }
+
+  @Test
+  public void isProxiableCopiedCCA() throws Exception {
+    GxCreditControlRequest ccr = gxMessageFactory.createGxCreditControlRequest();
+    ((GxServerSessionActivityImpl)gxServerSession).fetchCurrentState(ccr);
+    GxCreditControlAnswer cca = gxServerSession.createGxCreditControlAnswer();
+    assertEquals("The 'P' bit is not copied from request in Credit-Control-Answer, it should. [RFC3588/6.2]", ccr.getHeader().isProxiable(), cca.getHeader().isProxiable());
+
+    // Reverse 'P' bit ...
+    ((DiameterMessageImpl) ccr).getGenericData().setProxiable(!ccr.getHeader().isProxiable());
+    assertTrue("The 'P' bit was not modified in Credit-Control-Request, it should.", ccr.getHeader().isProxiable() != cca.getHeader().isProxiable());
+    ((GxServerSessionActivityImpl)gxServerSession).fetchCurrentState(ccr);
+
+    cca = gxServerSession.createGxCreditControlAnswer();
+    assertEquals("The 'P' bit is not copied from request in Credit-Control-Answer, it should. [RFC3588/6.2]", ccr.getHeader().isProxiable(), cca.getHeader().isProxiable());
   }
 
   @Test
@@ -216,6 +239,12 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
   }
 
   @Test
+  public void isProxiableRAR() throws Exception {
+    GxReAuthRequest rar = gxMessageFactory.createGxReAuthRequest();
+    assertTrue("The 'P' bit is not set by default in Re-Auth-Request, it should.", rar.getHeader().isProxiable());
+  }
+
+  @Test
   public void testGettersAndSettersRAR() throws Exception {
     GxReAuthRequest rar = gxMessageFactory.createGxReAuthRequest();
 
@@ -234,6 +263,20 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
   public void isAnswerRAA() throws Exception {
     GxReAuthAnswer raa = gxClientSession.createGxReAuthAnswer(gxMessageFactory.createGxReAuthRequest());
     assertFalse("Request Flag in Gx Re-Auth-Answer is set.", raa.getHeader().isRequest());
+  }
+
+  @Test
+  public void isProxiableCopiedRAA() throws Exception {
+    GxReAuthRequest rar = gxMessageFactory.createGxReAuthRequest();
+    GxReAuthAnswer raa = gxClientSession.createGxReAuthAnswer(rar);
+    assertEquals("The 'P' bit is not copied from request in Re-Auth-Answer, it should. [RFC3588/6.2]", rar.getHeader().isProxiable(), raa.getHeader().isProxiable());
+
+    // Reverse 'P' bit ...
+    ((DiameterMessageImpl) rar).getGenericData().setProxiable(!rar.getHeader().isProxiable());
+    assertTrue("The 'P' bit was not modified in Re-Auth-Request, it should.", rar.getHeader().isProxiable() != raa.getHeader().isProxiable());
+
+    raa = gxClientSession.createGxReAuthAnswer(rar);
+    assertEquals("The 'P' bit is not copied from request in Re-Auth-Answer, it should. [RFC3588/6.2]", rar.getHeader().isProxiable(), raa.getHeader().isProxiable());
   }
 
   @Test
@@ -326,10 +369,6 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
   }
 
   public void doGxReAuthRequest(ClientGxSession session, org.jdiameter.api.gx.events.GxReAuthRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    // NO-OP
-  }
-
-  public void doReAuthAnswer(ServerGxSession session, ReAuthRequest request, ReAuthAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     // NO-OP
   }
 
