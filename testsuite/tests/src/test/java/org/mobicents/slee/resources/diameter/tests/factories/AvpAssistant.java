@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2008, Red Hat, Inc. and individual contributors
+ * Copyright 2008-2011, Red Hat, Inc. and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -142,7 +142,9 @@ import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.Stack;
+import org.jdiameter.api.validation.AvpRepresentation;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
+import org.jdiameter.common.impl.validation.DictionaryImpl;
 import org.junit.Assert;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
@@ -233,12 +235,8 @@ import org.mobicents.slee.resource.diameter.sh.events.avp.userdata.UserDataObjec
 public class AvpAssistant {
 
   private static String clientHost = "127.0.0.1";
-  private static String clientPort = "13868";
-  private static String clientURI  = "aaa://" + clientHost + ":" + clientPort;
 
   private static String serverHost = "localhost";
-  private static String serverPort = "3868";
-  private static String serverURI = "aaa://" + serverHost + ":" + serverPort;
 
   private static String realmName = "mobicents.org";
 
@@ -315,7 +313,7 @@ public class AvpAssistant {
     stack.init( new MyConfiguration() );
     Message createMessage = stack.getSessionFactory().getNewRawSession().createMessage( 0, org.jdiameter.api.ApplicationId.createByAccAppId( 0L ));
     AvpSet rawAvp = createMessage.getAvps();
-    rawAvp.addGroupedAvp(0).addAvp( 666, "pwning_more", true );
+    rawAvp.addGroupedAvp(0).addAvp( Avp.ERROR_MESSAGE, "pwning_more", true );
     byte[] dummyAvpBytes = rawAvp.getAvp(0).getRawData();
 
     //DiameterAvpFactory baseAvpFactory = new DiameterAvpFactoryImpl();
@@ -832,6 +830,16 @@ public class AvpAssistant {
             // ignore... we fail!
           }
 
+          // Validate AVP Flags
+          ArrayList<String> failedAvpFlags = checkAvpFlags(((DiameterMessageImpl)message).getGenericData().getAvps());
+          if(failedAvpFlags.size() > 0) {
+            System.err.println("The following AVPs flags have failed to check against dictionary:");
+            for(String failedAvpFlag : failedAvpFlags) {
+              System.err.println(failedAvpFlag);
+            }
+            Assert.fail(failedAvpFlags.toString());
+          }
+          
           nFailures = passed ? nFailures : nFailures+1;
           System.out.println("[" + (passed ? "PASSED" : "FAILED") + "] " + methodName.replace("get", "") + " with param of type '"+ avpType.getName() + "' " + (hasser != null ? " WITH has" : " WITHOUT has"));
         }
@@ -987,6 +995,49 @@ public class AvpAssistant {
       return pluralMethodName.substring(0, pluralMethodName.length()-1);
     else
       return pluralMethodName;
+  }
+
+  /**
+   * 
+   * @param set the set to check
+   * @return an array of offending AVPs
+   */
+  private static ArrayList<String> checkAvpFlags(AvpSet set) {
+    ArrayList<String> failedAvps = new ArrayList<String>();
+
+    for(Avp avp : set) {
+      //System.out.println(avp.getVendorId() + ":" + avp.getCode() + " V[" + avp.isVendorId() + "] M[" + avp.isMandatory() + "] P[" + avp.isEncrypted() + "]");
+      AvpRepresentation avpRep = DictionaryImpl.INSTANCE.getAvp(avp.getCode(), avp.getVendorId());
+      //System.out.println(avpRep.getVendorId() + ":" + avpRep.getCode() + " V[" + avpRep.getRuleVendorBit() + "] M[" + avpRep.getRuleMandatory() + "] P[" + avpRep.getRuleProtected() + "]");
+      
+      // Mandatory must not be set if rule is MUST NOT or SHOULD NOT
+      if(avp.isMandatory() && (avpRep.getRuleMandatory().equals("mustnot") || avpRep.getRuleMandatory().equals("shouldnot"))) {
+        failedAvps.add("- Code[" + avp.getCode() + "], Vendor-Id[" + avp.getVendorId() + "], Flag[M / '" + avp.isMandatory() + "' vs '" + avpRep.getRuleMandatory() + "']");
+      }
+      
+      // Protected must not be set if rule is MUST or MAY
+      if(avp.isEncrypted() && !(avpRep.getRuleProtected().equals("must") || avpRep.getRuleProtected().equals("may"))) {
+        failedAvps.add("- Code[" + avp.getCode() + "], Vendor-Id[" + avp.getVendorId() + "], Flag[P / '" + avp.isEncrypted() + "' vs '" + avpRep.getRuleProtected() + "']");
+      }
+
+      // Vendor must be set if rule is MUST or MAY
+      if(avp.isEncrypted() && !(avpRep.getRuleProtected().equals("must") || avpRep.getRuleProtected().equals("may"))) {
+        failedAvps.add("- Code[" + avp.getCode() + "], Vendor-Id[" + avp.getVendorId() + "], Flag[P / '" + avp.isEncrypted() + "' vs '" + avpRep.getRuleProtected() + "']");
+      }
+
+      AvpSet subAvps = null;
+      try {
+        subAvps = avp.getGrouped();
+      }
+      catch (Exception e) {
+      }
+      
+      if(subAvps != null) {
+        failedAvps.addAll(checkAvpFlags(subAvps));
+      }
+    }
+    
+    return failedAvps;
   }
 
   public static class MyConfiguration extends EmptyConfiguration 
