@@ -66,6 +66,14 @@ public interface AvpSet extends Iterable<Avp>, Serializable, Wrapper {
    * @return array of removed Avps instance
    */
   AvpSet removeAvp(int avpCode);
+  
+  /**
+   * Remove AVPs with avpCode
+   * @param avpCode code of Avp
+   * @param vendorId code of Vendor
+   * @return array of removed Avps instance
+   */
+  AvpSet removeAvp(int avpCode, long vendorId);
 
   /**
    * Remove Avp by Avp index

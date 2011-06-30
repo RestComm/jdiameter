@@ -83,23 +83,27 @@ class AvpSetImpl implements AvpSet {
     }
 
     public AvpSet removeAvp(int avpCode) {
-      AvpSet result = new AvpSetImpl();
-    //  for (Avp avp : this.avps) {
-    //    if (avp.getCode() == avpCode) {
-    //      result.addAvp(avp);
-    //      this.avps.remove(avp);
-    //    }
-    //  }
-      Iterator<Avp> it = this.avps.iterator();
-      while(it.hasNext()) {
-        Avp avp = it.next();
-        if (avp.getCode() == avpCode) {
-          result.addAvp(avp);
-          it.remove();
-        }
-      }
-      return result;
+    	return removeAvp(avpCode, 0);
     }
+    
+    public AvpSet removeAvp(int avpCode, long vendorId) {
+        AvpSet result = new AvpSetImpl();
+      //  for (Avp avp : this.avps) {
+      //    if (avp.getCode() == avpCode) {
+      //      result.addAvp(avp);
+      //      this.avps.remove(avp);
+      //    }
+      //  }
+        Iterator<Avp> it = this.avps.iterator();
+        while(it.hasNext()) {
+          Avp avp = it.next();
+          if (avp.getCode() == avpCode && avp.getVendorId() == vendorId) {
+            result.addAvp(avp);
+            it.remove();
+          }
+        }
+        return result;
+      }
 
     public Avp removeAvpByIndex(int i) {
         return (i >= this.avps.size()) ? null : this.avps.remove(i);
