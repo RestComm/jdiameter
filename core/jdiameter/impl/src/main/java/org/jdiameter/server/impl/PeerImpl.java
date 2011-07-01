@@ -173,8 +173,10 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
   }
 
   public String toString() {
-    return uri.toString();
-  }
+	  if(fsm!=null)
+		  return "SPeer{" + "Uri=" + uri + "; State=" + fsm.getState(PeerState.class) + "; con="+ connection +"; incCon"+incConnections+" }";
+	  return "SPeer{" + "Uri=" + uri + "; State=" + fsm + "; con="+ connection +"; incCon"+incConnections+" }";
+ }
 
   protected class LocalActionConext extends ActionContext {
 

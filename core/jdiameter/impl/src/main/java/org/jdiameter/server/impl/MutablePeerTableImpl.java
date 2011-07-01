@@ -445,7 +445,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
 
                           peer = newPeerInstance(0, uri, connection.getRemoteAddress().getHostAddress(), null, false, connection,
                               metaData, config, null, fsmFactory, transportFactory, parser, statisticFactory, concurrentFactory);
-                          logger.debug("Created new peer instance [{}] and addding to peer table", peer);
+                          logger.debug("Created new peer instance [{}] and adding to peer table", peer);
                           appendPeerToPeerTable(peer);
                           logger.debug("Handle [{}] message on peer [{}]", message, peer);
                           peer.handleMessage(message.isRequest() ? EventTypes.CER_EVENT : EventTypes.CER_EVENT, message, connKey);
@@ -531,8 +531,13 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       connHandler.cancel(true);
       connHandler = null;
     }
-    //
+    //remove incoming data
     storageAnswers.clear();
+   
+    // check issue #2628 and junit test
+    //DONT use remove from table, its different method.
+    //it safe to remove directly, since everything is down
+    super.peerTable.clear();
   }
 
   public Peer addPeer(URI peerURI, String realm, boolean connecting) {

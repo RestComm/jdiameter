@@ -409,8 +409,208 @@ public class TestStackReConnection {
       }
     }
   }
+  
+  @Test
+  public void testServerRestart() throws Exception {
+    StackImpl server = new StackImpl();
+    StackImpl client = new StackImpl();
+    try {
+      String serverConfigName = "jdiameter-server-two.xml";
+      String clientConfigName = "jdiameter-client-two.xml";
 
+      InputStream serverConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
+      InputStream clientConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
+
+      Configuration serverConfig = new org.jdiameter.server.impl.helpers.XMLConfiguration(serverConfigInputStream);
+      Configuration clientConfig = new org.jdiameter.server.impl.helpers.XMLConfiguration(clientConfigInputStream);
+      
+      server.init(serverConfig);
+      serverConfigInputStream.close();
+      Network network = server.unwrap(Network.class);
+      network.addNetworkReqListener(new NetworkReqListener() {
+
+        public Answer processRequest(Request request) {
+          return null;
+        }
+      }, ApplicationId.createByAccAppId(193, 19302));
+      server.start();
+
+      _wait();
+      client.init(clientConfig);
+      clientConfigInputStream.close();
+      network = client.unwrap(Network.class);
+      network.addNetworkReqListener(new NetworkReqListener() {
+
+        public Answer processRequest(Request request) {
+          return null;
+        }
+      }, ApplicationId.createByAccAppId(193, 19302));
+      client.start(Mode.ALL_PEERS, 5000, TimeUnit.MILLISECONDS);
+      List<Peer> peers = server.unwrap(PeerTable.class).getPeerTable();
+      assertEquals("Wrong num of connections, initial setup did not succeed. ", 1, peers.size());
+      assertTrue("Peer not connected. State[" + ((IPeer) peers.get(0)).getState(PeerState.class) + "]", ((IPeer) peers.get(0)).isConnected());
+      server.stop(DisconnectCause.REBOOTING);
+      _wait();
+      peers = client.unwrap(PeerTable.class).getPeerTable();
+      assertEquals("Wrong num of connections, initial setup did not succeed. ", 1, peers.size());
+      assertTrue("Peer not connected. State[" + ((IPeer) peers.get(0)).getState(PeerState.class) + "]", !((IPeer) peers.get(0)).isConnected());
+      server.start();
+      _wait();
+      peers = server.unwrap(PeerTable.class).getPeerTable();
+      assertEquals("Wrong num of connections, initial setup did not succeed. ", 1, peers.size());
+
+      assertTrue("Peer not connected. State[" + ((IPeer) peers.get(0)).getState(PeerState.class) + "]", ((IPeer) peers.get(0)).isConnected());
+    }
+    finally {
+      try {
+        client.stop(DisconnectCause.DO_NOT_WANT_TO_TALK_TO_YOU);
+        client.destroy();
+      }
+      catch (Exception e) {
+        logger.warn("Failed to stop/destroy CLIENT stack.", e);
+      }
+
+      try {
+        server.stop(DisconnectCause.DO_NOT_WANT_TO_TALK_TO_YOU);
+        server.destroy();
+      }
+      catch (Exception e) {
+        logger.warn("Failed to stop/destroy SERVER stack.", e);
+      }
+    }
+  }
+
+  
+  @Test
+  public void testServerRestart2() throws Exception {
+    StackImpl server = new StackImpl();
+    StackImpl client = new StackImpl();
+    try {
+      String serverConfigName = "jdiameter-server-one.xml";
+      String clientConfigName = "jdiameter-client-one.xml";
+
+      InputStream serverConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
+      InputStream clientConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
+
+      Configuration serverConfig = new org.jdiameter.server.impl.helpers.XMLConfiguration(serverConfigInputStream);
+      Configuration clientConfig = new org.jdiameter.server.impl.helpers.XMLConfiguration(clientConfigInputStream);
+      
+      server.init(serverConfig);
+      serverConfigInputStream.close();
+      Network network = server.unwrap(Network.class);
+      network.addNetworkReqListener(new NetworkReqListener() {
+
+        public Answer processRequest(Request request) {
+          return null;
+        }
+      }, ApplicationId.createByAccAppId(193, 19302));
+      server.start();
+      _wait();
+      client.init(clientConfig);
+      clientConfigInputStream.close();
+      network = client.unwrap(Network.class);
+      network.addNetworkReqListener(new NetworkReqListener() {
+
+        public Answer processRequest(Request request) {
+          return null;
+        }
+      }, ApplicationId.createByAccAppId(193, 19302));
+      client.start(Mode.ALL_PEERS, 5000, TimeUnit.MILLISECONDS);
+      List<Peer> peers = server.unwrap(PeerTable.class).getPeerTable();
+      assertEquals("Wrong num of connections, initial setup did not succeed. ", 1, peers.size());
+      assertTrue("Peer not connected. State[" + ((IPeer) peers.get(0)).getState(PeerState.class) + "]", ((IPeer) peers.get(0)).isConnected());
+      server.stop(DisconnectCause.REBOOTING);
+      _wait();
+      peers = client.unwrap(PeerTable.class).getPeerTable();
+      assertEquals("Wrong num of connections, initial setup did not succeed. ", 1, peers.size());
+      assertTrue("Peer not connected. State[" + ((IPeer) peers.get(0)).getState(PeerState.class) + "]", !((IPeer) peers.get(0)).isConnected());
+
+      server.start();
+      _wait();
+      peers = server.unwrap(PeerTable.class).getPeerTable();
+      assertEquals("Wrong num of connections, initial setup did not succeed. ", 1, peers.size());
+
+      assertTrue("Peer not connected. State[" + ((IPeer) peers.get(0)).getState(PeerState.class) + "]", ((IPeer) peers.get(0)).isConnected());
+    }
+    finally {
+      try {
+        client.stop(DisconnectCause.DO_NOT_WANT_TO_TALK_TO_YOU);
+        client.destroy();
+      }
+      catch (Exception e) {
+        logger.warn("Failed to stop/destroy CLIENT stack.", e);
+      }
+
+      try {
+        server.stop(DisconnectCause.DO_NOT_WANT_TO_TALK_TO_YOU);
+        server.destroy();
+      }
+      catch (Exception e) {
+        logger.warn("Failed to stop/destroy SERVER stack.", e);
+      }
+    }
+  }
+  
+  
+  @Test
+  public void testServerRestart3() throws Exception {
+    StackImpl server = new StackImpl();
+    StackImpl client = new StackImpl();
+    try {
+      String serverConfigName = "jdiameter-server-one.xml";
+      String clientConfigName = "jdiameter-client-one.xml";
+
+      InputStream serverConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
+      InputStream clientConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
+
+      Configuration serverConfig = new org.jdiameter.server.impl.helpers.XMLConfiguration(serverConfigInputStream);
+      Configuration clientConfig = new org.jdiameter.server.impl.helpers.XMLConfiguration(clientConfigInputStream);
+      
+      server.init(serverConfig);
+      serverConfigInputStream.close();
+      Network network = server.unwrap(Network.class);
+      network.addNetworkReqListener(new NetworkReqListener() {
+
+        public Answer processRequest(Request request) {
+          return null;
+        }
+      }, ApplicationId.createByAccAppId(193, 19302));
+      server.start();
+      _wait();
+      
+      server.stop(DisconnectCause.REBOOTING);
+      _wait();
+
+     
+
+      server.start();
+      _wait();
+
+    }
+    finally {
+      try {
+        client.stop(DisconnectCause.DO_NOT_WANT_TO_TALK_TO_YOU);
+        client.destroy();
+      }
+      catch (Exception e) {
+        logger.warn("Failed to stop/destroy CLIENT stack.", e);
+      }
+
+      try {
+        server.stop(DisconnectCause.DO_NOT_WANT_TO_TALK_TO_YOU);
+        server.destroy();
+      }
+      catch (Exception e) {
+        logger.warn("Failed to stop/destroy SERVER stack.", e);
+      }
+    }
+  }
   private void _wait() throws InterruptedException {
     Thread.sleep(5000);
   }
+  
+  
+  
+  
+  
 }
