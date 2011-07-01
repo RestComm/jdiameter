@@ -154,6 +154,7 @@ public class CxDxServerSessionImpl extends CxDxSession implements ServerCxDxSess
       }
       final CxDxSessionState state = this.sessionData.getCxDxSessionState();
       CxDxSessionState newState = null;
+      Event localEvent = (Event) event;
       Event.Type eventType = (Type) event.getType();
       switch (state) {
 
@@ -219,13 +220,13 @@ public class CxDxServerSessionImpl extends CxDxSession implements ServerCxDxSess
         case RECEIVE_PPA:
           newState = CxDxSessionState.TERMINATED;
           super.cancelMsgTimer();
-          listener.doPushProfileAnswer(this,  null, (JPushProfileAnswer)event.getData());
+          listener.doPushProfileAnswer(this,  (JPushProfileRequest) localEvent.getRequest(), (JPushProfileAnswer) localEvent.getAnswer());
           break;
 
         case RECEIVE_RTA:
           newState = CxDxSessionState.TERMINATED;
           super.cancelMsgTimer();
-          listener.doRegistrationTerminationAnswer(this,  null,(JRegistrationTerminationAnswer) event.getData());
+          listener.doRegistrationTerminationAnswer(this, (JRegistrationTerminationRequest) localEvent.getRequest(), (JRegistrationTerminationAnswer) localEvent.getAnswer());
           break;
 
         default:
@@ -351,19 +352,19 @@ public class CxDxServerSessionImpl extends CxDxSession implements ServerCxDxSess
 
       try {
         switch (request.getCommandCode()) {
-        case JUserAuthorizationAnswer.code:
+        case JUserAuthorizationRequest.code:
           handleEvent(new Event(Event.Type.RECEIVE_UAR, messageFactory.createUserAuthorizationRequest(request), null));
           break;
 
-        case JServerAssignmentAnswer.code:
+        case JServerAssignmentRequest.code:
           handleEvent(new Event(Event.Type.RECEIVE_SAR, messageFactory.createServerAssignmentRequest(request), null));
           break;
 
-        case JMultimediaAuthAnswer.code:
+        case JMultimediaAuthRequest.code:
           handleEvent(new Event(Event.Type.RECEIVE_MAR, messageFactory.createMultimediaAuthRequest(request), null));
           break;
 
-        case JLocationInfoAnswer.code:
+        case JLocationInfoRequest.code:
           handleEvent(new Event(Event.Type.RECEIVE_LIR, messageFactory.createLocationInfoRequest(request), null));
           break;
 
@@ -388,11 +389,11 @@ public class CxDxServerSessionImpl extends CxDxSession implements ServerCxDxSess
         switch (answer.getCommandCode()) {
 
         case JPushProfileAnswer.code:
-          handleEvent(new Event(Event.Type.RECEIVE_PPA, null, messageFactory.createPushProfileAnswer(answer)));
+          handleEvent(new Event(Event.Type.RECEIVE_PPA, messageFactory.createPushProfileRequest(request), messageFactory.createPushProfileAnswer(answer)));
           break;
 
         case JRegistrationTerminationAnswer.code:
-          handleEvent(new Event(Event.Type.RECEIVE_RTA, null, messageFactory.createRegistrationTerminationAnswer(answer)));
+          handleEvent(new Event(Event.Type.RECEIVE_RTA, messageFactory.createRegistrationTerminationRequest(request), messageFactory.createRegistrationTerminationAnswer(answer)));
           break;
 
         default:
