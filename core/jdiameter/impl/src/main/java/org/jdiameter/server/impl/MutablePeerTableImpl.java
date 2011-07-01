@@ -534,10 +534,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     //remove incoming data
     storageAnswers.clear();
    
-    // check issue #2628 and junit test
-    //DONT use remove from table, its different method.
-    //it safe to remove directly, since everything is down
-    super.peerTable.clear();
+  
   }
 
   public Peer addPeer(URI peerURI, String realm, boolean connecting) {
