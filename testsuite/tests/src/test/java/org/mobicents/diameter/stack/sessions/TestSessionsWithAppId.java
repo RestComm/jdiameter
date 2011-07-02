@@ -67,7 +67,7 @@ import org.junit.Test;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
-public class SessionsWithAppId {
+public class TestSessionsWithAppId {
 
   private static StackImpl stack = new StackImpl();
 
@@ -88,7 +88,7 @@ public class SessionsWithAppId {
       InputStream is;
       String configFile = "jdiameter-server-two.xml";
 
-      is = SessionsWithAppId.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
+      is = TestSessionsWithAppId.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
 
       Configuration config;
       config = new org.jdiameter.server.impl.helpers.XMLConfiguration(is);
