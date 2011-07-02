@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and individual contributors by the
- * @authors tag. See the copyright.txt in the distribution for a
+ * Copyright 2010, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -19,6 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.server.impl;
 
 import static org.jdiameter.client.impl.helpers.Parameters.PeerName;
@@ -38,6 +39,7 @@ import java.net.URISyntaxException;
 import java.net.UnknownServiceException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -315,7 +317,9 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     // Connect to predefined peers
     for (Peer p : peerTable.values()) {
       try {
-        p.connect();
+        if(((IPeer) p).isAttemptConnection()) {
+          p.connect();
+        }
       }
       catch (Exception e) {
         logger.warn("Unable to start connect procedure for peer [" + p + "]", e);
@@ -533,8 +537,19 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     }
     //remove incoming data
     storageAnswers.clear();
-   
-  
+
+    // Clear dynamic peers from peertable
+    Iterator<URI> it = super.peerTable.keySet().iterator();
+    while(it.hasNext()) {
+    	URI u = it.next();
+    	if(this.predefinedPeerTable.contains(u)) {
+    		continue;
+    	}
+    	else {
+    		it.remove();
+    	}
+    }
+
   }
 
   public Peer addPeer(URI peerURI, String realm, boolean connecting) {

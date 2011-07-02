@@ -141,21 +141,22 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 }
                 IMessage message = (IMessage) event.getData();
                 try {
-					if(message.getAvps().getAvp(Avp.DISCONNECT_CAUSE)!=null && message.getAvps().getAvp(Avp.DISCONNECT_CAUSE).getInteger32()==DisconnectCause.REBOOTING)
-					{
-						doDisconnect();
-						doEndConnection();	
-					}
-					else
-					{
-						doDisconnect();
-						switchToNextState(DOWN);
-					}
-				} catch (AvpDataException e1) {
-					logger.warn("Disconnect cause is bad.",e1);
-					doDisconnect();
-            		switchToNextState(DOWN);
-				}
+                  Avp discCause = message.getAvps().getAvp(Avp.DISCONNECT_CAUSE);
+                  boolean willReconnect = (discCause != null) ? (discCause.getInteger32() == DisconnectCause.REBOOTING) : false;
+                  if(willReconnect) {
+                    doDisconnect();
+                    doEndConnection();	
+                  }
+                  else {
+                    doDisconnect();
+                    switchToNextState(DOWN);
+                  }
+                }
+                catch (AvpDataException ade) {
+                  logger.warn("Disconnect cause is bad.", ade);
+                  doDisconnect();
+                  switchToNextState(DOWN);
+                }
 
                 break;
               case DWR_EVENT:
