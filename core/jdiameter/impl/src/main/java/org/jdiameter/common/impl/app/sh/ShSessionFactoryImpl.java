@@ -193,6 +193,7 @@ public class ShSessionFactoryImpl implements IShSessionFactory, StateChangeListe
         }
 
         IShClientSessionData sessionData = (IShClientSessionData) this.sessionDataFactory.getAppSessionData(ClientShSession.class, sessionId);
+        sessionData.setApplicationId(applicationId);
         clientSession = new ShClientSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, this.getClientShSessionListener());
         sessionDataSource.addSession(clientSession);
         clientSession.getSessions().get(0).setRequestListener(clientSession);
@@ -211,6 +212,7 @@ public class ShSessionFactoryImpl implements IShSessionFactory, StateChangeListe
           }
         }
         IShServerSessionData sessionData = (IShServerSessionData) this.sessionDataFactory.getAppSessionData(ServerShSession.class, sessionId);
+        sessionData.setApplicationId(applicationId);
         serverSession = new ShServerSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, getServerShSessionListener());
         sessionDataSource.addSession(serverSession);
         serverSession.getSessions().get(0).setRequestListener(serverSession);

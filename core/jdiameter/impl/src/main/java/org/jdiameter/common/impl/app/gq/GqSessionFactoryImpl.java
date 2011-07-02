@@ -260,6 +260,7 @@ ClientAuthSessionListener, IClientAuthActionContext, IServerAuthActionContext, S
         }
 
         IServerAuthSessionData sessionData = (IServerAuthSessionData) this.sessionDataFactory.getAppSessionData(ServerAuthSession.class, sessionId);
+        sessionData.setApplicationId(applicationId);
         GqServerSessionImpl session = new GqServerSessionImpl(sessionData, sessionFactory, getServerSessionListener(), getMessageFactory(),
             getStateListener(), getServerSessionContext(), messageTimeout, isStateles());
 
@@ -279,6 +280,7 @@ ClientAuthSessionListener, IClientAuthActionContext, IServerAuthActionContext, S
             }
           }
           IClientAuthSessionData sessionData = (IClientAuthSessionData) this.sessionDataFactory.getAppSessionData(ClientAuthSession.class, sessionId);
+          sessionData.setApplicationId(applicationId);
           GqClientSessionImpl session = new GqClientSessionImpl(sessionData, sessionFactory, getClientSessionListener(), getMessageFactory(),
               getStateListener(), getClientSessionContext(), isStateles());
 

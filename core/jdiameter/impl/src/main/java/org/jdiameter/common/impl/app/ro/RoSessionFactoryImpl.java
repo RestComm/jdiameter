@@ -256,6 +256,7 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
         ClientRoSessionImpl clientSession = null;
 
         IClientRoSessionData sessionData = (IClientRoSessionData) this.sessionDataFactory.getAppSessionData(ClientRoSession.class, sessionId);
+        sessionData.setApplicationId(applicationId);
         clientSession = new ClientRoSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, this.getClientSessionListener(), this.getClientContextListener(), this.getStateListener()); 
         // this goes first!
         iss.addSession(clientSession);
@@ -273,6 +274,7 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
           }
         }
         IServerRoSessionData sessionData = (IServerRoSessionData) this.sessionDataFactory.getAppSessionData(ServerRoSession.class, sessionId);
+        sessionData.setApplicationId(applicationId);
         ServerRoSessionImpl serverSession = new ServerRoSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, this.getServerSessionListener(), this.getServerContextListener(), this.getStateListener());
 
         iss.addSession(serverSession);

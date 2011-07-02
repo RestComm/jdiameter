@@ -261,6 +261,7 @@ IGxMessageFactory, IServerGxSessionContext, IClientGxSessionContext {
            }
          }
          IClientGxSessionData sessionData =  (IClientGxSessionData) this.sessionDataFactory.getAppSessionData(ClientGxSession.class, sessionId);
+         sessionData.setApplicationId(applicationId);
          ClientGxSessionImpl clientSession = new ClientGxSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, this.getClientSessionListener(), this.getClientContextListener(), this.getStateListener());
          // this goes first!
          iss.addSession(clientSession);
@@ -278,6 +279,7 @@ IGxMessageFactory, IServerGxSessionContext, IClientGxSessionContext {
            }
          }
          IServerGxSessionData sessionData =  (IServerGxSessionData) this.sessionDataFactory.getAppSessionData(ServerGxSession.class, sessionId);
+         sessionData.setApplicationId(applicationId);
          ServerGxSessionImpl serverSession = new ServerGxSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, this.getServerSessionListener(), this.getServerContextListener(), this.getStateListener());
          iss.addSession(serverSession);
          serverSession.getSessions().get(0).setRequestListener(serverSession);

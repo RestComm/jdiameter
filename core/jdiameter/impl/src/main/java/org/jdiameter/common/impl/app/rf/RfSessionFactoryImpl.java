@@ -292,6 +292,7 @@ StateChangeListener<AppSession> {
           }
         }
         IServerRfSessionData sessionData = (IServerRfSessionData) this.sessionDataFactory.getAppSessionData(ServerRfSession.class, sessionId);
+        sessionData.setApplicationId(applicationId);
         // FIXME: determine how to get boolean flag!
         ServerRfSessionImpl session = new ServerRfSessionImpl(sessionData, sessionFactory, getServerSessionListener(), getServerContextListener(),
             getStateListener(), messageTimeout, true);
@@ -311,6 +312,7 @@ StateChangeListener<AppSession> {
           }
         }
         IClientRfSessionData sessionData = (IClientRfSessionData) this.sessionDataFactory.getAppSessionData(ClientRfSession.class, sessionId);
+        sessionData.setApplicationId(applicationId);
         ClientRfSessionImpl session = new ClientRfSessionImpl(sessionData, sessionFactory, getClientSessionListener(), getClientContextListener(), getStateListener(),
             this.getApplicationId());
 

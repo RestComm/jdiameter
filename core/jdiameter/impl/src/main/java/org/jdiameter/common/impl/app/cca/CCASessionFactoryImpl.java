@@ -307,6 +307,7 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
           }
         }
         IClientCCASessionData data = (IClientCCASessionData) this.sessionDataFactory.getAppSessionData(ClientCCASession.class, sessionId);
+        data.setApplicationId(applicationId);
         clientSession = new ClientCCASessionImpl(data, this.getMessageFactory(), sessionFactory, this.getClientSessionListener(), this.getClientContextListener(), this.getStateListener());
         // this goes first!
         iss.addSession(clientSession);
@@ -326,6 +327,7 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
           }
         }
         IServerCCASessionData data = (IServerCCASessionData) this.sessionDataFactory.getAppSessionData(ServerCCASession.class, sessionId);
+        data.setApplicationId(applicationId);
         serverSession = new ServerCCASessionImpl(data, this.getMessageFactory(), sessionFactory, this.getServerSessionListener(), this.getServerContextListener(), this.getStateListener());
         iss.addSession(serverSession);
         serverSession.getSessions().get(0).setRequestListener(serverSession);

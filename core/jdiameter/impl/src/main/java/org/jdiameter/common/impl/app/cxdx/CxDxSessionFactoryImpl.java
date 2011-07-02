@@ -236,6 +236,7 @@ ICxDxMessageFactory, StateChangeListener<AppSession> {
       }
 
       IClientCxDxSessionData sessionData = (IClientCxDxSessionData) this.sessionDataFactory.getAppSessionData(ClientCxDxSession.class, sessionId);
+      sessionData.setApplicationId(applicationId);
       CxDxClientSessionImpl clientSession = new CxDxClientSessionImpl(sessionData, this.getMessageFactory(), this.sessionFactory, this
           .getClientSessionListener());
 
@@ -254,6 +255,7 @@ ICxDxMessageFactory, StateChangeListener<AppSession> {
         }
       }
       IServerCxDxSessionData sessionData = (IServerCxDxSessionData) this.sessionDataFactory.getAppSessionData(ServerCxDxSession.class, sessionId);
+      sessionData.setApplicationId(applicationId);
       CxDxServerSessionImpl serverSession = new CxDxServerSessionImpl(sessionData, getMessageFactory(),sessionFactory, this.getServerSessionListener());
 
       iss.addSession(serverSession);

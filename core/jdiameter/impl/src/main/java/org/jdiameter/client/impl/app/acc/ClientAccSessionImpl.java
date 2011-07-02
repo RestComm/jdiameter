@@ -88,10 +88,9 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
   //protected AccountRequest buffer;
   protected IClientAccSessionData sessionData;
   public ClientAccSessionImpl(IClientAccSessionData sessionData, ISessionFactory sessionFactory,ClientAccSessionListener clientAccSessionListener, IClientAccActionContext iClientAccActionContext,
-      StateChangeListener<AppSession> stateChangeListener, ApplicationId applicationId) {
+      StateChangeListener<AppSession> stateChangeListener) {
     super(sessionFactory,sessionData);
     this.sessionData = sessionData;
-    this.sessionData.setApplicationId(applicationId);
     this.listener = clientAccSessionListener;
     this.context = iClientAccActionContext;
 

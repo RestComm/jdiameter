@@ -253,7 +253,7 @@ public class AccSessionFactoryImpl implements IAccSessionFactory,IAccMessageFact
     try {
       if (aClass == ClientAccSession.class) {
         IClientAccSessionData data = (IClientAccSessionData) this.sessionDataFactory.getAppSessionData(ClientAccSession.class, sessionId);
-        ClientAccSessionImpl clientSession = new ClientAccSessionImpl(data, sessionFactory, getClientSessionListener(), getClientContextListener(), getStateListener(), this.getApplicationId());
+        ClientAccSessionImpl clientSession = new ClientAccSessionImpl(data, sessionFactory, getClientSessionListener(), getClientContextListener(), getStateListener());
 
         clientSession.getSessions().get(0).setRequestListener(clientSession);
         appSession = clientSession;
@@ -300,6 +300,7 @@ public class AccSessionFactoryImpl implements IAccSessionFactory,IAccMessageFact
         }
 
         IServerAccSessionData data = (IServerAccSessionData) this.sessionDataFactory.getAppSessionData(ServerAccSession.class, sessionId);
+        data.setApplicationId(applicationId);
         ServerAccSessionImpl session = new ServerAccSessionImpl(data, sessionFactory,  getServerSessionListener(), getServerContextListener(), getStateListener(), stateless);
         iss.addSession(session);
         session.getSessions().get(0).setRequestListener(session);
@@ -316,7 +317,8 @@ public class AccSessionFactoryImpl implements IAccSessionFactory,IAccMessageFact
           }
         }
         IClientAccSessionData data = (IClientAccSessionData) this.sessionDataFactory.getAppSessionData(ClientAccSession.class, sessionId);
-        ClientAccSessionImpl session = new ClientAccSessionImpl(data, sessionFactory, getClientSessionListener(), getClientContextListener(), getStateListener(), this.getApplicationId());
+        data.setApplicationId(applicationId);
+        ClientAccSessionImpl session = new ClientAccSessionImpl(data, sessionFactory, getClientSessionListener(), getClientContextListener(), getStateListener());
 
         iss.addSession(session);
         session.getSessions().get(0).setRequestListener(session);
