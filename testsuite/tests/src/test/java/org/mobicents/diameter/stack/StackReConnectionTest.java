@@ -51,9 +51,9 @@ import org.junit.Test;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
-public class TestStackReConnection {
+public class StackReConnectionTest {
 
-  private static Logger logger = Logger.getLogger(TestStackReConnection.class);
+  private static Logger logger = Logger.getLogger(StackReConnectionTest.class);
 
   // 1. start server
   // 2. start client + wait for connection
@@ -68,8 +68,8 @@ public class TestStackReConnection {
       String serverConfigName = "jdiameter-server-two.xml";
       String clientConfigName = "jdiameter-client-two.xml";
 
-      InputStream serverConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
-      InputStream clientConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
+      InputStream serverConfigInputStream = StackReConnectionTest.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
+      InputStream clientConfigInputStream = StackReConnectionTest.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
 
       Configuration serverConfig = new org.jdiameter.server.impl.helpers.XMLConfiguration(serverConfigInputStream);
       Configuration clientConfig = new org.jdiameter.server.impl.helpers.XMLConfiguration(clientConfigInputStream);
@@ -109,7 +109,7 @@ public class TestStackReConnection {
       assertTrue("Peer not connected. State[" + ((IPeer) peers.get(0)).getState(PeerState.class) + "]", !((IPeer) peers.get(0)).isConnected());
 
       client = new StackImpl();
-      clientConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
+      clientConfigInputStream = StackReConnectionTest.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
       clientConfig = new org.jdiameter.server.impl.helpers.XMLConfiguration(clientConfigInputStream);
       client.init(clientConfig);
 
@@ -154,8 +154,8 @@ public class TestStackReConnection {
       String serverConfigName = "jdiameter-server-two.xml";
       String clientConfigName = "jdiameter-client-two.xml";
 
-      InputStream serverConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
-      InputStream clientConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
+      InputStream serverConfigInputStream = StackReConnectionTest.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
+      InputStream clientConfigInputStream = StackReConnectionTest.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
 
       Configuration serverConfig = new org.jdiameter.server.impl.helpers.XMLConfiguration(serverConfigInputStream);
       Configuration clientConfig = new org.jdiameter.server.impl.helpers.XMLConfiguration(clientConfigInputStream);
@@ -230,9 +230,9 @@ public class TestStackReConnection {
       String clientConfigName = "jdiameter-client-two.xml";
       String clientConfigName2 = "jdiameter-client-two-second.xml";
 
-      InputStream serverConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
-      InputStream clientConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
-      InputStream clientConfigInputStream2 = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName2);
+      InputStream serverConfigInputStream = StackReConnectionTest.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
+      InputStream clientConfigInputStream = StackReConnectionTest.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
+      InputStream clientConfigInputStream2 = StackReConnectionTest.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName2);
 
       Configuration serverConfig = new org.jdiameter.server.impl.helpers.XMLConfiguration(serverConfigInputStream);
       Configuration clientConfig = new org.jdiameter.server.impl.helpers.XMLConfiguration(clientConfigInputStream);
@@ -311,9 +311,9 @@ public class TestStackReConnection {
       String clientConfigName = "jdiameter-client-two.xml";
       String clientConfigName2 = "jdiameter-client-two-second.xml";
 
-      InputStream serverConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
-      InputStream clientConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
-      InputStream clientConfigInputStream2 = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName2);
+      InputStream serverConfigInputStream = StackReConnectionTest.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
+      InputStream clientConfigInputStream = StackReConnectionTest.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
+      InputStream clientConfigInputStream2 = StackReConnectionTest.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName2);
 
       Configuration serverConfig = new org.jdiameter.server.impl.helpers.XMLConfiguration(serverConfigInputStream);
       Configuration clientConfig = new org.jdiameter.server.impl.helpers.XMLConfiguration(clientConfigInputStream);
@@ -422,9 +422,9 @@ public class TestStackReConnection {
       String clientConfigName = "jdiameter-client-two.xml";
       String clientConfigName2 = "jdiameter-client-two-second.xml";
 
-      InputStream serverConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
-      InputStream clientConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
-      InputStream clientConfigInputStream2 = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName2);
+      InputStream serverConfigInputStream = StackReConnectionTest.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
+      InputStream clientConfigInputStream = StackReConnectionTest.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
+      InputStream clientConfigInputStream2 = StackReConnectionTest.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName2);
 
       Configuration serverConfig = new org.jdiameter.server.impl.helpers.XMLConfiguration(serverConfigInputStream);
       Configuration clientConfig = new org.jdiameter.server.impl.helpers.XMLConfiguration(clientConfigInputStream);
@@ -518,9 +518,9 @@ public class TestStackReConnection {
       String clientConfigName = "jdiameter-client-two.xml";
       String clientConfigName2 = "jdiameter-client-two-second.xml";
 
-      InputStream serverConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
-      InputStream clientConfigInputStream = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
-      InputStream clientConfigInputStream2 = TestStackReConnection.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName2);
+      InputStream serverConfigInputStream = StackReConnectionTest.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
+      InputStream clientConfigInputStream = StackReConnectionTest.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
+      InputStream clientConfigInputStream2 = StackReConnectionTest.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName2);
 
       Configuration serverConfig = new org.jdiameter.server.impl.helpers.XMLConfiguration(serverConfigInputStream);
       Configuration clientConfig = new org.jdiameter.server.impl.helpers.XMLConfiguration(clientConfigInputStream);

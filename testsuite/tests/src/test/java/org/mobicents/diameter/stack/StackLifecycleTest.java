@@ -12,7 +12,7 @@ import org.jdiameter.client.api.StackState;
 import org.jdiameter.server.impl.StackImpl;
 import org.junit.Test;
 
-public class TestStackLifecycle {
+public class StackLifecycleTest {
 
   // Stack Lifecycle
   // +------+           +------------+            +---------+
@@ -54,7 +54,7 @@ public class TestStackLifecycle {
       InputStream is;
       String configFile = "jdiameter-server-two.xml";
 
-      is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
+      is = StackLifecycleTest.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Assert.assertNotNull("InputStream for configuration file should not be null", is);
 
       Configuration config;
@@ -86,7 +86,7 @@ public class TestStackLifecycle {
       InputStream is;
       String configFile = "jdiameter-server-two.xml";
 
-      is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
+      is = StackLifecycleTest.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Assert.assertNotNull("InputStream for configuration file should not be null", is);
 
       Configuration config;
@@ -146,7 +146,7 @@ public class TestStackLifecycle {
       InputStream is;
       String configFile = "jdiameter-server-two.xml";
 
-      is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
+      is = StackLifecycleTest.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Assert.assertNotNull("InputStream for configuration file should not be null", is);
 
       Configuration config;
@@ -172,7 +172,7 @@ public class TestStackLifecycle {
       InputStream is;
       String configFile = "jdiameter-server-two.xml";
 
-      is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
+      is = StackLifecycleTest.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Assert.assertNotNull("InputStream for configuration file should not be null", is);
 
       Configuration config;
@@ -200,7 +200,7 @@ public class TestStackLifecycle {
       InputStream is;
       String configFile = "jdiameter-server-two.xml";
 
-      is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
+      is = StackLifecycleTest.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Assert.assertNotNull("InputStream for configuration file should not be null", is);
 
       Configuration config;
@@ -233,7 +233,7 @@ public class TestStackLifecycle {
       InputStream is;
       String configFile = "jdiameter-server-two.xml";
 
-      is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
+      is = StackLifecycleTest.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Assert.assertNotNull("InputStream for configuration file should not be null", is);
 
       Configuration config;
@@ -267,7 +267,7 @@ public class TestStackLifecycle {
       InputStream is;
       String configFile = "jdiameter-server-two.xml";
 
-      is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
+      is = StackLifecycleTest.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Assert.assertNotNull("InputStream for configuration file should not be null", is);
 
       Configuration config;
@@ -303,7 +303,7 @@ public class TestStackLifecycle {
       InputStream is;
       String configFile = "jdiameter-server-two.xml";
 
-      is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
+      is = StackLifecycleTest.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Assert.assertNotNull("InputStream for configuration file should not be null", is);
 
       Configuration config;
@@ -334,7 +334,7 @@ public class TestStackLifecycle {
       InputStream is;
       String configFile = "jdiameter-server-two.xml";
 
-      is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
+      is = StackLifecycleTest.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Assert.assertNotNull("InputStream for configuration file should not be null", is);
 
       Configuration config;
@@ -401,7 +401,7 @@ public class TestStackLifecycle {
       clientStack = new org.jdiameter.server.impl.StackImpl();
       InputStream is;
       String configFile = "jdiameter-client-two.xml";
-      is = TestStackLifecycle.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
+      is = StackLifecycleTest.class.getClassLoader().getResourceAsStream("configurations/" + configFile);
       Configuration config;
       config = new org.jdiameter.server.impl.helpers.XMLConfiguration(is);
       clientStack.init(config);
