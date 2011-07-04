@@ -376,6 +376,16 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                       unregister(true);
                       return;
                     }
+                    String realm;
+                    try {
+                        realm = message.getAvps().getAvp(Avp.ORIGIN_REALM).getOctetString();
+                        logger.debug("Origin-Realm in new received message is [{}]", host);
+                    } catch (AvpDataException e) {
+                        logger.warn("Unable to retrieve find Origin-Realm AVP in CER", e);
+                        unregister(true);
+                        return;
+                    }
+                    
                     boolean foundInpredefinedTable = false;
                     // find into predefined table
                     for (URI uri : predefinedPeerTable) {
@@ -423,6 +433,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                     }
 
                     if (peer != null) {
+                    	//FIXME: define procedure when 'peer.getRealm() != realm'
                       logger.debug("Add [{}] connection to peer [{}]", connection, peer);
                       peer.addIncomingConnection(connection);
                       try {
@@ -450,6 +461,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                           peer = newPeerInstance(0, uri, connection.getRemoteAddress().getHostAddress(), null, false, connection,
                               metaData, config, null, fsmFactory, transportFactory, parser, statisticFactory, concurrentFactory);
                           logger.debug("Created new peer instance [{}] and adding to peer table", peer);
+                          peer.setRealm(realm);
                           appendPeerToPeerTable(peer);
                           logger.debug("Handle [{}] message on peer [{}]", message, peer);
                           peer.handleMessage(message.isRequest() ? EventTypes.CER_EVENT : EventTypes.CER_EVENT, message, connKey);
@@ -573,13 +585,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       peer.setRealm(realm);
       appendPeerToPeerTable(peer);
       boolean found = false;
-      //      for (Realm r : router.getgetRealms()) {
-      //        if (r.getName().equals(realm)) {
-      //          ((IRealm)r).addPeerName(peerURI.toString());
-      //          found = true;
-      //          break;
-      //        }
-      //      }
+
       Collection<Realm> realms =  this.router.getRealmTable().getRealms(realm);
       for (Realm r : realms) {
         if (r.getName().equals(realm)) {
