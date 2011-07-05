@@ -327,12 +327,13 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
 
         if (!realmTable.realmExists(destRealm)) {
           // send no such realm answer.
+          logger.warn("Received a request for an unrecognized realm: [{}]. Answering with 3003 (DIAMETER_REALM_NOT_SERVED) Result-Code.", destRealm);
           sendErrorAnswer(message, null, ResultCode.REALM_NOT_SERVED);
           return true;
         }
         ApplicationId appId = message.getSingleApplicationId();
         if (appId == null) {
-          logger.warn("Receive a message with no Application Id. Answering with MISSING AVP Result-Code.");
+          logger.warn("Receive a message with no Application Id. Answering with 5005 (MISSING_AVP) Result-Code.");
           sendErrorAnswer(message, "Missing Application-Id", ResultCode.MISSING_AVP); 
           // TODO: add Auth-Application-Id, Acc-Application-Id and Vendor-Specific-Application-Id, can be empty
           return true;
@@ -425,13 +426,18 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                 isProcessed = consumeMessage(message);
               }
               else {
+                // RFC 3588 // 6.1
+                //   4. If none of the above is successful, an answer is returned with the
+                //   Result-Code set to DIAMETER_UNABLE_TO_DELIVER, with the E-bit set.
+                logger.warn("Received message for unknown peer [{}]. Answering with 3002 (UNABLE_TO_DELIVER) Result-Code.", destHost);
                 sendErrorAnswer(req, "No connection to peer", ResultCode.UNABLE_TO_DELIVER);
                 isProcessed = true;
               }
             }
           }
           catch(AvpDataException ade) {
-            sendErrorAnswer(message, "Failed to parse Destination-Host AVP", ResultCode.INVALID_AVP_VALUE,destHostAvp);
+            logger.warn("Received message with present but unparsable Destination-Host. Answering with 5004 (INVALID_AVP_VALUE) Result-Code.");
+            sendErrorAnswer(message, "Failed to parse Destination-Host AVP", ResultCode.INVALID_AVP_VALUE, destHostAvp);
             return true;
           }
         }
