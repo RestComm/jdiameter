@@ -91,11 +91,20 @@ public class ElementParser implements IElementParser {
 
     public String bytesToOctetString(byte[] rawData) throws AvpDataException {
         try {
-            char[] ca = new String(rawData, "iso-8859-1").toCharArray();
-            StringBuffer rc = new StringBuffer(ca.length);
-            for (char c:ca)
-                if (c != (char)0x0) rc.append(c);
-            return rc.toString();
+        	//TODO: veirfy ISO-8859-1 is correct here, according to google results its only ... western EU..
+        	//TODO: verify this, it octet sting we can not discard some chars, we have no idea whats there....
+        	// issue: http://code.google.com/p/mobicents/issues/detail?id=2757
+//            char[] ca = new String(rawData, "iso-8859-1").toCharArray();
+//            StringBuffer rc = new StringBuffer(ca.length);
+//            
+//            for (char c:ca)
+//                if (c != (char)0x0) 
+//                {	//easier to debug...
+//                	rc.append(c);
+//                }
+//          
+//            return rc.toString();
+        	return new String(rawData, "iso-8859-1");
         } catch (UnsupportedEncodingException e) {
             throw new AvpDataException("Invalid data type", e);
         }
