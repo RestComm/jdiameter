@@ -176,8 +176,8 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
           // Event: Service-specific authorization request received, and successfully processed
           // Action: Send service specific answer
           // New State: IDLE
+        	setState(IDLE);
           listener.doAuthRequestEvent(this, (AppRequestEvent) event.getData());
-          setState(IDLE);
           break;
         default:
           logger.debug("Unknown event {}", event.getType());
@@ -206,8 +206,8 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
             // Event: Service-specific authorization request received, and user is authorized
             // Action: Send successful service specific answer
             // New State: OPEN
+        	  setState(OPEN);
             listener.doAuthRequestEvent(this, (AppRequestEvent) event.getData());
-            setState(OPEN);
           }
           catch (Exception e) {
             setState(IDLE);
@@ -219,6 +219,7 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
             // Event: STR Received
             // Action: Send STA, Cleanup
             // New State: IDLE
+        	  setState(IDLE);
             listener.doSessionTerminationRequestEvent(this, (SessionTermRequest) event.getData());
           }
           catch (Exception e) {
@@ -260,12 +261,12 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
           break;
         case RECEIVE_STR_REQUEST:
           try {
+            setState(IDLE);
             listener.doSessionTerminationRequestEvent(this, (SessionTermRequest) event.getData());
           }
           catch (Exception e) {
             logger.debug("Can not handle event", e);
           }
-          setState(IDLE);
           break;
         case SEND_ASR_REQUEST:
           // Current State: OPEN
@@ -309,8 +310,8 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
           // Event: ASR successfully sent and ASA Received with Result-Code
           // Action: Cleanup
           // New State: IDLE
-          listener.doAbortSessionAnswerEvent(this, (AbortSessionAnswer) event.getData());
           setState(IDLE);
+          listener.doAbortSessionAnswerEvent(this, (AbortSessionAnswer) event.getData());
           break;
         default:
           logger.debug("Unknown event {}", event.getType());
@@ -461,6 +462,21 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
     return true;
   }
 
+  @Override
+  public void release() {
+    try {
+      sendAndStateLock.lock();
+      super.release();
+      this.context = null;
+      this.listener = null;
+    }
+    catch (Exception e) {
+      logger.debug("Failed to release session", e);
+    }
+    finally {
+      sendAndStateLock.unlock();
+    }
+  }
 
   private class RequestDelivery implements Runnable {
     ServerAuthSession session;

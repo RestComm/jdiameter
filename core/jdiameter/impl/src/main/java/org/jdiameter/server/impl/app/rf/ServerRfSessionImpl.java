@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
 public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListener<Request, Answer>, ServerRfSession, NetworkReqListener {
-
+	//FIXME: verify this FSM
   private static final long serialVersionUID = 1L;
 
   private static final Logger logger = LoggerFactory.getLogger(ServerRfSessionImpl.class);
@@ -208,8 +208,8 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
   public boolean handleEventForStatefulMode(StateEvent event) throws InternalException, OverloadException {
     try {
       if (((RfAccountingRequest) event.getData()).getMessage().isReTransmitted()) {
-        // FIXME: Alex is this ok?
         try {
+          setState(OPEN);
           listener.doRfAccountingRequestEvent(this, (RfAccountingRequest) event.getData());
           // FIXME: should we do this before passing to lst?
           cancelTsTimer();
@@ -217,7 +217,6 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
           if (context != null) {
             context.sessionTimerStarted(this, null);
           }
-          setState(OPEN);
         }
         catch (Exception e) {
           logger.debug("Can not handle event", e);
@@ -235,6 +234,7 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
             // Event: Accounting start request received, and successfully processed.
             // Action: Send accounting start answer, Start Ts
             // New State: OPEN
+            setState(OPEN);
             if (listener != null) {
               try {
                 listener.doRfAccountingRequestEvent(this, (RfAccountingRequest) event.getData());
@@ -243,7 +243,6 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
                 if (context != null) {
                   context.sessionTimerStarted(this, null);
                 }
-                setState(OPEN);
               }
               catch (Exception e) {
                 logger.debug("Can not handle event", e);
@@ -297,6 +296,7 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
             // processed
             // Action: Send accounting stop answer, Stop Ts
             // New State: IDLE
+            setState(IDLE);
             try {
               listener.doRfAccountingRequestEvent(this,
                   (RfAccountingRequest) event.getData());
@@ -304,7 +304,6 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
               if (context != null) {
                 context.sessionTimerCanceled(this, null);
               }
-              setState(IDLE);
             }
             catch (Exception e) {
               logger.debug("Can not handle event", e);
@@ -478,5 +477,18 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
   public boolean isReplicable() {
     return true;
   }
-
+  @Override
+	public void release() {
+		try {
+			sendAndStateLock.lock();
+			//TODO: cancel timer?
+			super.release();
+			//this.context = null;
+			//this.listener = null;
+		} catch (Exception e) {
+		      logger.debug("Failed to release session", e);
+		} finally {
+			sendAndStateLock.unlock();
+		}
+	}
 }

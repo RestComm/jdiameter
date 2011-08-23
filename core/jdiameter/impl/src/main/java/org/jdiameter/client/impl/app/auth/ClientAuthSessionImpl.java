@@ -216,8 +216,8 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
             // Event: Successful service-specific authorization answer received with Auth-Session-State set to NO_STATE_MAINTAINED
             // Action: Grant Access
             // New State: OPEN
-            listener.doAuthAnswerEvent(this, null, (AppAnswerEvent) event.getData());
             setState(OPEN);
+            listener.doAuthAnswerEvent(this, null, (AppAnswerEvent) event.getData());
           }
           catch (Exception e) {
             // Current State: PENDING
@@ -247,14 +247,18 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
           // Event: Session-Timeout Expires on Access Device
           // Action: Send STR
           // New State: DISCON
-          if (context != null) {
-            context.accessTimeoutElapses(this);
-            Request str = createSessionTermRequest();
-            context.disconnectUserOrDev(this, str);
-            session.send(str, this);
+          try {
+            if (context != null) {
+              context.accessTimeoutElapses(this);
+              Request str = createSessionTermRequest();
+              context.disconnectUserOrDev(this, str);
+              session.send(str, this);
+            }
           }
-          // IDLE is the same as DISCON
-          setState(IDLE);
+          finally {
+            // IDLE is the same as DISCON
+            setState(IDLE);
+          }
           break;
         default:
           logger.debug("Unknown event {}", event.getType());
@@ -330,8 +334,8 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
             // Event: Successful service-specific authorization answer received with default Auth-Session-State value
             // Action: Grant Access
             // New State: OPEN
-            listener.doAuthAnswerEvent(this, null, (AppAnswerEvent) event.getData());
             setState(OPEN);
+            listener.doAuthAnswerEvent(this, null, (AppAnswerEvent) event.getData());
           }
           catch (InternalException e) {
             // Current State: PENDING
@@ -388,12 +392,17 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
           // Event: Failed Service-specific authorization answer received
           // Action: Disconnect User/Device
           // New State: IDLE
-          if (context != null) {
-            Request str = createSessionTermRequest();
-            context.disconnectUserOrDev(this, str);
-            session.send(str, this);
+          try {
+            if (context != null) {
+              Request str = createSessionTermRequest();
+              context.disconnectUserOrDev(this, str);
+              session.send(str, this);
+            }
           }
-          setState(IDLE);
+          finally {
+            setState(IDLE);
+            listener.doAuthAnswerEvent(this, null, (AppAnswerEvent) event.getData());
+          }
           break;
         case RECEIVE_ABORT_SESSION_REQUEST:
           // Current State: OPEN 
@@ -415,13 +424,17 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
           // Event: Authorization-Lifetime + Auth-Grace-Period expires on access device
           // Action: Send STR
           // New State: DISCON
-          if (context != null) {
-            context.accessTimeoutElapses(this);
-            Request str = createSessionTermRequest();
-            context.disconnectUserOrDev(this, str);
-            session.send(str, this);
+          try {
+            if (context != null) {
+              context.accessTimeoutElapses(this);
+              Request str = createSessionTermRequest();
+              context.disconnectUserOrDev(this, str);
+              session.send(str, this);
+            }
           }
-          setState(DISCONNECTED);
+          finally {
+            setState(DISCONNECTED);
+          }
           break;
         }
         break;
@@ -492,11 +505,15 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
 
   public void timeoutExpired(Request request) {
     try {
+      sendAndStateLock.lock();
       //FIXME: should this also be async ?
       handleEvent(new Event(Event.Type.RECEIVE_FAILED_AUTH_ANSWER, new AppRequestEventImpl(request)));
     }
     catch (Exception e) {
       logger.debug("Can not handle timeout event", e);
+    }
+    finally {
+      sendAndStateLock.unlock();
     }
   }
 
@@ -619,6 +636,22 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
     else if (!sessionData.equals(other.sessionData))
       return false;
     return true;
+  }
+
+  @Override
+  public void release() {
+    try {
+      sendAndStateLock.lock();
+      super.release();
+      //this.context = null;
+      //this.listener = null;
+    }
+    catch (Exception e) {
+      logger.debug("Failed to release session", e);
+    }
+    finally {
+      sendAndStateLock.unlock();
+    }
   }
 
   private class RequestDelivery implements Runnable {

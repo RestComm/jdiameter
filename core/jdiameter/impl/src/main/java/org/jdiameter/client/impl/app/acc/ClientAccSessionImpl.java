@@ -207,14 +207,16 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
               // Action: Disconnect User/Device
               // New State: IDLE
               if (!checkBufferSpace() && accRtReq != null && accRtReq.getInteger32() != GRANT_AND_LOSE) {
-                sendAndStateLock.lock();
-                if (context != null) {
-                  Request str = createSessionTermRequest();
-                  context.disconnectUserOrDev(this,str);
-                  session.send(str, this);
-                }
-                setState(IDLE);
-                sendAndStateLock.unlock();
+        				try {
+      						if (context != null) {
+                    Request str = createSessionTermRequest();
+      							context.disconnectUserOrDev(this, str);
+                    session.send(str, this);
+      						}
+      					}
+        				finally {
+      						setState(IDLE);
+      					}
               }
             }
           }
@@ -244,14 +246,16 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
               // Action: Disconnect User/Device
               // New State: IDLE
               if (accRtReq != null && accRtReq.getInteger32() != GRANT_AND_LOSE) {
-                sendAndStateLock.lock();
-                if (context != null) {
-                  Request str = createSessionTermRequest();
-                  context.disconnectUserOrDev(this,str);
-                  session.send(str, this);
-                }
-                setState(IDLE);
-                sendAndStateLock.unlock();
+            	  try{
+	                if (context != null) {
+	                  Request str = createSessionTermRequest();
+	                  context.disconnectUserOrDev(this, str);
+	                  session.send(str, this);
+	                }
+            	  }
+            	  finally {
+            		  setState(IDLE);
+            	  }
               }
             }
           }
@@ -340,14 +344,16 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
               // Action: Disconnect User/Device
               // New State: IDLE
               if (!checkBufferSpace() && accRtReq != null && accRtReq.getInteger32() != GRANT_AND_LOSE) {
-                sendAndStateLock.lock();
-                if (context != null) {
-                  Request str = createSessionTermRequest();
-                  context.disconnectUserOrDev(this,str);
-                  session.send(str, this);
-                }
-                setState(IDLE);
-                sendAndStateLock.unlock();
+            	  try{
+	                if (context != null) {
+	                  Request str = createSessionTermRequest();
+	                  context.disconnectUserOrDev(this, str);
+	                  session.send(str, this);
+	                }
+            	  }
+            	  finally {
+            		  setState(IDLE);
+            	  }
               }
             }
           }
@@ -370,14 +376,16 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
               // Action: Disconnect User/Device
               // New State: IDLE
               if (accRtReq != null && accRtReq.getInteger32() != GRANT_AND_LOSE) {
-                sendAndStateLock.lock();
-                if (context != null) {
-                  Request str = createSessionTermRequest();
-                  context.disconnectUserOrDev(this,str);
-                  session.send(str, this);
-                }
-                setState(IDLE);
-                sendAndStateLock.unlock();
+            	  try {
+	                if (context != null) {
+	                  Request str = createSessionTermRequest();
+	                  context.disconnectUserOrDev(this, str);
+	                  session.send(str, this);
+	                }
+            	  }
+            	  finally {
+            		  setState(IDLE);
+            	  }
               }
             }
           }
@@ -650,22 +658,22 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
 
   public void receivedSuccessMessage(Request request, Answer answer) {
     if (request.getCommandCode() == AccountRequest.code) {
-      //FIXME: any reason for this to be after handle?
+    	// state should be changed before event listener call
+      try {
+  			sendAndStateLock.lock();
+  			handleEvent(new Event(createAccountAnswer(answer)));
+  		}
+      catch (Exception e) {
+  			logger.debug("Can not process received request", e);
+  		}
+      finally {
+  		 sendAndStateLock.unlock();
+  	  }
       try {
         listener.doAccAnswerEvent(this, createAccountRequest(request), createAccountAnswer(answer));
       }
       catch (Exception e) {
         logger.debug("Unable to deliver message to listener.", e);
-      }
-      try {
-        sendAndStateLock.lock();
-        handleEvent(new Event(createAccountAnswer(answer)));
-      }
-      catch (Exception e) {
-        logger.debug("Can not process received request", e);
-      }
-      finally {
-        sendAndStateLock.unlock();
       }
     }
     else {
@@ -680,32 +688,20 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
 
   public void timeoutExpired(Request request) {
     try {
+    	sendAndStateLock.lock();
       handleEvent(new Event(Event.Type.FAILED_RECEIVE_RECORD, createAccountRequest(request)));
     }
     catch (Exception e) {
       logger.debug("Can not handle timeout event", e);
     }
+    finally {
+    	sendAndStateLock.unlock();
+    }
   }
 
   public Answer processRequest(Request request) {
-    if (request.getCommandCode() == AccountRequest.code) {
-      try {
-        // FIXME Is this wrong?
-        listener.doAccAnswerEvent(this, createAccountRequest(request), null);
-      }
-      catch (Exception e) {
-        logger.debug("Can not process received request", e);
-      }
-    }
-    else {
-      try {
-        listener.doOtherEvent(this, createAccountRequest(request), null);
-      }
-      catch (Exception e) {
-        logger.debug("Can not process received request", e);
-      }
-    }
-    return null;
+    Answer a = request.createAnswer(5001);
+    return a;
   }
 
   /* (non-Javadoc)
@@ -750,6 +746,22 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
     else if (!sessionData.equals(other.sessionData))
       return false;
     return true;
+  }
+
+  @Override
+  public void release() {
+    try {
+      sendAndStateLock.lock();
+      super.release();
+      // this.context = null;
+      // this.listener = null;
+    }
+    catch (Exception e) {
+      logger.debug("Failed to release session", e);
+    }
+    finally {
+      sendAndStateLock.unlock();
+    }
   }
 
 }

@@ -215,12 +215,14 @@ public class CxDxClientSessionImpl extends CxDxSession implements ClientCxDxSess
           this.sessionData.setBuffer( (Request) ((AppEvent) event.getData()).getMessage());
           super.startMsgTimer();
           newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
+          setState(newState);
           listener.doPushProfileRequest(this, (JPushProfileRequest) event.getData());
           break;
 
         case RECEIVE_RTR:
           //super.scheduler.schedule(new TimeoutTimerTask((Request) ((AppEvent) event.getData()).getMessage()), CxDxSession._TX_TIMEOUT, TimeUnit.MILLISECONDS);
           newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
+          setState(newState);
           this.sessionData.setBuffer( (Request) ((AppEvent) event.getData()).getMessage());
           super.startMsgTimer();
           listener.doRegistrationTerminationRequest(this, (JRegistrationTerminationRequest) event.getData());
@@ -229,6 +231,7 @@ public class CxDxClientSessionImpl extends CxDxSession implements ClientCxDxSess
         case SEND_MESSAGE:
           newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
           super.session.send(((AppEvent) event.getData()).getMessage(),this);
+          setState(newState); //FIXME: is this ok to be here?
           break;
 
         default:
@@ -241,6 +244,7 @@ public class CxDxClientSessionImpl extends CxDxSession implements ClientCxDxSess
         switch (eventType) {
         case TIMEOUT_EXPIRES:
           newState = CxDxSessionState.TIMEDOUT;
+          setState(newState);
           break;
 
         case SEND_MESSAGE:
@@ -250,28 +254,33 @@ public class CxDxClientSessionImpl extends CxDxSession implements ClientCxDxSess
           //          }
           super.session.send(((AppEvent) event.getData()).getMessage(), this);
           newState = CxDxSessionState.TERMINATED;
+          setState(newState);
           break;
 
         case RECEIVE_LIA:
           newState = CxDxSessionState.TERMINATED;
+          setState(newState);
           super.cancelMsgTimer();
           listener.doLocationInformationAnswer(this, null, (JLocationInfoAnswer) event.getData());
           break;
 
         case RECEIVE_MAA:
           newState = CxDxSessionState.TERMINATED;
+          setState(newState);
           super.cancelMsgTimer();
           listener.doMultimediaAuthAnswer(this, null, (JMultimediaAuthAnswer) event.getData());
           break;
 
         case RECEIVE_SAA:
           newState = CxDxSessionState.TERMINATED;
+          setState(newState);
           super.cancelMsgTimer();
           listener.doServerAssignmentAnswer(this, null, (JServerAssignmentAnswer) event.getData());
           break;
 
         case RECEIVE_UAA:
           newState = CxDxSessionState.TERMINATED;
+          setState(newState);
           super.cancelMsgTimer();
           listener.doUserAuthorizationAnswer(this, null, (JUserAuthorizationAnswer) event.getData());
           break;
@@ -290,10 +299,6 @@ public class CxDxClientSessionImpl extends CxDxSession implements ClientCxDxSess
       default:
         logger.error("Cx/Dx Client FSM in wrong state: {}", state);
         break;
-      }
-
-      if (newState != null && newState != state) {
-        setState(newState);
       }
     }
     catch (Exception e) {
@@ -380,6 +385,21 @@ public class CxDxClientSessionImpl extends CxDxSession implements ClientCxDxSess
     }
 
     return true;
+  }
+
+  @Override
+  public void release() {
+    try {
+      sendAndStateLock.lock();
+      super.release();
+      //this.listener = null;
+    }
+    catch (Exception e) {
+      logger.debug("Failed to release session", e);
+    }
+    finally {
+      sendAndStateLock.unlock();
+    }
   }
 
   private class RequestDelivery implements Runnable {

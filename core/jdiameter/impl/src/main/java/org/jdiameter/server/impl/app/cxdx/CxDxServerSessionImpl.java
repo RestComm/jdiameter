@@ -166,7 +166,8 @@ public class CxDxServerSessionImpl extends CxDxSession implements ServerCxDxSess
           super.cancelMsgTimer();
           super.startMsgTimer();
           newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
-          listener.doLocationInformationRequest(this,  (JLocationInfoRequest) event.getData());
+          setState(newState);
+          listener.doLocationInformationRequest(this, (JLocationInfoRequest) event.getData());
           break;
 
         case RECEIVE_MAR:
@@ -174,30 +175,32 @@ public class CxDxServerSessionImpl extends CxDxSession implements ServerCxDxSess
           super.cancelMsgTimer();
           super.startMsgTimer();
           newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
-          listener.doMultimediaAuthRequest(this,  (JMultimediaAuthRequest) event.getData());
+          setState(newState);
+          listener.doMultimediaAuthRequest(this, (JMultimediaAuthRequest) event.getData());
           break;
 
         case RECEIVE_SAR:
           this.sessionData.setBuffer((Request)((AppEvent) event.getData()).getMessage());
           super.cancelMsgTimer();
-          super.cancelMsgTimer();
           super.startMsgTimer();
           newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
-          listener.doServerAssignmentRequest(this,  (JServerAssignmentRequest) event.getData());
+          setState(newState);
+          listener.doServerAssignmentRequest(this, (JServerAssignmentRequest) event.getData());
           break;
 
         case RECEIVE_UAR:
           this.sessionData.setBuffer((Request)((AppEvent) event.getData()).getMessage());
           super.cancelMsgTimer();
-          super.cancelMsgTimer();
           super.startMsgTimer();
           newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
+          setState(newState);
           listener.doUserAuthorizationRequest(this, (JUserAuthorizationRequest) event.getData());
           break;
 
         case SEND_MESSAGE:
-          newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
           super.session.send(((AppEvent) event.getData()).getMessage(),this);
+          newState = CxDxSessionState.MESSAGE_SENT_RECEIVED;
+          setState(newState);
           break;
 
         default:
@@ -213,20 +216,35 @@ public class CxDxServerSessionImpl extends CxDxSession implements ServerCxDxSess
           break;
 
         case SEND_MESSAGE:
-          super.session.send(((AppEvent) event.getData()).getMessage(), this);
-          newState = CxDxSessionState.TERMINATED;
+          try {
+            super.session.send(((AppEvent) event.getData()).getMessage(), this);
+          }
+          finally {
+            newState = CxDxSessionState.TERMINATED;
+            setState(newState);
+          }
           break;
 
         case RECEIVE_PPA:
-          newState = CxDxSessionState.TERMINATED;
-          super.cancelMsgTimer();
-          listener.doPushProfileAnswer(this,  (JPushProfileRequest) localEvent.getRequest(), (JPushProfileAnswer) localEvent.getAnswer());
+          try {
+            super.cancelMsgTimer();
+            listener.doPushProfileAnswer(this, (JPushProfileRequest) localEvent.getRequest(), (JPushProfileAnswer) localEvent.getAnswer());
+          }
+          finally {
+            newState = CxDxSessionState.TERMINATED;
+            setState(newState);
+          }
           break;
 
         case RECEIVE_RTA:
-          newState = CxDxSessionState.TERMINATED;
-          super.cancelMsgTimer();
-          listener.doRegistrationTerminationAnswer(this, (JRegistrationTerminationRequest) localEvent.getRequest(), (JRegistrationTerminationAnswer) localEvent.getAnswer());
+          try {
+            super.cancelMsgTimer();
+            listener.doRegistrationTerminationAnswer(this, (JRegistrationTerminationRequest) localEvent.getRequest(), (JRegistrationTerminationAnswer) localEvent.getAnswer());
+          }
+          finally {
+            newState = CxDxSessionState.TERMINATED;
+            setState(newState);
+          }
           break;
 
         default:
@@ -244,10 +262,6 @@ public class CxDxServerSessionImpl extends CxDxSession implements ServerCxDxSess
         logger.error("Cx/Dx Server FSM in wrong state: {}", state);
         break;
       }
-
-      if (newState != null && newState != state) {
-        setState(newState);
-      }
     }
     catch (Exception e) {
       throw new InternalException(e);
@@ -257,6 +271,21 @@ public class CxDxServerSessionImpl extends CxDxSession implements ServerCxDxSess
     }
 
     return true;
+  }
+
+  @Override
+  public void release() {
+    try {
+      sendAndStateLock.lock();
+      super.release();
+      //this.listener = null;
+    }
+    catch (Exception e) {
+      logger.debug("Failed to release session", e);
+    }
+    finally {
+      sendAndStateLock.unlock();
+    }
   }
 
   /*

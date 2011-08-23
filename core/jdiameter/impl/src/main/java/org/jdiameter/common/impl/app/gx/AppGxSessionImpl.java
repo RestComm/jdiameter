@@ -62,7 +62,7 @@ public abstract class AppGxSessionImpl extends AppSessionImpl implements Network
   }
 
   public void release() {
-	stateListeners.clear();
+    //stateListeners.clear();
     super.release();
   }
 }

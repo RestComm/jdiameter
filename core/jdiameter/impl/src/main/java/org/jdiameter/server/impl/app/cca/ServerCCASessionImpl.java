@@ -163,6 +163,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
           // New State: IDLE
           newState = ServerCCASessionState.IDLE;
           dispatchEvent(localEvent.getAnswer());
+          setState(newState);
           break;
 
         case SENT_INITIAL_RESPONSE:
@@ -185,6 +186,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
               newState = ServerCCASessionState.IDLE;
             }
             dispatchEvent(localEvent.getAnswer());
+            setState(newState);
           }
           catch (AvpDataException e) {
             throw new InternalException(e);
@@ -261,10 +263,10 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
           catch (AvpDataException e) {
             throw new InternalException(e);
           }
-          finally {
-            newState = ServerCCASessionState.IDLE;
-          }
+
+          newState = ServerCCASessionState.IDLE;
           dispatchEvent(localEvent.getAnswer());
+          setState(newState);
           break;
 
         case RECEIVED_RAA:
@@ -281,9 +283,6 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
       throw new InternalException(e);
     }
     finally {
-      if(newState != null) {
-        setState(newState);
-      }
       sendAndStateLock.unlock();
     }
   }
@@ -431,36 +430,34 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
     }
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public void release() {
-    this.stopTcc(false);
+    try {
+      sendAndStateLock.lock();
 
-    if(super.isValid()) {
+      this.stopTcc(false);
+
+      //if (super.isValid()) {
       super.release();
-    }
+      //}
 
-    if(super.session != null) {
-      super.session.setRequestListener(null);
+      //this.listener = null;
+      //this.context = null;
+      //this.factory = null;
     }
-
-    this.session = null;
-    this.listener = null;
-    this.factory = null;
+    finally {
+      sendAndStateLock.unlock();
+    }
   }
 
   protected void send(Event.Type type, AppRequestEvent request, AppAnswerEvent answer) throws InternalException {
     try {
-      sendAndStateLock.lock();
       if (type != null) {
         handleEvent(new Event(type, request, answer));
       }
     }
     catch (Exception e) {
       throw new InternalException(e);
-    }
-    finally {
-      sendAndStateLock.unlock();
     }
   }
 

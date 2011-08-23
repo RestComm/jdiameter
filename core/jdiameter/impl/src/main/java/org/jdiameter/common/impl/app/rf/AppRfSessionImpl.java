@@ -76,7 +76,7 @@ public abstract class AppRfSessionImpl extends AppSessionImpl implements  Networ
   }
 
   public void release() {
-	stateListeners.clear();
+    //stateListeners.clear();
     super.release();
   }
 }

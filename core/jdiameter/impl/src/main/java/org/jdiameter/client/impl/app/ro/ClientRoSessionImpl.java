@@ -522,7 +522,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
           // New State: IDLE
 
           //FIXME: Alex broke this, setting back "true" ? 
-          setState(ClientRoSessionState.IDLE, false);
+          //setState(ClientRoSessionState.IDLE, false);
           deliverRoAnswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
           setState(ClientRoSessionState.IDLE, true);
           break;
@@ -568,10 +568,14 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   public void timeoutExpired(Request request) {
     if(request.getCommandCode()== RoCreditControlAnswer.code) {
       try {
+        sendAndStateLock.lock();
         handleSendFailure(null, null, request);
       }
       catch (Exception e) {
         logger.debug("Failure processing timeout message for request", e);
+      }
+      finally {
+        sendAndStateLock.unlock();
       }
     }
   }
@@ -641,19 +645,24 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     }
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public void release() {
-    this.stopTx();
-    if(super.isValid()) {
+    try {
+      this.sendAndStateLock.lock();
+      this.stopTx();
+      //if (super.isValid()) {
       super.release();
+      //}
+      //this.context = null;
+      //this.listener = null;
+      //this.factory = null;
     }
-    if(super.session != null) {
-      super.session.setRequestListener(null);
+    catch (Exception e) {
+      logger.debug("Failed to release session", e);
     }
-    super.session = null;
-    this.listener = null;
-    this.factory = null;
+    finally {
+      this.sendAndStateLock.unlock();
+    }
   }
 
   protected void handleSendFailure(Exception e, Event.Type eventType, Message request) throws Exception {
@@ -1147,7 +1156,9 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
 
   protected void deliverRoAnswer(RoCreditControlRequest request, RoCreditControlAnswer answer) {
     try {
-      listener.doCreditControlAnswer(this, request, answer);
+      if(isValid()) {
+        listener.doCreditControlAnswer(this, request, answer);
+      }
     }
     catch (Exception e) {
       logger.warn("Failure delivering Ro Answer", e);

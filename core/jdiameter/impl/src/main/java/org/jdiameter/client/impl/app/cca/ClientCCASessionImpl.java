@@ -190,9 +190,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   protected boolean handleEventForEventBased(StateEvent event) throws InternalException, OverloadException {
     try {
       sendAndStateLock.lock();
-      Event localEvent = (Event) event;
-      Event.Type eventType = (Type) localEvent.getType();
-      ClientCCASessionState state = this.sessionData.getClientCCASessionState(); 
+      final Event localEvent = (Event) event;
+      final Event.Type eventType = (Type) localEvent.getType();
+      final ClientCCASessionState state = this.sessionData.getClientCCASessionState(); 
       switch (state) {
 
       case IDLE:
@@ -511,7 +511,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           // New State: IDLE
 
           //FIXME: Alex broke this, setting back "true" ? 
-          setState(ClientCCASessionState.IDLE, false);
+          //setState(ClientCCASessionState.IDLE, false);
           deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
           setState(ClientCCASessionState.IDLE, true);
           break;
@@ -630,24 +630,29 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     }
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public void release() {
-    this.stopTx();
-    if(super.isValid()) {
+    try {
+      this.sendAndStateLock.lock();
+      //this.stopTx();
+      //if (super.isValid()) {
       super.release();
+      //}
+      //this.listener = null;
+      //this.factory = null;
     }
-    if(super.session != null) {
-      super.session.setRequestListener(null);
+    catch (Exception e) {
+      logger.debug("Failed to release session", e);
     }
-    super.session = null;
-    this.listener = null;
-    this.factory = null;
+    finally {
+      sendAndStateLock.unlock();
+    }
   }
 
   protected void handleSendFailure(Exception e, Event.Type eventType, Message request) throws Exception {
     logger.debug("Failed to send message, type: {} message: {}, failure: {}", new Object[]{eventType, request, e != null ? e.getLocalizedMessage() : ""});
     try {
+      this.sendAndStateLock.lock();
       ClientCCASessionState state = this.sessionData.getClientCCASessionState();
       int gatheredRequestedAction = this.sessionData.getGatheredRequestedAction();
       // Event Based ----------------------------------------------------------
@@ -743,9 +748,10 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           break;
         }
       }
+      dispatch();
     }
     finally {
-      dispatch();
+      this.sendAndStateLock.unlock();
     }
   }
 

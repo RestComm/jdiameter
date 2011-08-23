@@ -234,20 +234,14 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
     }
   }
 
-  @SuppressWarnings("unchecked")
   public void release() {
     try {
       sendAndStateLock.lock();
-
-      if(super.isValid()) {
-        super.release();
-      }
-      if(super.session != null) {
-        super.session.setRequestListener(null);
-      }
-      this.session = null;
-      this.listener = null;
-      this.factory = null;
+      //if(super.isValid()) {
+      super.release();
+      //} 
+      //this.listener = null;
+      //this.factory = null;
     }
     catch (Exception e) {
       logger.debug("Failed to release session", e);

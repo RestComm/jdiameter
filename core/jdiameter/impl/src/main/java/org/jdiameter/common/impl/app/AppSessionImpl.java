@@ -106,6 +106,7 @@ public abstract class AppSessionImpl implements AppSession {
   }
 
   public void release() {
+    this.session.setRequestListener(null);
     this.session.release();
     this.appSessionData.remove();
   }

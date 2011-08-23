@@ -498,7 +498,7 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
                             // New State: IDLE
 
                             //FIXME: Alex broke this, setting back "true" ?
-                            setState(ClientGxSessionState.IDLE, false);
+                            //setState(ClientGxSessionState.IDLE, false);
                             deliverGxAnswer((GxCreditControlRequest) localEvent.getRequest(), (GxCreditControlAnswer) localEvent.getAnswer());
                             setState(ClientGxSessionState.IDLE, true);
                             break;
@@ -542,9 +542,14 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
     public void timeoutExpired(Request request) {
         if (request.getCommandCode() == GxCreditControlAnswer.code) {
             try {
+                sendAndStateLock.lock();
                 handleSendFailure(null, null, request);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.debug("Failure processing timeout message for request", e);
+            }
+            finally {
+                sendAndStateLock.unlock();
             }
         }
     }
@@ -611,20 +616,25 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void release() {
+      try {
+        this.sendAndStateLock.lock();
         this.stopTx();
-        if (super.isValid()) {
-            super.release();
-        }
-        if (super.session != null) {
-            super.session.setRequestListener(null);
-        }
-        super.session = null;
-        
-        this.listener = null;
-        this.factory = null;
+        //if (super.isValid()) {
+        super.release();
+        //}
+
+        //this.context = null;
+        //this.listener = null;
+        //this.factory = null;
+      }
+      catch (Exception e) {
+        logger.debug("Failed to release session", e);
+      }
+      finally {
+        sendAndStateLock.unlock();
+      }
     }
 
     protected void handleSendFailure(Exception e, Event.Type eventType, Message request) throws Exception {

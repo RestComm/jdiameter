@@ -195,15 +195,16 @@ public class ClientRfSessionImpl extends AppRfSessionImpl implements EventListen
               // Event: Failure to send and no buffer space available and realtime not equal to GRANT_AND_LOSE
               // Action: Disconnect User/Device
               // New State: IDLE
-
-              sendAndStateLock.lock();
-              if (context != null) {
-                Request str = createSessionTermRequest();
-                context.disconnectUserOrDev(this,str);
-                session.send(str, this);
+              try{
+                if (context != null) {
+                  Request str = createSessionTermRequest();
+                  context.disconnectUserOrDev(this, str);
+                  session.send(str, this);
+                }
               }
-              setState(IDLE);
-              sendAndStateLock.unlock();
+              finally {
+                setState(IDLE);
+              }
             }
           }
           break;
@@ -232,14 +233,16 @@ public class ClientRfSessionImpl extends AppRfSessionImpl implements EventListen
               // Action: Disconnect User/Device
               // New State: IDLE
               if (accRtReq != null && accRtReq.getInteger32() != GRANT_AND_LOSE) {
-                sendAndStateLock.lock();
-                if (context != null) {
-                  Request str = createSessionTermRequest();
-                  context.disconnectUserOrDev(this,str);
-                  session.send(str, this);
+                try {
+                  if (context != null) {
+                    Request str = createSessionTermRequest();
+                    context.disconnectUserOrDev(this, str);
+                    session.send(str, this);
+                  }
                 }
-                setState(IDLE);
-                sendAndStateLock.unlock();
+                finally {
+                  setState(IDLE);
+                }
               }
             }
           }
@@ -327,14 +330,16 @@ public class ClientRfSessionImpl extends AppRfSessionImpl implements EventListen
               // Action: Disconnect User/Device
               // New State: IDLE
               if (!checkBufferSpace() && accRtReq != null && accRtReq.getInteger32() != GRANT_AND_LOSE) {
-                sendAndStateLock.lock();
-                if (context != null) {
-                  Request str = createSessionTermRequest();
-                  context.disconnectUserOrDev(this,str);
-                  session.send(str, this);
+                try {
+                  if (context != null) {
+                    Request str = createSessionTermRequest();
+                    context.disconnectUserOrDev(this, str);
+                    session.send(str, this);
+                  }
                 }
-                setState(IDLE);
-                sendAndStateLock.unlock();
+                finally {
+                  setState(IDLE);
+                }
               }
             }
           }
@@ -357,14 +362,16 @@ public class ClientRfSessionImpl extends AppRfSessionImpl implements EventListen
               // Action: Disconnect User/Device
               // New State: IDLE
               if (accRtReq != null && accRtReq.getInteger32() != GRANT_AND_LOSE) {
-                sendAndStateLock.lock();
-                if (context != null) {
-                  Request str = createSessionTermRequest();
-                  context.disconnectUserOrDev(this,str);
-                  session.send(str, this);
+                try {
+                  if (context != null) {
+                    Request str = createSessionTermRequest();
+                    context.disconnectUserOrDev(this,str);
+                    session.send(str, this);
+                  }
                 }
-                setState(IDLE);
-                sendAndStateLock.unlock();
+                finally {
+                  setState(IDLE);
+                }
               }
             }
           }
@@ -634,13 +641,7 @@ public class ClientRfSessionImpl extends AppRfSessionImpl implements EventListen
 
   public void receivedSuccessMessage(Request request, Answer answer) {
     if (request.getCommandCode() == RfAccountingRequest.code) {
-      //FIXME: any reason for this to be after handle?
-      try {
-        listener.doRfAccountingAnswerEvent(this, createAccountRequest(request), createAccountAnswer(answer));
-      }
-      catch (Exception e) {
-        logger.debug("Unable to deliver message to listener.", e);
-      }
+      // state should be changed before event listener call
       try {
         sendAndStateLock.lock();
         handleEvent(new Event(createAccountAnswer(answer)));
@@ -650,6 +651,12 @@ public class ClientRfSessionImpl extends AppRfSessionImpl implements EventListen
       }
       finally {
         sendAndStateLock.unlock();
+      }
+      try {
+        listener.doRfAccountingAnswerEvent(this, createAccountRequest(request), createAccountAnswer(answer));
+      }
+      catch (Exception e) {
+        logger.debug("Unable to deliver message to listener.", e);
       }
     }
     else {
@@ -664,10 +671,14 @@ public class ClientRfSessionImpl extends AppRfSessionImpl implements EventListen
 
   public void timeoutExpired(Request request) {
     try {
+    	sendAndStateLock.lock();
       handleEvent(new Event(Event.Type.FAILED_RECEIVE_RECORD, createAccountRequest(request)));
     }
     catch (Exception e) {
       logger.debug("Can not handle timeout event", e);
+    }
+    finally {
+      sendAndStateLock.unlock();
     }
   }
 
@@ -737,5 +748,21 @@ public class ClientRfSessionImpl extends AppRfSessionImpl implements EventListen
     return true;
   }
 
+  @Override
+  public void release() {
+    try {
+      sendAndStateLock.lock();
+      //TODO: cancel timer?
+      super.release();
+      //this.context = null;
+      //this.listener = null;
+    }
+    catch (Exception e) {
+      logger.debug("Failed to release session", e);
+    }
+    finally {
+      sendAndStateLock.unlock();
+    }
+  }
 
 }

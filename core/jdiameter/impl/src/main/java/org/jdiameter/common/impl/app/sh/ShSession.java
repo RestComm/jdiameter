@@ -70,7 +70,7 @@ public abstract class ShSession extends AppSessionImpl implements NetworkReqList
   }
 
   public void release() {
-	stateListeners.clear();
+    //stateListeners.clear();
     super.release();
   }
 

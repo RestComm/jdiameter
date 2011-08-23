@@ -95,7 +95,7 @@ public abstract class CxDxSession extends AppSessionImpl implements NetworkReqLi
 
 	@Override
 	public void release() {
-		stateListeners.clear();
+	  //stateListeners.clear();
 		super.release();
 	}
 

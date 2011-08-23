@@ -205,7 +205,6 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
 
   public void timeoutExpired(Request request) {
     try {
-      sendAndStateLock.lock();
       if (request.getApplicationId() == factory.getApplicationId()) {
         if (request.getCommandCode() == ProfileUpdateRequest.code) {
           handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, factory.createProfileUpdateRequest(request), null));
@@ -224,28 +223,18 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
     catch (Exception e) {
       logger.debug("Failed to process timeout message", e);
     }
-    finally {
-      sendAndStateLock.unlock();
-    }
   }
 
-
-
-  @SuppressWarnings("unchecked")
   public void release() {
     try {
       sendAndStateLock.lock();
 
-      if(super.isValid()) {
+      //if(super.isValid()) {
         super.release();
-      }
+      //}
 
-      if(super.session != null) { 
-        super.session.setRequestListener(null);
-      }
-      this.session = null;
-      this.listener = null;
-      this.factory = null;
+     //this.listener = null;
+     //this.factory = null;
     }
     catch (Exception e) {
       logger.debug("Failed to release session", e);

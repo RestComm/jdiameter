@@ -250,7 +250,7 @@ public class PeerTableImpl implements IPeerTable {
   //NOTE: METHOD BODY MUST MATCH JDOC.....!!!
   //TODO: add  DNS lookup ?
   public Peer getPeer(String name) {
-    logger.debug("In getPeerByName for peer name [{}]. going to loop through peerTable and find a matching entry", name);
+    logger.debug("In getPeerByName for peer name [{}]. Going to loop through peerTable and find a matching entry", name);
 
     for (Peer p : peerTable.values()) {
       if (logger.isDebugEnabled()) {

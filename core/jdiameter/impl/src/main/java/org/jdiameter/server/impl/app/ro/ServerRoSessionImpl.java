@@ -163,6 +163,7 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
           // New State: IDLE
           newState = ServerRoSessionState.IDLE;
           dispatchEvent(localEvent.getAnswer());
+          setState(newState);
           break;
 
         case SENT_INITIAL_RESPONSE:
@@ -185,6 +186,7 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
               newState = ServerRoSessionState.IDLE;
             }
             dispatchEvent(localEvent.getAnswer());
+            setState(newState);
           }
           catch (AvpDataException e) {
             throw new InternalException(e);
@@ -267,10 +269,9 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
           catch (AvpDataException e) {
             throw new InternalException(e);
           }
-          finally {
-            newState = ServerRoSessionState.IDLE;
-          }
+          newState = ServerRoSessionState.IDLE;
           dispatchEvent(localEvent.getAnswer());
+          setState(newState);
           break;
 
         case RECEIVED_RAA:
@@ -287,9 +288,6 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
       throw new InternalException(e);
     }
     finally {
-      if(newState != null) {
-        setState(newState);
-      }
       sendAndStateLock.unlock();
     }
   }
@@ -446,22 +444,25 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
     }
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public void release() {
-    this.stopTcc(false);
+    try {
+      this.sendAndStateLock.lock();
 
-    if(super.isValid()) {
+      this.stopTcc(false);
+      //if (super.isValid()) {
       super.release();
+      //}
+      //this.context = null;
+      //this.listener = null;
+      //this.factory = null;
     }
-
-    if(super.session != null) {
-      super.session.setRequestListener(null);
+    catch (Exception e) {
+      logger.debug("Failed to release session", e);
     }
-
-    this.session = null;
-    this.listener = null;
-    this.factory = null;
+    finally {
+      sendAndStateLock.unlock();
+    }
   }
 
   protected void send(Event.Type type, AppRequestEvent request, AppAnswerEvent answer) throws InternalException {
