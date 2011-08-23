@@ -22,6 +22,7 @@
 package org.mobicents.diameter.stack.base;
 
 import static org.junit.Assert.*;
+import junit.framework.Assert;
 
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Avp;
@@ -44,8 +45,10 @@ import org.junit.Test;
  */
 public class AvpGetGroupedTest {
 
+  private static final String AVP_VALUE = "mobicents-diameter";
+
   private Message message;
-  
+
   private static StackCreator stackCreator = new StackCreator();
   static {
     try {
@@ -67,42 +70,42 @@ public class AvpGetGroupedTest {
 
     // Add AVPs
     AvpSet messageAvps = message.getAvps();
-    
+
     // Experimental-Result    297  7.6     Grouped
     AvpSet erAvp = messageAvps.addGroupedAvp(297);
     // Experimental-Result-Code    298  7.7     Unsigned32
     erAvp.addAvp(298, 2001);
-    
+
     // User-Name          1  8.14    UTF8String
-    /*Avp unAvp = */messageAvps.addAvp(1, "mobicents-diameter", false);
+    /*Avp unAvp = */messageAvps.addAvp(1, AVP_VALUE, false);
   }
-  
+
   @Test(timeout=500)
   public void testGroupedAvpOK() {
     // Forcing message -> bytes -> message with clone
     AvpSet messageAvps = ((Message) ((MessageImpl)message).clone()).getAvps();
-    
+
     Avp erAvp = messageAvps.getAvp(297);
-    
+
     if(erAvp == null) {
       fail("Unable to retrieve avp Experimental-Result.");
     }
-    
+
     AvpSet erAvpSet = null;
-    
+
     try {
       erAvpSet = erAvp.getGrouped();
     }
     catch (AvpDataException e) {
       fail("Unable to retrieve avp Experimental-Result as Grouped.");
     }
-    
+
     Avp ercAvp = erAvpSet.getAvp(298);
-    
+
     if(ercAvp == null) {
       fail("Unable to retrieve avp Experimental-Result-Code from Experimental-Result.");
     }
-    
+
     try {
       if(ercAvp.getUnsigned32() != 2001) {
         fail("Avp Experimental-Result-Code has unexpected value: " + ercAvp.getUnsigned32() + "; Expected: 2001.");
@@ -112,20 +115,20 @@ public class AvpGetGroupedTest {
       fail("Unable to retrieve avp Experimental-Result-Code value.");
     }
   }
-  
+
   @Test(timeout=500)
   public void testGroupedAvpNotOK() {
     // Forcing message -> bytes -> message with clone
     AvpSet messageAvps = ((Message) ((MessageImpl)message).clone()).getAvps();
-    
+
     Avp unAvp = messageAvps.getAvp(1);
-    
+
     if(unAvp == null) {
       fail("Unable to retrieve avp User-Name.");
     }
-    
+
     try {
-      if(!unAvp.getUTF8String().equals("mobicents-diameter")) {
+      if(!unAvp.getUTF8String().equals(AVP_VALUE)) {
         fail("Avp User-Name has unexpected value: " + unAvp.getUTF8String() + "; Expected: mobicents-diameter.");
       }
     }
@@ -134,7 +137,7 @@ public class AvpGetGroupedTest {
     }
 
     AvpSet unAvpSet = null;
-    
+
     try {
       unAvpSet = unAvp.getGrouped();
       fail("Able to retrieve as grouped from a non-grouped avp, User-Name: " + unAvpSet);
@@ -143,5 +146,43 @@ public class AvpGetGroupedTest {
       // We're good, we wanted this.
     }
   }
-  
+
+  @Test(timeout=500)
+  public void testGetGroupedAndValueAfter() {
+    // Forcing message -> bytes -> message with clone
+    AvpSet messageAvps = ((Message) ((MessageImpl)message).clone()).getAvps();
+
+    Avp unAvp = messageAvps.getAvp(1);
+
+    if(unAvp == null) {
+      fail("Unable to retrieve avp User-Name.");
+    }
+
+    try {
+      if(!unAvp.getUTF8String().equals(AVP_VALUE)) {
+        fail("Avp User-Name has unexpected value: " + unAvp.getUTF8String() + "; Expected: mobicents-diameter.");
+      }
+    }
+    catch (AvpDataException e) {
+      fail("Unable to retrieve avp User-Name value.");
+    }
+
+    AvpSet unAvpSet = null;
+
+    try {
+      unAvpSet = unAvp.getGrouped();
+      fail("Able to retrieve as grouped from a non-grouped avp, User-Name: " + unAvpSet);
+    }
+    catch (AvpDataException e) {
+      // We're good, we wanted this.
+      try {
+        String value = unAvp.getUTF8String();
+        Assert.assertEquals("Value retrieved as UTF8String after tried is not correct", AVP_VALUE, value);
+      }
+      catch (AvpDataException e1) {
+        fail("Unable to retrieve as UTF8String after tried to retrieve as grouped.");
+      }
+    }
+  }
+
 }
