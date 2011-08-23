@@ -34,6 +34,7 @@ import org.jdiameter.api.InternalException;
 import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
+import org.jdiameter.api.ResultCode;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
@@ -195,8 +196,9 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
           
         case RECEIVED_UPDATE:
         case RECEIVED_TERMINATE:
-          // just inform of what happened
-          logger.debug("Received an UPDATE or TERMINATE for session in IDLE state. Discarding it.");
+          Answer errorAnswer = ((Request) localEvent.getRequest().getMessage()).createAnswer(ResultCode.UNKNOWN_SESSION_ID);
+          session.send(errorAnswer);
+          logger.debug("Received an UPDATE or TERMINATE for a new session. Answering with 5002 (UNKNOWN_SESSION_ID) and terminating session.");
           // and let it throw exception anyway ...
         default:
           throw new InternalException("Wrong state: " + ServerRoSessionState.IDLE + " one event: " + eventType + " " + localEvent.getRequest() + " " + localEvent.getAnswer());

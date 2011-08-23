@@ -31,9 +31,11 @@ import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
+import org.jdiameter.api.Message;
 import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
+import org.jdiameter.api.ResultCode;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
@@ -192,8 +194,14 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
             throw new InternalException(e);
           }
           break;
+        case RECEIVED_UPDATE:
+        case RECEIVED_TERMINATE:
+          Answer errorAnswer = ((Request) localEvent.getRequest().getMessage()).createAnswer(ResultCode.UNKNOWN_SESSION_ID);
+          session.send(errorAnswer);
+          logger.debug("Received an UPDATE or TERMINATE for a new session. Answering with 5002 (UNKNOWN_SESSION_ID) and terminating session.");
+          // and let it throw exception anyway ...
         default:
-          throw new InternalException("Wrong state: " + ServerCCASessionState.IDLE + " one event: " + eventType + " " + localEvent.getRequest() + " " + localEvent.getAnswer());
+          throw new InternalException("Wrong state: " + ServerCCASessionState.IDLE + " on event: " + eventType + " " + localEvent.getRequest() + " " + localEvent.getAnswer());
         }
 
       case OPEN:
