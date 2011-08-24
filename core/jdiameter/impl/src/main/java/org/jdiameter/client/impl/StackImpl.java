@@ -197,7 +197,8 @@ public class StackImpl implements IContainer, StackImplMBean {
       assembler.getComponentInstance(ISessionDatasource.class).start();
       assembler.getComponentInstance(ITimerFacility.class);
       List<Peer> peerTable = peerManager.getPeerTable();
-      final CountDownLatch barrier = new CountDownLatch(Mode.ANY_PEER.equals(mode) ? 1 : peerTable.size());
+      // considering only "to connect" peers are on the table at this time...
+      final CountDownLatch barrier = new CountDownLatch(Mode.ANY_PEER.equals(mode) ? Math.min(peerTable.size(), 1) : peerTable.size());
       StateChangeListener listener = new AbstractStateChangeListener() {
         public void stateChanged(Enum oldState, Enum newState) {
           if (PeerState.OKAY.equals(newState)) {
