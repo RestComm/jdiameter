@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors by the
- * @authors tag. See the copyright.txt in the distribution for a
+ * Copyright 2011, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -19,6 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.server.impl.agent;
 
 import java.io.IOException;
@@ -34,7 +35,6 @@ import org.jdiameter.api.RouteException;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IRequest;
-import org.jdiameter.client.api.controller.IPeerTable;
 import org.jdiameter.client.api.controller.IRealm;
 import org.jdiameter.client.api.controller.IRealmTable;
 import org.jdiameter.server.api.agent.IRedirect;
@@ -55,8 +55,8 @@ public class RedirectAgentImpl extends AgentImpl implements IRedirect {
    * @param peerTable
    * @param realmTable
    */
-  public RedirectAgentImpl(IContainer container, IPeerTable peerTable, IRealmTable realmTable) {
-    super(container, peerTable, realmTable);
+  public RedirectAgentImpl(IContainer container, IRealmTable realmTable) {
+    super(container, realmTable);
   }
 
   public static final int RHU_DONT_CACHE = 0;

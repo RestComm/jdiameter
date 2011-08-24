@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors by the
- * @authors tag. See the copyright.txt in the distribution for a
+ * Copyright 2011, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -19,6 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.server.impl;
 
 import static org.jdiameter.api.PeerState.DOWN;
@@ -374,46 +375,22 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                 case LOCAL: // always call listener - this covers realms
                   // configured as localy processed and
                   // LocalPeer.realm
-                case PROXY: // might be complicated, lets make it listener
-                  // now
+                  isProcessed = consumeMessage(message);
+                  break;
+                case PROXY: 
+                  //TODO: change this its almost the same as above, make it sync, so no router code involved
+                  if(handleByAgent(message, isProcessed, req, matched)) {
+                    isProcessed = true;
+                  }
+                  break;
                 case RELAY: // might be complicated, lets make it listener
                   // now
                   isProcessed = consumeMessage(message); //if its not redirected its 
                   break;
                 case REDIRECT:
                   //TODO: change this its almost the same as above, make it sync, so no router code involved
-                  if (ovrManager != null && ovrManager.isParenAppOverload(message.getSingleApplicationId())) {
-                    logger.debug("Request [{}] skipped, because server application is overloaded", message);
-                    sendErrorAnswer(message, "Overloaded", ResultCode.TOO_BUSY);
-                    return true;
-                  }
-                  else {
-                    try {
-                      router.registerRequestRouteInfo(message);
-                      IMessage answer = (IMessage)matched.getAgent().processRequest(req,matched);
-                      if (isDuplicateProtection && answer != null) {
-                        peerTable.saveToDuplicate(message.getDuplicationKey(), answer);
-                      }
-                      isProcessed = true;
-                      if(answer != null) {
-                        sendMessage(answer);
-                      }
-                      if (statistic.isEnabled()) {
-                        statistic.getRecordByName(IStatisticRecord.Counters.SysGenResponse.name()).inc();
-                      }
-                    }
-                    catch (Exception exc) {
-                      // TODO: check this!!
-                      logger.warn("Error during processing message by redirect agent", exc);
-                      sendErrorAnswer(message, "Unable to process", ResultCode.UNABLE_TO_COMPLY);
-                      return true;
-                    }
-                  }
-                  if (isProcessed) {
-                    // NOTE: done to inc stat which informs on net work request consumption :)
-                    if (statistic.isEnabled()) {
-                      statistic.getRecordByName(IStatisticRecord.Counters.NetGenRequest.name()).inc();
-                    }
+                  if(handleByAgent(message, isProcessed, req, matched)) {
+                    isProcessed = true;
                   }
                   break;
               }
@@ -460,46 +437,22 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
           switch (action) {
             case LOCAL: // always call listener - this covers realms
               // configured as locally processed and LocalPeer.realm
-            case PROXY: // might be complicated, lets make it listener
-              // now
+              isProcessed = consumeMessage(message);
+              break;
+            case PROXY:
+              //TODO: change this its almost the same as above, make it sync, so no router code involved
+              if( handleByAgent(message, isProcessed, req, matched)) {
+                isProcessed = true;
+              }
+              break;
             case RELAY: // might be complicated, lets make it listener
               // now
               isProcessed = consumeMessage(message);
               break;
             case REDIRECT:
               //TODO: change this its almost the same as above, make it sync, so no router code involved
-              if (ovrManager != null && ovrManager.isParenAppOverload(message.getSingleApplicationId())) {
-                logger.debug("Request [{}] skipped, because server application has overload", message);
-                sendErrorAnswer(message, "Overloaded", ResultCode.TOO_BUSY);
-                return true;
-              }
-              else {
-                try {
-                  router.registerRequestRouteInfo(message);
-                  IMessage answer = (IMessage)matched.getAgent().processRequest(req,matched);
-                  if (isDuplicateProtection && answer != null) {
-                    peerTable.saveToDuplicate(message.getDuplicationKey(), answer);
-                  }
-                  isProcessed = true;
-                  if(answer != null) {
-                    sendMessage(answer);
-                  }
-                  if (statistic.isEnabled()) {
-                    statistic.getRecordByName(IStatisticRecord.Counters.SysGenResponse.name()).inc();
-                  }
-                }
-                catch (Exception exc) {
-                  // TODO: check this!!
-                  logger.warn("Error during processing message by redirect agent", exc);
-                  sendErrorAnswer(message, "Unable to process", ResultCode.UNABLE_TO_COMPLY);
-                  return true;
-                }
-              }
-              if (isProcessed) {
-                // NOTE: done to inc stat which informs on net work request consumption :)
-                if (statistic.isEnabled()) {
-                  statistic.getRecordByName(IStatisticRecord.Counters.NetGenRequest.name()).inc();
-                }
+              if(handleByAgent(message, isProcessed, req, matched)) {
+                isProcessed = true;
               }
               break;
           }
@@ -510,6 +463,50 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
         isProcessed = super.receiveMessage(message);
       }
 
+      return isProcessed;
+    }
+
+    /**
+     * @param message
+     * @param isProcessed
+     * @param req
+     * @param matched
+     * @return
+     */
+    private boolean handleByAgent(IMessage message, boolean isProcessed, IRequest req, IRealm matched) {
+      if (ovrManager != null && ovrManager.isParenAppOverload(message.getSingleApplicationId())) {
+        logger.debug("Request [{}] skipped, because server application is overloaded", message);
+        sendErrorAnswer(message, "Overloaded", ResultCode.TOO_BUSY);
+        return true;
+      }
+      else {
+        try {
+          router.registerRequestRouteInfo(message);
+          IMessage answer = (IMessage)matched.getAgent().processRequest(req,matched);
+          if (isDuplicateProtection && answer != null) {
+            peerTable.saveToDuplicate(message.getDuplicationKey(), answer);
+          }
+          isProcessed = true;
+          if(answer != null) {
+            sendMessage(answer);
+          }
+          if (statistic.isEnabled()) {
+            statistic.getRecordByName(IStatisticRecord.Counters.SysGenResponse.name()).inc();
+          }
+        }
+        catch (Exception exc) {
+          // TODO: check this!!
+          logger.warn("Error during processing message by " + matched.getAgent().getClass(), exc);
+          sendErrorAnswer(message, "Unable to process", ResultCode.UNABLE_TO_COMPLY);
+          return true;
+        }
+      }
+      if (isProcessed) {
+        // NOTE: done to inc stat which informs on net work request consumption :)
+        if (statistic.isEnabled()) {
+          statistic.getRecordByName(IStatisticRecord.Counters.NetGenRequest.name()).inc();
+        }
+      }
       return isProcessed;
     }
 

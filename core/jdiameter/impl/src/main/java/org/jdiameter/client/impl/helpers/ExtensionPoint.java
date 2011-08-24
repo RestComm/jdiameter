@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors by the
- * @authors tag. See the copyright.txt in the distribution for a
+ * Copyright 2011, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -19,6 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.client.impl.helpers;
 
 import java.util.ArrayList;
@@ -110,6 +111,11 @@ public class ExtensionPoint extends Ordinal {
   public static final ExtensionPoint InternalAgentRedirect = new ExtensionPoint("InternalAgentRedirect", "org.jdiameter.server.impl.agent.RedirectAgentImpl");
 
   /**
+   * Proxy Agent implementation class name
+   */
+  public static final ExtensionPoint InternalAgentProxy = new ExtensionPoint("InternalAgentProxy", "org.jdiameter.server.impl.agent.ProxyAgentImpl");
+
+  /**
    * Session Datasource class name
    */
   public static final ExtensionPoint InternalSessionDatasource = new ExtensionPoint("InternalSessionDatasource", "org.jdiameter.common.impl.data.LocalDataSource");
@@ -139,6 +145,7 @@ public class ExtensionPoint extends Ordinal {
       InternalTimerFacility,
       InternalSessionDatasource,
       InternalAgentRedirect,
+      InternalAgentProxy,
       InternalStatisticProcessor
   );
 

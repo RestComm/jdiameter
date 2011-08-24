@@ -1,24 +1,25 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
- * contributors as indicated by the @authors tag. All rights reserved.
- * See the copyright.txt in the distribution for a full listing
- * of individual contributors.
- * 
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License, v. 2.0.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
+ * Copyright 2010, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.client.impl;
 
 import org.jdiameter.api.*;
@@ -83,7 +84,6 @@ public abstract class BaseSessionImpl implements BaseSession {
     return false;
   }
 
-  @SuppressWarnings("unchecked")
   protected void genericSend(Message message, EventListener listener) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     if (isValid) {
       long timeOut = container.getConfiguration().getLongValue(MessageTimeOut.ordinal(), (Long) MessageTimeOut.defValue());
@@ -94,7 +94,6 @@ public abstract class BaseSessionImpl implements BaseSession {
     }
   }
 
-  @SuppressWarnings("unchecked")
   protected void genericSend(Message aMessage, EventListener listener, long timeout, TimeUnit timeUnit) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     if (isValid) {
       lastAccessedTime = System.currentTimeMillis();
@@ -225,7 +224,7 @@ public abstract class BaseSessionImpl implements BaseSession {
           return !canceled;
         }
 
-        public void receivedSuccessMessage(Message r, Message a) {
+        public void receivedSuccessMessage(Request r, Answer a) {
           lock.lock();
           try {
             if (!canceled) {
@@ -240,7 +239,7 @@ public abstract class BaseSessionImpl implements BaseSession {
           }
         }
 
-        public void timeoutExpired(Message message) {
+        public void timeoutExpired(Request message) {
           lock.lock();
           try {
             if (!canceled) {
@@ -309,11 +308,9 @@ public abstract class BaseSessionImpl implements BaseSession {
 class MyEventListener implements IEventListener {
 
   BaseSessionImpl session;
-  @SuppressWarnings("unchecked")
   EventListener listener;
   boolean isValid = true;
 
-  @SuppressWarnings("unchecked")
   public MyEventListener(BaseSessionImpl session, EventListener listener) {
     this.session = session;
     this.listener = listener;
@@ -332,7 +329,7 @@ class MyEventListener implements IEventListener {
   }
 
   @SuppressWarnings("unchecked")
-  public void receivedSuccessMessage(Message request, Message answer) {
+  public void receivedSuccessMessage(Request request, Answer answer) {
     if (isValid) {
       session.lastAccessedTime = System.currentTimeMillis();
       listener.receivedSuccessMessage(request, answer);
@@ -340,7 +337,7 @@ class MyEventListener implements IEventListener {
   }
 
   @SuppressWarnings("unchecked")
-  public void timeoutExpired(Message message) {
+  public void timeoutExpired(Request message) {
     if (isValid) {
       session.lastAccessedTime = System.currentTimeMillis();
       listener.timeoutExpired(message);

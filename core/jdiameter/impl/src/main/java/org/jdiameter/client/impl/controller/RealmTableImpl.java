@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors by the
- * @authors tag. See the copyright.txt in the distribution for a
+ * Copyright 2011, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -19,6 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.client.impl.controller;
 
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ import org.jdiameter.client.api.IRequest;
 import org.jdiameter.client.api.controller.IRealm;
 import org.jdiameter.client.api.controller.IRealmTable;
 import org.jdiameter.server.api.agent.IAgent;
+import org.jdiameter.server.api.agent.IProxy;
 import org.jdiameter.server.api.agent.IRedirect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +84,9 @@ public class RealmTableImpl implements IRealmTable {
     switch (action) {
       case LOCAL:
       case RELAY:
+    	  break;
       case PROXY:
+        agent = this.assembler.getComponentInstance(IProxy.class);
         break;
       case REDIRECT:
         agent = this.assembler.getComponentInstance(IRedirect.class);

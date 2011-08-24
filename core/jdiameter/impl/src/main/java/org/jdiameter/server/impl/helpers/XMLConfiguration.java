@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors by the
- * @authors tag. See the copyright.txt in the distribution for a
+ * Copyright 2011, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -19,6 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.server.impl.helpers;
 
 import org.jdiameter.api.Configuration;
@@ -494,6 +495,7 @@ public class XMLConfiguration extends EmptyConfiguration {
       else if (nodeName.equals("SessionDatasource")) {          addInternalExtension(InternalSessionDatasource, getValue(c.item(i)));        }
       else if (nodeName.equals("TimerFacility")) {              addInternalExtension(InternalTimerFacility, getValue(c.item(i)));            }
       else if (nodeName.equals("AgentRedirect")) {              addInternalExtension(InternalAgentRedirect, getValue(c.item(i)));            }
+      else if (nodeName.equals("AgentProxy")) {             	  addInternalExtension(InternalAgentProxy, getValue(c.item(i)));            }
       else if (nodeName.equals("OverloadManager")) {            addInternalExtension(InternalOverloadManager,getValue(c.item(i)));           }
       else 
         appendOtherExtension(c.item(i));
