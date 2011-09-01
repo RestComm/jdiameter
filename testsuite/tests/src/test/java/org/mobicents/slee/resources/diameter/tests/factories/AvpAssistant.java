@@ -133,6 +133,12 @@ import net.java.slee.resource.diameter.ro.events.avp.TimeStamps;
 import net.java.slee.resource.diameter.ro.events.avp.TrunkGroupId;
 import net.java.slee.resource.diameter.ro.events.avp.WlanInformation;
 import net.java.slee.resource.diameter.ro.events.avp.WlanRadioContainer;
+import net.java.slee.resource.diameter.rx.events.avp.AcceptableServiceInfoAvp;
+import net.java.slee.resource.diameter.rx.events.avp.AccessNetworkChargingIdentifierAvp;
+import net.java.slee.resource.diameter.rx.events.avp.FlowsAvp;
+import net.java.slee.resource.diameter.rx.events.avp.MediaComponentDescriptionAvp;
+import net.java.slee.resource.diameter.rx.events.avp.MediaSubComponentAvp;
+import net.java.slee.resource.diameter.rx.events.avp.SponsoredConnectivityDataAvp;
 import net.java.slee.resource.diameter.sh.events.avp.DiameterShAvpCodes;
 import net.java.slee.resource.diameter.sh.events.avp.SupportedFeaturesAvp;
 import net.java.slee.resource.diameter.sh.events.avp.UserIdentityAvp;
@@ -219,6 +225,13 @@ import org.mobicents.slee.resource.diameter.ro.events.avp.TimeStampsImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.TrunkGroupIdImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.WlanInformationImpl;
 import org.mobicents.slee.resource.diameter.ro.events.avp.WlanRadioContainerImpl;
+import org.mobicents.slee.resource.diameter.rx.events.avp.AcceptableServiceInfoAvpImpl;
+import org.mobicents.slee.resource.diameter.rx.events.avp.AccessNetworkChargingIdentifierAvpImpl;
+import org.mobicents.slee.resource.diameter.rx.events.avp.DiameterRxAvpCodes;
+import org.mobicents.slee.resource.diameter.rx.events.avp.FlowsAvpImpl;
+import org.mobicents.slee.resource.diameter.rx.events.avp.MediaComponentDescriptionAvpImpl;
+import org.mobicents.slee.resource.diameter.rx.events.avp.MediaSubComponentAvpImpl;
+import org.mobicents.slee.resource.diameter.rx.events.avp.SponsoredConnectivityDataAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.events.avp.SupportedFeaturesAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.events.avp.UserIdentityAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.events.avp.userdata.ObjectFactory;
@@ -695,6 +708,27 @@ public class AvpAssistant {
     typeValues.put( V6TransportAddress.class, new V6TransportAddressImpl(DiameterGqAvpCodes.ETSI_V6_TRANSPORT_ADDRESS, DiameterGqAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes) );
     typeValues.put( V6TransportAddress[].class, new V6TransportAddressImpl[]{new V6TransportAddressImpl(DiameterGqAvpCodes.ETSI_V6_TRANSPORT_ADDRESS, DiameterGqAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes)});
 
+    // Rx AVP Factory : avps are doubled from Gq... but with AVP suffix... damn
+    typeValues.put( AcceptableServiceInfoAvp.class, new AcceptableServiceInfoAvpImpl(DiameterRxAvpCodes.ACCEPTABLE_SERVICE_INFO, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( AcceptableServiceInfoAvp[].class, new AcceptableServiceInfoAvpImpl[]{new AcceptableServiceInfoAvpImpl(DiameterRxAvpCodes.ACCEPTABLE_SERVICE_INFO, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes), new AcceptableServiceInfoAvpImpl(DiameterRxAvpCodes.ACCEPTABLE_SERVICE_INFO, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( AccessNetworkChargingIdentifierAvp.class, new AccessNetworkChargingIdentifierAvpImpl(DiameterRxAvpCodes.ACCESS_NETWORK_CHARGING_IDENTIFIER, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( AccessNetworkChargingIdentifierAvp[].class, new AccessNetworkChargingIdentifierAvpImpl[]{new AccessNetworkChargingIdentifierAvpImpl(DiameterRxAvpCodes.ACCESS_NETWORK_CHARGING_IDENTIFIER, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes), new AccessNetworkChargingIdentifierAvpImpl(DiameterRxAvpCodes.ACCESS_NETWORK_CHARGING_IDENTIFIER, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( FlowsAvp.class, new FlowsAvpImpl(DiameterRxAvpCodes.FLOWS, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( FlowsAvp[].class, new FlowsAvpImpl[]{new FlowsAvpImpl(DiameterRxAvpCodes.FLOWS, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes), new FlowsAvpImpl(DiameterRxAvpCodes.FLOWS, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( MediaComponentDescriptionAvp.class, new MediaComponentDescriptionAvpImpl(DiameterRxAvpCodes.MEDIA_COMPONENT_DESCRIPTION, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( MediaComponentDescriptionAvp[].class, new MediaComponentDescriptionAvpImpl[]{new MediaComponentDescriptionAvpImpl(DiameterRxAvpCodes.MEDIA_COMPONENT_DESCRIPTION, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes), new MediaComponentDescriptionAvpImpl(DiameterRxAvpCodes.MEDIA_COMPONENT_DESCRIPTION, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( MediaSubComponentAvp.class, new MediaSubComponentAvpImpl(DiameterRxAvpCodes.MEDIA_SUBCOMPONENT, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( MediaSubComponentAvp[].class, new MediaSubComponentAvpImpl[]{new MediaSubComponentAvpImpl(DiameterRxAvpCodes.MEDIA_SUBCOMPONENT, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes), new MediaSubComponentAvpImpl(DiameterRxAvpCodes.MEDIA_SUBCOMPONENT, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( SponsoredConnectivityDataAvp.class, new SponsoredConnectivityDataAvpImpl(DiameterRxAvpCodes.SPONSORED_CONNECTIVITY_DATA, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( SponsoredConnectivityDataAvp[].class, new SponsoredConnectivityDataAvpImpl[]{new SponsoredConnectivityDataAvpImpl(DiameterRxAvpCodes.SPONSORED_CONNECTIVITY_DATA, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes), new SponsoredConnectivityDataAvpImpl(DiameterRxAvpCodes.SPONSORED_CONNECTIVITY_DATA, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( net.java.slee.resource.diameter.rx.events.avp.SupportedFeaturesAvp.class, new org.mobicents.slee.resource.diameter.rx.events.avp.SupportedFeaturesAvpImpl(DiameterRxAvpCodes.SUPPORTED_FEATURES, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.rx.events.avp.SupportedFeaturesAvp[].class, new org.mobicents.slee.resource.diameter.rx.events.avp.SupportedFeaturesAvpImpl[]{new org.mobicents.slee.resource.diameter.rx.events.avp.SupportedFeaturesAvpImpl(DiameterRxAvpCodes.SUPPORTED_FEATURES, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes), new org.mobicents.slee.resource.diameter.rx.events.avp.SupportedFeaturesAvpImpl(DiameterRxAvpCodes.SUPPORTED_FEATURES, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
   }
 
   public static Object getValueFromEnumerated(Class clazz) throws IllegalArgumentException, SecurityException, IllegalAccessException, InvocationTargetException, NoSuchMethodException
