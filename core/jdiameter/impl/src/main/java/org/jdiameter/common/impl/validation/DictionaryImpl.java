@@ -381,6 +381,7 @@ public class DictionaryImpl implements Dictionary {
           }
           else if (avpDefnChildElement.getNodeName().equals("type")) {
             avpType = avpDefnChildElement.getAttribute("type-name");
+            //FIXME: baranowb: why this is like that? This changes type of AVP to primitive ONE..? Checks against type dont make sense, ie to check for Address type...
             avpType = typedefMap.get(avpType);
 
             if(avpType == null) {
