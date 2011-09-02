@@ -23,7 +23,6 @@
 package org.mobicents.diameter.stack;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
@@ -65,8 +64,8 @@ public class StackConnectTest {
     StackImpl server = new StackImpl();
     StackImpl client = new StackImpl();
     try {
-      String serverConfigName = "jdiameter-server-one.xml";
-      String clientConfigName = "jdiameter-client-one.xml";
+      String serverConfigName = "jdiameter-server-two.xml";
+      String clientConfigName = "jdiameter-client-two.xml";
 
       InputStream serverConfigInputStream = StackConnectTest.class.getClassLoader().getResourceAsStream("configurations/" + serverConfigName);
       InputStream clientConfigInputStream = StackConnectTest.class.getClassLoader().getResourceAsStream("configurations/" + clientConfigName);
