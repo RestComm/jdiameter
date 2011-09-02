@@ -82,6 +82,11 @@
 			<!-- JAIN SLEE RESOURCE ADAPTORS DEPENDENCIES -->
                         <dependency>
                                 <groupId>org.mobicents.servers.diameter.resources</groupId>
+                                <artifactId>rx-ra</artifactId>
+                                <version>${mobicents.diameter.resources.rx.version}</version>
+                        </dependency>
+                        <dependency>
+                                <groupId>org.mobicents.servers.diameter.resources</groupId>
                                 <artifactId>gq-ra</artifactId>
                                 <version>${mobicents.diameter.resources.gq.version}</version>
                         </dependency>
