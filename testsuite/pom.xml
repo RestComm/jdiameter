@@ -29,6 +29,7 @@
 		<mobicents.diameter.resources.cx-dx.version>2.4.2-SNAPSHOT</mobicents.diameter.resources.cx-dx.version>
 		<mobicents.diameter.resources.gx.version>2.4.2-SNAPSHOT</mobicents.diameter.resources.gx.version>
 		<mobicents.diameter.resources.gq.version>1.0.0-SNAPSHOT</mobicents.diameter.resources.gq.version>
+		<mobicents.diameter.resources.rx.version>1.0.0-SNAPSHOT</mobicents.diameter.resources.rx.version>
 
 		<!-- Other Mobicents Components Versions -->
 		<!--mobicents.servers.jainslee.version>2.4.0.CR1</mobicents.servers.jainslee.version>
