@@ -1524,7 +1524,6 @@ public class RfFactoriesTest implements DiameterRAInterface {
 
   public void fireEvent(String sessionId, Message message) {
     // TODO Auto-generated method stub
-
   }
 
   public ApplicationId[] getSupportedApplications() {
@@ -1536,6 +1535,14 @@ public class RfFactoriesTest implements DiameterRAInterface {
   }
 
   public void update(DiameterActivityHandle arg0, DiameterActivity arg1) {
+    // TODO Auto-generated method stub
+  }
+
+  public void startActivityRemoveTimer(DiameterActivityHandle handle) {
+    // TODO Auto-generated method stub
+  }
+
+  public void stopActivityRemoveTimer(DiameterActivityHandle handle) {
     // TODO Auto-generated method stub
   }
 }
