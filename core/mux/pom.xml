@@ -9,7 +9,7 @@
 
 	<groupId>org.mobicents.servers.diameter</groupId>
 	<artifactId>mobicents-diameter-mux-parent</artifactId>
-	<version>1.4.0.CR1</version>
+	<version>1.4.0-SNAPSHOT</version>
 
 	<name>Mobicents :: Diameter Multiplexer :: ${pom.artifactId}</name>
 
@@ -69,9 +69,9 @@
 	</profiles>
 
 	<scm>
-		<connection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/core/mux/mobicents-diameter-mux-1.4.0.CR1</connection>
-		<developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/core/mux/mobicents-diameter-mux-1.4.0.CR1</developerConnection>
-		<url>http://mobicents.googlecode.com/svn/tags/servers/diameter/core/mux/mobicents-diameter-mux-1.4.0.CR1</url>
+		<connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/mux</connection>
+		<developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/mux</developerConnection>
+		<url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/mux</url>
 	</scm>
 
 	<!-- dupe info from parent, but it's only way to retrieve the parent without checkout -->
