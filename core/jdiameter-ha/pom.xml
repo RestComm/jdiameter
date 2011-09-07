@@ -21,7 +21,7 @@
 	</modules>
 
 	<properties>
-		<jdiameter.version>1.5.6.0-build509</jdiameter.version>
+		<jdiameter.version>1.5.7.0-build509</jdiameter.version>
 		<mobicents.cluster.version>1.12</mobicents.cluster.version>
 	</properties>
 
