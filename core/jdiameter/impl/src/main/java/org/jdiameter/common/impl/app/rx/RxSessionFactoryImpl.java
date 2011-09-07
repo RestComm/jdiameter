@@ -112,16 +112,7 @@ IRxMessageFactory, IServerRxSessionContext, IClientRxSessionContext {
     this.sessionDataFactory = (IAppSessionDataFactory<IRxSessionData>) this.iss.getDataFactory(IRxSessionData.class);
 
     if(this.sessionDataFactory == null) {
-      logger.error("INITIALISED Rx SessionDataFactory is null");
-    }
-    if(this.iss == null) {
-      logger.error("INITIALISEDRx  ISS is null");
-    }
-    if(IRxSessionData.class == null) {
-      logger.error("INITIALISED Rx IRxSessionData.class is null");
-    }
-    if(this.iss.getDataFactory(IRxSessionData.class) == null) {
-      logger.error("INITIALISED  ISS.getDataFactory is null");
+      logger.debug("Initialized Rx SessionDataFactory is null");
     }
   }
 
