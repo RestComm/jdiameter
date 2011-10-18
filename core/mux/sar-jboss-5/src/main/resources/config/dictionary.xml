@@ -1,13 +1,13 @@
 <dictionary>
 
 	<!-- Basic AVP Data Formats -->
-	<typedefn type-name="OctetString"  />
-	<typedefn type-name="Integer32"  />
-	<typedefn type-name="Integer64"  />
-	<typedefn type-name="Unsigned32"  />
-	<typedefn type-name="Unsigned64"  />
-	<typedefn type-name="Float32"  />
-	<typedefn type-name="Float64"  />
+	<typedefn type-name="OctetString" />
+	<typedefn type-name="Integer32" />
+	<typedefn type-name="Integer64" />
+	<typedefn type-name="Unsigned32" />
+	<typedefn type-name="Unsigned64" />
+	<typedefn type-name="Float32" />
+	<typedefn type-name="Float64" />
 
 	<!-- Derived AVP Data Formats -->
 	<typedefn type-name="Address" type-parent="OctetString" />
@@ -1011,7 +1011,7 @@
 			<enum code="16" name="xDSL - Digital Subscriber Line of unknown type" />
 			<enum code="17" name="Cable" />
 			<enum code="18" name="Wireless - Other" />
-			<enum code="19" name="Wireless - IEEE 802.11  " />
+			<enum code="19" name="Wireless - IEEE 802.11" />
 			<enum code="20" name="Token-Ring" />
 			<enum code="21" name="FDDI" />
 			<enum code="22" name="Wireless - CDMA2000" />
@@ -4488,78 +4488,78 @@
 	<avpdefn name="ToS-Traffic-Class" code="1014" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
 		<type type-name="OctetString" />
 	</avpdefn>
-<avpdefn name="Access-Network-Charging-Identifier-Gx" code="1022" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <grouped>
-            <avp name="Charging-Rule-Base-Name" />
-            <avp name="Charging-Rule-Name" />
-            <avp name="Access-Network-Charging-Identifier-Value" />
-        </grouped>
-    </avpdefn>
-    
-    <avpdefn name="Flow-Status" code="511" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <type type-name="Enumerated">
-            <enum name="ENABLED-UPLINK" 			code="0" />
-            <enum name="ENABLED-DOWNLINK" 			code="1" />
-            <enum name="ENABLED" 					code="2" />
-            <enum name="DISABLED" 					code="3" />
-            <enum name="REMOVED" 					code="4" />
-        </type>
-    </avpdefn>
-    
-    <avpdefn name="Charging-Rule-Definition" code="1003" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <grouped>
-				
-            <avp name="Charging-Rule-Name" multiplicity="1" />
-            <avp name="Service-Identifier" multiplicity="0-1" />
-            <avp name="Rating-Group" multiplicity="0-1" />
-            <avp name="Flow-Description" multiplicity="0+" />
-            <avp name="Reporting-Level" multiplicity="0-1" />
-            <avp name="Online" multiplicity="0-1" />
-            <avp name="Offline" multiplicity="0-1" />
-            <avp name="Metering-Method" multiplicity="0-1" />
-            <avp name="Precedence" multiplicity="0-1" />
-            <avp name="AF-Charging-Identifier" multiplicity="0-1" />
-            <avp name="Flows" multiplicity="0+" />
-            <avp name="Flow-Status" />
-        </grouped>
-    </avpdefn>
 
-    <avpdefn name="PCC-Rule-Status" code="1019" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <type type-name="Enumerated">
-            <enum name="ACTIVE" 			code="0" />
-            <enum name="INACTIVE" code="1" />
-            <enum name="TEMPORARY_INACTIVE" code="2" />
-        </type>
-    </avpdefn>
-    <avpdefn name="Charging-Rule-Report" code="1018" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <grouped>
-            <avp name="Charging-Rule-Base-Name" />
-            <avp name="Charging-Rule-Name" />
-            <avp name="PCC-Rule-Status" />
-        </grouped>
-    </avpdefn>
-		
-    <avpdefn name="Event-Trigger" code="1006" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <type type-name="Enumerated">
-            <enum name="SGSN_CHANGE" 						code="0" />
-            <enum name="QOS_CHANGE" 						code="1" />
-            <enum name="RAT_CHANGE" 						code="2" />
-            <enum name="TFT_CHANGE"							code="3" />
-            <enum name="PLMN_CHANGE"						code="4" />
-            <enum name="LOSS_OF_BEARER" 					code="5" />
-            <enum name="RECOVERY_OF_BEARER" 				code="6" />
-            <enum name="IP-CAN_CHANGE"						code="7" />
-            <enum name="GW-PCEF-MALFUNCTION"				code="8" />
-            <enum name="RESOURCES_LIMITATION"				code="9" />
-            <enum name="MAX_NR_BEARERS_REACHED"				code="10" />
-            <enum name="QOS_CHANGE_EXCEEDING_AUTHORIZATION"	code="11" />
-            <enum name="RAI_CHANGE"							code="12" />
-            <enum name="USER_LOCATION_CHANGE"				code="13" />
-            <enum name="NO_EVENT_TRIGGERS"					code="14" />
-            <enum name="OUT_OF_CREDIT"						code="15" />
-            <enum name="REALLOCATION_OF_CREDIT"				code="16" />
-            <enum name="REVALIDATION_TIMEOUT"				code="17" /> 
-			<enum name="UE_IP_ADDRESS_ALLOCATE"				code="18" /> 
+	<avpdefn name="Access-Network-Charging-Identifier-Gx" code="1022" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<grouped>
+			<avp name="Charging-Rule-Base-Name" />
+			<avp name="Charging-Rule-Name" />
+			<avp name="Access-Network-Charging-Identifier-Value" />
+		</grouped>
+	</avpdefn>
+
+	<avpdefn name="Flow-Status" code="511" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<type type-name="Enumerated">
+			<enum name="ENABLED-UPLINK" 			code="0" />
+			<enum name="ENABLED-DOWNLINK" 			code="1" />
+			<enum name="ENABLED" 					code="2" />
+			<enum name="DISABLED" 					code="3" />
+			<enum name="REMOVED" 					code="4" />
+		</type>
+	</avpdefn>
+
+	<avpdefn name="Charging-Rule-Definition" code="1003" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<grouped>
+			<avp name="Charging-Rule-Name" multiplicity="1" />
+			<avp name="Service-Identifier" multiplicity="0-1" />
+			<avp name="Rating-Group" multiplicity="0-1" />
+			<avp name="Flow-Description" multiplicity="0+" />
+			<avp name="Reporting-Level" multiplicity="0-1" />
+			<avp name="Online" multiplicity="0-1" />
+			<avp name="Offline" multiplicity="0-1" />
+			<avp name="Metering-Method" multiplicity="0-1" />
+			<avp name="Precedence" multiplicity="0-1" />
+			<avp name="AF-Charging-Identifier" multiplicity="0-1" />
+			<avp name="Flows" multiplicity="0+" />
+			<avp name="Flow-Status" />
+		</grouped>
+	</avpdefn>
+
+	<avpdefn name="PCC-Rule-Status" code="1019" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<type type-name="Enumerated">
+			<enum name="ACTIVE" 			code="0" />
+			<enum name="INACTIVE" code="1" />
+			<enum name="TEMPORARY_INACTIVE" code="2" />
+		</type>
+	</avpdefn>
+	<avpdefn name="Charging-Rule-Report" code="1018" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<grouped>
+			<avp name="Charging-Rule-Base-Name" />
+			<avp name="Charging-Rule-Name" />
+			<avp name="PCC-Rule-Status" />
+		</grouped>
+	</avpdefn>
+
+	<avpdefn name="Event-Trigger" code="1006" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<type type-name="Enumerated">
+			<enum name="SGSN_CHANGE" 						code="0" />
+			<enum name="QOS_CHANGE" 						code="1" />
+			<enum name="RAT_CHANGE" 						code="2" />
+			<enum name="TFT_CHANGE"							code="3" />
+			<enum name="PLMN_CHANGE"						code="4" />
+			<enum name="LOSS_OF_BEARER" 					code="5" />
+			<enum name="RECOVERY_OF_BEARER" 				code="6" />
+			<enum name="IP-CAN_CHANGE"						code="7" />
+			<enum name="GW-PCEF-MALFUNCTION"				code="8" />
+			<enum name="RESOURCES_LIMITATION"				code="9" />
+			<enum name="MAX_NR_BEARERS_REACHED"				code="10" />
+			<enum name="QOS_CHANGE_EXCEEDING_AUTHORIZATION"	code="11" />
+			<enum name="RAI_CHANGE"							code="12" />
+			<enum name="USER_LOCATION_CHANGE"				code="13" />
+			<enum name="NO_EVENT_TRIGGERS"					code="14" />
+			<enum name="OUT_OF_CREDIT"						code="15" />
+			<enum name="REALLOCATION_OF_CREDIT"				code="16" />
+			<enum name="REVALIDATION_TIMEOUT"				code="17" />
+			<enum name="UE_IP_ADDRESS_ALLOCATE"				code="18" />
 			<enum name="UE_IP_ADDRESS_RELEASE"				code="19" />
 			<enum name="DEFAULT_EPS_BEARER_QOS_CHANGE"		code="20" />
 			<enum name="AN_GW_CHANGE"						code="21" />
@@ -4568,7 +4568,7 @@
 			<enum name="PGW_TRACE_CONTROL"					code="24" />
 			<enum name="UE_TIME_ZONE_CHANGE"				code="25" />
 			<enum name="TAI_CHANGE"							code="26" />
-			<enum name="ECGI_CHANGE"						code="27" /> 
+			<enum name="ECGI_CHANGE"						code="27" />
 			<enum name="CHARGING_CORRELATION_EXCHANGE"		code="28" />
 			<enum name="APN-AMBR_MODIFICATION_FAILURE"		code="29" />
 			<enum name="USER_CSG_INFORMATION_CHANGE"		code="30" />
@@ -4576,121 +4576,123 @@
 			<enum name="DEFAULT-EPS-BEARER-QOS_MODIFICATION_FAILURE"				code="34" />
 			<enum name="USER_CSG_HYBRID_SUBSCRIBED_INFORMATION_CHANGE"				code="35" />
 			<enum name="USER_CSG_ HYBRID_UNSUBSCRIBED_INFORMATION_CHANGE"			code="36" />
-			<enum name="ROUTING_RULE_CHANGE"				code="37" /> 
+			<enum name="ROUTING_RULE_CHANGE"				code="37" />
 			<enum name="MAX_MBR_APN_AMBR_CHANGE"			code="38" />
 			<enum name="APPLICATION_START"					code="39" />
 			<enum name="APPLICATION_STOP"					code="40" />
-            
-            <enum code="1000" name="TFT_DELETED" />
+
+			<enum code="1000" name="TFT_DELETED" />
 			<enum code="1001" name="LOSS_OF_BEARER" />
 			<enum code="1002" name="RECOVERY_OF_BEARER" />
 			<enum code="1003" name="POLICY_ENFORCEMENT_FAILED" />
-        </type>
-    </avpdefn>
-		
-    <avpdefn name="QoS-Information" code="1016" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <grouped>
-            <avp name="QoS-Class-Identifier" />
-            <avp name="Max-Requested-Bandwidth-DL" />
-            <avp name="Max-Requested-Bandwidth-UL" />
-            <avp name="Guaranteed-Bitrate-UL" />
-            <avp name="Guaranteed-Bitrate-DL" />
-            <avp name="Bearer-Identifier" />
-        </grouped>
-    </avpdefn>
-    
-    <avpdefn name="Bearer-Identifier" code="1020" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <type type-name="OctetString" />
-    </avpdefn>
-    		
-    <avpdefn name="Guaranteed-Bitrate-UL" code="1026" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <type type-name="Unsigned32" />
-    </avpdefn>
-    <avpdefn name="Guaranteed-Bitrate-DL" code="1025" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <type type-name="Unsigned32" />
-    </avpdefn>
-		
-		
-    <avpdefn name="QoS-Class-Identifier" code="1028" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <type type-name="Enumerated">
-            <enum name="None" 			code="0" />
-            <enum name="Conversational" 			code="1" />
-            <enum name="Conversational" 			code="2" />
-            <enum name="Streaming" code="3" />
-            <enum name="Streaming" code="4" />
-            <enum name="Interactive"			code="5" />
-            <enum name="Interactive" code="6" />
-            <enum name="Interactive" code="7" />
-            <enum name="Interactive" code="8" />
-            <enum name="Background" code="9" />
-            <enum name="OTHER"			code="0xFFFFFFFF" />
-        </type>
-    </avpdefn>
-		
-		
-		
-    <avpdefn name="Bearer-Control-Mode" code="1023" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <type type-name="Enumerated">
-            <enum name="UE_ONLY"     		code="0" />
-            <enum name="RESERVED"    		code="1" />
-            <enum name="UE_NW"                      code="2" />
-        </type>
-    </avpdefn>
-    <avpdefn name="Default-EPS-Bearer-QoS" code="1049" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <grouped>
-            <avp name="QoS-Class-Identifier" />
-            <avp name="Allocation-Retention-Priority" />
-        </grouped>
-    </avpdefn>
-    <avpdefn name="Allocation-Retention-Priority" code="1034" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <grouped>
-            <avp name="Priority-Level" />
-            <avp name="Pre-emption-Capability" />
-            <avp name="Pre-emption-Vulnerability" />
-        </grouped>
-    </avpdefn>
-    <avpdefn name="Priority-Level" code="1046" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <type type-name="Unsigned32" />
-    </avpdefn>
-    <avpdefn name="Pre-emption-Capability" code="1047" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <type type-name="Enumerated">
-            <enum name="PRE-EMPTION_CAPABILITY_ENABLED" code="0" />
-            <enum name="PRE-EMPTION_CAPABILITY_DISABLED" code="1" />
-        </type>
-    </avpdefn>
-    <avpdefn name="Pre-emption-Vulnerability" code="1048" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <type type-name="Enumerated">
-            <enum name="PRE-EMPTION_VULNERABILITY_ENABLED" code="0" />
-            <enum name="PRE-EMPTION_VULNERABILITY_DISABLED"	code="1" />
-        </type>
-    </avpdefn>
-    <avpdefn name="Network-Request-Support" code="1024" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <type type-name="Enumerated">
-            <enum name="NETWORK_REQUEST NOT_SUPPORTED"    	code="0" />
-            <enum name="NETWORK_REQUEST SUPPORTED"    	code="1" />
-        </type>
-    </avpdefn>
-    
-    <avpdefn name="IP-CAN-Type" code="1027" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <type type-name="Enumerated">
-            <enum name="3GPP_GPRS"    	code="0" />
-            <enum name="DOCSIS" code="1" />
-            <enum name="xDSL"       	code="2" />
-            <enum name="WiMAX" code="3" />
-            <enum name="3GPP2"      	code="4" />
-            <enum name="3GPP_EPS" code="5" />
-            <enum name="Non-3GPP_EPS" code="6" />
-        </type>
-    </avpdefn>
-    <avpdefn name="AN-GW-Address" code="1050" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <type type-name="IPAddress" />
-    </avpdefn>
-    <avpdefn name="APN-Aggregate-Max-Bitrate-UL" code="1041" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <type type-name="Unsigned32" />
-    </avpdefn>
-    <avpdefn name="APN-Aggregate-Max-Bitrate-DL" code="1040" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-        <type type-name="Unsigned32" />
-    </avpdefn>
+		</type>
+	</avpdefn>
+
+	<avpdefn name="QoS-Information" code="1016" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<grouped>
+			<avp name="QoS-Class-Identifier" />
+			<avp name="Max-Requested-Bandwidth-DL" />
+			<avp name="Max-Requested-Bandwidth-UL" />
+			<avp name="Guaranteed-Bitrate-UL" />
+			<avp name="Guaranteed-Bitrate-DL" />
+			<avp name="Bearer-Identifier" />
+		</grouped>
+	</avpdefn>
+
+	<avpdefn name="Bearer-Identifier" code="1020" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<type type-name="OctetString" />
+	</avpdefn>
+
+	<avpdefn name="Guaranteed-Bitrate-UL" code="1026" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<type type-name="Unsigned32" />
+	</avpdefn>
+	<avpdefn name="Guaranteed-Bitrate-DL" code="1025" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<type type-name="Unsigned32" />
+	</avpdefn>
+
+	<avpdefn name="QoS-Class-Identifier" code="1028" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<type type-name="Enumerated">
+			<enum name="None" 			code="0" />
+			<enum name="Conversational" 			code="1" />
+			<enum name="Conversational" 			code="2" />
+			<enum name="Streaming" code="3" />
+			<enum name="Streaming" code="4" />
+			<enum name="Interactive"			code="5" />
+			<enum name="Interactive" code="6" />
+			<enum name="Interactive" code="7" />
+			<enum name="Interactive" code="8" />
+			<enum name="Background" code="9" />
+			<enum name="OTHER"			code="0xFFFFFFFF" />
+		</type>
+	</avpdefn>
+
+	<avpdefn name="Bearer-Control-Mode" code="1023" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<type type-name="Enumerated">
+			<enum name="UE_ONLY"			code="0" />
+			<enum name="RESERVED"			code="1" />
+			<enum name="UE_NW"				code="2" />
+		</type>
+	</avpdefn>
+	<avpdefn name="Default-EPS-Bearer-QoS" code="1049" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<grouped>
+			<avp name="QoS-Class-Identifier" />
+			<avp name="Allocation-Retention-Priority" />
+		</grouped>
+	</avpdefn>
+	<avpdefn name="Allocation-Retention-Priority" code="1034" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<grouped>
+			<avp name="Priority-Level" />
+			<avp name="Pre-emption-Capability" />
+			<avp name="Pre-emption-Vulnerability" />
+		</grouped>
+	</avpdefn>
+	<avpdefn name="Priority-Level" code="1046" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<type type-name="Unsigned32" />
+	</avpdefn>
+	<avpdefn name="Pre-emption-Capability" code="1047" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<type type-name="Enumerated">
+			<enum name="PRE-EMPTION_CAPABILITY_ENABLED" code="0" />
+			<enum name="PRE-EMPTION_CAPABILITY_DISABLED" code="1" />
+		</type>
+	</avpdefn>
+	<avpdefn name="Pre-emption-Vulnerability" code="1048" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<type type-name="Enumerated">
+			<enum name="PRE-EMPTION_VULNERABILITY_ENABLED" code="0" />
+			<enum name="PRE-EMPTION_VULNERABILITY_DISABLED"	code="1" />
+		</type>
+	</avpdefn>
+
+	<avpdefn name="Network-Request-Support" code="1024" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<type type-name="Enumerated">
+			<enum name="NETWORK_REQUEST NOT_SUPPORTED"	code="0" />
+			<enum name="NETWORK_REQUEST SUPPORTED"		code="1" />
+		</type>
+	</avpdefn>
+
+	<avpdefn name="IP-CAN-Type" code="1027" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<type type-name="Enumerated">
+			<enum name="3GPP_GPRS"		code="0" />
+			<enum name="DOCSIS"			code="1" />
+			<enum name="xDSL"			code="2" />
+			<enum name="WiMAX"			code="3" />
+			<enum name="3GPP2"			code="4" />
+			<enum name="3GPP_EPS"		code="5" />
+			<enum name="Non-3GPP_EPS"	code="6" />
+		</type>
+	</avpdefn>
+
+	<avpdefn name="AN-GW-Address" code="1050" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<type type-name="IPAddress" />
+	</avpdefn>
+
+	<avpdefn name="APN-Aggregate-Max-Bitrate-UL" code="1041" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<type type-name="Unsigned32" />
+	</avpdefn>
+
+	<avpdefn name="APN-Aggregate-Max-Bitrate-DL" code="1040" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<type type-name="Unsigned32" />
+	</avpdefn>
+
 	<application id="16777224" vendor-id="TGPP" name="3GPP Gx (Rel6)" URI="http://www.3gpp.org/ftp/Specs/archive/29_series/29.210/29210-670.zip">
 		<command name="Credit-Control-Request" code="272" request="true">
 			<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
@@ -4821,7 +4823,7 @@
 		</command>
 	</application>
 
-	<!-- ************************** 3GPP  Rx AVPS ********************* -->
+	<!-- ************************** 3GPP Rx AVPS ********************* -->
 	<avpdefn name="Reservation-Priority" code="458" vendor-id="ETSI" mandatory="mustnot" protected="may" may-encrypt="yes" vendor-bit="must" >
 		<type type-name="Enumerated">
 			<enum code="1" name="PRIORITY-ONE" />
@@ -4843,7 +4845,7 @@
 	</avpdefn>
 
 	<avpdefn name="Access-Network-Charging-Address" code="501" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
-		<type type-name="Address" /> <!--  was IP address.... -->
+		<type type-name="Address" /> <!-- was IP address... -->
 	</avpdefn>
 
 	<avpdefn name="Specific-Action" code="513" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
@@ -4920,17 +4922,17 @@
 
 	<avpdefn name="Codec-Data" code="524" mndatory="must" may-encript="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
 		<type type-name="OctetString" />
-	</avpdefn> 
-   
+	</avpdefn>
+
 	<avpdefn name="Service-URN" code="525" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
 		<type type-name="OctetString" />
 	</avpdefn>
 
 	<avpdefn name="Acceptable-Service-Info" code="526" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
 		<grouped>
-			<avp name="Media-Component-Description"  multiplicity="0+" />
-			<avp name="Max-Requested-Bandwidth-DL"  multiplicity="0-1" />
-			<avp name="Max-Requested-Bandwidth-UL"  multiplicity="0-1" />
+			<avp name="Media-Component-Description" multiplicity="0+" />
+			<avp name="Max-Requested-Bandwidth-DL" multiplicity="0-1" />
+			<avp name="Max-Requested-Bandwidth-UL" multiplicity="0-1" />
 		</grouped>
 	</avpdefn>
 
@@ -4950,17 +4952,17 @@
 
 	<avpdefn name="Sponsored-Connectivity-Data" code="530" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
 		<grouped>
-			<avp name="Sponsor-Identity"  multiplicity="0-1" />
-			<avp name="Application-Service-Provider-Identity"  multiplicity="0-1" />
-			<avp name="Granted-Service-Unit"  multiplicity="0-1" />
-			<avp name="Used-Service-Unit"  multiplicity="0-1" />
+			<avp name="Sponsor-Identity" multiplicity="0-1" />
+			<avp name="Application-Service-Provider-Identity" multiplicity="0-1" />
+			<avp name="Granted-Service-Unit" multiplicity="0-1" />
+			<avp name="Used-Service-Unit" multiplicity="0-1" />
 		</grouped>
 	</avpdefn>
-	
+
 	<avpdefn name="Sponsor-Identity" code="531" mndatory="must" may-encript="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
 		<type type-name="UTF8String" />
 	</avpdefn>
-	
+
 	<avpdefn name="Application-Service-Provider-Identity" code="532" mndatory="must" may-encript="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
 		<type type-name="UTF8String" />
 	</avpdefn>
@@ -5024,24 +5026,24 @@
 
 		<command name="Abort-Session-Answer"	code="274" vendor-id="TGPP" request="false">
 		</command>
-	</application>	
-	
+	</application>
+
 	<avpdefn name="RAT-Type" code="1032" mandatory="mustnot" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
 		<type type-name="Enumerated">
-			<enum name="WLAN" 				code="0" />			
+			<enum name="WLAN" 				code="0" />
 			<enum name="VIRTUAL" 					code="1" />
 			<enum name="UTRAN" 					code="1000" />
 			<enum name="GERAN" 					code="1001" />
 			<enum name="GAN" 					code="1002" />
 			<enum name="HSPA_EVLOUTION" 					code="1003" />
 			<enum name="EUTRAN" 					code="1004" />
-			<enum name="CDMA2000_1X" 					code="2000" />			
+			<enum name="CDMA2000_1X" 					code="2000" />
 			<enum name="HRPD" 					code="2001" />
 			<enum name="UMB" 					code="2002" />
 			<enum name="EHRPD" 					code="2003" />
 		</type>
 	</avpdefn>
-	
+
 	<avpdefn name="Served-User-Identity" code="1100" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
 		<grouped>
 			<avp name="MSISDN" />
@@ -5285,7 +5287,7 @@
 		</type>
 	</avpdefn>
 
-	
+
 
 	<avpdefn name="Service-Class" code="459" vendor-id="ETSI" mandatory="mustnot" protected="may" may-encrypt="yes" vendor-bit="must" >
 		<type type-name="UTF8String" />
@@ -5448,7 +5450,6 @@
 			<avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
 		</command>
-
 	</application>
 
 	<!-- UNUSED AVPs (57) -->
