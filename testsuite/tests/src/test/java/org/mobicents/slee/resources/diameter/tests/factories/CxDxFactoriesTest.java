@@ -43,6 +43,7 @@ import net.java.slee.resource.diameter.cxdx.events.avp.AssociatedIdentities;
 import net.java.slee.resource.diameter.cxdx.events.avp.AssociatedRegisteredIdentities;
 import net.java.slee.resource.diameter.cxdx.events.avp.ChargingInformation;
 import net.java.slee.resource.diameter.cxdx.events.avp.DeregistrationReason;
+import net.java.slee.resource.diameter.cxdx.events.avp.DiameterCxDxAvpCodes;
 import net.java.slee.resource.diameter.cxdx.events.avp.ReasonCode;
 import net.java.slee.resource.diameter.cxdx.events.avp.RestorationInfo;
 import net.java.slee.resource.diameter.cxdx.events.avp.SCSCFRestorationInfo;
@@ -57,6 +58,8 @@ import org.jdiameter.common.impl.app.cxdx.CxDxSessionFactoryImpl;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
+import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
+import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.cxdx.CxDxAVPFactoryImpl;
 import org.mobicents.slee.resource.diameter.cxdx.CxDxClientSessionImpl;
@@ -86,12 +89,12 @@ public class CxDxFactoriesTest {
       throw new RuntimeException("Failed to initialize the stack.");
     }
 
-    cxdxAvpFactory = new CxDxAVPFactoryImpl();
+    cxdxAvpFactory = new CxDxAVPFactoryImpl(new DiameterAvpFactoryImpl());
     try {
-      cxdxMessageFactory = new CxDxMessageFactoryImpl(stack);
+      cxdxMessageFactory = new CxDxMessageFactoryImpl(new DiameterMessageFactoryImpl(stack), stack);
 
       CxDxSessionFactoryImpl sf = new CxDxSessionFactoryImpl(stack.getSessionFactory());
-      ApplicationId cxdxAppId = ApplicationId.createByAuthAppId(CxDxMessageFactory._CXDX_VENDOR, CxDxMessageFactory._CXFX_AUTH_APP_ID);
+      ApplicationId cxdxAppId = ApplicationId.createByAuthAppId(DiameterCxDxAvpCodes.CXDX_VENDOR_ID, DiameterCxDxAvpCodes.CXDX_AUTH_APP_ID);
       org.jdiameter.server.impl.app.cxdx.CxDxServerSessionImpl stackServerSession = (org.jdiameter.server.impl.app.cxdx.CxDxServerSessionImpl) sf.getNewSession("123", ServerCxDxSession.class, cxdxAppId, new Object[0]);
       org.jdiameter.client.impl.app.cxdx.CxDxClientSessionImpl stackClientSession = (org.jdiameter.client.impl.app.cxdx.CxDxClientSessionImpl) sf.getNewSession("321", ClientCxDxSession.class, cxdxAppId, new Object[0]);
       serverSession = new CxDxServerSessionImpl(cxdxMessageFactory, cxdxAvpFactory, stackServerSession, stackServerSession, null, null, stack);
