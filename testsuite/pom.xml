@@ -29,7 +29,8 @@
 		<mobicents.diameter.resources.cx-dx.version>2.4.2-SNAPSHOT</mobicents.diameter.resources.cx-dx.version>
 		<mobicents.diameter.resources.gx.version>2.4.2-SNAPSHOT</mobicents.diameter.resources.gx.version>
 		<mobicents.diameter.resources.gq.version>1.0.0-SNAPSHOT</mobicents.diameter.resources.gq.version>
-		<mobicents.diameter.resources.rx.version>1.0.0-SNAPSHOT</mobicents.diameter.resources.rx.version>
+    <mobicents.diameter.resources.rx.version>1.0.0-SNAPSHOT</mobicents.diameter.resources.rx.version>
+    <mobicents.diameter.resources.s6a.version>1.0.0-SNAPSHOT</mobicents.diameter.resources.s6a.version>
 
 		<!-- Other Mobicents Components Versions -->
 		<!--mobicents.servers.jainslee.version>2.4.0.CR1</mobicents.servers.jainslee.version>
@@ -80,16 +81,21 @@
 			</dependency>
 		
 			<!-- JAIN SLEE RESOURCE ADAPTORS DEPENDENCIES -->
-                        <dependency>
-                                <groupId>org.mobicents.servers.diameter.resources</groupId>
-                                <artifactId>rx-ra</artifactId>
-                                <version>${mobicents.diameter.resources.rx.version}</version>
-                        </dependency>
-                        <dependency>
-                                <groupId>org.mobicents.servers.diameter.resources</groupId>
-                                <artifactId>gq-ra</artifactId>
-                                <version>${mobicents.diameter.resources.gq.version}</version>
-                        </dependency>
+      <dependency>
+              <groupId>org.mobicents.servers.diameter.resources</groupId>
+              <artifactId>s6a-ra</artifactId>
+              <version>${mobicents.diameter.resources.s6a.version}</version>
+      </dependency>
+      <dependency>
+              <groupId>org.mobicents.servers.diameter.resources</groupId>
+              <artifactId>rx-ra</artifactId>
+              <version>${mobicents.diameter.resources.rx.version}</version>
+      </dependency>
+      <dependency>
+              <groupId>org.mobicents.servers.diameter.resources</groupId>
+              <artifactId>gq-ra</artifactId>
+              <version>${mobicents.diameter.resources.gq.version}</version>
+      </dependency>
 			<dependency>
 				<groupId>org.mobicents.servers.diameter.resources</groupId>
 				<artifactId>gx-ra</artifactId>

@@ -139,6 +139,28 @@ import net.java.slee.resource.diameter.rx.events.avp.FlowsAvp;
 import net.java.slee.resource.diameter.rx.events.avp.MediaComponentDescriptionAvp;
 import net.java.slee.resource.diameter.rx.events.avp.MediaSubComponentAvp;
 import net.java.slee.resource.diameter.rx.events.avp.SponsoredConnectivityDataAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.AMBRAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.APNConfigurationAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.APNConfigurationProfileAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.ActiveAPNAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.AllocationRetentionPriorityAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.AuthenticationInfoAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.DiameterS6aAvpCodes;
+import net.java.slee.resource.diameter.s6a.events.avp.EPSLocationInformationAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.EPSSubscribedQoSProfileAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.EPSUserStateAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.EUTRANVectorAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.MIP6AgentInfoAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.MIPHomeAgentHostAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.MMELocationInformationAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.MMEUserStateAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.RequestedEUTRANAuthenticationInfoAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.RequestedUTRANGERANAuthenticationInfoAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.SGSNLocationInformationAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.SGSNUserStateAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.SpecificAPNInfoAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.SubscriptionDataAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.TerminalInformationAvp;
 import net.java.slee.resource.diameter.sh.events.avp.DiameterShAvpCodes;
 import net.java.slee.resource.diameter.sh.events.avp.SupportedFeaturesAvp;
 import net.java.slee.resource.diameter.sh.events.avp.UserIdentityAvp;
@@ -156,6 +178,7 @@ import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.ExperimentalResultAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.FailedAvpImpl;
+import org.mobicents.slee.resource.diameter.base.events.avp.GroupedAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.ProxyInfoAvpImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvpImpl;
 import org.mobicents.slee.resource.diameter.cca.events.avp.CcMoneyAvpImpl;
@@ -232,6 +255,27 @@ import org.mobicents.slee.resource.diameter.rx.events.avp.FlowsAvpImpl;
 import org.mobicents.slee.resource.diameter.rx.events.avp.MediaComponentDescriptionAvpImpl;
 import org.mobicents.slee.resource.diameter.rx.events.avp.MediaSubComponentAvpImpl;
 import org.mobicents.slee.resource.diameter.rx.events.avp.SponsoredConnectivityDataAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.AMBRAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.APNConfigurationAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.APNConfigurationProfileAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.ActiveAPNAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.AllocationRetentionPriorityAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.AuthenticationInfoAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.EPSLocationInformationAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.EPSSubscribedQoSProfileAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.EPSUserStateAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.EUTRANVectorAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.MIP6AgentInfoAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.MIPHomeAgentHostAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.MMELocationInformationAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.MMEUserStateAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.RequestedEUTRANAuthenticationInfoAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.RequestedUTRANGERANAuthenticationInfoAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.SGSNLocationInformationAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.SGSNUserStateAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.SpecificAPNInfoAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.SubscriptionDataAvpImpl;
+import org.mobicents.slee.resource.diameter.s6a.events.avp.TerminalInformationAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.events.avp.SupportedFeaturesAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.events.avp.UserIdentityAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.events.avp.userdata.ObjectFactory;
@@ -729,6 +773,74 @@ public class AvpAssistant {
     
     typeValues.put( net.java.slee.resource.diameter.rx.events.avp.SupportedFeaturesAvp.class, new org.mobicents.slee.resource.diameter.rx.events.avp.SupportedFeaturesAvpImpl(DiameterRxAvpCodes.SUPPORTED_FEATURES, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes) );
     typeValues.put( net.java.slee.resource.diameter.rx.events.avp.SupportedFeaturesAvp[].class, new org.mobicents.slee.resource.diameter.rx.events.avp.SupportedFeaturesAvpImpl[]{new org.mobicents.slee.resource.diameter.rx.events.avp.SupportedFeaturesAvpImpl(DiameterRxAvpCodes.SUPPORTED_FEATURES, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes), new org.mobicents.slee.resource.diameter.rx.events.avp.SupportedFeaturesAvpImpl(DiameterRxAvpCodes.SUPPORTED_FEATURES, DiameterRxAvpCodes.TGPP_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    // S6a AVP Factory
+    typeValues.put( ActiveAPNAvp.class, new ActiveAPNAvpImpl(DiameterS6aAvpCodes.ACTIVE_APN, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( ActiveAPNAvp[].class, new ActiveAPNAvpImpl[]{new ActiveAPNAvpImpl(DiameterS6aAvpCodes.ACTIVE_APN, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new ActiveAPNAvpImpl(DiameterS6aAvpCodes.ACTIVE_APN, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( AllocationRetentionPriorityAvp.class, new AllocationRetentionPriorityAvpImpl(DiameterS6aAvpCodes.ALLOCATION_RETENTION_POLICY, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( AllocationRetentionPriorityAvp[].class, new AllocationRetentionPriorityAvpImpl[]{new AllocationRetentionPriorityAvpImpl(DiameterS6aAvpCodes.ALLOCATION_RETENTION_POLICY, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new AllocationRetentionPriorityAvpImpl(DiameterS6aAvpCodes.ALLOCATION_RETENTION_POLICY, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( AMBRAvp.class, new AMBRAvpImpl(DiameterS6aAvpCodes.AMBR, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( AMBRAvp[].class, new AMBRAvpImpl[]{new AMBRAvpImpl(DiameterS6aAvpCodes.AMBR, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new AMBRAvpImpl(DiameterS6aAvpCodes.AMBR, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( APNConfigurationAvp.class, new APNConfigurationAvpImpl(DiameterS6aAvpCodes.APN_CONFIGURATION, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( APNConfigurationAvp[].class, new APNConfigurationAvpImpl[]{new APNConfigurationAvpImpl(DiameterS6aAvpCodes.APN_CONFIGURATION, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new APNConfigurationAvpImpl(DiameterS6aAvpCodes.APN_CONFIGURATION, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( APNConfigurationProfileAvp.class, new APNConfigurationProfileAvpImpl(DiameterS6aAvpCodes.APN_CONFIGURATION_PROFILE, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( APNConfigurationProfileAvp[].class, new APNConfigurationProfileAvpImpl[]{new APNConfigurationProfileAvpImpl(DiameterS6aAvpCodes.APN_CONFIGURATION_PROFILE, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new APNConfigurationProfileAvpImpl(DiameterS6aAvpCodes.APN_CONFIGURATION_PROFILE, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( AuthenticationInfoAvp.class, new AuthenticationInfoAvpImpl(DiameterS6aAvpCodes.AUTHENTICATION_INFO, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( AuthenticationInfoAvp[].class, new AuthenticationInfoAvpImpl[]{new AuthenticationInfoAvpImpl(DiameterS6aAvpCodes.AUTHENTICATION_INFO, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new AuthenticationInfoAvpImpl(DiameterS6aAvpCodes.AUTHENTICATION_INFO, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( EPSLocationInformationAvp.class, new EPSLocationInformationAvpImpl(DiameterS6aAvpCodes.EPS_LOCATION_INFORMATION, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( EPSLocationInformationAvp[].class, new EPSLocationInformationAvpImpl[]{new EPSLocationInformationAvpImpl(DiameterS6aAvpCodes.EPS_LOCATION_INFORMATION, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new EPSLocationInformationAvpImpl(DiameterS6aAvpCodes.EPS_LOCATION_INFORMATION, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( EPSSubscribedQoSProfileAvp.class, new EPSSubscribedQoSProfileAvpImpl(DiameterS6aAvpCodes.EPS_SUBSCRIBED_QOS_PROFILE, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( EPSSubscribedQoSProfileAvp[].class, new EPSSubscribedQoSProfileAvpImpl[]{new EPSSubscribedQoSProfileAvpImpl(DiameterS6aAvpCodes.EPS_SUBSCRIBED_QOS_PROFILE, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new EPSSubscribedQoSProfileAvpImpl(DiameterS6aAvpCodes.EPS_SUBSCRIBED_QOS_PROFILE, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( EPSUserStateAvp.class, new EPSUserStateAvpImpl(DiameterS6aAvpCodes.EPS_USER_STATE, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( EPSUserStateAvp[].class, new EPSUserStateAvpImpl[]{new EPSUserStateAvpImpl(DiameterS6aAvpCodes.EPS_USER_STATE, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new EPSUserStateAvpImpl(DiameterS6aAvpCodes.EPS_USER_STATE, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( EUTRANVectorAvp.class, new EUTRANVectorAvpImpl(DiameterS6aAvpCodes.E_UTRAN_VECTOR, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( EUTRANVectorAvp[].class, new EUTRANVectorAvpImpl[]{new EUTRANVectorAvpImpl(DiameterS6aAvpCodes.E_UTRAN_VECTOR, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new EUTRANVectorAvpImpl(DiameterS6aAvpCodes.E_UTRAN_VECTOR, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( SubscriptionDataAvp.class, new SubscriptionDataAvpImpl(DiameterS6aAvpCodes.SUBSCRIPTION_DATA, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( SubscriptionDataAvp[].class, new SubscriptionDataAvpImpl[]{new SubscriptionDataAvpImpl(DiameterS6aAvpCodes.SUBSCRIPTION_DATA, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new SubscriptionDataAvpImpl(DiameterS6aAvpCodes.SUBSCRIPTION_DATA, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+    
+    typeValues.put( RequestedEUTRANAuthenticationInfoAvp.class, new RequestedEUTRANAuthenticationInfoAvpImpl(DiameterS6aAvpCodes.REQUESTED_EUTRAN_AUTHENTICATION_INFO, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( RequestedEUTRANAuthenticationInfoAvp[].class, new RequestedEUTRANAuthenticationInfoAvpImpl[]{new RequestedEUTRANAuthenticationInfoAvpImpl(DiameterS6aAvpCodes.REQUESTED_EUTRAN_AUTHENTICATION_INFO, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new RequestedEUTRANAuthenticationInfoAvpImpl(DiameterS6aAvpCodes.REQUESTED_EUTRAN_AUTHENTICATION_INFO, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( RequestedUTRANGERANAuthenticationInfoAvp.class, new RequestedUTRANGERANAuthenticationInfoAvpImpl(DiameterS6aAvpCodes.REQUESTED_UTRAN_GERAN_AUTHENTICATION_INFO, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( RequestedUTRANGERANAuthenticationInfoAvp[].class, new RequestedUTRANGERANAuthenticationInfoAvpImpl[]{new RequestedUTRANGERANAuthenticationInfoAvpImpl(DiameterS6aAvpCodes.REQUESTED_UTRAN_GERAN_AUTHENTICATION_INFO, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new RequestedUTRANGERANAuthenticationInfoAvpImpl(DiameterS6aAvpCodes.REQUESTED_UTRAN_GERAN_AUTHENTICATION_INFO, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( MIP6AgentInfoAvp.class, new MIP6AgentInfoAvpImpl(DiameterS6aAvpCodes.MIP6_AGENT_INFO, 0L, 0, 1, dummyAvpBytes) );
+    typeValues.put( MIP6AgentInfoAvp[].class, new MIP6AgentInfoAvpImpl[]{new MIP6AgentInfoAvpImpl(DiameterS6aAvpCodes.MIP6_AGENT_INFO, 0L, 0, 1, dummyAvpBytes), new MIP6AgentInfoAvpImpl(DiameterS6aAvpCodes.MIP6_AGENT_INFO, 0L, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( MIPHomeAgentHostAvp.class, new MIPHomeAgentHostAvpImpl(DiameterS6aAvpCodes.MIP_HOME_AGENT_HOST, 0L, 0, 1, dummyAvpBytes) );
+    typeValues.put( MIPHomeAgentHostAvp[].class, new MIPHomeAgentHostAvpImpl[]{new MIPHomeAgentHostAvpImpl(DiameterS6aAvpCodes.MIP_HOME_AGENT_HOST, 0L, 0, 1, dummyAvpBytes), new MIPHomeAgentHostAvpImpl(DiameterS6aAvpCodes.MIP_HOME_AGENT_HOST, 0L, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( MMELocationInformationAvp.class, new MMELocationInformationAvpImpl(DiameterS6aAvpCodes.MME_LOCATION_INFORMATION, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( MMELocationInformationAvp[].class, new MMELocationInformationAvpImpl[]{new MMELocationInformationAvpImpl(DiameterS6aAvpCodes.MME_LOCATION_INFORMATION, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new MMELocationInformationAvpImpl(DiameterS6aAvpCodes.MME_LOCATION_INFORMATION, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( MMEUserStateAvp.class, new MMEUserStateAvpImpl(DiameterS6aAvpCodes.MME_USER_STATE, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( MMEUserStateAvp[].class, new MMEUserStateAvpImpl[]{new MMEUserStateAvpImpl(DiameterS6aAvpCodes.MME_USER_STATE, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new MMEUserStateAvpImpl(DiameterS6aAvpCodes.MME_USER_STATE, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( SGSNLocationInformationAvp.class, new SGSNLocationInformationAvpImpl(DiameterS6aAvpCodes.SGSN_LOCATION_INFORMATION, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( SGSNLocationInformationAvp[].class, new SGSNLocationInformationAvpImpl[]{new SGSNLocationInformationAvpImpl(DiameterS6aAvpCodes.SGSN_LOCATION_INFORMATION, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new SGSNLocationInformationAvpImpl(DiameterS6aAvpCodes.SGSN_LOCATION_INFORMATION, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( SGSNUserStateAvp.class, new SGSNUserStateAvpImpl(DiameterS6aAvpCodes.SGSN_USER_STATE, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( SGSNUserStateAvp[].class, new SGSNUserStateAvpImpl[]{new SGSNUserStateAvpImpl(DiameterS6aAvpCodes.SGSN_USER_STATE, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new SGSNUserStateAvpImpl(DiameterS6aAvpCodes.SGSN_USER_STATE, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( SpecificAPNInfoAvp.class, new SpecificAPNInfoAvpImpl(DiameterS6aAvpCodes.SPECIFIC_APN_INFO, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( SpecificAPNInfoAvp[].class, new SpecificAPNInfoAvpImpl[]{new SpecificAPNInfoAvpImpl(DiameterS6aAvpCodes.SPECIFIC_APN_INFO, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new SpecificAPNInfoAvpImpl(DiameterS6aAvpCodes.SPECIFIC_APN_INFO, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( net.java.slee.resource.diameter.s6a.events.avp.SupportedFeaturesAvp.class, new org.mobicents.slee.resource.diameter.s6a.events.avp.SupportedFeaturesAvpImpl(DiameterS6aAvpCodes.SUPPORTED_FEATURES, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( net.java.slee.resource.diameter.s6a.events.avp.SupportedFeaturesAvp[].class, new org.mobicents.slee.resource.diameter.s6a.events.avp.SupportedFeaturesAvpImpl[]{new org.mobicents.slee.resource.diameter.s6a.events.avp.SupportedFeaturesAvpImpl(DiameterS6aAvpCodes.SUPPORTED_FEATURES, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new org.mobicents.slee.resource.diameter.s6a.events.avp.SupportedFeaturesAvpImpl(DiameterS6aAvpCodes.SUPPORTED_FEATURES, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( TerminalInformationAvp.class, new TerminalInformationAvpImpl(DiameterS6aAvpCodes.TERMINAL_INFORMATION, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( TerminalInformationAvp[].class, new TerminalInformationAvpImpl[]{new TerminalInformationAvpImpl(DiameterS6aAvpCodes.TERMINAL_INFORMATION, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes), new TerminalInformationAvpImpl(DiameterS6aAvpCodes.TERMINAL_INFORMATION, DiameterS6aAvpCodes.S6A_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
   }
 
   public static Object getValueFromEnumerated(Class clazz) throws IllegalArgumentException, SecurityException, IllegalAccessException, InvocationTargetException, NoSuchMethodException
@@ -866,6 +978,103 @@ public class AvpAssistant {
 
           // Validate AVP Flags
           ArrayList<String> failedAvpFlags = checkAvpFlags(((DiameterMessageImpl)message).getGenericData().getAvps());
+          if(failedAvpFlags.size() > 0) {
+            System.err.println("The following AVPs flags have failed to check against dictionary:");
+            for(String failedAvpFlag : failedAvpFlags) {
+              System.err.println(failedAvpFlag);
+            }
+            Assert.fail(failedAvpFlags.toString());
+          }
+          
+          nFailures = passed ? nFailures : nFailures+1;
+          System.out.println("[" + (passed ? "PASSED" : "FAILED") + "] " + methodName.replace("get", "") + " with param of type '"+ avpType.getName() + "' " + (hasser != null ? " WITH has" : " WITHOUT has"));
+        }
+        else {
+          System.out.println("[??????] Unable to test " + methodName.replace("get", "") + " with param of type '"+ avpType.getName() + "'.");
+          Assert.fail("Missing AVP Implementation class to test " + methodName);
+        }
+      }
+    }
+
+    return nFailures;
+  }
+
+  public static int testMethods(DiameterAvp avp, Class interfaze) throws Exception
+  {
+    System.out.println(":::::::: Testing accessors for Class " + avp.getClass().getSimpleName() + " ::::::::");
+
+    int nFailures = 0;
+
+    for(Method m : interfaze.getMethods())
+    {
+      //clearAVPsInMessage(message);
+
+      //int commandCode = message.getCommand().getCode();
+
+      String methodName = m.getName();
+      
+      if(AvpAssistant.methodsToIgnore.contains( methodName )) {
+        continue;
+      }
+      else if(methodName.startsWith( "get" ))
+      {
+        Class avpType = m.getReturnType();
+
+        Object toGo = AvpAssistant.getValueFromEnumerated(avpType);
+
+        if(toGo == null)
+          toGo = AvpAssistant.getValueFromClass(avpType);
+
+        if(toGo != null)
+        {
+          Method hasser = null;
+
+          try {
+            hasser = interfaze.getMethod( getSingularMethodName(methodName.replaceFirst("get", "has")) );
+
+            Object hasAvpBeforeSet = hasser.invoke(avp);
+
+            Assert.assertFalse( "Message already has value before setting for " + methodName.replaceAll("get","") + "... aborting", (Boolean)hasAvpBeforeSet);
+          }
+          catch (NoSuchMethodException e) {
+            // skip it...
+          }
+
+          Method setter = interfaze.getMethod( methodName.replaceFirst("g", "s"), avpType );
+
+          //System.out.println("Setting value " + setter.getName() +"(" + toGo.toString() +")");
+
+          setter.invoke( avp, toGo );
+
+          if(hasser != null) {
+            Object hasAvpAfterSet = hasser.invoke(avp);
+
+            Assert.assertTrue( "Message does not has value after setting for " + methodName.replaceAll("get","") + "... aborting", (Boolean)hasAvpAfterSet);
+          }
+
+          //System.out.println("Current message: \r\n" + snr);
+
+          Object obtained = m.invoke( avp );
+          //System.out.println("Got value " + obtained.toString());
+          boolean passed = false;
+          try {
+            if(avpType == byte[].class) {
+              passed = Arrays.equals( (byte[])toGo, (byte[])obtained );
+            }            
+            else if(avpType == long[].class) {
+              passed = Arrays.equals( (long[])toGo, (long[])obtained );
+            }
+            else {
+              passed = (avpType.isArray() ? Arrays.equals( (Object[])toGo, (Object[])obtained ) : obtained.equals(toGo));
+            }
+          }
+          catch (Exception e) {
+            e.printStackTrace();
+            // ignore... we fail!
+          }
+
+          // Validate AVP Flags
+          ArrayList<String> failedAvpFlags = checkAvpFlags(((GroupedAvpImpl)avp).getGenericData());
           if(failedAvpFlags.size() > 0) {
             System.err.println("The following AVPs flags have failed to check against dictionary:");
             for(String failedAvpFlag : failedAvpFlags) {
