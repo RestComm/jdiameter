@@ -44,6 +44,7 @@ import org.jdiameter.client.api.IRequest;
 import org.jdiameter.client.api.controller.IRealm;
 import org.jdiameter.client.api.controller.IRealmTable;
 import org.jdiameter.server.api.agent.IAgent;
+import org.jdiameter.server.api.agent.IAgentConfiguration;
 import org.jdiameter.server.api.agent.IProxy;
 import org.jdiameter.server.api.agent.IRedirect;
 import org.slf4j.Logger;
@@ -78,13 +79,24 @@ public class RealmTableImpl implements IRealmTable {
     return (this.realmNameToRealmSet.containsKey(realmName) &&  this.realmNameToRealmSet.get(realmName).size() > 0);
   }
 
-  public Realm addRealm(String realmName, ApplicationId applicationId, LocalAction action, boolean dynamic, long expirationTime, String[] hosts) throws InternalException {
+  public Realm addRealm(String realmName, ApplicationId applicationId, LocalAction action, String agentConfiguration, boolean dynamic, long expirationTime, String[] hosts) throws InternalException {
     logger.debug("Adding realm [{}] into network map", realmName);
+
+    IAgentConfiguration agentConf = this.assembler.getComponentInstance(IAgentConfiguration.class);
+
+    if(agentConf != null) {
+      agentConf = agentConf.parse(agentConfiguration);
+    }
+
+    return addRealm(realmName, applicationId, action, agentConf, dynamic, expirationTime, hosts);
+  }
+
+  public Realm addRealm(String realmName, ApplicationId applicationId, LocalAction action, IAgentConfiguration agentConf, boolean dynamic, long expirationTime, String[] hosts) throws InternalException {
     IAgent agent = null;
     switch (action) {
       case LOCAL:
       case RELAY:
-    	  break;
+        break;
       case PROXY:
         agent = this.assembler.getComponentInstance(IProxy.class);
         break;
@@ -93,7 +105,7 @@ public class RealmTableImpl implements IRealmTable {
         break;
     }
 
-    RealmImpl realmImpl = new RealmImpl(realmName, applicationId, action, agent, dynamic, expirationTime, hosts);
+    RealmImpl realmImpl = new RealmImpl(realmName, applicationId, action, agent,agentConf, dynamic, expirationTime, hosts);
     addRealm(realmImpl);
 
     return realmImpl;
@@ -225,7 +237,7 @@ public class RealmTableImpl implements IRealmTable {
    */
   public void addLocalApplicationId(ApplicationId appId) {
     RealmSet rs = getRealmSet(localRealmName, false);
-    rs.addRealm(new RealmImpl(localRealmName, appId, LocalAction.LOCAL, null, true, -1, this.localHost) {
+    rs.addRealm(new RealmImpl(localRealmName, appId, LocalAction.LOCAL, null,null, true, -1, this.localHost) {
       public boolean isLocal() {
         return true;
       }

@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors by the
- * @authors tag. See the copyright.txt in the distribution for a
+ * Copyright 2011, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -19,10 +19,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.client.api.controller;
 
 import org.jdiameter.api.Realm;
 import org.jdiameter.server.api.agent.IAgent;
+import org.jdiameter.server.api.agent.IAgentConfiguration;
 
 /**
  * 
@@ -68,5 +70,11 @@ public interface IRealm extends Realm {
    * @return the agent for this realm, if any
    */
   public IAgent getAgent();
+
+  /**
+   * Get agent configuration values for this realm.
+   * @return
+   */
+  public IAgentConfiguration getAgentConfiguration();
 
 }

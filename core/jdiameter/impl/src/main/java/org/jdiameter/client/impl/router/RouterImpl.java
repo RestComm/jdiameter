@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and individual contributors by the
- * @authors tag. See the copyright.txt in the distribution for a
+ * Copyright 2010-2011, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -19,9 +19,11 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.client.impl.router;
 
 import static org.jdiameter.client.impl.helpers.Parameters.AcctApplId;
+import static org.jdiameter.client.impl.helpers.Parameters.Agent;
 import static org.jdiameter.client.impl.helpers.Parameters.ApplicationId;
 import static org.jdiameter.client.impl.helpers.Parameters.AuthApplId;
 import static org.jdiameter.client.impl.helpers.Parameters.OwnRealm;
@@ -33,9 +35,9 @@ import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryIsDynamic;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmHosts;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmLocalAction;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmName;
-import static org.jdiameter.server.impl.helpers.Parameters.RequestTableSize;
-import static org.jdiameter.server.impl.helpers.Parameters.RequestTableClearSize;
 import static org.jdiameter.server.impl.helpers.Parameters.RequestTable;
+import static org.jdiameter.server.impl.helpers.Parameters.RequestTableClearSize;
+import static org.jdiameter.server.impl.helpers.Parameters.RequestTableSize;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -60,6 +62,7 @@ import org.jdiameter.api.MetaData;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.URI;
 import org.jdiameter.client.api.IAnswer;
+import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IRequest;
 import org.jdiameter.client.api.controller.IPeer;
@@ -70,6 +73,7 @@ import org.jdiameter.client.api.router.IRouter;
 import org.jdiameter.client.impl.helpers.AppConfiguration;
 import org.jdiameter.client.impl.helpers.Parameters;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
+import org.jdiameter.server.api.agent.IAgentConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,6 +104,8 @@ public class RouterImpl implements IRouter {
   protected List<RedirectEntry> redirectTable = new ArrayList<RedirectEntry>(REDIRECT_TABLE_SIZE);
   protected IConcurrentFactory concurrentFactory;
 
+  protected IContainer container;
+
   // Answer routing feature
   public static int REQUEST_TABLE_SIZE = 10 * 1024;
   public static int REQUEST_TABLE_CLEAR_SIZE = 2 * 1024;
@@ -110,10 +116,11 @@ public class RouterImpl implements IRouter {
   protected List<Long> requestSortedEntryTable = new ArrayList<Long>();
   protected boolean isStopped = true;
 
-  public RouterImpl(IConcurrentFactory concurrentFactory, IRealmTable realmTable,Configuration config, MetaData aMetaData) {
+  public RouterImpl(IContainer container,IConcurrentFactory concurrentFactory, IRealmTable realmTable,Configuration config, MetaData aMetaData) {
     this.concurrentFactory = concurrentFactory;
     this.metaData = aMetaData;
     this.realmTable = realmTable;
+    this.container = container;
     logger.debug("Constructor for RouterImpl: Calling loadConfiguration");
     loadConfiguration(config);
   }
@@ -186,7 +193,18 @@ public class RouterImpl implements IRouter {
               LocalAction locAction = LocalAction.valueOf(c.getStringValue(RealmLocalAction.ordinal(), "0"));
               boolean isDynamic = c.getBooleanValue(RealmEntryIsDynamic.ordinal(), false);
               long expirationTime = c.getLongValue(RealmEntryExpTime.ordinal(), 0);
-              this.realmTable.addRealm(name, appId, locAction, isDynamic, expirationTime, hosts);
+              //check if there is Agent, ATM we support only props there.
+              IAgentConfiguration agentConfImpl = null;
+              Configuration[] confs = c.getChildren(Agent.ordinal());
+              if(confs != null && confs.length > 0) {
+                Configuration agentConfiguration = confs[0]; //only one!
+                agentConfImpl = this.container.getAssemblerFacility().getComponentInstance(IAgentConfiguration.class);
+
+                if(agentConfImpl != null) {
+                  agentConfImpl = agentConfImpl.parse(agentConfiguration);
+                }
+              }
+              this.realmTable.addRealm(name, appId, locAction, agentConfImpl, isDynamic, expirationTime, hosts);
             }
             catch (Exception e) {
               logger.warn("Unable to append realm entry", e);
@@ -212,16 +230,16 @@ public class RouterImpl implements IRouter {
       requestSortedEntryTable.add(hopByHopId);
 
       if (requestEntryTable.size() > REQUEST_TABLE_SIZE) {
-          List<Long> toRemove = requestSortedEntryTable.subList(0, REQUEST_TABLE_CLEAR_SIZE);
-          // removing from keyset removes from hashmap too
-          requestEntryTable.keySet().removeAll(toRemove);
-          // instead of wasting time removing, just make a new one, much faster
-          requestSortedEntryTable = new ArrayList<Long>(requestSortedEntryTable.subList(REQUEST_TABLE_CLEAR_SIZE, requestSortedEntryTable.size()));
-          // help garbage collector
-          toRemove = null;
-          if (logger.isDebugEnabled()) {
-            logger.debug("Request entry table has now [{}] entries.", requestEntryTable.size());
-          }
+        List<Long> toRemove = requestSortedEntryTable.subList(0, REQUEST_TABLE_CLEAR_SIZE);
+        // removing from keyset removes from hashmap too
+        requestEntryTable.keySet().removeAll(toRemove);
+        // instead of wasting time removing, just make a new one, much faster
+        requestSortedEntryTable = new ArrayList<Long>(requestSortedEntryTable.subList(REQUEST_TABLE_CLEAR_SIZE, requestSortedEntryTable.size()));
+        // help garbage collector
+        toRemove = null;
+        if (logger.isDebugEnabled()) {
+          logger.debug("Request entry table has now [{}] entries.", requestEntryTable.size());
+        }
       }
     }
     catch (Exception e) {
@@ -344,7 +362,7 @@ public class RouterImpl implements IRouter {
       for (String peerName : peers) {
         IPeer localPeer = (IPeer) manager.getPeer(peerName);
         if(logger.isDebugEnabled()) {
-        	logger.debug("Checking peer [{}] for name [{}]", new Object[]{localPeer,peerName});
+          logger.debug("Checking peer [{}] for name [{}]", new Object[]{localPeer,peerName});
         }
         if (localPeer != null) {
           if(localPeer.hasValidConnection()) {
@@ -781,8 +799,8 @@ public class RouterImpl implements IRouter {
       if (other instanceof RedirectEntry) {
         RedirectEntry that = (RedirectEntry) other;
         return liveTime == that.liveTime && usageType == that.usageType &&
-        Arrays.equals(hosts, that.hosts) && !(primaryKey != null ? !primaryKey.equals(that.primaryKey) : that.primaryKey != null) &&
-        !(secondaryKey != null ? !secondaryKey.equals(that.secondaryKey) : that.secondaryKey != null);
+            Arrays.equals(hosts, that.hosts) && !(primaryKey != null ? !primaryKey.equals(that.primaryKey) : that.primaryKey != null) &&
+            !(secondaryKey != null ? !secondaryKey.equals(that.secondaryKey) : that.secondaryKey != null);
       }
       else {
         return false;

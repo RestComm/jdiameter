@@ -28,10 +28,17 @@ import java.util.Map;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.LocalAction;
 import org.jdiameter.api.PeerTable;
+import org.jdiameter.client.api.controller.IRealm;
+import org.jdiameter.server.api.agent.IAgentConfiguration;
 import org.jdiameter.server.impl.MutablePeerTableImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
 public class NetworkImpl implements Network {
 
   private static final long serialVersionUID = 1L;
@@ -65,7 +72,7 @@ public class NetworkImpl implements Network {
       logger.error("Failed to unwrap class.", e);
     }
   }
-  
+
   public void removePeer(String name) {
     try {
       MutablePeerTableImpl mpt = (MutablePeerTableImpl) DiameterConfiguration.stack.unwrap(PeerTable.class);
@@ -92,7 +99,12 @@ public class NetworkImpl implements Network {
     try {
       org.jdiameter.server.impl.NetworkImpl n = (org.jdiameter.server.impl.NetworkImpl) DiameterConfiguration.stack.unwrap(org.jdiameter.api.Network.class);
       for(ApplicationIdJMX appId : realm.getApplicationIds()) {
-        /*org.jdiameter.api.Realm r =*/ n.addRealm(realm.getName(), appId.asApplicationId(), LocalAction.valueOf(realm.getLocalAction()), realm.getDynamic(), realm.getExpTime());
+        IAgentConfiguration agentConfiguration = null;
+        if(realm instanceof IRealm) {
+          agentConfiguration = ((IRealm)realm).getAgentConfiguration();
+        }
+        //TODO: XXX
+        /*org.jdiameter.api.Realm r =*/ n.addRealm(realm.getName(), appId.asApplicationId(), LocalAction.valueOf(realm.getLocalAction()),agentConfiguration, realm.getDynamic(), realm.getExpTime());
       }
     }
     catch (InternalException e) {
@@ -118,8 +130,8 @@ public class NetworkImpl implements Network {
       buf.append(peer.toString());
     }
     buf.append("  ## REALMS ##\r\n");
-      for(Realm realm : realms.values()) {
-        buf.append(realm.toString());
+    for(Realm realm : realms.values()) {
+      buf.append(realm.toString());
     }
 
     return buf.toString();

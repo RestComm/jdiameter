@@ -116,6 +116,11 @@ public class ExtensionPoint extends Ordinal {
   public static final ExtensionPoint InternalAgentProxy = new ExtensionPoint("InternalAgentProxy", "org.jdiameter.server.impl.agent.ProxyAgentImpl");
 
   /**
+   *  Agent Conf implementation class name
+   */
+  public static final ExtensionPoint InternalAgentConfiguration = new ExtensionPoint("InternalAgentConfiguration", "org.jdiameter.server.impl.agent.AgentConfigurationImpl");
+
+  /**
    * Session Datasource class name
    */
   public static final ExtensionPoint InternalSessionDatasource = new ExtensionPoint("InternalSessionDatasource", "org.jdiameter.common.impl.data.LocalDataSource");
@@ -146,8 +151,9 @@ public class ExtensionPoint extends Ordinal {
       InternalSessionDatasource,
       InternalAgentRedirect,
       InternalAgentProxy,
+      InternalAgentConfiguration,
       InternalStatisticProcessor
-  );
+      );
 
   /**
    * Stack layer

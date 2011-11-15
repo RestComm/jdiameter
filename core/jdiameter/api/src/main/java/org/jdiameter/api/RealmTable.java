@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors by the
- * @authors tag. See the copyright.txt in the distribution for a
+ * Copyright 2011, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -19,6 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.api;
 
 /**
@@ -49,13 +50,14 @@ public interface RealmTable extends Wrapper {
    * @param realmName name of realm
    * @param applicationId application id of realm
    * @param action action of realm
+   * @param agentConfiguration resource for configuration of action dependent agent, may be null. 
    * @param dynamic commCode of realm
    * @param expirationTime expiration time of realm
    * @param extraConf - additional configuration which may be used by implementation
    * @return instance of created realm
    * @throws InternalException - when realm definition under pKey and sKey exist
    */
-  public Realm addRealm(String realmName, ApplicationId applicationId, LocalAction action, boolean dynamic, long expirationTime, String[] hosts) throws InternalException;
+  public Realm addRealm(String realmName, ApplicationId applicationId, LocalAction action, String agentConfiguration, boolean dynamic, long expirationTime, String[] hosts) throws InternalException;
 
   /**
    * Checks if there is such realm entry.

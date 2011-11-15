@@ -29,6 +29,7 @@ import java.util.Collection;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.LocalAction;
 import org.jdiameter.client.api.controller.IRealm;
+import org.jdiameter.server.api.agent.IAgentConfiguration;
 
 /**
  * 
@@ -46,10 +47,12 @@ public class RealmImpl implements Realm {
   private String localAction;
   private Boolean dynamic;
   private Long expTime;
+  // make this a string ?
+  private IAgentConfiguration agentConfiguration;
 
   private String originalName;
-  
-  public RealmImpl(Collection<ApplicationIdJMX> applicationIds, String name, Collection<String> peers, String localAction, Boolean dynamic, Long expTime) {
+
+  public RealmImpl(Collection<ApplicationIdJMX> applicationIds, String name, Collection<String> peers, String localAction, IAgentConfiguration agentConfiguration, Boolean dynamic, Long expTime) {
     this.applicationIds = applicationIds;
     this.name = name;
     this.peers = peers;
@@ -156,12 +159,13 @@ public class RealmImpl implements Realm {
 
     return toStringBuffer.toString();
   }
-  
+
   public void updateRealm() {
     try {
       org.jdiameter.server.impl.NetworkImpl n = (org.jdiameter.server.impl.NetworkImpl) DiameterConfiguration.stack.unwrap(org.jdiameter.api.Network.class);
       for(ApplicationIdJMX appId : this.applicationIds) {
-        org.jdiameter.api.Realm r = n.addRealm(this.name, appId.asApplicationId(), LocalAction.valueOf(this.localAction), this.dynamic, this.expTime);
+        //TODO: XXX
+        org.jdiameter.api.Realm r = n.addRealm(this.name, appId.asApplicationId(), LocalAction.valueOf(this.localAction),this.agentConfiguration, this.dynamic, this.expTime);
         for(String host : this.peers) {
           ((IRealm)r).addPeerName(host);
         }

@@ -23,6 +23,7 @@
 package org.jdiameter.server.impl.agent;
 
 import java.io.IOException;
+import java.util.Properties;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.Avp;
@@ -37,6 +38,7 @@ import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IRequest;
 import org.jdiameter.client.api.controller.IRealm;
 import org.jdiameter.client.api.controller.IRealmTable;
+import org.jdiameter.server.api.agent.IAgentConfiguration;
 import org.jdiameter.server.api.agent.IRedirect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,14 +61,6 @@ public class RedirectAgentImpl extends AgentImpl implements IRedirect {
     super(container, realmTable);
   }
 
-  public static final int RHU_DONT_CACHE = 0;
-  public static final int RHU_ALL_SESSION = 1;
-  public static final int RHU_ALL_REALM = 2;
-  public static final int RHU_REALM_AND_APPLICATION = 3;
-  public static final int RHU_ALL_APPLICATION = 4;
-  public static final int RHU_ALL_HOST = 5;
-  public static final int RHU_ALL_USER = 6;
-
   public static final int RESULT_REDIRECT_INDICATION = ResultCode.REDIRECT_INDICATION;
   public static final int RESULT_INVALID_AVP_VALUE = ResultCode.INVALID_AVP_VALUE;
 
@@ -82,7 +76,23 @@ public class RedirectAgentImpl extends AgentImpl implements IRedirect {
       for(String host:destHosts) {
         set.addAvp(Avp.REDIRECT_HOST,host,false);
       }
-      set.addAvp(Avp.REDIRECT_HOST_USAGE,RHU_REALM_AND_APPLICATION);
+
+      IAgentConfiguration agentConfiguration = matchedRealm.getAgentConfiguration();
+      //default
+      int rhuValue = RHU_REALM_AND_APPLICATION;
+      if(agentConfiguration != null) {
+        Properties p = agentConfiguration.getProperties();
+        try {
+          rhuValue = Integer.parseInt(p.getProperty(RHU_PROPERTY, ""+rhuValue));
+        }
+        catch(Exception e) {
+          if(logger.isWarnEnabled()) {
+            logger.warn("Failed to parse configuration value. ", e);
+          }
+        }
+      }
+
+      set.addAvp(Avp.REDIRECT_HOST_USAGE, rhuValue);
       ans.setError(true);
       super.container.sendMessage((IMessage) ans);
     }

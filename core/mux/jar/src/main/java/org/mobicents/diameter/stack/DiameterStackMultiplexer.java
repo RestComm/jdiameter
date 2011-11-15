@@ -446,7 +446,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     if(logger.isInfoEnabled()) {
       logger.info("Diameter Stack Mux :: unregisterListener :: Listener [" + listener + "]");
     }
-    
+
     if(listener == null) {
       logger.warn("Diameter Stack Mux :: unregisterListener :: Trying to unregister a null Listener. Give up...");
       return;
@@ -681,11 +681,11 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     }
   }
 
-  public void _Network_Realms_addRealm(String name, String peers, long appVendorId, long appAcctId, long appAuthId, String localAction, boolean isDynamic, int expTime) throws MBeanException {
+  public void _Network_Realms_addRealm(String name, String peers, long appVendorId, long appAcctId, long appAuthId, String localAction, String agentConfiguration, boolean isDynamic, int expTime) throws MBeanException {
     try {
       org.jdiameter.server.impl.NetworkImpl n = (org.jdiameter.server.impl.NetworkImpl) stack.unwrap(org.jdiameter.api.Network.class);
       ApplicationId appId = appAcctId == 0 ? org.jdiameter.api.ApplicationId.createByAuthAppId(appVendorId, appAuthId) : org.jdiameter.api.ApplicationId.createByAccAppId(appVendorId, appAcctId);
-      org.jdiameter.api.Realm r = n.addRealm(name, appId, LocalAction.valueOf(localAction), isDynamic, expTime);
+      org.jdiameter.api.Realm r = n.addRealm(name, appId, LocalAction.valueOf(localAction), agentConfiguration, isDynamic, expTime);
       for(String peer : peers.split(",")) {
         ((IRealm)r).addPeerName(peer);
       }
@@ -694,9 +694,9 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       throw new MBeanException(e, "Failed to add realm with name '" + name + "'.");
     }
   }
-  
+
   public void _Network_Realms_addRealm(String name, String peers, long appVendorId, long appAcctId, long appAuthId) throws MBeanException {
-    _Network_Realms_addRealm(name, peers, appVendorId, appAcctId, appAuthId, "LOCAL", false, 1);
+    _Network_Realms_addRealm(name, peers, appVendorId, appAcctId, appAuthId, "LOCAL", null, false, 1);
   }
 
   public void _Network_Realms_removePeerFromRealm(String realmName, String peerName) throws MBeanException {
@@ -808,7 +808,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   }  
 
   // Getters ------------------------------------------------------------- //
-  
+
   public String _LocalPeer_getProductName() throws MBeanException {
     return this.stack.getMetaData().getLocalPeer().getProductName();
   }
@@ -868,7 +868,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   public DiameterConfiguration getDiameterConfiguration() throws MBeanException {
     return new DiameterConfiguration(stack);
   }
-  
+
   public boolean _LocalPeer_isActive() throws MBeanException {
     return this.stack.isActive();
   }
@@ -883,6 +883,6 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       throw new MBeanException(e, "Failed to get connection availability for peer with name '" + "'.");
     }
   }
-  
-  
+
+
 }

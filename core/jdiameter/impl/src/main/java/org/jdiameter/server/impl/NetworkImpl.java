@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors by the
- * @authors tag. See the copyright.txt in the distribution for a
+ * Copyright 2011, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -19,6 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.server.impl;
 
 import java.util.Collection;
@@ -43,6 +44,7 @@ import org.jdiameter.server.api.IMetaData;
 import org.jdiameter.server.api.IMutablePeerTable;
 import org.jdiameter.server.api.INetwork;
 import org.jdiameter.server.api.IRouter;
+import org.jdiameter.server.api.agent.IAgentConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +70,7 @@ public class NetworkImpl implements INetwork {
   public NetworkImpl(IStatisticManager statisticFactory, IMetaData metaData, IRouter router) {
     this.router = router;
     this.metaData = metaData;
-    
+
     IStatisticRecord nrlStat = statisticFactory.newCounterRecord(IStatisticRecord.Counters.RequestListenerCount, new IStatisticRecord.IntegerValueHolder() {
       public int getValueAsInt() {
         return appIdToNetListener.size();
@@ -169,10 +171,21 @@ public class NetworkImpl implements INetwork {
     return null;
   }
 
-  public Realm addRealm(String name, ApplicationId applicationId, LocalAction localAction,  boolean dynamic, long expirationTime) {
+  public Realm addRealm(String name, ApplicationId applicationId, LocalAction localAction, String agentConfiguration, boolean dynamic, long expirationTime) {
     try {
       //TODO: why oh why this method exists?
-      return router.getRealmTable().addRealm(name, applicationId, localAction, dynamic, expirationTime, new String[0]);
+      return router.getRealmTable().addRealm(name, applicationId, localAction, agentConfiguration, dynamic, expirationTime, new String[0]);
+    }
+    catch (InternalException e) {
+      logger.error("Failure on add realm operation.",e);
+      return null;
+    }
+  }
+
+  public Realm addRealm(String name, ApplicationId applicationId, LocalAction localAction, IAgentConfiguration agentConfiguration, boolean dynamic, long expirationTime) {
+    try {
+      //TODO: why oh why this method exists?
+      return router.getRealmTable().addRealm(name, applicationId, localAction,agentConfiguration, dynamic, expirationTime, new String[0]);
     }
     catch (InternalException e) {
       logger.error("Failure on add realm operation.",e);
@@ -185,7 +198,7 @@ public class NetworkImpl implements INetwork {
   }
 
   public Statistic getStatistic() {
-	  return this.statistic;
+    return this.statistic;
   }
 
   public NetworkReqListener getListener(IMessage message) {

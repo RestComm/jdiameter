@@ -181,14 +181,18 @@ public class DiameterConfiguration implements Serializable {
         network.addRealm(new RealmImpl(appIds, name, peers, localAction, dynamic, expTime));
       }
     }
-    */
+     */
     // ... Realms (mutable)
     try {
       MutablePeerTableImpl mpt = (MutablePeerTableImpl) stack.unwrap(PeerTable.class);
       for(org.jdiameter.api.Realm realm : mpt.getAllRealms()) {
+        IRealm irealm = null;
+        if(realm instanceof IRealm) {
+          irealm = (IRealm) realm;
+        }
         ArrayList<ApplicationIdJMX> x = new ArrayList<ApplicationIdJMX>();
         x.add(ApplicationIdJMX.fromApplicationId(realm.getApplicationId()));
-        network.addRealm(new RealmImpl(x, realm.getName(), new ArrayList<String>(Arrays.asList(((IRealm)realm).getPeerNames())), realm.getLocalAction().toString(), realm.isDynamic(), realm.getExpirationTime()));
+        network.addRealm(new RealmImpl(x, realm.getName(), new ArrayList<String>(Arrays.asList(((IRealm)realm).getPeerNames())), realm.getLocalAction().toString(), irealm != null ? irealm.getAgentConfiguration() : null, realm.isDynamic(), realm.getExpirationTime()));
       }
     }
     catch (Exception e) {
@@ -211,7 +215,7 @@ public class DiameterConfiguration implements Serializable {
   public Network getNetwork() {
     return network;
   }
-  
+
   protected static MutableConfiguration getMutableConfiguration() {
     return (MutableConfiguration) stack.getMetaData().getConfiguration();
   }

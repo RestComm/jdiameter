@@ -22,23 +22,34 @@
 
 package org.jdiameter.server.api.agent;
 
+import java.io.Serializable;
+import java.util.Properties;
+
+import org.jdiameter.api.Configuration;
+import org.jdiameter.api.InternalException;
+
 /**
- * 
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * Interface through which agent can access configuration options for realm.
+ *
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public interface IRedirect extends IAgent {
+public interface IAgentConfiguration extends Serializable {
+
+  public Properties getProperties();
 
   /**
-   * Default property name for redirect host usage.
+   * Parse resource and return implementation. May return null if pased argument is null.
+   * @param agentConfiguration
+   * @return
+   * @throws InternalException 
    */
-  public static final String RHU_PROPERTY = "rdr.host.usage";
+  public IAgentConfiguration parse(String agentConfiguration) throws InternalException;
 
-  public static final int RHU_DONT_CACHE = 0;
-  public static final int RHU_ALL_SESSION = 1;
-  public static final int RHU_ALL_REALM = 2;
-  public static final int RHU_REALM_AND_APPLICATION = 3;
-  public static final int RHU_ALL_APPLICATION = 4;
-  public static final int RHU_ALL_HOST = 5;
-  public static final int RHU_ALL_USER = 6;
+  /**
+   * @param agentConfiguration
+   * @return
+   */
+  public IAgentConfiguration parse(Configuration agentConfiguration) throws InternalException;
+
 }

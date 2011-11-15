@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors by the
- * @authors tag. See the copyright.txt in the distribution for a
+ * Copyright 2011, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -19,15 +19,19 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.client.api.controller;
 
 import java.util.Collection;
 
 import org.jdiameter.api.ApplicationId;
+import org.jdiameter.api.InternalException;
+import org.jdiameter.api.LocalAction;
 import org.jdiameter.api.Realm;
 import org.jdiameter.api.RealmTable;
 import org.jdiameter.client.api.IAnswer;
 import org.jdiameter.client.api.IRequest;
+import org.jdiameter.server.api.agent.IAgentConfiguration;
 
 /**
  * 
@@ -57,5 +61,19 @@ public interface IRealmTable extends RealmTable {
   public void removeLocalApplicationId(ApplicationId a);
 
   public void addLocalRealm(String localRealm, String fqdn);
+  /**
+   * Method which accepts IAgentConfiguration to avoid decode, encode, decode sequences
+   * @param name
+   * @param appId
+   * @param locAction
+   * @param agentConfImpl
+   * @param isDynamic
+   * @param expirationTime
+   * @param hosts
+ * @return 
+ * @throws InternalException 
+   */
+  public Realm addRealm(String name, ApplicationId appId, LocalAction locAction, IAgentConfiguration agentConfImpl, boolean isDynamic, long expirationTime,
+		String[] hosts) throws InternalException;
 
 }

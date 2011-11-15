@@ -26,6 +26,7 @@ import org.jdiameter.api.ConfigurationListener;
 import org.jdiameter.api.MutableConfiguration;
 import org.jdiameter.client.impl.helpers.ExtensionPoint;
 
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalAgentConfiguration;
 import static org.jdiameter.client.impl.helpers.Parameters.ExtensionName;
 import static org.jdiameter.server.impl.helpers.ExtensionPoint.*;
 import static org.jdiameter.server.impl.helpers.Parameters.Extensions;
@@ -70,6 +71,7 @@ public class EmptyConfiguration extends org.jdiameter.client.impl.helpers.EmptyC
           add(InternalOverloadManager, "org.jdiameter.server.impl.OverloadManagerImpl").
           add(InternalRealmController, InternalRealmController.defValue()).
           add(InternalAgentRedirect, InternalAgentRedirect.defValue()).
+          add(InternalAgentConfiguration, InternalAgentConfiguration.defValue()).
           add(InternalAgentProxy, InternalAgentProxy.defValue()).
           add(InternalSessionDatasource, InternalSessionDatasource.defValue()).
           add(InternalTimerFacility, InternalTimerFacility.defValue()).

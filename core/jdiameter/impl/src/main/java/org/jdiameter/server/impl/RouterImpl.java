@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors by the
- * @authors tag. See the copyright.txt in the distribution for a
+ * Copyright 2011, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -19,10 +19,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.server.impl;
 
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.MetaData;
+import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.controller.IRealmTable;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.server.api.IRouter;
@@ -34,10 +36,10 @@ import org.jdiameter.server.api.IRouter;
  */
 public class RouterImpl extends org.jdiameter.client.impl.router.RouterImpl implements IRouter {
 
-	//private static final Logger logger = LoggerFactory.getLogger(RouterImpl.class);
+  //private static final Logger logger = LoggerFactory.getLogger(RouterImpl.class);
 
-	public RouterImpl(IConcurrentFactory concurrentFactory, IRealmTable realmTable, Configuration config, MetaData metaData) {
-		super(concurrentFactory, realmTable, config, metaData);
-	}
+  public RouterImpl(IContainer container,IConcurrentFactory concurrentFactory, IRealmTable realmTable, Configuration config, MetaData metaData) {
+    super(container,concurrentFactory, realmTable, config, metaData);
+  }
 
 }

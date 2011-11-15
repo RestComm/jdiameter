@@ -323,7 +323,8 @@
                 </xsi:annotation>
                 <xsi:complexType>
                     <xsi:sequence>
-                        <xsi:element ref="ApplicationID"/>
+                        <xsi:element ref="ApplicationID" />
+                        <xsi:element name="Agent" type="AgentType" maxOccurs="1" minOccurs="0"/>
                     </xsi:sequence>
                    <xsi:attribute name="name"  type="xsi:string" use="required"/>
                    <xsi:attribute name="peers" type="xsi:string" use="required"/>
@@ -397,4 +398,32 @@
         </xsi:annotation>
     </xsi:element>
 
+    <xsi:complexType name="AgentType">
+        <xsi:sequence>
+            <xsi:element
+                name="Properties"
+                type="PropertiesType" maxOccurs="1" minOccurs="1">
+            </xsi:element>
+        </xsi:sequence>
+    </xsi:complexType>
+
+    <xsi:complexType name="PropertiesType">
+        <xsi:sequence>
+            <xsi:element
+                name="Property"
+                type="PropertyType" maxOccurs="unbounded" minOccurs="0">
+            </xsi:element>
+        </xsi:sequence>
+    </xsi:complexType>
+
+    <xsi:complexType name="PropertyType">
+        <xsi:attribute
+            name="name"
+            type="xsi:string">
+        </xsi:attribute>
+        <xsi:attribute
+            name="value"
+            type="xsi:string">
+        </xsi:attribute>
+    </xsi:complexType>
 </xsi:schema>

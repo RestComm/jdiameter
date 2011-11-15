@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors by the
- * @authors tag. See the copyright.txt in the distribution for a
+ * Copyright 2011, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -19,6 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.client.impl.helpers;
 
 import org.jdiameter.api.Configuration;
@@ -111,23 +112,23 @@ public class XMLConfiguration extends EmptyConfiguration {
     if (attributes != null)
       for (String key : attributes.keySet())
         factory.setAttribute(key, attributes.get(key));
-    if (features != null)
-      for (String key : features.keySet())
-        factory.setFeature(key, features.get(key));
-    DocumentBuilder builder = factory.newDocumentBuilder();
-    Document document;
+          if (features != null)
+            for (String key : features.keySet())
+              factory.setFeature(key, features.get(key));
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                Document document;
 
-    if (in instanceof InputStream) {
-      document = builder.parse((InputStream) in);
-    }
-    else if (in instanceof String) {
-      document = builder.parse(new File((String) in));
-    }
-    else {
-      throw  new Exception("Unknown type of input data");
-    }
-    validate(document);
-    processing(document);
+                if (in instanceof InputStream) {
+                  document = builder.parse((InputStream) in);
+                }
+                else if (in instanceof String) {
+                  document = builder.parse(new File((String) in));
+                }
+                else {
+                  throw  new Exception("Unknown type of input data");
+                }
+                validate(document);
+                processing(document);
   }
 
   protected void validate(Document document) throws Exception {
@@ -378,9 +379,9 @@ public class XMLConfiguration extends EmptyConfiguration {
       }
       if (nodeName.equals("KeyData")) { 
         sd.add(KeyData, getInstance().add(KDManager, cnode.getAttributes().getNamedItem("manager").getNodeValue())
-                .add(KDStore, cnode.getAttributes().getNamedItem("store").getNodeValue())
-                .add(KDFile, cnode.getAttributes().getNamedItem("file").getNodeValue())
-                .add(KDPwd, cnode.getAttributes().getNamedItem("pwd").getNodeValue()));
+            .add(KDStore, cnode.getAttributes().getNamedItem("store").getNodeValue())
+            .add(KDFile, cnode.getAttributes().getNamedItem("file").getNodeValue())
+            .add(KDPwd, cnode.getAttributes().getNamedItem("pwd").getNodeValue()));
       }
       if (nodeName.equals("TrustData")) {
         sd.add(TrustData, getInstance().add(TDManager, cnode.getAttributes().getNamedItem("manager").getNodeValue())
@@ -425,8 +426,8 @@ public class XMLConfiguration extends EmptyConfiguration {
 
   protected Configuration addPeer(Node node) {
     AppConfiguration peerConfig = getInstance()
-    .add(PeerRating, new Integer(node.getAttributes().getNamedItem("rating").getNodeValue()))
-    .add(PeerName, node.getAttributes().getNamedItem("name").getNodeValue());
+        .add(PeerRating, new Integer(node.getAttributes().getNamedItem("rating").getNodeValue()))
+        .add(PeerName, node.getAttributes().getNamedItem("name").getNodeValue());
     if (node.getAttributes().getNamedItem("ip") != null) {
       peerConfig.add(PeerIp, node.getAttributes().getNamedItem("ip").getNodeValue());
     }
@@ -440,24 +441,54 @@ public class XMLConfiguration extends EmptyConfiguration {
     return peerConfig;
   }
 
-  //    protected Configuration addRealm(Node node) {
-  //        return getInstance().
-  //            add(
-  //                RealmEntry,
-  //                node.getAttributes().getNamedItem("name").getNodeValue() + ":" +  node.getAttributes().getNamedItem("peers").getNodeValue()
-  //            );x
-  //    }
-
   protected Configuration addRealm(Node node) {
-    return getInstance().
-    add(RealmEntry, getInstance().
+
+    AppConfiguration realmEntry = getInstance().
         add(ApplicationId, new Configuration[] {addApplicationID(node.getChildNodes())}).
         add(RealmName,  getAttrValue(node, "name")).
         add(RealmHosts, getAttrValue(node, "peers")).
         add(RealmLocalAction,    getAttrValue(node, "local_action")).
         add(RealmEntryIsDynamic, Boolean.valueOf(getAttrValue(node, "dynamic"))).
-        add(RealmEntryExpTime,   Long.valueOf(getAttrValue(node, "exp_time")))
-    );
+        add(RealmEntryExpTime,   Long.valueOf(getAttrValue(node, "exp_time")));
+
+    NodeList childNodes = node.getChildNodes();
+    for (int i = 0; i < childNodes.getLength(); i++) {
+      String nodeName = childNodes.item(i).getNodeName();
+      if (nodeName.equals("Agent")) {
+        realmEntry.add(Agent, addAgent(childNodes.item(i)));
+      }
+    }
+    return getInstance().add(RealmEntry, realmEntry);
+  }
+
+  protected Configuration addAgent(Node node) {
+    AppConfiguration agentConf = getInstance();
+    NodeList agentChildren = node.getChildNodes();
+
+    for(int index = 0; index < agentChildren.getLength(); index++) {
+      Node n = agentChildren.item(index);
+      if(n.getNodeName().equals("Properties")) {
+        agentConf.add(Properties, getProperties(n).toArray(EMPTY_ARRAY));
+      }
+    }
+
+    return agentConf;
+  }
+
+  protected List<Configuration> getProperties(Node node) {
+    List<Configuration> props = new ArrayList<Configuration>();
+    NodeList propertiesChildren = node.getChildNodes();
+    for(int index = 0; index < propertiesChildren.getLength(); index++) {
+      Node n = propertiesChildren.item(index);
+      if(n.getNodeName().equals("Property")) {
+        AppConfiguration property = getInstance();
+        property.add(PropertyName, n.getAttributes().getNamedItem(PropertyName.name()).getNodeValue());
+        property.add(PropertyValue, n.getAttributes().getNamedItem(PropertyValue.name()).getNodeValue());
+        props.add(property);
+      }
+    }
+
+    return props;
   }
 
   protected Configuration addApplicationID(NodeList node) {
@@ -501,9 +532,11 @@ public class XMLConfiguration extends EmptyConfiguration {
       else if (nodeName.equals("TimerFacility")) {               add(ExtensionPoint.InternalTimerFacility, getValue(c.item(i)));            }
       //FIXME: possibly should not be in client...
       else if (nodeName.equals("AgentRedirect")) {               add(ExtensionPoint.InternalAgentRedirect, getValue(c.item(i)));            }
+      else if (nodeName.equals("AgentConfiguration")) {          add(ExtensionPoint.InternalAgentConfiguration,getValue(c.item(i)))   ;     }
       else if (nodeName.equals("StatisticProcessor")) {          add(ExtensionPoint.InternalStatisticProcessor,getValue(c.item(i)))   ;     }
-      else 
+      else {
         appendOtherExtension(c.item(i));
+      }
     }
 
   }

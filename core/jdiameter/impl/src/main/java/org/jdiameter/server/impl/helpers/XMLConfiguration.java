@@ -27,10 +27,15 @@ import org.jdiameter.client.impl.helpers.AppConfiguration;
 import org.jdiameter.client.impl.helpers.Ordinal;
 
 import static org.jdiameter.server.impl.helpers.ExtensionPoint.*;
+import static org.jdiameter.client.impl.helpers.Parameters.Agent;
 import static org.jdiameter.client.impl.helpers.Parameters.DictionaryClass;
 import static org.jdiameter.client.impl.helpers.Parameters.DictionaryEnabled;
 import static org.jdiameter.client.impl.helpers.Parameters.DictionaryReceiveLevel;
 import static org.jdiameter.client.impl.helpers.Parameters.DictionarySendLevel;
+import static org.jdiameter.client.impl.helpers.Parameters.Properties;
+import static org.jdiameter.client.impl.helpers.Parameters.PropertyName;
+import static org.jdiameter.client.impl.helpers.Parameters.PropertyValue;
+import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsActiveList;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsEnabled;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsLoggerDelay;
@@ -429,10 +434,10 @@ public class XMLConfiguration extends EmptyConfiguration {
 
   private Configuration addOverloadMonitorItem(Node node) {
     return getInstance().
-    add(OverloadEntryIndex, Integer.valueOf(getAttrValue(node, "index"))).
-    add(OverloadEntrylowThreshold, Double.valueOf(getAttrValue(node, "lowThreshold"))).
-    add(OverloadEntryhighThreshold, Double.valueOf(getAttrValue(node, "highThreshold"))).
-    add(ApplicationId, addApplicationID(node.getChildNodes()));
+        add(OverloadEntryIndex, Integer.valueOf(getAttrValue(node, "index"))).
+        add(OverloadEntrylowThreshold, Double.valueOf(getAttrValue(node, "lowThreshold"))).
+        add(OverloadEntryhighThreshold, Double.valueOf(getAttrValue(node, "highThreshold"))).
+        add(ApplicationId, addApplicationID(node.getChildNodes()));
   }
 
   protected void addIPAddress(Node node) {
@@ -452,19 +457,59 @@ public class XMLConfiguration extends EmptyConfiguration {
 
   protected Configuration addIPAddressItem(Node node) {
     return getInstance().
-    add(OwnIPAddress, getValue(node));
+        add(OwnIPAddress, getValue(node));
   }
 
   protected Configuration addRealm(Node node) {
-    return getInstance().
-    add(RealmEntry, getInstance().
-        add(ApplicationId, new Configuration[] {addApplicationID(node.getChildNodes())}).
-        add(RealmName,  getAttrValue(node, "name")).
-        add(RealmHosts, getAttrValue(node, "peers")).
-        add(RealmLocalAction,    getAttrValue(node, "local_action")).
-        add(RealmEntryIsDynamic, Boolean.valueOf(getAttrValue(node, "dynamic"))).
-        add(RealmEntryExpTime,   Long.valueOf(getAttrValue(node, "exp_time")))
-    );
+    AppConfiguration realmEntry = getInstance();
+    realmEntry.
+    add(ApplicationId, new Configuration[] {addApplicationID(node.getChildNodes())}).
+    add(RealmName,  getAttrValue(node, "name")).
+    add(RealmHosts, getAttrValue(node, "peers")).
+    add(RealmLocalAction,    getAttrValue(node, "local_action")).
+    add(RealmEntryIsDynamic, Boolean.valueOf(getAttrValue(node, "dynamic"))).
+    add(RealmEntryExpTime,   Long.valueOf(getAttrValue(node, "exp_time")));
+
+    NodeList childNodes = node.getChildNodes();
+    for (int i = 0; i < childNodes.getLength(); i++) {
+      String nodeName = childNodes.item(i).getNodeName();
+      if (nodeName.equals("Agent")) {
+        realmEntry.add(Agent, addAgent(childNodes.item(i)));
+      }
+    }
+
+    return getInstance().add(RealmEntry, realmEntry);
+  }
+
+  protected Configuration addAgent(Node node) {
+    AppConfiguration agentConf = getInstance();
+    NodeList agentChildren = node.getChildNodes();
+
+    for(int index = 0; index < agentChildren.getLength(); index++) {
+      Node n = agentChildren.item(index);
+      if(n.getNodeName().equals("Properties")) {
+        agentConf.add(Properties, getProperties(n).toArray(EMPTY_ARRAY));
+      }
+    }
+
+    return agentConf;
+  }
+
+  protected List<Configuration> getProperties(Node node) {
+    List<Configuration> props = new ArrayList<Configuration>();
+    NodeList propertiesChildren = node.getChildNodes();
+
+    for(int index = 0; index < propertiesChildren.getLength(); index++) {
+      Node n = propertiesChildren.item(index);
+      if(n.getNodeName().equals("Property")) {
+        AppConfiguration property = getInstance();
+        property.add(PropertyName, n.getAttributes().getNamedItem(PropertyName.name()).getNodeValue());
+        property.add(PropertyValue, n.getAttributes().getNamedItem(PropertyValue.name()).getNodeValue());
+        props.add(property);
+      }
+    }
+
+    return props;
   }
 
   protected void appendOtherParameter(Node node) {
@@ -495,7 +540,8 @@ public class XMLConfiguration extends EmptyConfiguration {
       else if (nodeName.equals("SessionDatasource")) {          addInternalExtension(InternalSessionDatasource, getValue(c.item(i)));        }
       else if (nodeName.equals("TimerFacility")) {              addInternalExtension(InternalTimerFacility, getValue(c.item(i)));            }
       else if (nodeName.equals("AgentRedirect")) {              addInternalExtension(InternalAgentRedirect, getValue(c.item(i)));            }
-      else if (nodeName.equals("AgentProxy")) {             	  addInternalExtension(InternalAgentProxy, getValue(c.item(i)));            }
+      else if (nodeName.equals("AgentConfiguration")) {         add(ExtensionPoint.InternalAgentConfiguration,getValue(c.item(i)))   ;     }
+      else if (nodeName.equals("AgentProxy")) {             	addInternalExtension(InternalAgentProxy, getValue(c.item(i)));            }
       else if (nodeName.equals("OverloadManager")) {            addInternalExtension(InternalOverloadManager,getValue(c.item(i)));           }
       else 
         appendOtherExtension(c.item(i));
@@ -527,5 +573,5 @@ public class XMLConfiguration extends EmptyConfiguration {
   protected String getAttrValue(Node node, String name) {
     return node.getAttributes().getNamedItem(name).getNodeValue();
   }
-  
+
 }

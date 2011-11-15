@@ -34,30 +34,34 @@ import org.mobicents.diameter.api.DiameterMessageFactory;
 import org.mobicents.diameter.api.DiameterProvider;
 import org.mobicents.diameter.stack.management.DiameterConfiguration;
 
-public interface DiameterStackMultiplexerMBean extends ServiceMBean
-{
+/**
+ * 
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ */
+public interface DiameterStackMultiplexerMBean extends ServiceMBean {
 
   public static final String MBEAN_NAME_PREFIX = "diameter:Service=DiameterStackMultiplexer,Name=";
-  
+
   public void registerListener(DiameterListener listener, ApplicationId[] appIds) throws IllegalStateException;
-  
+
   public void unregisterListener(DiameterListener listener);
 
   //For sake of simplicity in the pre Gamma :)
   public Stack getStack();
-  
+
   public DiameterProvider getProvider();
-  
+
   public DiameterMessageFactory getMessageFactory();
-  
+
   public DiameterStackMultiplexerMBean getMultiplexerMBean();
-  
+
   // MANAGEMENT OPERATIONS
-  
+
   // Get a Serializable Configuration
-  
+
   public DiameterConfiguration getDiameterConfiguration() throws MBeanException;
-  
+
   // Local Peer ----------------------------------------------------------
 
   /**
@@ -67,14 +71,14 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @throws MBeanException if the operation is unable to perform correctly
    */
   public void _LocalPeer_setURI(String uri) throws MBeanException;
-  
+
   /**
    * Adds an IP Address to the Local Peer.
    * @param ipAddress the IP Address to be added, if not present
    * @throws MBeanException if the operation is unable to perform correctly
    */
   public void _LocalPeer_addIPAddress(String ipAddress) throws MBeanException;
-  
+
   /**
    * Removes an IP Address from the Local Peer.
    * 
@@ -82,7 +86,7 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @throws MBeanException if the operation is unable to perform correctly
    */
   public void _LocalPeer_removeIPAddress(String ipAddress) throws MBeanException;
-  
+
   /**
    * Changes the Realm of the Local Peer.
    * 
@@ -90,7 +94,7 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @throws MBeanException if the operation is unable to perform correctly
    */
   public void _LocalPeer_setRealm(String realm) throws MBeanException;
-  
+
   /**
    * Sets the Local Peer Vendor-Id.
    * 
@@ -98,7 +102,7 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @throws MBeanException if the operation is unable to perform correctly
    */
   public void _LocalPeer_setVendorId(long vendorId) throws MBeanException;
-  
+
   // Parameters ----------------------------------------------------------
 
   /**
@@ -108,7 +112,7 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @throws MBeanException if the operation is unable to perform correctly
    */
   public void _Parameters_setAcceptUndefinedPeer(boolean acceptUndefinedPeer) throws MBeanException;
-  
+
   /**
    * Sets whether the stack will use URI (aaa://IP_ADDRESS:PORT) as FQDN. Some Peers require it.
    * 
@@ -116,7 +120,7 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @throws MBeanException if the operation is unable to perform correctly
    */
   public void _Parameters_setUseUriAsFqdn(boolean useUriAsFqdn) throws MBeanException;
-  
+
   /**
    * Sets the value to consider a message as a duplicate, in ms. (default: 240000, 4 minutes). 
    * 
@@ -124,9 +128,9 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @throws MBeanException if the operation is unable to perform correctly
    */
   public void _Parameters_setDuplicateTimer(long duplicateTimer) throws MBeanException;
-  
+
   // Parameters : Timeouts -----------------------------------------------
-  
+
   /**
    * Sets the timeout for general Diameter messages, in ms. (default: 60000, 1 minute).
    * 
@@ -134,7 +138,7 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @throws MBeanException if the operation is unable to perform correctly
    */
   public void _Parameters_setMessageTimeout(long messageTimeout) throws MBeanException;
-  
+
   /**
    * Sets the timeout for stopping the stack. (default: 10000, 10 seconds).
    * 
@@ -182,15 +186,15 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @throws MBeanException if the operation is unable to perform correctly
    */
   public void _Parameters_setRecTimeout(long recTimeout) throws MBeanException;
-  
+
   public void _Parameters_setConcurrentEntity(String name, String desc, Integer size) throws MBeanException;
 
   public void _Parameters_setStatisticLoggerDelay(long delay) throws MBeanException;
 
   public void _Parameters_setStatisticLoggerPause(long pause) throws MBeanException;
-  
+
   // Network : Peers -----------------------------------------------------
-  
+
   /**
    * Adds a peer definition to the stack. Same as <peer/> element in XML Configuration.
    * 
@@ -200,7 +204,7 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @throws MBeanException if the operation is unable to perform correctly
    */
   public void _Network_Peers_addPeer(String name, boolean attemptConnect, int rating) throws MBeanException;
-  
+
   /**
    * Removes a peer definition from stack.
    * 
@@ -222,8 +226,8 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @throws MBeanException if the operation is unable to perform correctly
    */
   public void _Network_Realms_addRealm(String name, String peers, long appVendorId, long appAcctId, long appAuthId) throws MBeanException;
-  
-  public void _Network_Realms_addRealm(String name, String peers, long appVendorId, long appAcctId, long appAuthId, String localAction, boolean isDynamic, int expTime) throws MBeanException;
+
+  public void _Network_Realms_addRealm(String name, String peers, long appVendorId, long appAcctId, long appAuthId, String localAction, String agentConfiguration, boolean isDynamic, int expTime) throws MBeanException;
 
   /**
    * Removes a Realm from the stack.
@@ -232,7 +236,7 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @throws MBeanException if the operation is unable to perform correctly
    */
   public void _Network_Realms_removeRealm(String name) throws MBeanException;
-  
+
   /**
    * Adds a new Peer host to the Realm
    * 
@@ -242,7 +246,7 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @throws MBeanException if the operation is unable to perform correctly
    */
   public void _Network_Realms_addPeerToRealm(String realmName, String peerName, boolean attemptConnecting) throws MBeanException;
-  
+
   /**
    * Removes a Peer host from the Realm
    * 
@@ -253,7 +257,7 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
   public void _Network_Realms_removePeerFromRealm(String realmName, String peerName) throws MBeanException;
 
   // Stack Operation -----------------------------------------------------
-  
+
   /**
    * Operation to stop the stack.
    * 
@@ -267,9 +271,9 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @throws MBeanException
    */
   public void startStack() throws MBeanException;
-  
+
   // Validation ----------------------------------------------------------
-  
+
   /**
    * Sets whether validation on Diameter messages/AVPs should be performed or not.
    * 
@@ -277,9 +281,9 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @throws MBeanException if the operation is unable to perform correctly
    */
   public void _Validation_setEnabled(boolean enableValidation) throws MBeanException;
-  
+
   // Configuration Dump --------------------------------------------------
-  
+
   /**
    * Dumps full stack configuration.
    * 
@@ -287,9 +291,9 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
    * @throws MBeanException if the operation is unable to perform correctly
    */
   public String dumpStackConfiguration() throws MBeanException;
-  
+
   // Information dump methods --------------------------------------------
-  
+
   public String _LocalPeer_getProductName() throws MBeanException;
 
   public Long _LocalPeer_getVendorId() throws MBeanException;
@@ -305,11 +309,11 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean
   public Set<ApplicationId> _LocalPeer_getCommonApplicationIds() throws MBeanException;
 
   public String[] _Network_Realms_getRealms() throws MBeanException;
-  
+
   public String[] _Network_Realms_getRealmPeers(String realmName) throws MBeanException;
-  
+
   public boolean _LocalPeer_isActive() throws MBeanException;
-  
+
   public boolean _Network_Peers_isPeerConnected(String name) throws MBeanException;
 
 }
