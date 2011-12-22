@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <project name="diameter.release.sf" default="package" basedir=".">
-
 	<tstamp>
 		<format property="TSTAMP" pattern="yyyyMMddHHmm" />
 	</tstamp>
@@ -8,28 +7,32 @@
 	<!-- Diameter Components Versions -->
 	<property name="RELEASE_VERSION" value="1.4.0-SNAPSHOT" />
 
-	<property name="CORE_JDIAMETER_VERSION" value="1.5.4.0-build404-SNAPSHOT" />
+	<property name="CORE_JDIAMETER_VERSION" value="1.5.7.0-build510-SNAPSHOT" />
 	<property name="CORE_JDIAMETER-HA_VERSION" value="1.0.0-SNAPSHOT" />
 	<property name="CORE_MUX_VERSION" value="1.4.0-SNAPSHOT" />
 	<property name="CORE_DOCS_VERSION" value="1.4.0-SNAPSHOT" />
 
 	<property name="TOOLS_JOPR_PLUGIN_VERSION" value="1.0.0-SNAPSHOT" />
 
-	<property name="RA_base_VERSION" value="3.0.0-SNAPSHOT" />
-	<property name="RA_cca_VERSION" value="3.0.0-SNAPSHOT" />
-	<property name="RA_sh-client_VERSION" value="3.0.0-SNAPSHOT" />
-	<property name="RA_sh-server_VERSION" value="3.0.0-SNAPSHOT" />
-	<property name="RA_ro_VERSION" value="3.0.0-SNAPSHOT" />
-	<property name="RA_rf_VERSION" value="3.0.0-SNAPSHOT" />
-	<property name="RA_cx-dx_VERSION" value="3.0.0-SNAPSHOT" />
+	<property name="RA_base_VERSION" value="2.6.0-SNAPSHOT" />
+	<property name="RA_cca_VERSION" value="2.6.0-SNAPSHOT" />
+	<property name="RA_sh-client_VERSION" value="2.6.0-SNAPSHOT" />
+	<property name="RA_sh-server_VERSION" value="2.6.0-SNAPSHOT" />
+	<property name="RA_ro_VERSION" value="2.6.0-SNAPSHOT" />
+	<property name="RA_rf_VERSION" value="2.6.0-SNAPSHOT" />
+	<property name="RA_cx-dx_VERSION" value="2.6.0-SNAPSHOT" />
+	<property name="RA_gq_VERSION" value="1.0.0-SNAPSHOT" />
+	<property name="RA_gx_VERSION" value="2.6.0-SNAPSHOT" />
+	<property name="RA_rx_VERSION" value="1.0.0-SNAPSHOT" />
+	<property name="RA_s6a_VERSION" value="1.0.0-SNAPSHOT" />
 
-	<property name="EXAMPLE_JAINSLEE_base_VERSION" value="3.0.0-SNAPSHOT" />
-	<property name="EXAMPLE_JAINSLEE_openims_VERSION" value="3.0.0-SNAPSHOT" />
+	<property name="EXAMPLE_JAINSLEE_base_VERSION" value="2.4.2-SNAPSHOT" />
+	<property name="EXAMPLE_JAINSLEE_openims_VERSION" value="2.4.2-SNAPSHOT" />
 
 	<!-- Dependencies Components Versions -->
-	<property name="JAINSLEE_VERSION" value="2.2.1.FINAL" />
-	<property name="JAINSLEE_SIP11_RA_VERSION" value="2.2.0.FINAL" />
-	<property name="JAINSLEE_SIP_SERVICES_VERSION" value="2.2.0.FINAL" />
+	<property name="JAINSLEE_VERSION" value="2.5.0.FINAL" />
+	<property name="JAINSLEE_SIP11_RA_VERSION" value="2.5.0.FINAL" />
+	<property name="JAINSLEE_SIP_SERVICES_VERSION" value="2.4.0.FINAL" />
 	<property name="JBOSS_VERSION" value="5.1.0.GA" />
 
 	
@@ -37,7 +40,7 @@
 	<property name="DEFAULT_SAR_CONFIGURATION" value="5" />
 	<property name="ALTERNATIVE_SAR_CONFIGURATION" value="4" />
 	
-	<property name="JAINSLEE_RA_LIST" value="base,cca,sh-client,sh-server,ro,rf,cx-dx" />
+	<property name="JAINSLEE_RA_LIST" value="base,cca,sh-client,sh-server,ro,rf,cx-dx,gq,gx,rx,s6a" />
 	<property name="JAINSLEE_EXAMPLE_LIST" value="base,openims" />
 
 	<!-- Directories Configuration -->
@@ -205,7 +208,7 @@
 
 				<copy todir="${zip_dir}/resources/@{ra.name}">
 					<fileset dir="${checkout_base_dir}/resources/@{ra.name}/du/target">
-						<include name="diameter-@{ra.name}-ra-DU-${RA_@{ra.name}_VERSION}.jar" />
+						<include name="diameter-@{ra.name}-ra-DU-*.jar" />
 					</fileset>
 					<fileset dir="${checkout_base_dir}/resources/@{ra.name}/docs/jdocbook-mobicents/target/docbook/publish/en-US/pdf">
 						<include name="*.pdf" />
