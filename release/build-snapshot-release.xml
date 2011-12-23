@@ -40,7 +40,8 @@
 	<property name="DEFAULT_SAR_CONFIGURATION" value="5" />
 	<property name="ALTERNATIVE_SAR_CONFIGURATION" value="4" />
 	
-	<property name="JAINSLEE_RA_LIST" value="base,cca,sh-client,sh-server,ro,rf,cx-dx,gq,gx,rx,s6a" />
+	<!-- ADD S6a WHEN THERE ARE DOCS - property name="JAINSLEE_RA_LIST" value="base,cca,sh-client,sh-server,ro,rf,cx-dx,gq,gx,rx,s6a" / -->
+	<property name="JAINSLEE_RA_LIST" value="base,cca,sh-client,sh-server,ro,rf,cx-dx,gq,gx,rx" />
 	<property name="JAINSLEE_EXAMPLE_LIST" value="base,openims" />
 
 	<!-- Directories Configuration -->
