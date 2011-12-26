@@ -43,8 +43,6 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public abstract class BaseSessionImpl implements BaseSession {
 
-  private static final long serialVersionUID = 1L;
-
   protected final long creationTime = System.currentTimeMillis();
   protected long lastAccessedTime = creationTime;
   protected boolean isValid = true;
@@ -264,9 +262,24 @@ public abstract class BaseSessionImpl implements BaseSession {
     }
   }
 
-  protected void appendAppId(ApplicationId appId, Message m) { // todo duplicate code look peerimpl 601 line
+  /**
+   * Appends an *-Application-Id AVP to the message, if none is present already.
+   * 
+   * @param appId the application-id value
+   * @param m the message to append the *-Application-Id
+   */
+  protected void appendAppId(ApplicationId appId, Message m) {
     if (appId == null) {
       return;
+    }
+
+    // check if any application-id avp is already present.
+    // we could use m.getApplicationIdAvps().size() > 0 but this should spare a few cpu cycles
+    for(Avp avp : m.getAvps()) {
+      int code = avp.getCode();
+      if(code == Avp.ACCT_APPLICATION_ID || code == Avp.AUTH_APPLICATION_ID || code == Avp.VENDOR_SPECIFIC_APPLICATION_ID) {
+        return;
+      }
     }
 
     if (appId.getVendorId() == 0) {
