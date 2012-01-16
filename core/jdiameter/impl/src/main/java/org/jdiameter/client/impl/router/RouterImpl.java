@@ -222,8 +222,8 @@ public class RouterImpl implements IRouter {
       long hopByHopId = request.getHopByHopIdentifier();
       Avp hostAvp = request.getAvps().getAvp(Avp.ORIGIN_HOST);
       Avp realmAvp = request.getAvps().getAvp(Avp.ORIGIN_REALM);
-      AnswerEntry entry = new AnswerEntry(hopByHopId, hostAvp != null ? hostAvp.getOctetString() : null,
-          realmAvp != null ? realmAvp.getOctetString() : null);
+      AnswerEntry entry = new AnswerEntry(hopByHopId, hostAvp != null ? hostAvp.getDiameterIdentity() : null,
+          realmAvp != null ? realmAvp.getDiameterIdentity() : null);
 
       logger.debug("Adding Hop-by-Hop id [{}] into request entry table for routing answers back to the requesting peer", hopByHopId);
       requestEntryTable.put(hopByHopId, entry);
@@ -282,11 +282,11 @@ public class RouterImpl implements IRouter {
       if (avpRealm == null) {
         throw new RouteException("Destination realm avp is empty");
       }
-      destRealm = avpRealm.getOctetString();
+      destRealm = avpRealm.getDiameterIdentity();
 
       Avp avpHost = message.getAvps().getAvp(Avp.DESTINATION_HOST);
       if (avpHost != null) {
-        destHost = avpHost.getOctetString();
+        destHost = avpHost.getDiameterIdentity();
       }
       if(logger.isDebugEnabled()) {
         logger.debug("Looking up peer for request: [{}], DestHost=[{}], DestRealm=[{}]", new Object[] {message,destHost, destRealm});
@@ -416,7 +416,7 @@ public class RouterImpl implements IRouter {
         int i = 0;
         // loop detected
         for (Avp avp : avps) {
-          String r =  avp.getOctetString();
+          String r =  avp.getDiameterIdentity();
           if (r.equals(metaData.getLocalPeer().getUri().getFQDN())) {
             throw new RouteException("Loop detected");
           }

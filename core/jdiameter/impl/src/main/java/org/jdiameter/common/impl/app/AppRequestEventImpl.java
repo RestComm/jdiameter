@@ -19,7 +19,7 @@ public class AppRequestEventImpl extends AppEventImpl implements AppRequestEvent
   public String getDestinationHost() throws AvpDataException {
     Avp destHostAvp = message.getAvps().getAvp(DESTINATION_HOST);
     if (destHostAvp  != null) {
-      return destHostAvp.getOctetString();
+      return destHostAvp.getDiameterIdentity();
     }
     else {
       throw new AvpDataException("Avp DESTINATION_HOST not found");
@@ -29,7 +29,7 @@ public class AppRequestEventImpl extends AppEventImpl implements AppRequestEvent
   public String getDestinationRealm() throws AvpDataException {
     Avp destRealmAvp = message.getAvps().getAvp(DESTINATION_REALM);
     if (destRealmAvp != null) {
-      return destRealmAvp.getOctetString();
+      return destRealmAvp.getDiameterIdentity();
     }
     else {
       throw new AvpDataException("Avp DESTINATION_REALM not found");

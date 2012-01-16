@@ -38,7 +38,7 @@ public class AppEventImpl implements AppEvent {
   public String getOriginHost() throws AvpDataException {
     Avp originHostAvp = message.getAvps().getAvp(ORIGIN_HOST);
     if (originHostAvp != null) {
-      return originHostAvp.getOctetString();
+      return originHostAvp.getDiameterIdentity();
     }
     else {
       throw new AvpDataException("Avp ORIGIN_HOST not found");
@@ -48,7 +48,7 @@ public class AppEventImpl implements AppEvent {
   public String getOriginRealm() throws AvpDataException {
     Avp originRealmAvp = message.getAvps().getAvp(ORIGIN_REALM);
     if (originRealmAvp != null) {
-      return originRealmAvp.getOctetString();
+      return originRealmAvp.getDiameterIdentity();
     }
     else {
       throw new AvpDataException("Avp ORIGIN_REALM not found");

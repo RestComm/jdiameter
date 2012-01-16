@@ -480,7 +480,7 @@ public class MessageImpl implements IMessage {
 
   public String getDuplicationKey() {
     try {
-      return getDuplicationKey(getAvps().getAvp(Avp.ORIGIN_HOST).getOctetString(), getEndToEndIdentifier());
+      return getDuplicationKey(getAvps().getAvp(Avp.ORIGIN_HOST).getDiameterIdentity(), getEndToEndIdentifier());
     }
     catch (AvpDataException e) {
       throw new IllegalArgumentException(e);

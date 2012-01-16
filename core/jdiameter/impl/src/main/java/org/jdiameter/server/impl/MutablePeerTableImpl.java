@@ -368,7 +368,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                     IPeer peer = null;
                     String host;
                     try {
-                      host = message.getAvps().getAvp(Avp.ORIGIN_HOST).getOctetString();
+                      host = message.getAvps().getAvp(Avp.ORIGIN_HOST).getDiameterIdentity();
                       logger.debug("Origin-Host in new received message is [{}]", host);
                     }
                     catch (AvpDataException e) {
@@ -378,7 +378,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                     }
                     String realm;
                     try {
-                        realm = message.getAvps().getAvp(Avp.ORIGIN_REALM).getOctetString();
+                        realm = message.getAvps().getAvp(Avp.ORIGIN_REALM).getDiameterIdentity();
                         logger.debug("Origin-Realm in new received message is [{}]", host);
                     } catch (AvpDataException e) {
                         logger.warn("Unable to retrieve find Origin-Realm AVP in CER", e);
