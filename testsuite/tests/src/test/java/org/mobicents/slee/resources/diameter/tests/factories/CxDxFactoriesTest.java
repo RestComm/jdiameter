@@ -672,7 +672,7 @@ public class CxDxFactoriesTest {
     String avpName = "Restoration-Info";
 
     // Create AVP with mandatory values
-    RestorationInfo riAvp1 = cxdxAvpFactory.createRestorationInfo("SAMPLE.PATH", "SAMPLE.CONTACT");
+    RestorationInfo riAvp1 = cxdxAvpFactory.createRestorationInfo("SAMPLE.PATH".getBytes(), "SAMPLE.CONTACT".getBytes());
 
     // Make sure it's not null
     Assert.assertNotNull("Created " + avpName + " AVP from objects should not be null.", riAvp1);
@@ -685,8 +685,8 @@ public class CxDxFactoriesTest {
     Assert.assertFalse("Created " + avpName + " AVP from default constructor should not have Contact AVP.", riAvp2.hasContact());
 
     // Set mandatory values
-    riAvp2.setPath("SAMPLE.PATH");
-    riAvp2.setContact("SAMPLE.CONTACT");
+    riAvp2.setPath("SAMPLE.PATH".getBytes());
+    riAvp2.setContact("SAMPLE.CONTACT".getBytes());
 
     // Make sure it's equal to the one created with mandatory values constructor
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + set<Mandatory-AVPs> should be equal to original.", riAvp1, riAvp2);
@@ -721,7 +721,7 @@ public class CxDxFactoriesTest {
     String avpName = "SCSCF-Restoration-Info";
 
     // Create AVP with mandatory values
-    SCSCFRestorationInfo scscfriAvp1 = cxdxAvpFactory.createSCSCFRestorationInfo("SAMPLE.USERNAME", new RestorationInfo[] { cxdxAvpFactory.createRestorationInfo("SAMPLE.PATH", "SAMPLE.CONTACT") });
+    SCSCFRestorationInfo scscfriAvp1 = cxdxAvpFactory.createSCSCFRestorationInfo("SAMPLE.USERNAME", new RestorationInfo[] { cxdxAvpFactory.createRestorationInfo("SAMPLE.PATH".getBytes(), "SAMPLE.CONTACT".getBytes()) });
 
     // Make sure it's not null
     Assert.assertNotNull("Created " + avpName + " AVP from objects should not be null.", scscfriAvp1);
@@ -736,7 +736,7 @@ public class CxDxFactoriesTest {
 
     // Set mandatory values
     scscfriAvp2.setUserName("SAMPLE.USERNAME");
-    scscfriAvp2.setRestorationInfo(cxdxAvpFactory.createRestorationInfo("SAMPLE.PATH", "SAMPLE.CONTACT"));
+    scscfriAvp2.setRestorationInfo(cxdxAvpFactory.createRestorationInfo("SAMPLE.PATH".getBytes(), "SAMPLE.CONTACT".getBytes()));
 
     // Make sure it's equal to the one created with mandatory values constructor
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + set<Mandatory-AVPs> should be equal to original.", scscfriAvp1, scscfriAvp2);
@@ -816,7 +816,7 @@ public class CxDxFactoriesTest {
     String avpName = "Subscription-Info";
 
     // Create AVP with mandatory values
-    SubscriptionInfo siAvp1 = cxdxAvpFactory.createSubscriptionInfo("cid", "fsh", "tsh", "rr", "c");
+    SubscriptionInfo siAvp1 = cxdxAvpFactory.createSubscriptionInfo("cid".getBytes(), "fsh".getBytes(), "tsh".getBytes(), "rr".getBytes(), "c".getBytes());
 
     // Make sure it's not null
     Assert.assertNotNull("Created " + avpName + " AVP from objects should not be null.", siAvp1);
@@ -832,11 +832,11 @@ public class CxDxFactoriesTest {
     Assert.assertFalse("Created " + avpName + " AVP from default constructor should not have Contact AVP.", siAvp2.hasContact());
 
     // Set mandatory values
-    siAvp2.setCallIDSIPHeader("cid");
-    siAvp2.setFromSIPHeader("fsh");
-    siAvp2.setToSIPHeader("tsh");
-    siAvp2.setRecordRoute("rr");
-    siAvp2.setContact("c");
+    siAvp2.setCallIDSIPHeader("cid".getBytes());
+    siAvp2.setFromSIPHeader("fsh".getBytes());
+    siAvp2.setToSIPHeader("tsh".getBytes());
+    siAvp2.setRecordRoute("rr".getBytes());
+    siAvp2.setContact("c".getBytes());
 
     // Make sure it's equal to the one created with mandatory values constructor
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + set<Mandatory-AVPs> should be equal to original.", siAvp1, siAvp2);

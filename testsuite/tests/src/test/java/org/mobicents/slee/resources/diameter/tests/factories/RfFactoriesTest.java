@@ -758,7 +758,7 @@ public class RfFactoriesTest implements DiameterRAInterface {
     String avpName = "MBMS-Information";
 
     // Create AVP with mandatory values
-    MbmsInformation miAvp1 = rfAvpFactory.createMbmsInformation("abc", MbmsServiceType.MULTICAST, MbmsUserServiceType.DOWNLOAD);
+    MbmsInformation miAvp1 = rfAvpFactory.createMbmsInformation("abc".getBytes(), MbmsServiceType.MULTICAST, MbmsUserServiceType.DOWNLOAD);
 
     // Make sure it's not null
     Assert.assertNotNull("Created " + avpName + " AVP from objects should not be null.", miAvp1);
@@ -772,7 +772,7 @@ public class RfFactoriesTest implements DiameterRAInterface {
     Assert.assertFalse("Created " + avpName + " AVP from default constructor should not have MBMS-User-Service-Type AVP.", miAvp2.hasMbmsUserServiceType());
 
     // Set mandatory values
-    miAvp2.setTmgi("abc");
+    miAvp2.setTmgi("abc".getBytes());
     miAvp2.setMbmsServiceType(MbmsServiceType.MULTICAST);
     miAvp2.setMbmsUserServiceType(MbmsUserServiceType.DOWNLOAD);
 
@@ -1079,7 +1079,7 @@ public class RfFactoriesTest implements DiameterRAInterface {
     String avpName = "PS-Furnish-Charging-Information";
 
     // Create AVP with mandatory values
-    PsFurnishChargingInformation piAvp1 = rfAvpFactory.createPsFurnishChargingInformation("123", "456");
+    PsFurnishChargingInformation piAvp1 = rfAvpFactory.createPsFurnishChargingInformation("123".getBytes(), "456".getBytes());
 
     // Make sure it's not null
     Assert.assertNotNull("Created " + avpName + " AVP from objects should not be null.", piAvp1);
@@ -1092,8 +1092,8 @@ public class RfFactoriesTest implements DiameterRAInterface {
     Assert.assertFalse("Created " + avpName + " AVP from default constructor should not have PS-Free-Format-Data AVP.", piAvp2.hasPsFreeFormatData());
 
     // Set mandatory values
-    piAvp2.setTgppChargingId("123");
-    piAvp2.setPsFreeFormatData("456");
+    piAvp2.setTgppChargingId("123".getBytes());
+    piAvp2.setPsFreeFormatData("456".getBytes());
 
     // Make sure it's equal to the one created with mandatory values constructor
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + set<Mandatory-AVPs> should be equal to original.", piAvp1, piAvp2);

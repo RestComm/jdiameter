@@ -464,10 +464,10 @@ public class GqFactoriesTest {
   private static V6TransportAddress V6TA_AVP_DEFAULT = gqAvpFactory.createV6TransportAddress();
 
   static {
-    V4TA_AVP_DEFAULT.setFramedIPAddress("255.255.255.254");
+    V4TA_AVP_DEFAULT.setFramedIPAddress("255.255.255.254".getBytes());
     V4TA_AVP_DEFAULT.setPortNumber(13579);
 
-    V6TA_AVP_DEFAULT.setFramedIPV6Prefix("A123:B456:C789:DE80::/57");
+    V6TA_AVP_DEFAULT.setFramedIPV6Prefix("A123:B456:C789:DE80::/57".getBytes());
     V6TA_AVP_DEFAULT.setPortNumber(24680);
 
     BIL_AVP_DEFAULT.setV4TransportAddress(V4TA_AVP_DEFAULT);
@@ -481,9 +481,9 @@ public class GqFactoriesTest {
 
     FG_AVP_DEFAULT.setFlow(F_AVP_DEFAULT);
 
-    GUA_AVP_DEFAULT.setAddressRealm("mobicents.org");
-    GUA_AVP_DEFAULT.setFramedIPAddress("255.255.255.254");
-    GUA_AVP_DEFAULT.setFramedIPV6Prefix("A123:B456:C789:DE80::/57");
+    GUA_AVP_DEFAULT.setAddressRealm("mobicents.org".getBytes());
+    GUA_AVP_DEFAULT.setFramedIPAddress("255.255.255.254".getBytes());
+    GUA_AVP_DEFAULT.setFramedIPV6Prefix("A123:B456:C789:DE80::/57".getBytes());
 
     MSC_AVP_DEFAULT.setFlowDescription(new IPFilterRule("deny in ip from 1.2.3.4/24 to any"));
     MSC_AVP_DEFAULT.setFlowNumber(7);
@@ -492,8 +492,8 @@ public class GqFactoriesTest {
     MSC_AVP_DEFAULT.setMaxRequestedBandwidthDL(555);
     MSC_AVP_DEFAULT.setMaxRequestedBandwidthUL(222);
 
-    MCD_AVP_DEFAULT.setAFApplicationIdentifier("AFApplicationIdentifier");
-    MCD_AVP_DEFAULT.setCodecData("codecData");
+    MCD_AVP_DEFAULT.setAFApplicationIdentifier("AFApplicationIdentifier".getBytes());
+    MCD_AVP_DEFAULT.setCodecData("codecData".getBytes());
     MCD_AVP_DEFAULT.setFlowStatus(FlowStatus.DISABLED);
     MCD_AVP_DEFAULT.setMaxRequestedBandwidthDL(999);
     MCD_AVP_DEFAULT.setMaxRequestedBandwidthUL(111);

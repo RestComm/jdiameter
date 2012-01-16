@@ -202,7 +202,9 @@ public class BaseFactoriesTest {
   @Test
   public void isProxiableCopiedACA() throws Exception {
     AccountingRequest acr = messageFactory.createAccountingRequest();
+    acr.setSessionId("sssxxx");
     AccountingAnswer aca = messageFactory.createAccountingAnswer(acr);
+    System.out.println(aca);
     assertEquals("The 'P' bit is not copied from request in Accounting-Answer, it should. [RFC3588/6.2]", acr.getHeader().isProxiable(), aca.getHeader().isProxiable());
 
     // Reverse 'P' bit ...
@@ -561,7 +563,7 @@ public class BaseFactoriesTest {
 
   @Test
   public void testAvpFactoryCreateProxyInfo() {
-    ProxyInfoAvp piAvp1 = avpFactory.createProxyInfo(new DiameterIdentity("diameter.mobicents.org"), "INITIALIZED");
+    ProxyInfoAvp piAvp1 = avpFactory.createProxyInfo(new DiameterIdentity("diameter.mobicents.org"), "INITIALIZED".getBytes());
 
     Assert.assertNotNull("Created Proxy-Info AVP from objects should not be null.", piAvp1);
 
