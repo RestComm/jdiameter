@@ -83,8 +83,6 @@ import org.slf4j.LoggerFactory;
  */
 public class GqClientSessionImpl extends AppAuthSessionImpl implements GqClientSession, EventListener<Request, Answer>, NetworkReqListener {
 
-  private static final long serialVersionUID = 1L;
-
   protected static final Logger logger = LoggerFactory.getLogger(GqClientSessionImpl.class);
 
   // Session State Handling ---------------------------------------------------
@@ -147,11 +145,11 @@ public class GqClientSessionImpl extends AppAuthSessionImpl implements GqClientS
       AvpSet avps = event.getMessage().getAvps();
       Avp destRealmAvp = avps.getAvp(Avp.DESTINATION_REALM);
       if(destRealmAvp != null) {
-        sessionData.setDestinationRealm(destRealmAvp.getOctetString());
+        sessionData.setDestinationRealm(destRealmAvp.getDiameterIdentity());
       }
       Avp destHostAvp = avps.getAvp(Avp.DESTINATION_HOST);
       if(destHostAvp != null) {
-        sessionData.setDestinationHost(destHostAvp.getOctetString());
+        sessionData.setDestinationHost(destHostAvp.getDiameterIdentity());
       }
     }
     catch (Exception e) {

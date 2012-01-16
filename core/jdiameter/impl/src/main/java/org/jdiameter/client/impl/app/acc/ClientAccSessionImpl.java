@@ -33,7 +33,6 @@ import static org.jdiameter.common.api.app.acc.ClientAccSessionState.PENDING_STA
 import java.io.Serializable;
 
 import org.jdiameter.api.Answer;
-import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.InternalException;
@@ -65,8 +64,6 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class ClientAccSessionImpl extends AppAccSessionImpl implements EventListener<Request, Answer>, ClientAccSession {
-
-  private static final long serialVersionUID = 1L;
 
   private static final Logger logger = LoggerFactory.getLogger(ClientAccSessionImpl.class);
 
@@ -104,10 +101,10 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
       try {
         session.send(accountRequest.getMessage(), this);
         // Store last destination information
-        sessionData.setDestinationRealm(accountRequest.getMessage().getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString());
+        sessionData.setDestinationRealm(accountRequest.getMessage().getAvps().getAvp(Avp.DESTINATION_REALM).getDiameterIdentity());
         Avp destHostAvp = accountRequest.getMessage().getAvps().getAvp(Avp.DESTINATION_HOST);
         if(destHostAvp != null) {
-          sessionData.setDestinationHost(destHostAvp.getOctetString());
+          sessionData.setDestinationHost(destHostAvp.getDiameterIdentity());
         }
       }
       catch (Throwable t) {

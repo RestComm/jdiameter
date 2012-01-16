@@ -273,7 +273,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
             }
           }
         }
-    );
+        );
     if (connection == null) {
       String ref = peerConfig.getStringValue(SecurityRef.ordinal(), null);
       InetAddress localAddress = null;
@@ -542,9 +542,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   }
 
   public String toString() {
-	  if(fsm!=null)
-		  return "CPeer{" + "Uri=" + uri + "; State=" + fsm.getState(PeerState.class) + "; con="+ connection +"}";
-	  return "CPeer{" + "Uri=" + uri + "; State=" + fsm + "; con="+ connection +"}";
+    return "CPeer{" + "Uri=" + uri + "; State=" + (fsm != null ? fsm.getState(PeerState.class) : "n/a") + "; Con="+ connection + "}";
   }
 
   protected void fillIPAddressTable(IMessage message) {
@@ -822,7 +820,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
         }
         else {
           if (realmName == null) {
-            realmName = origRealm.getOctetString();
+            realmName = origRealm.getDiameterIdentity();
           }
           if (vendorID == 0) {
             vendorID = vendorId.getUnsigned32();
@@ -957,7 +955,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       return ResultCode.SUCCESS;
     }
 
-    protected void addAppId(ApplicationId appId, IMessage message) { // todo duplicate code look SessionImpl 225 line
+    protected void addAppId(ApplicationId appId, IMessage message) {
       if (appId.getVendorId() == 0) {
         if (appId.getAuthAppId() != 0) {
           message.getAvps().addAvp(AUTH_APPLICATION_ID, appId.getAuthAppId(), true, false, true);
