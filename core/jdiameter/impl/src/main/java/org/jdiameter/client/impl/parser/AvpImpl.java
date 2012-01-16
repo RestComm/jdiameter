@@ -113,13 +113,8 @@ class AvpImpl implements Avp {
     return rawData;
   }
 
-  public String getOctetString() throws AvpDataException {
-    try {
-      return parser.bytesToOctetString(rawData);
-    }
-    catch (Exception e) {
-      throw new AvpDataException(this);
-    }
+  public byte[] getOctetString() throws AvpDataException {
+    return rawData;
   }
 
   public String getUTF8String() throws AvpDataException {
@@ -151,7 +146,9 @@ class AvpImpl implements Avp {
 
   public long getUnsigned32() throws AvpDataException {
     try {
-      return parser.bytesToInt(rawData);
+      byte[] u32ext = new byte[8];
+      System.arraycopy(rawData, 0, u32ext, 4, 4);
+      return parser.bytesToLong(u32ext);
     }
     catch (Exception e) {
       throw new AvpDataException(this);
@@ -204,12 +201,17 @@ class AvpImpl implements Avp {
   }
 
   public String getDiameterIdentity() throws AvpDataException {
-    return getOctetString();
+    try {
+      return parser.bytesToOctetString(rawData);
+    }
+    catch (Exception e) {
+      throw new AvpDataException(this);
+    }
   }
 
   public URI getDiameterURI() throws AvpDataException {
     try {
-      return new URI(getOctetString());
+      return new URI(parser.bytesToOctetString(rawData));
     }
     catch (URISyntaxException e) {
       throw new AvpDataException(e, this);

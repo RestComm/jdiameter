@@ -2282,7 +2282,7 @@ public interface Avp extends Wrapper, Serializable {
    * @throws AvpDataException
    *           if data has incorrect format
    */
-  String getOctetString() throws AvpDataException;
+  byte[] getOctetString() throws AvpDataException;
 
   /**
    * @return data as an integer
