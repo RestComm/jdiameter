@@ -831,7 +831,7 @@ public class TestingFramework
           else if(avpRep.getType().equals("Float32"))
             value = String.valueOf(avp.getFloat32());
           else
-            value = avp.getOctetString();
+            value = avp.getUTF8String();
           
           log(prefix + "<avp name=\"" + avpRep.getName() + "\" code=\"" + avp.getCode() + "\" vendor=\"" + avp.getVendorId() + "\" value=\"" + value + "\" />");
         }

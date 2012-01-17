@@ -85,7 +85,7 @@ public class Utils {
         else if (avpRep.getType().equals("Float32"))
           value = String.valueOf(avp.getFloat32());
         else
-          value = avp.getOctetString();
+          value = avp.getUTF8String();
 
         log.info(prefix + "<avp name=\"" + avpRep.getName() + "\" code=\"" + avp.getCode() + "\" vendor=\"" + avp.getVendorId() + "\" value=\"" + value + "\" />");
       }
