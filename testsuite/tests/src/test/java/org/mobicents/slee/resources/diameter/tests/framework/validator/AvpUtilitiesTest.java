@@ -1,3 +1,25 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2011, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package org.mobicents.slee.resources.diameter.tests.framework.validator;
 
 import static org.jdiameter.client.impl.helpers.Parameters.*;
@@ -17,7 +39,6 @@ import net.java.slee.resource.diameter.base.events.avp.DiameterAvpType;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Mode;
-import org.jdiameter.api.RouteException;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.Stack;
 import org.jdiameter.api.validation.Dictionary;
@@ -33,8 +54,6 @@ import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.base.events.avp.DiameterAvpImpl;
 
 /**
- * Start time:14:15:19 2009-05-27<br>
- * Project: diameter-parent<br>
  * 
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
@@ -57,17 +76,14 @@ public class AvpUtilitiesTest {
   private static Stack stack = null;
   private static Stack serverStack = null;
   private final static String validatorOnFile = "dictionary.xml";
-  private final static String validatorOffFile = "validatorOff.xml";
+  //private final static String validatorOffFile = "validatorOff.xml";
 
   static {
     stack = new org.jdiameter.client.impl.StackImpl();
     serverStack = new org.jdiameter.client.impl.StackImpl();
     InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(validatorOnFile);
     try {
-
-    	
-    	
-      MyConfigurationClient clientConf= new MyConfigurationClient();
+      MyConfigurationClient clientConf = new MyConfigurationClient();
       MyConfigurationServer serverConf = new MyConfigurationServer();
 
       System.out.println("[SERVER] Configured. Starting ...");
@@ -78,24 +94,23 @@ public class AvpUtilitiesTest {
 
       System.out.println("[CLIENT] Configured. Starting ...");
       stack.init(clientConf);
-      //conf dict, after stack.
+      // conf dict, after stack.
       DictionarySingleton.getDictionary().configure(is);
       stack.start(Mode.ANY_PEER, 5000, TimeUnit.MILLISECONDS);
       System.out.println("[CLIENT] Started");
     }
     catch (Exception e) {
       throw new RuntimeException("Failed to initialize the stack.", e);
-    }finally
-    {
-    	if(is!=null)
-    	{
-    		try{
-    			is.close();
-    		}catch(Exception e)
-    		{
-    			e.printStackTrace();
-    		}
-    	}
+    }
+    finally {
+      if (is != null) {
+        try {
+          is.close();
+        }
+        catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
     }
 
     baseFactory = new DiameterMessageFactoryImpl(stack);
@@ -119,12 +134,12 @@ public class AvpUtilitiesTest {
     this.instance = null;
   }
 
+  /* ammendonca: removal allowed is gone...
   @Test
   public void testOperationsAddWithValidatorOnAndRemovalAllowed() {
-    AvpUtilities.allowRemove(true);
     instance.configure(this.getClass().getClassLoader().getResourceAsStream(validatorOnFile));
     instance.setEnabled(true);
-    
+
     // It has session id
     AccountingRequestImpl request = (AccountingRequestImpl) baseFactory.createAccountingRequest();
 
@@ -138,7 +153,7 @@ public class AvpUtilitiesTest {
     // <avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1"/>
     AvpUtilities.setAvpAsOctetString(request.getGenericData(), 283, request.getGenericData().getAvps(), realmName);
     // <avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1"/>
-    //AvpUtilities.setAvpAsOctetString(request.getGenericData(), 293, request.getGenericData().getAvps(), serverURI);
+    // AvpUtilities.setAvpAsOctetString(request.getGenericData(), 293, request.getGenericData().getAvps(), serverURI);
     AvpUtilities.setAvpAsOctetString(request.getGenericData(), 293, request.getGenericData().getAvps(), serverHost);
     // <avp name="Accounting-Record-Type" code="480" vendor="0" multiplicity="1" index="-1"/>
     AvpUtilities.setAvpAsUnsigned32(request.getGenericData(), 480, request.getGenericData().getAvps(), 1);
@@ -156,24 +171,26 @@ public class AvpUtilitiesTest {
     }
     catch (org.jdiameter.api.validation.AvpNotAllowedException e) {
       if (e.getAvpCode() != 485 && e.getVendorId() != 0) {
-        fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (485:0), Received (" + e.getAvpCode() + ":" + e.getVendorId() + ").");
+        fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (485:0), Received (" + e.getAvpCode() + ":" + e.getVendorId()
+            + ").");
       }
     }
     catch (Exception e) {
       Throwable cause = e;
       boolean wasAvpNotAllowed = false;
 
-      while((cause = cause.getCause()) != null) {
-        if(cause instanceof org.jdiameter.api.validation.AvpNotAllowedException) {
+      while ((cause = cause.getCause()) != null) {
+        if (cause instanceof org.jdiameter.api.validation.AvpNotAllowedException) {
           wasAvpNotAllowed = true;
-          org.jdiameter.api.validation.AvpNotAllowedException exc = (org.jdiameter.api.validation.AvpNotAllowedException)cause;
+          org.jdiameter.api.validation.AvpNotAllowedException exc = (org.jdiameter.api.validation.AvpNotAllowedException) cause;
           if (exc.getAvpCode() != 485 && exc.getVendorId() != 0) {
-            fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (485:0), Received (" + exc.getAvpCode() + ":" + exc.getVendorId() + ").");
+            fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (485:0), Received (" + exc.getAvpCode() + ":"
+                + exc.getVendorId() + ").");
           }
         }
       }
 
-      if(!wasAvpNotAllowed) {
+      if (!wasAvpNotAllowed) {
         fail("Message failed to be sent for wrong reason. Expected AvpNotAllowedException, Received " + e);
       }
     }
@@ -212,7 +229,8 @@ public class AvpUtilitiesTest {
     }
     catch (AvpNotAllowedException e) {
       if (e.getAvpCode() != 258 && e.getVendorId() != 0) {
-        fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (258:0), Received (" + e.getAvpCode() + ":" + e.getVendorId() + ").");
+        fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (258:0), Received (" + e.getAvpCode() + ":" + e.getVendorId()
+            + ").");
       }
     }
     catch (Exception e) {
@@ -255,25 +273,27 @@ public class AvpUtilitiesTest {
     expectedAvps.put(a, a);
     testPresentAvps(request.getGenericData().getAvps(), expectedAvps);
   }
+   */
 
   @Test
   public void testOperationsAddWithValidatorOnAndRemovalNotAllowed() {
-    AvpUtilities.allowRemove(false);
 
     instance.configure(this.getClass().getClassLoader().getResourceAsStream(validatorOnFile));
     instance.setEnabled(true);
-    
+
     // It has session id
-    AccountingRequestImpl request = (AccountingRequestImpl) baseFactory.createAccountingRequest(new DiameterAvpImpl[]{new DiameterAvpImpl(263, 0L, 0, 1, "xxx".getBytes(), DiameterAvpType.UTF8_STRING)});
+    AccountingRequestImpl request = (AccountingRequestImpl) baseFactory.createAccountingRequest(new DiameterAvpImpl[] { new DiameterAvpImpl(263, 0L, 0, 1,
+        "xxx".getBytes(), DiameterAvpType.UTF8_STRING) });
 
     // <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0"/>
     try {
       AvpUtilities.setAvpAsUTF8String(request.getGenericData(), 263, request.getGenericData().getAvps(), "1346ferg5y");
-      fail("Session-Id can not be set twice (AVP Allow Remove is OFF).");
+      fail("Session-Id can not be set twice.");
     }
     catch (AvpNotAllowedException e) {
       if (e.getAvpCode() != 258 && e.getVendorId() != 0) {
-        fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (258:0), Received (" + e.getAvpCode() + ":" + e.getVendorId() + ").");
+        fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (258:0), Received (" + e.getAvpCode() + ":" + e.getVendorId()
+            + ").");
       }
     }
     catch (Exception e) {
@@ -281,10 +301,10 @@ public class AvpUtilitiesTest {
     }
 
     // <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1"/>
-    if(!request.hasOriginHost())
+    if (!request.hasOriginHost())
       AvpUtilities.setAvpAsOctetString(request.getGenericData(), 264, request.getGenericData().getAvps(), clientURI);
     // <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1"/>
-    if(!request.hasOriginRealm())
+    if (!request.hasOriginRealm())
       AvpUtilities.setAvpAsOctetString(request.getGenericData(), 296, request.getGenericData().getAvps(), realmName);
     // <avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1"/>
     AvpUtilities.setAvpAsOctetString(request.getGenericData(), 293, request.getGenericData().getAvps(), serverURI);
@@ -305,24 +325,26 @@ public class AvpUtilitiesTest {
     }
     catch (org.jdiameter.api.validation.AvpNotAllowedException e) {
       if (e.getAvpCode() != 485 && e.getVendorId() != 0) {
-        fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (485:0), Received (" + e.getAvpCode() + ":" + e.getVendorId() + ").");
+        fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (485:0), Received (" + e.getAvpCode() + ":" + e.getVendorId()
+            + ").");
       }
     }
     catch (Exception e) {
       Throwable cause = e;
       boolean wasAvpNotAllowed = false;
 
-      while((cause = cause.getCause()) != null) {
-        if(cause instanceof org.jdiameter.api.validation.AvpNotAllowedException) {
+      while ((cause = cause.getCause()) != null) {
+        if (cause instanceof org.jdiameter.api.validation.AvpNotAllowedException) {
           wasAvpNotAllowed = true;
-          org.jdiameter.api.validation.AvpNotAllowedException exc = (org.jdiameter.api.validation.AvpNotAllowedException)cause;
+          org.jdiameter.api.validation.AvpNotAllowedException exc = (org.jdiameter.api.validation.AvpNotAllowedException) cause;
           if (exc.getAvpCode() != 485 && exc.getVendorId() != 0) {
-            fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (485:0), Received (" + exc.getAvpCode() + ":" + exc.getVendorId() + ").");
+            fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (485:0), Received (" + exc.getAvpCode() + ":"
+                + exc.getVendorId() + ").");
           }
         }
       }
 
-      if(!wasAvpNotAllowed) {
+      if (!wasAvpNotAllowed) {
         fail("Message failed to be sent for wrong reason. Expected AvpNotAllowedException, Received " + e);
       }
     }
@@ -345,7 +367,8 @@ public class AvpUtilitiesTest {
     }
     catch (AvpNotAllowedException e) {
       if (e.getAvpCode() != 259 && e.getVendorId() != 0) {
-        fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (259:0), Received (" + e.getAvpCode() + ":" + e.getVendorId() + ").");
+        fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (259:0), Received (" + e.getAvpCode() + ":" + e.getVendorId()
+            + ").");
       }
     }
 
@@ -369,7 +392,8 @@ public class AvpUtilitiesTest {
     }
     catch (AvpNotAllowedException e) {
       if (e.getAvpCode() != 258 && e.getVendorId() != 0) {
-        fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (258:0), Received (" + e.getAvpCode() + ":" + e.getVendorId() + ").");
+        fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (258:0), Received (" + e.getAvpCode() + ":" + e.getVendorId()
+            + ").");
       }
     }
     catch (Exception e) {
@@ -414,13 +438,14 @@ public class AvpUtilitiesTest {
     testPresentAvps(request.getGenericData().getAvps(), expectedAvps);
   }
 
+  /* ammendonca: removal allowed is gone...
   @Test
   public void testOperationsAddWithValidatorOffAndRemovalAllowed() {
-    AvpUtilities.allowRemove(true);
     instance.configure(this.getClass().getClassLoader().getResourceAsStream(validatorOffFile));
     instance.setEnabled(false);
     // It has session id
-    AccountingRequestImpl request = (AccountingRequestImpl) baseFactory.createAccountingRequest(new DiameterAvpImpl[]{new DiameterAvpImpl(263, 0L, 0, 1, "xxx".getBytes(), DiameterAvpType.UTF8_STRING)});
+    AccountingRequestImpl request = (AccountingRequestImpl) baseFactory.createAccountingRequest(new DiameterAvpImpl[] { new DiameterAvpImpl(263, 0L, 0, 1,
+        "xxx".getBytes(), DiameterAvpType.UTF8_STRING) });
 
     // <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0"/>
     AvpUtilities.setAvpAsUTF8String(request.getGenericData(), 263, request.getGenericData().getAvps(), "1346ferg5y");
@@ -432,7 +457,7 @@ public class AvpUtilitiesTest {
     // <avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1"/>
     // We don't add this one, make it fail
     // <avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
-    //AvpUtilities.setAvpAsOctetString(request.getGenericData(), 293, request.getGenericData().getAvps(), serverURI);
+    // AvpUtilities.setAvpAsOctetString(request.getGenericData(), 293, request.getGenericData().getAvps(), serverURI);
     AvpUtilities.setAvpAsOctetString(request.getGenericData(), 293, request.getGenericData().getAvps(), serverHost);
     // <avp name="Accounting-Record-Type" code="480" vendor="0" multiplicity="1" index="-1"/>
     AvpUtilities.setAvpAsUnsigned32(request.getGenericData(), 480, request.getGenericData().getAvps(), 1);
@@ -452,7 +477,7 @@ public class AvpUtilitiesTest {
       // We want to come here, since we lack Destination-Realm AVP (283).
     }
     catch (Exception e) {
-    	e.printStackTrace();
+      e.printStackTrace();
       fail("Message failed to be sent for wrong reason. Expected RouteException due to lack of Destination-Realm AVP (283), Received " + e);
     }
 
@@ -480,7 +505,8 @@ public class AvpUtilitiesTest {
     }
     catch (AvpNotAllowedException e) {
       if (e.getAvpCode() != 259 && e.getVendorId() != 0) {
-        fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (259:0), Received (" + e.getAvpCode() + ":" + e.getVendorId() + ").");
+        fail("Message Validation failed with wrong AVP Code/Vendor-Id in Exception. Expected (259:0), Received (" + e.getAvpCode() + ":" + e.getVendorId()
+            + ").");
       }
       else {
         fail("Wrong AVP not allowed to be added, with Validator in OFF state. It's smart, but not what we want.");
@@ -520,7 +546,7 @@ public class AvpUtilitiesTest {
     expectedAvps.put(a, a);
     a = new ExpectedAvp();
     a.code = 296;
-    //cause its legal in this case.
+    // cause its legal in this case.
     a.count = 3; // was 2 but request comes with one already...
     expectedAvps.put(a, a);
     a = new ExpectedAvp();
@@ -551,25 +577,26 @@ public class AvpUtilitiesTest {
 
     testPresentAvps(request.getGenericData().getAvps(), expectedAvps);
   }
+   */
 
   private void testPresentAvps(AvpSet set, Map<ExpectedAvp, ExpectedAvp> expected) {
-    for(ExpectedAvp e: expected.values()) {
-      AvpSet innerSet  = set.removeAvp(e.code);
-      if(innerSet.size() != e.count) {
-        fail("Wrong count of avps, code: "+e.code+", vendor:"+e.vendor+". Expected: "+e.count+", present: "+innerSet.size());
+    for (ExpectedAvp e : expected.values()) {
+      AvpSet innerSet = set.removeAvp(e.code);
+      if (innerSet.size() != e.count) {
+        fail("Wrong count of avps, code: " + e.code + ", vendor:" + e.vendor + ". Expected: " + e.count + ", present: " + innerSet.size());
       }
 
-      if(e.count>0) {
+      if (e.count > 0) {
         Avp avp = innerSet.getAvpByIndex(0);
-        if(avp.getVendorId() != e.vendor) {
-          fail("Wrong vendor of avp, code: "+e.code+". Expected: "+e.vendor+", present: "+avp.getVendorId());
+        if (avp.getVendorId() != e.vendor) {
+          fail("Wrong vendor of avp, code: " + e.code + ". Expected: " + e.vendor + ", present: " + avp.getVendorId());
         }
       }
     }
 
-    if(set.size() > 0) {
+    if (set.size() > 0) {
       StringBuffer buf = new StringBuffer();
-      for(Avp a: set) {
+      for (Avp a : set) {
         buf.append("Code[").append(a.getCode()).append("] Vendor[").append("], ");
       }
       fail("Wrong count of avps, removed all expected, left overs: " + set.size() + " -- " + buf.toString());
@@ -595,23 +622,22 @@ public class AvpUtilitiesTest {
       // Set Ericsson SDK feature
       // add(UseUriAsFqdn, true);
       // Set Common Applications
-      add(ApplicationId, 
+      add(ApplicationId,
           // AppId 1
           getInstance().add(VendorId, 0L).add(AuthApplId, 0L).add(AcctApplId, 3L));
       // Set peer table
-      add(PeerTable, 
+      add(PeerTable,
           // Peer 1
           getInstance().add(PeerRating, 1).add(PeerName, serverURI).add(PeerAttemptConnection, true));
       // Set realm table
-      add(RealmTable, 
-              // Realm 1
-              getInstance().add(RealmEntry, getInstance().
-                  add(RealmName, realmName).
-                  add(ApplicationId, getInstance().add(VendorId, 0L).add(AuthApplId, 0L).add(AcctApplId, 3L)).
-                  add(RealmHosts, clientHost + ", " + serverHost).
-                  add(RealmLocalAction, "LOCAL").
-                  add(RealmEntryIsDynamic, false).
-                  add(RealmEntryExpTime, 1000L)));
+      add(RealmTable,
+          // Realm 1
+          getInstance()
+          .add(
+              RealmEntry,
+              getInstance().add(RealmName, realmName).add(ApplicationId, getInstance().add(VendorId, 0L).add(AuthApplId, 0L).add(AcctApplId, 3L))
+              .add(RealmHosts, clientHost + ", " + serverHost).add(RealmLocalAction, "LOCAL").add(RealmEntryIsDynamic, false)
+              .add(RealmEntryExpTime, 1000L)));
     }
   }
 
@@ -629,26 +655,24 @@ public class AvpUtilitiesTest {
       // Set Ericsson SDK feature
       // add(UseUriAsFqdn, true);
       // Set Common Applications
-      add(ApplicationId, 
+      add(ApplicationId,
           // AppId 1
           getInstance().add(VendorId, 0L).add(AuthApplId, 0L).add(AcctApplId, 3L));
       // Set peer table
-      add(PeerTable, 
+      add(PeerTable,
           // Peer 1
           getInstance().add(PeerRating, 1).add(PeerAttemptConnection, false).add(PeerName, clientURI));
       // Set realm table
-      add(RealmTable, 
+      add(RealmTable,
           // Realm 1
-          getInstance().add(RealmEntry, getInstance().
-              add(RealmName, realmName).
-              add(ApplicationId, getInstance().add(VendorId, 0L).add(AuthApplId, 0L).add(AcctApplId, 3L)).
-              add(RealmHosts, clientHost + ", " + serverHost).
-              add(RealmLocalAction, "LOCAL").
-              add(RealmEntryIsDynamic, false).
-              add(RealmEntryExpTime, 1000L)));
+          getInstance()
+          .add(
+              RealmEntry,
+              getInstance().add(RealmName, realmName).add(ApplicationId, getInstance().add(VendorId, 0L).add(AuthApplId, 0L).add(AcctApplId, 3L))
+              .add(RealmHosts, clientHost + ", " + serverHost).add(RealmLocalAction, "LOCAL").add(RealmEntryIsDynamic, false)
+              .add(RealmEntryExpTime, 1000L)));
     }
   }
-
 
 }
 
@@ -665,7 +689,6 @@ class ExpectedAvp {
     result = prime * result + (int) (vendor ^ (vendor >>> 32));
     return result;
   }
-
 
   @Override
   public boolean equals(Object obj) {
