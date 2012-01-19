@@ -176,7 +176,7 @@ public class GqFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(aar, GqAARequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }  
 
   @Test
@@ -213,7 +213,7 @@ public class GqFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(aaa, GqAAAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }  
 
   @Test
@@ -254,7 +254,7 @@ public class GqFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(asr, GqAbortSessionRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }  
 
   @Test
@@ -291,7 +291,7 @@ public class GqFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(asa, GqAbortSessionAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }  
 
   @Test
@@ -326,7 +326,7 @@ public class GqFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(rar, GqReAuthRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }  
 
   @Test
@@ -363,7 +363,7 @@ public class GqFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(raa, GqReAuthAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }  
 
   @Test
@@ -398,7 +398,7 @@ public class GqFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(str, GqSessionTerminationRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }  
 
   @Test
@@ -435,7 +435,7 @@ public class GqFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(sta, GqSessionTerminationAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }  
 
   @Test

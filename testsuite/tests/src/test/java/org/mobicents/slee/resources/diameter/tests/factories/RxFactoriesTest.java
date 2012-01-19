@@ -42,7 +42,6 @@ import static org.jdiameter.server.impl.helpers.Parameters.RealmLocalAction;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmName;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.IPFilterRule;
-import net.java.slee.resource.diameter.gq.events.avp.MediaComponentDescription;
 import net.java.slee.resource.diameter.rx.RxAvpFactory;
 import net.java.slee.resource.diameter.rx.RxMessageFactory;
 import net.java.slee.resource.diameter.rx.events.*;
@@ -75,7 +74,6 @@ import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.rx.RxAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.rx.RxMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.rx.RxServerSessionActivityImpl;
-import org.mobicents.slee.resources.diameter.tests.base.avp.IPFilterRulePassTest;
 
 /**
  * Test class for JAIN SLEE Diameter Rx' RA Message and AVP Factories
@@ -164,7 +162,7 @@ public class RxFactoriesTest {
 //    AARequest aar = rxMessageFactory.createAARequest();
 //    int nFailures = AvpAssistant.testMethods(aar, AARequest.class);
 //
-//    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+//    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
 //  }  
 //
   @Test
@@ -202,7 +200,7 @@ public class RxFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(aaa, AAAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }  
 
   @Test
@@ -246,7 +244,7 @@ public class RxFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(asr, AbortSessionRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }  
 
   @Test
@@ -283,7 +281,7 @@ public class RxFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(asa, AbortSessionAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }  
 
   @Test
@@ -318,7 +316,7 @@ public class RxFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(rar, ReAuthRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }  
 
   @Test
@@ -355,7 +353,7 @@ public class RxFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(raa, ReAuthAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }  
 
   @Test
@@ -390,7 +388,7 @@ public class RxFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(str, SessionTerminationRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }  
 
   @Test
@@ -427,7 +425,7 @@ public class RxFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(sta, SessionTerminationAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }  
 
   @Test

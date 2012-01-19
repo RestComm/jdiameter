@@ -196,7 +196,7 @@ public class RfFactoriesTest implements DiameterRAInterface {
 
     int nFailures = AvpAssistant.testMethods(acr, RfAccountingRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -233,7 +233,7 @@ public class RfFactoriesTest implements DiameterRAInterface {
 
     int nFailures = AvpAssistant.testMethods(aca, RfAccountingAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test

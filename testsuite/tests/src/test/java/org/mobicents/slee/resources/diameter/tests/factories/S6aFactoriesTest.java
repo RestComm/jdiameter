@@ -172,7 +172,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(ulr, UpdateLocationRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -192,7 +192,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(ula, UpdateLocationAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -248,7 +248,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(air, AuthenticationInformationRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -268,7 +268,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(aia, AuthenticationInformationAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -324,7 +324,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(clr, CancelLocationRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -344,7 +344,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(cla, CancelLocationAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -400,7 +400,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(idr, InsertSubscriberDataRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -420,7 +420,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(ida, InsertSubscriberDataAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -476,7 +476,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(dsr, DeleteSubscriberDataRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -496,7 +496,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(dsa, DeleteSubscriberDataAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -552,7 +552,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(pur, PurgeUERequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -572,7 +572,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(pua, PurgeUEAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -628,7 +628,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(rsr, ResetRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -648,7 +648,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(rsa, ResetAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -704,7 +704,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(nor, NotifyRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -724,7 +724,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(noa, NotifyAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -767,7 +767,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, ActiveAPNAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -776,7 +776,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, AMBRAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -785,7 +785,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, APNConfigurationAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -794,7 +794,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, APNConfigurationProfileAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -803,7 +803,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, AllocationRetentionPriorityAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -812,7 +812,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, AuthenticationInfoAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -821,7 +821,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, EPSLocationInformationAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -830,7 +830,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, EPSSubscribedQoSProfileAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -839,7 +839,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, EPSUserStateAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -848,7 +848,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, EUTRANVectorAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -857,7 +857,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, MIP6AgentInfoAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -866,7 +866,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, MIPHomeAgentHostAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -875,7 +875,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, MMELocationInformationAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -884,7 +884,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, MMEUserStateAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -893,7 +893,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, RequestedEUTRANAuthenticationInfoAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -902,7 +902,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, RequestedUTRANGERANAuthenticationInfoAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -911,7 +911,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, SGSNLocationInformationAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -920,7 +920,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, SGSNUserStateAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -929,7 +929,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, SpecificAPNInfoAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -938,7 +938,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, SubscriptionDataAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -947,7 +947,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, SupportedFeaturesAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -956,7 +956,7 @@ public class S6aFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(avp, TerminalInformationAvpImpl.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
 }

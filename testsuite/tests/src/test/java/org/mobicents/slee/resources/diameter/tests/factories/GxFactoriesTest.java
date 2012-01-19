@@ -167,7 +167,7 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
 
     int nFailures = AvpAssistant.testMethods(ccr, GxCreditControlRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }  
 
   @Test
@@ -210,7 +210,7 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
 
     int nFailures = AvpAssistant.testMethods(cca, GxCreditControlAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }  
 
   @Test
@@ -250,7 +250,7 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
 
     int nFailures = AvpAssistant.testMethods(rar, GxReAuthRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }  
 
   @Test
@@ -285,7 +285,7 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
 
     int nFailures = AvpAssistant.testMethods(raa, GxReAuthAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }  
 
   @Test

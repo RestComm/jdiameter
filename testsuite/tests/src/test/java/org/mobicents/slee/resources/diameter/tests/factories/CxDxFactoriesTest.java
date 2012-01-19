@@ -133,7 +133,7 @@ public class CxDxFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(lir, LocationInfoRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -151,7 +151,7 @@ public class CxDxFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(lia, LocationInfoAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -204,7 +204,7 @@ public class CxDxFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(mar, MultimediaAuthenticationRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -222,7 +222,7 @@ public class CxDxFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(maa, MultimediaAuthenticationAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -269,7 +269,7 @@ public class CxDxFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(ppr, PushProfileRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -290,7 +290,7 @@ public class CxDxFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(rtr, RegistrationTerminationRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -308,7 +308,7 @@ public class CxDxFactoriesTest {
     
     int nFailures = AvpAssistant.testMethods(rta, RegistrationTerminationAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -361,7 +361,7 @@ public class CxDxFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(sar, ServerAssignmentRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -379,7 +379,7 @@ public class CxDxFactoriesTest {
     
     int nFailures = AvpAssistant.testMethods(saa, ServerAssignmentAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -432,7 +432,7 @@ public class CxDxFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(uar, UserAuthorizationRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -450,7 +450,7 @@ public class CxDxFactoriesTest {
     
     int nFailures = AvpAssistant.testMethods(uaa, UserAuthorizationAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test

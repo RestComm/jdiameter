@@ -119,7 +119,7 @@ public class ShClientFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(pur, ProfileUpdateRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -148,7 +148,7 @@ public class ShClientFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(pna, PushNotificationAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -197,7 +197,7 @@ public class ShClientFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(snr, SubscribeNotificationsRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -218,7 +218,7 @@ public class ShClientFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(udr, UserDataRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test

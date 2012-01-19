@@ -128,7 +128,7 @@ public class BaseFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(asr, AbortSessionRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -157,7 +157,7 @@ public class BaseFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(asa, AbortSessionAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -190,7 +190,7 @@ public class BaseFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(acr, AccountingRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -221,7 +221,7 @@ public class BaseFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(aca, AccountingAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -254,7 +254,7 @@ public class BaseFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(cer, CapabilitiesExchangeRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -283,7 +283,7 @@ public class BaseFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(cea, CapabilitiesExchangeAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -316,7 +316,7 @@ public class BaseFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(dwr, DeviceWatchdogRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -345,7 +345,7 @@ public class BaseFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(dwa, DeviceWatchdogAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -378,7 +378,7 @@ public class BaseFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(dpr, DisconnectPeerRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -407,7 +407,7 @@ public class BaseFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(dpa, DisconnectPeerAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -440,7 +440,7 @@ public class BaseFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(rar, ReAuthRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -469,7 +469,7 @@ public class BaseFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(raa, ReAuthAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -502,7 +502,7 @@ public class BaseFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(str, SessionTerminationRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -531,7 +531,7 @@ public class BaseFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(str, SessionTerminationAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test

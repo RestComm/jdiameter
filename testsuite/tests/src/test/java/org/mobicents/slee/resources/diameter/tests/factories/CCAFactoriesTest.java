@@ -142,7 +142,7 @@ public class CCAFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(ccr, CreditControlRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -172,7 +172,7 @@ public class CCAFactoriesTest {
 
     int nFailures = AvpAssistant.testMethods(cca, CreditControlAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test

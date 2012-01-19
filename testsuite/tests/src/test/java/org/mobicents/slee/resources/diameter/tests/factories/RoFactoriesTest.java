@@ -162,7 +162,7 @@ public class RoFactoriesTest implements IRoMessageFactory, ServerRoSessionListen
 
     int nFailures = AvpAssistant.testMethods(ccr, RoCreditControlRequest.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
@@ -199,7 +199,7 @@ public class RoFactoriesTest implements IRoMessageFactory, ServerRoSessionListen
 
     int nFailures = AvpAssistant.testMethods(cca, RoCreditControlAnswer.class);
 
-    assertTrue("Some methods have failed. See logs for more details.", nFailures == 0);
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
   @Test
