@@ -21,7 +21,7 @@
 	</modules>
 
 	<properties>
-		<jdiameter.version>1.5.7.0-build510-SNAPSHOT</jdiameter.version>
+		<jdiameter.version>1.5.8.0-build519</jdiameter.version>
 		<mobicents.cluster.version>1.13</mobicents.cluster.version>
 	</properties>
 
