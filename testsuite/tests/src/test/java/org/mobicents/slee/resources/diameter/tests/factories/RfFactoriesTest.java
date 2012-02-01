@@ -228,6 +228,18 @@ public class RfFactoriesTest implements DiameterRAInterface {
   }
 
   @Test
+  public void hasTFlagSetACA() throws Exception {
+    RfAccountingRequest acr = rfMessageFactory.createRfAccountingRequest(AccountingRecordType.EVENT_RECORD);
+    acr.setAccountingRecordNumber(5L); // needed ...
+    ((DiameterMessageImpl) acr).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Accounting-Request", acr.getHeader().isPotentiallyRetransmitted());
+
+    RfAccountingAnswer aca = rfServerSession.createRfAccountingAnswer(acr);
+    assertFalse("The 'T' flag should not be set in Accounting-Answer", aca.getHeader().isPotentiallyRetransmitted());
+  }
+
+  @Test
   public void testGettersAndSettersACA() throws Exception {
     RfAccountingAnswer aca = rfServerSession.createRfAccountingAnswer();
 
@@ -1503,11 +1515,11 @@ public class RfFactoriesTest implements DiameterRAInterface {
       // add(UseUriAsFqdn, true);
       // Set Common Applications
       add(org.jdiameter.client.impl.helpers.Parameters.ApplicationId,
-      // AppId 1
+          // AppId 1
           getInstance().add(VendorId, 0L).add(AuthApplId, 0L).add(AcctApplId, 3L));
       // Set peer table
       add(PeerTable,
-      // Peer 1
+          // Peer 1
           getInstance().add(PeerRating, 1).add(PeerName, serverURI));
       // Set realm table
       add(RealmTable,
