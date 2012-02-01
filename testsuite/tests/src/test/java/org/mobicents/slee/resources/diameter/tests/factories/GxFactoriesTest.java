@@ -205,6 +205,18 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
   }
 
   @Test
+  public void hasTFlagSetCCA() throws Exception {
+    GxCreditControlRequest ccr = gxMessageFactory.createGxCreditControlRequest();
+    ((DiameterMessageImpl) ccr).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Credit-Control-Request", ccr.getHeader().isPotentiallyRetransmitted());
+
+    ((GxServerSessionActivityImpl)gxServerSession).fetchCurrentState(ccr);
+    GxCreditControlAnswer cca = gxServerSession.createGxCreditControlAnswer();
+    assertFalse("The 'T' flag should not be set in Credit-Control-Answer", cca.getHeader().isPotentiallyRetransmitted());
+  }
+
+  @Test
   public void testGettersAndSettersCCA() throws Exception {
     GxCreditControlAnswer cca = gxServerSession.createGxCreditControlAnswer();
 
@@ -277,6 +289,17 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
 
     raa = gxClientSession.createGxReAuthAnswer(rar);
     assertEquals("The 'P' bit is not copied from request in Re-Auth-Answer, it should. [RFC3588/6.2]", rar.getHeader().isProxiable(), raa.getHeader().isProxiable());
+  }
+
+  @Test
+  public void hasTFlagSetRAA() throws Exception {
+    GxReAuthRequest rar = gxMessageFactory.createGxReAuthRequest();
+    ((DiameterMessageImpl) rar).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Re-Auth-Request", rar.getHeader().isPotentiallyRetransmitted());
+
+    GxReAuthAnswer raa = gxClientSession.createGxReAuthAnswer(rar);
+    assertFalse("The 'T' flag should not be set in Re-Auth-Answer", raa.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
