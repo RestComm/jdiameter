@@ -230,6 +230,18 @@ public class S6aFactoriesTest {
   }
 
   @Test
+  public void hasTFlagSetULA() throws Exception {
+    UpdateLocationRequest ulr = s6aMessageFactory.createUpdateLocationRequest();
+    ((DiameterMessageImpl) ulr).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Update-Location-Request", ulr.getHeader().isPotentiallyRetransmitted());
+
+    serverSession.fetchSessionData(ulr);
+    UpdateLocationAnswer ula = serverSession.createUpdateLocationAnswer();
+    assertFalse("The 'T' flag should not be set in Update-Location-Answer", ula.getHeader().isPotentiallyRetransmitted());
+  }
+
+  @Test
   public void isRequestAIR() throws Exception {
     AuthenticationInformationRequest air = s6aMessageFactory.createAuthenticationInformationRequest();
 
@@ -303,6 +315,18 @@ public class S6aFactoriesTest {
 
     aia = serverSession.createAuthenticationInformationAnswer();
     assertEquals("The 'P' bit is not copied from request in Authentication-Information-Answer, it should. [RFC3588/6.2]", air.getHeader().isProxiable(), aia.getHeader().isProxiable());
+  }
+
+  @Test
+  public void hasTFlagSetAIA() throws Exception {
+    AuthenticationInformationRequest air = s6aMessageFactory.createAuthenticationInformationRequest();
+    ((DiameterMessageImpl) air).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Authentication-Information-Request", air.getHeader().isPotentiallyRetransmitted());
+
+    serverSession.fetchSessionData(air);
+    AuthenticationInformationAnswer aia = serverSession.createAuthenticationInformationAnswer();
+    assertFalse("The 'T' flag should not be set in Authentication-Information-Answer", aia.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -382,6 +406,18 @@ public class S6aFactoriesTest {
   }
 
   @Test
+  public void hasTFlagSetCLA() throws Exception {
+    CancelLocationRequest clr = s6aMessageFactory.createCancelLocationRequest();
+    ((DiameterMessageImpl) clr).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Cancel-Location-Request", clr.getHeader().isPotentiallyRetransmitted());
+
+    clientSession.fetchSessionData(clr);
+    CancelLocationAnswer cla = clientSession.createCancelLocationAnswer();
+    assertFalse("The 'T' flag should not be set in Cancel-Location-Answer", cla.getHeader().isPotentiallyRetransmitted());
+  }
+
+  @Test
   public void isRequestIDR() throws Exception {
     InsertSubscriberDataRequest idr = s6aMessageFactory.createInsertSubscriberDataRequest();
 
@@ -455,6 +491,18 @@ public class S6aFactoriesTest {
 
     ida = clientSession.createInsertSubscriberDataAnswer();
     assertEquals("The 'P' bit is not copied from request in Insert-Subscriber-Data-Answer, it should. [RFC3588/6.2]", idr.getHeader().isProxiable(), ida.getHeader().isProxiable());
+  }
+
+  @Test
+  public void hasTFlagSetIDA() throws Exception {
+    InsertSubscriberDataRequest idr = s6aMessageFactory.createInsertSubscriberDataRequest();
+    ((DiameterMessageImpl) idr).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Insert-Subscriber-Data-Request", idr.getHeader().isPotentiallyRetransmitted());
+
+    clientSession.fetchSessionData(idr);
+    InsertSubscriberDataAnswer ida = clientSession.createInsertSubscriberDataAnswer();
+    assertFalse("The 'T' flag should not be set in Insert-Subscriber-Data-Answer", ida.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -534,6 +582,18 @@ public class S6aFactoriesTest {
   }
 
   @Test
+  public void hasTFlagSetDSA() throws Exception {
+    DeleteSubscriberDataRequest dsr = s6aMessageFactory.createDeleteSubscriberDataRequest();
+    ((DiameterMessageImpl) dsr).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Delete-Subscriber-Data-Request", dsr.getHeader().isPotentiallyRetransmitted());
+
+    clientSession.fetchSessionData(dsr);
+    DeleteSubscriberDataAnswer dsa = clientSession.createDeleteSubscriberDataAnswer();
+    assertFalse("The 'T' flag should not be set in Delete-Subscriber-Data-Answer", dsa.getHeader().isPotentiallyRetransmitted());
+  }
+
+  @Test
   public void isRequestPUR() throws Exception {
     PurgeUERequest pur = s6aMessageFactory.createPurgeUERequest();
 
@@ -607,6 +667,18 @@ public class S6aFactoriesTest {
 
     pua = serverSession.createPurgeUEAnswer();
     assertEquals("The 'P' bit is not copied from request in Purge-UE-Answer, it should. [RFC3588/6.2]", pur.getHeader().isProxiable(), pua.getHeader().isProxiable());
+  }
+
+  @Test
+  public void hasTFlagSetPUA() throws Exception {
+    PurgeUERequest pur = s6aMessageFactory.createPurgeUERequest();
+    ((DiameterMessageImpl) pur).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Purge-UE-Request", pur.getHeader().isPotentiallyRetransmitted());
+
+    serverSession.fetchSessionData(pur);
+    PurgeUEAnswer pua = serverSession.createPurgeUEAnswer();
+    assertFalse("The 'T' flag should not be set in Purge-UE-Answer", pua.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -686,6 +758,18 @@ public class S6aFactoriesTest {
   }
 
   @Test
+  public void hasTFlagSetRSA() throws Exception {
+    ResetRequest rsr = s6aMessageFactory.createResetRequest();
+    ((DiameterMessageImpl) rsr).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Reset-Request", rsr.getHeader().isPotentiallyRetransmitted());
+
+    clientSession.fetchSessionData(rsr);
+    ResetAnswer rsa = clientSession.createResetAnswer();
+    assertFalse("The 'T' flag should not be set in Reset-Answer", rsa.getHeader().isPotentiallyRetransmitted());
+  }
+
+  @Test
   public void isRequestNOR() throws Exception {
     NotifyRequest nor = s6aMessageFactory.createNotifyRequest();
 
@@ -759,6 +843,18 @@ public class S6aFactoriesTest {
 
     noa = serverSession.createNotifyAnswer();
     assertEquals("The 'P' bit is not copied from request in Notify-Answer, it should. [RFC3588/6.2]", nor.getHeader().isProxiable(), noa.getHeader().isProxiable());
+  }
+
+  @Test
+  public void hasTFlagSetNOA() throws Exception {
+    NotifyRequest nor = s6aMessageFactory.createNotifyRequest();
+    ((DiameterMessageImpl) nor).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Notify-Request", nor.getHeader().isPotentiallyRetransmitted());
+
+    serverSession.fetchSessionData(nor);
+    NotifyAnswer noa = serverSession.createNotifyAnswer();
+    assertFalse("The 'T' flag should not be set in Notify-Answer", noa.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
