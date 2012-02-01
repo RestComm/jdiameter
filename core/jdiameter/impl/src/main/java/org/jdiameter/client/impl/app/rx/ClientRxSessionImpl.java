@@ -46,16 +46,16 @@ import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
-import org.jdiameter.api.auth.events.AbortSessionAnswer;
-import org.jdiameter.api.auth.events.AbortSessionRequest;
-import org.jdiameter.api.auth.events.ReAuthAnswer;
-import org.jdiameter.api.auth.events.ReAuthRequest;
-import org.jdiameter.api.auth.events.SessionTermAnswer;
-import org.jdiameter.api.auth.events.SessionTermRequest;
 import org.jdiameter.api.rx.ClientRxSession;
 import org.jdiameter.api.rx.ClientRxSessionListener;
 import org.jdiameter.api.rx.events.RxAAAnswer;
 import org.jdiameter.api.rx.events.RxAARequest;
+import org.jdiameter.api.rx.events.RxAbortSessionAnswer;
+import org.jdiameter.api.rx.events.RxAbortSessionRequest;
+import org.jdiameter.api.rx.events.RxReAuthAnswer;
+import org.jdiameter.api.rx.events.RxReAuthRequest;
+import org.jdiameter.api.rx.events.RxSessionTermAnswer;
+import org.jdiameter.api.rx.events.RxSessionTermRequest;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.ISessionFactory;
@@ -168,7 +168,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
   }
 
 
-  public void sendSessionTermRequest(SessionTermRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void sendSessionTermRequest(RxSessionTermRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     try {
       this.handleEvent(new Event(true, request, null));
     }
@@ -177,11 +177,11 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
     }
   }
 
-  public void sendReAuthAnswer(ReAuthAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void sendReAuthAnswer(RxReAuthAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     this.handleEvent(new Event(Event.Type.SEND_RAA, null, answer));
   }
 
-  public void sendAbortSessionAnswer(AbortSessionAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void sendAbortSessionAnswer(RxAbortSessionAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     this.handleEvent(new Event(Event.Type.SEND_ASA, null, answer));
   }
 
@@ -353,7 +353,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
               eventQueue.add(localEvent);
               break;
             case RECEIVE_RAR:
-              deliverReAuthRequest((ReAuthRequest) localEvent.getRequest());
+              deliverReAuthRequest((RxReAuthRequest) localEvent.getRequest());
               break;
             case SEND_RAA:
               // Current State: PENDING_U
@@ -368,7 +368,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
               }
               break;
             case RECEIVE_ASR:
-              deliverAbortSessionRequest((AbortSessionRequest) localEvent.getRequest());
+              deliverAbortSessionRequest((RxAbortSessionRequest) localEvent.getRequest());
               break;
             case SEND_ASA:
               try {
@@ -398,7 +398,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
               else if (isProvisional(resultCode) || isFailure(resultCode)) {
                 handleFailureMessage((RxAAAnswer) STanswer, (RxAARequest) localEvent.getRequest(), eventType);
               }
-              deliverRxSessionTermAnswer((SessionTermRequest) localEvent.getRequest(), (SessionTermAnswer) localEvent.getAnswer());
+              deliverRxSessionTermAnswer((RxSessionTermRequest) localEvent.getRequest(), (RxSessionTermAnswer) localEvent.getAnswer());
               break;
             case SEND_AAR:
               try {
@@ -428,7 +428,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
               //                            //FIXME: Alex broke this, setting back "true" ?
               //                            setState(ClientRxSessionState.IDLE, false);
               //                            //setState(ClientRxSessionState.IDLE, true);
-              //                            deliverRxSessionTermAnswer((SessionTermRequest) localEvent.getRequest(), (SessionTermAnswer) localEvent.getAnswer());
+              //                            deliverRxSessionTermAnswer((RxSessionTermRequest) localEvent.getRequest(), (RxSessionTermAnswer) localEvent.getAnswer());
               //                            //setState(ClientRxSessionState.IDLE, true);
               //                            break;
             default:
@@ -468,7 +468,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
               }
               break;
             case RECEIVE_RAR:
-              deliverReAuthRequest((ReAuthRequest) localEvent.getRequest());
+              deliverReAuthRequest((RxReAuthRequest) localEvent.getRequest());
               break;
             case SEND_RAA:
               try {
@@ -479,7 +479,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
               }
               break;
             case RECEIVE_ASR:
-              deliverAbortSessionRequest((AbortSessionRequest) localEvent.getRequest());
+              deliverAbortSessionRequest((RxAbortSessionRequest) localEvent.getRequest());
               break;
             case SEND_ASA:
               try {
@@ -649,7 +649,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
     }
   }
 
-  protected void deliverRxSessionTermAnswer(SessionTermRequest request, SessionTermAnswer answer) {
+  protected void deliverRxSessionTermAnswer(RxSessionTermRequest request, RxSessionTermAnswer answer) {
     try {
       listener.doSessionTermAnswer(this, request, answer);
     }
@@ -658,7 +658,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
     }
   }
 
-  protected void deliverReAuthRequest(ReAuthRequest request) {
+  protected void deliverReAuthRequest(RxReAuthRequest request) {
     try {
       listener.doReAuthRequest(this, request);
     }
@@ -667,7 +667,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
     }
   }
 
-  protected void deliverAbortSessionRequest(AbortSessionRequest request) {
+  protected void deliverAbortSessionRequest(RxAbortSessionRequest request) {
     try {
       listener.doAbortSessionRequest(this, request);
     }
@@ -733,10 +733,10 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
     public void run() {
       try {
         switch (request.getCommandCode()) {
-          case ReAuthRequest.code:
+          case RxReAuthRequest.code:
             handleEvent(new Event(Event.Type.RECEIVE_RAR, factory.createReAuthRequest(request), null));
             break;
-          case AbortSessionRequest.code:
+          case RxAbortSessionRequest.code:
             handleEvent(new Event(Event.Type.RECEIVE_ASR, factory.createAbortSessionRequest(request), null));
             break;        
           default:
@@ -764,9 +764,9 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
             final RxAAAnswer myAAAnswer = factory.createAAAnswer(answer);
             handleEvent(new Event(false, myAARequest, myAAAnswer));
             break;
-          case SessionTermAnswer.code:
-            final SessionTermRequest mySTRequest = factory.createSessionTermRequest(request);
-            final SessionTermAnswer mySTAnswer = factory.createSessionTermAnswer(answer);
+          case RxSessionTermAnswer.code:
+            final RxSessionTermRequest mySTRequest = factory.createSessionTermRequest(request);
+            final RxSessionTermAnswer mySTAnswer = factory.createSessionTermAnswer(answer);
             handleEvent(new Event(false, mySTRequest, mySTAnswer));
             break;
           default:

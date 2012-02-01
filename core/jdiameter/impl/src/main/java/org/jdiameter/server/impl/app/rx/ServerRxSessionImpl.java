@@ -40,16 +40,16 @@ import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
-import org.jdiameter.api.auth.events.AbortSessionAnswer;
-import org.jdiameter.api.auth.events.AbortSessionRequest;
-import org.jdiameter.api.auth.events.ReAuthAnswer;
-import org.jdiameter.api.auth.events.ReAuthRequest;
-import org.jdiameter.api.auth.events.SessionTermAnswer;
-import org.jdiameter.api.auth.events.SessionTermRequest;
 import org.jdiameter.api.rx.ServerRxSession;
 import org.jdiameter.api.rx.ServerRxSessionListener;
 import org.jdiameter.api.rx.events.RxAAAnswer;
 import org.jdiameter.api.rx.events.RxAARequest;
+import org.jdiameter.api.rx.events.RxAbortSessionAnswer;
+import org.jdiameter.api.rx.events.RxAbortSessionRequest;
+import org.jdiameter.api.rx.events.RxReAuthAnswer;
+import org.jdiameter.api.rx.events.RxReAuthRequest;
+import org.jdiameter.api.rx.events.RxSessionTermAnswer;
+import org.jdiameter.api.rx.events.RxSessionTermRequest;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.rx.IRxMessageFactory;
@@ -109,15 +109,15 @@ public class ServerRxSessionImpl extends AppRxSessionImpl implements ServerRxSes
     handleEvent(new Event(false, null, answer));
   }
 
-  public void sendSessionTermAnswer(SessionTermAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void sendSessionTermAnswer(RxSessionTermAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     handleEvent(new Event(false, null, answer));
   }
 
-  public void sendReAuthRequest(ReAuthRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void sendReAuthRequest(RxReAuthRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_RAR, request, null);
   }
 
-  public void sendAbortSessionRequest(AbortSessionRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void sendAbortSessionRequest(RxAbortSessionRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_ASR, request, null);
   }
 
@@ -225,10 +225,10 @@ public class ServerRxSessionImpl extends AppRxSessionImpl implements ServerRxSes
               dispatchEvent(localEvent.getAnswer());
               break;
             case RECEIVE_STR:
-              listener.doSessionTermRequest(this, (SessionTermRequest) localEvent.getRequest());
+              listener.doSessionTermRequest(this, (RxSessionTermRequest) localEvent.getRequest());
               break;
             case SEND_STA:
-              SessionTermAnswer STA = (SessionTermAnswer) localEvent.getAnswer();
+              RxSessionTermAnswer STA = (RxSessionTermAnswer) localEvent.getAnswer();
               try {
                 if (isSuccess(STA.getResultCodeAvp().getUnsigned32())) {
                   // Current State: OPEN
@@ -254,13 +254,13 @@ public class ServerRxSessionImpl extends AppRxSessionImpl implements ServerRxSes
               break;
 
             case RECEIVE_RAA:
-              listener.doReAuthAnswer(this, (ReAuthRequest) localEvent.getRequest(), (ReAuthAnswer) localEvent.getAnswer());
+              listener.doReAuthAnswer(this, (RxReAuthRequest) localEvent.getRequest(), (RxReAuthAnswer) localEvent.getAnswer());
               break;
             case SEND_RAR:
               dispatchEvent(localEvent.getRequest());
               break;
             case RECEIVE_ASA:
-              listener.doAbortSessionAnswer(this, (AbortSessionRequest) localEvent.getRequest(), (AbortSessionAnswer) localEvent.getAnswer());
+              listener.doAbortSessionAnswer(this, (RxAbortSessionRequest) localEvent.getRequest(), (RxAbortSessionAnswer) localEvent.getAnswer());
               break;
             case SEND_ASR:
               dispatchEvent(localEvent.getRequest());
@@ -408,7 +408,7 @@ public class ServerRxSessionImpl extends AppRxSessionImpl implements ServerRxSes
           case RxAARequest.code:
             handleEvent(new Event(true, factory.createAARequest(request), null));
             break;
-          case SessionTermRequest.code:
+          case RxSessionTermRequest.code:
             handleEvent(new Event(true, factory.createSessionTermRequest(request), null));
             break;
           default:
@@ -433,10 +433,10 @@ public class ServerRxSessionImpl extends AppRxSessionImpl implements ServerRxSes
         // FIXME: baranowb: add message validation here!!!
         // We handle CCR, STR, ACR, ASR other go into extension
         switch (request.getCommandCode()) {
-          case ReAuthRequest.code:
+          case RxReAuthRequest.code:
             handleEvent(new Event(Event.Type.RECEIVE_RAA, factory.createReAuthRequest(request), factory.createReAuthAnswer(answer)));
             break;
-          case AbortSessionRequest.code:
+          case RxAbortSessionRequest.code:
             handleEvent(new Event(Event.Type.RECEIVE_ASA, factory.createAbortSessionRequest(request), factory.createAbortSessionAnswer(answer)));
             break;
           default:

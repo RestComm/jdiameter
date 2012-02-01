@@ -20,44 +20,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.jdiameter.common.api.app.rx;
+package org.jdiameter.common.impl.app.rx;
 
-import org.jdiameter.api.Answer;
 import org.jdiameter.api.Request;
-import org.jdiameter.api.rx.events.RxAAAnswer;
-import org.jdiameter.api.rx.events.RxAARequest;
-import org.jdiameter.api.rx.events.RxAbortSessionAnswer;
-import org.jdiameter.api.rx.events.RxAbortSessionRequest;
-import org.jdiameter.api.rx.events.RxReAuthAnswer;
-import org.jdiameter.api.rx.events.RxReAuthRequest;
-import org.jdiameter.api.rx.events.RxSessionTermAnswer;
+import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.rx.events.RxSessionTermRequest;
+import org.jdiameter.common.impl.app.AppRequestEventImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Diameter 3GPP IMS Rx Reference Point Message Factory
- *
+ * 
+ * @author <a href="mailto:richard.good@smilecoms.com"> Richard Good </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
- * @author <a href="mailto:richard.good@smilecoms.com"> Richard Good </a>
  */
-public interface IRxMessageFactory {
+public class RxSessionTermRequestImpl extends AppRequestEventImpl implements RxSessionTermRequest {
 
-  public RxReAuthRequest createReAuthRequest(Request request);
+  private static final long serialVersionUID = 1L;
+  protected Logger logger = LoggerFactory.getLogger(RxSessionTermRequestImpl.class);
 
-  public RxReAuthAnswer createReAuthAnswer(Answer answer);
+  public RxSessionTermRequestImpl(AppSession session, String destRealm, String destHost) {
+    super(session.getSessions().get(0).createRequest(code, session.getSessionAppId(), destRealm, destHost));
+  }
 
-  public RxSessionTermRequest createSessionTermRequest(Request request);
-
-  public RxSessionTermAnswer createSessionTermAnswer(Answer answer);
-  
-   public RxAbortSessionRequest createAbortSessionRequest(Request request);
-
-  public RxAbortSessionAnswer createAbortSessionAnswer(Answer answer);
-  
-  public RxAARequest createAARequest(Request request);
-
-  public RxAAAnswer createAAAnswer(Answer answer);
-  
-  public long[] getApplicationIds();
-
+  public RxSessionTermRequestImpl(Request request) {
+    super(request);
+  }   
 }

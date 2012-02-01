@@ -35,12 +35,23 @@ import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
 
-import org.jdiameter.api.auth.events.ReAuthAnswer;
-import org.jdiameter.api.auth.events.ReAuthRequest;
-import org.jdiameter.api.auth.events.AbortSessionAnswer;
-import org.jdiameter.api.auth.events.AbortSessionRequest;
-import org.jdiameter.api.auth.events.SessionTermAnswer;
-import org.jdiameter.api.auth.events.SessionTermRequest;
+//import org.jdiameter.api.auth.events.ReAuthAnswer;
+//import org.jdiameter.api.auth.events.ReAuthRequest;
+import org.jdiameter.api.rx.events.RxReAuthAnswer;
+import org.jdiameter.api.rx.events.RxReAuthRequest;
+
+
+//import org.jdiameter.api.auth.events.AbortSessionAnswer;
+//import org.jdiameter.api.auth.events.AbortSessionRequest;
+import org.jdiameter.api.rx.events.RxAbortSessionAnswer;
+import org.jdiameter.api.rx.events.RxAbortSessionRequest;
+
+
+
+//import org.jdiameter.api.auth.events.SessionTermAnswer;
+//import org.jdiameter.api.auth.events.SessionTermRequest;
+import org.jdiameter.api.rx.events.RxSessionTermAnswer;
+import org.jdiameter.api.rx.events.RxSessionTermRequest;
 
 import org.jdiameter.api.rx.ClientRxSession;
 import org.jdiameter.api.rx.ClientRxSessionListener;
@@ -62,12 +73,14 @@ import org.jdiameter.common.api.app.rx.IRxSessionFactory;
 import org.jdiameter.common.api.app.rx.IServerRxSessionContext;
 import org.jdiameter.common.api.data.ISessionDatasource;
 
-import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
-import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
-import org.jdiameter.common.impl.app.auth.AbortSessionAnswerImpl;
-import org.jdiameter.common.impl.app.auth.AbortSessionRequestImpl;
-import org.jdiameter.common.impl.app.auth.SessionTermAnswerImpl;
-import org.jdiameter.common.impl.app.auth.SessionTermRequestImpl;
+//import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
+//import org.jdiameter.common.impl.app.auth.ReAuthRequestImpl;
+
+//import org.jdiameter.common.impl.app.auth.AbortSessionAnswerImpl;
+//import org.jdiameter.common.impl.app.auth.AbortSessionRequestImpl;
+
+//import org.jdiameter.common.impl.app.auth.SessionTermAnswerImpl;
+//import org.jdiameter.common.impl.app.auth.SessionTermRequestImpl;
 
 
 import org.jdiameter.server.impl.app.rx.IServerRxSessionData;
@@ -325,22 +338,22 @@ IRxMessageFactory, IServerRxSessionContext, IClientRxSessionContext {
   public void doAAAnswer(ClientRxSession session, RxAARequest request, RxAAAnswer answer) throws InternalException {
   }
 
-  public void doReAuthRequest(ClientRxSession session, ReAuthRequest request) throws InternalException {
+  public void doReAuthRequest(ClientRxSession session, RxReAuthRequest request) throws InternalException {
   }
 
-  public void doReAuthAnswer(ServerRxSession session, ReAuthRequest request, ReAuthAnswer answer) throws InternalException {
+  public void doReAuthAnswer(ServerRxSession session, RxReAuthRequest request, RxReAuthAnswer answer) throws InternalException {
   }
 
-  public void doAbortSessionRequest(ClientRxSession session, AbortSessionRequest request) throws InternalException {
+  public void doAbortSessionRequest(ClientRxSession session, RxAbortSessionRequest request) throws InternalException {
   }
 
-  public void doAbortSessionAnswer(ServerRxSession session, AbortSessionRequest request, AbortSessionAnswer answer) throws InternalException {
+  public void doAbortSessionAnswer(ServerRxSession session, RxAbortSessionRequest request, RxAbortSessionAnswer answer) throws InternalException {
   }
 
-  public void doSessionTermRequest(ServerRxSession session, SessionTermRequest request) throws InternalException {
+  public void doSessionTermRequest(ServerRxSession session, RxSessionTermRequest request) throws InternalException {
   }
 
-  public void doSessionTermAnswer(ClientRxSession session, SessionTermRequest request, SessionTermAnswer answer) throws InternalException {
+  public void doSessionTermAnswer(ClientRxSession session, RxSessionTermRequest request, RxSessionTermAnswer answer) throws InternalException {
   }
 
   public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException {
@@ -355,28 +368,28 @@ IRxMessageFactory, IServerRxSessionContext, IClientRxSessionContext {
     return new RxAARequestImpl(req);
   }
 
-  public ReAuthAnswer createReAuthAnswer(Answer answer) {
-    return new ReAuthAnswerImpl(answer);
+  public RxReAuthAnswer createReAuthAnswer(Answer answer) {
+    return new RxReAuthAnswerImpl(answer);
   }
 
-  public ReAuthRequest createReAuthRequest(Request req) {
-    return new ReAuthRequestImpl(req);
+  public RxReAuthRequest createReAuthRequest(Request req) {
+    return new RxReAuthRequestImpl(req);
   }
 
-  public SessionTermAnswer createSessionTermAnswer(Answer answer) {
-    return new SessionTermAnswerImpl(answer);
+  public RxSessionTermAnswer createSessionTermAnswer(Answer answer) {
+    return new RxSessionTermAnswerImpl(answer);
   }
 
-  public SessionTermRequest createSessionTermRequest(Request req) {
-    return new SessionTermRequestImpl(req);
+  public RxSessionTermRequest createSessionTermRequest(Request req) {
+    return new RxSessionTermRequestImpl(req);
   }
 
-  public AbortSessionAnswer createAbortSessionAnswer(Answer answer) {
-    return new AbortSessionAnswerImpl(answer);
+  public RxAbortSessionAnswer createAbortSessionAnswer(Answer answer) {
+    return new RxAbortSessionAnswerImpl(answer);
   }
 
-  public AbortSessionRequest createAbortSessionRequest(Request req) {
-    return new AbortSessionRequestImpl(req);
+  public RxAbortSessionRequest createAbortSessionRequest(Request req) {
+    return new RxAbortSessionRequestImpl(req);
   }
 
   // Context Methods ----------------------------------------------------------

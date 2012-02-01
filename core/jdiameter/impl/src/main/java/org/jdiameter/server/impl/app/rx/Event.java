@@ -26,16 +26,14 @@ import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.StateEvent;
-
-import org.jdiameter.api.rx.events.RxAARequest;
-import org.jdiameter.api.auth.events.ReAuthRequest;
-import org.jdiameter.api.auth.events.AbortSessionRequest;
-import org.jdiameter.api.auth.events.SessionTermRequest;
-
 import org.jdiameter.api.rx.events.RxAAAnswer;
-import org.jdiameter.api.auth.events.ReAuthAnswer;
-import org.jdiameter.api.auth.events.AbortSessionAnswer;
-import org.jdiameter.api.auth.events.SessionTermAnswer;
+import org.jdiameter.api.rx.events.RxAARequest;
+import org.jdiameter.api.rx.events.RxAbortSessionAnswer;
+import org.jdiameter.api.rx.events.RxAbortSessionRequest;
+import org.jdiameter.api.rx.events.RxReAuthAnswer;
+import org.jdiameter.api.rx.events.RxReAuthRequest;
+import org.jdiameter.api.rx.events.RxSessionTermAnswer;
+import org.jdiameter.api.rx.events.RxSessionTermRequest;
 
 /**
  * 
@@ -74,16 +72,16 @@ public class Event implements StateEvent {
 
     if (isRequest) {
       switch (request.getCommandCode()) {
-        case ReAuthRequest.code:
+        case RxReAuthRequest.code:
           type = Type.SEND_RAR;
           break;
-        case AbortSessionRequest.code:
+        case RxAbortSessionRequest.code:
           type = Type.SEND_ASR;
           break;
         case RxAARequest.code:
           type = Type.RECEIVE_AAR;
           break;
-        case SessionTermRequest.code:
+        case RxSessionTermRequest.code:
           type = Type.RECEIVE_STR;
           break;
         case 5: //BUG FIX How do we know this is an event and not a session? Do we need to fix this? Does Rx do event?
@@ -95,16 +93,16 @@ public class Event implements StateEvent {
     }
     else {
       switch (answer.getCommandCode()) {
-        case AbortSessionAnswer.code:
+        case RxAbortSessionAnswer.code:
           type = Type.RECEIVE_ASA;
           break;
-        case ReAuthAnswer.code:
+        case RxReAuthAnswer.code:
           type = Type.RECEIVE_RAA;
           break;
         case RxAAAnswer.code:
           type = Type.SEND_AAA;
           break;
-        case SessionTermAnswer.code:
+        case RxSessionTermAnswer.code:
           type = Type.SEND_STA;
           break;
         case 6:  //BUG FIX How do we know this is an event and not a session? Do we need to fix this? Does Rx do event?

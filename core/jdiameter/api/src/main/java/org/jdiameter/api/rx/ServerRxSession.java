@@ -28,11 +28,10 @@ import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateMachine;
-import org.jdiameter.api.auth.events.ReAuthRequest;
-import org.jdiameter.api.auth.events.AbortSessionRequest;
-import org.jdiameter.api.auth.events.SessionTermAnswer;
-
 import org.jdiameter.api.rx.events.RxAAAnswer;
+import org.jdiameter.api.rx.events.RxAbortSessionRequest;
+import org.jdiameter.api.rx.events.RxReAuthRequest;
+import org.jdiameter.api.rx.events.RxSessionTermAnswer;
 
 /**
  * Basic class for Rx Server Interface specific session.
@@ -46,10 +45,10 @@ public interface ServerRxSession extends AppSession, StateMachine {
 
   public void sendAAAnswer(RxAAAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-  public void sendSessionTermAnswer(SessionTermAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  public void sendSessionTermAnswer(RxSessionTermAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-  public void sendReAuthRequest(ReAuthRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  public void sendReAuthRequest(RxReAuthRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-  public void sendAbortSessionRequest(AbortSessionRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  public void sendAbortSessionRequest(RxAbortSessionRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
 }
