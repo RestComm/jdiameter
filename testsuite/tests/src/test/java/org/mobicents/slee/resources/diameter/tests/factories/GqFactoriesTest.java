@@ -195,16 +195,27 @@ public class GqFactoriesTest {
 
   @Test
   public void isProxiableCopiedAAA() throws Exception {
-    GqAARequest rar = gqMessageFactory.createGqAARequest();
-    GqAAAnswer raa = gqMessageFactory.createGqAAAnswer(rar);
-    assertEquals("The 'P' bit is not copied from request in Gq' AA-Answer, it should. [RFC3588/6.2]", rar.getHeader().isProxiable(), raa.getHeader().isProxiable());
+    GqAARequest aar = gqMessageFactory.createGqAARequest();
+    GqAAAnswer aaa = gqMessageFactory.createGqAAAnswer(aar);
+    assertEquals("The 'P' bit is not copied from request in Gq' AA-Answer, it should. [RFC3588/6.2]", aar.getHeader().isProxiable(), aaa.getHeader().isProxiable());
 
     // Reverse 'P' bit ...
-    ((DiameterMessageImpl) rar).getGenericData().setProxiable(!rar.getHeader().isProxiable());
-    assertTrue("The 'P' bit was not modified in Gq' AA-Request, it should.", rar.getHeader().isProxiable() != raa.getHeader().isProxiable());
+    ((DiameterMessageImpl) aar).getGenericData().setProxiable(!aar.getHeader().isProxiable());
+    assertTrue("The 'P' bit was not modified in Gq' AA-Request, it should.", aar.getHeader().isProxiable() != aaa.getHeader().isProxiable());
 
-    raa = gqMessageFactory.createGqAAAnswer(rar);
-    assertEquals("The 'P' bit is not copied from request in Gq' AA-Answer, it should. [RFC3588/6.2]", rar.getHeader().isProxiable(), raa.getHeader().isProxiable());
+    aaa = gqMessageFactory.createGqAAAnswer(aar);
+    assertEquals("The 'P' bit is not copied from request in Gq' AA-Answer, it should. [RFC3588/6.2]", aar.getHeader().isProxiable(), aaa.getHeader().isProxiable());
+  }
+
+  @Test
+  public void hasTFlagSetAAA() throws Exception {
+    GqAARequest aar = gqMessageFactory.createGqAARequest();
+    ((DiameterMessageImpl) aar).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in AA-Request", aar.getHeader().isPotentiallyRetransmitted());
+
+    GqAAAnswer aaa = gqMessageFactory.createGqAAAnswer(aar);
+    assertFalse("The 'T' flag should not be set in AA-Answer", aaa.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -273,16 +284,27 @@ public class GqFactoriesTest {
 
   @Test
   public void isProxiableCopiedASA() throws Exception {
-    GqAbortSessionRequest rar = gqMessageFactory.createGqAbortSessionRequest();
-    GqAbortSessionAnswer raa = gqMessageFactory.createGqAbortSessionAnswer(rar);
-    assertEquals("The 'P' bit is not copied from request in Gq' Abort-Session-Answer, it should. [RFC3588/6.2]", rar.getHeader().isProxiable(), raa.getHeader().isProxiable());
+    GqAbortSessionRequest asr = gqMessageFactory.createGqAbortSessionRequest();
+    GqAbortSessionAnswer asa = gqMessageFactory.createGqAbortSessionAnswer(asr);
+    assertEquals("The 'P' bit is not copied from request in Gq' Abort-Session-Answer, it should. [RFC3588/6.2]", asr.getHeader().isProxiable(), asa.getHeader().isProxiable());
 
     // Reverse 'P' bit ...
-    ((DiameterMessageImpl) rar).getGenericData().setProxiable(!rar.getHeader().isProxiable());
-    assertTrue("The 'P' bit was not modified in Gq' Abort-Session-Request, it should.", rar.getHeader().isProxiable() != raa.getHeader().isProxiable());
+    ((DiameterMessageImpl) asr).getGenericData().setProxiable(!asr.getHeader().isProxiable());
+    assertTrue("The 'P' bit was not modified in Gq' Abort-Session-Request, it should.", asr.getHeader().isProxiable() != asa.getHeader().isProxiable());
 
-    raa = gqMessageFactory.createGqAbortSessionAnswer(rar);
-    assertEquals("The 'P' bit is not copied from request in Gq' Abort-Session-Answer, it should. [RFC3588/6.2]", rar.getHeader().isProxiable(), raa.getHeader().isProxiable());
+    asa = gqMessageFactory.createGqAbortSessionAnswer(asr);
+    assertEquals("The 'P' bit is not copied from request in Gq' Abort-Session-Answer, it should. [RFC3588/6.2]", asr.getHeader().isProxiable(), asa.getHeader().isProxiable());
+  }
+
+  @Test
+  public void hasTFlagSetASA() throws Exception {
+    GqAbortSessionRequest asr = gqMessageFactory.createGqAbortSessionRequest();
+    ((DiameterMessageImpl) asr).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Abort-Session-Request", asr.getHeader().isPotentiallyRetransmitted());
+
+    GqAbortSessionAnswer asa = gqMessageFactory.createGqAbortSessionAnswer(asr);
+    assertFalse("The 'T' flag should not be set in Abort-Session-Answer", asa.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -358,6 +380,17 @@ public class GqFactoriesTest {
   }
 
   @Test
+  public void hasTFlagSetRAA() throws Exception {
+    GqReAuthRequest rar = gqMessageFactory.createGqReAuthRequest();
+    ((DiameterMessageImpl) rar).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Re-Auth-Request", rar.getHeader().isPotentiallyRetransmitted());
+
+    GqReAuthAnswer raa = gqMessageFactory.createGqReAuthAnswer(rar);
+    assertFalse("The 'T' flag should not be set in Re-Auth-Answer", raa.getHeader().isPotentiallyRetransmitted());
+  }
+
+  @Test
   public void testGettersAndSettersRAA() throws Exception {
     GqReAuthAnswer raa = gqMessageFactory.createGqReAuthAnswer(gqMessageFactory.createGqReAuthRequest());
 
@@ -427,6 +460,17 @@ public class GqFactoriesTest {
 
     sta = gqMessageFactory.createGqSessionTerminationAnswer(str);
     assertEquals("The 'P' bit is not copied from request in Session-Termination-Answer, it should. [RFC3588/6.2]", str.getHeader().isProxiable(), sta.getHeader().isProxiable());
+  }
+
+  @Test
+  public void hasTFlagSetSTA() throws Exception {
+    GqSessionTerminationRequest str = gqMessageFactory.createGqSessionTerminationRequest();
+    ((DiameterMessageImpl) str).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Session-Termination-Request", str.getHeader().isPotentiallyRetransmitted());
+
+    GqSessionTerminationAnswer sta = gqMessageFactory.createGqSessionTerminationAnswer(str);
+    assertFalse("The 'T' flag should not be set in Session-Termination-Answer", sta.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -514,41 +558,41 @@ public class GqFactoriesTest {
 
     // Create AVP with mandatory values
     BindingInformation biAvp1 = gqAvpFactory.createBindingInformation();
-    
+
     // Make sure it's not null
     Assert.assertNotNull("Created " + avpName + " AVP from objects should not be null.", biAvp1);
 
     // Create AVP with default constructor
     BindingInformation biAvp2 = gqAvpFactory.createBindingInformation();
-    
+
     // Should not contain mandatory values
 
     // Set mandatory values
-    
+
     // Make sure it's equal to the one created with mandatory values constructor
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + set<Mandatory-AVPs> should be equal to original.", biAvp1, biAvp2);
-    
+
     // Make new copy
     biAvp2 = gqAvpFactory.createBindingInformation();
-    
+
     // And set all values using setters
     AvpAssistant.testSetters(biAvp2);
-    
+
     // Create empty...
     BindingInformation biAvp3 = gqAvpFactory.createBindingInformation();
-    
+
     // Verify that no values have been set
     AvpAssistant.testHassers(biAvp3, false);
 
     // Set all previous values
     biAvp3.setExtensionAvps(biAvp2.getExtensionAvps());
-    
+
     // Verify if values have been set
     AvpAssistant.testHassers(biAvp3, true);
-    
+
     // Verify if values have been correctly set
     AvpAssistant.testGetters(biAvp3);
-    
+
     // Make sure they match!
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + setExtensionAvps should be equal to original.", biAvp2, biAvp3);
   }
@@ -560,41 +604,41 @@ public class GqFactoriesTest {
 
     // Create AVP with mandatory values
     BindingInputList bilAvp1 = gqAvpFactory.createBindingInputList();
-    
+
     // Make sure it's not null
     Assert.assertNotNull("Created " + avpName + " AVP from objects should not be null.", bilAvp1);
 
     // Create AVP with default constructor
     BindingInputList bilAvp2 = gqAvpFactory.createBindingInputList();
-    
+
     // Should not contain mandatory values
 
     // Set mandatory values
-    
+
     // Make sure it's equal to the one created with mandatory values constructor
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + set<Mandatory-AVPs> should be equal to original.", bilAvp1, bilAvp2);
-    
+
     // Make new copy
     bilAvp2 = gqAvpFactory.createBindingInputList();
-    
+
     // And set all values using setters
     AvpAssistant.testSetters(bilAvp2);
-    
+
     // Create empty...
     BindingInputList bilAvp3 = gqAvpFactory.createBindingInputList();
-    
+
     // Verify that no values have been set
     AvpAssistant.testHassers(bilAvp3, false);
 
     // Set all previous values
     bilAvp3.setExtensionAvps(bilAvp2.getExtensionAvps());
-    
+
     // Verify if values have been set
     AvpAssistant.testHassers(bilAvp3, true);
-    
+
     // Verify if values have been correctly set
     AvpAssistant.testGetters(bilAvp3);
-    
+
     // Make sure they match!
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + setExtensionAvps should be equal to original.", bilAvp2, bilAvp3);
   }
@@ -606,41 +650,41 @@ public class GqFactoriesTest {
 
     // Create AVP with mandatory values
     BindingOutputList bolAvp1 = gqAvpFactory.createBindingOutputList();
-    
+
     // Make sure it's not null
     Assert.assertNotNull("Created " + avpName + " AVP from objects should not be null.", bolAvp1);
 
     // Create AVP with default constructor
     BindingOutputList bolAvp2 = gqAvpFactory.createBindingOutputList();
-    
+
     // Should not contain mandatory values
 
     // Set mandatory values
-    
+
     // Make sure it's equal to the one created with mandatory values constructor
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + set<Mandatory-AVPs> should be equal to original.", bolAvp1, bolAvp2);
-    
+
     // Make new copy
     bolAvp2 = gqAvpFactory.createBindingOutputList();
-    
+
     // And set all values using setters
     AvpAssistant.testSetters(bolAvp2);
-    
+
     // Create empty...
     BindingOutputList bolAvp3 = gqAvpFactory.createBindingOutputList();
-    
+
     // Verify that no values have been set
     AvpAssistant.testHassers(bolAvp3, false);
 
     // Set all previous values
     bolAvp3.setExtensionAvps(bolAvp2.getExtensionAvps());
-    
+
     // Verify if values have been set
     AvpAssistant.testHassers(bolAvp3, true);
-    
+
     // Verify if values have been correctly set
     AvpAssistant.testGetters(bolAvp3);
-    
+
     // Make sure they match!
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + setExtensionAvps should be equal to original.", bolAvp2, bolAvp3);
   }
@@ -652,41 +696,41 @@ public class GqFactoriesTest {
 
     // Create AVP with mandatory values
     FlowGrouping fgAvp1 = gqAvpFactory.createFlowGrouping();
-    
+
     // Make sure it's not null
     Assert.assertNotNull("Created " + avpName + " AVP from objects should not be null.", fgAvp1);
 
     // Create AVP with default constructor
     FlowGrouping fgAvp2 = gqAvpFactory.createFlowGrouping();
-    
+
     // Should not contain mandatory values
 
     // Set mandatory values
-    
+
     // Make sure it's equal to the one created with mandatory values constructor
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + set<Mandatory-AVPs> should be equal to original.", fgAvp1, fgAvp2);
-    
+
     // Make new copy
     fgAvp2 = gqAvpFactory.createFlowGrouping();
-    
+
     // And set all values using setters
     AvpAssistant.testSetters(fgAvp2);
-    
+
     // Create empty...
     FlowGrouping fgAvp3 = gqAvpFactory.createFlowGrouping();
-    
+
     // Verify that no values have been set
     AvpAssistant.testHassers(fgAvp3, false);
 
     // Set all previous values
     fgAvp3.setExtensionAvps(fgAvp2.getExtensionAvps());
-    
+
     // Verify if values have been set
     AvpAssistant.testHassers(fgAvp3, true);
-    
+
     // Verify if values have been correctly set
     AvpAssistant.testGetters(fgAvp3);
-    
+
     // Make sure they match!
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + setExtensionAvps should be equal to original.", fgAvp2, fgAvp3);
   }
@@ -698,41 +742,41 @@ public class GqFactoriesTest {
 
     // Create AVP with mandatory values
     Flows fAvp1 = gqAvpFactory.createFlows();
-    
+
     // Make sure it's not null
     Assert.assertNotNull("Created " + avpName + " AVP from objects should not be null.", fAvp1);
 
     // Create AVP with default constructor
     Flows fAvp2 = gqAvpFactory.createFlows();
-    
+
     // Should not contain mandatory values
 
     // Set mandatory values
-    
+
     // Make sure it's equal to the one created with mandatory values constructor
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + set<Mandatory-AVPs> should be equal to original.", fAvp1, fAvp2);
-    
+
     // Make new copy
     fAvp2 = gqAvpFactory.createFlows();
-    
+
     // And set all values using setters
     AvpAssistant.testSetters(fAvp2);
-    
+
     // Create empty...
     Flows fAvp3 = gqAvpFactory.createFlows();
-    
+
     // Verify that no values have been set
     AvpAssistant.testHassers(fAvp3, false);
 
     // Set all previous values
     fAvp3.setExtensionAvps(fAvp2.getExtensionAvps());
-    
+
     // Verify if values have been set
     AvpAssistant.testHassers(fAvp3, true);
-    
+
     // Verify if values have been correctly set
     AvpAssistant.testGetters(fAvp3);
-    
+
     // Make sure they match!
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + setExtensionAvps should be equal to original.", fAvp2, fAvp3);
   }
@@ -744,41 +788,41 @@ public class GqFactoriesTest {
 
     // Create AVP with mandatory values
     GloballyUniqueAddress guaAvp1 = gqAvpFactory.createGloballyUniqueAddress();
-    
+
     // Make sure it's not null
     Assert.assertNotNull("Created " + avpName + " AVP from objects should not be null.", guaAvp1);
 
     // Create AVP with default constructor
     GloballyUniqueAddress guaAvp2 = gqAvpFactory.createGloballyUniqueAddress();
-    
+
     // Should not contain mandatory values
 
     // Set mandatory values
-    
+
     // Make sure it's equal to the one created with mandatory values constructor
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + set<Mandatory-AVPs> should be equal to original.", guaAvp1, guaAvp2);
-    
+
     // Make new copy
     guaAvp2 = gqAvpFactory.createGloballyUniqueAddress();
-    
+
     // And set all values using setters
     AvpAssistant.testSetters(guaAvp2);
-    
+
     // Create empty...
     GloballyUniqueAddress guaAvp3 = gqAvpFactory.createGloballyUniqueAddress();
-    
+
     // Verify that no values have been set
     AvpAssistant.testHassers(guaAvp3, false);
 
     // Set all previous values
     guaAvp3.setExtensionAvps(guaAvp2.getExtensionAvps());
-    
+
     // Verify if values have been set
     AvpAssistant.testHassers(guaAvp3, true);
-    
+
     // Verify if values have been correctly set
     AvpAssistant.testGetters(guaAvp3);
-    
+
     // Make sure they match!
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + setExtensionAvps should be equal to original.", guaAvp2, guaAvp3);
   }
@@ -790,41 +834,41 @@ public class GqFactoriesTest {
 
     // Create AVP with mandatory values
     MediaComponentDescription mcdAvp1 = gqAvpFactory.createMediaComponentDescription();
-    
+
     // Make sure it's not null
     Assert.assertNotNull("Created " + avpName + " AVP from objects should not be null.", mcdAvp1);
 
     // Create AVP with default constructor
     MediaComponentDescription mcdAvp2 = gqAvpFactory.createMediaComponentDescription();
-    
+
     // Should not contain mandatory values
 
     // Set mandatory values
-    
+
     // Make sure it's equal to the one created with mandatory values constructor
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + set<Mandatory-AVPs> should be equal to original.", mcdAvp1, mcdAvp2);
-    
+
     // Make new copy
     mcdAvp2 = gqAvpFactory.createMediaComponentDescription();
-    
+
     // And set all values using setters
     AvpAssistant.testSetters(mcdAvp2);
-    
+
     // Create empty...
     MediaComponentDescription mcdAvp3 = gqAvpFactory.createMediaComponentDescription();
-    
+
     // Verify that no values have been set
     AvpAssistant.testHassers(mcdAvp3, false);
 
     // Set all previous values
     mcdAvp3.setExtensionAvps(mcdAvp2.getExtensionAvps());
-    
+
     // Verify if values have been set
     AvpAssistant.testHassers(mcdAvp3, true);
-    
+
     // Verify if values have been correctly set
     AvpAssistant.testGetters(mcdAvp3);
-    
+
     // Make sure they match!
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + setExtensionAvps should be equal to original.", mcdAvp2, mcdAvp3);
   }
@@ -836,41 +880,41 @@ public class GqFactoriesTest {
 
     // Create AVP with mandatory values
     MediaSubComponent mscAvp1 = gqAvpFactory.createMediaSubComponent();
-    
+
     // Make sure it's not null
     Assert.assertNotNull("Created " + avpName + " AVP from objects should not be null.", mscAvp1);
 
     // Create AVP with default constructor
     MediaSubComponent mscAvp2 = gqAvpFactory.createMediaSubComponent();
-    
+
     // Should not contain mandatory values
 
     // Set mandatory values
-    
+
     // Make sure it's equal to the one created with mandatory values constructor
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + set<Mandatory-AVPs> should be equal to original.", mscAvp1, mscAvp2);
-    
+
     // Make new copy
     mscAvp2 = gqAvpFactory.createMediaSubComponent();
-    
+
     // And set all values using setters
     AvpAssistant.testSetters(mscAvp2);
-    
+
     // Create empty...
     MediaSubComponent mscAvp3 = gqAvpFactory.createMediaSubComponent();
-    
+
     // Verify that no values have been set
     AvpAssistant.testHassers(mscAvp3, false);
 
     // Set all previous values
     mscAvp3.setExtensionAvps(mscAvp2.getExtensionAvps());
-    
+
     // Verify if values have been set
     AvpAssistant.testHassers(mscAvp3, true);
-    
+
     // Verify if values have been correctly set
     AvpAssistant.testGetters(mscAvp3);
-    
+
     // Make sure they match!
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + setExtensionAvps should be equal to original.", mscAvp2, mscAvp3);
   }
@@ -882,41 +926,41 @@ public class GqFactoriesTest {
 
     // Create AVP with mandatory values
     V4TransportAddress v4taAvp1 = gqAvpFactory.createV4TransportAddress();
-    
+
     // Make sure it's not null
     Assert.assertNotNull("Created " + avpName + " AVP from objects should not be null.", v4taAvp1);
 
     // Create AVP with default constructor
     V4TransportAddress v4taAvp2 = gqAvpFactory.createV4TransportAddress();
-    
+
     // Should not contain mandatory values
 
     // Set mandatory values
-    
+
     // Make sure it's equal to the one created with mandatory values constructor
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + set<Mandatory-AVPs> should be equal to original.", v4taAvp1, v4taAvp2);
-    
+
     // Make new copy
     v4taAvp2 = gqAvpFactory.createV4TransportAddress();
-    
+
     // And set all values using setters
     AvpAssistant.testSetters(v4taAvp2);
-    
+
     // Create empty...
     V4TransportAddress v4taAvp3 = gqAvpFactory.createV4TransportAddress();
-    
+
     // Verify that no values have been set
     AvpAssistant.testHassers(v4taAvp3, false);
 
     // Set all previous values
     v4taAvp3.setExtensionAvps(v4taAvp2.getExtensionAvps());
-    
+
     // Verify if values have been set
     AvpAssistant.testHassers(v4taAvp3, true);
-    
+
     // Verify if values have been correctly set
     AvpAssistant.testGetters(v4taAvp3);
-    
+
     // Make sure they match!
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + setExtensionAvps should be equal to original.", v4taAvp2, v4taAvp3);
   }
@@ -928,41 +972,41 @@ public class GqFactoriesTest {
 
     // Create AVP with mandatory values
     V6TransportAddress v6taAvp1 = gqAvpFactory.createV6TransportAddress();
-    
+
     // Make sure it's not null
     Assert.assertNotNull("Created " + avpName + " AVP from objects should not be null.", v6taAvp1);
 
     // Create AVP with default constructor
     V6TransportAddress v6taAvp2 = gqAvpFactory.createV6TransportAddress();
-    
+
     // Should not contain mandatory values
 
     // Set mandatory values
-    
+
     // Make sure it's equal to the one created with mandatory values constructor
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + set<Mandatory-AVPs> should be equal to original.", v6taAvp1, v6taAvp2);
-    
+
     // Make new copy
     v6taAvp2 = gqAvpFactory.createV6TransportAddress();
-    
+
     // And set all values using setters
     AvpAssistant.testSetters(v6taAvp2);
-    
+
     // Create empty...
     V6TransportAddress v6taAvp3 = gqAvpFactory.createV6TransportAddress();
-    
+
     // Verify that no values have been set
     AvpAssistant.testHassers(v6taAvp3, false);
 
     // Set all previous values
     v6taAvp3.setExtensionAvps(v6taAvp2.getExtensionAvps());
-    
+
     // Verify if values have been set
     AvpAssistant.testHassers(v6taAvp3, true);
-    
+
     // Verify if values have been correctly set
     AvpAssistant.testGetters(v6taAvp3);
-    
+
     // Make sure they match!
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + setExtensionAvps should be equal to original.", v6taAvp2, v6taAvp3);
   }
@@ -987,7 +1031,7 @@ public class GqFactoriesTest {
           add(VendorId,   193L).
           add(AuthApplId, 0L).
           add(AcctApplId, 19302L)
-      );
+          );
       // Set peer table
       add(PeerTable,
           // Peer 1
