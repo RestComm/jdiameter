@@ -122,16 +122,27 @@ public class ShServerFactoriesTest {
 
   @Test
   public void isProxiableCopiedPUA() throws Exception {
-    ProfileUpdateRequest rar = shClientFactory.createProfileUpdateRequest();
-    ProfileUpdateAnswer raa = shServerFactory.createProfileUpdateAnswer(rar);
-    assertEquals("The 'P' bit is not copied from request in Profile-Update-Answer, it should. [RFC3588/6.2]", rar.getHeader().isProxiable(), raa.getHeader().isProxiable());
+    ProfileUpdateRequest pur = shClientFactory.createProfileUpdateRequest();
+    ProfileUpdateAnswer pua = shServerFactory.createProfileUpdateAnswer(pur);
+    assertEquals("The 'P' bit is not copied from request in Profile-Update-Answer, it should. [RFC3588/6.2]", pur.getHeader().isProxiable(), pua.getHeader().isProxiable());
 
     // Reverse 'P' bit ...
-    ((DiameterMessageImpl) rar).getGenericData().setProxiable(!rar.getHeader().isProxiable());
-    assertTrue("The 'P' bit was not modified in Profile-Update-Request, it should.", rar.getHeader().isProxiable() != raa.getHeader().isProxiable());
+    ((DiameterMessageImpl) pur).getGenericData().setProxiable(!pur.getHeader().isProxiable());
+    assertTrue("The 'P' bit was not modified in Profile-Update-Request, it should.", pur.getHeader().isProxiable() != pua.getHeader().isProxiable());
 
-    raa = shServerFactory.createProfileUpdateAnswer(rar);
-    assertEquals("The 'P' bit is not copied from request in Profile-Update-Answer, it should. [RFC3588/6.2]", rar.getHeader().isProxiable(), raa.getHeader().isProxiable());
+    pua = shServerFactory.createProfileUpdateAnswer(pur);
+    assertEquals("The 'P' bit is not copied from request in Profile-Update-Answer, it should. [RFC3588/6.2]", pur.getHeader().isProxiable(), pua.getHeader().isProxiable());
+  }
+
+  @Test
+  public void hasTFlagSetPUA() throws Exception {
+    ProfileUpdateRequest pur = shClientFactory.createProfileUpdateRequest();
+    ((DiameterMessageImpl) pur).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Profile-Update-Request", pur.getHeader().isPotentiallyRetransmitted());
+
+    ProfileUpdateAnswer pua = shServerFactory.createProfileUpdateAnswer(pur);
+    assertFalse("The 'T' flag should not be set in Profile-Update-Answer", pua.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -229,6 +240,17 @@ public class ShServerFactoriesTest {
   }
 
   @Test
+  public void hasTFlagSetSNA() throws Exception {
+    SubscribeNotificationsRequest snr = shClientFactory.createSubscribeNotificationsRequest();
+    ((DiameterMessageImpl) snr).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Subscribe-Notifications-Request", snr.getHeader().isPotentiallyRetransmitted());
+
+    SubscribeNotificationsAnswer sna = shServerFactory.createSubscribeNotificationsAnswer(snr);
+    assertFalse("The 'T' flag should not be set in Subscribe-Notifications-Answer", sna.getHeader().isPotentiallyRetransmitted());
+  }
+
+  @Test
   public void testGettersAndSettersSNA() throws Exception {
     SubscribeNotificationsAnswer sna = shServerFactory.createSubscribeNotificationsAnswer(shClientFactory.createSubscribeNotificationsRequest());
 
@@ -283,6 +305,17 @@ public class ShServerFactoriesTest {
 
     uda = shServerFactory.createUserDataAnswer(udr);
     assertEquals("The 'P' bit is not copied from request in User-Data-Answer, it should. [RFC3588/6.2]", udr.getHeader().isProxiable(), uda.getHeader().isProxiable());
+  }
+
+  @Test
+  public void hasTFlagSetUDA() throws Exception {
+    UserDataRequest udr = shClientFactory.createUserDataRequest();
+    ((DiameterMessageImpl) udr).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in User-Data-Request", udr.getHeader().isPotentiallyRetransmitted());
+
+    UserDataAnswer uda = shServerFactory.createUserDataAnswer(udr);
+    assertFalse("The 'T' flag should not be set in User-Data-Answer", uda.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test

@@ -132,14 +132,25 @@ public class ShClientFactoriesTest {
   public void isProxiableCopiedPNA() throws Exception {
     PushNotificationRequest pnr = shServerFactory.createPushNotificationRequest();
     PushNotificationAnswer pna = shClientFactory.createPushNotificationAnswer(pnr);
-    assertEquals("The 'P' bit is not copied from request in XXX-RRR-Answer, it should. [RFC3588/6.2]", pnr.getHeader().isProxiable(), pna.getHeader().isProxiable());
+    assertEquals("The 'P' bit is not copied from request in Push-Notification-Answer, it should. [RFC3588/6.2]", pnr.getHeader().isProxiable(), pna.getHeader().isProxiable());
     
     // Reverse 'P' bit ...
     ((DiameterMessageImpl) pnr).getGenericData().setProxiable(!pnr.getHeader().isProxiable());
-    assertTrue("The 'P' bit was not modified in XXX-RRR-Request, it should.", pnr.getHeader().isProxiable() != pna.getHeader().isProxiable());
+    assertTrue("The 'P' bit was not modified in Push-Notification-Request, it should.", pnr.getHeader().isProxiable() != pna.getHeader().isProxiable());
 
     pna = shClientFactory.createPushNotificationAnswer(pnr);
-    assertEquals("The 'P' bit is not copied from request in XXX-RRR-Answer, it should. [RFC3588/6.2]", pnr.getHeader().isProxiable(), pna.getHeader().isProxiable());
+    assertEquals("The 'P' bit is not copied from request in Push-Notification-Answer, it should. [RFC3588/6.2]", pnr.getHeader().isProxiable(), pna.getHeader().isProxiable());
+  }
+
+  @Test
+  public void hasTFlagSetPNA() throws Exception {
+    PushNotificationRequest pnr = shServerFactory.createPushNotificationRequest();
+    ((DiameterMessageImpl) pnr).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Push-Notification-Request", pnr.getHeader().isPotentiallyRetransmitted());
+
+    PushNotificationAnswer pna = shClientFactory.createPushNotificationAnswer(pnr);
+    assertFalse("The 'T' flag should not be set in Push-Notification-Answer", pna.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
