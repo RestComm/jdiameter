@@ -152,6 +152,17 @@ public class BaseFactoriesTest {
   }
 
   @Test
+  public void hasTFlagSetASA() throws Exception {
+    AbortSessionRequest asr = messageFactory.createAbortSessionRequest();
+    ((DiameterMessageImpl) asr).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Abort-Session-Request", asr.getHeader().isPotentiallyRetransmitted());
+
+    AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer(asr);
+    assertFalse("The 'T' flag should be set in Abort-Session-Answer", asa.getHeader().isPotentiallyRetransmitted());
+  }
+
+  @Test
   public void testGettersAndSettersASA() throws Exception {
     AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer(messageFactory.createAbortSessionRequest());
 
@@ -213,6 +224,17 @@ public class BaseFactoriesTest {
 
     aca = messageFactory.createAccountingAnswer(acr);
     assertEquals("The 'P' bit is not copied from request in Accounting-Answer, it should. [RFC3588/6.2]", acr.getHeader().isProxiable(), aca.getHeader().isProxiable());
+  }
+
+  @Test
+  public void hasTFlagSetACA() throws Exception {
+    AccountingRequest acr = messageFactory.createAccountingRequest();
+    ((DiameterMessageImpl) acr).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Accounting-Request", acr.getHeader().isPotentiallyRetransmitted());
+
+    AccountingAnswer aca = messageFactory.createAccountingAnswer(acr);
+    assertFalse("The 'T' flag should be set in Accounting-Answer", aca.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -278,6 +300,17 @@ public class BaseFactoriesTest {
   }
 
   @Test
+  public void hasTFlagSetCEA() throws Exception {
+    CapabilitiesExchangeRequest cer = messageFactory.createCapabilitiesExchangeRequest();
+    ((DiameterMessageImpl) cer).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Capabilities-Exchange-Request", cer.getHeader().isPotentiallyRetransmitted());
+
+    CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer(cer);
+    assertFalse("The 'T' flag should be set in Capabilities-Exchange-Answer", cea.getHeader().isPotentiallyRetransmitted());
+  }
+
+  @Test
   public void testGettersAndSettersCEA() throws Exception {
     CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer(messageFactory.createCapabilitiesExchangeRequest());
 
@@ -337,6 +370,17 @@ public class BaseFactoriesTest {
 
     dwa = messageFactory.createDeviceWatchdogAnswer(dwr);
     assertEquals("The 'P' bit is not copied from request in Device-Watchdog-Answer, it should. [RFC3588/6.2]", dwr.getHeader().isProxiable(), dwa.getHeader().isProxiable());
+  }
+
+  @Test
+  public void hasTFlagSetDWA() throws Exception {
+    DeviceWatchdogRequest dwr = messageFactory.createDeviceWatchdogRequest();
+    ((DiameterMessageImpl) dwr).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Device-Watchdog-Request", dwr.getHeader().isPotentiallyRetransmitted());
+
+    DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer(dwr);
+    assertFalse("The 'T' flag should be set in Device-Watchdog-Answer", dwa.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -402,6 +446,17 @@ public class BaseFactoriesTest {
   }
 
   @Test
+  public void hasTFlagSetDPA() throws Exception {
+    DisconnectPeerRequest dpr = messageFactory.createDisconnectPeerRequest();
+    ((DiameterMessageImpl) dpr).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Disconnect-Peer-Request", dpr.getHeader().isPotentiallyRetransmitted());
+
+    DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer(dpr);
+    assertFalse("The 'T' flag should be set in Disconnect-Peer-Answer", dpa.getHeader().isPotentiallyRetransmitted());
+  }
+
+  @Test
   public void testGettersAndSettersDPA() throws Exception {
     DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer(messageFactory.createDisconnectPeerRequest());
 
@@ -461,6 +516,17 @@ public class BaseFactoriesTest {
 
     asa = messageFactory.createReAuthAnswer(asr);
     assertEquals("The 'P' bit is not copied from request in Re-Auth-Answer, it should. [RFC3588/6.2]", asr.getHeader().isProxiable(), asa.getHeader().isProxiable());
+  }
+
+  @Test
+  public void hasTFlagSetRAA() throws Exception {
+    ReAuthRequest rar = messageFactory.createReAuthRequest();
+    ((DiameterMessageImpl) rar).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Re-Auth-Request", rar.getHeader().isPotentiallyRetransmitted());
+
+    ReAuthAnswer raa = messageFactory.createReAuthAnswer(rar);
+    assertFalse("The 'T' flag should be set in Re-Auth-Answer", raa.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -525,6 +591,16 @@ public class BaseFactoriesTest {
     assertEquals("The 'P' bit is not copied from request in Session-Termination-Answer, it should. [RFC3588/6.2]", asr.getHeader().isProxiable(), asa.getHeader().isProxiable());
   }
 
+  @Test
+  public void hasTFlagSetSTA() throws Exception {
+    SessionTerminationRequest str = messageFactory.createSessionTerminationRequest();
+    ((DiameterMessageImpl) str).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Session-Termination-Request", str.getHeader().isPotentiallyRetransmitted());
+
+    SessionTerminationAnswer sta = messageFactory.createSessionTerminationAnswer(str);
+    assertFalse("The 'T' flag should be set in Session-Termination-Answer", sta.getHeader().isPotentiallyRetransmitted());
+  }
   @Test
   public void testGettersAndSettersSTA() throws Exception {
     SessionTerminationAnswer str = messageFactory.createSessionTerminationAnswer(messageFactory.createSessionTerminationRequest());
@@ -671,14 +747,14 @@ public class BaseFactoriesTest {
       // add(UseUriAsFqdn, true);
       // Set Common Applications
       add(ApplicationId,
-      // AppId 1
+          // AppId 1
           getInstance().
           add(VendorId, 193L).
           add(AuthApplId, 0L).
           add(AcctApplId, 19302L));
       // Set peer table
       add(PeerTable,
-      // Peer 1
+          // Peer 1
           getInstance().
           add(PeerRating, 1).
           add(PeerName, serverURI));
