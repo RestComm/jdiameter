@@ -194,6 +194,17 @@ public class RxFactoriesTest {
   }
 
   @Test
+  public void hasTFlagSetAAA() throws Exception {
+    AARequest aar = rxMessageFactory.createAARequest();
+    ((DiameterMessageImpl) aar).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in AA-Request", aar.getHeader().isPotentiallyRetransmitted());
+
+    AAAnswer aaa = rxMessageFactory.createAAAnswer(aar);
+    assertFalse("The 'T' flag should not be set in AA-Answer", aaa.getHeader().isPotentiallyRetransmitted());
+  }
+
+  @Test
   public void testGettersAndSettersAAA() throws Exception {
 	  rxServerSession.fetchCurrentState(rxMessageFactory.createAARequest());
     AAAnswer aaa = rxServerSession.createAAAnswer();
@@ -276,6 +287,17 @@ public class RxFactoriesTest {
   }
 
   @Test
+  public void hasTFlagSetASA() throws Exception {
+    AbortSessionRequest asr = rxMessageFactory.createAbortSessionRequest();
+    ((DiameterMessageImpl) asr).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Abort-Session-Request", asr.getHeader().isPotentiallyRetransmitted());
+
+    AbortSessionAnswer asa = rxMessageFactory.createAbortSessionAnswer(asr);
+    assertFalse("The 'T' flag should not be set in Abort-Session-Answer", asa.getHeader().isPotentiallyRetransmitted());
+  }
+
+  @Test
   public void testGettersAndSettersASA() throws Exception {
     AbortSessionAnswer asa = rxMessageFactory.createAbortSessionAnswer(rxMessageFactory.createAbortSessionRequest());
 
@@ -348,6 +370,17 @@ public class RxFactoriesTest {
   }
 
   @Test
+  public void hasTFlagSetRAA() throws Exception {
+    ReAuthRequest rar = rxMessageFactory.createReAuthRequest();
+    ((DiameterMessageImpl) rar).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Re-Auth-Request", rar.getHeader().isPotentiallyRetransmitted());
+
+    ReAuthAnswer raa = rxMessageFactory.createReAuthAnswer(rar);
+    assertFalse("The 'T' flag should not be set in Re-Auth-Answer", raa.getHeader().isPotentiallyRetransmitted());
+  }
+
+  @Test
   public void testGettersAndSettersRAA() throws Exception {
     ReAuthAnswer raa = rxMessageFactory.createReAuthAnswer(rxMessageFactory.createReAuthRequest());
 
@@ -417,6 +450,17 @@ public class RxFactoriesTest {
 
     sta = rxMessageFactory.createSessionTerminationAnswer(str);
     assertEquals("The 'P' bit is not copied from request in Session-Termination-Answer, it should. [RFC3588/6.2]", str.getHeader().isProxiable(), sta.getHeader().isProxiable());
+  }
+
+  @Test
+  public void hasTFlagSetSTA() throws Exception {
+    SessionTerminationRequest str = rxMessageFactory.createSessionTerminationRequest();
+    ((DiameterMessageImpl) str).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Session-Termination-Request", str.getHeader().isPotentiallyRetransmitted());
+
+    SessionTerminationAnswer sta = rxMessageFactory.createSessionTerminationAnswer(str);
+    assertFalse("The 'T' flag should not be set in Session-Termination-Answer", sta.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
