@@ -174,7 +174,7 @@ public class CCAFactoriesTest {
     assertTrue("The 'T' flag should be set in Credit-Control-Request", ccr.getHeader().isPotentiallyRetransmitted());
 
     CreditControlAnswer cca = ccaMessageFactory.createCreditControlAnswer(ccr);
-    assertFalse("The 'T' flag should be set in Credit-Control-Answer", cca.getHeader().isPotentiallyRetransmitted());
+    assertFalse("The 'T' flag should not be set in Credit-Control-Answer", cca.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
