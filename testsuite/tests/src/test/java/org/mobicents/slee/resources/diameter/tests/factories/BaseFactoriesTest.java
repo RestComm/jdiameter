@@ -159,7 +159,7 @@ public class BaseFactoriesTest {
     assertTrue("The 'T' flag should be set in Abort-Session-Request", asr.getHeader().isPotentiallyRetransmitted());
 
     AbortSessionAnswer asa = messageFactory.createAbortSessionAnswer(asr);
-    assertFalse("The 'T' flag should be set in Abort-Session-Answer", asa.getHeader().isPotentiallyRetransmitted());
+    assertFalse("The 'T' flag should not be set in Abort-Session-Answer", asa.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -234,7 +234,7 @@ public class BaseFactoriesTest {
     assertTrue("The 'T' flag should be set in Accounting-Request", acr.getHeader().isPotentiallyRetransmitted());
 
     AccountingAnswer aca = messageFactory.createAccountingAnswer(acr);
-    assertFalse("The 'T' flag should be set in Accounting-Answer", aca.getHeader().isPotentiallyRetransmitted());
+    assertFalse("The 'T' flag should not be set in Accounting-Answer", aca.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -307,7 +307,7 @@ public class BaseFactoriesTest {
     assertTrue("The 'T' flag should be set in Capabilities-Exchange-Request", cer.getHeader().isPotentiallyRetransmitted());
 
     CapabilitiesExchangeAnswer cea = messageFactory.createCapabilitiesExchangeAnswer(cer);
-    assertFalse("The 'T' flag should be set in Capabilities-Exchange-Answer", cea.getHeader().isPotentiallyRetransmitted());
+    assertFalse("The 'T' flag should not be set in Capabilities-Exchange-Answer", cea.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -380,7 +380,7 @@ public class BaseFactoriesTest {
     assertTrue("The 'T' flag should be set in Device-Watchdog-Request", dwr.getHeader().isPotentiallyRetransmitted());
 
     DeviceWatchdogAnswer dwa = messageFactory.createDeviceWatchdogAnswer(dwr);
-    assertFalse("The 'T' flag should be set in Device-Watchdog-Answer", dwa.getHeader().isPotentiallyRetransmitted());
+    assertFalse("The 'T' flag should not be set in Device-Watchdog-Answer", dwa.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -453,7 +453,7 @@ public class BaseFactoriesTest {
     assertTrue("The 'T' flag should be set in Disconnect-Peer-Request", dpr.getHeader().isPotentiallyRetransmitted());
 
     DisconnectPeerAnswer dpa = messageFactory.createDisconnectPeerAnswer(dpr);
-    assertFalse("The 'T' flag should be set in Disconnect-Peer-Answer", dpa.getHeader().isPotentiallyRetransmitted());
+    assertFalse("The 'T' flag should not be set in Disconnect-Peer-Answer", dpa.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -526,7 +526,7 @@ public class BaseFactoriesTest {
     assertTrue("The 'T' flag should be set in Re-Auth-Request", rar.getHeader().isPotentiallyRetransmitted());
 
     ReAuthAnswer raa = messageFactory.createReAuthAnswer(rar);
-    assertFalse("The 'T' flag should be set in Re-Auth-Answer", raa.getHeader().isPotentiallyRetransmitted());
+    assertFalse("The 'T' flag should not be set in Re-Auth-Answer", raa.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -599,7 +599,7 @@ public class BaseFactoriesTest {
     assertTrue("The 'T' flag should be set in Session-Termination-Request", str.getHeader().isPotentiallyRetransmitted());
 
     SessionTerminationAnswer sta = messageFactory.createSessionTerminationAnswer(str);
-    assertFalse("The 'T' flag should be set in Session-Termination-Answer", sta.getHeader().isPotentiallyRetransmitted());
+    assertFalse("The 'T' flag should not be set in Session-Termination-Answer", sta.getHeader().isPotentiallyRetransmitted());
   }
   @Test
   public void testGettersAndSettersSTA() throws Exception {
