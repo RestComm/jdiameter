@@ -167,6 +167,17 @@ public class CCAFactoriesTest {
   }
 
   @Test
+  public void hasTFlagSetCCA() throws Exception {
+    CreditControlRequest ccr = ccaMessageFactory.createCreditControlRequest();
+    ((DiameterMessageImpl) ccr).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Credit-Control-Request", ccr.getHeader().isPotentiallyRetransmitted());
+
+    CreditControlAnswer cca = ccaMessageFactory.createCreditControlAnswer(ccr);
+    assertFalse("The 'T' flag should be set in Credit-Control-Answer", cca.getHeader().isPotentiallyRetransmitted());
+  }
+
+  @Test
   public void testGettersAndSettersCCA() throws Exception {
     CreditControlAnswer cca = ccaMessageFactory.createCreditControlAnswer(ccaMessageFactory.createCreditControlRequest("582364567346578348"));
 
@@ -819,14 +830,14 @@ public class CCAFactoriesTest {
       // add(UseUriAsFqdn, true);
       // Set Common Applications
       add(ApplicationId,
-      // AppId 1
+          // AppId 1
           getInstance().
           add(VendorId, 193L).
           add(AuthApplId, 0L).
           add(AcctApplId, 19302L));
       // Set peer table
       add(PeerTable,
-      // Peer 1
+          // Peer 1
           getInstance().
           add(PeerRating, 1).
           add(PeerName, serverURI));
