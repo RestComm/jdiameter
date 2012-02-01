@@ -32,6 +32,7 @@ import net.java.slee.resource.diameter.cxdx.events.LocationInfoAnswer;
 import net.java.slee.resource.diameter.cxdx.events.LocationInfoRequest;
 import net.java.slee.resource.diameter.cxdx.events.MultimediaAuthenticationAnswer;
 import net.java.slee.resource.diameter.cxdx.events.MultimediaAuthenticationRequest;
+import net.java.slee.resource.diameter.cxdx.events.PushProfileAnswer;
 import net.java.slee.resource.diameter.cxdx.events.PushProfileRequest;
 import net.java.slee.resource.diameter.cxdx.events.RegistrationTerminationAnswer;
 import net.java.slee.resource.diameter.cxdx.events.RegistrationTerminationRequest;
@@ -114,7 +115,43 @@ public class CxDxFactoriesTest {
 
   private static CxDxServerSessionImpl serverSession;
   private static CxDxClientSessionImpl clientSession;
-  
+
+  //  // test set application-id
+  //  @Test
+  //  public void testSetApplicationId() throws Exception {
+  //    ApplicationId appId = ((CxDxMessageFactoryImpl)cxdxMessageFactory).getApplicationId();
+  //    long vendorId = appId.getVendorId();
+  //    long authAppId = appId.getAuthAppId();
+  //    
+  //    assertTrue("Auth-Application-Id in Message Factory is not correctly set", authAppId != 0);
+  //    
+  //    LocationInfoRequest lir = cxdxMessageFactory.createLocationInfoRequest();
+  //    if(vendorId != 0) {
+  //      VendorSpecificApplicationIdAvp vsaiAvp = lir.getVendorSpecificApplicationId();
+  //      
+  //      assertFalse("No Vendor-Specific-Application-Id AVP found.", vsaiAvp == null);
+  //      
+  //      long msgAuthAppId = vsaiAvp.getAuthApplicationId();
+  //      
+  //      assertEquals("Auth-Application-Id in Vendor-Specific-Application-Id does not match factory value.", authAppId, msgAuthAppId);
+  //    }
+  //    else {
+  //      DiameterAvp authAppIdAvp = null;
+  //      DiameterAvp[] avps = lir.getAvps();
+  //      for (DiameterAvp avp : avps) {
+  //        if(avp.getCode() == Avp.AUTH_APPLICATION_ID) {
+  //          authAppIdAvp = avp;
+  //          break;
+  //        }
+  //      }
+  //      
+  //      assertFalse("No Auth-Application-Id AVP found.", authAppIdAvp == null);
+  //      
+  //      long msgAuthAppId = authAppIdAvp.longValue();
+  //      
+  //    }
+  //  }
+
   @Test
   public void isRequestLIR() throws Exception {
     LocationInfoRequest lir = cxdxMessageFactory.createLocationInfoRequest();
@@ -140,7 +177,7 @@ public class CxDxFactoriesTest {
   public void isAnswerLIA() throws Exception {
     serverSession.fetchSessionData(cxdxMessageFactory.createLocationInfoRequest());
     LocationInfoAnswer lia = serverSession.createLocationInfoAnswer();
-    
+
     assertFalse("Request Flag in Location-Info-Answer is set.", lia.getHeader().isRequest());
   }
 
@@ -186,6 +223,19 @@ public class CxDxFactoriesTest {
     assertEquals("The 'P' bit is not copied from request in Location-Info-Answer, it should. [RFC3588/6.2]", lir.getHeader().isProxiable(), lia.getHeader().isProxiable());
   }
 
+
+  @Test
+  public void hasTFlagSetLIA() throws Exception {
+    LocationInfoRequest lir = cxdxMessageFactory.createLocationInfoRequest();
+    ((DiameterMessageImpl) lir).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Location-Info-Request", lir.getHeader().isPotentiallyRetransmitted());
+
+    serverSession.fetchSessionData(lir);
+    LocationInfoAnswer lia = serverSession.createLocationInfoAnswer();
+    assertFalse("The 'T' flag should be set in Location-Info-Answer", lia.getHeader().isPotentiallyRetransmitted());
+  }
+
   @Test
   public void isRequestMAR() throws Exception {
     MultimediaAuthenticationRequest mar = cxdxMessageFactory.createMultimediaAuthenticationRequest();
@@ -211,7 +261,7 @@ public class CxDxFactoriesTest {
   public void isAnswerMAA() throws Exception {
     serverSession.fetchSessionData(cxdxMessageFactory.createMultimediaAuthenticationRequest());
     MultimediaAuthenticationAnswer maa = serverSession.createMultimediaAuthenticationAnswer();
-    
+
     assertFalse("Request Flag in Multimedia-Authentication-Answer is set.", maa.getHeader().isRequest());
   }
 
@@ -258,6 +308,18 @@ public class CxDxFactoriesTest {
   }
 
   @Test
+  public void hasTFlagSetMAA() throws Exception {
+    MultimediaAuthenticationRequest mar = cxdxMessageFactory.createMultimediaAuthenticationRequest();
+    ((DiameterMessageImpl) mar).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Multimedia-Authentication-Request", mar.getHeader().isPotentiallyRetransmitted());
+
+    serverSession.fetchSessionData(mar);
+    MultimediaAuthenticationAnswer maa = serverSession.createMultimediaAuthenticationAnswer();
+    assertFalse("The 'T' flag should be set in Multimedia-Authentication-Answer", maa.getHeader().isPotentiallyRetransmitted());
+  }
+
+  @Test
   public void isRequestPPR() throws Exception {
     PushProfileRequest ppr = cxdxMessageFactory.createPushProfileRequest();
     assertTrue("Request Flag in Push-Profile-Request is not set.", ppr.getHeader().isRequest());
@@ -270,6 +332,68 @@ public class CxDxFactoriesTest {
     int nFailures = AvpAssistant.testMethods(ppr, PushProfileRequest.class);
 
     assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
+  }
+
+  @Test
+  public void isAnswerPPA() throws Exception {
+    clientSession.fetchSessionData(cxdxMessageFactory.createPushProfileRequest());
+    PushProfileAnswer ppa = clientSession.createPushProfileAnswer();
+
+    assertFalse("Request Flag in Push-Profile-Answer is set.", ppa.getHeader().isRequest());
+  }
+
+  @Test
+  public void testGettersAndSettersPPA() throws Exception {
+    clientSession.fetchSessionData(cxdxMessageFactory.createPushProfileRequest());
+    PushProfileAnswer ppa = clientSession.createPushProfileAnswer();
+
+    int nFailures = AvpAssistant.testMethods(ppa, PushProfileAnswer.class);
+
+    assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
+  }
+
+  @Test
+  public void hasDestinationHostPPA() throws Exception {
+    clientSession.fetchSessionData(cxdxMessageFactory.createPushProfileRequest());
+    PushProfileAnswer ppa = clientSession.createPushProfileAnswer();
+
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", ppa.getDestinationHost());
+  }
+
+  @Test
+  public void hasDestinationRealmPPA() throws Exception {
+    clientSession.fetchSessionData(cxdxMessageFactory.createPushProfileRequest());
+    PushProfileAnswer ppa = clientSession.createPushProfileAnswer();
+
+    assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", ppa.getDestinationRealm());
+  }
+
+  @Test
+  public void isProxiableCopiedPPA() throws Exception {
+    PushProfileRequest ppr = cxdxMessageFactory.createPushProfileRequest();
+    clientSession.fetchSessionData(ppr);
+    PushProfileAnswer ppa = clientSession.createPushProfileAnswer();
+    assertEquals("The 'P' bit is not copied from request in Push-Profile-Answer, it should. [RFC3588/6.2]", ppr.getHeader().isProxiable(), ppa.getHeader().isProxiable());
+
+    // Reverse 'P' bit ...
+    ((DiameterMessageImpl) ppr).getGenericData().setProxiable(!ppr.getHeader().isProxiable());
+    assertTrue("The 'P' bit was not modified in Push-Profile-Request, it should.", ppr.getHeader().isProxiable() != ppa.getHeader().isProxiable());
+    clientSession.fetchSessionData(ppr);
+
+    ppa = clientSession.createPushProfileAnswer();
+    assertEquals("The 'P' bit is not copied from request in Push-Profile-Answer, it should. [RFC3588/6.2]", ppr.getHeader().isProxiable(), ppa.getHeader().isProxiable());
+  }
+
+  @Test
+  public void hasTFlagSetPPA() throws Exception {
+    PushProfileRequest ppr = cxdxMessageFactory.createPushProfileRequest();
+    ((DiameterMessageImpl) ppr).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Push-Profile-Request", ppr.getHeader().isPotentiallyRetransmitted());
+
+    clientSession.fetchSessionData(ppr);
+    PushProfileAnswer ppa = clientSession.createPushProfileAnswer();
+    assertFalse("The 'T' flag should be set in Push-Profile-Answer", ppa.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -297,7 +421,7 @@ public class CxDxFactoriesTest {
   public void isAnswerRTA() throws Exception {
     clientSession.fetchSessionData(cxdxMessageFactory.createRegistrationTerminationRequest());
     RegistrationTerminationAnswer rta = clientSession.createRegistrationTerminationAnswer();
-    
+
     assertFalse("Request Flag in Registration-Termination-Answer is set.", rta.getHeader().isRequest());
   }
 
@@ -305,7 +429,7 @@ public class CxDxFactoriesTest {
   public void testGettersAndSettersRTA() throws Exception {
     clientSession.fetchSessionData(cxdxMessageFactory.createRegistrationTerminationRequest());
     RegistrationTerminationAnswer rta = clientSession.createRegistrationTerminationAnswer();
-    
+
     int nFailures = AvpAssistant.testMethods(rta, RegistrationTerminationAnswer.class);
 
     assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
@@ -323,7 +447,7 @@ public class CxDxFactoriesTest {
   public void hasDestinationRealmRTA() throws Exception {
     clientSession.fetchSessionData(cxdxMessageFactory.createRegistrationTerminationRequest());
     RegistrationTerminationAnswer rta = clientSession.createRegistrationTerminationAnswer();
-    
+
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", rta.getDestinationRealm());
   }
 
@@ -341,6 +465,18 @@ public class CxDxFactoriesTest {
 
     rta = clientSession.createRegistrationTerminationAnswer();
     assertEquals("The 'P' bit is not copied from request in Registration-Termination-Answer, it should. [RFC3588/6.2]", rtr.getHeader().isProxiable(), rta.getHeader().isProxiable());
+  }
+
+  @Test
+  public void hasTFlagSetRTA() throws Exception {
+    RegistrationTerminationRequest rtr = cxdxMessageFactory.createRegistrationTerminationRequest();
+    ((DiameterMessageImpl) rtr).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Registration-Termination-Request", rtr.getHeader().isPotentiallyRetransmitted());
+
+    clientSession.fetchSessionData(rtr);
+    RegistrationTerminationAnswer rta = clientSession.createRegistrationTerminationAnswer();
+    assertFalse("The 'T' flag should be set in Registration-Termination-Answer", rta.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -368,7 +504,7 @@ public class CxDxFactoriesTest {
   public void isAnswerSAA() throws Exception {
     serverSession.fetchSessionData(cxdxMessageFactory.createServerAssignmentRequest());
     ServerAssignmentAnswer saa = serverSession.createServerAssignmentAnswer();
-    
+
     assertFalse("Request Flag in Server-Assignment-Answer is set.", saa.getHeader().isRequest());
   }
 
@@ -376,7 +512,7 @@ public class CxDxFactoriesTest {
   public void testGettersAndSettersSAA() throws Exception {
     serverSession.fetchSessionData(cxdxMessageFactory.createServerAssignmentRequest());
     ServerAssignmentAnswer saa = serverSession.createServerAssignmentAnswer();
-    
+
     int nFailures = AvpAssistant.testMethods(saa, ServerAssignmentAnswer.class);
 
     assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
@@ -394,7 +530,7 @@ public class CxDxFactoriesTest {
   public void hasDestinationRealmSAA() throws Exception {
     serverSession.fetchSessionData(cxdxMessageFactory.createServerAssignmentRequest());
     ServerAssignmentAnswer saa = serverSession.createServerAssignmentAnswer();
-    
+
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", saa.getDestinationRealm());
   }
 
@@ -412,6 +548,18 @@ public class CxDxFactoriesTest {
 
     saa = serverSession.createServerAssignmentAnswer();
     assertEquals("The 'P' bit is not copied from request in Server-Assignment-Answer, it should. [RFC3588/6.2]", sar.getHeader().isProxiable(), saa.getHeader().isProxiable());
+  }
+
+  @Test
+  public void hasTFlagSetSAA() throws Exception {
+    ServerAssignmentRequest sar = cxdxMessageFactory.createServerAssignmentRequest();
+    ((DiameterMessageImpl) sar).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in Server-Assignment-Request", sar.getHeader().isPotentiallyRetransmitted());
+
+    serverSession.fetchSessionData(sar);
+    ServerAssignmentAnswer saa = serverSession.createServerAssignmentAnswer();
+    assertFalse("The 'T' flag should be set in Server-Assignment-Answer", saa.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -439,7 +587,7 @@ public class CxDxFactoriesTest {
   public void isAnswerUAA() throws Exception {
     serverSession.fetchSessionData(cxdxMessageFactory.createUserAuthorizationRequest());
     UserAuthorizationAnswer uaa = serverSession.createUserAuthorizationAnswer();
-    
+
     assertFalse("Request Flag in Server-Assignment-Answer is set.", uaa.getHeader().isRequest());
   }
 
@@ -447,7 +595,7 @@ public class CxDxFactoriesTest {
   public void testGettersAndSettersUAA() throws Exception {
     serverSession.fetchSessionData(cxdxMessageFactory.createUserAuthorizationRequest());
     UserAuthorizationAnswer uaa = serverSession.createUserAuthorizationAnswer();
-    
+
     int nFailures = AvpAssistant.testMethods(uaa, UserAuthorizationAnswer.class);
 
     assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
@@ -465,7 +613,7 @@ public class CxDxFactoriesTest {
   public void hasDestinationRealmUAA() throws Exception {
     serverSession.fetchSessionData(cxdxMessageFactory.createUserAuthorizationRequest());
     UserAuthorizationAnswer uaa = serverSession.createUserAuthorizationAnswer();
-    
+
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", uaa.getDestinationRealm());
   }
 
@@ -483,6 +631,18 @@ public class CxDxFactoriesTest {
 
     uaa = serverSession.createUserAuthorizationAnswer();
     assertEquals("The 'P' bit is not copied from request in User-Authorization-Answer, it should. [RFC3588/6.2]", uar.getHeader().isProxiable(), uaa.getHeader().isProxiable());
+  }
+
+  @Test
+  public void hasTFlagSetUAA() throws Exception {
+    UserAuthorizationRequest uar = cxdxMessageFactory.createUserAuthorizationRequest();
+    ((DiameterMessageImpl) uar).getGenericData().setReTransmitted(true);
+
+    assertTrue("The 'T' flag should be set in User-Authorization-Request", uar.getHeader().isPotentiallyRetransmitted());
+
+    serverSession.fetchSessionData(uar);
+    UserAuthorizationAnswer uaa = serverSession.createUserAuthorizationAnswer();
+    assertFalse("The 'T' flag should be set in User-Authorization-Answer", uaa.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
