@@ -15,8 +15,8 @@
 
 	<properties>
 		<!-- Mobicents Diameter Components Versions -->
-		<mobicents.diameter.jdiameter.version>1.5.7.0-build510-SNAPSHOT</mobicents.diameter.jdiameter.version>
-		<mobicents.diameter.jdiameter-ha.version>1.0.0-SNAPSHOT</mobicents.diameter.jdiameter-ha.version>
+		<mobicents.diameter.jdiameter.version>1.5.8.0-build519</mobicents.diameter.jdiameter.version>
+		<mobicents.diameter.jdiameter-ha.version>1.0.0.CR2</mobicents.diameter.jdiameter-ha.version>
 
 		<!-- Other Mobicents Components Versions -->
 		<mobicents.tools.mavenplugin.eclipse.version>1.0.0.BETA2</mobicents.tools.mavenplugin.eclipse.version>
