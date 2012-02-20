@@ -48,6 +48,7 @@ import net.java.slee.resource.diameter.s6a.events.avp.AMBRAvp;
 import net.java.slee.resource.diameter.s6a.events.avp.APNConfigurationAvp;
 import net.java.slee.resource.diameter.s6a.events.avp.APNConfigurationProfileAvp;
 import net.java.slee.resource.diameter.s6a.events.avp.ActiveAPNAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.AllAPNConfigurationsIncludedIndicator;
 import net.java.slee.resource.diameter.s6a.events.avp.AllocationRetentionPriorityAvp;
 import net.java.slee.resource.diameter.s6a.events.avp.AuthenticationInfoAvp;
 import net.java.slee.resource.diameter.s6a.events.avp.DiameterS6aAvpCodes;
@@ -59,6 +60,7 @@ import net.java.slee.resource.diameter.s6a.events.avp.MIP6AgentInfoAvp;
 import net.java.slee.resource.diameter.s6a.events.avp.MIPHomeAgentHostAvp;
 import net.java.slee.resource.diameter.s6a.events.avp.MMELocationInformationAvp;
 import net.java.slee.resource.diameter.s6a.events.avp.MMEUserStateAvp;
+import net.java.slee.resource.diameter.s6a.events.avp.PDNType;
 import net.java.slee.resource.diameter.s6a.events.avp.RequestedEUTRANAuthenticationInfoAvp;
 import net.java.slee.resource.diameter.s6a.events.avp.RequestedUTRANGERANAuthenticationInfoAvp;
 import net.java.slee.resource.diameter.s6a.events.avp.SGSNLocationInformationAvp;
@@ -193,6 +195,33 @@ public class S6aFactoriesTest {
     int nFailures = AvpAssistant.testMethods(ula, UpdateLocationAnswer.class);
 
     assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
+  }
+
+  @Test
+  // Test for http://code.google.com/p/mobicents/issues/detail?id=3096
+  public void testGroupedChildAVPsULA() throws Exception {
+    UpdateLocationRequest ulr = s6aMessageFactory.createUpdateLocationRequest();
+    serverSession.fetchSessionData(ulr);
+    UpdateLocationAnswer ula = serverSession.createUpdateLocationAnswer();
+    SubscriptionDataAvp sd = s6aAvpFactory.createSubscriptionData();
+    
+    // AMBR
+    AMBRAvp ambr = s6aAvpFactory.createAMBR();
+    ambr.setMaxRequestedBandwidthDL(12L);
+    ambr.setMaxRequestedBandwidthUL(6L);
+    sd.setAMBR(ambr);
+    
+    // APNConfigurationProfile
+    APNConfigurationProfileAvp apnCP = s6aAvpFactory.createAPNConfigurationProfile();
+    apnCP.setAllAPNConfigurationsIncludedIndicator(AllAPNConfigurationsIncludedIndicator.ALL_APN_CONFIGURATIONS_INCLUDED);
+    APNConfigurationAvp apnC = s6aAvpFactory.createAPNConfiguration();
+    apnC.setContextIdentifier(123L);
+    apnC.setPDNType(PDNType.IPv4_OR_IPv6);
+    apnC.setServiceSelection("...");
+    apnCP.setAPNConfiguration(apnC);
+    sd.setAPNConfigurationProfile(apnCP);
+    
+    ula.setSubscriptionData(sd);
   }
 
   @Test
