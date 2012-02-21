@@ -41,6 +41,7 @@ import static org.jdiameter.server.impl.helpers.Parameters.RealmHosts;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmLocalAction;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmName;
 import static org.junit.Assert.*;
+import static org.mobicents.slee.resources.diameter.tests.factories.BaseFactoriesTest.*;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.IPFilterRule;
 import net.java.slee.resource.diameter.gq.GqAvpFactory;
@@ -69,6 +70,7 @@ import net.java.slee.resource.diameter.gq.events.avp.V4TransportAddress;
 import net.java.slee.resource.diameter.gq.events.avp.V6TransportAddress;
 
 import org.jdiameter.api.Answer;
+import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.Stack;
@@ -112,7 +114,8 @@ public class GqFactoriesTest {
 
   private static Stack stack;
 
-  private static GqServerSession session; 
+  private static GqServerSession serverSession; 
+  //private static GqClientSession clientSession; 
 
   static {
     stack = new org.jdiameter.client.impl.StackImpl();
@@ -143,12 +146,15 @@ public class GqFactoriesTest {
   }
 
   private GqServerSessionActivity gqServerSession = null;
+  //private GqClientSessionActivity gqClientSession = null;
 
   public GqFactoriesTest() {
     try {
       GqSessionFactoryImpl gqSessionFactory = new GqSessionFactoryImpl(stack.getSessionFactory());
-      session = new GqServerSessionImpl(new ServerAuthSessionDataLocalImpl(), (ISessionFactory) stack.getSessionFactory(), gqSessionFactory, gqSessionFactory, gqSessionFactory, gqSessionFactory, 30000L, true);
-      gqServerSession = new GqServerSessionActivityImpl(gqMessageFactory.getBaseMessageFactory(), gqAvpFactory.getBaseFactory(), session, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), stack);
+      serverSession = new GqServerSessionImpl(new ServerAuthSessionDataLocalImpl(), (ISessionFactory) stack.getSessionFactory(), gqSessionFactory, gqSessionFactory, gqSessionFactory, gqSessionFactory, 30000L, true);
+      //clientSession = new GqClientSessionImpl(new ClientAuthSessionDataLocalImpl(), (ISessionFactory) stack.getSessionFactory(), gqSessionFactory, gqSessionFactory, gqSessionFactory, gqSessionFactory, true);
+      gqServerSession = new GqServerSessionActivityImpl(gqMessageFactory.getBaseMessageFactory(), gqAvpFactory.getBaseFactory(), serverSession, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), stack);
+      //gqClientSession = new GqClientSessionActivityImpl(gqMessageFactory.getBaseMessageFactory(), gqAvpFactory.getBaseFactory(), clientSession, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), stack);
       //((GqServerSessionActivityImpl)roServerSession).fetchCurrentState(roMessageFactory.createGqAARequest());
     }
     catch (IllegalDiameterStateException e) {
@@ -1063,6 +1069,247 @@ public class GqFactoriesTest {
 
   public long[] getApplicationIds() {
     return new long[]{GqMessageFactory._GQ_AUTH_APP_ID};
+  }
+
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeAAR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((GqMessageFactoryImpl)gqMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Gq is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    GqAARequest originalAAR = gqMessageFactory.createGqAARequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalAAR);
+
+    // now we switch..
+    originalAAR = null;
+    isVendor = !isVendor;
+    ((GqMessageFactoryImpl)gqMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    GqAARequest changedAAR = gqMessageFactory.createGqAARequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedAAR);
+
+    // revert back to default
+    ((GqMessageFactoryImpl)gqMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeAAA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((GqMessageFactoryImpl)gqMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Gq is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    GqAAAnswer originalAAA = gqMessageFactory.createGqAAAnswer(gqMessageFactory.createGqAARequest());
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalAAA);
+
+    // now we switch..
+    originalAAA = null;
+    isVendor = !isVendor;
+    ((GqMessageFactoryImpl)gqMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    GqAAAnswer changedAAA = gqMessageFactory.createGqAAAnswer(gqMessageFactory.createGqAARequest());
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedAAA);
+
+    // revert back to default
+    ((GqMessageFactoryImpl)gqMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeASR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((GqMessageFactoryImpl)gqMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Gq is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    GqAbortSessionRequest originalASR = gqMessageFactory.createGqAbortSessionRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalASR);
+
+    // now we switch..
+    originalASR = null;
+    isVendor = !isVendor;
+    ((GqMessageFactoryImpl)gqMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    GqAbortSessionRequest changedASR = gqMessageFactory.createGqAbortSessionRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedASR);
+
+    // revert back to default
+    ((GqMessageFactoryImpl)gqMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeASA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((GqMessageFactoryImpl)gqMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Gq is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    GqAbortSessionAnswer originalASA = gqMessageFactory.createGqAbortSessionAnswer(gqMessageFactory.createGqAbortSessionRequest());
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalASA);
+
+    // now we switch..
+    originalASA = null;
+    isVendor = !isVendor;
+    ((GqMessageFactoryImpl)gqMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    GqAbortSessionAnswer changedASA = gqMessageFactory.createGqAbortSessionAnswer(gqMessageFactory.createGqAbortSessionRequest());
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedASA);
+
+    // revert back to default
+    ((GqMessageFactoryImpl)gqMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeRAR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((GqMessageFactoryImpl)gqMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Gq is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    GqReAuthRequest originalRAR = gqMessageFactory.createGqReAuthRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalRAR);
+
+    // now we switch..
+    originalRAR = null;
+    isVendor = !isVendor;
+    ((GqMessageFactoryImpl)gqMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    GqReAuthRequest changedRAR = gqMessageFactory.createGqReAuthRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedRAR);
+
+    // revert back to default
+    ((GqMessageFactoryImpl)gqMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeRAA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((GqMessageFactoryImpl)gqMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Gq is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    GqReAuthAnswer originalRAA = gqMessageFactory.createGqReAuthAnswer(gqMessageFactory.createGqReAuthRequest());
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalRAA);
+
+    // now we switch..
+    originalRAA = null;
+    isVendor = !isVendor;
+    ((GqMessageFactoryImpl)gqMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    GqReAuthAnswer changedRAA = gqMessageFactory.createGqReAuthAnswer(gqMessageFactory.createGqReAuthRequest());
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedRAA);
+
+    // revert back to default
+    ((GqMessageFactoryImpl)gqMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeSTR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((GqMessageFactoryImpl)gqMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Gq is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    GqSessionTerminationRequest originalSTR = gqMessageFactory.createGqSessionTerminationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalSTR);
+
+    // now we switch..
+    originalSTR = null;
+    isVendor = !isVendor;
+    ((GqMessageFactoryImpl)gqMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    GqSessionTerminationRequest changedSTR = gqMessageFactory.createGqSessionTerminationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedSTR);
+
+    // revert back to default
+    ((GqMessageFactoryImpl)gqMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeSTA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((GqMessageFactoryImpl)gqMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Gq is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    GqSessionTerminationAnswer originalSTA = gqMessageFactory.createGqSessionTerminationAnswer(gqMessageFactory.createGqSessionTerminationRequest());
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalSTA);
+
+    // now we switch..
+    originalSTA = null;
+    isVendor = !isVendor;
+    ((GqMessageFactoryImpl)gqMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    GqSessionTerminationAnswer changedSTA = gqMessageFactory.createGqSessionTerminationAnswer(gqMessageFactory.createGqSessionTerminationRequest());
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedSTA);
+
+    // revert back to default
+    ((GqMessageFactoryImpl)gqMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
   }
 
 }
