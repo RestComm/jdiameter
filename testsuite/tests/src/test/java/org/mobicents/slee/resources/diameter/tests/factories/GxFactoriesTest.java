@@ -40,11 +40,10 @@ import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryIsDynamic;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmHosts;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmLocalAction;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmName;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.mobicents.slee.resources.diameter.tests.factories.BaseFactoriesTest.*;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
+import net.java.slee.resource.diameter.cca.events.avp.CcRequestType;
 import net.java.slee.resource.diameter.gx.GxAvpFactory;
 import net.java.slee.resource.diameter.gx.GxClientSessionActivity;
 import net.java.slee.resource.diameter.gx.GxMessageFactory;
@@ -55,6 +54,7 @@ import net.java.slee.resource.diameter.gx.events.GxReAuthAnswer;
 import net.java.slee.resource.diameter.gx.events.GxReAuthRequest;
 
 import org.jdiameter.api.Answer;
+import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.OverloadException;
@@ -126,6 +126,8 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
     gxAvpFactory = new GxAvpFactoryImpl(baseAvpFactory);
     try {
       gxMessageFactory = new GxMessageFactoryImpl(baseFactory, stack.getSessionFactory().getNewSession().getSessionId(), stack);
+      // Gx: Vendor-Specific-Application-Id is not permitted, only Auth-Application-Id;
+      ((GxMessageFactoryImpl)gxMessageFactory).setApplicationId(0L, 16777224L);
     }
     catch (Exception e) {
       e.printStackTrace();
@@ -146,8 +148,8 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
     try {
       serverSession = new ServerGxSessionImpl(new ServerGxSessionDataLocalImpl(), this, (ISessionFactory) stack.getSessionFactory(), this, null, null);
       clientSession = new ClientGxSessionImpl(new ClientGxSessionDataLocalImpl(), this, (ISessionFactory) stack.getSessionFactory(), this, null, null);
-      gxServerSession = new GxServerSessionActivityImpl(gxMessageFactory.getBaseMessageFactory(), gxAvpFactory.getBaseFactory(), serverSession, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), stack);
-      gxClientSession = new GxClientSessionActivityImpl(gxMessageFactory.getBaseMessageFactory(), gxAvpFactory.getBaseFactory(), clientSession, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), stack);
+      gxServerSession = new GxServerSessionActivityImpl(gxMessageFactory, gxAvpFactory, serverSession, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), stack);
+      gxClientSession = new GxClientSessionActivityImpl(gxMessageFactory, gxAvpFactory, clientSession, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), stack);
       ((GxServerSessionActivityImpl)gxServerSession).fetchCurrentState(gxMessageFactory.createGxCreditControlRequest());
     }
     catch (IllegalDiameterStateException e) {
@@ -177,7 +179,7 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
   }
 
   @Test
-  public void hasGxApplicationIdCCR() throws Exception {
+  public void  GxApplicationIdCCR() throws Exception {
     GxCreditControlRequest ccr = gxMessageFactory.createGxCreditControlRequest();
     assertTrue("Auth-Application-Id AVP in Gx CCR must be 16777224, it is " + ccr.getAuthApplicationId(), ccr.getAuthApplicationId() == 16777224);
   }
@@ -329,6 +331,159 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", raa.getDestinationRealm());    
   }
 
+  @Test
+  public void testMessageFactoryApplicationIdChangeCCR() throws Exception {
+    long vendor = 10415L; 
+    ApplicationId originalAppId = ((GxMessageFactoryImpl)gxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Gx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    GxCreditControlRequest originalCCR = gxMessageFactory.createGxCreditControlRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalCCR);
+    
+    // now we switch..
+    originalCCR = null;
+    isVendor = !isVendor;
+    ((GxMessageFactoryImpl)gxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+    
+    // create a new message and see how it comes...
+    GxCreditControlRequest changedCCR = gxMessageFactory.createGxCreditControlRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedCCR);
+
+    // revert back to default
+    ((GxMessageFactoryImpl)gxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeRAR() throws Exception {
+    long vendor = 10415L; 
+    ApplicationId originalAppId = ((GxMessageFactoryImpl)gxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Gx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    GxReAuthRequest originalRAR = gxMessageFactory.createGxReAuthRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalRAR);
+    
+    // now we switch..
+    originalRAR = null;
+    isVendor = !isVendor;
+    ((GxMessageFactoryImpl)gxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+    
+    // create a new message and see how it comes...
+    GxCreditControlRequest changedRAR = gxMessageFactory.createGxCreditControlRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedRAR);
+
+    // revert back to default
+    ((GxMessageFactoryImpl)gxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeInClientSessionCCR() throws Exception {
+    long vendor = 10415L; 
+    ApplicationId originalAppId = ((GxMessageFactoryImpl)gxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Gx is " + originalAppId.getVendorId());
+
+    // let's create a message and see how it comes...
+    GxCreditControlRequest originalCCR = gxClientSession.createGxCreditControlRequest(CcRequestType.EVENT_REQUEST);
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalCCR);
+
+    // now we switch..
+    originalCCR = null;
+    isVendor = !isVendor;
+    ((GxMessageFactoryImpl)gxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    GxCreditControlRequest changedCCR = gxClientSession.createGxCreditControlRequest(CcRequestType.EVENT_REQUEST);
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedCCR);
+
+    // revert back to default
+    ((GxMessageFactoryImpl)gxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeInClientSessionRAA() throws Exception {
+    long vendor = 10415L; 
+    ApplicationId originalAppId = ((GxMessageFactoryImpl)gxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Gx is " + originalAppId.getVendorId());
+
+    // let's create a message and see how it comes...
+    GxReAuthAnswer originalRAA = gxClientSession.createGxReAuthAnswer(gxMessageFactory.createGxReAuthRequest());
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalRAA);
+
+    // now we switch..
+    originalRAA = null;
+    isVendor = !isVendor;
+    ((GxMessageFactoryImpl)gxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    GxReAuthAnswer changedRAA = gxClientSession.createGxReAuthAnswer(gxMessageFactory.createGxReAuthRequest());
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedRAA);
+
+    // revert back to default
+    ((GxMessageFactoryImpl)gxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeInServerSessionCCA() throws Exception {
+    long vendor = 10415L; 
+    ApplicationId originalAppId = ((GxMessageFactoryImpl)gxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Gx is " + originalAppId.getVendorId());
+
+    // let's create a message and see how it comes...
+    GxCreditControlAnswer originalCCA = gxServerSession.createGxCreditControlAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalCCA);
+
+    // now we switch..
+    originalCCA = null;
+    isVendor = !isVendor;
+    ((GxMessageFactoryImpl)gxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    GxCreditControlAnswer changedCCA = gxServerSession.createGxCreditControlAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedCCA);
+
+    // revert back to default
+    ((GxMessageFactoryImpl)gxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
   /**
    * Class representing the Diameter Configuration  
    */
@@ -349,7 +504,7 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
           add(VendorId,   193L).
           add(AuthApplId, 0L).
           add(AcctApplId, 19302L)
-      );
+          );
       // Set peer table
       add(PeerTable,
           // Peer 1
@@ -358,14 +513,14 @@ public class GxFactoriesTest implements IGxMessageFactory, ServerGxSessionListen
           add(PeerName, serverURI));
       // Set realm table
       add(RealmTable, 
-              // Realm 1
-              getInstance().add(RealmEntry, getInstance().
-                  add(RealmName, realmName).
-                  add(ApplicationId, getInstance().add(VendorId, 193L).add(AuthApplId, 0L).add(AcctApplId, 19302L)).
-                  add(RealmHosts, clientHost + ", " + serverHost).
-                  add(RealmLocalAction, "LOCAL").
-                  add(RealmEntryIsDynamic, false).
-                  add(RealmEntryExpTime, 1000L)));
+          // Realm 1
+          getInstance().add(RealmEntry, getInstance().
+              add(RealmName, realmName).
+              add(ApplicationId, getInstance().add(VendorId, 193L).add(AuthApplId, 0L).add(AcctApplId, 19302L)).
+              add(RealmHosts, clientHost + ", " + serverHost).
+              add(RealmLocalAction, "LOCAL").
+              add(RealmEntryIsDynamic, false).
+              add(RealmEntryExpTime, 1000L)));
     }
   }
 
