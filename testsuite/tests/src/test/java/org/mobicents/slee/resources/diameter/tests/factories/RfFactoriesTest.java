@@ -44,48 +44,50 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mobicents.slee.resources.diameter.tests.factories.BaseFactoriesTest.*;
 import net.java.slee.resource.diameter.base.DiameterActivity;
 import net.java.slee.resource.diameter.base.events.avp.AccountingRecordType;
+import net.java.slee.resource.diameter.rf.RfAvpFactory;
 import net.java.slee.resource.diameter.rf.RfMessageFactory;
 import net.java.slee.resource.diameter.rf.RfServerSessionActivity;
 import net.java.slee.resource.diameter.rf.events.RfAccountingAnswer;
 import net.java.slee.resource.diameter.rf.events.RfAccountingRequest;
-import net.java.slee.resource.diameter.ro.RoAvpFactory;
-import net.java.slee.resource.diameter.ro.events.avp.AdditionalContentInformation;
-import net.java.slee.resource.diameter.ro.events.avp.AddressDomain;
-import net.java.slee.resource.diameter.ro.events.avp.ApplicationServerInformation;
-import net.java.slee.resource.diameter.ro.events.avp.EventType;
-import net.java.slee.resource.diameter.ro.events.avp.ImsInformation;
-import net.java.slee.resource.diameter.ro.events.avp.InterOperatorIdentifier;
-import net.java.slee.resource.diameter.ro.events.avp.LcsClientId;
-import net.java.slee.resource.diameter.ro.events.avp.LcsClientName;
-import net.java.slee.resource.diameter.ro.events.avp.LcsInformation;
-import net.java.slee.resource.diameter.ro.events.avp.LcsRequestorId;
-import net.java.slee.resource.diameter.ro.events.avp.LocationType;
-import net.java.slee.resource.diameter.ro.events.avp.MbmsInformation;
-import net.java.slee.resource.diameter.ro.events.avp.MbmsServiceType;
-import net.java.slee.resource.diameter.ro.events.avp.MbmsUserServiceType;
-import net.java.slee.resource.diameter.ro.events.avp.MessageBody;
-import net.java.slee.resource.diameter.ro.events.avp.MessageClass;
-import net.java.slee.resource.diameter.ro.events.avp.MmContentType;
-import net.java.slee.resource.diameter.ro.events.avp.MmsInformation;
-import net.java.slee.resource.diameter.ro.events.avp.NodeFunctionality;
-import net.java.slee.resource.diameter.ro.events.avp.OriginatorAddress;
-import net.java.slee.resource.diameter.ro.events.avp.PocInformation;
-import net.java.slee.resource.diameter.ro.events.avp.PsFurnishChargingInformation;
-import net.java.slee.resource.diameter.ro.events.avp.PsInformation;
-import net.java.slee.resource.diameter.ro.events.avp.RecipientAddress;
-import net.java.slee.resource.diameter.ro.events.avp.SdpMediaComponent;
-import net.java.slee.resource.diameter.ro.events.avp.ServiceInformation;
-import net.java.slee.resource.diameter.ro.events.avp.TalkBurstExchange;
-import net.java.slee.resource.diameter.ro.events.avp.TimeStamps;
-import net.java.slee.resource.diameter.ro.events.avp.TrunkGroupId;
-import net.java.slee.resource.diameter.ro.events.avp.WlanInformation;
+import net.java.slee.resource.diameter.rf.events.avp.AdditionalContentInformation;
+import net.java.slee.resource.diameter.rf.events.avp.AddressDomain;
+import net.java.slee.resource.diameter.rf.events.avp.ApplicationServerInformation;
+import net.java.slee.resource.diameter.rf.events.avp.EventType;
+import net.java.slee.resource.diameter.rf.events.avp.ImsInformation;
+import net.java.slee.resource.diameter.rf.events.avp.InterOperatorIdentifier;
+import net.java.slee.resource.diameter.rf.events.avp.LcsClientId;
+import net.java.slee.resource.diameter.rf.events.avp.LcsClientName;
+import net.java.slee.resource.diameter.rf.events.avp.LcsInformation;
+import net.java.slee.resource.diameter.rf.events.avp.LcsRequestorId;
+import net.java.slee.resource.diameter.rf.events.avp.LocationType;
+import net.java.slee.resource.diameter.rf.events.avp.MbmsInformation;
+import net.java.slee.resource.diameter.rf.events.avp.MbmsServiceType;
+import net.java.slee.resource.diameter.rf.events.avp.MbmsUserServiceType;
+import net.java.slee.resource.diameter.rf.events.avp.MessageBody;
+import net.java.slee.resource.diameter.rf.events.avp.MessageClass;
+import net.java.slee.resource.diameter.rf.events.avp.MmContentType;
+import net.java.slee.resource.diameter.rf.events.avp.MmsInformation;
+import net.java.slee.resource.diameter.rf.events.avp.NodeFunctionality;
+import net.java.slee.resource.diameter.rf.events.avp.OriginatorAddress;
+import net.java.slee.resource.diameter.rf.events.avp.PocInformation;
+import net.java.slee.resource.diameter.rf.events.avp.PsFurnishChargingInformation;
+import net.java.slee.resource.diameter.rf.events.avp.PsInformation;
+import net.java.slee.resource.diameter.rf.events.avp.RecipientAddress;
+import net.java.slee.resource.diameter.rf.events.avp.SdpMediaComponent;
+import net.java.slee.resource.diameter.rf.events.avp.ServiceInformation;
+import net.java.slee.resource.diameter.rf.events.avp.TalkBurstExchange;
+import net.java.slee.resource.diameter.rf.events.avp.TimeStamps;
+import net.java.slee.resource.diameter.rf.events.avp.TrunkGroupId;
+import net.java.slee.resource.diameter.rf.events.avp.WlanInformation;
 
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.Stack;
+import org.jdiameter.api.rf.ClientRfSession;
 import org.jdiameter.api.rf.ServerRfSession;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
@@ -93,14 +95,13 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.slee.resource.diameter.base.DiameterActivityHandle;
-import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.base.handlers.DiameterRAInterface;
+import org.mobicents.slee.resource.diameter.rf.RfAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.rf.RfMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.rf.RfServerSessionActivityImpl;
 import org.mobicents.slee.resource.diameter.rf.handlers.RfSessionFactory;
-import org.mobicents.slee.resource.diameter.ro.RoAvpFactoryImpl;
 
 /**
  * Test class for JAIN SLEE Diameter Rf (Offline Charging) RA Message and AVP Factories
@@ -120,11 +121,12 @@ public class RfFactoriesTest implements DiameterRAInterface {
   private static String realmName = "mobicents.org";
 
   private static RfMessageFactory rfMessageFactory;
-  private static RoAvpFactory rfAvpFactory;
+  private static RfAvpFactory rfAvpFactory;
 
   private static Stack stack;
 
-  private static ServerRfSession session;
+  private static ServerRfSession serverSession;
+  // private static ClientRfSession clientSession;
 
   static {
     stack = new org.jdiameter.client.impl.StackImpl();
@@ -136,10 +138,10 @@ public class RfFactoriesTest implements DiameterRAInterface {
     }
 
     DiameterMessageFactoryImpl baseFactory = new DiameterMessageFactoryImpl(stack);
-    DiameterAvpFactoryImpl baseAvpFactory = new DiameterAvpFactoryImpl();
+    // DiameterAvpFactoryImpl baseAvpFactory = new DiameterAvpFactoryImpl();
 
     rfMessageFactory = new RfMessageFactoryImpl(baseFactory, null, stack);
-    rfAvpFactory = new RoAvpFactoryImpl(baseAvpFactory);
+    rfAvpFactory = new RfAvpFactoryImpl();
 
     try {
       AvpDictionary.INSTANCE.parseDictionary(RfFactoriesTest.class.getClassLoader().getResourceAsStream("dictionary.xml"));
@@ -150,6 +152,7 @@ public class RfFactoriesTest implements DiameterRAInterface {
   }
 
   private RfServerSessionActivity rfServerSession = null;
+  // private RfClientSessionActivity rfClientSession = null;
   private RfSessionFactory accSessionFactory;
 
   public RfFactoriesTest() {
@@ -159,18 +162,20 @@ public class RfFactoriesTest implements DiameterRAInterface {
       // this.accSessionFactory.registerListener(this, 5000L, sf);
 
       ((ISessionFactory) sf).registerAppFacory(ServerRfSession.class, accSessionFactory);
+      ((ISessionFactory) sf).registerAppFacory(ClientRfSession.class, accSessionFactory);
 
       RfAccountingRequest acr = rfMessageFactory.createRfAccountingRequest(AccountingRecordType.EVENT_RECORD);
 
       acr.setAccountingRecordNumber(5L); // needed for answer creation later ...
 
-      session = ((ISessionFactory) sf).getNewAppSession(null, null, ServerRfSession.class, ((DiameterMessageImpl) acr).getGenericData());
-      rfServerSession = new RfServerSessionActivityImpl((DiameterMessageFactoryImpl) rfMessageFactory.getBaseMessageFactory(), (DiameterAvpFactoryImpl) rfAvpFactory.getBaseFactory(), session, null,
-          null, stack);
+      serverSession = ((ISessionFactory) sf).getNewAppSession(null, null, ServerRfSession.class, ((DiameterMessageImpl) acr).getGenericData());
+      // clientSession = ((ISessionFactory) sf).getNewAppSession(null, null, ClientRfSession.class);
+      rfServerSession = new RfServerSessionActivityImpl(rfMessageFactory, rfAvpFactory, serverSession, null, null, stack);
+      // rfClientSession = new RfClientSessionActivityImpl(rfMessageFactory, rfAvpFactory, clientSession, null, null, stack);
 
       // FIXME: ammendonca: this is needed?
       ((RfServerSessionActivityImpl) rfServerSession).fetchSessionData(acr, true);
-      // ((RfServerSessionActivityImpl)rfServerSession).setSession(session);
+      // ((RfServerSessionActivityImpl)rfServerSession).setSession(serverSession);
     }
     catch (Exception e) {
       e.printStackTrace();
@@ -1498,6 +1503,73 @@ public class RfFactoriesTest implements DiameterRAInterface {
   @Test
   public void testAvpFactoryCreateWlanRadioContainer() throws Exception {
     // 1
+  }
+
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeACR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((RfMessageFactoryImpl)rfMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Rf is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    RfAccountingRequest originalACR = rfMessageFactory.createRfAccountingRequest(AccountingRecordType.EVENT_RECORD);
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalACR);
+
+    // now we switch..
+    originalACR = null;
+    isVendor = !isVendor;
+    ((RfMessageFactoryImpl)rfMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    RfAccountingRequest changedACR = rfMessageFactory.createRfAccountingRequest(AccountingRecordType.EVENT_RECORD);
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedACR);
+
+    // revert back to default
+    ((RfMessageFactoryImpl)rfMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testServerSessionApplicationIdChangeACA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((RfMessageFactoryImpl)rfMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Rf is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    RfAccountingRequest acr = rfMessageFactory.createRfAccountingRequest(AccountingRecordType.EVENT_RECORD);
+    ((RfServerSessionActivityImpl)rfServerSession).fetchSessionData(acr, true);
+
+    RfAccountingAnswer originalACA = rfServerSession.createRfAccountingAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalACA);
+
+    // now we switch..
+    originalACA = null;
+    isVendor = !isVendor;
+    ((RfMessageFactoryImpl)rfMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    RfAccountingAnswer changedACA = rfServerSession.createRfAccountingAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedACA);
+
+    changedACA = rfServerSession.createRfAccountingAnswer(acr);
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedACA);
+
+    // revert back to default
+    ((RfMessageFactoryImpl)rfMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
   }
 
   /**
