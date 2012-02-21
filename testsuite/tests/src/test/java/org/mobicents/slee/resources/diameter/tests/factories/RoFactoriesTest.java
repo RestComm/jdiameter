@@ -44,14 +44,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mobicents.slee.resources.diameter.tests.factories.BaseFactoriesTest.*;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
+import net.java.slee.resource.diameter.cca.events.avp.CcRequestType;
 import net.java.slee.resource.diameter.ro.RoAvpFactory;
+import net.java.slee.resource.diameter.ro.RoClientSessionActivity;
 import net.java.slee.resource.diameter.ro.RoMessageFactory;
 import net.java.slee.resource.diameter.ro.RoServerSessionActivity;
 import net.java.slee.resource.diameter.ro.events.RoCreditControlAnswer;
 import net.java.slee.resource.diameter.ro.events.RoCreditControlRequest;
 
 import org.jdiameter.api.Answer;
+import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.OverloadException;
@@ -63,9 +67,13 @@ import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.auth.events.ReAuthAnswer;
 import org.jdiameter.api.auth.events.ReAuthRequest;
+import org.jdiameter.api.ro.ClientRoSession;
+import org.jdiameter.api.ro.ClientRoSessionListener;
 import org.jdiameter.api.ro.ServerRoSession;
 import org.jdiameter.api.ro.ServerRoSessionListener;
 import org.jdiameter.client.api.ISessionFactory;
+import org.jdiameter.client.impl.app.ro.ClientRoSessionDataLocalImpl;
+import org.jdiameter.client.impl.app.ro.ClientRoSessionImpl;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
 import org.jdiameter.common.api.app.ro.IRoMessageFactory;
 import org.jdiameter.server.impl.app.ro.ServerRoSessionDataLocalImpl;
@@ -76,6 +84,7 @@ import org.mobicents.slee.resource.diameter.base.DiameterAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.ro.RoAvpFactoryImpl;
+import org.mobicents.slee.resource.diameter.ro.RoClientSessionActivityImpl;
 import org.mobicents.slee.resource.diameter.ro.RoMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.ro.RoServerSessionActivityImpl;
 
@@ -84,7 +93,7 @@ import org.mobicents.slee.resource.diameter.ro.RoServerSessionActivityImpl;
  * 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public class RoFactoriesTest implements IRoMessageFactory, ServerRoSessionListener {
+public class RoFactoriesTest implements IRoMessageFactory, ServerRoSessionListener, ClientRoSessionListener {
 
   private static String clientHost = "127.0.0.1";
   private static String clientPort = "13868";
@@ -101,7 +110,8 @@ public class RoFactoriesTest implements IRoMessageFactory, ServerRoSessionListen
 
   private static Stack stack;
 
-  private static ServerRoSession session;
+  private static ServerRoSession serverSession;
+  private static ClientRoSession clientSession;
 
   static {
     stack = new org.jdiameter.client.impl.StackImpl();
@@ -132,11 +142,14 @@ public class RoFactoriesTest implements IRoMessageFactory, ServerRoSessionListen
   }
 
   private RoServerSessionActivity roServerSession = null;
+  private RoClientSessionActivity roClientSession = null;
 
   public RoFactoriesTest() {
     try {
-      session = new ServerRoSessionImpl(new ServerRoSessionDataLocalImpl(), this, (ISessionFactory) stack.getSessionFactory(), this, null, null);
-      roServerSession = new RoServerSessionActivityImpl(roMessageFactory.getBaseMessageFactory(), roAvpFactory.getBaseFactory(), session, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), stack);
+      serverSession = new ServerRoSessionImpl(new ServerRoSessionDataLocalImpl(), this, (ISessionFactory) stack.getSessionFactory(), this, null, null);
+      clientSession = new ClientRoSessionImpl(new ClientRoSessionDataLocalImpl(), this, (ISessionFactory) stack.getSessionFactory(), this, null, null);
+      roServerSession = new RoServerSessionActivityImpl(roMessageFactory, roAvpFactory, serverSession, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), stack);
+      roClientSession = new RoClientSessionActivityImpl(roMessageFactory, roAvpFactory, clientSession, new DiameterIdentity("127.0.0.2"), new DiameterIdentity("mobicents.org"), stack);
       ((RoServerSessionActivityImpl) roServerSession).fetchCurrentState(roMessageFactory.createRoCreditControlRequest());
     }
     catch (IllegalDiameterStateException e) {
@@ -232,6 +245,99 @@ public class RoFactoriesTest implements IRoMessageFactory, ServerRoSessionListen
     assertNull("The Destination-Host and Destination-Realm AVPs MUST NOT be present in the answer message. [RFC3588/6.2]", cca.getDestinationRealm());
   }
 
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeCCR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((RoMessageFactoryImpl)roMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Ro is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    RoCreditControlRequest originalCCR = roMessageFactory.createRoCreditControlRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalCCR);
+
+    // now we switch..
+    originalCCR = null;
+    isVendor = !isVendor;
+    ((RoMessageFactoryImpl)roMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    RoCreditControlRequest changedCCR = roMessageFactory.createRoCreditControlRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedCCR);
+
+    // revert back to default
+    ((RoMessageFactoryImpl)roMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testClientSessionApplicationIdChangeCCR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((RoMessageFactoryImpl)roMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Ro is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    RoCreditControlRequest originalCCR = roClientSession.createRoCreditControlRequest(CcRequestType.EVENT_REQUEST);
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalCCR);
+
+    // now we switch..
+    originalCCR = null;
+    isVendor = !isVendor;
+    ((RoMessageFactoryImpl)roMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    RoCreditControlRequest changedCCR = roClientSession.createRoCreditControlRequest(CcRequestType.EVENT_REQUEST);
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedCCR);
+
+    // revert back to default
+    ((RoMessageFactoryImpl)roMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testServerSessionApplicationIdChangeCCA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((RoMessageFactoryImpl)roMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Ro is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    RoCreditControlRequest ccr = roMessageFactory.createRoCreditControlRequest();
+    ((RoServerSessionActivityImpl)roServerSession).fetchCurrentState(ccr);
+    RoCreditControlAnswer originalCCA = roServerSession.createRoCreditControlAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalCCA);
+
+    // now we switch..
+    originalCCA = null;
+    isVendor = !isVendor;
+    ((RoMessageFactoryImpl)roMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    RoCreditControlAnswer changedCCA = roServerSession.createRoCreditControlAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedCCA);
+
+    // revert back to default
+    ((RoMessageFactoryImpl)roMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
   /**
    * Class representing the Diameter Configuration
    */
@@ -300,6 +406,26 @@ public class RoFactoriesTest implements IRoMessageFactory, ServerRoSessionListen
   public org.jdiameter.api.ro.events.RoCreditControlAnswer createCreditControlAnswer(Answer answer) {
     // NO-OP
     return null;
+  }
+
+  public void doCreditControlAnswer(ClientRoSession session, org.jdiameter.api.ro.events.RoCreditControlRequest request,
+      org.jdiameter.api.ro.events.RoCreditControlAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+    // NO-OP
+  }
+
+  public void doReAuthRequest(ClientRoSession session, ReAuthRequest request) throws InternalException, IllegalDiameterStateException, RouteException,
+      OverloadException {
+    // NO-OP
+  }
+
+  public int getDefaultDDFHValue() {
+    // NO-OP
+    return 0;
+  }
+
+  public int getDefaultCCFHValue() {
+    // NO-OP
+    return 0;
   }
 
 }
