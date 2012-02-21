@@ -22,21 +22,28 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mobicents.slee.resources.diameter.tests.factories.BaseFactoriesTest.checkCorrectApplicationIdAVPs;
+import net.java.slee.resource.diameter.base.events.avp.AuthSessionStateType;
+import net.java.slee.resource.diameter.sh.client.ShClientMessageFactory;
+import net.java.slee.resource.diameter.sh.events.ProfileUpdateRequest;
+import net.java.slee.resource.diameter.sh.events.PushNotificationAnswer;
+import net.java.slee.resource.diameter.sh.events.PushNotificationRequest;
+import net.java.slee.resource.diameter.sh.events.SubscribeNotificationsRequest;
+import net.java.slee.resource.diameter.sh.events.UserDataRequest;
 import net.java.slee.resource.diameter.sh.events.avp.DataReferenceType;
 import net.java.slee.resource.diameter.sh.events.avp.DiameterShAvpCodes;
 import net.java.slee.resource.diameter.sh.events.avp.SubsReqType;
 import net.java.slee.resource.diameter.sh.events.avp.SupportedApplicationsAvp;
 import net.java.slee.resource.diameter.sh.events.avp.SupportedFeaturesAvp;
 import net.java.slee.resource.diameter.sh.events.avp.UserIdentityAvp;
-import net.java.slee.resource.diameter.sh.events.ProfileUpdateRequest;
-import net.java.slee.resource.diameter.sh.events.PushNotificationAnswer;
-import net.java.slee.resource.diameter.sh.events.PushNotificationRequest;
-import net.java.slee.resource.diameter.sh.events.SubscribeNotificationsRequest;
-import net.java.slee.resource.diameter.sh.events.UserDataRequest;
 
+import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.Stack;
+import org.jdiameter.api.sh.ClientShSession;
+import org.jdiameter.client.impl.app.sh.ShClientSessionImpl;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
+import org.jdiameter.common.impl.app.sh.ShSessionFactoryImpl;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mobicents.diameter.dictionary.AvpDictionary;
@@ -45,6 +52,7 @@ import org.mobicents.slee.resource.diameter.base.DiameterMessageFactoryImpl;
 import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
 import org.mobicents.slee.resource.diameter.sh.DiameterShAvpFactoryImpl;
 import org.mobicents.slee.resource.diameter.sh.client.ShClientMessageFactoryImpl;
+import org.mobicents.slee.resource.diameter.sh.client.ShClientSubscriptionActivityImpl;
 import org.mobicents.slee.resource.diameter.sh.events.avp.UserIdentityAvpImpl;
 import org.mobicents.slee.resource.diameter.sh.server.ShServerMessageFactoryImpl;
 
@@ -76,6 +84,10 @@ public class ShClientFactoriesTest {
   private static DiameterShAvpFactoryImpl shAvpFactory;
   private static Stack stack;
 
+  //private static ShServerActivityImpl serverSession;
+  //private static ShClientActivityImpl clientSession;
+  private static ShClientSubscriptionActivityImpl clientSubsSession;
+
   static {
     stack = new org.jdiameter.client.impl.StackImpl();
     try {
@@ -88,17 +100,27 @@ public class ShClientFactoriesTest {
 
     DiameterMessageFactoryImpl baseMessageFactory = new DiameterMessageFactoryImpl(stack);
     Session session = null;
-
+    ShSessionFactoryImpl sf = null;
+    
     try {
       session = stack.getSessionFactory().getNewSession();
+      sf = new ShSessionFactoryImpl(stack.getSessionFactory());
     }
     catch (Exception e) {
       // let's go with null
       e.printStackTrace();
     }
-    shClientFactory = new ShClientMessageFactoryImpl(stack);
     shAvpFactory = new DiameterShAvpFactoryImpl(new DiameterAvpFactoryImpl());
+    shClientFactory = new ShClientMessageFactoryImpl(stack);
     shServerFactory = new ShServerMessageFactoryImpl(baseMessageFactory, session, stack, shAvpFactory);
+
+    ApplicationId shAppId = org.jdiameter.api.ApplicationId.createByAuthAppId(ShClientMessageFactory._SH_VENDOR_ID, ShClientMessageFactory._SH_APP_ID);
+    //ShServerSessionImpl stackServerSession = (ShServerSessionImpl) sf.getNewSession("123", ServerShSession.class, shAppId, new Object[0]);
+    //serverSession = new ShServerActivityImpl(shServerFactory, shAvpFactory, stackServerSession, null, null);
+
+    ShClientSessionImpl stackClientSession = (ShClientSessionImpl) sf.getNewSession("321", ClientShSession.class, shAppId, new Object[0]);
+    //clientSession = new ShClientActivityImpl(shClientFactory, shAvpFactory, stackClientSession, null, null);
+    clientSubsSession = new ShClientSubscriptionActivityImpl(shClientFactory, shAvpFactory, stackClientSession, null, null);
   }
 
   @Test
@@ -424,6 +446,163 @@ public class ShClientFactoriesTest {
 
     // Make sure they match!
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + setExtensionAvps should be equal to original.", uiAvp2, uiAvp3);
+  }
+
+
+  @Test
+  public void testMessageFactoryApplicationIdChangePUR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((ShClientMessageFactoryImpl)shClientFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Sh is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    ProfileUpdateRequest originalPUR = shClientFactory.createProfileUpdateRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalPUR);
+
+    // now we switch..
+    originalPUR = null;
+    isVendor = !isVendor;
+    ((ShClientMessageFactoryImpl)shClientFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    ProfileUpdateRequest changedPUR = shClientFactory.createProfileUpdateRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedPUR);
+
+    // revert back to default
+    ((ShClientMessageFactoryImpl)shClientFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangePNA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((ShClientMessageFactoryImpl)shClientFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Sh is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    PushNotificationAnswer originalPNA = shClientFactory.createPushNotificationAnswer(shServerFactory.createPushNotificationRequest());
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalPNA);
+
+    // now we switch..
+    originalPNA = null;
+    isVendor = !isVendor;
+    ((ShClientMessageFactoryImpl)shClientFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    PushNotificationAnswer changedPNA = shClientFactory.createPushNotificationAnswer(shServerFactory.createPushNotificationRequest());
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedPNA);
+
+    // revert back to default
+    ((ShClientMessageFactoryImpl)shClientFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testClientSessionApplicationIdChangePNA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((ShClientMessageFactoryImpl)shClientFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Sh is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    PushNotificationRequest pnr = shServerFactory.createPushNotificationRequest();
+    UserIdentityAvp uiAvp = shAvpFactory.createUserIdentity();
+    uiAvp.setPublicIdentity("alexandre@mobicents.org");
+    pnr.setUserIdentity(uiAvp);
+    pnr.setAuthSessionState(AuthSessionStateType.NO_STATE_MAINTAINED);
+    clientSubsSession.fetchSessionData(pnr, true);
+    PushNotificationAnswer originalPNA = clientSubsSession.createPushNotificationAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalPNA);
+
+    // now we switch..
+    originalPNA = null;
+    isVendor = !isVendor;
+    ((ShClientMessageFactoryImpl)shClientFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    PushNotificationAnswer changedPNA = clientSubsSession.createPushNotificationAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedPNA);
+
+    // revert back to default
+    ((ShClientMessageFactoryImpl)shClientFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeSNR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((ShClientMessageFactoryImpl)shClientFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Sh is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    SubscribeNotificationsRequest originalSNR = shClientFactory.createSubscribeNotificationsRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalSNR);
+
+    // now we switch..
+    originalSNR = null;
+    isVendor = !isVendor;
+    ((ShClientMessageFactoryImpl)shClientFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    SubscribeNotificationsRequest changedSNR = shClientFactory.createSubscribeNotificationsRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedSNR);
+
+    // revert back to default
+    ((ShClientMessageFactoryImpl)shClientFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeUDR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((ShClientMessageFactoryImpl)shClientFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for Sh is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    UserDataRequest originalUDR = shClientFactory.createUserDataRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalUDR);
+
+    // now we switch..
+    originalUDR = null;
+    isVendor = !isVendor;
+    ((ShClientMessageFactoryImpl)shClientFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    UserDataRequest changedUDR = shClientFactory.createUserDataRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedUDR);
+
+    // revert back to default
+    ((ShClientMessageFactoryImpl)shClientFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
   }
 
   /**
