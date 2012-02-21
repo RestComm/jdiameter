@@ -26,6 +26,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mobicents.slee.resources.diameter.tests.factories.BaseFactoriesTest.*;
 import net.java.slee.resource.diameter.s6a.S6aAVPFactory;
 import net.java.slee.resource.diameter.s6a.S6aMessageFactory;
 import net.java.slee.resource.diameter.s6a.events.AuthenticationInformationAnswer;
@@ -1084,4 +1085,500 @@ public class S6aFactoriesTest {
     assertEquals("Some methods have failed. See logs for more details.", 0, nFailures);
   }
 
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeULR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((S6aMessageFactoryImpl)s6aMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for S6a is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    UpdateLocationRequest originalULR = s6aMessageFactory.createUpdateLocationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalULR);
+
+    // now we switch..
+    originalULR = null;
+    isVendor = !isVendor;
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    UpdateLocationRequest changedULR = s6aMessageFactory.createUpdateLocationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedULR);
+
+    // revert back to default
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testServerSessionApplicationIdChangeULA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((S6aMessageFactoryImpl)s6aMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for S6a is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    UpdateLocationRequest ulr = s6aMessageFactory.createUpdateLocationRequest();
+    serverSession.fetchSessionData(ulr);
+    UpdateLocationAnswer originalULA = serverSession.createUpdateLocationAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalULA);
+
+    // now we switch..
+    originalULA = null;
+    isVendor = !isVendor;
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    UpdateLocationAnswer changedULA = serverSession.createUpdateLocationAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedULA);
+
+    // revert back to default
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeAIR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((S6aMessageFactoryImpl)s6aMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for S6a is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    AuthenticationInformationRequest originalAIR = s6aMessageFactory.createAuthenticationInformationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalAIR);
+
+    // now we switch..
+    originalAIR = null;
+    isVendor = !isVendor;
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    AuthenticationInformationRequest changedAIR = s6aMessageFactory.createAuthenticationInformationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedAIR);
+
+    // revert back to default
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testServerSessionApplicationIdChangeAIA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((S6aMessageFactoryImpl)s6aMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for S6a is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    AuthenticationInformationRequest air = s6aMessageFactory.createAuthenticationInformationRequest();
+    serverSession.fetchSessionData(air);
+    AuthenticationInformationAnswer originalAIA = serverSession.createAuthenticationInformationAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalAIA);
+
+    // now we switch..
+    originalAIA = null;
+    isVendor = !isVendor;
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    AuthenticationInformationAnswer changedAIA = serverSession.createAuthenticationInformationAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedAIA);
+
+    // revert back to default
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeCLR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((S6aMessageFactoryImpl)s6aMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for S6a is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    CancelLocationRequest originalCLR = s6aMessageFactory.createCancelLocationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalCLR);
+
+    // now we switch..
+    originalCLR = null;
+    isVendor = !isVendor;
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    CancelLocationRequest changedCLR = s6aMessageFactory.createCancelLocationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedCLR);
+
+    // revert back to default
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testClientSessionApplicationIdChangeCLA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((S6aMessageFactoryImpl)s6aMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for S6a is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    CancelLocationRequest clr = s6aMessageFactory.createCancelLocationRequest();
+    clientSession.fetchSessionData(clr);
+    CancelLocationAnswer originalCLA = clientSession.createCancelLocationAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalCLA);
+
+    // now we switch..
+    originalCLA = null;
+    isVendor = !isVendor;
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    CancelLocationAnswer changedCLA = clientSession.createCancelLocationAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedCLA);
+
+    // revert back to default
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeIDR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((S6aMessageFactoryImpl)s6aMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for S6a is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    InsertSubscriberDataRequest originalIDR = s6aMessageFactory.createInsertSubscriberDataRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalIDR);
+
+    // now we switch..
+    originalIDR = null;
+    isVendor = !isVendor;
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    InsertSubscriberDataRequest changedIDR = s6aMessageFactory.createInsertSubscriberDataRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedIDR);
+
+    // revert back to default
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testClientSessionApplicationIdChangeIDA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((S6aMessageFactoryImpl)s6aMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for S6a is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    InsertSubscriberDataRequest idr = s6aMessageFactory.createInsertSubscriberDataRequest();
+    clientSession.fetchSessionData(idr);
+    InsertSubscriberDataAnswer originalIDA = clientSession.createInsertSubscriberDataAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalIDA);
+
+    // now we switch..
+    originalIDA = null;
+    isVendor = !isVendor;
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    InsertSubscriberDataAnswer changedIDA = clientSession.createInsertSubscriberDataAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedIDA);
+
+    // revert back to default
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeDSR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((S6aMessageFactoryImpl)s6aMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for S6a is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    DeleteSubscriberDataRequest originalDSR = s6aMessageFactory.createDeleteSubscriberDataRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalDSR);
+
+    // now we switch..
+    originalDSR = null;
+    isVendor = !isVendor;
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    DeleteSubscriberDataRequest changedDSR = s6aMessageFactory.createDeleteSubscriberDataRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedDSR);
+
+    // revert back to default
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testClientSessionApplicationIdChangeDSA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((S6aMessageFactoryImpl)s6aMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for S6a is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    DeleteSubscriberDataRequest dsr = s6aMessageFactory.createDeleteSubscriberDataRequest();
+    clientSession.fetchSessionData(dsr);
+    DeleteSubscriberDataAnswer originalDSA = clientSession.createDeleteSubscriberDataAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalDSA);
+
+    // now we switch..
+    originalDSA = null;
+    isVendor = !isVendor;
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    DeleteSubscriberDataAnswer changedDSA = clientSession.createDeleteSubscriberDataAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedDSA);
+
+    // revert back to default
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangePUR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((S6aMessageFactoryImpl)s6aMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for S6a is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    PurgeUERequest originalPUR = s6aMessageFactory.createPurgeUERequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalPUR);
+
+    // now we switch..
+    originalPUR = null;
+    isVendor = !isVendor;
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    PurgeUERequest changedPUR = s6aMessageFactory.createPurgeUERequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedPUR);
+
+    // revert back to default
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testServerSessionApplicationIdChangePUA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((S6aMessageFactoryImpl)s6aMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for S6a is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    PurgeUERequest pur = s6aMessageFactory.createPurgeUERequest();
+    serverSession.fetchSessionData(pur);
+    PurgeUEAnswer originalPUA = serverSession.createPurgeUEAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalPUA);
+
+    // now we switch..
+    originalPUA = null;
+    isVendor = !isVendor;
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    PurgeUEAnswer changedPUA = serverSession.createPurgeUEAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedPUA);
+
+    // revert back to default
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeRSR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((S6aMessageFactoryImpl)s6aMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for S6a is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    ResetRequest originalRSR = s6aMessageFactory.createResetRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalRSR);
+
+    // now we switch..
+    originalRSR = null;
+    isVendor = !isVendor;
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    ResetRequest changedRSR = s6aMessageFactory.createResetRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedRSR);
+
+    // revert back to default
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testClientSessionApplicationIdChangeRSA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((S6aMessageFactoryImpl)s6aMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for S6a is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    ResetRequest rsr = s6aMessageFactory.createResetRequest();
+    clientSession.fetchSessionData(rsr);
+    ResetAnswer originalRSA = clientSession.createResetAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalRSA);
+
+    // now we switch..
+    originalRSA = null;
+    isVendor = !isVendor;
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    ResetAnswer changedRSA = clientSession.createResetAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedRSA);
+
+    // revert back to default
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeNOR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((S6aMessageFactoryImpl)s6aMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for S6a is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    NotifyRequest originalNOR = s6aMessageFactory.createNotifyRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalNOR);
+
+    // now we switch..
+    originalNOR = null;
+    isVendor = !isVendor;
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    NotifyRequest changedNOR = s6aMessageFactory.createNotifyRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedNOR);
+
+    // revert back to default
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testServerSessionApplicationIdChangeNOA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((S6aMessageFactoryImpl)s6aMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for S6a is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    NotifyRequest nor = s6aMessageFactory.createNotifyRequest();
+    serverSession.fetchSessionData(nor);
+    NotifyAnswer originalNOA = serverSession.createNotifyAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalNOA);
+
+    // now we switch..
+    originalNOA = null;
+    isVendor = !isVendor;
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    NotifyAnswer changedNOA = serverSession.createNotifyAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedNOA);
+
+    // revert back to default
+    ((S6aMessageFactoryImpl)s6aMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
 }
