@@ -234,7 +234,7 @@ public class CxDxFactoriesTest {
 
     serverSession.fetchSessionData(lir);
     LocationInfoAnswer lia = serverSession.createLocationInfoAnswer();
-    assertFalse("The 'T' flag should be set in Location-Info-Answer", lia.getHeader().isPotentiallyRetransmitted());
+    assertFalse("The 'T' flag should not be set in Location-Info-Answer", lia.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -317,7 +317,7 @@ public class CxDxFactoriesTest {
 
     serverSession.fetchSessionData(mar);
     MultimediaAuthenticationAnswer maa = serverSession.createMultimediaAuthenticationAnswer();
-    assertFalse("The 'T' flag should be set in Multimedia-Authentication-Answer", maa.getHeader().isPotentiallyRetransmitted());
+    assertFalse("The 'T' flag should not be set in Multimedia-Authentication-Answer", maa.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -394,7 +394,7 @@ public class CxDxFactoriesTest {
 
     clientSession.fetchSessionData(ppr);
     PushProfileAnswer ppa = clientSession.createPushProfileAnswer();
-    assertFalse("The 'T' flag should be set in Push-Profile-Answer", ppa.getHeader().isPotentiallyRetransmitted());
+    assertFalse("The 'T' flag should not be set in Push-Profile-Answer", ppa.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -477,7 +477,7 @@ public class CxDxFactoriesTest {
 
     clientSession.fetchSessionData(rtr);
     RegistrationTerminationAnswer rta = clientSession.createRegistrationTerminationAnswer();
-    assertFalse("The 'T' flag should be set in Registration-Termination-Answer", rta.getHeader().isPotentiallyRetransmitted());
+    assertFalse("The 'T' flag should not be set in Registration-Termination-Answer", rta.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -560,7 +560,7 @@ public class CxDxFactoriesTest {
 
     serverSession.fetchSessionData(sar);
     ServerAssignmentAnswer saa = serverSession.createServerAssignmentAnswer();
-    assertFalse("The 'T' flag should be set in Server-Assignment-Answer", saa.getHeader().isPotentiallyRetransmitted());
+    assertFalse("The 'T' flag should not be set in Server-Assignment-Answer", saa.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
@@ -643,7 +643,7 @@ public class CxDxFactoriesTest {
 
     serverSession.fetchSessionData(uar);
     UserAuthorizationAnswer uaa = serverSession.createUserAuthorizationAnswer();
-    assertFalse("The 'T' flag should be set in User-Authorization-Answer", uaa.getHeader().isPotentiallyRetransmitted());
+    assertFalse("The 'T' flag should not be set in User-Authorization-Answer", uaa.getHeader().isPotentiallyRetransmitted());
   }
 
   @Test
