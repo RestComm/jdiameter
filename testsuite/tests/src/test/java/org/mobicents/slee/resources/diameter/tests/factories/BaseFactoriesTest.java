@@ -53,6 +53,7 @@ import net.java.slee.resource.diameter.base.events.CapabilitiesExchangeAnswer;
 import net.java.slee.resource.diameter.base.events.CapabilitiesExchangeRequest;
 import net.java.slee.resource.diameter.base.events.DeviceWatchdogAnswer;
 import net.java.slee.resource.diameter.base.events.DeviceWatchdogRequest;
+import net.java.slee.resource.diameter.base.events.DiameterMessage;
 import net.java.slee.resource.diameter.base.events.DisconnectPeerAnswer;
 import net.java.slee.resource.diameter.base.events.DisconnectPeerRequest;
 import net.java.slee.resource.diameter.base.events.ReAuthAnswer;
@@ -63,9 +64,11 @@ import net.java.slee.resource.diameter.base.events.avp.DiameterAvp;
 import net.java.slee.resource.diameter.base.events.avp.DiameterAvpCodes;
 import net.java.slee.resource.diameter.base.events.avp.DiameterIdentity;
 import net.java.slee.resource.diameter.base.events.avp.ExperimentalResultAvp;
+import net.java.slee.resource.diameter.base.events.avp.GroupedAvp;
 import net.java.slee.resource.diameter.base.events.avp.ProxyInfoAvp;
 import net.java.slee.resource.diameter.base.events.avp.VendorSpecificApplicationIdAvp;
 
+import org.jdiameter.api.Avp;
 import org.jdiameter.api.Stack;
 import org.jdiameter.client.impl.helpers.EmptyConfiguration;
 import org.junit.Assert;
@@ -82,6 +85,18 @@ import org.mobicents.slee.resource.diameter.base.events.DiameterMessageImpl;
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
 public class BaseFactoriesTest {
+
+  public static final int NO_APP_ID_AVPS = 0;
+  public static final int VENDOR_SPECIFIC_APP_ID = 16;
+  public static final int AUTH_APP_ID = 32;
+  public static final int ACCT_APP_ID = 64;
+  public static final int VENDOR_SPECIFIC_APP_ID_AUTH = VENDOR_SPECIFIC_APP_ID * AUTH_APP_ID; // 512
+  public static final int VENDOR_SPECIFIC_APP_ID_ACCT = VENDOR_SPECIFIC_APP_ID * ACCT_APP_ID; // 1024
+  public static final int VENDOR_SPECIFIC_APP_ID_AUTH_AND_ACCT = VENDOR_SPECIFIC_APP_ID * AUTH_APP_ID * ACCT_APP_ID; // 32768
+  public static final int AUTH_AND_ACCT_APP_ID = AUTH_APP_ID + ACCT_APP_ID; // 96
+  public static final int AUTH_AND_VENDOR_SPECIFIC_APP_ID = AUTH_APP_ID + VENDOR_SPECIFIC_APP_ID; // 48
+  public static final int ACCT_AND_VENDOR_SPECIFIC_APP_ID = ACCT_APP_ID + VENDOR_SPECIFIC_APP_ID; // 80
+  public static final int AUTH_ACCT_AND_VENDOR_SPECIFIC_APP_ID = AUTH_APP_ID + ACCT_APP_ID + VENDOR_SPECIFIC_APP_ID; // 112
 
   private static String clientHost = "127.0.0.1";
   private static String clientPort = "13868";
@@ -769,5 +784,65 @@ public class BaseFactoriesTest {
               add(RealmHosts, clientHost + ", " + serverHost).add(RealmLocalAction, "LOCAL").add(RealmEntryIsDynamic, false).add(RealmEntryExpTime, 1000L)));
     }
   }
+  
+  // Util methods for several applications 
+  
+  public static int getApplicationIdAvpsHash(DiameterMessage msg) {
+    int result = NO_APP_ID_AVPS;
+    int vsaiResult = 1;
+    for(DiameterAvp avp : msg.getAvps()) {
+      if(avp.getCode() == Avp.AUTH_APPLICATION_ID) {
+        result += AUTH_APP_ID;
+      }
+      else if(avp.getCode() == Avp.ACCT_APPLICATION_ID) {
+        result += ACCT_APP_ID;
+      }
+      if(avp.getCode() == Avp.VENDOR_SPECIFIC_APPLICATION_ID) {
+        result += VENDOR_SPECIFIC_APP_ID;
+        GroupedAvp vsai = (GroupedAvp)avp;
+        for(DiameterAvp subAvp : vsai.getExtensionAvps()) {
+          if(subAvp.getCode() == Avp.AUTH_APPLICATION_ID) {
+            vsaiResult *= AUTH_APP_ID;
+          }
+          else if(subAvp.getCode() == Avp.ACCT_APPLICATION_ID) {
+            vsaiResult *= ACCT_APP_ID;
+          }
+        }
+      }
+    }
+
+    if(result == VENDOR_SPECIFIC_APP_ID) {
+      result *= vsaiResult;
+    }
+
+    return result;
+  }
+
+  public static void checkCorrectApplicationIdAVPs(boolean isVendor, boolean isAuth, boolean isAcct, DiameterMessage message) {
+    int appIdCode = getApplicationIdAvpsHash(message);
+
+    assertFalse("Invalid Application ID AVPs found (" + appIdCode + ")", appIdCode == AUTH_AND_ACCT_APP_ID || appIdCode == AUTH_AND_VENDOR_SPECIFIC_APP_ID || 
+        appIdCode == ACCT_AND_VENDOR_SPECIFIC_APP_ID || appIdCode == AUTH_ACCT_AND_VENDOR_SPECIFIC_APP_ID || appIdCode == VENDOR_SPECIFIC_APP_ID_AUTH_AND_ACCT);
+
+    if(!isVendor) {
+      if(isAuth) {
+        assertEquals("Message should have Auth-Application-Id AVP. Application ID AVPs Hashcode mismatch... ", AUTH_APP_ID, appIdCode);
+      }
+      else if(isAcct) {
+        assertEquals("Message should have Acct-Application-Id AVP. Application ID AVPs Hashcode mismatch... ", ACCT_APP_ID, appIdCode);
+      }
+    }
+    else {
+      if(isAuth) {
+        assertEquals("Message should have Auth-Application-Id AVP. Application ID AVPs Hashcode mismatch... ", VENDOR_SPECIFIC_APP_ID_AUTH, appIdCode);
+      }
+      else if(isAcct) {
+        assertEquals("Message should have Acct-Application-Id AVP. Application ID AVPs Hashcode mismatch... ", VENDOR_SPECIFIC_APP_ID_ACCT, appIdCode);
+      }
+    }
+
+  }
+
+
 
 }

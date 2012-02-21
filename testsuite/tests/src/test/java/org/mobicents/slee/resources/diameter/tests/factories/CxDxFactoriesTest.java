@@ -26,6 +26,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mobicents.slee.resources.diameter.tests.factories.BaseFactoriesTest.*;
 import net.java.slee.resource.diameter.cxdx.CxDxAVPFactory;
 import net.java.slee.resource.diameter.cxdx.CxDxMessageFactory;
 import net.java.slee.resource.diameter.cxdx.events.LocationInfoAnswer;
@@ -1026,4 +1027,557 @@ public class CxDxFactoriesTest {
     Assert.assertEquals("Created " + avpName + " AVP from default constructor + setUnitValue should be equal to original.", siAvp2, siAvp3);
   }
 
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeLIR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((CxDxMessageFactoryImpl)cxdxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for CxDx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    LocationInfoRequest originalLIR = cxdxMessageFactory.createLocationInfoRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalLIR);
+
+    // now we switch..
+    originalLIR = null;
+    isVendor = !isVendor;
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    LocationInfoRequest changedLIR = cxdxMessageFactory.createLocationInfoRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedLIR);
+
+    // revert back to default
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeMAR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((CxDxMessageFactoryImpl)cxdxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for CxDx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    MultimediaAuthenticationRequest originalMAR = cxdxMessageFactory.createMultimediaAuthenticationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalMAR);
+
+    // now we switch..
+    originalMAR = null;
+    isVendor = !isVendor;
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    MultimediaAuthenticationRequest changedMAR = cxdxMessageFactory.createMultimediaAuthenticationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedMAR);
+
+    // revert back to default
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangePPR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((CxDxMessageFactoryImpl)cxdxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for CxDx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    PushProfileRequest originalPPR = cxdxMessageFactory.createPushProfileRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalPPR);
+
+    // now we switch..
+    originalPPR = null;
+    isVendor = !isVendor;
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    PushProfileRequest changedPPR = cxdxMessageFactory.createPushProfileRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedPPR);
+
+    // revert back to default
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeRTR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((CxDxMessageFactoryImpl)cxdxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for CxDx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    RegistrationTerminationRequest originalRTR = cxdxMessageFactory.createRegistrationTerminationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalRTR);
+
+    // now we switch..
+    originalRTR = null;
+    isVendor = !isVendor;
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    RegistrationTerminationRequest changedRTR = cxdxMessageFactory.createRegistrationTerminationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedRTR);
+
+    // revert back to default
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeSAR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((CxDxMessageFactoryImpl)cxdxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for CxDx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    ServerAssignmentRequest originalSAR = cxdxMessageFactory.createServerAssignmentRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalSAR);
+
+    // now we switch..
+    originalSAR = null;
+    isVendor = !isVendor;
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    ServerAssignmentRequest changedSAR = cxdxMessageFactory.createServerAssignmentRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedSAR);
+
+    // revert back to default
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testMessageFactoryApplicationIdChangeUAR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((CxDxMessageFactoryImpl)cxdxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for CxDx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    UserAuthorizationRequest originalUAR = cxdxMessageFactory.createUserAuthorizationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalUAR);
+
+    // now we switch..
+    originalUAR = null;
+    isVendor = !isVendor;
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    UserAuthorizationRequest changedUAR = cxdxMessageFactory.createUserAuthorizationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedUAR);
+
+    // revert back to default
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+
+  @Test
+  public void testClientSessionApplicationIdChangeLIR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((CxDxMessageFactoryImpl)cxdxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for CxDx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    LocationInfoRequest originalLIR = clientSession.createLocationInfoRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalLIR);
+
+    // now we switch..
+    originalLIR = null;
+    isVendor = !isVendor;
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    LocationInfoRequest changedLIR = clientSession.createLocationInfoRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedLIR);
+
+    // revert back to default
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testServerSessionApplicationIdChangeLIA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((CxDxMessageFactoryImpl)cxdxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for CxDx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    LocationInfoRequest lir = cxdxMessageFactory.createLocationInfoRequest();
+    serverSession.fetchSessionData(lir);
+    LocationInfoAnswer originalLIA = serverSession.createLocationInfoAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalLIA);
+
+    // now we switch..
+    originalLIA = null;
+    isVendor = !isVendor;
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    LocationInfoAnswer changedLIA = serverSession.createLocationInfoAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedLIA);
+
+    // revert back to default
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testClientSessionApplicationIdChangeMAR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((CxDxMessageFactoryImpl)cxdxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for CxDx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    MultimediaAuthenticationRequest originalMAR = clientSession.createMultimediaAuthenticationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalMAR);
+
+    // now we switch..
+    originalMAR = null;
+    isVendor = !isVendor;
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    MultimediaAuthenticationRequest changedMAR = clientSession.createMultimediaAuthenticationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedMAR);
+
+    // revert back to default
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testServerSessionApplicationIdChangeMAA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((CxDxMessageFactoryImpl)cxdxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for CxDx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    MultimediaAuthenticationRequest mar = cxdxMessageFactory.createMultimediaAuthenticationRequest();
+    serverSession.fetchSessionData(mar);
+    MultimediaAuthenticationAnswer originalMAA = serverSession.createMultimediaAuthenticationAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalMAA);
+
+    // now we switch..
+    originalMAA = null;
+    isVendor = !isVendor;
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    MultimediaAuthenticationAnswer changedMAA = serverSession.createMultimediaAuthenticationAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedMAA);
+
+    // revert back to default
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testServerSessionApplicationIdChangePPR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((CxDxMessageFactoryImpl)cxdxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for CxDx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    PushProfileRequest originalPPR = serverSession.createPushProfileRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalPPR);
+
+    // now we switch..
+    originalPPR = null;
+    isVendor = !isVendor;
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    PushProfileRequest changedPPR = serverSession.createPushProfileRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedPPR);
+
+    // revert back to default
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testClientSessionApplicationIdChangePPA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((CxDxMessageFactoryImpl)cxdxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for CxDx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    PushProfileRequest ppr = cxdxMessageFactory.createPushProfileRequest();
+    clientSession.fetchSessionData(ppr);
+    PushProfileAnswer originalPPA = clientSession.createPushProfileAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalPPA);
+
+    // now we switch..
+    originalPPA = null;
+    isVendor = !isVendor;
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    PushProfileAnswer changedPPA = clientSession.createPushProfileAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedPPA);
+
+    // revert back to default
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testServerSessionApplicationIdChangeRTR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((CxDxMessageFactoryImpl)cxdxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for CxDx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    RegistrationTerminationRequest originalRTR = serverSession.createRegistrationTerminationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalRTR);
+
+    // now we switch..
+    originalRTR = null;
+    isVendor = !isVendor;
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    RegistrationTerminationRequest changedRTR = serverSession.createRegistrationTerminationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedRTR);
+
+    // revert back to default
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testClientSessionApplicationIdChangeRTA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((CxDxMessageFactoryImpl)cxdxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for CxDx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    RegistrationTerminationRequest rtr = cxdxMessageFactory.createRegistrationTerminationRequest();
+    clientSession.fetchSessionData(rtr);
+    RegistrationTerminationAnswer originalRTA = clientSession.createRegistrationTerminationAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalRTA);
+
+    // now we switch..
+    originalRTA = null;
+    isVendor = !isVendor;
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    RegistrationTerminationAnswer changedRTA = clientSession.createRegistrationTerminationAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedRTA);
+
+    // revert back to default
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testClientSessionApplicationIdChangeSAR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((CxDxMessageFactoryImpl)cxdxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for CxDx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    ServerAssignmentRequest originalSAR = clientSession.createServerAssignmentRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalSAR);
+
+    // now we switch..
+    originalSAR = null;
+    isVendor = !isVendor;
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    ServerAssignmentRequest changedSAR = clientSession.createServerAssignmentRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedSAR);
+
+    // revert back to default
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testServerSessionApplicationIdChangeSAA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((CxDxMessageFactoryImpl)cxdxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for CxDx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    ServerAssignmentRequest sar = cxdxMessageFactory.createServerAssignmentRequest();
+    serverSession.fetchSessionData(sar);
+    ServerAssignmentAnswer originalSAA = serverSession.createServerAssignmentAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalSAA);
+
+    // now we switch..
+    originalSAA = null;
+    isVendor = !isVendor;
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    ServerAssignmentAnswer changedSAA = serverSession.createServerAssignmentAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedSAA);
+
+    // revert back to default
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testClientSessionApplicationIdChangeUAR() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((CxDxMessageFactoryImpl)cxdxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for CxDx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    UserAuthorizationRequest originalUAR = clientSession.createUserAuthorizationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalUAR);
+
+    // now we switch..
+    originalUAR = null;
+    isVendor = !isVendor;
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    UserAuthorizationRequest changedUAR = clientSession.createUserAuthorizationRequest();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedUAR);
+
+    // revert back to default
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
+
+  @Test
+  public void testServerSessionApplicationIdChangeUAA() throws Exception {
+    long vendor = 10415L;
+    ApplicationId originalAppId = ((CxDxMessageFactoryImpl)cxdxMessageFactory).getApplicationId();
+
+    boolean isAuth = originalAppId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+    boolean isAcct = originalAppId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE;
+
+    boolean isVendor = originalAppId.getVendorId() != 0L;
+
+    assertTrue("Invalid Application-Id (" + originalAppId + "). Should only, and at least, contain either Auth or Acct value.", (isAuth && !isAcct) || (!isAuth && isAcct));
+
+    System.out.println("Default VENDOR-ID for CxDx is " + originalAppId.getVendorId());
+    // let's create a message and see how it comes...
+    UserAuthorizationRequest uar = cxdxMessageFactory.createUserAuthorizationRequest();
+    serverSession.fetchSessionData(uar);
+    UserAuthorizationAnswer originalUAA = serverSession.createUserAuthorizationAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, originalUAA);
+
+    // now we switch..
+    originalUAA = null;
+    isVendor = !isVendor;
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(isVendor ? vendor : 0L, isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+
+    // create a new message and see how it comes...
+    UserAuthorizationAnswer changedUAA = serverSession.createUserAuthorizationAnswer();
+    checkCorrectApplicationIdAVPs(isVendor, isAuth, isAcct, changedUAA);
+
+    // revert back to default
+    ((CxDxMessageFactoryImpl)cxdxMessageFactory).setApplicationId(originalAppId.getVendorId(), isAuth ? originalAppId.getAuthAppId() : originalAppId.getAcctAppId());
+  }
 }
