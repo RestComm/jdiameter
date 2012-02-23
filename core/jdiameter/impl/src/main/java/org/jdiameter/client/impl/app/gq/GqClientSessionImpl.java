@@ -221,6 +221,13 @@ public class GqClientSessionImpl extends AppAuthSessionImpl implements GqClientS
                 setState(IDLE);
               }
               break;
+            case SEND_SESSION_TERMINATION_REQUEST:
+              // Current State: OPEN
+              // Event: Service to user is terminated
+              // Action: Disconnect User/Device
+              // New State: IDLE
+              setState(IDLE);
+              break;
             default:
               logger.debug("Unknown event [{}]", event.getType());
               break;
@@ -335,6 +342,13 @@ public class GqClientSessionImpl extends AppAuthSessionImpl implements GqClientS
                 setState(IDLE);
               }
               break;
+            case SEND_SESSION_TERMINATION_REQUEST:
+              // Current State: OPEN
+              // Event: Service to user is terminated
+              // Action: Disconnect User/Device
+              // New State: IDLE
+            	setState(DISCONNECTED);
+            	break;
             default:
               logger.debug("Unknown event [{}]", event.getType());
               break;

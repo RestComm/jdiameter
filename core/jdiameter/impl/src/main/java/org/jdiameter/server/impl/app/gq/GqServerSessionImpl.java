@@ -333,9 +333,9 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
               // Current State: DISCON
               // Event: ASR successfully sent and ASA Received with Result-Code
               // Action: Cleanup
-              // New State: IDLE
+              // New State: DISCON 
               listener.doAbortSessionAnswerEvent(this, (AbortSessionAnswer) event.getData());
-              setState(IDLE);
+              //setState(IDLE);
               break;
             case RECEIVE_STR_REQUEST:
               try {
