@@ -41,6 +41,7 @@ import org.jdiameter.common.api.app.auth.IAuthSessionData;
 import org.jdiameter.common.api.app.cca.ICCASessionData;
 import org.jdiameter.common.api.app.cxdx.ICxDxSessionData;
 import org.jdiameter.common.api.app.gx.IGxSessionData;
+import org.jdiameter.common.api.app.rx.IRxSessionData;
 import org.jdiameter.common.api.app.rf.IRfSessionData;
 import org.jdiameter.common.api.app.ro.IRoSessionData;
 import org.jdiameter.common.api.app.sh.IShSessionData;
@@ -57,6 +58,7 @@ import org.mobicents.diameter.impl.ha.common.auth.AuthReplicatedSessionDataFacto
 import org.mobicents.diameter.impl.ha.common.cca.CCAReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.cxdx.CxDxReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.gx.GxReplicatedSessionDataFactory;
+import org.mobicents.diameter.impl.ha.common.rx.RxReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.rf.RfReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.ro.RoReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.sh.ShReplicatedSessionDataFactory;
@@ -121,6 +123,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
     appSessionDataFactories.put(IShSessionData.class, new ShReplicatedSessionDataFactory(this));
     appSessionDataFactories.put(ICxDxSessionData.class, new CxDxReplicatedSessionDataFactory(this));
     appSessionDataFactories.put(IGxSessionData.class, new GxReplicatedSessionDataFactory(this));
+    appSessionDataFactories.put(IRxSessionData.class, new RxReplicatedSessionDataFactory(this));
   }
 
   @Override
