@@ -206,7 +206,9 @@ public class PeerFSMImpl implements IStateMachine {
   }
 
   protected void switchToNextState(FsmState newState) {
-    if (!newState.isInternal()) {
+    // Fix for Issue #3026 (http://code.google.com/p/mobicents/issues/detail?id=3026)
+    // notify only when it's a new public state
+    if (newState.getPublicState() != state.getPublicState()) {
       for (StateChangeListener l : listeners) {
         l.stateChanged(state.getPublicState(), newState.getPublicState());
       }
