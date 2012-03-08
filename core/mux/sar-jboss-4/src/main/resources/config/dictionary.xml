@@ -37,6 +37,7 @@
 	<vendor vendor-id="TGPP" code="10415" name="3GPP" />
 	<vendor vendor-id="Vodafone" code="12645" name="Vodafone" />
 	<vendor vendor-id="ETSI" code="13019" name="ETSI" />
+	<vendor vendor-id="CableLabs" code="4491" name="Cable Labs" />
 
 	<avpdefn name="User-Name" code="1" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot" >
 		<type type-name="UTF8String" />
@@ -3654,6 +3655,13 @@
 			<avp name="Confidentiality-Key" multiplicity="0-1" />
 			<avp name="Integrity-Key" multiplicity="0-1" />
 			<avp name="SIP-Digest-Authenticate" multiplicity="0-1" />
+			<avp name="CableLabs-SIP-Digest-Authenticate" multiplicity="0-1" />
+			<avp name="ETSI-SIP-Authenticate" multiplicity="0-1" />
+			<avp name="ETSI-SIP-Authentication-Info" multiplicity="0-1" />
+			<avp name="ETSI-SIP-Authorization" multiplicity="0-1" />
+			<avp name="Framed-IP-Address" multiplicity="0-1" />
+			<avp name="Framed-IPv6-Prefix" multiplicity="0-1" />
+			<avp name="Framed-Interface-Id" multiplicity="0-1" />
 			<avp name="Line-Identifier" multiplicity="0+" />
 		</grouped>
 	</avpdefn>
@@ -3689,7 +3697,7 @@
 	<avpdefn name="SIP-Digest-Authenticate" code="635" vendor-id="TGPP" mandatory="mustnot" protected="may" may-encrypt="no" vendor-bit="must" >
 		<grouped>
 			<avp name="Digest-Realm" multiplicity="1" />
-			<avp name="Digest-Domain" multiplicity="1" />
+			<avp name="Digest-Domain" multiplicity="0-1" />
 			<avp name="Digest-Algorithm" multiplicity="0+" />
 			<avp name="Digest-QoP" multiplicity="1" />
 			<avp name="Digest-HA1" multiplicity="1" />
@@ -3718,6 +3726,154 @@
 
 	<avpdefn name="Line-Identifier" code="500" vendor-id="ETSI" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
 		<type type-name="OctetString" />
+	</avpdefn>
+
+	<avpdefn name="CableLabs-SIP-Digest-Authenticate" code="228" vendor-id="CableLabs" mandatory="mustnot" protected="may" may-encrypt="no" vendor-bit="must" >
+		<grouped>
+			<avp name="CableLabs-Digest-Realm" multiplicity="1" />
+			<avp name="CableLabs-Digest-Domain" multiplicity="1" />
+			<avp name="CableLabs-Digest-Algorithm" multiplicity="0+" />
+			<avp name="CableLabs-Digest-QoP" multiplicity="1" />
+			<avp name="CableLabs-Digest-Auth-Param" multiplicity="0+" />
+		</grouped>
+	</avpdefn>
+
+	<avpdefn name="CableLabs-Digest-Realm" code="209" vendor-id="CableLabs" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="CableLabs-Digest-Algorithm" code="204" vendor-id="CableLabs" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="CableLabs-Digest-QoP" code="208" vendor-id="CableLabs" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="CableLabs-Digest-Domain" code="206" vendor-id="CableLabs" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="CableLabs-Digest-HA1" code="207" vendor-id="CableLabs" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="OctetString" />
+	</avpdefn>
+
+	<avpdefn name="CableLabs-Digest-Auth-Param" code="205" vendor-id="CableLabs" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="OctetString" />
+	</avpdefn>
+
+	<avpdefn name="ETSI-SIP-Authenticate" code="501" vendor-id="ETSI" mandatory="mustnot" protected="may" may-encrypt="no" vendor-bit="must" >
+		<grouped>
+			<avp name="ETSI-Digest-Realm" multiplicity="1" />
+			<avp name="ETSI-Digest-Nonce" multiplicity="0-1" />
+			<avp name="ETSI-Digest-Domain" multiplicity="0-1" />
+			<avp name="ETSI-Digest-Opaque" multiplicity="0-1" />
+			<avp name="ETSI-Digest-Stale" multiplicity="0-1" />			
+			<avp name="ETSI-Digest-Algorithm" multiplicity="0+" />
+			<avp name="ETSI-Digest-QoP" multiplicity="1" />
+			<avp name="ETSI-Digest-HA1" multiplicity="0-1" />
+			<avp name="ETSI-Digest-Auth-Param" multiplicity="0+" />
+		</grouped>
+	</avpdefn>
+
+	<avpdefn name="ETSI-SIP-Authorization" code="502" vendor-id="ETSI" mandatory="mustnot" protected="may" may-encrypt="no" vendor-bit="must" >
+		<grouped>
+			<avp name="ETSI-Digest-Username" multiplicity="1" />
+			<avp name="ETSI-Digest-Realm" multiplicity="0-1" />
+			<avp name="ETSI-Digest-Nonce" multiplicity="0-1" />
+			<avp name="ETSI-Digest-URI" multiplicity="0-1" />
+			<avp name="ETSI-Digest-Response" multiplicity="0-1" />
+			<avp name="ETSI-Digest-Algorithm" multiplicity="0+" />
+			<avp name="ETSI-Digest-CNonce" multiplicity="0-1" />
+			<avp name="ETSI-Digest-Opaque" multiplicity="0-1" />
+			<avp name="ETSI-Digest-QoP" multiplicity="1" />
+			<avp name="ETSI-Digest-Nonce-Count" multiplicity="0-1" />
+			<avp name="ETSI-Digest-Method" multiplicity="0-1" />
+			<avp name="ETSI-Digest-Entity-Body-Hash" multiplicity="0-1" />
+			<avp name="ETSI-Digest-Auth-Param" multiplicity="0+" />
+		</grouped>
+	</avpdefn>
+
+	<avpdefn name="ETSI-SIP-Authentication-Info" code="503" vendor-id="ETSI" mandatory="mustnot" protected="may" may-encrypt="no" vendor-bit="must" >
+		<grouped>
+			<avp name="ETSI-Digest-Nextnonce" multiplicity="0-1" />
+			<avp name="ETSI-Digest-QoP" multiplicity="1" />
+			<avp name="ETSI-Digest-Response-Auth" multiplicity="0-1" />
+			<avp name="ETSI-Digest-CNonce" multiplicity="0-1" />
+			<avp name="ETSI-Digest-Nonce-Count" multiplicity="0-1" />
+		</grouped>
+	</avpdefn>
+
+	<avpdefn name="ETSI-Digest-Realm" code="504" vendor-id="ETSI" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="ETSI-Digest-Nonce" code="505" vendor-id="ETSI" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="ETSI-Digest-Domain" code="506" vendor-id="ETSI" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="ETSI-Digest-Opaque" code="507" vendor-id="ETSI" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="ETSI-Digest-Stale" code="508" vendor-id="ETSI" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="ETSI-Digest-Algorithm" code="509" vendor-id="ETSI" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="ETSI-Digest-QoP" code="510" vendor-id="ETSI" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="ETSI-Digest-HA1" code="511" vendor-id="ETSI" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="ETSI-Digest-Auth-Param" code="512" vendor-id="ETSI" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="ETSI-Digest-Username" code="513" vendor-id="ETSI" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="ETSI-Digest-URI" code="514" vendor-id="ETSI" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="ETSI-Digest-Response" code="515" vendor-id="ETSI" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="ETSI-Digest-CNonce" code="516" vendor-id="ETSI" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="ETSI-Digest-Nonce-Count" code="517" vendor-id="ETSI" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="ETSI-Digest-Method" code="518" vendor-id="ETSI" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="ETSI-Digest-Entity-Body-Hash" code="519" vendor-id="ETSI" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="ETSI-Digest-Nextnonce" code="520" vendor-id="ETSI" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="ETSI-Digest-Response-Auth" code="521" vendor-id="ETSI" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="UTF8String" />
 	</avpdefn>
 
 	<avpdefn name="Server-Assignment-Type" code="614" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
