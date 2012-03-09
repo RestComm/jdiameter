@@ -334,6 +334,12 @@ public class MessageImpl implements IMessage {
       logger.debug("Returning [{}] as the first application id because none with the requested app ids were found", toReturn);
     }
 
+    if (toReturn == null) {
+      // TODO: ammendonca: improve this (find vendor? use common app list map?)
+      logger.debug("There are no Application-Id AVPs. Using the value in the header and assuming as Auth Application-Id [{}]", this.applicationId);
+      toReturn = ApplicationId.createByAuthAppId(this.applicationId);
+    }
+
     return toReturn;
   }
 
