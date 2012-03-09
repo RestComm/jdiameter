@@ -83,9 +83,13 @@ import net.java.slee.resource.diameter.cca.events.avp.UsedServiceUnitAvp;
 import net.java.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvp;
 import net.java.slee.resource.diameter.cxdx.events.avp.AssociatedIdentities;
 import net.java.slee.resource.diameter.cxdx.events.avp.AssociatedRegisteredIdentities;
+import net.java.slee.resource.diameter.cxdx.events.avp.CableLabsSIPDigestAuthenticate;
 import net.java.slee.resource.diameter.cxdx.events.avp.ChargingInformation;
 import net.java.slee.resource.diameter.cxdx.events.avp.DeregistrationReason;
 import net.java.slee.resource.diameter.cxdx.events.avp.DiameterCxDxAvpCodes;
+import net.java.slee.resource.diameter.cxdx.events.avp.EtsiSIPAuthenticate;
+import net.java.slee.resource.diameter.cxdx.events.avp.EtsiSIPAuthenticationInfo;
+import net.java.slee.resource.diameter.cxdx.events.avp.EtsiSIPAuthorization;
 import net.java.slee.resource.diameter.cxdx.events.avp.RestorationInfo;
 import net.java.slee.resource.diameter.cxdx.events.avp.SCSCFRestorationInfo;
 import net.java.slee.resource.diameter.cxdx.events.avp.SIPAuthDataItem;
@@ -196,8 +200,12 @@ import org.mobicents.slee.resource.diameter.cca.events.avp.UsedServiceUnitAvpImp
 import org.mobicents.slee.resource.diameter.cca.events.avp.UserEquipmentInfoAvpImpl;
 import org.mobicents.slee.resource.diameter.cxdx.events.avp.AssociatedIdentitiesImpl;
 import org.mobicents.slee.resource.diameter.cxdx.events.avp.AssociatedRegisteredIdentitiesImpl;
+import org.mobicents.slee.resource.diameter.cxdx.events.avp.CableLabsSIPDigestAuthenticateImpl;
 import org.mobicents.slee.resource.diameter.cxdx.events.avp.ChargingInformationImpl;
 import org.mobicents.slee.resource.diameter.cxdx.events.avp.DeregistrationReasonImpl;
+import org.mobicents.slee.resource.diameter.cxdx.events.avp.EtsiSIPAuthenticateImpl;
+import org.mobicents.slee.resource.diameter.cxdx.events.avp.EtsiSIPAuthenticationInfoImpl;
+import org.mobicents.slee.resource.diameter.cxdx.events.avp.EtsiSIPAuthorizationImpl;
 import org.mobicents.slee.resource.diameter.cxdx.events.avp.RestorationInfoImpl;
 import org.mobicents.slee.resource.diameter.cxdx.events.avp.SCSCFRestorationInfoImpl;
 import org.mobicents.slee.resource.diameter.cxdx.events.avp.SIPAuthDataItemImpl;
@@ -697,11 +705,23 @@ public class AvpAssistant {
     typeValues.put( SIPDigestAuthenticate.class, new SIPDigestAuthenticateImpl(DiameterCxDxAvpCodes.SIP_DIGEST_AUTHENTICATE, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
     typeValues.put( SIPDigestAuthenticate[].class, new SIPDigestAuthenticateImpl[]{new SIPDigestAuthenticateImpl(DiameterCxDxAvpCodes.SIP_DIGEST_AUTHENTICATE, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
 
+    typeValues.put( CableLabsSIPDigestAuthenticate.class, new CableLabsSIPDigestAuthenticateImpl(DiameterCxDxAvpCodes.CABLELABS_SIP_DIGEST_AUTHENTICATE, DiameterCxDxAvpCodes.CABLELABS_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( CableLabsSIPDigestAuthenticate[].class, new CableLabsSIPDigestAuthenticateImpl[]{new CableLabsSIPDigestAuthenticateImpl(DiameterCxDxAvpCodes.CABLELABS_SIP_DIGEST_AUTHENTICATE, DiameterCxDxAvpCodes.CABLELABS_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
     typeValues.put( RestorationInfo.class, new RestorationInfoImpl(DiameterCxDxAvpCodes.RESTORATION_INFO, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
     typeValues.put( RestorationInfo[].class, new RestorationInfoImpl[]{new RestorationInfoImpl(DiameterCxDxAvpCodes.RESTORATION_INFO, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
 
     typeValues.put( net.java.slee.resource.diameter.cxdx.events.avp.ServerCapabilities.class, new org.mobicents.slee.resource.diameter.cxdx.events.avp.ServerCapabilitiesImpl(DiameterCxDxAvpCodes.SERVER_CAPABILITIES, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes) );
     typeValues.put( net.java.slee.resource.diameter.cxdx.events.avp.ServerCapabilities[].class, new org.mobicents.slee.resource.diameter.cxdx.events.avp.ServerCapabilitiesImpl[]{new org.mobicents.slee.resource.diameter.cxdx.events.avp.ServerCapabilitiesImpl(DiameterCxDxAvpCodes.SERVER_CAPABILITIES, DiameterCxDxAvpCodes.CXDX_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( EtsiSIPAuthorization.class, new EtsiSIPAuthorizationImpl(DiameterCxDxAvpCodes.ETSI_SIP_AUTHORIZATION, DiameterCxDxAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( EtsiSIPAuthorization[].class, new EtsiSIPAuthorizationImpl[]{new EtsiSIPAuthorizationImpl(DiameterCxDxAvpCodes.ETSI_SIP_AUTHORIZATION, DiameterCxDxAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( EtsiSIPAuthenticate.class, new EtsiSIPAuthenticateImpl(DiameterCxDxAvpCodes.ETSI_SIP_AUTHENTICATE, DiameterCxDxAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( EtsiSIPAuthenticate[].class, new EtsiSIPAuthenticateImpl[]{new EtsiSIPAuthenticateImpl(DiameterCxDxAvpCodes.ETSI_SIP_AUTHENTICATE, DiameterCxDxAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes)});
+
+    typeValues.put( EtsiSIPAuthenticationInfo.class, new EtsiSIPAuthenticationInfoImpl(DiameterCxDxAvpCodes.ETSI_SIP_AUTHENTICATION_INFO, DiameterCxDxAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes) );
+    typeValues.put( EtsiSIPAuthenticationInfo[].class, new EtsiSIPAuthenticationInfoImpl[]{new EtsiSIPAuthenticationInfoImpl(DiameterCxDxAvpCodes.ETSI_SIP_AUTHENTICATION_INFO, DiameterCxDxAvpCodes.ETSI_VENDOR_ID, 0, 1, dummyAvpBytes)});
 
     // Gx AVP Factory
     
