@@ -1,110 +1,128 @@
 /*
- * Copyright (c) 2006 jDiameter.
- * https://jdiameter.dev.java.net/
+ * JBoss, Home of Professional Open Source
+ * Copyright 2006, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
  *
- * License: GPL v3
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
  *
- * e-mail: erick.svenson@yahoo.com
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.client.impl.helpers;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-
 /**
- * This enumeration containce all logger usage in JDiameter stack implementation
+ * This enumeration contains all logger usage in JDiameter stack implementation
+ * 
+ * @author erick.svenson@yahoo.com
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
 public class Loggers extends Ordinal {
 
-    protected static int index;
+  private static final long serialVersionUID = 1L;
 
-    private static ArrayList<Loggers> value = new ArrayList<Loggers>();
+  protected static int index;
 
-    /**
-     * Logs the stack lifecycle
-     */
-    public static final Loggers Stack = new Loggers("Stack", null ,"Logs the stack lifecycle");
-    /**
-     * Logs the peers
-     */
-    public static final Loggers Peer = new Loggers("Peer", "peer","Logs the peers");
-    /**
-     * Logs the peer manager subsystem
-     */
-    public static final Loggers PeerTable = new Loggers("PeerTable", "peertable","Logs the peer table subsystem");
-    /**
-     * Logs the peers fsm
-     */
-    public static final Loggers FSM = new Loggers("FSM", "peer.fsm","Logs the peers fsm");
-    /**
-     * Logs the message parser
-     */
-    public static final Loggers Parser = new Loggers("Parser", "parser","Logs the message parser");
-    /**
-     * Logs the avp opetations processing
-     */
-    public static final Loggers AVP = new Loggers("AVP", "parser.avp","Logs the avp opetations processing");
-    /**
-     *  Logs the message opetations/lifecycle processing
-     */
-    public static final Loggers Message = new Loggers("Message", "parser.message","Logs the message opetations/lifecycle processing");
-    /**
-     * Logs the message router subsystem
-     */
-    public static final Loggers Router = new Loggers("Router", "router","Logs the message router subsystem");
-    /**
-     * Logs the transport(tcp) opetations processing
-     */
-    public static final Loggers Transport = new Loggers("Transport", "TCPTransport","Logs the transport(tcp) opetations processing");
+  private static ArrayList<Loggers> value = new ArrayList<Loggers>();
 
-    /**
-     * Return Iterator of all entries
-     * @return  Iterator of all entries
-     */    
-    public static Iterable<Loggers> values(){
-        return value;
-    }
+  /**
+   * Logs the stack lifecycle
+   */
+  public static final Loggers Stack = new Loggers("Stack", null ,"Logs the stack lifecycle");
+  /**
+   * Logs the peers
+   */
+  public static final Loggers Peer = new Loggers("Peer", "peer","Logs the peers");
+  /**
+   * Logs the peer manager subsystem
+   */
+  public static final Loggers PeerTable = new Loggers("PeerTable", "peertable","Logs the peer table subsystem");
+  /**
+   * Logs the peers fsm
+   */
+  public static final Loggers FSM = new Loggers("FSM", "peer.fsm","Logs the peers fsm");
+  /**
+   * Logs the message parser
+   */
+  public static final Loggers Parser = new Loggers("Parser", "parser","Logs the message parser");
+  /**
+   * Logs the avp opetations processing
+   */
+  public static final Loggers AVP = new Loggers("AVP", "parser.avp","Logs the avp opetations processing");
+  /**
+   *  Logs the message opetations/lifecycle processing
+   */
+  public static final Loggers Message = new Loggers("Message", "parser.message","Logs the message opetations/lifecycle processing");
+  /**
+   * Logs the message router subsystem
+   */
+  public static final Loggers Router = new Loggers("Router", "router","Logs the message router subsystem");
+  /**
+   * Logs the transport(tcp) opetations processing
+   */
+  public static final Loggers Transport = new Loggers("Transport", "TCPTransport","Logs the transport(tcp) opetations processing");
 
-    private String description;
-    private String fullName;
+  /**
+   * Return Iterator of all entries
+   * @return  Iterator of all entries
+   */    
+  public static Iterable<Loggers> values(){
+    return value;
+  }
 
-    protected Loggers(String name, String fullName, String desc) {
-        this.name = name;
-        if (fullName == null)
-            this.fullName    = "jDiameter";
-        else
-            this.fullName    = "jDiameter." + fullName;
-        this.description = desc;
-        ordinal = index++;
-        value.add(this);
-    }
+  private String description;
+  private String fullName;
 
-    /**
-     * Return full name of logger
-     *
-     * @return full name of logger
-     */
-    public String fullName() {
-        return fullName;
-    }
+  protected Loggers(String name, String fullName, String desc) {
+    this.name = name;
+    if (fullName == null)
+      this.fullName    = "jDiameter";
+    else
+      this.fullName    = "jDiameter." + fullName;
+    this.description = desc;
+    ordinal = index++;
+    value.add(this);
+  }
 
-    /**
-     * Return description of logger
-     *
-     * @return description of logger
-     */
-    public String description() {
-        return description;
-    }
+  /**
+   * Return full name of logger
+   *
+   * @return full name of logger
+   */
+  public String fullName() {
+    return fullName;
+  }
 
-    /**
-     * Return logger instance
-     *
-     * @return logger instance
-     */
-    public Logger logger() {
-        return Logger.getLogger(fullName);
-    }
+  /**
+   * Return description of logger
+   *
+   * @return description of logger
+   */
+  public String description() {
+    return description;
+  }
+
+  /**
+   * Return logger instance
+   *
+   * @return logger instance
+   */
+  public Logger logger() {
+    return Logger.getLogger(fullName);
+  }
 }

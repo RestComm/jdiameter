@@ -81,8 +81,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSession, NetworkReqListener, EventListener<Request, Answer> {
 
-  private static final long serialVersionUID = 1L;
-
   private static final Logger logger = LoggerFactory.getLogger(ClientRxSessionImpl.class);
 
   // Session State Handling ---------------------------------------------------

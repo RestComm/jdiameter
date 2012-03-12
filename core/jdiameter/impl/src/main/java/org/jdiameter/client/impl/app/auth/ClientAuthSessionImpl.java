@@ -19,6 +19,7 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
+
 package org.jdiameter.client.impl.app.auth;
 
 import static org.jdiameter.api.Message.SESSION_TERMINATION_REQUEST;
@@ -80,8 +81,6 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientAuthSession, EventListener<Request, Answer>, NetworkReqListener {
-
-  private static final long serialVersionUID = 1L;
 
   protected static final Logger logger = LoggerFactory.getLogger(ClientAuthSessionImpl.class);
 
