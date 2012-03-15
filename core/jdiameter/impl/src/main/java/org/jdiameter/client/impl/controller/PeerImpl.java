@@ -636,6 +636,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
         }
       }
       catch (TransportException e) {
+        logger.debug("Failure establishing connection.", e);
         switch (e.getCode()) {
           case NetWorkError:
             throw new IOException("Unable to connect to " + connection.getKey() + " - " + e.getMessage());

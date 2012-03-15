@@ -9,15 +9,24 @@
  */
 package org.jdiameter.server.impl.helpers;
 
+
 /**
  * This class provide pluggable features
  */
 public class ExtensionPoint extends org.jdiameter.client.impl.helpers.ExtensionPoint {
 
+    private static final long serialVersionUID = -8220684081025349561L;
+
     /**
      * Network implementation class name
      */
     public static final ExtensionPoint InternalNetWork = new ExtensionPoint("InternalNetWork", "org.jdiameter.server.impl.NetworkImpl", true);
+
+    //false - so its not added to extension point so Assembler does not try to create instance!
+    /**
+     * Class name of network guard
+     */
+    public static final ExtensionPoint InternalNetworkGuard = new ExtensionPoint("InternalNetworkGuard", "org.jdiameter.server.impl.io.tcp.NetworkGuard", false);
 
     /**
      * Overload manager implementation class name 

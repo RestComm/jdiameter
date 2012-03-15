@@ -76,6 +76,11 @@ public class ExtensionPoint extends Ordinal {
   public static final ExtensionPoint InternalSessionFactory = new ExtensionPoint("InternalSessionFactory", "org.jdiameter.client.impl.SessionFactoryImpl");
 
   /**
+   * Class name of connection interface implementation
+   */
+  public static final ExtensionPoint InternalConnectionClass = new ExtensionPoint("InternalConnection","org.jdiameter.client.impl.transport.tcp.TCPClientConnection");
+
+  /**
    * Transport factory implementation class name
    */
   public static final ExtensionPoint InternalTransportFactory = new ExtensionPoint("InternalTransportFactory", "org.jdiameter.client.impl.transport.TransportLayerFactory");
@@ -142,6 +147,8 @@ public class ExtensionPoint extends Ordinal {
       InternalPeerController,
       InternalRealmController,
       InternalSessionFactory,
+      //DONT add this, this will make assembler to try to create instance and he will fail :)
+      //InternalConnectionClass,
       InternalTransportFactory,
       InternalPeerFsmFactory,
       InternalStatisticFactory,

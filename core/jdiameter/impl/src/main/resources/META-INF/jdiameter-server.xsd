@@ -39,46 +39,46 @@
                 <xsi:annotation>
                     <xsi:documentation>Local peer uri.</xsi:documentation>
                 </xsi:annotation>
-                 <xsi:complexType>
-                    <xsi:attribute name="value" type="xsi:string" use="required"/>
+                <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:string" use="required" />
                 </xsi:complexType>
             </xsi:element>
-            <xsi:element ref="IPAddresses" minOccurs="0" maxOccurs="1"/>
+            <xsi:element ref="IPAddresses" minOccurs="0" maxOccurs="1" />
             <xsi:element name="Realm" minOccurs="1" maxOccurs="1">
                 <xsi:annotation>
                     <xsi:documentation>Local peer realm.</xsi:documentation>
                 </xsi:annotation>
                 <xsi:complexType>
-                   <xsi:attribute name="value" type="xsi:string" use="required"/>
-               </xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:string" use="required" />
+                </xsi:complexType>
             </xsi:element>
             <xsi:element name="VendorID" minOccurs="1" maxOccurs="1">
                 <xsi:annotation>
                     <xsi:documentation>Local peer vendor identificator.</xsi:documentation>
                 </xsi:annotation>
-                 <xsi:complexType>
-                    <xsi:attribute name="value" type="xsi:integer" use="required"/>
+                <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:integer" use="required" />
                 </xsi:complexType>
             </xsi:element>
             <xsi:element name="ProductName" minOccurs="1" maxOccurs="1">
                 <xsi:annotation>
                     <xsi:documentation>Product name of stack.</xsi:documentation>
                 </xsi:annotation>
-                 <xsi:complexType>
-                    <xsi:attribute name="value" type="xsi:string" use="required"/>
+                <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:string" use="required" />
                 </xsi:complexType>
             </xsi:element>
             <xsi:element name="FirmwareRevision" minOccurs="1" maxOccurs="1">
-                 <xsi:annotation>
+                <xsi:annotation>
                     <xsi:documentation>Firmware revision of stack.</xsi:documentation>
-                 </xsi:annotation>
-                 <xsi:complexType>
-                    <xsi:attribute name="value" type="xsi:integer" use="required"/>
+                </xsi:annotation>
+                <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:integer" use="required" />
                 </xsi:complexType>
             </xsi:element>
-            <xsi:element ref="Applications" minOccurs="0" maxOccurs="1"/>
-            <xsi:element ref="OverloadMonitor" minOccurs="0" maxOccurs="1"/>
-        </xsi:sequence>
+            <xsi:element ref="Applications" minOccurs="0" maxOccurs="1" />
+            <xsi:element ref="OverloadMonitor" minOccurs="0" maxOccurs="1" />        </xsi:sequence>
+        <!-- must match SecurityData.name -->
         <xsi:attribute name="security_ref"  type="xsi:string" use="optional"/>
     </xsi:complexType>
 
@@ -110,16 +110,16 @@
         </xsi:sequence>
     </xsi:complexType>
 
-	<xsi:element name="Entry">
-		<xsi:complexType>
-			<xsi:sequence>
-				<xsi:element ref="ApplicationID"/>
-			</xsi:sequence>
+    <xsi:element name="Entry">
+        <xsi:complexType>
+            <xsi:sequence>
+                <xsi:element ref="ApplicationID"/>
+            </xsi:sequence>
             <xsi:attribute name="index" type="xsi:integer" use="required"/>
             <xsi:attribute name="lowThreshold"  type="xsi:double" use="required"/>
-			<xsi:attribute name="highThreshold" type="xsi:double" use="required"/>
-		</xsi:complexType>
-	</xsi:element>
+            <xsi:attribute name="highThreshold" type="xsi:double" use="required"/>
+        </xsi:complexType>
+    </xsi:element>
 
     <xsi:element name="Applications" type="ApplicationsType">
         <xsi:annotation>
@@ -304,6 +304,14 @@
                     <xsi:attribute name="clear_size" type="xsi:integer" use="required"/>
                 </xsi:complexType>
             </xsi:element>
+            <xsi:element name="Connection" minOccurs="0" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Sets java class name of connection used for transport, by default its set to 'org.jdiameter.client.impl.transport.tcp.TCPClientConnection'</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                   <xsi:attribute name="value" type="xsi:string" use="required"/>
+               </xsi:complexType>
+            </xsi:element>
          </xsi:sequence>
     </xsi:complexType>
 
@@ -427,7 +435,7 @@
 
     <xsi:complexType name="SecurityDataType">
         <xsi:sequence>
-            <xsi:element name="CipherSuites" minOccurs="0" maxOccurs="1">
+            <xsi:element name="CipherSuites" minOccurs="0" maxOccurs="1" type="xsi:string">
                 <xsi:annotation>
                     <xsi:documentation>Cipher suites separated by ','</xsi:documentation>
                 </xsi:annotation>
@@ -468,32 +476,32 @@
         </xsi:annotation>
     </xsi:element>
 
-	<xsi:complexType name="AgentType">
-    	<xsi:sequence>
-    		<xsi:element
-    			name="Properties"
-    			type="PropertiesType" maxOccurs="1" minOccurs="1">
-    		</xsi:element>
-    	</xsi:sequence>
+    <xsi:complexType name="AgentType">
+        <xsi:sequence>
+            <xsi:element
+                name="Properties"
+                type="PropertiesType" maxOccurs="1" minOccurs="1">
+            </xsi:element>
+        </xsi:sequence>
     </xsi:complexType>
 
     <xsi:complexType name="PropertiesType">
-    	<xsi:sequence>
-    		<xsi:element
-    			name="Property"
-    			type="PropertyType" maxOccurs="unbounded" minOccurs="0">
-    		</xsi:element>
-    	</xsi:sequence>
+        <xsi:sequence>
+            <xsi:element
+                name="Property"
+                type="PropertyType" maxOccurs="unbounded" minOccurs="0">
+            </xsi:element>
+        </xsi:sequence>
     </xsi:complexType>
 
     <xsi:complexType name="PropertyType">
-    	<xsi:attribute
-    		name="name"
-    		type="xsi:string">
-    	</xsi:attribute>
-    	<xsi:attribute
-    		name="value"
-    		type="xsi:string">
-    	</xsi:attribute>
+        <xsi:attribute
+            name="name"
+            type="xsi:string">
+        </xsi:attribute>
+        <xsi:attribute
+            name="value"
+            type="xsi:string">
+        </xsi:attribute>
     </xsi:complexType>
 </xsi:schema>

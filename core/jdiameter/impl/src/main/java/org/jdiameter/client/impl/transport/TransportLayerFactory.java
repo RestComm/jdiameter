@@ -4,6 +4,8 @@ import org.jdiameter.api.Configuration;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.client.api.io.*;
 import org.jdiameter.client.api.parser.IMessageParser;
+import org.jdiameter.client.impl.helpers.AppConfiguration;
+import org.jdiameter.client.impl.helpers.ExtensionPoint;
 import org.jdiameter.client.impl.helpers.Parameters;
 import org.jdiameter.common.api.concurrent.DummyConcurrentFactory;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
@@ -23,32 +25,30 @@ import java.net.InetAddress;
  */
 public class TransportLayerFactory implements ITransportLayerFactory {
 
-    protected Class<IConnection> connectionClass;
-    protected Constructor<IConnection> constructorIAi, constructorIAiCL;
+    private Class<IConnection> connectionClass;
+    private Constructor<IConnection> constructorIAi, constructorIAiCL;
     protected IMessageParser parser;
-    protected Configuration config;
+    protected Configuration config = null;
 
     public TransportLayerFactory(Configuration config, IMessageParser parser) throws TransportException {
         this.config = config;
-        String implName = config.getStringValue(
-                Parameters.ConnectionImplClass.ordinal(), (String) Parameters.ConnectionImplClass.defValue()
+        Configuration[] children = config.getChildren(Parameters.Extensions.ordinal());
+        
+        AppConfiguration internalExtensions = (AppConfiguration) children[ExtensionPoint.Internal.id()];
+        String implName = internalExtensions.getStringValue(
+                ExtensionPoint.InternalConnectionClass.ordinal(), (String) ExtensionPoint.InternalConnectionClass.defValue()
         );
         try {
+        	//TODO: this should be enough to check if class has interface!?
             this.connectionClass = (Class<IConnection>) forName(implName);
-            Class[] interf = this.connectionClass.getInterfaces();
-            boolean isIConnection = false;
-            for (Class c : interf) {
-                if (c.equals(IConnection.class)) {
-                    isIConnection = true;
-                    break;
-                }
-            }
-            if (!isIConnection)
+            
+            if (!IConnection.class.isAssignableFrom(this.connectionClass))
                 throw new TransportException("Specified class does not inherit IConnection interface " + this.connectionClass, TransportError.Internal);
         } catch (Exception e) {
             throw new TransportException("Cannot prepare specified connection class " + this.connectionClass, TransportError.Internal, e);
         }
         try {
+        	//TODO: this is bad practice, IConnection is interface and this code enforces constructor type to be present!
             constructorIAiCL = connectionClass.getConstructor(
                 Configuration.class, IConcurrentFactory.class, InetAddress.class, Integer.TYPE, InetAddress.class,
                 Integer.TYPE, IConnectionListener.class, IMessageParser.class, String.class);

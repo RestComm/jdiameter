@@ -28,18 +28,35 @@ import org.jdiameter.client.impl.helpers.Ordinal;
 
 import static org.jdiameter.server.impl.helpers.ExtensionPoint.*;
 import static org.jdiameter.client.impl.helpers.Parameters.Agent;
+import static org.jdiameter.client.impl.helpers.Parameters.CipherSuites;
 import static org.jdiameter.client.impl.helpers.Parameters.DictionaryClass;
 import static org.jdiameter.client.impl.helpers.Parameters.DictionaryEnabled;
 import static org.jdiameter.client.impl.helpers.Parameters.DictionaryReceiveLevel;
 import static org.jdiameter.client.impl.helpers.Parameters.DictionarySendLevel;
+import static org.jdiameter.client.impl.helpers.Parameters.KDFile;
+import static org.jdiameter.client.impl.helpers.Parameters.KDManager;
+import static org.jdiameter.client.impl.helpers.Parameters.KDPwd;
+import static org.jdiameter.client.impl.helpers.Parameters.KDStore;
+import static org.jdiameter.client.impl.helpers.Parameters.KeyData;
 import static org.jdiameter.client.impl.helpers.Parameters.Properties;
 import static org.jdiameter.client.impl.helpers.Parameters.PropertyName;
 import static org.jdiameter.client.impl.helpers.Parameters.PropertyValue;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
+import static org.jdiameter.client.impl.helpers.Parameters.SDEnableSessionCreation;
+import static org.jdiameter.client.impl.helpers.Parameters.SDName;
+import static org.jdiameter.client.impl.helpers.Parameters.SDProtocol;
+import static org.jdiameter.client.impl.helpers.Parameters.SDUseClientMode;
+import static org.jdiameter.client.impl.helpers.Parameters.Security;
+import static org.jdiameter.client.impl.helpers.Parameters.SecurityRef;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsActiveList;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsEnabled;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsLoggerDelay;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsLoggerPause;
+import static org.jdiameter.client.impl.helpers.Parameters.TDFile;
+import static org.jdiameter.client.impl.helpers.Parameters.TDManager;
+import static org.jdiameter.client.impl.helpers.Parameters.TDPwd;
+import static org.jdiameter.client.impl.helpers.Parameters.TDStore;
+import static org.jdiameter.client.impl.helpers.Parameters.TrustData;
 import static org.jdiameter.server.impl.helpers.Parameters.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -166,6 +183,9 @@ public class XMLConfiguration extends EmptyConfiguration {
       }
       else if (nodeName.equals("Parameters")) {
         addParameters(c.item(i));
+      }
+      else if (nodeName.equals("Security")) {
+          addSecurity(c.item(i));
       }
       else if (nodeName.equals("Network")) {
         addNetwork(c.item(i));
@@ -357,7 +377,47 @@ public class XMLConfiguration extends EmptyConfiguration {
 
     add(name, tableConfiguration);
   }
+  
+  protected void addSecurity(Node node) {
+	    NodeList c = node.getChildNodes();
+	    List<Configuration> items = new ArrayList<Configuration>();
+	    for (int i = 0; i < c.getLength(); i++) {
+	      String nodeName = c.item(i).getNodeName();
+	      if (nodeName.equals("SecurityData"))
+	        items.add(addSecurityData(c.item(i)));
+	    }
+	    add(Security, items.toArray(EMPTY_ARRAY));
+	  }
 
+	  protected Configuration addSecurityData(Node node) {
+	    AppConfiguration sd = getInstance().add(SDName, node.getAttributes().getNamedItem("name").getNodeValue())
+	        .add(SDProtocol, node.getAttributes().getNamedItem("protocol").getNodeValue())
+	        .add(SDEnableSessionCreation, Boolean.valueOf(node.getAttributes().getNamedItem("enable_session_creation").getNodeValue()))
+	        .add(SDUseClientMode, Boolean.valueOf(node.getAttributes().getNamedItem("use_client_mode").getNodeValue()));
+
+	    NodeList c = node.getChildNodes();
+
+	    for (int i = 0; i < c.getLength(); i++) {
+	      Node cnode = c.item(i);
+	      String nodeName = cnode.getNodeName();
+	      if (nodeName.equals("CipherSuites")) {
+	        sd.add(CipherSuites, cnode.getTextContent().trim());
+	      }
+	      if (nodeName.equals("KeyData")) {
+	        sd.add(KeyData, getInstance().add(KDManager, cnode.getAttributes().getNamedItem("manager").getNodeValue())
+	            .add(KDStore, cnode.getAttributes().getNamedItem("store").getNodeValue())
+	            .add(KDFile, cnode.getAttributes().getNamedItem("file").getNodeValue())
+	            .add(KDPwd, cnode.getAttributes().getNamedItem("pwd").getNodeValue()));
+	      }
+	      if (nodeName.equals("TrustData")) {
+	        sd.add(TrustData, getInstance().add(TDManager, cnode.getAttributes().getNamedItem("manager").getNodeValue())
+	            .add(TDStore, cnode.getAttributes().getNamedItem("store").getNodeValue())
+	            .add(TDFile, cnode.getAttributes().getNamedItem("file").getNodeValue())
+	            .add(TDPwd, cnode.getAttributes().getNamedItem("pwd").getNodeValue()));
+	      }
+	    }
+	    return sd;
+	  }
   protected void addNetwork(Node node) {
     NodeList c = node.getChildNodes();
     for (int i = 0; i < c.getLength(); i++) {
@@ -403,11 +463,18 @@ public class XMLConfiguration extends EmptyConfiguration {
     if (node.getAttributes().getNamedItem("portRange") != null) {
       c.add(PeerLocalPortRange, node.getAttributes().getNamedItem("portRange").getNodeValue());
     }
+    if (node.getAttributes().getNamedItem("security_ref") != null) {
+        c.add(SecurityRef, node.getAttributes().getNamedItem("security_ref").getNodeValue());
+      }
     return c;
   }
 
   protected void addLocalPeer(Node node) {
     NodeList c = node.getChildNodes();
+    if (node.getAttributes().getNamedItem("security_ref") != null) {
+        add(SecurityRef, node.getAttributes().getNamedItem("security_ref").getNodeValue());
+    }
+
     for (int i = 0; i < c.getLength(); i++) {
       String nodeName = c.item(i).getNodeName();
       if (nodeName.equals("URI")) add(OwnDiameterURI, getValue(c.item(i)));
@@ -531,6 +598,8 @@ public class XMLConfiguration extends EmptyConfiguration {
       else if (nodeName.equals("RealmController")) {            addInternalExtension(InternalRealmController, getValue(c.item(i)));          }
       else if (nodeName.equals("SessionFactory")) {             addInternalExtension(InternalSessionFactory, getValue(c.item(i)));           }
       else if (nodeName.equals("TransportFactory")) {           addInternalExtension(InternalTransportFactory, getValue(c.item(i)));         }
+      else if (nodeName.equals("Connection")) {                 addInternalExtension(InternalConnectionClass, getValue(c.item(i)));          }
+      else if (nodeName.equals("NetworkGuard")) {               addInternalExtension(InternalNetworkGuard, getValue(c.item(i)));             }
       else if (nodeName.equals("PeerFsmFactory")) {             addInternalExtension(InternalPeerFsmFactory, getValue(c.item(i)));           }
       else if (nodeName.equals("StatisticFactory")) {           addInternalExtension(InternalStatisticFactory, getValue(c.item(i)));         }
       else if (nodeName.equals("ConcurrentFactory")) {          addInternalExtension(InternalConcurrentFactory, getValue(c.item(i)));        }
@@ -540,8 +609,8 @@ public class XMLConfiguration extends EmptyConfiguration {
       else if (nodeName.equals("SessionDatasource")) {          addInternalExtension(InternalSessionDatasource, getValue(c.item(i)));        }
       else if (nodeName.equals("TimerFacility")) {              addInternalExtension(InternalTimerFacility, getValue(c.item(i)));            }
       else if (nodeName.equals("AgentRedirect")) {              addInternalExtension(InternalAgentRedirect, getValue(c.item(i)));            }
-      else if (nodeName.equals("AgentConfiguration")) {         add(ExtensionPoint.InternalAgentConfiguration,getValue(c.item(i)))   ;     }
-      else if (nodeName.equals("AgentProxy")) {             	addInternalExtension(InternalAgentProxy, getValue(c.item(i)));            }
+      else if (nodeName.equals("AgentConfiguration")) {         add(ExtensionPoint.InternalAgentConfiguration,getValue(c.item(i)));          }
+      else if (nodeName.equals("AgentProxy")) {             	addInternalExtension(InternalAgentProxy, getValue(c.item(i)));               }
       else if (nodeName.equals("OverloadManager")) {            addInternalExtension(InternalOverloadManager,getValue(c.item(i)));           }
       else 
         appendOtherExtension(c.item(i));

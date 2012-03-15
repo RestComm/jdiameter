@@ -411,6 +411,11 @@ public class PeerTableImpl implements IPeerTable {
           logger.debug("Failure trying to destroy ThreadGroup probably due to existing active threads. Use stop() before destroy(). (nr_threads={})", concurrentFactory.getThreadGroup().activeCount());
         }
       }
+      catch(ThreadDeath td) {
+        // The class ThreadDeath is specifically a subclass of Error rather than Exception, even though it is a
+        // "normal occurrence", because many applications catch all occurrences of Exception and then discard the
+        // exception.  ....
+      }
     }
     if (router != null) {
       logger.debug("Calling destroy on router");

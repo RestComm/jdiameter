@@ -27,6 +27,8 @@ import org.jdiameter.api.MutableConfiguration;
 import org.jdiameter.client.impl.helpers.ExtensionPoint;
 
 import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalAgentConfiguration;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalConnectionClass;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalTransportFactory;
 import static org.jdiameter.client.impl.helpers.Parameters.ExtensionName;
 import static org.jdiameter.server.impl.helpers.ExtensionPoint.*;
 import static org.jdiameter.server.impl.helpers.Parameters.Extensions;
@@ -63,6 +65,8 @@ public class EmptyConfiguration extends org.jdiameter.client.impl.helpers.EmptyC
           add(InternalMessageParser, InternalMessageParser.defValue()).
           add(InternalElementParser, InternalElementParser.defValue()).
           add(InternalTransportFactory, "org.jdiameter.server.impl.io.TransportLayerFactory").
+          add(InternalConnectionClass, InternalConnectionClass.defValue()).
+          add(InternalNetworkGuard, InternalNetworkGuard.defValue()).
           add(InternalPeerFsmFactory, "org.jdiameter.server.impl.fsm.FsmFactoryImpl").
           add(InternalSessionFactory, InternalSessionFactory.defValue()).
           add(InternalRouterEngine, "org.jdiameter.server.impl.RouterImpl").

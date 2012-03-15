@@ -65,6 +65,7 @@ public class AssemblerImpl implements IAssembler {
     Configuration[] ext = config.getChildren(Extensions.ordinal());
     for (Configuration e : ext) {
       String extName = e.getStringValue(ExtensionName.ordinal(), "");
+      // TODO: server?
       // Create structure of containers
       if (extName.equals(ExtensionPoint.Internal.name())) {
         fill(ExtensionPoint.Internal.getExtensionPoints(), e, true);

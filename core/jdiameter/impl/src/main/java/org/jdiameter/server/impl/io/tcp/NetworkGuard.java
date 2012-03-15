@@ -25,6 +25,7 @@ import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.impl.transport.tcp.TCPClientConnection;
 import org.jdiameter.common.api.concurrent.DummyConcurrentFactory;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
+import org.jdiameter.server.api.IMetaData;
 import org.jdiameter.server.api.io.INetworkConnectionListener;
 import org.jdiameter.server.api.io.INetworkGuard;
 import org.slf4j.Logger;
@@ -42,6 +43,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
+ * TCP implementation of {@link org.jdiameter.server.api.io.INetworkGuard}.
  * 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
@@ -62,10 +64,12 @@ public class NetworkGuard implements INetworkGuard, Runnable {
 
   @Deprecated
   public NetworkGuard(InetAddress inetAddress, int port, IMessageParser parser) throws Exception {
-    this(inetAddress, port, null, parser);
+    this(inetAddress, port, null, parser, null);
   }
 
-  public NetworkGuard(InetAddress inetAddress, int port, IConcurrentFactory concurrentFactory, IMessageParser parser) throws Exception {
+  public NetworkGuard(InetAddress inetAddress, int port,
+			IConcurrentFactory concurrentFactory, IMessageParser parser,
+			IMetaData data) throws Exception {
     this.port = port;
     this.parser = parser;
     this.concurrentFactory = concurrentFactory == null ? new DummyConcurrentFactory() : concurrentFactory;

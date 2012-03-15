@@ -43,10 +43,6 @@ public class Parameters extends Ordinal {
    * Class name of IOC  property
    */
   public static final Parameters Assembler = new Parameters("Assembler", String.class, "org.jdiameter.client.impl.helpers.AssemblerImpl");
-  /**
-   * Class name of connection interface implementation property
-   */
-  public static final Parameters ConnectionImplClass = new Parameters("ConnectionImplClas", String.class, "org.jdiameter.client.impl.transport.tcp.TCPClientConnection");
 
   /**
    * Local peer URI property

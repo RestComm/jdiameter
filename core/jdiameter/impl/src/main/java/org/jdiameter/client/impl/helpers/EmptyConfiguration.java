@@ -71,6 +71,7 @@ public class EmptyConfiguration implements AppConfiguration {
           add(InternalMessageParser, InternalMessageParser.defValue()).
           add(InternalElementParser, InternalElementParser.defValue()).
           add(InternalTransportFactory, InternalTransportFactory.defValue()).
+          add(InternalConnectionClass, InternalConnectionClass.defValue()).
           add(InternalPeerFsmFactory, InternalPeerFsmFactory.defValue()).
           add(InternalSessionFactory, InternalSessionFactory.defValue()).
           add(InternalPeerController, InternalPeerController.defValue()).
