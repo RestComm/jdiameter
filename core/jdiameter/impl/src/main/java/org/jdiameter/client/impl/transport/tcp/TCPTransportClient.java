@@ -44,7 +44,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
-class TCPTransportClient implements Runnable {
+public class TCPTransportClient implements Runnable {
 
   private TCPClientConnection parentConnection;
   private IConcurrentFactory concurrentFactory;
@@ -71,7 +71,7 @@ class TCPTransportClient implements Runnable {
 
   private static final Logger logger = LoggerFactory.getLogger(TCPTransportClient.class);
 
-  TCPTransportClient() {
+  public TCPTransportClient() {
   }
 
   /**
@@ -114,7 +114,7 @@ class TCPTransportClient implements Runnable {
     destAddress = new InetSocketAddress(socket.getInetAddress(), socket.getPort());
   }
 
-  public void start() throws Exception {
+  public void start() throws NotInitializedException {
     // for client
     if(socketDescription == null && socketChannel != null) {
       socketDescription = socketChannel.socket().toString();
@@ -135,6 +135,7 @@ class TCPTransportClient implements Runnable {
     }
 
     if (!selfThread.isAlive()) {
+      selfThread.setDaemon(true);
       selfThread.start();
     }
   }
@@ -204,18 +205,26 @@ class TCPTransportClient implements Runnable {
   }
 
   public InetSocketAddress getDestAddress() {
-    return destAddress;
+    return this.destAddress;
   }
 
   public void setDestAddress(InetSocketAddress address) {
-    destAddress = address;
+	  this.destAddress = address;
     if(logger.isDebugEnabled()) {
       logger.debug("Destination address is set to [{}] : [{}]", destAddress.getHostName(), destAddress.getPort());
     }
   }
 
   public void setOrigAddress(InetSocketAddress address) {
-    origAddress = address;
+    this.origAddress = address;
+    if(logger.isDebugEnabled()) {
+        logger.debug("Origin address is set to [{}] : [{}]", origAddress.getHostName(), origAddress.getPort());
+      }
+  }
+  
+  public InetSocketAddress getOrigAddress()
+  {
+	  return this.origAddress;
   }
 
   public void sendMessage(ByteBuffer bytes) throws IOException {
@@ -267,7 +276,7 @@ class TCPTransportClient implements Runnable {
    *
    * @param data data to add
    */
-  void append(byte[] data) {
+  private void append(byte[] data) {
     if (storage.position() + data.length >= storage.capacity()) {
       ByteBuffer tmp = ByteBuffer.allocate(storage.limit() + data.length * 2);
       byte[] tmpData = new byte[storage.position()];

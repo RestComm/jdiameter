@@ -57,36 +57,11 @@ public class TCPClientConnection implements IConnection {
 
   private final long createdTime;
   private TCPTransportClient client;
-
-  protected static enum EventType {
-    CONNECTED, DISCONNECTED, MESSAGE_RECEIVED, DATA_EXCEPTION
-  }
-
-  protected static class Event {
-    EventType type;
-    ByteBuffer message;
-    Exception exception;
-
-    Event(EventType type) {
-      this.type = type;
-    }
-
-    Event(EventType type, Exception exception) {
-      this(type);
-      this.exception = exception;
-    }
-
-    Event(EventType type, ByteBuffer message) {
-      this(type);
-      this.message = message;
-    }
-  }
-
   //FIXME : requires JDK6 : protected LinkedBlockingDeque<Event> buffer = new LinkedBlockingDeque<Event>(64);
-  protected LinkedBlockingQueue<Event> buffer = new LinkedBlockingQueue<Event>(64);
-  protected IMessageParser parser;
-  protected Lock lock = new ReentrantLock();
-  protected ConcurrentLinkedQueue<IConnectionListener> listeners = new ConcurrentLinkedQueue<IConnectionListener>();
+  private LinkedBlockingQueue<Event> buffer = new LinkedBlockingQueue<Event>(64);
+  private IMessageParser parser;
+  private Lock lock = new ReentrantLock();
+  private ConcurrentLinkedQueue<IConnectionListener> listeners = new ConcurrentLinkedQueue<IConnectionListener>();
 
   // Cached value for connection key
   private String cachedKey = null;
@@ -327,5 +302,30 @@ public class TCPClientConnection implements IConnection {
       return true;
     }
   }
+  
+  //------------------ helper classes ------------------------
+  private static enum EventType {
+      CONNECTED, DISCONNECTED, MESSAGE_RECEIVED, DATA_EXCEPTION
+    }
+
+    private static class Event {
+      EventType type;
+      ByteBuffer message;
+      Exception exception;
+
+      Event(EventType type) {
+        this.type = type;
+      }
+
+      Event(EventType type, Exception exception) {
+        this(type);
+        this.exception = exception;
+      }
+
+      Event(EventType type, ByteBuffer message) {
+        this(type);
+        this.message = message;
+      }
+    }
 
 }
