@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and individual contributors by the
- * @authors tag. See the copyright.txt in the distribution for a
+ * Copyright 2006, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -19,6 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.server.impl.app.ro;
 
 import java.io.Serializable;
@@ -61,14 +62,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Credit Control Application Server session implementation
+ * Ro Application Server session implementation
  * 
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
 public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSession, NetworkReqListener, EventListener<Request, Answer> {
 
-  private static final long serialVersionUID = 1L;
   private static final Logger logger = LoggerFactory.getLogger(ServerRoSessionImpl.class);
 
   // Session State Handling ---------------------------------------------------

@@ -70,7 +70,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ServerRxSessionImpl extends AppRxSessionImpl implements ServerRxSession, NetworkReqListener, EventListener<Request, Answer> {
 
-  private static final long serialVersionUID = 1L;
   private static final Logger logger = LoggerFactory.getLogger(ServerRxSessionImpl.class);
 
   // Session State Handling ---------------------------------------------------

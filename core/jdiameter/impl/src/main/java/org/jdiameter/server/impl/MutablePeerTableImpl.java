@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and individual contributors
+ * Copyright 2006, Red Hat, Inc. and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -115,7 +115,6 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   protected boolean duplicateProtection = false;
   protected long duplicateTimer;
   protected ScheduledExecutorService duplicationScheduler = null;
-  @SuppressWarnings("unchecked")
   protected ScheduledFuture duplicationHandler = null;
   protected ConcurrentHashMap<String, StorageEntry> storageAnswers = new ConcurrentHashMap<String, StorageEntry>();
 
@@ -124,7 +123,6 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   // Connections handling -----------------------------------------------------
   private ConcurrentHashMap<String, IConnection> incConnections;
   private ScheduledExecutorService connScheduler;
-  @SuppressWarnings("unchecked")
   private ScheduledFuture connHandler;
 
   // Network management -------------------------------------------------------
@@ -135,7 +133,6 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   // Overload handling --------------------------------------------------------
   protected IOverloadManager ovrManager;
   protected ScheduledExecutorService overloadScheduler = null;
-  @SuppressWarnings("unchecked")
   protected ScheduledFuture overloadHandler = null;
   protected PeerTableListener peerTableListener = null;
   protected IStatisticManager statisticFactory;

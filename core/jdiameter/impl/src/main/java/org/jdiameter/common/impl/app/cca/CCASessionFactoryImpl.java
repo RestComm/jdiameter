@@ -1,24 +1,25 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and/or its affiliates, and individual
- * contributors as indicated by the @authors tag. All rights reserved.
- * See the copyright.txt in the distribution for a full listing
- * of individual contributors.
- * 
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License, v. 2.0.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
+ * Copyright 2008, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.common.impl.app.cca;
 
 import java.util.concurrent.ScheduledFuture;
@@ -389,7 +390,6 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
 
   // Context Methods ----------------------------------------------------------
 
-  @SuppressWarnings("unchecked")
   public void stateChanged(Enum oldState, Enum newState) {
     logger.info("Diameter CCA SessionFactory :: stateChanged :: oldState[{}], newState[{}]", oldState, newState);
   }
@@ -399,7 +399,6 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
    * 
    * @see org.jdiameter.api.app.StateChangeListener#stateChanged(java.lang.Object, java.lang.Enum, java.lang.Enum)
    */
-  @SuppressWarnings("unchecked")
   public void stateChanged(AppSession source, Enum oldState, Enum newState) {
     logger.info("Diameter CCA SessionFactory :: stateChanged :: source[{}], oldState[{}], newState[{}]", new Object[]{source, oldState, newState});
   }
@@ -411,17 +410,14 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
     session.release();
   }
 
-  @SuppressWarnings("unchecked")
   public void sessionSupervisionTimerReStarted(ServerCCASession session, ScheduledFuture future) {
     // TODO Complete this method.
   }
 
-  @SuppressWarnings("unchecked")
   public void sessionSupervisionTimerStarted(ServerCCASession session, ScheduledFuture future) {
     // TODO Complete this method.
   }
 
-  @SuppressWarnings("unchecked")
   public void sessionSupervisionTimerStopped(ServerCCASession session, ScheduledFuture future) {
     // TODO Complete this method.
   }

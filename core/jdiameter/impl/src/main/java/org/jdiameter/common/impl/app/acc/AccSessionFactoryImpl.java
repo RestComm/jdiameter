@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and individual contributors by the
- * @authors tag. See the copyright.txt in the distribution for a
+ * Copyright 2006, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -19,6 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.common.impl.app.acc;
 
 import java.util.concurrent.ScheduledFuture;
@@ -334,7 +335,6 @@ public class AccSessionFactoryImpl implements IAccSessionFactory,IAccMessageFact
 
   // State Change Listener ---------------------------------------------------- 
 
-  @SuppressWarnings("unchecked")
   public void stateChanged(Enum oldState, Enum newState) {
     logger.info("Diameter ACC SessionFactory :: stateChanged :: oldState[{}], newState[{}]", oldState, newState);
   }
@@ -344,7 +344,6 @@ public class AccSessionFactoryImpl implements IAccSessionFactory,IAccMessageFact
    * 
    * @see org.jdiameter.api.app.StateChangeListener#stateChanged(java.lang.Object, java.lang.Enum, java.lang.Enum)
    */
-  @SuppressWarnings("unchecked")
   public void stateChanged(AppSession source, Enum oldState, Enum newState) {
     logger.info("Diameter ACC SessionFactory :: stateChanged :: source[{}], oldState[{}], newState[{}]", new Object[] { source, oldState, newState });
   }

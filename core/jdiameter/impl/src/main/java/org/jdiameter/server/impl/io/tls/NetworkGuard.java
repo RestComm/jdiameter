@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source.
- * Copyright 2011, Red Hat, Inc., and individual contributors
+ * Copyright 2012, Red Hat, Inc., and individual contributors
  * as indicated by the @author tags. See the copyright.txt file in the
  * distribution for a full listing of individual contributors.
  *
@@ -25,12 +25,6 @@ package org.jdiameter.server.impl.io.tls;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.net.ssl.SSLContext;
@@ -40,7 +34,6 @@ import javax.net.ssl.SSLSocket;
 
 import org.jdiameter.api.Configuration;
 import org.jdiameter.client.api.parser.IMessageParser;
-import org.jdiameter.client.impl.transport.tcp.TCPClientConnection;
 import org.jdiameter.client.impl.transport.tls.TLSClientConnection;
 import org.jdiameter.client.impl.transport.tls.TLSUtils;
 import org.jdiameter.common.api.concurrent.DummyConcurrentFactory;
@@ -55,8 +48,8 @@ import org.slf4j.LoggerFactory;
 /**
  * TLS implementation of {@link org.jdiameter.server.api.io.INetworkGuard}.
  * 
- * @author baranowb
- * 
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class NetworkGuard implements INetworkGuard, Runnable {
 

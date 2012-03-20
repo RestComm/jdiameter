@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors
+ * Copyright 2006, Red Hat, Inc. and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -31,12 +31,11 @@ import org.jdiameter.server.api.IRouter;
 
 /**
  * 
+ * @author erick.svenson@yahoo.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
 public class RouterImpl extends org.jdiameter.client.impl.router.RouterImpl implements IRouter {
-
-  //private static final Logger logger = LoggerFactory.getLogger(RouterImpl.class);
 
   public RouterImpl(IContainer container,IConcurrentFactory concurrentFactory, IRealmTable realmTable, Configuration config, MetaData metaData) {
     super(container,concurrentFactory, realmTable, config, metaData);

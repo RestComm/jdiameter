@@ -81,8 +81,6 @@ import org.slf4j.LoggerFactory;
  */
 public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerSession, EventListener<Request, Answer>, NetworkReqListener {
 
-  private static final long serialVersionUID = 1L;
-
   protected static final Logger logger = LoggerFactory.getLogger(GqServerSessionImpl.class);
 
   protected IServerAuthSessionData sessionData;

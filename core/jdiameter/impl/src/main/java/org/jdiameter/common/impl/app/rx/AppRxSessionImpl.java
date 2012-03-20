@@ -42,7 +42,6 @@ import org.jdiameter.common.impl.app.AppSessionImpl;
  */
 public abstract class AppRxSessionImpl extends AppSessionImpl implements NetworkReqListener, StateMachine {
 
-  private static final long serialVersionUID = 1L;
   protected Lock sendAndStateLock = new ReentrantLock();
   //FIXME: those must be recreated from local resources!
   //FIXME: change this to single ref!

@@ -68,7 +68,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSession, NetworkReqListener, EventListener<Request, Answer> {
 
-  private static final long serialVersionUID = 1L;
   private static final Logger logger = LoggerFactory.getLogger(ServerGxSessionImpl.class);
 
   // Session State Handling ---------------------------------------------------
