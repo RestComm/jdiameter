@@ -1,85 +1,101 @@
 /*
- * Copyright (c) 2006 jDiameter.
- * https://jdiameter.dev.java.net/
+ * JBoss, Home of Professional Open Source
+ * Copyright 2006, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
  *
- * License: Lesser General Public License (LGPL)
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
  *
- * e-mail: erick.svenson@yahoo.com
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.api;
 
 /**
  * An exception that provides information on a stack has application request overload.
+ * 
+ * @author erick.svenson@yahoo.com
  * @version 1.5.1 Final
  */
-
 public class OverloadException extends Exception {
 
-    double lowThreshold, highThreshold, value;
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * Default constructor
-     */
-    public OverloadException() {
-        super();
-    }
+  double lowThreshold, highThreshold, value;
 
-    /**
-     * Constructor with overload data
-     * @param lowThreshold low threshold overload value
-     * @param highThreshold  high threshold overload value
-     * @param value current overload value 
-     */
-    public OverloadException(double lowThreshold, double highThreshold, double value) {
-        this.lowThreshold = lowThreshold;
-        this.highThreshold = highThreshold;
-        this.value = value;
-    }
+  /**
+   * Default constructor
+   */
+  public OverloadException() {
+    super();
+  }
 
-    /**
-     * Constructor with reason string
-     * @param message reason string
-     */
-    public OverloadException(String message) {
-        super(message);
-    }
+  /**
+   * Constructor with overload data
+   * @param lowThreshold low threshold overload value
+   * @param highThreshold  high threshold overload value
+   * @param value current overload value 
+   */
+  public OverloadException(double lowThreshold, double highThreshold, double value) {
+    this.lowThreshold = lowThreshold;
+    this.highThreshold = highThreshold;
+    this.value = value;
+  }
 
-    /**
-     * Constructor with reason string and parent exception
-     * @param message message reason string
-     * @param cause parent exception
-     */
-    public OverloadException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  /**
+   * Constructor with reason string
+   * @param message reason string
+   */
+  public OverloadException(String message) {
+    super(message);
+  }
 
-    /**
-     * Constructor with parent exception
-     * @param cause  parent exception
-     */
-    public OverloadException(Throwable cause) {
-        super(cause);
-    }
+  /**
+   * Constructor with reason string and parent exception
+   * @param message message reason string
+   * @param cause parent exception
+   */
+  public OverloadException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    /**
-     * @return current low threshold overload value
-     */
-    public double getLowThreshold() {
-        return lowThreshold;
-    }
+  /**
+   * Constructor with parent exception
+   * @param cause  parent exception
+   */
+  public OverloadException(Throwable cause) {
+    super(cause);
+  }
 
-    /**
-     * @return current high threshold overload value
-     */
-    public double getHighThreshold() {
-        return highThreshold;
-    }
+  /**
+   * @return current low threshold overload value
+   */
+  public double getLowThreshold() {
+    return lowThreshold;
+  }
 
-    /**
-     * @return current overload value
-     */
-    public double getValue() {
-        return value;
-    }
+  /**
+   * @return current high threshold overload value
+   */
+  public double getHighThreshold() {
+    return highThreshold;
+  }
+
+  /**
+   * @return current overload value
+   */
+  public double getValue() {
+    return value;
+  }
 }

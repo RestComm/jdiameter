@@ -1,51 +1,67 @@
 /*
- * Copyright (c) 2006 jDiameter.
- * https://jdiameter.dev.java.net/
+ * JBoss, Home of Professional Open Source
+ * Copyright 2006, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
  *
- * License: Lesser General Public License (LGPL)
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
  *
- * e-mail: erick.svenson@yahoo.com
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.jdiameter.api;
 
 /**
  * An exception that provides information on a stack  error or other errors.
+ * 
+ * @author erick.svenson@yahoo.com
  * @version 1.5.1 Final
  */
-
 public class InternalException extends Exception {
 
-    /**
-     * Default constructor
-     */
-    public InternalException() {
-        super();
-    }
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * Constructor with reason string
-     * @param message reason string
-     */
-    public InternalException(String message) {
-        super(message);
-    }
+  /**
+   * Default constructor
+   */
+  public InternalException() {
+    super();
+  }
 
-    /**
-     * Constructor with reason string and parent exception
-     * @param message message reason string
-     * @param cause parent exception
-     */
-    public InternalException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  /**
+   * Constructor with reason string
+   * @param message reason string
+   */
+  public InternalException(String message) {
+    super(message);
+  }
 
-    /**
-     * Constructor with parent exception
-     * @param cause  parent exception
-     */
-    public InternalException(Throwable cause) {
-        super(cause);
-    }
+  /**
+   * Constructor with reason string and parent exception
+   * @param message message reason string
+   * @param cause parent exception
+   */
+  public InternalException(String message, Throwable cause) {
+    super(message, cause);
+  }
+
+  /**
+   * Constructor with parent exception
+   * @param cause  parent exception
+   */
+  public InternalException(Throwable cause) {
+    super(cause);
+  }
 
 }
