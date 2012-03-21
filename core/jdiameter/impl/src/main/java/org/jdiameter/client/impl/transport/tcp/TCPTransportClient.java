@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ClosedByInterruptException;
@@ -211,7 +212,7 @@ public class TCPTransportClient implements Runnable {
   }
 
   public void setDestAddress(InetSocketAddress address) {
-	  this.destAddress = address;
+    this.destAddress = address;
     if(logger.isDebugEnabled()) {
       logger.debug("Destination address is set to [{}] : [{}]", destAddress.getHostName(), destAddress.getPort());
     }
@@ -220,13 +221,13 @@ public class TCPTransportClient implements Runnable {
   public void setOrigAddress(InetSocketAddress address) {
     this.origAddress = address;
     if(logger.isDebugEnabled()) {
-        logger.debug("Origin address is set to [{}] : [{}]", origAddress.getHostName(), origAddress.getPort());
-      }
+      logger.debug("Origin address is set to [{}] : [{}]", origAddress.getHostName(), origAddress.getPort());
+    }
   }
-  
+
   public InetSocketAddress getOrigAddress()
   {
-	  return this.origAddress;
+    return this.origAddress;
   }
 
   public void sendMessage(ByteBuffer bytes) throws IOException {
@@ -295,47 +296,71 @@ public class TCPTransportClient implements Runnable {
     catch (BufferOverflowException boe) {
       logger.error("Buffer overflow occured", boe);
     }
-    boolean messageReseived;
+    boolean messageReceived;
     do {
-      messageReseived = seekMessage(storage);
-    } while (messageReseived);
+      messageReceived = seekMessage();
+    } while (messageReceived);
   }
 
-  private boolean seekMessage(ByteBuffer localStorage) {
+  private boolean seekMessage() {
+    // make sure there's actual data written on the buffer
     if (storage.position() == 0) {
       return false;
     }
 
     storage.flip();
-    int tmp = localStorage.getInt();
-    localStorage.position(0);
-
-    byte vers = (byte) (tmp >> 24);
-    if (vers != 1) {
-      return false;
-    }
-    int dataLength = (tmp & 0xFFFFFF);
-
-    if (localStorage.limit() < dataLength) {
-      localStorage.position(localStorage.limit());
-      localStorage.limit(localStorage.capacity());
-      return false;
-    }
-
-    byte[] data = new byte[dataLength];
-    localStorage.get(data);
-    localStorage.position(dataLength);
-    localStorage.compact();
-
     try {
-      getParent().onMessageReceived(ByteBuffer.wrap(data));
+      // get first four bytes for version and message length
+      // 0                   1                   2                   3
+      // 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      // |    Version    |                 Message Length                |
+      // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      int tmp = storage.getInt();
+      // reset position so we can now read whole message
+      logger.debug("No data received ?");
+      storage.position(0);
+
+      // check that version is 1, as per RFC 3588 - Section 3:
+      // This Version field MUST be set to 1 to indicate Diameter Version 1
+      byte vers = (byte) (tmp >> 24);
+      if (vers != 1) {
+        return false;
+      }
+      // extract the message length, so we know how much to read
+      int messageLength = (tmp & 0xFFFFFF);
+
+      // verify that we do have the whole message in the storage
+      if (storage.limit() < messageLength) {
+        // we don't have it all.. let's restore buffer to receive more
+        storage.position(storage.limit());
+        storage.limit(storage.capacity());
+        logger.debug("Received partial message, waiting for remaining (expected: {} bytes, got {} bytes).", messageLength, storage.position());
+        return false;
+      }
+
+      // read the complete message
+      byte[] data = new byte[messageLength];
+      storage.get(data);
+      storage.compact();
+
+      try {
+        // make a message out of data and process it
+        getParent().onMessageReceived(ByteBuffer.wrap(data));
+      }
+      catch (AvpDataException e) {
+        logger.debug("Garbage was received. Discarding.");
+        storage.clear();
+        getParent().onAvpDataException(e);
+      }
     }
-    catch (AvpDataException e) {
-      logger.debug("Garbage was received. Discarding.");
-      storage.clear();
-      getParent().onAvpDataException(e);
+    catch(BufferUnderflowException bue) {
+      // we don't have enough data to read message length.. wait for more
+      storage.position(storage.limit());
+      storage.limit(storage.capacity());
+      logger.debug("Buffer underflow occured, waiting for more data.", bue);
+      return false;
     }
     return true;
   }
-
 }
