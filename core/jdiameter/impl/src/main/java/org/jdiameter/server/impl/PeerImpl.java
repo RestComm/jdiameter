@@ -78,7 +78,7 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
 
   // External references
   private MutablePeerTableImpl peerTable;
-  protected Set<URI> predefinedPeerTable;
+  protected Set<String> predefinedPeerTable;
   protected INetwork network;
   protected IOverloadManager ovrManager;
   protected ISessionFactory sessionFactory;

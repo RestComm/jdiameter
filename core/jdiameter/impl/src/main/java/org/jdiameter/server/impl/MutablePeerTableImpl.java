@@ -128,7 +128,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   // Network management -------------------------------------------------------
   protected INetworkGuard networkGuard;
   protected INetwork network;
-  protected Set<URI> predefinedPeerTable;
+  protected Set<String> predefinedPeerTable;
 
   // Overload handling --------------------------------------------------------
   protected IOverloadManager ovrManager;
@@ -187,7 +187,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       this.duplicateTimer = config.getLongValue(DuplicateTimer.ordinal(), (Long) DuplicateTimer.defValue());
     }
     if (predefinedPeerTable == null) {
-      predefinedPeerTable = new CopyOnWriteArraySet<URI>();
+      predefinedPeerTable = new CopyOnWriteArraySet<String>();
     }
     if (config instanceof MutableConfiguration) {
       ((MutableConfiguration) config).addChangeListener(this);
@@ -207,10 +207,10 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     logger.debug("Creating Peer for URI [{}]", uri);
     if (predefinedPeerTable == null) {
       logger.debug("Creating new empty predefined peer table");
-      predefinedPeerTable = new CopyOnWriteArraySet<URI>();
+      predefinedPeerTable = new CopyOnWriteArraySet<String>();
     }
     logger.debug("Adding URI [{}] to predefinedPeerTable", uri);
-    predefinedPeerTable.add(new URI(uri));
+    predefinedPeerTable.add(new URI(uri).getFQDN());
     if (peerConfig.getBooleanValue(PeerAttemptConnection.ordinal(), false)) {
       logger.debug("Peer at URI [{}] is configured to attempt a connection (i.e. acting as a client) and a new peer instance will be created and returned", uri);
       return newPeerInstance(rating, new URI(uri), ip, portRange, true, null,
@@ -325,7 +325,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     isStarted = true;
   }
 
-  public Set<URI> getPredefinedPeerTable() {
+  public Set<String> getPredefinedPeerTable() {
     return predefinedPeerTable;
   }
 
@@ -383,49 +383,35 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                         return;
                     }
                     
-                    boolean foundInpredefinedTable = false;
+                    boolean foundInPredefinedTable = false;
                     // find into predefined table
-                    for (URI uri : predefinedPeerTable) {
+                    for (String fqdn : predefinedPeerTable) {
                       if(logger.isDebugEnabled()) {
-                        logger.debug("Checking against entry in predefinedPeerTable with URI [{}]", uri.toString());
+                        logger.debug("Checking against entry in predefinedPeerTable with FQDN [{}]", fqdn);
                       }
-                      if (uri.getFQDN().equals(host)) {
+                      if (fqdn.equals(host)) {
                         if(logger.isDebugEnabled()) {
-                          logger.debug("{} == {}", uri.getFQDN(), host);
+                          logger.debug("{} == {}", fqdn, host);
                         }
-                        peer = (IPeer) peerTable.get(uri);
-                        foundInpredefinedTable = true; // found but not init
+                        peer = (IPeer) peerTable.get(fqdn);
+                        foundInPredefinedTable = true; // found but not init
                         break;
                       }
                       else {
                         if(logger.isDebugEnabled()) {
-                          logger.debug("{} != {}", uri.getFQDN(), host);
+                          logger.debug("{} != {}", fqdn, host);
                         }
                       }
                     }
                     // find in peer table for peer already connected to server but not removed
                     if (peer == null) {
-                      logger.debug("Peer is still null [{}]", host);
-                      for (URI uri : peerTable.keySet()) {
-                        if (logger.isDebugEnabled()) {
-                          logger.debug("PeerTable contains an URI of [{}]", uri.toString());
-                        }
-                        // PCB added additional check that peer is not down
-                        if (uri.getFQDN().equals(host)) {
-                          peer = (IPeer) peerTable.get(uri);
-                          if (peer.hasValidConnection()) {
-                            if (logger.isDebugEnabled()) {
-                              logger.debug("URI [{}] == [{}] and peer connection is open", uri.getFQDN(), host);
-                            }
-                            break;
-                          }
-                          else {
-                            if (logger.isDebugEnabled()) {
-                              logger.debug("URI [{}] == [{}] but peer connection is not open", uri.getFQDN(), host);
-                            }
-                            peer = null;
-                          }
-                        }
+                      logger.debug("Peer with FQDN [{}] was not found in predefined peer table. Checking at (previously) connected peers table", host);
+                      peer = (IPeer) peerTable.get(host);
+                      if (peer != null) {
+                        logger.debug("Got peer for FQDN [{}]. Is connection open ? {}.", host, peer.hasValidConnection());
+                      }
+                      else {
+                        logger.debug("Still haven't found peer for FQDN [{}]", host);                        
                       }
                     }
 
@@ -442,7 +428,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                       }
                     }
                     else {
-                      if (isAcceptUndefinedPeer || foundInpredefinedTable) {
+                      if (isAcceptUndefinedPeer || foundInPredefinedTable) {
                         try {
                           int port = connection.getRemotePort();
 
@@ -507,7 +493,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   }
 
   private void appendPeerToPeerTable(IPeer peer) {
-    peerTable.put(peer.getUri(), peer);
+    peerTable.put(peer.getUri().getFQDN(), peer);
     if (peerTableListener != null) {
       peerTableListener.peerAccepted(peer);
     }
@@ -548,10 +534,10 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     storageAnswers.clear();
 
     // Clear dynamic peers from peertable
-    Iterator<URI> it = super.peerTable.keySet().iterator();
+    Iterator<String> it = super.peerTable.keySet().iterator();
     while(it.hasNext()) {
-    	URI u = it.next();
-    	if(this.predefinedPeerTable.contains(u)) {
+    	String fqdn = it.next();
+    	if(this.predefinedPeerTable.contains(fqdn)) {
     		continue;
     	}
     	else {
@@ -611,16 +597,16 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
 
   public Peer removePeer(String host) {
     try {
-      URI peerUri = null;
-      for (URI u : peerTable.keySet()) {
-        if (u.getFQDN().equals(host)) {
-          peerUri = u;
-          peerTable.get(u).disconnect(DisconnectCause.BUSY);
+      String fqdn = null;
+      for (String f : peerTable.keySet()) {
+        if (f.equals(host)) {
+          fqdn = f;
+          peerTable.get(fqdn).disconnect(DisconnectCause.BUSY);
         }
       }
-      if (peerUri != null) {
-        predefinedPeerTable.remove(peerUri);
-        Peer removedPeer = peerTable.remove(peerUri);
+      if (fqdn != null) {
+        predefinedPeerTable.remove(fqdn);
+        Peer removedPeer = peerTable.remove(fqdn);
         if (peerTableListener != null) {
           peerTableListener.peerRemoved(removedPeer);
         }

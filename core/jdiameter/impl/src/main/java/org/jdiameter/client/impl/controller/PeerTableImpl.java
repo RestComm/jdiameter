@@ -81,7 +81,7 @@ public class PeerTableImpl implements IPeerTable {
   private static final Logger logger = LoggerFactory.getLogger(PeerTableImpl.class);
 
   // Peer table
-  protected ConcurrentHashMap<URI, Peer> peerTable = new ConcurrentHashMap<URI, Peer>();
+  protected ConcurrentHashMap<String, Peer> peerTable = new ConcurrentHashMap<String, Peer>();
   protected boolean isStarted;
   protected long stopTimeOut;
   protected IAssembler assembler;
@@ -128,7 +128,7 @@ public class PeerTableImpl implements IPeerTable {
               //NOTE: this depends on conf, in normal case realm is younger part of FQDN, but in some cases
               //conf peers may contain IPs only... sucks.
               peer.setRealm(router.getRealmTable().getRealmForPeer(peer.getUri().getFQDN()));
-              peerTable.put(peer.getUri(), peer);
+              peerTable.put(peer.getUri().getFQDN(), peer);
               logger.debug("Appended peer [{}] to peer table", peer);
             }
           }
@@ -142,7 +142,7 @@ public class PeerTableImpl implements IPeerTable {
 
   protected Peer createPeer(int rating, String uri, String ip, String portRange, MetaData metaData, Configuration config, Configuration peerConfig, 
       IFsmFactory fsmFactory, ITransportLayerFactory transportFactory, IStatisticManager statisticFactory, IConcurrentFactory concurrentFactory, IMessageParser parser)  
-  throws InternalException, TransportException, URISyntaxException, UnknownServiceException {
+          throws InternalException, TransportException, URISyntaxException, UnknownServiceException {
     return new PeerImpl(this, rating, new URI(uri), ip, portRange, metaData.unwrap(IMetaData.class), config,
         peerConfig, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser, this.sessionDatasource);
   }
@@ -248,73 +248,16 @@ public class PeerTableImpl implements IPeerTable {
     return null;
   }
 
-  //NOTE: METHOD BODY MUST MATCH JDOC.....!!!
-  //TODO: add  DNS lookup ?
-  public Peer getPeer(String name) {
-    logger.debug("In getPeerByName for peer name [{}]. Going to loop through peerTable and find a matching entry", name);
-
-    for (Peer p : peerTable.values()) {
-      if (logger.isDebugEnabled()) {
-        logger.debug("Checking to see if peer name [{}] matches peertable value of [{}] or [{}]", new Object[]{name, p.getUri().toString(), p.getUri().getFQDN()});
-      }
-
-      if (p.getUri().toString().equals(name) || p.getUri().getFQDN().equals(name)) {
-        if (logger.isDebugEnabled()) {
-          logger.debug("Found matching peer value of [{}]. Connection valid? : [{}]", p.getUri().toString(), ((IPeer) p).hasValidConnection());
-        }
-        IPeer ret = (IPeer) p;
-        //PCB added validity check to ensure only open peer is returned
-        if (ret.hasValidConnection()) {
-          if (logger.isDebugEnabled()) {
-            logger.debug("Found matching peer [{}] and its connection is open. will return it", ret.getUri().toString());
-          }
-          return ret;
-        } else {
-          if (logger.isDebugEnabled()) {
-            logger.debug("Found matching peer [{}] but its connection is not open. Will ignore it and seek further", ret.getUri().toString());
-          }
-        }
-      }
-    }
-    if (logger.isDebugEnabled()) {
-      logger.debug("No peer found in getPeerByName for peer [{}] will return null", name);
-    }
-
-    return null;
-  }
-
-  public IPeer getPeerByName(String peerName) {
-    logger.debug("Looking for Peer by name [{}] in Peer Table: [{}]", peerName, peerTable);
-    for (Peer p : peerTable.values()) {
-      if (p.getUri().getFQDN().equals(peerName)) {
-        return (IPeer) p;
-      }
-    }
-
-    logger.debug("No peer found in getPeerByName for peer [{}] will return null", peerName);
-    return null;
-  }
-
-  public IPeer getPeerByUri(String peerUri) {
-    if(logger.isDebugEnabled()) {
-      logger.debug("Looking for Peer by URI '{}' in Peer Table: {}", peerUri, peerTable);
-    }
-    // Creating URI for validation and easy FQDN retrieval
-    URI otherUri;
-    try {
-      otherUri = new URI(peerUri);
-    }
-    catch (Exception e) {
+  public IPeer getPeer(String fqdn) {
+    logger.debug("In getPeer for peer with FQDN [{}]. Going to find a matching entry in peerTable", fqdn);
+    IPeer peer = (IPeer) peerTable.get(fqdn);
+    if (peer == null) {
+      logger.debug("No peer found in getPeer for peer [{}] will return null", fqdn);
       return null;
     }
-    for (Peer p : peerTable.values()) {
-      if (p.getUri().getFQDN().equals(otherUri.getFQDN())) {
-        return (IPeer) p;
-      }
-    }
 
-    logger.debug("No peer found in getPeerByUrifor peer [{}] will return null", peerUri);
-    return null;
+    logger.debug("Found matching peer [{}]. Is connection open ? {}.", peer.getUri(), peer.hasValidConnection());
+    return peer;
   }
 
   public void removeSessionListener(String sessionId) {

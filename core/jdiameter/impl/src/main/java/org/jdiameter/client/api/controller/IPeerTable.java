@@ -83,18 +83,10 @@ public interface IPeerTable extends PeerTable {
     /**
      * Return peer from peer table by identity - FQDN host name.
      * 
-     * @param peerHost peer host
+     * @param fqdn peer host
      * @return peer instance
      */
-    IPeer getPeerByName(String peerHost);
-
-    /**
-     * Return peer from peer table by peerURI
-     * 
-     * @param peerUri peer uri
-     * @return peer instance
-     */
-    IPeer getPeerByUri(String peerUri);
+    IPeer getPeer(String fqdn);
 
     /**
      * Return map of session event listeners
