@@ -230,7 +230,7 @@ public class TLSClientConnection implements IConnection {
 
   public String getKey() {
     if (this.cachedKey == null) {
-      this.cachedKey = new StringBuffer("aaa://").append(getRemoteAddress().getHostName()).append(":").append(getRemotePort()).toString();
+      this.cachedKey = new StringBuffer("aaas://").append(getRemoteAddress().getHostName()).append(":").append(getRemotePort()).toString();
     }
 
     return this.cachedKey;
