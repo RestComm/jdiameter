@@ -283,7 +283,7 @@
                     <xsi:attribute name="active_records" type="xsi:string" use="optional"/>
                 </xsi:complexType>
             </xsi:element>
-            <xsi:element name="Concurrent" minOccurs="0" maxOccurs="1"/>
+            <xsi:element ref="Concurrent" minOccurs="0" maxOccurs="1"/>
             <xsi:element name="Dictionary" minOccurs="0" maxOccurs="1">
                 <xsi:annotation>
                     <xsi:documentation>Dictionary and Validator configuration</xsi:documentation>
