@@ -376,7 +376,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                     String realm;
                     try {
                         realm = message.getAvps().getAvp(Avp.ORIGIN_REALM).getDiameterIdentity();
-                        logger.debug("Origin-Realm in new received message is [{}]", host);
+                        logger.debug("Origin-Realm in new received message is [{}]", realm);
                     } catch (AvpDataException e) {
                         logger.warn("Unable to retrieve find Origin-Realm AVP in CER", e);
                         unregister(true);
