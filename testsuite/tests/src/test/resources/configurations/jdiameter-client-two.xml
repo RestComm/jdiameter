@@ -39,7 +39,7 @@
     <Statistics pause="30000" delay="30000" enabled="true" active_records="Concurrent,ScheduledExecService,Network,ScheduledExecService,AppGenRequestPerSecond,NetGenRequestPerSecond,Peer,Peer.local,PeerFSM"/>
 
     <Concurrent>
-      <Entity name="ThreadGroup" size="64"/> // Common Thread Pool
+      <Entity name="ThreadGroup" size="64"/> <!-- Common Thread Pool -->
       <Entity name="ProcessingMessageTimer" size="1"/>
       <Entity name="DuplicationMessageTimer" size="1"/>
       <Entity name="RedirectMessageTimer" size="1"/>
