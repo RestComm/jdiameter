@@ -647,21 +647,21 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
 
   @Override
   public void release() {
-    try {
-      this.sendAndStateLock.lock();
-      this.stopTx();
-      //if (super.isValid()) {
-      super.release();
-      //}
-      //this.context = null;
-      //this.listener = null;
-      //this.factory = null;
+    if (isValid()) {
+      try {
+        this.sendAndStateLock.lock();
+        this.stopTx();
+        super.release();
+      }
+      catch (Exception e) {
+        logger.debug("Failed to release session", e);
+      }
+      finally {
+        this.sendAndStateLock.unlock();
+      }
     }
-    catch (Exception e) {
-      logger.debug("Failed to release session", e);
-    }
-    finally {
-      this.sendAndStateLock.unlock();
+    else {
+      logger.debug("Trying to release an already invalid session, with Session ID '{}'", getSessionId());
     }
   }
 

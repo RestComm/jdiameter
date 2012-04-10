@@ -430,22 +430,21 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
 
   @Override
   public void release() {
-    try {
-      this.sendAndStateLock.lock();
-
-      this.stopTcc(false);
-      //if (super.isValid()) {
-      super.release();
-      //}
-      //this.context = null;
-      //this.listener = null;
-      //this.factory = null;
+    if (isValid()) {
+      try {
+        this.sendAndStateLock.lock();
+        this.stopTcc(false);
+        super.release();
+      }
+      catch (Exception e) {
+        logger.debug("Failed to release session", e);
+      }
+      finally {
+        sendAndStateLock.unlock();
+      }
     }
-    catch (Exception e) {
-      logger.debug("Failed to release session", e);
-    }
-    finally {
-      sendAndStateLock.unlock();
+    else {
+      logger.debug("Trying to release an already invalid session, with Session ID '{}'", getSessionId());
     }
   }
 

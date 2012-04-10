@@ -370,6 +370,24 @@ public class S6aServerSessionImpl extends S6aSession implements ServerS6aSession
     }
   }
 
+  public void release() {
+    if (isValid()) {
+      try {
+        sendAndStateLock.lock();
+        super.release();
+      }
+      catch (Exception e) {
+        logger.debug("Failed to release session", e);
+      }
+      finally {
+        sendAndStateLock.unlock();
+      }
+    }
+    else {
+      logger.debug("Trying to release an already invalid session, with Session ID '{}'", getSessionId());
+    }
+  }
+
   private class RequestDelivery implements Runnable {
 
     ServerS6aSession session;

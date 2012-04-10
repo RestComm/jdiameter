@@ -749,18 +749,21 @@ public class ClientRfSessionImpl extends AppRfSessionImpl implements EventListen
 
   @Override
   public void release() {
-    try {
-      sendAndStateLock.lock();
-      //TODO: cancel timer?
-      super.release();
-      //this.context = null;
-      //this.listener = null;
+    if (isValid()) {
+      try {
+        sendAndStateLock.lock();
+        //TODO: cancel timer?
+        super.release();
+      }
+      catch (Exception e) {
+        logger.debug("Failed to release session", e);
+      }
+      finally {
+        sendAndStateLock.unlock();
+      }
     }
-    catch (Exception e) {
-      logger.debug("Failed to release session", e);
-    }
-    finally {
-      sendAndStateLock.unlock();
+    else {
+      logger.debug("Trying to release an already invalid session, with Session ID '{}'", getSessionId());
     }
   }
 

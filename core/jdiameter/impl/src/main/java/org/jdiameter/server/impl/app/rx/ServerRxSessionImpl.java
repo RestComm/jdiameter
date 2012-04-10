@@ -351,23 +351,21 @@ public class ServerRxSessionImpl extends AppRxSessionImpl implements ServerRxSes
 
   @Override
   public void release() {
-
-    if (super.isValid()) {
-      super.release();
+    if (isValid()) {
+      try {
+        this.sendAndStateLock.lock();
+        super.release();
+      }
+      catch (Exception e) {
+        logger.debug("Failed to release session", e);
+      }
+      finally {
+        sendAndStateLock.unlock();
+      }
     }
-
-    if (super.session != null) {
-      super.session.setRequestListener(null);
+    else {
+      logger.debug("Trying to release an already invalid session, with Session ID '{}'", getSessionId());
     }
-
-    this.session = null;
-
-    if (listener != null) {
-      this.removeStateChangeNotification((StateChangeListener) listener);
-      this.listener = null;
-    }
-
-    this.factory = null;
   }
 
   protected void send(Event.Type type, AppRequestEvent request, AppAnswerEvent answer) throws InternalException {

@@ -105,6 +105,7 @@ public abstract class AppSessionImpl implements AppSession {
   }
 
   public void release() {
+    logger.debug("Releasing application session for Session ID '{}' ({}).", getSessionId(), getSessionAppId());
     this.session.setRequestListener(null);
     this.session.release();
     this.appSessionData.remove();

@@ -565,18 +565,21 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
 
   @Override
   public void release() {
-    if (super.isValid()) {
-      super.release();
+    if (isValid()) {
+      try {
+        this.sendAndStateLock.lock();
+        super.release();
+      }
+      catch (Exception e) {
+        logger.debug("Failed to release session", e);
+      }
+      finally {
+        sendAndStateLock.unlock();
+      }
     }
-    if (super.session != null) {
-      super.session.setRequestListener(null);
+    else {
+      logger.debug("Trying to release an already invalid session, with Session ID '{}'", getSessionId());
     }
-    super.session = null;
-    if (listener != null) {
-      this.removeStateChangeNotification((StateChangeListener) listener);
-    }
-    this.listener = null;
-    this.factory = null;
   }
 
   protected void handleSendFailure(Exception e, Event.Type eventType, Message request) throws Exception {

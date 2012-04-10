@@ -388,16 +388,20 @@ public class CxDxClientSessionImpl extends CxDxSession implements ClientCxDxSess
 
   @Override
   public void release() {
-    try {
-      sendAndStateLock.lock();
-      super.release();
-      //this.listener = null;
+    if (isValid()) {
+      try {
+        sendAndStateLock.lock();
+        super.release();
+      }
+      catch (Exception e) {
+        logger.debug("Failed to release session", e);
+      }
+      finally {
+        sendAndStateLock.unlock();
+      }
     }
-    catch (Exception e) {
-      logger.debug("Failed to release session", e);
-    }
-    finally {
-      sendAndStateLock.unlock();
+    else {
+      logger.debug("Trying to release an already invalid session, with Session ID '{}'", getSessionId());
     }
   }
 

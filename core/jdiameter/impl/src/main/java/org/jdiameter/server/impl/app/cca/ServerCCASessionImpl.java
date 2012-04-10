@@ -439,21 +439,19 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
 
   @Override
   public void release() {
-    try {
-      sendAndStateLock.lock();
+    if (isValid()) {
+      try {
+        sendAndStateLock.lock();
 
-      this.stopTcc(false);
-
-      //if (super.isValid()) {
-      super.release();
-      //}
-
-      //this.listener = null;
-      //this.context = null;
-      //this.factory = null;
+        this.stopTcc(false);
+        super.release();
+      }
+      finally {
+        sendAndStateLock.unlock();
+      }
     }
-    finally {
-      sendAndStateLock.unlock();
+    else {
+      logger.debug("Trying to release an already invalid session, with Session ID '{}'", getSessionId());
     }
   }
 

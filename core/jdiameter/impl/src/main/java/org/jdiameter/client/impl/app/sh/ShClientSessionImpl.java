@@ -224,21 +224,20 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
   }
 
   public void release() {
-    try {
-      sendAndStateLock.lock();
-
-      //if(super.isValid()) {
+    if (isValid()) {
+      try {
+        sendAndStateLock.lock();
         super.release();
-      //}
-
-     //this.listener = null;
-     //this.factory = null;
+      }
+      catch (Exception e) {
+        logger.debug("Failed to release session", e);
+      }
+      finally {
+        sendAndStateLock.unlock();
+      }
     }
-    catch (Exception e) {
-      logger.debug("Failed to release session", e);
-    }
-    finally {
-      sendAndStateLock.unlock();
+    else {
+      logger.debug("Trying to release an already invalid session, with Session ID '{}'", getSessionId());
     }
   }
 
