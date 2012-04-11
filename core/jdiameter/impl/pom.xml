@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.mobicents.servers.diameter</groupId>
 		<artifactId>jdiameter-parent</artifactId>
-		<version>1.5.8.0-build520-SNAPSHOT</version>
+		<version>1.5.8.1-build529</version>
 	</parent>
 
 	<artifactId>jdiameter-impl</artifactId>
