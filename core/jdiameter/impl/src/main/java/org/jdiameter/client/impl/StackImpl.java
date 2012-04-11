@@ -86,7 +86,6 @@ public class StackImpl implements IContainer, StackImplMBean {
   protected StackState state = StackState.IDLE;
   protected Lock lock = new ReentrantLock();
 
-
   /**
    * Use for processing request time-out tasks (for all active peers)
    */
@@ -95,6 +94,9 @@ public class StackImpl implements IContainer, StackImplMBean {
   @SuppressWarnings("unchecked")
   public SessionFactory init(Configuration config) throws IllegalDiameterStateException, InternalException {
     lock.lock();
+    if (log.isInfoEnabled()) {
+      log.info("(:)(:)(:)(:)(:) Starting " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" + VersionProperties.instance.getProperty("version") + " (:)(:)(:)(:)(:)");
+    }
     try {
       if (state != StackState.IDLE) {
         throw new IllegalDiameterStateException();
@@ -122,12 +124,14 @@ public class StackImpl implements IContainer, StackImplMBean {
         ValidatorLevel validatorSendLevel = ValidatorLevel.fromString((String) Parameters.DictionarySendLevel.defValue());
         ValidatorLevel validatorReceiveLevel = ValidatorLevel.fromString((String) Parameters.DictionaryReceiveLevel.defValue());
 
-        if(dictionaryConfigs != null && dictionaryConfigs.length > 0) {
+        if (dictionaryConfigs != null && dictionaryConfigs.length > 0) {
           Configuration dictionaryConfiguration = dictionaryConfigs[0];
           dictionaryClassName = dictionaryConfiguration.getStringValue(Parameters.DictionaryClass.ordinal(), (String) Parameters.DictionaryClass.defValue());
           validatorEnabled = dictionaryConfiguration.getBooleanValue(Parameters.DictionaryEnabled.ordinal(), (Boolean) Parameters.DictionaryEnabled.defValue());
-          validatorSendLevel = ValidatorLevel.fromString(dictionaryConfiguration.getStringValue(Parameters.DictionarySendLevel.ordinal(), (String) Parameters.DictionarySendLevel.defValue()));
-          validatorReceiveLevel = ValidatorLevel.fromString( dictionaryConfiguration.getStringValue(Parameters.DictionaryReceiveLevel.ordinal(), (String) Parameters.DictionaryReceiveLevel.defValue()));
+          validatorSendLevel = ValidatorLevel.fromString(dictionaryConfiguration.getStringValue(Parameters.DictionarySendLevel.ordinal(),
+              (String) Parameters.DictionarySendLevel.defValue()));
+          validatorReceiveLevel = ValidatorLevel.fromString(dictionaryConfiguration.getStringValue(Parameters.DictionaryReceiveLevel.ordinal(),
+              (String) Parameters.DictionaryReceiveLevel.defValue()));
         }
 
         createDictionary(dictionaryClassName, validatorEnabled, validatorSendLevel, validatorReceiveLevel);
@@ -145,10 +149,14 @@ public class StackImpl implements IContainer, StackImplMBean {
     finally {
       lock.unlock();
     }
+    if (log.isInfoEnabled()) {
+      log.info("(:)(:)(:)(:)(:) Started  " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" + VersionProperties.instance.getProperty("version") + " (:)(:)(:)(:)(:)");
+    }
     return (SessionFactory) assembler.getComponentInstance(SessionFactory.class);
   }
 
-  private void createDictionary(String clazz, boolean validatorEnabled, ValidatorLevel validatorSendLevel, ValidatorLevel validatorReceiveLevel) throws InternalException {
+  private void createDictionary(String clazz, boolean validatorEnabled, ValidatorLevel validatorSendLevel, ValidatorLevel validatorReceiveLevel)
+      throws InternalException {
     // Defer call to singleton
     DictionarySingleton.init(clazz, validatorEnabled, validatorSendLevel, validatorReceiveLevel);
   }
@@ -249,6 +257,9 @@ public class StackImpl implements IContainer, StackImplMBean {
     lock.lock();
     try {
       if (state == StackState.STARTED || state == StackState.CONFIGURED) {
+        if (log.isInfoEnabled()) {
+          log.info("(:)(:)(:)(:)(:) Stopping " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" + VersionProperties.instance.getProperty("version") + " (:)(:)(:)(:)(:)");
+        }
         List<Peer> peerTable = peerManager.getPeerTable();
         final CountDownLatch barrier = new CountDownLatch(peerTable.size());
         StateChangeListener listener = new AbstractStateChangeListener() {
@@ -304,6 +315,9 @@ public class StackImpl implements IContainer, StackImplMBean {
           log.warn("Stopped error", e);
         }
         state = StackState.STOPPED;
+        if (log.isInfoEnabled()) {
+          log.info("(:)(:)(:)(:)(:) Stopped  " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" + VersionProperties.instance.getProperty("version") + " (:)(:)(:)(:)(:)");
+        }
       }
     }
     finally {
@@ -313,7 +327,7 @@ public class StackImpl implements IContainer, StackImplMBean {
 
   public void destroy() {
     // Be friendly
-    if(state == StackState.STARTED) {
+    if (state == StackState.STARTED) {
       log.warn("Calling destroy() with Stack in STARTED state. Calling stop(REBOOTING) before, please do it yourself with the proper cause.");
       stop(DisconnectCause.REBOOTING);
     }
@@ -383,7 +397,7 @@ public class StackImpl implements IContainer, StackImplMBean {
     if (aClass == PeerTable.class) {
       unwrapObject = assembler.getComponentInstance(aClass);
     }
-    //TODO: "layers" should be removed....
+    // TODO: "layers" should be removed....
     if (unwrapObject == null) {
       unwrapObject = assembler.getChilds()[StackLayer.id()].getComponentInstance(aClass);
     }
@@ -438,7 +452,7 @@ public class StackImpl implements IContainer, StackImplMBean {
     try {
       return getMetaData().toString();
     }
-    catch(Exception exc) {
+    catch (Exception exc) {
       return "not set";
     }
   }
