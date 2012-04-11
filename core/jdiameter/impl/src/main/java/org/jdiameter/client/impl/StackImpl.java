@@ -95,7 +95,7 @@ public class StackImpl implements IContainer, StackImplMBean {
   public SessionFactory init(Configuration config) throws IllegalDiameterStateException, InternalException {
     lock.lock();
     if (log.isInfoEnabled()) {
-      log.info("(:)(:)(:)(:)(:) Starting " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" + VersionProperties.instance.getProperty("version") + " (:)(:)(:)(:)(:)");
+      log.info("(-)(-)(-)(-)(-) Starting " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" + VersionProperties.instance.getProperty("version") + " (-)(-)(-)(-)(-)");
     }
     try {
       if (state != StackState.IDLE) {
@@ -150,7 +150,7 @@ public class StackImpl implements IContainer, StackImplMBean {
       lock.unlock();
     }
     if (log.isInfoEnabled()) {
-      log.info("(:)(:)(:)(:)(:) Started  " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" + VersionProperties.instance.getProperty("version") + " (:)(:)(:)(:)(:)");
+      log.info("(-)(-)(-)(-)(-) Started  " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" + VersionProperties.instance.getProperty("version") + " (-)(-)(-)(-)(-)");
     }
     return (SessionFactory) assembler.getComponentInstance(SessionFactory.class);
   }
@@ -258,7 +258,7 @@ public class StackImpl implements IContainer, StackImplMBean {
     try {
       if (state == StackState.STARTED || state == StackState.CONFIGURED) {
         if (log.isInfoEnabled()) {
-          log.info("(:)(:)(:)(:)(:) Stopping " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" + VersionProperties.instance.getProperty("version") + " (:)(:)(:)(:)(:)");
+          log.info("(-)(-)(-)(-)(-) Stopping " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" + VersionProperties.instance.getProperty("version") + " (-)(-)(-)(-)(-)");
         }
         List<Peer> peerTable = peerManager.getPeerTable();
         final CountDownLatch barrier = new CountDownLatch(peerTable.size());
@@ -316,7 +316,7 @@ public class StackImpl implements IContainer, StackImplMBean {
         }
         state = StackState.STOPPED;
         if (log.isInfoEnabled()) {
-          log.info("(:)(:)(:)(:)(:) Stopped  " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" + VersionProperties.instance.getProperty("version") + " (:)(:)(:)(:)(:)");
+          log.info("(-)(-)(-)(-)(-) Stopped  " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" + VersionProperties.instance.getProperty("version") + " (-)(-)(-)(-)(-)");
         }
       }
     }
