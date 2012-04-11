@@ -2143,6 +2143,28 @@
 		</grouped>
 	</avpdefn>
 
+	<avpdefn name="Charging-Characteristics-Selection-Mode" code="2066" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="Enumerated">
+			<enum code="0" name="SERVING_NODE_SUPPLIED" />
+			<enum code="1" name="SUBSCRIPTION_SPECIFIC" />
+			<enum code="2" name="APN_SPECIFIC" />
+			<enum code="3" name="HOME_DEFAULT" />
+			<enum code="4" name="ROAMING_DEFAULT" />
+			<enum code="5" name="VISITING_DEFAULT" />
+		</type>
+	</avpdefn>
+
+	<avpdefn name="Serving-Node-Type" code="2047" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
+		<type type-name="Enumerated">
+			<enum code="0" name="SGSN" />
+			<enum code="1" name="PMIPSGW" />
+			<enum code="2" name="GTPSGW" />
+			<enum code="3" name="ePDG" />
+			<enum code="4" name="hSGW" />
+			<enum code="5" name="MME" />
+		</type>
+	</avpdefn> 
+
 	<avpdefn name="PS-Information" code="874" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
 		<grouped>
 			<avp name="3GPP-Charging-Id" />
@@ -2151,6 +2173,7 @@
 			<avp name="3GPP-GPRS-Negotiated-QoS-Profile" />
 			<avp name="SGSN-Address" />
 			<avp name="GGSN-Address" />
+			<avp name="Serving-Node-Type" />
 			<avp name="CG-Address" />
 			<avp name="3GPP-IMSI-MCC-MNC" />
 			<avp name="3GPP-GGSN-MCC-MNC" />
@@ -2159,6 +2182,7 @@
 			<avp name="3GPP-Session-Stop-Indicator" />
 			<avp name="3GPP-Selection-Mode" />
 			<avp name="3GPP-Charging-Characteristics" />
+			<avp name="3GPP-Charging-Characteristics-Selection-Mode" />
 			<avp name="3GPP-SGSN-MCC-MNC" />
 			<avp name="3GPP-MS-TimeZone" />
 			<avp name="3GPP-CAMEL-Charging-Info" />
@@ -4740,11 +4764,29 @@
 			<enum name="TEMPORARY_INACTIVE" code="2" />
 		</type>
 	</avpdefn>
+
+	<avpdefn name="Rule-Failure-Code" code="1031" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<type type-name="Enumerated">
+			<enum name="UNKNOWN_RULE_NAME" code="1" />
+			<enum name="RATING_GROUP_ERROR" code="2" />
+			<enum name="SERVICE_IDENTIFIER_ERROR" code="3" />
+			<enum name="GW_PCEF_MALFUNCTION" code="4" />
+			<enum name="RESOURCE_LIMITATION" code="5" />
+			<enum name="MAX_NR_BEARERS_REACHED" code="6" />
+			<enum name="UNKNOWN_BEARER_ID" code="7" />
+			<enum name="MISSING_BEARER_ID" code="8" />
+			<enum name="MISSING_FLOW_INFORMATION" code="9" />
+			<enum name="RESOURCE_ALLOCATION_FAILURE" code="10" />
+			<enum name="UNSUCCESSFUL_QOS_VALIDATION" code="11" />
+		</type>
+	</avpdefn>
+
 	<avpdefn name="Charging-Rule-Report" code="1018" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
 		<grouped>
 			<avp name="Charging-Rule-Base-Name" />
 			<avp name="Charging-Rule-Name" />
 			<avp name="PCC-Rule-Status" />
+			<avp name="Rule-Failure-Code" />
 		</grouped>
 	</avpdefn>
 
