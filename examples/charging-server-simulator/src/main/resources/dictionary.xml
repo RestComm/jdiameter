@@ -2182,7 +2182,7 @@
 			<avp name="3GPP-Session-Stop-Indicator" />
 			<avp name="3GPP-Selection-Mode" />
 			<avp name="3GPP-Charging-Characteristics" />
-			<avp name="3GPP-Charging-Characteristics-Selection-Mode" />
+			<avp name="Charging-Characteristics-Selection-Mode" />
 			<avp name="3GPP-SGSN-MCC-MNC" />
 			<avp name="3GPP-MS-TimeZone" />
 			<avp name="3GPP-CAMEL-Charging-Info" />
