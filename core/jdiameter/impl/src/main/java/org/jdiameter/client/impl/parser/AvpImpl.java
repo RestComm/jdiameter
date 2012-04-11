@@ -123,7 +123,7 @@ class AvpImpl implements Avp {
       return parser.bytesToUtf8String(rawData);
     }
     catch (Exception e) {
-      throw new AvpDataException(this);
+      throw new AvpDataException(e, this);
     }
   }
 
@@ -132,7 +132,7 @@ class AvpImpl implements Avp {
       return parser.bytesToInt(rawData);
     }
     catch (Exception e) {
-      throw new AvpDataException(this);
+      throw new AvpDataException(e, this);
     }
   }
 
@@ -141,7 +141,7 @@ class AvpImpl implements Avp {
       return parser.bytesToLong(rawData);
     }
     catch (Exception e) {
-      throw new AvpDataException(this);
+      throw new AvpDataException(e, this);
     }
   }
 
@@ -152,7 +152,7 @@ class AvpImpl implements Avp {
       return parser.bytesToLong(u32ext);
     }
     catch (Exception e) {
-      throw new AvpDataException(this);
+      throw new AvpDataException(e, this);
     }
   }
 
@@ -161,7 +161,7 @@ class AvpImpl implements Avp {
       return parser.bytesToLong(rawData);
     }
     catch (Exception e) {
-      throw new AvpDataException(this);
+      throw new AvpDataException(e, this);
     }
   }
 
@@ -170,7 +170,7 @@ class AvpImpl implements Avp {
       return parser.bytesToFloat(rawData);
     }
     catch (Exception e) {
-      throw new AvpDataException(this);
+      throw new AvpDataException(e, this);
     }
   }
 
@@ -179,7 +179,7 @@ class AvpImpl implements Avp {
       return parser.bytesToDouble(rawData);
     }
     catch (Exception e) {
-      throw new AvpDataException(this);
+      throw new AvpDataException(e, this);
     }
   }
 
@@ -188,7 +188,7 @@ class AvpImpl implements Avp {
       return parser.bytesToAddress(rawData);
     }
     catch (Exception e) {
-      throw new AvpDataException(this);
+      throw new AvpDataException(e, this);
     }
   }
 
@@ -197,7 +197,7 @@ class AvpImpl implements Avp {
       return parser.bytesToDate(rawData);
     }
     catch (Exception e) {
-      throw new AvpDataException(this);
+      throw new AvpDataException(e, this);
     }
   }
 
@@ -206,7 +206,7 @@ class AvpImpl implements Avp {
       return parser.bytesToOctetString(rawData);
     }
     catch (Exception e) {
-      throw new AvpDataException(this);
+      throw new AvpDataException(e, this);
     }
   }
 
