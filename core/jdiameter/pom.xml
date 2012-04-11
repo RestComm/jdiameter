@@ -14,7 +14,7 @@
 
 	<name>Mobicents :: Diameter Stack :: ${pom.artifactId}</name>
 
-	<version>1.5.9.0-build530-SNAPSHOT</version>
+	<version>1.5.8.0-build520-SNAPSHOT</version>
 
 	<modules>
 		<module>api</module>
