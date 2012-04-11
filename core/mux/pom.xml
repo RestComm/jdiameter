@@ -9,14 +9,14 @@
 
 	<groupId>org.mobicents.servers.diameter</groupId>
 	<artifactId>mobicents-diameter-mux-parent</artifactId>
-	<version>1.4.0-SNAPSHOT</version>
+	<version>1.4.0.CR3</version>
 
 	<name>Mobicents :: Diameter Multiplexer :: ${pom.artifactId}</name>
 
 	<properties>
 		<!-- Mobicents Diameter Components Versions -->
-		<mobicents.diameter.jdiameter.version>1.5.8.0-build520-SNAPSHOT</mobicents.diameter.jdiameter.version>
-		<mobicents.diameter.jdiameter-ha.version>1.0.0-SNAPSHOT</mobicents.diameter.jdiameter-ha.version>
+		<mobicents.diameter.jdiameter.version>1.5.8.1-build529</mobicents.diameter.jdiameter.version>
+		<mobicents.diameter.jdiameter-ha.version>1.0.0.CR3</mobicents.diameter.jdiameter-ha.version>
 
 		<!-- Other Mobicents Components Versions -->
 		<mobicents.tools.mavenplugin.eclipse.version>1.0.0.BETA2</mobicents.tools.mavenplugin.eclipse.version>
@@ -69,9 +69,9 @@
 	</profiles>
 
 	<scm>
-		<connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/mux</connection>
-		<developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/mux</developerConnection>
-		<url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/mux</url>
+		<connection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/core/mux/mobicents-diameter-mux-1.4.0.CR3</connection>
+		<developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/core/mux/mobicents-diameter-mux-1.4.0.CR3</developerConnection>
+		<url>http://mobicents.googlecode.com/svn/tags/servers/diameter/core/mux/mobicents-diameter-mux-1.4.0.CR3</url>
 	</scm>
 
 	<!-- dupe info from parent, but it's only way to retrieve the parent without checkout -->
