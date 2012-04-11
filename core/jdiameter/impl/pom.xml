@@ -9,7 +9,9 @@
 
 	<artifactId>jdiameter-impl</artifactId>
 	<name>Mobicents :: Diameter Stack :: ${pom.artifactId}</name>
-
+	<properties>
+	   <vendor>Mobicents</vendor>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
@@ -37,7 +39,15 @@
 			<version>${commons-pool.version}</version>
 		</dependency>
 	</dependencies>
-
+    
+    <build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>    
+    </build>
 	<profiles>
 		<profile>
 			<id>maven-release</id>
