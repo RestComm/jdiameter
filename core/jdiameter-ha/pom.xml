@@ -11,7 +11,7 @@
 
 	<groupId>org.mobicents.servers.diameter</groupId>
 	<artifactId>jdiameter-ha-parent</artifactId>
-	<version>1.0.0.CR3</version>
+	<version>1.0.0-SNAPSHOT</version>
 
 	<name>Mobicents :: Diameter Stack HA :: ${pom.artifactId}</name>
 
@@ -85,9 +85,9 @@
 	</profiles>
 
 	<scm>
-		<connection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter-ha/jdiameter-ha-1.0.0.CR3</connection>
-		<developerConnection>scm:svn:https://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter-ha/jdiameter-ha-1.0.0.CR3</developerConnection>
-		<url>http://mobicents.googlecode.com/svn/tags/servers/diameter/core/jdiameter-ha/jdiameter-ha-1.0.0.CR3</url>
+		<connection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/jdiameter-ha</connection>
+		<developerConnection>scm:svn:https://mobicents.googlecode.com/svn/trunk/servers/diameter/core/jdiameter-ha</developerConnection>
+		<url>http://mobicents.googlecode.com/svn/trunk/servers/diameter/core/jdiameter-ha</url>
 	</scm>
 
 	<pluginRepositories>
