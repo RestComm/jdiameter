@@ -412,7 +412,14 @@ public class DictionaryImpl implements Dictionary {
 
         resolveWeakLinks(avp);
         
-        avpMap.put(avp, avp);
+        AvpRepresentation existingAvp = null;
+        if((existingAvp = avpMap.get(avp)) != null) {
+          logger.warn("Duplicated AVP Definition for AVP Code: {}, Vendor-Id: {}. See TRACE logs for definitions.", avp.getCode(), avp.getVendorId());
+          logger.trace("Existing AVP:\r\n {}\r\n New AVP:\r\n {}", existingAvp, avp);
+        }
+        else {
+          avpMap.put(avp, avp);
+        }
         
         AvpRepresentation oldAvp = avpByNameMap.put(avp.getName(), avp);
         

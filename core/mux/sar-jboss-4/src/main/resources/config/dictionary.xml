@@ -3201,7 +3201,6 @@
 		</command>
 
 	</application>
-	-->
 
 	<avpdefn name="3GPP-Multiple-Services-Credit-Control" code="456" mandatory="must" protected="may" may-encrypt="no" vendor-bit="mustnot" >
 		<grouped>
@@ -3224,6 +3223,7 @@
 			<avp name="G-S-U-Pool-Reference" multiplicity="0" />
 		</grouped>
 	</avpdefn>
+	-->
 
 	<avpdefn name="Time-Quota-Threshold" code="868" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
 		<type type-name="Unsigned32" />
@@ -5477,13 +5477,6 @@
 		</type>
 	</avpdefn>
 
-	<avpdefn name="Service-Info-Status" code="527" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="must" >
-		<type type-name="Enumerated">
-			<enum code="0" name="FINAL_SERVICE_INFORMATION" />
-			<enum code="1" name="PRELIMINARY_SERVICE_INFORMATION" />
-		</type>
-	</avpdefn>
-
 	<avpdefn name="MPS-Identifier" code="528" vendor-id="TGPP" mandatory="mustnot" protected="may" may-encrypt="yes" vendor-bit="must" >
 		<type type-name="OctetString" />
 	</avpdefn>
@@ -5730,21 +5723,6 @@
 
 	<avpdefn name="Service-Selection" code="493" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="mustnot" >
 		<type type-name="UTF8String" />
-	</avpdefn>
-
-	<avpdefn name="RAT-Type" code="1032" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
-		<type type-name="Enumerated">
-			<enum code="0" name="WLAN" />
-			<enum code="1000" name="UTRAN" />
-			<enum code="1001" name="GERAN" />
-			<enum code="1002" name="GAN" />
-			<enum code="1003" name="HSPA_EVOLUTION" />
-			<enum code="1004" name="EUTRAN" />
-			<enum code="2000" name="CDMA2000_1X" />
-			<enum code="2001" name="HRPD" />
-			<enum code="2002" name="UMB" />
-			<enum code="2003" name="EHRPD" />
-		</type>
 	</avpdefn>
 
 	<avpdefn name="Subscription-Data" code="1400" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
