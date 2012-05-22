@@ -102,8 +102,8 @@ public class StackCreator extends StackImpl implements Stack {
     stack.start(mode, timeout, unit);
   }
 
-  public void stop(long timeout, TimeUnit unit) throws IllegalDiameterStateException, InternalException {
-    stack.stop(timeout, unit);
+  public void stop(long timeout, TimeUnit unit, int disconnectReason) throws IllegalDiameterStateException, InternalException {
+    stack.stop(timeout, unit, disconnectReason);
   }
 
   public <T> T unwrap(Class<T> iface) throws InternalException {
