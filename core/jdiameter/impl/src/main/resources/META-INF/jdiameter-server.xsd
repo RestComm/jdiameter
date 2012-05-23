@@ -200,6 +200,14 @@
                     <xsi:attribute name="value" type="xsi:long" use="required"/>
                 </xsi:complexType>
             </xsi:element>
+            <xsi:element name="DuplicateSize" minOccurs="0" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Number of duplicate answers to store</xsi:documentation>
+                </xsi:annotation>
+                 <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:integer" use="required"/>
+                </xsi:complexType>
+            </xsi:element>
             <xsi:element name="UseUriAsFqdn" minOccurs="0" maxOccurs="1">
                 <xsi:annotation>
                     <xsi:documentation>Set Origin-Host-Name Avp as Uri into CER message. Default value is false</xsi:documentation>

@@ -31,6 +31,7 @@ import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledEx
 import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.PeerOverloadTimer;
 import static org.jdiameter.server.impl.helpers.Parameters.AcceptUndefinedPeer;
 import static org.jdiameter.server.impl.helpers.Parameters.DuplicateProtection;
+import static org.jdiameter.server.impl.helpers.Parameters.DuplicateSize;
 import static org.jdiameter.server.impl.helpers.Parameters.DuplicateTimer;
 import static org.jdiameter.server.impl.helpers.Parameters.PeerAttemptConnection;
 
@@ -101,7 +102,6 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
 
   private static final Logger logger = LoggerFactory.getLogger(MutablePeerTableImpl.class);
 
-  private static final int MAX_DUPLICATE_ANSWERS = 5000;
   private static final int CONN_INVALIDATE_PERIOD = 60000;
 
   protected Configuration config;
@@ -113,6 +113,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
 
   // Duplicate handling -------------------------------------------------------
   protected boolean duplicateProtection = false;
+  protected int duplicateSize;
   protected long duplicateTimer;
   protected ScheduledExecutorService duplicationScheduler = null;
   protected ScheduledFuture duplicationHandler = null;
@@ -147,7 +148,9 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
 
     public StorageEntry(IMessage message) {
       answer = message;
-      duplicationKey = message.getDuplicationKey();
+      // duplicationKey = message.getDuplicationKey(); doesn't work because it's answer
+      String[] originInfo = router.getRequestRouteInfo(answer.getHopByHopIdentifier());
+      duplicationKey = message.getDuplicationKey(originInfo[0], message.getEndToEndIdentifier());
     }
 
     public IMessage getMessage() {
@@ -185,7 +188,9 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     this.duplicateProtection = config.getBooleanValue(DuplicateProtection.ordinal(), (Boolean) DuplicateProtection.defValue());
     if (this.duplicateProtection) {
       this.duplicateTimer = config.getLongValue(DuplicateTimer.ordinal(), (Long) DuplicateTimer.defValue());
+      this.duplicateSize = config.getIntValue(DuplicateSize.ordinal(), (Integer) DuplicateSize.defValue());
     }
+    logger.debug("Duplicate Protection Configuration: Enabled? {}, Timer: {}, Size: {}", new Object[]{this.duplicateProtection, this.duplicateTimer, this.duplicateSize});
     if (predefinedPeerTable == null) {
       predefinedPeerTable = new CopyOnWriteArraySet<String>();
     }
@@ -273,10 +278,24 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       Runnable duplicateTask = new Runnable() {
         public void run() {
           long now = System.currentTimeMillis();
+          if(logger.isDebugEnabled()) {
+            logger.debug("Running Duplicate Cleaning Task. Duplicate Storage size is: {}. Removing entries with time <= '{}'", storageAnswers.size(), now - duplicateTimer);
+          }
           for (StorageEntry s : storageAnswers.values()) {
             if (s != null && s.getTime() + duplicateTimer <= now) {
+              if(logger.isTraceEnabled()) {
+                logger.trace("Duplicate Cleaning Task - Removing Entry with key '{}' and time '{}'", s.getDuplicationKey(), s.getTime());
+              }
               storageAnswers.remove(s.getDuplicationKey());
             }
+            else {
+              if(logger.isTraceEnabled()) {
+                logger.trace("Duplicate Cleaning Task - Skipping Entry with key '{}' and time '{}'", s.getDuplicationKey(), s.getTime());
+              }
+            }
+          }
+          if(logger.isDebugEnabled()) {
+            logger.debug("Completed Duplicate Cleaning Task. New Duplicate Storage size is: {}. Total task runtime: {}ms", storageAnswers.size(), System.currentTimeMillis() - now);
           }
         }
       };
@@ -642,9 +661,13 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   }
 
   public void saveToDuplicate(String key, IMessage answer) {
-    if (storageAnswers != null && storageAnswers.size() < MAX_DUPLICATE_ANSWERS) {
+    if (storageAnswers != null && storageAnswers.size() < duplicateSize) {
       if (key != null) {
-        storageAnswers.put(key, new StorageEntry((IMessage) answer.clone()));
+        StorageEntry se = new StorageEntry((IMessage) answer.clone());
+        if(logger.isTraceEnabled()) {
+          logger.trace("Duplicate Protection - Inserting Entry with key '{}' and time '{}'", key, se.getTime());
+        }
+        storageAnswers.put(key, se);
       }
     }
   }

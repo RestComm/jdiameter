@@ -583,6 +583,7 @@ public class XMLConfiguration extends EmptyConfiguration {
     String nodeName = node.getNodeName();
     if (nodeName.equals("DuplicateProtection")) add(DuplicateProtection, Boolean.valueOf(getValue(node)));
     if (nodeName.equals("DuplicateTimer")) add(DuplicateTimer, getLongValue(node));
+    if (nodeName.equals("DuplicateSize")) add(DuplicateSize, getIntValue(node));
     if (nodeName.equals("AcceptUndefinedPeer")) add(AcceptUndefinedPeer, Boolean.valueOf(getValue(node)));
   }
 

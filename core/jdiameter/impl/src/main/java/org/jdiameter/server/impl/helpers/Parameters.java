@@ -45,6 +45,10 @@ public class Parameters extends org.jdiameter.client.impl.helpers.Parameters {
    */
   public static final Parameters DuplicateTimer = new Parameters("DuplicateTimer", Long.class, 4 * 60 * 1000L);
   /**
+   * Maximum number of Answers to keep for duplicate detection
+   */
+  public static final Parameters DuplicateSize = new Parameters("DuplicateSize", Integer.class, 5000);
+  /**
    * On/Off
    */
   public static final Parameters AcceptUndefinedPeer = new Parameters("PeerAcceptUndefinedPeer", Boolean.class, false);
