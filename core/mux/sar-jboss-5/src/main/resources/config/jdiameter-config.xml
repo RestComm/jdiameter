@@ -27,7 +27,7 @@
     <AcceptUndefinedPeer value="true" />
     <DuplicateProtection value="true" />
     <DuplicateTimer value="240000" />
-    <DuplicateTimer value="5000" />
+    <DuplicateSize value="5000" />
     <UseUriAsFqdn value="false" /> <!-- Needed for Ericsson Emulator (set to true) -->
     <QueueSize value="10000" />
     <MessageTimeOut value="60000" />
