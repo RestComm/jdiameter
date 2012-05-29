@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousCloseException;
@@ -43,6 +44,7 @@ import javax.net.ssl.SSLSocketFactory;
 
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
+import org.jdiameter.api.AvpSet;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.io.NotInitializedException;
 import org.jdiameter.client.api.parser.IMessageParser;
@@ -77,10 +79,11 @@ public class TLSTransportClient {
   private String socketDescription = null;
 
   // sync streams to get data.
-  private InputStream sslInputStream;
-  private OutputStream sslOutputStream;
+  private InputStream inputStream;
+  private OutputStream outputStream;
 
-  private SSLSocket sslSocket;
+  //private SSLSocket sslSocket;
+  private Socket plainSocket;
 
   public static final int DEFAULT_BUFFER_SIZE = 4096;
   public static final int DEFAULT_STORAGE_SIZE = 4096;
@@ -97,6 +100,9 @@ public class TLSTransportClient {
   private final DiameterSSLHandshakeListener handshakeListener = new DiameterSSLHandshakeListener();
   private final ReadTask readTash = new ReadTask();
 
+  //tell weather we are in a client mode
+  private boolean client;
+  private boolean receivedInband;
   /**
    * Default constructor
    * 
@@ -113,56 +119,56 @@ public class TLSTransportClient {
     if (destAddress == null) {
       throw new NotInitializedException("Destination address is not set");
     }
-
-    SSLSocketFactory cltFct = parentConnection.getSSLFactory();
-    this.sslSocket = (SSLSocket) cltFct.createSocket();
-
-    this.sslSocket.setEnableSessionCreation(parentConnection.getSSLConfig().getBooleanValue(SDEnableSessionCreation.ordinal(), true));
-    this.sslSocket.setUseClientMode(true);
-    if (parentConnection.getSSLConfig().getStringValue(CipherSuites.ordinal(), null) != null) {
-      this.sslSocket.setEnabledCipherSuites(parentConnection.getSSLConfig().getStringValue(CipherSuites.ordinal(), null).split(","));
-    }
-
+    this.client = true;
+    // SSLSocketFactory cltFct = parentConnection.getSSLFactory();
+    // this.sslSocket = (SSLSocket) cltFct.createSocket();
+    //
+    // this.sslSocket.setEnableSessionCreation(parentConnection.getSSLConfig().getBooleanValue(SDEnableSessionCreation.ordinal(), true));
+    // this.sslSocket.setUseClientMode(true);
+    // if (parentConnection.getSSLConfig().getStringValue(CipherSuites.ordinal(), null) != null) {
+    //   this.sslSocket.setEnabledCipherSuites(parentConnection.getSSLConfig().getStringValue(CipherSuites.ordinal(), null).split(","));
+    // }
+    //
+    // if (this.origAddress != null) {
+    //   this.sslSocket.bind(this.origAddress);
+    // }
+    // this.sslSocket.connect(this.destAddress);
+    //
+    // // now lets get streams.
+    // this.sslInputStream = this.sslSocket.getInputStream();
+    // this.sslOutputStream = this.sslSocket.getOutputStream();
+    this.plainSocket = new Socket();
     if (this.origAddress != null) {
-      this.sslSocket.bind(this.origAddress);
+      this.plainSocket.bind(this.origAddress);
     }
-    this.sslSocket.connect(this.destAddress);
-
-    // now lets get streams.
-    this.sslInputStream = this.sslSocket.getInputStream();
-    this.sslOutputStream = this.sslSocket.getOutputStream();
-
+    this.plainSocket.connect(this.destAddress);
+    this.inputStream = this.plainSocket.getInputStream();
+    this.outputStream = this.plainSocket.getOutputStream();
     // now, we need to notify parent, this will START CER/CEA exchange
     // on CEA 2xxx we can enable TLS
     parentConnection.onConnected();
   }
 
-  public void initialize(SSLSocket socket) throws IOException, NotInitializedException {
+  public void initialize(Socket socket) throws IOException, NotInitializedException {
     logger.debug("Initialising TLSTransportClient for a socket on [{}]", socket);
-    this.sslSocket = socket;
+    this.client = false;
+    this.plainSocket = socket;
     this.socketDescription = socket.toString();
-    // this is done for on server side?
-    this.sslSocket.setUseClientMode(false);
-    this.sslSocket.setEnableSessionCreation(parentConnection.getSSLConfig().getBooleanValue(SDEnableSessionCreation.ordinal(), true));
-    if (this.parentConnection.getSSLConfig().getStringValue(CipherSuites.ordinal(), null) != null) {
-      this.sslSocket.setEnabledCipherSuites(parentConnection.getSSLConfig().getStringValue(CipherSuites.ordinal(), null).split(","));
-    }
+
     this.destAddress = new InetSocketAddress(socket.getInetAddress(), socket.getPort());
-    // start SSL shakes
-    // s...
-    // now lets get streams.
-    this.sslInputStream = this.sslSocket.getInputStream();
-    this.sslOutputStream = this.sslSocket.getOutputStream();
+
+    this.inputStream = this.plainSocket.getInputStream();
+    this.outputStream = this.plainSocket.getOutputStream();
   }
 
   public void start() throws NotInitializedException {
     // for client
     if (this.socketDescription == null) {
-      this.socketDescription = this.sslSocket.toString();
+      this.socketDescription = this.plainSocket.toString();
     }
     logger.debug("Starting transport. Socket is {}", socketDescription);
 
-    if (!sslSocket.isConnected()) {
+    if (!this.plainSocket.isConnected()) {
       throw new NotInitializedException("Socket is not connected");
     }
     if (getParent() == null) {
@@ -212,9 +218,14 @@ public class TLSTransportClient {
     if (!isConnected()) {
       throw new IOException("Failed to send message over [" + socketDescription + "]");
     }
-    if (!isForRutherProcessing(message)) {
+
+    //switch to wait for SSL handshake to workout.
+    if(!isExchangeAllowed()){
+      //TODO: do more?
       return;
     }
+
+    doTLSPreSendProcessing(message);
 
     final ByteBuffer messageBuffer = this.parser.encodeMessage(message);
     if (logger.isDebugEnabled()) {
@@ -222,9 +233,10 @@ public class TLSTransportClient {
     }
     lock.lock();
     try {
-      this.sslOutputStream.write(messageBuffer.array(), messageBuffer.position(), messageBuffer.limit());
-    }
-    catch (Exception e) {
+      this.outputStream.write(messageBuffer.array(), messageBuffer.position(), messageBuffer.limit());
+      doTLSPostSendProcessing(message);
+
+    } catch (Exception e) {
       logger.debug("Unable to send message", e);
       throw new IOException("Error while sending message: " + e);
     }
@@ -237,15 +249,16 @@ public class TLSTransportClient {
     }
   }
 
+
   boolean isConnected() {
-    return this.sslSocket != null && this.sslSocket.isConnected();
+    return this.plainSocket != null && this.plainSocket.isConnected();
   }
 
   void stop() throws Exception {
     logger.debug("Stopping transport. Socket is [{}]", socketDescription);
     stop = true;
-    if (sslSocket != null && !sslSocket.isClosed()) {
-      sslSocket.close();
+    if (plainSocket != null && !plainSocket.isClosed()) {
+      plainSocket.close();
     }
     if (this.readThread != null) {
       this.readThread.join(100);
@@ -282,81 +295,37 @@ public class TLSTransportClient {
     } while (messageReseived);
   }
 
-  private boolean isForRutherProcessing(IMessage message) throws NotInitializedException, AvpDataException {
-    if (this.shaking) {
-      // no messages can be exchanged now?
-      if (logger.isDebugEnabled()) {
-        logger.debug("Discarding message since SSL handshake is beeing performed on [{}], dropped message [{}]", socketDescription, message);
-      }
-      // TODO: anything else?
-      return false;
+  private boolean isExchangeAllowed(){
+    this.lock.lock();
+    try{
+      return !this.shaking;
+    }finally {
+      this.lock.unlock();
     }
+  }
 
-    if (!this.shaken) {
-      // we allow to exchange ONLY CER/CEA & DPR/DPA allowed
-      int commandCode = message.getCommandCode();
-      boolean isRequest = message.isRequest();
-      if (commandCode == IMessage.DISCONNECT_PEER_REQUEST) {
-        return true;
-      }
-      else if (commandCode != IMessage.CAPABILITIES_EXCHANGE_REQUEST) {
+  private boolean isSuccess(IMessage message) throws AvpDataException {
+    Avp resultAvp = message.getResultCode();
+    if (resultAvp == null) {
+      resultAvp = message.getAvps().getAvp(Avp.EXPERIMENTAL_RESULT);
+      if (resultAvp == null) {
+        // bad message, ignore
         if (logger.isDebugEnabled()) {
-          logger.debug("Discarding message since SSL handshake has not been performed on [{}], dropped message [{}]. Only CER/CEA allowed", socketDescription,
-              message);
+          logger.debug("Discarding message since SSL handshake has not been performed on [{}], dropped message [{}]. No result type avp.", socketDescription, message);
         }
         // TODO: anything else?
         return false;
-      }
 
-      if (isRequest) {
-        // just continue?
-        return true;
       }
-      else {
-        // if OK, setup TLS?
-        Avp resultAvp = message.getResultCode();
-        if (resultAvp == null) {
-          resultAvp = message.getAvps().getAvp(Avp.EXPERIMENTAL_RESULT);
-          if (resultAvp == null) {
-            // bad message, ignore
-            if (logger.isDebugEnabled()) {
-              logger.debug("Discarding message since SSL handshake has not been performed on [{}], dropped message [{}]. No result type avp.", socketDescription, message);
-            }
-            // TODO: anything else?
-            return false;
-
-          }
-          resultAvp = resultAvp.getGrouped().getAvp(Avp.EXPERIMENTAL_RESULT_CODE);
-          if (resultAvp == null) {
-            // bad message, ignore
-            if (logger.isDebugEnabled()) {
-              logger.debug("Discarding message since SSL handshake has not been performed on [{}], dropped message [{}]. No result avp.", socketDescription, message);
-            }
-          }
+      resultAvp = resultAvp.getGrouped().getAvp(Avp.EXPERIMENTAL_RESULT_CODE);
+      if (resultAvp == null) {
+        // bad message, ignore
+        if (logger.isDebugEnabled()) {
+          logger.debug("Discarding message since SSL handshake has not been performed on [{}], dropped message [{}]. No result avp.", socketDescription, message);
         }
-        long resultValue = resultAvp.getUnsigned32();
-        if (isSuccess(resultValue)) {
-          // kick in with handshake
-          try {
-            this.shaking = true;
-            this.sslSocket.addHandshakeCompletedListener(this.handshakeListener);
-            this.sslSocket.startHandshake();
-          }
-          catch (Exception e) {
-            // TODO: ensure close?
-            throw new NotInitializedException(e);
-          }
-        }
-        else {
-          // allow
-        }
-        return true;
       }
     }
-    return true;
-  }
-
-  private boolean isSuccess(long resultCode) {
+    long resultCode = resultAvp.getUnsigned32();
     return resultCode >= 2000 && resultCode < 3000;
   }
 
@@ -394,10 +363,10 @@ public class TLSTransportClient {
 
       IMessage message = this.parser.createMessage(messageBuffer);
       // check if
-      if (isForRutherProcessing(message)) {
+      if(isExchangeAllowed()){
+        doTLSPreReceiveProcessing(message);
         getParent().onMessageReceived(message);
       }
-      // else continue and return true, so we can iterate over rest of buffer.
     }
     catch (Exception e) {
       logger.debug("Garbage was received. Discarding.");
@@ -406,6 +375,116 @@ public class TLSTransportClient {
       getParent().onAvpDataException(new AvpDataException(e));
     }
     return true;
+  }
+
+  /**
+   * @param message
+   * @throws AvpDataException 
+   * @throws NotInitializedException 
+   */
+  private void doTLSPreReceiveProcessing(IMessage message) throws AvpDataException, NotInitializedException {
+    if(this.shaken){
+      return;
+    }
+    if (this.client) {
+      // if(CEA && message.isSuccess && message.has(inband)){
+      // startTLS();
+      // }
+      if (message.isRequest()) {
+        return;
+      }
+      if (message.getCommandCode() == IMessage.CAPABILITIES_EXCHANGE_ANSWER && isSuccess(message)) {
+        AvpSet set = message.getAvps();
+        Avp inbandAvp = set.getAvp(Avp.INBAND_SECURITY_ID);
+        if (inbandAvp != null && inbandAvp.getUnsigned32() == 1) {
+          startTLS();
+        }
+      }
+
+    } else {
+      // if(CER && message.has(inband)){
+      // this.receveidInband = true;
+      // }
+      if (!message.isRequest()) {
+        return;
+      }
+      AvpSet set = message.getAvps();
+      Avp inbandAvp = set.getAvp(Avp.INBAND_SECURITY_ID);
+      if (inbandAvp != null && inbandAvp.getUnsigned32() == 1) {
+        this.receivedInband = true;
+      }
+
+    }
+  }
+
+  /**
+   * @param message
+   */
+  private void doTLSPreSendProcessing(IMessage message) {
+    if (message.getCommandCode() == IMessage.CAPABILITIES_EXCHANGE_REQUEST) {
+      AvpSet set = message.getAvps();
+      set.removeAvp(Avp.INBAND_SECURITY_ID);
+      set.addAvp(Avp.INBAND_SECURITY_ID, 1);
+    }
+  }
+
+  /**
+   * @param message
+   * @throws AvpDataException 
+   * @throws NotInitializedException 
+   */
+  private void doTLSPostSendProcessing(IMessage message) throws AvpDataException, NotInitializedException {
+    // if( !client && !shaken && CEA && message.isSuccess() && receivedInband){
+    // startTLS;
+    // }
+
+    if (this.shaken || this.client || this.plainSocket instanceof SSLSocket || message.isRequest()
+        || message.getCommandCode() != IMessage.CAPABILITIES_EXCHANGE_ANSWER) {
+      return;
+    }
+
+    if (this.receivedInband && isSuccess(message)) {
+      this.receivedInband = false;
+      startTLS();
+    }
+  }
+
+  /**
+   * @throws NotInitializedException 
+   * 
+   */
+  private void startTLS() throws NotInitializedException {
+    try {
+      this.shaking = true;
+      SSLSocketFactory cltFct = parentConnection.getSSLFactory();
+      SSLSocket sslSocket = (SSLSocket) cltFct.createSocket(this.plainSocket, null, this.plainSocket.getPort(), false);
+
+      sslSocket.setEnableSessionCreation(parentConnection.getSSLConfig().getBooleanValue(
+          SDEnableSessionCreation.ordinal(), true));
+      // only clients start shake
+      if (parentConnection.getSSLConfig().getStringValue(CipherSuites.ordinal(), null) != null) {
+        sslSocket.setEnabledCipherSuites(parentConnection.getSSLConfig().getStringValue(CipherSuites.ordinal(), null)
+            .split(","));
+      }
+
+      this.inputStream = sslSocket.getInputStream();
+      this.outputStream = sslSocket.getOutputStream();
+      this.plainSocket = sslSocket;
+
+      if (this.client) {
+        sslSocket.setUseClientMode(true);
+        // TODO: catch this to check for failure
+        sslSocket.addHandshakeCompletedListener(this.handshakeListener);
+        sslSocket.startHandshake();
+      } else {
+        sslSocket.addHandshakeCompletedListener(this.handshakeListener);
+        sslSocket.setUseClientMode(false);
+      }
+
+    } catch (Exception e) {
+      // TODO: ensure close?
+      throw new NotInitializedException(e);
+    }
   }
 
   private void clearBuffer() throws IOException {
@@ -423,7 +502,7 @@ public class TLSTransportClient {
         lock.lock();
         shaking = false;
         shaken = true;
-        sslSocket.removeHandshakeCompletedListener(this);
+        ((SSLSocket)plainSocket).removeHandshakeCompletedListener(this);
         getParent().onConnected();
       }
       finally {
@@ -439,7 +518,7 @@ public class TLSTransportClient {
       logger.debug("Transport is started. Socket is [{}]", socketDescription);
       try {
         while (!stop) {
-          int dataLength = sslInputStream.read(buffer.array());
+          int dataLength = inputStream.read(buffer.array());
           logger.debug("Just read [{}] bytes on [{}]", dataLength, socketDescription);
           if (dataLength == -1) {
             break;
@@ -464,8 +543,8 @@ public class TLSTransportClient {
       finally {
         try {
           clearBuffer();
-          if (sslSocket != null && !sslSocket.isClosed()) {
-            sslSocket.close();
+          if (plainSocket != null && !plainSocket.isClosed()) {
+            plainSocket.close();
           }
           getParent().onDisconnect();
         }

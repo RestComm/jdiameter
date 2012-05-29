@@ -25,13 +25,13 @@ package org.jdiameter.client.impl.transport.tls;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.jdiameter.api.AvpDataException;
@@ -55,10 +55,11 @@ import org.slf4j.LoggerFactory;
  */
 public class TLSClientConnection implements IConnection {
 
+  private static Logger logger = LoggerFactory.getLogger(TLSClientConnection.class);
+
   private TLSTransportClient client;
   private SSLSocketFactory factory;
   private Configuration sslConfig;
-  private static Logger logger = LoggerFactory.getLogger(TLSClientConnection.class);
 
   private final long createdTime;
 
@@ -78,8 +79,10 @@ public class TLSClientConnection implements IConnection {
     this.client.setOrigAddress(new InetSocketAddress(localAddress, localPort));
 
     try {
-      if (ref == null)
-        throw new Exception("Can not create connection with out TLS parameters");
+      if (ref == null) {
+        throw new Exception("Can not create connection without TLS parameters");
+      }
+      logger.trace("Initializing TLS with reference '{}'", ref);
       fillSecurityData(config, ref);
     }
     catch (Exception e) {
@@ -97,8 +100,10 @@ public class TLSClientConnection implements IConnection {
     this.client.setOrigAddress(new InetSocketAddress(localAddress, localPort));
 
     try {
-      if (ref == null)
+      if (ref == null) {
         throw new Exception("Can not create connection without TLS parameters");
+      }
+      logger.trace("Initializing TLS with reference '{}'", ref);
       fillSecurityData(config, ref);
     }
     catch (Exception e) {
@@ -106,7 +111,7 @@ public class TLSClientConnection implements IConnection {
     }
   }
 
-  public TLSClientConnection(Configuration config, Configuration localPeerSSLConfig, IConcurrentFactory concurrentFactory, SSLSocket socket,
+  public TLSClientConnection(Configuration config, Configuration localPeerSSLConfig, IConcurrentFactory concurrentFactory, Socket socket,
       IMessageParser parser) throws Exception {
     this.createdTime = System.currentTimeMillis();
     this.sslConfig = localPeerSSLConfig;
@@ -116,15 +121,27 @@ public class TLSClientConnection implements IConnection {
     this.client.setOrigAddress(new InetSocketAddress(socket.getInetAddress().getHostAddress(), socket.getLocalPort()));
     this.client.initialize(socket);
     this.client.start();
-    this.factory = null;
-
+    try {
+      if (localPeerSSLConfig == null) {
+        throw new Exception("Can not create connection without TLS parameters");
+      }
+      fillSecurityData(localPeerSSLConfig);
+    }
+    catch (Exception e) {
+      throw new IllegalArgumentException(e);
+    }
   }
 
   private void fillSecurityData(Configuration config, String ref) throws Exception {
     sslConfig = TLSUtils.getSSLConfiguration(config, ref);
-    if (sslConfig == null)
+    if (sslConfig == null) {
       throw new Exception("Incorrect reference to secutity data");
+    }
     this.factory = getSSLContext(sslConfig);
+  }
+
+  private void fillSecurityData(Configuration config) throws Exception {
+    this.factory = getSSLContext(config);
   }
 
   protected TLSTransportClient getClient() {
