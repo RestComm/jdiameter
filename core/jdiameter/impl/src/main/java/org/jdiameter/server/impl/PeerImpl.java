@@ -209,6 +209,15 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
     }
 
     public int processCerMessage(String key, IMessage message) {
+      // Workaround for Issue #3205 (http://code.google.com/p/mobicents/issues/detail?id=3205)
+      // BEGIN WORKAROUND // Give some time to initialization...
+      try {
+        Thread.sleep(100);
+      }
+      catch (InterruptedException e) {
+        // ignore
+      }
+      // END WORKAROUND // Give some time to initialization...
       logger.debug("Processing CER");
 
       int resultCode = ResultCode.SUCCESS;
