@@ -57,6 +57,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.UseUriAsFqdn;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -147,7 +148,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   protected IStateMachine fsm;
   protected IMessageParser parser;
   // Feature
-  protected boolean useUriAsFQDN = false; // Use URI as orign host name into CER command
+  protected boolean useUriAsFQDN = false; // Use URI as origin host name into CER command
 
   //session store and data
   protected ISessionDatasource sessionDataSource;
@@ -291,14 +292,45 @@ public class PeerImpl extends AbstractPeer implements IPeer {
         catch (Exception e) {
           logger.warn("Unable to get local address", e);
         }
+
         try {
           String[] rng = portRange.trim().split("-");
-          int strRange = Integer.parseInt(rng[0]);
+          int startRange = Integer.parseInt(rng[0]);
           int endRange = Integer.parseInt(rng[1]);
-          localPort = strRange + new Random().nextInt(endRange - strRange + 1);
+          boolean portNotAvailable = false;
+          int limit = 0;
+          int maxTries = endRange - startRange + 1;
+          logger.debug("Selecting local port randomly from range '{}-{}'. Doing {} tries (some ports may not be tested, others tested more than once).", new Object[]{startRange, endRange, maxTries});
+
+          do {
+            portNotAvailable = false;
+            limit++;
+            localPort = startRange + new Random().nextInt(endRange - startRange + 1);
+            logger.trace("Checking if port '{}' is available.", localPort);
+            //check if port is open
+            ServerSocket socket = null;
+            try {
+              socket = new ServerSocket(localPort);
+              socket.setReuseAddress(true);
+            }
+            catch (IOException e) {
+              logger.trace("The port '{}' is NOT available.", localPort);
+              portNotAvailable = true;
+            }
+            finally {
+              // Clean up
+              if (socket != null) {
+                logger.trace("The port '{}' is available and will be used.", localPort);
+                socket.close();
+              }
+            }
+          } while (portNotAvailable && (limit < maxTries));
+          if(portNotAvailable){
+            logger.warn("Unable to find available port in port range.");
+          }
         }
         catch (Exception exc) {
-          logger.warn("Unable to get local port", exc);
+          logger.warn("Unable to get local port.", exc);
         }
         logger.debug("Create connection with localAddress=[{}]; localPort=[{}]", localAddress, localPort);
       }
