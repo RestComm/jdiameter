@@ -153,7 +153,8 @@
 
 	<AcceptUndefinedPeer value="true"/>
 	<DuplicateProtection value="true"/>
-	<DuplicateTimer value="240000"/>
+  <DuplicateTimer value="240000"/>
+  <DuplicateSize value="5000"/>
 	<UseUriAsFqdn value="true"/> <!-- Needed for Ericsson SDK Emulator -->
 	<QueueSize value="10000"/>
 	<MessageTimeOut value="60000"/>
@@ -193,12 +194,18 @@
 				<para>Specifies whether duplicate message protection is enabled. The default value is <literal>false</literal>.</para>
 			</listitem>
 		</varlistentry>
-		<varlistentry>
-			<term>&lt;DuplicateTimer&gt;</term>
-			<listitem>
-				<para>Specifies the time each duplicate message is valid for. The default, minimum value is <literal>240000</literal> (4 minutes in milliseconds).</para>
-			</listitem>
-		</varlistentry>
+    <varlistentry>
+      <term>&lt;DuplicateTimer&gt;</term>
+      <listitem>
+        <para>Specifies the time each duplicate message is valid for (in extreme cases, it can live up to 2 * DuplicateTimer - 1 milliseconds). The default, minimum value is <literal>240000</literal> (4 minutes in milliseconds).</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;DuplicateSize&gt;</term>
+      <listitem>
+        <para>Specifies the number of requests stored for duplicate protection. The default value is <literal>5000</literal>.</para>
+      </listitem>
+    </varlistentry>
 		<varlistentry>
 			<term>&lt;UseUriAsFqdn&gt;</term>
 			<listitem>
@@ -433,7 +440,8 @@
 	<Parameters>
 		<AcceptUndefinedPeer value="true" />
 		<DuplicateProtection value="true" />
-		<DuplicateTimer value="240000" />
+    <DuplicateTimer value="240000" />
+    <DuplicateSize value="5000" />
 		<UseUriAsFqdn value="false" /> <!-- Needed for Ericsson Emulator (set to true) -->
 		<QueueSize value="10000" />
 		<MessageTimeOut value="60000" />
