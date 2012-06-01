@@ -46,7 +46,7 @@
 				</step>
 			</procedure>
 			<note>
-				<para>By default &THIS.PLATFORM; Diameter MUX; deploys in the &JEE.PLATFORM; v4.x <acronym>SAR</acronym>. To change it, run <application>maven</application> with the profile switch command: <parameter>-Pjboss5</parameter>.</para>
+				<para>By default &THIS.PLATFORM; Diameter MUX; deploys in the &JEE.PLATFORM; v5.x <acronym>SAR</acronym>. To change it, run <application>maven</application> with the profile switch command: <parameter>-Pjboss4</parameter>.</para>
 			</note>
 		</section>
 
