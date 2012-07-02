@@ -1,141 +1,143 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.mobicents.servers.diameter</groupId>
-    <artifactId>mobicents-diameter-mux-parent</artifactId>
-    <version>1.4.1-SNAPSHOT</version> 
-  </parent>
-  
-  <artifactId>mobicents-diameter-mux-sar-jboss-5</artifactId>
+	<parent>
+		<groupId>org.mobicents.diameter</groupId>
+		<artifactId>mobicents-diameter-mux-parent</artifactId>
+		<version>1.5.0-SNAPSHOT</version> 
+	</parent>
+	
+	<artifactId>mobicents-diameter-mux-sar-jboss-5</artifactId>
 
-  <name>Mobicents :: Diameter Multiplexer :: ${pom.artifactId}</name>
-  
-  <packaging>jboss-sar</packaging>
+	<name>Mobicents :: Diameter Multiplexer :: ${pom.artifactId}</name>
+	
+	<packaging>jboss-sar</packaging>
 
-  <dependencies>
-    <dependency>
-      <groupId>${pom.groupId}</groupId>
-      <artifactId>mobicents-diameter-mux-jar</artifactId>
-      <version>${pom.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-  </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>${pom.groupId}</groupId>
+			<artifactId>mobicents-diameter-mux-jar</artifactId>
+			<version>${pom.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+	</dependencies>
 
-  <build>
-    <finalName>mobicents-diameter-mux-${pom.version}</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jboss-packaging-maven-plugin</artifactId>
-        <version>2.1.1</version>
-        <extensions>true</extensions>
-        <configuration>
-          <excludes>
-			<exclude>apache-xerces:xml-apis</exclude>
-			<exclude>org.jboss.logging:jboss-logging-spi</exclude>
-			<exclude>org.jboss:jboss-common-core</exclude>
-			<exclude>org.jboss:jboss-vfs</exclude>
-			<exclude>org.jboss:jbossxb</exclude>
-			<exclude>org.jboss:jboss-reflect</exclude>
-			<exclude>wutka-dtdparser:dtdparser121</exclude>
-			<exclude>javax.activation:activation</exclude>
-			<exclude>sun-jaxb:jaxb-api</exclude>
-			<exclude>org.jboss.deployers:jboss-deployers-core-spi</exclude>
-			<exclude>org.jboss.deployers:jboss-deployers-impl</exclude>
-			<exclude>org.jboss.deployers:jboss-deployers-spi</exclude>
-			<exclude>org.jboss.deployers:jboss-deployers-structure-spi</exclude>
-			<exclude>org.jboss.deployers:jboss-deployers-client-spi</exclude>
-			<exclude>org.jboss.man:jboss-managed</exclude>
-			<exclude>org.jboss.man:jboss-metatype</exclude>
-			<exclude>org.jboss:jboss-mdr</exclude>
-			<exclude>org.jboss.integration:jboss-classloading-spi</exclude>
-			<exclude>org.jboss.cl:jboss-classloading</exclude>
-			<exclude>org.jboss.cl:jboss-classloader</exclude>
-			<exclude>org.jboss.microcontainer:jboss-kernel</exclude>
-			<exclude>org.jboss.microcontainer:jboss-dependency</exclude>
-			<exclude>javassist:javassist</exclude>
-			<exclude>org.jboss.deployers:jboss-deployers-vfs</exclude>
-			<exclude>org.jboss.deployers:jboss-deployers-vfs-spi</exclude>
-			<exclude>stax:stax-api</exclude>
-			<exclude>org.jboss.cl:jboss-classloading-vfs</exclude>
-			<exclude>org.jboss.deployers:jboss-deployers-core</exclude>
-			<exclude>org.jboss.deployers:jboss-deployers-client</exclude>
-			<exclude>org.jboss.jbossas:jboss-as-j2se</exclude>
-			<exclude>oswego-concurrent:concurrent</exclude>
-			<exclude>org.jboss.bootstrap:jboss-bootstrap</exclude>
-			<exclude>org.jboss.jbossas:jboss-as-system</exclude>
-			<exclude>org.jboss.jbossas:jboss-as-system-jmx</exclude>
-			<exclude>org.jboss.aop:jboss-aop</exclude>
-			<exclude>org.apache.ant:ant</exclude>
-			<exclude>org.apache.ant:ant-launcher</exclude>
-			<exclude>qdox:qdox</exclude>
-			<exclude>trove:trove</exclude>
-			<exclude>log4j:log4j</exclude>
-			<exclude>org.jboss.logging:jboss-logging-log4j</exclude>
-			<exclude>org.jboss.integration:jboss-profileservice-spi</exclude>
-			<exclude>org.jboss.microcontainer:jboss-aop-mc-int</exclude>
-			<exclude>org.jboss.jbossas:jboss-as-jmx</exclude>
-			<exclude>org.jboss.jbossas:jboss-as-j2se</exclude>
-			<exclude>org.jboss.jbossas:jboss-as-mbeans</exclude>
-			<exclude>dom4j:dom4j</exclude>
-			<exclude>bcel:bcel</exclude>
-			<exclude>org.jboss.test:jboss-test</exclude>
-			<exclude>org.apache.ant:ant-junit</exclude>
-			<exclude>junit:junit</exclude>
-			<exclude>jboss.profiler.jvmti:jboss-profiler-jvmti</exclude>
-			<exclude>org.jboss.jbossas:jboss-server-manager</exclude>
-			<exclude>org.jboss.naming:jnp-client</exclude>
-			<exclude>org.jboss.security:jbosssx-client</exclude>
-			<exclude>org.jboss.security:jboss-security-spi</exclude>
-			<!--exclude>org.mobicents.servers.diameter:jdiameter-api</exclude>
-			<exclude>org.mobicents.servers.diameter:jdiameter-impl</exclude>
-			<exclude>picocontainer:picocontainer</exclude-->
-			<exclude>xml-apis:xml-apis</exclude>
-			<!--exclude>org.slf4j:slf4j-api</exclude>
-			<exclude>org.slf4j:slf4j-log4j12</exclude-->
-          </excludes>
+	<build>
+		<finalName>mobicents-diameter-mux-${pom.version}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jboss-packaging-maven-plugin</artifactId>
+				<version>2.1.1</version>
+				<extensions>true</extensions>
+				<configuration>
+					<excludes>
+						<exclude>apache-xerces:xml-apis</exclude>
+						<exclude>org.jboss.logging:jboss-logging-spi</exclude>
+						<exclude>org.jboss:jboss-common-core</exclude>
+						<exclude>org.jboss:jboss-vfs</exclude>
+						<exclude>org.jboss:jbossxb</exclude>
+						<exclude>org.jboss:jboss-reflect</exclude>
+						<exclude>wutka-dtdparser:dtdparser121</exclude>
+						<exclude>javax.activation:activation</exclude>
+						<exclude>sun-jaxb:jaxb-api</exclude>
+						<exclude>org.jboss.deployers:jboss-deployers-core-spi</exclude>
+						<exclude>org.jboss.deployers:jboss-deployers-impl</exclude>
+						<exclude>org.jboss.deployers:jboss-deployers-spi</exclude>
+						<exclude>org.jboss.deployers:jboss-deployers-structure-spi</exclude>
+						<exclude>org.jboss.deployers:jboss-deployers-client-spi</exclude>
+						<exclude>org.jboss.man:jboss-managed</exclude>
+						<exclude>org.jboss.man:jboss-metatype</exclude>
+						<exclude>org.jboss:jboss-mdr</exclude>
+						<exclude>org.jboss.integration:jboss-classloading-spi</exclude>
+						<exclude>org.jboss.cl:jboss-classloading</exclude>
+						<exclude>org.jboss.cl:jboss-classloader</exclude>
+						<exclude>org.jboss.microcontainer:jboss-kernel</exclude>
+						<exclude>org.jboss.microcontainer:jboss-dependency</exclude>
+						<exclude>javassist:javassist</exclude>
+						<exclude>org.jboss.deployers:jboss-deployers-vfs</exclude>
+						<exclude>org.jboss.deployers:jboss-deployers-vfs-spi</exclude>
+						<exclude>stax:stax-api</exclude>
+						<exclude>org.jboss.cl:jboss-classloading-vfs</exclude>
+						<exclude>org.jboss.deployers:jboss-deployers-core</exclude>
+						<exclude>org.jboss.deployers:jboss-deployers-client</exclude>
+						<exclude>org.jboss.jbossas:jboss-as-j2se</exclude>
+						<exclude>oswego-concurrent:concurrent</exclude>
+						<exclude>org.jboss.bootstrap:jboss-bootstrap</exclude>
+						<exclude>org.jboss.jbossas:jboss-as-system</exclude>
+						<exclude>org.jboss.jbossas:jboss-as-system-jmx</exclude>
+						<exclude>org.jboss.aop:jboss-aop</exclude>
+						<exclude>org.apache.ant:ant</exclude>
+						<exclude>org.apache.ant:ant-launcher</exclude>
+						<exclude>qdox:qdox</exclude>
+						<exclude>trove:trove</exclude>
+						<exclude>log4j:log4j</exclude>
+						<exclude>org.jboss.logging:jboss-logging-log4j</exclude>
+						<exclude>org.jboss.integration:jboss-profileservice-spi</exclude>
+						<exclude>org.jboss.microcontainer:jboss-aop-mc-int</exclude>
+						<exclude>org.jboss.jbossas:jboss-as-jmx</exclude>
+						<exclude>org.jboss.jbossas:jboss-as-j2se</exclude>
+						<exclude>org.jboss.jbossas:jboss-as-mbeans</exclude>
+						<exclude>dom4j:dom4j</exclude>
+						<exclude>bcel:bcel</exclude>
+						<exclude>org.jboss.test:jboss-test</exclude>
+						<exclude>org.apache.ant:ant-junit</exclude>
+						<exclude>junit:junit</exclude>
+						<exclude>jboss.profiler.jvmti:jboss-profiler-jvmti</exclude>
+						<exclude>org.jboss.jbossas:jboss-server-manager</exclude>
+						<exclude>org.jboss.naming:jnp-client</exclude>
+						<exclude>org.jboss.security:jbosssx-client</exclude>
+						<exclude>org.jboss.security:jboss-security-spi</exclude>
+						<!--exclude>org.mobicents.diameter:jdiameter-api</exclude>
+						<exclude>org.mobicents.diameter:jdiameter-impl</exclude>
+						<exclude>picocontainer:picocontainer</exclude-->
+						<exclude>xml-apis:xml-apis</exclude>
+						<!--exclude>org.slf4j:slf4j-api</exclude>
+						<exclude>org.slf4j:slf4j-log4j12</exclude-->
+					</excludes>
+				</configuration>
+			</plugin>
 
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>deploy</id>
-            <phase>install</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
-                <condition property="jboss.dir" value="${jboss.home}" else="${env.JBOSS_HOME}">
-                  <isset property="jboss.home" />
-                </condition>
-                <copy todir="${jboss.dir}/server/${node}/deploy/${project.build.finalName}.sar">
-                  <fileset dir="target/${project.build.finalName}">
-                    <include name="**" />
-                  </fileset>
-                </copy>
-              </tasks>
-            </configuration>
-          </execution>
-          <execution>
-            <id>undeploy</id>
-            <phase>clean</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
-                <delete dir="${env.JBOSS_HOME}/server/${node}/deploy/${project.build.finalName}.sar" />
-              </tasks>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>deploy</id>
+						<phase>install</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<condition property="jboss.dir" value="${jboss.home}" else="${env.JBOSS_HOME}">
+									<isset property="jboss.home" />
+								</condition>
+								<copy todir="${jboss.dir}/server/${node}/deploy/${project.build.finalName}.sar">
+									<fileset dir="target/${project.build.finalName}">
+										<include name="**" />
+									</fileset>
+								</copy>
+							</tasks>
+						</configuration>
+					</execution>
+					<execution>
+						<id>undeploy</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<delete dir="${env.JBOSS_HOME}/server/${node}/deploy/${project.build.finalName}.sar" />
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

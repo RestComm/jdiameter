@@ -1,28 +1,29 @@
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.mobicents.servers.diameter</groupId>
-		<artifactId>mobicents-diameter-core-docs</artifactId>
-		<version>1.4.1-SNAPSHOT</version>
+		<groupId>org.mobicents.diameter</groupId>
+		<artifactId>diameter-core-docs-parent</artifactId>
+		<version>1.5.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>mobicents-diameter-core-docs-sources-mobicents</artifactId>
+	<artifactId>diameter-core-docs-sources-mobicents</artifactId>
 
 	<properties>
 		<version.jdiameter>1.5.4.1-build415</version.jdiameter>
 		<THIS.PLATFORM>Mobicents</THIS.PLATFORM>
 		<JEE.PLATFORM>JBoss Application Server</JEE.PLATFORM>
-		<MANAGEMENT.PLATFORM>Jopr</MANAGEMENT.PLATFORM>
-		<THIS.ISSUE_TRACKER_URL>http://code.google.com/p/mobicents/issues/list</THIS.ISSUE_TRACKER_URL>
-		<THIS.RELEASE_SOURCE_CODE_URL>http://mobicents.googlecode.com/svn/tags/servers/${docs.dirname}</THIS.RELEASE_SOURCE_CODE_URL>
-		<THIS.JDIAMETER_RELEASE_SOURCE_CODE_URL>${THIS.RELEASE_SOURCE_CODE_URL}/${docs.jdiameter.dirname}</THIS.JDIAMETER_RELEASE_SOURCE_CODE_URL>
-		<THIS.MUX_RELEASE_SOURCE_CODE_URL>${THIS.RELEASE_SOURCE_CODE_URL}/${docs.mux.dirname}</THIS.MUX_RELEASE_SOURCE_CODE_URL>
-		<THIS.TRUNK_SOURCE_CODE_URL>http://mobicents.googlecode.com/svn/trunk/servers/${docs.dirname}</THIS.TRUNK_SOURCE_CODE_URL>
-		<THIS.JDIAMETER_TRUNK_SOURCE_CODE_URL>${THIS.TRUNK_SOURCE_CODE_URL}/${docs.jdiameter.dirname}</THIS.JDIAMETER_TRUNK_SOURCE_CODE_URL>
-		<THIS.MUX_TRUNK_SOURCE_CODE_URL>${THIS.TRUNK_SOURCE_CODE_URL}/${docs.mux.dirname}</THIS.MUX_TRUNK_SOURCE_CODE_URL>
+		<MANAGEMENT.PLATFORM>RHQ</MANAGEMENT.PLATFORM>
+		<THIS.ISSUE_TRACKER_URL>http://code.google.com/p/jdiameter/issues/list</THIS.ISSUE_TRACKER_URL>
+		<THIS.RELEASE_SOURCE_CODE_URL>?</THIS.RELEASE_SOURCE_CODE_URL>
+		<THIS.JDIAMETER_RELEASE_SOURCE_CODE_URL>?</THIS.JDIAMETER_RELEASE_SOURCE_CODE_URL>
+		<THIS.MUX_RELEASE_SOURCE_CODE_URL>?</THIS.MUX_RELEASE_SOURCE_CODE_URL>
+		<THIS.TRUNK_SOURCE_CODE_URL>?</THIS.TRUNK_SOURCE_CODE_URL>
+		<THIS.JDIAMETER_TRUNK_SOURCE_CODE_URL>?</THIS.JDIAMETER_TRUNK_SOURCE_CODE_URL>
+		<THIS.MUX_TRUNK_SOURCE_CODE_URL>?</THIS.MUX_TRUNK_SOURCE_CODE_URL>
 
 		<THIS.TESTSUITE_TRUNK_SOURCE_CODE_URL>http://mobicents.googlecode.com/svn/trunk/servers/${docs.dirname}/testsuite/load</THIS.TESTSUITE_TRUNK_SOURCE_CODE_URL>
 		
@@ -63,6 +64,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
