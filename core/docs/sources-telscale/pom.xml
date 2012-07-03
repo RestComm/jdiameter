@@ -10,14 +10,14 @@
 		<version>1.5.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>diameter-core-docs-sources-jbcp</artifactId>
+	<artifactId>diameter-core-docs-sources-telscale</artifactId>
 
 	<properties>
 		<version.jdiameter>1.5.4.1-build415</version.jdiameter>
-		<THIS.PLATFORM>JBoss Communications</THIS.PLATFORM>
+		<THIS.PLATFORM>TelScale</THIS.PLATFORM>
 		<JEE.PLATFORM>JBoss Enterprise Application Platform</JEE.PLATFORM>
 		<MANAGEMENT.PLATFORM>JBoss Operations Network</MANAGEMENT.PLATFORM>
-		<THIS.ISSUE_TRACKER_URL>http://bugzilla.redhat.com/bugzilla/</THIS.ISSUE_TRACKER_URL>
+		<THIS.ISSUE_TRACKER_URL>http://support.telestax.com/</THIS.ISSUE_TRACKER_URL>
 		<THIS.RELEASE_SOURCE_CODE_URL>?</THIS.RELEASE_SOURCE_CODE_URL>
 		<THIS.JDIAMETER_RELEASE_SOURCE_CODE_URL>??</THIS.JDIAMETER_RELEASE_SOURCE_CODE_URL>
 		<THIS.TRUNK_SOURCE_CODE_URL>NOT AVAILABLE</THIS.TRUNK_SOURCE_CODE_URL>

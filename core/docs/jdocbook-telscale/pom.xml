@@ -10,7 +10,7 @@
 		<version>1.5.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>diameter-core-docs-jdocbook-jbcp</artifactId>
+	<artifactId>diameter-core-docs-jdocbook-telscale</artifactId>
 
 	<packaging>jdocbook</packaging>
 
@@ -30,7 +30,7 @@
 							<artifactItems>
 								<artifactItem>
 									<groupId>${pom.groupId}</groupId>
-									<artifactId>mobicents-diameter-core-docs-sources-jbcp</artifactId>
+									<artifactId>mobicents-diameter-core-docs-sources-telscale</artifactId>
 									<version>${pom.version}</version>
 									<type>jar</type>
 									<overWrite>true</overWrite>
@@ -76,7 +76,7 @@
 						<format>
 							<formatName>pdf</formatName>
 							<stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
-							<finalName>JBCP_Diameter_Core_User_Guide.pdf</finalName>
+							<finalName>TelScale_Diameter_Core_User_Guide.pdf</finalName>
 						</format>
 						<format>
 							<formatName>html</formatName>
