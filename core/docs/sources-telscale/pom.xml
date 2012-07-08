@@ -12,6 +12,8 @@
 
 	<artifactId>diameter-core-docs-sources-telscale</artifactId>
 
+	<name>Mobicents :: Diameter Documentation :: ${pom.artifactId}</name>
+
 	<properties>
 		<version.jdiameter>1.5.4.1-build415</version.jdiameter>
 		<THIS.PLATFORM>TelScale</THIS.PLATFORM>

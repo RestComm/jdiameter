@@ -12,6 +12,8 @@
 
 	<artifactId>diameter-core-docs-parent</artifactId>
 
+	<name>Mobicents :: Diameter Documentation :: ${pom.artifactId}</name>
+
 	<packaging>pom</packaging>
 
 	<properties>

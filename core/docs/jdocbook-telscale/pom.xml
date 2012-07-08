@@ -12,6 +12,8 @@
 
 	<artifactId>diameter-core-docs-jdocbook-telscale</artifactId>
 
+	<name>Mobicents :: Diameter Documentation :: ${pom.artifactId}</name>
+
 	<packaging>jdocbook</packaging>
 
 	<build>
