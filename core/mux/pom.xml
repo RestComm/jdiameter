@@ -26,6 +26,19 @@
 		<module>jar</module>
 	</modules>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<resume>false</resume>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 	<profiles>
 		<profile>
 			<id>maven-release</id>
@@ -48,7 +61,7 @@
 			<modules>
 				<module>sar-jboss-5</module>
 			</modules>
-		</profile>		
+		</profile>
 	</profiles>
 
 </project>

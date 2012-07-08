@@ -29,6 +29,27 @@
 		<commons-pool.version>1.5.5</commons-pool.version>
 	</properties>
 
+	<profiles>
+		<profile>
+			<id>maven-release</id>
+			<modules>
+				<!-- any module not bound to default modules, such as the ones for test, release, etc... -->
+			</modules>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-release-plugin</artifactId>
+						<configuration>
+							<autoVersionSubmodules>true</autoVersionSubmodules>
+							<resume>false</resume>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 	<build>
 		<plugins>
 			<plugin>
