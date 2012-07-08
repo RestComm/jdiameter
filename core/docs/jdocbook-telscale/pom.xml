@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.mobicents.diameter</groupId>
 		<artifactId>diameter-core-docs-parent</artifactId>
-		<version>6.1.1-TelScale-SNAPSHOT</version>
+		<version>1.5.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>diameter-core-docs-jdocbook-telscale</artifactId>
