@@ -22,9 +22,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>${pom.groupId}</groupId>
+			<groupId>org.mobicents.diameter</groupId>
 			<artifactId>jdiameter-impl</artifactId>
-			<version>${jdiameter.version}</version>
 		</dependency>
 		
 		<!--  cache  -->
