@@ -24,27 +24,23 @@
 		</dependency>
 
 		<dependency>
-			<groupId>${pom.groupId}</groupId>
+			<groupId>org.mobicents.diameter</groupId>
 			<artifactId>jdiameter-api</artifactId>
-			<version>${mobicents.diameter.jdiameter.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>${pom.groupId}</groupId>
+			<groupId>org.mobicents.diameter</groupId>
 			<artifactId>jdiameter-impl</artifactId>
-			<version>${mobicents.diameter.jdiameter.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>${pom.groupId}</groupId>
+			<groupId>org.mobicents.diameter</groupId>
 			<artifactId>jdiameter-ha-api</artifactId>
-			<version>${mobicents.diameter.jdiameter-ha.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>${pom.groupId}</groupId>
+			<groupId>org.mobicents.diameter</groupId>
 			<artifactId>jdiameter-ha-impl</artifactId>
-			<version>${mobicents.diameter.jdiameter-ha.version}</version>
 		</dependency>
 	</dependencies>
 

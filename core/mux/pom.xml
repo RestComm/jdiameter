@@ -16,8 +16,8 @@
 
 	<properties>
 		<!-- Mobicents Diameter Components Versions -->
-		<mobicents.diameter.jdiameter.version>1.5.9.0-build538-SNAPSHOT</mobicents.diameter.jdiameter.version>
-		<mobicents.diameter.jdiameter-ha.version>1.1.0-SNAPSHOT</mobicents.diameter.jdiameter-ha.version>
+		<jdiameter.version>1.5.9.0-build538-SNAPSHOT</jdiameter.version>
+		<jdiameter-ha.version>1.1.0-SNAPSHOT</jdiameter-ha.version>
 	</properties>
 
 	<packaging>pom</packaging>
@@ -25,6 +25,31 @@
 	<modules>
 		<module>jar</module>
 	</modules>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.mobicents.diameter</groupId>
+				<artifactId>jdiameter-api</artifactId>
+				<version>${jdiameter.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mobicents.diameter</groupId>
+				<artifactId>jdiameter-impl</artifactId>
+				<version>${jdiameter.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mobicents.diameter</groupId>
+				<artifactId>jdiameter-ha-api</artifactId>
+				<version>${jdiameter-ha.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mobicents.diameter</groupId>
+				<artifactId>jdiameter-ha-impl</artifactId>
+				<version>${jdiameter-ha.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<plugins>
