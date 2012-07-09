@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.mobicents.diameter</groupId>
 		<artifactId>diameter-core-parent</artifactId>
-		<version>6.1.1-TelScale-SNAPSHOT</version>
+		<version>6.1.1.GA-TelScale</version>
 	</parent>
 
 	<artifactId>mobicents-diameter-mux-parent</artifactId>
@@ -14,8 +14,8 @@
 
 	<properties>
 		<!-- Mobicents Diameter Components Versions -->
-		<jdiameter.version>6.1.1-TelScale-SNAPSHOT</jdiameter.version>
-		<jdiameter-ha.version>6.1.1-TelScale-SNAPSHOT</jdiameter-ha.version>
+		<jdiameter.version>6.1.1.GA-TelScale</jdiameter.version>
+		<jdiameter-ha.version>6.1.1.GA-TelScale</jdiameter-ha.version>
 	</properties>
 
 	<packaging>pom</packaging>
