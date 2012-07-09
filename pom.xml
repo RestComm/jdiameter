@@ -10,7 +10,7 @@
 
 	<groupId>org.mobicents.diameter</groupId>
 	<artifactId>diameter-parent</artifactId>
-	<version>6.1.1.GA-TelScale</version>
+	<version>6.1.2-TelScale-SNAPSHOT</version>
 
 	<packaging>pom</packaging>
 
