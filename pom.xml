@@ -11,7 +11,6 @@
 	<groupId>org.mobicents.diameter</groupId>
 	<artifactId>diameter-parent</artifactId>
 	<version>6.1.2.GA-TelScale</version>
-
 	<packaging>pom</packaging>
 
 	<name>Mobicents :: Diameter :: ${pom.artifactId}</name>

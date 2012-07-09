@@ -5,16 +5,16 @@
 	<parent>
 		<groupId>org.mobicents.diameter</groupId>
 		<artifactId>diameter-core-parent</artifactId>
-		<version>1.5.0.FINAL</version>
+		<version>6.1.2.GA-TelScale</version>
 	</parent>
 
 	<artifactId>jdiameter-parent</artifactId>
 	<version>1.5.10.0-build639</version>
 
 	<packaging>pom</packaging>
-
 	<name>Mobicents :: Diameter Stack :: ${pom.artifactId}</name>
-
+	<version>6.1.2.GA-TelScale</version>
+	
 	<modules>
 		<module>api</module>
 		<module>impl</module>
