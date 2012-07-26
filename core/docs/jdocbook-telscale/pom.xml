@@ -45,21 +45,20 @@
 			<plugin>
 				<groupId>org.jboss.maven.plugins</groupId>
 				<artifactId>maven-jdocbook-plugin</artifactId>
-				<version>2.2.0</version>
+				<version>2.3.5</version>
 				<extensions>true</extensions>
 
 				<dependencies>
 					<dependency>
-						<groupId>org.jboss</groupId>
-						<artifactId>jbossorg-docbook-xslt</artifactId>
-						<version>1.1.0</version>
+						<groupId>org.mobicents.jdocbook</groupId>
+						<artifactId>telestax-xslt-ns</artifactId>
+						<version>1.1.0.FINAL</version>
 					</dependency>
-
 					<dependency>
-						<groupId>org.jboss</groupId>
-						<artifactId>jbossorg-jdocbook-style</artifactId>
-						<version>1.1.0</version>
+						<groupId>org.mobicents.jdocbook</groupId>
+						<artifactId>telestax-telscale-style</artifactId>
 						<type>jdocbook-style</type>
+						<version>1.1.0.FINAL</version>
 					</dependency>
 				</dependencies>
 
