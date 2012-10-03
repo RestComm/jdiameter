@@ -1,4 +1,4 @@
-package org.mobicents.slee.resources.diameter.tests;
+package org.mobicents.diameter.framework.scenarios;
 
 import java.io.FileNotFoundException;
 import java.util.Arrays;
@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.mobicents.slee.resources.diameter.tests.framework.TestingFramework;
+import org.mobicents.diameter.framework.TestingFramework;
 
 @RunWith(Parameterized.class)
 public class DuplicateDetectionTest {

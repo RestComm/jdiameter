@@ -1,9 +1,9 @@
-package org.mobicents.slee.resources.diameter.tests;
+package org.mobicents.diameter.framework.scenarios;
 
 import java.io.FileNotFoundException;
 
 import org.junit.Test;
-import org.mobicents.slee.resources.diameter.tests.framework.TestingFramework;
+import org.mobicents.diameter.framework.TestingFramework;
 
 public class RefundAccountTest
 {
