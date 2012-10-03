@@ -1,0 +1,24 @@
+# Java compiled #
+#################
+*.class
+
+# Eclipse #
+###########
+.classpath
+.project
+.settings
+
+# Maven #
+#########
+target
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
