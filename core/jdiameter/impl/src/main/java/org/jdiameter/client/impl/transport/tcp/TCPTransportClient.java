@@ -145,6 +145,15 @@ public class TCPTransportClient implements Runnable {
 
   public void run() {
     logger.debug("Transport is started. Socket is [{}]", socketDescription);
+    // Workaround for Issue #4 (http://code.google.com/p/jdiameter/issues/detail?id=4)
+    // BEGIN WORKAROUND // Give some time to initialization...
+    try {
+      Thread.sleep(100);
+    }
+    catch (InterruptedException e) {
+      // ignore
+    }
+    // END WORKAROUND // Give some time to initialization...
     try {
       while (!stop) {
         int dataLength = socketChannel.read(buffer);
