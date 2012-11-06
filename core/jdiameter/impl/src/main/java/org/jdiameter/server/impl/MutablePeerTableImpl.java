@@ -307,7 +307,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       public void run() {
         Map<String, IConnection> connections = getIncConnections();
         for (IConnection connection : connections.values()) {
-          if (System.currentTimeMillis() - connection.getCreatedTime() <= CONN_INVALIDATE_PERIOD) {
+          if (System.currentTimeMillis() - connection.getCreatedTime() >= CONN_INVALIDATE_PERIOD) {
             logger.debug("External connection released by timeout [{}]", connection);
             try {
               connection.remAllConnectionListener();
