@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.mobicents.servers.diameter.testsuite</groupId>
+		<groupId>org.mobicents.diameter.testsuite</groupId>
 		<artifactId>testsuite-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
@@ -13,27 +13,27 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.mobicents.servers.diameter</groupId>
+			<groupId>org.mobicents.diameter</groupId>
 			<artifactId>mobicents-diameter-mux-jar</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.mobicents.servers.diameter</groupId>
+			<groupId>org.mobicents.diameter</groupId>
 			<artifactId>jdiameter-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.mobicents.servers.diameter</groupId>
+			<groupId>org.mobicents.diameter</groupId>
 			<artifactId>jdiameter-impl</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.mobicents.servers.diameter</groupId>
+			<groupId>org.mobicents.diameter</groupId>
 			<artifactId>jdiameter-ha-impl</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.picocontainer</groupId>
 			<artifactId>picocontainer</artifactId>
-			<groupId>picocontainer</groupId>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -51,21 +51,6 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-			<properties>
-				<maven.test.skip>true</maven.test.skip>
-			</properties>
-		</profile>
-
-		<profile>
-			<id>runtests</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-
-			<properties>
-				<maven.test.skip>false</maven.test.skip>
-			</properties>
-
 			<build>
 				<finalName>diameter-${pom.artifactId}-${pom.version}</finalName>
 
@@ -74,6 +59,7 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
 						<configuration>
+							<argLine>-Djava.net.preferIPv4Stack=true</argLine>
 							<forkMode>pertest</forkMode>
 							<excludes>
 								<exclude>**/*$*</exclude>
@@ -91,6 +77,5 @@
 
 		</profile>
 	</profiles>
-		
-	
+
 </project>

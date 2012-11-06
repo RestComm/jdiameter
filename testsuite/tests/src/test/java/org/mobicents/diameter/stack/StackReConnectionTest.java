@@ -96,6 +96,8 @@ public class StackReConnectionTest {
       }, ApplicationId.createByAccAppId(193, 19302));
       client.start(Mode.ALL_PEERS, 5000, TimeUnit.MILLISECONDS);
 
+      _wait(); // FIXME: This should not be needed. We are checking before peer state is updated...
+
       List<Peer> peers = server.unwrap(PeerTable.class).getPeerTable();
       assertEquals("Wrong num of connections, initial setup did not succeed. ", 1, peers.size());
 
@@ -121,6 +123,8 @@ public class StackReConnectionTest {
         }
       }, ApplicationId.createByAccAppId(193, 19302));
       client.start(Mode.ALL_PEERS, 5000, TimeUnit.MILLISECONDS);
+
+      _wait(); // FIXME: This should not be needed. We are checking before peer state is updated...
 
       peers = server.unwrap(PeerTable.class).getPeerTable();
       assertEquals("Wrong num of connections, initial setup did not succeed. ", 1, peers.size());
@@ -182,6 +186,8 @@ public class StackReConnectionTest {
       }, ApplicationId.createByAccAppId(193, 19302));
       client.start(Mode.ALL_PEERS, 5000, TimeUnit.MILLISECONDS);
 
+      _wait(); // FIXME: This should not be needed. We are checking before peer state is updated...
+
       List<Peer> peers = server.unwrap(PeerTable.class).getPeerTable();
       assertEquals("Wrong num of connections, initial setup did not succeed. ", 1, peers.size());
 
@@ -195,6 +201,8 @@ public class StackReConnectionTest {
       assertTrue("Peer not connected. State[" + ((IPeer) peers.get(0)).getState(PeerState.class) + "]", !((IPeer) peers.get(0)).isConnected());
 
       client.start(Mode.ALL_PEERS, 15000, TimeUnit.MILLISECONDS);
+
+      _wait(); // FIXME: This should not be needed. We are checking before peer state is updated...
 
       peers = server.unwrap(PeerTable.class).getPeerTable();
       assertEquals("Wrong num of connections, initial setup did not succeed. ", 1, peers.size());
@@ -259,6 +267,7 @@ public class StackReConnectionTest {
         }
       }, ApplicationId.createByAccAppId(193, 19302));
       client.start(Mode.ALL_PEERS, 5000, TimeUnit.MILLISECONDS);
+
       client2.init(clientConfig2);
       clientConfigInputStream2.close();
       network = client2.unwrap(Network.class);
@@ -269,6 +278,9 @@ public class StackReConnectionTest {
         }
       }, ApplicationId.createByAccAppId(193, 19302));
       client2.start(Mode.ALL_PEERS, 5000, TimeUnit.MILLISECONDS);
+
+      _wait(); // FIXME: This should not be needed. We are checking before peer state is updated...
+
       List<Peer> peers = server.unwrap(PeerTable.class).getPeerTable();
       assertEquals("Wrong num of connections, initial setup did not succeed. ", 2, peers.size());
 
@@ -341,8 +353,6 @@ public class StackReConnectionTest {
       }, ApplicationId.createByAccAppId(193, 19302));
       client.start(Mode.ALL_PEERS, 5000, TimeUnit.MILLISECONDS);
       
-      Thread.sleep(1500);
-      
       client2.init(clientConfig2);
       clientConfigInputStream2.close();
       network = client2.unwrap(Network.class);
@@ -353,6 +363,9 @@ public class StackReConnectionTest {
         }
       }, ApplicationId.createByAccAppId(193, 19302));
       client2.start(Mode.ALL_PEERS, 5000, TimeUnit.MILLISECONDS);
+
+      _wait(); // FIXME: This should not be needed. We are checking before peer state is updated...
+
       List<Peer> peers = server.unwrap(PeerTable.class).getPeerTable();
       assertEquals("Wrong num of connections, initial setup did not succeed. ", 2, peers.size());
 
@@ -379,6 +392,8 @@ public class StackReConnectionTest {
       assertTrue("Did not find not connected client peer", foundNotConnected);
 
       client.start(Mode.ALL_PEERS, 15000, TimeUnit.MILLISECONDS);
+
+      _wait(); // FIXME: This should not be needed. We are checking before peer state is updated...
 
       peers = server.unwrap(PeerTable.class).getPeerTable();
       assertEquals("Wrong num of connections, initial setup did not succeed. ", 2, peers.size());
@@ -452,8 +467,6 @@ public class StackReConnectionTest {
       }, ApplicationId.createByAccAppId(193, 19302));
       client.start(Mode.ALL_PEERS, 5000, TimeUnit.MILLISECONDS);
       
-      Thread.sleep(1500);
-      
       client2.init(clientConfig2);
       clientConfigInputStream2.close();
       network = client2.unwrap(Network.class);
@@ -464,6 +477,9 @@ public class StackReConnectionTest {
         }
       }, ApplicationId.createByAccAppId(193, 19302));
       client2.start(Mode.ALL_PEERS, 5000, TimeUnit.MILLISECONDS);
+
+      _wait(); // FIXME: This should not be needed. We are checking before peer state is updated...
+
       List<Peer> peers = server.unwrap(PeerTable.class).getPeerTable();
       assertEquals("Wrong num of connections, initial setup did not succeed. ", 2, peers.size());
 
@@ -548,8 +564,6 @@ public class StackReConnectionTest {
       }, ApplicationId.createByAccAppId(193, 19302));
       client.start(Mode.ALL_PEERS, 5000, TimeUnit.MILLISECONDS);
       
-      Thread.sleep(1500);
-      
       client2.init(clientConfig2);
       clientConfigInputStream2.close();
       network = client2.unwrap(Network.class);
@@ -560,6 +574,9 @@ public class StackReConnectionTest {
         }
       }, ApplicationId.createByAccAppId(193, 19302));
       client2.start(Mode.ALL_PEERS, 5000, TimeUnit.MILLISECONDS);
+
+      _wait(); // FIXME: This should not be needed. We are checking before peer state is updated...
+
       List<Peer> peers = server.unwrap(PeerTable.class).getPeerTable();
       assertEquals("Wrong num of connections, initial setup did not succeed. ", 2, peers.size());
 
@@ -611,6 +628,6 @@ public class StackReConnectionTest {
   }
 
   private void _wait() throws InterruptedException {
-    Thread.sleep(5000);
+    Thread.sleep(4000);
   }
 }

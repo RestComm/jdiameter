@@ -98,6 +98,8 @@ public class StackConnectTest {
       }, ApplicationId.createByAccAppId(193, 19302));
       client.start(Mode.ALL_PEERS, 5000, TimeUnit.MILLISECONDS);
 
+      _wait(); // FIXME: This should not be needed. We are checking before peer state is updated...
+
       peers = server.unwrap(PeerTable.class).getPeerTable();
       assertEquals("Wrong num of connections, initial setup did not succeed. ", 1, peers.size());
       IPeer p = (IPeer) peers.get(0);
