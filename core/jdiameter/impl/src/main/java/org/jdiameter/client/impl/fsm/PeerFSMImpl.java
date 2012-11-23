@@ -106,7 +106,7 @@ public class PeerFSMImpl implements IStateMachine {
     this.statisticFactory = statisticFactory;
     this.predefSize = config.getIntValue(QueueSize.ordinal(), (Integer) QueueSize.defValue());
     //PCB added logging
-    logger.error("Max FSM Queue size is [{}]", predefSize);
+    logger.debug("Maximum FSM Queue size is [{}]", predefSize);
     this.eventQueue = new LinkedBlockingQueue<StateEvent>(predefSize);
     this.listeners = new ConcurrentLinkedQueue<StateChangeListener>();
     loadTimeOuts(config);
@@ -215,7 +215,7 @@ public class PeerFSMImpl implements IStateMachine {
           }
         }
         //PCB added logging
-        logger.error("FSM Thread is exiting");
+        logger.debug("FSM Thread is exiting");
         //this happens when peer FSM is down, lets remove stat
         statisticFactory.removeStatistic(queueStat);
         queueStat = null;
@@ -223,7 +223,7 @@ public class PeerFSMImpl implements IStateMachine {
     };
     //PCB added FSM multithread
     for (int i = 1; i <= FSM_THREAD_COUNT; i++) {
-      logger.error("Starting FSM Thread {} of {}", i, FSM_THREAD_COUNT);
+      logger.debug("Starting FSM Thread {} of {}", i, FSM_THREAD_COUNT);
       Thread executor = concurrentFactory.getThread("FSM-" + context.getPeerDescription() + "_" + i, fsmQueueProcessor);
       executor.start();
     }
@@ -299,14 +299,14 @@ public class PeerFSMImpl implements IStateMachine {
     try {
       if(logger.isDebugEnabled()) {
         logger.debug("Placing message into linked blocking queue with remaining capacity: [{}].", eventQueue.remainingCapacity());
-      }
-      //PCB added logging
-      int queueSize = eventQueue.size();
-      if (System.currentTimeMillis() - lastLogged > 1000) {
-        lastLogged = System.currentTimeMillis();
-        if (queueSize >= 5) {
-          logger.error("Diameter Event Queue size is [{}]", queueSize);
-        }
+        //PCB added logging
+        //int queueSize = eventQueue.size();
+        //if (System.currentTimeMillis() - lastLogged > 1000) {
+        //  lastLogged = System.currentTimeMillis();
+        //  if (queueSize >= 5) {
+        //    logger.debug("Diameter Event Queue size is [{}]", queueSize);
+        //  }
+        //}
       }
       rc = eventQueue.offer(event, IAC_TIMEOUT, TimeUnit.MILLISECONDS);
     }
