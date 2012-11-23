@@ -287,7 +287,8 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
               //       it seems, if peer is not removed, it will linger
               //       without any way to process messages
               // if(context.isRestoreConnection()) { 
-              executor = null;
+              //PCB added FSM multithread
+              mustRun = false;
               // }
               context.removeStatistics();
             }

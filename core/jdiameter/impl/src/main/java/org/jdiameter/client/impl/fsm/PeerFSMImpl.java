@@ -80,12 +80,14 @@ public class PeerFSMImpl implements IStateMachine {
   protected boolean watchdogSent;
   protected long timer;
   protected long CEA_TIMEOUT = 0, IAC_TIMEOUT = 0, REC_TIMEOUT = 0, DWA_TIMEOUT = 0, DPA_TIMEOUT = 0;
+
+  //PCB made FSM queue multi-threaded
+  private static final int FSM_THREAD_COUNT = 3;
+
   protected final StateEvent timeOutEvent = new FsmEvent(EventTypes.TIMEOUT_EVENT);
   protected Random random = new Random();
 
   protected IConcurrentFactory concurrentFactory;
-  protected Thread executor;
-
   protected IContext context;
   protected State[] states;
   protected int predefSize;
@@ -96,10 +98,15 @@ public class PeerFSMImpl implements IStateMachine {
   protected IStatisticRecord timeSumm;
   protected IStatisticRecord timeCount;
 
+  //PCB changed for multi-thread
+  protected boolean mustRun = false;
+
   public PeerFSMImpl(IContext aContext, IConcurrentFactory concurrentFactory, Configuration config, IStatisticManager statisticFactory) {
     this.context = aContext;
     this.statisticFactory = statisticFactory;
     this.predefSize = config.getIntValue(QueueSize.ordinal(), (Integer) QueueSize.defValue());
+    //PCB added logging
+    logger.error("Max FSM Queue size is [{}]", predefSize);
     this.eventQueue = new LinkedBlockingQueue<StateEvent>(predefSize);
     this.listeners = new ConcurrentLinkedQueue<StateChangeListener>();
     loadTimeOuts(config);
@@ -117,6 +124,18 @@ public class PeerFSMImpl implements IStateMachine {
   }
 
   private void runQueueProcessing() {
+    try {
+      // PCB - changed way it decides if queue processing must happen in order to allow for multithreaded FSM
+      lock.lock();
+      if (mustRun) {
+        // runQueueProcessing has been called
+        return;
+      }
+      mustRun = true;
+    }
+    finally {
+      lock.unlock();
+    }
     IStatisticRecord queueSize = statisticFactory.newCounterRecord(IStatisticRecord.Counters.QueueSize, new IStatisticRecord.IntegerValueHolder() {
       public int getValueAsInt() {
         return eventQueue.size();
@@ -154,21 +173,22 @@ public class PeerFSMImpl implements IStateMachine {
 
     queueStat = statisticFactory.newStatistic(context.getPeerDescription(), IStatistic.Groups.PeerFSM, queueSize, messagePrcAverageTime);
 
-    executor = concurrentFactory.getThread("FSM-" + context.getPeerDescription(),
-        new Runnable() {
+    Runnable fsmQueueProcessor = new Runnable() {
       public void run() {
-        while (executor != null) {
+
+        //PCB changed for multi-thread
+        while (mustRun) {
           StateEvent event;
           try {
             event = eventQueue.poll(100, TimeUnit.MILLISECONDS);
           }
           catch (InterruptedException e) {
-            executor = null; //so we don't kill it totally!?
             logger.debug("Peer FSM stopped", e);
             break;
           }
           //FIXME: baranowb: why this lock is here?
-          lock.lock();
+          // PCB removed lock
+          // lock.lock();
           try {
             if (event != null) {
               if (event instanceof FsmEvent && queueStat != null && queueStat.isEnabled()) {
@@ -181,6 +201,7 @@ public class PeerFSMImpl implements IStateMachine {
             if (timer != 0 && timer < System.currentTimeMillis()) {
               timer = 0;
               if(state != DOWN) { //without this check this event is fired in DOWN state.... it should not be.
+                logger.debug("Sending timeout event");
                 handleEvent(timeOutEvent); //FIXME: check why timer is not killed?
               }
             }
@@ -189,16 +210,23 @@ public class PeerFSMImpl implements IStateMachine {
             logger.debug("Error during processing FSM event", e);
           }
           finally {
-            lock.unlock();
+            // PCB removed lock
+            // lock.unlock();
           }
         }
+        //PCB added logging
+        logger.error("FSM Thread is exiting");
         //this happens when peer FSM is down, lets remove stat
         statisticFactory.removeStatistic(queueStat);
         queueStat = null;
       }
+    };
+    //PCB added FSM multithread
+    for (int i = 1; i <= FSM_THREAD_COUNT; i++) {
+      logger.error("Starting FSM Thread {} of {}", i, FSM_THREAD_COUNT);
+      Thread executor = concurrentFactory.getThread("FSM-" + context.getPeerDescription() + "_" + i, fsmQueueProcessor);
+      executor.start();
     }
-    );
-    executor.start();
   }
 
   public double getQueueInfo() {
@@ -244,7 +272,8 @@ public class PeerFSMImpl implements IStateMachine {
     if (logger.isDebugEnabled()) {
       logger.debug("Handling event with type [{}]", event.getType());
     }
-    if(executor == null) {
+    //PCB added FSM multithread
+    if (!mustRun) {
       logger.debug("Executor is null so calling runQueueProcessing()");
       runQueueProcessing();
     }
@@ -271,6 +300,14 @@ public class PeerFSMImpl implements IStateMachine {
       if(logger.isDebugEnabled()) {
         logger.debug("Placing message into linked blocking queue with remaining capacity: [{}].", eventQueue.remainingCapacity());
       }
+      //PCB added logging
+      int queueSize = eventQueue.size();
+      if (System.currentTimeMillis() - lastLogged > 1000) {
+        lastLogged = System.currentTimeMillis();
+        if (queueSize >= 5) {
+          logger.error("Diameter Event Queue size is [{}]", queueSize);
+        }
+      }
       rc = eventQueue.offer(event, IAC_TIMEOUT, TimeUnit.MILLISECONDS);
     }
     catch (InterruptedException e) {
@@ -281,6 +318,9 @@ public class PeerFSMImpl implements IStateMachine {
     }
     return true;
   }
+
+  //PCB added logging
+  private static long lastLogged;
 
   protected void setInActiveTimer() {
     timer = IAC_TIMEOUT - 2 * 1000 + random.nextInt(5) * 1000 + System.currentTimeMillis();
@@ -521,7 +561,8 @@ public class PeerFSMImpl implements IStateMachine {
           {
             public void entryAction() {
               clearTimer();
-              executor = null;
+              //PCB changed multithread FSM
+              mustRun = false;
               context.removeStatistics();
             }
 
