@@ -104,7 +104,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
   // Session State Handling ---------------------------------------------------
   protected boolean isEventBased = false;
   //protected boolean requestTypeSet = false;
-  protected ClientRxSessionState state = ClientRxSessionState.IDLE;
+  //protected ClientRxSessionState state = ClientRxSessionState.IDLE;
 
   protected byte[] buffer;
 
@@ -193,7 +193,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
 
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> stateType) {
-    return stateType == ClientRxSessionState.class ? (E) state : null;
+    return stateType == ClientRxSessionState.class ? (E) sessionData.getClientRxSessionState() : null;
   }
 
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
@@ -203,9 +203,10 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
   protected boolean handleEventForEventBased(StateEvent event) throws InternalException, OverloadException {
     try {
       sendAndStateLock.lock();
+      final ClientRxSessionState state = this.sessionData.getClientRxSessionState();
       Event localEvent = (Event) event;
       Event.Type eventType = (Type) localEvent.getType();
-      switch (this.state) {
+      switch (state) {
 
         case IDLE:
           switch (eventType) {
@@ -297,9 +298,10 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
   protected boolean handleEventForSessionBased(StateEvent event) throws InternalException, OverloadException {
     try {
       sendAndStateLock.lock();
+      final ClientRxSessionState state = this.sessionData.getClientRxSessionState();
       Event localEvent = (Event) event;
       Event.Type eventType = (Type) localEvent.getType();
-      switch (this.state) {
+      switch (state) {
         case IDLE:
           switch (eventType) {
             case SEND_AAR:
@@ -630,7 +632,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
       }
     } // Session Based --------------------------------------------------------
     else {
-      if (state == ClientRxSessionState.OPEN && eventQueue.size() > 0) {
+      if (sessionData.getClientRxSessionState() == ClientRxSessionState.OPEN && eventQueue.size() > 0) {
         try {
           this.handleEvent(eventQueue.remove(0));
         }
@@ -792,7 +794,8 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
     result = prime * result + (isEventBased ? 1231 : 1237);
     result = prime * result + ((originHost == null) ? 0 : originHost.hashCode());
     result = prime * result + ((originRealm == null) ? 0 : originRealm.hashCode());
-    result = prime * result + ((state == null) ? 0 : state.hashCode());
+    result = prime * result + ((sessionData == null) ? 0 : (sessionData.getClientRxSessionState() == null ? 0 : 
+        sessionData.getClientRxSessionState().hashCode()));
     return result;
   }
 
@@ -834,14 +837,17 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
     else if (!originRealm.equals(other.originRealm)) {
       return false;
     }
-    if (state == null) {
-      if (other.state != null) {
+    if (sessionData == null) {
+      if (other.sessionData != null)
         return false;
-      }
     }
-    else if (!state.equals(other.state)) {
-      return false;
+    else if (sessionData.getClientRxSessionState() == null) {
+        if (other.sessionData.getClientRxSessionState() != null)
+            return false;
     }
+    else if (!sessionData.getClientRxSessionState().equals(other.sessionData.getClientRxSessionState()))
+        return false;
+
 
     return true;
   }
