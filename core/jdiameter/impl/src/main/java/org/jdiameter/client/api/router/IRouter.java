@@ -66,12 +66,16 @@ public interface IRouter  {
    */
   void registerRequestRouteInfo(IRequest request);
 
+  // PCB - Changed to use a better routing mechanism as hopbyhop was not always unique and the table could also grow too big
   /**
    * Return Request route info
    * @param hopByHopIndentifier Hop-by-Hop Identifier
    * @return Array (host and realm)
    */
-  String[] getRequestRouteInfo(long hopByHopIndentifier);
+  String[] getRequestRouteInfo(IMessage message);
+
+  //PCB added
+  void garbageCollectRequestRouteInfo(IMessage message);
 
   /**
    * Start inner time facilities

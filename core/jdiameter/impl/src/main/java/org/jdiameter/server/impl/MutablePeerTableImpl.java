@@ -149,7 +149,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     public StorageEntry(IMessage message) {
       answer = message;
       // duplicationKey = message.getDuplicationKey(); doesn't work because it's answer
-      String[] originInfo = router.getRequestRouteInfo(answer.getHopByHopIdentifier());
+      String[] originInfo = router.getRequestRouteInfo(answer);
       duplicationKey = message.getDuplicationKey(originInfo[0], message.getEndToEndIdentifier());
     }
 
@@ -308,7 +308,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
         Map<String, IConnection> connections = getIncConnections();
         for (IConnection connection : connections.values()) {
           if (System.currentTimeMillis() - connection.getCreatedTime() >= CONN_INVALIDATE_PERIOD) {
-            logger.debug("External connection released by timeout [{}]", connection);
+            logger.debug("External connection released by timeout [{}]", connection.getKey());
             try {
               connection.remAllConnectionListener();
               connection.release();
@@ -364,9 +364,10 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
         metaData.getLocalPeer().getUri().getPort(),
         new INetworkConnectionListener() {
           public void newNetworkConnection(final IConnection connection) {
+            //PCB added logging
+            logger.debug("newNetworkConnection. connection [{}]", connection.getKey());
             synchronized (regLock) {
               final IConnectionListener listener = new IConnectionListener() {
-
                 public void connectionOpened(String connKey) {
                   logger.debug("Connection [{}] opened", connKey);
                 }
@@ -503,8 +504,13 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                   }
                 }
               };
+              //PCB added logging
+              String connKey = connection.getKey();
               getIncConnections().put(connection.getKey(), connection);
+              logger.debug("Inserted connection [{}] into IncConnections", connKey);
+
               connection.addConnectionListener(listener);
+              logger.debug("Added listener [{}] to connection [{}]", listener, connKey);
             }
           }
         }
@@ -573,17 +579,20 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       Configuration peerConfig = null;
       Configuration[] peers = config.getChildren(PeerTable.ordinal());
       // find peer config
-      for (Configuration c : peers)
+      for (Configuration c : peers) {
         if (peerURI.getFQDN().equals(c.getStringValue(PeerName.ordinal(), ""))) {
           peerConfig = c;
           break;
         }
+      }
       if (peerConfig == null) {
         peerConfig = new EmptyConfiguration(false).add(PeerAttemptConnection, connecting);
       }
       IPeer peer = (IPeer) createPeer(0, peerURI.toString(), null, null, metaData, config, peerConfig, fsmFactory, 
           transportFactory, statisticFactory, concurrentFactory, parser);
-      if (peer == null) return null;
+      if (peer == null) {
+        return null;
+      }
       peer.setRealm(realm);
       appendPeerToPeerTable(peer);
       boolean found = false;

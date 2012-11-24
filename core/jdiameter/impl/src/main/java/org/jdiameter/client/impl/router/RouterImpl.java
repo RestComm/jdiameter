@@ -44,10 +44,13 @@ import java.net.URISyntaxException;
 import java.net.UnknownServiceException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+//PCB added for thread safe
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.jdiameter.api.ApplicationId;
@@ -58,6 +61,7 @@ import org.jdiameter.api.Configuration;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.LocalAction;
+import org.jdiameter.api.Message;
 import org.jdiameter.api.MetaData;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.URI;
@@ -110,10 +114,11 @@ public class RouterImpl implements IRouter {
   public static int REQUEST_TABLE_SIZE = 10 * 1024;
   public static int REQUEST_TABLE_CLEAR_SIZE = 2 * 1024;
 
-  protected ReadWriteLock requestEntryTableLock = new ReentrantReadWriteLock();
+  protected Lock requestEntryTableLock = new ReentrantLock();
   protected ReadWriteLock redirectTableLock = new ReentrantReadWriteLock();
-  protected Map<Long, AnswerEntry> requestEntryTable ;
-  protected List<Long> requestSortedEntryTable = new ArrayList<Long>();
+  //PCB added
+  protected Map<String, AnswerEntry> requestEntryMap;
+  //protected List<Long> requestSortedEntryTable = new ArrayList<Long>();
   protected boolean isStopped = true;
 
   public RouterImpl(IContainer container,IConcurrentFactory concurrentFactory, IRealmTable realmTable,Configuration config, MetaData aMetaData) {
@@ -152,7 +157,8 @@ public class RouterImpl implements IRouter {
       REQUEST_TABLE_SIZE = (int) tSize;
       REQUEST_TABLE_CLEAR_SIZE = (int) tClearSize;
     }
-    this.requestEntryTable = new HashMap<Long, AnswerEntry>(REQUEST_TABLE_SIZE);
+    //PCB added thread safety
+    this.requestEntryMap = new ConcurrentHashMap<String, AnswerEntry>(REQUEST_TABLE_SIZE);
     logger.debug("Configured Request Table with size[{}] and clear size[{}].", REQUEST_TABLE_SIZE, REQUEST_TABLE_CLEAR_SIZE);
 
     //add realms based on realm table.
@@ -218,54 +224,87 @@ public class RouterImpl implements IRouter {
   public void registerRequestRouteInfo(IRequest request) {
     logger.debug("Entering registerRequestRouteInfo");
     try {
-      requestEntryTableLock.writeLock().lock();
+      // PCB removed lock
+      // requestEntryTableLock.writeLock().lock();
       long hopByHopId = request.getHopByHopIdentifier();
       Avp hostAvp = request.getAvps().getAvp(Avp.ORIGIN_HOST);
       Avp realmAvp = request.getAvps().getAvp(Avp.ORIGIN_REALM);
       AnswerEntry entry = new AnswerEntry(hopByHopId, hostAvp != null ? hostAvp.getDiameterIdentity() : null,
           realmAvp != null ? realmAvp.getDiameterIdentity() : null);
 
-      logger.debug("Adding Hop-by-Hop id [{}] into request entry table for routing answers back to the requesting peer", hopByHopId);
-      requestEntryTable.put(hopByHopId, entry);
-      requestSortedEntryTable.add(hopByHopId);
+      int s = requestEntryMap.size();
+      // PCB added logging
+      logger.debug("RequestRoute map size is [{}]", s);
 
-      if (requestEntryTable.size() > REQUEST_TABLE_SIZE) {
-        List<Long> toRemove = requestSortedEntryTable.subList(0, REQUEST_TABLE_CLEAR_SIZE);
-        // removing from keyset removes from hashmap too
-        requestEntryTable.keySet().removeAll(toRemove);
-        // instead of wasting time removing, just make a new one, much faster
-        requestSortedEntryTable = new ArrayList<Long>(requestSortedEntryTable.subList(REQUEST_TABLE_CLEAR_SIZE, requestSortedEntryTable.size()));
-        // help garbage collector
-        toRemove = null;
-        if (logger.isDebugEnabled()) {
-          logger.debug("Request entry table has now [{}] entries.", requestEntryTable.size());
+      //PCB added
+      if (s > REQUEST_TABLE_CLEAR_SIZE) {
+        try {
+          requestEntryTableLock.lock();
+          s = requestEntryMap.size();
+          logger.debug("After 'lock', RequestRoute map size is [{}]", s);
+          // The double-check with a gap is in case while about to clear the map, it drops below REQUEST_TABLE_SIZE due to a
+          // response being sent, and then the lock might not be in effect for another thread
+          // Hence lock at REQUEST_TABLE_CLEAR_SIZE and clear at REQUEST_TABLE_SIZE so that all threads would be locked not
+          // just the first to reach REQUEST_TABLE_SIZE
+          if (s > REQUEST_TABLE_SIZE) {
+            // Going to clear it out and suffer the consequences of some messages possibly not being routed back the clients..
+            logger.warn("RequestRoute map size is [{}]. There's probably a leak. Cleaning up after a short wait...", s);
+            // Lets do our best to avoid lost messages by locking table from writes (as this is the only code writing to it),
+            // sleeping for a while for responses to be sent and then clearing it
+            Thread.sleep(5000);
+            logger.warn("RequestRoute map size is now [{}] after sleeping. Clearing it!", requestEntryMap.size());
+            requestEntryMap.clear();
+          }
+        }
+        catch (Exception e) {
+          logger.warn("Failure trying to clear RequestRoute map", e);
+        }
+        finally {
+          requestEntryTableLock.unlock();
         }
       }
+
+      String messageKey = makeRoutingKey(request);
+      logger.debug("Adding request key [{}] to RequestRoute map for routing answers back to the requesting peer", messageKey);
+      requestEntryMap.put(messageKey, entry);
+      // requestSortedEntryTable.add(hopByHopId);
     }
     catch (Exception e) {
       logger.warn("Unable to store route info", e);
     }
     finally {
-      requestEntryTableLock.writeLock().unlock();
+      // requestEntryTableLock.writeLock().unlock();
     }
   }
 
-  public String[] getRequestRouteInfo(long hopByHopIdentifier) {
-    requestEntryTableLock.readLock().lock();
-    AnswerEntry ans = requestEntryTable.get(hopByHopIdentifier);
-    requestEntryTableLock.readLock().unlock();
+  // PCB - Made better routing algorithm that should not grow all the time
+  private String makeRoutingKey(Message message) {
+    String sessionId = message.getSessionId();
+    return new StringBuilder(sessionId != null ? sessionId : "null").append(message.getEndToEndIdentifier())
+        .append(message.getHopByHopIdentifier()).toString();
+  }
+
+  public String[] getRequestRouteInfo(IMessage message) {
+    String messageKey = makeRoutingKey(message);
+    AnswerEntry ans = requestEntryMap.get(messageKey);
     if (ans != null) {
       if (logger.isDebugEnabled()) {
-        logger.debug("getRequestRouteInfo found host [{}] and realm [{}] for Hop-by-Hop Id [{}]", new Object[]{ans.getHost(), ans.getRealm(), hopByHopIdentifier});
+        logger.debug("getRequestRouteInfo found host [{}] and realm [{}] for Message key Id [{}]", new Object[]{ans.getHost(), ans.getRealm(), messageKey});
       }
       return new String[] {ans.getHost(), ans.getRealm()};
     }
     else {
       if(logger.isWarnEnabled()) {
-        logger.warn("Could not find route info for Hop-by-Hop Id [{}]. Table size is [{}]", hopByHopIdentifier, requestEntryTable.size());
+        logger.warn("Could not find route info for message key [{}]. Table size is [{}]", messageKey, requestEntryMap.size());
       }
       return null;
     }
+  }
+
+  //PCB added
+  public void garbageCollectRequestRouteInfo(IMessage message) {
+    String messageKey = makeRoutingKey(message);
+    requestEntryMap.remove(messageKey);
   }
 
   public IPeer getPeer(IMessage message, IPeerTable manager) throws RouteException, AvpDataException {
@@ -296,7 +335,7 @@ public class RouterImpl implements IRouter {
     }
     else {
       //answer, search
-      info = getRequestRouteInfo(message.getHopByHopIdentifier());
+      info = getRequestRouteInfo(message);
       if (info != null) {
         destHost = info[0];
         destRealm = info[1];
@@ -563,8 +602,9 @@ public class RouterImpl implements IRouter {
     // Get application id
     ApplicationId appId = ((IMessage)message).getSingleApplicationId();
     // User name
-    if (avpUserName != null)
+    if (avpUserName != null) {
       userName = avpUserName.getUTF8String();
+    }
     // Processing table
     try{
       redirectTableLock.readLock().lock();
@@ -629,12 +669,13 @@ public class RouterImpl implements IRouter {
     if (redirectTable != null) {
       redirectTable.clear();
     }
-    if (requestEntryTable != null) {
-      requestEntryTable.clear();
+    if (requestEntryMap != null) {
+      requestEntryMap.clear();
     }
-    if (requestSortedEntryTable != null) {
-      requestSortedEntryTable.clear();
-    }
+    //PCB removed
+    //if (requestSortedEntryTable != null) {
+    //  requestSortedEntryTable.clear();
+    //}
     //if (redirectScheduler != null) {
     //  concurrentFactory.shutdownNow(redirectScheduler);
     //}
@@ -653,8 +694,8 @@ public class RouterImpl implements IRouter {
     //redirectEntryHandler = null;
     //redirectScheduler = null;
     redirectTable = null;
-    requestEntryTable = null;
-    requestEntryTable = null;
+    requestEntryMap = null;
+    requestEntryMap = null;
   }
 
   protected IPeer selectPeer(List<IPeer> availablePeers) {
@@ -749,6 +790,7 @@ public class RouterImpl implements IRouter {
     int usageType;
     String[] hosts;
     String destinationRealm;
+
     public RedirectEntry(String key1, ApplicationId key2, long time, int usage, String[] aHosts, String destinationRealm) throws InternalError {
       // Check arguments
       if (key1 == null && key2 == null) {
@@ -811,7 +853,6 @@ public class RouterImpl implements IRouter {
   protected class AnswerEntry {
 
     final long createTime = System.nanoTime();
-
     Long hopByHopId;
     String host, realm;
 
