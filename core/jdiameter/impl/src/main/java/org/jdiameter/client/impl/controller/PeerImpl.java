@@ -719,7 +719,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
           if(table instanceof MutablePeerTableImpl) { // available only to server, client skip this step
             MutablePeerTableImpl peerTable = (MutablePeerTableImpl) table;
             if(peerTable.isDuplicateProtection()) {
-              String[] originInfo = router.getRequestRouteInfo(message.getHopByHopIdentifier());
+              String[] originInfo = router.getRequestRouteInfo(message);
               if(originInfo != null) {
                 // message.getDuplicationKey() doesn't work because it's answer
                 peerTable.saveToDuplicate(message.getDuplicationKey(originInfo[0], message.getEndToEndIdentifier()), message);
@@ -728,6 +728,8 @@ public class PeerImpl extends AbstractPeer implements IPeer {
           }
         }
       }
+      // PCB added this
+      router.garbageCollectRequestRouteInfo(message);
 
       // Send to network
       message.setState(IMessage.STATE_SENT);
