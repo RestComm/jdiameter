@@ -36,8 +36,11 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ClosedByInterruptException;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
+import java.util.Iterator;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -74,6 +77,9 @@ public class TCPTransportClient implements Runnable {
 
   private static final Logger logger = LoggerFactory.getLogger(TCPTransportClient.class);
 
+  //PCB - allow non blocking IO
+  private static final boolean BLOCKING_IO = false;
+
   public TCPTransportClient() {
   }
 
@@ -101,7 +107,8 @@ public class TCPTransportClient implements Runnable {
       socketChannel.socket().bind(origAddress);
     }
     socketChannel.connect(destAddress);
-    socketChannel.configureBlocking(true);
+    //PCB added logging
+    socketChannel.configureBlocking(BLOCKING_IO);
     getParent().onConnected();
   }
 
@@ -113,7 +120,8 @@ public class TCPTransportClient implements Runnable {
     logger.debug("Initialising TCPTransportClient for a socket on [{}]", socket);
     socketDescription = socket.toString();
     socketChannel = socket.getChannel();
-    socketChannel.configureBlocking(true);
+    //PCB added logging
+    socketChannel.configureBlocking(BLOCKING_IO);
     destAddress = new InetSocketAddress(socket.getInetAddress(), socket.getPort());
   }
 
@@ -143,50 +151,73 @@ public class TCPTransportClient implements Runnable {
     }
   }
 
+  //PCB added logging
   public void run() {
-    logger.debug("Transport is started. Socket is [{}]", socketDescription);
     // Workaround for Issue #4 (http://code.google.com/p/jdiameter/issues/detail?id=4)
     // BEGIN WORKAROUND // Give some time to initialization...
+    int sleepTime = 250;
+    logger.debug("Sleeping for {}ms before starting transport so that listeners can all be added and ready for messages", sleepTime);
     try {
-      Thread.sleep(100);
+      Thread.sleep(sleepTime);
     }
     catch (InterruptedException e) {
       // ignore
     }
-    // END WORKAROUND // Give some time to initialization...
+    logger.debug("Finished sleeping for {}ms. By now, MutablePeerTableImpl should have added its listener", sleepTime);
+
+    logger.debug("Transport is started. Socket is [{}]", socketDescription);
+    Selector selector = null;
     try {
+      selector = Selector.open();
+      socketChannel.register(selector, SelectionKey.OP_READ);
       while (!stop) {
-        int dataLength = socketChannel.read(buffer);
-        logger.debug("Just read [{}] bytes on [{}]", dataLength, socketDescription);
-        if (dataLength == -1) {
-          break;
+        selector.select();
+        Iterator<SelectionKey> it = selector.selectedKeys().iterator();
+        while (it.hasNext()) {
+          // Get the selection key
+          SelectionKey selKey = it.next();
+          // Remove it from the list to indicate that it is being processed
+          it.remove();
+          if (selKey.isValid() && selKey.isReadable()) {
+            // Get channel with bytes to read
+            SocketChannel sChannel = (SocketChannel) selKey.channel();
+            int dataLength = sChannel.read(buffer);
+            logger.debug("Just read [{}] bytes on [{}]", dataLength, socketDescription);
+            if (dataLength == -1) {
+              stop = true;
+              break;
+            }
+            buffer.flip();
+            byte[] data = new byte[buffer.limit()];
+            buffer.get(data);
+            append(data);
+            buffer.clear();
+          }
         }
-        buffer.flip();
-        byte[] data = new byte[buffer.limit()];
-        buffer.get(data);
-        append(data);
-        buffer.clear();
       }
     }
     catch (ClosedByInterruptException e) {
-      logger.debug("Transport exception ", e);
+      logger.error("Transport exception ", e);
     }
     catch (AsynchronousCloseException e) {
-      logger.debug("Transport exception ", e);
+      logger.error("Transport is closed");
     }
     catch (Throwable e) {
-      logger.debug("Transport exception ", e);
+      logger.error("Transport exception ", e);
     }
     finally {
       try {
         clearBuffer();
+        if (selector != null) {
+          selector.close();
+        }
         if (socketChannel != null && socketChannel.isOpen()) {
           socketChannel.close();
         }
         getParent().onDisconnect();
       }
       catch (Exception e) {
-        logger.debug("Error", e);                    
+        logger.error("Error", e);
       }
       stop = false;
       logger.info("Read thread is stopped for socket [{}]", socketDescription);
@@ -234,8 +265,7 @@ public class TCPTransportClient implements Runnable {
     }
   }
 
-  public InetSocketAddress getOrigAddress()
-  {
+  public InetSocketAddress getOrigAddress() {
     return this.origAddress;
   }
 
@@ -244,16 +274,17 @@ public class TCPTransportClient implements Runnable {
       logger.debug("About to send a byte buffer of size [{}] over the TCP nio socket [{}]", bytes.array().length, socketDescription);
     }
     int rc;
-    lock.lock();   
+    // PCB - removed locking
+    // lock.lock();
     try {
       rc = socketChannel.write(bytes);
     }
     catch (Exception e) {
-      logger.debug("Unable to send message", e);
+      logger.error("Unable to send message", e);
       throw new IOException("Error while sending message: " + e);
     }
     finally {
-      lock.unlock();
+      // lock.unlock();
     }
     if (rc == -1) {
       throw new IOException("Connection closed");
@@ -355,7 +386,9 @@ public class TCPTransportClient implements Runnable {
 
       try {
         // make a message out of data and process it
+        logger.debug("Passing message on to parent");
         getParent().onMessageReceived(ByteBuffer.wrap(data));
+        logger.debug("Finished passing message on to parent");
       }
       catch (AvpDataException e) {
         logger.debug("Garbage was received. Discarding.");
