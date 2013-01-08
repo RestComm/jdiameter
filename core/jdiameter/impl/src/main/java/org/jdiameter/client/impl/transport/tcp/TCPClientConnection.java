@@ -116,6 +116,8 @@ public class TCPClientConnection implements IConnection {
   }
 
   public void disconnect() throws InternalError {
+        //PCB added logging
+        logger.debug("In disconnect for [{}]", this.getKey());
     try {
       if (getClient() != null) {
         getClient().stop();
@@ -127,6 +129,8 @@ public class TCPClientConnection implements IConnection {
   }
 
   public void release() throws IOException {
+    //PCB added logging
+    logger.debug("In release for [{}]", this.getKey());
     try {
       if (getClient() != null) {
         getClient().release();
@@ -145,7 +149,22 @@ public class TCPClientConnection implements IConnection {
   public void sendMessage(IMessage message) throws TransportException, OverloadException {
     try {
       if (getClient() != null) {
+        //PCB added logging
+        //Long receivedAt = timerMap.remove(message.getEndToEndIdentifier() + "_"+ message.getHopByHopIdentifier());
+        //if (receivedAt != null) {
+        //  long millis = System.currentTimeMillis() - receivedAt;
+        //  if (millis >= 200) {
+        //    logger.warn("Diameter Message processing took [{}]ms", millis);
+        //  }
+        //}
         getClient().sendMessage(parser.encodeMessage(message));
+        //PCB added logging
+        //if (receivedAt != null) {
+        //  long millis = System.currentTimeMillis() - receivedAt;
+        //  if (millis >= 200) {
+        //    logger.warn("Diameter Message processing and sending took [{}]ms", millis);
+        //  }
+        //}
       }
     }
     catch (Exception e) {
@@ -180,6 +199,8 @@ public class TCPClientConnection implements IConnection {
       if (buffer.size() != 0) {
         for (Event e : buffer) {
           try {
+            //PCB added logging
+            logger.debug("Processing event from buffer");
             onEvent(e);
           }
           catch (AvpDataException e1) {
@@ -195,8 +216,12 @@ public class TCPClientConnection implements IConnection {
   }
 
   public void remAllConnectionListener() {
+    //PCB added logging
+    logger.debug("Waiting to get lock in order to remove all listeners");
     lock.lock();
     try {
+      //PCB added logging
+      logger.debug("Removing all listeners on [{}]", this.getKey());
       listeners.clear();
     }
     finally {
@@ -207,6 +232,8 @@ public class TCPClientConnection implements IConnection {
   public void remConnectionListener(IConnectionListener listener) {
     lock.lock();
     try {
+      //PCB added logging
+      logger.debug("Removing listener [{}] on [{}]", listener.getClass().getName(), this.getKey());
       listeners.remove(listener);
     }
     finally {
@@ -260,10 +287,18 @@ public class TCPClientConnection implements IConnection {
   }
 
   protected void onEvent(Event event) throws AvpDataException {
+    //PCB added logging
+    logger.debug("In onEvent for connection [{}]. Getting lock", this.getKey());
     lock.lock();
+    //PCB added logging
+    logger.debug("Got lock");
     try {
       if (processBufferedMessages(event)) {
         for (IConnectionListener listener : listeners) {
+          //PCB added logging
+          if (logger.isDebugEnabled()) {
+            logger.debug("Passing event to listener. Event type is [{}]", event.type.toString());
+          }
           switch (event.type) {
             case CONNECTED:
               listener.connectionOpened(getKey());
@@ -272,7 +307,10 @@ public class TCPClientConnection implements IConnection {
               listener.connectionClosed(getKey(), null);
               break;
             case MESSAGE_RECEIVED:
-              listener.messageReceived(getKey(), parser.createMessage(event.message));
+              //PCB added
+              IMessage msg = parser.createMessage(event.message);
+              //timerMap.put(msg.getEndToEndIdentifier() + "_"+ msg.getHopByHopIdentifier(), System.currentTimeMillis());
+              listener.messageReceived(getKey(), msg);
               break;
             case DATA_EXCEPTION:
               listener.internalError(getKey(), null, new TransportException("Avp Data Exception:", 
@@ -283,24 +321,33 @@ public class TCPClientConnection implements IConnection {
       }
     }
     finally {
+      logger.debug("Releasing lock and finished onEvent for connection [{}]", this.getKey());
       lock.unlock();
     }
   }
 
+  //private static final Map<String, Long> timerMap = new ConcurrentHashMap<String, Long>();
+
   protected boolean processBufferedMessages(Event event) throws AvpDataException {
     if (listeners.size() == 0) {
+      //PCB added logging
+      logger.debug("listeners.size() == 0 on connection [{}]", this.getKey());
       try {
         buffer.add(event);
       }
       catch (IllegalStateException e) {
+        logger.debug("Got IllegalStateException in processBufferedMessages");
         // FIXME : requires JDK6 : buffer.removeLast();
         Event[] tempBuffer = buffer.toArray(new Event[buffer.size()]);
         buffer.remove(tempBuffer[tempBuffer.length-1]);
         buffer.add(event);
       }
+      //PCB added logging
+      logger.debug("processBufferedMessages is returning false");
       return false;
     }
     else {
+      logger.debug("processBufferedMessages is returning true on connection [{}] as there are listeners", getKey());
       return true;
     }
   }
