@@ -109,6 +109,8 @@ public class NetworkGuard implements INetworkGuard, Runnable {
                 Socket s = serverSocket.accept();
                 logger.info("Open incomming connection {}", s);
                 TCPClientConnection client = new TCPClientConnection(null, concurrentFactory, s, parser, null);
+                //PCB added logging
+                logger.debug("Finished initialising TCPClientConnection for {}", s);
                 for (INetworkConnectionListener listener : listeners) {
                   listener.newNetworkConnection(client);
                 }

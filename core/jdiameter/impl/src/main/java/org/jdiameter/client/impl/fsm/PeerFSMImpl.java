@@ -181,6 +181,9 @@ public class PeerFSMImpl implements IStateMachine {
           StateEvent event;
           try {
             event = eventQueue.poll(100, TimeUnit.MILLISECONDS);
+            if(logger.isDebugEnabled() && event != null) {
+            	logger.debug("Got Event [{}] from Queue", event);
+            }
           }
           catch (InterruptedException e) {
             logger.debug("Peer FSM stopped", e);
@@ -188,7 +191,7 @@ public class PeerFSMImpl implements IStateMachine {
           }
           //FIXME: baranowb: why this lock is here?
           // PCB removed lock
-          // lock.lock();
+          lock.lock();
           try {
             if (event != null) {
               if (event instanceof FsmEvent && queueStat != null && queueStat.isEnabled()) {
@@ -211,7 +214,7 @@ public class PeerFSMImpl implements IStateMachine {
           }
           finally {
             // PCB removed lock
-            // lock.unlock();
+            lock.unlock();
           }
         }
         //PCB added logging
@@ -298,7 +301,7 @@ public class PeerFSMImpl implements IStateMachine {
     boolean rc;
     try {
       if(logger.isDebugEnabled()) {
-        logger.debug("Placing message into linked blocking queue with remaining capacity: [{}].", eventQueue.remainingCapacity());
+        logger.debug("Placing event [{}] into linked blocking queue with remaining capacity: [{}].", event, eventQueue.remainingCapacity());
         //PCB added logging
         //int queueSize = eventQueue.size();
         //if (System.currentTimeMillis() - lastLogged > 1000) {
@@ -320,7 +323,7 @@ public class PeerFSMImpl implements IStateMachine {
   }
 
   //PCB added logging
-  private static long lastLogged;
+  //private static long lastLogged;
 
   protected void setInActiveTimer() {
     timer = IAC_TIMEOUT - 2 * 1000 + random.nextInt(5) * 1000 + System.currentTimeMillis();

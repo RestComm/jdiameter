@@ -148,6 +148,8 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
     PeerState state = fsm.getState(PeerState.class);
     if (DOWN  ==  state || INITIAL == state) {
       conn.addConnectionListener(connListener);
+      // ammendonca: if we are receiving a new connection in such state, we may want to make it primary, right?
+      this.connection = conn;
       logger.debug("Append external connection [{}]", conn.getKey());
     }
     else {
@@ -174,10 +176,11 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
   }
 
   public String toString() {
-	  if(fsm!=null)
-		  return "SPeer{" + "Uri=" + uri + "; State=" + fsm.getState(PeerState.class) + "; con="+ connection +"; incCon"+incConnections+" }";
-	  return "SPeer{" + "Uri=" + uri + "; State=" + fsm + "; con="+ connection +"; incCon"+incConnections+" }";
- }
+    if (fsm != null) {
+      return "SPeer{" + "Uri=" + uri + "; State=" + fsm.getState(PeerState.class) + "; con="+ connection +"; incCon"+incConnections+" }";
+    }
+    return "SPeer{" + "Uri=" + uri + "; State=" + fsm + "; con="+ connection +"; incCon"+incConnections+" }";
+  }
 
   protected class LocalActionConext extends ActionContext {
 
@@ -240,7 +243,7 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
               break;
             case INITIAL:
               boolean isLocalWin = false;
-              if (isElection)
+              if (isElection) {
                 try {
                   // ammendonca: can't understand why it checks for <= 0 ... using equals
                   //isLocalWin = metaData.getLocalPeer().getUri().getFQDN().compareTo(
@@ -248,8 +251,9 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                   isLocalWin = metaData.getLocalPeer().getUri().getFQDN().equals(
                       message.getAvps().getAvp(Avp.ORIGIN_HOST).getOctetString());
                 }
-              catch(Exception exc) {
-                isLocalWin = true;
+                catch (Exception exc) {
+                  isLocalWin = true;
+                }
               }
 
               logger.debug("local peer is win - [{}]", isLocalWin);
@@ -319,7 +323,7 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
           try{
             destRealm = destRealmAvp.getDiameterIdentity();
           }
-          catch(AvpDataException ade) {
+          catch (AvpDataException ade) {
             sendErrorAnswer(message, "Failed to parse Destination-Realm AVP", ResultCode.INVALID_AVP_VALUE, destRealmAvp);
             return true;
           }
@@ -412,7 +416,7 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
               }
             }
           }
-          catch(AvpDataException ade) {
+          catch (AvpDataException ade) {
             logger.warn("Received message with present but unparsable Destination-Host. Answering with 5004 (INVALID_AVP_VALUE) Result-Code.");
             sendErrorAnswer(message, "Failed to parse Destination-Host AVP", ResultCode.INVALID_AVP_VALUE, destHostAvp);
             return true;
@@ -427,7 +431,7 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
           if(matched != null) {
             action = matched.getLocalAction();
           }
-          else{
+          else {
             // We don't support it locally, its not defined as remote, so send no such realm answer.
             sendErrorAnswer(message, null, ResultCode.APPLICATION_UNSUPPORTED); 
             // or REALM_NOT_SERVED ?
@@ -552,7 +556,7 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                 statistic.getRecordByName(IStatisticRecord.Counters.SysGenResponse.name()).inc();
               }
             }
-            catch(Exception e) {
+            catch (Exception e) {
               // TODO: check this!!
               logger.warn("Error during processing message by duplicate protection", e);
               sendErrorAnswer(message, "Unable to process", ResultCode.UNABLE_TO_COMPLY);
