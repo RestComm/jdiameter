@@ -148,9 +148,7 @@ public class PeerTableImpl implements IPeerTable {
   }
 
   public List<Peer> getPeerTable() {
-    List<Peer> p = new ArrayList<Peer>();
-    p.addAll(peerTable.values());
-    return p;
+    return new ArrayList<Peer>(peerTable.values());
   }
 
   public void sendMessage(IMessage message) throws IllegalDiameterStateException, RouteException, AvpDataException, IOException {
