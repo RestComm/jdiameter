@@ -28,6 +28,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.CeaTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.DpaTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.DwaTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.IacTimeOut;
+import static org.jdiameter.client.impl.helpers.Parameters.PeerFSMThreadCount;
 import static org.jdiameter.client.impl.helpers.Parameters.QueueSize;
 import static org.jdiameter.client.impl.helpers.Parameters.RecTimeOut;
 
@@ -82,7 +83,7 @@ public class PeerFSMImpl implements IStateMachine {
   protected long CEA_TIMEOUT = 0, IAC_TIMEOUT = 0, REC_TIMEOUT = 0, DWA_TIMEOUT = 0, DPA_TIMEOUT = 0;
 
   //PCB made FSM queue multi-threaded
-  private static final int FSM_THREAD_COUNT = 3;
+  private static int FSM_THREAD_COUNT = 3;
 
   protected final StateEvent timeOutEvent = new FsmEvent(EventTypes.TIMEOUT_EVENT);
   protected Random random = new Random();
@@ -111,6 +112,7 @@ public class PeerFSMImpl implements IStateMachine {
     this.listeners = new ConcurrentLinkedQueue<StateChangeListener>();
     loadTimeOuts(config);
     this.concurrentFactory = concurrentFactory;
+    FSM_THREAD_COUNT = config.getIntValue(PeerFSMThreadCount.ordinal(), (Integer) PeerFSMThreadCount.defValue());
     runQueueProcessing();
   }
 
@@ -218,7 +220,7 @@ public class PeerFSMImpl implements IStateMachine {
           }
         }
         //PCB added logging
-        logger.debug("FSM Thread is exiting");
+        logger.debug("FSM Thread {} is exiting", Thread.currentThread().getName());
         //this happens when peer FSM is down, lets remove stat
         statisticFactory.removeStatistic(queueStat);
         queueStat = null;

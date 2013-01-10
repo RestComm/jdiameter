@@ -105,6 +105,11 @@ public class Parameters extends Ordinal {
   public static final Parameters RecTimeOut = new Parameters("RecTimeOut", Long.class, 10000L);
 
   /**
+   * Peer FSM Thread Count property
+   */
+  public static final Parameters PeerFSMThreadCount = new Parameters("PeerFSMThreadCount", Integer.class, 3);
+
+  /**
    * Orig_host avp set as URI into CER message
    */
   public static final Parameters UseUriAsFqdn = new Parameters("UseUriAsFqdn", Boolean.class, false);    

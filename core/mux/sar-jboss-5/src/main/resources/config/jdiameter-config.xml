@@ -2,7 +2,7 @@
 <Configuration xmlns="http://www.jdiameter.org/jdiameter-server">
 
   <LocalPeer>
-    <URI value="aaa://127.0.0.1:3868" />
+    <URI value="aaa://uas.mobicents.org:3868" />
     <!-- URI value="aaa://mobicents.open-ims.test:1812" /--> <!-- OpenIMS Example -->
     <IPAddresses>
       <IPAddress value="127.0.0.1" />
@@ -25,7 +25,7 @@
 
   <Parameters>
     <AcceptUndefinedPeer value="true" />
-    <DuplicateProtection value="true" />
+    <DuplicateProtection value="false" />
     <DuplicateTimer value="240000" />
     <DuplicateSize value="5000" />
     <UseUriAsFqdn value="false" /> <!-- Needed for Ericsson Emulator (set to true) -->
@@ -37,6 +37,9 @@
     <DwaTimeOut value="10000" />
     <DpaTimeOut value="5000" />
     <RecTimeOut value="10000" />
+
+	<!-- Peer FSM Thread Count Configuration -->
+	<PeerFSMThreadCount value="3" />
 
     <!-- Statistics Configuration -->
     <Statistics pause="30000" delay="30000" enabled="false" active_records="Concurrent,ScheduledExecService,Network,ScheduledExecService,AppGenRequestPerSecond,NetGenRequestPerSecond,Peer,Peer.local,PeerFSM"/>

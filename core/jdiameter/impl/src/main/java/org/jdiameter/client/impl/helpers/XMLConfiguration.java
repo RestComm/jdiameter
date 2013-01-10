@@ -53,6 +53,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.OwnProductName;
 import static org.jdiameter.client.impl.helpers.Parameters.OwnRealm;
 import static org.jdiameter.client.impl.helpers.Parameters.OwnVendorID;
 import static org.jdiameter.client.impl.helpers.Parameters.PeerIp;
+import static org.jdiameter.client.impl.helpers.Parameters.PeerFSMThreadCount;
 import static org.jdiameter.client.impl.helpers.Parameters.PeerLocalPortRange;
 import static org.jdiameter.client.impl.helpers.Parameters.PeerName;
 import static org.jdiameter.client.impl.helpers.Parameters.PeerRating;
@@ -304,6 +305,7 @@ public class XMLConfiguration extends EmptyConfiguration {
       else if (nodeName.equals("DwaTimeOut")) { add(DwaTimeOut, getLongValue(c.item(i)));               }
       else if (nodeName.equals("DpaTimeOut")) { add(DpaTimeOut, getLongValue(c.item(i)));               }
       else if (nodeName.equals("RecTimeOut")) { add(RecTimeOut, getLongValue(c.item(i)));               }
+      else if (nodeName.equals("PeerFSMThreadCount")) { add(PeerFSMThreadCount, getIntValue(c.item(i)));}
       else if (nodeName.equals("Statistics")) { addStatisticLogger(Statistics, c.item(i));              }
       else if (nodeName.equals("Concurrent")) { addConcurrent(Concurrent, c.item(i));                   }
       else if (nodeName.equals("Dictionary")) { addDictionary(Dictionary, c.item(i));                   }

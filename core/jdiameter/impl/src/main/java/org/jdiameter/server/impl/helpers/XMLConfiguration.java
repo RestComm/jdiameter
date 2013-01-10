@@ -38,6 +38,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.KDManager;
 import static org.jdiameter.client.impl.helpers.Parameters.KDPwd;
 import static org.jdiameter.client.impl.helpers.Parameters.KDStore;
 import static org.jdiameter.client.impl.helpers.Parameters.KeyData;
+import static org.jdiameter.client.impl.helpers.Parameters.PeerFSMThreadCount;
 import static org.jdiameter.client.impl.helpers.Parameters.Properties;
 import static org.jdiameter.client.impl.helpers.Parameters.PropertyName;
 import static org.jdiameter.client.impl.helpers.Parameters.PropertyValue;
@@ -249,6 +250,7 @@ public class XMLConfiguration extends EmptyConfiguration {
       else if (nodeName.equals("DpaTimeOut")) { add(DpaTimeOut, getLongValue(c.item(i)));               }
       else if (nodeName.equals("RecTimeOut")) { add(RecTimeOut, getLongValue(c.item(i)));               }
       else if (nodeName.equals("ThreadPool")) { addThreadPool(c.item(i));                               }
+      else if (nodeName.equals("PeerFSMThreadCount")) { add(PeerFSMThreadCount, getIntValue(c.item(i)));}
       else if (nodeName.equals("Statistics")) { addStatisticLogger(Statistics, c.item(i));              }
       else if (nodeName.equals("Concurrent")) { addConcurrent(Concurrent, c.item(i));                   }
       else if (nodeName.equals("Dictionary")) { addDictionary(Dictionary, c.item(i));                   }
