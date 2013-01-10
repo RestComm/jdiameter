@@ -165,6 +165,9 @@
 	<DpaTimeOut value="5000"/>
 	<RecTimeOut value="10000"/>
 
+	<!-- Peer FSM Thread Count Configuration -->
+	<PeerFSMThreadCount value="3" />
+
 	<Concurrent>
 		<Entity name="ThreadGroup" size="64"/>
 		<Entity name="ProcessingMessageTimer" size="1"/>
@@ -260,6 +263,12 @@
 				<para>Determines how long it takes for the reconnection procedure to timeout. The delay is in milliseconds.</para>
 			</listitem>
 		</varlistentry>
+                <varlistentry>
+                        <term>&lt;PeerFSMThreadCount&gt;</term>
+                        <listitem>
+                                <para>Determines the number of threads for handling events in the Peer FSM.</para>
+                        </listitem>
+                </varlistentry>
 		<varlistentry>
 			<term>&lt;Concurrent /&gt;</term>
 			<listitem>
@@ -451,6 +460,9 @@
 		<DwaTimeOut value="10000" />
 		<DpaTimeOut value="5000" />
 		<RecTimeOut value="10000" />
+
+		<PeerFSMThreadCount value="3" />
+
 		<Concurrent>
 			 <Entity name="ThreadGroup" size="64"/>
 			 <Entity name="ProcessingMessageTimer" size="1"/>
