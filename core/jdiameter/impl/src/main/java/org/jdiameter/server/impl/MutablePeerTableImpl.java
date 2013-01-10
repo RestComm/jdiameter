@@ -63,6 +63,7 @@ import org.jdiameter.api.MutableConfiguration;
 import org.jdiameter.api.MutablePeerTable;
 import org.jdiameter.api.Network;
 import org.jdiameter.api.Peer;
+import org.jdiameter.api.PeerState;
 import org.jdiameter.api.PeerTableListener;
 import org.jdiameter.api.Realm;
 import org.jdiameter.api.Statistic;
@@ -103,6 +104,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   private static final Logger logger = LoggerFactory.getLogger(MutablePeerTableImpl.class);
 
   private static final int CONN_INVALIDATE_PERIOD = 60000;
+  private static final int MAX_PEER_TABLE_SIZE = 10000;
 
   protected Configuration config;
   protected ISessionFactory sessionFactory;
@@ -518,6 +520,18 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   }
 
   private void appendPeerToPeerTable(IPeer peer) {
+    logger.debug("Adding Peer[{}] to PeerTable with size {}", peer, peerTable.size());
+
+    // Cleaning up if we are at max capacity...
+    if(peerTable.size() == MAX_PEER_TABLE_SIZE) {
+      for(String k : peerTable.keySet()) {
+        Peer p = peerTable.get(k);
+        if(p != null && p.getState(PeerState.class) == PeerState.DOWN) {
+          peerTable.remove(k, p);
+        }
+      }
+    }
+
     peerTable.put(peer.getUri().getFQDN(), peer);
     if (peerTableListener != null) {
       peerTableListener.peerAccepted(peer);
