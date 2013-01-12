@@ -669,9 +669,9 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     logger.debug("Failed to send message, type: {} message: {}, failure: {}", new Object[]{eventType, request, e != null ? e.getLocalizedMessage() : ""});
     try {
       ClientRoSessionState state = sessionData.getClientRoSessionState();
-      int gatheredRequestedAction = sessionData.getGatheredRequestedAction();
       // Event Based ----------------------------------------------------------
       if (isEventBased()) {
+        int gatheredRequestedAction = sessionData.getGatheredRequestedAction();
         switch (state) {
         case PENDING_EVENT:
           if (gatheredRequestedAction == CHECK_BALANCE || gatheredRequestedAction == PRICE_ENQUIRY) {
@@ -774,9 +774,9 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
       // Event Based ----------------------------------------------------------
       long resultCode = event.getResultCodeAvp().getUnsigned32();
       ClientRoSessionState state = sessionData.getClientRoSessionState();
-      int gatheredRequestedAction = sessionData.getGatheredRequestedAction();
       Serializable txTimerId = sessionData.getTxTimerId();
       if (isEventBased()) {
+        int gatheredRequestedAction = sessionData.getGatheredRequestedAction();
         switch (state) {
         case PENDING_EVENT:
           if (resultCode == END_USER_SERVICE_DENIED || resultCode == USER_UNKNOWN) {
@@ -1012,9 +1012,9 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   protected void handleTxExpires(Message message) {
     // Event Based ----------------------------------------------------------
     ClientRoSessionState state = sessionData.getClientRoSessionState();
-    int gatheredRequestedAction = sessionData.getGatheredRequestedAction();
 
     if (isEventBased()) {
+      int gatheredRequestedAction = sessionData.getGatheredRequestedAction();
       if (gatheredRequestedAction == CHECK_BALANCE || gatheredRequestedAction == PRICE_ENQUIRY) {
         // Current State: PENDING_E
         // Event: Failure to send, temporary error, failed CC event answer received or Tx expired; requested action CHECK_BALANCE or PRICE_ENQUIRY

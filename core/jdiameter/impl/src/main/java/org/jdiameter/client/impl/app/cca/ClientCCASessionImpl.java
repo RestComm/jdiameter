@@ -654,9 +654,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     try {
       this.sendAndStateLock.lock();
       ClientCCASessionState state = this.sessionData.getClientCCASessionState();
-      int gatheredRequestedAction = this.sessionData.getGatheredRequestedAction();
       // Event Based ----------------------------------------------------------
       if (isEventBased()) {
+        int gatheredRequestedAction = this.sessionData.getGatheredRequestedAction();
         switch (state) {
         case PENDING_EVENT:
           if (gatheredRequestedAction == CHECK_BALANCE || gatheredRequestedAction == PRICE_ENQUIRY) {
@@ -761,8 +761,8 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       long resultCode = event.getResultCodeAvp().getUnsigned32();
       ClientCCASessionState state = this.sessionData.getClientCCASessionState();
       Serializable txTimerId = this.sessionData.getTxTimerId();
-      int gatheredRequestedAction = this.sessionData.getGatheredRequestedAction();
       if (isEventBased()) {
+        int gatheredRequestedAction = this.sessionData.getGatheredRequestedAction();
         switch (state) {
         case PENDING_EVENT:
           if (resultCode == END_USER_SERVICE_DENIED || resultCode == USER_UNKNOWN) {
@@ -999,9 +999,8 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     // Event Based ----------------------------------------------------------
     ClientCCASessionState state = this.sessionData.getClientCCASessionState();
     Serializable txTimerId = this.sessionData.getTxTimerId();
-    int gatheredRequestedAction = this.sessionData.getGatheredRequestedAction();
-    int gatheredDDFH = this.sessionData.getGatheredDDFH();
     if (isEventBased()) {
+      int gatheredRequestedAction = this.sessionData.getGatheredRequestedAction();
       if (gatheredRequestedAction == CHECK_BALANCE || gatheredRequestedAction == PRICE_ENQUIRY) {
         // Current State: PENDING_E
         // Event: Failure to send, temporary error, failed CC event answer received or Tx expired; requested action CHECK_BALANCE or PRICE_ENQUIRY
@@ -1011,6 +1010,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         setState(ClientCCASessionState.IDLE);
       }
       else if (gatheredRequestedAction == DIRECT_DEBITING) {
+        int gatheredDDFH = this.sessionData.getGatheredDDFH();
         if(gatheredDDFH == DDFH_TERMINATE_OR_BUFFER) {
           // Current State: PENDING_E
           // Event: Temporary error; requested action DIRECT_DEBITING; DDFH equal to TERMINATE_OR_BUFFER; Tx expired

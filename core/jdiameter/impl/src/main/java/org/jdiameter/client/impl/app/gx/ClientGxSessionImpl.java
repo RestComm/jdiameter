@@ -640,8 +640,8 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
         try {
             // Event Based ----------------------------------------------------------
           final ClientGxSessionState state = this.sessionData.getClientGxSessionState();
-          final int gatheredRequestedAction = sessionData.getGatheredRequestedAction();
             if (isEventBased()) {
+                final int gatheredRequestedAction = sessionData.getGatheredRequestedAction();
                 switch (state) {
                     case PENDING_EVENT:
                         if (gatheredRequestedAction == CHECK_BALANCE || gatheredRequestedAction == PRICE_ENQUIRY) {
@@ -738,10 +738,10 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
         try {
             // Event Based ----------------------------------------------------------
           final ClientGxSessionState state = this.sessionData.getClientGxSessionState();
-          final int gatheredRequestedAction = sessionData.getGatheredRequestedAction();
           final Serializable txTimerId = sessionData.getTxTimerId();
             final long resultCode = event.getResultCodeAvp().getUnsigned32();
             if (isEventBased()) {
+                final int gatheredRequestedAction = sessionData.getGatheredRequestedAction();
                 switch (state) {
                     case PENDING_EVENT:
                         if (resultCode == END_USER_SERVICE_DENIED || resultCode == USER_UNKNOWN) {
@@ -959,9 +959,8 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
     protected void handleTxExpires(Message message) {
         // Event Based ----------------------------------------------------------
       final ClientGxSessionState state = this.sessionData.getClientGxSessionState();
-      final int gatheredRequestedAction = this.sessionData.getGatheredRequestedAction();
-      final int gatheredDDFH = this.sessionData.getGatheredDDFH();
         if (isEventBased()) {
+            final int gatheredRequestedAction = this.sessionData.getGatheredRequestedAction();
             if (gatheredRequestedAction == CHECK_BALANCE || gatheredRequestedAction == PRICE_ENQUIRY) {
                 // Current State: PENDING_E
                 // Event: Failure to send, temporary error, failed CC event answer received or Tx expired; requested action CHECK_BALANCE or PRICE_ENQUIRY
@@ -970,6 +969,7 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
                 context.indicateServiceError(this);
                 setState(ClientGxSessionState.IDLE);
             } else if (gatheredRequestedAction == DIRECT_DEBITING) {
+                final int gatheredDDFH = this.sessionData.getGatheredDDFH();
                 if (gatheredDDFH == DDFH_TERMINATE_OR_BUFFER) {
                     // Current State: PENDING_E
                     // Event: Temporary error; requested action DIRECT_DEBITING; DDFH equal to TERMINATE_OR_BUFFER; Tx expired
