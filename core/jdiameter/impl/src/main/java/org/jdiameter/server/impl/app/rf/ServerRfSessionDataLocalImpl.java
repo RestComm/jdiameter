@@ -37,7 +37,7 @@ public class ServerRfSessionDataLocalImpl extends AppSessionDataLocalImpl implem
   protected boolean stateless = true;
   protected ServerRfSessionState state = ServerRfSessionState.IDLE;
   protected Serializable tsTimerId;
-  protected long tsTimeout;
+  protected long tsTimeout = NON_INITIALIZED;
 
   /**
    * 

@@ -36,7 +36,7 @@ public class ServerAccSessionDataLocalImpl extends AppSessionDataLocalImpl imple
 
   protected ServerAccSessionState state = ServerAccSessionState.IDLE;
   protected boolean stateles = true;
-  protected long tsTimeout;
+  protected long tsTimeout = NON_INITIALIZED;
   protected Serializable tsTimerId;
 
   /**

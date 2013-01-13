@@ -356,7 +356,7 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
 
     try{
       sendAndStateLock.lock();
-      if(sessionData.getTsTimeout() != 0) {
+      if(sessionData.getTsTimeout() > 0) {
         Serializable tsTid = super.timerFacility.schedule(sessionData.getSessionId(), TIMER_NAME_TS, sessionData.getTsTimeout());
         sessionData.setTsTimerId(tsTid);
       }

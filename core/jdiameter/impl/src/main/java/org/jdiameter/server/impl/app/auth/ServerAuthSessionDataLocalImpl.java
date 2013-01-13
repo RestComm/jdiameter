@@ -36,8 +36,8 @@ public class ServerAuthSessionDataLocalImpl extends AppSessionDataLocalImpl impl
 
   protected ServerAuthSessionState state = ServerAuthSessionState.IDLE;
   protected Serializable tsTimerId;
-  protected long tsTimeout;
-  protected boolean stateless;
+  protected long tsTimeout = NON_INITIALIZED;
+  protected boolean stateless = true;
 
   /**
    * 

@@ -89,7 +89,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
 
   public boolean isEventBased() {
     if (exists()) {
-      return (Boolean) getNode().get(EVENT_BASED);
+      return toPrimitive((Boolean) getNode().get(EVENT_BASED), true);
     }
     else {
       throw new IllegalStateException();
@@ -107,7 +107,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
 
   public boolean isRequestTypeSet() {
     if (exists()) {
-      return (Boolean) getNode().get(REQUEST_TYPE);
+      return toPrimitive((Boolean) getNode().get(REQUEST_TYPE), false);
     }
     else {
       throw new IllegalStateException();
@@ -233,7 +233,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
 
   public int getGatheredRequestedAction() {
     if (exists()) {
-      return (Integer) getNode().get(GRA);
+      return toPrimitive((Integer) getNode().get(GRA));
     }
     else {
       throw new IllegalStateException();
@@ -251,7 +251,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
 
   public int getGatheredCCFH() {
     if (exists()) {
-      return (Integer) getNode().get(GCCFH);
+      return toPrimitive((Integer) getNode().get(GCCFH));
     }
     else {
       throw new IllegalStateException();
@@ -269,7 +269,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
 
   public int getGatheredDDFH() {
     if (exists()) {
-      return (Integer) getNode().get(GDDFH);
+      return toPrimitive((Integer) getNode().get(GDDFH));
     }
     else {
       throw new IllegalStateException();

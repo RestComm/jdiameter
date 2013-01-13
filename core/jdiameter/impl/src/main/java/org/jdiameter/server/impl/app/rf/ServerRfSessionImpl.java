@@ -341,7 +341,9 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
     //    }, tsTimeout, TimeUnit.MILLISECONDS);
     try {
       sendAndStateLock.lock();
-      this.sessionData.setTsTimerId(super.timerFacility.schedule(getSessionId(), TIMER_NAME_TS, this.sessionData.getTsTimeout()));
+      if(sessionData.getTsTimeout() > 0) {
+        this.sessionData.setTsTimerId(super.timerFacility.schedule(getSessionId(), TIMER_NAME_TS, this.sessionData.getTsTimeout()));
+      }
     }
     finally {
       sendAndStateLock.unlock();

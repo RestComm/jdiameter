@@ -46,10 +46,10 @@ public class ClientCCASessionDataLocalImpl extends AppSessionDataLocalImpl imple
   //protected Message buffer = null;
   protected Request buffer;
 
-  protected int gatheredRequestedAction = ClientCCASessionImpl.NON_INITIALIZED;
+  protected int gatheredRequestedAction = NON_INITIALIZED;
 
-  protected int gatheredCCFH = ClientCCASessionImpl.NON_INITIALIZED;
-  protected int gatheredDDFH = ClientCCASessionImpl.NON_INITIALIZED;
+  protected int gatheredCCFH = NON_INITIALIZED;
+  protected int gatheredDDFH = NON_INITIALIZED;
 
   /**
    * 

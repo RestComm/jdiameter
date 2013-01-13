@@ -75,7 +75,7 @@ public class ServerAuthSessionDataReplicatedImpl extends AppSessionDataReplicate
   @Override
   public boolean isStateless() {
     if (exists()) {
-      return (Boolean) getNode().get(STATELESS);
+      return toPrimitive((Boolean) getNode().get(STATELESS), true);
     }
     else {
       throw new IllegalStateException();
@@ -141,7 +141,7 @@ public class ServerAuthSessionDataReplicatedImpl extends AppSessionDataReplicate
   @Override
   public long getTsTimeout() {
     if (exists()) {
-      return (Long) getNode().get(TS_TIMEOUT);
+      return toPrimitive((Long) getNode().get(TS_TIMEOUT));
     }
     else {
       throw new IllegalStateException();

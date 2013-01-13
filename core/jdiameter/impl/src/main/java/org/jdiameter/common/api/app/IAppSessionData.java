@@ -32,6 +32,8 @@ import org.jdiameter.api.ApplicationId;
  */
 public interface IAppSessionData {
 
+  public static final int NON_INITIALIZED = Integer.MIN_VALUE; 
+
   /**
    * Returns the session-id of the session to which this data belongs to.
    * @return a string representing the session-id

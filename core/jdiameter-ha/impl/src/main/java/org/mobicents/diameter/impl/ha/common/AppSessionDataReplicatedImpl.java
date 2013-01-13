@@ -90,4 +90,18 @@ public class AppSessionDataReplicatedImpl extends ClusteredCacheData implements 
     }
   }
 
+  // Some util methods for handling primitives
+
+  protected boolean toPrimitive(Boolean b, boolean _default) {
+    return b == null ? _default : b;
+  }
+
+  protected int toPrimitive(Integer i) {
+    return i == null ? NON_INITIALIZED : i;
+  }
+
+  protected long toPrimitive(Long l) {
+    return l == null ? NON_INITIALIZED : l;
+  }
+
 }

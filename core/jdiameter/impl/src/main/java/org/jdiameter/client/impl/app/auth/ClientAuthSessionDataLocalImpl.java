@@ -35,7 +35,7 @@ import org.jdiameter.common.api.app.auth.ClientAuthSessionState;
 public class ClientAuthSessionDataLocalImpl extends AppSessionDataLocalImpl implements IClientAuthSessionData {
 
   protected ClientAuthSessionState state = ClientAuthSessionState.IDLE;
-  protected boolean stateless;
+  protected boolean stateless = true;
   protected String destinationHost;
   protected String destinationRealm;
   protected Serializable tsTimerId;

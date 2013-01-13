@@ -107,7 +107,7 @@ public class ClientAuthSessionDataReplicatedImpl extends AppSessionDataReplicate
   @Override
   public boolean isStateless() {
     if (exists()) {
-      return (Boolean) getNode().get(STATELESS);
+      return toPrimitive((Boolean) getNode().get(STATELESS), true);
     }
     else {
       throw new IllegalStateException();

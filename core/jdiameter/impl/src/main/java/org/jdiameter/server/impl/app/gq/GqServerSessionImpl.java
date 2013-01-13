@@ -417,7 +417,9 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
   protected void startTsTimer() {
     try {
       sendAndStateLock.lock();
-      sessionData.setTsTimerId(super.timerFacility.schedule(sessionData.getSessionId(), TIMER_NAME_TS, sessionData.getTsTimeout()));
+      if (sessionData.getTsTimeout() > 0) {
+        sessionData.setTsTimerId(super.timerFacility.schedule(sessionData.getSessionId(), TIMER_NAME_TS, sessionData.getTsTimeout()));
+      }
     }
     finally {
       sendAndStateLock.unlock();

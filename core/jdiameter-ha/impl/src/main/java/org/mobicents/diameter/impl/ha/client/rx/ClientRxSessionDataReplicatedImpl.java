@@ -68,7 +68,7 @@ public class ClientRxSessionDataReplicatedImpl extends AppSessionDataReplicatedI
     @Override
     public boolean isEventBased() {
         if (exists()) {
-            return (Boolean) getNode().get(EVENT_BASED);
+            return toPrimitive((Boolean) getNode().get(EVENT_BASED), true);
         } else {
             throw new IllegalStateException();
         }
@@ -86,7 +86,7 @@ public class ClientRxSessionDataReplicatedImpl extends AppSessionDataReplicatedI
     @Override
     public boolean isRequestTypeSet() {
         if (exists()) {
-            return (Boolean) getNode().get(REQUEST_TYPE);
+            return toPrimitive((Boolean) getNode().get(REQUEST_TYPE), false);
         } else {
             throw new IllegalStateException();
         }

@@ -89,8 +89,7 @@ public class ClientGxSessionImpl extends AppGxSessionImpl implements ClientGxSes
     protected static final long TX_TIMER_DEFAULT_VALUE = 30 * 60 * 1000; // miliseconds
 
     protected long[] authAppIds = new long[]{4};
-    // Requested Action + Credit-Control and Direct-Debiting Failure-Handling ---
-    static final int NON_INITIALIZED = -300;
+
     protected static final int CCFH_TERMINATE = 0;
     protected static final int CCFH_CONTINUE = 1;
     protected static final int CCFH_RETRY_AND_TERMINATE = 2;

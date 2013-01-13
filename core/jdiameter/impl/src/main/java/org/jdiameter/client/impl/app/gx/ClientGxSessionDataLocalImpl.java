@@ -46,10 +46,10 @@ public class ClientGxSessionDataLocalImpl extends AppSessionDataLocalImpl implem
   //protected Message buffer = null;
   protected Request buffer;
 
-  protected int gatheredRequestedAction = ClientGxSessionImpl.NON_INITIALIZED;
+  protected int gatheredRequestedAction = NON_INITIALIZED;
 
-  protected int gatheredCCFH = ClientGxSessionImpl.NON_INITIALIZED;
-  protected int gatheredDDFH = ClientGxSessionImpl.NON_INITIALIZED;
+  protected int gatheredCCFH = NON_INITIALIZED;
+  protected int gatheredDDFH = NON_INITIALIZED;
 
   /**
    * 

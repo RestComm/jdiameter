@@ -95,9 +95,6 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
   protected long[] authAppIds = new long[] { 4 };
 
-  // Requested Action + Credit-Control and Direct-Debiting Failure-Handling ---
-  public static final int NON_INITIALIZED = -300;
-
   protected static final int CCFH_TERMINATE = 0;
   protected static final int CCFH_CONTINUE = 1;
   protected static final int CCFH_RETRY_AND_TERMINATE = 2;
