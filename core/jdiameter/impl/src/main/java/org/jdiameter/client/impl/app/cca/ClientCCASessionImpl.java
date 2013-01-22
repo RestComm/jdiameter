@@ -672,7 +672,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Action: Store request with T-flag
               // New State: IDLE
               request.setReTransmitted(true);
-              this.sessionData.setBuffer((Request) ((AppEventImpl)request).getMessage());
+              this.sessionData.setBuffer((Request) request);
 
               setState(ClientCCASessionState.IDLE, false);
               break;
@@ -694,7 +694,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
             // New State: IDLE
             setState(ClientCCASessionState.IDLE, false);
             request.setReTransmitted(true);
-            this.sessionData.setBuffer((Request) ((AppEventImpl)request).getMessage());
+            this.sessionData.setBuffer((Request) request);
           }
           else {
             logger.warn("Invalid Requested-Action AVP value {}", gatheredRequestedAction);
@@ -752,10 +752,10 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     }
   }
 
-  protected void handleFailureMessage(JCreditControlAnswer event, JCreditControlRequest request, Event.Type eventType) {
+  protected void handleFailureMessage(JCreditControlAnswer answer, JCreditControlRequest request, Event.Type eventType) {
     try {
       // Event Based ----------------------------------------------------------
-      long resultCode = event.getResultCodeAvp().getUnsigned32();
+      long resultCode = answer.getResultCodeAvp().getUnsigned32();
       ClientCCASessionState state = this.sessionData.getClientCCASessionState();
       Serializable txTimerId = this.sessionData.getTxTimerId();
       if (isEventBased()) {
@@ -769,7 +769,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Action: Terminate end user�s service
               // New State: IDLE
               context.denyAccessOnFailureMessage(this);
-              deliverCCAnswer(request, event);
+              deliverCCAnswer(request, answer);
               setState(ClientCCASessionState.IDLE);
             }
             else if(gatheredRequestedAction == DIRECT_DEBITING && txTimerId == null) {
@@ -786,7 +786,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
             // Action: Grant service to end user
             // New State: IDLE
             context.grantAccessOnFailureMessage(this);
-            deliverCCAnswer(request, event);
+            deliverCCAnswer(request, answer);
             setState(ClientCCASessionState.IDLE);
           }
           else if (temporaryErrorCodes.contains(resultCode)) {
@@ -796,7 +796,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Action: Indicate service error
               // New State: IDLE
               context.indicateServiceError(this);
-              deliverCCAnswer(request, event);
+              deliverCCAnswer(request, answer);
               setState(ClientCCASessionState.IDLE);
             }
             else if (gatheredRequestedAction == DIRECT_DEBITING) {
@@ -806,7 +806,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                 // Action: Grant service to end user
                 // New State: IDLE
                 context.grantAccessOnFailureMessage(this);
-                deliverCCAnswer(request, event);
+                deliverCCAnswer(request, answer);
                 setState(ClientCCASessionState.IDLE);
               }
               else if (getLocalDDFH() == DDFH_TERMINATE_OR_BUFFER && txTimerId != null) {
@@ -815,7 +815,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                 // Action: Terminate end user�s service
                 // New State: IDLE
                 context.denyAccessOnFailureMessage(this);
-                deliverCCAnswer(request, event);
+                deliverCCAnswer(request, answer);
                 setState(ClientCCASessionState.IDLE);
               }
             }
@@ -824,7 +824,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Event: Temporary error, and requested action REFUND_ACCOUNT
               // Action: Store request
               // New State: IDLE
-              this.sessionData.setBuffer((Request) ((AppEventImpl)request).getMessage());
+              this.sessionData.setBuffer((Request) request.getMessage());
               setState(ClientCCASessionState.IDLE, false);
             }
             else {
@@ -838,7 +838,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Action: Indicate service error
               // New State: IDLE
               context.indicateServiceError(this);
-              deliverCCAnswer(request, event);
+              deliverCCAnswer(request, answer);
               setState(ClientCCASessionState.IDLE);
             }
             else if (gatheredRequestedAction == DIRECT_DEBITING) {
@@ -848,7 +848,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                 // Action: Grant service to end user
                 // New State: IDLE
                 context.grantAccessOnFailureMessage(this);
-                deliverCCAnswer(request, event);
+                deliverCCAnswer(request, answer);
                 setState(ClientCCASessionState.IDLE);
               }
               else if (getLocalDDFH() == DDFH_TERMINATE_OR_BUFFER && txTimerId != null) {
@@ -857,7 +857,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                 // Action: Terminate end user�s service
                 // New State: IDLE
                 context.denyAccessOnFailureMessage(this);
-                deliverCCAnswer(request, event);
+                deliverCCAnswer(request, answer);
                 setState(ClientCCASessionState.IDLE);
               }
             }
@@ -868,7 +868,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // New State: IDLE
               this.sessionData.setBuffer(null);
               context.indicateServiceError(this);
-              deliverCCAnswer(request, event);
+              deliverCCAnswer(request, answer);
               setState(ClientCCASessionState.IDLE);
             }
             else {
@@ -987,7 +987,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     }
     catch (Exception e) {
       if(logger.isDebugEnabled()) {
-        logger.debug("Failure handling failure message for Event " + event + " (" + eventType + ") and Request " + request, e);
+        logger.debug("Failure handling failure message for Event " + answer + " (" + eventType + ") and Request " + request, e);
       }
     }
   }
