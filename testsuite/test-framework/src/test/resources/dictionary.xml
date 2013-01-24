@@ -4873,7 +4873,7 @@
 			<enum name="Interactive" code="7" />
 			<enum name="Interactive" code="8" />
 			<enum name="Background" code="9" />
-			<enum name="OTHER"			code="0xFFFFFFFF" />
+			<enum name="OTHER"			code="-1" />
 		</type>
 	</avpdefn>
 
@@ -5000,7 +5000,7 @@
 
 	</application>
 
-	<application id="16777224" name="3GPP Gx" uri="http://www.3gpp.org/ftp/Specs/html-info/29214.htm">
+	<application id="16777224" vendor-id="TGPP" name="3GPP Gx" uri="http://www.3gpp.org/ftp/Specs/html-info/29214.htm">
 	<!-- 3GPP TS 29.214 Release 7, 3GPP TS 29.214 V6.6.0 (2007-06)-->
 
 		<!-- 3GPP Gx Application -->
@@ -5152,7 +5152,7 @@
 			<enum name="CONTROL" code="4" />
 			<enum name="TEXT" code="5" />
 			<enum name="MESSAGE" code="6" />
-			<enum name="OTHER" code="0xFFFFFFFF" />
+			<enum name="OTHER" code="-1" />
 		</type>
 	</avpdefn>
 
@@ -5171,7 +5171,7 @@
 		</type>
 	</avpdefn>
 
-	<avpdefn name="Codec-Data" code="524" mndatory="must" may-encript="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+	<avpdefn name="Codec-Data" code="524" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
 		<type type-name="OctetString" />
 	</avpdefn>
 
@@ -5210,25 +5210,25 @@
 		</grouped>
 	</avpdefn>
 
-	<avpdefn name="Sponsor-Identity" code="531" mndatory="must" may-encript="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+	<avpdefn name="Sponsor-Identity" code="531" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
 		<type type-name="UTF8String" />
 	</avpdefn>
 
-	<avpdefn name="Application-Service-Provider-Identity" code="532" mndatory="must" may-encript="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+	<avpdefn name="Application-Service-Provider-Identity" code="532" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
 		<type type-name="UTF8String" />
 	</avpdefn>
 
-	<avpdefn name="Rx-Request-Type" code="533" mndatory="mustnot" may-encript="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+	<avpdefn name="Rx-Request-Type" code="533" mandatory="mustnot" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
 		<type type-name="UTF8String" />
 	</avpdefn>
 
-	<avpdefn name="Application-Service-Provider-Identity" code="534" mndatory="must" may-encript="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+	<avpdefn name="Application-Service-Provider-Identity" code="534" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
 		<type type-name="UTF8String" />
 	</avpdefn>
 
 	<!-- ************************ END 3GPP Rx AVPS ******************* -->
 
-	<application id="16777236" name="3GPP Rx" uri="http://www.3gpp.org/ftp/Specs/html-info/29214.htm">
+	<application id="16777236" vendor-id="TGPP" name="3GPP Rx" uri="http://www.3gpp.org/ftp/Specs/html-info/29214.htm">
 	<!-- 3GPP TS 29.214 Release 7, 3GPP TS 29.214 V6.6.0 (2007-06)-->
 
 		<!-- 3GPP Rx Application -->
@@ -5269,13 +5269,13 @@
 			<avp name="RAT-Type" code="1032" vendor="10415" multiplicity="1" index="-1" />
 		</command>
 
-		<command name="Re-Auth-Answer"	code="258" vendor-id="TGPP" request="false">
+		<command name="Re-Auth-Answer" code="258" vendor-id="TGPP" request="false">
 		</command>
 
-		<command name="Session-Termination-Answer"	code="275" vendor-id="TGPP" request="false">
+		<command name="Session-Termination-Answer" code="275" vendor-id="TGPP" request="false">
 		</command>
 
-		<command name="Abort-Session-Answer"	code="274" vendor-id="TGPP" request="false">
+		<command name="Abort-Session-Answer" code="274" vendor-id="TGPP" request="false">
 		</command>
 	</application>
 

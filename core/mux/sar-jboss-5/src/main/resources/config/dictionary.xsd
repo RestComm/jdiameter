@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+	TeleStax, Open Source Cloud Communications
+
+	Copyright 2012, TeleStax and individual contributors as indicated
+	by the @authors tag. See the copyright.txt in the distribution for
+	a full listing of individual contributors.
+
+	This is free software; you can redistribute it and/or modify it
+	under the terms of the GNU Lesser General Public License as
+	published by the Free Software Foundation; either version 2.1 of
+	the License, or (at your option) any later version.
+
+	This software is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+	Lesser General Public License for more details.
+
+	You should have received a copy of the GNU Lesser General Public
+	License along with this software; if not, write to the Free
+	Software Foundation, Inc., 51 FranklinSt, Fifth Floor, Boston, MA
+	02110-1301 USA, or see the FSF site: http://www.fsf.org.
+
+-->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="dictionary">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="typedefn" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="vendor" minOccurs="0" maxOccurs="unbounded" />
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="avpdefn" minOccurs="0" maxOccurs="unbounded" />
+          <xs:element ref="application" minOccurs="0" maxOccurs="unbounded" />
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="typedefn">
+    <xs:complexType>
+      <xs:attribute name="type-name" type="xs:string" use="required" />
+      <xs:attribute name="type-parent" type="xs:string" use="optional" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="vendor">
+    <xs:complexType>
+      <xs:attribute name="vendor-id" type="xs:string" use="required" />
+      <xs:attribute name="code" type="xs:unsignedInt" use="required" />
+      <xs:attribute name="name" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="avpdefn">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="type" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="grouped" minOccurs="0" maxOccurs="1" />
+      </xs:choice>
+
+      <xs:attribute name="name" type="xs:string" use="required" />
+      <xs:attribute name="code" type="xs:unsignedInt" use="required" />
+      <xs:attribute name="vendor-id" type="xs:string" use="optional" />
+      <xs:attribute name="mandatory" type="xs:string" use="required" />
+      <xs:attribute name="protected" type="xs:string" use="required" />
+      <xs:attribute name="may-encrypt" type="xs:string" use="required" />
+      <xs:attribute name="vendor-bit" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="type">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="enum" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+
+      <xs:attribute name="type-name" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="enum">
+    <xs:complexType>
+      <xs:attribute name="code" type="xs:integer" use="required" />
+      <xs:attribute name="name" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="grouped">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="avp" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="avp">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required" />
+      <xs:attribute name="code" type="xs:unsignedInt" use="optional" />
+      <xs:attribute name="vendor" type="xs:string" use="optional" />
+      <xs:attribute name="multiplicity" type="xs:string" use="optional" />
+      <xs:attribute name="index" type="xs:short" use="optional" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="application">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="command" minOccurs="1" maxOccurs="unbounded" />
+      </xs:sequence>
+
+      <xs:attribute name="id" type="xs:string" use="required" />
+      <xs:attribute name="vendor-id" type="xs:string" use="required" />
+      <xs:attribute name="name" type="xs:string" use="required" />
+      <xs:attribute name="uri" type="xs:string" use="optional" />
+      <xs:attribute name="URI" type="xs:string" use="optional" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="command">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="avp" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+
+      <xs:attribute name="name" type="xs:string" use="required" />
+      <xs:attribute name="code" type="xs:string" use="required" />
+      <xs:attribute name="request" type="xs:string" use="required" />
+      <xs:attribute name="vendor-id" type="xs:string" use="optional" />
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
