@@ -36,6 +36,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -101,6 +102,7 @@ public class PeerFSMImpl implements IStateMachine {
 
   //PCB changed for multi-thread
   protected boolean mustRun = false;
+  protected AtomicInteger numberOfThreadsRunning = new AtomicInteger(0);
 
   public PeerFSMImpl(IContext aContext, IConcurrentFactory concurrentFactory, Configuration config, IStatisticManager statisticFactory) {
     this.context = aContext;
@@ -129,108 +131,117 @@ public class PeerFSMImpl implements IStateMachine {
     try {
       // PCB - changed way it decides if queue processing must happen in order to allow for multithreaded FSM
       lock.lock();
-      if (mustRun) {
+      if (numberOfThreadsRunning.get() > 0) {
         // runQueueProcessing has been called
         return;
       }
+      eventQueue.clear();
       mustRun = true;
+
+      IStatisticRecord queueSize = statisticFactory.newCounterRecord(IStatisticRecord.Counters.QueueSize, new IStatisticRecord.IntegerValueHolder() {
+        public int getValueAsInt() {
+          return eventQueue.size();
+        }
+
+        public String getValueAsString() {
+          return String.valueOf(getValueAsInt());
+        }
+      });
+
+      this.timeSumm = statisticFactory.newCounterRecord("TimeSumm", "TimeSumm");
+      this.timeCount = statisticFactory.newCounterRecord("TimeCount", "TimeCount");
+
+      final IStatisticRecord messagePrcAverageTime = statisticFactory.newCounterRecord(IStatisticRecord.Counters.MessageProcessingTime,
+          new IStatisticRecord.DoubleValueHolder() {
+        public double getValueAsDouble() {
+          if(queueStat == null) {
+            return 0;
+          }
+          IStatisticRecord mpta = queueStat.getRecordByName(IStatisticRecord.Counters.MessageProcessingTime.name());
+          org.jdiameter.api.StatisticRecord[] children = mpta.getChilds();
+          if (children.length == 2 && children[1].getValueAsLong() != 0) {
+            long count = children[1].getValueAsLong();
+            return ((float) children[0].getValueAsLong()) / ((float) (count != 0 ? count : 1));
+          }
+          else {
+            return 0;
+          }
+        }
+
+        public String getValueAsString() {
+          return String.valueOf(getValueAsDouble());
+        }
+      }, timeSumm, timeCount);
+
+      logger.debug("Initializing QueueStat @ Thread[{}]", Thread.currentThread().getName());
+      queueStat = statisticFactory.newStatistic(context.getPeerDescription(), IStatistic.Groups.PeerFSM, queueSize, messagePrcAverageTime);
+      logger.debug("Finished Initializing QueueStat @ Thread[{}]", Thread.currentThread().getName());
+
+      Runnable fsmQueueProcessor = new Runnable() {
+        public void run() {  
+          int runningNow = numberOfThreadsRunning.incrementAndGet();
+          logger.debug("Starting ... [{}] FSM threads are running", runningNow);
+          //PCB changed for multi-thread
+          while (mustRun) {
+            StateEvent event;
+            try {
+              event = eventQueue.poll(100, TimeUnit.MILLISECONDS);
+              if(logger.isDebugEnabled() && event != null) {
+                logger.debug("Got Event [{}] from Queue", event);
+              }
+            }
+            catch (InterruptedException e) {
+              logger.debug("Peer FSM stopped", e);
+              break;
+            }
+            //FIXME: baranowb: why this lock is here?
+            // PCB removed lock
+            // lock.lock();
+            try {
+              if (event != null) {
+                if (event instanceof FsmEvent && queueStat != null && queueStat.isEnabled()) {
+                  timeSumm.inc(System.currentTimeMillis() - ((FsmEvent) event).getCreatedTime());
+                  timeCount.inc();
+                }
+                logger.debug("Process event [{}]. Peer State is [{}]", event, state);
+                getStates()[state.ordinal()].processEvent(event);
+              }
+              if (timer != 0 && timer < System.currentTimeMillis()) {
+                timer = 0;
+                if(state != DOWN) { //without this check this event is fired in DOWN state.... it should not be.
+                  logger.debug("Sending timeout event");
+                  handleEvent(timeOutEvent); //FIXME: check why timer is not killed?
+                }
+              }
+            }
+            catch (Exception e) {
+              logger.debug("Error during processing FSM event", e);
+            }
+            finally {
+              // PCB removed lock
+              // lock.unlock();
+            }
+          }
+          //PCB added logging
+          logger.debug("FSM Thread {} is exiting", Thread.currentThread().getName());
+          //this happens when peer FSM is down, lets remove stat
+          statisticFactory.removeStatistic(queueStat);
+          logger.debug("Setting QueueStat to null @ Thread [{}]", Thread.currentThread().getName());
+          queueStat = null;
+          logger.debug("Done Setting QueueStat to null @ Thread [{}]", Thread.currentThread().getName());
+          int runningNowAfterStop = numberOfThreadsRunning.decrementAndGet();
+          logger.debug("Stopping ... [{}] FSM threads are running", runningNowAfterStop);
+        }
+      };
+      //PCB added FSM multithread
+      for (int i = 1; i <= FSM_THREAD_COUNT; i++) {
+        logger.debug("Starting FSM Thread {} of {}", i, FSM_THREAD_COUNT);
+        Thread executor = concurrentFactory.getThread("FSM-" + context.getPeerDescription() + "_" + i, fsmQueueProcessor);
+        executor.start();
+      }
     }
     finally {
       lock.unlock();
-    }
-    IStatisticRecord queueSize = statisticFactory.newCounterRecord(IStatisticRecord.Counters.QueueSize, new IStatisticRecord.IntegerValueHolder() {
-      public int getValueAsInt() {
-        return eventQueue.size();
-      }
-
-      public String getValueAsString() {
-        return String.valueOf(getValueAsInt());
-      }
-    });
-
-    this.timeSumm = statisticFactory.newCounterRecord("TimeSumm", "TimeSumm");
-    this.timeCount = statisticFactory.newCounterRecord("TimeCount", "TimeCount");
-
-    final IStatisticRecord messagePrcAverageTime = statisticFactory.newCounterRecord(IStatisticRecord.Counters.MessageProcessingTime,
-        new IStatisticRecord.DoubleValueHolder() {
-      public double getValueAsDouble() {
-        if(queueStat == null) {
-          return 0;
-        }
-        IStatisticRecord mpta = queueStat.getRecordByName(IStatisticRecord.Counters.MessageProcessingTime.name());
-        org.jdiameter.api.StatisticRecord[] children = mpta.getChilds();
-        if (children.length == 2 && children[1].getValueAsLong() != 0) {
-          long count = children[1].getValueAsLong();
-          return ((float) children[0].getValueAsLong()) / ((float) (count != 0 ? count : 1));
-        }
-        else {
-          return 0;
-        }
-      }
-
-      public String getValueAsString() {
-        return String.valueOf(getValueAsDouble());
-      }
-    }, timeSumm, timeCount);
-
-    queueStat = statisticFactory.newStatistic(context.getPeerDescription(), IStatistic.Groups.PeerFSM, queueSize, messagePrcAverageTime);
-
-    Runnable fsmQueueProcessor = new Runnable() {
-      public void run() {
-
-        //PCB changed for multi-thread
-        while (mustRun) {
-          StateEvent event;
-          try {
-            event = eventQueue.poll(100, TimeUnit.MILLISECONDS);
-            if(logger.isDebugEnabled() && event != null) {
-            	logger.debug("Got Event [{}] from Queue", event);
-            }
-          }
-          catch (InterruptedException e) {
-            logger.debug("Peer FSM stopped", e);
-            break;
-          }
-          //FIXME: baranowb: why this lock is here?
-          // PCB removed lock
-          lock.lock();
-          try {
-            if (event != null) {
-              if (event instanceof FsmEvent && queueStat != null && queueStat.isEnabled()) {
-                timeSumm.inc(System.currentTimeMillis() - ((FsmEvent) event).getCreatedTime());
-                timeCount.inc();
-              }
-              logger.debug("Process event [{}]. Peer State is [{}]", event, state);
-              getStates()[state.ordinal()].processEvent(event);
-            }
-            if (timer != 0 && timer < System.currentTimeMillis()) {
-              timer = 0;
-              if(state != DOWN) { //without this check this event is fired in DOWN state.... it should not be.
-                logger.debug("Sending timeout event");
-                handleEvent(timeOutEvent); //FIXME: check why timer is not killed?
-              }
-            }
-          }
-          catch (Exception e) {
-            logger.debug("Error during processing FSM event", e);
-          }
-          finally {
-            // PCB removed lock
-            lock.unlock();
-          }
-        }
-        //PCB added logging
-        logger.debug("FSM Thread {} is exiting", Thread.currentThread().getName());
-        //this happens when peer FSM is down, lets remove stat
-        statisticFactory.removeStatistic(queueStat);
-        queueStat = null;
-      }
-    };
-    //PCB added FSM multithread
-    for (int i = 1; i <= FSM_THREAD_COUNT; i++) {
-      logger.debug("Starting FSM Thread {} of {}", i, FSM_THREAD_COUNT);
-      Thread executor = concurrentFactory.getThread("FSM-" + context.getPeerDescription() + "_" + i, fsmQueueProcessor);
-      executor.start();
     }
   }
 
@@ -278,8 +289,8 @@ public class PeerFSMImpl implements IStateMachine {
       logger.debug("Handling event with type [{}]", event.getType());
     }
     //PCB added FSM multithread
-    if (!mustRun) {
-      logger.debug("Executor is null so calling runQueueProcessing()");
+    if (numberOfThreadsRunning.get() == 0) {
+      logger.debug("No FSM threads are running so calling runQueueProcessing()");
       runQueueProcessing();
     }
     if (event.getData() != null && dictionary!= null && dictionary.isEnabled()) {
@@ -567,7 +578,9 @@ public class PeerFSMImpl implements IStateMachine {
             public void entryAction() {
               clearTimer();
               //PCB changed multithread FSM
+              logger.debug("Setting mustRun to false @ Thread [{}]", Thread.currentThread().getName());
               mustRun = false;
+              logger.debug("Finished Setting mustRun to false @ Thread [{}]", Thread.currentThread().getName());
               context.removeStatistics();
             }
 
