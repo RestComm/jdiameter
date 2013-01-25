@@ -687,7 +687,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
   public void timeoutExpired(Request request) {
     try {
     	sendAndStateLock.lock();
-      handleEvent(new Event(Event.Type.FAILED_RECEIVE_RECORD, createAccountRequest(request)));
+      handleEvent(new Event(Event.Type.FAILED_SEND_RECORD, createAccountRequest(request)));
     }
     catch (Exception e) {
       logger.debug("Can not handle timeout event", e);
