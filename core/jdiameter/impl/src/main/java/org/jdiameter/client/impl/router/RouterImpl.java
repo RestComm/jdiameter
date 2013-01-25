@@ -63,6 +63,7 @@ import org.jdiameter.api.InternalException;
 import org.jdiameter.api.LocalAction;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.MetaData;
+import org.jdiameter.api.PeerState;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.URI;
 import org.jdiameter.client.api.IAnswer;
@@ -403,7 +404,9 @@ public class RouterImpl implements IRouter {
         if(logger.isDebugEnabled()) {
           logger.debug("Checking peer [{}] for name [{}]", new Object[]{localPeer,peerName});
         }
-        if (localPeer != null) {
+        // ammendonca: added peer state check.. should not be needed but 
+        // hasValidConnection is returning true for disconnected peers in *FTFlowTests
+        if (localPeer != null && localPeer.getState(PeerState.class) == PeerState.OKAY) {
           if(localPeer.hasValidConnection()) {
             if(logger.isDebugEnabled()) {
               logger.debug("Found available peer to add to available peer list with uri [{}] with a valid connection", localPeer.getUri().toString());
