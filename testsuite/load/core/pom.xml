@@ -78,72 +78,48 @@
 											<artifactId>jdiameter-api</artifactId>
 											<type>jar</type>
 											<overWrite>true</overWrite>
-											<outputDirectory>
-												${project.build.directory}/run
-                  </outputDirectory>
-											<destFileName>
-												jdiameter-api.jar
-                  </destFileName>
+											<outputDirectory>${project.build.directory}/run</outputDirectory>
+											<destFileName>jdiameter-api.jar</destFileName>
 										</artifactItem>
 										<artifactItem>
 											<groupId>org.mobicents.servers.diameter</groupId>
 											<artifactId>jdiameter-impl</artifactId>
 											<type>jar</type>
 											<overWrite>true</overWrite>
-											<outputDirectory>
-												${project.build.directory}/run
-                  </outputDirectory>
-											<destFileName>
-												jdiameter-impl.jar
-                  </destFileName>
+											<outputDirectory>${project.build.directory}/run</outputDirectory>
+											<destFileName>jdiameter-impl.jar</destFileName>
 										</artifactItem>
 										<artifactItem>
 											<artifactId>picocontainer</artifactId>
 											<groupId>picocontainer</groupId>
 											<type>jar</type>
 											<overWrite>true</overWrite>
-											<outputDirectory>
-												${project.build.directory}/run
-                  </outputDirectory>
-											<destFileName>
-												picocontainer.jar
-                  </destFileName>
+											<outputDirectory>${project.build.directory}/run</outputDirectory>
+											<destFileName>picocontainer.jar</destFileName>
 										</artifactItem>
 										<artifactItem>
 											<groupId>junit</groupId>
 											<artifactId>junit</artifactId>
 											<type>jar</type>
 											<overWrite>true</overWrite>
-											<outputDirectory>
-												${project.build.directory}/run
-                  </outputDirectory>
-											<destFileName>
-												junit.jar
-                  </destFileName>
+											<outputDirectory>${project.build.directory}/run</outputDirectory>
+											<destFileName>junit.jar</destFileName>
 										</artifactItem>
 										<artifactItem>
 											<groupId>org.slf4j</groupId>
 											<artifactId>slf4j-api</artifactId>
 											<type>jar</type>
 											<overWrite>true</overWrite>
-											<outputDirectory>
-												${project.build.directory}/run
-                  </outputDirectory>
-											<destFileName>
-												slf4j-api.jar
-                  </destFileName>
+											<outputDirectory>${project.build.directory}/run</outputDirectory>
+											<destFileName>slf4j-api.jar</destFileName>
 										</artifactItem>
 										<artifactItem>
 											<groupId>org.slf4j</groupId>
 											<artifactId>slf4j-log4j12</artifactId>
 											<type>jar</type>
 											<overWrite>true</overWrite>
-											<outputDirectory>
-												${project.build.directory}/run
-                  </outputDirectory>
-											<destFileName>
-												slf4j-log4j12.jar
-                  </destFileName>
+											<outputDirectory>${project.build.directory}/run</outputDirectory>
+											<destFileName>slf4j-log4j12.jar</destFileName>
 										</artifactItem>
 
 										<artifactItem>
@@ -151,24 +127,16 @@
 											<artifactId>java-getopt</artifactId>
 											<type>jar</type>
 											<overWrite>true</overWrite>
-											<outputDirectory>
-												${project.build.directory}/run
-                  </outputDirectory>
-											<destFileName>
-												java-getopt.jar
-                  </destFileName>
+											<outputDirectory>${project.build.directory}/run</outputDirectory>
+											<destFileName>java-getopt.jar</destFileName>
 										</artifactItem>
 										<artifactItem>
 											<groupId>log4j</groupId>
 											<artifactId>log4j</artifactId>
 											<type>jar</type>
 											<overWrite>true</overWrite>
-											<outputDirectory>
-												${project.build.directory}/run
-                  </outputDirectory>
-											<destFileName>
-												log4j.jar
-                  </destFileName>
+											<outputDirectory>${project.build.directory}/run</outputDirectory>
+											<destFileName>log4j.jar</destFileName>
 										</artifactItem>
 
 										<artifactItem>
@@ -186,12 +154,8 @@
 											<version>1.4.0-SNAPSHOT</version>
 											<type>jar</type>
 											<overWrite>true</overWrite>
-											<outputDirectory>
-												${project.build.directory}/run
-                  </outputDirectory>
-											<destFileName>
-												testsuite-load.jar
-                  </destFileName>
+											<outputDirectory>${project.build.directory}/run</outputDirectory>
+											<destFileName>testsuite-load.jar</destFileName>
 										</artifactItem>
 									</artifactItems>
 								</configuration>

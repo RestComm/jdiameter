@@ -74,6 +74,8 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
 						<configuration>
+							<!-- Force JUnit by making TestNG invalid.. -->
+							<testNGArtifactName>none:none</testNGArtifactName>
 							<forkMode>pertest</forkMode>
 							<excludes>
 								<exclude>**/*$*</exclude>

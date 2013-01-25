@@ -25,7 +25,7 @@
 		<get.opt.version>1.0.9</get.opt.version>
 		<picocontainer.version>2.13.5</picocontainer.version>
 		<slf4j.version>1.5.8</slf4j.version>
-		<junit.version>4.10</junit.version>
+		<junit.version>4.11</junit.version>
 		<version.jboss.microcontainer>2.2.0.M2</version.jboss.microcontainer>
 		<version.jboss.aop>2.1.8.GA</version.jboss.aop>
 		<version.aop.asintegration.mc>2.1.8.GA</version.aop.asintegration.mc>
@@ -146,15 +146,15 @@
 	</dependencyManagement>
 
 	<profiles>
-                <profile>
-                        <id>default</id>
-                        <activation>
-                                <activeByDefault>true</activeByDefault>
-                        </activation>
-                        <modules>
-                                <module>tests</module>
-                        </modules>
-                </profile>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<modules>
+				<module>tests</module>
+			</modules>
+		</profile>
 		<profile>
 			<id>load</id>
 			<activation>
