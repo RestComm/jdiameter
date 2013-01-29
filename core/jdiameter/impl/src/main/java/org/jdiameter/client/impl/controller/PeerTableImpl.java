@@ -302,22 +302,23 @@ public class PeerTableImpl implements IPeerTable {
       try {
         // Wait for some threads which may take longer...
         // FIXME: Change this once we get rid of ThreadGroup and hard interrupting threads.
-        boolean interrupted = false;
+        // boolean interrupted = false;
         long remWaitTime = 2000;
         logger.debug("Stopping thread group and waiting a max of {}ms for all threads to finish", remWaitTime);
         while(concurrentFactory.getThreadGroup().activeCount() > 0 && remWaitTime > 0) {
           long waitTime = 250;
           Thread.sleep(waitTime);
           remWaitTime -= waitTime;
+          logger.debug("Waited {}ms. Time remaining to wait: {}ms. {} Thread still active.", new Object[]{waitTime, remWaitTime, concurrentFactory.getThreadGroup().activeCount()});
           // it did not terminated, let's interrupt
           // FIXME: remove ASAP, this is very bad, it kills threads in middle of op,
           //        killing FSM of peer for instance, after that its not usable.
-          if(remWaitTime <= 0 && !interrupted) {
-            interrupted = true;
-            remWaitTime = 2000;
-            logger.debug("Stopping thread group did not work. Interrupting and waiting a max of {}ms for all threads to finish", remWaitTime);
-            concurrentFactory.getThreadGroup().interrupt();
-          }
+          // if(remWaitTime <= 0 && !interrupted) {
+          //   interrupted = true;
+          //   remWaitTime = 2000;
+          //   logger.debug("Stopping thread group did not work. Interrupting and waiting a max of {}ms for all threads to finish", remWaitTime);
+          //   concurrentFactory.getThreadGroup().interrupt();
+          // }
         }
       }
       catch (Exception e) {
@@ -344,8 +345,9 @@ public class PeerTableImpl implements IPeerTable {
     logger.debug("In destroy. Going to destroy concurrentFactory's thread group");
     if (concurrentFactory != null) {
       try {
-        concurrentFactory.getThreadGroup().stop(); //had to add it to make testStartStopStart pass....
-        concurrentFactory.getThreadGroup().destroy();
+        // concurrentFactory.getThreadGroup().interrupt();
+        // concurrentFactory.getThreadGroup().stop(); //had to add it to make testStartStopStart pass....
+        // concurrentFactory.getThreadGroup().destroy();
       }
       catch (IllegalThreadStateException itse) {
         if(logger.isDebugEnabled()) {
