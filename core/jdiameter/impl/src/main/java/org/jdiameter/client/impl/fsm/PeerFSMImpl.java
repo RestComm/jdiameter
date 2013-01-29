@@ -311,7 +311,7 @@ public class PeerFSMImpl implements IStateMachine {
       logger.debug("Not performing validation to message since validator is DISABLED.");
     }
 
-    boolean rc;
+    boolean rc = false;
     try {
       if(logger.isDebugEnabled()) {
         logger.debug("Placing event [{}] into linked blocking queue with remaining capacity: [{}].", event, eventQueue.remainingCapacity());
@@ -327,7 +327,8 @@ public class PeerFSMImpl implements IStateMachine {
       rc = eventQueue.offer(event, IAC_TIMEOUT, TimeUnit.MILLISECONDS);
     }
     catch (InterruptedException e) {
-      throw new InternalError("Can not put event to FSM " + this.toString());
+      logger.debug("Can not put event '" + event.toString() + "' to FSM " + this.toString(), e);
+      throw new InternalError("Can not put event '" + event.toString() + "' to FSM " + this.toString());
     }
     if (!rc) {
       throw new OverloadException("FSM overloaded");
