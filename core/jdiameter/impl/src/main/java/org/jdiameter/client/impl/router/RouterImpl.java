@@ -390,7 +390,7 @@ public class RouterImpl implements IRouter {
       return c;
     }
     else {
-      logger.debug("Finding peer by destination host avp [host={}] did not find anything. Now going to try finding one by destination realm [{}]", destRealm, destHost);
+      logger.debug("Finding peer by destination host avp [host={}] did not find anything. Now going to try finding one by destination realm [{}]", destHost, destRealm);
       String peers[] = matchedRealm.getPeerNames();
       if (peers == null || peers.length == 0) {
         throw new RouteException("Unable to find context by route information [" + destRealm + " ," + destHost + "]");
