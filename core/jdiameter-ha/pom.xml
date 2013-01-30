@@ -5,11 +5,11 @@
 	<parent>
 		<groupId>org.mobicents.diameter</groupId>
 		<artifactId>diameter-core-parent</artifactId>
-		<version>1.5.0.FINAL</version>
+		<version>1.5.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>jdiameter-ha-parent</artifactId>
-	<version>1.2.0.FINAL</version>
+	<version>1.1.0-SNAPSHOT</version>
 
 	<packaging>pom</packaging>
 
@@ -30,12 +30,12 @@
 			<dependency>
 				<groupId>org.mobicents.diameter</groupId>
 				<artifactId>jdiameter-api</artifactId>
-				<version>1.5.10.0-build639</version>
+				<version>${jdiameter.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mobicents.diameter</groupId>
 				<artifactId>jdiameter-impl</artifactId>
-				<version>1.5.10.0-build639</version>
+				<version>${jdiameter.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mobicents.cluster</groupId>
