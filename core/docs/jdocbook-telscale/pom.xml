@@ -30,7 +30,7 @@
 							<artifactItems>
 								<artifactItem>
 									<groupId>${pom.groupId}</groupId>
-									<artifactId>mobicents-diameter-core-docs-sources-telscale</artifactId>
+									<artifactId>diameter-core-docs-sources-telscale</artifactId>
 									<version>${pom.version}</version>
 									<type>jar</type>
 									<overWrite>true</overWrite>
