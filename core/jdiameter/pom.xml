@@ -8,13 +8,10 @@
 		<version>6.1.2.GA-TelScale</version>
 	</parent>
 
-	<artifactId>jdiameter-parent</artifactId>
-	<version>1.5.10.0-build639</version>
-
-	<packaging>pom</packaging>
 	<name>Mobicents :: Diameter Stack :: ${pom.artifactId}</name>
+	<artifactId>jdiameter-parent</artifactId>
 	<version>6.1.2.GA-TelScale</version>
-	
+
 	<modules>
 		<module>api</module>
 		<module>impl</module>
