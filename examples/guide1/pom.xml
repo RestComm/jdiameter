@@ -209,7 +209,7 @@
 										<artifactItem>
 											<groupId>${pom.groupId}</groupId>
 											<artifactId>${pom.artifactId}</artifactId>
-											<version>${pom.version}</version>
+											<version>${project.version}</version>
 											<type>jar</type>
 											<overWrite>true</overWrite>
 											<outputDirectory>

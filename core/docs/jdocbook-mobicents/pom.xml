@@ -31,7 +31,7 @@
 								<artifactItem>
 									<groupId>${pom.groupId}</groupId>
 									<artifactId>diameter-core-docs-sources-mobicents</artifactId>
-									<version>${pom.version}</version>
+									<version>${project.version}</version>
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${project.build.directory}/docbook/resources</outputDirectory>

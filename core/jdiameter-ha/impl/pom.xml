@@ -16,7 +16,7 @@
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
 			<artifactId>jdiameter-ha-api</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>

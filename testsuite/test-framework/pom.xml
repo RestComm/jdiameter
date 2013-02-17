@@ -67,7 +67,7 @@
 			</properties>
 
 			<build>
-				<finalName>diameter-${pom.artifactId}-${pom.version}</finalName>
+				<finalName>diameter-${pom.artifactId}-${project.version}</finalName>
 
 				<plugins>
 					<plugin>

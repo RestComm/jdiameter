@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>${pom.groupId}</groupId>
 			<artifactId>jdiameter-api</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<artifactId>picocontainer</artifactId>
