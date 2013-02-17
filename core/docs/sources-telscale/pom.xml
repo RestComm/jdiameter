@@ -16,7 +16,7 @@
 		<version.jdiameter>${project.version}</version.jdiameter>
 		<THIS.PLATFORM>TelScale</THIS.PLATFORM>
 		<JEE.PLATFORM>JBoss Enterprise Application Platform</JEE.PLATFORM>
-		<MANAGEMENT.PLATFORM>JBoss Operations Network</MANAGEMENT.PLATFORM>
+		<MANAGEMENT.PLATFORM>RHQ</MANAGEMENT.PLATFORM>
 		<THIS.ISSUE_TRACKER_URL>http://support.telestax.com/</THIS.ISSUE_TRACKER_URL>
 		<THIS.RELEASE_SOURCE_CODE_URL>?</THIS.RELEASE_SOURCE_CODE_URL>
 		<THIS.JDIAMETER_RELEASE_SOURCE_CODE_URL>??</THIS.JDIAMETER_RELEASE_SOURCE_CODE_URL>
@@ -62,17 +62,6 @@
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
-					<execution>
-						<phase>install</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<tasks>
-								<copy file="publican.cfg" todir="src/main/resources/" />
-							</tasks>
-						</configuration>
-					</execution>
 					<execution>
 						<id>clean-resources</id>
 						<phase>clean</phase>
