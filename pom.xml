@@ -56,7 +56,7 @@
 	</licenses>
 
 	<modules>
-		<module>core</module>
+		<!-- module>core</module-->
 	</modules>
 
 	<build>
