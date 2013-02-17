@@ -21,8 +21,8 @@
 	</modules>
 
 	<properties>
-		<jdiameter.version>6.1.2.GA-TelScale</jdiameter.version>
-		<mobicents.cluster.version>1.14.0.FINAL</mobicents.cluster.version>
+		<jdiameter.version>${project.version}</jdiameter.version>
+		<mobicents.cluster.version>${project.version}</mobicents.cluster.version>
 	</properties>
 
 	<dependencyManagement>
