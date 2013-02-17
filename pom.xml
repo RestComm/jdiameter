@@ -13,7 +13,7 @@
 	<version>6.1.2.GA-TelScale</version>
 	<packaging>pom</packaging>
 
-	<name>Mobicents :: Diameter :: ${pom.artifactId}</name>
+	<name>Mobicents :: Diameter :: ${project.artifactId}</name>
 	<description>Mobicents Diameter</description>
 	<url>http://code.google.com/p/jdiameter/</url>
 
@@ -67,7 +67,7 @@
 				<inherited>false</inherited>
 				<executions />
 				<configuration>
-					<eclipseProjectName>${pom.artifactId}</eclipseProjectName>
+					<eclipseProjectName>${project.artifactId}</eclipseProjectName>
 					<generateProjectsForModules>false</generateProjectsForModules>
 				</configuration>
 			</plugin>

@@ -13,7 +13,7 @@
 	<artifactId>charging-server-simulator</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	
-	<name>Mobicents :: Examples :: ${pom.artifactId}</name>
+	<name>Mobicents :: Examples :: ${project.artifactId}</name>
 
 	<properties>
 		<!-- Mobicents Diameter Components Versions -->
@@ -165,7 +165,7 @@
 				<inherited>false</inherited>
 				<executions />
 				<configuration>
-					<eclipseProjectName>${pom.artifactId}</eclipseProjectName>
+					<eclipseProjectName>${project.artifactId}</eclipseProjectName>
 					<generateProjectsForModules>false</generateProjectsForModules>
 				</configuration>
 			</plugin>

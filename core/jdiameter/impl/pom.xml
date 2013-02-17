@@ -10,7 +10,7 @@
 
 	<artifactId>jdiameter-impl</artifactId>
 
-	<name>Mobicents :: Diameter Stack :: ${pom.artifactId}</name>
+	<name>Mobicents :: Diameter Stack :: ${project.artifactId}</name>
 
 	<properties>
 		<vendor>Mobicents</vendor>
@@ -18,7 +18,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>${pom.groupId}</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>jdiameter-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>

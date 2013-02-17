@@ -13,7 +13,7 @@
 	<artifactId>testsuite-parent</artifactId>
 	<version>6.1.2.GA-TelScale</version>
 
-	<name>Mobicents :: Diameter Testsuite :: ${pom.artifactId}</name>
+	<name>Mobicents :: Diameter Testsuite :: ${project.artifactId}</name>
 
 	<properties>
 		<!-- Mobicents Diameter Components Versions -->
@@ -175,7 +175,7 @@
 				<inherited>false</inherited>
 				<executions />
 				<configuration>
-					<eclipseProjectName>${pom.artifactId}</eclipseProjectName>
+					<eclipseProjectName>${project.artifactId}</eclipseProjectName>
 				</configuration>
 			</plugin>
 		</plugins>

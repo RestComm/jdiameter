@@ -10,7 +10,7 @@
 
 	<artifactId>diameter-core-docs-parent</artifactId>
 
-	<name>Mobicents :: Diameter Documentation :: ${pom.artifactId}</name>
+	<name>Mobicents :: Diameter Documentation :: ${project.artifactId}</name>
 
 	<packaging>pom</packaging>
 

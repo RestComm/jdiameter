@@ -11,7 +11,7 @@
 	<groupId>org.mobicents.servers.diameter.testsuite</groupId>
 	<artifactId>testsuite-load-container</artifactId>
 
-	<name>Mobicents :: Diameter Testsuite :: ${pom.artifactId}</name>
+	<name>Mobicents :: Diameter Testsuite :: ${project.artifactId}</name>
 
 	<dependencies>
 		<dependency>
@@ -119,7 +119,7 @@
 							src/main/assembly/pojo.xml
 						</descriptor>
 					</descriptors>
-					<finalName>${pom.artifactId}</finalName>
+					<finalName>${project.artifactId}</finalName>
 				</configuration>
 				<executions>
 					<execution>

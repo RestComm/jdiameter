@@ -13,7 +13,7 @@
 	<groupId>org.mobicents.servers.diameter.guide</groupId>
 	<artifactId>example1</artifactId>
 
-	<name>Mobicents :: Guide :: Example 1 :: ${pom.artifactId}</name>
+	<name>Mobicents :: Guide :: Example 1 :: ${project.artifactId}</name>
 
 	<properties>
 		<mobicents.diameter.jdiameter.version>1.5.4.0-build404-SNAPSHOT</mobicents.diameter.jdiameter.version>
@@ -207,8 +207,8 @@
 										</artifactItem>
 										<!-- This requires default profile to run once -->
 										<artifactItem>
-											<groupId>${pom.groupId}</groupId>
-											<artifactId>${pom.artifactId}</artifactId>
+											<groupId>${project.groupId}</groupId>
+											<artifactId>${project.artifactId}</artifactId>
 											<version>${project.version}</version>
 											<type>jar</type>
 											<overWrite>true</overWrite>

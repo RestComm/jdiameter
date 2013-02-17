@@ -10,7 +10,7 @@
 
 	<artifactId>jdiameter-ha-api</artifactId>
 
-	<name>Mobicents :: Diameter Stack HA :: ${pom.artifactId}</name>
+	<name>Mobicents :: Diameter Stack HA :: ${project.artifactId}</name>
 
 	<dependencies>
 		<dependency>

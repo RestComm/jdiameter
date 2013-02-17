@@ -13,7 +13,7 @@
 
 	<packaging>pom</packaging>
 
-	<name>Mobicents :: Diameter Stack HA :: ${pom.artifactId}</name>
+	<name>Mobicents :: Diameter Stack HA :: ${project.artifactId}</name>
 
 	<modules>
 		<module>api</module>
