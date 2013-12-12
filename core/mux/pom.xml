@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.mobicents.diameter</groupId>
 		<artifactId>diameter-core-parent</artifactId>
-		<version>1.5.0-SNAPSHOT</version>
+		<version>1.6.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>mobicents-diameter-mux-parent</artifactId>
@@ -29,22 +29,22 @@
 			<dependency>
 				<groupId>org.mobicents.diameter</groupId>
 				<artifactId>jdiameter-api</artifactId>
-				<version>${jdiameter.version}</version>
+				<version>1.6.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mobicents.diameter</groupId>
 				<artifactId>jdiameter-impl</artifactId>
-				<version>${jdiameter.version}</version>
+				<version>1.6.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mobicents.diameter</groupId>
 				<artifactId>jdiameter-ha-api</artifactId>
-				<version>${jdiameter-ha.version}</version>
+				<version>1.3.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mobicents.diameter</groupId>
 				<artifactId>jdiameter-ha-impl</artifactId>
-				<version>${jdiameter-ha.version}</version>
+				<version>1.3.0-SNAPSHOT</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
