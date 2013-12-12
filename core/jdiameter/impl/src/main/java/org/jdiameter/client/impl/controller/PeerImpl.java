@@ -618,7 +618,8 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   protected void sendErrorAnswer(IRequest request, String errorMessage, int resultCode, Avp ...avpsToAdd) {
     logger.debug("Could not process request. Result Code = [{}], Error Message: [{}]", resultCode, errorMessage);
     request.setRequest(false);
-    request.setError(true);
+    // Not setting error flag, depends on error code. Will be set @ PeerImpl.ActionContext.sendMessage(IMessage)
+    // request.setError(true);
     request.getAvps().addAvp(RESULT_CODE, resultCode, true, false, true);
 
     //add before removal actions
@@ -709,6 +710,14 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       }
       // Remove destination information from answer messages
       if (!message.isRequest()) {
+        try {
+          long resultCode = message.getResultCode().getUnsigned32();
+          message.setError(resultCode >= 3000 && resultCode < 4000);
+        }
+        catch (Exception e) {
+          logger.debug("Unable to retrieve Result-Code from answer. Not setting ERROR bit.");
+          // ignore. should not happen
+        }
         // 6.2.  Diameter Answer Processing answers and Error messages DONT have those.... pffff.
         message.getAvps().removeAvp(DESTINATION_HOST);
         message.getAvps().removeAvp(DESTINATION_REALM);
