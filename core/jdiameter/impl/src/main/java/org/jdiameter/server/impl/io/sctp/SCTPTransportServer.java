@@ -50,9 +50,9 @@ public class SCTPTransportServer {
   private Association serverAssociation = null;
   private Association remoteClientAssociation = null;
   private SCTPServerConnection parentConnection;
-  public static String serverAssociationName;
-  public static String remoteClientAssociationName;
-  public static String serverName;
+  private String serverAssociationName;
+  private String remoteClientAssociationName;
+  private String serverName;
   protected InetSocketAddress destAddress;
   protected InetSocketAddress origAddress;
   private Server server = null;
@@ -390,7 +390,7 @@ public class SCTPTransportServer {
       this.remoteClientAssociation.send(payloadData);
     }
     catch (Exception e) {
-      e.printStackTrace();
+      logger.error("Failed sending byte buffer over SCTP", e);
     }
 
     if (logger.isDebugEnabled()) {

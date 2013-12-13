@@ -46,7 +46,7 @@ public class SCTPTransportClient {
   private ManagementImpl management = null;
   private AssociationImpl clientAssociation = null;
   private SCTPClientConnection parentConnection;
-  public static String clientAssociationName;
+  private String clientAssociationName;
   protected InetSocketAddress destAddress;
   protected InetSocketAddress origAddress;
   private int payloadProtocolId = 0;
@@ -267,7 +267,7 @@ public class SCTPTransportClient {
       this.clientAssociation.send(payloadData);
     }
     catch (Exception e) {
-      e.printStackTrace();
+      logger.error("Failed sending byte buffer over SCTP", e);
     }
     if (logger.isDebugEnabled()) {
       logger.debug("Sent a byte buffer of size [{}] over SCTP", bytes.array().length);
