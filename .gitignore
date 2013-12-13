@@ -8,6 +8,12 @@
 .project
 .settings
 
+# IntelliJ IDEA #
+#################
+.idea/
+*.iml
+*.iws
+
 # Maven #
 #########
 target
