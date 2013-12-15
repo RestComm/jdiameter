@@ -4897,6 +4897,13 @@
 			<avp name="Pre-emption-Vulnerability" />
 		</grouped>
 	</avpdefn>
+	<avpdefn name="Session-Release-Cause" code="1045" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
+		<type type-name="Enumerated">
+			<enum name="UNSPECIFIED_REASON" code="0" />
+			<enum name="UE_SUBSCRIPTION_REASON"	code="1" />
+			<enum name="INSUFFICIENT_SERVER_RESOURCES"	code="2" />
+		</type>
+	</avpdefn>
 	<avpdefn name="Priority-Level" code="1046" mandatory="must" may-encrypt="yes" protected="may" vendor-bit="must" vendor-id="TGPP">
 		<type type-name="Unsigned32" />
 	</avpdefn>
@@ -5023,6 +5030,7 @@
 			<avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Supported-Features" code="628" vendor="10415" multiplicity="1" index="-1" />
 			<avp name="Re-Auth-Request-Type" code="285" vendor="0" multiplicity="1" index="-1" />
+			<avp name="Session-Release-Cause" code="1045" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Event-Trigger" code="1006" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Charging-Rule-Install" code="1001" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Charging-Rule-Remove" code="1002" vendor="10415" multiplicity="0-1" index="-1" />
