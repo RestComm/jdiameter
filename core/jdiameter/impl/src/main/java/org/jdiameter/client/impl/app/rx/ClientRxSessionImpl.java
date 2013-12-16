@@ -43,6 +43,7 @@ import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppEvent;
+import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
@@ -245,7 +246,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
                   setState(ClientRxSessionState.IDLE, false);
                 }
                 if (isProvisional(resultCode) || isFailure(resultCode)) {
-                  handleFailureMessage((RxAAAnswer) answer, (RxAARequest) localEvent.getRequest(), eventType);
+                  handleFailureMessage(answer, (AppRequestEvent) localEvent.getRequest(), eventType);
                 }
 
                 deliverRxAAAnswer((RxAARequest) localEvent.getRequest(), (RxAAAnswer) localEvent.getAnswer());
@@ -335,7 +336,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
                 setState(ClientRxSessionState.OPEN);
               }
               else if (isProvisional(resultCode) || isFailure(resultCode)) {
-                handleFailureMessage((RxAAAnswer) answer, (RxAARequest) localEvent.getRequest(), eventType);
+                handleFailureMessage(answer, (AppRequestEvent) localEvent.getRequest(), eventType);
               }
               deliverRxAAAnswer((RxAARequest) localEvent.getRequest(), (RxAAAnswer) localEvent.getAnswer());
               break;
@@ -385,10 +386,10 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
           break;
 
         case PENDING_STR:
-          AppAnswerEvent STanswer = (AppAnswerEvent) localEvent.getAnswer();
+          AppAnswerEvent stanswer = (AppAnswerEvent) localEvent.getAnswer();
           switch (eventType) {
             case RECEIVE_STA:
-              long resultCode = STanswer.getResultCodeAvp().getUnsigned32();
+              long resultCode = stanswer.getResultCodeAvp().getUnsigned32();
               if (isSuccess(resultCode)) {
                 // Current State: PENDING_STR
                 // Event: Successful ST answer received
@@ -396,7 +397,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
                 setState(ClientRxSessionState.IDLE, false);
               }
               else if (isProvisional(resultCode) || isFailure(resultCode)) {
-                handleFailureMessage((RxAAAnswer) STanswer, (RxAARequest) localEvent.getRequest(), eventType);
+                handleFailureMessage(stanswer, (AppRequestEvent) localEvent.getRequest(), eventType);
               }
               deliverRxSessionTermAnswer((RxSessionTermRequest) localEvent.getRequest(), (RxSessionTermAnswer) localEvent.getAnswer());
               break;
@@ -594,7 +595,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
     //}
   }
 
-  protected void handleFailureMessage(final RxAAAnswer event, final RxAARequest request, final Event.Type eventType) {
+  protected void handleFailureMessage(final AppAnswerEvent event, final AppRequestEvent request, final Event.Type eventType) {
     try {
       setState(ClientRxSessionState.IDLE);
     }
