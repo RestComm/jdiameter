@@ -317,7 +317,7 @@ public class ClientAccSessionImpl extends AppAccSessionImpl implements EventList
           break;
         case FAILED_SEND_RECORD:
           AccountRequest request = (AccountRequest) event.getData();
-          Avp accRtReq = ((Message) event.getData()).getAvps().getAvp(ACCOUNTING_REALTIME_REQUIRED);
+          Avp accRtReq = request.getMessage().getAvps().getAvp(ACCOUNTING_REALTIME_REQUIRED);
 
           // Current State: PENDING_I
           // Event: Failure to send and buffer space available (or old record interim can be overwritten) and realtime not equal to DELIVER_AND_GRANT
