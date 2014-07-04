@@ -311,7 +311,7 @@ public class TCPTransportClient implements Runnable {
   }
 
   boolean isConnected() {
-    return socketChannel != null && socketChannel.isConnected();
+    return socketChannel != null && socketChannel.isOpen() && socketChannel.isConnected();
   }
 
   /**
