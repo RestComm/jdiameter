@@ -1,30 +1,29 @@
-/*
- * TeleStax, Open Source Cloud Communications
- * Copyright 2013, TeleStax and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2014, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  */
 
 package org.jdiameter.server.impl.io.sctp;
 
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.nio.channels.Selector;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.common.api.concurrent.DummyConcurrentFactory;
@@ -43,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
-public class NetworkGuard implements INetworkGuard, Runnable {
+public class NetworkGuard implements INetworkGuard {
 
   private static final Logger logger = LoggerFactory.getLogger(NetworkGuard.class);
   protected IMessageParser parser;
@@ -52,36 +51,43 @@ public class NetworkGuard implements INetworkGuard, Runnable {
   protected CopyOnWriteArrayList<INetworkConnectionListener> listeners = new CopyOnWriteArrayList<INetworkConnectionListener>();
   protected boolean isWork = false;
   protected Selector selector;
-  protected ServerSocket serverSocket;
-  SCTPServerConnection server;
-  private Thread thread;
-  protected InetAddress localAddress;
+  protected List<SCTPServerConnection> serverConnections;
+  
+  protected InetAddress[] localAddresses;
 
   @Deprecated
   public NetworkGuard(InetAddress inetAddress, int port, IMessageParser parser) throws Exception {
     this(inetAddress, port, null, parser, null);
   }
 
-  public NetworkGuard(InetAddress inetAddress, int port, IConcurrentFactory concurrentFactory, IMessageParser parser,
-      IMetaData data) throws Exception {
+  public NetworkGuard(InetAddress inetAddress, int port, IConcurrentFactory concurrentFactory, IMessageParser parser, IMetaData data) throws Exception {
+    this(new InetAddress[]{inetAddress}, port, concurrentFactory, parser, data);
+  }
 
+  public NetworkGuard(InetAddress[] inetAddresses, int port, IConcurrentFactory concurrentFactory, IMessageParser parser, IMetaData data) throws Exception {
     this.port = port;
-    this.localAddress = inetAddress;
+    this.localAddresses = inetAddresses;
     this.parser = parser;
     this.concurrentFactory = concurrentFactory == null ? new DummyConcurrentFactory() : concurrentFactory;
-    this.thread = this.concurrentFactory.getThread("NetworkGuard", this);
+    this.serverConnections = new ArrayList<SCTPServerConnection>();
 
     try {
-      server = new SCTPServerConnection(null, this.localAddress, port, parser, null, this);
-      isWork = true;
-      thread.start();
+      for (InetAddress ia : inetAddresses) {
+        final SCTPServerConnection sctpServerConnection = new SCTPServerConnection(null, ia, port, parser, null, this);
+        this.serverConnections.add(sctpServerConnection);
+      }
     }
     catch (Exception exc) {
-      destroy();
+      try{
+        destroy();
+      }
+      catch(Exception e) {
+        // ignore
+      }
       throw new Exception(exc);
     }
   }
-
+  
   public void run() {
     try {
       while (isWork) {
@@ -105,16 +111,18 @@ public class NetworkGuard implements INetworkGuard, Runnable {
 
   @Override
   public String toString() {
-    return "NetworkGuard:" + (serverSocket != null ? serverSocket.toString() : "closed");
+    return "NetworkGuard:" + (this.serverConnections.size() != 0 ? this.serverConnections : "closed");
   }
 
-  public void onNewRemoteConnection(Server globalServer, Association association) {
+  public void onNewRemoteConnection(Server globalServer, Association association, SCTPServerConnection connection) {
     logger.debug("New remote connection");
     try {
-      String peerAddress = association.getPeerAddress();
-      int peerPort = association.getPeerPort();
+      final String peerAddress = association.getPeerAddress();
+      final int peerPort = association.getPeerPort();
+      final String localAddress = association.getHostAddress();
+      final int localPort = association.getHostPort();
       SCTPServerConnection remoteClientConnection = new SCTPServerConnection(null, InetAddress.getByName(peerAddress),
-          peerPort, this.localAddress, port, parser, null, this, globalServer, association, server.getManagement());
+          peerPort, InetAddress.getByName(localAddress), localPort, parser, null, this, globalServer, association, connection.getManagement());
       notifyListeners(remoteClientConnection);
     }
     catch (Exception exc) {
@@ -124,29 +132,19 @@ public class NetworkGuard implements INetworkGuard, Runnable {
 
   public void destroy() {
     logger.debug("Destroying");
-    try {
-      isWork = false;
+    Iterator<SCTPServerConnection> it = this.serverConnections.iterator();
+    while (it.hasNext()) {
       try {
-        if (thread != null) {
-          thread.join(2000);
-          if (thread.isAlive()) {
-            // FIXME: remove ASAP
-            thread.interrupt();
-          }
-          thread = null;
-
+        SCTPServerConnection server = it.next();
+        it.remove();
+        if (server != null && server.isConnected()) {
+          server.disconnect();
+          server.destroy();
         }
       }
-      catch (InterruptedException e) {
-        logger.debug("Can not stop thread", e);
+      catch (Exception e) {
+        logger.error("", e);
       }
-      if (server != null && server.isConnected()) {
-        server.disconnect();
-        server.destroy();
-      }
-    }
-    catch (Exception e) {
-      logger.error("", e);
     }
   }
 

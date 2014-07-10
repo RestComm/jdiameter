@@ -1,24 +1,21 @@
-/*
- * TeleStax, Open Source Cloud Communications
- * Copyright 2013, TeleStax and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2014, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  */
 
 package org.jdiameter.server.impl.io.sctp;
 
@@ -86,7 +83,7 @@ public class SCTPTransportServer {
   }
 
   public void startNewRemoteConnection(Server server, Association association, String peerAddress, int peerPort) {
-    logger.debug("Initializing new Remote Connection");
+    logger.debug("Initializing new Remote Connection '{}' -> '{}' ---> '{}:{}'", new Object[]{this.origAddress, this.destAddress, peerAddress, peerPort});
     remoteClientAssociationName = peerAddress + ":" + peerPort;
     serverName = server.getName();
 
@@ -98,7 +95,7 @@ public class SCTPTransportServer {
 
       logger.debug("Setting new Association Listener");
       remoteClientAssociation.setAssociationListener(new ServerAssociationListener());
-      logger.debug("Starting Association");
+      logger.debug("Starting Association: {}", remoteClientAssociationName);
       management.startAssociation(remoteClientAssociationName);
 
       // ammendonca: this is managed, no need to do it manually now.
@@ -140,8 +137,8 @@ public class SCTPTransportServer {
         this.management.start();
       }
 
-      logger.debug("Orig Address: " + origAddress.getAddress().getHostAddress() + " Orig port: " + origAddress.getPort());
-
+      logger.debug("Orig Address: '{}:{}'", origAddress.getAddress().getHostAddress(), origAddress.getPort());
+      logger.debug("Dest Address: '{}'", this.destAddress);
       serverAssociationName = origAddress.getHostName() + ":" + origAddress.getPort();
       serverName = serverAssociationName;
 
@@ -168,7 +165,7 @@ public class SCTPTransportServer {
       }
 
       if (serverAssociation == null) {
-        serverAssociation = this.management.addServerAssociation("0.0.0.0", origAddress.getPort(), serverName,
+        serverAssociation = this.management.addServerAssociation(origAddress.getAddress().getHostAddress(), origAddress.getPort(), serverName,
             serverAssociationName, IpChannelType.SCTP);
       }
 

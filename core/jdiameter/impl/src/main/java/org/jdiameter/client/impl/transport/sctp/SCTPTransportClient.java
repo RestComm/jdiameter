@@ -1,24 +1,21 @@
-/*
- * TeleStax, Open Source Cloud Communications
- * Copyright 2013, TeleStax and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2014, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  */
 
 package org.jdiameter.client.impl.transport.sctp;
 
@@ -42,6 +39,9 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
 public class SCTPTransportClient {
+
+  private static final int CONNECT_DELAY = 5000;  
+  private static final int DELAY = 50;  
 
   private ManagementImpl management = null;
   private AssociationImpl clientAssociation = null;
@@ -116,7 +116,7 @@ public class SCTPTransportClient {
     return parentConnection;
   }
 
-  public void start() throws NotInitializedException {
+  public void start() throws NotInitializedException, IOException {
     // for client
     logger.debug("Starting SCTP client");
     try {
@@ -130,9 +130,29 @@ public class SCTPTransportClient {
     if (getParent() == null) {
       throw new NotInitializedException("No parent connection is set");
     }
-
+    
     logger.debug("Successfuly initialized SCTP Client Host [{}:{}] Peer [{}:{}]", new Object[] { clientAssociation.getHostAddress(),
         clientAssociation.getHostPort(), clientAssociation.getPeerAddress(), clientAssociation.getPeerPort() });
+    logger.debug("Client Association Status: Started[{}] Connected[{}] Up[{}] ", new Object[]{clientAssociation.isStarted(), clientAssociation.isConnected(), clientAssociation.isUp()});
+    logger.trace("Client Association [{}]", clientAssociation);
+    defer();
+  }
+
+  private void defer() throws IOException {
+    final long endTStamp = System.currentTimeMillis() + CONNECT_DELAY;
+    while(clientAssociation.isStarted() && !clientAssociation.isConnected() && !clientAssociation.isUp()) {
+      try {
+        Thread.sleep(DELAY);
+      }
+      catch (InterruptedException e) {
+        // clear flag and proceed
+        Thread.interrupted();
+        throw new IOException("Failed to establish SCTP connection, thread was interrupted waiting for connection.");
+      }
+      if(endTStamp < System.currentTimeMillis()){
+          throw new IOException("Failed to establish SCTP connection!");
+      }
+    }
     logger.debug("Client Association Status: Started[{}] Connected[{}] Up[{}] ", new Object[]{clientAssociation.isStarted(), clientAssociation.isConnected(), clientAssociation.isUp()});
     logger.trace("Client Association [{}]", clientAssociation);
   }
