@@ -56,8 +56,10 @@ import static org.jdiameter.server.impl.helpers.Parameters.DuplicateTimer;
 import static org.jdiameter.server.impl.helpers.Parameters.PeerAttemptConnection;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.UnknownServiceException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -350,6 +352,17 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       networkGuard = createNetworkGuard(transportFactory);
     }
     catch (TransportException e) {
+      // We want the root cause, that's what matters to us...
+      Throwable t = e;
+      while (t.getCause() != null) {
+        t = t.getCause();
+      }
+      Peer p = stack.getMetaData().getLocalPeer();
+      String ips = "";
+      for(InetAddress ip : p.getIPAddresses()) {
+        ips += " " + ip.getHostAddress() + ":" + p.getUri().getPort(); 
+      }
+      logger.error("Unable to create server socket for LocalPeer '{}' at{} ({}).", new Object[]{p.getUri().getFQDN(), ips, t.getMessage()});
       logger.debug("Unable to create server socket", e);
     }
     // Connect to predefined peers
