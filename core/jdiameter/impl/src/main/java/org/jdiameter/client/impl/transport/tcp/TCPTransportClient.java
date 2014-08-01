@@ -292,11 +292,13 @@ public class TCPTransportClient implements Runnable {
     if (logger.isDebugEnabled()) {
       logger.debug("About to send a byte buffer of size [{}] over the TCP nio socket [{}]", bytes.array().length, socketDescription);
     }
-    int rc;
+    int rc = 0;
     // PCB - removed locking
     // lock.lock();
     try {
-      rc = socketChannel.write(bytes);
+      while (rc < bytes.array().length) {
+        rc += socketChannel.write(bytes);
+      }
     }
     catch (Exception e) {
       logger.error("Unable to send message", e);
