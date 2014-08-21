@@ -1,27 +1,48 @@
 /*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
+ * TeleStax, Open Source Cloud Communications
+ * Copyright 2011-2014, TeleStax Inc. and individual contributors
+ * by the @authors tag.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
+ * This program is free software: you can redistribute it and/or modify
+ * under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation; either version 3 of
  * the License, or (at your option) any later version.
  *
- * This software is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ * 
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ * 
+ *   JBoss, Home of Professional Open Source
+ *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+ *   by the @authors tag. See the copyright.txt in the distribution for a
+ *   full listing of individual contributors.
+ *
+ *   This is free software; you can redistribute it and/or modify it
+ *   under the terms of the GNU Lesser General Public License as
+ *   published by the Free Software Foundation; either version 2.1 of
+ *   the License, or (at your option) any later version.
+ *
+ *   This software is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *   Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public
+ *   License along with this software; if not, write to the Free
+ *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
 package org.jdiameter.client.impl.helpers;
 
+import static org.jdiameter.server.impl.helpers.ExtensionPoint.*;
 import static org.jdiameter.client.impl.helpers.Parameters.AcctApplId;
 import static org.jdiameter.client.impl.helpers.Parameters.Agent;
 import static org.jdiameter.client.impl.helpers.Parameters.ApplicationId;
@@ -110,7 +131,7 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.jdiameter.api.Configuration;
-import org.jdiameter.server.impl.helpers.ExtensionPoint;
+import org.jdiameter.server.impl.helpers.Parameters;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -581,30 +602,35 @@ public class XMLConfiguration extends EmptyConfiguration {
     NodeList c = node.getChildNodes();
     for (int i = 0; i < c.getLength(); i++) {
       String nodeName = c.item(i).getNodeName();
-      if (nodeName.equals("MetaData")) {                         add(ExtensionPoint.InternalMetaData,getValue(c.item(i)));                  }
-      else if (nodeName.equals("MessageParser")) {               add(ExtensionPoint.InternalMessageParser,getValue(c.item(i)));             }
-      else if (nodeName.equals("ElementParser")) {               add(ExtensionPoint.InternalElementParser,getValue(c.item(i)));             }
-      else if (nodeName.equals("RouterEngine")) {                add(ExtensionPoint.InternalRouterEngine,getValue(c.item(i)));              }
-      else if (nodeName.equals("PeerController")) {              add(ExtensionPoint.InternalPeerController,getValue(c.item(i)));            }
-      else if (nodeName.equals("RealmController")) {             add(ExtensionPoint.InternalRealmController,getValue(c.item(i)));           }
-      else if (nodeName.equals("SessionFactory")) {              add(ExtensionPoint.InternalSessionFactory,getValue(c.item(i)));            }
-      else if (nodeName.equals("TransportFactory")) {            add(ExtensionPoint.InternalTransportFactory, getValue(c.item(i)));         }
-      else if (nodeName.equals("Connection")) {                  add(ExtensionPoint.InternalConnectionClass, getValue(c.item(i)));          }
-      else if (nodeName.equals("PeerFsmFactory")) {              add(ExtensionPoint.InternalPeerFsmFactory,getValue(c.item(i)));            }
-      else if (nodeName.equals("StatisticFactory")) {            add(ExtensionPoint.InternalStatisticFactory,getValue(c.item(i)));          }
-      else if (nodeName.equals("ConcurrentFactory")) {           add(ExtensionPoint.InternalConcurrentFactory,getValue(c.item(i)));         }
-      else if (nodeName.equals("ConcurrentEntityFactory")) {     add(ExtensionPoint.InternalConcurrentEntityFactory,getValue(c.item(i)));   }
-      else if (nodeName.equals("SessionDatasource")) {           add(ExtensionPoint.InternalSessionDatasource, getValue(c.item(i)));        }
-      else if (nodeName.equals("TimerFacility")) {               add(ExtensionPoint.InternalTimerFacility, getValue(c.item(i)));            }
+      if (nodeName.equals("MetaData")) {                         addInternalExtension(InternalMetaData,getValue(c.item(i)));                  }
+      else if (nodeName.equals("MessageParser")) {               addInternalExtension(InternalMessageParser,getValue(c.item(i)));             }
+      else if (nodeName.equals("ElementParser")) {               addInternalExtension(InternalElementParser,getValue(c.item(i)));             }
+      else if (nodeName.equals("RouterEngine")) {                addInternalExtension(InternalRouterEngine,getValue(c.item(i)));              }
+      else if (nodeName.equals("PeerController")) {              addInternalExtension(InternalPeerController,getValue(c.item(i)));            }
+      else if (nodeName.equals("RealmController")) {             addInternalExtension(InternalRealmController,getValue(c.item(i)));           }
+      else if (nodeName.equals("SessionFactory")) {              addInternalExtension(InternalSessionFactory,getValue(c.item(i)));            }
+      else if (nodeName.equals("TransportFactory")) {            addInternalExtension(InternalTransportFactory, getValue(c.item(i)));         }
+      else if (nodeName.equals("Connection")) {                  addInternalExtension(InternalConnectionClass, getValue(c.item(i)));          }
+      else if (nodeName.equals("PeerFsmFactory")) {              addInternalExtension(InternalPeerFsmFactory,getValue(c.item(i)));            }
+      else if (nodeName.equals("StatisticFactory")) {            addInternalExtension(InternalStatisticFactory,getValue(c.item(i)));          }
+      else if (nodeName.equals("ConcurrentFactory")) {           addInternalExtension(InternalConcurrentFactory,getValue(c.item(i)));         }
+      else if (nodeName.equals("ConcurrentEntityFactory")) {     addInternalExtension(InternalConcurrentEntityFactory,getValue(c.item(i)));   }
+      else if (nodeName.equals("SessionDatasource")) {           addInternalExtension(InternalSessionDatasource, getValue(c.item(i)));        }
+      else if (nodeName.equals("TimerFacility")) {               addInternalExtension(InternalTimerFacility, getValue(c.item(i)));            }
       //FIXME: possibly should not be in client...
-      else if (nodeName.equals("AgentRedirect")) {               add(ExtensionPoint.InternalAgentRedirect, getValue(c.item(i)));            }
-      else if (nodeName.equals("AgentConfiguration")) {          add(ExtensionPoint.InternalAgentConfiguration,getValue(c.item(i)))   ;     }
-      else if (nodeName.equals("StatisticProcessor")) {          add(ExtensionPoint.InternalStatisticProcessor,getValue(c.item(i)))   ;     }
+      else if (nodeName.equals("AgentRedirect")) {               addInternalExtension(InternalAgentRedirect, getValue(c.item(i)));            }
+      else if (nodeName.equals("AgentConfiguration")) {          add(InternalAgentConfiguration,getValue(c.item(i)))   ;     }
+      else if (nodeName.equals("StatisticProcessor")) {          addInternalExtension(InternalStatisticProcessor,getValue(c.item(i)))   ;     }
       else {
         appendOtherExtension(c.item(i));
       }
     }
+  }
 
+  protected void addInternalExtension(Ordinal ep, String value) {
+    Configuration[] extensionConfs = this.getChildren(Parameters.Extensions.ordinal());
+    AppConfiguration internalExtensions = (AppConfiguration) extensionConfs[ExtensionPoint.Internal.id()];
+    internalExtensions.add(ep,value);
   }
 
   private void appendOtherExtension(Node item) {
