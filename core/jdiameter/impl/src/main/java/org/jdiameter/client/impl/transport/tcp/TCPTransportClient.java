@@ -99,6 +99,7 @@ public class TCPTransportClient implements Runnable {
 
   //PCB - allow non blocking IO
   private static final boolean BLOCKING_IO = false;
+  private static final long SELECT_TIMEOUT = 500; // milliseconds
 
   public TCPTransportClient() {
   }
@@ -190,7 +191,7 @@ public class TCPTransportClient implements Runnable {
       selector = Selector.open();
       socketChannel.register(selector, SelectionKey.OP_READ);
       while (!stop) {
-        selector.select();
+        selector.select(SELECT_TIMEOUT);
         Iterator<SelectionKey> it = selector.selectedKeys().iterator();
         while (it.hasNext()) {
           // Get the selection key
