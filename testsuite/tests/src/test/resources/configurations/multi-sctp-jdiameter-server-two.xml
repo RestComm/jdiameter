@@ -58,7 +58,7 @@
   <Network>
     <Peers>
       <Peer name="client1.mobicents.org" attempt_connect="false" rating="1" />
-      <Peer name="client2.mobicents.org"" attempt_connect="false" rating="1" />
+      <Peer name="client2.mobicents.org" attempt_connect="false" rating="1" />
     </Peers>
 
     <Realms>
