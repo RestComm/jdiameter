@@ -280,6 +280,14 @@
                    <xsi:attribute name="value" type="xsi:long" use="required"/>
                </xsi:complexType>
             </xsi:element>
+            <xsi:element name="BindDelay" minOccurs="0" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Server Socket bind delay in milliseconds.</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                   <xsi:attribute name="value" type="xsi:long" use="required"/>
+               </xsi:complexType>
+            </xsi:element>
             <xsi:element name="PeerFSMThreadCount" minOccurs="0" maxOccurs="1">
                 <xsi:annotation>
                     <xsi:documentation>Peer FSM Thread Count.</xsi:documentation>

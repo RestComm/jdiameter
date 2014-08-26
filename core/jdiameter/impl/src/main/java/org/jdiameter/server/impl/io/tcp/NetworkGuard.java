@@ -1,46 +1,49 @@
- /*
-  * TeleStax, Open Source Cloud Communications
-  * Copyright 2011-2014, TeleStax Inc. and individual contributors
-  * by the @authors tag.
-  *
-  * This program is free software: you can redistribute it and/or modify
-  * under the terms of the GNU Affero General Public License as
-  * published by the Free Software Foundation; either version 3 of
-  * the License, or (at your option) any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU Affero General Public License for more details.
-  *
-  * You should have received a copy of the GNU Affero General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>
-  * 
-  * This file incorporates work covered by the following copyright and
-  * permission notice:
-  * 
-  *   JBoss, Home of Professional Open Source
-  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
-  *   by the @authors tag. See the copyright.txt in the distribution for a
-  *   full listing of individual contributors.
-  *
-  *   This is free software; you can redistribute it and/or modify it
-  *   under the terms of the GNU Lesser General Public License as
-  *   published by the Free Software Foundation; either version 2.1 of
-  *   the License, or (at your option) any later version.
-  *
-  *   This software is distributed in the hope that it will be useful,
-  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  *   Lesser General Public License for more details.
-  *
-  *   You should have received a copy of the GNU Lesser General Public
-  *   License along with this software; if not, write to the Free
-  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
-  */
+/*
+ * TeleStax, Open Source Cloud Communications
+ * Copyright 2011-2014, TeleStax Inc. and individual contributors
+ * by the @authors tag.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ * 
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ * 
+ *   JBoss, Home of Professional Open Source
+ *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+ *   by the @authors tag. See the copyright.txt in the distribution for a
+ *   full listing of individual contributors.
+ *
+ *   This is free software; you can redistribute it and/or modify it
+ *   under the terms of the GNU Lesser General Public License as
+ *   published by the Free Software Foundation; either version 2.1 of
+ *   the License, or (at your option) any later version.
+ *
+ *   This software is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *   Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public
+ *   License along with this software; if not, write to the Free
+ *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 
 package org.jdiameter.server.impl.io.tcp;
+
+
+import static org.jdiameter.server.impl.helpers.Parameters.BindDelay;
 
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.impl.transport.tcp.TCPClientConnection;
@@ -65,6 +68,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * TCP implementation of {@link org.jdiameter.server.api.io.INetworkGuard}.
@@ -79,6 +85,7 @@ public class NetworkGuard implements INetworkGuard {
   protected IMessageParser parser;
   protected IConcurrentFactory concurrentFactory;
   protected int port;
+  protected long bindDelay;
   protected CopyOnWriteArrayList<INetworkConnectionListener> listeners = new CopyOnWriteArrayList<INetworkConnectionListener>();
   protected boolean isWork = false;
 //  protected Selector selector;
@@ -86,6 +93,7 @@ public class NetworkGuard implements INetworkGuard {
 
   //private Thread thread;
   private List<GuardTask> tasks = new ArrayList<GuardTask>();
+
 
   @Deprecated
   public NetworkGuard(InetAddress inetAddress, int port, IMessageParser parser) throws Exception {
@@ -106,6 +114,8 @@ public class NetworkGuard implements INetworkGuard {
     this.parser = parser;
     this.concurrentFactory = concurrentFactory == null ? new DummyConcurrentFactory() : concurrentFactory;
     //this.thread = this.concurrentFactory.getThread("NetworkGuard", this);
+    this.bindDelay = data.getConfiguration().getLongValue(BindDelay.ordinal(), (Long) BindDelay.defValue());
+
     try {        
       for (int addrIdx = 0; addrIdx < inetAddress.length; addrIdx++) {
         GuardTask guardTask = new GuardTask(new InetSocketAddress(inetAddress[addrIdx], port));
@@ -155,14 +165,32 @@ public class NetworkGuard implements INetworkGuard {
     private Selector selector;
     private ServerSocket serverSocket;
 
-    public GuardTask(InetSocketAddress addr) throws IOException {
+    private final ScheduledExecutorService binder = Executors.newSingleThreadScheduledExecutor();
+    
+    public GuardTask(final InetSocketAddress addr) throws IOException {
       selector = Selector.open();
-      ServerSocketChannel ssc = ServerSocketChannel.open();
+      final ServerSocketChannel ssc = ServerSocketChannel.open();
       ssc.configureBlocking(false);
       serverSocket = ssc.socket();
-      serverSocket.bind(addr);
-      ssc.register(selector, SelectionKey.OP_ACCEPT, addr);
-      logger.info("Open server socket {} ", serverSocket);
+
+      if(bindDelay > 0) {
+        logger.info("Socket binding will be delayed by {}ms...", bindDelay);
+      }
+
+      Runnable task = new Runnable() {
+        public void run() {
+          try {
+            serverSocket.bind(addr);
+            logger.debug("Binding after delaying {}ms...", bindDelay);
+            ssc.register(selector, SelectionKey.OP_ACCEPT, addr);
+            logger.info("Open server socket {} ", serverSocket);
+          }
+          catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        }
+      };
+      binder.schedule(task, bindDelay, TimeUnit.MILLISECONDS);
     }
 
     public void start() {

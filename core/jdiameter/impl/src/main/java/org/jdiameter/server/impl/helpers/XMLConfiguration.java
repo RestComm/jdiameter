@@ -269,6 +269,7 @@ public class XMLConfiguration extends EmptyConfiguration {
       else if (nodeName.equals("DwaTimeOut")) { add(DwaTimeOut, getLongValue(c.item(i)));               }
       else if (nodeName.equals("DpaTimeOut")) { add(DpaTimeOut, getLongValue(c.item(i)));               }
       else if (nodeName.equals("RecTimeOut")) { add(RecTimeOut, getLongValue(c.item(i)));               }
+      else if (nodeName.equals("BindDelay"))  { add(BindDelay, getLongValue(c.item(i)));                }
       else if (nodeName.equals("ThreadPool")) { addThreadPool(c.item(i));                               }
       else if (nodeName.equals("PeerFSMThreadCount")) { add(PeerFSMThreadCount, getIntValue(c.item(i)));}
       else if (nodeName.equals("Statistics")) { addStatisticLogger(Statistics, c.item(i));              }
