@@ -168,11 +168,6 @@ public class NetworkGuard implements INetworkGuard {
     private final ScheduledExecutorService binder = Executors.newSingleThreadScheduledExecutor();
     
     public GuardTask(final InetSocketAddress addr) throws IOException {
-      selector = Selector.open();
-      final ServerSocketChannel ssc = ServerSocketChannel.open();
-      ssc.configureBlocking(false);
-      serverSocket = ssc.socket();
-
       if(bindDelay > 0) {
         logger.info("Socket binding will be delayed by {}ms...", bindDelay);
       }
@@ -180,8 +175,13 @@ public class NetworkGuard implements INetworkGuard {
       Runnable task = new Runnable() {
         public void run() {
           try {
+            logger.debug("Binding {} after delaying {}ms...", addr, bindDelay);
+            final ServerSocketChannel ssc = ServerSocketChannel.open();
+            ssc.configureBlocking(false);
+            serverSocket = ssc.socket();
             serverSocket.bind(addr);
-            logger.debug("Binding after delaying {}ms...", bindDelay);
+
+            selector = Selector.open();
             ssc.register(selector, SelectionKey.OP_ACCEPT, addr);
             logger.info("Open server socket {} ", serverSocket);
           }
@@ -200,6 +200,11 @@ public class NetworkGuard implements INetworkGuard {
     public void run() {
       try {
         while (isWork) {
+          if (selector == null) {
+            logger.trace("Selector is still null, stack is waiting for binding...");
+            Thread.sleep(250);
+            continue;
+          }
           // without timeout when we kill socket, this causes errors, bug in VM ?
           int num = selector.select(100);
           if (num == 0)
