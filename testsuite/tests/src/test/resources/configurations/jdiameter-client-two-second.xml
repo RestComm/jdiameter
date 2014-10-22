@@ -6,7 +6,7 @@
     <IPAddresses>
       <IPAddress value="127.0.0.2" />
     </IPAddresses>
-    <Realm value="test.mobicents.org" />
+    <Realm value="mobicents.org" />
     <VendorID value="193" />
     <ProductName value="jDiameter" />
     <FirmwareRevision value="1" />
