@@ -129,8 +129,16 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                   }
                   break;
                 case CER_EVENT:
-                  setInActiveTimer();
-                  // Skip
+                  // setInActiveTimer();
+                  logger.debug("Rejecting CER in OKAY state. Answering with UNABLE_TO_COMPLY (5012)");
+                  try {
+                    context.sendCeaMessage(ResultCode.UNABLE_TO_COMPLY, message(event), "Unable to receive CER in OPEN state.");
+                  }
+                  catch (Exception e) {
+                    logger.debug("Failed to send CEA.", e);
+                    doDisconnect();  // !
+                    doEndConnection();
+                  }
                   break;
                 case DPR_EVENT:
                   try {
