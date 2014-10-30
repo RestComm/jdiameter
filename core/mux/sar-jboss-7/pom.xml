@@ -7,24 +7,24 @@
 		<artifactId>mobicents-diameter-mux-parent</artifactId>
 		<version>1.6.0-SNAPSHOT</version> 
 	</parent>
-	
-	<artifactId>mobicents-diameter-mux-sar-jboss-4</artifactId>
 
-	<name>Mobicents :: Diameter Multiplexer :: ${pom.artifactId}</name>
-	
+	<artifactId>mobicents-diameter-mux-sar-jboss-7</artifactId>
+
+	<name>Mobicents :: Diameter Multiplexer :: ${project.artifactId}</name>
+
 	<packaging>jboss-sar</packaging>
 
 	<dependencies>
 		<dependency>
-			<groupId>${pom.groupId}</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>mobicents-diameter-mux-jar</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 
 	<build>
-		<finalName>mobicents-diameter-mux-${pom.version}</finalName>
+		<finalName>mobicents-diameter-mux-${project.version}</finalName>
 		<plugins>
 			<!-- Copy common resources, config files -->
 			<plugin>
@@ -140,7 +140,7 @@
 								<condition property="jboss.dir" value="${jboss.home}" else="${env.JBOSS_HOME}">
 									<isset property="jboss.home" />
 								</condition>
-								<copy todir="${jboss.dir}/server/${node}/deploy/${project.build.finalName}.sar">
+								<copy todir="${jboss.dir}/${node}/deployments/${project.build.finalName}.sar">
 									<fileset dir="target/${project.build.finalName}">
 										<include name="**" />
 									</fileset>
@@ -156,13 +156,12 @@
 						</goals>
 						<configuration>
 							<tasks>
-								<delete dir="${env.JBOSS_HOME}/server/${node}/deploy/${project.build.finalName}.sar" />
+								<delete dir="${env.JBOSS_HOME}/${node}/deployments/${project.build.finalName}.sar" />
 							</tasks>
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
-		</plugins>
+			</plugin>		</plugins>
 	</build>
 
 </project>

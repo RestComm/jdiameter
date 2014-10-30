@@ -10,7 +10,7 @@
 
 	<artifactId>mobicents-diameter-mux-parent</artifactId>
 
-	<name>Mobicents :: Diameter Multiplexer :: ${pom.artifactId}</name>
+	<name>Mobicents :: Diameter Multiplexer :: ${project.artifactId}</name>
 
 	<properties>
 		<!-- Mobicents Diameter Components Versions -->
@@ -68,6 +68,7 @@
 			<modules>
 				<module>sar-jboss-4</module>
 				<module>sar-jboss-5</module>
+				<module>sar-jboss-7</module>
 			</modules>
 		</profile>
 		<profile>
@@ -83,6 +84,12 @@
 			</activation>
 			<modules>
 				<module>sar-jboss-5</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>jboss7</id>
+			<modules>
+				<module>sar-jboss-7</module>
 			</modules>
 		</profile>
 	</profiles>

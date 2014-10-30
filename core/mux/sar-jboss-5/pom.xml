@@ -7,11 +7,11 @@
 		<artifactId>mobicents-diameter-mux-parent</artifactId>
 		<version>1.6.0-SNAPSHOT</version> 
 	</parent>
-	
+
 	<artifactId>mobicents-diameter-mux-sar-jboss-5</artifactId>
 
 	<name>Mobicents :: Diameter Multiplexer :: ${pom.artifactId}</name>
-	
+
 	<packaging>jboss-sar</packaging>
 
 	<dependencies>
@@ -26,10 +26,36 @@
 	<build>
 		<finalName>mobicents-diameter-mux-${pom.version}</finalName>
 		<plugins>
+			<!-- Copy common resources, config files -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.7</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<overwrite>true</overwrite>
+							<outputDirectory>${basedir}/target/classes/config</outputDirectory>
+							<resources>
+								<resource>
+									<directory>../common/config</directory>
+									<filtering>false</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Build SAR -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jboss-packaging-maven-plugin</artifactId>
-				<version>2.1.1</version>
+				<version>2.2</version>
 				<extensions>true</extensions>
 				<configuration>
 					<excludes>
@@ -99,6 +125,7 @@
 				</configuration>
 			</plugin>
 
+			<!-- Deploy SAR to JBOSS -->
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>

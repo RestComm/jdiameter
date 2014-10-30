@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jboss-deployment-structure>
-  <deployment>  
-     <resources>
-         <resource-root path="lib/mobicents-diameter-mux-jar-1.4.0.FINAL.jar">
-         </resource-root>
-      </resources>
-  </deployment>
-</jboss-deployment-structure>
