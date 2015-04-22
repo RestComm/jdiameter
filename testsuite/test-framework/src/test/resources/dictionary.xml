@@ -2140,6 +2140,7 @@
 			<avp name="LCS-Information" />
 			<avp name="PoC-Information" />
 			<avp name="MBMS-Information" />
+			<avp name="SMS-Information" />
 		</grouped>
 	</avpdefn>
 
@@ -2163,7 +2164,7 @@
 			<enum code="4" name="hSGW" />
 			<enum code="5" name="MME" />
 		</type>
-	</avpdefn> 
+	</avpdefn>
 
 	<avpdefn name="PS-Information" code="874" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
 		<grouped>
@@ -3144,6 +3145,182 @@
 		<type type-name="OctetString" />
 	</avpdefn>
 
+	<avpdefn name="SMS-Information" code="2000" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<grouped>
+			<avp name="SMS-Node" />
+			<avp name="Client-Address" />
+			<avp name="Originator-SCCP-Address" />
+			<avp name="SMSC-Address" />
+			<avp name="Data-Coding-Scheme" />
+			<avp name="SM-Discharge-Time" />
+			<avp name="SM-Message-Type" />
+			<avp name="Originator-Interface" />
+			<avp name="SM-Protocol-ID" />
+			<avp name="Reply-Path-Requested" />
+			<avp name="SM-Status" />
+			<avp name="SM-User-Data-Header" />
+			<avp name="Number-Of-Messages-Sent" />
+			<avp name="Recipient-Info" />
+			<avp name="Originator-Received-Address" />
+			<avp name="SM-Service-Type" />
+		</grouped>
+	</avpdefn>
+
+	<avpdefn name="SMS-Node" code="2016" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<type type-name="Enumerated">
+			<enum code="0" name="SMS Router" />
+			<enum code="1" name="IP-SM-GW" />
+			<enum code="2" name="SMS Router and IP-SM-GW" />
+			<enum code="3" name="SMS-SC" />
+		</type>
+	</avpdefn>
+
+	<avpdefn name="Client-Address" code="2018" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<type type-name="Address" />
+	</avpdefn>
+
+	<avpdefn name="Originator-SCCP-Address" code="2008" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<type type-name="Address" />
+	</avpdefn>
+
+	<avpdefn name="SMSC-Address" code="2017" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<type type-name="Address" />
+	</avpdefn>
+
+	<avpdefn name="Data-Coding-Scheme" code="2001" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<type type-name="Integer32" />
+	</avpdefn>
+
+	<avpdefn name="SM-Discharge-Time" code="2012" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<type type-name="Time" />
+	</avpdefn>
+
+	<avpdefn name="SM-Message-Type" code="2007" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<type type-name="Enumerated">
+			<enum code="0" name="SUBMISSION" />
+			<enum code="1" name="DELIVERY_REPORT" />
+			<enum code="2" name="SM Service Request" />
+		</type>
+	</avpdefn>
+
+	<avpdefn name="Originator-Interface" code="2009" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<grouped>
+			<avp name="Interface-Id" />
+			<avp name="Interface-Text" />
+			<avp name="Interface-Port" />
+			<avp name="Interface-Type" />
+		</grouped>
+	</avpdefn>
+
+	<avpdefn name="SM-Protocol-ID" code="2013" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<type type-name="OctetString" />
+	</avpdefn>
+
+	<avpdefn name="Reply-Path-Requested" code="2011" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<type type-name="Enumerated">
+			<enum code="0" name="No Reply Path Set" />
+			<enum code="1" name="Reply path Set" />
+		</type>
+	</avpdefn>
+
+	<avpdefn name="SM-Status" code="2014" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<type type-name="OctetString" />
+	</avpdefn>
+
+	<avpdefn name="SM-User-Data-Header" code="2015" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<type type-name="OctetString" />
+	</avpdefn>
+
+	<avpdefn name="Number-Of-Messages-Sent" code="2019" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<type type-name="Unsigned32" />
+	</avpdefn>
+
+	<avpdefn name="Recipient-Info" code="2026" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<grouped>
+			<avp name="Destination-Interface" />
+			<avp name="Recipient-Address_CHANGEME_" />
+			<avp name="Recipient-Received-Address" />
+			<avp name="Recipient-SCCP-Address" />
+			<avp name="SM-Protocol-ID" />
+		</grouped>
+	</avpdefn>
+
+	<avpdefn name="Originator-Received-Address" code="2027" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<grouped>
+			<avp name="Address-Type" />
+			<avp name="Address-Data" />
+			<avp name="Address-Domain" />
+		</grouped>
+	</avpdefn>
+
+	<avpdefn name="SM-Service-Type" code="2029" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<type type-name="Enumerated">
+			<enum code="0" name="VAS4SMS Short Message content processing" />
+			<enum code="1" name="VAS4SMS Short Message forwarding" />
+			<enum code="2" name="VAS4SMS Short Message Forwarding multiple subscriptions" />
+			<enum code="3" name="VAS4SMS Short Message filtering" />
+			<enum code="4" name="VAS4SMS Short Message receipt" />
+			<enum code="5" name="VAS4SMS Short Message Network Storage" />
+			<enum code="6" name="VAS4SMS Short Message to multiple destinations" />
+			<enum code="7" name="VAS4SMS Short Message Virtual Private Network (VPN)" />
+			<enum code="8" name="VAS4SMS Short Message Auto Reply" />
+			<enum code="9" name="VAS4SMS Short Message Personal Signature" />
+			<enum code="10" name="VAS4SMS Short Message Deferred Delivery" />
+		</type>
+	</avpdefn>
+
+	<avpdefn name="Interface-Id" code="2003" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="Interface-Text" code="2005" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="Interface-Port" code="2004" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<type type-name="UTF8String" />
+	</avpdefn>
+
+	<avpdefn name="Interface-Type" code="2006" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<type type-name="Enumerated">
+			<enum code="0" name="Unknown" />
+			<enum code="1" name="MOBILE_ORIGINATING" />
+			<enum code="2" name="MOBILE_TERMINATING" />
+			<enum code="3" name="APPLICATION_ORIGINATING" />
+			<enum code="4" name="APPLICATION_TERMINATION" />
+		</type>
+	</avpdefn>
+
+	<avpdefn name="Destination-Interface" code="2002" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<grouped>
+			<avp name="Interface-Id" />
+			<avp name="Interface-Text" />
+			<avp name="Interface-Port" />
+			<avp name="Interface-Type" />
+		</grouped>
+	</avpdefn>
+
+	<avpdefn name="Recipient-Address_CHANGEME_" code="1201" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<grouped>
+			<avp name="Address-Type" />
+			<avp name="Address-Data" />
+			<avp name="Address-Domain" />
+			<avp name="Addressee-Type" />
+		</grouped>
+	</avpdefn>
+
+	<avpdefn name="Recipient-Received-Address" code="2028" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<grouped>
+			<avp name="Address-Type" />
+			<avp name="Address-Data" />
+			<avp name="Address-Domain" />
+		</grouped>
+	</avpdefn>
+
+	<avpdefn name="Recipient-SCCP-Address" code="2010" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+		<type type-name="Address" />
+	</avpdefn>
+
 	<!-- Conflicts with Base Accounting Messages
 	<application id="3" vendor-id="TGPP" name="3GPP Rf (Rel7 v7.1.0)">
 		<command name="Accounting-Request" code="271" request="true">
@@ -3792,7 +3969,7 @@
 			<avp name="ETSI-Digest-Nonce" multiplicity="0-1" />
 			<avp name="ETSI-Digest-Domain" multiplicity="0-1" />
 			<avp name="ETSI-Digest-Opaque" multiplicity="0-1" />
-			<avp name="ETSI-Digest-Stale" multiplicity="0-1" />			
+			<avp name="ETSI-Digest-Stale" multiplicity="0-1" />
 			<avp name="ETSI-Digest-Algorithm" multiplicity="0+" />
 			<avp name="ETSI-Digest-QoP" multiplicity="1" />
 			<avp name="ETSI-Digest-HA1" multiplicity="0-1" />
@@ -6794,15 +6971,6 @@
 
 	<avpdefn name="Authorised-QoS" code="849" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
 		<type type-name="UTF8String" />
-	</avpdefn>
-
-	<avpdefn name="Recipient-Address_CHANGEME_" code="1201" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
-		<grouped>
-			<avp name="Address-Type" />
-			<avp name="Address-Data" />
-			<avp name="Address-Domain" />
-			<avp name="Addressee-Type" />
-		</grouped>
 	</avpdefn>
 
 	<avpdefn name="MBMS-BMSC-SSM-IP-Address" code="918" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
