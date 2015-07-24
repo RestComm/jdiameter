@@ -20,7 +20,7 @@ public class DiameterUtilities {
     String flags = reqFlag += message.isError() ? " | E" : "";
 
     if(logger.isInfoEnabled()) {
-      logger.info("Message [" + flags + "] Command-Code: " + message.getCommandCode() + " / E2E(" 
+      logger.info("Message [" + flags + "] Command-Code: " + message.getCommandCode() + " / E2E("
           + message.getEndToEndIdentifier() + ") / HbH(" + message.getHopByHopIdentifier() + ")");
       logger.info("- - - - - - - - - - - - - - - - AVPs - - - - - - - - - - - - - - - -");
       printAvps(message.getAvps());
@@ -63,12 +63,12 @@ public class DiameterUtilities {
           isGrouped = true;
         }
         else {
-          avpValue = avp.getOctetString().replaceAll("\r", "").replaceAll("\n", "");
+          avpValue = avp.getUTF8String().replaceAll("\r", "").replaceAll("\n", "");
         }
       }
       catch (Exception ignore) {
         try {
-          avpValue = avp.getOctetString().replaceAll("\r", "").replaceAll("\n", "");
+          avpValue = avp.getUTF8String().replaceAll("\r", "").replaceAll("\n", "");
         }
         catch (AvpDataException e) {
           avpValue = avp.toString();
@@ -85,7 +85,7 @@ public class DiameterUtilities {
 
       if(isGrouped) {
         try {
-          printAvps(avp.getGrouped(), indentation + "  ");          
+          printAvps(avp.getGrouped(), indentation + "  ");
         }
         catch (AvpDataException e) {
           // Failed to ungroup... ignore then...

@@ -10,9 +10,9 @@
 			<!--outputDirectory>lib/</outputDirectory-->
 			<unpack>true</unpack>
 			<includes>
-				<include>org.mobicents.servers.diameter:mobicents-diameter-mux-jar</include>
-				<include>org.mobicents.servers.diameter:jdiameter-api</include>
-				<include>org.mobicents.servers.diameter:jdiameter-impl</include>
+				<include>org.mobicents.diameter:mobicents-diameter-mux-jar</include>
+				<include>org.mobicents.diameter:jdiameter-api</include>
+				<include>org.mobicents.diameter:jdiameter-impl</include>
 				<include>org.slf4j:slf4j-api</include>
 				<include>org.slf4j:slf4j-log4j12</include>
 				<include>log4j:log4j</include>
