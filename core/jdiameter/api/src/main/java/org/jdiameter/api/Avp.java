@@ -35,6 +35,7 @@ import java.util.Date;
  * @author artem.litvinov@gmail.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:ajitlakhwani@gmail.com"> Ajit Lakhwani </a>
  */
 public interface Avp extends Wrapper, Serializable {
 
@@ -2260,6 +2261,87 @@ public interface Avp extends Wrapper, Serializable {
    */
   public static final int WLAN_UE_LOCAL_IPADDRESS = 894;
 
+  	// SLg (3GPP TS 29.172) Interface AVPs
+	public static final int SLG_LOCATION_TYPE = 2500;
+	public static final int LCS_EPS_CLIENT_NAME = 2501;
+	public static final int LCS_REQUESTOR_NAME = 2502;
+	public static final int LCS_PRIORITY = 2503;
+	public static final int LCS_QOS = 2504;
+	public static final int HORIZONTAL_ACCURACY = 2505;
+	public static final int VERTICAL_ACCURACY = 2506;
+	public static final int VERTICAL_REQUESTED = 2507;
+	public static final int VELOCITY_REQUESTED = 2508;
+	public static final int RESPONSE_TIME = 2509;
+	public static final int SUPPORTED_GAD_SHAPES = 2510;
+	public static final int LCS_CODEWORD = 2511;
+	public static final int LCS_PRIVACY_CHECK = 2512;
+	public static final int ACCURACY_FULFILMENT_INDICATOR = 2513;
+	public static final int AGE_OF_LOCATION_ESTIMATE = 2514;
+	public static final int VELOCITY_ESTIMATE = 2515;
+	public static final int EUTRAN_POSITIONING_DATA = 2516;
+	public static final int ECGI = 2517;
+	public static final int LOCATION_EVENT = 2518;
+	public static final int PSEUDONYM_INDICATOR = 2519;
+	public static final int LCS_SERVICE_TYPE_ID = 2520;
+	public static final int LCS_PRIVACY_CHECK_NON_SESSION = 2521;
+	public static final int LCS_PRIVACY_CHECK_SESSION = 2522;
+	public static final int LCS_QOS_CLASS = 2523;
+	public static final int GERAN_POSITIONING_INFO = 2524;
+	public static final int GERAN_POSITIONING_DATA = 2525;
+	public static final int GERAN_GANSS_POSITIONING_DATA = 2526;
+	public static final int UTRAN_POSITIONING_INFO = 2527;
+	public static final int UTRAN_POSITIONING_DATA = 2528;
+	public static final int UTRAN_GANSS_POSITIONING_DATA = 2529;
+	public static final int LRR_FLAGS = 2530;
+	public static final int LCS_REFERENCE_NUMBER = 2531;
+	public static final int DEFERRED_LOCATION_TYPE = 2532;
+	public static final int AREA_EVENT_INFO = 2533;
+	public static final int AREA_DEFINITION = 2534;
+	public static final int AREA = 2535;
+	public static final int AREA_TYPE = 2536;
+	public static final int AREA_IDENTIFICATION = 2537;
+	public static final int OCCURRENCE_INFO = 2538;
+	public static final int INTERVAL_TIME = 2539;
+	public static final int PERIODIC_LDR_INFORMATION = 2540;
+	public static final int REPORTING_AMOUNT = 2541;
+	public static final int REPORTING_INTERVAL = 2542;
+	public static final int REPORTING_PLMN_LIST = 2543;
+	public static final int PLMN_ID_LIST = 2544;
+	public static final int PLR_FLAGS = 2545;
+	public static final int PLA_FLAGS = 2546;
+	public static final int DEFERRED_MT_LR_DATA = 2547;
+	public static final int TERMINATION_CAUSE_SLG = 2548;
+	public static final int LRA_FLAGS = 2549;
+	public static final int PERIODIC_LOCATION_SUPPORT_INDICATOR = 2550;
+	public static final int PRIORITIZED_LIST_INDICATOR = 2551;
+	public static final int ESMLC_CELL_INFO = 2552;
+	public static final int CELL_PORTION_ID = 2553;
+	public static final int _1XRTT_RCID = 2554;
+  
+	public static final int IMEI = 1402;
+	public static final int SERVICE_SELECTION = 493;
+	public static final int CELL_GLOBAL_IDENTITY = 1604;
+	public static final int SERVICE_AREA_IDENTITY = 1607;
+	public static final int VISITED_PLMN_ID = 1407;
+
+	// SLh (3GPP TS 29.173) Interface AVPs
+	public static final int LMSI = 2400;
+	public static final int SERVING_NODE = 2401;
+	public static final int MME_NAME = 2402;
+	public static final int MSC_NUMBER = 2403;
+	public static final int LCS_CAPABILITIES_SETS = 2404;
+	public static final int GMLC_ADDRESS = 2405;
+	public static final int ADDITIONAL_SERVING_ = 2406;
+	public static final int PPR_ADDRESS = 2407;
+	public static final int MME_REALM = 2408;
+	public static final int SGSN_NAME = 2409;
+	public static final int SGSN_REALM = 2410;
+	public static final int RIA_FLAGS = 2411;
+	
+	public static final int SGSN_NUMBER = 1489;
+	public static final int GMLC_NUMBER = 1474;
+	public static final int _3GPP_AAA_SERVER_NAME = 318;
+	
   /**
    * @return the AVP code.
    */
