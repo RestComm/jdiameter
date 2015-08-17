@@ -22,15 +22,30 @@
 
 package org.jdiameter.client.impl;
 
-import org.jdiameter.api.*;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+
+import org.jdiameter.api.Answer;
+import org.jdiameter.api.ApplicationId;
+import org.jdiameter.api.Avp;
+import org.jdiameter.api.EventListener;
+import org.jdiameter.api.IllegalDiameterStateException;
+import org.jdiameter.api.InternalException;
+import org.jdiameter.api.Message;
+import org.jdiameter.api.NetworkReqListener;
+import org.jdiameter.api.OverloadException;
+import org.jdiameter.api.RawSession;
+import org.jdiameter.api.Request;
+import org.jdiameter.api.RouteException;
+import org.jdiameter.client.api.IAssembler;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IRequest;
 import org.jdiameter.client.api.ISession;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.common.api.data.ISessionDatasource;
-
-import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation for {@link ISession}
@@ -40,6 +55,10 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class SessionImpl extends BaseSessionImpl implements ISession {
+
+  private static final Logger logger = LoggerFactory.getLogger(SessionImpl.class);
+	
+  private Semaphore lock = new Semaphore(1); // container lock
 
   SessionImpl(IContainer container) {
     setContainer(container);
@@ -52,8 +71,15 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
   }
 
   void setContainer(IContainer container) {
-    this.container = container;
-    this.parser = (IMessageParser) container.getAssemblerFacility().getComponentInstance(IMessageParser.class);
+	try {
+		lock.acquire(); // allow container change only if not releasing
+	    this.container = container;
+	    this.parser = (IMessageParser) container.getAssemblerFacility().getComponentInstance(IMessageParser.class);
+	} catch (InterruptedException e) {
+		logger.error("failure getting lock", e);
+	} finally {
+		lock.release();
+	}
   }
 
   public void send(Message message, EventListener<Request, Answer> listener) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
@@ -132,14 +158,25 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
 
   public void release() {
     isValid = false;
-    if (container != null) {
-      container.removeSessionListener(sessionId);
-      // FIXME
-      container.getAssemblerFacility().getComponentInstance(ISessionDatasource.class).removeSession(sessionId);
-    }
-    container = null;
-    parser = null;
-    reqListener = null;
+    
+    try {
+    	lock.acquire(); // prevent container NullPointerException
+    	
+	    if (container != null) {
+	      container.removeSessionListener(sessionId);
+	      IAssembler assembler = container.getAssemblerFacility();
+	      ISessionDatasource datasource = assembler.getComponentInstance(ISessionDatasource.class);
+	      datasource.removeSession(sessionId);
+	    }
+	    
+	    container = null;
+	    parser = null;
+	    reqListener = null;
+    } catch (InterruptedException e) {
+		logger.error("failure getting lock", e);
+	} finally {
+		lock.release();
+	}
   }
 
   public boolean isWrapperFor(Class<?> iface) throws InternalException {
