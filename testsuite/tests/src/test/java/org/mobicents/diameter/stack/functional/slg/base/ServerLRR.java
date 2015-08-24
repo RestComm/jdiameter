@@ -22,6 +22,7 @@
 package org.mobicents.diameter.stack.functional.slg.base;
 
 import org.jdiameter.api.Answer;
+import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.IllegalDiameterStateException;
@@ -83,7 +84,7 @@ public class ServerLRR extends AbstractServer {
 
   public void sendLocationReport() throws Exception {
     if (super.serverSLgSession == null) {
-      super.serverSLgSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(this.sessionFactory.getSessionId("xxTESTxx"), getApplicationId(), ServerSLgSession.class, (Object) null);
+      super.serverSLgSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(this.sessionFactory.getSessionId("xxTESTxx"), ApplicationId.createByAuthAppId(10415, 16777255), ServerSLgSession.class, (Object) null);
     }
     LocationReportRequest request = new LocationReportRequestImpl(super.serverSLgSession.getSessions().get(0)
         .createRequest(LocationReportRequestImpl.code, getApplicationId(), getClientRealmName()));
@@ -94,7 +95,7 @@ public class ServerLRR extends AbstractServer {
     vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
     avpSet.removeAvp(Avp.ORIGIN_HOST);
     avpSet.addAvp(Avp.ORIGIN_HOST, getServerURI(), true);
-    avpSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
+    avpSet.addAvp(Avp.DESTINATION_HOST, getClientURI(), true);
     avpSet.addAvp(Avp.LOCATION_EVENT, 0);
 
     this.serverSLgSession.sendLocationReportRequest(request);

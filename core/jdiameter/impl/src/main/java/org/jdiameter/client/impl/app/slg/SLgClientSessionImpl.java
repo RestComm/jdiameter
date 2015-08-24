@@ -41,7 +41,6 @@ import org.jdiameter.api.slg.ClientSLgSessionListener;
 import org.jdiameter.api.slg.events.LocationReportAnswer;
 import org.jdiameter.api.slg.events.LocationReportRequest;
 import org.jdiameter.api.slg.events.ProvideLocationRequest;
-import org.jdiameter.api.slh.events.LCSRoutingInfoRequest;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.slg.ISLgMessageFactory;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
@@ -252,7 +251,7 @@ public class SLgClientSessionImpl extends SLgSession implements ClientSLgSession
       try {
         sendAndStateLock.lock();
         if (request.getApplicationId() == factory.getApplicationId()) {
-          if (request.getCommandCode() == LCSRoutingInfoRequest.code) {
+          if (request.getCommandCode() == ProvideLocationRequest.code) {
             handleEvent(new Event(Event.Type.RECEIVE_PROVIDE_LOCATION_ANSWER, factory.createProvideLocationRequest(request), factory.createProvideLocationAnswer(answer)));
             return;
           }

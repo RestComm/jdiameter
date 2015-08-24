@@ -14,7 +14,7 @@
      <Entry index="1" lowThreshold="0.5" highThreshold="0.6">
        <ApplicationID>
          <VendorId value="10415" />
-         <AuthApplId value="16777217" />
+         <AuthApplId value="16777255" />
          <AcctApplId value="0" />
        </ApplicationID>
      </Entry>
@@ -44,7 +44,7 @@
       <Realm name="server.mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
         <ApplicationID>
           <VendorId value="10415" />
-          <AuthApplId value="16777217" />
+          <AuthApplId value="16777255" />
           <AcctApplId value="0" />
         </ApplicationID>
       </Realm>
