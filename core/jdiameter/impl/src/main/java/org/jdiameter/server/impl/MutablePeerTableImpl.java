@@ -623,6 +623,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     //TODO: add sKey here, now it adds peer to all realms.
     //TODO: better, separate addPeer from realm!
     try {
+    	logger.debug("Adding peer, URI-{}, realm-{}, connecting-{}", new Object[] {peerURI, realm, connecting});
       Configuration peerConfig = null;
       Configuration[] peers = config.getChildren(PeerTable.ordinal());
       // find peer config
@@ -647,7 +648,19 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       Collection<Realm> realms =  this.router.getRealmTable().getRealms(realm);
       for (Realm r : realms) {
         if (r.getName().equals(realm)) {
-          ((IRealm)r).addPeerName(peerURI.toString());
+        	boolean peerNameFound = false;
+        	for (String peerName : ((IRealm)r).getPeerNames()) {
+        		if (peerName != null && peerName.equals(peerURI.getFQDN())) {
+        			peerNameFound = true;
+        			break;
+        		}
+        	}
+        	if (!peerNameFound) {
+        		((IRealm)r).addPeerName(peerURI.getFQDN());
+        		logger.debug("Adding peerName-{} to realm-{}", peerURI.getFQDN(), realm);
+        	} else {
+        		logger.debug("Skipped adding peerName-{} to realm-{}, because it already exists", peerURI.getFQDN(), realm);
+        	}
           found = true;
           break;
         }
