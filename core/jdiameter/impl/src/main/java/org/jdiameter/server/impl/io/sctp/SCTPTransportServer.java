@@ -90,13 +90,15 @@ public class SCTPTransportServer {
     try {
       logger.debug("Adding new server association for [{}:{}]", peerAddress, peerPort);
 
-      remoteClientAssociation = management.addServerAssociation(peerAddress, peerPort, serverName, remoteClientAssociationName,
-          IpChannelType.SCTP);
+      //remoteClientAssociation = management.addServerAssociation(peerAddress, peerPort, serverName, remoteClientAssociationName,
+      //    IpChannelType.SCTP);
 
-      logger.debug("Setting new Association Listener");
-      remoteClientAssociation.setAssociationListener(new ServerAssociationListener());
-      logger.debug("Starting Association: {}", remoteClientAssociationName);
-      management.startAssociation(remoteClientAssociationName);
+      //logger.debug("Setting new Association Listener");
+      remoteClientAssociation = association;
+      remoteClientAssociation.acceptAnonymousAssociation(new ServerAssociationListener());
+      //remoteClientAssociation.setAssociationListener(new ServerAssociationListener());
+      //logger.debug("Starting Association: {}", remoteClientAssociationName);
+      //management.startAssociation(remoteClientAssociationName);
 
       // ammendonca: this is managed, no need to do it manually now.
 
@@ -135,6 +137,8 @@ public class SCTPTransportServer {
             + origAddress.getPort());
         this.management.setSingleThread(true);
         this.management.start();
+        // Clear any saved connections, we will get them from jdiameter-config.xml
+        this.management.removeAllResourses();
       }
 
       logger.debug("Orig Address: '{}:{}'", origAddress.getAddress().getHostAddress(), origAddress.getPort());

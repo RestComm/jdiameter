@@ -27,7 +27,7 @@ import org.junit.Test;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
-@Ignore
+
 public class StackConnectMultiSCTPTest extends StackConnectMultiBaseTest {
 
   private String serverConfigName = "multi-sctp-jdiameter-server-two.xml";

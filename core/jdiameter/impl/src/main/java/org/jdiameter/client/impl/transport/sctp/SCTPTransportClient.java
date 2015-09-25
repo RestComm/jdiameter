@@ -84,9 +84,11 @@ public class SCTPTransportClient {
 
       if (this.management == null) {
         this.management = new ManagementImpl(clientAssociationName);
-        this.management.setConnectDelay(1);// Try connecting every 10 secs
+        //this.management.setConnectDelay(1);// Try connecting every 10 secs
         this.management.setSingleThread(true);
         this.management.start();
+        // Clear any saved connections, we will get them from jdiameter-config.xml
+        this.management.removeAllResourses();
         logger.debug("Management initialized.");
       }
       else {
