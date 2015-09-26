@@ -4,8 +4,8 @@
   <LocalPeer>
     <URI value="aaa://127.0.0.22:3868" />
     <IPAddresses>
-      <IPAddress value="127.0.0.22" />
-      <!-- IPAddress value="127.0.0.22" /-->
+      <IPAddress value="127.0.0.111" />
+      <IPAddress value="127.0.0.222" />
     </IPAddresses>
     <Realm value="mobicents.org" />
     <VendorID value="193" />

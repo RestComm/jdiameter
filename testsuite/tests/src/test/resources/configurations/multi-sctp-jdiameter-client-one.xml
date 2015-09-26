@@ -56,11 +56,11 @@
 
   <Network>
     <Peers>
-      <Peer name="aaa://127.0.0.22:3868" attempt_connect="true" rating="1" />
+      <Peer name="aaa://127.0.0.111:3868" attempt_connect="true" rating="1" />
     </Peers>
 
     <Realms>
-      <Realm name="test.mobicents.org" peers="127.0.0.1,127.0.0.22" local_action="LOCAL" dynamic="false" exp_time="1">
+      <Realm name="test.mobicents.org" peers="127.0.0.1,127.0.0.111" local_action="LOCAL" dynamic="false" exp_time="1">
         <ApplicationID>
           <VendorId value="193" />
           <AuthApplId value="0" />

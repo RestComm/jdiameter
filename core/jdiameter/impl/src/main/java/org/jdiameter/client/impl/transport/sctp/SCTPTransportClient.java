@@ -40,8 +40,10 @@ import org.slf4j.LoggerFactory;
  */
 public class SCTPTransportClient {
 
-  private static final int CONNECT_DELAY = 5000;  
-  private static final int DELAY = 50;  
+  // How long to wait for the association to be connected
+  private static final int CONNECT_TIMEOUT = 30000;  
+  // The waiting time between checks for association connection
+  private static final int DELAY = 100;  
 
   private ManagementImpl management = null;
   private AssociationImpl clientAssociation = null;
@@ -78,15 +80,16 @@ public class SCTPTransportClient {
 
     logger.debug("Initializing SCTP client");
 
-    clientAssociationName = origAddress.getHostName() + "." + origAddress.getPort();
+    clientAssociationName = origAddress.getAddress().getHostAddress() + "." + origAddress.getPort() + "_" + 
+    						destAddress.getAddress().getHostAddress() + "." + destAddress.getPort();
 
     try {
 
       if (this.management == null) {
         this.management = new ManagementImpl(clientAssociationName);
-        //this.management.setConnectDelay(1);// Try connecting every 10 secs
         this.management.setSingleThread(true);
         this.management.start();
+        this.management.setConnectDelay(1000); // Try connecting every 1 secs -- Note: 1st attempt is also delayed!
         // Clear any saved connections, we will get them from jdiameter-config.xml
         this.management.removeAllResourses();
         logger.debug("Management initialized.");
@@ -141,7 +144,7 @@ public class SCTPTransportClient {
   }
 
   private void defer() throws IOException {
-    final long endTStamp = System.currentTimeMillis() + CONNECT_DELAY;
+    final long endTStamp = System.currentTimeMillis() + CONNECT_TIMEOUT;
     while(clientAssociation.isStarted() && !clientAssociation.isConnected() && !clientAssociation.isUp()) {
       try {
         Thread.sleep(DELAY);
