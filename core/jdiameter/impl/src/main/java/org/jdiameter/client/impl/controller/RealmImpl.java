@@ -103,7 +103,9 @@ public class RealmImpl implements IRealm {
    *          name of peer host
    */
   public void addPeerName(String name) {
-    hosts.add(name);
+    if(!hasPeerName(name)) {
+      hosts.add(name);
+    }
   }
 
   /**
