@@ -5,6 +5,7 @@
 		<groupId>org.mobicents.diameter.testsuite</groupId>
 		<artifactId>testsuite-parent</artifactId>
 		<version>1.7.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>testsuite-test-framework</artifactId>

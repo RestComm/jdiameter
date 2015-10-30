@@ -6,6 +6,7 @@
 		<groupId>org.mobicents.diameter</groupId>
 		<artifactId>mobicents-diameter-mux-parent</artifactId>
 		<version>1.7.0-SNAPSHOT</version> 
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 	
 	<artifactId>mobicents-diameter-mux-sar-jboss-4</artifactId>
