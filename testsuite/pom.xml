@@ -4,23 +4,17 @@
 	<parent>
 		<groupId>org.mobicents.diameter</groupId>
 		<artifactId>diameter-parent</artifactId>
-		<version>1.6.0-SNAPSHOT</version>
+		<version>1.7.0-SNAPSHOT</version>
 	</parent>
 
 	<packaging>pom</packaging>
 
 	<groupId>org.mobicents.diameter.testsuite</groupId>
 	<artifactId>testsuite-parent</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
 
 	<name>Mobicents :: Diameter Testsuite :: ${pom.artifactId}</name>
 
 	<properties>
-		<!-- Mobicents Diameter Components Versions -->
-		<mobicents.diameter.jdiameter.version>1.7.0-SNAPSHOT</mobicents.diameter.jdiameter.version>
-		<mobicents.diameter.jdiameter-ha.version>1.7.0-SNAPSHOT</mobicents.diameter.jdiameter-ha.version>
-		<mobicents.diameter.mux.version>1.7.0-SNAPSHOT</mobicents.diameter.mux.version>
-
 		<!-- Third party -->
 		<get.opt.version>1.0.9</get.opt.version>
 		<picocontainer.version>2.13.5</picocontainer.version>
@@ -41,27 +35,27 @@
 			<dependency>
 				<groupId>org.mobicents.diameter</groupId>
 				<artifactId>jdiameter-api</artifactId>
-				<version>${mobicents.diameter.jdiameter.version}</version>
+				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mobicents.diameter</groupId>
 				<artifactId>jdiameter-impl</artifactId>
-				<version>${mobicents.diameter.jdiameter.version}</version>
+				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mobicents.diameter</groupId>
 				<artifactId>jdiameter-ha-api</artifactId>
-				<version>${mobicents.diameter.jdiameter-ha.version}</version>
+				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mobicents.diameter</groupId>
 				<artifactId>jdiameter-ha-impl</artifactId>
-				<version>${mobicents.diameter.jdiameter-ha.version}</version>
+				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mobicents.diameter</groupId>
 				<artifactId>mobicents-diameter-mux-jar</artifactId>
-				<version>${mobicents.diameter.mux.version}</version>
+				<version>${pom.version}</version>
 			</dependency>
 
 			<dependency>

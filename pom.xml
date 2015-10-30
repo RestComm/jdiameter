@@ -77,6 +77,24 @@
 
 	<profiles>
 		<profile>
+			<id>testsuite</id>
+			<modules>
+				<module>testsuite</module>
+			</modules>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-release-plugin</artifactId>
+						<configuration>
+							<autoVersionSubmodules>false</autoVersionSubmodules>
+							<resume>false</resume>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
 			<id>maven-release</id>
 			<modules>
 				<!-- any module not bound to default modules, such as the ones for test, release, etc... -->
