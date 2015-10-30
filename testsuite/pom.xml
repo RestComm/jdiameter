@@ -12,7 +12,7 @@
 	<groupId>org.mobicents.diameter.testsuite</groupId>
 	<artifactId>testsuite-parent</artifactId>
 
-	<name>Mobicents :: Diameter Testsuite :: ${pom.artifactId}</name>
+	<name>Mobicents :: Diameter Testsuite :: ${project.artifactId}</name>
 
 	<properties>
 		<!-- Third party -->
@@ -169,7 +169,7 @@
 				<inherited>false</inherited>
 				<executions />
 				<configuration>
-					<eclipseProjectName>${pom.artifactId}</eclipseProjectName>
+					<eclipseProjectName>${project.artifactId}</eclipseProjectName>
 				</configuration>
 			</plugin>
 		</plugins>

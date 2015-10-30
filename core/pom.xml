@@ -12,7 +12,7 @@
 
 	<artifactId>diameter-core-parent</artifactId>
 
-	<name>Mobicents :: Diameter Core :: ${pom.artifactId}</name>
+	<name>Mobicents :: Diameter Core :: ${project.artifactId}</name>
 
 	<modules>
 		<module>jdiameter</module>
