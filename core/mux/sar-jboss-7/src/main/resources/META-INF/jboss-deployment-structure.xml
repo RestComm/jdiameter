@@ -1,0 +1,10 @@
+<jboss-deployment-structure>
+      <ear-subdeployments-isolated>true</ear-subdeployments-isolated>
+
+      <deployment>
+        <dependencies>
+          <module name="org.mobicents.diameter" />
+        </dependencies>
+      </deployment>
+
+</jboss-deployment-structure>

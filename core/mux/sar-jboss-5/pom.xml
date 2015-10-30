@@ -140,6 +140,10 @@
 								<condition property="jboss.dir" value="${jboss.home}" else="${env.JBOSS_HOME}">
 									<isset property="jboss.home" />
 								</condition>
+								<zip destfile="target/${project.build.finalName}/mobicents-diameter.zip">
+									<zipfileset src="target/${project.build.finalName}/lib/mobicents-diameter-mux-jar-${pom.version}.jar" excludes="META-INF/*.xml,org/mobicents/diameter/stack/*AS7*.class"/>
+								</zip>
+								<move file="target/${project.build.finalName}/mobicents-diameter.zip" tofile="target/${project.build.finalName}/lib/mobicents-diameter-mux-jar-${pom.version}.jar" />
 								<copy todir="${jboss.dir}/server/${node}/deploy/${project.build.finalName}.sar">
 									<fileset dir="target/${project.build.finalName}">
 										<include name="**" />

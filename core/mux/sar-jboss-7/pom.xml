@@ -21,36 +21,22 @@
 			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
+		<!-- Just because we need the right version of slf4j... -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
 		<finalName>mobicents-diameter-mux-${project.version}</finalName>
 		<plugins>
-			<!-- Copy common resources, config files -->
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.7</version>
-				<executions>
-					<execution>
-						<id>copy-resources</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<overwrite>true</overwrite>
-							<outputDirectory>${basedir}/target/classes/config</outputDirectory>
-							<resources>
-								<resource>
-									<directory>../common/config</directory>
-									<filtering>false</filtering>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
 			<!-- Build SAR -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -125,7 +111,7 @@
 				</configuration>
 			</plugin>
 
-			<!-- Deploy SAR to JBOSS -->
+			<!-- Create module and deployment structure -->
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
@@ -140,11 +126,42 @@
 								<condition property="jboss.dir" value="${jboss.home}" else="${env.JBOSS_HOME}">
 									<isset property="jboss.home" />
 								</condition>
-								<copy todir="${jboss.dir}/${node}/deployments/${project.build.finalName}.sar">
+								<!-- The AS7 module structure -->
+								<copy todir="${basedir}/target/jboss-modules/org/mobicents/diameter/main" flatten="true">
+									<fileset dir=".">
+										<include name="src/main/resources/META-INF/module.xml" />
+									</fileset>
+									<filterset>
+										<filter token="COMMONS_VERSION" value="${commons-pool.version}"/>
+										<filter token="PICOCONTAINER_VERSION" value="${picocontainer.version}"/>
+										<filter token="SLF4J_VERSION" value="${slf4j.version}"/>
+										<filter token="JDIAMETER_VERSION" value="${pom.version}"/>
+									</filterset>
+								</copy>
+								<copy todir="${basedir}/target/jboss-modules/org/mobicents/diameter/main" flatten="true">
 									<fileset dir="target/${project.build.finalName}">
+										<include name="lib/commons-pool-*" />
+										<include name="lib/picocontainer*" />
+										<include name="lib/slf4j*" />
+										<include name="lib/jdiameter*" />
+									</fileset>
+								</copy>
+								<copy todir="${basedir}/target/jboss-modules/org/mobicents/diameter/main/config">
+									<fileset dir="../common/config">
 										<include name="**" />
 									</fileset>
 								</copy>
+								<!-- The MUX deployment archive -->
+								<copy file="../jar/target/mobicents-diameter-mux-${pom.version}.jar" tofile="${basedir}/target/deployments/mobicents-diameter-tmp.zip"/>
+								<zip destfile="${basedir}/target/deployments/mobicents-diameter.zip">
+									<zipfileset src="${basedir}/target/deployments/mobicents-diameter-tmp.zip" excludes="org/mobicents/diameter/stack/DiameterStackMultiplexer.class,org/mobicents/diameter/stack/DiameterStackMultiplexerMBean.class"/>
+								</zip>
+								<move file="${basedir}/target/deployments/mobicents-diameter.zip" tofile="${basedir}/target/deployments/mobicents-diameter.jar"/>
+								<touch file="${basedir}/target/deployments/mobicents-diameter.jar.dodeploy"/>
+								<!-- Clean up some of the mess -->
+								<delete file="${basedir}/target/deployments/mobicents-diameter-tmp.zip"/>
+								<delete dir="target/${project.build.finalName}"/>
+								<delete file="target/${project.build.finalName}.sar"/>
 							</tasks>
 						</configuration>
 					</execution>
@@ -161,7 +178,8 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>		</plugins>
+			</plugin>
+		</plugins>
 	</build>
 
 </project>
