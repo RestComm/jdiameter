@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>org.mobicents.servers.diameter.testsuite</groupId>
 		<artifactId>testsuite-load-parent</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.7.0-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.mobicents.servers.diameter.testsuite</groupId>
 	<artifactId>testsuite-load</artifactId>
 
-	<name>Mobicents :: Diameter Testsuite :: ${pom.artifactId}</name>
+	<name>Mobicents :: Diameter Testsuite :: ${project.artifactId}</name>
 
 	<dependencies>
 		<dependency>

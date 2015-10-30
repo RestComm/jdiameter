@@ -10,21 +10,21 @@
 	
 	<artifactId>mobicents-diameter-mux-sar-jboss-4</artifactId>
 
-	<name>Mobicents :: Diameter Multiplexer :: ${pom.artifactId}</name>
+	<name>Mobicents :: Diameter Multiplexer :: ${project.artifactId}</name>
 	
 	<packaging>jboss-sar</packaging>
 
 	<dependencies>
 		<dependency>
-			<groupId>${pom.groupId}</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>mobicents-diameter-mux-jar</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 
 	<build>
-		<finalName>mobicents-diameter-mux-${pom.version}</finalName>
+		<finalName>mobicents-diameter-mux-${project.version}</finalName>
 		<plugins>
 			<!-- Copy common resources, config files -->
 			<plugin>

@@ -9,7 +9,7 @@
 
 	<artifactId>testsuite-test-framework</artifactId>
 
-	<name>Mobicents :: Diameter Testsuite :: ${pom.artifactId}</name>
+	<name>Mobicents :: Diameter Testsuite :: ${project.artifactId}</name>
 
 	<dependencies>
 		<dependency>
@@ -67,7 +67,7 @@
 			</properties>
 
 			<build>
-				<finalName>diameter-${pom.artifactId}-${pom.version}</finalName>
+				<finalName>diameter-${project.artifactId}-${project.version}</finalName>
 
 				<plugins>
 					<plugin>

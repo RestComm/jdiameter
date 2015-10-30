@@ -27,24 +27,24 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>${pom.groupId}</groupId>
+				<groupId>${project.groupId}</groupId>
 				<artifactId>jdiameter-api</artifactId>
-				<version>${pom.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>${pom.groupId}</groupId>
+				<groupId>${project.groupId}</groupId>
 				<artifactId>jdiameter-impl</artifactId>
-				<version>${pom.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>${pom.groupId}</groupId>
+				<groupId>${project.groupId}</groupId>
 				<artifactId>jdiameter-ha-api</artifactId>
-				<version>${pom.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>${pom.groupId}</groupId>
+				<groupId>${project.groupId}</groupId>
 				<artifactId>jdiameter-ha-impl</artifactId>
-				<version>${pom.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

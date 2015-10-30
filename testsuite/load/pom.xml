@@ -12,7 +12,7 @@
 	<artifactId>testsuite-load-parent</artifactId>
 	<packaging>pom</packaging>
 
-	<name>Mobicents :: Diameter Testsuite :: ${pom.artifactId}</name>
+	<name>Mobicents :: Diameter Testsuite :: ${project.artifactId}</name>
 
 	<modules>
 		<module>core</module>

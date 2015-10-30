@@ -10,7 +10,7 @@
 	
 	<artifactId>mobicents-diameter-mux-jar</artifactId>
 
-	<name>Mobicents :: Diameter Multiplexer :: ${pom.artifactId}</name>
+	<name>Mobicents :: Diameter Multiplexer :: ${project.artifactId}</name>
 	
 	<packaging>jar</packaging>
 
@@ -51,7 +51,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>mobicents-diameter-mux-${pom.version}</finalName>
+		<finalName>mobicents-diameter-mux-${project.version}</finalName>
 	</build>
 
 </project>

@@ -135,7 +135,7 @@
 										<filter token="COMMONS_VERSION" value="${commons-pool.version}"/>
 										<filter token="PICOCONTAINER_VERSION" value="${picocontainer.version}"/>
 										<filter token="SLF4J_VERSION" value="${slf4j.version}"/>
-										<filter token="JDIAMETER_VERSION" value="${pom.version}"/>
+										<filter token="JDIAMETER_VERSION" value="${project.version}"/>
 									</filterset>
 								</copy>
 								<copy todir="${basedir}/target/jboss-modules/org/mobicents/diameter/main" flatten="true">
@@ -152,7 +152,7 @@
 									</fileset>
 								</copy>
 								<!-- The MUX deployment archive -->
-								<copy file="../jar/target/mobicents-diameter-mux-${pom.version}.jar" tofile="${basedir}/target/deployments/mobicents-diameter-tmp.zip"/>
+								<copy file="../jar/target/mobicents-diameter-mux-${project.version}.jar" tofile="${basedir}/target/deployments/mobicents-diameter-tmp.zip"/>
 								<zip destfile="${basedir}/target/deployments/mobicents-diameter.zip">
 									<zipfileset src="${basedir}/target/deployments/mobicents-diameter-tmp.zip" excludes="org/mobicents/diameter/stack/DiameterStackMultiplexer.class,org/mobicents/diameter/stack/DiameterStackMultiplexerMBean.class"/>
 								</zip>
