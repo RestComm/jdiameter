@@ -29,12 +29,14 @@ import org.mobicents.diameter.api.DiameterMessageFactory;
 import org.mobicents.diameter.api.DiameterProvider;
 import org.mobicents.diameter.stack.management.DiameterConfiguration;
 
+import javax.ejb.Local;
+
 /**
  *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 
-@javax.ejb.Remote
+@Local
 public interface DiameterStackMultiplexerAS7 {
 
   public static final String MBEAN_NAME_PREFIX = "diameter:Service=DiameterStackMultiplexer,Name=";
