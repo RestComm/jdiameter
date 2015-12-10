@@ -231,12 +231,12 @@ public class MessageImpl implements IMessage {
     return answer;
   }
 
-  public Answer createAnswer(long vendorId, long experementalResultCode) {
+  public Answer createAnswer(long vendorId, long experimentalResultCode) {
     MessageImpl answer = new MessageImpl(this);
     try {
       AvpSet exp_code = answer.getAvps().addGroupedAvp(297, true, false);
       exp_code.addAvp(Avp.VENDOR_ID, vendorId, true, false, true);
-      exp_code.addAvp(Avp.EXPERIMENTAL_RESULT_CODE, experementalResultCode, true, false, true);
+      exp_code.addAvp(Avp.EXPERIMENTAL_RESULT_CODE, experimentalResultCode, true, false, true);
     }
     catch (Exception e) {
       logger.debug("Can not create answer message", e);

@@ -33,10 +33,11 @@ import org.jdiameter.api.validation.AvpRepresentation;
 
 /**
  * Implementation of {@link AvpRepresentation} interface.
- * 
+ *
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @since 1.5.4.0-build404
+ * 
  */
 public class AvpRepresentationImpl implements AvpRepresentation {
 
