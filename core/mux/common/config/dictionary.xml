@@ -2206,7 +2206,15 @@
 		<type type-name="IPAddress" />
 	</avpdefn>
 
-	<avpdefn name="3GPP-GPRS-Negotiated-QoS-Profile" code="5" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+    <avpdefn name="Ext-PDP-Address" code="1621" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+        <type type-name="IPAddress" />
+    </avpdefn>
+
+    <avpdefn name="Ext-PDP-Type" code="1620" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+        <type type-name="OctetString" />
+    </avpdefn>
+
+    <avpdefn name="3GPP-GPRS-Negotiated-QoS-Profile" code="5" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
 		<type type-name="UTF8String" />
 	</avpdefn>
 
@@ -6029,7 +6037,7 @@
 		<grouped>
 			<avp name="Item-Number" multiplicity="0+" />
 			<avp name="RAND" multiplicity="0+" />
-			<avp name="XRES" multiplicity="0+" />
+			<avp name="SRES" multiplicity="0+" />
 			<avp name="Kc" multiplicity="0+" />
 		</grouped>
 	</avpdefn>
@@ -6210,7 +6218,11 @@
 		<type type-name="OctetString" />
 	</avpdefn>
 
-	<avpdefn name="AUTN" code="1449" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
+    <avpdefn name="SRES" code="1454" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
+        <type type-name="OctetString" />
+    </avpdefn>
+
+    <avpdefn name="AUTN" code="1449" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
 		<type type-name="OctetString" />
 	</avpdefn>
 
@@ -6307,6 +6319,8 @@
 			<avp name="VPLMN-Dynamic-Address-Allowed" multiplicity="0+" />
 			<avp name="Service-Selection" multiplicity="0+" />
 			<avp name="3GPP-Charging-Characteristics" multiplicity="0+" />
+            <avp name="Ext-PDP-Type" multiplicity="0+" />
+            <avp name="Ext-PDP-Address" multiplicity="0+" />
 		</grouped>
 	</avpdefn>
 
