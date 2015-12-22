@@ -5933,11 +5933,7 @@
 			<avp name="APN-OI-Replacement" multiplicity="0+" />
 			<avp name="LCS-Info" multiplicity="0+" />
 			<avp name="Teleservice-List" multiplicity="0+" />
-<<<<<<< HEAD
-			<avp name="Call-Barring-Info" multiplicity="0+" />  <!-- Call-Barring-Info @ R12 -->
-=======
 			<avp name="Call-Barring-Infor-List" multiplicity="0+" /> <!-- Call-Barring-Info @ R12 -->
->>>>>>> upstream/master
 			<avp name="3GPP-Charging-Characteristics" multiplicity="0+" />
 			<avp name="AMBR" multiplicity="0+" />
 			<avp name="APN-Configuration-Profile" multiplicity="0+" />
@@ -6459,15 +6455,9 @@
 	<avpdefn name="TS-Code" code="1487" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
 		<type type-name="OctetString" />
 	</avpdefn>
-<<<<<<< HEAD
 	
 	<!-- Call-Barring-Info @ R12 -->
-	<avpdefn name="Call-Barring-Info" code="1488" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
-=======
-
-	<!-- Call-Barring-Info @ R12 -->
 	<avpdefn name="Call-Barring-Infor-List" code="1488" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
->>>>>>> upstream/master
 		<grouped>
 			<avp name="SS-Code" multiplicity="0+" />
 		</grouped>
@@ -6552,10 +6542,8 @@
 			<avp name="Current-Location-Retrieved" multiplicity="0-1" />
 			<avp name="Age-Of-Location-Information" multiplicity="0-1" />
 			<avp name="User-CSG-Information" multiplicity="0-1" />
-<<<<<<< HEAD
 		</grouped>
 	</avpdefn>
-
 	<avpdefn name="User-CSG-Information" code="2319" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
 		<grouped>
 			<avp name="CSG-Id" multiplicity="1" />
@@ -6563,20 +6551,6 @@
 			<avp name="CSG-Membership-Indication" multiplicity="0-1" />
 		</grouped>
 	</avpdefn>
-
-=======
-		</grouped>
-	</avpdefn>
-
-	<avpdefn name="User-CSG-Information" code="2319" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
-		<grouped>
-			<avp name="CSG-Id" multiplicity="1" />
-			<avp name="CSG-Access-Mode" multiplicity="1" />
-			<avp name="CSG-Membership-Indication" multiplicity="0-1" />
-		</grouped>
-	</avpdefn>
-
->>>>>>> upstream/master
 	<avpdefn name="CSG-Access-Mode" code="2317" vendor-id="TGPP" mandatory="mustnot" protected="may" may-encrypt="no" vendor-bit="must" >
 		<type type-name="Enumerated">
 			<enum code="0" name="CLOSED_MODE" />
@@ -6602,7 +6576,6 @@
 			<avp name="Current-Location-Retrieved" multiplicity="0-1" />
 			<avp name="Age-Of-Location-Information" multiplicity="0-1" />
 			<avp name="User-CSG-Information" multiplicity="0-1" />
-<<<<<<< HEAD
 		</grouped>
 	</avpdefn>
 
@@ -6614,19 +6587,6 @@
 		</grouped>
 	</avpdefn>
 
-=======
-		</grouped>
-	</avpdefn>
-
-	<avpdefn name="ProSe-Subscription-Data" code="3701" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
-		<grouped>
-			<avp name="ProSe-Permission" multiplicity="1" />
-			<avp name="ProSe-Allowed-PLMN" multiplicity="0+" />
-			<avp name="3GPP-Charging-Characteristics" multiplicity="0-1" />
-		</grouped>
-	</avpdefn>
-
->>>>>>> upstream/master
 	<avpdefn name="ProSe-Allowed-PLMN" code="3703" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
 		<grouped>
 			<avp name="Visited-PLMN-Id" multiplicity="1" />
