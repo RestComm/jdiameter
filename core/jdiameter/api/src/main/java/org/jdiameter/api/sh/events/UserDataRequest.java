@@ -25,7 +25,7 @@ package org.jdiameter.api.sh.events;
 import org.jdiameter.api.app.AppRequestEvent;
 
 /**
- * The User-Data-Request (UDR) command, indicated by the Command-Code field set to 306 and the ÔRÕ
+ * The User-Data-Request (UDR) command, indicated by the Command-Code field set to 306 and the
  * bit set in the Command Flags field, is sent by a Diameter client to a Diameter server in order
  * to request user data.
  *

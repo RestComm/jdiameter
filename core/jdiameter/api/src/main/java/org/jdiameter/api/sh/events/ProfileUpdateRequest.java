@@ -26,7 +26,7 @@ import org.jdiameter.api.app.AppRequestEvent;
 
 /**
  * The Profile-Update-Request (PUR) command, indicated by the Command-Code field set to 307 and the
- * ÔRÕ bit set in the Command Flags field, is sent by a Diameter client to a Diameter server in
+ * bit set in the Command Flags field, is sent by a Diameter client to a Diameter server in
  * order to update user data in the server.
  *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>

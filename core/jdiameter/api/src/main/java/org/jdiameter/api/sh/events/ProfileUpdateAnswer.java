@@ -26,7 +26,7 @@ import org.jdiameter.api.app.AppAnswerEvent;
 
 /**
  * The Profile-Update-Answer (PUA) command, indicated by the Command-Code field set to 307 and the
- * ÔRÕ bit cleared in the Command Flags field, is sent by a server in response to the
+ * bit cleared in the Command Flags field, is sent by a server in response to the
  * Profile-Update-Request command. 
  *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>

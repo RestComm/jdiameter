@@ -26,7 +26,7 @@ import org.jdiameter.api.app.AppAnswerEvent;
 
 /**
  * The Push-Notifications-Answer (PNA) command, indicated by the Command-Code field set to 309 and
- * the ÔRÕ bit cleared in the Command Flags field, is sent by a client in response to the
+ * the bit cleared in the Command Flags field, is sent by a client in response to the
  * Push-Notification-Request command. 
  *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>

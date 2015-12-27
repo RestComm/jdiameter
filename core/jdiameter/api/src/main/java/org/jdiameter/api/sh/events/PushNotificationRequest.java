@@ -26,7 +26,7 @@ import org.jdiameter.api.app.AppRequestEvent;
 
 /**
  * The Push-Notification-Request (PNR) command, indicated by the Command-Code field set to 309 and
- * the ÔRÕ bit set in the Command Flags field, is sent by a Diameter server to a Diameter client
+ * the bit set in the Command Flags field, is sent by a Diameter server to a Diameter client
  * in order to notify changes in the user data in the server.
  *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>

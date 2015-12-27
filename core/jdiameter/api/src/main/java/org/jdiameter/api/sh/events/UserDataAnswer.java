@@ -25,7 +25,7 @@ package org.jdiameter.api.sh.events;
 import org.jdiameter.api.app.AppAnswerEvent;
 
 /**
- * The User-Data-Answer (UDA) command, indicated by the Command-Code field set to 306 and the ÔRÕ
+ * The User-Data-Answer (UDA) command, indicated by the Command-Code field set to 306 and the
  * bit cleared in the Command Flags field, is sent by a server in response to the
  * User-Data-Request command. 
  *

@@ -26,7 +26,7 @@ import org.jdiameter.api.app.AppAnswerEvent;
 
 /**
  * The Subscribe-Notifications-Answer command, indicated by the Command-Code field set to 308 and
- * the ÔRÕ bit cleared in the Command Flags field, is sent by a server in response to the
+ * the bit cleared in the Command Flags field, is sent by a server in response to the
  * Subscribe-Notifications-Request command. 
  *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
