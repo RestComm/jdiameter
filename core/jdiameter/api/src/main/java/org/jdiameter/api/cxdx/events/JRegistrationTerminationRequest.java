@@ -25,7 +25,7 @@ package org.jdiameter.api.cxdx.events;
 import org.jdiameter.api.app.AppRequestEvent;
 
 /**
- * The Registration-Termination-Request (RTR) command, indicated by the Command-Code field set to 304 and the ÔRÕ bit
+ * The Registration-Termination-Request (RTR) command, indicated by the Command-Code field set to 304 and the bit
  * set in the Command Flags field, is sent by a Diameter Multimedia server to a Diameter Multimedia client in order to
  * request the de-registration of a user.
  * 

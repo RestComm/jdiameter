@@ -25,7 +25,7 @@ package org.jdiameter.api.cxdx.events;
 import org.jdiameter.api.app.AppRequestEvent;
 
 /**
- * The Push-Profile-Request (PPR) command, indicated by the Command-Code field set to 305 and the ÔRÕ bit set in the
+ * The Push-Profile-Request (PPR) command, indicated by the Command-Code field set to 305 and the bit set in the
  * Command Flags field, is sent by a Diameter Multimedia server to a Diameter Multimedia client in order to update the
  * subscription data and for SIP Digest authentication the authentication data of a multimedia user in the Diameter
  * Multimedia client whenever a modification has occurred in the subscription data or digest password that constitutes

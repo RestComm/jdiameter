@@ -25,7 +25,7 @@ package org.jdiameter.api.cxdx.events;
 import org.jdiameter.api.app.AppRequestEvent;
 
 /**
- * The Multimedia-Auth-Request (MAR) command, indicated by the Command-Code field set to 303 and the ÔRÕ bit set in the
+ * The Multimedia-Auth-Request (MAR) command, indicated by the Command-Code field set to 303 and the bit set in the
  * Command Flags field, is sent by a Diameter Multimedia client to a Diameter Multimedia server in order to request
  * security information.
  * 
