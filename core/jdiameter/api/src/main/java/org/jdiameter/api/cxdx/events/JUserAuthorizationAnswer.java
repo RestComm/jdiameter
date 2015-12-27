@@ -25,7 +25,7 @@ package org.jdiameter.api.cxdx.events;
 import org.jdiameter.api.app.AppAnswerEvent;
 
 /**
- * The User-Authorization-Answer (UAA) command, indicated by the Command-Code field set to 300 and the ÔRÕ bit cleared
+ * The User-Authorization-Answer (UAA) command, indicated by the Command-Code field set to 300 and the bit cleared
  * in the Command Flags field, is sent by a server in response to the User-Authorization-Request command.
  * 
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
