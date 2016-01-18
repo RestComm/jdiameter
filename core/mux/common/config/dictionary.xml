@@ -3857,21 +3857,21 @@
 	<avpdefn name="SIP-Auth-Data-Item" code="612" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
 		<grouped>
 			<avp name="SIP-Item-Number" multiplicity="0-1" />
-			<avp name="SIP-Authentication-Scheme" multiplicity="0-1" />
-			<avp name="SIP-Authenticate" multiplicity="0-1" />
+            <avp name="SIP-Authentication-Scheme" multiplicity="0-1" />
+            <avp name="SIP-Authenticate" multiplicity="0-1" />
 			<avp name="SIP-Authorization" multiplicity="0-1" />
 			<avp name="SIP-Authentication-Context" multiplicity="0-1" />
 			<avp name="Confidentiality-Key" multiplicity="0-1" />
 			<avp name="Integrity-Key" multiplicity="0-1" />
 			<avp name="SIP-Digest-Authenticate" multiplicity="0-1" />
+            <avp name="Framed-IP-Address" multiplicity="0-1" />
+            <avp name="Framed-IPv6-Prefix" multiplicity="0-1" />
+            <avp name="Framed-Interface-Id" multiplicity="0-1" />
+            <avp name="Line-Identifier" multiplicity="0+" />
 			<avp name="CableLabs-SIP-Digest-Authenticate" multiplicity="0-1" />
 			<avp name="ETSI-SIP-Authenticate" multiplicity="0-1" />
 			<avp name="ETSI-SIP-Authentication-Info" multiplicity="0-1" />
 			<avp name="ETSI-SIP-Authorization" multiplicity="0-1" />
-			<avp name="Framed-IP-Address" multiplicity="0-1" />
-			<avp name="Framed-IPv6-Prefix" multiplicity="0-1" />
-			<avp name="Framed-Interface-Id" multiplicity="0-1" />
-			<avp name="Line-Identifier" multiplicity="0+" />
 		</grouped>
 	</avpdefn>
 
@@ -3906,8 +3906,7 @@
 	<avpdefn name="SIP-Digest-Authenticate" code="635" vendor-id="TGPP" mandatory="mustnot" protected="may" may-encrypt="no" vendor-bit="must" >
 		<grouped>
 			<avp name="Digest-Realm" multiplicity="1" />
-			<avp name="Digest-Domain" multiplicity="0-1" />
-			<avp name="Digest-Algorithm" multiplicity="0+" />
+			<avp name="Digest-Algorithm" multiplicity="0-1" />
 			<avp name="Digest-QoP" multiplicity="1" />
 			<avp name="Digest-HA1" multiplicity="1" />
 		</grouped>
@@ -4099,6 +4098,9 @@
 			<enum code="9" name="AUTHENTICATION_FAILURE" />
 			<enum code="10" name="AUTHENTICATION_TIMEOUT" />
 			<enum code="11" name="DEREGISTRATION_TOO_MUCH_DATA" />
+            <enum code="12" name="AAA_USER_DATA_REQUEST" />
+            <enum code="13" name="PGW_UPDATE" />
+            <enum code="14" name="RESTORATION" />
 		</type>
 	</avpdefn>
 
@@ -4190,7 +4192,7 @@
 		</type>
 	</avpdefn>
 
-	<avpdefn name="Wildcarded-PSI" code="634" vendor-id="TGPP" mandatory="mustnot" protected="may" may-encrypt="no" vendor-bit="must" >
+	<avpdefn name="Wildcarded-Public-Identity" code="634" vendor-id="TGPP" mandatory="mustnot" protected="may" may-encrypt="no" vendor-bit="must" >
 		<type type-name="UTF8String" />
 	</avpdefn>
 
@@ -4201,6 +4203,10 @@
 	<avpdefn name="UAR-Flags" code="637" vendor-id="TGPP" mandatory="may" protected="may" may-encrypt="no" vendor-bit="must" >
 		<type type-name="Unsigned32" />
 	</avpdefn>
+
+    <avpdefn name="Initial-CSeq-Sequence-Number" code="654" vendor-id="TGPP" mandatory="mustnot" protected="may" may-encrypt="no" vendor-bit="must" >
+        <type type-name="Unsigned32" />
+    </avpdefn>
 
 	<avpdefn name="Loose-Route-Indication" code="638" vendor-id="TGPP" mandatory="mustnot" protected="may" may-encrypt="no" vendor-bit="must" >
 		<type type-name="Enumerated">
@@ -4213,6 +4219,7 @@
 		<grouped>
 			<avp name="User-Name" multiplicity="1" />
 			<avp name="Restoration-Info" multiplicity="1+" />
+            <avp name="SIP-Authentication-Scheme" multiplicity="0-1" />
 		</grouped>
 	</avpdefn>
 
@@ -4220,6 +4227,8 @@
 		<grouped>
 			<avp name="Path" multiplicity="1" />
 			<avp name="Contact" multiplicity="1" />
+            <avp name="Initial-CSeq-Sequence-Number" multiplicity="0-1" />
+            <avp name="Call-ID-SIP-Header" multiplicity="0-1" />
 			<avp name="Subscription-Info" multiplicity="0-1" />
 		</grouped>
 	</avpdefn>
@@ -4275,6 +4284,7 @@
 		<type type-name="OctetString" />
 	</avpdefn>
 
+    <!-- 3GPP TS 29.229 version 12.7.0 Release 12 -->
 	<application id="16777216" vendor-id="TGPP" name="3GPP Cx/Dx" URI="...">
 		<command name="User-Authorization-Request" code="300" request="true">
 			<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
@@ -4282,39 +4292,33 @@
 			<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
 			<avp name="User-Name" code="1" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="Public-Identity" code="601" vendor="10415" multiplicity="1" index="-1" />
 			<avp name="Visited-Network-Identifier" code="600" vendor="10415" multiplicity="1" index="-1" />
-			<avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" />
-			<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
-			<avp name="User-Authorization-Type" code="623" vendor="10415" multiplicity="0-1" index="-1" />
+            <avp name="User-Authorization-Type" code="623" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="UAR-Flags" code="637" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
-			<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
 			<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
 		</command>
 
 		<command name="User-Authorization-Answer" code="300" request="false">
 			<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
 			<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Result-Code" code="268" vendor="0" multiplicity="0-1" index="-1" />
+            <avp name="Experimental-Result" code="297" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
-			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0-1" index="-1" />
-			<avp name="Result-Code" code="268" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="Server-Name" code="602" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Server-Capabilities" code="603" vendor="10415" multiplicity="0-1" index="-1" />
-			<avp name="Wildcarded-IMPU" code="636" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
-			<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
 		</command>
 
 		<command name="Server-Assigment-Request" code="301" request="true">
@@ -4323,48 +4327,45 @@
 			<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
+            <avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
+            <avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
+            <avp name="Public-Identity" code="601" vendor="10415" multiplicity="0+" index="-1" />
+            <avp name="Wildcarded-Public-Identity" code="634" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Server-Name" code="602" vendor="10415" multiplicity="1" index="-1" />
 			<avp name="Server-Assignment-Type" code="614" vendor="10415" multiplicity="1" index="-1" />
 			<avp name="User-Data-Already-Available" code="624" vendor="10415" multiplicity="1" index="-1" />
-			<avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" />
-			<avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
-			<avp name="Public-Identity" code="601" vendor="10415" multiplicity="0+" index="-1" />
-			<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
-			<avp name="Wildcarded-PSI" code="634" vendor="10415" multiplicity="0-1" index="-1" />
-			<avp name="Wildcarded-IMPU" code="636" vendor="10415" multiplicity="0-1" index="-1" />
-			<avp name="SCSCF-Restoration-Info" code="639" vendor="10415" multiplicity="0-1" index="-1" />
-			<avp name="Multiple-Registration-Indication" code="648" vendor="10415" multiplicity="0-1" index="-1" />
+            <avp name="SCSCF-Restoration-Info" code="639" vendor="10415" multiplicity="0-1" index="-1" />
+            <avp name="Multiple-Registration-Indication" code="648" vendor="10415" multiplicity="0-1" index="-1" />
+			<avp name="Session-Priority" code="650" vendor="10415" multiplicity="0-1" index="-1" />
+            <avp name="SAR-Flags" code="655" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
-			<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
 		</command>
 
 		<command name="Server-Assigment-Answer" code="301" request="false">
 			<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
 			<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Result-Code" code="268" vendor="0" multiplicity="0-1" index="-1" />
+            <avp name="Experimental-Result" code="297" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
-			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0-1" index="-1" />
-			<avp name="Result-Code" code="268" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="User-Data" code="702" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Charging-Information" code="618" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Associated-Identities" code="632" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Loose-Route-Indication" code="638" vendor="10415" multiplicity="0-1" index="-1" />
+            <avp name="SCSCF-Restoration-Info" code="639" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="Associated-Registered-Identities" code="647" vendor="10415" multiplicity="0-1" index="-1" />
-			<avp name="SCSCF-Restoration-Info" code="639" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="Server-Name" code="602" vendor="10415" multiplicity="0-1" index="-1" />
+            <avp name="Wildcarded-Public-Identity" code="634" vendor="10415" multiplicity="0-1" index="-1" />
+            <avp name="Priviledged-Sender-Indication" code="652" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
-			<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
 		</command>
 
 		<command name="Location-Info-Request" code="302" request="true">
@@ -4373,38 +4374,33 @@
 			<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Originating-Request" code="633" vendor="10415" multiplicity="0-1" index="-1" />
+            <avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="Public-Identity" code="601" vendor="10415" multiplicity="1" index="-1" />
-			<avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" />
-			<avp name="Originating-Request" code="633" vendor="10415" multiplicity="0-1" index="-1" />
-			<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="User-Authorization-Type" code="623" vendor="10415" multiplicity="0-1" index="-1" />
+            <avp name="Session-Priority" code="650" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
-			<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
 		</command>
 
 		<command name="Location-Info-Answer" code="302" request="false">
 			<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
 			<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Result-Code" code="268" vendor="0" multiplicity="0-1" index="-1" />
+            <avp name="Experimental-Result" code="297" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
-			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0-1" index="-1" />
-			<avp name="Result-Code" code="268" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="Server-Name" code="602" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Server-Capabilities" code="603" vendor="10415" multiplicity="0-1" index="-1" />
-			<avp name="Wildcarded-PSI" code="634" vendor="10415" multiplicity="0-1" index="-1" />
-			<avp name="Wildcarded-IMPU" code="636" vendor="10415" multiplicity="0-1" index="-1" />
+			<avp name="Wildcarded-Public-Identity" code="634" vendor="10415" multiplicity="0-1" index="-1" />
+			<avp name="LIA-Flags" code="653" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
-			<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
 		</command>
 
 		<command name="Multimedia-Auth-Request" code="303" request="true">
@@ -4414,40 +4410,33 @@
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="User-Name" code="1" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="Public-Identity" code="601" vendor="10415" multiplicity="1" index="-1" />
 			<avp name="SIP-Auth-Data-Item" code="612" vendor="10415" multiplicity="1" index="-1" />
 			<avp name="SIP-Number-Auth-Items" code="607" vendor="10415" multiplicity="1" index="-1" />
 			<avp name="Server-Name" code="602" vendor="10415" multiplicity="1" index="-1" />
-			<avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" />
-			<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
-			<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
 		</command>
 
 		<command name="Multimedia-Auth-Answer" code="303" request="false">
 			<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
 			<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Result-Code" code="268" vendor="0" multiplicity="0-1" index="-1" />
+            <avp name="Experimental-Result" code="297" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
-			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0-1" index="-1" />
-			<avp name="Result-Code" code="268" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="Public-Identity" code="601" vendor="10415" multiplicity="0-1" index="-1" />
+            <avp name="SIP-Number-Auth-Items" code="607" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="SIP-Auth-Data-Item" code="612" vendor="10415" multiplicity="0+" index="-1" />
-			<avp name="SIP-Number-Auth-Items" code="607" vendor="10415" multiplicity="0-1" index="-1" />
-			<avp name="Wildcarded-IMPU" code="636" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
-			<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
 		</command>
 
 		<command name="Registration-Termination-Request" code="304" request="true">
@@ -4456,36 +4445,32 @@
 			<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Destination-Host" code="293" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
-			<avp name="Destination-Host" code="293" vendor="0" multiplicity="1" index="-1" />
 			<avp name="User-Name" code="1" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Deregistration-Reason" code="615" vendor="10415" multiplicity="1" index="-1" />
 			<avp name="Associated-Identities" code="632" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="Public-Identity" code="601" vendor="10415" multiplicity="0+" index="-1" />
+            <avp name="Deregistration-Reason" code="615" vendor="10415" multiplicity="1" index="-1" />
 			<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
-			<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
 		</command>
 
 		<command name="Registration-Termination-Answer" code="304" request="false">
 			<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
 			<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Result-Code" code="268" vendor="0" multiplicity="0-1" index="-1" />
+            <avp name="Experimental-Result" code="297" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
-			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0-1" index="-1" />
-			<avp name="Result-Code" code="268" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Associated-Identities" code="632" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
+            <avp name="Identity-with-Emergency-Registration" code="651" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
-			<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
 		</command>
 
 		<command name="Push-Profile-Request" code="305" request="true">
@@ -4494,37 +4479,30 @@
 			<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Destination-Host" code="293" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
-			<avp name="Destination-Host" code="293" vendor="0" multiplicity="1" index="-1" />
 			<avp name="User-Name" code="1" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="User-Data" code="702" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Charging-Information" code="618" vendor="10415" multiplicity="0-1" index="-1" />
-			<avp name="SIP-Number-Auth-Items" code="607" vendor="10415" multiplicity="0-1" index="-1" />
+			<avp name="SIP-Auth-Data-Item" code="612" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
-			<avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
 		</command>
 
 		<command name="Push-Profile-Answer" code="305" request="false">
 			<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
 			<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="1" index="-1" />
+            <avp name="Result-Code" code="268" vendor="0" multiplicity="0-1" index="-1" />
+            <avp name="Experimental-Result" code="297" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
-			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0-1" index="-1" />
-			<avp name="Result-Code" code="268" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
 			<avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
-			<avp name="Destination-Host" code="293" vendor="0" multiplicity="0" index="-1" />
-			<avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
 		</command>
-
 	</application>
 
 	<avpdefn name="User-Identity" code="700" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
@@ -4617,7 +4595,29 @@
 		</type>
 	</avpdefn>
 
-	<application id="16777217" vendor-id="TGPP" name="3GPP Sh" URI="http://webapp.etsi.org/exchangefolder/ts_129329v060600p.pdf">
+    <avpdefn name="SAR-Flags" code="655" vendor-id="TGPP" mandatory="may" protected="may" may-encrypt="no" vendor-bit="must" >
+        <type type-name="Unsigned32" />
+    </avpdefn>
+
+    <avpdefn name="LIA-Flags" code="653" vendor-id="TGPP" mandatory="mustnot" protected="may" may-encrypt="no" vendor-bit="must" >
+        <type type-name="Unsigned32" />
+    </avpdefn>
+
+    <avpdefn name="Priviledged-Sender-Indication" code="652" vendor-id="TGPP" mandatory="mustnot" protected="may" may-encrypt="no" vendor-bit="must" >
+        <type type-name="Enumerated">
+            <enum code="0" name="NOT_PRIVILEDGED_SENDER" />
+            <enum code="1" name="PRIVILEDGED_SENDER" />
+        </type>
+    </avpdefn>
+
+    <avpdefn name="Identity-with-Emergency-Registration" code="651" vendor-id="TGPP" mandatory="mustnot" protected="may" may-encrypt="no" vendor-bit="must" >
+        <grouped>
+            <avp name="User-Name" />
+            <avp name="Public-Identity" />
+        </grouped>
+    </avpdefn>
+
+    <application id="16777217" vendor-id="TGPP" name="3GPP Sh" URI="http://webapp.etsi.org/exchangefolder/ts_129329v060600p.pdf">
 		<command name="User-Data-Request" code="306" request="true">
 			<avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
 			<avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="1" index="-1" />
@@ -4656,7 +4656,7 @@
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
-			<avp name="Wildcarded-PSI" code="634" vendor="10415" multiplicity="0-1" index="-1" />
+			<avp name="Wildcarded-Public-Identity" code="634" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Wildcarded-IMPU" code="636" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="User-Data" code="702" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
@@ -4676,7 +4676,7 @@
 			<avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="User-Identity" code="700" vendor="10415" multiplicity="1" index="-1" />
-			<avp name="Wildcarded-PSI" code="634" vendor="10415" multiplicity="0-1" index="-1" />
+			<avp name="Wildcarded-Public-Identity" code="634" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Wildcarded-IMPU" code="636" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Data-Reference" code="703" vendor="10415" multiplicity="1" index="-1" />
 			<avp name="User-Data" code="702" vendor="10415" multiplicity="1" index="-1" />
@@ -4698,7 +4698,7 @@
 			<avp name="Auth-Session-State" code="277" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
-			<avp name="Wildcarded-PSI" code="634" vendor="10415" multiplicity="0-1" index="-1" />
+			<avp name="Wildcarded-Public-Identity" code="634" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Wildcarded-IMPU" code="636" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
@@ -4718,7 +4718,7 @@
 			<avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="User-Identity" code="700" vendor="10415" multiplicity="1" index="-1" />
-			<avp name="Wildcarded-PSI" code="634" vendor="10415" multiplicity="0-1" index="-1" />
+			<avp name="Wildcarded-Public-Identity" code="634" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Wildcarded-IMPU" code="636" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Service-Indication" code="704" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="Send-Data-Indication" code="710" vendor="10415" multiplicity="0+" index="-1" />
@@ -4747,7 +4747,7 @@
 			<avp name="Experimental-Result" code="297" vendor="0" multiplicity="0-1" index="-1" />
 			<avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
-			<avp name="Wildcarded-PSI" code="634" vendor="10415" multiplicity="0-1" index="-1" />
+			<avp name="Wildcarded-Public-Identity" code="634" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Wildcarded-IMPU" code="636" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="User-Data" code="702" vendor="10415" multiplicity="0-1" index="-1" />
@@ -4769,7 +4769,7 @@
 			<avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
 			<avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
 			<avp name="User-Identity" code="700" vendor="10415" multiplicity="1" index="-1" />
-			<avp name="Wildcarded-PSI" code="634" vendor="10415" multiplicity="0-1" index="-1" />
+			<avp name="Wildcarded-Public-Identity" code="634" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="Wildcarded-IMPU" code="636" vendor="10415" multiplicity="0-1" index="-1" />
 			<avp name="User-Data" code="702" vendor="10415" multiplicity="1" index="-1" />
 			<avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
@@ -6455,7 +6455,7 @@
 	<avpdefn name="TS-Code" code="1487" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
 		<type type-name="OctetString" />
 	</avpdefn>
-
+	
 	<!-- Call-Barring-Info @ R12 -->
 	<avpdefn name="Call-Barring-Infor-List" code="1488" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
 		<grouped>
@@ -6544,7 +6544,6 @@
 			<avp name="User-CSG-Information" multiplicity="0-1" />
 		</grouped>
 	</avpdefn>
-
 	<avpdefn name="User-CSG-Information" code="2319" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
 		<grouped>
 			<avp name="CSG-Id" multiplicity="1" />
@@ -6552,7 +6551,6 @@
 			<avp name="CSG-Membership-Indication" multiplicity="0-1" />
 		</grouped>
 	</avpdefn>
-
 	<avpdefn name="CSG-Access-Mode" code="2317" vendor-id="TGPP" mandatory="mustnot" protected="may" may-encrypt="no" vendor-bit="must" >
 		<type type-name="Enumerated">
 			<enum code="0" name="CLOSED_MODE" />
