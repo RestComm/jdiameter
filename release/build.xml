@@ -1,212 +1,529 @@
 <?xml version="1.0"?>
-<project name="diameter.release" default="release" basedir=".">
+<project name="diameter.release.sf" default="release" basedir=".">
+
+	<!-- Uncomment below line to include JAIN SLEE dependencies in release -->
+	<!--property name="include.slee.deps" value="true" /-->
 	
-	<property name="release.version" value="1.0.0.BETA1-SNAPSHOT" />
-	<property name="release.configurations" value="default"/>
-	<property name="release.dir" location="${ant.file.media.server.release}/../target/" />
+	<property name="diameter.release.version" value="2.8.0" />
+	<property name="jboss.version" value="5.1.0.GA" />
+	<property name="ras.clone.version" value="2.8.0" />
+	<property name="release.version" value="${diameter.release.version}" />
 	
-	<property name="jboss.version" value="4.2.3.GA" />
-	<property name="jboss.config" value="default" />
-	<property name="jboss.config.default" value="default" />
-	<property name="jboss.home.relative.path" value="jboss-${jboss.version}/"/>
-	<property name="jboss.home" value="${release.dir}/${jboss.home.relative.path}/"/>
+
+	<property name="CORE_JDIAMETER_TAG" value="${release.version}" />
+	<!--property name="TOOLS_RHQ_PLUGIN_TAG" value="ts1" /-->
+	
+	<property name="base.dir" location="${ant.file.diameter.release.sf}/.." />
+	<property name="checkout.dir" value="${base.dir}/checkout" />	
+	
+	<property name="diameter-base-dir" value="${base.dir}"/>
+	<property name="diameter-work-dir" value="${diameter-base-dir}/.."/>
+	<property name="diameter-checkout-ras" value="${checkout.dir}/ras"/>
+	
+	<property name="output.dir" value="${base.dir}/target" />
+	<property name="release.dir" value="${output.dir}/binary" />
+	<property name="packages.dir" value="${base.dir}/checkout" />
+	<property name="tmp.jboss.home" value="${output.dir}/tmp" />
+
 	<property name="jboss.distro.zip.path" value="jboss-${jboss.version}.zip" />
-	<property name="jboss.download.url" value="http://downloads.sourceforge.net/jboss/jboss-${jboss.version}.zip" />
+	<property name="jboss.home.relative.path" value="jboss-${jboss.version}/" />
+	<property name="jboss.home" value="${release.dir}/${jboss.home.relative.path}/" />
+	<property name="jboss.config" value="default" />
 	
-	<property name="ra.dirs" value="base,cca,sh-client,sh-server,ro,rf"/>
-	<property name="examples.dirs" value="base,openims"/>
+
+	<property name="DOCS_PROFILE" value="mobicents" />
+
+	<target name="init" depends="set-mobicents-versions" />
+
+	<target name="set-mobicents-versions">
+		<!-- Diameter Components Versions -->
+		<property name="RELEASE_NAME" value="restcomm" />
+		<property name="RELEASE_VERSION" value="${diameter.release.version}" />
+
+		<property name="CORE_JDIAMETER_VERSION" value="${diameter.release.version}" />
+		<property name="CORE_JDIAMETER-HA_VERSION" value="${diameter.release.version}" />
+		<property name="CORE_MUX_VERSION" value="${diameter.release.version}" />
+		<property name="CORE_DOCS_VERSION" value="${diameter.release.version}" />
+
+		<property name="TOOLS_RHQ_PLUGIN_VERSION" value="1.0.0.BETA2" />
+
+		<property name="SLEE_DIAMETER_PACKAGE_VERSION" value="${diameter.release.version}" />
+
+		<property name="RA_base_VERSION"      value="${diameter.release.version}" />
+		<property name="RA_cca_VERSION"       value="${diameter.release.version}" />
+		<property name="RA_sh-client_VERSION" value="${diameter.release.version}" />
+		<property name="RA_sh-server_VERSION" value="${diameter.release.version}" />
+		<property name="RA_ro_VERSION"        value="${diameter.release.version}" />
+		<property name="RA_rf_VERSION"        value="${diameter.release.version}" />
+		<property name="RA_cx-dx_VERSION"     value="${diameter.release.version}" />
+		<property name="RA_gx_VERSION"        value="${diameter.release.version}" />
+		<property name="RA_gq_VERSION"        value="${diameter.release.version}" />
+		<property name="RA_rx_VERSION"        value="${diameter.release.version}" />
+		<property name="RA_s6a_VERSION"       value="${diameter.release.version}" />
+
+		<property name="EXAMPLE_JAINSLEE_base_VERSION"    value="2.8.11" />
+		<property name="EXAMPLE_JAINSLEE_openims_VERSION" value="2.8.11" />
+
+		<!-- Dependencies Components Versions -->
+		<property name="JAINSLEE_VERSION"              value="2.8.11" />
+		<property name="JAINSLEE_SIP11_RA_VERSION"     value="2.8.11" />
+		<property name="JAINSLEE_SIP_SERVICES_VERSION" value="2.8.11" />
+
+		<property name="JBOSS_VERSION" value="5.1.0.GA" />
+
+		<!-- jboss-x. to be used as building profile -->
+		<property name="DEFAULT_SAR_CONFIGURATION"     value="5" />
+		<property name="ALTERNATIVE_SAR_CONFIGURATION" value="7" />
+		
+		<property name="JAINSLEE_RA_LIST"      value="base,cca,sh-client,sh-server,ro,rf,cx-dx,gx,gq,rx,s6a" />
+		<property name="JAINSLEE_RA_DOCS_LIST" value="base,cca,sh-client,sh-server,ro,rf,cx-dx,gx,gq,rx,s6a" />
+		<property name="JAINSLEE_EXAMPLE_LIST" value="base,openims" />
+
+		<!-- Directories Configuration -->
+		<property name="downloads_dir"     value="${basedir}/downloads" />
+		<property name="diameter-work-dir" value="${basedir}/diameter" />
+		<property name="zip_dir"           value="${basedir}/diameter/zip" />
+
+		<property name="mux_zip_dir"     value="${basedir}/diameter/mux-zip" />
+		<property name="alt_mux_zip_dir" value="${basedir}/diameter/alt-mux-zip" />
+
+		<property name="zip_file_name"         value="${RELEASE_NAME}-diameter-${RELEASE_VERSION}" />
+		<property name="mux_zip_file_name"     value="${RELEASE_NAME}-diameter-mux-jboss${DEFAULT_SAR_CONFIGURATION}-${RELEASE_VERSION}.sar.zip" />
+		<property name="alt_mux_zip_file_name" value="${RELEASE_NAME}-diameter-mux-jboss${ALTERNATIVE_SAR_CONFIGURATION}-${RELEASE_VERSION}.sar.zip" />
+	</target>
+
+	<property name="failoncopy" value="true" />
 	
-	<property name="core.jdiameter.location" location="${ant.file.diameter.release}/../../core/jdiameter" />
-	<property name="core.mux.location" location="${ant.file.diameter.release}/../../core/mux" />
-	<property name="resources.location" location="${ant.file.diameter.release}/../../resources" />
-	<property name="examples.location" value="${ant.file.diameter.release}/../../examples" />
+	<!-- Relese section -->
 	
+	<property name="release.build.goals" value="clean install dependency:tree"/>
+	<!--property name="release.deploy.goals" value="clean deploy -DaltDeploymentRepository=mobicents-releases-repository::default::git-repo"/-->
+	<property name="release.deploy.local.goals" value="clean deploy -DaltDeploymentRepository=local-output::default::file:///tmp/output"/>
+	
+	<target name="release" depends="clean, init, build-src-zip, build-src, prepare-text-content, build-ras, build-and-package-mux, build-and-package-mux-alternative, copy-jars, copy-mux, copy-mux-alternative, package"/>
+	<target name="release-no-ras" depends="clean, init, build-src-zip, build-src, prepare-text-content, build-and-package-mux, build-and-package-mux-alternative, copy-jars, copy-mux, copy-mux-alternative, package"/>
+	
+    <target name="deploy">
+    	<ant antfile="${ant.file.diameter.release.sf}" target="release">
+    		<property name="release.build.goals" value="${release.ts.deploy.goals}" />
+    	</ant>
+    </target>
+	
+    <target name="deploy-local">
+    	<ant antfile="${ant.file.diameter.release.sf}" target="release">
+    		<property name="release.build.goals" value="${release.ts.deploy.local.goals}" />
+    	</ant>
+    </target>
+	
+    <target name="deploy-local-no-ras">
+    	<ant antfile="${ant.file.diameter.release.sf}" target="release-no-ras">
+    		<property name="release.build.goals" value="${release.ts.deploy.local.goals}" />
+    	</ant>
+    </target>
+	
+	
+	
+	<!-- Definition -->
+	<property environment="sys" />
+	<condition property="mvn.executable" value="${sys.M2_HOME}\bin\mvn.bat" else="mvn">
+		<os family="windows" />
+	</condition>
+
 	<taskdef onerror="fail" resource="net/sf/antcontrib/antlib.xml">
 		<classpath>
-			<pathelement location="${ant.file.diameter.release}/../ant-contrib-1.0b3.jar" />
+			<pathelement location="${diameter.release.sf}/../ant-contrib-1.0b3.jar" />
 		</classpath>
 	</taskdef>
-	
-	<condition property="mvn.executable" value="${sys.M2_HOME}\bin\mvn.bat" else="mvn">
-		<os family="windows"/>
-	</condition>
-	
-	<!-- ################################################################### -->
-		
-	<available file="${ant.file.diameter.release}/../${jboss.distro.zip.path}" property="got.jboss" />
-	<target name="get-jboss" unless="got.jboss">
-		<echo>Downloading JBoss AS</echo>
-		<get dest="${ant.file.diameter.release}/../${jboss.distro.zip.path}" src="${jboss.download.url}" />
-	</target>
-	
-	<target name="unzip-jboss">
-		<delete dir="${jboss.home}" failonerror="true" />
-		<mkdir dir="${jboss.home}" />
-		<unzip src="${jboss.distro.zip.path}" dest="${release.dir}" />
-		
-		<propertyregex input="${release.configurations}" regexp="(\w+)" global="true" replace="**/\1/**" property="used.configurations" />
-		<echo>Included configurations: ${release.configurations} -&gt; Excludes list: ${used.configurations}</echo>
-		
-		<delete includeemptydirs="true" failonerror="false" verbose="false">
-			<fileset dir="${jboss.home}/server" excludes="${used.configurations}" />
-		</delete>
-	</target>
-	
-	<!-- ################################################################### -->
-	
-	<condition property="mobicents.jain.slee.checked.out">
-		<available file="${ant.file.diameter.release}/../servers/jain-slee/.svn/entries" />
-	</condition>
-	<target name="get-mobicents-jain-slee" depends="checkout-jain-slee-server,update-jain-slee-server" />
-	
-	<target name="checkout-jain-slee-server" unless="mobicents.jain.slee.checked.out">
-		<echo>Checking out Mobicents JAIN-SLEE</echo>
-		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
-			<arg line="-f external-components-checkout.xml validate -P checkout" />
-		</exec>
-	</target>
-	
-	<target name="update-jain-slee-server">
-		<echo>Updating Mobicents JAIN-SLEE</echo>
-		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
-			<arg line="-f external-components-checkout.xml validate -P update" />
-		</exec>
-	</target>
-	
-	<target name="build-mobicents-jain-slee" depends="get-mobicents-jain-slee">
-		<echo>Building Mobicents JAIN-SLEE</echo>
-		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../servers/jain-slee">
-			<arg line="clean install -Djboss.home=${jboss.home} -Dnode=${jboss.config} -P set-svn-revision" />
-		</exec>
-		
-		<copy failonerror="true" file="${ant.file.diameter.release}/../servers/jain-slee/release/jbossjta-properties.xml" tofile="${jboss.home}/server/${jboss.config}/conf/jbossjta-properties.xml" overwrite="true" />
-		
-		<!-- If any resources/examples from jain-slee are needed, please see how it's done in media server release script -->
-	</target>
-	
-	<!-- ################################################################### -->
-	
-	<condition property="mobicents.diameter.server.checked.out">
-		<and>
-			<available file="${ant.file.diameter.release}/../servers/diamter/core/jdiameter/.svn/entries" />
-			<available file="${ant.file.diameter.release}/../servers/diamter/core/mux/.svn/entries" />
-		</and>
-	</condition>
-	<target name="get-custom-diameter-server" depends="checkout-diameter-server,update-diameter-server" />
 
-	<target name="checkout-diameter-server" unless="mobicents.diamter.server.checked.out">
-		<echo>Checking out diameter ...</echo>
+	<target name="checkout" depends="init, checkout-rhq-plugin" />
+	<target name="build-src" depends="build-src-core" />
+	<target name="prepare-text-content" depends="prepare-text-content-core" />
+	<target name="copy-jars" depends="copy-jars-core" />
+
+	<!-- Checkout section -->
+
+	<target name="checkout-core">
+		<echo>Checkout Diameter Core (jDiameter @tag:${CORE_JDIAMETER_TAG})</echo>
 		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
-			<arg line="-f internal-components-checkout.xml validate -P checkout" />
+			<arg line="-f internal-components-checkout-standalone-1.2.X.xml validate -P checkout -Ddiameter.core.jdiameter.tag=${CORE_JDIAMETER_TAG}" />
 		</exec>
 	</target>
 
-	<target name="update-diameter-server">
-		<echo>Updating diameter ...</echo>
+	<target name="checkout-rhq-plugin">
+		<echo>Checkout Diameter RHQ Plugin</echo>
 		<exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
-			<arg line="-f internal-components-checkout.xml validate -P update" />
+			<arg line="-f internal-components-checkout-standalone-1.2.X.xml validate -P checkout-rhq-plugin -Ddiameter.tools.rhq-plugin.tag=${TOOLS_RHQ_PLUGIN_TAG}" />
 		</exec>
 	</target>
-	
-	<!-- ################################################################### -->
-	
-	<target name="build-ras">
-		<for delimiter="," param="dir.name" list="${ra.dirs}">
+
+	<!-- Compile Section -->
+
+	<target name="build-src-core">
+		<exec executable="${mvn.executable}" dir="${diameter-work-dir}">
+			<arg line="-f pom.xml ${release.build.goals}" />
+		</exec>
+		
+		<exec executable="${mvn.executable}" dir="${diameter-work-dir}/core/docs">
+			<arg line="-f pom.xml ${release.build.goals} -P${DOCS_PROFILE}" />
+		</exec>
+	</target>
+
+	<target name="build-rhq-plugin">
+		<echo>Build Diameter RHQ Plugin</echo>
+		<exec executable="${mvn.executable}" dir="${diameter-work-dir}/diameter-rhq-plugin">
+			<arg line="${release.build.goals}" />
+		</exec>
+		<echo>Build Diameter RHQ Plugin Documentation</echo>
+		<exec executable="${mvn.executable}" dir="${diameter-work-dir}/diameter-rhq-plugin/docs">
+			<arg line="${release.build.goals} -P${DOCS_PROFILE}" />
+		</exec>
+	</target>
+
+	<!-- Copy jars section -->
+
+	<target name="copy-jars-core">
+		<copy todir="${zip_dir}/core/jdiameter">
+			<fileset dir="${diameter-work-dir}/core/jdiameter/api/target">
+				<include name="jdiameter-api-${CORE_JDIAMETER_VERSION}.jar" />
+			</fileset>
+			<fileset dir="${diameter-work-dir}/core/jdiameter/impl/target">
+				<include name="jdiameter-impl-${CORE_JDIAMETER_VERSION}.jar" />
+			</fileset>
+			<fileset dir="${diameter-work-dir}/core/jdiameter-ha/api/target">
+				<include name="jdiameter-ha-api-${CORE_JDIAMETER-HA_VERSION}.jar" />
+			</fileset>
+			<fileset dir="${diameter-work-dir}/core/jdiameter-ha/impl/target">
+				<include name="jdiameter-ha-impl-${CORE_JDIAMETER-HA_VERSION}.jar" />
+			</fileset>
+		</copy>
+
+		<copy todir="${zip_dir}/core/mux">
+			<fileset dir="${diameter-work-dir}/core/mux/jar/target">
+				<include name="mobicents-diameter-mux-${CORE_MUX_VERSION}.jar" />
+			</fileset>
+		</copy>
+		<move file="${zip_dir}/core/mux/mobicents-diameter-mux-${CORE_MUX_VERSION}.jar" 
+			tofile="${zip_dir}/core/mux/${RELEASE_NAME}-diameter-mux-${CORE_MUX_VERSION}.jar"/>
+		<copy todir="${zip_dir}/docs">
+			<fileset dir="${diameter-work-dir}/core/docs/jdocbook-${DOCS_PROFILE}/target/docbook/publish/en-US/pdf">
+				<include name="*.pdf" />
+			</fileset>
+		</copy>
+		<unzip src="${diameter-work-dir}/core/mux/sar-jboss-${DEFAULT_SAR_CONFIGURATION}/target/mobicents-diameter-mux-${CORE_MUX_VERSION}.sar" dest="${zip_dir}/core/mux/${RELEASE_NAME}-diameter-mux-${CORE_MUX_VERSION}.sar/"/>
+		<move file="${zip_dir}/core/mux/${RELEASE_NAME}-diameter-mux-${CORE_MUX_VERSION}.jar" 
+			todir="${zip_dir}/core/mux/${RELEASE_NAME}-diameter-mux-${CORE_MUX_VERSION}.sar/lib"/>
+		<delete file="${zip_dir}/core/mux/${RELEASE_NAME}-diameter-mux-${CORE_MUX_VERSION}.sar/lib/mobicents-diameter-mux-jar-${CORE_MUX_VERSION}.jar" verbose="false"/>		
+		
+	</target>
+
+	<target name="copy-jars-resources">
+		<for delimiter="," param="ra.name" list="${JAINSLEE_RA_LIST}">
 			<sequential>
-				<echo>Packaging RA for release from DIR[${resources.location}/@{dir.name}]</echo>
-				<exec executable="${mvn.executable}" dir="${resources.location}/@{dir.name}">
-					<arg line="clean install -Djboss.home=${release.dir}/tmp -Dnode=${jboss.config} -P set-svn-revision" />
-				</exec>
-				<exec executable="${mvn.executable}" dir="${resources.location}/@{dir.name}">
-					<arg line="-o install -P release,set-svn-revision -Drelease.name=target -Djboss.home=${release.dir}/tmp -Djboss.path=../../${jboss.home.relative.path} -Dnode=${jboss.config.default}" />
-				</exec>
+				<echo>Copy Diameter Resource: @{ra.name}</echo>
+
+				<copy todir="${zip_dir}/resources/@{ra.name}">
+					<fileset dir="${diameter-work-dir}/resources/@{ra.name}/du/target">
+						<include name="diameter-@{ra.name}-ra-DU-${RA_@{ra.name}_VERSION}.jar" />
+					</fileset>
+					<fileset dir="${diameter-work-dir}/resources/@{ra.name}/docs/jdocbook-${DOCS_PROFILE}/target/docbook/publish/en-US/pdf">
+						<include name="*.pdf" />
+					</fileset>
+				</copy>
 			</sequential>
 		</for>
-		<!--move file="${resources.location}/../release/target/resources" tofile="${release.dir}/resources" /-->
-		<delete dir="${release.dir}/tmp"/>
 	</target>
-	
-	<target name="build-examples">
-		<for delimiter="," param="dir.name" list="${examples.dirs}">
+
+	<target name="copy-jars-examples">
+		<for delimiter="," param="example.name" list="${JAINSLEE_EXAMPLE_LIST}">
 			<sequential>
-				<echo>Packaging example for release from DIR[${examples.location}/@{dir.name}]</echo>
-				<exec executable="${mvn.executable}" dir="${examples.location}/@{dir.name}">
-					<arg line="clean install -Djboss.home=${release.dir}/tmp -Dnode=${jboss.config} -P set-svn-revision" />
-				</exec>
-				<exec executable="${mvn.executable}" dir="${examples.location}/@{dir.name}">
-					<arg line="-o install -P release,set-svn-revision -Drelease.name=target -Djboss.home=${release.dir}/tmp -Djboss.path=../../${jboss.home.relative.path} -Dnode=${jboss.config.default}" />
-				</exec>
+				<echo>Copy Diameter Example: @{example.name} Version: ${EXAMPLE_JAINSLEE_@{example.name}_VERSION}</echo>
+
+				<copy todir="${zip_dir}/examples/@{example.name}">
+					<fileset dir="${diameter-work-dir}/examples/@{example.name}/du/target">
+						<include name="diameter-@{example.name}-example-DU-*.jar" />
+					</fileset>
+					<!-- TODO: WHEN EXAMPLES HAVE DOCS - fileset dir="${diameter-work-dir}/examples/@{example.name}/docs/jdocbook-${DOCS_PROFILE}/target/docbook/publish/en-US/pdf">
+						<include name="*.pdf" />
+					</fileset-->
+				</copy>
 			</sequential>
 		</for>
-		<!--move file="${examples.location}/../release/target/examples" tofile="${release.dir}/examples" /-->
-		<delete dir="${release.dir}/tmp"/>
 	</target>
+
+	<target name="copy-rhq-plugin">
+		<copy tofile="${zip_dir}/tools/${RELEASE_NAME}-diameter-rhq-plugin-${TOOLS_RHQ_PLUGIN_VERSION}.jar">
+			<fileset dir="${diameter-work-dir}/diameter-rhq-plugin/plugin/target/">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+		<copy todir="${zip_dir}/tools/">
+			<fileset dir="${diameter-work-dir}/diameter-rhq-plugin/docs/jdocbook-${DOCS_PROFILE}/target/docbook/publish/en-US/pdf">
+				<include name="*.pdf" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="copy-jars-additional-resources" if="include.slee.deps">
+	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${jainslee.folder.path}/resources/sip11/sip11-ra-DU-${JAINSLEE_SIP11_RA_VERSION}.jar" failonerror="${failoncopy}" />
+	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${jainslee.folder.path}/resources/sip11/du-management.xml" failonerror="${failoncopy}">
+			<filterchain>
+				<replacetokens>
+					<token key="JAINSLEE_VERSION" value="${JAINSLEE_VERSION}" />
+				</replacetokens>
+			</filterchain>
+	  </copy>
+	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip11" file="${diameter-work-dir}/examples/openims/release/thirdparty/sip11/build.xml" failonerror="${failoncopy}" />
+
+	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip-services-proxy-with-initial-invite" file="${jainslee.folder.path}/examples/sip-services/sip-services-proxy-with-initial-invite-DU-${JAINSLEE_SIP_SERVICES_VERSION}.jar" failonerror="${failoncopy}" />
+	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip-services-proxy-with-initial-invite" file="${jainslee.folder.path}/examples/sip-services/proxy-with-initial-invite-du-management.xml" failonerror="${failoncopy}">
+			<filterchain>
+				<replacetokens>
+					<token key="JAINSLEE_VERSION" value="${JAINSLEE_VERSION}" />
+				</replacetokens>
+			</filterchain>
+	  </copy>
+	  <copy todir="${zip_dir}/examples/openims/thirdparty/sip-services-proxy-with-initial-invite" file="${diameter-work-dir}/examples/openims/release/thirdparty/sip-services-proxy-with-initial-invite/build.xml" failonerror="${failoncopy}" />
+	</target>
+
+	<!-- Prepare text content section -->
+
+	<target name="prepare-text-content-core">
+		<copy todir="${zip_dir}" file="${basedir}/README.TXT" failonerror="${failoncopy}">
+			<filterchain>
+				<replacetokens>
+					<token key="VERSION" value="${RELEASE_VERSION}" />
+					<token key="JDIAM_VERSION" value="${CORE_JDIAMETER_VERSION}" />
+					<token key="JDIAM-HA_VERSION" value="${CORE_JDIAMETER-HA_VERSION}" />
+					<token key="MUX_VERSION" value="${CORE_MUX_VERSION}" />
+					<token key="base_VERSION" value="${RA_base_VERSION}" />
+					<token key="cca_VERSION" value="${RA_cca_VERSION}" />
+					<token key="sh-client_VERSION" value="${RA_sh-client_VERSION}" />
+					<token key="sh-server_VERSION" value="${RA_sh-server_VERSION}" />
+					<token key="ro_VERSION" value="${RA_ro_VERSION}" />
+					<token key="rf_VERSION" value="${RA_rf_VERSION}" />
+					<token key="rx_VERSION" value="${RA_rx_VERSION}" />
+					<token key="gq_VERSION" value="${RA_gq_VERSION}" />
+					<token key="gx_VERSION" value="${RA_gx_VERSION}" />
+					<token key="s6a_VERSION" value="${RA_s6a_VERSION}" />
+					<token key="cx-dx_VERSION" value="${RA_cx-dx_VERSION}" />
+					<token key="base_EXAMPLE_VERSION" value="${EXAMPLE_JAINSLEE_base_VERSION}" />
+					<token key="openims_EXAMPLE_VERSION" value="${EXAMPLE_JAINSLEE_openims_VERSION}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
+		<copy todir="${zip_dir}/core/jdiameter" file="${diameter-work-dir}/core/jdiameter/release/README.TXT" failonerror="${failoncopy}">
+			<filterchain>
+				<replacetokens>
+					<token key="JDIAM_VERSION" value="${CORE_JDIAMETER_VERSION}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
+		<!-- TODO: Add jdiameter-ha README.TXT ? -->
+		<copy todir="${zip_dir}/core/mux" file="${diameter-work-dir}/core/mux/release/README.TXT" failonerror="${failoncopy}">
+			<filterchain>
+				<replacetokens>
+					<token key="MUX_VERSION" value="${CORE_MUX_VERSION}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
+	</target>
+
+	<target name="prepare-text-content-resources">
+		<for delimiter="," param="ra.name" list="${JAINSLEE_RA_LIST}">
+			<sequential>
+				<echo>Copy Diameter Resource: @{ra.name}</echo>
+
+				<copy tofile="${zip_dir}/resources/@{ra.name}/du-management.xml" file="${diameter-work-dir}/resources/@{ra.name}/du/target/build.xml" failonerror="${failoncopy}" />
+				<copy tofile="${zip_dir}/resources/@{ra.name}/build.xml" file="template-build.xml" failonerror="${failoncopy}" />
+				<copy todir="${zip_dir}/resources/@{ra.name}" file="${diameter-work-dir}/resources/@{ra.name}/release/README.TXT" failonerror="${failoncopy}">
+					<filterchain>
+						<replacetokens>
+							<token key="@{ra.name}_VERSION" value="${RA_@{ra.name}_VERSION}" />
+						</replacetokens>
+					</filterchain>
+				</copy>
+			</sequential>
+		</for>
+	</target>
+
+	<target name="prepare-text-content-examples">
+		<for delimiter="," param="example.name" list="${JAINSLEE_EXAMPLE_LIST}">
+			<sequential>
+				<echo>Copy Diameter Example: @{example.name}</echo>
+
+				<copy tofile="${zip_dir}/examples/@{example.name}/du-management.xml" file="${diameter-work-dir}/examples/@{example.name}/du/target/build.xml" failonerror="${failoncopy}" />
+				<copy tofile="${zip_dir}/examples/@{example.name}/build.xml" file="template-build.xml" failonerror="${failoncopy}" />
+				<copy todir="${zip_dir}/examples/@{example.name}" file="${diameter-work-dir}/examples/@{example.name}/release/README.TXT" failonerror="${failoncopy}">
+					<filterchain>
+						<replacetokens>
+							<token key="@{example.name}_EXAMPLE_VERSION" value="${EXAMPLE_JAINSLEE_@{example.name}_VERSION}" />
+						</replacetokens>
+					</filterchain>
+				</copy>
+			</sequential>
+		</for>
+	</target>
+
+	<!-- Release procedures : Make ZIP(s), Checksum , Clean -->
 	
-	<!-- ################################################################### -->
-	
-	<target name="zip-jboss" description="">
-		<fixcrlf srcdir="${jboss.home}/bin" includes="*.sh" eol="lf" eof="remove" />
-		<zip destfile="${ant.file.diameter.release}/../${zip.filename}" filesonly="false">
-			<zipfileset dir="${jboss.home}/bin" filemode="755" prefix="jboss-${jboss.version}/bin">
-				<include name="*.sh" />
-			</zipfileset>
-			<zipfileset dir="${jboss.home}/bin" prefix="jboss-${jboss.version}/bin">
-				<exclude name="*.sh" />
-			</zipfileset>
-			<zipfileset dir="${release.dir}" prefix="" excludes="**/bin/** **/server/*/data/** **/server/*/log/** **/server/*/tmp/** **/server/*/work/** **/server/tmp/**"/>
+	<target name="build-src-zip">
+		<zip destfile="${basedir}/${zip_file_name}-src.zip">
+			<zipfileset dir="${diameter-work-dir}/core" prefix="core" excludes="release"></zipfileset>
+			<!-- zipfileset dir="${diameter-work-dir}/resources" prefix="resources" excludes="release"></zipfileset -->
+			<!-- zipfileset dir="${diameter-work-dir}/examples" prefix="examples" excludes="release"></zipfileset -->
 		</zip>
+
+		<antcall target="checksum">
+			<param name="source.file" value="${basedir}/${zip_file_name}-src.zip" />
+			<param name="algorithm" value="sha1" />
+		</antcall>
+	</target>
+
+	<target name="package" description="Create zip file: ${diameter-work-dir}/${zip_file_name}.zip">
+		<zip destfile="${basedir}/${zip_file_name}.zip" basedir="${zip_dir}"/>
+		<antcall target="checksum">
+			<param name="source.file" value="${basedir}/${zip_file_name}.zip" />
+			<param name="algorithm" value="sha1" />
+		</antcall>
+	</target>
+
+	<target name="build-and-package-mux" description="Create zip file: ${basedir}/${mux_zip_file_name}">
+		<exec executable="${mvn.executable}" dir="${diameter-work-dir}/core/mux">
+			<arg line="-f pom.xml ${release.build.goals} -Pjboss${DEFAULT_SAR_CONFIGURATION}" />
+		</exec>
+
+		<mkdir dir="${mux_zip_dir}" />
 		
-		<checksum file="${ant.file.diameter.release}/../${zip.filename}" algorithm="sha1" fileext=".sha1.asc" forceOverwrite="yes" />
+		<copy todir="${mux_zip_dir}" file="${diameter-work-dir}/core/mux/release/README.TXT" failonerror="${failoncopy}">
+			<filterchain>
+				<replacetokens>
+					<token key="MUX_VERSION" value="${CORE_MUX_VERSION}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
+
+		<copy todir="${mux_zip_dir}">
+			<fileset dir="${diameter-work-dir}/core/mux/jar/target">
+				<include name="mobicents-diameter-mux-${CORE_MUX_VERSION}.jar" />
+			</fileset>
+		</copy>
+		<unzip src="${diameter-work-dir}/core/mux/sar-jboss-${DEFAULT_SAR_CONFIGURATION}/target/mobicents-diameter-mux-${CORE_MUX_VERSION}.sar" dest="${mux_zip_dir}/mobicents-diameter-mux-${CORE_MUX_VERSION}.sar/"/>
+
+		<zip destfile="${basedir}/${mux_zip_file_name}" basedir="${mux_zip_dir}"/>
+		<antcall target="checksum">
+			<param name="source.file" value="${basedir}/${mux_zip_file_name}" />
+			<param name="algorithm" value="sha1" />
+		</antcall>
 	</target>
-	
-	<!-- ################################################################### -->
-	
-	<target name="clean">
-		<!--delete dir="${release.dir}" /-->
-	</target>
-	
-	<!-- ################################################################### -->
-	
-	<target name="release-custom" depends="get-custom-diameter-server">
-		<antcall target="release">
-			<param name="release.dir" location="${ant.file.diameter.release}/../servers/diameter/release/target"/>
-			<param name="jboss.home" location="${ant.file.diameter.release}/../servers/diameter/release/target/${jboss.home.relative.path}/"/>
-			
-			<param name="core.jdiameter.location" location="${ant.file.diameter.release}/../servers/diameter/core/jdiameter" />
-			<param name="core.mux.location" location="${ant.file.diameter.release}/../servers/diameter/core/mux" />
-			<param name="resources.location" location="${ant.file.diameter.release}/../servers/diameter/resources" />
-			<param name="examples.location" value="${ant.file.diameter.release}/../servers/diameter/examples" />
+
+	<target name="build-and-package-mux-alternative" description="Create zip file: ${basedir}/${alt_mux_zip_file_name}">
+		<exec executable="${mvn.executable}" dir="${diameter-work-dir}/core/mux">
+			<arg line="-f pom.xml ${release.build.goals} -Pjboss${ALTERNATIVE_SAR_CONFIGURATION}" />
+		</exec>
+
+		<mkdir dir="${alt_mux_zip_dir}" />
+		
+		<copy todir="${alt_mux_zip_dir}" file="${diameter-work-dir}/core/mux/release/README.TXT" failonerror="${failoncopy}">
+			<filterchain>
+				<replacetokens>
+					<token key="MUX_VERSION" value="${CORE_MUX_VERSION}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
+
+		<copy todir="${alt_mux_zip_dir}">
+			<fileset dir="${diameter-work-dir}/core/mux/jar/target">
+				<include name="mobicents-diameter-mux-${CORE_MUX_VERSION}.jar" />
+			</fileset>
+		</copy>
+		<unzip src="${diameter-work-dir}/core/mux/sar-jboss-${ALTERNATIVE_SAR_CONFIGURATION}/target/mobicents-diameter-mux-${CORE_MUX_VERSION}.sar" dest="${alt_mux_zip_dir}/${RELEASE_NAME}-diameter-mux-${CORE_MUX_VERSION}.sar/"/>
+
+		<zip destfile="${basedir}/${alt_mux_zip_file_name}" basedir="${alt_mux_zip_dir}"/>
+		<antcall target="checksum">
+			<param name="source.file" value="${basedir}/${alt_mux_zip_file_name}" />
+			<param name="algorithm" value="sha1" />
 		</antcall>
 	</target>
 	
-	<target name="release" depends="unzip-jboss,build-mobicents-jain-slee">
-		<for delimiter="," param="config.name" list="${jboss.config}">
-			<sequential>
-				<echo>Installing diameter core in '@{config.name}' configuration</echo>
-				<exec executable="${mvn.executable}" dir="${core.jdiameter.location}">
-					<arg line="clean install -P set-svn-revision -Djboss.home=${jboss.home} -Dnode=@{config.name}"/>
-				</exec>
-				<exec executable="${mvn.executable}" dir="${core.mux.location}">
-					<arg line="clean install -P set-svn-revision -Djboss.home=${jboss.home} -Dnode=@{config.name}"/>
-				</exec>
-			</sequential>
-		</for>
+	<target name="copy-mux-alternative" description="Copy alt-mux into zip folder: ${zipdir}">
+		<mkdir dir="${zip_dir}/core/alt-mux-JBoss-AS7" />
+		<copy todir="${zip_dir}/core/alt-mux-JBoss-AS7">
+			<fileset dir="${alt_mux_zip_dir}">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<move file="${zip_dir}/core/alt-mux-JBoss-AS7/mobicents-diameter-mux-${CORE_MUX_VERSION}.jar" 
+			tofile="${zip_dir}/core/alt-mux-JBoss-AS7/${RELEASE_NAME}-diameter-mux-${CORE_MUX_VERSION}.jar"/>
+		<move file="${zip_dir}/core/alt-mux-JBoss-AS7/${RELEASE_NAME}-diameter-mux-${CORE_MUX_VERSION}.jar" 
+			todir="${zip_dir}/core/alt-mux-JBoss-AS7/${RELEASE_NAME}-diameter-mux-${CORE_MUX_VERSION}.sar/lib"/>
+		<delete file="${zip_dir}/core/alt-mux-JBoss-AS7/${RELEASE_NAME}-diameter-mux-${CORE_MUX_VERSION}.sar/lib/mobicents-diameter-mux-jar-${CORE_MUX_VERSION}.jar" verbose="false"/>		
 		
-		<antcall target="build-ras"/>
-		<antcall target="build-examples"/>
-		
-		<tstamp>
-			<format property="time.stamp" pattern="yyyyMMdd-HHmm" />
-		</tstamp>
-		<antcall target="zip-jboss">
-			<param name="zip.filename" value="mobicents-diameter-all-${release.version}-jboss-${jboss.version}-${time.stamp}.zip" />
-			<param name="jboss.home" value="${jboss.home}" />
-		</antcall>
-		<!--antcall target="build-src-zip">
-			<param name="zip.filename" value="mobicents-jainslee-server-${release.version}-${time.stamp}-src.zip" />
-		</antcall-->
-		
-		<antcall target="clean"/>
 	</target>
 	
+
+	<target name="checksum">
+	  <checksum file="${source.file}" algorithm="${algorithm}" fileext=".${algorithm}.asc" forceOverwrite="yes"/>
+	</target>
+
+	<target name="clean" description="Remove everything that we created.">
+		<delete>
+			<fileset dir="${basedir}">
+			    <include name="**/*.zip"/>
+			    <include name="**/*.asc"/>
+			</fileset>
+		</delete>
+		<delete dir="${basedir}/diameter" verbose="false"/>
+		<delete dir="${checkout.dir}" verbose="false"/>
+		<delete dir="${output.dir}" verbose="false"/>
+
+	</target>
+	
+	<!--build  RA's -->
+	
+	<target name="clone-diameter-ras">		
+        <echo>Clone Mobicents JainSlee.diameter (Diameter RA's)</echo>
+		<mkdir dir="${diameter-checkout-ras}"/>
+        <exec failonerror="true" executable="git">
+            <arg value="clone" />
+            <arg value="https://code.google.com/p/jain-slee.diameter/" />
+            <arg value="-b" />
+            <arg value="${ras.clone.version}" />
+            <arg value="${diameter-checkout-ras}/diameter" />
+        </exec>
+	</target>
+	
+	
+	<target name="build-ras" depends="clone-diameter-ras,build-diameter,copy-ras"/>
+	
+	<target name="build-diameter" description="">
+        <echo>building Mobicents JainSlee.diameter (Diameter RA's) from sources</echo>
+		<antcall target="build-package">
+			<param name="packages.dir" value="${diameter-checkout-ras}" />
+			<param name="package.name" value="diameter" />
+		</antcall>
+	</target>
+
+	<target name="build-package" description="builds a SLEE package, use package.name and javadoc.dirs to pass the package singularities">
+		<exec failonerror="true" executable="${mvn.executable}" dir="${packages.dir}/${package.name}">
+			<arg line="versions:set -DnewVersion=${release.version}" />
+		</exec>
+		<exec failonerror="true" executable="${mvn.executable}" dir="${packages.dir}/${package.name}">
+			<arg line="${release.build.goals} -Drelease.dir=${release.dir} -Djboss.home=${tmp.jboss.home} -Djboss.path=../../${jboss.home.relative.path} -Dnode=${jboss.config} -Prelease,set-git-hash,${release.profile}" />
+		</exec>
+	</target>
+	
+	<target name="copy-ras">
+		<copy todir="${zip_dir}/docs/resources">
+			<fileset dir="${release.dir}/docs/resources">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<copy todir="${zip_dir}/resources">
+			<fileset dir="${release.dir}/resources">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+	</target>
+	
+
 </project>
