@@ -89,7 +89,7 @@
 
 		<property name="zip_file_name"         value="${RELEASE_NAME}-diameter-${RELEASE_VERSION}" />
 		<property name="mux_zip_file_name"     value="${RELEASE_NAME}-diameter-mux-jboss${DEFAULT_SAR_CONFIGURATION}-${RELEASE_VERSION}.sar.zip" />
-		<property name="alt_mux_zip_file_name" value="${RELEASE_NAME}-diameter-mux-jboss${ALTERNATIVE_SAR_CONFIGURATION}-${RELEASE_VERSION}.sar.zip" />
+		<property name="alt_mux_zip_file_name" value="${RELEASE_NAME}-diameter-mux-jboss${ALTERNATIVE_SAR_CONFIGURATION}-${RELEASE_VERSION}.zip" />
 	</target>
 
 	<property name="failoncopy" value="true" />
@@ -436,7 +436,12 @@
 				<include name="mobicents-diameter-mux-${CORE_MUX_VERSION}.jar" />
 			</fileset>
 		</copy>
-		<unzip src="${diameter-work-dir}/core/mux/sar-jboss-${ALTERNATIVE_SAR_CONFIGURATION}/target/mobicents-diameter-mux-${CORE_MUX_VERSION}.sar" dest="${alt_mux_zip_dir}/${RELEASE_NAME}-diameter-mux-${CORE_MUX_VERSION}.sar/"/>
+		<copy todir="${alt_mux_zip_dir}">
+			<fileset dir="${diameter-work-dir}/core/mux/sar-jboss-${ALTERNATIVE_SAR_CONFIGURATION}/target/jboss-modules">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<!--unzip src="${diameter-work-dir}/core/mux/sar-jboss-${ALTERNATIVE_SAR_CONFIGURATION}/target/mobicents-diameter-mux-${CORE_MUX_VERSION}.sar" dest="${alt_mux_zip_dir}/${RELEASE_NAME}-diameter-mux-${CORE_MUX_VERSION}.sar/"/-->
 
 		<zip destfile="${basedir}/${alt_mux_zip_file_name}" basedir="${alt_mux_zip_dir}"/>
 		<antcall target="checksum">
