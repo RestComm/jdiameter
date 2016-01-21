@@ -459,6 +459,21 @@
 		<delete file="${zip_dir}/core/alt-mux-JBoss-AS7/${RELEASE_NAME}-diameter-mux-${CORE_MUX_VERSION}.sar/lib/mobicents-diameter-mux-jar-${CORE_MUX_VERSION}.jar" verbose="false"/>		
 		
 	</target>
+
+	<target name="copy-mux" description="Copy mux into zip folder: ${zipdir}">
+		<mkdir dir="${zip_dir}/core/mux-JBoss-AS5" />
+		<copy todir="${zip_dir}/core/mux-JBoss-AS5">
+			<fileset dir="${mux_zip_dir}">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<move file="${zip_dir}/core/mux-JBoss-AS5/mobicents-diameter-mux-${CORE_MUX_VERSION}.jar" 
+			tofile="${zip_dir}/core/mux-JBoss-AS5/${RELEASE_NAME}-diameter-mux-${CORE_MUX_VERSION}.jar"/>
+		<move file="${zip_dir}/core/mux-JBoss-AS5/${RELEASE_NAME}-diameter-mux-${CORE_MUX_VERSION}.jar" 
+			todir="${zip_dir}/core/mux-JBoss-AS5/${RELEASE_NAME}-diameter-mux-${CORE_MUX_VERSION}.sar/lib"/>
+		<delete file="${zip_dir}/core/mux-JBoss-AS5/${RELEASE_NAME}-diameter-mux-${CORE_MUX_VERSION}.sar/lib/mobicents-diameter-mux-jar-${CORE_MUX_VERSION}.jar" verbose="false"/>		
+		
+	</target>
 	
 
 	<target name="checksum">
