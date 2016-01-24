@@ -141,7 +141,7 @@
 
 	<target name="build-src-core" unless="skip.build-src">
 		<exec failonerror="true" executable="${mvn.executable}" dir="${checkout_base_dir}">
-			<arg line="versions:set -DnewVersion=${release.version}" />
+			<arg line="versions:set -DnewVersion=${diameter.release.version}" />
 		</exec>
 		<exec executable="${mvn.executable}" dir="${checkout_base_dir}/">
 			<arg line="-f pom.xml ${release.build.goals} -Pmaven-release" />
@@ -170,7 +170,7 @@
 		<echo>Build Diameter RHQ Plugin</echo>
 		<replace file="${checkout_base_dir}/diameter-rhq-plugin/pom.xml" token="2.23-SNAPSHOT" value="2.27.21"/>
 		<exec failonerror="true" executable="${mvn.executable}" dir="${checkout_base_dir}/diameter-rhq-plugin">
-			<arg line="versions:set -DnewVersion=${release.version}" />
+			<arg line="versions:set -DnewVersion=${diameter.release.version}" />
 		</exec>
 		<exec executable="${mvn.executable}" dir="${checkout_base_dir}/diameter-rhq-plugin">
 			<arg line="${release.build.goals}" />
