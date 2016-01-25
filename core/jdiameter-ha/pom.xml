@@ -22,7 +22,7 @@
 
 	<properties>
 		<jdiameter.version>1.5.9.0-build538-SNAPSHOT</jdiameter.version>
-		<mobicents.cluster.version>1.14.0.FINAL</mobicents.cluster.version>
+		<mobicents.cluster.version>1.15.11</mobicents.cluster.version>
 	</properties>
 
 	<dependencyManagement>
