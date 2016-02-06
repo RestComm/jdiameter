@@ -1,0 +1,68 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">%BOOK_ENTITIES;]>
+
+<section id="jdiameter-validator-source_overview">
+
+	<title>Validator Source Overview</title>
+	<para>The Validator	API defines methods to access its database of AVPs and check if the AVP and message have the proper structure.</para>
+	<para>The Validator is currently message oriented. This means that it declares methods that center on message consistency checks. The class containing all validation logic is <classname>org.jdiameter.common.impl.validation.DiameterMessageValidator</classname>. It exposes the following methods:</para>
+	<variablelist>
+		<varlistentry>
+			<term>public boolean isOn();</term>
+			<listitem>
+				<para>Simple method to determine if the <literal>Validator</literal> is enabled.</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>public ValidatorLevel getSendLevel();
+			</term>
+			<listitem>
+				<para>Returns the validation level of outgoing messages. It can have one of the following values: <literal>OFF</literal>, <literal>MESSAGE</literal>, <literal>ALL</literal>.</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>public ValidatorLevel getReceiveLevel()</term>
+			<listitem>
+				<para>Returns the validation level of incoming messages. It can have one of the following values: <literal>OFF</literal>, <literal>MESSAGE</literal>, <literal>ALL</literal>.</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>public void validate(Message msg, boolean incoming) throws JAvpNotAllowedException</term>
+			<listitem>
+				<para>Performs validation on a message. Based on the <parameter>incoming</parameter> flag, the correct validation level is applied. If validation fails, an exception with details is thrown.</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>public void validate(Message msg, ValidatorLevel validatorLevel) throws JAvpNotAllowedException</term>
+			<listitem>
+				<para>Performs validation on messages with a specified level. It is a programatical way to allow different levels of validation from those configured. If validation fails, a <classname>JAvpNotAllowedException</classname> with details is thrown.</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+
+  <note><para>The current implementation provides more methods, however those are out of scope for this documentation.</para></note>
+	<para>A simple example of a Validator use case is shown below:</para>
+
+	<example id="example-Validator_Message_Check_Example">
+		<title>Validator Message Check Example</title>
+		<para>The example below is pseudo-code.</para>
+		<programlisting role="JAVA" language="Java">
+...
+boolean isRequest = true;
+boolean isIncoming = false;
+
+DiameterMessageValidator messageValidator = DiameterMessageValidator.getInstance();
+Message message = createMessage(UserDataRequest.MESSAGE_CODE, isRequest,
+	applicationId);
+
+//add AVPs
+...
+//perform check
+try{
+	messageValidator.validate(message, isIncoming);
+}
+catch(JAvpNotAllowedException e) {
+	System.err.println(&quot;Failed to validate ..., avp code: &quot; + e.getAvpCode() + &quot; avp vendor:&quot; + e.getVendorId() + &quot;, message:&quot; + e.getMessage());
+}</programlisting>
+	</example>
+</section>

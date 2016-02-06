@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">%BOOK_ENTITIES;]>
+
+<section id="jdiameter-setup">
+
+	<title>&THIS.PLATFORM; Diameter Stack Setup</title>
+	<section id="jdiameter-preinstall_requirements_and_prerequisites">
+		<title>Pre-Install Requirements and Prerequisites</title>
+		<para>Ensure that the following requirements have been met before continuing with the install.</para>
+		<section id="jdiameter-hardware_requirements">
+			<title>Hardware Requirements</title>
+			<para>&THIS.PLATFORM; Diameter Stack does not have any hardware requirements.</para>
+		</section>
+		<section id="jdiameter-software_prerequisites">
+			<title>Software Prerequisites</title>
+			<para>&THIS.PLATFORM; Diameter Stack has the following software dependencies:</para>
+			<itemizedlist>
+				<listitem>
+					<para>Pico Container</para>
+				</listitem>
+				<listitem>
+					<para>slf4j</para>
+				</listitem>
+			</itemizedlist>
+			<para>Clustered setup also requires following:</para>
+			<itemizedlist>
+				<listitem>
+					<para>JDiameter HA</para>
+				</listitem>
+				<listitem>
+					<!-- Doc: Pavel/Tom is this ok? -->
+					<para>JBoss Cache</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+	</section>	
+	<section id="jdiameter-source_code">
+		<title>Source Code</title>
+		<para>This section provides instructions on how to obtain and build the &THIS.PLATFORM; Diameter Stack from source code.</para>
+		
+		<section id="jdiameter-release_source_building">
+			<title>Release Source Code Building</title>
+			<procedure>
+				<step>
+					<title>Downloading the source code</title>
+					<important>
+						<para>Subversion is used to manage its source code. Instructions for using Subversion, including install, can be found at <ulink url="http://svnbook.red-bean.com" /></para>
+					</important>
+					<para>Use SVN to checkout a specific release source, the base URL is &THIS.JDIAMETER_RELEASE_SOURCE_CODE_URL;, then add the specific release version, lets consider &THIS.VERSION;.</para>
+					<programlisting>[usr]$ svn co &THIS.JDIAMETER_RELEASE_SOURCE_CODE_URL;/&THIS.VERSION; &THIS.DIRNAME.JDIAMETER;-&THIS.VERSION;</programlisting>
+				</step>
+				<step>
+					<title>Building the source code</title>
+					<important>
+						<para>Maven 2.0.9 (or higher) is used to build the release. Instructions for using Maven2, including install, can be found at <ulink url="http://maven.apache.org" /></para>
+					</important>
+					<para>Use Maven to build the deployable unit binary.</para>
+					<programlisting>
+						[usr]$ cd &THIS.DIRNAME.JDIAMETER;-&THIS.VERSION;
+						[usr]$ mvn install
+					</programlisting>
+					<para>Once the process finishes you should have the <acronym>JAR</acronym> files deployed in maven archive.</para>
+				</step>
+			</procedure>
+		</section>
+		
+		<section id="jdiameter-trunk_source_building">
+			<title>Development Trunk Source Building</title>
+			<para>Follow the process in <xref linkend="jdiameter-release_source_building"/>, replacing the SVN source code URL with &THIS.JDIAMETER_TRUNK_SOURCE_CODE_URL;.</para>
+		</section>
+		
+	</section>
+</section>

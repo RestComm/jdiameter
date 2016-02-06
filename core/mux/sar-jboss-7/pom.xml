@@ -4,21 +4,21 @@
 
 	<parent>
 		<groupId>org.mobicents.diameter</groupId>
-		<artifactId>mobicents-diameter-mux-parent</artifactId>
+		<artifactId>restcomm-diameter-mux-parent</artifactId>
 		<version>1.7.0-SNAPSHOT</version> 
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>mobicents-diameter-mux-sar-jboss-7</artifactId>
+	<artifactId>restcomm-diameter-mux-sar-jboss-7</artifactId>
 
-	<name>Mobicents :: Diameter Multiplexer :: ${project.artifactId}</name>
+	<name>Restcomm :: Diameter Multiplexer :: ${project.artifactId}</name>
 
 	<packaging>jboss-sar</packaging>
 
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>mobicents-diameter-mux-jar</artifactId>
+			<artifactId>restcomm-diameter-mux-jar</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
@@ -36,7 +36,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>mobicents-diameter-mux-${project.version}</finalName>
+		<finalName>restcomm-diameter-mux-${project.version}</finalName>
 		<plugins>
 			<!-- Build SAR -->
 			<plugin>
@@ -153,14 +153,14 @@
 									</fileset>
 								</copy>
 								<!-- The MUX deployment archive -->
-								<copy file="../jar/target/mobicents-diameter-mux-${project.version}.jar" tofile="${basedir}/target/deployments/mobicents-diameter-tmp.zip"/>
-								<zip destfile="${basedir}/target/deployments/mobicents-diameter.zip">
-									<zipfileset src="${basedir}/target/deployments/mobicents-diameter-tmp.zip" excludes="org/mobicents/diameter/stack/DiameterStackMultiplexer.class,org/mobicents/diameter/stack/DiameterStackMultiplexerMBean.class"/>
+								<copy file="../jar/target/restcomm-diameter-mux-${project.version}.jar" tofile="${basedir}/target/deployments/restcomm-diameter-tmp.zip"/>
+								<zip destfile="${basedir}/target/deployments/restcomm-diameter.zip">
+									<zipfileset src="${basedir}/target/deployments/restcomm-diameter-tmp.zip" excludes="org/mobicents/diameter/stack/DiameterStackMultiplexer.class,org/mobicents/diameter/stack/DiameterStackMultiplexerMBean.class"/>
 								</zip>
-								<move file="${basedir}/target/deployments/mobicents-diameter.zip" tofile="${basedir}/target/deployments/mobicents-diameter.jar"/>
-								<touch file="${basedir}/target/deployments/mobicents-diameter.jar.dodeploy"/>
+								<move file="${basedir}/target/deployments/restcomm-diameter.zip" tofile="${basedir}/target/deployments/restcomm-diameter.jar"/>
+								<touch file="${basedir}/target/deployments/restcomm-diameter.jar.dodeploy"/>
 								<!-- Clean up some of the mess -->
-								<delete file="${basedir}/target/deployments/mobicents-diameter-tmp.zip"/>
+								<delete file="${basedir}/target/deployments/restcomm-diameter-tmp.zip"/>
 								<delete dir="target/${project.build.finalName}"/>
 								<delete file="target/${project.build.finalName}.sar"/>
 							</tasks>

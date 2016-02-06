@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">
+%BOOK_ENTITIES;]>
+<section id="mf-Message_Format">
+	<title>Message Format</title>
+	<para>Diameter is a byte based protocol. Each message has a fixed structure, which consists of two parts: header and payload.</para>
+	<para>The message header structure is common for every message. The content is fixed, as is the length. Message header content includes the code, application and certain bit flags, which helps identify the message in Diameter scope.</para>
+	<para>The message payload is built up of AVPs. Its content differs for each command and application, though they all define the Session-ID AVP as mandatory.</para>
+	<figure>
+		<title>Diameter Message Structure</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/dia-Introduction-dia-DiameterPacketFormat.png" format="PNG"/>
+			</imageobject>
+		</mediaobject>
+	</figure>
+	<para>The header has the following fields:</para>
+	<variablelist>
+		<title>Message Headers</title>
+		<varlistentry>
+			<term>Version</term>
+			<listitem>
+				<para>Indicates the Diameter protocol version. This value is always set to <literal>1</literal>.</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Message Length</term>
+			<listitem>
+				<para>Indicates the Diameter message length, including the header fields.</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Flags</term>
+			<listitem>
+				<para>Composed by eight bits, to provide information regarding the message. The first four bits in the flags octet have the following meaning:</para>
+				<itemizedlist>
+					<listitem>
+						<para>R = The message is a request (<literal>1</literal>) or an answer (<literal>0</literal>).</para>
+					</listitem>
+					<listitem>
+						<para>P = The message is proxiable (<literal>1</literal>) and may be proxied, relayed or redirected, or it must be processed locally (<literal>0</literal>).</para>
+					</listitem>
+					<listitem>
+						<para>E = The message is an error message (<literal>1</literal>) or a regular message (<literal>0</literal>).</para>
+					</listitem>
+					<listitem>
+						<para>T = The message is potentially being re-transmitted (<literal>1</literal>) or being sent for the first time (<literal>0</literal>).</para>
+					</listitem>
+				</itemizedlist>
+				<para>The last four bits are reserved for future use, and should be set to <literal>0</literal>.</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Command Code</term>
+			<listitem>
+				<para>Indicates the command associated with the message.</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Application-ID</term>
+			<listitem>
+				<para>Identifies the application to which the message is applicable for. The application is an authentication, accounting, or vendor specific application. The <literal>application-id</literal> in the header must be the same as what is contained in any relevant AVPs in the message.</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Hop-by-Hop ID</term>
+			<listitem>
+				<para>A unique ID that is used to match requests and answers. The header field of the answer message must contain the same value present in the corresponding request. This is how answers are routed back to the peer that sent the message.</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>End-to-End ID</term>
+			<listitem>
+				<para>A time-limited unique ID that is used to to detect duplicate messages. The ID must be unique for at least four minutes. The answer message originator must ensure that this header contains the same value present in the corresponding request.</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+	<para>The message payload is built up from AVPs. Each AVP has a similar structure: a header, and encoded data. Data can be simple (eg, integer, long) or complex (another encoded AVP).</para>
+	<figure>
+		<title>Payload Structure</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/dia-Introduction-dia-DiameterAVPLayout.png" format="PNG"/>
+			</imageobject>
+		</mediaobject>
+	</figure>
+	<variablelist>
+		<title>Payload AVPs</title>
+		<varlistentry>
+			<term>AVP Code</term>
+			<listitem>
+				<para>Uniquely identifies the attribute, by combining the specified code with the value contained within the Vendor-ID header field.</para>
+				<para>AVP numbers 1 to 255 are reserved for RADIUS backwards compatibility, and do not require the Vendor-ID header field. AVP numbers 256 and above are used exclusively for the Diameter protocol, and are allocated by <orgname>IANA</orgname>.</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Flags</term>
+			<listitem>
+				<para>Bit flags that specify how each attribute must be handled. Flags octets have the following structure: V M P r r r r r.</para>
+				<para>A full description is available in <ulink url="http://tools.ietf.org/html/rfc3588#section-4.1">Section 4.1 of RFC3588</ulink>.</para>
+				<para>The first three bits have the following meaning:</para>
+				<variablelist>
+          <varlistentry>
+            <term>V</term>
+            <listitem>
+              <para>If set, indicates that optional octets (Vendor-ID) is present in AVP header.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>M</term>
+            <listitem>
+              <para>If set, it indicates that receiveing peer must understand this AVP or send error answer.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>P</term>
+            <listitem>
+              <para>If set, it indicates the need for encryption for end-to-end security.</para>
+            </listitem>
+          </varlistentry>
+				</variablelist>
+				<para>The last 5 bits are reserved for future use, and should be set to <literal>0</literal>.</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>AVP Length</term>
+			<listitem>
+				<para>Indicates the number of octets in the AVP, including the following information:</para>
+				<itemizedlist>
+					<listitem>
+						<para>AVP Code</para>
+					</listitem>
+					<listitem>
+						<para>AVP Length</para>
+					</listitem>
+					<listitem>
+						<para>AVP Flags</para>
+					</listitem>
+					<listitem>
+						<para>Vendor-ID field (if present)</para>
+					</listitem>
+					<listitem>
+						<para>AVP Data</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Vendor-ID</term>
+			<listitem>
+				<para>An optional octet that identifies the AVP in application space. AVP code and AVP Vendor-ID create a unique identifier for the AVP.</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+</section>

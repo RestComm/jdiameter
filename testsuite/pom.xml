@@ -13,7 +13,7 @@
 	<groupId>org.mobicents.diameter.testsuite</groupId>
 	<artifactId>testsuite-parent</artifactId>
 
-	<name>Mobicents :: Diameter Testsuite :: ${project.artifactId}</name>
+	<name>Restcomm :: Diameter Testsuite :: ${project.artifactId}</name>
 
 	<properties>
 		<!-- Third party -->
@@ -55,7 +55,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.mobicents.diameter</groupId>
-				<artifactId>mobicents-diameter-mux-jar</artifactId>
+				<artifactId>restcomm-diameter-mux-jar</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 

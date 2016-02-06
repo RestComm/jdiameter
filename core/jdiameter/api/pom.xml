@@ -10,7 +10,7 @@
 
 	<artifactId>jdiameter-api</artifactId>
 
-	<name>Mobicents :: Diameter Stack :: ${project.artifactId}</name>
+	<name>Restcomm :: Diameter Stack :: ${project.artifactId}</name>
 
 	<dependencies />
 

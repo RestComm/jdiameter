@@ -8,9 +8,9 @@
 		<version>1.7.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>diameter-core-docs-jdocbook-mobicents</artifactId>
+	<artifactId>diameter-core-docs-jdocbook-restcomm</artifactId>
 
-	<name>Mobicents :: Diameter Documentation :: ${pom.artifactId}</name>
+	<name>Restcomm :: Diameter Documentation :: ${pom.artifactId}</name>
 
 	<packaging>jdocbook</packaging>
 
@@ -30,7 +30,7 @@
 							<artifactItems>
 								<artifactItem>
 									<groupId>${pom.groupId}</groupId>
-									<artifactId>diameter-core-docs-sources-mobicents</artifactId>
+									<artifactId>diameter-core-docs-sources-restcomm</artifactId>
 									<version>${pom.version}</version>
 									<type>jar</type>
 									<overWrite>true</overWrite>
@@ -76,7 +76,7 @@
 						<format>
 							<formatName>pdf</formatName>
 							<stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
-							<finalName>Mobicents_Diameter_Core_User_Guide.pdf</finalName>
+							<finalName>Restcomm_Diameter_Core_User_Guide.pdf</finalName>
 						</format>
 						<format>
 							<formatName>html</formatName>

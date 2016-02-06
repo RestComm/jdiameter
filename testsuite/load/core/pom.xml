@@ -12,7 +12,7 @@
 	<groupId>org.mobicents.servers.diameter.testsuite</groupId>
 	<artifactId>testsuite-load</artifactId>
 
-	<name>Mobicents :: Diameter Testsuite :: ${project.artifactId}</name>
+	<name>Restcomm :: Diameter Testsuite :: ${project.artifactId}</name>
 
 	<dependencies>
 		<dependency>
@@ -37,7 +37,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.mobicents.servers.diameter</groupId>
-			<artifactId>mobicents-diameter-mux-jar</artifactId>
+			<artifactId>restcomm-diameter-mux-jar</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -142,7 +142,7 @@
 
 										<artifactItem>
 											<groupId>org.mobicents.servers.diameter</groupId>
-											<artifactId>mobicents-diameter-mux-jar</artifactId>
+											<artifactId>restcomm-diameter-mux-jar</artifactId>
 											<type>jar</type>
 											<overWrite>true</overWrite>
 											<outputDirectory>${project.build.directory}/run</outputDirectory>

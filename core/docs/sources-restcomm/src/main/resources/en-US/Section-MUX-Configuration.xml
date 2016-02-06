@@ -1,0 +1,35 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">%BOOK_ENTITIES;]>
+
+<section id="mux-configuration">
+
+	<title>Diameter Multiplexer (MUX) Configuration</title>
+	<para>MUX requires three configuration files:</para>
+	<variablelist>
+		<varlistentry>
+			<term>
+				<filename>jboss-service.xml</filename>
+			</term>
+			<listitem>
+				<para>This file is specific to SAR. Please refer to the <application>&JEE.PLATFORM;</application> manual for explanation. The file binds Diameter MUX under the following JMX object name by default: <literal>diameter.mobicents:service=DiameterStackMultiplexer</literal>.</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>
+				<filename>jdiameter-config.xml</filename>
+			</term>
+			<listitem>
+				<para>This file configures the stack exposed by MUX. Please refer to <xref linkend="jdiameter-configuration" /> for details. It is located in <filename>mobicents-diameter-mux-&THIS.VERSION;.sar/config</filename>.</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>
+				<filename>dictionary.xml</filename>
+			</term>
+			<listitem>
+				<para>This file configures the dictionary. Its structure and content is identical to the file described in <xref linkend="jdiameter-validator-configuration" />.</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+
+</section>

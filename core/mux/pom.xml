@@ -9,12 +9,12 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>mobicents-diameter-mux-parent</artifactId>
+	<artifactId>restcomm-diameter-mux-parent</artifactId>
 
-	<name>Mobicents :: Diameter Multiplexer :: ${project.artifactId}</name>
+	<name>Restcomm :: Diameter Multiplexer :: ${project.artifactId}</name>
 
 	<properties>
-		<!-- Mobicents Diameter Components Versions -->
+		<!-- Restcomm Diameter Components Versions -->
 		<jdiameter.version>1.5.9.0-build538-SNAPSHOT</jdiameter.version>
 		<jdiameter-ha.version>1.1.0-SNAPSHOT</jdiameter-ha.version>
 	</properties>

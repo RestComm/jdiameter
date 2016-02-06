@@ -13,12 +13,12 @@
 	<artifactId>charging-server-simulator</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
-	<name>Mobicents :: Examples :: ${project.artifactId}</name>
+	<name>Restcomm :: Examples :: ${project.artifactId}</name>
 
 	<properties>
 		<!-- Mobicents Diameter Components Versions -->
-		<mobicents.diameter.jdiameter.version>1.7.0-SNAPSHOT</mobicents.diameter.jdiameter.version>
-		<mobicents.diameter.mux.version>1.7.0-SNAPSHOT</mobicents.diameter.mux.version>
+		<restcomm.diameter.jdiameter.version>1.7.0-SNAPSHOT</restcomm.diameter.jdiameter.version>
+		<restcomm.diameter.mux.version>1.7.0-SNAPSHOT</restcomm.diameter.mux.version>
 		<!-- Thirdparty Dependencies Versions -->
 		<slf4j.version>1.5.8</slf4j.version>
 		<jbosscache.version>3.2.5.GA</jbosscache.version>
@@ -70,17 +70,17 @@
 		<dependency>
 			<groupId>org.mobicents.diameter</groupId>
 			<artifactId>jdiameter-api</artifactId>
-			<version>${mobicents.diameter.jdiameter.version}</version>
+			<version>${restcomm.diameter.jdiameter.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mobicents.diameter</groupId>
 			<artifactId>jdiameter-impl</artifactId>
-			<version>${mobicents.diameter.jdiameter.version}</version>
+			<version>${restcomm.diameter.jdiameter.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mobicents.diameter</groupId>
-			<artifactId>mobicents-diameter-mux-jar</artifactId>
-			<version>${mobicents.diameter.mux.version}</version>
+			<artifactId>restcomm-diameter-mux-jar</artifactId>
+			<version>${restcomm.diameter.mux.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -98,7 +98,6 @@
 						<configuration>
 							<autoVersionSubmodules>true</autoVersionSubmodules>
 							<resume>false</resume>
-							<tagBase>https://mobicents.googlecode.com/svn/tags/servers/diameter/examples/charging-server-simulator</tagBase>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -112,7 +111,7 @@
 	</profiles>
 
 	<build>
-		<finalName>mobicents-dcs-b${buildNumber}</finalName>
+		<finalName>restcomm-dcs-b${buildNumber}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>

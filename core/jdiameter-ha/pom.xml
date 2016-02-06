@@ -13,7 +13,7 @@
 
 	<packaging>pom</packaging>
 
-	<name>Mobicents :: Diameter Stack HA :: ${project.artifactId}</name>
+	<name>Restcomm :: Diameter Stack HA :: ${project.artifactId}</name>
 
 	<modules>
 		<module>api</module>
@@ -22,7 +22,7 @@
 
 	<properties>
 		<jdiameter.version>1.5.9.0-build538-SNAPSHOT</jdiameter.version>
-		<mobicents.cluster.version>1.15.11</mobicents.cluster.version>
+		<restcomm.cluster.version>1.15.11</restcomm.cluster.version>
 	</properties>
 
 	<dependencyManagement>
@@ -40,17 +40,17 @@
 			<dependency>
 				<groupId>org.mobicents.cluster</groupId>
 				<artifactId>core</artifactId>
-				<version>${mobicents.cluster.version}</version>
+				<version>${restcomm.cluster.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mobicents.cluster</groupId>
 				<artifactId>cache</artifactId>
-				<version>${mobicents.cluster.version}</version>
+				<version>${restcomm.cluster.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mobicents.cluster</groupId>
 				<artifactId>timers</artifactId>
-				<version>${mobicents.cluster.version}</version>
+				<version>${restcomm.cluster.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -72,7 +72,7 @@
 				<inherited>false</inherited>
 				<executions />
 				<configuration>
-					<eclipseProjectName>mobicents-diameter-jdiameter-ha</eclipseProjectName>
+					<eclipseProjectName>restcomm-diameter-jdiameter-ha</eclipseProjectName>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -2,12 +2,12 @@
 <Configuration xmlns="http://www.jdiameter.org/jdiameter-server">
 
   <LocalPeer>
-    <URI value="aaa://uas.mobicents.org:3868" />
-    <!-- URI value="aaa://mobicents.open-ims.test:1812" /--> <!-- OpenIMS Example -->
+    <URI value="aaa://uas.restcomm.org:3868" />
+    <!-- URI value="aaa://restcomm.open-ims.test:1812" /--> <!-- OpenIMS Example -->
     <IPAddresses>
       <IPAddress value="127.0.0.1" />
     </IPAddresses>
-    <Realm value="mobicents.org" />
+    <Realm value="restcomm.org" />
     <!-- Realm value="open-ims.test" / --> <!-- OpenIMS Example -->
     <VendorID value="193" />
     <ProductName value="jDiameter" />
@@ -73,14 +73,14 @@
       <!-- Peer name="aaa://127.0.0.1:21812" attempt_connect="true" rating="1" /-->
       
       <!-- Sh / CCA / Cx/Dx -->
-      <!-- Peer name="aaa://uac.mobicents.org" attempt_connect="false" rating="1" /-->
+      <!-- Peer name="aaa://uac.restcomm.org" attempt_connect="false" rating="1" /-->
 
       <!-- Sh (OpenIMS) -->
       <!-- Peer name="aaa://hss.open-ims.test" attempt_connect="true" rating="1" /-->
     </Peers>
     <Realms>
       <!-- Ericsson SDK Client/Emulator and Testsuite -->
-      <Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+      <Realm name="restcomm.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
         <ApplicationID>
           <VendorId value="193" />
           <AuthApplId value="0" />
@@ -89,7 +89,7 @@
       </Realm>
 
       <!-- Sh -->
-      <!-- Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+      <!-- Realm name="restcomm.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
         <ApplicationID>
           <VendorId value="10415" />
           <AuthApplId value="16777217" />
@@ -98,7 +98,7 @@
       </Realm-->
       
       <!-- Sh (OpenIMS) -->
-      <!-- Realm name="open-ims.test" peers="hss.open-ims.test,mobicents.open-ims.test" local_action="LOCAL" dynamic="false" exp_time="1">
+      <!-- Realm name="open-ims.test" peers="hss.open-ims.test,restcomm.open-ims.test" local_action="LOCAL" dynamic="false" exp_time="1">
         <ApplicationID>
           <VendorId value="10415" />
           <AuthApplId value="16777217" />
@@ -107,7 +107,7 @@
       </Realm-->
       
       <!--  CCA -->
-      <!-- Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+      <!-- Realm name="restcomm.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
         <ApplicationID>
           <VendorId value="0" />
           <AuthApplId value="4" />
@@ -116,7 +116,7 @@
       </Realm -->
       
       <!-- Cx/Dx -->
-      <!-- Realm name="mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+      <!-- Realm name="restcomm.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
         <ApplicationID>
           <VendorId value="10415" />
           <AuthApplId value="16777216" />

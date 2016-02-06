@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">
+%BOOK_ENTITIES;
+]>
+
+<chapter id="jdiameter">
+
+	<title>&THIS.PLATFORM; Diameter Stack</title>
+
+	<para>The Diameter Stack is the core component of the presented Diameter solution. It performs all necessary tasks to allow user interaction with the Diameter network. It manages the state of diameter peers and allows to route messages between them. For more details, refer to <ulink url="http://tools.ietf.org/html/rfc3588">RFC 3588</ulink>.</para>
+	<para>The Diameter Stack currently supports the following application sessions:</para>
+	<itemizedlist>
+		<listitem>
+			<para>Base</para>
+		</listitem>
+		<listitem>
+			<para>Credit Control Application (CCA)</para>
+		</listitem>
+		<listitem>
+			<para>Sh</para>
+		</listitem>
+		<listitem>
+			<para>Ro</para>
+		</listitem>
+		<listitem>
+			<para>Rf</para>
+		</listitem>
+		<listitem>
+			<para>Cx/Dx</para>
+		</listitem>
+		<listitem>
+			<para>Gx</para>
+		</listitem>
+		<listitem>
+			<para>Gq'</para>
+		</listitem>
+		<listitem>
+			<para>Rx</para>
+		</listitem>
+	</itemizedlist>
+	
+
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Section-JDiameter-Design_Overview.xml"
+		encoding="UTF-8" />
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Section-JDiameter-Setup.xml"
+		encoding="UTF-8" />
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Section-JDiameter-Configuration.xml"
+		encoding="UTF-8" />
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Section-JDiameter-Source_Overview.xml"
+		encoding="UTF-8" />
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Section-JDiameter-Validator.xml"
+		encoding="UTF-8" />
+
+</chapter>

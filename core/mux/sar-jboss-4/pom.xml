@@ -4,28 +4,28 @@
 
 	<parent>
 		<groupId>org.mobicents.diameter</groupId>
-		<artifactId>mobicents-diameter-mux-parent</artifactId>
+		<artifactId>restcomm-diameter-mux-parent</artifactId>
 		<version>1.7.0-SNAPSHOT</version> 
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	
-	<artifactId>mobicents-diameter-mux-sar-jboss-4</artifactId>
+	<artifactId>restcomm-diameter-mux-sar-jboss-4</artifactId>
 
-	<name>Mobicents :: Diameter Multiplexer :: ${project.artifactId}</name>
+	<name>Restcomm :: Diameter Multiplexer :: ${project.artifactId}</name>
 	
 	<packaging>jboss-sar</packaging>
 
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>mobicents-diameter-mux-jar</artifactId>
+			<artifactId>restcomm-diameter-mux-jar</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 
 	<build>
-		<finalName>mobicents-diameter-mux-${project.version}</finalName>
+		<finalName>restcomm-diameter-mux-${project.version}</finalName>
 		<plugins>
 			<!-- Copy common resources, config files -->
 			<plugin>

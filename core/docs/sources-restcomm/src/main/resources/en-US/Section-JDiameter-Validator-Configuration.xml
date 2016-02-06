@@ -1,0 +1,456 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">%BOOK_ENTITIES;]>
+
+<section id="jdiameter-validator-configuration">
+
+	<title>Validator Configuration</title>
+
+	<para>The Validator is configured with a single XML file. This file contains the structure definition for both messages and AVPs.</para>
+	<para>Upon creation of the Diameter Stack, the validator is initialized. It performs the initialization by looking up the <filename>dictionary.xml</filename> file in classpath.</para>
+	<note>
+		<para>
+			The configuration file contains more data that <literal>Validator</literal> uses to build its data base. This is because the <literal>Dictionary</literal> uses the same file to configure itself. It reuses the AVP definitions, with some extra information like AVP type and flags.
+		</para>
+	</note>
+
+	<para>The configuration file has the following structure:</para>
+	<programlisting role="XML">
+&lt;dictonary&gt;
+	&lt;validator enabled=&quot;true|false&quot; sendLevel=&quot;OFF|MESSAGE|ALL&quot; receiveLevel=&quot;OFF|MESSAGE|ALL&quot; /&gt;
+	&lt;vendor name=&quot;&quot; vendor-id=&quot;&quot; code=&quot;&quot;/&gt;
+	&lt;typedefn type-name=&quot;&quot; type-parent=&quot;&quot;/&gt;
+	&lt;application id=&quot;&quot; name=&quot;&quot;&gt;
+		&lt;avp ...&gt;
+			&lt;type type-name=&quot;&quot;/&gt;
+			&lt;enum name=&quot;&quot; code=&quot;&quot;/&gt;
+			&lt;grouped&gt;
+				&lt;gavp name=&quot;&quot;/&gt;
+			&lt;grouped/&gt;
+		&lt;avp/&gt;
+		&lt;command name=&quot;&quot; code=&quot;&quot; request=&quot;true|false&quot;/&gt;
+		&lt;avp ...&gt;
+			&lt;type type-name=&quot;&quot;/&gt;
+			&lt;enum name=&quot;&quot; code=&quot;&quot;/&gt;
+			&lt;grouped&gt;
+				&lt;gavp name=&quot;&quot;/&gt;
+			&lt;grouped/&gt;
+		&lt;avp/&gt;
+	&lt;application&gt;
+&lt;dictionary/&gt;</programlisting>
+
+  <variablelist>
+    <varlistentry>
+      <term>&lt;dictionary&gt;</term>
+      <listitem>
+        <para>
+        The root element that contains the child elements comprising the validator and dictionary components. This element does not support any attributes.
+        </para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;validator&gt;</term>
+      <listitem>
+        <para>
+        Specifies whether message validation is activated for sent and received stack messages. The element supports the following optional attributes:
+        </para>
+        <variablelist>
+          <varlistentry>
+            <term>enabled</term>
+            <listitem>
+              <para>Specifies whether the validator is activated or deactivated. If not specified, the validator is deactivated.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>sendLevel</term>
+            <listitem>
+              <para>Determines the validation level for messages sent by the stack instance. Values determine if sent messages are not validated at all (<literal>OFF</literal>), only message level AVPs are checked (<literal>MESSAGE</literal>) or all AVPs are checked (<literal>ALL</literal>).</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>receiveLevel</term>
+            <listitem>
+              <para>Determines the validation level for messages received by the stack instance. Values determine if sent messages are not validated at all (<literal>OFF</literal>), only message level AVPs are checked (<literal>MESSAGE</literal>) or all AVPs are checked (<literal>ALL</literal>).</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;vendor&gt;</term>
+      <listitem>
+        <para>
+        Optional element that specifies the mapping between the vendor name, vendor ID, and vendor code. The element supports the following required attributes:
+        </para>
+        <variablelist>
+          <varlistentry>
+            <term>name</term>
+            <listitem>
+              <para>Specifies the vendor name. For example, &quot;Hewlett Packard&quot;.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>vendor-id</term>
+            <listitem>
+              <para>Specifies the unique ID associated with the vendor. For example, &quot;HP&quot;.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>code</term>
+            <listitem>
+              <para>Specifies the alpha-numeric code allocated to the vendor by <orgname>IANA</orgname>. For example, &quot;11&quot;. The value must be unique for each &lt;vendor&gt; declaration.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+	<example id="example-Vendor_XML_Attributes">
+		<title>&lt;vendor&gt; XML Attributes</title>
+		<programlisting role="XML">...
+&lt;vendor vendor-id=&quot;None&quot; code=&quot;0&quot; name=&quot;None&quot; /&gt;
+&lt;vendor vendor-id=&quot;HP&quot; code=&quot;11&quot; name=&quot;Hewlett Packard&quot; /&gt;
+&lt;vendor vendor-id=&quot;Merit&quot; code=&quot;61&quot; name=&quot;Merit Networks&quot; /&gt;
+&lt;vendor vendor-id=&quot;Sun&quot; code=&quot;42&quot; name=&quot;Sun Microsystems, Inc.&quot; /&gt;
+&lt;vendor vendor-id=&quot;USR&quot; code=&quot;429&quot; name=&quot;US Robotics Corp.&quot; /&gt;
+&lt;vendor vendor-id=&quot;3GPP2&quot; code=&quot;5535&quot; name=&quot;3GPP2&quot; /&gt;
+&lt;vendor vendor-id=&quot;TGPP&quot; code=&quot;10415&quot; name=&quot;3GPP&quot; /&gt;
+&lt;vendor vendor-id=&quot;TGPPCX&quot; code=&quot;16777216&quot; name=&quot;3GPP CX/DX&quot; /&gt;
+&lt;vendor vendor-id=&quot;TGPPSH&quot; code=&quot;16777217&quot; name=&quot;3GPP SH&quot; /&gt;
+&lt;vendor vendor-id=&quot;Ericsson&quot; code=&quot;193&quot; name=&quot;Ericsson&quot; /&gt;
+&lt;vendor vendor-id=&quot;ETSI&quot; code=&quot;13019&quot; name=&quot;ETSI&quot; /&gt;
+&lt;vendor vendor-id=&quot;Vodafone&quot; code=&quot;12645&quot; name=&quot;Vodafone&quot; /&gt;</programlisting>
+	</example>
+
+	<!--***TODO: Developer: Correct the <typedefn> section so it meets RFC 3588 requirements. Content: refs in comments mayeb should be removed?--> 
+  <variablelist>
+    <varlistentry>
+      <term>&lt;typedefn&gt;</term>
+      <listitem>
+        <para>
+        Defines the simple Attribute Value Pair (AVP) types. The element supports the following required attributes:
+        </para>
+        <variablelist>
+          <varlistentry>
+            <term>type-name</term>
+            <listitem>
+              <para>Specifies a type name in accordance with the acceptable base types defined in RFC 3588. For example; &quot;Enumerated&quot;, &quot;OctetString&quot;, &quot;Integer32&quot;.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>type-parent</term>
+            <listitem>
+              <para>Specifies the parent type name used to define the base characteristics of the type. The values are restricted to defined &lt;typedefn&gt; elements. For example; &quot;OctetString&quot;, &quot;UTF8String&quot;, &quot;IPAddress&quot;.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+	<example id="example-Typedefn_XML_Attributes">
+		<title>&lt;typedefn&gt; XML Attributes</title>
+		<programlisting role="XML">&lt;!-- Primitive types, see http://tools.ietf.org/html/rfc3588#section-4.2 --&gt;
+&lt;typedefn type-name=&quot;OctetString&quot; /&gt;
+&lt;typedefn type-name=&quot;Float64&quot; /&gt;
+&lt;typedefn type-name=&quot;Float32&quot; /&gt;
+&lt;typedefn type-name=&quot;Integer64&quot; /&gt;
+&lt;typedefn type-name=&quot;Integer32&quot; /&gt;
+&lt;typedefn type-name=&quot;Unsigned64&quot; /&gt;
+&lt;typedefn type-name=&quot;Unsigned32&quot; /&gt;
+
+&lt;!-- derived avp types, see http://tools.ietf.org/html/rfc3588#section-4.3 --&gt;
+&lt;typedefn type-name=&quot;Address&quot; type-parent=&quot;OctetString&quot; /&gt;
+&lt;typedefn type-name=&quot;Time&quot; type-parent=&quot;OctetString&quot; /&gt;
+&lt;typedefn type-name=&quot;UTF8String&quot; type-parent=&quot;OctetString&quot; /&gt;
+&lt;typedefn type-name=&quot;DiameterIdentity&quot; type-parent=&quot;OctetString&quot; /&gt;</programlisting>
+	</example>
+  <variablelist>
+    <varlistentry>
+      <term>&lt;application&gt;</term>
+      <listitem>
+        <para>
+        Defines the specific applications used within the dictionary. Two child elements are supported by &lt;application&gt;: &lt;avp&gt; and &lt;command&gt;.
+        </para>
+        <para>
+        The &lt;application&gt; element supports the following attributes:
+        </para>
+        <variablelist>
+          <varlistentry>
+            <term>id</term>
+            <listitem>
+              <para>Specifies the unique ID allocated to the application. The attribute is used in all messages and forms part of the message header.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>name</term>
+            <listitem>
+              <para>Optional attribute that specifies the logical name of the application.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>uri</term>
+            <listitem>
+              <para>Optional attribute that specifies a link to additional application information.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+	<example id="example-Application_XML_Attributes">
+		<title>&lt;application&gt; XML Attributes</title>
+		<programlisting role="XML">&lt;application id=&quot;16777216&quot; name=&quot;3GPP Cx/Dx&quot; uri=&quot;http://www.ietf.org/rfc/rfc3588.txt?number=3588&quot;&gt;</programlisting>
+	</example>
+  <variablelist>
+    <varlistentry>
+      <term>&lt;avp&gt;</term>
+      <listitem>
+        <para>
+        Element containing information necessary to configure the Attribute Value Pairs. <xref linkend="table-avp_attributes"/> contains the complete list of supported attributes, and their available values (if applicable).
+        </para>
+        <para>
+        The &lt;avp&gt; element supports a number of child elements that are used to set finer parameters for the individual AVP. The supported elements are &lt;type&gt;, &lt;enum&gt;, and &lt;grouped&gt;.
+        </para>
+        <note>
+          <para>
+          Different sets of elements are supported by &lt;avp&gt; depending on its position in the dictionary.xml file.
+          </para>
+        </note>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+	<example id="example-Avp_Child_Elements_And_Attributes">
+		<title>&lt;avp&gt; Child Elements and Attributes</title>
+		<programlisting role="XML">&lt;avp name=&quot;Server-Assignment-Type&quot; code=&quot;614&quot; mandatory=&quot;must&quot; vendor-bit=&quot;must&quot; 
+ vendor-id=&quot;TGPP&quot; may-encrypt=&quot;no&quot;&gt;
+	 &lt;type type-name=&quot;Unsigned32&quot; /&gt;
+	 &lt;enum name=&quot;NO_ASSIGMENT&quot; code=&quot;0&quot; /&gt;
+	 &lt;enum name=&quot;REGISTRATION&quot; code=&quot;1&quot; /&gt;
+	 &lt;enum name=&quot;RE_REGISTRATION&quot; code=&quot;2&quot; /&gt;
+	 &lt;enum name=&quot;UNREGISTERED_USER&quot; code=&quot;3&quot; /&gt;
+	 &lt;grouped&gt;
+		 &lt;gavp name=&quot;SIP-Item-Number&quot; multiplicity=&quot;0-1&quot;/&gt;
+		 &lt;gavp name=&quot;SIP-Authentication-Scheme&quot; multiplicity=&quot;0-1&quot;/&gt;
+		 &lt;gavp name=&quot;SIP-Authenticate&quot; multiplicity=&quot;0-1&quot;/&gt;
+		 &lt;gavp name=&quot;Line-Identifier&quot; multiplicity=&quot;0+&quot;/&gt;
+	 &lt;/grouped&gt;
+&lt;/avp&gt;</programlisting>
+	</example>
+  <variablelist>
+    <varlistentry>
+      <term>&lt;type&gt;</term>
+      <listitem>
+        <para>
+        Child element of &lt;avp&gt; that is used to match the AVP with the AVP type as defined in the &lt;typedefn&gt; element. The element supports the following mandatory attribute:
+        </para>
+        <variablelist>
+          <varlistentry>
+            <term>type-name</term>
+            <listitem>
+              <para>
+              Specifies the type-name of the element. This is used to match the type-name value in the &lt;typedefn&gt; element.
+              </para>
+              <note>
+                <para>
+                &lt;type&gt; is ignored if the &lt;avp&gt; element contains the &lt;grouped&gt; element.
+                </para>
+              </note>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;enum&gt;</term>
+      <listitem>
+        <para>
+        Child element of &lt;avp&gt; that specifies the enumeration value for the specified AVP. &lt;enum&gt; is used only when the type-name attribute of &lt;type&gt; is specified. The element supports the following mandatory attributes:
+        </para>
+        <variablelist>
+          <varlistentry>
+            <term>name</term>
+            <listitem>
+              <para>Specifies the name of a constant value that applies to the AVP.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>code</term>
+            <listitem>
+              <para>Specifies the integer value associated with the name of the constant. The value is passed as a value of the AVP, and maps to the name attribute.</para>
+              <note>
+                <para>&lt;enum&gt; is ignored if the &lt;avp&gt; element contains the &lt;grouped&gt; element.</para>
+              </note>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>&lt;grouped&gt;</term>
+      <listitem>
+        <para>
+        Child element of &lt;avp&gt; that specifies the AVP is a grouped type. A grouped AVP is one that has no &lt;typedefn&gt; element present. The element does not support any attributes, however the &lt;gavp&gt; element is allowed as a child element.
+        </para>
+        <para>
+        The &lt;gavp&gt;, which specifies a reference to a grouped AVP, supports one mandatory attribute:
+        </para>
+        <variablelist>
+          <varlistentry>
+            <term>name</term>
+            <listitem>
+              <para>
+              Specifies the name of the grouped AVP member. The value must match the defined AVP name.
+              </para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+	<table frame="all" pgwide="1" id="table-avp_attributes">
+		<title>&lt;avp&gt; Attributes</title>
+		<tgroup cols="3" colsep="1">
+			<colspec colname="c1"/>
+			<colspec colname="c2"/>
+			<colspec colname="c3"/>
+			<thead>
+				<row>
+					<entry>Attribute Name (optional in brackets)</entry>
+					<entry>Explicit Values (default in brackets)</entry>
+					<entry>Description</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry>name</entry>
+					<entry/>
+					<entry>Specifies the name of the AVP. This is used to match the AVP definition to any grouped AVP references. For further information about grouped AVPs, refer to the element description in this section.</entry>
+				</row>
+				<row>
+					<entry>code</entry>
+					<entry/>
+					<entry>Specifies the integer code of the AVP.</entry>
+				</row>
+				<row>
+					<entry>(vendor-id)</entry>
+					<entry>(none)</entry>
+					<entry>Used to match the vendor ID reference to the value defined in the &lt;vendor&gt; element.</entry>
+				</row>
+				<row>
+					<entry>(multiplicity)</entry>
+					<entry/>
+					<entry>Specifies the number of acceptable AVPs in a message using an explicit value. </entry>
+				</row>
+				<row>
+					<entry/>
+					<entry>0</entry>
+					<entry>An AVP <emphasis>must not</emphasis> be present in the message.</entry>
+				</row>
+				<row>
+					<entry/>
+					<entry>(0+)</entry>
+					<entry>Zero or more instances of the AVP <emphasis>must be</emphasis> present in the message.</entry>
+				</row>
+				<row>
+					<entry/>
+					<entry>0-1</entry>
+					<entry>Zero, or one instance of the AVP <emphasis>may be</emphasis> present in the message. An error occurs if the message contains more than one instance of the AVP.</entry>
+				</row>
+				<row>
+					<entry/>
+					<entry>1</entry>
+					<entry>One instance of the AVP <emphasis>must be</emphasis> present in the message.</entry>
+				</row>
+				<row>
+					<entry/>
+					<entry>1+</entry>
+					<entry>At least one instance of the AVP <emphasis>must be</emphasis> present in the message.</entry>
+				</row>
+				<row>
+					<entry>may-encrypt</entry>
+					<entry>Yes | (No)</entry>
+					<entry>Specifies whether the AVP can be encrypted.</entry>
+				</row>
+				<row>
+					<entry>protected</entry>
+					<entry>may | must | mustnot</entry>
+					<entry>Determines actual state of AVP that is expected, if it MUST be encrypted , may or MUST NOT.</entry>
+				</row>
+				<row>
+					<entry>vendor-bit</entry>
+					<entry>must | mustnot</entry>
+					<entry>Specifies whether the Vendor ID should be set.</entry>
+				</row>
+				<row>
+					<entry>mandatory</entry>
+					<entry>may | must | mustnot</entry>
+					<entry>Determines if support for this AVP is mandatory in order to consume/process message.</entry>
+				</row>
+				<row>
+					<entry>vendor</entry>
+					<entry/>
+					<entry>Specifies the defined vendor code, which is used by the &lt;command&gt; child element.</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</table>
+
+	<example id="example-Avp_XML_Attributes">
+		<title>&lt;avp&gt; XML Attributes</title>
+		<programlisting role="XML">&lt;!-- MUST --&gt;
+&lt;avp name=&quot;Session-Id&quot; code=&quot;263&quot; vendor=&quot;0&quot; multiplicity=&quot;1&quot; index=&quot;0&quot; /&gt;
+&lt;avp name=&quot;Auth-Session-State&quot; code=&quot;277&quot; vendor=&quot;0&quot; multiplicity=&quot;1&quot; index=&quot;-1&quot; /&gt;
+
+&lt;!-- MAY --&gt;
+&lt;avp name=&quot;Destination-Host&quot; code=&quot;293&quot; vendor=&quot;0&quot; multiplicity=&quot;0-1&quot; index=&quot;-1&quot; /&gt;
+&lt;avp name=&quot;Supported-Features&quot; code=&quot;628&quot; vendor=&quot;10415&quot; multiplicity=&quot;0+&quot; index=&quot;-1&quot; /&gt;
+
+&lt;!-- FORBBIDEN --&gt;
+&lt;avp name=&quot;Auth-Application-Id&quot; code=&quot;258&quot; vendor=&quot;0&quot; multiplicity=&quot;0&quot; index=&quot;-1&quot; /&gt;
+&lt;avp name=&quot;Error-Reporting-Host&quot; code=&quot;294&quot; vendor=&quot;0&quot; multiplicity=&quot;0&quot; index=&quot;-1&quot; /&gt;</programlisting>
+	</example>
+  <variablelist>
+    <varlistentry>
+      <term>&lt;command&gt;</term>
+      <listitem>
+        <para>
+        Specifies the command for the application. The element supports the &lt;avp&gt; element, which specifies the structure of the command. The element supports the following attributes:
+        </para>
+        <variablelist>
+          <varlistentry>
+            <term>name</term>
+            <listitem>
+              <para>
+              Optional parameter that specifies the message name for descriptive purposes.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>code</term>
+            <listitem>
+              <para>
+              Mandatory parameter that specifies the integer code of the message.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>request</term>
+            <listitem>
+              <para>
+              Mandatory parameter that specifies whether the declared command is a request or answer. The available values are &quot;true&quot; (request) or &quot;false&quot; (answer).
+              </para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+	<note>
+		<para>If the &lt;avp&gt; element is specified in &lt;command&gt;, it does not support any child elements. The &lt;avp&gt; element only refers to defined AVPs when used in this context.</para>
+	</note>
+	<example id="example-Command_Elements_And_Attributes">
+		<title>&lt;command&gt; Elements and Attributes</title>
+		<programlisting role="XML">&lt;command name=&quot;User-Authorization&quot; code=&quot;300&quot; vendor-id=&quot;TGPP&quot; request=&quot;true&quot;&gt;
+	&lt;avp name=&quot;Server-Assignment-Type&quot; code=&quot;614&quot; mandatory=&quot;must&quot; vendor-bit=&quot;must&quot; vendor-id=&quot;TGPP&quot; may-encrypt=&quot;no&quot;/&gt;
+&lt;/command&gt;</programlisting>
+	</example>
+</section>

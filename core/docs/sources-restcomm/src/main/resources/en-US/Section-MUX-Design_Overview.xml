@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">%BOOK_ENTITIES;]>
+
+<section id="mux-design">
+	<title>Diameter Multiplexer (MUX) Design</title>
+	<para>
+		MUX is a simple service provided on behalf of the Stack. Entities interested in receiving messages for certain diameter applications register in MUX. Upon registration, the entity passes a set of application IDs. Based on the message content and registered listeners, MUX either drops the message or passes it to the proper listener. MUX checks application IDs present in the message to match the target listener.
+	</para>
+	<figure>
+		<title>Diameter Multiplexer (MUX) Design Overview</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata scalefit="1" width="100%" contentdepth="100%" align="center" fileref="images/DIA_2_x_MUX_design.png" format="PNG" />
+			</imageobject>
+		</mediaobject>
+	</figure>
+</section>

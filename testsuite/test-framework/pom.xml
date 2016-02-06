@@ -10,12 +10,12 @@
 
 	<artifactId>testsuite-test-framework</artifactId>
 
-	<name>Mobicents :: Diameter Testsuite :: ${project.artifactId}</name>
+	<name>Restcomm :: Diameter Testsuite :: ${project.artifactId}</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.mobicents.diameter</groupId>
-			<artifactId>mobicents-diameter-mux-jar</artifactId>
+			<artifactId>restcomm-diameter-mux-jar</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>

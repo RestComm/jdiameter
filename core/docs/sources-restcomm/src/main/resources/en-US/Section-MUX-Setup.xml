@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">%BOOK_ENTITIES;]>
+
+<section id="MUX-setup">
+
+	<title>Diameter Multiplexer (MUX) Setup</title>
+	<section id="MUX-preinstall_requirements_and_prerequisites">
+		<title>Pre-Install Requirements and Prerequisites</title>
+		<para>Ensure that the following requirements have been met before continuing with the installation process.</para>
+		<section id="MUX-hardware_requirements">
+			<title>Hardware Requirements</title>
+			<para>MUX does not have any hardware requirements.</para>
+		</section>
+		<section id="MUX-software_prerequisites">
+			<title>Software Prerequisites</title>
+			<para>MUX must be deployed either in &JEE.PLATFORM; v4.x or v5.x. However it is possible to adapt configuration files and run in any JMX container.</para>
+		</section>
+	</section>
+	<section id="MUX-source_code">
+		<title>Source Code</title>
+		<para>This section provides instructions on how to obtain and build the &THIS.PLATFORM; Diameter MUX from source code.</para>
+
+		<section id="MUX-release_source_building">
+			<title>Release Source Code Building</title>
+			<procedure>
+				<step>
+					<title>Downloading the source code</title>
+					<important>
+						<para>Subversion is used to manage its source code. Instructions for using Subversion, including installation, can be found at <ulink url="http://svnbook.red-bean.com" />.</para>
+					</important>
+					<para>Use SVN to checkout a specific release source. The base URL is &THIS.MUX_RELEASE_SOURCE_CODE_URL;. Then add the specific release version, for example &THIS.VERSION;.</para>
+					<programlisting>[usr]$ svn co &THIS.MUX_RELEASE_SOURCE_CODE_URL;/&THIS.VERSION; &THIS.DIRNAME.MUX;-&THIS.VERSION;</programlisting>
+				</step>
+				<step>
+					<title>Building the source code</title>
+					<important>
+						<para>Maven 2.0.9 (or higher) is used to build the release. Instructions for using Maven2, including installation, can be found at <ulink url="http://maven.apache.org" />.</para>
+					</important>
+					<para>Use Maven to build the deployable unit binary.</para>
+					<programlisting>
+						[usr]$ cd &THIS.DIRNAME.MUX;-&THIS.VERSION;
+						[usr]$ mvn install
+					</programlisting>
+					<para>Once the process finishes you should have the SAR built. If the <varname>JBOSS_HOME</varname> environment variable is set, the <acronym>SAR</acronym> will be deployed in the container after execution.</para>
+				</step>
+			</procedure>
+			<note>
+				<para>By default &THIS.PLATFORM; Diameter MUX; deploys in the &JEE.PLATFORM; v5.x <acronym>SAR</acronym>. To change it, run <application>maven</application> with the profile switch command: <parameter>-Pjboss4</parameter>.</para>
+			</note>
+		</section>
+
+		<section id="MUX-trunk_source_building">
+			<title>Development Trunk Source Building</title>
+			<para>Follow the <xref linkend="MUX-release_source_building" /> procedure, replacing the SVN source code URL with &THIS.MUX_TRUNK_SOURCE_CODE_URL;.</para>
+		</section>
+
+	</section>
+</section>

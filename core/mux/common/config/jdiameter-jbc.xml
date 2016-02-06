@@ -9,7 +9,7 @@
 		transactionManagerLookupClass="org.jboss.cache.transaction.JBossTransactionManagerLookup" />
 	<jmxStatistics 
 		enabled="false" />
-	<clustering clusterName="${jboss.partition.name:DefaultPartition}-mobicents-diameter">
+	<clustering clusterName="${jboss.partition.name:DefaultPartition}-restcomm-diameter">
 		<async />
 		<jgroupsConfig multiplexerStack="${jboss.default.jgroups.stack:udp}"/>
 	</clustering>

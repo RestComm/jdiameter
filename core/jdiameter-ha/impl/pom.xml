@@ -11,7 +11,7 @@
 
 	<artifactId>jdiameter-ha-impl</artifactId>
 
-	<name>Mobicents :: Diameter Stack HA :: ${project.artifactId}</name>
+	<name>Restcomm :: Diameter Stack HA :: ${project.artifactId}</name>
 
 	<dependencies>
 		<dependency>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">%BOOK_ENTITIES;]>
+
+<section id="mux-dictionary">
+
+	<title>Diameter Multiplexer (MUX) Dictionary</title>
+	<para>The Dictionary is part of the MUX package. Its purpose is to provide unified access to information regarding AVP structure, content and definition. It is configured with an XML file: <filename>dictionary.xml</filename>.</para>
+
+	<para>Dictionary logic is contained in the <literal>org.mobicents.diameter.dictionary.AvpDictionary</literal> class. It exposes the following methods:</para>
+	<variablelist>
+		<varlistentry>
+			<term><methodname>public AvpRepresentation getAvp(int code)</methodname></term>
+			<listitem><para>Return an <classname>AvpRepresentation</classname> object representing the AVP with the given code (assuming vendor ID as 0 (zero)). If there is no AVP defined, it returns <literal>null</literal>.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><methodname>public AvpRepresentation getAvp(int code, long vendorId)</methodname></term>
+			<listitem><para>Returns an <classname>AvpRepresentation</classname> object representing the AVP with the given code and vendor ID. If there is no AVP defined, it returns <literal>null</literal>.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><methodname>public AvpRepresentation getAvp(String avpName)</methodname></term>
+			<listitem><para>Returns an <classname>AvpRepresentation</classname> object representing the AVP with the given name. If there is no AVP defined, it returns <literal>null</literal>.</para></listitem>
+		</varlistentry>
+	</variablelist>
+
+	<para>Dictionary uses a POJO class to provide access to stored information: <literal>org.mobicents.diameter.dictionary.AvpRepresentation</literal>. It exposes the following methods:</para>
+	<variablelist>
+		<varlistentry>
+			<term><methodname>public int getCode()</methodname></term>
+			<listitem><para>Returns the code assigned to the represented AVP.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><methodname>public long getVendorId()</methodname></term>
+			<listitem><para>Returns the vendor ID assigned to the represented AVP.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><methodname>public String getName()</methodname></term>
+			<listitem><para>Returns name assigned to the represented AVP. If no name is defined, it returns <literal>null</literal>.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><methodname>public boolean isGrouped()</methodname></term>
+			<listitem><para>Returns <literal>true</literal> if the AVP is of grouped type.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><methodname>public String getType()</methodname></term>
+			<listitem><para>Returns a <type>String</type> with the name of the represented AVP type. Return value is equal to one of defined types. For example, <type>OctetString</type> or <type>Unsiged32</type>.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><methodname>public boolean isMayEncrypt()</methodname></term>
+			<listitem><para>Returns <literal>true</literal> if the AVP can be encrypted.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><methodname>public boolean isProtected()</methodname></term>
+			<listitem><para>Returns <literal>true</literal> if the AVP <emphasis>must</emphasis> be encrypted. This occurs if <methodname>public String getRuleProtected()</methodname> returns <literal>must</literal>.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><methodname>public boolean isMandatory()</methodname></term>
+			<listitem><para>Returns <literal>true</literal> if the AVP must be supported by an agent to properly consume the message. It only returns <literal>true</literal> if <methodname>public String getRuleMandatory()</methodname> returns <literal>must</literal>.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><methodname>public String getRuleMandatory()</methodname></term>
+			<listitem><para>Returns the mandatory rule value. It can return one of the following values: <literal>may</literal>, <literal>must</literal> or <literal>mustnot</literal>.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><methodname>public String getRuleProtected()</methodname></term>
+			<listitem><para>Returns the protected rule value. It can have one of the following values: <literal>may</literal>, <literal>must</literal> or <literal>mustnot</literal>.</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><methodname>public String getRuleVendorBit()</methodname></term>
+			<listitem><para>Returns the vendor rule value. It can have one of the following values: <literal>must</literal> or <literal>mustnot</literal>.</para></listitem>
+		</varlistentry>
+		<!-- TODO: Developer: add this? public String getMultiplicityIndicator() -->
+	</variablelist>
+	<para>The Diameter MUX Dictionary can be used as follows:</para>
+	<programlisting role="JAVA" language="Java">public static void addAvp(Message msg, int avpCode, long vendorId, AvpSet set, Object avp) {
+	AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
+
+	if(avpRep != null) {
+		DiameterAvpType avpType = DiameterAvpType.fromString(avpRep.getType());
+
+		boolean isMandatoryAvp = avpRep.isMandatory();
+		boolean isProtectedAvp = avpRep.isProtected();
+
+		if(avp instanceof byte[]) {
+			setAvpAsRaw(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, (byte[]) avp);
+		}
+		else
+		{
+			switch (avpType.getType()) {
+			case DiameterAvpType._ADDRESS:
+			case DiameterAvpType._DIAMETER_IDENTITY:
+			case DiameterAvpType._DIAMETER_URI:
+			case DiameterAvpType._IP_FILTER_RULE:
+			case DiameterAvpType._OCTET_STRING:
+			case DiameterAvpType._QOS_FILTER_RULE:
+				setAvpAsOctetString(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					avp.toString());
+				break;
+
+			case DiameterAvpType._ENUMERATED:
+			case DiameterAvpType._INTEGER_32:
+				setAvpAsInteger32(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					(Integer) avp);
+				break;
+
+			case DiameterAvpType._FLOAT_32:
+				setAvpAsFloat32(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					(Float) avp);
+				break;
+
+			case DiameterAvpType._FLOAT_64:
+				setAvpAsFloat64(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					(Float) avp);
+				break;
+
+			case DiameterAvpType._GROUPED:
+				setAvpAsGrouped(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					(DiameterAvp[]) avp);
+				break;
+
+			case DiameterAvpType._INTEGER_64:
+				setAvpAsInteger64(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					(Long) avp);
+				break;
+
+			case DiameterAvpType._TIME:
+				setAvpAsTime(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					(Date) avp);
+				break;
+
+			case DiameterAvpType._UNSIGNED_32:
+				setAvpAsUnsigned32(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					(Long) avp);
+				break;
+
+			case DiameterAvpType._UNSIGNED_64:
+				setAvpAsUnsigned64(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					(Long) avp);
+				break;
+
+			case DiameterAvpType._UTF8_STRING:
+				setAvpAsUTF8String(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					(String) avp);
+				break;
+			}
+		}
+	}
+}</programlisting>
+	
+</section>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [<!ENTITY % BOOK_ENTITIES SYSTEM "Diameter_User_Guide.ent">%BOOK_ENTITIES;]>
+
+<chapter id="mux">
+
+	<title>Multiplexer (MUX)</title>
+	<para>The Multiplexer (MUX) is designed as a stack wrapper. It serves two purposes:</para>
+	<variablelist>
+		<varlistentry>
+			<term>Expose Stack</term>
+			<listitem>
+				<para>It exposes the stack and allows it to be shared between multiple listeners. The stack follows the life cycle of the MUX. It is created and destroyed with MUX.</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>Expose Management Operations</term>
+			<listitem>
+				<para>Exposes the management operations for <acronym>JMX</acronym> clients, one of them being the &MANAGEMENT.PLATFORM; Console. For specific information please refer to the &THIS.PLATFORM; Diameter Management Console User Guide.</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Section-MUX-Design_Overview.xml"
+		encoding="UTF-8" />
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Section-MUX-Setup.xml"
+		encoding="UTF-8" />
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Section-MUX-Configuration.xml"
+		encoding="UTF-8" />
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Section-MUX-Source_Overview.xml"
+		encoding="UTF-8" />
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Section-MUX-Dictionary.xml"
+		encoding="UTF-8" />
+
+</chapter>

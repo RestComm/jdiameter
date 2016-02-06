@@ -13,7 +13,7 @@
 
 	<artifactId>diameter-core-parent</artifactId>
 
-	<name>Mobicents :: Diameter Core :: ${project.artifactId}</name>
+	<name>Restcomm :: Diameter Core :: ${project.artifactId}</name>
 
 	<modules>
 		<module>jdiameter</module>
@@ -35,7 +35,7 @@
 				<inherited>false</inherited>
 				<executions />
 				<configuration>
-					<eclipseProjectName>mobicents-diameter-core</eclipseProjectName>
+					<eclipseProjectName>restcomm-diameter-core</eclipseProjectName>
 					<generateProjectsForModules>false</generateProjectsForModules>
 				</configuration>
 			</plugin>

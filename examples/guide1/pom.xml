@@ -13,11 +13,11 @@
 	<groupId>org.mobicents.servers.diameter.guide</groupId>
 	<artifactId>example1</artifactId>
 
-	<name>Mobicents :: Guide :: Example 1 :: ${pom.artifactId}</name>
+	<name>Restcomm :: Guide :: Example 1 :: ${pom.artifactId}</name>
 
 	<properties>
-		<mobicents.diameter.jdiameter.version>1.5.4.0-build404-SNAPSHOT</mobicents.diameter.jdiameter.version>
-		<mobicents.diameter.mux.version>1.4.0-SNAPSHOT</mobicents.diameter.mux.version>
+		<restcomm.diameter.jdiameter.version>1.5.4.0-build404-SNAPSHOT</restcomm.diameter.jdiameter.version>
+		<restcomm.diameter.mux.version>1.4.0-SNAPSHOT</restcomm.diameter.mux.version>
 		<get.opt.version>1.0.9</get.opt.version>
 		<picocontainer.version>1.2</picocontainer.version>
 		<slf4j.version>1.5.8</slf4j.version>
@@ -26,18 +26,18 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.mobicents.servers.diameter</groupId>
-			<artifactId>mobicents-diameter-mux-jar</artifactId>
-			<version>${mobicents.diameter.mux.version}</version>
+			<artifactId>restcomm-diameter-mux-jar</artifactId>
+			<version>${restcomm.diameter.mux.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mobicents.servers.diameter</groupId>
 			<artifactId>jdiameter-api</artifactId>
-			<version>${mobicents.diameter.jdiameter.version}</version>
+			<version>${restcomm.diameter.jdiameter.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mobicents.servers.diameter</groupId>
 			<artifactId>jdiameter-impl</artifactId>
-			<version>${mobicents.diameter.jdiameter.version}</version>
+			<version>${restcomm.diameter.jdiameter.version}</version>
 		</dependency>
 		<dependency>
 			<artifactId>picocontainer</artifactId>
@@ -199,7 +199,7 @@
 
 										<artifactItem>
 											<groupId>org.mobicents.servers.diameter</groupId>
-											<artifactId>mobicents-diameter-mux-jar</artifactId>
+											<artifactId>restcomm-diameter-mux-jar</artifactId>
 											<type>jar</type>
 											<overWrite>true</overWrite>
 											<outputDirectory>${project.build.directory}/run</outputDirectory>

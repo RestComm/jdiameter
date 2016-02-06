@@ -11,7 +11,7 @@
 
 	<artifactId>jdiameter-impl</artifactId>
 
-	<name>Mobicents :: Diameter Stack :: ${project.artifactId}</name>
+	<name>Restcomm :: Diameter Stack :: ${project.artifactId}</name>
 
 	<properties>
 		<vendor>Mobicents</vendor>
