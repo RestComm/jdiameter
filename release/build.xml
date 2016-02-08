@@ -173,11 +173,11 @@
 			<arg line="versions:set -DnewVersion=${diameter.release.version}" />
 		</exec>
 		<exec executable="${mvn.executable}" dir="${checkout_base_dir}/diameter-rhq-plugin">
-			<arg line="${release.build.goals}" />
+			<arg line="${release.build.goals} -Drestcomm.diameter.version=${diameter.release.version}" />
 		</exec>
 		<echo>Build Diameter RHQ Plugin Documentation</echo>
 		<exec executable="${mvn.executable}" dir="${checkout_base_dir}/diameter-rhq-plugin/docs">
-			<arg line="${release.build.goals} -P${DOCS_PROFILE}" />
+			<arg line="${release.build.goals} -Drestcomm.diameter.version=${diameter.release.version} -P${DOCS_PROFILE}" />
 		</exec>
 	</target>
 

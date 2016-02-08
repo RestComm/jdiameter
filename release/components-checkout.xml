@@ -8,7 +8,7 @@
 	<artifactId>diameter-internal-components-checkout</artifactId>
 	<version>1.0</version>
 
-	<name>Mobicents :: Diameter :: ${pom.artifactId}</name>
+	<name>Restcomm :: Diameter :: ${pom.artifactId}</name>
 
 	<properties>
 		<checkout.basedir>${basedir}/diameter</checkout.basedir>
