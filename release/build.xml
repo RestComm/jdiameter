@@ -22,7 +22,7 @@
 	<property name="CORE_JDIAMETER_TAG" value="master" />
 	<property name="TOOLS_RHQ_PLUGIN_TAG" value="master" />
 
-	<property name="DOCS_PROFILE" value="mobicents" />
+	<property name="DOCS_PROFILE" value="restcomm" />
 
 	<target name="init" depends="set-versions" />
 
@@ -56,7 +56,7 @@
 		<property name="EXAMPLE_JAINSLEE_openims_VERSION" value="2.4.1.FINAL" />
 
 		<!-- Dependencies Components Versions -->
-		<property name="JAINSLEE_VERSION"              value="2.7.0.FINAL" />
+		<property name="JAINSLEE_VERSION"              value="2.8.25.54" />
 		<property name="JAINSLEE_SIP11_RA_VERSION"     value="2.7.0.FINAL" />
 		<property name="JAINSLEE_SIP_SERVICES_VERSION" value="2.4.0.FINAL" />
 
@@ -201,7 +201,7 @@
 
 		<copy todir="${zip_dir}/core/mux">
 			<fileset dir="${checkout_base_dir}/core/mux/jar/target">
-				<include name="mobicents-diameter-mux-*.jar" />
+				<include name="restcomm-diameter-mux-*.jar" />
 			</fileset>
 		</copy>
 		<copy todir="${zip_dir}/core">
@@ -211,11 +211,11 @@
 		</copy>
 		<copy todir="${checkout_base_dir}/core/mux/sar-jboss-${DEFAULT_SAR_CONFIGURATION}/target/">
 			<fileset dir="${checkout_base_dir}/core/mux/sar-jboss-${DEFAULT_SAR_CONFIGURATION}/target/">
-				<include name="mobicents-diameter-mux*.sar" />
+				<include name="restcomm-diameter-mux*.sar" />
 			</fileset>
-			<mapper type="glob" from="mobicents-diameter-mux*.sar" to="mobicents-diameter-mux.sar"/>
+			<mapper type="glob" from="restcomm-diameter-mux*.sar" to="restcomm-diameter-mux.sar"/>
 		</copy>
-		<unzip src="${checkout_base_dir}/core/mux/sar-jboss-${DEFAULT_SAR_CONFIGURATION}/target/mobicents-diameter-mux.sar" dest="${zip_dir}/core/mux/${RELEASE_NAME}-diameter-mux.sar/"/>
+		<unzip src="${checkout_base_dir}/core/mux/sar-jboss-${DEFAULT_SAR_CONFIGURATION}/target/restcomm-diameter-mux.sar" dest="${zip_dir}/core/mux/${RELEASE_NAME}-diameter-mux.sar/"/>
 	</target>
 
 	<target name="copy-jars-resources">
@@ -369,15 +369,15 @@
 
 	<!-- JAIN SLEE -->
 
-	<property name="jainslee.distro.zip.path" value="${downloads_dir}/mobicents-jainslee-server-${JAINSLEE_VERSION}.zip" />
-	<property name="jainslee.folder.path" value="${checkout_base_dir}/mobicents-jainslee-server-${JAINSLEE_VERSION}" />
+	<property name="jainslee.distro.zip.path" value="${downloads_dir}/restcomm-jainslee-server-${JAINSLEE_VERSION}.zip" />
+	<property name="jainslee.folder.path" value="${checkout_base_dir}/restcomm-jainslee-server-${JAINSLEE_VERSION}" />
 
 	<available file="${jainslee.distro.zip.path}" property="got.jainslee" />
 
 	<target name="download-jainslee" if="include.slee.deps" unless="got.jainslee">
-		<echo>Downloading Mobicents JAIN SLEE Server v${JAINSLEE_VERSION}</echo>
+		<echo>Downloading Restcomm JAIN SLEE Server v${JAINSLEE_VERSION}</echo>
 		<mkdir dir="${downloads_dir}"/>
-		<get verbose="true" dest="${jainslee.distro.zip.path}" src="http://downloads.sourceforge.net/project/mobicents/Mobicents%20JAIN%20SLEE%20Server/${JAINSLEE_VERSION}/mobicents-jainslee-${JAINSLEE_VERSION}-jboss-${JBOSS_VERSION}.zip" />
+		<get verbose="true" dest="${jainslee.distro.zip.path}" src="https://mobicents.ci.cloudbees.com/job/Restcomm-JAIN-SLEE-Release/lastSuccessfulBuild/artifact/release/restcomm-jainslee-${JAINSLEE_VERSION}-jboss-${JBOSS_VERSION}.zip" />
 	</target>
 
 	<target name="unzip-jainslee" if="include.slee.deps">
@@ -429,22 +429,22 @@
 
 		<copy todir="${mux_zip_dir}/">
 			<fileset dir="${checkout_base_dir}/core/mux/sar-jboss-${DEFAULT_SAR_CONFIGURATION}/target/">
-				<include name="mobicents-diameter-mux*/**" />
-				<exclude name="mobicents-diameter-mux*.sar" />
+				<include name="restcomm-diameter-mux*/**" />
+				<exclude name="restcomm-diameter-mux*.sar" />
 			</fileset>
 		</copy>
 
 		<path id="mux_name">
 			<dirset dir="${mux_zip_dir}">
-				<include name="mobicents-diameter-mux-*"/>
+				<include name="restcomm-diameter-mux-*"/>
 			</dirset>
 		</path>
 		<property name="mux-name" refid="mux_name" />
 		<move file="${mux-name}" tofile="${mux-name}.sar" />
 
-		<copy todir="${mux_zip_dir}/mobicents-diameter-mux-${CORE_MUX_VERSION}.sar/">
+		<copy todir="${mux_zip_dir}/restcomm-diameter-mux-${CORE_MUX_VERSION}.sar/">
 			<fileset dir="${checkout_base_dir}/core/mux/jar/target">
-				<include name="mobicents-diameter-mux-${CORE_MUX_VERSION}.jar" />
+				<include name="restcomm-diameter-mux-${CORE_MUX_VERSION}.jar" />
 			</fileset>
 		</copy>
 
