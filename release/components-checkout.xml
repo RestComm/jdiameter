@@ -72,8 +72,10 @@
 									<connectionUrl>${slee.diameter.package.connectionURL}</connectionUrl>
 									<username>${checkout.username}</username>
 									<password>${checkout.password}</password>
-									<scmVersionType>tag</scmVersionType>
-									<scmVersion>${slee.diameter.package.tag}</scmVersion>
+									<scmVersionType>revision</scmVersionType>
+									<scmVersion>HEAD</scmVersion>
+									<!--scmVersionType>tag</scmVersionType>
+									<scmVersion>${slee.diameter.package.tag}</scmVersion-->
 									<checkoutDirectory>${checkout.basedir}/slee-diameter/</checkoutDirectory>
 									<skipCheckoutIfExists>false</skipCheckoutIfExists>
 								</configuration>
