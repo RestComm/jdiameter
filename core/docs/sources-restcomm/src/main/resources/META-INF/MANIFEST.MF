@@ -1,17 +1,17 @@
 Manifest-Version: 1.0
 Archiver-Version: Plexus Archiver
 Created-By: Apache Maven Bundle Plugin
-Built-By: jean
-Build-Jdk: 1.7.0_80
+Built-By: jenkins
+Build-Jdk: 1.7.0_79
 Implementation-Title: org.mobicents.diameter:diameter-core-docs-sources
-Implementation-Version: 1.7.0-SNAPSHOT
+Implementation-Version: 1.7.0.83
 Tool: Bnd-1.15.0
 Bundle-Name: Restcomm :: Diameter Documentation :: diameter-core-docs-
  sources
-Implementation-URL: http://www.mobicents.org
+Implementation-URL: http://www.restcomm.org
 Implementation-Vendor-Id: TeleStax, Inc.
-Bundle-Version: 1.7.0.SNAPSHOT
-Bnd-LastModified: 1454794906523
+Bundle-Version: 1.7.0.83
+Bnd-LastModified: 1455106383392
 Bundle-ManifestVersion: 2
 Bundle-License: http://www.gnu.org/licenses/agpl.html
 Bundle-Description: Restcomm Diameter
