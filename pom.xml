@@ -148,8 +148,8 @@
 
 	<pluginRepositories>
 		<pluginRepository>
-			<id>mobicents-public-repository-group</id>
-			<name>Mobicents Public Maven Repository Group</name>
+			<id>restcomm-public-repository-group</id>
+			<name>Restcomm Public Maven Repository Group</name>
 			<url>https://oss.sonatype.org/content/groups/public</url>
 			<layout>default</layout>
 			<releases>
