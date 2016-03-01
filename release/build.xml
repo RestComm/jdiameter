@@ -199,9 +199,10 @@
 			</fileset>
 		</copy>
 
-		<copy todir="${zip_dir}/core/mux">
-			<fileset dir="${checkout_base_dir}/core/mux/jar/target">
-				<include name="restcomm-diameter-mux-*.jar" />
+		<!-- Copy fixed AS5 MUX jar file -->
+		<copy todir="${zip_dir}/core/mux" flatten="true">
+			<fileset dir="${checkout_base_dir}/core/mux/sar-jboss-5/target/">
+				<include name="restcomm-diameter-mux-*/lib/restcomm-diameter-mux-*.jar" />
 			</fileset>
 		</copy>
 		<copy todir="${zip_dir}/core">
@@ -216,6 +217,12 @@
 			<mapper type="glob" from="restcomm-diameter-mux*.sar" to="restcomm-diameter-mux.sar"/>
 		</copy>
 		<unzip src="${checkout_base_dir}/core/mux/sar-jboss-${DEFAULT_SAR_CONFIGURATION}/target/restcomm-diameter-mux.sar" dest="${zip_dir}/core/mux/${RELEASE_NAME}-diameter-mux.sar/"/>
+		<!-- Replace with fixed AS5 MUX jar file -->
+		<copy todir="${zip_dir}/core/mux/${RELEASE_NAME}-diameter-mux.sar/lib/">
+			<fileset dir="${zip_dir}/core/mux/">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
 	</target>
 
 	<target name="copy-jars-resources">
