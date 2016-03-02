@@ -25,6 +25,7 @@ package org.jdiameter.client.impl.parser;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.UnknownServiceException;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.jdiameter.api.Avp;
@@ -45,15 +46,15 @@ class AvpImpl implements Avp {
 
   private static final long serialVersionUID = 1L;
   private static final ElementParser parser = new ElementParser();
-  int avpCode;
-  long vendorID;
+  private int avpCode;
+  private long vendorID;
 
-  boolean isMandatory = false;
-  boolean isEncrypted = false;
-  boolean isVendorSpecific = false;
+  private boolean isMandatory = false;
+  private boolean isEncrypted = false;
+  private boolean isVendorSpecific = false;
 
-  byte[] rawData = new byte[0];
-  AvpSet groupedData;
+  private byte[] rawData = null;
+  private AvpSet groupedData = new AvpSetImpl();
 
   private static final Logger logger = LoggerFactory.getLogger(AvpImpl.class);
 
@@ -65,7 +66,10 @@ class AvpImpl implements Avp {
     isVendorSpecific = (flags & 0x80) != 0;
     //
     vendorID = vnd;
-    rawData  = data;
+    
+    if (data != null) { // any data string/int/encoded-grouped
+    	rawData = Arrays.copyOf(data, data.length);
+    }
   }
 
   AvpImpl(Avp avp) {
@@ -75,13 +79,19 @@ class AvpImpl implements Avp {
     isEncrypted = avp.isEncrypted();
     isVendorSpecific = avp.isVendorId();
     try {
-      rawData = avp.getRaw();
-      if (rawData == null || rawData.length == 0) {
-        groupedData = avp.getGrouped();
-      }
-    }
-    catch (AvpDataException e) {
-      logger.debug("Can not create Avp", e);
+    	byte[] data = avp.getRaw();
+    	if (data != null) { // simple AVP
+    		rawData = Arrays.copyOf(data, data.length);
+    	} else {
+    		// grouped AVP
+    		AvpSet grouped = avp.getGrouped();
+    		
+    		if (grouped != null) {
+    			groupedData = parser.decodeAvpSet(parser.encodeAvpSet(grouped)); // copy all
+    		}
+    	}
+    } catch (Exception e) {
+      logger.error("Can not create Avp", e);
     }
   }
 
@@ -224,13 +234,12 @@ class AvpImpl implements Avp {
 
   public AvpSet getGrouped() throws AvpDataException {
     try {
-      if (groupedData == null) {
-        groupedData = parser.decodeAvpSet(rawData);
-        rawData = new byte[0];
-      }
-      return groupedData;
-    }
-    catch (Exception e) {
+    	if (rawData != null) {
+    		return parser.decodeAvpSet(rawData);
+    	} else {
+    		return groupedData;
+    	}
+    } catch (Exception e) {
       throw new AvpDataException(e, this);
     }
   }
@@ -244,7 +253,7 @@ class AvpImpl implements Avp {
   }
 
   public byte[] getRawData() {
-    return (rawData == null || rawData.length == 0) ? parser.encodeAvpSet(groupedData) : rawData;
+    return rawData;
   }
 
   // Caching toString.. Avp shouldn't be modified once created.
@@ -253,7 +262,8 @@ class AvpImpl implements Avp {
   @Override
   public String toString() {
     if(toString == null) {
-      this.toString = new StringBuffer("AvpImpl [avpCode=").append(avpCode).append(", vendorID=").append(vendorID).append("]@").append(super.hashCode()).toString(); 
+    	this.toString = new StringBuffer("AvpImpl [avpCode=").append(avpCode).append(", vendorID=").append(vendorID)
+    		  .append(", len=").append((rawData != null) ? rawData.length : null).append("]@").append(super.hashCode()).toString(); 
     }
 
     return this.toString;

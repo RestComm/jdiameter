@@ -37,7 +37,10 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jdiameter.api.Avp;
+import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.URI;
@@ -53,6 +56,8 @@ class AvpSetImpl implements AvpSet {
 
   // FIXME: by default 3588.4-1 says: 'M' should be set to true;
   // FIXME: by default 3588.x says: if grouped has at least on AVP with 'M' set, it also has to have 'M' set! - TODO: add backmapping.
+	
+  private static final Logger logger = LoggerFactory.getLogger(AvpSetImpl.class);
   
   private static final long serialVersionUID = 1L;
   private static final ElementParser parser = new ElementParser();
@@ -187,10 +192,15 @@ class AvpSetImpl implements AvpSet {
     }
 
     public AvpSet insertGroupedAvp(int index, int avpCode) {
-        AvpImpl res = new AvpImpl(avpCode, 0, 0, new byte[0]);
-        res.groupedData = new AvpSetImpl();
+        AvpImpl res = new AvpImpl(avpCode, 0, 0, null);
         this.avps.add(index, res);
-        return res.groupedData;
+        
+        try {
+			return res.getGrouped();
+		} catch (AvpDataException e) {
+			logger.error("insert avp failed", e);
+		}
+        return null;
     }
 
     public int size() {
@@ -421,26 +431,41 @@ class AvpSetImpl implements AvpSet {
     }
 
     public AvpSet addGroupedAvp(int avpCode) {
-        AvpImpl res = new AvpImpl(avpCode, 0, 0, new byte[0] );
-        res.groupedData = new AvpSetImpl();
+        AvpImpl res = new AvpImpl(avpCode, 0, 0, null);
         this.avps.add(res);
-        return res.groupedData;
+        
+        try {
+			return res.getGrouped();
+		} catch (AvpDataException e) {
+			logger.error("add avp failed", e);
+		}
+        return null;
     }
 
     public AvpSet addGroupedAvp(int avpCode, boolean mFlag, boolean pFlag) {
         int flags = ((mFlag ? 0x40:0) | (pFlag ? 0x20:0));
-        AvpImpl res = new AvpImpl(avpCode, flags, 0, new byte[0] );
-        res.groupedData = new AvpSetImpl();
+        AvpImpl res = new AvpImpl(avpCode, flags, 0, null);
         this.avps.add(res);
-        return res.groupedData;
+        
+        try {
+			return res.getGrouped();
+		} catch (AvpDataException e) {
+			logger.error("add avp failed", e);
+		}
+        return null;
     }
 
     public AvpSet addGroupedAvp(int avpCode, long vndId, boolean mFlag, boolean pFlag) {
         int flags = ((vndId !=0 ? 0x80:0) | (mFlag ? 0x40:0) | (pFlag ? 0x20:0));
-        AvpImpl res = new AvpImpl(avpCode, flags, vndId, new byte[0] );
-        res.groupedData = new AvpSetImpl();
+        AvpImpl res = new AvpImpl(avpCode, flags, vndId, null);
         this.avps.add(res);
-        return res.groupedData;
+        
+        try {
+			return res.getGrouped();
+		} catch (AvpDataException e) {
+			logger.error("add avp failed", e);
+		}
+        return null;
     }
 
     public Avp insertAvp(int index, int avpCode, byte[] value) {
@@ -654,18 +679,28 @@ class AvpSetImpl implements AvpSet {
 
     public AvpSet insertGroupedAvp(int index, int avpCode, boolean mFlag, boolean pFlag) {
         int flags = ((mFlag ? 0x40:0) | (pFlag ? 0x20:0));
-        AvpImpl res = new AvpImpl(avpCode, flags, 0, new byte[0] );
-        res.groupedData = new AvpSetImpl();
+        AvpImpl res = new AvpImpl(avpCode, flags, 0, null);
         this.avps.add(index, res);
-        return res.groupedData;
+
+        try {
+			return res.getGrouped();
+		} catch (AvpDataException e) {
+			logger.error("insert avp failed", e);
+		}
+        return null;
     }
 
     public AvpSet insertGroupedAvp(int index, int avpCode, long vndId, boolean mFlag, boolean pFlag) {
         int flags = ((vndId !=0 ? 0x80:0) | (mFlag ? 0x40:0) | (pFlag ? 0x20:0));
-        AvpImpl res = new AvpImpl(avpCode, flags, vndId, new byte[0] );
-        res.groupedData = new AvpSetImpl();
+        AvpImpl res = new AvpImpl(avpCode, flags, vndId, null);
         this.avps.add(index, res);
-        return res.groupedData;
+        
+        try {
+			return res.getGrouped();
+		} catch (AvpDataException e) {
+			logger.error("insert avp failed", e);
+		}
+        return null;
     }
 
     public boolean isWrapperFor(Class<?> aClass) throws InternalException {

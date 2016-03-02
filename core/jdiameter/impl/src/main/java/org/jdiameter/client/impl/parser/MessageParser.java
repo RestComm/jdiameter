@@ -74,7 +74,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MessageParser extends ElementParser implements IMessageParser {
 
-  private static final Logger logger = LoggerFactory.getLogger(MessageParser.class);
+  private static final org.slf4j.Logger logger = LoggerFactory.getLogger(MessageParser.class);
 
   protected UIDGenerator endToEndGen = new UIDGenerator(
       (int) (TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) & 0xFFF) << 20
@@ -239,11 +239,48 @@ public class MessageParser extends ElementParser implements IMessageParser {
 //      }
     }
   }
+  
+  public static String byteArrayToHexString(byte in[]) {
+	  return byteArrayToHexString(in, true);
+  }
+  
+  public static String byteArrayToHexString(byte in[], boolean columnize) {
+		if (in == null || in.length <= 0) return "";
+		String pseudo = "0123456789ABCDEF";
+
+		StringBuffer out = new StringBuffer(in.length * 3);
+
+		for (int i=0; i < in.length; i++) {
+			byte ch = in[i];
+			out.append(pseudo.charAt((int) ((ch & 0xF0) >> 4))); 
+			out.append(pseudo.charAt((int) (ch & 0x0F)));
+			
+			if (columnize) {
+				if ((i+1)%16 == 0) {
+					out.append("\n");
+				} else if ((i+1)%4 == 0) {
+					out.append(" ");
+				}
+			}
+		}
+
+		return out.toString();
+  }
+  
+  public static String byteArrayToHexStringLine(byte in[]) {
+	  return byteArrayToHexString(in, false);
+  }
 
   public ByteBuffer encodeMessage(IMessage message) throws ParseException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
+    
+    StringBuilder sb = null;
+    if (logger.isTraceEnabled()) {
+    	sb = new StringBuilder();
+    }
+    
     try {
-      byte[] rawData = encodeAvpSet(message.getAvps());
+      byte[] rawData = encodeAvpSet(message.getAvps(), sb, "");
       DataOutputStream data = new DataOutputStream(out);
       // Wasting processor time, are we ?
       // int tmp = (1 << 24) & 0xFF000000;
@@ -265,7 +302,13 @@ public class MessageParser extends ElementParser implements IMessageParser {
       throw new ParseException("Failed to encode message.", e);
     }
     try{
-    	return prepareBuffer(out.toByteArray(), out.size());
+    	byte[] enc = out.toByteArray();
+    	
+    	if (logger.isTraceEnabled()) {
+    		String hex = byteArrayToHexString(enc);
+    		logger.trace("encoded message {} of size [{}]:\n{}\n{}", new Object[]{message, enc.length, sb.toString(), hex});
+    	}
+    	return prepareBuffer(enc, out.size());
     }
     catch(AvpDataException ade) {
     	throw new ParseException(ade);
