@@ -57,6 +57,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -377,4 +378,12 @@ public class ElementParser implements IElementParser {
       }
       return result;
     }
+    
+    protected ByteBuffer prepareBuffer(byte [] bytes, int len) throws AvpDataException  {
+      if (bytes.length != len) {
+        throw new AvpDataException("Incorrect data length");
+      }
+      return ByteBuffer.wrap(bytes);
+    }
+
 }
