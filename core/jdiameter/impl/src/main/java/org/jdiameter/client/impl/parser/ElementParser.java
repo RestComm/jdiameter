@@ -1,23 +1,43 @@
 /*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
+ * TeleStax, Open Source Cloud Communications
+ * Copyright 2011-2016, TeleStax Inc. and individual contributors
+ * by the @authors tag.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
+ * This program is free software: you can redistribute it and/or modify
+ * under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation; either version 3 of
  * the License, or (at your option) any later version.
  *
- * This software is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ * 
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ * 
+ *   JBoss, Home of Professional Open Source
+ *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+ *   by the @authors tag. See the copyright.txt in the distribution for a
+ *   full listing of individual contributors.
+ *
+ *   This is free software; you can redistribute it and/or modify it
+ *   under the terms of the GNU Lesser General Public License as
+ *   published by the Free Software Foundation; either version 2.1 of
+ *   the License, or (at your option) any later version.
+ *
+ *   This software is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *   Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public
+ *   License along with this software; if not, write to the Free
+ *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
 package org.jdiameter.client.impl.parser;
@@ -31,15 +51,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -62,190 +80,165 @@ public class ElementParser implements IElementParser {
     
     private static final int INT32_SIZE = 4;
     private static final int INT64_SIZE = 8;
-    private static final int FLOAT32_SIZE = 4;
-    private static final int FLOAT64_SIZE = 8;
 
     public int bytesToInt(byte[] rawData) throws AvpDataException {
-      return prepareBuffer(rawData, INT32_SIZE).getInt();
+      // http://stackoverflow.com/a/9581858
+      return 
+          (rawData[0] & 0xFF) << 24 | 
+          (rawData[1] & 0xFF) << 16 | 
+          (rawData[2] & 0xFF) << 8 | 
+          (rawData[3] & 0xFF) << 0;
     }
 
     public long bytesToLong(byte[] rawData) throws AvpDataException {
-      return prepareBuffer(rawData, INT64_SIZE).getLong();
+      // http://stackoverflow.com/a/1026804
+      return (rawData[0] & 0xFFL) << 56
+          | (rawData[1] & 0xFFL) << 48
+          | (rawData[2] & 0xFFL) << 40
+          | (rawData[3] & 0xFFL) << 32
+          | (rawData[4] & 0xFFL) << 24
+          | (rawData[5] & 0xFFL) << 16
+          | (rawData[6] & 0xFFL) << 8
+          | (rawData[7] & 0xFFL) << 0;
+    }
+
+    public long bytesToUnsignedInt32(byte[] rawData) throws AvpDataException {
+      byte[] u32ext = new byte[INT64_SIZE];
+      System.arraycopy(rawData, 0, u32ext, 4, 4);
+      return bytesToLong(u32ext);
     }
 
     public float bytesToFloat(byte[] rawData) throws AvpDataException {
-       return prepareBuffer(rawData, INT32_SIZE).getFloat();
+      // http://stackoverflow.com/a/14308765
+      return Float.intBitsToFloat(bytesToInt(rawData));
     }
 
     public double bytesToDouble(byte[] rawData) throws AvpDataException {
-         return prepareBuffer(rawData, FLOAT64_SIZE).getDouble();
-    }
-
-    protected ByteBuffer prepareBuffer(byte [] bytes, int len) throws AvpDataException  {
-        if (bytes.length != len)
-            throw new AvpDataException("Incorrect data length");
-        //ByteBuffer buffer = ByteBuffer.allocate(bytes.length);
-        //buffer.put(bytes);
-        //buffer.flip();
-        return ByteBuffer.wrap(bytes);
+      return Double.longBitsToDouble(bytesToLong(rawData));
     }
 
     public String bytesToOctetString(byte[] rawData) throws AvpDataException {
-        try {
-        	//TODO: veirfy ISO-8859-1 is correct here, according to google results its only ... western EU..
-        	//TODO: verify this, it octet sting we can not discard some chars, we have no idea whats there....
-        	// issue: http://code.google.com/p/mobicents/issues/detail?id=2757
-//            char[] ca = new String(rawData, "iso-8859-1").toCharArray();
-//            StringBuffer rc = new StringBuffer(ca.length);
-//            
-//            for (char c:ca)
-//                if (c != (char)0x0) 
-//                {	//easier to debug...
-//                	rc.append(c);
-//                }
-//          
-//            return rc.toString();
-        	return new String(rawData, "iso-8859-1");
-        } catch (UnsupportedEncodingException e) {
-            throw new AvpDataException("Invalid data type", e);
-        }
+      try {
+        return new String(rawData, "iso-8859-1");
+      }
+      catch (UnsupportedEncodingException e) {
+        throw new AvpDataException("Invalid data type", e);
+      }
     }
 
     public String bytesToUtf8String(byte[] rawData) throws AvpDataException {
-        try {
-            char[] ca = new String(rawData, "utf8").toCharArray();
-            StringBuffer rc = new StringBuffer(ca.length);
-            for (char c:ca)
-                if (c != (char)0x0) rc.append(c);
-            return rc.toString();
-        } catch (Exception e) {
-             throw new AvpDataException("Invalid data type", e);
-        }
+      try {
+        return new String(rawData, "utf8");
+      }
+      catch (UnsupportedEncodingException e) {
+        throw new AvpDataException("Invalid data type", e);
+      }
     }
 
     public Date bytesToDate(byte[] rawData) throws AvpDataException {
-        try {
-            byte[] tmp = new byte[8];
-            System.arraycopy(rawData, 0 , tmp, 4, 4);
-            return new Date(((bytesToLong(tmp) - SECOND_SHIFT) * 1000L));
-        } catch (Exception e) {
-            throw new AvpDataException(e);
-        }
+      try {
+          byte[] tmp = new byte[8];
+          System.arraycopy(rawData, 0 , tmp, 4, 4);
+          return new Date(((bytesToLong(tmp) - SECOND_SHIFT) * 1000L));
+      }
+      catch (Exception e) {
+          throw new AvpDataException(e);
+      }
     }
 
     public InetAddress bytesToAddress(byte[] rawData) throws AvpDataException {
-        InetAddress inetAddress;
-        byte[] address;
-        try {
-            if (rawData[INT_INET4] == INT_INET4) {
-                address = new byte[4];
-                System.arraycopy(rawData, 2, address, 0, address.length);
-                inetAddress = Inet4Address.getByAddress(address);
-            } else {
-                address = new byte[16];
-                System.arraycopy(rawData, 2, address, 0, address.length);
-                inetAddress = Inet6Address.getByAddress(address);
-            }
-        } catch (Exception e) {
-            throw new AvpDataException(e);
-        }
-        return inetAddress;
+      InetAddress inetAddress;
+      try {
+        boolean isIPv6 = rawData[INT_INET4] != INT_INET4; 
+        byte[] address = new byte[isIPv6 ? 16 : 4];
+        System.arraycopy(rawData, 2, address, 0, address.length);
+        inetAddress = isIPv6 ? Inet6Address.getByAddress(address) : Inet4Address.getByAddress(address);
+      }
+      catch (Exception e) {
+        throw new AvpDataException(e);
+      }
+      return inetAddress;
     }
 
     public byte [] int32ToBytes(int value){
-        byte [] bytes = new byte[INT32_SIZE];
-        //ByteBuffer buffer = ByteBuffer.allocate(INT32_SIZE);
-        ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        buffer.putInt(value);
-        //buffer.flip();
-        //buffer.get(bytes);
-        return bytes;
+      byte[] bytes = new byte[INT32_SIZE];
+      bytes[0] = (byte)(value >> 24 & 0xFF);
+      bytes[1] = (byte)(value >> 16 & 0xFF);
+      bytes[2] = (byte)(value >>  8 & 0xFF);
+      bytes[3] = (byte)(value >>  0 & 0xFF);
+      return bytes;
     }
 
     public byte [] intU32ToBytes(long value){
-        // FIXME: this needs to reworked!
-        byte [] bytes = new byte[INT32_SIZE];
-        ByteBuffer buffer = ByteBuffer.allocate(INT64_SIZE);
-        buffer.putLong(value);
-        buffer.flip();
-        buffer.get(bytes);
-        buffer.get(bytes);
-        return bytes;
+      byte[] bytes = int64ToBytes(value);
+      return new byte[]{bytes[4],bytes[5],bytes[6],bytes[7]};
     }
 
-    public byte [] int64ToBytes(long value){
-        byte [] bytes = new byte[INT64_SIZE];
-        //ByteBuffer buffer = ByteBuffer.allocate(INT64_SIZE);
-        ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        buffer.putLong(value);
-        //buffer.flip();
-        //buffer.get(bytes);
-        return bytes;
+    public byte [] int64ToBytes(long value) {
+      byte[] bytes = new byte[INT64_SIZE];
+      bytes[0] = (byte)(value >> 56 & 0xFF);
+      bytes[1] = (byte)(value >> 48 & 0xFF);
+      bytes[2] = (byte)(value >> 40 & 0xFF);
+      bytes[3] = (byte)(value >> 32 & 0xFF);
+      bytes[4] = (byte)(value >> 24 & 0xFF);
+      bytes[5] = (byte)(value >> 16 & 0xFF);
+      bytes[6] = (byte)(value >>  8 & 0xFF);
+      bytes[7] = (byte)(value >>  0 & 0xFF);
+      return bytes;
     }
 
-    public byte [] float32ToBytes(float value){
-        byte [] bytes = new byte[FLOAT32_SIZE];
-        //ByteBuffer buffer = ByteBuffer.allocate(FLOAT32_SIZE);
-        ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        buffer.putFloat(value);
-        //buffer.flip();
-        //buffer.get(bytes);
-        return bytes;
+    public byte [] float32ToBytes(float value) {
+      // http://stackoverflow.com/a/14308774
+      return int32ToBytes(Float.floatToIntBits(value));
     }
 
-    public byte [] float64ToBytes(double value){
-        byte [] bytes = new byte[FLOAT64_SIZE];
-        //ByteBuffer buffer = ByteBuffer.allocate(FLOAT64_SIZE);
-        ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        buffer.putDouble(value);
-        //buffer.flip();
-        //buffer.get(bytes);
-        return bytes;
+    public byte [] float64ToBytes(double value) {
+      return int64ToBytes(Double.doubleToLongBits(value));
     }
 
     public byte[] octetStringToBytes(String value) throws ParseException{
-        try {
-            return value.getBytes("iso-8859-1");
-        }
-        catch (UnsupportedEncodingException e) {
-            throw new ParseException(e);
-        }
+      try {
+        return value.getBytes("iso-8859-1");
+      }
+      catch (UnsupportedEncodingException e) {
+        throw new ParseException(e);
+      }
     }
 
     public byte[] utf8StringToBytes(String value) throws ParseException {
-        try {
-            return value.getBytes("utf8");
-        }
-        catch (Exception e) {
-            throw new ParseException(e);
-        }
+      try {
+        return value.getBytes("utf8");
+      }
+      catch (Exception e) {
+        throw new ParseException(e);
+      }
     }
 
     public byte[] addressToBytes(InetAddress address) {
-        byte byteAddrOrig[] = address.getAddress();
+      byte byteAddrOrig[] = address.getAddress();
 
-        byte[] data = new byte[byteAddrOrig.length + 2];
+      byte[] data = new byte[byteAddrOrig.length + 2];
 
-        int addrType = address instanceof Inet4Address ? INT_INET4 : INT_INET6;
-        data[0] = (byte) ((addrType >> 8) & 0xFF);
-        data[INT_INET4] = (byte) ((addrType >> 0) & 0xFF);
+      int addrType = address instanceof Inet4Address ? INT_INET4 : INT_INET6;
+      data[0] = (byte) ((addrType >> 8) & 0xFF);
+      data[INT_INET4] = (byte) ((addrType >> 0) & 0xFF);
 
-        System.arraycopy(byteAddrOrig, 0, data, 2, byteAddrOrig.length);
-        return data;
+      System.arraycopy(byteAddrOrig, 0, data, 2, byteAddrOrig.length);
+      return data;
     }
 
     public byte[] dateToBytes(Date date) {
-        byte[] data = new byte[4];
-        System.arraycopy(int64ToBytes((date.getTime()/1000L) + SECOND_SHIFT), 4, data, 0, 4);
-        return data;
+      byte[] data = new byte[4];
+      System.arraycopy(int64ToBytes((date.getTime()/1000L) + SECOND_SHIFT), 4, data, 0, 4);
+      return data;
     }
 
     public <T> T bytesToObject(java.lang.Class<?> iface, byte[] rawdata) throws AvpDataException {
-        return null;
+      return null;
     }
 
     public byte [] objectToBytes(Object data) throws ParseException {
-        return null;
+      return null;
     }
 
     public AvpSetImpl decodeAvpSet(byte[] buffer) throws IOException, AvpDataException {
@@ -293,54 +286,95 @@ public class ElementParser implements IElementParser {
       }
       return avps;  
     }
-    
+
     public byte[] encodeAvpSet(AvpSet avps) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try {
-          DataOutputStream data = new DataOutputStream(out);
-          for (Avp a : avps) {
-            if (a instanceof AvpImpl) {
-              AvpImpl aImpl = (AvpImpl) a;
-              if (aImpl.rawData.length == 0 && aImpl.groupedData != null) {
-                aImpl.rawData = encodeAvpSet(a.getGrouped());
-              }
-              data.write(encodeAvp(aImpl));
+      //ByteArrayOutputStream out = new ByteArrayOutputStream();
+      DynamicByteArray dba = new DynamicByteArray(0);
+      try {
+        //DataOutputStream data = new DataOutputStream(out);
+        for (Avp a : avps) {
+          if (a instanceof AvpImpl) {
+            AvpImpl aImpl = (AvpImpl) a;
+            if (aImpl.rawData.length == 0 && aImpl.groupedData != null) {
+              aImpl.rawData = encodeAvpSet(a.getGrouped());
             }
+            //data.write(newEncodeAvp(aImpl));
+            dba.add(encodeAvp(aImpl));
           }
         }
-        catch (Exception e) {
-          logger.debug("Error during encode avps", e);
-        }
-        return out.toByteArray();
       }
-    
+      catch (Exception e) {
+        e.printStackTrace();
+        logger.debug("Error during encode avps", e);
+      }
+      return dba.getResult();
+    }
+
+    protected class DynamicByteArray {
+
+      private byte[] array;
+      private int size;
+
+      public DynamicByteArray(int cap) {
+        array = new byte[cap > 0 ? cap : 256];
+        size = 0;
+      }
+
+      public int get(int pos) {
+        if (pos >= size) {
+          throw new ArrayIndexOutOfBoundsException();
+        }
+        return array[pos];
+      }
+
+      public void add(byte[] bytes) {
+        if(size + bytes.length > array.length) {
+          byte[] newarray = new byte[array.length+bytes.length*2];
+          System.arraycopy(array, 0, newarray, 0, size);
+          array = newarray;
+        }
+        System.arraycopy(bytes, 0, array, size, bytes.length);
+        size += bytes.length;
+      }
+      
+      public byte[] getResult() {
+        return Arrays.copyOfRange(array, 0, size);
+      }
+    }
+
     public byte[] encodeAvp(AvpImpl avp) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try {
-          DataOutputStream data = new DataOutputStream(out);
-          data.writeInt(avp.getCode());
-          int flags = (byte) ((avp.getVendorId() != 0 ? 0x80 : 0) |
-              (avp.isMandatory() ? 0x40 : 0) | (avp.isEncrypted() ? 0x20 : 0));
-          int origLength = avp.getRaw().length + 8 + (avp.getVendorId() != 0 ? 4 : 0);
-          // newLength is never used. Should it?
-          //int newLength  = origLength;
-          //if (newLength % 4 != 0) {
-          //  newLength += 4 - (newLength % 4);
-          //}
-          data.writeInt(((flags << 24) & 0xFF000000) + origLength);
-          if (avp.getVendorId() != 0) {
-            data.writeInt((int) avp.getVendorId());
-          }
-          data.write(avp.getRaw());
-          if (avp.getRaw().length % 4 != 0) {
-            for(int i = 0; i < 4 - avp.getRaw().length % 4; i++) {
-              data.write(0);
-            }
-          }
-        }
-        catch (Exception e) {
-          logger.debug("Error during encode avp", e);
-        }
-        return out.toByteArray();
+      try {
+        int payloadSize = avp.getRaw().length;
+        boolean hasVendorId = avp.getVendorId() != 0;
+        int origLength = payloadSize + 8 + (hasVendorId ? 4 : 0);
+        int tmp = payloadSize % 4;
+        int paddingSize = tmp > 0 ? (4 - tmp) : 0;
+
+        byte[] bCode = this.int32ToBytes(avp.getCode());
+        int flags = (byte) ((hasVendorId ? 0x80 : 0) |
+            (avp.isMandatory() ? 0x40 : 0) | (avp.isEncrypted() ? 0x20 : 0));
+        byte[] bFlags = this.int32ToBytes(((flags << 24) & 0xFF000000) + origLength);
+        byte[] bVendor = hasVendorId ? int32ToBytes((int)avp.getVendorId()) : new byte[0];
+        return concat(origLength + paddingSize, bCode, bFlags, bVendor, avp.getRaw());
       }
+      catch (Exception e) {
+        logger.debug("Error during encode avp", e);
+        return new byte[0];
+      }
+    }
+
+    private byte[] concat(int length, byte[]... arrays) {
+      if (length == 0) {
+        for (byte[] array : arrays) {
+          length += array.length;
+        }
+      }
+      byte[] result = new byte[length];
+      int pos = 0;
+      for (byte[] array : arrays) {
+        System.arraycopy(array, 0, result, pos, array.length);
+        pos += array.length;
+      }
+      return result;
+    }
 }
