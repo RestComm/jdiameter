@@ -77,6 +77,7 @@ import org.jdiameter.client.api.controller.IRealmTable;
 import org.jdiameter.client.api.router.IRouter;
 import org.jdiameter.client.impl.helpers.AppConfiguration;
 import org.jdiameter.client.impl.helpers.Parameters;
+import org.jdiameter.client.impl.parser.MessageImpl;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.server.api.agent.IAgentConfiguration;
 import org.slf4j.Logger;
@@ -149,7 +150,7 @@ public class RouterImpl implements IRouter {
       AppConfiguration requestTableConfig = (AppConfiguration) config.getChildren(org.jdiameter.server.impl.helpers.Parameters.RequestTable.ordinal())[0];
       int tSize = (int)requestTableConfig.getIntValue(RequestTableSize.ordinal(),(Integer) RequestTableSize.defValue());
       int tClearSize = (int)requestTableConfig.getIntValue(RequestTableClearSize.ordinal(),(Integer) RequestTableClearSize.defValue());
-      if(tClearSize >= tSize) {
+      if (tSize > 0 && tClearSize >= tSize) {
         logger.warn("Configuration entry RequestTable, attribute 'clear_size' [{}] should not be greater than 'size' [{}]. Adjusting.", tSize, tClearSize);
         while (tClearSize >= tSize) {
           tSize *= 10;
@@ -224,6 +225,10 @@ public class RouterImpl implements IRouter {
 
   public void registerRequestRouteInfo(IRequest request) {
     logger.debug("Entering registerRequestRouteInfo");
+    if (REQUEST_TABLE_SIZE == 0) {
+      return; // we don't have anything to do as we are storing routing info at answer message
+    }
+    
     try {
       // PCB removed lock
       // requestEntryTableLock.writeLock().lock();
@@ -286,6 +291,11 @@ public class RouterImpl implements IRouter {
   }
 
   public String[] getRequestRouteInfo(IMessage message) {
+    if (REQUEST_TABLE_SIZE == 0) {
+      return ((MessageImpl)message).getRoutingInfo(); // using answer stored routing info
+    }
+
+    // using request table
     String messageKey = makeRoutingKey(message);
     AnswerEntry ans = requestEntryMap.get(messageKey);
     if (ans != null) {
@@ -304,6 +314,10 @@ public class RouterImpl implements IRouter {
 
   //PCB added
   public void garbageCollectRequestRouteInfo(IMessage message) {
+    if (REQUEST_TABLE_SIZE == 0) {
+      return; // we don't have anything to do as we are storing routing info at answer message
+    }
+
     String messageKey = makeRoutingKey(message);
     requestEntryMap.remove(messageKey);
   }
@@ -697,7 +711,6 @@ public class RouterImpl implements IRouter {
     //redirectEntryHandler = null;
     //redirectScheduler = null;
     redirectTable = null;
-    requestEntryMap = null;
     requestEntryMap = null;
   }
 

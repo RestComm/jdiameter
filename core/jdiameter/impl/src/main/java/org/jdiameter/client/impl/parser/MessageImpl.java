@@ -38,6 +38,7 @@ import org.jdiameter.api.InternalException;
 import org.jdiameter.client.api.IEventListener;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.controller.IPeer;
+import org.jdiameter.client.impl.router.RouterImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,6 +141,39 @@ public class MessageImpl implements IMessage {
     copyHeader(request);
     setRequest(false);
     parser.copyBasicAvps(this, request, true);
+    // if we set REQUEST_TABLE_SIZE to 0, we store routing info at answer
+    if (RouterImpl.REQUEST_TABLE_SIZE == 0) {
+      addRoutingInfo(request);
+    }
+  }
+  
+  private String[] routingInfo = {null,null};
+
+  private void addRoutingInfo(MessageImpl request) {
+    for(Avp a :request.getAvps()) {
+      if(a.getCode() == Avp.ORIGIN_HOST) {
+        try {
+          routingInfo[0] = a.getDiameterIdentity();
+          if (routingInfo[1] != null) return;
+        }
+        catch (AvpDataException e) {
+          logger.error("Unable to read Origin-Host AVP value for storing Routing Info", e);
+        }
+      }
+      else if (a.getCode() == Avp.ORIGIN_REALM) {
+        try {
+          routingInfo[1] = a.getDiameterIdentity();
+          if (routingInfo[0] != null) return;
+        }
+        catch (AvpDataException e) {
+          logger.error("Unable to read Origin-Realm AVP value for storing Routing Info", e);
+        }
+      }
+    }
+  }
+  
+  public String[] getRoutingInfo() {
+    return routingInfo;
   }
 
   public byte getVersion() {
