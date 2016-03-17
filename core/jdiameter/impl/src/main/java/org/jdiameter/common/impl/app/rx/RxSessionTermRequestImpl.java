@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class RxSessionTermRequestImpl extends AppRequestEventImpl implements RxSessionTermRequest {
 
   private static final long serialVersionUID = 1L;
-  protected Logger logger = LoggerFactory.getLogger(RxSessionTermRequestImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(RxSessionTermRequestImpl.class);
 
   public RxSessionTermRequestImpl(AppSession session, String destRealm, String destHost) {
     super(session.getSessions().get(0).createRequest(code, session.getSessionAppId(), destRealm, destHost));

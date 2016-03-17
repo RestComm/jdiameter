@@ -41,7 +41,7 @@ public class RoCreditControlRequestImpl extends AppRequestEventImpl implements R
 
   private static final long serialVersionUID = 1L;
 
-  protected Logger logger = LoggerFactory.getLogger(RoCreditControlRequestImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(RoCreditControlRequestImpl.class);
 
   private static final int REQUESTED_ACTION_AVP_CODE = 436;
   private static final int CC_REQUEST_TYPE_AVP_CODE = 416;

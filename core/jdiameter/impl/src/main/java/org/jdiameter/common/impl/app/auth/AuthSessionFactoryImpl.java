@@ -79,7 +79,7 @@ ClientAuthSessionListener, IClientAuthActionContext, IServerAuthActionContext, S
   protected ClientAuthSessionListener clientSessionListener;
   protected boolean stateles;
   protected long messageTimeout = 5000;
-  protected Logger logger = LoggerFactory.getLogger(AuthSessionFactoryImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(AuthSessionFactoryImpl.class);
   protected ISessionDatasource iss;
   protected ISessionFactory sessionFactory = null;
   protected IServerAuthActionContext serverSessionContext;

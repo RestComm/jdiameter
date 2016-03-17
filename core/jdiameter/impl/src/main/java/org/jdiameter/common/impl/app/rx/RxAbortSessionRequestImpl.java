@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class RxAbortSessionRequestImpl extends AppRequestEventImpl implements RxAbortSessionRequest {
 
   private static final long serialVersionUID = 1L;
-  protected Logger logger = LoggerFactory.getLogger(RxAbortSessionRequestImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(RxAbortSessionRequestImpl.class);
 
   public RxAbortSessionRequestImpl(AppSession session, String destRealm, String destHost) {
     super(session.getSessions().get(0).createRequest(code, session.getSessionAppId(), destRealm, destHost));

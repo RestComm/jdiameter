@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class RxAAAnswerImpl extends AppAnswerEventImpl implements RxAAAnswer {
 
   private static final long serialVersionUID = 1L;
-  protected Logger logger = LoggerFactory.getLogger(RxAAAnswerImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(RxAAAnswerImpl.class);
 
   public RxAAAnswerImpl(Request message, long resultCode) {
     super(message.createAnswer(resultCode));

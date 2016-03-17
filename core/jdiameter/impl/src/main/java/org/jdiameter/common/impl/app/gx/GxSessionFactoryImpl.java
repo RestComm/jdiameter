@@ -82,7 +82,7 @@ IGxMessageFactory, IServerGxSessionContext, IClientGxSessionContext {
   protected IServerGxSessionContext serverContextListener;
   protected IClientGxSessionContext clientContextListener;
   protected IGxMessageFactory messageFactory;
-  protected Logger logger = LoggerFactory.getLogger(GxSessionFactoryImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(GxSessionFactoryImpl.class);
   protected ISessionDatasource iss;
   protected ISessionFactory sessionFactory = null;
   protected IAppSessionDataFactory<IGxSessionData> sessionDataFactory;

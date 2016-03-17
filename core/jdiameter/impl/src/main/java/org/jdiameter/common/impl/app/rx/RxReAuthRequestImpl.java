@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class RxReAuthRequestImpl extends AppRequestEventImpl implements RxReAuthRequest {
 
   private static final long serialVersionUID = 1L;
-  protected Logger logger = LoggerFactory.getLogger(RxReAuthRequestImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(RxReAuthRequestImpl.class);
 
   public RxReAuthRequestImpl(AppSession session, String destRealm, String destHost) {
     super(session.getSessions().get(0).createRequest(code, session.getSessionAppId(), destRealm, destHost));

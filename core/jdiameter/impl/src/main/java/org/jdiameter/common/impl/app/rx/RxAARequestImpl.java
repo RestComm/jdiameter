@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class RxAARequestImpl extends AppRequestEventImpl implements RxAARequest {
 
   private static final long serialVersionUID = 1L;
-  protected Logger logger = LoggerFactory.getLogger(RxAARequestImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(RxAARequestImpl.class);
 
   public RxAARequestImpl(AppSession session, String destRealm, String destHost) {
     super(session.getSessions().get(0).createRequest(code, session.getSessionAppId(), destRealm, destHost));

@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class RxAbortSessionAnswerImpl extends AppAnswerEventImpl implements RxAbortSessionAnswer {
 
   private static final long serialVersionUID = 1L;
-  protected Logger logger = LoggerFactory.getLogger(RxAbortSessionAnswerImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(RxAbortSessionAnswerImpl.class);
 
   public RxAbortSessionAnswerImpl(Request message, long resultCode) {
     super(message.createAnswer(resultCode));

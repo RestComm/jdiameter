@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
 public class RfSessionFactoryImpl implements IRfSessionFactory, ServerRfSessionListener, ClientRfSessionListener, IClientRfActionContext, IServerRfActionContext,
 StateChangeListener<AppSession> {
 
-  protected Logger logger = LoggerFactory.getLogger(RfSessionFactoryImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(RfSessionFactoryImpl.class);
 
   protected ServerRfSessionListener serverSessionListener;
   protected StateChangeListener<AppSession> stateListener;

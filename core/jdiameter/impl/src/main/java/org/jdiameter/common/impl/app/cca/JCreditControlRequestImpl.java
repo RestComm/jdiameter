@@ -40,7 +40,7 @@ public class JCreditControlRequestImpl extends AppRequestEventImpl implements JC
 
   private static final long serialVersionUID = 1L;
 
-  protected Logger logger = LoggerFactory.getLogger(JCreditControlRequestImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(JCreditControlRequestImpl.class);
 
   private static final int REQUESTED_ACTION_AVP_CODE = 436;
   private static final int CC_REQUEST_TYPE_AVP_CODE = 416;

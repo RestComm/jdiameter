@@ -67,7 +67,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ShSessionFactoryImpl implements IShSessionFactory, StateChangeListener<AppSession>, ClientShSessionListener, ServerShSessionListener, IShMessageFactory {
 
-  protected Logger logger = LoggerFactory.getLogger(ShSessionFactoryImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(ShSessionFactoryImpl.class);
 
   // Listeners provided by developer ----------------------------------------
   protected ClientShSessionListener clientShSessionListener;

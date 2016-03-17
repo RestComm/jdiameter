@@ -40,7 +40,7 @@ public class JCreditControlAnswerImpl extends AppAnswerEventImpl implements JCre
 
   private static final long serialVersionUID = 1L;
 
-  protected Logger logger = LoggerFactory.getLogger(JCreditControlAnswerImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(JCreditControlAnswerImpl.class);
 
   private static final int CREDIT_CONTROL_FAILURE_HANDLING_AVP_CODE = 427; 
   private static final int DIRECT_DEBITING_FAILURE_HANDLING_AVP_CODE = 428;

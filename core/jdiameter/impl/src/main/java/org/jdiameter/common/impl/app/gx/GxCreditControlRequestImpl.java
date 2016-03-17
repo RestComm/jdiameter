@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class GxCreditControlRequestImpl extends AppRequestEventImpl implements GxCreditControlRequest {
 
     private static final long serialVersionUID = 1L;
-    protected Logger logger = LoggerFactory.getLogger(GxCreditControlRequestImpl.class);
+    protected final static Logger logger = LoggerFactory.getLogger(GxCreditControlRequestImpl.class);
     private static final int REQUESTED_ACTION_AVP_CODE = 436;
     private static final int CC_REQUEST_TYPE_AVP_CODE = 416;
 

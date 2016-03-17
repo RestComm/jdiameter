@@ -112,7 +112,7 @@ IRxMessageFactory, IServerRxSessionContext, IClientRxSessionContext {
   protected IServerRxSessionContext serverContextListener;
   protected IClientRxSessionContext clientContextListener;
   protected IRxMessageFactory messageFactory;
-  protected Logger logger = LoggerFactory.getLogger(RxSessionFactoryImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(RxSessionFactoryImpl.class);
   protected ISessionDatasource iss;
   protected ISessionFactory sessionFactory = null;
   protected IAppSessionDataFactory<IRxSessionData> sessionDataFactory;

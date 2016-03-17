@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AccSessionFactoryImpl implements IAccSessionFactory,IAccMessageFactory, ServerAccSessionListener, ClientAccSessionListener, IClientAccActionContext, IServerAccActionContext, StateChangeListener<AppSession> {
 
-  protected Logger logger = LoggerFactory.getLogger(AccSessionFactoryImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(AccSessionFactoryImpl.class);
 
   protected ServerAccSessionListener serverSessionListener;
   protected StateChangeListener<AppSession> stateListener;

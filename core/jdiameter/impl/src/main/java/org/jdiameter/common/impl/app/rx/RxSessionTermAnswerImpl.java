@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class RxSessionTermAnswerImpl extends AppAnswerEventImpl implements RxSessionTermAnswer {
 
   private static final long serialVersionUID = 1L;
-  protected Logger logger = LoggerFactory.getLogger(RxSessionTermAnswerImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(RxSessionTermAnswerImpl.class);
 
   public RxSessionTermAnswerImpl(Request message, long resultCode) {
     super(message.createAnswer(resultCode));

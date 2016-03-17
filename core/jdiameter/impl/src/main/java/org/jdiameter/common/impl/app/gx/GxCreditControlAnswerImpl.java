@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 public class GxCreditControlAnswerImpl extends AppAnswerEventImpl implements GxCreditControlAnswer {
 
   private static final long serialVersionUID = 1L;
-  protected Logger logger = LoggerFactory.getLogger(GxCreditControlAnswerImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(GxCreditControlAnswerImpl.class);
   private static final int CREDIT_CONTROL_FAILURE_HANDLING_AVP_CODE = 427;
   private static final int DIRECT_DEBITING_FAILURE_HANDLING_AVP_CODE = 428;
   private static final int REQUESTED_ACTION_AVP_CODE = 436;

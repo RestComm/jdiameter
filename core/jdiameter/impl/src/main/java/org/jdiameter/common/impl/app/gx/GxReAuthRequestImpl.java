@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public class GxReAuthRequestImpl extends AppRequestEventImpl implements GxReAuthRequest {
 
   private static final long serialVersionUID = 1L;
-  protected Logger logger = LoggerFactory.getLogger(GxReAuthRequestImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(GxReAuthRequestImpl.class);
 
   public GxReAuthRequestImpl(AppSession session, String destRealm, String destHost) {
     super(session.getSessions().get(0).createRequest(code, session.getSessionAppId(), destRealm, destHost));

@@ -83,7 +83,7 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   protected IClientRoSessionContext clientContextListener;
   protected IRoMessageFactory messageFactory;
 
-  protected Logger logger = LoggerFactory.getLogger(RoSessionFactoryImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(RoSessionFactoryImpl.class);
   protected ISessionDatasource iss;
   protected IAppSessionDataFactory<IRoSessionData> sessionDataFactory;
   protected ISessionFactory sessionFactory = null;

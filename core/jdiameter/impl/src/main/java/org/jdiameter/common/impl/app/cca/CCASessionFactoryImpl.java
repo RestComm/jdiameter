@@ -83,7 +83,7 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
   protected ICCAMessageFactory messageFactory;
 
 
-  protected Logger logger = LoggerFactory.getLogger(CCASessionFactoryImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(CCASessionFactoryImpl.class);
   protected ISessionDatasource iss;
   protected ISessionFactory sessionFactory = null;
   protected IAppSessionDataFactory<ICCASessionData> sessionDataFactory;

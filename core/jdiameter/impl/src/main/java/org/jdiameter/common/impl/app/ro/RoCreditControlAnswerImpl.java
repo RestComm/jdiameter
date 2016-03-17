@@ -40,7 +40,7 @@ public class RoCreditControlAnswerImpl extends AppAnswerEventImpl implements RoC
 
   private static final long serialVersionUID = 1L;
 
-  protected Logger logger = org.slf4j.LoggerFactory.getLogger(RoCreditControlAnswerImpl.class);
+  protected final static Logger logger = org.slf4j.LoggerFactory.getLogger(RoCreditControlAnswerImpl.class);
 
   private static final int CREDIT_CONTROL_FAILURE_HANDLING_AVP_CODE = 427; 
   private static final int DIRECT_DEBITING_FAILURE_HANDLING_AVP_CODE = 428;
