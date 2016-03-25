@@ -1,0 +1,40 @@
+
+[[_jdiameter_validator]]
+= Diameter Stack Validator
+
+Validator is one of the Stack features.
+The primary purpose of the Validator is to detect malformed messages, such as an Answer message containing a Destination-Host Attribute Value Pair (AVP).
+
+The Validator is capable of validating multi-leveled, grouped AVPs, excluding the following content types:
+
+* URI, or Identifier types.
+* Enumerated types against defined values.
+
+The Validator is only capable of checking structural integrity, not the content of the message.
+
+The Validator performs the following checks:
+
+Index::
+  Checks that the AVPs are in the correct place.
+  For example, `Session-Id` must always be encoded before any other AVP.
+
+Multiplicity::
+  Checks that the message AVPs occur the proper number of times.
+  For example, the Session-ID should only be present once.
+
+The `Validator` is called by the stack implementation.
+It is invoked after the message is received, but before it is dispatched to a remote peer.
+
+NOTE: This means that if the peer does not exist in the local peer table, the validator is not called, as the stack fails before calling it. 
+
+:leveloffset: +1
+
+include::Section-JDiameter-Validator-Configuration.adoc[]
+
+:leveloffset: -1
+
+:leveloffset: +1
+
+include::Section-JDiameter-Validator-Source_Overview.adoc[]
+
+:leveloffset: -1

@@ -1,0 +1,12 @@
+
+[[_mux_design]]
+= Diameter Multiplexer (MUX) Design
+
+MUX is a simple service provided on behalf of the Stack.
+Entities interested in receiving messages for certain diameter applications register in MUX.
+Upon registration, the entity passes a set of application IDs.
+Based on the message content and registered listeners, MUX either drops the message or passes it to the proper listener.
+MUX checks application IDs present in the message to match the target listener. 
+
+.Diameter Multiplexer (MUX) Design Overview
+image::images/DIA_2_x_MUX_design.png[]

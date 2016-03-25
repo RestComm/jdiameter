@@ -1,0 +1,69 @@
+
+[[_jdiameter_setup]]
+= {this-platform}  Diameter Stack Setup
+
+[[_jdiameter_preinstall_requirements_and_prerequisites]]
+== Pre-Install Requirements and Prerequisites
+
+Ensure that the following requirements have been met before continuing with the install.
+
+[[_jdiameter_hardware_requirements]]
+=== Hardware Requirements
+
+{this-platform} Diameter Stack does not have any hardware requirements.
+
+[[_jdiameter_software_prerequisites]]
+=== Software Prerequisites
+
+{this-platform} Diameter Stack has the following software dependencies:
+
+* Pico Container
+* slf4j
+
+Clustered setup also requires following:
+
+* JDiameter HA
+* JBoss Cache
+
+[[_jdiameter_source_code]]
+== Source Code
+
+This section provides instructions on how to obtain and build the {this-platform} Diameter Stack from source code.
+
+[[_jdiameter_release_source_building]]
+=== Release Source Code Building
+
+
+. Downloading the source code
++
+IMPORTANT: Subversion is used to manage its source code.
+Instructions for using Subversion, including install, can be found at http://svnbook.red-bean.com
++
+Use SVN to checkout a specific release source, the base URL is {this-trunk-source-code-url} , then add the specific release version, lets consider &THIS.VERSION;.
++
+[source]
+----
+[usr]$ git clone git@github.com:RestComm/jss7.git
+----
+
+. Building the source code
++
+IMPORTANT: Maven 3.2.5 (or higher) is used to build the release.
+Instructions for using Maven2, including install, can be found at http://maven.apache.org
++
+Use Maven to build the deployable unit binary.
++
+[source]
+----
+
+						[usr]$ cd -
+						[usr]$ mvn install
+----
++
+Once the process finishes you should have the  files deployed in maven archive.
+
+
+[[_jdiameter_trunk_source_building]]
+=== Development Trunk Source Building
+
+Follow the process in <<_jdiameter_release_source_building>>, replacing the SVN source code URL with {this-trunk-source-code-url} .

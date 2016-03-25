@@ -1,0 +1,19 @@
+
+[[_mux_configuration]]
+= Diameter Multiplexer (MUX) Configuration
+
+MUX requires three configuration files:
+
+[path]_jboss-service.xml_::
+  This file is specific to SAR.
+  Please refer to the [app]`` manual for explanation.
+  The file binds Diameter MUX under the following JMX object name by default: `diameter.mobicents:service=DiameterStackMultiplexer`.
+
+[path]_jdiameter-config.xml_::
+  This file configures the stack exposed by MUX.
+  Please refer to <<_jdiameter_configuration>> for details.
+  It is located in [path]_mobicents-diameter-mux-.sar/config_.
+
+[path]_dictionary.xml_::
+  This file configures the dictionary.
+  Its structure and content is identical to the file described in <<_jdiameter_validator_configuration>>.

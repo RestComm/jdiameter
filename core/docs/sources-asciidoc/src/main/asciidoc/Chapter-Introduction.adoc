@@ -1,0 +1,48 @@
+[[_introduction]]
+= Introduction to {this-platform}  Diameter
+
+Diameter is a computer networking protocol for Authentication, Authorization and Accounting (), as defined in RFC3588.
+It is a successor to RADIUS, and has been designed to overcome certain RADIUS limitations:
+
+* No transport reliability and flexibility (Diameter uses TCP/SCTP instead of UDP).
+* No security within protocol (Diameter supports IPSec (mandatory) and TLS (optional)).
+* Limited address space for AVPs (Diameter uses 32-bit address space instead of 8-bit). 
+* Only stateless mode is possible (Diameter supports both stateful and stateless modes).
+* Static peers (Diameter offers dynamic discovery, using DNS, SRV and NAPTR).
+* No peer alignment capabilities (Diameter introduces capabilities negotiation).
+* No support for transport layer failover.
+  Diameter follows http://tools.ietf.org/html/rfc3539[RFC3539], which introduces correct procedures.
+* Limited support for roaming (Diameter introduces mechanisms for secure and scalable roaming).
+* No extension possible (Diameter allows extension - new commands and AVPs to be defined).
+
+Diameter offers all of the capabilities of the RADIUS protocol, and is compatible with RADIUS.
+It can also define extensions, or "Applications".
+
+Each application may introduce new types of messages, AVP codes, and state machines.
+The Message and AVP codes are assigned by the .
+Each application has its own Application ID and Vendor ID that is used to distinguish between applications.
+Application code is used to signal to other peers which operations are supported by the connecting peer (Capabilities Exchange / Negotiation).
+
+:leveloffset: +1
+
+include::Section-Introduction-Message_Format.adoc[]
+
+:leveloffset: -1
+
+[[_introduction_contents]]
+== Contents
+
+{this-platform} Diameter core is built on top of three basic components:
+
+Stack::
+  Extensible Diameter Stack.
+  It provides basic session support along with application specific sessions.
+
+Multiplexer (MUX)::
+  Diameter Stack multiplexer.
+  Allows different listeners to share the same stack instance.
+
+Dictionary::
+  Diameter Message and AVP Dictionary.
+  Provides an API to access information about AVPs.
+  Dictionary is embeded in the MUX.

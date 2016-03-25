@@ -1,0 +1,49 @@
+[[_jdiameter]]
+= {this-platform}  Diameter Stack
+
+The Diameter Stack is the core component of the presented Diameter solution.
+It performs all necessary tasks to allow user interaction with the Diameter network.
+It manages the state of diameter peers and allows to route messages between them.
+For more details, refer to http://tools.ietf.org/html/rfc3588[RFC 3588].
+
+The Diameter Stack currently supports the following application sessions:
+
+* Base
+* Credit Control Application (CCA)
+* Sh
+* Ro
+* Rf
+* Cx/Dx
+* Gx
+* Gq'
+* Rx
+
+:leveloffset: +1
+
+include::Section-JDiameter-Design_Overview.adoc[]
+
+:leveloffset: -1
+
+:leveloffset: +1
+
+include::Section-JDiameter-Setup.adoc[]
+
+:leveloffset: -1
+
+:leveloffset: +1
+
+include::Section-JDiameter-Configuration.adoc[]
+
+:leveloffset: -1
+
+:leveloffset: +1
+
+include::Section-JDiameter-Source_Overview.adoc[]
+
+:leveloffset: -1
+
+:leveloffset: +1
+
+include::Section-JDiameter-Validator.adoc[]
+
+:leveloffset: -1

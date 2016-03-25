@@ -1,0 +1,68 @@
+
+[[_mux_setup]]
+= Diameter Multiplexer (MUX) Setup
+
+[[_mux_preinstall_requirements_and_prerequisites]]
+== Pre-Install Requirements and Prerequisites
+
+Ensure that the following requirements have been met before continuing with the installation process.
+
+[[_mux_hardware_requirements]]
+=== Hardware Requirements
+
+MUX does not have any hardware requirements.
+
+[[_mux_software_prerequisites]]
+=== Software Prerequisites
+
+MUX must be deployed either in {jee-version} v4.x or v5.x.
+However it is possible to adapt configuration files and run in any JMX container.
+
+[[_mux_source_code]]
+== Source Code
+
+This section provides instructions on how to obtain and build the {this-platform} Diameter MUX from source code.
+
+[[_mux_release_source_building]]
+=== Release Source Code Building
+
+
+. Downloading the source code
++
+IMPORTANT: Subversion is used to manage its source code.
+Instructions for using Subversion, including installation, can be found at http://svnbook.red-bean.com.
++
+Use SVN to checkout a specific release source.
+The base URL is {this-trunk-source-code-url} .
+Then add the specific release version, for example {project-version} .
++
+[source]
+----
+[usr]$ git clone git@github.com:RestComm/jdiameter.git
+----
+
+. Building the source code
++
+IMPORTANT: Maven 3.2.5 (or higher) is used to build the release.
+Instructions for using Maven2, including installation, can be found at http://maven.apache.org.
++
+Use Maven to build the deployable unit binary.
++
+[source]
+----
+
+						[usr]$ cd -
+						[usr]$ mvn install
+----
++
+Once the process finishes you should have the SAR built.
+If the [var]`JBOSS_HOME` environment variable is set, the  will be deployed in the container after execution.
+
+
+NOTE: By default {this-platform} Diameter MUX; deploys in the {jee-platform} v5.x .
+To change it, run [app]`maven` with the profile switch command: [parameter]`-Pjboss4`.
+
+[[_mux_trunk_source_building]]
+=== Development Trunk Source Building
+
+Follow the <<_mux_release_source_building>> procedure, replacing the SVN source code URL with {this-trunk-source-code-url} .

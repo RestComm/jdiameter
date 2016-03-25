@@ -1,0 +1,145 @@
+
+[[_mux_dictionary]]
+= Diameter Multiplexer (MUX) Dictionary
+
+The Dictionary is part of the MUX package.
+Its purpose is to provide unified access to information regarding AVP structure, content and definition.
+It is configured with an XML file: [path]_dictionary.xml_.
+
+Dictionary logic is contained in the `org.mobicents.diameter.dictionary.AvpDictionary` class.
+It exposes the following methods:
+
+[method]`public AvpRepresentation getAvp(int code)`::
+  Return an [class]`AvpRepresentation` object representing the AVP with the given code (assuming vendor ID as 0 (zero)). If there is no AVP defined, it returns `null`.
+
+[method]`public AvpRepresentation getAvp(int code, long vendorId)`::
+  Returns an [class]`AvpRepresentation` object representing the AVP with the given code and vendor ID.
+  If there is no AVP defined, it returns `null`.
+
+[method]`public AvpRepresentation getAvp(String avpName)`::
+  Returns an [class]`AvpRepresentation` object representing the AVP with the given name.
+  If there is no AVP defined, it returns `null`.
+
+Dictionary uses a POJO class to provide access to stored information: `org.mobicents.diameter.dictionary.AvpRepresentation`.
+It exposes the following methods:
+
+[method]`public int getCode()`::
+  Returns the code assigned to the represented AVP.
+
+[method]`public long getVendorId()`::
+  Returns the vendor ID assigned to the represented AVP.
+
+[method]`public String getName()`::
+  Returns name assigned to the represented AVP.
+  If no name is defined, it returns `null`.
+
+[method]`public boolean isGrouped()`::
+  Returns `true` if the AVP is of grouped type.
+
+[method]`public String getType()`::
+  Returns a [type]`String` with the name of the represented AVP type.
+  Return value is equal to one of defined types.
+  For example, [type]`OctetString` or [type]`Unsiged32`.
+
+[method]`public boolean isMayEncrypt()`::
+  Returns `true` if the AVP can be encrypted.
+
+[method]`public boolean isProtected()`::
+  Returns `true` if the AVP _must_ be encrypted.
+  This occurs if [method]`public String getRuleProtected()` returns `must`.
+
+[method]`public boolean isMandatory()`::
+  Returns `true` if the AVP must be supported by an agent to properly consume the message.
+  It only returns `true` if [method]`public String getRuleMandatory()` returns `must`.
+
+[method]`public String getRuleMandatory()`::
+  Returns the mandatory rule value.
+  It can return one of the following values: `may`, `must` or `mustnot`.
+
+[method]`public String getRuleProtected()`::
+  Returns the protected rule value.
+  It can have one of the following values: `may`, `must` or `mustnot`.
+
+[method]`public String getRuleVendorBit()`::
+  Returns the vendor rule value.
+  It can have one of the following values: `must` or `mustnot`.
+
+The Diameter MUX Dictionary can be used as follows:
+
+[source,java]
+----
+public static void addAvp(Message msg, int avpCode, long vendorId, AvpSet set, Object avp) {
+	AvpRepresentation avpRep = AvpDictionary.INSTANCE.getAvp(avpCode, vendorId);
+
+	if(avpRep != null) {
+		DiameterAvpType avpType = DiameterAvpType.fromString(avpRep.getType());
+
+		boolean isMandatoryAvp = avpRep.isMandatory();
+		boolean isProtectedAvp = avpRep.isProtected();
+
+		if(avp instanceof byte[]) {
+			setAvpAsRaw(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp, (byte[]) avp);
+		}
+		else
+		{
+			switch (avpType.getType()) {
+			case DiameterAvpType._ADDRESS:
+			case DiameterAvpType._DIAMETER_IDENTITY:
+			case DiameterAvpType._DIAMETER_URI:
+			case DiameterAvpType._IP_FILTER_RULE:
+			case DiameterAvpType._OCTET_STRING:
+			case DiameterAvpType._QOS_FILTER_RULE:
+				setAvpAsOctetString(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					avp.toString());
+				break;
+
+			case DiameterAvpType._ENUMERATED:
+			case DiameterAvpType._INTEGER_32:
+				setAvpAsInteger32(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					(Integer) avp);
+				break;
+
+			case DiameterAvpType._FLOAT_32:
+				setAvpAsFloat32(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					(Float) avp);
+				break;
+
+			case DiameterAvpType._FLOAT_64:
+				setAvpAsFloat64(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					(Float) avp);
+				break;
+
+			case DiameterAvpType._GROUPED:
+				setAvpAsGrouped(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					(DiameterAvp[]) avp);
+				break;
+
+			case DiameterAvpType._INTEGER_64:
+				setAvpAsInteger64(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					(Long) avp);
+				break;
+
+			case DiameterAvpType._TIME:
+				setAvpAsTime(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					(Date) avp);
+				break;
+
+			case DiameterAvpType._UNSIGNED_32:
+				setAvpAsUnsigned32(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					(Long) avp);
+				break;
+
+			case DiameterAvpType._UNSIGNED_64:
+				setAvpAsUnsigned64(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					(Long) avp);
+				break;
+
+			case DiameterAvpType._UTF8_STRING:
+				setAvpAsUTF8String(msg, avpCode, vendorId, set, isMandatoryAvp, isProtectedAvp,
+					(String) avp);
+				break;
+			}
+		}
+	}
+}
+----

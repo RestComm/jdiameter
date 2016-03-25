@@ -22,11 +22,11 @@
 	</properties>
 
 	<modules>
-		<module>sources</module>
+		<module>sources-asciidoc</module>
 	</modules>
 
 	<profiles>
-		<profile>
+		<!--profile>
 			<id>restcomm</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
@@ -43,7 +43,7 @@
 				<module>sources-restcomm</module>
 				<module>jdocbook-restcomm</module>
 			</modules>
-		</profile>
+		</profile-->
 	</profiles>
 
 	<build>

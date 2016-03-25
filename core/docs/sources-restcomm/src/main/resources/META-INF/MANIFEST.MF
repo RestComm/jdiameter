@@ -8,10 +8,10 @@ Implementation-Version: 1.7.0-SNAPSHOT
 Tool: Bnd-1.15.0
 Bundle-Name: Restcomm :: Diameter Documentation :: diameter-core-docs-
  sources
-Implementation-URL: http://www.mobicents.org
+Implementation-URL: http://www.restcomm.org
 Implementation-Vendor-Id: TeleStax, Inc.
 Bundle-Version: 1.7.0.SNAPSHOT
-Bnd-LastModified: 1454794906523
+Bnd-LastModified: 1458928694267
 Bundle-ManifestVersion: 2
 Bundle-License: http://www.gnu.org/licenses/agpl.html
 Bundle-Description: Restcomm Diameter

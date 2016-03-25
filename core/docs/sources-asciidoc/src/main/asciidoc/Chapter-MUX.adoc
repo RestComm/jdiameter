@@ -1,0 +1,44 @@
+[[_mux]]
+= Multiplexer (MUX)
+
+The Multiplexer (MUX) is designed as a stack wrapper.
+It serves two purposes:
+
+Expose Stack::
+  It exposes the stack and allows it to be shared between multiple listeners.
+  The stack follows the life cycle of the MUX.
+  It is created and destroyed with MUX.
+
+Expose Management Operations::
+  Exposes the management operations for  clients, one of them being the &MANAGEMENT.PLATFORM; Console.
+  For specific information please refer to the {this-platform}  Diameter Management Console User Guide.
+
+:leveloffset: +1
+
+include::Section-MUX-Design_Overview.adoc[]
+
+:leveloffset: -1
+
+:leveloffset: +1
+
+include::Section-MUX-Setup.adoc[]
+
+:leveloffset: -1
+
+:leveloffset: +1
+
+include::Section-MUX-Configuration.adoc[]
+
+:leveloffset: -1
+
+:leveloffset: +1
+
+include::Section-MUX-Source_Overview.adoc[]
+
+:leveloffset: -1
+
+:leveloffset: +1
+
+include::Section-MUX-Dictionary.adoc[]
+
+:leveloffset: -1
