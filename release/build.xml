@@ -205,9 +205,14 @@
 				<include name="restcomm-diameter-mux-*/lib/restcomm-diameter-mux-*.jar" />
 			</fileset>
 		</copy>
-		<copy todir="${zip_dir}/core">
-			<fileset dir="${checkout_base_dir}/core/docs/jdocbook-${DOCS_PROFILE}/target/docbook/publish/en-US/pdf">
-				<include name="*.pdf" />
+		<copy todir="${zip_dir}/core/pdf">
+			<fileset dir="${checkout_base_dir}/core/docs/sources-asciidoc/target/generated-docs/pdf">
+				<include name="*" />
+			</fileset>
+		</copy>
+		<copy todir="${zip_dir}/core/html-book">
+			<fileset dir="${checkout_base_dir}/core/docs/sources-asciidoc/target/generated-docs/html-book">
+				<include name="**/*" />
 			</fileset>
 		</copy>
 		<copy todir="${checkout_base_dir}/core/mux/sar-jboss-${DEFAULT_SAR_CONFIGURATION}/target/">
