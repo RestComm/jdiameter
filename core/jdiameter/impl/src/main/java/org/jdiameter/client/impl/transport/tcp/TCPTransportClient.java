@@ -295,7 +295,8 @@ public class TCPTransportClient implements Runnable {
     }
     int rc = 0;
     // PCB - removed locking
-    // lock.lock();
+    // ZhixiaoLuo: Fix #28, without the lock the data in the socketChannel will get mixed in multi-threads.
+    lock.lock();
     try {
       while (rc < bytes.array().length) {
         rc += socketChannel.write(bytes);
@@ -306,7 +307,7 @@ public class TCPTransportClient implements Runnable {
       throw new IOException("Error while sending message: " + e);
     }
     finally {
-      // lock.unlock();
+      lock.unlock();
     }
     if (rc == -1) {
       throw new IOException("Connection closed");
@@ -386,6 +387,9 @@ public class TCPTransportClient implements Runnable {
       // This Version field MUST be set to 1 to indicate Diameter Version 1
       byte vers = (byte) (tmp >> 24);
       if (vers != 1) {
+    	// ZhixiaoLuo: fix #28, if unlucky storage.limit < data.length(1024), then always failed to do storage.put(data) 
+    	// ZhixiaoLuo: and get BufferOverflowException in append(data)
+      	storage.clear();
         return false;
       }
       // extract the message length, so we know how much to read
