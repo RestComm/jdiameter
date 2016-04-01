@@ -129,8 +129,13 @@ public class ConcurrentFactory implements IConcurrentFactory {
   public ScheduledExecutorService getScheduledExecutorService(String name) {
     CommonScheduledExecutorService service = null;
     if(!scheduledExecutorServices.containsKey(name)) {
-      service = new CommonScheduledExecutorService(name, getConfigByName(name), this.entityFactory, statisticFactory);
-      scheduledExecutorServices.put(name,service);
+    	//ZhixiaoLuo: fix StatisticManagerImpl.IllegalArgumentException if 2 sessions try to get ApplicationSession service
+    	synchronized(ConcurrentFactory.class){
+    		if(!scheduledExecutorServices.containsKey(name)) {
+    			service = new CommonScheduledExecutorService(name, getConfigByName(name), this.entityFactory, statisticFactory);
+      			scheduledExecutorServices.put(name,service);
+    		}
+    	}
     }
     else {
       service = scheduledExecutorServices.get(name);
