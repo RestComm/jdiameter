@@ -44,14 +44,14 @@ public class S13SessionFactoryImpl implements IS13SessionFactory, ServerS13Sessi
 	protected StateChangeListener<AppSession> stateListener;
 	protected ISessionDatasource iss;
 	protected IAppSessionDataFactory<IS13SessionData> sessionDataFactory;
-	
+
 	public S13SessionFactoryImpl(){};
 
 	public S13SessionFactoryImpl(SessionFactory sessionFactory) {
 		super();
 		init(sessionFactory);
 	}
-	
+
 	public void init(SessionFactory sessionFactory) {
 		this.sessionFactory = (ISessionFactory) sessionFactory;
 		this.iss = this.sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
@@ -78,7 +78,7 @@ public class S13SessionFactoryImpl implements IS13SessionFactory, ServerS13Sessi
 	public ClientS13SessionListener getClientSessionListener() {
 		return clientSessionListener != null ? clientSessionListener : this;
 	}
-	
+
 	/**
 	* @param serverSessionListener the serverSessionListener to set
 	*/
@@ -106,14 +106,14 @@ public class S13SessionFactoryImpl implements IS13SessionFactory, ServerS13Sessi
 	public StateChangeListener<AppSession> getStateListener() {
 		return stateListener != null ? stateListener : this;
 	}
-	
+
 	/**
 	* @param stateListener the stateListener to set
 	*/
 	public void setStateListener(StateChangeListener<AppSession> stateListener) {
 		this.stateListener = stateListener;
 	}
-	
+
 	public AppSession getSession(String sessionId, Class<? extends AppSession> aClass) {
 		if (sessionId == null) {
 			throw new IllegalArgumentException("SessionId must not be null");
@@ -137,11 +137,11 @@ public class S13SessionFactoryImpl implements IS13SessionFactory, ServerS13Sessi
 				throw new IllegalArgumentException("Wrong session class: "+ aClass + ". Supported[" + ServerS13Session.class + "]");
 			}
 		} catch (Exception e) {
-			logger.error("Failure to obtain new s13 Session.", e);
+			logger.error("Failure to obtain new S13 Session.", e);
 		}
 		return appSession;
 	}
-	
+
 	public AppSession getNewSession(String sessionId, Class<? extends AppSession> aClass, ApplicationId applicationId, Object[] args) {
 		AppSession appSession = null;
 
@@ -180,15 +180,15 @@ public class S13SessionFactoryImpl implements IS13SessionFactory, ServerS13Sessi
 		}
 		return appSession;
 	}
-	
+
 	public void stateChanged(Enum oldState, Enum newState) {
-		logger.info("Diameter s13 Session Factory :: stateChanged :: oldState[{}], newState[{}]", oldState, newState);
+		logger.info("Diameter S13 Session Factory :: stateChanged :: oldState[{}], newState[{}]", oldState, newState);
 	}
 
 	public long getApplicationId() {
 		return 16777252;
 	}
-	
+
 	public void stateChanged(AppSession source, Enum oldState, Enum newState) {
 		logger.info("Diameter S13 Session Factory :: stateChanged :: Session, [{}], oldState[{}], newState[{}]", new Object[]{source, oldState, newState});
 	}
@@ -200,15 +200,15 @@ public class S13SessionFactoryImpl implements IS13SessionFactory, ServerS13Sessi
 	public JMEIdentityCheckRequest createMEIdentityCheckRequest(Request request) {
 		return new JMEIdentityCheckRequestImpl(request);
 	}
-	
+
 	public void doMEIdentityCheckRequestEvent(ServerS13Session appSession, JMEIdentityCheckRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
 		logger.info("Diameter S13 Session Factory :: doMEIdentityCheckRequestEvent :: appSession[{}], Request[{}]", appSession, request);
 	}
-	
+
 	public void doOtherEvent(AppSession appSession, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
 		logger.info("Diameter S13 Session Factory :: doOtherEvent :: appSession[{}], Request[{}], Answer[{}]", new Object[]{appSession, request, answer});
 	}
-	
+
 	public void doMEIdentityCheckAnswerEvent(ClientS13Session appSession, JMEIdentityCheckRequest request, JMEIdentityCheckAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
 		logger.info("Diameter S13 Session Factory :: doMEIdentityCheckAnswerEvent :: appSession[{}], Request[{}], Answer[{}]", new Object[]{appSession, request, answer});
 	}

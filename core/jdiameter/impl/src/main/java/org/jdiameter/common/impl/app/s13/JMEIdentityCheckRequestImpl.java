@@ -10,11 +10,8 @@ import org.slf4j.LoggerFactory;
 
 public class JMEIdentityCheckRequestImpl extends AppRequestEventImpl implements JMEIdentityCheckRequest {
 	private static final long serialVersionUID = 1L;
-	
-	protected Logger logger = LoggerFactory.getLogger(JMEIdentityCheckRequestImpl.class);
-	
-	private static final int TERMINAL_INFO_GROUP_AVP_CODE = 1401;
-	private static final int IMEI_AVP_CODE = 1402;
+
+	protected final static Logger logger = LoggerFactory.getLogger(JMEIdentityCheckRequestImpl.class);
 
 	public JMEIdentityCheckRequestImpl(Message message) {
 		super(message);
@@ -22,17 +19,117 @@ public class JMEIdentityCheckRequestImpl extends AppRequestEventImpl implements 
 	}
 
 	@Override
-	public String getIMEI() {
-		Avp terminalInfoAvp = super.message.getAvps().getAvp(TERMINAL_INFO_GROUP_AVP_CODE);
-		
-		if(terminalInfoAvp !=null) {
+	public Avp getTerminalInformationAvp() {
+		return super.message.getAvps().getAvp(Avp.TERMINAL_INFORMATION);
+	}
+
+	@Override
+	public boolean hasIMEI() {
+		Avp terminalInfoAvp = super.message.getAvps().getAvp(Avp.TERMINAL_INFORMATION);
+
+		if(terminalInfoAvp != null) {
 			try {
-				Avp imei = terminalInfoAvp.getGrouped().getAvp(IMEI_AVP_CODE);
+				return terminalInfoAvp.getGrouped().getAvp(Avp.TGPP_IMEI) != null;
+			}catch(AvpDataException ex){
+				 logger.debug("Failure trying to obtain (Terminal-Infonation) IMEI AVP value", ex);
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public String getIMEI() {
+		Avp terminalInfoAvp = super.message.getAvps().getAvp(Avp.TERMINAL_INFORMATION);
+
+		if(terminalInfoAvp != null) {
+			try {
+				Avp imei = terminalInfoAvp.getGrouped().getAvp(Avp.TGPP_IMEI);
 				if(imei != null){
 					return imei.getUTF8String();
 				}
 			}catch(AvpDataException ex){
 				 logger.debug("Failure trying to obtain (Terminal-Infonation) IMEI AVP value", ex);
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public boolean hasTgpp2MEID() {
+		Avp terminalInfoAvp = super.message.getAvps().getAvp(Avp.TERMINAL_INFORMATION);
+
+		if(terminalInfoAvp != null) {
+			try {
+				return terminalInfoAvp.getGrouped().getAvp(Avp.TGPP2_MEID) != null;
+			}catch(AvpDataException ex){
+				 logger.debug("Failure trying to obtain (Terminal-Infonation) MEID AVP value", ex);
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public byte[] getTgpp2MEID() {
+		Avp terminalInfoAvp = super.message.getAvps().getAvp(Avp.TERMINAL_INFORMATION);
+
+		if(terminalInfoAvp != null) {
+			try {
+				Avp meid = terminalInfoAvp.getGrouped().getAvp(Avp.TGPP2_MEID);
+				if(meid != null){
+					return meid.getOctetString();
+				}
+			}catch(AvpDataException ex){
+				 logger.debug("Failure trying to obtain (Terminal-Infonation) MEID AVP value", ex);
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public boolean hasSoftwareVersion() {
+		Avp terminalInfoAvp = super.message.getAvps().getAvp(Avp.TERMINAL_INFORMATION);
+
+		if(terminalInfoAvp != null) {
+			try {
+				return terminalInfoAvp.getGrouped().getAvp(Avp.SOFTWARE_VERSION) != null;
+			}catch(AvpDataException ex){
+				 logger.debug("Failure trying to obtain (Terminal-Infonation) Software-Version AVP value", ex);
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public String getSoftwareVersion() {
+		Avp terminalInfoAvp = super.message.getAvps().getAvp(Avp.TERMINAL_INFORMATION);
+
+		if(terminalInfoAvp != null) {
+			try {
+				Avp softwareVersion = terminalInfoAvp.getGrouped().getAvp(Avp.SOFTWARE_VERSION);
+				if(softwareVersion != null){
+					return softwareVersion.getUTF8String();
+				}
+			}catch(AvpDataException ex){
+				 logger.debug("Failure trying to obtain (Terminal-Infonation) Software-Version AVP value", ex);
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public boolean isUserNameAVPPresent() {
+		return super.message.getAvps().getAvp(Avp.USER_NAME) != null;
+	}
+
+	@Override
+	public String getUserName() {
+		Avp userNameAvp = super.message.getAvps().getAvp(Avp.USER_NAME);
+
+		if(userNameAvp != null){
+			try{
+				return userNameAvp.getUTF8String();
+			}catch (AvpDataException e) {
+				logger.debug("Failure trying to obtain User-Name AVP value", e);
 			}
 		}
 		return null;

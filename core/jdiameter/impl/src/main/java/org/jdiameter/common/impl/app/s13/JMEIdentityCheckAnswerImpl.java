@@ -11,10 +11,8 @@ import org.slf4j.LoggerFactory;
 
 public class JMEIdentityCheckAnswerImpl extends AppAnswerEventImpl implements JMEIdentityCheckAnswer {
 	private static final long serialVersionUID = 1L;
-	
-	protected Logger logger = LoggerFactory.getLogger(JMEIdentityCheckAnswerImpl.class);
-	
-	private static final int EQUIPMENT_STATUS_AVP_CODE = 1445;
+
+	protected final static Logger logger = LoggerFactory.getLogger(JMEIdentityCheckAnswerImpl.class);
 
 	public JMEIdentityCheckAnswerImpl(Answer answer) {
 		super(answer);
@@ -23,10 +21,15 @@ public class JMEIdentityCheckAnswerImpl extends AppAnswerEventImpl implements JM
 	public JMEIdentityCheckAnswerImpl(Request request, long resultCode) {
 		super(request.createAnswer(resultCode));
 	}
-	
+
+	@Override
+	public boolean isEquipmentStatusAVPPresent() {
+		return super.message.getAvps().getAvp(Avp.EQUIPMENT_STATUS) != null;
+	}
+
 	public int getEquipmentStatus() {
 
-		Avp equipmentStatusAvp = super.message.getAvps().getAvp(EQUIPMENT_STATUS_AVP_CODE);
+		Avp equipmentStatusAvp = super.message.getAvps().getAvp(Avp.EQUIPMENT_STATUS);
 		if (equipmentStatusAvp != null) {
 			try {
 				return equipmentStatusAvp.getInteger32();
