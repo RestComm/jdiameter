@@ -1,3 +1,22 @@
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  */
+
 package org.jdiameter.client.impl.app.s13;
 
 import org.jdiameter.api.Answer;
@@ -26,259 +45,259 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class S13ClientSessionImpl extends S13Session implements ClientS13Session, EventListener<Request, Answer>, NetworkReqListener {
-	
-	private static final Logger logger = LoggerFactory.getLogger(S13ClientSessionImpl.class);
 
-	private transient ClientS13SessionListener listener;
+  private static final Logger logger = LoggerFactory.getLogger(S13ClientSessionImpl.class);
 
-	protected long appId = -1;
-	protected IClientS13SessionData sessionData;
+  private transient ClientS13SessionListener listener;
 
-	public S13ClientSessionImpl(IClientS13SessionData sessionData, IS13MessageFactory fct, ISessionFactory sf, ClientS13SessionListener lst) {
-		super(sf, sessionData);
-		if (lst == null) {
-			throw new IllegalArgumentException("Listener can not be null");
-		}
-		if (fct.getApplicationId() < 0) {
-			throw new IllegalArgumentException( "ApplicationId can not be less than zero");
-		}
+  protected long appId = -1;
+  protected IClientS13SessionData sessionData;
 
-		this.appId = fct.getApplicationId();
-		this.listener = lst;
-		super.messageFactory = fct;
-		this.sessionData = sessionData;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public <E> E getState(Class<E> stateType) {
-		return stateType == S13SessionState.class ? (E) this.sessionData.getS13SessionState() : null;
-	}
+  public S13ClientSessionImpl(IClientS13SessionData sessionData, IS13MessageFactory fct, ISessionFactory sf, ClientS13SessionListener lst) {
+    super(sf, sessionData);
+    if (lst == null) {
+      throw new IllegalArgumentException("Listener can not be null");
+    }
+    if (fct.getApplicationId() < 0) {
+      throw new IllegalArgumentException( "ApplicationId can not be less than zero");
+    }
 
-	public Answer processRequest(Request request) {
-		RequestDelivery rd = new RequestDelivery();
-		rd.session = this;
-		rd.request = request;
-		super.scheduler.execute(rd);
-		return null;
-	}
+    this.appId = fct.getApplicationId();
+    this.listener = lst;
+    super.messageFactory = fct;
+    this.sessionData = sessionData;
+  }
 
-	public void sendMEIdentityCheckRequest(JMEIdentityCheckRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-		send(Event.Type.SEND_MESSAGE, request, null);
-	}
-	
-	
-	public void receivedSuccessMessage(Request request, Answer answer) {
-		AnswerDelivery rd = new AnswerDelivery();
-		rd.session = this;
-		rd.request = request;
-		rd.answer = answer;
-		super.scheduler.execute(rd);
-	}
+  @SuppressWarnings("unchecked")
+  public <E> E getState(Class<E> stateType) {
+    return stateType == S13SessionState.class ? (E) this.sessionData.getS13SessionState() : null;
+  }
 
-	public void timeoutExpired(Request request) {
-		try {
-			handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES,new AppRequestEventImpl(request), null));
-		} catch (Exception e) {
-			logger.debug("Failed to process timeout message", e);
-		}
-	}
+  public Answer processRequest(Request request) {
+    RequestDelivery rd = new RequestDelivery();
+    rd.session = this;
+    rd.request = request;
+    super.scheduler.execute(rd);
+    return null;
+  }
 
-	protected void send(Event.Type type, AppEvent request, AppEvent answer) throws InternalException {
-		try {
-			if (type != null) {
-				handleEvent(new Event(type, request, answer));
-			}
-		} catch (Exception e) {
-			throw new InternalException(e);
-		}
-	}
-	
-	public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
-		try {
-			sendAndStateLock.lock();
-			if (!super.session.isValid()) {
-				// FIXME: throw new InternalException("Generic session is not valid.");
-				return false;
-			}
-			final S13SessionState state = this.sessionData.getS13SessionState();
-			S13SessionState newState = null;
-			Event localEvent = (Event) event;
-			Event.Type eventType = (Type) event.getType();
-			switch (state) {
+  public void sendMEIdentityCheckRequest(JMEIdentityCheckRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+    send(Event.Type.SEND_MESSAGE, request, null);
+  }
 
-			case IDLE:
-				switch (eventType) {
-			
-				case SEND_MESSAGE:
-					newState = S13SessionState.MESSAGE_SENT_RECEIVED;
-					super.session.send(((AppEvent) event.getData()).getMessage(), this);
-					setState(newState); // FIXME: is this ok to be here?
-					break;
 
-				default:
-					logger.error( "Invalid Event Type {} for S13 Client Session at state {}.", eventType, sessionData.getS13SessionState());
-					break;
-				}
-				break;
+  public void receivedSuccessMessage(Request request, Answer answer) {
+    AnswerDelivery rd = new AnswerDelivery();
+    rd.session = this;
+    rd.request = request;
+    rd.answer = answer;
+    super.scheduler.execute(rd);
+  }
 
-			case MESSAGE_SENT_RECEIVED:
-				switch (eventType) {
-				case TIMEOUT_EXPIRES:
-					newState = S13SessionState.TIMEDOUT;
-					setState(newState);
-					break;
+  public void timeoutExpired(Request request) {
+    try {
+      handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES,new AppRequestEventImpl(request), null));
+    } catch (Exception e) {
+      logger.debug("Failed to process timeout message", e);
+    }
+  }
 
-				case SEND_MESSAGE:
-					try {
-						super.session.send(((AppEvent) event.getData()).getMessage(),this);
-					} finally {
-						newState = S13SessionState.TERMINATED;
-						setState(newState);
-					}
-					break;
+  protected void send(Event.Type type, AppEvent request, AppEvent answer) throws InternalException {
+    try {
+      if (type != null) {
+        handleEvent(new Event(type, request, answer));
+      }
+    } catch (Exception e) {
+      throw new InternalException(e);
+    }
+  }
 
-				case RECEIVE_ECA:
-					newState = S13SessionState.TERMINATED;
-					setState(newState);
-					super.cancelMsgTimer();
-					listener.doMEIdentityCheckAnswerEvent(this,(JMEIdentityCheckRequest) localEvent.getRequest(), (JMEIdentityCheckAnswer) localEvent.getAnswer());
-					break;
+  public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
+    try {
+      sendAndStateLock.lock();
+      if (!super.session.isValid()) {
+        // FIXME: throw new InternalException("Generic session is not valid.");
+        return false;
+      }
+      final S13SessionState state = this.sessionData.getS13SessionState();
+      S13SessionState newState = null;
+      Event localEvent = (Event) event;
+      Event.Type eventType = (Type) event.getType();
+      switch (state) {
 
-				default:
-					throw new InternalException("Unexpected/Unknown message received: " + event.getData());
-				}
-				break;
+      case IDLE:
+        switch (eventType) {
 
-			case TERMINATED:
-				throw new InternalException("Cant receive message in state TERMINATED. Command: " + event.getData());
+        case SEND_MESSAGE:
+          newState = S13SessionState.MESSAGE_SENT_RECEIVED;
+          super.session.send(((AppEvent) event.getData()).getMessage(), this);
+          setState(newState); // FIXME: is this ok to be here?
+          break;
 
-			case TIMEDOUT:
-				throw new InternalException( "Cant receive message in state TIMEDOUT. Command: " + event.getData());
+        default:
+          logger.error( "Invalid Event Type {} for S13 Client Session at state {}.", eventType, sessionData.getS13SessionState());
+          break;
+        }
+        break;
 
-			default:
-				logger.error("S6a Client FSM in wrong state: {}", state);
-				break;
-			}
-		} catch (Exception e) {
-			throw new InternalException(e);
-		} finally {
-			sendAndStateLock.unlock();
-		}
-		return true;
-	}
-	
-	@SuppressWarnings("unchecked")
-	protected void setState(S13SessionState newState) {
-		S13SessionState oldState = this.sessionData.getS13SessionState();
-		this.sessionData.setS13SessionState(newState);
+      case MESSAGE_SENT_RECEIVED:
+        switch (eventType) {
+        case TIMEOUT_EXPIRES:
+          newState = S13SessionState.TIMEDOUT;
+          setState(newState);
+          break;
 
-		for (StateChangeListener i : stateListeners) {
-			i.stateChanged(this, (Enum) oldState, (Enum) newState);
-		}
-		if (newState == S13SessionState.TERMINATED || newState == S13SessionState.TIMEDOUT) {
-			super.cancelMsgTimer();
-			this.release();
-		}
-	}
+        case SEND_MESSAGE:
+          try {
+            super.session.send(((AppEvent) event.getData()).getMessage(),this);
+          } finally {
+            newState = S13SessionState.TERMINATED;
+            setState(newState);
+          }
+          break;
 
-	public void onTimer(String timerName) {
-		if (timerName.equals(S13Session.TIMER_NAME_MSG_TIMEOUT)) {
-			try {
-				sendAndStateLock.lock();
-				try {
-					handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES,new AppRequestEventImpl(this.sessionData.getBuffer()), null));
-				} catch (Exception e) {
-					logger.debug("Failure handling Timeout event.");
-				}
-				this.sessionData.setBuffer(null);
-				this.sessionData.setTsTimerId(null);
-			} finally {
-				sendAndStateLock.unlock();
-			}
-		}
-	}
+        case RECEIVE_ECA:
+          newState = S13SessionState.TERMINATED;
+          setState(newState);
+          super.cancelMsgTimer();
+          listener.doMEIdentityCheckAnswerEvent(this,(JMEIdentityCheckRequest) localEvent.getRequest(), (JMEIdentityCheckAnswer) localEvent.getAnswer());
+          break;
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + (int) (appId ^ (appId >>> 32));
-		return result;
-	}
+        default:
+          throw new InternalException("Unexpected/Unknown message received: " + event.getData());
+        }
+        break;
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!super.equals(obj)) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
+      case TERMINATED:
+        throw new InternalException("Cant receive message in state TERMINATED. Command: " + event.getData());
 
-		S13ClientSessionImpl other = (S13ClientSessionImpl) obj;
-		if (appId != other.appId) {
-			return false;
-		}
-		return true;
-	}
+      case TIMEDOUT:
+        throw new InternalException( "Cant receive message in state TIMEDOUT. Command: " + event.getData());
 
-	@Override
-	public void release() {
-		if (isValid()) {
-			try {
-				sendAndStateLock.lock();
-				super.release();
-			} catch (Exception e) {
-				logger.debug("Failed to release session", e);
-			} finally {
-				sendAndStateLock.unlock();
-			}
-		} else {
-			logger.debug("Trying to release an already invalid session, with Session ID '{}'", getSessionId());
-		}
-	}
+      default:
+        logger.error("S13 Client FSM in wrong state: {}", state);
+        break;
+      }
+    } catch (Exception e) {
+      throw new InternalException(e);
+    } finally {
+      sendAndStateLock.unlock();
+    }
+    return true;
+  }
 
-	private class RequestDelivery implements Runnable {
-		ClientS13Session session;
-		Request request;
+  @SuppressWarnings("unchecked")
+  protected void setState(S13SessionState newState) {
+    S13SessionState oldState = this.sessionData.getS13SessionState();
+    this.sessionData.setS13SessionState(newState);
 
-		public void run() {
-			try {
-				switch (request.getCommandCode()) {
-				
-				default:
-					listener.doOtherEvent(session, new AppRequestEventImpl(request), null);
-					break;
-				}
-			} catch (Exception e) {
-				logger.debug("Failed to process request message", e);
-			}
-		}
-	}
+    for (StateChangeListener i : stateListeners) {
+      i.stateChanged(this, (Enum) oldState, (Enum) newState);
+    }
+    if (newState == S13SessionState.TERMINATED || newState == S13SessionState.TIMEDOUT) {
+      super.cancelMsgTimer();
+      this.release();
+    }
+  }
 
-	private class AnswerDelivery implements Runnable {
-		ClientS13Session session;
-		Answer answer;
-		Request request;
+  public void onTimer(String timerName) {
+    if (timerName.equals(S13Session.TIMER_NAME_MSG_TIMEOUT)) {
+      try {
+        sendAndStateLock.lock();
+        try {
+          handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES,new AppRequestEventImpl(this.sessionData.getBuffer()), null));
+        } catch (Exception e) {
+          logger.debug("Failure handling Timeout event.");
+        }
+        this.sessionData.setBuffer(null);
+        this.sessionData.setTsTimerId(null);
+      } finally {
+        sendAndStateLock.unlock();
+      }
+    }
+  }
 
-		public void run() {
-			try {
-				switch (answer.getCommandCode()) {
-				
-				case JMEIdentityCheckAnswer.code:
-					handleEvent(new Event(Event.Type.RECEIVE_ECA,messageFactory.createMEIdentityCheckRequest(request), messageFactory.createMEIdentityCheckAnswer(answer)));
-					break;
-					
-				default:
-					listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
-					break;
-				}
-			} catch (Exception e) {
-				logger.debug("Failed to process success message", e);
-			}
-		}
-	}
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + (int) (appId ^ (appId >>> 32));
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!super.equals(obj)) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+
+    S13ClientSessionImpl other = (S13ClientSessionImpl) obj;
+    if (appId != other.appId) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public void release() {
+    if (isValid()) {
+      try {
+        sendAndStateLock.lock();
+        super.release();
+      } catch (Exception e) {
+        logger.debug("Failed to release session", e);
+      } finally {
+        sendAndStateLock.unlock();
+      }
+    } else {
+      logger.debug("Trying to release an already invalid session, with Session ID '{}'", getSessionId());
+    }
+  }
+
+  private class RequestDelivery implements Runnable {
+    ClientS13Session session;
+    Request request;
+
+    public void run() {
+      try {
+        switch (request.getCommandCode()) {
+
+        default:
+          listener.doOtherEvent(session, new AppRequestEventImpl(request), null);
+          break;
+        }
+      } catch (Exception e) {
+        logger.debug("Failed to process request message", e);
+      }
+    }
+  }
+
+  private class AnswerDelivery implements Runnable {
+    ClientS13Session session;
+    Answer answer;
+    Request request;
+
+    public void run() {
+      try {
+        switch (answer.getCommandCode()) {
+
+        case JMEIdentityCheckAnswer.code:
+          handleEvent(new Event(Event.Type.RECEIVE_ECA,messageFactory.createMEIdentityCheckRequest(request), messageFactory.createMEIdentityCheckAnswer(answer)));
+          break;
+
+        default:
+          listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
+          break;
+        }
+      } catch (Exception e) {
+        logger.debug("Failed to process success message", e);
+      }
+    }
+  }
 }

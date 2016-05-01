@@ -1,3 +1,22 @@
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  */
+
 package org.jdiameter.common.impl.app.s13;
 
 import java.io.Serializable;
@@ -9,31 +28,31 @@ import org.jdiameter.common.api.app.s13.S13SessionState;
 
 public class S13LocalSessionDataImpl extends AppSessionDataLocalImpl implements IS13SessionData {
 
-	protected S13SessionState state = S13SessionState.IDLE;
-	protected Request buffer;
-	protected Serializable tsTimerId;
+  protected S13SessionState state = S13SessionState.IDLE;
+  protected Request buffer;
+  protected Serializable tsTimerId;
 
-	public void setS13SessionState(S13SessionState state) {
-		this.state = state;
-	}
+  public void setS13SessionState(S13SessionState state) {
+    this.state = state;
+  }
 
-	public S13SessionState getS13SessionState() {
-		return this.state;
-	}
+  public S13SessionState getS13SessionState() {
+    return this.state;
+  }
 
-	public Serializable getTsTimerId() {
-		return this.tsTimerId;
-	}
+  public Serializable getTsTimerId() {
+    return this.tsTimerId;
+  }
 
-	public void setTsTimerId(Serializable tid) {
-		this.tsTimerId = tid;
-	}
+  public void setTsTimerId(Serializable tid) {
+    this.tsTimerId = tid;
+  }
 
-	public void setBuffer(Request buffer) {
-		this.buffer = buffer;
-	}
+  public void setBuffer(Request buffer) {
+    this.buffer = buffer;
+  }
 
-	public Request getBuffer() {
-		return this.buffer;
-	}
+  public Request getBuffer() {
+    return this.buffer;
+  }
 }
