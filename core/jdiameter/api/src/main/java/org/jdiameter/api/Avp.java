@@ -2096,7 +2096,7 @@ public interface Avp extends Wrapper, Serializable {
   public static final int TARIFF_INFORMATION = 2060;
 
   /**
-   * Ro/Rf (3GPP TS 32.299) Terminal Information AVP code
+   * Ro/Rf/S13 (3GPP TS 32.299) Terminal Information AVP code
    */
   public static final int TERMINAL_INFORMATION = 1401;
 
@@ -2259,6 +2259,29 @@ public interface Avp extends Wrapper, Serializable {
    * Ro/Rf (3GPP TS 32.299) WLAN UE Local IPAddress AVP code
    */
   public static final int WLAN_UE_LOCAL_IPADDRESS = 894;
+
+  // S13/S13' Interfaces AVPs
+
+  /**
+   * S13/S13' (3GPP TS 29.272) 3GPP IMEI AVP code
+   */
+  public static final int TGPP_IMEI = 1402;
+
+  /**
+   * S13/S13' (3GPP TS 29.272) Software Version AVP code
+   */
+  public static final int SOFTWARE_VERSION = 1403;
+
+  /**
+   * S13/S13' (3GPP TS 29.272) Equipment-Status AVP code
+   */
+  public static final int EQUIPMENT_STATUS = 1445;
+
+  /**
+   * S13/S13' (3GPP TS 29.272) 3GPP2 MEID AVP code
+   */
+  public static final int TGPP2_MEID = 1471;
+
 
   /**
    * @return the AVP code.
