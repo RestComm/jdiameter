@@ -207,11 +207,20 @@ public class PeerFSMImpl implements IStateMachine {
                 getStates()[state.ordinal()].processEvent(event);
               }
               if (timer != 0 && timer < System.currentTimeMillis()) {
-                timer = 0;
-                if(state != DOWN) { //without this check this event is fired in DOWN state.... it should not be.
-                  logger.debug("Sending timeout event");
-                  handleEvent(timeOutEvent); //FIXME: check why timer is not killed?
-                }
+            	  // ZhixiaoLuo: add lock here to avoid 2 timeout events at the same time if 2 threads get into timer=0
+            	  // ZhixiaoLuo: use double check strategy to avoid locking most normal cases
+                  lock.lock();
+                  try{
+                	  if (timer != 0 && timer < System.currentTimeMillis()) {
+                		  timer = 0;
+                          if(state != DOWN) { //without this check this event is fired in DOWN state.... it should not be.
+                              logger.debug("Sending timeout event");
+                              handleEvent(timeOutEvent); //FIXME: check why timer is not killed?
+                           }
+                	  }
+                  }finally{
+                	  lock.unlock();
+                  }
               }
             }
             catch (Exception e) {

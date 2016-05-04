@@ -119,15 +119,15 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
         break;
 
       case RECEIVE_PROFILE_UPDATE_ANSWER:
-        listener.doProfileUpdateAnswerEvent(this, null, new ProfileUpdateAnswerImpl( (Answer) localEvent.getAnswer().getMessage()));
+        listener.doProfileUpdateAnswerEvent(this, (ProfileUpdateRequest)localEvent.getRequest(), new ProfileUpdateAnswerImpl( (Answer) localEvent.getAnswer().getMessage()));
         break;
 
       case RECEIVE_USER_DATA_ANSWER:
-        listener.doUserDataAnswerEvent(this, null, new UserDataAnswerImpl((Answer) localEvent.getAnswer().getMessage()));
+        listener.doUserDataAnswerEvent(this, (UserDataRequest)localEvent.getRequest(), new UserDataAnswerImpl((Answer) localEvent.getAnswer().getMessage()));
         break;
 
       case RECEIVE_SUBSCRIBE_NOTIFICATIONS_ANSWER:
-        listener.doSubscribeNotificationsAnswerEvent(this, null, new SubscribeNotificationsAnswerImpl( (Answer) localEvent.getAnswer().getMessage()));
+        listener.doSubscribeNotificationsAnswerEvent(this, (SubscribeNotificationsRequest)localEvent.getRequest(), new SubscribeNotificationsAnswerImpl( (Answer) localEvent.getAnswer().getMessage()));
         break;
 
       case SEND_PROFILE_UPDATE_REQUEST:
