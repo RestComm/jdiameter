@@ -5,9 +5,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.mobicents.servers.diameter</groupId>
+		<groupId>org.mobicents.diameter</groupId>
 		<artifactId>diameter-parent</artifactId>
-		<version>1.4.0-SNAPSHOT</version>
+		<version>1.7.0-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.mobicents.servers.diameter.guide</groupId>
@@ -16,8 +16,8 @@
 	<name>Restcomm :: Guide :: Example 1 :: ${pom.artifactId}</name>
 
 	<properties>
-		<restcomm.diameter.jdiameter.version>1.5.4.0-build404-SNAPSHOT</restcomm.diameter.jdiameter.version>
-		<restcomm.diameter.mux.version>1.4.0-SNAPSHOT</restcomm.diameter.mux.version>
+		<restcomm.diameter.jdiameter.version>1.7.0-SNAPSHOT</restcomm.diameter.jdiameter.version>
+		<restcomm.diameter.mux.version>1.7.0-SNAPSHOT</restcomm.diameter.mux.version>
 		<get.opt.version>1.0.9</get.opt.version>
 		<picocontainer.version>1.2</picocontainer.version>
 		<slf4j.version>1.5.8</slf4j.version>
@@ -25,17 +25,17 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.mobicents.servers.diameter</groupId>
+			<groupId>org.mobicents.diameter</groupId>
 			<artifactId>restcomm-diameter-mux-jar</artifactId>
 			<version>${restcomm.diameter.mux.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.mobicents.servers.diameter</groupId>
+			<groupId>org.mobicents.diameter</groupId>
 			<artifactId>jdiameter-api</artifactId>
 			<version>${restcomm.diameter.jdiameter.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.mobicents.servers.diameter</groupId>
+			<groupId>org.mobicents.diameter</groupId>
 			<artifactId>jdiameter-impl</artifactId>
 			<version>${restcomm.diameter.jdiameter.version}</version>
 		</dependency>

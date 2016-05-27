@@ -19,6 +19,7 @@ package org.example.client;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.Set;
 
@@ -406,7 +407,8 @@ public class ExampleClient implements EventListener<Request, Answer> {
 				else if (avpRep.getType().equals("Float32"))
 					value = String.valueOf(avp.getFloat32());
 				else
-					value = avp.getOctetString();
+					//value = avp.getOctetString();
+					value = new String(avp.getOctetString(), StandardCharsets.UTF_8);
 
 				log.info(prefix + "<avp name=\"" + avpRep.getName() + "\" code=\"" + avp.getCode() + "\" vendor=\"" + avp.getVendorId()
 						+ "\" value=\"" + value + "\" />");
