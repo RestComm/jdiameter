@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+
+<Configuration xmlns="http://www.jdiameter.org/jdiameter-client">
+
+    <!--
+    LocalPeer configuration
+
+    Each diameter node has a local peer that is e.g. announced during capability exchanges.
+    It also describes what diameter applications are provided by this particular stack.
+    -->
+    <LocalPeer>
+
+        <!-- Local IP description -->
+        <URI value="aaa://127.0.0.1:3868"/>
+        <IPAddress value="192.168.178.101"/>
+
+        <!-- Realm this client is assigned to -->
+        <Realm value="localpeer.2scale.net"/>
+
+        <!-- 2scale Vendor ID: 47420 -->
+        <VendorID value="47420"/>
+        <ProductName value="Test Diameter Stack"/>
+        <FirmwareRevision value="1"/>
+
+        <!-- Describes supported application IDs as client -->
+        <Applications>
+            <ApplicationID>
+                <VendorId value="10415"/>
+                <AuthApplId value="4"/>
+                <AcctApplId value="0"/>
+            </ApplicationID>
+        </Applications>
+    </LocalPeer>
+
+    <Parameters>
+        <!--
+        Determines whether the URI should be used as FQDN. If it is set to true, the stack expects
+        the destination/origin host to be in the format of "aaa://isdn.domain.com:3868" rather than the
+        normal "isdn.domain.com". The default value is false. -->
+        <UseUriAsFqdn value="true" /> <!-- Needed for Ericsson Emulator (set to true) -->
+
+        <!--
+        Determines how many tasks the peer state machine can have before rejecting the next task.
+        This queue contains FSM events and messaging.
+        -->
+        <QueueSize value="10000"/>
+
+        <!--
+        Determines the timeout for messages other than protocol FSM messages. The delay is in milliseconds.
+        -->
+        <MessageTimeOut value="60000"/>
+
+        <!--
+        Determines how long the stack waits for all resources to stop. The delays are in milliseconds.
+        -->
+        <StopTimeOut value="10000"/>
+
+        <!--
+        Determines how long it takes for CER/CEA exchanges to timeout if there is no response.
+        The delays are in milliseconds.
+        -->
+        <CeaTimeOut value="10000"/>
+
+        <!--
+        Determines how long the stack waits to retry the communication with a peer that has stopped answering
+        DWR messages. The delay is in milliseconds.
+        -->
+        <IacTimeOut value="10000"/>
+
+        <!--
+        Determines how long it takes for a DWR/DWA exchange to timeout if there is no response.
+        The delay is in milliseconds.
+        -->
+        <DwaTimeOut value="10000"/>
+
+        <!--
+        Determines how long it takes for a DPR/DPA exchange to timeout if there is no response.
+        The delay is in milliseconds.
+        -->
+        <DpaTimeOut value="5000"/>
+
+        <!--
+        Determines how long it takes for the reconnection procedure to timeout. The delay is in milliseconds.
+        -->
+        <RecTimeOut value="10000"/>
+
+        <!-- Statistics Logger Configuration -->
+        <Statistics pause="5000" delay="5000" enabled="true"
+                    active_records="Concurrent,ScheduledExecService,Network,ScheduledExecService,AppGenRequestPerSecond,NetGenRequestPerSecond,Peer,Peer.local,PeerFSM"/>
+
+        <!--Concurrent>
+            <Entity name="ThreadGroup" size="64"/>
+            <Entity name="ProcessingMessageTimer" size="1"/>
+            <Entity name="DuplicationMessageTimer" size="1"/>
+            <Entity name="RedirectMessageTimer" size="1"/>
+            <Entity name="PeerOverloadTimer" size="1"/>
+            <Entity name="ConnectionTimer" size="1"/>
+            <Entity name="StatisticTimer" size="1"/>
+        </Concurrent-->
+
+    </Parameters>
+
+    <!--
+        The <Network> element contains elements that specify parameters for external peers.
+        The available elements and attributes are listed for reference.
+    -->
+    <Network>
+
+        <!--
+        Parent element containing the child element <Peer>, which specifies external peers and the way they connect
+        -->
+        <Peers>
+            <!--
+            <Peer> specifies the name of external peers, whether they should be treated as a server or client,
+            and what rating the peer has externally.
+            <Peer> supports the following properties:
+                name Specifies the name of the peer in the form of a URI.
+                     The structure is "aaa://[fqdn|ip]:port" (for example, "aaa://192.168.1.1:3868").
+                attempt_connect Determines if the stack should try to connect to this peer.
+                                This property accepts boolean values.
+                rating Specifies the rating of this peer in order to achieve peer priorities/sorting.
+            -->
+            <Peer name="aaa://127.0.0.1:13868" rating="1"/>
+            <Peer name="aaa://127.0.0.2:13868" rating="2"/>
+        </Peers>
+
+        <!--
+           Parent element containing the child element <Realm>, which specifies all realms that connect into the
+           Diameter network. <Realm> contains attributes and elements that describe different realms configured
+           for the Core. It supports <ApplicationID> child elements, which define the applications supported.
+        -->
+        <Realms>
+            <!--
+                <Realm> supports the following parameters:
+                peers
+                    Comma separated list of peers. Each peer is represented by an IP Address or FQDN.
+                local_action
+                    Determines the action the Local Peer will play on the specified realm: Act as a LOCAL peer.
+                dynamic
+                    Specifies if this realm is dynamic.
+                    That is, peers that connect to peers with this realm name will be added to the realm peer
+                    list if not present already.
+                exp_time
+                    The time before a peer belonging to this realm is removed if no connection is available.
+            -->
+            <Realm name="remotepeer.2scale.net" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+                <ApplicationID>
+                    <VendorId value="10415" />
+                    <AuthApplId value="4" />
+                    <AcctApplId value="0" />
+                </ApplicationID>
+            </Realm>
+        </Realms>
+    </Network>
+
+    <Extensions>
+        <RouterEngine value="org.jdiameter.client.impl.router.WeightedRoundRobinRouter" />
+    </Extensions>
+
+</Configuration>
