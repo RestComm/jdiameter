@@ -44,6 +44,7 @@ import org.jdiameter.common.api.app.gx.IGxSessionData;
 import org.jdiameter.common.api.app.rx.IRxSessionData;
 import org.jdiameter.common.api.app.rf.IRfSessionData;
 import org.jdiameter.common.api.app.ro.IRoSessionData;
+import org.jdiameter.common.api.app.s13.IS13SessionData;
 import org.jdiameter.common.api.app.sh.IShSessionData;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.impl.data.LocalDataSource;
@@ -61,13 +62,14 @@ import org.mobicents.diameter.impl.ha.common.gx.GxReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.rx.RxReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.rf.RfReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.ro.RoReplicatedSessionDataFactory;
+import org.mobicents.diameter.impl.ha.common.s13.S13ReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.sh.ShReplicatedSessionDataFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Replicated datasource implementation for {@link ISessionDatasource}
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -124,6 +126,8 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
     appSessionDataFactories.put(ICxDxSessionData.class, new CxDxReplicatedSessionDataFactory(this));
     appSessionDataFactories.put(IGxSessionData.class, new GxReplicatedSessionDataFactory(this));
     appSessionDataFactories.put(IRxSessionData.class, new RxReplicatedSessionDataFactory(this));
+    appSessionDataFactories.put(IS13SessionData.class, new S13ReplicatedSessionDataFactory(this));
+
   }
 
   @Override
@@ -133,7 +137,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.api.ha.ISessionDatasource#addSession(org.jdiameter .api.BaseSession)
    */
   public void addSession(BaseSession session) {
@@ -143,7 +147,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.api.ha.ISessionDatasource#getSession(java.lang.String )
    */
   public BaseSession getSession(String sessionId) {
@@ -160,7 +164,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.api.ha.ISessionDatasource#getSessionListener(java .lang.String)
    */
   public NetworkReqListener getSessionListener(String sessionId) {
@@ -177,7 +181,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.api.ha.ISessionDatasource#removeSession(java.lang .String)
    */
   public void removeSession(String sessionId) {
@@ -193,7 +197,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.api.ha.ISessionDatasource#removeSessionListener( java.lang.String)
    */
   public NetworkReqListener removeSessionListener(String sessionId) {
@@ -211,7 +215,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.api.ha.ISessionDatasource#setSessionListener(java .lang.String, org.jdiameter.api.NetworkReqListener)
    */
   public void setSessionListener(String sessionId, NetworkReqListener data) {
@@ -236,7 +240,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.api.data.ISessionDatasource#isClustered()
    */
   public boolean isClustered() {
@@ -245,7 +249,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.api.data.ISessionDatasource#getDataFactory(java. lang.Class)
    */
   @Override
