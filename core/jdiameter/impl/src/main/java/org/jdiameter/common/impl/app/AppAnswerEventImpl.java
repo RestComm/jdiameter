@@ -55,11 +55,11 @@ public class AppAnswerEventImpl extends AppEventImpl implements AppAnswerEvent {
 
   public Avp getResultCodeAvp() throws AvpDataException {
     Avp resultCodeAvp = message.getAvps().getAvp(Avp.RESULT_CODE);
-	  if(resultCodeAvp!=null)
-		  return resultCodeAvp;
+    if(resultCodeAvp!=null)
+    	return resultCodeAvp;
     resultCodeAvp = message.getAvps().getAvp(Avp.EXPERIMENTAL_RESULT);
-	  if(resultCodeAvp!=null)
-		  return resultCodeAvp.getGrouped().getAvp(Avp.EXPERIMENTAL_RESULT_CODE);
-	  return null;
+    if(resultCodeAvp!=null)
+    	return resultCodeAvp.getGrouped().getAvp(Avp.EXPERIMENTAL_RESULT_CODE);
+    return null;
   }
 }
