@@ -45,6 +45,14 @@ public interface IMessageParser {
     IMessage createMessage(ByteBuffer data) throws AvpDataException;
 
     /**
+     * Create message from byte array
+     * @param data message byte array
+     * @return instance of message
+     * @throws AvpDataException
+     */
+    IMessage createMessage(byte[] message) throws AvpDataException;
+    
+    /**
      * Created specified type of message
      * @param iface type of message
      * @param data message bytebuffer

@@ -53,6 +53,11 @@
 			<artifactId>sctp-api</artifactId>
 			<version>1.6.0.FINAL</version>
 		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.0.36.Final</version>
+		</dependency>
 	</dependencies>
 
 	<build>

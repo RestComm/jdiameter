@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<Configuration xmlns="http://www.jdiameter.org/jdiameter-server">
+
+  <LocalPeer>
+    <URI value="aaa://127.0.0.1:13868" />
+    <IPAddresses>
+      <IPAddress value="127.0.0.1" />
+    </IPAddresses>
+    <Realm value="client.mobicents.org" />
+    <VendorID value="0" />
+    <ProductName value="jDiameter" />
+    <FirmwareRevision value="1" />
+    <OverloadMonitor>
+     <Entry index="1" lowThreshold="0.5" highThreshold="0.6">
+       <ApplicationID>
+         <VendorId value="0" />
+         <AuthApplId value="0" />
+         <AcctApplId value="300" />
+       </ApplicationID>
+     </Entry>
+    </OverloadMonitor>
+  </LocalPeer>
+  
+  <Parameters>
+    <AcceptUndefinedPeer value="true" />
+    <DuplicateProtection value="true" />
+    <DuplicateTimer value="240000" />
+    <UseUriAsFqdn value="true" />
+    <QueueSize value="10000" />
+    <MessageTimeOut value="60000" />
+    <StopTimeOut value="10000" />
+    <CeaTimeOut value="10000" />
+    <IacTimeOut value="30000" />
+    <DwaTimeOut value="10000" />
+    <DpaTimeOut value="5000" />
+    <RecTimeOut value="10000" />
+  </Parameters>
+  
+  <Network>
+    <Peers>
+      <Peer name="aaa://127.0.0.1:4868" attempt_connect="true" rating="1" />
+    </Peers>
+    <Realms>
+      <Realm name="server.mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+        <ApplicationID>
+          <VendorId value="0" />
+          <AuthApplId value="0" />
+          <AcctApplId value="300" />
+        </ApplicationID>
+      </Realm>
+      <Realm name="client.mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+        <ApplicationID>
+          <VendorId value="0" />
+          <AuthApplId value="0" />
+          <AcctApplId value="300" />
+        </ApplicationID>
+      </Realm>
+    </Realms>
+  </Network>
+  <Extensions>
+    <Connection value="org.jdiameter.client.impl.transport.tcp.netty.TCPClientConnection" />
+    <NetworkGuard value="org.jdiameter.server.impl.io.tcp.netty.NetworkGuard" />
+  </Extensions>
+</Configuration>

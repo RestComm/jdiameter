@@ -86,10 +86,9 @@ public class MessageParser extends ElementParser implements IMessageParser {
 
   }
 
-  public IMessage createMessage(ByteBuffer data) throws AvpDataException {
+  public IMessage createMessage(byte[] message) throws AvpDataException {
     // Read header
     try {
-      byte[] message = data.array();
       long tmp;
       DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
       tmp = in.readInt();
@@ -122,6 +121,11 @@ public class MessageParser extends ElementParser implements IMessageParser {
     }
   }
 
+  public IMessage createMessage(ByteBuffer data) throws AvpDataException {
+    byte[] message = data.array();
+    return createMessage(message);
+  }
+  
   public <T> T createMessage(Class<?> iface, ByteBuffer data) throws AvpDataException {
     if (iface == IMessage.class) {
       return (T) createMessage(data);

@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<Configuration xmlns="http://www.jdiameter.org/jdiameter-server">
+
+  <LocalPeer security_ref="tls-server">
+    <URI value="aaa://127.0.0.2:3868" />
+    <IPAddresses>
+      <IPAddress value="127.0.0.2" />
+    </IPAddresses>
+    <Realm value="mobicents.org" />
+    <VendorID value="193" />
+    <ProductName value="jDiameter" />
+    <FirmwareRevision value="1" />
+    <OverloadMonitor>
+      <Entry index="1" lowThreshold="0.5" highThreshold="0.6">
+        <ApplicationID>
+          <VendorId value="193" />
+          <AuthApplId value="0" />
+          <AcctApplId value="19302" />
+        </ApplicationID>
+      </Entry>
+    </OverloadMonitor>
+  </LocalPeer>
+
+  <Parameters>
+    <AcceptUndefinedPeer value="true" />
+    <DuplicateProtection value="true" />
+    <DuplicateTimer value="240000" />
+    <UseUriAsFqdn value="false" />
+    <QueueSize value="10000" />
+    <MessageTimeOut value="60000" />
+    <StopTimeOut value="10000" />
+    <CeaTimeOut value="10000" />
+    <IacTimeOut value="30000" />
+    <DwaTimeOut value="10000" />
+    <DpaTimeOut value="5000" />
+    <RecTimeOut value="10000" />
+    
+    <BindDelay value="15000" />
+
+    <!-- Statistics Logger Configuration -->
+    <Statistics pause="30000" delay="30000" enabled="true" active_records="Concurrent,ScheduledExecService,Network,ScheduledExecService,AppGenRequestPerSecond,NetGenRequestPerSecond,Peer,Peer.local,PeerFSM"/>
+
+    <Concurrent>
+      <Entity name="ThreadGroup" size="64"/> <!-- Common Thread Pool -->
+      <Entity name="ProcessingMessageTimer" size="1"/>
+      <Entity name="DuplicationMessageTimer" size="1"/>
+      <Entity name="RedirectMessageTimer" size="1"/>
+      <Entity name="PeerOverloadTimer" size="1"/>
+      <Entity name="ConnectionTimer" size="1"/>
+      <Entity name="StatisticTimer" size="1"/>
+    </Concurrent>
+    <Dictionary enabled="false" sendLevel="MESSAGE" receiveLevel="OFF" />    
+    <!-- To enable clustering uncomment the following lines
+    <SessionDatasource value="org.mobicents.diameter.impl.ha.data.ReplicatedDataSource"/>
+    <TimerFacility value="org.mobicents.diameter.impl.ha.timer.ReplicatedTimerFacilityImpl"/>
+    -->
+    </Parameters>
+
+  <Network>
+    <Peers>
+      <Peer name="aaa://127.0.0.2:13868" attempt_connect="false" rating="1" />
+    </Peers>
+
+    <Realms>
+      <Realm name="test.mobicents.org" peers="127.0.0.2" local_action="LOCAL" dynamic="false" exp_time="1">
+        <ApplicationID>
+          <VendorId value="193" />
+          <AuthApplId value="0" />
+          <AcctApplId value="19302" />
+        </ApplicationID>
+      </Realm>
+    </Realms>
+  </Network>
+
+  <Security>
+    <SecurityData name="tls-server" protocol="TLSv1" enable_session_creation="true" use_client_mode="false" need_client_auth="true">
+      <KeyData manager="PKIX" store="JKS" file="src/test/resources/certs/server-ks.jks" pwd="changeit" />
+      <TrustData manager="PKIX" store="JKS" file="src/test/resources/certs/server-ts.jks" pwd="changeit" />
+    </SecurityData>
+  </Security>
+  
+  <Extensions>
+    <Connection value="org.jdiameter.client.impl.transport.tls.netty.TLSClientConnection" />
+    <NetworkGuard value="org.jdiameter.server.impl.io.tls.netty.NetworkGuard" />
+  </Extensions>
+
+</Configuration>

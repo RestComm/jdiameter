@@ -25,6 +25,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
@@ -133,6 +134,10 @@ public class AccSessionStatefulBasicFlowTest {
   public void testBasicFlow() throws Exception {
     try {
       // pain of parameter tests :) ?
+      waitForMessage();
+      waitForMessage();
+      waitForMessage();
+      
       clientNode.sendInitial();
       waitForMessage();
 
@@ -215,8 +220,20 @@ public class AccSessionStatefulBasicFlowTest {
     Class<AccSessionStatefulBasicFlowTest> t = AccSessionStatefulBasicFlowTest.class;
     client = t.getClassLoader().getResource(client).toString();
     server1 = t.getClassLoader().getResource(server1).toString();
+    
+    String nettyTcpClient = "configurations/functional-acc/netty/tcp/config-client.xml";
+    String nettyTcpServer1 = "configurations/functional-acc/netty/tcp/config-server-node1.xml";
 
-    return Arrays.asList(new Object[][] { { client, server1 } });
+    nettyTcpClient = t.getClassLoader().getResource(nettyTcpClient).toString();
+    nettyTcpServer1 = t.getClassLoader().getResource(nettyTcpServer1).toString();
+
+    String nettyTlsClient = "configurations/functional-acc/netty/tls/config-client.xml";
+    String nettyTlsServer1 = "configurations/functional-acc/netty/tls/config-server-node1.xml";
+
+    nettyTlsClient = t.getClassLoader().getResource(nettyTlsClient).toString();
+    nettyTlsServer1 = t.getClassLoader().getResource(nettyTlsServer1).toString();
+
+    return Arrays.asList(new Object[][] { { client, server1 }, {nettyTcpClient, nettyTcpServer1}, {nettyTlsClient, nettyTlsServer1} });
   }
 
   private void waitForMessage() {
@@ -227,5 +244,5 @@ public class AccSessionStatefulBasicFlowTest {
       e.printStackTrace();
     }
   }
-
+  
 }
