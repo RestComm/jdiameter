@@ -66,6 +66,8 @@ import org.jdiameter.common.api.app.ro.IRoSessionData;
 import org.jdiameter.common.api.app.rx.IRxSessionData;
 import org.jdiameter.common.api.app.s13.IS13SessionData;
 import org.jdiameter.common.api.app.sh.IShSessionData;
+import org.jdiameter.common.api.app.slh.ISLhSessionData;
+import org.jdiameter.common.api.app.slg.ISLgSessionData;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.impl.data.LocalDataSource;
 import org.mobicents.cache.MobicentsCache;
@@ -84,6 +86,8 @@ import org.mobicents.diameter.impl.ha.common.ro.RoReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.rx.RxReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.s13.S13ReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.sh.ShReplicatedSessionDataFactory;
+import org.mobicents.diameter.impl.ha.common.slh.SLhReplicatedSessionDataFactory;
+import org.mobicents.diameter.impl.ha.common.slg.SLgReplicatedSessionDataFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,7 +142,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
     this.mobicentsCluster.startCluster();
 
     this.container = container;
-    // this is coded, its tied to specific impl of SessionDatasource
+    // this is coded, it's tied to specific impl of SessionDatasource
     appSessionDataFactories.put(IAuthSessionData.class, new AuthReplicatedSessionDataFactory(this));
     appSessionDataFactories.put(IAccSessionData.class, new AccReplicatedSessionDataFactory(this));
     appSessionDataFactories.put(ICCASessionData.class, new CCAReplicatedSessionDataFactory(this));
@@ -149,6 +153,8 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
     appSessionDataFactories.put(IGxSessionData.class, new GxReplicatedSessionDataFactory(this));
     appSessionDataFactories.put(IRxSessionData.class, new RxReplicatedSessionDataFactory(this));
     appSessionDataFactories.put(IS13SessionData.class, new S13ReplicatedSessionDataFactory(this));
+    appSessionDataFactories.put(ISLhSessionData.class, new SLhReplicatedSessionDataFactory(this));
+    appSessionDataFactories.put(ISLgSessionData.class, new SLgReplicatedSessionDataFactory(this));
 
   }
 
