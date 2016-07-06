@@ -309,8 +309,16 @@ public class AccSessionFTFlowTest {
     replicatedClient = t.getClassLoader().getResource(replicatedClient).toString();
     replicatedServer1 = t.getClassLoader().getResource(replicatedServer1).toString();
     replicatedServer2 = t.getClassLoader().getResource(replicatedServer2).toString();
+    
+    String replicatedNettyTcpClient = "configurations/functional-acc/netty/tcp/replicated-config-client.xml";
+    String replicatedNettyTcpServer1 = "configurations/functional-acc/netty/tcp/replicated-config-server-node1.xml";
+    String replicatedNettyTcpServer2 = "configurations/functional-acc/netty/tcp/replicated-config-server-node2.xml";
 
-    return Arrays.asList(new Object[][] { { replicatedClient, replicatedServer1, replicatedServer2 } });
+    replicatedNettyTcpClient = t.getClassLoader().getResource(replicatedNettyTcpClient).toString();
+    replicatedNettyTcpServer1 = t.getClassLoader().getResource(replicatedNettyTcpServer1).toString();
+    replicatedNettyTcpServer2 = t.getClassLoader().getResource(replicatedNettyTcpServer2).toString();
+
+    return Arrays.asList(new Object[][] { { replicatedClient, replicatedServer1, replicatedServer2 }, { replicatedNettyTcpClient, replicatedNettyTcpServer1, replicatedNettyTcpServer2 } });
   }
 
   private void waitForMessage() {

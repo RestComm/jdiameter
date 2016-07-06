@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<Configuration xmlns="http://www.jdiameter.org/jdiameter-server">
+
+  <LocalPeer security_ref="tls-client">
+    <URI value="aaa://client22.mobicents.org:23868" />
+    <IPAddresses>
+      <IPAddress value="127.0.0.2" />
+    </IPAddresses>
+    <Realm value="mobicents.org" />
+    <VendorID value="193" />
+    <ProductName value="jDiameter" />
+    <FirmwareRevision value="1" />
+    <OverloadMonitor>
+      <Entry index="1" lowThreshold="0.5" highThreshold="0.6">
+        <ApplicationID>
+          <VendorId value="193" />
+          <AuthApplId value="0" />
+          <AcctApplId value="19302" />
+        </ApplicationID>
+      </Entry>
+    </OverloadMonitor>
+  </LocalPeer>
+
+  <Parameters>
+    <AcceptUndefinedPeer value="true" />
+    <DuplicateProtection value="true" />
+    <DuplicateTimer value="240000" />
+    <UseUriAsFqdn value="true" />
+    <QueueSize value="10000" />
+    <MessageTimeOut value="60000" />
+    <StopTimeOut value="10000" />
+    <CeaTimeOut value="10000" />
+    <IacTimeOut value="30000" />
+    <DwaTimeOut value="10000" />
+    <DpaTimeOut value="5000" />
+    <RecTimeOut value="10000" />
+  </Parameters>
+  
+
+  <Network>
+    <Peers>
+      <Peer name="aaa://127.0.0.2:3868" attempt_connect="true" rating="1" />
+    </Peers>
+
+    <Realms>
+      <Realm name="mobicents.org" peers="127.0.0.2" local_action="LOCAL" dynamic="false" exp_time="1">
+        <ApplicationID>
+          <VendorId value="193" />
+          <AuthApplId value="0" />
+          <AcctApplId value="19302" />
+        </ApplicationID>
+      </Realm>
+    </Realms>
+  </Network>
+
+  <Security>
+    <SecurityData name="tls-client" protocol="TLSv1"
+      enable_session_creation="true" use_client_mode="true"
+      need_client_auth="true">
+      <KeyData manager="PKIX" store="JKS"
+        file="src/test/resources/certs/client-ks.jks" pwd="changeit" />
+      <TrustData manager="PKIX" store="JKS"
+        file="src/test/resources/certs/client-ts.jks" pwd="changeit" />
+    </SecurityData>
+  </Security>
+  <Extensions>
+    <Connection
+      value="org.jdiameter.client.impl.transport.tls.netty.TLSClientConnection" />
+    <NetworkGuard value="org.jdiameter.server.impl.io.tls.netty.NetworkGuard" />
+  </Extensions>
+  
+</Configuration>
