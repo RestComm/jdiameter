@@ -1,98 +1,98 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.mobicents.diameter</groupId>
-		<artifactId>diameter-core-parent</artifactId>
-		<version>1.7.0-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
-	</parent>
+  <parent>
+    <groupId>org.mobicents.diameter</groupId>
+    <artifactId>diameter-core-parent</artifactId>
+    <version>1.7.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
 
-	<artifactId>restcomm-diameter-mux-parent</artifactId>
+  <artifactId>restcomm-diameter-mux-parent</artifactId>
 
-	<name>Restcomm :: Diameter Multiplexer :: ${project.artifactId}</name>
+  <name>Restcomm :: Diameter Multiplexer :: ${project.artifactId}</name>
 
-	<properties>
-		<!-- Restcomm Diameter Components Versions -->
-		<jdiameter.version>1.5.9.0-build538-SNAPSHOT</jdiameter.version>
-		<jdiameter-ha.version>1.1.0-SNAPSHOT</jdiameter-ha.version>
-	</properties>
+  <properties>
+    <!-- Restcomm Diameter Components Versions -->
+    <jdiameter.version>1.5.9.0-build538-SNAPSHOT</jdiameter.version>
+    <jdiameter-ha.version>1.1.0-SNAPSHOT</jdiameter-ha.version>
+  </properties>
 
-	<packaging>pom</packaging>
+  <packaging>pom</packaging>
 
-	<modules>
-		<module>jar</module>
-	</modules>
+  <modules>
+    <module>jar</module>
+  </modules>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>jdiameter-api</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>jdiameter-impl</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>jdiameter-ha-api</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>jdiameter-ha-impl</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>jdiameter-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>jdiameter-impl</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>jdiameter-ha-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>jdiameter-ha-impl</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-				<configuration>
-					<autoVersionSubmodules>true</autoVersionSubmodules>
-					<resume>false</resume>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <resume>false</resume>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
-	<profiles>
-		<profile>
-			<id>maven-release</id>
-			<modules>
-				<module>sar-jboss-4</module>
-				<module>sar-jboss-5</module>
-				<module>sar-jboss-7</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>jboss4</id>
-			<modules>
-				<module>sar-jboss-4</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>jboss5</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<modules>
-				<module>sar-jboss-5</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>jboss7</id>
-			<modules>
-				<module>sar-jboss-7</module>
-			</modules>
-		</profile>
-	</profiles>
+  <profiles>
+    <profile>
+      <id>maven-release</id>
+      <modules>
+        <module>sar-jboss-4</module>
+        <module>sar-jboss-7</module>
+        <module>sar-jboss-5</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>jboss4</id>
+      <modules>
+        <module>sar-jboss-4</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>jboss5</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>sar-jboss-5</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>jboss7</id>
+      <modules>
+        <module>sar-jboss-7</module>
+      </modules>
+    </profile>
+  </profiles>
 
 </project>

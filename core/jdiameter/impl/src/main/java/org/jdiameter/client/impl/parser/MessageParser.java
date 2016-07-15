@@ -15,10 +15,10 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
- * 
+ *
  * This file incorporates work covered by the following copyright and
  * permission notice:
- * 
+ *
  *   JBoss, Home of Professional Open Source
  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
  *   by the @authors tag. See the copyright.txt in the distribution for a
@@ -67,7 +67,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
@@ -78,14 +78,15 @@ public class MessageParser extends ElementParser implements IMessageParser {
 
   protected UIDGenerator endToEndGen = new UIDGenerator(
       (int) (TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) & 0xFFF) << 20
-  );
+      );
 
- 
+
 
   public MessageParser() {
 
   }
 
+  @Override
   public IMessage createMessage(byte[] message) throws AvpDataException {
     // Read header
     try {
@@ -96,12 +97,12 @@ public class MessageParser extends ElementParser implements IMessageParser {
       if (version != 1) {
         throw new Exception("Illegal value of version " + version);
       }
-      
+
       if (message.length != (tmp & 0x00FFFFFF)) {
         //throw new ParseException("Wrong length of data: " + (tmp & 0x00FFFFFF));
         throw new Exception("Wrong length of data: " + (tmp & 0x00FFFFFF));
       }
-      
+
       tmp = in.readInt();
       short flags        = (short) ((tmp >> 24) & 0xFF);
       int commandCode    = (int) (tmp & 0xFFFFFF);
@@ -121,11 +122,13 @@ public class MessageParser extends ElementParser implements IMessageParser {
     }
   }
 
+  @Override
   public IMessage createMessage(ByteBuffer data) throws AvpDataException {
     byte[] message = data.array();
     return createMessage(message);
   }
-  
+
+  @Override
   public <T> T createMessage(Class<?> iface, ByteBuffer data) throws AvpDataException {
     if (iface == IMessage.class) {
       return (T) createMessage(data);
@@ -133,19 +136,22 @@ public class MessageParser extends ElementParser implements IMessageParser {
     return null;
   }
 
+  @Override
   public <T> T createEmptyMessage(Class<?> iface, IMessage parentMessage) {
     if (iface == Request.class) {
-      return (T) createEmptyMessage(parentMessage, parentMessage.getCommandCode());   
+      return (T) createEmptyMessage(parentMessage, parentMessage.getCommandCode());
     }
     else {
       return null;
     }
   }
 
+  @Override
   public IMessage createEmptyMessage(IMessage prnMessage) {
     return createEmptyMessage(prnMessage, prnMessage.getCommandCode());
   }
 
+  @Override
   public IMessage createEmptyMessage(IMessage prnMessage, int commandCode) {
     //
     MessageImpl newMessage = new MessageImpl(
@@ -155,14 +161,14 @@ public class MessageParser extends ElementParser implements IMessageParser {
         prnMessage.getHopByHopIdentifier(),
         endToEndGen.nextLong(),
         null
-    );
+        );
     copyBasicAvps(newMessage, prnMessage, false);
 
     return newMessage;
   }
 
   void copyBasicAvps(IMessage newMessage, IMessage prnMessage, boolean invertPoints) {
-	  //left it here, but 
+    //left it here, but
     Avp avp;
     // Copy session id's information
     {
@@ -233,17 +239,18 @@ public class MessageParser extends ElementParser implements IMessageParser {
           }
         }
       }
-//      // set Orig host and realm
-//      try {
-//        newMessage.getAvps().addAvp(Avp.ORIGIN_HOST, metaData.getLocalPeer().getUri().getFQDN(), true, false, true);
-//        newMessage.getAvps().addAvp(Avp.ORIGIN_REALM, metaData.getLocalPeer().getRealmName(), true, false, true);
-//      }
-//      catch (Exception e) {
-//        logger.debug("Error copying Origin-Host/Realm AVPs", e);
-//      }
+      //      // set Orig host and realm
+      //      try {
+      //        newMessage.getAvps().addAvp(Avp.ORIGIN_HOST, metaData.getLocalPeer().getUri().getFQDN(), true, false, true);
+      //        newMessage.getAvps().addAvp(Avp.ORIGIN_REALM, metaData.getLocalPeer().getRealmName(), true, false, true);
+      //      }
+      //      catch (Exception e) {
+      //        logger.debug("Error copying Origin-Host/Realm AVPs", e);
+      //      }
     }
   }
 
+  @Override
   public ByteBuffer encodeMessage(IMessage message) throws ParseException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     try {
@@ -261,18 +268,18 @@ public class MessageParser extends ElementParser implements IMessageParser {
       data.writeInt(tmp);
       data.write(toBytes(message.getHeaderApplicationId()));
       data.write(toBytes(message.getHopByHopIdentifier()));
-      data.write(toBytes(message.getEndToEndIdentifier())); 
+      data.write(toBytes(message.getEndToEndIdentifier()));
       data.write(rawData);
     }
     catch (Exception e) {
       //logger.debug("Error during encode message", e);
       throw new ParseException("Failed to encode message.", e);
     }
-    try{
-    	return prepareBuffer(out.toByteArray(), out.size());
+    try {
+      return prepareBuffer(out.toByteArray(), out.size());
     }
-    catch(AvpDataException ade) {
-    	throw new ParseException(ade);
+    catch (AvpDataException ade) {
+      throw new ParseException(ade);
     }
   }
 
@@ -285,10 +292,12 @@ public class MessageParser extends ElementParser implements IMessageParser {
     return data;
   }
 
+  @Override
   public IMessage createEmptyMessage(int commandCode, long headerAppId) {
     return new MessageImpl(commandCode, headerAppId);
   }
 
+  @Override
   public <T> T createEmptyMessage(Class<?> iface, int commandCode, long headerAppId) {
     if (iface == IRequest.class) {
       return (T) new MessageImpl(commandCode, headerAppId);

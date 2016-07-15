@@ -1,26 +1,57 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.client.impl.transport.tcp;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.util.concurrent.ConcurrentLinkedQueue;
+// FIXME : requires JDK6 : import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Configuration;
@@ -36,19 +67,8 @@ import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.nio.ByteBuffer;
-import java.util.concurrent.ConcurrentLinkedQueue;
-// FIXME : requires JDK6 : import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 /**
- * 
+ *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
@@ -98,10 +118,12 @@ public class TCPClientConnection implements IConnection {
     listeners.add(listener);
   }
 
+  @Override
   public long getCreatedTime() {
     return createdTime;
   }
 
+  @Override
   public void connect() throws TransportException {
     try {
       getClient().initialize();
@@ -115,9 +137,10 @@ public class TCPClientConnection implements IConnection {
     }
   }
 
+  @Override
   public void disconnect() throws InternalError {
-        //PCB added logging
-        logger.debug("In disconnect for [{}]", this.getKey());
+    //PCB added logging
+    logger.debug("In disconnect for [{}]", this.getKey());
     try {
       if (getClient() != null) {
         getClient().stop();
@@ -128,6 +151,7 @@ public class TCPClientConnection implements IConnection {
     }
   }
 
+  @Override
   public void release() throws IOException {
     //PCB added logging
     logger.debug("In release for [{}]", this.getKey());
@@ -146,6 +170,7 @@ public class TCPClientConnection implements IConnection {
     }
   }
 
+  @Override
   public void sendMessage(IMessage message) throws TransportException, OverloadException {
     try {
       if (getClient() != null) {
@@ -176,22 +201,27 @@ public class TCPClientConnection implements IConnection {
     return client;
   }
 
+  @Override
   public boolean isNetworkInitiated() {
     return false;
   }
 
+  @Override
   public boolean isConnected() {
     return getClient() != null && getClient().isConnected();
   }
 
+  @Override
   public InetAddress getRemoteAddress() {
     return getClient().getDestAddress().getAddress();
   }
 
+  @Override
   public int getRemotePort() {
     return getClient().getDestAddress().getPort();
   }
 
+  @Override
   public void addConnectionListener(IConnectionListener listener) {
     lock.lock();
     try {
@@ -215,6 +245,7 @@ public class TCPClientConnection implements IConnection {
     }
   }
 
+  @Override
   public void remAllConnectionListener() {
     //PCB added logging
     logger.debug("Waiting to get lock in order to remove all listeners");
@@ -229,6 +260,7 @@ public class TCPClientConnection implements IConnection {
     }
   }
 
+  @Override
   public void remConnectionListener(IConnectionListener listener) {
     lock.lock();
     try {
@@ -241,16 +273,19 @@ public class TCPClientConnection implements IConnection {
     }
   }
 
+  @Override
   public boolean isWrapperFor(Class<?> aClass) throws InternalException {
     return false;
   }
 
+  @Override
   public <T> T unwrap(Class<T> aClass) throws InternalException {
     return null;
   }
 
+  @Override
   public String getKey() {
-    if(this.cachedKey == null) {
+    if (this.cachedKey == null) {
       this.cachedKey = new StringBuffer("aaa://").append(getRemoteAddress().getHostName()).append(":").append(getRemotePort()).toString();
     }
 
@@ -313,7 +348,7 @@ public class TCPClientConnection implements IConnection {
               listener.messageReceived(getKey(), msg);
               break;
             case DATA_EXCEPTION:
-              listener.internalError(getKey(), null, new TransportException("Avp Data Exception:", 
+              listener.internalError(getKey(), null, new TransportException("Avp Data Exception:",
                   TransportError.ReceivedBrokenMessage, event.exception));
               break;
           }
@@ -339,7 +374,7 @@ public class TCPClientConnection implements IConnection {
         logger.debug("Got IllegalStateException in processBufferedMessages");
         // FIXME : requires JDK6 : buffer.removeLast();
         Event[] tempBuffer = buffer.toArray(new Event[buffer.size()]);
-        buffer.remove(tempBuffer[tempBuffer.length-1]);
+        buffer.remove(tempBuffer[tempBuffer.length - 1]);
         buffer.add(event);
       }
       //PCB added logging
@@ -351,30 +386,30 @@ public class TCPClientConnection implements IConnection {
       return true;
     }
   }
-  
+
   //------------------ helper classes ------------------------
-  private static enum EventType {
-      CONNECTED, DISCONNECTED, MESSAGE_RECEIVED, DATA_EXCEPTION
+  private enum EventType {
+    CONNECTED, DISCONNECTED, MESSAGE_RECEIVED, DATA_EXCEPTION
+  }
+
+  private static class Event {
+    EventType type;
+    ByteBuffer message;
+    Exception exception;
+
+    Event(EventType type) {
+      this.type = type;
     }
 
-    private static class Event {
-      EventType type;
-      ByteBuffer message;
-      Exception exception;
-
-      Event(EventType type) {
-        this.type = type;
-      }
-
-      Event(EventType type, Exception exception) {
-        this(type);
-        this.exception = exception;
-      }
-
-      Event(EventType type, ByteBuffer message) {
-        this(type);
-        this.message = message;
-      }
+    Event(EventType type, Exception exception) {
+      this(type);
+      this.exception = exception;
     }
+
+    Event(EventType type, ByteBuffer message) {
+      this(type);
+      this.message = message;
+    }
+  }
 
 }

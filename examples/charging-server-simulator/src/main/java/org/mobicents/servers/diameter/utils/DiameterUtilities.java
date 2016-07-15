@@ -19,7 +19,7 @@ public class DiameterUtilities {
     String reqFlag = message.isRequest() ? "R" : "A";
     String flags = reqFlag += message.isError() ? " | E" : "";
 
-    if(logger.isInfoEnabled()) {
+    if (logger.isInfoEnabled()) {
       logger.info("Message [" + flags + "] Command-Code: " + message.getCommandCode() + " / E2E("
           + message.getEndToEndIdentifier() + ") / HbH(" + message.getHopByHopIdentifier() + ")");
       logger.info("- - - - - - - - - - - - - - - - AVPs - - - - - - - - - - - - - - - -");
@@ -32,7 +32,7 @@ public class DiameterUtilities {
   }
 
   public static void printAvps(AvpSet avps, String indentation) {
-    for(Avp avp : avps) {
+    for (Avp avp : avps) {
       AvpRepresentation avpRep = AVP_DICTIONARY.getAvp(avp.getCode(), avp.getVendorId());
       Object avpValue = null;
       boolean isGrouped = false;
@@ -40,25 +40,25 @@ public class DiameterUtilities {
       try {
         String avpType = AVP_DICTIONARY.getAvp(avp.getCode(), avp.getVendorId()).getType();
 
-        if("Integer32".equals(avpType) || "AppId".equals(avpType)) {
+        if ("Integer32".equals(avpType) || "AppId".equals(avpType)) {
           avpValue = avp.getInteger32();
         }
-        else if("Unsigned32".equals(avpType) || "VendorId".equals(avpType)) {
+        else if ("Unsigned32".equals(avpType) || "VendorId".equals(avpType)) {
           avpValue = avp.getUnsigned32();
         }
-        else if("Float64".equals(avpType)) {
+        else if ("Float64".equals(avpType)) {
           avpValue = avp.getFloat64();
         }
-        else if("Integer64".equals(avpType)) {
+        else if ("Integer64".equals(avpType)) {
           avpValue = avp.getInteger64();
         }
-        else if("Time".equals(avpType)) {
+        else if ("Time".equals(avpType)) {
           avpValue = avp.getTime();
         }
-        else if("Unsigned64".equals(avpType)) {
+        else if ("Unsigned64".equals(avpType)) {
           avpValue = avp.getUnsigned64();
         }
-        else if("Grouped".equals(avpType)) {
+        else if ("Grouped".equals(avpType)) {
           avpValue = "<Grouped>";
           isGrouped = true;
         }
@@ -76,14 +76,14 @@ public class DiameterUtilities {
       }
 
       String avpLine = indentation + avp.getCode() + ": " + avpRep.getName();
-      while(avpLine.length() < 50) {
+      while (avpLine.length() < 50) {
         avpLine += avpLine.length() % 2 == 0 ? "." : " ";
       }
       avpLine += avpValue;
 
       logger.info(avpLine);
 
-      if(isGrouped) {
+      if (isGrouped) {
         try {
           printAvps(avp.getGrouped(), indentation + "  ");
         }

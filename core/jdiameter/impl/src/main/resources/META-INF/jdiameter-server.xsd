@@ -93,7 +93,7 @@
             <xsi:element name="IPAddress" minOccurs="1" maxOccurs="unbounded">
                  <xsi:complexType>
                     <xsi:attribute name="value" type="xsi:string" use="required"/>
-                </xsi:complexType>                
+                </xsi:complexType>
             </xsi:element>
         </xsi:sequence>
     </xsi:complexType>
@@ -163,7 +163,7 @@
                 </xsi:annotation>
                  <xsi:complexType>
                     <xsi:attribute name="value" type="xsi:integer" use="required"/>
-                </xsi:complexType>                
+                </xsi:complexType>
             </xsi:element>
         </xsi:sequence>
     </xsi:complexType>
@@ -215,7 +215,7 @@
                 <xsi:complexType>
                    <xsi:attribute name="value" type="xsi:boolean" use="required"/>
                </xsi:complexType>
-            </xsi:element>            
+            </xsi:element>
             <xsi:element name="QueueSize" minOccurs="1" maxOccurs="1">
                 <xsi:annotation>
                     <xsi:documentation>QueueSize of fsm event queue</xsi:documentation>
@@ -492,7 +492,7 @@
         <xsi:attribute name="enable_session_creation" type="xsi:boolean" use="required"/>
         <xsi:attribute name="use_client_mode" type="xsi:boolean" use="required"/>
         <xsi:attribute name="need_client_auth" type="xsi:boolean" use="required"/>
-    </xsi:complexType>    
+    </xsi:complexType>
 
     <xsi:element name="Extensions" type="xsi:anyType">
         <xsi:annotation>

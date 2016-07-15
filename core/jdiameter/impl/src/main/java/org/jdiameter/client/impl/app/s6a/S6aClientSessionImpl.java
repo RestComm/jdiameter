@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.client.impl.app.s6a;
 
@@ -52,12 +72,9 @@ import org.jdiameter.api.s6a.events.JResetRequest;
 import org.jdiameter.api.s6a.events.JUpdateLocationAnswer;
 import org.jdiameter.api.s6a.events.JUpdateLocationRequest;
 import org.jdiameter.client.api.ISessionFactory;
-import org.jdiameter.client.impl.app.s6a.S6aClientSessionImpl;
-import org.jdiameter.client.impl.app.s6a.Event;
-import org.jdiameter.client.impl.app.s6a.IClientS6aSessionData;
 import org.jdiameter.client.impl.app.s6a.Event.Type;
-import org.jdiameter.common.api.app.s6a.S6aSessionState;
 import org.jdiameter.common.api.app.s6a.IS6aMessageFactory;
+import org.jdiameter.common.api.app.s6a.S6aSessionState;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.jdiameter.common.impl.app.s6a.S6aSession;
@@ -65,8 +82,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Diameter S6a Client Session implementation 
- * 
+ * Diameter S6a Client Session implementation
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class S6aClientSessionImpl extends S6aSession implements ClientS6aSession, EventListener<Request, Answer>, NetworkReqListener  {
@@ -79,7 +96,7 @@ public class S6aClientSessionImpl extends S6aSession implements ClientS6aSession
   protected long appId = -1;
   protected IClientS6aSessionData sessionData;
   public S6aClientSessionImpl(IClientS6aSessionData sessionData, IS6aMessageFactory fct, ISessionFactory sf, ClientS6aSessionListener lst) {
-    super(sf,sessionData);
+    super(sf, sessionData);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
@@ -95,9 +112,10 @@ public class S6aClientSessionImpl extends S6aSession implements ClientS6aSession
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.app.StateMachine#getState(java.lang.Class)
    */
+  @Override
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> stateType) {
     return stateType == S6aSessionState.class ? (E) this.sessionData.getS6aSessionState() : null;
@@ -107,6 +125,7 @@ public class S6aClientSessionImpl extends S6aSession implements ClientS6aSession
    * (non-Javadoc)
    * @see org.jdiameter.api.NetworkReqListener#processRequest(org.jdiameter.api.Request)
    */
+  @Override
   public Answer processRequest(Request request) {
     RequestDelivery rd  = new RequestDelivery();
     rd.session = this;
@@ -115,34 +134,47 @@ public class S6aClientSessionImpl extends S6aSession implements ClientS6aSession
     return null;
   }
 
-  public void sendAuthenticationInformationRequest(JAuthenticationInformationRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void sendAuthenticationInformationRequest(JAuthenticationInformationRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_MESSAGE, request, null);
   }
 
+  @Override
   public void sendPurgeUERequest(JPurgeUERequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_MESSAGE, request, null);
   }
 
+  @Override
   public void sendNotifyRequest(JNotifyRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_MESSAGE, request, null);
   }
 
-  public void sendUpdateLocationRequest(JUpdateLocationRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void sendUpdateLocationRequest(JUpdateLocationRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_MESSAGE, request, null);
   }
 
-  public void sendCancelLocationAnswer(JCancelLocationAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void sendCancelLocationAnswer(JCancelLocationAnswer answer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_MESSAGE, null, answer);
   }
 
-  public void sendInsertSubscriberDataAnswer(JInsertSubscriberDataAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void sendInsertSubscriberDataAnswer(JInsertSubscriberDataAnswer answer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_MESSAGE, null, answer);
   }
 
-  public void sendDeleteSubscriberDataAnswer(JDeleteSubscriberDataAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void sendDeleteSubscriberDataAnswer(JDeleteSubscriberDataAnswer answer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_MESSAGE, null, answer);
   }
 
+  @Override
   public void sendResetAnswer(JResetAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_MESSAGE, null, answer);
   }
@@ -151,6 +183,7 @@ public class S6aClientSessionImpl extends S6aSession implements ClientS6aSession
    * (non-Javadoc)
    * @see org.jdiameter.api.EventListener#receivedSuccessMessage(org.jdiameter.api.Message, org.jdiameter.api.Message)
    */
+  @Override
   public void receivedSuccessMessage(Request request, Answer answer) {
     AnswerDelivery rd = new AnswerDelivery();
     rd.session = this;
@@ -161,10 +194,11 @@ public class S6aClientSessionImpl extends S6aSession implements ClientS6aSession
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.jdiameter.api.EventListener#timeoutExpired(org.jdiameter.api.Message)
    */
+  @Override
   public void timeoutExpired(Request request) {
     try {
       handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, new AppRequestEventImpl(request), null));
@@ -185,6 +219,7 @@ public class S6aClientSessionImpl extends S6aSession implements ClientS6aSession
     }
   }
 
+  @Override
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
     try {
       sendAndStateLock.lock();
@@ -234,7 +269,7 @@ public class S6aClientSessionImpl extends S6aSession implements ClientS6aSession
 
             case SEND_MESSAGE:
               newState = S6aSessionState.MESSAGE_SENT_RECEIVED;
-              super.session.send(((AppEvent) event.getData()).getMessage(),this);
+              super.session.send(((AppEvent) event.getData()).getMessage(), this);
               setState(newState); //FIXME: is this ok to be here?
               break;
 
@@ -272,7 +307,8 @@ public class S6aClientSessionImpl extends S6aSession implements ClientS6aSession
               newState = S6aSessionState.TERMINATED;
               setState(newState);
               super.cancelMsgTimer();
-              listener.doAuthenticationInformationAnswerEvent(this, (JAuthenticationInformationRequest) localEvent.getRequest(), (JAuthenticationInformationAnswer) localEvent.getAnswer());
+              listener.doAuthenticationInformationAnswerEvent(this, (JAuthenticationInformationRequest) localEvent.getRequest(),
+                  (JAuthenticationInformationAnswer) localEvent.getAnswer());
               break;
 
             case RECEIVE_PUA:
@@ -321,7 +357,7 @@ public class S6aClientSessionImpl extends S6aSession implements ClientS6aSession
     this.sessionData.setS6aSessionState(newState);
 
     for (StateChangeListener i : stateListeners) {
-      i.stateChanged(this,(Enum) oldState, (Enum) newState);
+      i.stateChanged(this, oldState, newState);
     }
     if (newState == S6aSessionState.TERMINATED || newState == S6aSessionState.TIMEDOUT) {
       super.cancelMsgTimer();
@@ -333,9 +369,10 @@ public class S6aClientSessionImpl extends S6aSession implements ClientS6aSession
    * (non-Javadoc)
    * @see org.jdiameter.common.impl.app.AppSessionImpl#onTimer(java.lang.String)
    */
+  @Override
   public void onTimer(String timerName) {
-    if(timerName.equals(S6aSession.TIMER_NAME_MSG_TIMEOUT)) {
-      try{
+    if (timerName.equals(S6aSession.TIMER_NAME_MSG_TIMEOUT)) {
+      try {
         sendAndStateLock.lock();
         try {
           handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, new AppRequestEventImpl(this.sessionData.getBuffer()), null));
@@ -412,6 +449,7 @@ public class S6aClientSessionImpl extends S6aSession implements ClientS6aSession
     ClientS6aSession session;
     Request request;
 
+    @Override
     public void run() {
       try {
         switch (request.getCommandCode()) {
@@ -447,15 +485,18 @@ public class S6aClientSessionImpl extends S6aSession implements ClientS6aSession
     Answer answer;
     Request request;
 
+    @Override
     public void run() {
       try {
         switch (answer.getCommandCode()) {
           case JUpdateLocationAnswer.code:
-            handleEvent(new Event(Event.Type.RECEIVE_ULA, messageFactory.createUpdateLocationRequest(request), messageFactory.createUpdateLocationAnswer(answer)));
+            handleEvent(new Event(Event.Type.RECEIVE_ULA, messageFactory.createUpdateLocationRequest(request),
+                messageFactory.createUpdateLocationAnswer(answer)));
             break;
 
           case JAuthenticationInformationAnswer.code:
-            handleEvent(new Event(Event.Type.RECEIVE_AIA, messageFactory.createAuthenticationInformationRequest(request), messageFactory.createAuthenticationInformationAnswer(answer)));
+            handleEvent(new Event(Event.Type.RECEIVE_AIA, messageFactory.createAuthenticationInformationRequest(request),
+                messageFactory.createAuthenticationInformationAnswer(answer)));
             break;
 
           case JPurgeUEAnswer.code:

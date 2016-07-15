@@ -29,15 +29,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
- * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a> 
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a> 
+ *
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class JCreditControlRequestImpl extends AppRequestEventImpl implements JCreditControlRequest {
 
   private static final long serialVersionUID = 1L;
 
-  protected final static Logger logger = LoggerFactory.getLogger(JCreditControlRequestImpl.class);
+  protected static final Logger logger = LoggerFactory.getLogger(JCreditControlRequestImpl.class);
 
   private static final int REQUESTED_ACTION_AVP_CODE = 436;
   private static final int CC_REQUEST_TYPE_AVP_CODE = 416;
@@ -50,13 +50,15 @@ public class JCreditControlRequestImpl extends AppRequestEventImpl implements JC
     super(request);
   }
 
+  @Override
   public boolean isRequestedActionAVPPresent() {
     return super.message.getAvps().getAvp(REQUESTED_ACTION_AVP_CODE) != null;
   }
 
+  @Override
   public int getRequestedActionAVPValue() {
     Avp requestedActionAvp = super.message.getAvps().getAvp(REQUESTED_ACTION_AVP_CODE);
-    if(requestedActionAvp != null) {
+    if (requestedActionAvp != null) {
       try {
         return requestedActionAvp.getInteger32();
       }
@@ -68,13 +70,15 @@ public class JCreditControlRequestImpl extends AppRequestEventImpl implements JC
     return -1;
   }
 
+  @Override
   public boolean isRequestTypeAVPPresent() {
     return super.message.getAvps().getAvp(CC_REQUEST_TYPE_AVP_CODE) != null;
   }
 
+  @Override
   public int getRequestTypeAVPValue() {
     Avp requestTypeAvp = super.message.getAvps().getAvp(CC_REQUEST_TYPE_AVP_CODE);
-    if(requestTypeAvp != null) {
+    if (requestTypeAvp != null) {
       try {
         return requestTypeAvp.getInteger32();
       }

@@ -1,658 +1,658 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:simpleType name="tSIP_URL" final="list restriction">
-		<xs:restriction base="xs:anyURI"/>
-	</xs:simpleType>
-	<xs:simpleType name="tTEL_URL" final="list restriction">
-		<xs:restriction base="xs:anyURI"/>
-	</xs:simpleType>
-	<xs:simpleType name="tDiameterURI" final="list restriction">
-		<xs:restriction base="xs:anyURI"/>
-	</xs:simpleType>
-	<xs:simpleType name="tIdentityType" final="list restriction">
-		<xs:restriction base="xs:unsignedByte">
-			<xs:minInclusive value="0"/>
-			<xs:maxInclusive value="3"/>
-			<xs:enumeration value="0">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">PUBLIC_USER_IDENTITY</label>
-						<definition xml:lang="en">Identity is a Public User Identity.</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">DISTINCT_PSI</label>
-						<definition xml:lang="en">Identity is a distinct Public Service Identity.</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="2">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">WILDCARDED_PSI</label>
-						<definition xml:lang="en">Identity matches a wildcarded Public Service Identity.</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="3">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">WILDCARDED_IMPU</label>
-						<definition xml:lang="en">Identity matches a Wildcarded Public User Identity.</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tIMSPublicIdentity" final="#all">
-		<xs:union memberTypes="tSIP_URL tTEL_URL"/>
-	</xs:simpleType>
-	<xs:simpleType name="tProfilePartIndicator" final="list restriction">
-		<xs:restriction base="xs:unsignedByte">
-			<xs:maxInclusive value="1"/>
-			<xs:enumeration value="0">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">REGISTERED</label>
-						<definition xml:lang="en">iFC is part of the registered profile</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">UNREGISTERED</label>
-						<definition xml:lang="en">iFC is part of the unregistered profile</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tServiceInfo" final="list restriction">
-		<xs:restriction base="xs:string">
-			<xs:minLength value="0"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tDSAI-Tag" final="list restriction">
-		<xs:restriction base="xs:string">
-			<xs:minLength value="0"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tServiceLevelTraceInfo" final="list restriction">
-		<xs:restriction base="xs:string">
-			<xs:minLength value="0"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tString" final="list restriction">
-		<xs:restriction base="xs:string">
-			<xs:minLength value="0"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tMSISDN" final="list restriction">
-		<xs:restriction base="xs:string">
-			<xs:minLength value="0"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tIMSUserState" final="list restriction">
-		<xs:restriction base="xs:unsignedByte">
-			<xs:maxInclusive value="3"/>
-			<xs:enumeration value="0">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">NOT_REGISTERED</label>
-						<definition xml:lang="en">Not registered</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">REGISTERED</label>
-						<definition xml:lang="en">Registered</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="2">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">REGISTERED_UNREG_SERVICES</label>
-						<definition xml:lang="en">Registered, with services for unregistered</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="3">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">AUTHENTICATION_PENDING </label>
-						<definition xml:lang="en">Pending of authentication</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tCSUserState" final="list restriction">
-		<xs:restriction base="xs:unsignedByte">
-			<xs:maxInclusive value="3"/>
-			<xs:enumeration value="0">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">CAMELBusy</label>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">NetworkDeterminedNotReachable</label>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="2">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">AssumedIdle</label>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="3">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">NotProvidedFromVLR</label>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tPSUserState" final="list restriction">
-		<xs:restriction base="xs:unsignedByte">
-			<xs:maxInclusive value="6"/>
-			<xs:enumeration value="0">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">Detached </label>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">AttachedNotReachableForPaging</label>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="2">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">AttachedReachableForPaging</label>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="3">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">ConnectedNotReachableForPaging</label>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="4">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">ConnectedReachableForPaging</label>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="5">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">notProvidedFromSGSN</label>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="6">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">networkDeterminedNotReachable</label>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tPSIActivation" final="list restriction">
-		<xs:restriction base="xs:unsignedByte">
-			<xs:maxInclusive value="1"/>
-			<xs:enumeration value="0">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">INACTIVE</label>
-						<definition xml:lang="en"> The PSI is not available for incoming traffic.</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">ACTIVE</label>
-						<definition xml:lang="en">The PSI is available for incoming traffic.</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tDSAI-Value" final="list restriction">
-		<xs:restriction base="xs:unsignedByte">
-			<xs:maxInclusive value="1"/>
-			<xs:enumeration value="0">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">ACTIVE</label>
-						<definition xml:lang="en">The service is active</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">INACTIVE</label>
-						<definition xml:lang="en">The service is inactive</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tLocationNumber" final="list restriction">
-		<xs:restriction base="xs:string">
-			<xs:minLength value="4"/>
-			<xs:maxLength value="16"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tCellGlobalId" final="list restriction">
-		<xs:restriction base="xs:string">
-			<xs:length value="12"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tServiceAreaId" final="list restriction">
-		<xs:restriction base="xs:string">
-			<xs:length value="12"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tLocationAreaId" final="list restriction">
-		<xs:restriction base="xs:string">
-			<xs:length value="8"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tRoutingAreaId" final="list restriction">
-		<xs:restriction base="xs:string">
-			<xs:length value="8"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tGeographicalInformation" final="list restriction">
-		<xs:restriction base="xs:string">
-			<xs:length value="12"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tGeodeticInformation" final="list restriction">
-		<xs:restriction base="xs:string">
-			<xs:length value="16"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tAddressString" final="list restriction">
-		<xs:restriction base="xs:string">
-			<xs:minLength value="4"/>
-			<xs:maxLength value="28"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tSelectedLSAIdentity" final="list restriction">
-		<xs:restriction base="xs:string">
-			<xs:length value="4"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tPriority" final="list restriction">
-		<xs:restriction base="xs:int">
-			<xs:minInclusive value="0"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tGroupID" final="list restriction">
-		<xs:restriction base="xs:int">
-			<xs:minInclusive value="0"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tRegistrationType" final="list restriction">
-		<xs:restriction base="xs:unsignedByte">
-			<xs:maxInclusive value="2"/>
-			<xs:enumeration value="0">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">INITIAL_REGISTRATION</label>
-						<definition xml:lang="en">Matches to REGISTER messages that are relater to initial registration.</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">RE-REGISTRATION</label>
-						<definition xml:lang="en">Matches to REGISTER messages that are relater to re-registration.</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="2">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">DE-REGISTRATION</label>
-						<definition xml:lang="en">Matches to REGISTER messages that are relater to de-registration.</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tID" final="list restriction">
-		<xs:restriction base="xs:int">
-			<xs:minInclusive value="0"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tDirectionOfRequest" final="list restriction">
-		<xs:restriction base="xs:unsignedByte">
-			<xs:maxInclusive value="3"/>
-			<xs:enumeration value="0">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">ORIGINATING_SESSION</label>
-						<definition xml:lang="en">Originating Session</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">TERMINATING_SESSION</label>
-						<definition xml:lang="en">Terminating Session</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="2">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">TERMINATING_UNREGISTERED</label>
-						<definition xml:lang="en">Terminating Session for unregistered user</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="3">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">ORIGINATING_UNREGISTERED</label>
-						<definition xml:lang="en">Originating Session for an unregistered user</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tDefaultHandling" final="list restriction">
-		<xs:restriction base="xs:unsignedByte">
-			<xs:maxInclusive value="1"/>
-			<xs:enumeration value="0">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">SESSION_CONTINUED</label>
-						<definition xml:lang="en">Session Continued</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="1">
-				<xs:annotation>
-					<xs:documentation>
-						<label xml:lang="en">SESSION_TERMINATED</label>
-						<definition xml:lang="en">Session Terminated</definition>
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tAgeOfLocationInformation" final="list restriction">
-		<xs:restriction base="xs:int">
-			<xs:minInclusive value="0"/>
-			<xs:maxInclusive value="32767"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="tBool">
-		<xs:restriction base="xs:boolean"/>
-	</xs:simpleType>
-	<xs:simpleType name="tSequenceNumber" final="list restriction">
-		<xs:restriction base="xs:int">
-			<xs:minInclusive value="0"/>
-			<xs:maxInclusive value="65535"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:complexType name="tExtension">
-		<xs:sequence>
-			<xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tShIMSDataExtension">
-		<xs:sequence>
-			<xs:element name="PSIActivation" type="tPSIActivation" minOccurs="0"/>
-			<xs:element name="Extension" type="tShIMSDataExtension2" minOccurs="0"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tShIMSDataExtension2">
-		<xs:sequence>
-			<xs:element name="DSAI" type="tDSAI" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="Extension" type="tShIMSDataExtension3" minOccurs="0"/>
-		</xs:sequence>
-	</xs:complexType>
-	
-	<xs:complexType name="tShIMSDataExtension3">
-		<xs:sequence>
-			<xs:element name="ServiceLevelTraceInfo" type="tServiceLevelTraceInfo" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="Extension" type="tExtension" minOccurs="0"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tSePoTriExtension">
-		<xs:sequence>
-			<xs:element name="RegistrationType" type="tRegistrationType" minOccurs="0" maxOccurs="2"/>
-			<xs:element name="Extension" type="tExtension" minOccurs="0"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tPublicIdentityExtension2">
-		<xs:sequence>
-			<xs:element name="WildcardedIMPU" type="xs:anyURI" minOccurs="0"/>
-			<xs:element name="Extension" type="tExtension" minOccurs="0"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tPublicIdentityExtension">
-		<xs:sequence>
-			<xs:element name="IdentityType" type="tIdentityType" minOccurs="0"/>
-			<xs:element name="WildcardedPSI" type="xs:anyURI" minOccurs="0"/>
-			<xs:element name="Extension" type="tPublicIdentityExtension2" minOccurs="0"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tSh-Data-Extension">
-		<xs:sequence>
-			<xs:element name="RegisteredIdentities" type="tPublicIdentity" minOccurs="0"/>
-			<xs:element name="ImplicitIdentities" type="tPublicIdentity" minOccurs="0"/>
-			<xs:element name="AllIdentities" type="tPublicIdentity" minOccurs="0"/>
-			<xs:element name="AliasIdentities" type="tPublicIdentity" minOccurs="0"/>
-			<xs:element name="AliasesRepositoryData" type="tTransparentData" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="Extension" type="tSh-Data-Extension2" minOccurs="0"/>
-			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tSh-Data-Extension2">
-		<xs:sequence>
-			<xs:element name="DeletedIdentities" type="tPublicIdentity" minOccurs="0"/>
-			<xs:element name="Extension" type="tExtension" minOccurs="0"/>
-			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tSh-Data">
-		<xs:sequence>
-			<xs:element name="PublicIdentifiers" type="tPublicIdentity" minOccurs="0"/>
-			<xs:element name="RepositoryData" type="tTransparentData" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="Sh-IMS-Data" type="tShIMSData" minOccurs="0"/>
-			<xs:element name="CSLocationInformation" type="tCSLocationInformation" minOccurs="0"/>
-			<xs:element name="PSLocationInformation" type="tPSLocationInformation" minOccurs="0"/>
-			<xs:element name="CSUserState" type="tCSUserState" minOccurs="0"/>
-			<xs:element name="PSUserState" type="tPSUserState" minOccurs="0"/>
-			<xs:element name="Extension" type="tSh-Data-Extension" minOccurs="0"/>
-			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tTransparentData">
-		<xs:sequence>
-			<xs:element name="ServiceIndication" type="tString"/>
-			<xs:element name="SequenceNumber" type="tSequenceNumber"/>
-			<xs:element name="ServiceData" type="tServiceData" minOccurs="0"/>
-			<xs:element name="Extension" type="tExtension" minOccurs="0"/>
-			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tServiceData">
-		<xs:sequence>
-			<xs:any processContents="lax"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tShIMSData">
-		<xs:sequence>
-			<xs:element name="SCSCFName" type="tSIP_URL" minOccurs="0"/>
-			<xs:element name="IFCs" type="tIFCs" minOccurs="0"/>
-			<xs:element name="IMSUserState" type="tIMSUserState" minOccurs="0"/>
-			<xs:element name="ChargingInformation" type="tChargingInformation" minOccurs="0"/>
-			<xs:element name="Extension" type="tShIMSDataExtension" minOccurs="0"/>
-			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tIFCs">
-		<xs:sequence>
-			<xs:element name="InitialFilterCriteria" type="tInitialFilterCriteria" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="Extension" type="tExtension" minOccurs="0"/>
-			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tCSLocationInformation">
-		<xs:sequence>
-			<xs:element name="LocationNumber" type="tLocationNumber" minOccurs="0"/>
-			<xs:choice>
-				<xs:element name="CellGlobalId" type="tCellGlobalId" minOccurs="0"/>
-				<xs:element name="ServiceAreaId" type="tServiceAreaId" minOccurs="0"/>
-				<xs:element name="LocationAreaId" type="tLocationAreaId" minOccurs="0"/>
-			</xs:choice>
-			<xs:element name="GeographicalInformation" type="tGeographicalInformation" minOccurs="0"/>
-			<xs:element name="GeodeticInformation" type="tGeodeticInformation" minOccurs="0"/>
-			<xs:element name="VLRNumber" type="tISDNAddress" minOccurs="0"/>
-			<xs:element name="MSCNumber" type="tISDNAddress" minOccurs="0"/>
-			<xs:element name="CurrentLocationRetrieved" type="tBool" minOccurs="0"/>
-			<xs:element name="AgeOfLocationInformation" type="tAgeOfLocationInformation" minOccurs="0"/>
-			<xs:element name="Extension" type="tExtension" minOccurs="0"/>
-			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tPSLocationInformation">
-		<xs:sequence>
-			<xs:choice>
-				<xs:element name="CellGlobalId" type="tCellGlobalId" minOccurs="0"/>
-				<xs:element name="ServiceAreaId" type="tServiceAreaId" minOccurs="0"/>
-				<xs:element name="LocationAreaId" type="tLocationAreaId" minOccurs="0"/>
-			</xs:choice>
-			<xs:element name="RoutingAreaId" type="tRoutingAreaId" minOccurs="0"/>
-			<xs:element name="GeographicalInformation" type="tGeographicalInformation" minOccurs="0"/>
-			<xs:element name="GeodeticInformation" type="tGeodeticInformation" minOccurs="0"/>
-			<xs:element name="SGSNNumber" type="tISDNAddress" minOccurs="0"/>
-			<xs:element name="CurrentLocationRetrieved" type="tBool" minOccurs="0"/>
-			<xs:element name="AgeOfLocationInformation" type="tAgeOfLocationInformation" minOccurs="0"/>
-			<xs:element name="Extension" type="tExtension" minOccurs="0"/>
-			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tISDNAddress">
-		<xs:sequence>
-			<xs:element name="Address" type="tAddressString" maxOccurs="9"/>
-			<xs:element name="Extension" type="tExtension" minOccurs="0"/>
-			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tPublicIdentity">
-		<xs:sequence>
-			<xs:element name="IMSPublicIdentity" type="tIMSPublicIdentity" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="MSISDN" type="tMSISDN" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="Extension" type="tPublicIdentityExtension" minOccurs="0"/>
-			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tInitialFilterCriteria">
-		<xs:sequence>
-			<xs:element name="Priority" type="tPriority"/>
-			<xs:element name="TriggerPoint" type="tTrigger" minOccurs="0"/>
-			<xs:element name="ApplicationServer" type="tApplicationServer"/>
-			<xs:element name="Extension" type="tExtension" minOccurs="0"/>
-			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tTrigger">
-		<xs:sequence>
-			<xs:element name="ConditionTypeCNF" type="tBool"/>
-			<xs:element name="SPT" type="tSePoTri" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="Extension" type="tExtension" minOccurs="0"/>
-			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tSePoTri">
-		<xs:sequence>
-			<xs:element name="ConditionNegated" type="tBool" minOccurs="0"/>
-			<xs:element name="Group" type="tGroupID" maxOccurs="unbounded"/>
-			<xs:choice>
-				<xs:element name="RequestURI" type="tString"/>
-				<xs:element name="Method" type="tString"/>
-				<xs:element name="SIPHeader" type="tHeader"/>
-				<xs:element name="SessionCase" type="tDirectionOfRequest"/>
-				<xs:element name="SessionDescription" type="tSessionDescription"/>
-			</xs:choice>
-			<xs:element name="Extension" type="tSePoTriExtension" minOccurs="0"/>
-			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tSessionDescription">
-		<xs:sequence>
-			<xs:element name="Line" type="tString"/>
-			<xs:element name="Content" type="tString" minOccurs="0"/>
-			<xs:element name="Extension" type="tExtension" minOccurs="0"/>
-			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tHeader">
-		<xs:sequence>
-			<xs:element name="Header" type="tString"/>
-			<xs:element name="Content" type="tString" minOccurs="0"/>
-			<xs:element name="Extension" type="tExtension" minOccurs="0"/>
-			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tApplicationServer">
-		<xs:sequence>
-			<xs:element name="ServerName" type="tSIP_URL"/>
-			<xs:element name="DefaultHandling" type="tDefaultHandling" minOccurs="0"/>
-			<xs:element name="ServiceInfo" type="tServiceInfo" minOccurs="0"/>
-			<xs:element name="Extension" type="tExtension" minOccurs="0"/>
-			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tChargingInformation">
-		<xs:sequence>
-			<xs:element name="PrimaryEventChargingFunctionName" type="tDiameterURI" minOccurs="0"/>
-			<xs:element name="SecondaryEventChargingFunctionName" type="tDiameterURI" minOccurs="0"/>
-			<xs:element name="PrimaryChargingCollectionFunctionName" type="tDiameterURI" minOccurs="0"/>
-			<xs:element name="SecondaryChargingCollectionFunctionName" type="tDiameterURI" minOccurs="0"/>
-			<xs:element name="Extension" type="tExtension" minOccurs="0"/>
-			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="tDSAI">
-		<xs:sequence>
-			<xs:element name="DSAI-Tag" type="tDSAI-Tag"/>
-			<xs:element name="DSAI-Value" type="tDSAI-Value"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:element name="Sh-Data" type="tSh-Data"/>
+  <xs:simpleType name="tSIP_URL" final="list restriction">
+    <xs:restriction base="xs:anyURI"/>
+  </xs:simpleType>
+  <xs:simpleType name="tTEL_URL" final="list restriction">
+    <xs:restriction base="xs:anyURI"/>
+  </xs:simpleType>
+  <xs:simpleType name="tDiameterURI" final="list restriction">
+    <xs:restriction base="xs:anyURI"/>
+  </xs:simpleType>
+  <xs:simpleType name="tIdentityType" final="list restriction">
+    <xs:restriction base="xs:unsignedByte">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="3"/>
+      <xs:enumeration value="0">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">PUBLIC_USER_IDENTITY</label>
+            <definition xml:lang="en">Identity is a Public User Identity.</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">DISTINCT_PSI</label>
+            <definition xml:lang="en">Identity is a distinct Public Service Identity.</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="2">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">WILDCARDED_PSI</label>
+            <definition xml:lang="en">Identity matches a wildcarded Public Service Identity.</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="3">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">WILDCARDED_IMPU</label>
+            <definition xml:lang="en">Identity matches a Wildcarded Public User Identity.</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tIMSPublicIdentity" final="#all">
+    <xs:union memberTypes="tSIP_URL tTEL_URL"/>
+  </xs:simpleType>
+  <xs:simpleType name="tProfilePartIndicator" final="list restriction">
+    <xs:restriction base="xs:unsignedByte">
+      <xs:maxInclusive value="1"/>
+      <xs:enumeration value="0">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">REGISTERED</label>
+            <definition xml:lang="en">iFC is part of the registered profile</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">UNREGISTERED</label>
+            <definition xml:lang="en">iFC is part of the unregistered profile</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tServiceInfo" final="list restriction">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="0"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tDSAI-Tag" final="list restriction">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="0"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tServiceLevelTraceInfo" final="list restriction">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="0"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tString" final="list restriction">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="0"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tMSISDN" final="list restriction">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="0"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tIMSUserState" final="list restriction">
+    <xs:restriction base="xs:unsignedByte">
+      <xs:maxInclusive value="3"/>
+      <xs:enumeration value="0">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">NOT_REGISTERED</label>
+            <definition xml:lang="en">Not registered</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">REGISTERED</label>
+            <definition xml:lang="en">Registered</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="2">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">REGISTERED_UNREG_SERVICES</label>
+            <definition xml:lang="en">Registered, with services for unregistered</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="3">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">AUTHENTICATION_PENDING </label>
+            <definition xml:lang="en">Pending of authentication</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tCSUserState" final="list restriction">
+    <xs:restriction base="xs:unsignedByte">
+      <xs:maxInclusive value="3"/>
+      <xs:enumeration value="0">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">CAMELBusy</label>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">NetworkDeterminedNotReachable</label>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="2">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">AssumedIdle</label>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="3">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">NotProvidedFromVLR</label>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tPSUserState" final="list restriction">
+    <xs:restriction base="xs:unsignedByte">
+      <xs:maxInclusive value="6"/>
+      <xs:enumeration value="0">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">Detached </label>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">AttachedNotReachableForPaging</label>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="2">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">AttachedReachableForPaging</label>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="3">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">ConnectedNotReachableForPaging</label>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="4">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">ConnectedReachableForPaging</label>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="5">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">notProvidedFromSGSN</label>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="6">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">networkDeterminedNotReachable</label>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tPSIActivation" final="list restriction">
+    <xs:restriction base="xs:unsignedByte">
+      <xs:maxInclusive value="1"/>
+      <xs:enumeration value="0">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">INACTIVE</label>
+            <definition xml:lang="en"> The PSI is not available for incoming traffic.</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">ACTIVE</label>
+            <definition xml:lang="en">The PSI is available for incoming traffic.</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tDSAI-Value" final="list restriction">
+    <xs:restriction base="xs:unsignedByte">
+      <xs:maxInclusive value="1"/>
+      <xs:enumeration value="0">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">ACTIVE</label>
+            <definition xml:lang="en">The service is active</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">INACTIVE</label>
+            <definition xml:lang="en">The service is inactive</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tLocationNumber" final="list restriction">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="4"/>
+      <xs:maxLength value="16"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tCellGlobalId" final="list restriction">
+    <xs:restriction base="xs:string">
+      <xs:length value="12"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tServiceAreaId" final="list restriction">
+    <xs:restriction base="xs:string">
+      <xs:length value="12"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tLocationAreaId" final="list restriction">
+    <xs:restriction base="xs:string">
+      <xs:length value="8"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tRoutingAreaId" final="list restriction">
+    <xs:restriction base="xs:string">
+      <xs:length value="8"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tGeographicalInformation" final="list restriction">
+    <xs:restriction base="xs:string">
+      <xs:length value="12"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tGeodeticInformation" final="list restriction">
+    <xs:restriction base="xs:string">
+      <xs:length value="16"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tAddressString" final="list restriction">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="4"/>
+      <xs:maxLength value="28"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tSelectedLSAIdentity" final="list restriction">
+    <xs:restriction base="xs:string">
+      <xs:length value="4"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tPriority" final="list restriction">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="0"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tGroupID" final="list restriction">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="0"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tRegistrationType" final="list restriction">
+    <xs:restriction base="xs:unsignedByte">
+      <xs:maxInclusive value="2"/>
+      <xs:enumeration value="0">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">INITIAL_REGISTRATION</label>
+            <definition xml:lang="en">Matches to REGISTER messages that are relater to initial registration.</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">RE-REGISTRATION</label>
+            <definition xml:lang="en">Matches to REGISTER messages that are relater to re-registration.</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="2">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">DE-REGISTRATION</label>
+            <definition xml:lang="en">Matches to REGISTER messages that are relater to de-registration.</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tID" final="list restriction">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="0"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tDirectionOfRequest" final="list restriction">
+    <xs:restriction base="xs:unsignedByte">
+      <xs:maxInclusive value="3"/>
+      <xs:enumeration value="0">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">ORIGINATING_SESSION</label>
+            <definition xml:lang="en">Originating Session</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">TERMINATING_SESSION</label>
+            <definition xml:lang="en">Terminating Session</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="2">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">TERMINATING_UNREGISTERED</label>
+            <definition xml:lang="en">Terminating Session for unregistered user</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="3">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">ORIGINATING_UNREGISTERED</label>
+            <definition xml:lang="en">Originating Session for an unregistered user</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tDefaultHandling" final="list restriction">
+    <xs:restriction base="xs:unsignedByte">
+      <xs:maxInclusive value="1"/>
+      <xs:enumeration value="0">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">SESSION_CONTINUED</label>
+            <definition xml:lang="en">Session Continued</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>
+            <label xml:lang="en">SESSION_TERMINATED</label>
+            <definition xml:lang="en">Session Terminated</definition>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tAgeOfLocationInformation" final="list restriction">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="32767"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="tBool">
+    <xs:restriction base="xs:boolean"/>
+  </xs:simpleType>
+  <xs:simpleType name="tSequenceNumber" final="list restriction">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="65535"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="tExtension">
+    <xs:sequence>
+      <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tShIMSDataExtension">
+    <xs:sequence>
+      <xs:element name="PSIActivation" type="tPSIActivation" minOccurs="0"/>
+      <xs:element name="Extension" type="tShIMSDataExtension2" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tShIMSDataExtension2">
+    <xs:sequence>
+      <xs:element name="DSAI" type="tDSAI" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Extension" type="tShIMSDataExtension3" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="tShIMSDataExtension3">
+    <xs:sequence>
+      <xs:element name="ServiceLevelTraceInfo" type="tServiceLevelTraceInfo" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Extension" type="tExtension" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tSePoTriExtension">
+    <xs:sequence>
+      <xs:element name="RegistrationType" type="tRegistrationType" minOccurs="0" maxOccurs="2"/>
+      <xs:element name="Extension" type="tExtension" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tPublicIdentityExtension2">
+    <xs:sequence>
+      <xs:element name="WildcardedIMPU" type="xs:anyURI" minOccurs="0"/>
+      <xs:element name="Extension" type="tExtension" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tPublicIdentityExtension">
+    <xs:sequence>
+      <xs:element name="IdentityType" type="tIdentityType" minOccurs="0"/>
+      <xs:element name="WildcardedPSI" type="xs:anyURI" minOccurs="0"/>
+      <xs:element name="Extension" type="tPublicIdentityExtension2" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tSh-Data-Extension">
+    <xs:sequence>
+      <xs:element name="RegisteredIdentities" type="tPublicIdentity" minOccurs="0"/>
+      <xs:element name="ImplicitIdentities" type="tPublicIdentity" minOccurs="0"/>
+      <xs:element name="AllIdentities" type="tPublicIdentity" minOccurs="0"/>
+      <xs:element name="AliasIdentities" type="tPublicIdentity" minOccurs="0"/>
+      <xs:element name="AliasesRepositoryData" type="tTransparentData" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Extension" type="tSh-Data-Extension2" minOccurs="0"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tSh-Data-Extension2">
+    <xs:sequence>
+      <xs:element name="DeletedIdentities" type="tPublicIdentity" minOccurs="0"/>
+      <xs:element name="Extension" type="tExtension" minOccurs="0"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tSh-Data">
+    <xs:sequence>
+      <xs:element name="PublicIdentifiers" type="tPublicIdentity" minOccurs="0"/>
+      <xs:element name="RepositoryData" type="tTransparentData" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Sh-IMS-Data" type="tShIMSData" minOccurs="0"/>
+      <xs:element name="CSLocationInformation" type="tCSLocationInformation" minOccurs="0"/>
+      <xs:element name="PSLocationInformation" type="tPSLocationInformation" minOccurs="0"/>
+      <xs:element name="CSUserState" type="tCSUserState" minOccurs="0"/>
+      <xs:element name="PSUserState" type="tPSUserState" minOccurs="0"/>
+      <xs:element name="Extension" type="tSh-Data-Extension" minOccurs="0"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tTransparentData">
+    <xs:sequence>
+      <xs:element name="ServiceIndication" type="tString"/>
+      <xs:element name="SequenceNumber" type="tSequenceNumber"/>
+      <xs:element name="ServiceData" type="tServiceData" minOccurs="0"/>
+      <xs:element name="Extension" type="tExtension" minOccurs="0"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tServiceData">
+    <xs:sequence>
+      <xs:any processContents="lax"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tShIMSData">
+    <xs:sequence>
+      <xs:element name="SCSCFName" type="tSIP_URL" minOccurs="0"/>
+      <xs:element name="IFCs" type="tIFCs" minOccurs="0"/>
+      <xs:element name="IMSUserState" type="tIMSUserState" minOccurs="0"/>
+      <xs:element name="ChargingInformation" type="tChargingInformation" minOccurs="0"/>
+      <xs:element name="Extension" type="tShIMSDataExtension" minOccurs="0"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tIFCs">
+    <xs:sequence>
+      <xs:element name="InitialFilterCriteria" type="tInitialFilterCriteria" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Extension" type="tExtension" minOccurs="0"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tCSLocationInformation">
+    <xs:sequence>
+      <xs:element name="LocationNumber" type="tLocationNumber" minOccurs="0"/>
+      <xs:choice>
+        <xs:element name="CellGlobalId" type="tCellGlobalId" minOccurs="0"/>
+        <xs:element name="ServiceAreaId" type="tServiceAreaId" minOccurs="0"/>
+        <xs:element name="LocationAreaId" type="tLocationAreaId" minOccurs="0"/>
+      </xs:choice>
+      <xs:element name="GeographicalInformation" type="tGeographicalInformation" minOccurs="0"/>
+      <xs:element name="GeodeticInformation" type="tGeodeticInformation" minOccurs="0"/>
+      <xs:element name="VLRNumber" type="tISDNAddress" minOccurs="0"/>
+      <xs:element name="MSCNumber" type="tISDNAddress" minOccurs="0"/>
+      <xs:element name="CurrentLocationRetrieved" type="tBool" minOccurs="0"/>
+      <xs:element name="AgeOfLocationInformation" type="tAgeOfLocationInformation" minOccurs="0"/>
+      <xs:element name="Extension" type="tExtension" minOccurs="0"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tPSLocationInformation">
+    <xs:sequence>
+      <xs:choice>
+        <xs:element name="CellGlobalId" type="tCellGlobalId" minOccurs="0"/>
+        <xs:element name="ServiceAreaId" type="tServiceAreaId" minOccurs="0"/>
+        <xs:element name="LocationAreaId" type="tLocationAreaId" minOccurs="0"/>
+      </xs:choice>
+      <xs:element name="RoutingAreaId" type="tRoutingAreaId" minOccurs="0"/>
+      <xs:element name="GeographicalInformation" type="tGeographicalInformation" minOccurs="0"/>
+      <xs:element name="GeodeticInformation" type="tGeodeticInformation" minOccurs="0"/>
+      <xs:element name="SGSNNumber" type="tISDNAddress" minOccurs="0"/>
+      <xs:element name="CurrentLocationRetrieved" type="tBool" minOccurs="0"/>
+      <xs:element name="AgeOfLocationInformation" type="tAgeOfLocationInformation" minOccurs="0"/>
+      <xs:element name="Extension" type="tExtension" minOccurs="0"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tISDNAddress">
+    <xs:sequence>
+      <xs:element name="Address" type="tAddressString" maxOccurs="9"/>
+      <xs:element name="Extension" type="tExtension" minOccurs="0"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tPublicIdentity">
+    <xs:sequence>
+      <xs:element name="IMSPublicIdentity" type="tIMSPublicIdentity" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="MSISDN" type="tMSISDN" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Extension" type="tPublicIdentityExtension" minOccurs="0"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tInitialFilterCriteria">
+    <xs:sequence>
+      <xs:element name="Priority" type="tPriority"/>
+      <xs:element name="TriggerPoint" type="tTrigger" minOccurs="0"/>
+      <xs:element name="ApplicationServer" type="tApplicationServer"/>
+      <xs:element name="Extension" type="tExtension" minOccurs="0"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tTrigger">
+    <xs:sequence>
+      <xs:element name="ConditionTypeCNF" type="tBool"/>
+      <xs:element name="SPT" type="tSePoTri" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="Extension" type="tExtension" minOccurs="0"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tSePoTri">
+    <xs:sequence>
+      <xs:element name="ConditionNegated" type="tBool" minOccurs="0"/>
+      <xs:element name="Group" type="tGroupID" maxOccurs="unbounded"/>
+      <xs:choice>
+        <xs:element name="RequestURI" type="tString"/>
+        <xs:element name="Method" type="tString"/>
+        <xs:element name="SIPHeader" type="tHeader"/>
+        <xs:element name="SessionCase" type="tDirectionOfRequest"/>
+        <xs:element name="SessionDescription" type="tSessionDescription"/>
+      </xs:choice>
+      <xs:element name="Extension" type="tSePoTriExtension" minOccurs="0"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tSessionDescription">
+    <xs:sequence>
+      <xs:element name="Line" type="tString"/>
+      <xs:element name="Content" type="tString" minOccurs="0"/>
+      <xs:element name="Extension" type="tExtension" minOccurs="0"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tHeader">
+    <xs:sequence>
+      <xs:element name="Header" type="tString"/>
+      <xs:element name="Content" type="tString" minOccurs="0"/>
+      <xs:element name="Extension" type="tExtension" minOccurs="0"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tApplicationServer">
+    <xs:sequence>
+      <xs:element name="ServerName" type="tSIP_URL"/>
+      <xs:element name="DefaultHandling" type="tDefaultHandling" minOccurs="0"/>
+      <xs:element name="ServiceInfo" type="tServiceInfo" minOccurs="0"/>
+      <xs:element name="Extension" type="tExtension" minOccurs="0"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tChargingInformation">
+    <xs:sequence>
+      <xs:element name="PrimaryEventChargingFunctionName" type="tDiameterURI" minOccurs="0"/>
+      <xs:element name="SecondaryEventChargingFunctionName" type="tDiameterURI" minOccurs="0"/>
+      <xs:element name="PrimaryChargingCollectionFunctionName" type="tDiameterURI" minOccurs="0"/>
+      <xs:element name="SecondaryChargingCollectionFunctionName" type="tDiameterURI" minOccurs="0"/>
+      <xs:element name="Extension" type="tExtension" minOccurs="0"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tDSAI">
+    <xs:sequence>
+      <xs:element name="DSAI-Tag" type="tDSAI-Tag"/>
+      <xs:element name="DSAI-Value" type="tDSAI-Value"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Sh-Data" type="tSh-Data"/>
 </xs:schema>

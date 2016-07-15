@@ -4,18 +4,18 @@
  * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
- * 
+ *
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License, v. 2.0.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
+ * v. 2.0 along with this distribution; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
@@ -37,14 +37,13 @@ import org.jdiameter.api.cxdx.ClientCxDxSession;
 import org.jdiameter.api.cxdx.ServerCxDxSession;
 import org.jdiameter.api.cxdx.events.JRegistrationTerminationAnswer;
 import org.jdiameter.api.cxdx.events.JRegistrationTerminationRequest;
-import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.impl.app.cxdx.CxDxSessionFactoryImpl;
 import org.jdiameter.common.impl.app.cxdx.JRegistrationTerminationAnswerImpl;
 import org.mobicents.diameter.stack.functional.Utils;
 import org.mobicents.diameter.stack.functional.cxdx.AbstractClient;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -56,17 +55,18 @@ public class ClientRTR extends AbstractClient {
   protected JRegistrationTerminationRequest request;
 
   /**
-	 * 
-	 */
+   *
+   */
   public ClientRTR() {
   }
 
+  @Override
   public void init(InputStream configStream, String clientID) throws Exception {
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777216));
       CxDxSessionFactoryImpl cxdxSessionFactory = new CxDxSessionFactoryImpl(this.sessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ServerCxDxSession.class, cxdxSessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ClientCxDxSession.class, cxdxSessionFactory);
+      sessionFactory.registerAppFacory(ServerCxDxSession.class, cxdxSessionFactory);
+      sessionFactory.registerAppFacory(ClientCxDxSession.class, cxdxSessionFactory);
       cxdxSessionFactory.setClientSessionListener(this);
     }
     finally {
@@ -122,8 +122,8 @@ public class ClientRTR extends AbstractClient {
   }
 
   @Override
-  public void doRegistrationTerminationRequest(ClientCxDxSession session, JRegistrationTerminationRequest request) throws InternalException, IllegalDiameterStateException,
-      RouteException, OverloadException {
+  public void doRegistrationTerminationRequest(ClientCxDxSession session, JRegistrationTerminationRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     if (this.receivedRegistrationTermination) {
       fail("Received RTR more than once", null);
       return;
@@ -145,7 +145,7 @@ public class ClientRTR extends AbstractClient {
     }
     else {
       try {
-        super.clientCxDxSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(request.getSessionId(), getApplicationId(), ClientCxDxSession.class, (Object) null);
+        super.clientCxDxSession = this.sessionFactory.getNewAppSession(request.getSessionId(), getApplicationId(), ClientCxDxSession.class, (Object) null);
         ((NetworkReqListener) this.clientCxDxSession).processRequest(request);
       }
       catch (Exception e) {

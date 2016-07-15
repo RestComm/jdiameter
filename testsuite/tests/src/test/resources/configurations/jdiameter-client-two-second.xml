@@ -35,7 +35,6 @@
     <DpaTimeOut value="5000" />
     <RecTimeOut value="10000" />
   </Parameters>
-  
 
   <Network>
     <Peers>

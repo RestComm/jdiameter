@@ -51,7 +51,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -96,13 +96,14 @@ public class StackConnectTest {
       Network network = server.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
       }, ApplicationId.createByAccAppId(193, 19302));
       server.start();
       _wait();
-      
+
       List<Peer> peers = server.unwrap(PeerTable.class).getPeerTable();
       assertEquals("Wrong num of connections, initial setup did not succeed. ", 0, peers.size());
       client.init(clientConfig);
@@ -110,6 +111,7 @@ public class StackConnectTest {
       network = client.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
@@ -124,7 +126,7 @@ public class StackConnectTest {
       assertTrue("Peer not connected. State[" + p.getState(PeerState.class) + "]", ((IPeer) peers.get(0)).isConnected());
       assertEquals("Peer has wrong realm.","mobicents.org", p.getRealmName());
 
-      
+
     }
     finally {
       try {

@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.InternalException;
@@ -45,7 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -89,10 +90,12 @@ public class SCTPClientConnection implements IConnection {
     listeners.add(listener);
   }
 
+  @Override
   public long getCreatedTime() {
     return createdTime;
   }
 
+  @Override
   public void connect() throws TransportException {
     try {
       getClient().initialize();
@@ -106,6 +109,7 @@ public class SCTPClientConnection implements IConnection {
     }
   }
 
+  @Override
   public void disconnect() throws InternalError {
     try {
       if (getClient() != null) {
@@ -117,6 +121,7 @@ public class SCTPClientConnection implements IConnection {
     }
   }
 
+  @Override
   public void release() throws IOException {
     try {
       if (getClient() != null) {
@@ -133,6 +138,7 @@ public class SCTPClientConnection implements IConnection {
     }
   }
 
+  @Override
   public void sendMessage(IMessage message) throws TransportException, OverloadException {
     try {
       if (getClient() != null) {
@@ -148,22 +154,27 @@ public class SCTPClientConnection implements IConnection {
     return client;
   }
 
+  @Override
   public boolean isNetworkInitiated() {
     return false;
   }
 
+  @Override
   public boolean isConnected() {
     return getClient() != null && getClient().isConnected();
   }
 
+  @Override
   public InetAddress getRemoteAddress() {
     return getClient().getDestAddress().getAddress();
   }
 
+  @Override
   public int getRemotePort() {
     return getClient().getDestAddress().getPort();
   }
 
+  @Override
   public void addConnectionListener(IConnectionListener listener) {
     lock.lock();
     try {
@@ -185,6 +196,7 @@ public class SCTPClientConnection implements IConnection {
     }
   }
 
+  @Override
   public void remAllConnectionListener() {
     lock.lock();
     try {
@@ -195,6 +207,7 @@ public class SCTPClientConnection implements IConnection {
     }
   }
 
+  @Override
   public void remConnectionListener(IConnectionListener listener) {
     lock.lock();
     try {
@@ -205,14 +218,17 @@ public class SCTPClientConnection implements IConnection {
     }
   }
 
+  @Override
   public boolean isWrapperFor(Class<?> aClass) throws InternalException {
     return false;
   }
 
+  @Override
   public <T> T unwrap(Class<T> aClass) throws InternalException {
     return null;
   }
 
+  @Override
   public String getKey() {
     if (this.cachedKey == null) {
       this.cachedKey = new StringBuffer("aaa://").append(getRemoteAddress().getHostName()).append(":").append(getRemotePort())
@@ -257,19 +273,19 @@ public class SCTPClientConnection implements IConnection {
       if (processBufferedMessages(event)) {
         for (IConnectionListener listener : listeners) {
           switch (event.type) {
-          case CONNECTED:
-            listener.connectionOpened(getKey());
-            break;
-          case DISCONNECTED:
-            listener.connectionClosed(getKey(), null);
-            break;
-          case MESSAGE_RECEIVED:
-            listener.messageReceived(getKey(), parser.createMessage(event.message));
-            break;
-          case DATA_EXCEPTION:
-            listener.internalError(getKey(), null, new TransportException("Avp Data Exception:",
-                TransportError.ReceivedBrokenMessage, event.exception));
-            break;
+            case CONNECTED:
+              listener.connectionOpened(getKey());
+              break;
+            case DISCONNECTED:
+              listener.connectionClosed(getKey(), null);
+              break;
+            case MESSAGE_RECEIVED:
+              listener.messageReceived(getKey(), parser.createMessage(event.message));
+              break;
+            case DATA_EXCEPTION:
+              listener.internalError(getKey(), null, new TransportException("Avp Data Exception:",
+                  TransportError.ReceivedBrokenMessage, event.exception));
+              break;
           }
         }
       }
@@ -298,7 +314,7 @@ public class SCTPClientConnection implements IConnection {
   }
 
   // ------------------ helper classes ------------------------
-  private static enum EventType {
+  private enum EventType {
     CONNECTED, DISCONNECTED, MESSAGE_RECEIVED, DATA_EXCEPTION
   }
 

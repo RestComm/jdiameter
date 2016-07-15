@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.server.impl.app.gx;
 
@@ -42,12 +62,12 @@ import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
-import org.jdiameter.api.gx.events.GxReAuthRequest;
-import org.jdiameter.api.gx.events.GxReAuthAnswer;
 import org.jdiameter.api.gx.ServerGxSession;
 import org.jdiameter.api.gx.ServerGxSessionListener;
 import org.jdiameter.api.gx.events.GxCreditControlAnswer;
 import org.jdiameter.api.gx.events.GxCreditControlRequest;
+import org.jdiameter.api.gx.events.GxReAuthAnswer;
+import org.jdiameter.api.gx.events.GxReAuthRequest;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.gx.IGxMessageFactory;
@@ -61,7 +81,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Credit Control Application Server session implementation
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:carl-magnus.bjorkell@emblacom.com"> Carl-Magnus Björkell </a>
@@ -84,8 +104,9 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
   //protected String originHost, originRealm;
   protected IServerGxSessionData sessionData;
 
-  public ServerGxSessionImpl(IServerGxSessionData sessionData, IGxMessageFactory fct, ISessionFactory sf, ServerGxSessionListener lst, IServerGxSessionContext ctx, StateChangeListener<AppSession> stLst) {
-    super(sf,sessionData);
+  public ServerGxSessionImpl(IServerGxSessionData sessionData, IGxMessageFactory fct, ISessionFactory sf, ServerGxSessionListener lst,
+      IServerGxSessionContext ctx, StateChangeListener<AppSession> stLst) {
+    super(sf, sessionData);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
@@ -102,23 +123,28 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
     super.addStateChangeNotification(stLst);
   }
 
+  @Override
   public void sendCreditControlAnswer(GxCreditControlAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     handleEvent(new Event(false, null, answer));
   }
 
+  @Override
   public void sendGxReAuthRequest(GxReAuthRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SENT_RAR, request, null);
   }
 
+  @Override
   public boolean isStateless() {
     return this.sessionData.isStateless();
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> stateType) {
     return stateType == ServerGxSessionState.class ? (E) this.sessionData.getServerGxSessionState() : null;
   }
 
+  @Override
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
     ServerGxSessionState newState = null;
 
@@ -131,148 +157,146 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
       //Its kind of awkward, but with two state on server side its easier to go through event types?
       //but for sake of FSM readability
       final Event.Type eventType = (Event.Type) localEvent.getType();
-      switch(state)
-      {
-      case IDLE:
-        switch(eventType)
-        {
-        case RECEIVED_INITIAL:
-          listener.doCreditControlRequest(this, (GxCreditControlRequest)localEvent.getRequest());
-          break;
+      switch (state) {
+        case IDLE:
+          switch (eventType) {
+            case RECEIVED_INITIAL:
+              listener.doCreditControlRequest(this, (GxCreditControlRequest) localEvent.getRequest());
+              break;
 
-        case RECEIVED_EVENT:
-          // Current State: IDLE
-          // Event: CC event request received and successfully processed
-          // Action: Send CC event answer
-          // New State: IDLE
-          listener.doCreditControlRequest(this, (GxCreditControlRequest)localEvent.getRequest());
-          break;
+            case RECEIVED_EVENT:
+              // Current State: IDLE
+              // Event: CC event request received and successfully processed
+              // Action: Send CC event answer
+              // New State: IDLE
+              listener.doCreditControlRequest(this, (GxCreditControlRequest) localEvent.getRequest());
+              break;
 
-        case SENT_EVENT_RESPONSE:
-          // Current State: IDLE
-          // Event: CC event request received and successfully processed
-          // Action: Send CC event answer
-          // New State: IDLE
+            case SENT_EVENT_RESPONSE:
+              // Current State: IDLE
+              // Event: CC event request received and successfully processed
+              // Action: Send CC event answer
+              // New State: IDLE
 
-          // Current State: IDLE
-          // Event: CC event request received but not successfully processed
-          // Action: Send CC event answer with Result-Code != SUCCESS
-          // New State: IDLE
-          newState = ServerGxSessionState.IDLE;
-          dispatchEvent(localEvent.getAnswer());
-          setState(newState);
-          break;
-
-        case SENT_INITIAL_RESPONSE:
-          GxCreditControlAnswer answer = (GxCreditControlAnswer) localEvent.getAnswer();
-          try {
-            long resultCode = answer.getResultCodeAvp().getUnsigned32();
-            // Current State: IDLE
-            // Event: CC initial request received and successfully processed
-            // Action: Send CC initial answer, reserve units, start Tcc
-            // New State: OPEN
-            if(isSuccess(resultCode)) {
-              startTcc(answer.getValidityTimeAvp());
-              newState = ServerGxSessionState.OPEN;
-            }
-            // Current State: IDLE
-            // Event: CC initial request received but not successfully processed
-            // Action: Send CC initial answer with Result-Code != SUCCESS
-            // New State: IDLE
-            else {
+              // Current State: IDLE
+              // Event: CC event request received but not successfully processed
+              // Action: Send CC event answer with Result-Code != SUCCESS
+              // New State: IDLE
               newState = ServerGxSessionState.IDLE;
-            }
-            dispatchEvent(localEvent.getAnswer());
-            setState(newState);
-          }
-          catch (AvpDataException e) {
-            throw new InternalException(e);
-          }
-          break;
-        default:
-          throw new InternalException("Wrong state: " + ServerGxSessionState.IDLE + " one event: " + eventType + " " + localEvent.getRequest() + " " + localEvent.getAnswer());
-        }
+              dispatchEvent(localEvent.getAnswer());
+              setState(newState);
+              break;
 
-      case OPEN:
-        switch(eventType)
-        {
-        /* This should not happen, it should be silently discarded, right?
+            case SENT_INITIAL_RESPONSE:
+              GxCreditControlAnswer answer = (GxCreditControlAnswer) localEvent.getAnswer();
+              try {
+                long resultCode = answer.getResultCodeAvp().getUnsigned32();
+                // Current State: IDLE
+                // Event: CC initial request received and successfully processed
+                // Action: Send CC initial answer, reserve units, start Tcc
+                // New State: OPEN
+                if (isSuccess(resultCode)) {
+                  startTcc(answer.getValidityTimeAvp());
+                  newState = ServerGxSessionState.OPEN;
+                }
+                // Current State: IDLE
+                // Event: CC initial request received but not successfully processed
+                // Action: Send CC initial answer with Result-Code != SUCCESS
+                // New State: IDLE
+                else {
+                  newState = ServerGxSessionState.IDLE;
+                }
+                dispatchEvent(localEvent.getAnswer());
+                setState(newState);
+              }
+              catch (AvpDataException e) {
+                throw new InternalException(e);
+              }
+              break;
+            default:
+              throw new InternalException("Wrong state: " + ServerGxSessionState.IDLE + " one event: " + eventType + " " + localEvent.getRequest() + " " +
+                  localEvent.getAnswer());
+          }
+
+        case OPEN:
+          switch (eventType) {
+            /* This should not happen, it should be silently discarded, right?
         case RECEIVED_INITIAL:
           // only for rtr
-          if(((RoRequest)localEvent.getRequest()).getMessage().isReTransmitted()) {
-            listener.doCreditControlRequest(this, (RoRequest)localEvent.getRequest());
+          if (((RoRequest) localEvent.getRequest()).getMessage().isReTransmitted()) {
+            listener.doCreditControlRequest(this, (RoRequest) localEvent.getRequest());
           }
           else {
             //do nothing?
           }
           break;
-         */
-        case RECEIVED_UPDATE:
-          listener.doCreditControlRequest(this, (GxCreditControlRequest)localEvent.getRequest());
-          break;
+             */
+            case RECEIVED_UPDATE:
+              listener.doCreditControlRequest(this, (GxCreditControlRequest) localEvent.getRequest());
+              break;
 
-        case SENT_UPDATE_RESPONSE:
-          GxCreditControlAnswer answer = (GxCreditControlAnswer) localEvent.getAnswer();
-          try {
-            if(isSuccess(answer.getResultCodeAvp().getUnsigned32())) {
-              // Current State: OPEN
-              // Event: CC update request received and successfully processed
-              // Action: Send CC update answer, debit used units, reserve new units, restart Tcc
-              // New State: OPEN
-              startTcc(answer.getValidityTimeAvp());
-            }
-            else {
-              // Current State: OPEN
-              // Event: CC update request received but not successfully processed
-              // Action: Send CC update answer with Result-Code != SUCCESS, debit used units
-              // New State: IDLE
+            case SENT_UPDATE_RESPONSE:
+              GxCreditControlAnswer answer = (GxCreditControlAnswer) localEvent.getAnswer();
+              try {
+                if (isSuccess(answer.getResultCodeAvp().getUnsigned32())) {
+                  // Current State: OPEN
+                  // Event: CC update request received and successfully processed
+                  // Action: Send CC update answer, debit used units, reserve new units, restart Tcc
+                  // New State: OPEN
+                  startTcc(answer.getValidityTimeAvp());
+                }
+                else {
+                  // Current State: OPEN
+                  // Event: CC update request received but not successfully processed
+                  // Action: Send CC update answer with Result-Code != SUCCESS, debit used units
+                  // New State: IDLE
 
-              // It's a failure, we wait for Tcc to fire -- FIXME: Alexandre: Should we?
-            }
+                  // It's a failure, we wait for Tcc to fire -- FIXME: Alexandre: Should we?
+                }
+              }
+              catch (AvpDataException e) {
+                throw new InternalException(e);
+              }
+              dispatchEvent(localEvent.getAnswer());
+              break;
+            case RECEIVED_TERMINATE:
+              listener.doCreditControlRequest(this, (GxCreditControlRequest) localEvent.getRequest());
+              break;
+            case SENT_TERMINATE_RESPONSE:
+              answer = (GxCreditControlAnswer) localEvent.getAnswer();
+              try {
+                // Current State: OPEN
+                // Event: CC termination request received and successfully processed
+                // Action: Send CC termination answer, Stop Tcc, debit used units
+                // New State: IDLE
+                if (isSuccess(answer.getResultCodeAvp().getUnsigned32())) {
+                  stopTcc(false);
+                }
+                else {
+                  // Current State: OPEN
+                  // Event: CC termination request received but not successfully processed
+                  // Action: Send CC termination answer with Result-Code != SUCCESS, debit used units
+                  // New State: IDLE
+
+                  // It's a failure, we wait for Tcc to fire -- FIXME: Alexandre: Should we?
+                }
+              }
+              catch (AvpDataException e) {
+                throw new InternalException(e);
+              }
+
+              newState = ServerGxSessionState.IDLE;
+              dispatchEvent(localEvent.getAnswer());
+              setState(newState);
+              break;
+
+            case RECEIVED_RAA:
+              listener.doGxReAuthAnswer(this, (GxReAuthRequest) localEvent.getRequest(), (GxReAuthAnswer) localEvent.getAnswer());
+              break;
+            case SENT_RAR:
+              dispatchEvent(localEvent.getRequest());
+              break;
           }
-          catch (AvpDataException e) {
-            throw new InternalException(e);
-          }
-          dispatchEvent(localEvent.getAnswer());
-          break;
-        case RECEIVED_TERMINATE:
-          listener.doCreditControlRequest(this, (GxCreditControlRequest)localEvent.getRequest());
-          break;
-        case SENT_TERMINATE_RESPONSE:
-          answer = (GxCreditControlAnswer) localEvent.getAnswer();
-          try {
-            // Current State: OPEN
-            // Event: CC termination request received and successfully processed
-            // Action: Send CC termination answer, Stop Tcc, debit used units
-            // New State: IDLE
-            if(isSuccess(answer.getResultCodeAvp().getUnsigned32())) {
-              stopTcc(false);
-            }
-            else {
-              // Current State: OPEN
-              // Event: CC termination request received but not successfully processed
-              // Action: Send CC termination answer with Result-Code != SUCCESS, debit used units
-              // New State: IDLE
-
-              // It's a failure, we wait for Tcc to fire -- FIXME: Alexandre: Should we?
-            }
-          }
-          catch (AvpDataException e) {
-            throw new InternalException(e);
-          }
-
-          newState = ServerGxSessionState.IDLE;
-          dispatchEvent(localEvent.getAnswer());
-          setState(newState);
-          break;
-
-        case RECEIVED_RAA:
-          listener.doGxReAuthAnswer(this, (GxReAuthRequest)localEvent.getRequest(), (GxReAuthAnswer)localEvent.getAnswer());
-          break;
-        case SENT_RAR:
-          dispatchEvent(localEvent.getRequest());
-          break;
-        }
       }
       return true;
     }
@@ -286,7 +310,7 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.impl.app.AppSessionImpl#isReplicable()
    */
   @Override
@@ -302,6 +326,7 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
       this.session = session;
     }
 
+    @Override
     public void run() {
       // Current State: OPEN
       // Event: Session supervision timer Tcc expired
@@ -320,6 +345,7 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
     }
   }
 
+  @Override
   public Answer processRequest(Request request) {
     RequestDelivery rd = new RequestDelivery();
     //rd.session = (ServerGxSession) LocalDataSource.INSTANCE.getSession(request.getSessionId());
@@ -329,6 +355,7 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
     return null;
   }
 
+  @Override
   public void receivedSuccessMessage(Request request, Answer answer) {
     AnswerDelivery rd = new AnswerDelivery();
     rd.session = this;
@@ -337,6 +364,7 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
     super.scheduler.execute(rd);
   }
 
+  @Override
   public void timeoutExpired(Request request) {
     context.timeoutExpired(request);
     //FIXME: Should we release ?
@@ -377,7 +405,7 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.impl.app.AppSessionImpl#onTimer(java.lang.String)
    */
   @Override
@@ -393,7 +421,7 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
       super.timerFacility.cancel(tccTimerId);
 
       this.sessionData.setTccTimerId(null);
-      if (!willRestart && context!=null) {
+      if (!willRestart && context != null) {
         context.sessionSupervisionTimerStopped(this, null);
       }
     }
@@ -468,7 +496,7 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
       session.send(event.getMessage(), this);
       // Store last destination information
     }
-    catch(Exception e) {
+    catch (Exception e) {
       throw new InternalException(e);
       // logger.debug("Failure trying to dispatch event", e);
     }
@@ -484,19 +512,24 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (!super.equals(obj))
+    }
+    if (!super.equals(obj)) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     ServerGxSessionImpl other = (ServerGxSessionImpl) obj;
     if (sessionData == null) {
-      if (other.sessionData != null)
+      if (other.sessionData != null) {
         return false;
+      }
     }
-    else if (!sessionData.equals(other.sessionData))
+    else if (!sessionData.equals(other.sessionData)) {
       return false;
+    }
     return true;
   }
 
@@ -505,16 +538,17 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
     ServerGxSession session;
     Request request;
 
+    @Override
     public void run() {
       try {
         switch (request.getCommandCode()) {
-        case GxCreditControlAnswer.code:
-          handleEvent(new Event(true, factory.createCreditControlRequest(request), null));
-          break;
+          case GxCreditControlAnswer.code:
+            handleEvent(new Event(true, factory.createCreditControlRequest(request), null));
+            break;
 
-        default:
-          listener.doOtherEvent(session, new AppRequestEventImpl(request), null);
-          break;
+          default:
+            listener.doOtherEvent(session, new AppRequestEventImpl(request), null);
+            break;
         }
       }
       catch (Exception e) {
@@ -528,17 +562,18 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
     Answer answer;
     Request request;
 
+    @Override
     public void run() {
       try {
         // FIXME: baranowb: add message validation here!!!
         // We handle CCR, STR, ACR, ASR other go into extension
         switch (request.getCommandCode()) {
-        case GxReAuthRequest.code:
-          handleEvent(new Event(Event.Type.RECEIVED_RAA, factory.createGxReAuthRequest(request), factory.createGxReAuthAnswer(answer)));
-          break;
-        default:
-          listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
-          break;
+          case GxReAuthRequest.code:
+            handleEvent(new Event(Event.Type.RECEIVED_RAA, factory.createGxReAuthRequest(request), factory.createGxReAuthAnswer(answer)));
+            break;
+          default:
+            listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
+            break;
         }
       }
       catch (Exception e) {

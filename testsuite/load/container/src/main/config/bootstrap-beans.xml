@@ -1,28 +1,20 @@
-
 <deployment xmlns="urn:jboss:bean-deployer:2.0">
-	<!-- Timer definition -->
-    
-	<!-- File Filter -->
-    <bean name="FileFilter"
-		class="org.mobicents.diameter.server.bootstrap.FileFilterImpl">
-		<!-- Unless specified the default list of suffixes is , -beans.xml, -conf.xml -->
-    </bean>
+  <!-- Timer definition -->
 
-	<!-- The MainDeployer -->
-    <bean name="MainDeployer"
-		class="org.mobicents.diameter.server.bootstrap.MainDeployer">
-		<annotation>@org.jboss.aop.microcontainer.aspects.jmx.JMX(name="mobicents:service=ContainerStopper", exposedInterface=org.mobicents.diameter.server.bootstrap.ContainerOperations.class)</annotation>
-        <property name="path">
-         	<set elementClass="java.lang.String">
-            	<value>${dia.home.dir}/deploy</value>  
-         	</set>	
-		</property>
-        <property name="scanPeriod">30000</property>
-        <property name="fileFilter"><inject bean="FileFilter"/></property>
-    </bean>
+  <!-- File Filter -->
+  <bean name="FileFilter" class="org.mobicents.diameter.server.bootstrap.FileFilterImpl">
+  <!-- Unless specified the default list of suffixes is , -beans.xml, -conf.xml -->
+  </bean>
 
-	
-
-                
-    
+  <!-- The MainDeployer -->
+  <bean name="MainDeployer" class="org.mobicents.diameter.server.bootstrap.MainDeployer">
+    <annotation>@org.jboss.aop.microcontainer.aspects.jmx.JMX(name="mobicents:service=ContainerStopper", exposedInterface=org.mobicents.diameter.server.bootstrap.ContainerOperations.class)</annotation>
+    <property name="path">
+      <set elementClass="java.lang.String">
+        <value>${dia.home.dir}/deploy</value>
+      </set>
+    </property>
+    <property name="scanPeriod">30000</property>
+    <property name="fileFilter"><inject bean="FileFilter"/></property>
+  </bean>
 </deployment>

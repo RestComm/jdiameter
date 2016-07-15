@@ -36,7 +36,7 @@
     open-args="mode=client;dest=127.0.0.1:3868">
   </define>
 
-  <define entity="traffic-param" name="call-rate" value="1"></define>	
+  <define entity="traffic-param" name="call-rate" value="1"></define>
   <define entity="traffic-param" name="display-period" value="1"></define>
   <define entity="traffic-param" name="log-stat-period" value="1"></define>
   <define entity="traffic-param" name="log-stat-file" value="../logs/client-stat.csv"></define>

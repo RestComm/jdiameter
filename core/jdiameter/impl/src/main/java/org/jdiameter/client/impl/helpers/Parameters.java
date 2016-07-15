@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.client.impl.helpers;
 
@@ -26,7 +46,7 @@ import java.util.ArrayList;
 
 /**
  * This enumeration defined all parameters of diameter stack implementation
- * 
+ *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
@@ -70,7 +90,7 @@ public class Parameters extends Ordinal {
   public static final Parameters OwnFirmwareRevision = new Parameters("OwnFirmwareRevision", Long.class, 0L);
 
   /**
-   * Task executor task queue size  property 
+   * Task executor task queue size  property
    */
   public static final Parameters QueueSize = new Parameters("QueueSize", Integer.class,   10000);
 
@@ -112,7 +132,7 @@ public class Parameters extends Ordinal {
   /**
    * Orig_host avp set as URI into CER message
    */
-  public static final Parameters UseUriAsFqdn = new Parameters("UseUriAsFqdn", Boolean.class, false);    
+  public static final Parameters UseUriAsFqdn = new Parameters("UseUriAsFqdn", Boolean.class, false);
 
   /**
    * Peer name property
@@ -217,7 +237,7 @@ public class Parameters extends Ordinal {
   /**
    * Security data name
    */
-  public static final Parameters SDName = new Parameters("SDName", String.class);    
+  public static final Parameters SDName = new Parameters("SDName", String.class);
 
   /**
    * Security protocol
@@ -232,7 +252,7 @@ public class Parameters extends Ordinal {
   /**
    * Security client mode flag
    */
-  public static final Parameters SDUseClientMode= new Parameters("SDUseClientMode", Boolean.class, false);
+  public static final Parameters SDUseClientMode = new Parameters("SDUseClientMode", Boolean.class, false);
 
   /**
    * Cipher suites separated by ', '
@@ -268,7 +288,7 @@ public class Parameters extends Ordinal {
   /**
    * Trust data
    */
-  public static final Parameters TrustData = new Parameters("TrustData", String.class);    
+  public static final Parameters TrustData = new Parameters("TrustData", String.class);
 
   /**
    * Key manager
@@ -324,12 +344,12 @@ public class Parameters extends Ordinal {
   public static final Parameters StatisticsLoggerDelay = new Parameters("StatisticsLoggerDelay", Long.class, 30000L);
 
   /**
-   * Statistic flag controlling if statistics are on/off - ie. timer tasks to display are created. 
+   * Statistic flag controlling if statistics are on/off - ie. timer tasks to display are created.
    */
   public static final Parameters StatisticsEnabled = new Parameters("StatisticsEnabled", Boolean.class, false);
 
   /**
-   * List of statistics names which should be enabled. 
+   * List of statistics names which should be enabled.
    */
   public static final Parameters StatisticsActiveList = new Parameters("StatisticsActiveList", String.class, false);
 
@@ -380,7 +400,7 @@ public class Parameters extends Ordinal {
 
   /**
    * Return all parameters as iterator
-   * 
+   *
    * @return all parameters as iterator
    */
   public static Iterable<Parameters> values() {
@@ -407,7 +427,7 @@ public class Parameters extends Ordinal {
 
   /**
    * Return default value of property
-   * 
+   *
    * @return default value of property
    */
   public Object defValue() {
@@ -416,7 +436,7 @@ public class Parameters extends Ordinal {
 
   /**
    * Return type of property
-   * 
+   *
    * @return type of property
    */
   public Class type() {

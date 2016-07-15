@@ -1,52 +1,46 @@
- /*
-  * TeleStax, Open Source Cloud Communications
-  * Copyright 2011-2014, TeleStax Inc. and individual contributors
-  * by the @authors tag.
-  *
-  * This program is free software: you can redistribute it and/or modify
-  * under the terms of the GNU Affero General Public License as
-  * published by the Free Software Foundation; either version 3 of
-  * the License, or (at your option) any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU Affero General Public License for more details.
-  *
-  * You should have received a copy of the GNU Affero General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>
-  * 
-  * This file incorporates work covered by the following copyright and
-  * permission notice:
-  * 
-  *   JBoss, Home of Professional Open Source
-  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
-  *   by the @authors tag. See the copyright.txt in the distribution for a
-  *   full listing of individual contributors.
-  *
-  *   This is free software; you can redistribute it and/or modify it
-  *   under the terms of the GNU Lesser General Public License as
-  *   published by the Free Software Foundation; either version 2.1 of
-  *   the License, or (at your option) any later version.
-  *
-  *   This software is distributed in the hope that it will be useful,
-  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  *   Lesser General Public License for more details.
-  *
-  *   You should have received a copy of the GNU Lesser General Public
-  *   License along with this software; if not, write to the Free
-  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
-  */
+/*
+ * TeleStax, Open Source Cloud Communications
+ * Copyright 2011-2014, TeleStax Inc. and individual contributors
+ * by the @authors tag.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ *   JBoss, Home of Professional Open Source
+ *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+ *   by the @authors tag. See the copyright.txt in the distribution for a
+ *   full listing of individual contributors.
+ *
+ *   This is free software; you can redistribute it and/or modify it
+ *   under the terms of the GNU Lesser General Public License as
+ *   published by the Free Software Foundation; either version 2.1 of
+ *   the License, or (at your option) any later version.
+ *
+ *   This software is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *   Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public
+ *   License along with this software; if not, write to the Free
+ *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 
 package org.jdiameter.client.impl.transport.tcp;
-
-import org.jdiameter.api.AvpDataException;
-import org.jdiameter.client.api.io.NotInitializedException;
-import org.jdiameter.common.api.concurrent.IConcurrentFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -64,8 +58,14 @@ import java.util.Iterator;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.jdiameter.api.AvpDataException;
+import org.jdiameter.client.api.io.NotInitializedException;
+import org.jdiameter.common.api.concurrent.IConcurrentFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
- * 
+ *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
@@ -116,7 +116,7 @@ public class TCPTransportClient implements Runnable {
   }
 
   /**
-   *  Network init socket 
+   *  Network init socket
    */
   public void initialize() throws IOException, NotInitializedException {
     logger.debug("Initialising TCPTransportClient. Origin address is [{}] and destination address is [{}]", origAddress, destAddress);
@@ -148,7 +148,7 @@ public class TCPTransportClient implements Runnable {
 
   public void start() throws NotInitializedException {
     // for client
-    if(socketDescription == null && socketChannel != null) {
+    if (socketDescription == null && socketChannel != null) {
       socketDescription = socketChannel.socket().toString();
     }
     logger.debug("Starting transport. Socket is {}", socketDescription);
@@ -172,6 +172,7 @@ public class TCPTransportClient implements Runnable {
   }
 
   //PCB added logging
+  @Override
   public void run() {
     // Workaround for Issue #4 (http://code.google.com/p/jdiameter/issues/detail?id=4)
     // BEGIN WORKAROUND // Give some time to initialization...
@@ -273,14 +274,14 @@ public class TCPTransportClient implements Runnable {
 
   public void setDestAddress(InetSocketAddress address) {
     this.destAddress = address;
-    if(logger.isDebugEnabled()) {
+    if (logger.isDebugEnabled()) {
       logger.debug("Destination address is set to [{}] : [{}]", destAddress.getHostName(), destAddress.getPort());
     }
   }
 
   public void setOrigAddress(InetSocketAddress address) {
     this.origAddress = address;
-    if(logger.isDebugEnabled()) {
+    if (logger.isDebugEnabled()) {
       logger.debug("Origin address is set to [{}] : [{}]", origAddress.getHostName(), origAddress.getPort());
     }
   }
@@ -317,6 +318,7 @@ public class TCPTransportClient implements Runnable {
     }
   }
 
+  @Override
   public String toString() {
     StringBuffer buffer = new StringBuffer();
     buffer.append("Transport to ");
@@ -387,9 +389,9 @@ public class TCPTransportClient implements Runnable {
       // This Version field MUST be set to 1 to indicate Diameter Version 1
       byte vers = (byte) (tmp >> 24);
       if (vers != 1) {
-    	// ZhixiaoLuo: fix #28, if unlucky storage.limit < data.length(1024), then always failed to do storage.put(data) 
-    	// ZhixiaoLuo: and get BufferOverflowException in append(data)
-      	storage.clear();
+        // ZhixiaoLuo: fix #28, if unlucky storage.limit < data.length(1024), then always failed to do storage.put(data)
+        // ZhixiaoLuo: and get BufferOverflowException in append(data)
+        storage.clear();
         return false;
       }
       // extract the message length, so we know how much to read
@@ -421,7 +423,7 @@ public class TCPTransportClient implements Runnable {
         getParent().onAvpDataException(e);
       }
     }
-    catch(BufferUnderflowException bue) {
+    catch (BufferUnderflowException bue) {
       // we don't have enough data to read message length.. wait for more
       storage.position(storage.limit());
       storage.limit(storage.capacity());

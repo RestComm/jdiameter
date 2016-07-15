@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2006-2011, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.client.impl.router;
 
@@ -85,7 +105,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Diameter Routing Core
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -123,7 +143,7 @@ public class RouterImpl implements IRouter {
   //protected List<Long> requestSortedEntryTable = new ArrayList<Long>();
   protected boolean isStopped = true;
 
-  public RouterImpl(IContainer container,IConcurrentFactory concurrentFactory, IRealmTable realmTable,Configuration config, MetaData aMetaData) {
+  public RouterImpl(IContainer container, IConcurrentFactory concurrentFactory, IRealmTable realmTable, Configuration config, MetaData aMetaData) {
     this.concurrentFactory = concurrentFactory;
     this.metaData = aMetaData;
     this.realmTable = realmTable;
@@ -135,8 +155,8 @@ public class RouterImpl implements IRouter {
   protected void loadConfiguration(Configuration config) {
     logger.debug("Loading Router Configuration. Populating Realms, Application IDs, etc");
     //add local realm : this might not be good
-    String localRealm = config.getStringValue(OwnRealm.ordinal(),null);
-    String localHost = config.getStringValue(Parameters.OwnDiameterURI.ordinal(),null);
+    String localRealm = config.getStringValue(OwnRealm.ordinal(), null);
+    String localHost = config.getStringValue(Parameters.OwnDiameterURI.ordinal(), null);
     try {
       this.realmTable.addLocalRealm(localRealm, new URI(localHost).getFQDN());
     }
@@ -148,16 +168,16 @@ public class RouterImpl implements IRouter {
     }
     if (config.getChildren(RequestTable.ordinal()) != null) {
       AppConfiguration requestTableConfig = (AppConfiguration) config.getChildren(org.jdiameter.server.impl.helpers.Parameters.RequestTable.ordinal())[0];
-      int tSize = (int)requestTableConfig.getIntValue(RequestTableSize.ordinal(),(Integer) RequestTableSize.defValue());
-      int tClearSize = (int)requestTableConfig.getIntValue(RequestTableClearSize.ordinal(),(Integer) RequestTableClearSize.defValue());
+      int tSize = requestTableConfig.getIntValue(RequestTableSize.ordinal(),(Integer) RequestTableSize.defValue());
+      int tClearSize = requestTableConfig.getIntValue(RequestTableClearSize.ordinal(),(Integer) RequestTableClearSize.defValue());
       if (tSize > 0 && tClearSize >= tSize) {
         logger.warn("Configuration entry RequestTable, attribute 'clear_size' [{}] should not be greater than 'size' [{}]. Adjusting.", tSize, tClearSize);
         while (tClearSize >= tSize) {
           tSize *= 10;
         }
       }
-      REQUEST_TABLE_SIZE = (int) tSize;
-      REQUEST_TABLE_CLEAR_SIZE = (int) tClearSize;
+      REQUEST_TABLE_SIZE = tSize;
+      REQUEST_TABLE_CLEAR_SIZE = tClearSize;
     }
     //PCB added thread safety
     this.requestEntryMap = new ConcurrentHashMap<String, AnswerEntry>(REQUEST_TABLE_SIZE);
@@ -189,7 +209,8 @@ public class RouterImpl implements IRouter {
                         appId = org.jdiameter.api.ApplicationId.createByAccAppId(vnd, acc);
                       }
                       if (logger.isDebugEnabled()) {
-                        logger.debug("Realm [{}] has application Acct [{}] Auth [{}] Vendor [{}]", new Object[]{name, appId.getAcctAppId(), appId.getAuthAppId(), appId.getVendorId()});
+                        logger.debug("Realm [{}] has application Acct [{}] Auth [{}] Vendor [{}]",
+                            new Object[]{name, appId.getAcctAppId(), appId.getAuthAppId(), appId.getVendorId()});
                       }
                       break;
                     }
@@ -204,11 +225,11 @@ public class RouterImpl implements IRouter {
               //check if there is Agent, ATM we support only props there.
               IAgentConfiguration agentConfImpl = null;
               Configuration[] confs = c.getChildren(Agent.ordinal());
-              if(confs != null && confs.length > 0) {
+              if (confs != null && confs.length > 0) {
                 Configuration agentConfiguration = confs[0]; //only one!
                 agentConfImpl = this.container.getAssemblerFacility().getComponentInstance(IAgentConfiguration.class);
 
-                if(agentConfImpl != null) {
+                if (agentConfImpl != null) {
                   agentConfImpl = agentConfImpl.parse(agentConfiguration);
                 }
               }
@@ -223,12 +244,13 @@ public class RouterImpl implements IRouter {
     }
   }
 
+  @Override
   public void registerRequestRouteInfo(IRequest request) {
     logger.debug("Entering registerRequestRouteInfo");
     if (REQUEST_TABLE_SIZE == 0) {
       return; // we don't have anything to do as we are storing routing info at answer message
     }
-    
+
     try {
       // PCB removed lock
       // requestEntryTableLock.writeLock().lock();
@@ -290,9 +312,10 @@ public class RouterImpl implements IRouter {
         .append(message.getHopByHopIdentifier()).toString();
   }
 
+  @Override
   public String[] getRequestRouteInfo(IMessage message) {
     if (REQUEST_TABLE_SIZE == 0) {
-      return ((MessageImpl)message).getRoutingInfo(); // using answer stored routing info
+      return ((MessageImpl) message).getRoutingInfo(); // using answer stored routing info
     }
 
     // using request table
@@ -305,7 +328,7 @@ public class RouterImpl implements IRouter {
       return new String[] {ans.getHost(), ans.getRealm()};
     }
     else {
-      if(logger.isWarnEnabled()) {
+      if (logger.isWarnEnabled()) {
         logger.warn("Could not find route info for message key [{}]. Table size is [{}]", messageKey, requestEntryMap.size());
       }
       return null;
@@ -313,6 +336,7 @@ public class RouterImpl implements IRouter {
   }
 
   //PCB added
+  @Override
   public void garbageCollectRequestRouteInfo(IMessage message) {
     if (REQUEST_TABLE_SIZE == 0) {
       return; // we don't have anything to do as we are storing routing info at answer message
@@ -322,6 +346,7 @@ public class RouterImpl implements IRouter {
     requestEntryMap.remove(messageKey);
   }
 
+  @Override
   public IPeer getPeer(IMessage message, IPeerTable manager) throws RouteException, AvpDataException {
     logger.debug("Getting a peer for message [{}]", message);
     //FIXME: add ability to send without matching realm+peer pair?, that is , route based on peer table entries?
@@ -331,7 +356,7 @@ public class RouterImpl implements IRouter {
     IRealm matchedRealm = null;
     String[] info = null;
     // Get destination information
-    if(message.isRequest()) {
+    if (message.isRequest()) {
       Avp avpRealm = message.getAvps().getAvp(Avp.DESTINATION_REALM);
       if (avpRealm == null) {
         throw new RouteException("Destination realm avp is empty");
@@ -342,11 +367,11 @@ public class RouterImpl implements IRouter {
       if (avpHost != null) {
         destHost = avpHost.getDiameterIdentity();
       }
-      if(logger.isDebugEnabled()) {
-        logger.debug("Looking up peer for request: [{}], DestHost=[{}], DestRealm=[{}]", new Object[] {message,destHost, destRealm});
+      if (logger.isDebugEnabled()) {
+        logger.debug("Looking up peer for request: [{}], DestHost=[{}], DestRealm=[{}]", new Object[] {message, destHost, destRealm});
       }
 
-      matchedRealm = (IRealm) this.realmTable.matchRealm(message); 
+      matchedRealm = (IRealm) this.realmTable.matchRealm(message);
     }
     else {
       //answer, search
@@ -364,10 +389,10 @@ public class RouterImpl implements IRouter {
       }
       //FIXME: if no info, should not send it ?
       //FIXME: add strict deff in route back table so stack does not have to lookup?
-      if(logger.isDebugEnabled()) {
-        logger.debug("Looking up peer for answer: [{}], DestHost=[{}], DestRealm=[{}]", new Object[] {message,destHost, destRealm});
+      if (logger.isDebugEnabled()) {
+        logger.debug("Looking up peer for answer: [{}], DestHost=[{}], DestRealm=[{}]", new Object[] {message, destHost, destRealm});
       }
-      matchedRealm = (IRealm) this.realmTable.matchRealm((IAnswer)message,destRealm);
+      matchedRealm = (IRealm) this.realmTable.matchRealm(message, destRealm);
     }
 
     //  IPeer peer = getPeerPredProcessing(message, destRealm, destHost);
@@ -388,7 +413,7 @@ public class RouterImpl implements IRouter {
     //redirectProcessing(message, destRealm, destHost);
     // Check previous context information, this takes care of most answers.
     if (message.getPeer() != null && destHost != null && destHost.equals(message.getPeer().getUri().getFQDN()) && message.getPeer().hasValidConnection()) {
-      if(logger.isDebugEnabled()) {
+      if (logger.isDebugEnabled()) {
         logger.debug("Select previous message usage peer [{}]", message.getPeer());
       }
       return message.getPeer();
@@ -396,7 +421,7 @@ public class RouterImpl implements IRouter {
 
     // Balancing procedure
 
-    IPeer c = (IPeer) (destHost != null ? manager.getPeer(destHost) : null);
+    IPeer c = destHost != null ? manager.getPeer(destHost) : null;
 
     if (c != null && c.hasValidConnection()) {
       logger.debug("Found a peer using destination host avp [{}] peer is [{}] with a valid connection.", destHost, c);
@@ -404,8 +429,9 @@ public class RouterImpl implements IRouter {
       return c;
     }
     else {
-      logger.debug("Finding peer by destination host avp [host={}] did not find anything. Now going to try finding one by destination realm [{}]", destHost, destRealm);
-      String peers[] = matchedRealm.getPeerNames();
+      logger.debug("Finding peer by destination host avp [host={}] did not find anything. Now going to try finding one by destination realm [{}]",
+          destHost, destRealm);
+      String[] peers = matchedRealm.getPeerNames();
       if (peers == null || peers.length == 0) {
         throw new RouteException("Unable to find context by route information [" + destRealm + " ," + destHost + "]");
       }
@@ -414,29 +440,30 @@ public class RouterImpl implements IRouter {
       ArrayList<IPeer> availablePeers = new ArrayList<IPeer>(5);
       logger.debug("Looping through peers in realm [{}]", destRealm);
       for (String peerName : peers) {
-        IPeer localPeer = (IPeer) manager.getPeer(peerName);
-        if(logger.isDebugEnabled()) {
-          logger.debug("Checking peer [{}] for name [{}]", new Object[]{localPeer,peerName});
+        IPeer localPeer = manager.getPeer(peerName);
+        if (logger.isDebugEnabled()) {
+          logger.debug("Checking peer [{}] for name [{}]", new Object[]{localPeer, peerName});
         }
-        // ammendonca: added peer state check.. should not be needed but 
+        // ammendonca: added peer state check.. should not be needed but
         // hasValidConnection is returning true for disconnected peers in *FTFlowTests
         if (localPeer != null && localPeer.getState(PeerState.class) == PeerState.OKAY) {
-          if(localPeer.hasValidConnection()) {
-            if(logger.isDebugEnabled()) {
+          if (localPeer.hasValidConnection()) {
+            if (logger.isDebugEnabled()) {
               logger.debug("Found available peer to add to available peer list with uri [{}] with a valid connection", localPeer.getUri().toString());
             }
             availablePeers.add(localPeer);
           }
           else {
-            if(logger.isDebugEnabled()) {
+            if (logger.isDebugEnabled()) {
               logger.debug("Found a peer with uri [{}] with no valid connection", localPeer.getUri());
             }
           }
         }
       }
 
-      if(logger.isDebugEnabled()) {
-        logger.debug("Performing Realm routing. Realm [{}] has the following peers available [{}] from list [{}]", new Object[] {destRealm, availablePeers, Arrays.asList(peers)});
+      if (logger.isDebugEnabled()) {
+        logger.debug("Performing Realm routing. Realm [{}] has the following peers available [{}] from list [{}]",
+            new Object[] {destRealm, availablePeers, Arrays.asList(peers)});
       }
 
       // Balancing
@@ -454,14 +481,16 @@ public class RouterImpl implements IRouter {
     }
   }
 
+  @Override
   public IRealmTable getRealmTable() {
     return this.realmTable;
   }
 
+  @Override
   public void processRedirectAnswer(IRequest request, IAnswer answer, IPeerTable table) throws InternalException, RouteException {
     try {
       Avp destinationRealmAvp = request.getAvps().getAvp(Avp.DESTINATION_REALM);
-      if(destinationRealmAvp == null) {
+      if (destinationRealmAvp == null) {
         throw new RouteException("Request to be routed has no Destination-Realm AVP!"); // sanity check... if user messes with us
       }
       String destinationRealm = destinationRealmAvp.getDiameterIdentity();
@@ -503,14 +532,14 @@ public class RouterImpl implements IRouter {
             break;
           case REALM_AND_APPLICATION:
             primaryKey = destinationRealm;
-            secondaryKey = ((IMessage)request).getSingleApplicationId();
+            secondaryKey = ((IMessage) request).getSingleApplicationId();
             break;
           case ALL_APPLICATION:
-            secondaryKey = ((IMessage)request).getSingleApplicationId();
+            secondaryKey = ((IMessage) request).getSingleApplicationId();
             break;
           case ALL_HOST:
-            Avp destinationHostAvp = ((IRequest)request).getAvps().getAvp(Avp.DESTINATION_HOST);
-            if(destinationHostAvp == null) {
+            Avp destinationHostAvp = request.getAvps().getAvp(Avp.DESTINATION_HOST);
+            if (destinationHostAvp == null) {
               throw new RouteException("Request to be routed has no Destination-Host AVP!"); // sanity check... if user messes with us
             }
             primaryKey = destinationHostAvp.getDiameterIdentity();
@@ -524,7 +553,7 @@ public class RouterImpl implements IRouter {
             break;
         }
         //
-        if(redirectTable.size()> REDIRECT_TABLE_SIZE) {
+        if (redirectTable.size() > REDIRECT_TABLE_SIZE) {
           try {
             //yes, possible that this will trigger this procedure twice, but thats worst than locking always.
             redirectTableLock.writeLock().lock();
@@ -537,15 +566,15 @@ public class RouterImpl implements IRouter {
         if (REDIRECT_TABLE_SIZE > redirectTable.size()) {
           RedirectEntry e = new RedirectEntry(primaryKey, secondaryKey, redirectCacheTime, redirectUsage, redirectHosts, destinationRealm);
           redirectTable.add(e);
-          //redirectProcessing(answer,destRealm.getOctetString(),destHost !=null ? destHost.getOctetString():null);
+          //redirectProcessing(answer, destRealm.getOctetString(), destHost !=null ? destHost.getOctetString():null);
           //we dont have to elect?
-          updateRoute(request,e.getRedirectHost());
+          updateRoute(request, e.getRedirectHost());
         }
         else {
           if (redirectHosts != null && redirectHosts.length > 0) {
             String destHost = redirectHosts[0];
             //setRouteInfo(answer, getRealmForPeer(destHost), destHost);
-            updateRoute(request,destHost);
+            updateRoute(request, destHost);
           }
         }
       }
@@ -553,11 +582,11 @@ public class RouterImpl implements IRouter {
         if (redirectHosts != null && redirectHosts.length > 0) {
           String destHost = redirectHosts[0];
           //setRouteInfo(answer, getRealmForPeer(destHost), destHost);
-          updateRoute(request,destHost);
+          updateRoute(request, destHost);
         }
       }
       //now send
-      table.sendMessage((IMessage)request);
+      table.sendMessage((IMessage) request);
     }
     catch (AvpDataException exc) {
       throw new InternalException(exc);
@@ -571,17 +600,17 @@ public class RouterImpl implements IRouter {
   }
 
   /**
-   * 
+   *
    */
   private void trimRedirectTable() {
-    for(int index = 0; index < redirectTable.size(); index++) {
-      try{
-        if(redirectTable.get(index).getExpiredTime() <= System.currentTimeMillis()) {
+    for (int index = 0; index < redirectTable.size(); index++) {
+      try {
+        if (redirectTable.get(index).getExpiredTime() <= System.currentTimeMillis()) {
           redirectTable.remove(index);
           index--; //a trick :)
         }
       }
-      catch(Exception e) {
+      catch (Exception e) {
         logger.debug("Error in redirect task cleanup.", e);
         break;
       }
@@ -598,12 +627,13 @@ public class RouterImpl implements IRouter {
     request.getAvps().addAvp(Avp.DESTINATION_HOST, destHost, true, false,  true);
   }
 
+  @Override
   public boolean updateRoute(IRequest message) throws RouteException, AvpDataException {
     AvpSet set = message.getAvps();
     Avp destRealmAvp = set.getAvp(Avp.DESTINATION_REALM);
     Avp destHostAvp = set.getAvp(Avp.DESTINATION_HOST);
 
-    if(destRealmAvp == null) {
+    if (destRealmAvp == null) {
       throw new RouteException("Request does not have Destination-Realm AVP!");
     }
 
@@ -617,16 +647,16 @@ public class RouterImpl implements IRouter {
     //
     Avp avpUserName = message.getAvps().getAvp(Avp.USER_NAME);
     // Get application id
-    ApplicationId appId = ((IMessage)message).getSingleApplicationId();
+    ApplicationId appId = ((IMessage) message).getSingleApplicationId();
     // User name
     if (avpUserName != null) {
       userName = avpUserName.getUTF8String();
     }
     // Processing table
-    try{
+    try {
       redirectTableLock.readLock().lock();
 
-      for (int index = 0;index<redirectTable.size();index++) {
+      for (int index = 0; index < redirectTable.size(); index++) {
         RedirectEntry e = redirectTable.get(index);
         switch (e.getUsageType()) {
           case ALL_SESSION: // Usage type: ALL SESSION
@@ -637,7 +667,7 @@ public class RouterImpl implements IRouter {
             break;
           case REALM_AND_APPLICATION: // Usage type: REALM AND APPLICATION
             matchedEntry = destRealm != null & appId != null & e.primaryKey != null & e.secondaryKey != null & destRealm.equals(e.primaryKey)
-            & appId.equals(e.secondaryKey);
+              & appId.equals(e.secondaryKey);
             break;
           case ALL_APPLICATION: // Usage type: ALL APPLICATION
             matchedEntry = appId != null & e.secondaryKey != null & appId.equals(e.secondaryKey);
@@ -655,7 +685,7 @@ public class RouterImpl implements IRouter {
           //String newDestRealm = getRealmForPeer(destHost);
           //setRouteInfo(message, destRealm, newDestHost);
           updateRoute(message, newDestHost);
-          logger.debug("Redirect message from host={}; to new-host={}, realm={} ", new Object[] { destHost, newDestHost,destRealm});
+          logger.debug("Redirect message from host={}; to new-host={}, realm={} ", new Object[] { destHost, newDestHost, destRealm});
           return true;
         }
       }
@@ -670,6 +700,7 @@ public class RouterImpl implements IRouter {
     return null;
   }
 
+  @Override
   public void start() {
     if (isStopped) {
       //redirectScheduler = concurrentFactory.getScheduledExecutorService(RedirectMessageTimer.name());
@@ -678,6 +709,7 @@ public class RouterImpl implements IRouter {
     }
   }
 
+  @Override
   public void stop() {
     isStopped = true;
     // if (redirectEntryHandler != null) {
@@ -698,10 +730,11 @@ public class RouterImpl implements IRouter {
     //}
   }
 
+  @Override
   public void destroy() {
     try {
       if (!isStopped) {
-        stop();        
+        stop();
       }
     }
     catch (Exception exc) {
@@ -740,34 +773,34 @@ public class RouterImpl implements IRouter {
   //            boolean matchedEntry = false;
   //            switch (e.getUsageType()) {
   //                case ALL_SESSION: // Usage type: ALL SESSION
-  //                	matchedEntry = sessionId != null && e.primaryKey != null &
-  //                            sessionId.equals(e.primaryKey);
-  //                    break;
+  //                  matchedEntry = sessionId != null && e.primaryKey != null &
+  //                  sessionId.equals(e.primaryKey);
+  //                  break;
   //                case ALL_REALM: // Usage type: ALL REALM
-  //                	matchedEntry = destRealm != null && e.primaryKey != null &
-  //                            destRealm.equals(e.primaryKey);
-  //                    break;
+  //                  matchedEntry = destRealm != null && e.primaryKey != null &
+  //                  destRealm.equals(e.primaryKey);
+  //                  break;
   //                case REALM_AND_APPLICATION: // Usage type: REALM AND APPLICATION
-  //                	matchedEntry = destRealm != null & appId != null & e.primaryKey != null & e.secondaryKey != null &
-  //                            destRealm.equals(e.primaryKey) & appId.equals(e.secondaryKey);
-  //                    break;
+  //                  matchedEntry = destRealm != null & appId != null & e.primaryKey != null & e.secondaryKey != null &
+  //                  destRealm.equals(e.primaryKey) & appId.equals(e.secondaryKey);
+  //                  break;
   //                case ALL_APPLICATION: // Usage type: ALL APPLICATION
-  //                	matchedEntry = appId != null & e.secondaryKey != null &
-  //                            appId.equals(e.secondaryKey);
-  //                    break;
+  //                  matchedEntry = appId != null & e.secondaryKey != null &
+  //                  appId.equals(e.secondaryKey);
+  //                  break;
   //                case ALL_HOST: // Usage type: ALL HOST
-  //                	matchedEntry = destHost != null & e.primaryKey != null &
-  //                            destHost.equals(e.primaryKey);
-  //                    break;
+  //                  matchedEntry = destHost != null & e.primaryKey != null &
+  //                  destHost.equals(e.primaryKey);
+  //                  break;
   //                case ALL_USER: // Usage type: ALL USER
-  //                	matchedEntry = userName != null & e.primaryKey != null &
-  //                            userName.equals(e.primaryKey);
-  //                    break;
+  //                  matchedEntry = userName != null & e.primaryKey != null &
+  //                  userName.equals(e.primaryKey);
+  //                  break;
   //            }
   //            // Update message redirect information
   //            if (matchedEntry) {
   //              String newDestHost  = e.getRedirectHost();
-  //              // FIXME: Alexandre: Should use newDestHost? 
+  //              // FIXME: Alexandre: Should use newDestHost?
   //              String newDestRealm = getRealmForPeer(destHost);
   //              setRouteInfo(message, destRealm, newDestHost);
   //              logger.debug("Redirect message from host={}; realm={} to new-host={}; new-realm={}",
@@ -840,6 +873,7 @@ public class RouterImpl implements IRouter {
       return createTime + liveTime;
     }
 
+    @Override
     public int hashCode() {
       int result = (primaryKey != null ? primaryKey.hashCode() : 0);
       result = 31 * result + (secondaryKey != null ? secondaryKey.hashCode() : 0);
@@ -849,6 +883,7 @@ public class RouterImpl implements IRouter {
       return result;
     }
 
+    @Override
     public boolean equals(Object other) {
       if (other == this) {
         return true;
@@ -898,6 +933,12 @@ public class RouterImpl implements IRouter {
       return realm;
     }
 
+    @Override
+    public int hashCode() {
+      return super.hashCode();
+    }
+
+    @Override
     public boolean equals(Object o) {
       if (this == o) {
         return true;
@@ -909,8 +950,9 @@ public class RouterImpl implements IRouter {
       return hopByHopId == that.hopByHopId;
     }
 
+    @Override
     public String toString() {
-      return "AnswerEntry{" + "createTime=" + createTime + ", hopByHopId=" + hopByHopId + '}';
+      return "AnswerEntry {" + "createTime=" + createTime + ", hopByHopId=" + hopByHopId + '}';
     }
   }
 }

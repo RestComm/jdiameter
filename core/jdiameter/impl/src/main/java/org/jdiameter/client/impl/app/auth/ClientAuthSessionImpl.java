@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and/or its affiliates, and individual
- * contributors as indicated by the @authors tag. All rights reserved.
- * See the copyright.txt in the distribution for a full listing
- * of individual contributors.
- * 
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License, v. 2.0.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.client.impl.app.auth;
 
@@ -75,7 +95,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Client Authorization session implementation
- * 
+ *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
@@ -97,12 +117,13 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
   //protected String destHost, destRealm;
   //protected ScheduledFuture sessionTimer;
   //protected Serializable timerId_ts;
-  protected static final String TIMER_NAME_TS="AUTH_TS";
+  protected static final String TIMER_NAME_TS = "AUTH_TS";
   protected IClientAuthSessionData sessionData;
 
   // Constructors -------------------------------------------------------------
 
-  public ClientAuthSessionImpl(IClientAuthSessionData sessionData,ISessionFactory sf,ClientAuthSessionListener lst, IAuthMessageFactory fct, StateChangeListener<AppSession> scListener,IClientAuthActionContext context,  boolean stateless) {
+  public ClientAuthSessionImpl(IClientAuthSessionData sessionData, ISessionFactory sf, ClientAuthSessionListener lst, IAuthMessageFactory fct,
+      StateChangeListener<AppSession> scListener, IClientAuthActionContext context,  boolean stateless) {
     super(sf, sessionData);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
@@ -121,19 +142,24 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
 
   // ClientAuthSession Implementation methods ---------------------------------
 
+  @Override
   public void sendAbortSessionAnswer(AbortSessionAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_SESSION_ABORT_ANSWER, answer);
   }
 
+  @Override
   public void sendAuthRequest(AppRequestEvent request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_AUTH_REQUEST, request);
   }
 
+  @Override
   public void sendReAuthAnswer(ReAuthAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_AUTH_ANSWER, answer);
   }
 
-  public void sendSessionTerminationRequest(SessionTermRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void sendSessionTerminationRequest(SessionTermRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_SESSION_TERMINATION_REQUEST, request);
   }
 
@@ -149,11 +175,11 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
       // Store last destination information
       AvpSet avps = event.getMessage().getAvps();
       Avp destRealmAvp = avps.getAvp(Avp.DESTINATION_REALM);
-      if(destRealmAvp != null) {
+      if (destRealmAvp != null) {
         sessionData.setDestinationRealm(destRealmAvp.getDiameterIdentity());
       }
       Avp destHostAvp = avps.getAvp(Avp.DESTINATION_HOST);
-      if(destHostAvp != null) {
+      if (destHostAvp != null) {
         sessionData.setDestinationHost(destHostAvp.getDiameterIdentity());
       }
     }
@@ -165,6 +191,7 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
     }
   }
 
+  @Override
   public boolean isStateless() {
     return this.sessionData.isStateless();
   }
@@ -178,11 +205,13 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
     }
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> eClass) {
     return eClass == ClientAuthSessionState.class ? (E) sessionData.getClientAuthSessionState() : null;
   }
 
+  @Override
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
     return sessionData.isStateless() ? handleEventForStatelessSession(event) : handleEventForStatefulSession(event);
   }
@@ -193,77 +222,77 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
       ClientAuthSessionState oldState = state;
 
       switch (state) {
-      case IDLE:
-        switch ((Event.Type) event.getType()) {
-        case SEND_AUTH_REQUEST:
-          // Current State: IDLE 
-          // Event: Client or Device Requests access
-          // Action: Send service specific auth req
-          // New State: PENDING
-          setState(PENDING);
-          break;
-        default:
-          logger.debug("Unknown event {}", event.getType());
-          break;
-        }
-        break;
-      case PENDING:
-        switch ((Event.Type) event.getType()) {
-        case RECEIVE_AUTH_ANSWER:
-          try {
-            // Current State: PENDING
-            // Event: Successful service-specific authorization answer received with Auth-Session-State set to NO_STATE_MAINTAINED
-            // Action: Grant Access
-            // New State: OPEN
-            setState(OPEN);
-            listener.doAuthAnswerEvent(this, null, (AppAnswerEvent) event.getData());
-          }
-          catch (Exception e) {
-            // Current State: PENDING
-            // Event: Failed service-specific authorization answer received
-            // Action: Cleanup
-            // New State: IDLE
-            setState(IDLE);
+        case IDLE:
+          switch ((Event.Type) event.getType()) {
+            case SEND_AUTH_REQUEST:
+              // Current State: IDLE
+              // Event: Client or Device Requests access
+              // Action: Send service specific auth req
+              // New State: PENDING
+              setState(PENDING);
+              break;
+            default:
+              logger.debug("Unknown event {}", event.getType());
+              break;
           }
           break;
-        default:
-          logger.debug("Unknown event {}", event.getType());
-          break;
-        }
-        break;
-      case OPEN:
-        switch ((Event.Type) event.getType()) {
-        case SEND_SESSION_ABORT_ANSWER:
-        case SEND_SESSION_TERMINATION_REQUEST:
-          // Current State: OPEN
-          // Event: Service to user is terminated
-          // Action: Disconnect User/Device
-          // New State: IDLE
-          setState(IDLE);
-          break;
-        case TIMEOUT_EXPIRES:
-          // Current State: OPEN
-          // Event: Session-Timeout Expires on Access Device
-          // Action: Send STR
-          // New State: DISCON
-          try {
-            if (context != null) {
-              context.accessTimeoutElapses(this);
-              Request str = createSessionTermRequest();
-              context.disconnectUserOrDev(this, str);
-              session.send(str, this);
-            }
-          }
-          finally {
-            // IDLE is the same as DISCON
-            setState(IDLE);
+        case PENDING:
+          switch ((Event.Type) event.getType()) {
+            case RECEIVE_AUTH_ANSWER:
+              try {
+                // Current State: PENDING
+                // Event: Successful service-specific authorization answer received with Auth-Session-State set to NO_STATE_MAINTAINED
+                // Action: Grant Access
+                // New State: OPEN
+                setState(OPEN);
+                listener.doAuthAnswerEvent(this, null, (AppAnswerEvent) event.getData());
+              }
+              catch (Exception e) {
+                // Current State: PENDING
+                // Event: Failed service-specific authorization answer received
+                // Action: Cleanup
+                // New State: IDLE
+                setState(IDLE);
+              }
+              break;
+            default:
+              logger.debug("Unknown event {}", event.getType());
+              break;
           }
           break;
-        default:
-          logger.debug("Unknown event {}", event.getType());
+        case OPEN:
+          switch ((Event.Type) event.getType()) {
+            case SEND_SESSION_ABORT_ANSWER:
+            case SEND_SESSION_TERMINATION_REQUEST:
+              // Current State: OPEN
+              // Event: Service to user is terminated
+              // Action: Disconnect User/Device
+              // New State: IDLE
+              setState(IDLE);
+              break;
+            case TIMEOUT_EXPIRES:
+              // Current State: OPEN
+              // Event: Session-Timeout Expires on Access Device
+              // Action: Send STR
+              // New State: DISCON
+              try {
+                if (context != null) {
+                  context.accessTimeoutElapses(this);
+                  Request str = createSessionTermRequest();
+                  context.disconnectUserOrDev(this, str);
+                  session.send(str, this);
+                }
+              }
+              finally {
+                // IDLE is the same as DISCON
+                setState(IDLE);
+              }
+              break;
+            default:
+              logger.debug("Unknown event {}", event.getType());
+              break;
+          }
           break;
-        }
-        break;
       }
 
       // post processing
@@ -302,169 +331,169 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
 
     try {
       switch (state) {
-      case IDLE: {
-        switch ((Event.Type) event.getType()) {
-        case SEND_AUTH_REQUEST:
-          // Current State: IDLE 
-          // Event: Client or Device Requests access
-          // Action: Send service specific auth req
-          // New State: PENDING
-          setState(PENDING);
-          break;
-        case RECEIVE_ABORT_SESSION_REQUEST:
-          // Current State: IDLE
-          // Event: ASR Received for unknown session
-          // Action: Send ASA with Result-Code = UNKNOWN_SESSION_ID
-          // New State: IDLE
-          // FIXME: Should send ASA with UNKNOWN_SESSION_ID instead ?
-          listener.doAbortSessionRequestEvent(this, (AbortSessionRequest) event.getData());
-          break;
-        default:
-          logger.debug("Unknown event {}", event.getType());
+        case IDLE: {
+          switch ((Event.Type) event.getType()) {
+            case SEND_AUTH_REQUEST:
+              // Current State: IDLE
+              // Event: Client or Device Requests access
+              // Action: Send service specific auth req
+              // New State: PENDING
+              setState(PENDING);
+              break;
+            case RECEIVE_ABORT_SESSION_REQUEST:
+              // Current State: IDLE
+              // Event: ASR Received for unknown session
+              // Action: Send ASA with Result-Code = UNKNOWN_SESSION_ID
+              // New State: IDLE
+              // FIXME: Should send ASA with UNKNOWN_SESSION_ID instead ?
+              listener.doAbortSessionRequestEvent(this, (AbortSessionRequest) event.getData());
+              break;
+            default:
+              logger.debug("Unknown event {}", event.getType());
+              break;
+          }
           break;
         }
-        break;
-      }
-      case PENDING: {
-        switch ((Event.Type) event.getType()) {
-        case RECEIVE_AUTH_ANSWER:
-          try {
-            // Current State: PENDING
-            // Event: Successful service-specific authorization answer received with default Auth-Session-State value
-            // Action: Grant Access
-            // New State: OPEN
-            setState(OPEN);
-            listener.doAuthAnswerEvent(this, null, (AppAnswerEvent) event.getData());
-          }
-          catch (InternalException e) {
-            // Current State: PENDING
-            // Event: Successful service-specific authorization answer received but service not provided
-            // Action: Send STR
-            // New State: DISCON
+        case PENDING: {
+          switch ((Event.Type) event.getType()) {
+            case RECEIVE_AUTH_ANSWER:
+              try {
+                // Current State: PENDING
+                // Event: Successful service-specific authorization answer received with default Auth-Session-State value
+                // Action: Grant Access
+                // New State: OPEN
+                setState(OPEN);
+                listener.doAuthAnswerEvent(this, null, (AppAnswerEvent) event.getData());
+              }
+              catch (InternalException e) {
+                // Current State: PENDING
+                // Event: Successful service-specific authorization answer received but service not provided
+                // Action: Send STR
+                // New State: DISCON
 
-            // Current State: PENDING
-            // Event: Error Processing successful service-specific authorization answer
-            // Action: Send STR
-            // New State: DISCON
-            setState(DISCONNECTED);
+                // Current State: PENDING
+                // Event: Error Processing successful service-specific authorization answer
+                // Action: Send STR
+                // New State: DISCON
+                setState(DISCONNECTED);
+              }
+              catch (Exception e) {
+                // Current State: PENDING
+                // Event: Failed service-specific authorization answer received
+                // Action: Cleanup
+                // New State: IDLE
+                setState(IDLE);
+              }
+              break;
+            default:
+              logger.debug("Unknown event {}", event.getType());
+              break;
           }
-          catch (Exception e) {
-            // Current State: PENDING
-            // Event: Failed service-specific authorization answer received
-            // Action: Cleanup
-            // New State: IDLE
-            setState(IDLE);
-          }
-          break;
-        default:
-          logger.debug("Unknown event {}", event.getType());
           break;
         }
-        break;
-      }
-      case OPEN: {
-        switch ((Event.Type) event.getType()) {
-        case SEND_AUTH_REQUEST:
-          // Current State: OPEN 
-          // Event: User or client device requests access to service
-          // Action: Send service specific auth req 
-          // New State: OPEN
-          break;
-        case RECEIVE_AUTH_ANSWER:
-          try {
-            // Current State: OPEN 
-            // Event: Successful service-specific authorization answer received
-            // Action: Provide Service
-            // New State: OPEN
-            listener.doAuthAnswerEvent(this, null, (AppAnswerEvent) event.getData());
-          }
-          catch (Exception e) {
-            // Current State: OPEN 
-            // Event: ASR Received, client will comply with request to end the session
-            // Action: Send ASA with Result-Code = SUCCESS, Send STR
-            // New State: DISCON
-            setState(DISCONNECTED);
-          }
-          break;
-        case RECEIVE_FAILED_AUTH_ANSWER:
-          // Current State: OPEN 
-          // Event: Failed Service-specific authorization answer received
-          // Action: Disconnect User/Device
-          // New State: IDLE
-          try {
-            if (context != null) {
-              Request str = createSessionTermRequest();
-              context.disconnectUserOrDev(this, str);
-              session.send(str, this);
-            }
-          }
-          finally {
-            setState(IDLE);
-            listener.doAuthAnswerEvent(this, null, (AppAnswerEvent) event.getData());
-          }
-          break;
-        case RECEIVE_ABORT_SESSION_REQUEST:
-          // Current State: OPEN 
-          // Event: ASR Received (client to take comply or not)  
-          // Action: TBD
-          // New State: TBD (comply = DISCON, !comply = OPEN)
-          listener.doAbortSessionRequestEvent(this, (AbortSessionRequestImpl) event.getData());
-          break;
-        case SEND_SESSION_TERMINATION_REQUEST:
-          setState(DISCONNECTED);
-          break;
-        case TIMEOUT_EXPIRES:
-          // Current State: OPEN 
-          // Event: Session-Timeout Expires on Access Device
-          // Action: Send STR
-          // New State: DISCON
+        case OPEN: {
+          switch ((Event.Type) event.getType()) {
+            case SEND_AUTH_REQUEST:
+              // Current State: OPEN
+              // Event: User or client device requests access to service
+              // Action: Send service specific auth req
+              // New State: OPEN
+              break;
+            case RECEIVE_AUTH_ANSWER:
+              try {
+                // Current State: OPEN
+                // Event: Successful service-specific authorization answer received
+                // Action: Provide Service
+                // New State: OPEN
+                listener.doAuthAnswerEvent(this, null, (AppAnswerEvent) event.getData());
+              }
+              catch (Exception e) {
+                // Current State: OPEN
+                // Event: ASR Received, client will comply with request to end the session
+                // Action: Send ASA with Result-Code = SUCCESS, Send STR
+                // New State: DISCON
+                setState(DISCONNECTED);
+              }
+              break;
+            case RECEIVE_FAILED_AUTH_ANSWER:
+              // Current State: OPEN
+              // Event: Failed Service-specific authorization answer received
+              // Action: Disconnect User/Device
+              // New State: IDLE
+              try {
+                if (context != null) {
+                  Request str = createSessionTermRequest();
+                  context.disconnectUserOrDev(this, str);
+                  session.send(str, this);
+                }
+              }
+              finally {
+                setState(IDLE);
+                listener.doAuthAnswerEvent(this, null, (AppAnswerEvent) event.getData());
+              }
+              break;
+            case RECEIVE_ABORT_SESSION_REQUEST:
+              // Current State: OPEN
+              // Event: ASR Received (client to take comply or not)
+              // Action: TBD
+              // New State: TBD (comply = DISCON, !comply = OPEN)
+              listener.doAbortSessionRequestEvent(this, (AbortSessionRequestImpl) event.getData());
+              break;
+            case SEND_SESSION_TERMINATION_REQUEST:
+              setState(DISCONNECTED);
+              break;
+            case TIMEOUT_EXPIRES:
+              // Current State: OPEN
+              // Event: Session-Timeout Expires on Access Device
+              // Action: Send STR
+              // New State: DISCON
 
-          // Current State: OPEN 
-          // Event: Authorization-Lifetime + Auth-Grace-Period expires on access device
-          // Action: Send STR
-          // New State: DISCON
-          try {
-            if (context != null) {
-              context.accessTimeoutElapses(this);
-              Request str = createSessionTermRequest();
-              context.disconnectUserOrDev(this, str);
-              session.send(str, this);
-            }
-          }
-          finally {
-            setState(DISCONNECTED);
+              // Current State: OPEN
+              // Event: Authorization-Lifetime + Auth-Grace-Period expires on access device
+              // Action: Send STR
+              // New State: DISCON
+              try {
+                if (context != null) {
+                  context.accessTimeoutElapses(this);
+                  Request str = createSessionTermRequest();
+                  context.disconnectUserOrDev(this, str);
+                  session.send(str, this);
+                }
+              }
+              finally {
+                setState(DISCONNECTED);
+              }
+              break;
           }
           break;
         }
-        break;
-      }
-      case DISCONNECTED: {
-        switch ((Event.Type) event.getType()) {
-        case RECEIVE_ABORT_SESSION_REQUEST:
-          // Current State: DISCON
-          // Event: ASR Received
-          // Action: Send ASA
-          // New State: DISCON
-          listener.doAbortSessionRequestEvent(this, (AbortSessionRequest) event.getData());
-          break;
-        case RECEIVE_SESSION_TERINATION_ANSWER:
-          // Current State: DISCON
-          // Event: STA Received
-          // Action: Disconnect User/Device
-          // New State: IDLE
-          listener.doSessionTerminationAnswerEvent(this, ((SessionTermAnswerImpl) event.getData()));
-          setState(IDLE);
-          break;
-        default:
-          logger.debug("Unknown event {}", event.getType());
+        case DISCONNECTED: {
+          switch ((Event.Type) event.getType()) {
+            case RECEIVE_ABORT_SESSION_REQUEST:
+              // Current State: DISCON
+              // Event: ASR Received
+              // Action: Send ASA
+              // New State: DISCON
+              listener.doAbortSessionRequestEvent(this, (AbortSessionRequest) event.getData());
+              break;
+            case RECEIVE_SESSION_TERINATION_ANSWER:
+              // Current State: DISCON
+              // Event: STA Received
+              // Action: Disconnect User/Device
+              // New State: IDLE
+              listener.doSessionTerminationAnswerEvent(this, ((SessionTermAnswerImpl) event.getData()));
+              setState(IDLE);
+              break;
+            default:
+              logger.debug("Unknown event {}", event.getType());
+              break;
+          }
           break;
         }
-        break;
-      }
-      default: {
-        logger.debug("Unknown state {}", state);
-        break;
-      }
+        default: {
+          logger.debug("Unknown state {}", state);
+          break;
+        }
       }
 
       // post processing
@@ -494,6 +523,7 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
     return true;
   }
 
+  @Override
   public void receivedSuccessMessage(Request request, Answer answer) {
     AnswerDelivery ad = new AnswerDelivery();
     ad.session = this;
@@ -502,6 +532,7 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
     super.scheduler.execute(ad);
   }
 
+  @Override
   public void timeoutExpired(Request request) {
     try {
       sendAndStateLock.lock();
@@ -516,6 +547,7 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
     }
   }
 
+  @Override
   public Answer processRequest(Request request) {
     RequestDelivery rd = new RequestDelivery();
     rd.session = this;
@@ -547,7 +579,7 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
     try {
       sendAndStateLock.lock();
       Serializable timerId = sessionData.getTsTimerId();
-      if(timerId != null) {
+      if (timerId != null) {
         super.timerFacility.cancel(timerId);
         sessionData.setTsTimerId(null);
       }
@@ -562,7 +594,7 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
    */
   @Override
   public void onTimer(String timerName) {
-    if(timerName.equals(TIMER_NAME_TS)) {
+    if (timerName.equals(TIMER_NAME_TS)) {
       try {
         sendAndStateLock.lock();
         sessionData.setTsTimerId(null);
@@ -621,19 +653,24 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (!super.equals(obj))
+    }
+    if (!super.equals(obj)) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     ClientAuthSessionImpl other = (ClientAuthSessionImpl) obj;
     if (sessionData == null) {
-      if (other.sessionData != null)
+      if (other.sessionData != null) {
         return false;
+      }
     }
-    else if (!sessionData.equals(other.sessionData))
+    else if (!sessionData.equals(other.sessionData)) {
       return false;
+    }
     return true;
   }
 
@@ -660,11 +697,12 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
     ClientAuthSession session;
     Request request;
 
+    @Override
     public void run() {
       try {
-        if (request.getCommandCode() == AbortSessionRequestImpl.code) {
+        if (request.getCommandCode() == AbortSessionRequest.code) {
           handleEvent(new Event(Event.Type.RECEIVE_ABORT_SESSION_REQUEST, createAbortSessionRequest(request)));
-        } else if (request.getCommandCode() == ReAuthRequestImpl.code) {
+        } else if (request.getCommandCode() == ReAuthRequest.code) {
           listener.doReAuthRequestEvent(session, createReAuthRequest(request));
         } else {
           listener.doOtherEvent(session, factory.createAuthRequest(request), null);
@@ -681,13 +719,14 @@ public class ClientAuthSessionImpl extends AppAuthSessionImpl implements ClientA
     Answer answer;
     Request request;
 
+    @Override
     public void run() {
       try {
         sendAndStateLock.lock();
         // FIXME: baranowb: this shouldn't be like that?
         if (answer.getCommandCode() == factory.getAuthMessageCommandCode()) {
           handleEvent(new Event(Event.Type.RECEIVE_AUTH_ANSWER, factory.createAuthAnswer(answer)));
-        } else if (answer.getCommandCode() == SessionTermAnswerImpl.code) {
+        } else if (answer.getCommandCode() == SessionTermAnswer.code) {
           handleEvent(new Event(Event.Type.RECEIVE_SESSION_TERINATION_ANSWER, createSessionTermAnswer(answer)));
         }
         else {

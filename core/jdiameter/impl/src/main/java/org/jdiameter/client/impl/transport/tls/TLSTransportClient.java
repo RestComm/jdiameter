@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2012, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.client.impl.transport.tls;
 
@@ -45,6 +65,7 @@ import javax.net.ssl.SSLSocketFactory;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.AvpSet;
+import org.jdiameter.api.Message;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.io.NotInitializedException;
 import org.jdiameter.client.api.parser.IMessageParser;
@@ -54,7 +75,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
@@ -105,7 +126,7 @@ public class TLSTransportClient {
   private boolean receivedInband;
   /**
    * Default constructor
-   * 
+   *
    * @param parenConnection
    *          connection created this transport
    */
@@ -220,7 +241,7 @@ public class TLSTransportClient {
     }
 
     //switch to wait for SSL handshake to workout.
-    if(!isExchangeAllowed()){
+    if (!isExchangeAllowed()) {
       //TODO: do more?
       return;
     }
@@ -295,11 +316,11 @@ public class TLSTransportClient {
     } while (messageReseived);
   }
 
-  private boolean isExchangeAllowed(){
+  private boolean isExchangeAllowed() {
     this.lock.lock();
-    try{
+    try {
       return !this.shaking;
-    }finally {
+    } finally {
       this.lock.unlock();
     }
   }
@@ -311,7 +332,8 @@ public class TLSTransportClient {
       if (resultAvp == null) {
         // bad message, ignore
         if (logger.isDebugEnabled()) {
-          logger.debug("Discarding message since SSL handshake has not been performed on [{}], dropped message [{}]. No result type avp.", socketDescription, message);
+          logger.debug("Discarding message since SSL handshake has not been performed on [{}], dropped message [{}]. No result type avp.",
+              socketDescription, message);
         }
         // TODO: anything else?
         return false;
@@ -321,7 +343,8 @@ public class TLSTransportClient {
       if (resultAvp == null) {
         // bad message, ignore
         if (logger.isDebugEnabled()) {
-          logger.debug("Discarding message since SSL handshake has not been performed on [{}], dropped message [{}]. No result avp.", socketDescription, message);
+          logger.debug("Discarding message since SSL handshake has not been performed on [{}], dropped message [{}]. No result avp.",
+              socketDescription, message);
         }
       }
     }
@@ -363,7 +386,7 @@ public class TLSTransportClient {
 
       IMessage message = this.parser.createMessage(messageBuffer);
       // check if
-      if(isExchangeAllowed()){
+      if (isExchangeAllowed()) {
         doTLSPreReceiveProcessing(message);
         getParent().onMessageReceived(message);
       }
@@ -379,21 +402,21 @@ public class TLSTransportClient {
 
   /**
    * @param message
-   * @throws AvpDataException 
-   * @throws NotInitializedException 
+   * @throws AvpDataException
+   * @throws NotInitializedException
    */
   private void doTLSPreReceiveProcessing(IMessage message) throws AvpDataException, NotInitializedException {
-    if(this.shaken){
+    if (this.shaken) {
       return;
     }
     if (this.client) {
-      // if(CEA && message.isSuccess && message.has(inband)){
+      // if (CEA && message.isSuccess && message.has(inband)) {
       // startTLS();
       // }
       if (message.isRequest()) {
         return;
       }
-      if (message.getCommandCode() == IMessage.CAPABILITIES_EXCHANGE_ANSWER && isSuccess(message)) {
+      if (message.getCommandCode() == Message.CAPABILITIES_EXCHANGE_ANSWER && isSuccess(message)) {
         AvpSet set = message.getAvps();
         Avp inbandAvp = set.getAvp(Avp.INBAND_SECURITY_ID);
         if (inbandAvp != null && inbandAvp.getUnsigned32() == 1) {
@@ -402,7 +425,7 @@ public class TLSTransportClient {
       }
 
     } else {
-      // if(CER && message.has(inband)){
+      // if (CER && message.has(inband)) {
       // this.receveidInband = true;
       // }
       if (!message.isRequest()) {
@@ -421,7 +444,7 @@ public class TLSTransportClient {
    * @param message
    */
   private void doTLSPreSendProcessing(IMessage message) {
-    if (message.getCommandCode() == IMessage.CAPABILITIES_EXCHANGE_REQUEST) {
+    if (message.getCommandCode() == Message.CAPABILITIES_EXCHANGE_REQUEST) {
       AvpSet set = message.getAvps();
       set.removeAvp(Avp.INBAND_SECURITY_ID);
       set.addAvp(Avp.INBAND_SECURITY_ID, 1);
@@ -430,16 +453,16 @@ public class TLSTransportClient {
 
   /**
    * @param message
-   * @throws AvpDataException 
-   * @throws NotInitializedException 
+   * @throws AvpDataException
+   * @throws NotInitializedException
    */
   private void doTLSPostSendProcessing(IMessage message) throws AvpDataException, NotInitializedException {
-    // if( !client && !shaken && CEA && message.isSuccess() && receivedInband){
+    // if ( !client && !shaken && CEA && message.isSuccess() && receivedInband) {
     // startTLS;
     // }
 
     if (this.shaken || this.client || this.plainSocket instanceof SSLSocket || message.isRequest()
-        || message.getCommandCode() != IMessage.CAPABILITIES_EXCHANGE_ANSWER) {
+        || message.getCommandCode() != Message.CAPABILITIES_EXCHANGE_ANSWER) {
       return;
     }
 
@@ -450,8 +473,8 @@ public class TLSTransportClient {
   }
 
   /**
-   * @throws NotInitializedException 
-   * 
+   * @throws NotInitializedException
+   *
    */
   private void startTLS() throws NotInitializedException {
     try {
@@ -502,7 +525,7 @@ public class TLSTransportClient {
         lock.lock();
         shaking = false;
         shaken = true;
-        ((SSLSocket)plainSocket).removeHandshakeCompletedListener(this);
+        ((SSLSocket) plainSocket).removeHandshakeCompletedListener(this);
         getParent().onConnected();
       }
       finally {

@@ -4,24 +4,24 @@
  * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
- * 
+ *
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License, v. 2.0.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
+ * v. 2.0 along with this distribution; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
 package org.mobicents.diameter.stack.functional.acc.base;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,9 +46,9 @@ import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Simple test for stateful accounting
- * 
+ *
  * 1 Servers (A), 1 Client (C)
- * 
+ *
  * Flow:
  * 1. Client C sends INITIAL ACR to Server A;
  * 2. Server A receives INITIAL, creates new session, processes it under session, answers it;
@@ -56,7 +56,7 @@ import org.junit.runners.Parameterized.Parameters;
  * 4. Server A receives INTERIM, processes it under session, answers it;
  * 5. Client C sends TERMINATE ACR to Server A;
  * 6. Server A receives TERMINATE, processes it under session, answers it;
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -143,16 +143,16 @@ public class AccSessionStatefulBasicFlowTest {
 
       serverNode1.sendInitial();
       waitForMessage();
-      
+
       clientNode.sendInterim();
       waitForMessage();
-      
+
       serverNode1.sendInterim();
       waitForMessage();
-      
+
       clientNode.sendTermination();
       waitForMessage();
-      
+
       serverNode1.sendTermination();
       waitForMessage();
     }

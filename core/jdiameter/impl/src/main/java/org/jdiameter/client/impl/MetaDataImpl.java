@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.client.impl;
 
@@ -76,7 +96,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Use stack extension point
- * 
+ *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
@@ -100,42 +120,46 @@ public class MetaDataImpl implements IMetaData {
   public MetaDataImpl(IContainer s, IStatisticManager statisticFactory) {
     this(s);
     this.peer = newLocalPeer(statisticFactory);
+
     IStatisticRecord heapMemory = statisticFactory.newCounterRecord(IStatisticRecord.Counters.HeapMemory,
         new IStatisticRecord.LongValueHolder() {
-      public long getValueAsLong() {
-        for (MemoryPoolMXBean bean : beans) {
-          MemoryType memoryType = bean.getType();
-          MemoryUsage memoryUsage = bean.getUsage();
-          if (memoryType == MemoryType.HEAP) {
-            return memoryUsage.getUsed();
+          @Override
+          public long getValueAsLong() {
+            for (MemoryPoolMXBean bean : beans) {
+              MemoryType memoryType = bean.getType();
+              MemoryUsage memoryUsage = bean.getUsage();
+              if (memoryType == MemoryType.HEAP) {
+                return memoryUsage.getUsed();
+              }
+            }
+            return 0;
           }
-        }
-        return 0;
-      }
 
-      public String getValueAsString() {
-        return String.valueOf(getValueAsLong());
-      }
-    }
-    );
+          @Override
+          public String getValueAsString() {
+            return String.valueOf(getValueAsLong());
+          }
+        });
+
     IStatisticRecord noHeapMemory = statisticFactory.newCounterRecord(IStatisticRecord.Counters.NoHeapMemory,
         new IStatisticRecord.LongValueHolder() {
-      public long getValueAsLong() {
-        for (MemoryPoolMXBean bean : beans) {
-          MemoryType memoryType = bean.getType();
-          MemoryUsage memoryUsage = bean.getUsage();
-          if (memoryType != MemoryType.HEAP) {
-            return memoryUsage.getUsed();
+          @Override
+          public long getValueAsLong() {
+            for (MemoryPoolMXBean bean : beans) {
+              MemoryType memoryType = bean.getType();
+              MemoryUsage memoryUsage = bean.getUsage();
+              if (memoryType != MemoryType.HEAP) {
+                return memoryUsage.getUsed();
+              }
+            }
+            return 0;
           }
-        }
-        return 0;
-      }
 
-      public String getValueAsString() {
-        return String.valueOf(getValueAsLong());
-      }
-    }
-    );
+          @Override
+          public String getValueAsString() {
+            return String.valueOf(getValueAsLong());
+          }
+        });
     peer.getStatistic().appendCounter(heapMemory, noHeapMemory);
   }
 
@@ -143,38 +167,47 @@ public class MetaDataImpl implements IMetaData {
     return new ClientLocalPeer(statisticFactory);
   }
 
+  @Override
   public Peer getLocalPeer() {
     return peer;
   }
 
+  @Override
   public int getMajorVersion() {
     return 2;
   }
 
+  @Override
   public int getMinorVersion() {
     return 1;
   }
 
+  @Override
   public StackType getStackType() {
     return StackType.TYPE_CLIENT;
   }
 
+  @Override
   public Configuration getConfiguration() {
     return stack.getConfiguration();
   }
 
+  @Override
   public void updateLocalHostStateId() {
     state = System.currentTimeMillis();
   }
 
+  @Override
   public long getLocalHostStateId() {
     return state;
   }
 
+  @Override
   public boolean isWrapperFor(Class<?> aClass) throws InternalException {
     return aClass == IMetaData.class;
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public <T> T unwrap(Class<T> aClass) throws InternalException {
     if (aClass == IMetaData.class) {
@@ -193,10 +226,12 @@ public class MetaDataImpl implements IMetaData {
       addresses = new InetAddress[0];
     }
 
+    @Override
     public void connect() throws IllegalDiameterStateException {
       throw new IllegalDiameterStateException("Illegal operation");
     }
 
+    @Override
     public void disconnect(int disconnectCause) throws IllegalDiameterStateException {
       throw new IllegalDiameterStateException("Illegal operation");
     }
@@ -207,6 +242,7 @@ public class MetaDataImpl implements IMetaData {
       createPeerStatistics();
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <E> E getState(Class<E> anEnum) {
       switch (stack.getState()) {
@@ -222,6 +258,7 @@ public class MetaDataImpl implements IMetaData {
       return (E) PeerState.DOWN;
     }
 
+    @Override
     public URI getUri() {
       try {
         return new URI(stack.getConfiguration().getStringValue(OwnDiameterURI.ordinal(), (String) OwnDiameterURI.defValue()));
@@ -234,30 +271,35 @@ public class MetaDataImpl implements IMetaData {
       }
     }
 
+    @Override
     public String getRealmName() {
       return stack.getConfiguration().getStringValue(OwnRealm.ordinal(), (String) OwnRealm.defValue());
     }
 
+    @Override
     public long getVendorId() {
       return stack.getConfiguration().getLongValue(OwnVendorID.ordinal(), (Long) OwnVendorID.defValue());
     }
 
+    @Override
     public String getProductName() {
       return stack.getConfiguration().getStringValue(OwnProductName.ordinal(), (String) OwnProductName.defValue());
     }
 
+    @Override
     public long getFirmware() {
       return stack.getConfiguration().getLongValue(OwnFirmwareRevision.ordinal(), -1L);
     }
 
+    @Override
     public Set<ApplicationId> getCommonApplications() {
-      if(logger.isDebugEnabled()) {
+      if (logger.isDebugEnabled()) {
         logger.debug("In getCommonApplications appIds size is [{}]", appIds.size());
       }
       if (appIds.isEmpty()) {
         Configuration[] apps = stack.getConfiguration().getChildren(ApplicationId.ordinal());
         if (apps != null) {
-          if(logger.isDebugEnabled()) {
+          if (logger.isDebugEnabled()) {
             logger.debug("Stack configuration has apps list size of  [{}]. Looping through them", apps.length);
           }
           for (Configuration a : apps) {
@@ -282,6 +324,7 @@ public class MetaDataImpl implements IMetaData {
       return appIds;
     }
 
+    @Override
     public InetAddress[] getIPAddresses() {
       if (addresses.length == 0) {
         String address = stack.getConfiguration().getStringValue(OwnIPAddress.ordinal(), null);
@@ -320,72 +363,90 @@ public class MetaDataImpl implements IMetaData {
       return addresses;
     }
 
+    @Override
     public IStatistic getStatistic() {
       return statistic;
     }
 
+    @Override
     public String toString() {
       return "Peer{" +
-      "\n\tUri=" + getUri() + "; RealmName=" + getRealmName() + "; VendorId=" + getVendorId() +
-      ";\n\tProductName=" + getProductName() + "; FirmWare=" + getFirmware() +
-      ";\n\tAppIds=" + getCommonApplications() +
-      ";\n\tIPAddresses=" + Arrays.asList(getIPAddresses()).toString() + ";" + "\n}";
+          "\n\tUri=" + getUri() + "; RealmName=" + getRealmName() + "; VendorId=" + getVendorId() +
+          ";\n\tProductName=" + getProductName() + "; FirmWare=" + getFirmware() +
+          ";\n\tAppIds=" + getCommonApplications() +
+          ";\n\tIPAddresses=" + Arrays.asList(getIPAddresses()).toString() + ";" + "\n}";
     }
 
+    @Override
     public int getRating() {
       return 0;
     }
 
+    @Override
     public void addPeerStateListener(PeerStateListener peerStateListener) {
     }
 
+    @Override
     public void removePeerStateListener(PeerStateListener peerStateListener) {
     }
 
+    @Override
     public long getHopByHopIdentifier() {
       return hopByHopId.incrementAndGet();
     }
 
+    @Override
     public void addMessage(IMessage message) {
     }
 
+    @Override
     public void remMessage(IMessage message) {
     }
 
+    @Override
     public IMessage[] remAllMessage() {
       return new IMessage[0];
     }
 
+    @Override
     public boolean handleMessage(EventTypes type, IMessage message, String key) throws TransportException, OverloadException, InternalException {
-      return false;  
+      return false;
     }
 
+    @Override
     public boolean sendMessage(IMessage message) throws TransportException, OverloadException {
       return false;
     }
 
+    @Override
     public boolean hasValidConnection() {
       return false;
     }
 
+    @Override
     public void setRealm(String realm) {
     }
 
+    @Override
     public void addStateChangeListener(StateChangeListener listener) {
     }
 
+    @Override
     public void remStateChangeListener(StateChangeListener listener) {
     }
 
+    @Override
     public void addConnectionListener(IConnectionListener listener) {
     }
 
+    @Override
     public void remConnectionListener(IConnectionListener listener) {
     }
 
     /* (non-Javadoc)
      * @see org.jdiameter.client.api.controller.IPeer#isConnected()
      */
+    @Override
     public boolean isConnected() {
       return true; // it's own peer
     }

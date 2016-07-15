@@ -12,7 +12,7 @@ case "`uname`" in
     Darwin*)
         darwin=true
         ;;
-        
+
     Linux)
         linux=true
         ;;
@@ -46,9 +46,9 @@ export TEST_CORE
 #Setup the JVM
 if [ "x$JAVA" = "x" ]; then
     if [ "x$JAVA_HOME" != "x" ]; then
-	JAVA="$JAVA_HOME/bin/java"
+        JAVA="$JAVA_HOME/bin/java"
     else
-	JAVA="java"
+        JAVA="java"
     fi
 fi
 
@@ -162,8 +162,8 @@ executeTest(){
 
 
       "$JAVA" $JAVA_OPTS \
-	-classpath "$RUN_CLASSPATH" \
-	org.mobicents.tests.diameter.CLIRunner $*
+        -classpath "$RUN_CLASSPATH" \
+        org.mobicents.tests.diameter.CLIRunner $*
 
 
 

@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.server.impl.app.acc;
 
@@ -50,14 +70,13 @@ import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.acc.IServerAccActionContext;
 import org.jdiameter.common.api.app.acc.ServerAccSessionState;
-import org.jdiameter.common.impl.app.acc.AccountRequestImpl;
 import org.jdiameter.common.impl.app.acc.AppAccSessionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Server Accounting session implementation
- * 
+ *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
@@ -77,20 +96,20 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
 
   // Constructors -------------------------------------------------------------
   public ServerAccSessionImpl(IServerAccSessionData sessionData, ISessionFactory sessionFactory,
-      ServerAccSessionListener serverSessionListener, 
-      IServerAccActionContext serverContextListener,StateChangeListener<AppSession> stLst,boolean stateless) {
+      ServerAccSessionListener serverSessionListener,
+      IServerAccActionContext serverContextListener, StateChangeListener<AppSession> stLst, boolean stateless) {
     // TODO Auto-generated constructor stub
-    this(sessionData,sessionFactory,serverSessionListener,serverContextListener,stLst);
+    this(sessionData, sessionFactory, serverSessionListener, serverContextListener, stLst);
 
     this.sessionData.setTsTimeout(0); // 0 == turn off
     this.sessionData.setStateless(stateless);
 
   }
 
-  public ServerAccSessionImpl(IServerAccSessionData sessionData, ISessionFactory sessionFactory, ServerAccSessionListener serverSessionListener, 
-      IServerAccActionContext serverContextListener,StateChangeListener<AppSession> stLst) {
+  public ServerAccSessionImpl(IServerAccSessionData sessionData, ISessionFactory sessionFactory, ServerAccSessionListener serverSessionListener,
+      IServerAccActionContext serverContextListener, StateChangeListener<AppSession> stLst) {
     // TODO Auto-generated constructor stub
-    super(sessionFactory,sessionData);
+    super(sessionFactory, sessionData);
     this.sessionData = sessionData;
     this.listener = serverSessionListener;
     this.context = serverContextListener;
@@ -98,11 +117,12 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
     super.addStateChangeNotification(stLst);
   }
 
+  @Override
   public void sendAccountAnswer(AccountAnswer accountAnswer) throws InternalException, IllegalStateException, RouteException, OverloadException {
     try {
       AvpSet avpSet = accountAnswer.getMessage().getAvps();
       Avp acctInterimIntervalAvp = avpSet.getAvp(Avp.ACCT_INTERIM_INTERVAL); //Unsigned32
-      if(acctInterimIntervalAvp != null) {
+      if (acctInterimIntervalAvp != null) {
         try {
           this.sessionData.setTsTimeout(acctInterimIntervalAvp.getUnsigned32());
         }
@@ -114,7 +134,7 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
       startTsTimer();
       session.send(accountAnswer.getMessage());
       /* TODO: Do we need to notify state change ? */
-      if(isStateless() && isValid()) {
+      if (isStateless() && isValid()) {
         session.release();
       }
     }
@@ -123,6 +143,7 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
     }
   }
 
+  @Override
   public boolean isStateless() {
     return sessionData.isStateless();
   }
@@ -137,6 +158,7 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
     }
   }
 
+  @Override
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
     return sessionData.isStateless() ? handleEventForStatelessMode(event) : handleEventForStatefulMode(event);
   }
@@ -147,73 +169,73 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
       //this will handle RTRs as well, no need to alter.
       ServerAccSessionState state = sessionData.getServerAccSessionState();
       switch (state) {
-      case IDLE: {
-        switch ((Event.Type) event.getType()) {
-        case RECEIVED_START_RECORD:
-          // Current State: IDLE
-          // Event: Accounting start request received, and successfully processed.
-          // Action: Send accounting start answer
-          // New State: IDLE
-          if (listener != null) {
-            try {
-              listener.doAccRequestEvent(this, (AccountRequest) event.getData());
-            }
-            catch (Exception e) {
-              logger.debug("Can not handle event", e);
-            }
+        case IDLE: {
+          switch ((Event.Type) event.getType()) {
+            case RECEIVED_START_RECORD:
+              // Current State: IDLE
+              // Event: Accounting start request received, and successfully processed.
+              // Action: Send accounting start answer
+              // New State: IDLE
+              if (listener != null) {
+                try {
+                  listener.doAccRequestEvent(this, (AccountRequest) event.getData());
+                }
+                catch (Exception e) {
+                  logger.debug("Can not handle event", e);
+                }
+              }
+              // TODO: This is unnecessary state change: setState(IDLE);
+              break;
+            case RECEIVED_EVENT_RECORD:
+              // Current State: IDLE
+              // Event: Accounting event request received, and successfully processed.
+              // Action: Send accounting event answer
+              // New State: IDLE
+              if (listener != null) {
+                try {
+                  listener.doAccRequestEvent(this, (AccountRequest) event.getData());
+                }
+                catch (Exception e) {
+                  logger.debug("Can not handle event", e);
+                }
+              }
+              // FIXME: it is required, so we know it ends up again in IDLE!
+              setState(IDLE);
+              break;
+            case RECEIVED_INTERIM_RECORD:
+              // Current State: IDLE
+              // Event: Interim record received, and successfully processed.
+              // Action: Send accounting interim answer
+              // New State: IDLE
+              if (listener != null) {
+                try {
+                  listener.doAccRequestEvent(this, (AccountRequest) event.getData());
+                }
+                catch (Exception e) {
+                  logger.debug("Can not handle event", e);
+                }
+              }
+              // TODO: This is unnecessary state change: setState(IDLE);
+              break;
+            case RECEIVED_STOP_RECORD:
+              // Current State: IDLE
+              // Event: Accounting stop request received, and successfully processed
+              // Action: Send accounting stop answer
+              // New State: IDLE
+              if (listener != null) {
+                try {
+                  listener.doAccRequestEvent(this, (AccountRequest) event.getData());
+                }
+                catch (Exception e) {
+                  logger.debug("Can not handle event", e);
+                }
+              }
+              // TODO: This is unnecessary state change: setState(IDLE);
+              break;
+            default:
+              throw new IllegalStateException("Current state " + state + " action " + event.getType());
           }
-          // TODO: This is unnecessary state change: setState(IDLE);
-          break;
-        case RECEIVED_EVENT_RECORD:
-          // Current State: IDLE
-          // Event: Accounting event request received, and successfully processed.
-          // Action: Send accounting event answer
-          // New State: IDLE
-          if (listener != null) {
-            try {
-              listener.doAccRequestEvent(this, (AccountRequest) event.getData());
-            }
-            catch (Exception e) {
-              logger.debug("Can not handle event", e);
-            }
-          }
-          // FIXME: it is required, so we know it ends up again in IDLE!
-          setState(IDLE);
-          break;
-        case RECEIVED_INTERIM_RECORD:
-          // Current State: IDLE
-          // Event: Interim record received, and successfully processed.
-          // Action: Send accounting interim answer
-          // New State: IDLE
-          if (listener != null) {
-            try {
-              listener.doAccRequestEvent(this, (AccountRequest) event.getData());
-            }
-            catch (Exception e) {
-              logger.debug("Can not handle event", e);
-            }
-          }
-          // TODO: This is unnecessary state change: setState(IDLE);
-          break;
-        case RECEIVED_STOP_RECORD:
-          // Current State: IDLE
-          // Event: Accounting stop request received, and successfully processed
-          // Action: Send accounting stop answer
-          // New State: IDLE
-          if (listener != null) {
-            try {
-              listener.doAccRequestEvent(this, (AccountRequest) event.getData());
-            }
-            catch (Exception e) {
-              logger.debug("Can not handle event", e);
-            }
-          }
-          // TODO: This is unnecessary state change: setState(IDLE);
-          break;
-        default:
-          throw new IllegalStateException("Current state " + state + " action " + event.getType());
         }
-      }
       }
     }
     catch (Exception e) {
@@ -252,96 +274,95 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
         AccountRequest request =  (AccountRequest) event.getData();
         AvpSet avpSet = request.getMessage().getAvps();
         Avp acctInterimIntervalAvp = avpSet.getAvp(85);//Unsigned32
-        if(acctInterimIntervalAvp!=null)
-        {
+        if (acctInterimIntervalAvp != null) {
           this.sessionData.setTsTimeout(acctInterimIntervalAvp.getUnsigned32());
         }
         switch (state) {
-        case IDLE: {
-          switch ((Event.Type) event.getType()) {
-          case RECEIVED_START_RECORD:
-            // Current State: IDLE
-            // Event: Accounting start request received, and successfully processed.
-            // Action: Send accounting start answer, Start Ts
-            // New State: OPEN
-        	  setState(OPEN);
-            if (listener != null) {
-              try {
-                listener.doAccRequestEvent(this, (AccountRequest) event.getData());
-                cancelTsTimer();
-                startTsTimer();
-                if (context != null) {
-                  context.sessionTimerStarted(this, null);
+          case IDLE: {
+            switch ((Event.Type) event.getType()) {
+              case RECEIVED_START_RECORD:
+                // Current State: IDLE
+                // Event: Accounting start request received, and successfully processed.
+                // Action: Send accounting start answer, Start Ts
+                // New State: OPEN
+                setState(OPEN);
+                if (listener != null) {
+                  try {
+                    listener.doAccRequestEvent(this, (AccountRequest) event.getData());
+                    cancelTsTimer();
+                    startTsTimer();
+                    if (context != null) {
+                      context.sessionTimerStarted(this, null);
+                    }
+                  }
+                  catch (Exception e) {
+                    logger.debug("Can not handle event", e);
+                    setState(IDLE);
+                  }
                 }
-              }
-              catch (Exception e) {
-                logger.debug("Can not handle event", e);
-                setState(IDLE);
-              }
-            }
-            break;
-          case RECEIVED_EVENT_RECORD:
-            // Current State: IDLE
-            // Event: Accounting event request received, and
-            // successfully processed.
-            // Action: Send accounting event answer
-            // New State: IDLE
-            if (listener != null) {
-              try {
-                listener.doAccRequestEvent(this, (AccountRequest) event.getData());
-              }
-              catch (Exception e) {
-                logger.debug("Can not handle event", e);
-              }
+                break;
+              case RECEIVED_EVENT_RECORD:
+                // Current State: IDLE
+                // Event: Accounting event request received, and
+                // successfully processed.
+                // Action: Send accounting event answer
+                // New State: IDLE
+                if (listener != null) {
+                  try {
+                    listener.doAccRequestEvent(this, (AccountRequest) event.getData());
+                  }
+                  catch (Exception e) {
+                    logger.debug("Can not handle event", e);
+                  }
+                }
+                break;
             }
             break;
           }
-          break;
-        }
-        case OPEN: {
-          switch ((Event.Type) event.getType()) {
-          case RECEIVED_INTERIM_RECORD:
-            // Current State: OPEN
-            // Event: Interim record received, and successfully
-            // processed.
-            // Action: Send accounting interim answer, Restart Ts
-            // New State: OPEN
-            try {
-              listener.doAccRequestEvent(this, (AccountRequest) event.getData());
-              cancelTsTimer();
-              startTsTimer();
-              if (context != null) {
-                context.sessionTimerStarted(this, null);
-              }
-            }
-            catch (Exception e) {
-              logger.debug("Can not handle event", e);
-              setState(IDLE);
-            }
-            break;
-          case RECEIVED_STOP_RECORD:
-            // Current State: OPEN
-            // Event: Accounting stop request received, and
-            // successfully
-            // processed
-            // Action: Send accounting stop answer, Stop Ts
-            // New State: IDLE
-            try {
-              setState(IDLE);
-              cancelTsTimer();
-              listener.doAccRequestEvent(this, (AccountRequest) event.getData());
-              if (context != null) {
-                context.sessionTimerCanceled(this, null);
-              }
-            }
-            catch (Exception e) {
-              logger.debug("Can not handle event", e);
-              setState(IDLE);
+          case OPEN: {
+            switch ((Event.Type) event.getType()) {
+              case RECEIVED_INTERIM_RECORD:
+                // Current State: OPEN
+                // Event: Interim record received, and successfully
+                // processed.
+                // Action: Send accounting interim answer, Restart Ts
+                // New State: OPEN
+                try {
+                  listener.doAccRequestEvent(this, (AccountRequest) event.getData());
+                  cancelTsTimer();
+                  startTsTimer();
+                  if (context != null) {
+                    context.sessionTimerStarted(this, null);
+                  }
+                }
+                catch (Exception e) {
+                  logger.debug("Can not handle event", e);
+                  setState(IDLE);
+                }
+                break;
+              case RECEIVED_STOP_RECORD:
+                // Current State: OPEN
+                // Event: Accounting stop request received, and
+                // successfully
+                // processed
+                // Action: Send accounting stop answer, Stop Ts
+                // New State: IDLE
+                try {
+                  setState(IDLE);
+                  cancelTsTimer();
+                  listener.doAccRequestEvent(this, (AccountRequest) event.getData());
+                  if (context != null) {
+                    context.sessionTimerCanceled(this, null);
+                  }
+                }
+                catch (Exception e) {
+                  logger.debug("Can not handle event", e);
+                  setState(IDLE);
+                }
+                break;
             }
             break;
           }
-          break;
-        }
         }
       }
     }
@@ -354,9 +375,9 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
 
   private void startTsTimer() {
 
-    try{
+    try {
       sendAndStateLock.lock();
-      if(sessionData.getTsTimeout() > 0) {
+      if (sessionData.getTsTimeout() > 0) {
         Serializable tsTid = super.timerFacility.schedule(sessionData.getSessionId(), TIMER_NAME_TS, sessionData.getTsTimeout());
         sessionData.setTsTimerId(tsTid);
       }
@@ -368,10 +389,10 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
   }
 
   private void cancelTsTimer() {
-    try{
+    try {
       sendAndStateLock.lock();
       Serializable tsTid = sessionData.getTsTimerId();
-      if(tsTid != null) {
+      if (tsTid != null) {
         super.timerFacility.cancel(tsTid);
         sessionData.setTsTimerId(null);
       }
@@ -386,7 +407,7 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
    */
   @Override
   public void onTimer(String timerName) {
-    if(timerName.equals(TIMER_NAME_TS)) {
+    if (timerName.equals(TIMER_NAME_TS)) {
       if (context != null) {
         try {
           context.sessionTimeoutElapses(ServerAccSessionImpl.this);
@@ -430,13 +451,15 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
     return answer;
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> eClass) {
     return eClass == ServerAccSessionState.class ? (E) sessionData.getServerAccSessionState() : null;
   }
 
-  public Answer processRequest(Request request) {        
-    if (request.getCommandCode() == AccountRequestImpl.code) {
+  @Override
+  public Answer processRequest(Request request) {
+    if (request.getCommandCode() == AccountRequest.code) {
       try {
         sendAndStateLock.lock();
         handleEvent(new Event(createAccountRequest(request)));
@@ -450,7 +473,7 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
     }
     else {
       try {
-        listener.doOtherEvent(this, createAccountRequest(request), null); 
+        listener.doOtherEvent(this, createAccountRequest(request), null);
       }
       catch (Exception e) {
         logger.debug("Can not handle event", e);
@@ -459,8 +482,9 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
     return null;
   }
 
+  @Override
   public void receivedSuccessMessage(Request request, Answer answer) {
-    if(request.getCommandCode() == AccountRequestImpl.code) {
+    if (request.getCommandCode() == AccountRequest.code) {
       try {
         sendAndStateLock.lock();
         handleEvent(new Event(createAccountRequest(request)));
@@ -489,8 +513,9 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
     }
   }
 
+  @Override
   public void timeoutExpired(Request request) {
-    // FIXME: alexandre: We don't do anything here... are we even getting this on server?      
+    // FIXME: alexandre: We don't do anything here... are we even getting this on server?
   }
 
   /* (non-Javadoc)
@@ -500,7 +525,7 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
   public boolean isReplicable() {
     return true;
   }
-  
+
   @Override
   public void release() {
     if (isValid()) {

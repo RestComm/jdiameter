@@ -43,7 +43,7 @@ import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.server.impl.StackImpl;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -84,6 +84,7 @@ public abstract class StackConnectMultiBaseTest {
       Network network = server.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
@@ -98,6 +99,7 @@ public abstract class StackConnectMultiBaseTest {
       network = client1.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
@@ -117,6 +119,7 @@ public abstract class StackConnectMultiBaseTest {
       network = client2.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }

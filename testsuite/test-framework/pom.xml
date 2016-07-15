@@ -1,100 +1,100 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.mobicents.diameter.testsuite</groupId>
-		<artifactId>testsuite-parent</artifactId>
-		<version>1.7.0-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
-	</parent>
+  <parent>
+    <groupId>org.mobicents.diameter.testsuite</groupId>
+    <artifactId>testsuite-parent</artifactId>
+    <version>1.7.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
 
-	<artifactId>testsuite-test-framework</artifactId>
+  <artifactId>testsuite-test-framework</artifactId>
 
-	<name>Restcomm :: Diameter Testsuite :: ${project.artifactId}</name>
+  <name>Restcomm :: Diameter Testsuite :: ${project.artifactId}</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.mobicents.diameter</groupId>
-			<artifactId>restcomm-diameter-mux-jar</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mobicents.diameter</groupId>
-			<artifactId>jdiameter-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.mobicents.diameter</groupId>
-			<artifactId>jdiameter-impl</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mobicents.diameter</groupId>
-			<artifactId>jdiameter-ha-impl</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<artifactId>picocontainer</artifactId>
-			<groupId>picocontainer</groupId>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>urbanophile</groupId>
-			<artifactId>java-getopt</artifactId>
-		</dependency>
-	</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>org.mobicents.diameter</groupId>
+      <artifactId>restcomm-diameter-mux-jar</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mobicents.diameter</groupId>
+      <artifactId>jdiameter-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mobicents.diameter</groupId>
+      <artifactId>jdiameter-impl</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mobicents.diameter</groupId>
+      <artifactId>jdiameter-ha-impl</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <artifactId>picocontainer</artifactId>
+      <groupId>picocontainer</groupId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>urbanophile</groupId>
+      <artifactId>java-getopt</artifactId>
+    </dependency>
+  </dependencies>
 
-	<profiles>
-		<profile>
-			<id>default</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<properties>
-				<maven.test.skip>true</maven.test.skip>
-			</properties>
-		</profile>
+  <profiles>
+    <profile>
+      <id>default</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <maven.test.skip>true</maven.test.skip>
+      </properties>
+    </profile>
 
-		<profile>
-			<id>runtests</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
+    <profile>
+      <id>runtests</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
 
-			<properties>
-				<maven.test.skip>false</maven.test.skip>
-			</properties>
+      <properties>
+        <maven.test.skip>false</maven.test.skip>
+      </properties>
 
-			<build>
-				<finalName>diameter-${project.artifactId}-${project.version}</finalName>
+      <build>
+        <finalName>diameter-${project.artifactId}-${project.version}</finalName>
 
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<!-- Force JUnit by making TestNG invalid.. -->
-							<testNGArtifactName>none:none</testNGArtifactName>
-							<forkMode>pertest</forkMode>
-							<excludes>
-								<exclude>**/*$*</exclude>
-								<exclude>**/TestingFramework.java</exclude>
-								<exclude>**/TestingFrameworkValidator.java</exclude>
-							</excludes>
-						</configuration>
-					</plugin>
-				</plugins>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <!-- Force JUnit by making TestNG invalid.. -->
+              <testNGArtifactName>none:none</testNGArtifactName>
+              <forkMode>pertest</forkMode>
+              <excludes>
+                <exclude>**/*$*</exclude>
+                <exclude>**/TestingFramework.java</exclude>
+                <exclude>**/TestingFrameworkValidator.java</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+        </plugins>
 
-				<resources>
-					<resource>
-						<directory>src/test/resources</directory>
-					</resource>
-				</resources>
-			</build>
+        <resources>
+          <resource>
+            <directory>src/test/resources</directory>
+          </resource>
+        </resources>
+      </build>
 
-		</profile>
-	</profiles>
+    </profile>
+  </profiles>
 
 </project>

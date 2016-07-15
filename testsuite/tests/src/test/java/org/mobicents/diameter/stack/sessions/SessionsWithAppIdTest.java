@@ -24,8 +24,6 @@ package org.mobicents.diameter.stack.sessions;
 
 import java.io.InputStream;
 
-import junit.framework.Assert;
-
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.SessionFactory;
@@ -61,6 +59,7 @@ import org.jdiameter.common.impl.app.ro.RoSessionFactoryImpl;
 import org.jdiameter.common.impl.app.s13.S13SessionFactoryImpl;
 import org.jdiameter.common.impl.app.sh.ShSessionFactoryImpl;
 import org.jdiameter.server.impl.StackImpl;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**

@@ -1,62 +1,62 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.mobicents.diameter</groupId>
-		<artifactId>diameter-core-parent</artifactId>
-		<version>1.7.0-SNAPSHOT</version>
-	</parent>
+  <parent>
+    <groupId>org.mobicents.diameter</groupId>
+    <artifactId>diameter-core-parent</artifactId>
+    <version>1.7.0-SNAPSHOT</version>
+  </parent>
 
-	<artifactId>diameter-core-docs-parent</artifactId>
+  <artifactId>diameter-core-docs-parent</artifactId>
 
-	<name>Restcomm :: Diameter Documentation :: ${pom.artifactId}</name>
+  <name>Restcomm :: Diameter Documentation :: ${pom.artifactId}</name>
 
-	<packaging>pom</packaging>
+  <packaging>pom</packaging>
 
-	<properties>
-		<docs.bookid>RestcommDiameter</docs.bookid>
-		<docs.dirname>diameter/core</docs.dirname>
-		<docs.jdiameter.dirname>jdiameter</docs.jdiameter.dirname>
-		<docs.mux.dirname>mux</docs.mux.dirname>
-	</properties>
+  <properties>
+    <docs.bookid>RestcommDiameter</docs.bookid>
+    <docs.dirname>diameter/core</docs.dirname>
+    <docs.jdiameter.dirname>jdiameter</docs.jdiameter.dirname>
+    <docs.mux.dirname>mux</docs.mux.dirname>
+  </properties>
 
-	<modules>
-		<module>sources-asciidoc</module>
-	</modules>
+  <modules>
+    <module>sources-asciidoc</module>
+  </modules>
 
-	<profiles>
-		<!--profile>
-			<id>restcomm</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<modules>
-				<module>sources-restcomm</module>
-				<module>jdocbook-restcomm</module>
-			</modules>
-		</profile>
+  <profiles>
+    <!--profile>
+      <id>restcomm</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>sources-restcomm</module>
+        <module>jdocbook-restcomm</module>
+      </modules>
+    </profile>
 
-		<profile>
-			<id>maven-release</id>
-			<modules>
-				<module>sources-restcomm</module>
-				<module>jdocbook-restcomm</module>
-			</modules>
-		</profile-->
-	</profiles>
+    <profile>
+      <id>maven-release</id>
+      <modules>
+        <module>sources-restcomm</module>
+        <module>jdocbook-restcomm</module>
+      </modules>
+    </profile-->
+  </profiles>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-				<configuration>
-					<autoVersionSubmodules>true</autoVersionSubmodules>
-					<resume>false</resume>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <resume>false</resume>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

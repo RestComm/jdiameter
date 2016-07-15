@@ -1,26 +1,52 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.server.impl.fsm;
+
+import static org.jdiameter.client.impl.fsm.FsmState.DOWN;
+import static org.jdiameter.client.impl.fsm.FsmState.INITIAL;
+import static org.jdiameter.client.impl.fsm.FsmState.OKAY;
+import static org.jdiameter.client.impl.fsm.FsmState.STOPPING;
+import static org.jdiameter.client.impl.fsm.FsmState.SUSPECT;
 
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
@@ -32,9 +58,7 @@ import org.jdiameter.api.ResultCode;
 import org.jdiameter.api.app.State;
 import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.client.api.IMessage;
-
 import org.jdiameter.client.api.fsm.IContext;
-import static org.jdiameter.client.impl.fsm.FsmState.*;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.statistic.IStatisticManager;
 import org.jdiameter.server.api.IStateMachine;
@@ -42,7 +66,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -54,6 +78,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
     super(context, concurrentFactory, config, statisticFactory);
   }
 
+  @Override
   protected void loadTimeOuts(Configuration config) {
     super.loadTimeOuts(config);
     if (config instanceof MutableConfiguration) {
@@ -61,22 +86,25 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
     }
   }
 
+  @Override
   public boolean elementChanged(int i, Object data) {
     Configuration newConfig = (Configuration) data;
     super.loadTimeOuts(newConfig);
     return true;
   }
 
+  @Override
   protected State[] getStates() {
     if (states == null) {
       states = new State[] {
-          new MyState() // OKEY
-          {
+          new MyState() { // OKEY
+            @Override
             public void entryAction() { // todo send buffered messages
               setInActiveTimer();
               watchdogSent = false;
             }
 
+            @Override
             public boolean processEvent(StateEvent event) {
               switch (type(event)) {
                 case DISCONNECT_EVENT:
@@ -100,8 +128,8 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                   }
                   break;
                 case STOP_EVENT:
-                  try { 
-                    if(event.getData() == null) {
+                  try {
+                    if (event.getData() == null) {
                       context.sendDprMessage(DisconnectCause.BUSY);
                     }
                     else {
@@ -152,9 +180,9 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                   try {
                     Avp discCause = message.getAvps().getAvp(Avp.DISCONNECT_CAUSE);
                     boolean willReconnect = (discCause != null) ? (discCause.getInteger32() == DisconnectCause.REBOOTING) : false;
-                    if(willReconnect) {
+                    if (willReconnect) {
                       doDisconnect();
-                      doEndConnection();	
+                      doEndConnection();
                     }
                     else {
                       doDisconnect();
@@ -200,8 +228,8 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
               return true;
             }
           },
-          new MyState() // SUSPECT
-          {
+          new MyState() { // SUSPECT
+            @Override
             public boolean processEvent(StateEvent event) {
               switch (type(event)) {
                 case DISCONNECT_EVENT:
@@ -213,7 +241,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                   break;
                 case STOP_EVENT:
                   try {
-                    if(event.getData() == null) {
+                    if (event.getData() == null) {
                       context.sendDprMessage(DisconnectCause.REBOOTING);
                     }
                     else {
@@ -245,18 +273,17 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                   }
                   IMessage message = (IMessage) event.getData();
                   try {
-                    if(message.getAvps().getAvp(Avp.DISCONNECT_CAUSE)!=null && message.getAvps().getAvp(Avp.DISCONNECT_CAUSE).getInteger32()==DisconnectCause.REBOOTING)
-                    {
+                    if (message.getAvps().getAvp(Avp.DISCONNECT_CAUSE) != null &&
+                        message.getAvps().getAvp(Avp.DISCONNECT_CAUSE).getInteger32() == DisconnectCause.REBOOTING) {
                       doDisconnect();
-                      doEndConnection();	
+                      doEndConnection();
                     }
-                    else
-                    {
+                    else {
                       doDisconnect();
                       switchToNextState(DOWN);
                     }
                   } catch (AvpDataException e1) {
-                    logger.warn("Disconnect cause is bad.",e1);
+                    logger.warn("Disconnect cause is bad.", e1);
                     doDisconnect();
                     switchToNextState(DOWN);
                   }
@@ -264,7 +291,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 case DWR_EVENT:
                   try {
                     int code = context.processDwrMessage((IMessage) event.getData());
-                    context.sendDwaMessage(message(event),code, null);
+                    context.sendDwaMessage(message(event), code, null);
                     switchToNextState(OKAY);
                   }
                   catch (Throwable e) {
@@ -287,27 +314,28 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
               return true;
             }
           },
-          new MyState() // DOWN
-          {
+          new MyState() { // DOWN
+            @Override
             public void entryAction() {
               setTimer(0);
               //FIXME: baranowb: removed this, cause this breaks peers as
               //       it seems, if peer is not removed, it will linger
               //       without any way to process messages
-              // if(context.isRestoreConnection()) { 
+              // if (context.isRestoreConnection()) {
               //PCB added FSM multithread
               mustRun = false;
               // }
               context.removeStatistics();
             }
 
+            @Override
             public boolean processEvent(StateEvent event) {
               switch (type(event)) {
                 case START_EVENT:
                   try {
                     context.createStatistics();
                     if (!context.isConnected()) {
-                      context.connect();                              
+                      context.connect();
                     }
                     context.sendCerMessage();
                     setTimer(CEA_TIMEOUT);
@@ -318,7 +346,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                     doEndConnection();
                   }
                   break;
-                case CER_EVENT: 
+                case CER_EVENT:
                   context.createStatistics();
                   int resultCode = context.processCerMessage(key(event), message(event));
                   if (resultCode == ResultCode.SUCCESS) {
@@ -347,19 +375,19 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                   // todo buffering
                   throw new IllegalStateException("Connection is down");
                 case STOP_EVENT:
-                case TIMEOUT_EVENT:    
+                case TIMEOUT_EVENT:
                 case DISCONNECT_EVENT:
                   // those are ~legal, ie. DISCONNECT_EVENT is sent back from connection
                   break;
                 default:
-                  logger.debug("Unknown event type {} in state {}", type(event), state);                          
+                  logger.debug("Unknown event type {} in state {}", type(event), state);
                   return false;
               }
               return true;
             }
           },
-          new MyState() // REOPEN
-          {
+          new MyState() { // REOPEN
+            @Override
             public boolean processEvent(StateEvent event) {
               switch (type(event)) {
                 case CONNECT_EVENT:
@@ -374,7 +402,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                   }
                   break;
                 case TIMEOUT_EVENT:
-                  try {                              
+                  try {
                     context.connect();
                   }
                   catch (Exception e) {
@@ -393,18 +421,19 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                   // todo buffering
                   throw new IllegalStateException("Connection is down");
                 default:
-                  logger.debug("Unknown event type {} in state {}", type(event), state);                          
+                  logger.debug("Unknown event type {} in state {}", type(event), state);
                   return false;
               }
               return true;
             }
           },
-          new MyState() // INITIAL
-          {
+          new MyState() { // INITIAL
+            @Override
             public void entryAction() {
               setTimer(CEA_TIMEOUT);
             }
 
+            @Override
             public boolean processEvent(StateEvent event) {
               switch (type(event)) {
                 case DISCONNECT_EVENT:
@@ -452,14 +481,14 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                   // todo buffering
                   throw new IllegalStateException("Connection is down");
                 default:
-                  logger.debug("Unknown event type {} in state {}", type(event), state);                          
+                  logger.debug("Unknown event type {} in state {}", type(event), state);
                   return false;
               }
               return true;
             }
           },
-          new MyState() // STOPPING
-          {
+          new MyState() { // STOPPING
+            @Override
             public boolean processEvent(StateEvent event) {
               switch (type(event)) {
                 case TIMEOUT_EVENT:
@@ -475,7 +504,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 case DISCONNECT_EVENT:
                   break;
                 default:
-                  logger.debug("Unknown event type {} in state {}", type(event), state);                          
+                  logger.debug("Unknown event type {} in state {}", type(event), state);
                   return false;
               }
               return true;

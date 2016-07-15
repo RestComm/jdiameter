@@ -1,45 +1,80 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.server.impl.helpers;
 
-import org.jdiameter.api.ConfigurationListener;
-import org.jdiameter.api.MutableConfiguration;
-import org.jdiameter.client.impl.helpers.ExtensionPoint;
-
 import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalAgentConfiguration;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalAgentProxy;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalAgentRedirect;
 import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalConnectionClass;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalElementParser;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalMessageParser;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalMetaData;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalPeerController;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalPeerFsmFactory;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalRealmController;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalRouterEngine;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalSessionDatasource;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalSessionFactory;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalStatisticFactory;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalTimerFacility;
 import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalTransportFactory;
 import static org.jdiameter.client.impl.helpers.Parameters.ExtensionName;
-import static org.jdiameter.server.impl.helpers.ExtensionPoint.*;
-import static org.jdiameter.server.impl.helpers.Parameters.Extensions;
+import static org.jdiameter.client.impl.helpers.Parameters.Extensions;
+import static org.jdiameter.server.impl.helpers.ExtensionPoint.InternalNetWork;
+import static org.jdiameter.server.impl.helpers.ExtensionPoint.InternalNetworkGuard;
+import static org.jdiameter.server.impl.helpers.ExtensionPoint.InternalOverloadManager;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.jdiameter.api.ConfigurationListener;
+import org.jdiameter.api.MutableConfiguration;
+import org.jdiameter.client.impl.helpers.ExtensionPoint;
+
 /**
  * This class allow create configuration class for stack
- * 
+ *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
@@ -86,11 +121,12 @@ public class EmptyConfiguration extends org.jdiameter.client.impl.helpers.EmptyC
           add(ExtensionName, ExtensionPoint.ControllerLayer.name()),
           getInstance().  // TransportLayer extension point
           add(ExtensionName, ExtensionPoint.TransportLayer.name())
-      );
+          );
     }
   }
   //
 
+  @Override
   public void setByteValue(int key, byte value) {
     List<ConfigurationListener> list = listeners.get(key);
     if (list != null)  {
@@ -107,6 +143,7 @@ public class EmptyConfiguration extends org.jdiameter.client.impl.helpers.EmptyC
     }
   }
 
+  @Override
   public void setIntValue(int key, int value) {
     List<ConfigurationListener> list = listeners.get(key);
     if (list != null)  {
@@ -123,6 +160,7 @@ public class EmptyConfiguration extends org.jdiameter.client.impl.helpers.EmptyC
     }
   }
 
+  @Override
   public void setLongValue(int key, long value) {
     List<ConfigurationListener> list = listeners.get(key);
     if (list != null)  {
@@ -139,6 +177,7 @@ public class EmptyConfiguration extends org.jdiameter.client.impl.helpers.EmptyC
     }
   }
 
+  @Override
   public void setDoubleValue(int key, double value) {
     List<ConfigurationListener> list = listeners.get(key);
     if (list != null)  {
@@ -155,6 +194,7 @@ public class EmptyConfiguration extends org.jdiameter.client.impl.helpers.EmptyC
     }
   }
 
+  @Override
   public void setByteArrayValue(int key, byte[] value) {
     List<ConfigurationListener> list = listeners.get(key);
     if (list != null)  {
@@ -171,6 +211,7 @@ public class EmptyConfiguration extends org.jdiameter.client.impl.helpers.EmptyC
     }
   }
 
+  @Override
   public void setBooleanValue(int key, boolean value) {
     List<ConfigurationListener> list = listeners.get(key);
     if (list != null)  {
@@ -187,6 +228,7 @@ public class EmptyConfiguration extends org.jdiameter.client.impl.helpers.EmptyC
     }
   }
 
+  @Override
   public void setStringValue(int key, java.lang.String value) {
     List<ConfigurationListener> list = listeners.get(key);
     if (list != null)  {
@@ -203,6 +245,7 @@ public class EmptyConfiguration extends org.jdiameter.client.impl.helpers.EmptyC
     }
   }
 
+  @Override
   public void setChildren(int key, org.jdiameter.api.Configuration... values) {
     List<ConfigurationListener> list = listeners.get(key);
     if (list != null)  {
@@ -223,6 +266,7 @@ public class EmptyConfiguration extends org.jdiameter.client.impl.helpers.EmptyC
     }
   }
 
+  @Override
   public void removeValue(int... keys) {
     for (int i:keys) {
       List<ConfigurationListener> list = listeners.get(i);
@@ -241,6 +285,7 @@ public class EmptyConfiguration extends org.jdiameter.client.impl.helpers.EmptyC
   /**
    * @see org.jdiameter.api.MutableConfiguration class
    */
+  @Override
   public void addChangeListener(ConfigurationListener listener, int... ints) {
     for (int i:ints) {
       List<ConfigurationListener> list = listeners.get(i);
@@ -255,7 +300,8 @@ public class EmptyConfiguration extends org.jdiameter.client.impl.helpers.EmptyC
   /**
    * @see org.jdiameter.api.MutableConfiguration class
    */
-  public void removeChangeListener(ConfigurationListener listener,int... ints) {
+  @Override
+  public void removeChangeListener(ConfigurationListener listener, int... ints) {
     for (int i:ints) {
       List<ConfigurationListener> list = listeners.get(i);
       if (list != null) {

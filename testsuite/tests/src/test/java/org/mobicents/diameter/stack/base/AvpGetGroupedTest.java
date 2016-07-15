@@ -22,8 +22,7 @@
 
 package org.mobicents.diameter.stack.base;
 
-import static org.junit.Assert.*;
-import junit.framework.Assert;
+import static org.junit.Assert.fail;
 
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Avp;
@@ -33,15 +32,16 @@ import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.Message;
 import org.jdiameter.client.impl.parser.MessageImpl;
-import org.mobicents.diameter.stack.functional.StackConfig;
-import org.mobicents.diameter.stack.functional.StackCreator;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mobicents.diameter.stack.functional.StackConfig;
+import org.mobicents.diameter.stack.functional.StackCreator;
 
 /**
  * JUnit tests for Avp.getGrouped() method. Started due to issue #2519
  * (http://code.google.com/p/mobicents/issues/detail?id=2519)
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class AvpGetGroupedTest {
@@ -81,14 +81,14 @@ public class AvpGetGroupedTest {
     /*Avp unAvp = */messageAvps.addAvp(1, AVP_VALUE, false);
   }
 
-  @Test(timeout=500)
+  @Test(timeout = 500)
   public void testGroupedAvpOK() {
     // Forcing message -> bytes -> message with clone
-    AvpSet messageAvps = ((Message) ((MessageImpl)message).clone()).getAvps();
+    AvpSet messageAvps = ((Message) ((MessageImpl) message).clone()).getAvps();
 
     Avp erAvp = messageAvps.getAvp(297);
 
-    if(erAvp == null) {
+    if (erAvp == null) {
       fail("Unable to retrieve avp Experimental-Result.");
     }
 
@@ -103,12 +103,12 @@ public class AvpGetGroupedTest {
 
     Avp ercAvp = erAvpSet.getAvp(298);
 
-    if(ercAvp == null) {
+    if (ercAvp == null) {
       fail("Unable to retrieve avp Experimental-Result-Code from Experimental-Result.");
     }
 
     try {
-      if(ercAvp.getUnsigned32() != 2001) {
+      if (ercAvp.getUnsigned32() != 2001) {
         fail("Avp Experimental-Result-Code has unexpected value: " + ercAvp.getUnsigned32() + "; Expected: 2001.");
       }
     }
@@ -117,19 +117,19 @@ public class AvpGetGroupedTest {
     }
   }
 
-  @Test(timeout=500)
+  @Test(timeout = 500)
   public void testGroupedAvpNotOK() {
     // Forcing message -> bytes -> message with clone
-    AvpSet messageAvps = ((Message) ((MessageImpl)message).clone()).getAvps();
+    AvpSet messageAvps = ((Message) ((MessageImpl) message).clone()).getAvps();
 
     Avp unAvp = messageAvps.getAvp(1);
 
-    if(unAvp == null) {
+    if (unAvp == null) {
       fail("Unable to retrieve avp User-Name.");
     }
 
     try {
-      if(!unAvp.getUTF8String().equals(AVP_VALUE)) {
+      if (!unAvp.getUTF8String().equals(AVP_VALUE)) {
         fail("Avp User-Name has unexpected value: " + unAvp.getUTF8String() + "; Expected: mobicents-diameter.");
       }
     }
@@ -148,19 +148,19 @@ public class AvpGetGroupedTest {
     }
   }
 
-  @Test(timeout=500)
+  @Test(timeout = 500)
   public void testGetGroupedAndValueAfter() {
     // Forcing message -> bytes -> message with clone
-    AvpSet messageAvps = ((Message) ((MessageImpl)message).clone()).getAvps();
+    AvpSet messageAvps = ((Message) ((MessageImpl) message).clone()).getAvps();
 
     Avp unAvp = messageAvps.getAvp(1);
 
-    if(unAvp == null) {
+    if (unAvp == null) {
       fail("Unable to retrieve avp User-Name.");
     }
 
     try {
-      if(!unAvp.getUTF8String().equals(AVP_VALUE)) {
+      if (!unAvp.getUTF8String().equals(AVP_VALUE)) {
         fail("Avp User-Name has unexpected value: " + unAvp.getUTF8String() + "; Expected: mobicents-diameter.");
       }
     }

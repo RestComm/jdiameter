@@ -1,44 +1,44 @@
- /*
-  * TeleStax, Open Source Cloud Communications
-  * Copyright 2011-2014, TeleStax Inc. and individual contributors
-  * by the @authors tag.
-  *
-  * This program is free software: you can redistribute it and/or modify
-  * under the terms of the GNU Affero General Public License as
-  * published by the Free Software Foundation; either version 3 of
-  * the License, or (at your option) any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU Affero General Public License for more details.
-  *
-  * You should have received a copy of the GNU Affero General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>
-  * 
-  * This file incorporates work covered by the following copyright and
-  * permission notice:
-  * 
-  *   JBoss, Home of Professional Open Source
-  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
-  *   by the @authors tag. See the copyright.txt in the distribution for a
-  *   full listing of individual contributors.
-  *
-  *   This is free software; you can redistribute it and/or modify it
-  *   under the terms of the GNU Lesser General Public License as
-  *   published by the Free Software Foundation; either version 2.1 of
-  *   the License, or (at your option) any later version.
-  *
-  *   This software is distributed in the hope that it will be useful,
-  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  *   Lesser General Public License for more details.
-  *
-  *   You should have received a copy of the GNU Lesser General Public
-  *   License along with this software; if not, write to the Free
-  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
-  */
+/*
+ * TeleStax, Open Source Cloud Communications
+ * Copyright 2011-2014, TeleStax Inc. and individual contributors
+ * by the @authors tag.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ *   JBoss, Home of Professional Open Source
+ *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+ *   by the @authors tag. See the copyright.txt in the distribution for a
+ *   full listing of individual contributors.
+ *
+ *   This is free software; you can redistribute it and/or modify it
+ *   under the terms of the GNU Lesser General Public License as
+ *   published by the Free Software Foundation; either version 2.1 of
+ *   the License, or (at your option) any later version.
+ *
+ *   This software is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *   Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public
+ *   License along with this software; if not, write to the Free
+ *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 
 package org.jdiameter.server.impl;
 
@@ -59,7 +59,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.UnknownServiceException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -116,7 +115,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
@@ -190,7 +189,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     }
   }
 
-  public MutablePeerTableImpl(Configuration config, MetaData metaData,IContainer stack, org.jdiameter.server.api.IRouter router,
+  public MutablePeerTableImpl(Configuration config, MetaData metaData, IContainer stack, org.jdiameter.server.api.IRouter router,
       ISessionFactory sessionFactory, IFsmFactory fsmFactory, ITransportLayerFactory trFactory,
       IMessageParser parser, INetwork network, IOverloadManager ovrManager,
       IStatisticManager statisticFactory, IConcurrentFactory concurrentFactory) {
@@ -214,7 +213,8 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       this.duplicateTimer = config.getLongValue(DuplicateTimer.ordinal(), (Long) DuplicateTimer.defValue());
       this.duplicateSize = config.getIntValue(DuplicateSize.ordinal(), (Integer) DuplicateSize.defValue());
     }
-    logger.debug("Duplicate Protection Configuration: Enabled? {}, Timer: {}, Size: {}", new Object[]{this.duplicateProtection, this.duplicateTimer, this.duplicateSize});
+    logger.debug("Duplicate Protection Configuration: Enabled? {}, Timer: {}, Size: {}",
+        new Object[]{this.duplicateProtection, this.duplicateTimer, this.duplicateSize});
     if (predefinedPeerTable == null) {
       predefinedPeerTable = new CopyOnWriteArraySet<String>();
     }
@@ -223,7 +223,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     }
 
     logger.debug("MutablePeerTableImpl is starting initialisation by calling init on super class");
-    init(stack,router, config, metaData, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser);
+    init(stack, router, config, metaData, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser);
     logger.debug("MutablePeerTableImpl has finished initialisation");
   }
 
@@ -241,7 +241,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     logger.debug("Adding URI [{}] to predefinedPeerTable", uri);
     predefinedPeerTable.add(new URI(uri).getFQDN());
     if (peerConfig.getBooleanValue(PeerAttemptConnection.ordinal(), false)) {
-      logger.debug("Peer at URI [{}] is configured to attempt a connection (i.e. acting as a client) and a new peer instance will be created and returned", uri);
+      logger.debug("Peer at URI [{}] is configured to attempt a connection (acting as a client) and a new peer instance will be created and returned", uri);
       return newPeerInstance(rating, new URI(uri), ip, portRange, true, null,
           metaData, globalConfig, peerConfig, (IFsmFactory) fsmFactory,
           (ITransportLayerFactory) transportFactory, parser, statisticFactory, concurrentFactory);
@@ -255,19 +255,22 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
   protected IPeer newPeerInstance(int rating, URI uri, String ip, String portRange, boolean attCnn, IConnection connection,
       MetaData metaData, Configuration globalConfig, Configuration peerConfig, IFsmFactory fsmFactory,
       ITransportLayerFactory transportFactory, IMessageParser parser,
-      IStatisticManager statisticFactory, IConcurrentFactory concurrentFactory) throws URISyntaxException, UnknownServiceException, InternalException, TransportException {
+      IStatisticManager statisticFactory, IConcurrentFactory concurrentFactory)
+          throws URISyntaxException, UnknownServiceException, InternalException, TransportException {
     logger.debug("Creating and returning a new Peer Instance for URI [{}].", uri);
     return new org.jdiameter.server.impl.PeerImpl(
-        rating, uri, ip, portRange, attCnn, connection,
-        this, (org.jdiameter.server.api.IMetaData) metaData, globalConfig, peerConfig, sessionFactory,
-        fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser, network, ovrManager, sessionDatasource
-    );
+            rating, uri, ip, portRange, attCnn, connection,
+            this, (org.jdiameter.server.api.IMetaData) metaData, globalConfig, peerConfig, sessionFactory,
+            fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser, network, ovrManager, sessionDatasource
+            );
   }
 
+  @Override
   public void setPeerTableListener(PeerTableListener peerTableListener) {
     this.peerTableListener = peerTableListener;
   }
 
+  @Override
   public boolean elementChanged(int i, Object data) {
     Configuration newConf = (Configuration) data;
     stopTimeOut = newConf.getLongValue(StopTimeOut.ordinal(), (Long) StopTimeOut.defValue());
@@ -280,6 +283,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     return duplicateProtection;
   }
 
+  @Override
   public void start() throws IllegalDiameterStateException, IOException { // TODO: use parent method
     logger.debug("Starting MutablePeerTableImpl. Starting router, overload scheduler, connection check timer, etc.");
     router.start();
@@ -287,6 +291,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     overloadScheduler = concurrentFactory.getScheduledExecutorService(PeerOverloadTimer.name());
 
     Runnable overloadTask = new Runnable() {
+      @Override
       public void run() {
         if (ovrManager != null) {
           for (Peer p : peerTable.values()) {
@@ -300,26 +305,29 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     if (duplicateProtection) {
       duplicationScheduler = concurrentFactory.getScheduledExecutorService(DuplicationMessageTimer.name());
       Runnable duplicateTask = new Runnable() {
+        @Override
         public void run() {
           long now = System.currentTimeMillis();
-          if(logger.isDebugEnabled()) {
-            logger.debug("Running Duplicate Cleaning Task. Duplicate Storage size is: {}. Removing entries with time <= '{}'", storageAnswers.size(), now - duplicateTimer);
+          if (logger.isDebugEnabled()) {
+            logger.debug("Running Duplicate Cleaning Task. Duplicate Storage size is: {}. Removing entries with time <= '{}'",
+                storageAnswers.size(), now - duplicateTimer);
           }
           for (StorageEntry s : storageAnswers.values()) {
             if (s != null && s.getTime() + duplicateTimer <= now) {
-              if(logger.isTraceEnabled()) {
+              if (logger.isTraceEnabled()) {
                 logger.trace("Duplicate Cleaning Task - Removing Entry with key '{}' and time '{}'", s.getDuplicationKey(), s.getTime());
               }
               storageAnswers.remove(s.getDuplicationKey());
             }
             else {
-              if(logger.isTraceEnabled()) {
+              if (logger.isTraceEnabled()) {
                 logger.trace("Duplicate Cleaning Task - Skipping Entry with key '{}' and time '{}'", s.getDuplicationKey(), s.getTime());
               }
             }
           }
-          if(logger.isDebugEnabled()) {
-            logger.debug("Completed Duplicate Cleaning Task. New Duplicate Storage size is: {}. Total task runtime: {}ms", storageAnswers.size(), System.currentTimeMillis() - now);
+          if (logger.isDebugEnabled()) {
+            logger.debug("Completed Duplicate Cleaning Task. New Duplicate Storage size is: {}. Total task runtime: {}ms",
+                storageAnswers.size(), System.currentTimeMillis() - now);
           }
         }
       };
@@ -328,6 +336,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     //
     connScheduler = concurrentFactory.getScheduledExecutorService(ConnectionTimer.name());
     Runnable connectionCheckTask = new Runnable() {
+      @Override
       public void run() {
         Map<String, IConnection> connections = getIncConnections();
         for (IConnection connection : connections.values()) {
@@ -359,8 +368,8 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       }
       Peer p = stack.getMetaData().getLocalPeer();
       String ips = "";
-      for(InetAddress ip : p.getIPAddresses()) {
-        ips += " " + ip.getHostAddress() + ":" + p.getUri().getPort(); 
+      for (InetAddress ip : p.getIPAddresses()) {
+        ips += " " + ip.getHostAddress() + ":" + p.getUri().getPort();
       }
       logger.error("Unable to create server socket for LocalPeer '{}' at{} ({}).", new Object[]{p.getUri().getFQDN(), ips, t.getMessage()});
       logger.debug("Unable to create server socket", e);
@@ -368,7 +377,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     // Connect to predefined peers
     for (Peer p : peerTable.values()) {
       try {
-        if(((IPeer) p).isAttemptConnection()) {
+        if (((IPeer) p).isAttemptConnection()) {
           p.connect();
         }
       }
@@ -398,21 +407,25 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
         metaData.getLocalPeer().getIPAddresses(),
         metaData.getLocalPeer().getUri().getPort(),
         new INetworkConnectionListener() {
+          @Override
           public void newNetworkConnection(final IConnection connection) {
             //PCB added logging
             logger.debug("newNetworkConnection. connection [{}]", connection.getKey());
             synchronized (regLock) {
               final IConnectionListener listener = new IConnectionListener() {
+                @Override
                 public void connectionOpened(String connKey) {
                   logger.debug("Connection [{}] opened", connKey);
                 }
 
+                @Override
                 @SuppressWarnings("unchecked")
                 public void connectionClosed(String connKey, List notSended) {
                   logger.debug("Connection [{}] closed", connKey);
                   unregister(true);
                 }
 
+                @Override
                 public void messageReceived(String connKey, IMessage message) {
                   logger.debug("Message [{}] received to peer [{}]", message, connKey);
                   if (message.isRequest() && message.getCommandCode() == Message.CAPABILITIES_EXCHANGE_REQUEST) {
@@ -430,22 +443,22 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                     }
                     String realm;
                     try {
-                        realm = message.getAvps().getAvp(Avp.ORIGIN_REALM).getDiameterIdentity();
-                        logger.debug("Origin-Realm in new received message is [{}]", realm);
+                      realm = message.getAvps().getAvp(Avp.ORIGIN_REALM).getDiameterIdentity();
+                      logger.debug("Origin-Realm in new received message is [{}]", realm);
                     } catch (AvpDataException e) {
-                        logger.warn("Unable to retrieve find Origin-Realm AVP in CER", e);
-                        unregister(true);
-                        return;
+                      logger.warn("Unable to retrieve find Origin-Realm AVP in CER", e);
+                      unregister(true);
+                      return;
                     }
-                    
+
                     boolean foundInPredefinedTable = false;
                     // find into predefined table
                     for (String fqdn : predefinedPeerTable) {
-                      if(logger.isDebugEnabled()) {
+                      if (logger.isDebugEnabled()) {
                         logger.debug("Checking against entry in predefinedPeerTable with FQDN [{}]", fqdn);
                       }
                       if (fqdn.equals(host)) {
-                        if(logger.isDebugEnabled()) {
+                        if (logger.isDebugEnabled()) {
                           logger.debug("{} == {}", fqdn, host);
                         }
                         peer = (IPeer) peerTable.get(fqdn);
@@ -453,7 +466,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                         break;
                       }
                       else {
-                        if(logger.isDebugEnabled()) {
+                        if (logger.isDebugEnabled()) {
                           logger.debug("{} != {}", fqdn, host);
                         }
                       }
@@ -466,12 +479,12 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                         logger.debug("Got peer for FQDN [{}]. Is connection open ? {}.", host, peer.hasValidConnection());
                       }
                       else {
-                        logger.debug("Still haven't found peer for FQDN [{}]", host);                        
+                        logger.debug("Still haven't found peer for FQDN [{}]", host);
                       }
                     }
 
                     if (peer != null) {
-                    	//FIXME: define procedure when 'peer.getRealm() != realm'
+                      //FIXME: define procedure when 'peer.getRealm() != realm'
                       logger.debug("Add [{}] connection to peer [{}]", connection, peer);
                       peer.addIncomingConnection(connection);
                       try {
@@ -510,7 +523,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                         }
                       }
                       else {
-                        logger.info("Skip anonymous connection [{}]", connection);                              
+                        logger.info("Skip anonymous connection [{}]", connection);
                         unregister(true);
                       }
                     }
@@ -521,6 +534,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                   }
                 }
 
+                @Override
                 public void internalError(String connKey, IMessage message, TransportException cause) {
                   logger.debug("Connection [{}] internalError [{}]", connKey, cause);
                   unregister(true);
@@ -549,17 +563,17 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
             }
           }
         }
-    );
+        );
   }
 
   private void appendPeerToPeerTable(IPeer peer) {
     logger.debug("Adding Peer[{}] to PeerTable with size {}", peer, peerTable.size());
 
     // Cleaning up if we are at max capacity...
-    if(peerTable.size() == MAX_PEER_TABLE_SIZE) {
-      for(String k : peerTable.keySet()) {
+    if (peerTable.size() == MAX_PEER_TABLE_SIZE) {
+      for (String k : peerTable.keySet()) {
         Peer p = peerTable.get(k);
-        if(p != null && p.getState(PeerState.class) == PeerState.DOWN) {
+        if (p != null && p.getState(PeerState.class) == PeerState.DOWN) {
           peerTable.remove(k, p);
         }
       }
@@ -571,6 +585,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     }
   }
 
+  @Override
   public void stopping(int disconnectCause) {
     super.stopping(disconnectCause);
     if (networkGuard != null) {
@@ -582,7 +597,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       concurrentFactory.shutdownNow(overloadScheduler);
       overloadScheduler = null;
       overloadHandler.cancel(true);
-      overloadHandler = null;            
+      overloadHandler = null;
     }
     //
     if (duplicationScheduler != null) {
@@ -607,18 +622,19 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
 
     // Clear dynamic peers from peertable
     Iterator<String> it = super.peerTable.keySet().iterator();
-    while(it.hasNext()) {
-    	String fqdn = it.next();
-    	if(this.predefinedPeerTable.contains(fqdn)) {
-    		continue;
-    	}
-    	else {
-    		it.remove();
-    	}
+    while (it.hasNext()) {
+      String fqdn = it.next();
+      if (this.predefinedPeerTable.contains(fqdn)) {
+        continue;
+      }
+      else {
+        it.remove();
+      }
     }
 
   }
 
+  @Override
   public Peer addPeer(URI peerURI, String realm, boolean connecting) {
     //TODO: add sKey here, now it adds peer to all realms.
     //TODO: better, separate addPeer from realm!
@@ -635,7 +651,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       if (peerConfig == null) {
         peerConfig = new EmptyConfiguration(false).add(PeerAttemptConnection, connecting);
       }
-      IPeer peer = (IPeer) createPeer(0, peerURI.toString(), null, null, metaData, config, peerConfig, fsmFactory, 
+      IPeer peer = (IPeer) createPeer(0, peerURI.toString(), null, null, metaData, config, peerConfig, fsmFactory,
           transportFactory, statisticFactory, concurrentFactory, parser);
       if (peer == null) {
         return null;
@@ -647,7 +663,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       Collection<Realm> realms =  this.router.getRealmTable().getRealms(realm);
       for (Realm r : realms) {
         if (r.getName().equals(realm)) {
-          ((IRealm)r).addPeerName(peerURI.toString());
+          ((IRealm) r).addPeerName(peerURI.toString());
           found = true;
           break;
         }
@@ -660,7 +676,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
       }
       return peer;
     }
-    catch(Exception e) {
+    catch (Exception e) {
       logger.debug("Unable to add peer", e);
       return null;
     }
@@ -670,6 +686,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     return new HashSet<Realm>(router.getRealmTable().getRealms());
   }
 
+  @Override
   public Peer removePeer(String host) {
     try {
       String fqdn = null;
@@ -698,6 +715,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     }
   }
 
+  @Override
   public Statistic getStatistic(String name) {
     for (Peer p : peerTable.values()) {
       if (p.getUri().getFQDN().equals(name)) {
@@ -707,6 +725,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     return null;
   }
 
+  @Override
   public IMessage isDuplicate(IMessage request) {
     String key = request.getDuplicationKey();
     if (key != null && storageAnswers != null) {
@@ -716,11 +735,12 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     return null;
   }
 
+  @Override
   public void saveToDuplicate(String key, IMessage answer) {
     if (storageAnswers != null && storageAnswers.size() < duplicateSize) {
       if (key != null) {
         StorageEntry se = new StorageEntry((IMessage) answer.clone());
-        if(logger.isTraceEnabled()) {
+        if (logger.isTraceEnabled()) {
           logger.trace("Duplicate Protection - Inserting Entry with key '{}' and time '{}'", key, se.getTime());
         }
         storageAnswers.put(key, se);
@@ -728,22 +748,25 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     }
   }
 
+  @Override
   public ISessionFactory getSessionFactory() {
     return sessionFactory;
   }
 
+  @Override
   public boolean isWrapperFor(Class<?> aClass) throws InternalException {
     boolean isWrapp = super.isWrapperFor(aClass);
 
     return aClass == MutablePeerTable.class || aClass == Network.class || isWrapp;
   }
 
+  @Override
   public <T> T unwrap(Class<T> aClass) throws InternalException {
     if (aClass == MutablePeerTable.class) {
-      return (T) assembler.getComponentInstance(aClass);
+      return assembler.getComponentInstance(aClass);
     }
     if (aClass == Network.class) {
-      return (T) assembler.getComponentInstance(aClass);
+      return assembler.getComponentInstance(aClass);
     }
     return null;
   }

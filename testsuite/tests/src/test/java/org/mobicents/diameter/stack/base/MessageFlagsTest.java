@@ -4,18 +4,18 @@
  * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
- * 
+ *
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License, v. 2.0.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
+ * v. 2.0 along with this distribution; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
@@ -39,7 +39,7 @@ import org.mobicents.diameter.stack.functional.StackConfig;
 import org.mobicents.diameter.stack.functional.StackCreator;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -90,38 +90,38 @@ public class MessageFlagsTest {
   @Parameters
   public static Collection<Object[]> data() {
     return Arrays.asList(new Object[][]{
-        {true, true, true, true, true},
-        {true, true, true, true, false},
-        {true, true, true, false, true},
-        {true, true, true, false, false},
-        {true, true, false, true, true},
-        {true, true, false, true, false},
-        {true, true, false, false, true},
-        {true, true, false, false, false},
-        {true, false, true, true, true},
-        {true, false, true, true, false},
-        {true, false, true, false, true},
-        {true, false, true, false, false},
-        {true, false, false, true, true},
-        {true, false, false, true, false},
-        {true, false, false, false, true},
-        {true, false, false, false, false},
-        {false, true, true, true, true},
-        {false, true, true, true, false},
-        {false, true, true, false, true},
-        {false, true, true, false, false},
-        {false, true, false, true, true},
-        {false, true, false, true, false},
-        {false, true, false, false, true},
-        {false, true, false, false, false},
-        {false, false, true, true, true},
-        {false, false, true, true, false},
-        {false, false, true, false, true},
-        {false, false, true, false, false},
-        {false, false, false, true, true},
-        {false, false, false, true, false},
-        {false, false, false, false, true},
-        {false, false, false, false, false}
+      {true, true, true, true, true},
+      {true, true, true, true, false},
+      {true, true, true, false, true},
+      {true, true, true, false, false},
+      {true, true, false, true, true},
+      {true, true, false, true, false},
+      {true, true, false, false, true},
+      {true, true, false, false, false},
+      {true, false, true, true, true},
+      {true, false, true, true, false},
+      {true, false, true, false, true},
+      {true, false, true, false, false},
+      {true, false, false, true, true},
+      {true, false, false, true, false},
+      {true, false, false, false, true},
+      {true, false, false, false, false},
+      {false, true, true, true, true},
+      {false, true, true, true, false},
+      {false, true, true, false, true},
+      {false, true, true, false, false},
+      {false, true, false, true, true},
+      {false, true, false, true, false},
+      {false, true, false, false, true},
+      {false, true, false, false, false},
+      {false, false, true, true, true},
+      {false, false, true, true, false},
+      {false, false, true, false, true},
+      {false, false, true, false, false},
+      {false, false, false, true, true},
+      {false, false, false, true, false},
+      {false, false, false, false, true},
+      {false, false, false, false, false}
     });
   }
 
@@ -153,7 +153,7 @@ public class MessageFlagsTest {
 
       // Confirm it's OK
       assertTrue("Wrong flags: R[rcv " + received_R + "; exp " + expected_R + "], P[rcv " + received_P + "; exp " + expected_P + "]" +
-          "E[rcv " + received_E + "; exp " + expected_E + "], T[rcv " + received_T + "; exp " + expected_T + "]", 
+          "E[rcv " + received_E + "; exp " + expected_E + "], T[rcv " + received_T + "; exp " + expected_T + "]",
           (expected_R == received_R) && (expected_P == received_P) && (expected_E == received_E) && (expected_T == received_T));
     }
     catch (InternalException e) {

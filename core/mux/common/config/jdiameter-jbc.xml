@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <jbosscache
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="urn:jboss:jbosscache-core:config:3.1">
-	<locking
-		lockAcquisitionTimeout="20000" />
-	<transaction 
-		transactionManagerLookupClass="org.jboss.cache.transaction.JBossTransactionManagerLookup" />
-	<jmxStatistics 
-		enabled="false" />
-	<clustering clusterName="${jboss.partition.name:DefaultPartition}-restcomm-diameter">
-		<async />
-		<jgroupsConfig multiplexerStack="${jboss.default.jgroups.stack:udp}"/>
-	</clustering>
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="urn:jboss:jbosscache-core:config:3.1">
+  <locking
+    lockAcquisitionTimeout="20000" />
+  <transaction
+    transactionManagerLookupClass="org.jboss.cache.transaction.JBossTransactionManagerLookup" />
+  <jmxStatistics
+    enabled="false" />
+  <clustering clusterName="${jboss.partition.name:DefaultPartition}-restcomm-diameter">
+    <async />
+    <jgroupsConfig multiplexerStack="${jboss.default.jgroups.stack:udp}"/>
+  </clustering>
 </jbosscache>

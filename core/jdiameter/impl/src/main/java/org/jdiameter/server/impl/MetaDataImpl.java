@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.server.impl;
 
@@ -55,7 +75,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
@@ -74,14 +94,17 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
     super(s, factory);
   }
 
+  @Override
   public StackType getStackType() {
     return StackType.TYPE_SERVER;
   }
 
+  @Override
   protected IPeer newLocalPeer(IStatisticManager statisticFactory) {
     return new ServerLocalPeer(statisticFactory);
   }
 
+  @Override
   public void addApplicationId(ApplicationId applicationId) {
     synchronized (lock) {
       if (appIds.contains(applicationId)) {
@@ -89,20 +112,24 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
       }
       appIds.add(applicationId);
     }
-    if(logger.isDebugEnabled()) {
-      logger.debug("Adding application id of auth [{}] acct [{}] vendor [{}]", new Object[]{applicationId.getAuthAppId(), applicationId.getAcctAppId(), applicationId.getVendorId()});
+    if (logger.isDebugEnabled()) {
+      logger.debug("Adding application id of auth [{}] acct [{}] vendor [{}]",
+          new Object[]{applicationId.getAuthAppId(), applicationId.getAcctAppId(), applicationId.getVendorId()});
     }
   }
 
+  @Override
   public void remApplicationId(ApplicationId applicationId) {
     synchronized (lock) {
       appIds.remove(applicationId);
     }
-    if(logger.isDebugEnabled()) {
-      logger.debug("Removing application id of auth [{}] acct [{}] vendor [{}]", new Object[]{applicationId.getAuthAppId(), applicationId.getAcctAppId(), applicationId.getVendorId()});
+    if (logger.isDebugEnabled()) {
+      logger.debug("Removing application id of auth [{}] acct [{}] vendor [{}]",
+          new Object[]{applicationId.getAuthAppId(), applicationId.getAcctAppId(), applicationId.getVendorId()});
     }
   }
 
+  @Override
   public void reload() {
     // Reload common application ids from configuration
     synchronized (lock) {
@@ -127,6 +154,7 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
       super(statisticFactory);
     }
 
+    @Override
     public Set<ApplicationId> getCommonApplications() {
       Set<ApplicationId> set;
       synchronized (lock) {
@@ -202,6 +230,7 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
     }
 
     // Local processing message
+    @Override
     @SuppressWarnings("unchecked")
     public boolean sendMessage(IMessage message) throws TransportException, OverloadException {
       logger.debug("Sending Message in Server Local Peer");
@@ -241,9 +270,10 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
               String avpSessionId = message.getSessionId();
               if (avpSessionId != null) {
                 // XXX: FT/HA // NetworkReqListener sessionListener = slc.get(avpSessionId);
-                NetworkReqListener sessionListener = (NetworkReqListener) sessionDataSource.getSessionListener(avpSessionId);
+                NetworkReqListener sessionListener = sessionDataSource.getSessionListener(avpSessionId);
                 if (sessionListener != null) {
-                  logger.debug("Giving message to sessionListener to process as Session-Id AVP existed in message and was used to get a session from Session DataSource");
+                  logger.debug("Giving message to sessionListener to process as Session-Id AVP existed in message "
+                      + "and was used to get a session from Session DataSource");
                   answer = (IMessage) sessionListener.processRequest(message);
                 }
                 else {
@@ -262,20 +292,21 @@ public class MetaDataImpl extends org.jdiameter.client.impl.MetaDataImpl impleme
             }
           }
           else {
-            if(logger.isDebugEnabled()) {
+            if (logger.isDebugEnabled()) {
               logger.debug("Unable to find handler {} for message {}", message.getSingleApplicationId(), message);
             }
           }
           if (answer != null) {
-            if(logger.isDebugEnabled()) {
+            if (logger.isDebugEnabled()) {
               logger.debug("Removing message with HbH Identifier [{}] from Peer Requests Map", message.getHopByHopIdentifier());
             }
             peerRequests.remove(message.getHopByHopIdentifier());
           }
         }
         else {
-          if(logger.isDebugEnabled()) {
-            logger.debug("Message is an answer. Setting answer to the message and fetching message from Peer Requests Map using HbH Identifier [{}]", message.getHopByHopIdentifier());
+          if (logger.isDebugEnabled()) {
+            logger.debug("Message is an answer. Setting answer to the message and fetching message from Peer Requests Map using HbH Identifier [{}]",
+                message.getHopByHopIdentifier());
           }
           answer = message;
           message = peerRequests.get(answer.getHopByHopIdentifier());

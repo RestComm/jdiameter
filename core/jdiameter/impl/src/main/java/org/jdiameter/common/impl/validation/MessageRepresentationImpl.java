@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.common.impl.validation;
 
@@ -40,11 +60,11 @@ import org.slf4j.LoggerFactory;
  * This class represents message/command in validation framework. It contains
  * basic info about command along with avp list - their multiplicity and
  * allowance.
- * 
+ *
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @since 1.5.4.0-build404
- * 
+ *
  */
 public class MessageRepresentationImpl implements MessageRepresentation {
 
@@ -120,6 +140,7 @@ public class MessageRepresentationImpl implements MessageRepresentation {
     return true;
   }
 
+  @Override
   public Map<AvpRepresentation, AvpRepresentation> getMessageAvps() {
     return unmuttableMessageAvps;
   }
@@ -129,26 +150,32 @@ public class MessageRepresentationImpl implements MessageRepresentation {
     this.unmuttableMessageAvps = messageAvps;
   }
 
+  @Override
   public int getCommandCode() {
     return commandCode;
   }
 
+  @Override
   public long getApplicationId() {
     return applicationId;
   }
 
+  @Override
   public boolean isRequest() {
     return isRequest;
   }
 
+  @Override
   public String getName() {
     return name;
   }
 
+  @Override
   public AvpRepresentation getAvp(int code) {
     return getAvp(code, 0);
   }
 
+  @Override
   public AvpRepresentation getAvp(int code, long vendorId) {
     AvpRepresentation avp = unmuttableMessageAvps.get(new AvpRepresentationImpl(code, vendorId));
 
@@ -161,6 +188,7 @@ public class MessageRepresentationImpl implements MessageRepresentation {
 
   // Convenience methods ------------------------------------------------------
 
+  @Override
   public boolean isAllowed(int code, long vendorId) {
     AvpRepresentation avpRep = new AvpRepresentationImpl(code, vendorId);
     avpRep = this.unmuttableMessageAvps.get(avpRep);
@@ -170,14 +198,17 @@ public class MessageRepresentationImpl implements MessageRepresentation {
     return avpRep.isAllowed();
   }
 
+  @Override
   public boolean isAllowed(int code) {
     return this.isAllowed(code, 0);
   }
 
+  @Override
   public boolean isCountValidForMultiplicity(int code, int avpCount) {
     return this.isCountValidForMultiplicity(code, 0, avpCount);
   }
 
+  @Override
   public boolean isCountValidForMultiplicity(int code, long vendorId, int avpCount) {
     AvpRepresentation avpRep = getAvp(code, vendorId);
     if (avpRep == null) {
@@ -186,14 +217,17 @@ public class MessageRepresentationImpl implements MessageRepresentation {
     return avpRep.isCountValidForMultiplicity(avpCount);
   }
 
+  @Override
   public boolean isCountValidForMultiplicity(AvpSet destination, int code, long vendorId) {
-    return this.isCountValidForMultiplicity(destination, code,vendorId,0);
+    return this.isCountValidForMultiplicity(destination, code, vendorId, 0);
   }
 
+  @Override
   public boolean isCountValidForMultiplicity(AvpSet destination, int code) {
-    return this.isCountValidForMultiplicity(destination, code,0L);
+    return this.isCountValidForMultiplicity(destination, code, 0L);
   }
 
+  @Override
   public boolean isCountValidForMultiplicity(AvpSet destination, int code, long vendorId, int numberToAdd) {
     AvpRepresentation avpRep = getAvp(code, vendorId);
     if (avpRep == null) {
@@ -203,13 +237,14 @@ public class MessageRepresentationImpl implements MessageRepresentation {
     return avpRep.isCountValidForMultiplicity(destination, numberToAdd);
   }
 
+  @Override
   public boolean isCountValidForMultiplicity(AvpSet destination, int code, int numberToAdd) {
     return this.isCountValidForMultiplicity(destination, code, 0, numberToAdd);
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Comparable#compareTo(java.lang.Object)
    */
   public int compareTo(MessageRepresentation o) {
@@ -253,6 +288,7 @@ public class MessageRepresentationImpl implements MessageRepresentation {
 
   // Validation part ----------------------------------------------------------
 
+  @Override
   public void validate(Message msg, ValidatorLevel validatorLevel) throws AvpNotAllowedException {
     if (validatorLevel == ValidatorLevel.OFF) {
       return;
@@ -268,7 +304,7 @@ public class MessageRepresentationImpl implements MessageRepresentation {
       }
 
       if (!ap.isCountValidForMultiplicity(count)) {
-        throw new AvpNotAllowedException("AVP: \n" + ap + "\n,has wrong count in message - " + (count), ap.getCode(), ap.getVendorId());
+        throw new AvpNotAllowedException("AVP: \n" + ap + "\n, has wrong count in message - " + (count), ap.getCode(), ap.getVendorId());
       }
       // if its ALL, we need to go down deeper in AVPs
       if (validatorLevel != ValidatorLevel.ALL) {
@@ -300,10 +336,10 @@ public class MessageRepresentationImpl implements MessageRepresentation {
       // catch (AvpDataException e) {
       //   logger.debug("Failed to get grouped AVP.", e);
       // }
-      // 
+      //
       // if (groupedPart == null) {
       //   logger.error("Avp should be grouped, but its not: " + ap);
-      // 
+      //
       //   continue;
       // }
       // else {
@@ -312,28 +348,28 @@ public class MessageRepresentationImpl implements MessageRepresentation {
     }
   }
 
-  //	/**
-  //	 * @param ap
-  //	 * @param presumablyGrouped
-  //	 */
-  //	private void validateGroupedChildren(AvpRepresentation ap, AvpSet groupedAvp) {
-  //		// we have grouped avp, and its representation, we should validate
-  //		// children.
-  //		for (AvpRepresentation childrenVAvp : ap.getChildren()) {
-  //			AvpSet childSset = groupedAvp.getAvps(childrenVAvp.getCode(), childrenVAvp.getVendorId());
-  //			int count = childSset.size();
+  //  /**
+  //   * @param ap
+  //   * @param presumablyGrouped
+  //   */
+  //  private void validateGroupedChildren(AvpRepresentation ap, AvpSet groupedAvp) {
+  //    // we have grouped avp, and its representation, we should validate
+  //    // children.
+  //    for (AvpRepresentation childrenVAvp : ap.getChildren()) {
+  //      AvpSet childSset = groupedAvp.getAvps(childrenVAvp.getCode(), childrenVAvp.getVendorId());
+  //      int count = childSset.size();
   //
-  //			if (!childrenVAvp.isCountValidForMultiplicity(count)) {
-  //				throw new AvpNotAllowedException("AVP: " + childrenVAvp + " has wrong count ,in grouped parent avp - " + (count) + ", allowed: "
-  //						+ childrenVAvp.getMultiplicityIndicator(), ap.getCode(), ap.getVendorId());
-  //			}
-  //			if (childrenVAvp.isGrouped()) {
+  //      if (!childrenVAvp.isCountValidForMultiplicity(count)) {
+  //        throw new AvpNotAllowedException("AVP: " + childrenVAvp + " has wrong count, in grouped parent avp - " + (count) + ", allowed: "
+  //            + childrenVAvp.getMultiplicityIndicator(), ap.getCode(), ap.getVendorId());
+  //      }
+  //      if (childrenVAvp.isGrouped()) {
   //
-  //				validateGrouped(childrenVAvp, childSset);
-  //			}
-  //			// else we are good ?
-  //		}
+  //        validateGrouped(childrenVAvp, childSset);
+  //      }
+  //      // else we are good ?
+  //    }
   //
-  //	}
+  //  }
 
 }

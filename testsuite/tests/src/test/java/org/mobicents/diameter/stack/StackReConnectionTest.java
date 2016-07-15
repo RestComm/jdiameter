@@ -47,7 +47,7 @@ import org.jdiameter.server.impl.StackImpl;
 import org.junit.Test;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -79,6 +79,7 @@ public class StackReConnectionTest {
       Network network = server.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
@@ -90,6 +91,7 @@ public class StackReConnectionTest {
       network = client.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
@@ -118,6 +120,7 @@ public class StackReConnectionTest {
       network = client.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
@@ -169,6 +172,7 @@ public class StackReConnectionTest {
       Network network = server.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
@@ -180,6 +184,7 @@ public class StackReConnectionTest {
       network = client.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
@@ -251,6 +256,7 @@ public class StackReConnectionTest {
       Network network = server.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
@@ -262,6 +268,7 @@ public class StackReConnectionTest {
       network = client.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
@@ -273,6 +280,7 @@ public class StackReConnectionTest {
       network = client2.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
@@ -336,6 +344,7 @@ public class StackReConnectionTest {
       Network network = server.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
@@ -347,17 +356,19 @@ public class StackReConnectionTest {
       network = client.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
       }, ApplicationId.createByAccAppId(193, 19302));
       client.start(Mode.ALL_PEERS, 5000, TimeUnit.MILLISECONDS);
-      
+
       client2.init(clientConfig2);
       clientConfigInputStream2.close();
       network = client2.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
@@ -450,6 +461,7 @@ public class StackReConnectionTest {
       Network network = server.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
@@ -461,17 +473,19 @@ public class StackReConnectionTest {
       network = client.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
       }, ApplicationId.createByAccAppId(193, 19302));
       client.start(Mode.ALL_PEERS, 5000, TimeUnit.MILLISECONDS);
-      
+
       client2.init(clientConfig2);
       clientConfigInputStream2.close();
       network = client2.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
@@ -547,6 +561,7 @@ public class StackReConnectionTest {
       Network network = server.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
@@ -558,17 +573,19 @@ public class StackReConnectionTest {
       network = client.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
       }, ApplicationId.createByAccAppId(193, 19302));
       client.start(Mode.ALL_PEERS, 5000, TimeUnit.MILLISECONDS);
-      
+
       client2.init(clientConfig2);
       clientConfigInputStream2.close();
       network = client2.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
@@ -597,9 +614,9 @@ public class StackReConnectionTest {
 
       peers = server.unwrap(PeerTable.class).getPeerTable();
       assertEquals("Wrong number of peers in table, probably clients tried to reconnect.", stoppedPeerTableSize, peers.size());
-      
-      for(Peer p : peers) {
-        assertFalse("Peer [" + p.getUri() + "] is connected. State[" + p.getState(PeerState.class) + "]", ((IPeer)p).isConnected());
+
+      for (Peer p : peers) {
+        assertFalse("Peer [" + p.getUri() + "] is connected. State[" + p.getState(PeerState.class) + "]", ((IPeer) p).isConnected());
       }
     }
     finally {

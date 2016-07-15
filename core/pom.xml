@@ -1,54 +1,54 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.mobicents.diameter</groupId>
-		<artifactId>diameter-parent</artifactId>
-		<version>1.7.0-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
-	</parent>
+  <parent>
+    <groupId>org.mobicents.diameter</groupId>
+    <artifactId>diameter-parent</artifactId>
+    <version>1.7.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
 
-	<packaging>pom</packaging>
+  <packaging>pom</packaging>
 
-	<artifactId>diameter-core-parent</artifactId>
+  <artifactId>diameter-core-parent</artifactId>
 
-	<name>Restcomm :: Diameter Core :: ${project.artifactId}</name>
+  <name>Restcomm :: Diameter Core :: ${project.artifactId}</name>
 
-	<modules>
-		<module>jdiameter</module>
-		<module>jdiameter-ha</module>
-		<module>mux</module>
-	</modules>
+  <modules>
+    <module>jdiameter</module>
+    <module>jdiameter-ha</module>
+    <module>mux</module>
+  </modules>
 
-	<properties>
-		<slf4j.version>1.5.8</slf4j.version>
-		<picocontainer.version>2.13.5</picocontainer.version>
-		<commons-pool.version>1.5.5</commons-pool.version>
-	</properties>
+  <properties>
+    <slf4j.version>1.5.8</slf4j.version>
+    <picocontainer.version>2.13.5</picocontainer.version>
+    <commons-pool.version>1.5.5</commons-pool.version>
+  </properties>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<groupId>org.mobicents.tools</groupId>
-				<inherited>false</inherited>
-				<executions />
-				<configuration>
-					<eclipseProjectName>restcomm-diameter-core</eclipseProjectName>
-					<generateProjectsForModules>false</generateProjectsForModules>
-				</configuration>
-			</plugin>
-		</plugins>       
-	</build>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <groupId>org.mobicents.tools</groupId>
+        <inherited>false</inherited>
+        <executions />
+        <configuration>
+          <eclipseProjectName>restcomm-diameter-core</eclipseProjectName>
+          <generateProjectsForModules>false</generateProjectsForModules>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
-	<profiles>
-		<profile>
-			<id>maven-release</id>
-			<modules>
-				<module>docs</module>
-			</modules>
-		</profile>
-	</profiles>
+  <profiles>
+    <profile>
+      <id>maven-release</id>
+      <modules>
+        <module>docs</module>
+      </modules>
+    </profile>
+  </profiles>
 
 </project>
