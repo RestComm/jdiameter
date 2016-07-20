@@ -68,6 +68,7 @@ import org.jdiameter.client.api.parser.ParseException;
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:grzegorz.figiel@pro-ids.com"> Grzegorz Figiel [ProIDS] </a>
  */
 class AvpSetImpl implements AvpSet {
 
@@ -131,6 +132,26 @@ class AvpSetImpl implements AvpSet {
     }
     return result;
   }
+
+  @Override
+    public int getAvpIndex(int avpCode) {
+        for (Avp avp : this.avps) {
+            if (avp.getCode() == avpCode ) {
+                return this.avps.indexOf(avp);
+            }
+        }
+        return -1;
+    }
+
+  @Override
+    public int getAvpIndex(int avpCode, long vendorId) {
+        for (Avp avp : this.avps) {
+            if (avp.getCode() == avpCode && avp.getVendorId() == vendorId) {
+                return this.avps.indexOf(avp);
+            }
+        }
+        return -1;
+    }
 
   @Override
   public AvpSet removeAvp(int avpCode) {
@@ -219,7 +240,7 @@ class AvpSetImpl implements AvpSet {
   public Avp insertAvp(int index, int avpCode, long value, long vndId, boolean mFlag, boolean pFlag, boolean asUnsigned) {
     int flags = ((vndId != 0 ? 0x80 : 0) | (mFlag ? 0x40 : 0) | (pFlag ? 0x20 : 0));
     Avp res = new AvpImpl(avpCode, flags, vndId, asUnsigned ? parser.intU32ToBytes(value) : parser.int64ToBytes(value));
-    this.avps.add(res);
+        this.avps.add(index, res);
     return res;
   }
 
