@@ -39,6 +39,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -91,7 +93,11 @@ public class NetworkGuard implements INetworkGuard {
           public void initChannel(SocketChannel ch) throws Exception {
             ch.pipeline().addLast(new ClientHandler());
           }
-        }).option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true);
+        }).option(ChannelOption.SO_BACKLOG, 128)
+        .childOption(ChannelOption.SO_KEEPALIVE, true)
+        //.childOption(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT)
+        .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+        ;
 
     try {
       channels.add(bootstrap.bind(localAddress).sync().channel());

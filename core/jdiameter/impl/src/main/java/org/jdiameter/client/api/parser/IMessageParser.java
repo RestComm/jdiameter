@@ -109,4 +109,12 @@ public interface IMessageParser {
      */
     ByteBuffer encodeMessage(IMessage message) throws ParseException;
 
+    /**
+     * Encode message to byte[]
+     * @param message diameter message
+     * @return instance of message
+     * @throws ParseException
+     */
+    byte[] encodeMessageToBytes(IMessage message) throws ParseException;
+
 }
