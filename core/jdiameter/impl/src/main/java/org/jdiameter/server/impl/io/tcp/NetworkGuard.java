@@ -15,10 +15,10 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
- * 
+ *
  * This file incorporates work covered by the following copyright and
  * permission notice:
- * 
+ *
  *   JBoss, Home of Professional Open Source
  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
  *   by the @authors tag. See the copyright.txt in the distribution for a
@@ -45,16 +45,6 @@ package org.jdiameter.server.impl.io.tcp;
 
 import static org.jdiameter.server.impl.helpers.Parameters.BindDelay;
 
-import org.jdiameter.client.api.parser.IMessageParser;
-import org.jdiameter.client.impl.transport.tcp.TCPClientConnection;
-import org.jdiameter.common.api.concurrent.DummyConcurrentFactory;
-import org.jdiameter.common.api.concurrent.IConcurrentFactory;
-import org.jdiameter.server.api.IMetaData;
-import org.jdiameter.server.api.io.INetworkConnectionListener;
-import org.jdiameter.server.api.io.INetworkGuard;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -72,9 +62,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.jdiameter.client.api.parser.IMessageParser;
+import org.jdiameter.client.impl.transport.tcp.TCPClientConnection;
+import org.jdiameter.common.api.concurrent.DummyConcurrentFactory;
+import org.jdiameter.common.api.concurrent.IConcurrentFactory;
+import org.jdiameter.server.api.IMetaData;
+import org.jdiameter.server.api.io.INetworkConnectionListener;
+import org.jdiameter.server.api.io.INetworkGuard;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * TCP implementation of {@link org.jdiameter.server.api.io.INetworkGuard}.
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -88,8 +88,8 @@ public class NetworkGuard implements INetworkGuard {
   protected long bindDelay;
   protected CopyOnWriteArrayList<INetworkConnectionListener> listeners = new CopyOnWriteArrayList<INetworkConnectionListener>();
   protected boolean isWork = false;
-//  protected Selector selector;
-//  protected ServerSocket serverSocket;
+  //  protected Selector selector;
+  //  protected ServerSocket serverSocket;
 
   //private Thread thread;
   private List<GuardTask> tasks = new ArrayList<GuardTask>();
@@ -106,7 +106,7 @@ public class NetworkGuard implements INetworkGuard {
     this(new InetAddress[]{inetAddress}, port, concurrentFactory, parser, data);
   }
 
-  
+
   public NetworkGuard(InetAddress[] inetAddress, int port,
       IConcurrentFactory concurrentFactory, IMessageParser parser,
       IMetaData data) throws Exception {
@@ -116,7 +116,7 @@ public class NetworkGuard implements INetworkGuard {
     //this.thread = this.concurrentFactory.getThread("NetworkGuard", this);
     this.bindDelay = data.getConfiguration().getLongValue(BindDelay.ordinal(), (Long) BindDelay.defValue());
 
-    try {        
+    try {
       for (int addrIdx = 0; addrIdx < inetAddress.length; addrIdx++) {
         GuardTask guardTask = new GuardTask(new InetSocketAddress(inetAddress[addrIdx], port));
         Thread t = this.concurrentFactory.getThread(guardTask);
@@ -125,7 +125,7 @@ public class NetworkGuard implements INetworkGuard {
       }
       isWork = true;
       for (GuardTask gt : this.tasks) {
-          gt.start();
+        gt.start();
       }
       //thread.start();
     }
@@ -135,12 +135,14 @@ public class NetworkGuard implements INetworkGuard {
     }
   }
 
+  @Override
   public void addListener(INetworkConnectionListener listener) {
     if (!listeners.contains(listener)) {
       listeners.add(listener);
     }
   }
 
+  @Override
   public void remListener(INetworkConnectionListener listener) {
     listeners.remove(listener);
   }
@@ -150,10 +152,11 @@ public class NetworkGuard implements INetworkGuard {
     return "NetworkGuard:" + (this.tasks.size() != 0 ? this.tasks : "closed");
   }
 
+  @Override
   public void destroy() {
     isWork = false;
     Iterator<GuardTask> it = this.tasks.iterator();
-    while(it.hasNext()){
+    while (it.hasNext()) {
       GuardTask gt = it.next();
       it.remove();
       gt.cleanTask();
@@ -166,13 +169,14 @@ public class NetworkGuard implements INetworkGuard {
     private ServerSocket serverSocket;
 
     private final ScheduledExecutorService binder = Executors.newSingleThreadScheduledExecutor();
-    
-    public GuardTask(final InetSocketAddress addr) throws IOException {
-      if(bindDelay > 0) {
+
+    GuardTask(final InetSocketAddress addr) throws IOException {
+      if (bindDelay > 0) {
         logger.info("Socket binding will be delayed by {}ms...", bindDelay);
       }
 
       Runnable task = new Runnable() {
+        @Override
         public void run() {
           try {
             logger.debug("Binding {} after delaying {}ms...", addr, bindDelay);
@@ -197,6 +201,7 @@ public class NetworkGuard implements INetworkGuard {
       this.thread.start();
     }
 
+    @Override
     public void run() {
       try {
         while (isWork) {
@@ -207,8 +212,9 @@ public class NetworkGuard implements INetworkGuard {
           }
           // without timeout when we kill socket, this causes errors, bug in VM ?
           int num = selector.select(100);
-          if (num == 0)
+          if (num == 0) {
             continue;
+          }
           Set<SelectionKey> keys = selector.selectedKeys();
           try {
             for (SelectionKey key : keys) {

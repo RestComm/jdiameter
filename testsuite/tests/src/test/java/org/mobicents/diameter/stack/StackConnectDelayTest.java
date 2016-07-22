@@ -51,7 +51,7 @@ import org.junit.runners.Parameterized.Parameters;
 import org.mobicents.diameter.stack.functional.acc.base.AccSessionFTFlowTest;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -101,12 +101,13 @@ public class StackConnectDelayTest {
       Network network = server.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
       }, ApplicationId.createByAccAppId(193, 19302));
       server.start();
-      
+
       List<Peer> peers = server.unwrap(PeerTable.class).getPeerTable();
       assertEquals("Wrong num of connections, initial setup did not succeed. ", 0, peers.size());
       client1.init(client1Config);
@@ -116,19 +117,21 @@ public class StackConnectDelayTest {
       network = client1.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
       }, ApplicationId.createByAccAppId(193, 19302));
-      
+
       network = client2.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           return null;
         }
       }, ApplicationId.createByAccAppId(193, 19302));
-      
+
       try {
         client1.start(Mode.ALL_PEERS, 5000, TimeUnit.MILLISECONDS);
         fail("Client 1 should not be able to connect since server should not be bound.");
@@ -154,7 +157,7 @@ public class StackConnectDelayTest {
       assertTrue("Peer not connected. State[" + p.getState(PeerState.class) + "]", ((IPeer) peers.get(0)).isConnected());
       assertEquals("Peer has wrong realm.","mobicents.org", p.getRealmName());
 
-      
+
     }
     finally {
       try {

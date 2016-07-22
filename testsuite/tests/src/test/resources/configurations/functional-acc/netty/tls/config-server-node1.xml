@@ -42,7 +42,7 @@
       <Peer name="aaa://127.0.0.1:13868" attempt_connect="false" rating="1" />
     </Peers>
     <Realms>
-    	<!-- define backroute to client realm -->
+      <!-- define backroute to client realm -->
       <Realm name="client.mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
         <ApplicationID>
           <VendorId value="0" />
@@ -50,20 +50,20 @@
           <AcctApplId value="300" />
         </ApplicationID>
       </Realm>
-    
+
     </Realms>
   </Network>
-  
+
   <Security>
     <SecurityData name="tls-server" protocol="TLSv1" enable_session_creation="true" use_client_mode="false" need_client_auth="true">
       <KeyData manager="PKIX" store="JKS" file="src/test/resources/certs/server-ks.jks" pwd="changeit" />
       <TrustData manager="PKIX" store="JKS" file="src/test/resources/certs/server-ts.jks" pwd="changeit" />
     </SecurityData>
   </Security>
-  
+
   <Extensions>
     <Connection value="org.jdiameter.client.impl.transport.tls.netty.TLSClientConnection" />
     <NetworkGuard value="org.jdiameter.server.impl.io.tls.netty.NetworkGuard" />
   </Extensions>
-  
+
 </Configuration>

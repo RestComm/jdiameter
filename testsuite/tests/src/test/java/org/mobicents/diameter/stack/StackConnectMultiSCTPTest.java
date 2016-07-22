@@ -19,11 +19,10 @@
 
 package org.mobicents.diameter.stack;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -34,14 +33,17 @@ public class StackConnectMultiSCTPTest extends StackConnectMultiBaseTest {
   private String clientConfigName1 = "multi-sctp-jdiameter-client-one.xml";
   private String clientConfigName2 = "multi-sctp-jdiameter-client-two.xml";
 
+  @Override
   public String getServerConfigName() {
     return serverConfigName;
   }
 
+  @Override
   public String getClient1ConfigName() {
     return clientConfigName1;
   }
 
+  @Override
   public String getClient2ConfigName() {
     return clientConfigName2;
   }
@@ -49,6 +51,7 @@ public class StackConnectMultiSCTPTest extends StackConnectMultiBaseTest {
   // 1. start server
   // 2. start client1 + wait for connection
   // 3. start client2 + wait for connection
+  @Override
   @Test
   public void testConnectUndefined() throws Exception {
     super.testConnectUndefined();

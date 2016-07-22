@@ -36,7 +36,6 @@ import org.jdiameter.api.cca.ClientCCASession;
 import org.jdiameter.api.cca.ClientCCASessionListener;
 import org.jdiameter.api.cca.ServerCCASession;
 import org.jdiameter.api.cca.events.JCreditControlRequest;
-import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.cca.ClientCCASessionState;
 import org.jdiameter.common.api.app.cca.IClientCCASessionContext;
 import org.jdiameter.common.impl.app.cca.CCASessionFactoryImpl;
@@ -46,7 +45,7 @@ import org.mobicents.diameter.stack.functional.TBase;
 
 /**
  * @author baranowb
- * 
+ *
  */
 public abstract class AbstractClient extends TBase implements ClientCCASessionListener, IClientCCASessionContext {
 
@@ -66,13 +65,14 @@ public abstract class AbstractClient extends TBase implements ClientCCASessionLi
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(0, 4));
       CCASessionFactoryImpl creditControlSessionFactory = new CCASessionFactoryImpl(this.sessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ServerCCASession.class, creditControlSessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ClientCCASession.class, creditControlSessionFactory);
+      sessionFactory.registerAppFacory(ServerCCASession.class, creditControlSessionFactory);
+      sessionFactory.registerAppFacory(ClientCCASession.class, creditControlSessionFactory);
 
       creditControlSessionFactory.setStateListener(this);
       creditControlSessionFactory.setClientSessionListener(this);
       creditControlSessionFactory.setClientContextListener(this);
-      this.clientCCASession = ((ISessionFactory) this.sessionFactory).getNewAppSession(this.sessionFactory.getSessionId("xxTESTxx"), getApplicationId(), ClientCCASession.class, (Object) null);
+      this.clientCCASession = this.sessionFactory.getNewAppSession(this.sessionFactory.getSessionId("xxTESTxx"), getApplicationId(), ClientCCASession.class,
+          (Object) null);
     }
     finally {
       try {
@@ -107,18 +107,20 @@ public abstract class AbstractClient extends TBase implements ClientCCASessionLi
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.api.app.cca.IClientCCASessionContext# getDefaultTxTimerValue()
    */
+  @Override
   public long getDefaultTxTimerValue() {
     return 10;
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.cca.ClientCCASessionListener#getDefaultDDFHValue()
    */
+  @Override
   public int getDefaultDDFHValue() {
     // DDFH_CONTINUE: 1
     return 1;
@@ -126,9 +128,10 @@ public abstract class AbstractClient extends TBase implements ClientCCASessionLi
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.cca.ClientCCASessionListener#getDefaultCCFHValue()
    */
+  @Override
   public int getDefaultCCFHValue() {
     // CCFH_CONTINUE: 1
     return 1;
@@ -136,16 +139,19 @@ public abstract class AbstractClient extends TBase implements ClientCCASessionLi
 
   // ----------- should not be called..
 
+  @Override
   public void receivedSuccessMessage(Request request, Answer answer) {
     fail("Received \"SuccessMessage\" event, request[" + request + "], answer[" + answer + "]", null);
 
   }
 
+  @Override
   public void timeoutExpired(Request request) {
     fail("Received \"Timoeout\" event, request[" + request + "]", null);
 
   }
 
+  @Override
   public Answer processRequest(Request request) {
     fail("Received \"Request\" event, request[" + request + "]", null);
     return null;
@@ -155,74 +161,82 @@ public abstract class AbstractClient extends TBase implements ClientCCASessionLi
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.api.app.cca.IClientCCASessionContext#txTimerExpired (org.jdiameter.api.cca.ClientCCASession)
    */
+  @Override
   public void txTimerExpired(ClientCCASession session) {
     // NOP
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.api.app.cca.IClientCCASessionContext# grantAccessOnDeliverFailure(org.jdiameter.api.cca.ClientCCASession,
    * org.jdiameter.api.Message)
    */
+  @Override
   public void grantAccessOnDeliverFailure(ClientCCASession clientCCASessionImpl, Message request) {
     // NOP
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.api.app.cca.IClientCCASessionContext# denyAccessOnDeliverFailure(org.jdiameter.api.cca.ClientCCASession,
    * org.jdiameter.api.Message)
    */
+  @Override
   public void denyAccessOnDeliverFailure(ClientCCASession clientCCASessionImpl, Message request) {
     // NOP
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.api.app.cca.IClientCCASessionContext# grantAccessOnTxExpire(org.jdiameter.api.cca.ClientCCASession)
    */
+  @Override
   public void grantAccessOnTxExpire(ClientCCASession clientCCASessionImpl) {
     // NOP
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.api.app.cca.IClientCCASessionContext# denyAccessOnTxExpire(org.jdiameter.api.cca.ClientCCASession)
    */
+  @Override
   public void denyAccessOnTxExpire(ClientCCASession clientCCASessionImpl) {
     // NOP
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.api.app.cca.IClientCCASessionContext# grantAccessOnFailureMessage(org.jdiameter.api.cca.ClientCCASession)
    */
+  @Override
   public void grantAccessOnFailureMessage(ClientCCASession clientCCASessionImpl) {
     // NOP
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.api.app.cca.IClientCCASessionContext# denyAccessOnFailureMessage(org.jdiameter.api.cca.ClientCCASession)
    */
+  @Override
   public void denyAccessOnFailureMessage(ClientCCASession clientCCASessionImpl) {
     // NOP
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.api.app.cca.IClientCCASessionContext# indicateServiceError(org.jdiameter.api.cca.ClientCCASession)
    */
+  @Override
   public void indicateServiceError(ClientCCASession clientCCASessionImpl) {
     // NOP
   }
@@ -231,7 +245,8 @@ public abstract class AbstractClient extends TBase implements ClientCCASessionLi
   protected JCreditControlRequest createCCR(int ccRequestType, int requestNumber, ClientCCASession ccaSession) throws Exception {
 
     // Create Credit-Control-Request
-    JCreditControlRequest ccr = new JCreditControlRequestImpl(ccaSession.getSessions().get(0).createRequest(JCreditControlRequest.code, getApplicationId(), getServerRealmName()));
+    JCreditControlRequest ccr =
+        new JCreditControlRequestImpl(ccaSession.getSessions().get(0).createRequest(JCreditControlRequest.code, getApplicationId(), getServerRealmName()));
 
     // AVPs present by default: Origin-Host, Origin-Realm, Session-Id,
     // Vendor-Specific-Application-Id, Destination-Realm

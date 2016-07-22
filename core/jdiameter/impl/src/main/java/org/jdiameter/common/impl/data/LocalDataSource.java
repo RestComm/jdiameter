@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.common.impl.data;
 
@@ -59,14 +79,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Local implementation of session datasource for {@link ISessionDatasource}
- * 
+ *
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class LocalDataSource implements ISessionDatasource {
 
   //provided by impl, no way to change that, no conf! :)
-  protected HashMap<Class<? extends IAppSessionData>, IAppSessionDataFactory<? extends IAppSessionData>> appSessionDataFactories = new HashMap<Class<? extends IAppSessionData>, IAppSessionDataFactory<? extends IAppSessionData>>();
+  protected HashMap<Class<? extends IAppSessionData>, IAppSessionDataFactory<? extends IAppSessionData>> appSessionDataFactories =
+      new HashMap<Class<? extends IAppSessionData>, IAppSessionDataFactory<? extends IAppSessionData>>();
 
   private ConcurrentHashMap<String, SessionEntry> sessionIdToEntry = new ConcurrentHashMap<String, LocalDataSource.SessionEntry>();
 
@@ -90,15 +111,17 @@ public class LocalDataSource implements ISessionDatasource {
     this();
   }
 
+  @Override
   public boolean exists(String sessionId) {
     return this.sessionIdToEntry.containsKey(sessionId);
   }
 
+  @Override
   public void setSessionListener(String sessionId, NetworkReqListener data) {
     logger.debug("setSessionListener({}, {})", sessionId, data);
 
     SessionEntry se = sessionIdToEntry.get(sessionId);
-    if(se != null) {
+    if (se != null) {
       se.listener = data;
     }
     else {
@@ -106,16 +129,18 @@ public class LocalDataSource implements ISessionDatasource {
     }
   }
 
+  @Override
   public NetworkReqListener getSessionListener(String sessionId) {
     SessionEntry se = sessionIdToEntry.get(sessionId);
     logger.debug("getSessionListener({}) => {}", sessionId, se);
     return se != null ? se.listener : null;
   }
 
+  @Override
   public NetworkReqListener removeSessionListener(String sessionId) {
     SessionEntry se = sessionIdToEntry.get(sessionId);
     logger.debug("removeSessionListener({}) => {}", sessionId, se);
-    if(se != null) {
+    if (se != null) {
       NetworkReqListener lst = se.listener;
       se.listener = null;
       return lst;
@@ -125,16 +150,17 @@ public class LocalDataSource implements ISessionDatasource {
     }
   }
 
+  @Override
   public void addSession(BaseSession session) {
     logger.debug("addSession({})", session);
     SessionEntry se = null;
 
     String sessionId = session.getSessionId();
     //FIXME: check here replicable vs not replicable?
-    if(this.sessionIdToEntry.containsKey(sessionId)) {
+    if (this.sessionIdToEntry.containsKey(sessionId)) {
       se = this.sessionIdToEntry.get(sessionId);
-      if( !(se.session instanceof ISession) || se.session.isReplicable()) { //must be not replicable so we can "overwrite"
-        throw new IllegalArgumentException("Sessin with id: "+sessionId+", already exists!");
+      if ( !(se.session instanceof ISession) || se.session.isReplicable()) { //must be not replicable so we can "overwrite"
+        throw new IllegalArgumentException("Sessin with id: " + sessionId + ", already exists!");
       }
       else {
         this.sessionIdToEntry.put(sessionId, se);
@@ -147,12 +173,14 @@ public class LocalDataSource implements ISessionDatasource {
     this.sessionIdToEntry.put(session.getSessionId(), se);
   }
 
+  @Override
   public BaseSession getSession(String sessionId) {
     SessionEntry se = sessionIdToEntry.get(sessionId);
     logger.debug("getSession({}) => {}", sessionId, se);
     return se != null ? se.session : null;
   }
 
+  @Override
   public void removeSession(String sessionId) {
     SessionEntry se = this.sessionIdToEntry.remove(sessionId);
     logger.debug("removeSession({}) => {}", sessionId, se);
@@ -162,6 +190,7 @@ public class LocalDataSource implements ISessionDatasource {
   /* (non-Javadoc)
    * @see org.jdiameter.common.api.data.ISessionDatasource#start()
    */
+  @Override
   public void start() {
     // NOP
   }
@@ -169,6 +198,7 @@ public class LocalDataSource implements ISessionDatasource {
   /* (non-Javadoc)
    * @see org.jdiameter.common.api.data.ISessionDatasource#stop()
    */
+  @Override
   public void stop() {
     // NOP
   }
@@ -176,6 +206,7 @@ public class LocalDataSource implements ISessionDatasource {
   /* (non-Javadoc)
    * @see org.jdiameter.common.api.data.ISessionDatasource#isClustered()
    */
+  @Override
   public boolean isClustered() {
     return false;
   }
@@ -198,7 +229,7 @@ public class LocalDataSource implements ISessionDatasource {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.jdiameter.common.api.data.ISessionDatasource#getDataFactory(java.
    * lang.Class)

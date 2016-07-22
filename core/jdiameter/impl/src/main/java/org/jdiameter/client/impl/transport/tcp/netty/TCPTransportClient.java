@@ -19,14 +19,6 @@
 
 package org.jdiameter.client.impl.transport.tcp.netty;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-
-import org.jdiameter.client.api.IMessage;
-import org.jdiameter.client.api.parser.IMessageParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -36,16 +28,21 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.concurrent.DefaultEventExecutorGroup;
-import io.netty.util.concurrent.EventExecutorGroup;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+
+import org.jdiameter.client.api.IMessage;
+import org.jdiameter.client.api.parser.IMessageParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author <a href="mailto:jqayyum@gmail.com"> Jehanzeb Qayyum </a>
  */
 public class TCPTransportClient {
   protected EventLoopGroup workerGroup;
-  protected EventExecutorGroup eventExecutorGroup = new DefaultEventExecutorGroup(4);
   protected Channel channel;
   protected TCPClientConnection parentConnection;
   protected InetSocketAddress destAddress;
@@ -99,7 +96,7 @@ public class TCPTransportClient {
     ChannelPipeline pipeline = this.channel.pipeline();
     pipeline.addLast("decoder", new DiameterMessageDecoder(parentConnection, parser));
     pipeline.addLast("encoder", new DiameterMessageEncoder(parser));
-    pipeline.addLast(eventExecutorGroup, "msgHandler", new DiameterMessageHandler(parentConnection));
+    pipeline.addLast("msgHandler", new DiameterMessageHandler(parentConnection));
 
     this.destAddress = (InetSocketAddress) this.channel.remoteAddress();
   }
@@ -120,7 +117,7 @@ public class TCPTransportClient {
             ChannelPipeline pipeline = ch.pipeline();
             pipeline.addLast("decoder", new DiameterMessageDecoder(parentConnection, parser));
             pipeline.addLast("encoder", new DiameterMessageEncoder(parser));
-            pipeline.addLast(eventExecutorGroup, "msgHandler", new DiameterMessageHandler(parentConnection));
+            pipeline.addLast("msgHandler", new DiameterMessageHandler(parentConnection));
           }
         });
 
@@ -138,19 +135,7 @@ public class TCPTransportClient {
     }
     closeChannel();
     closeWorkerGroup();
-    closeEventExecutorGroup();
     logger.debug("Transport is stopped [{}]", socketDescription);
-  }
-
-  private void closeEventExecutorGroup() {
-    if (eventExecutorGroup != null) {
-      try {
-        eventExecutorGroup.shutdownGracefully().sync();
-      } catch (InterruptedException e) {
-        logger.error("Error stopping socket " + socketDescription, e);
-      }
-      eventExecutorGroup = null;
-    }
   }
 
   private void closeWorkerGroup() {
@@ -187,6 +172,7 @@ public class TCPTransportClient {
       throw new IllegalStateException("TCP transport is stopped on socket " + socketDescription);
     }
     channel.writeAndFlush(message);
+    //channel.write(message);
   }
 
   public String toString() {

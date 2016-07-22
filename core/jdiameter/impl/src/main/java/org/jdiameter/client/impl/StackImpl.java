@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.client.impl;
 
@@ -70,7 +90,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Use stack extension point
- * 
+ *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
@@ -91,11 +111,13 @@ public class StackImpl implements IContainer, StackImplMBean {
    */
   protected ScheduledExecutorService scheduledFacility;
 
+  @Override
   @SuppressWarnings("unchecked")
   public SessionFactory init(Configuration config) throws IllegalDiameterStateException, InternalException {
     lock.lock();
     if (log.isInfoEnabled()) {
-      log.info("(-)(-)(-)(-)(-) Starting " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" + VersionProperties.instance.getProperty("version") + " (-)(-)(-)(-)(-)");
+      log.info("(-)(-)(-)(-)(-) Starting " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" +
+          VersionProperties.instance.getProperty("version") + " (-)(-)(-)(-)(-)");
     }
     try {
       if (state != StackState.IDLE) {
@@ -113,7 +135,7 @@ public class StackImpl implements IContainer, StackImplMBean {
         throw new InternalException(e);
       }
       this.config = config;
-      this.concurrentFactory = (IConcurrentFactory) assembler.getComponentInstance(IConcurrentFactory.class);
+      this.concurrentFactory = assembler.getComponentInstance(IConcurrentFactory.class);
 
       try {
         Configuration[] dictionaryConfigs = config.getChildren(Parameters.Dictionary.ordinal());
@@ -141,7 +163,7 @@ public class StackImpl implements IContainer, StackImplMBean {
       }
 
       // create manager
-      this.peerManager = (IPeerTable) assembler.getComponentInstance(IPeerTable.class);
+      this.peerManager = assembler.getComponentInstance(IPeerTable.class);
       this.peerManager.setAssembler(assembler);
 
       this.state = StackState.CONFIGURED;
@@ -150,9 +172,10 @@ public class StackImpl implements IContainer, StackImplMBean {
       lock.unlock();
     }
     if (log.isInfoEnabled()) {
-      log.info("(-)(-)(-)(-)(-) Started  " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" + VersionProperties.instance.getProperty("version") + " (-)(-)(-)(-)(-)");
+      log.info("(-)(-)(-)(-)(-) Started  " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" +
+          VersionProperties.instance.getProperty("version") + " (-)(-)(-)(-)(-)");
     }
-    return (SessionFactory) assembler.getComponentInstance(SessionFactory.class);
+    return assembler.getComponentInstance(SessionFactory.class);
   }
 
   private void createDictionary(String clazz, boolean validatorEnabled, ValidatorLevel validatorSendLevel, ValidatorLevel validatorReceiveLevel)
@@ -161,20 +184,23 @@ public class StackImpl implements IContainer, StackImplMBean {
     DictionarySingleton.init(clazz, validatorEnabled, validatorSendLevel, validatorReceiveLevel);
   }
 
+  @Override
   public SessionFactory getSessionFactory() throws IllegalDiameterStateException {
     if (state == StackState.CONFIGURED || state == StackState.STARTED) {
       // FIXME: When possible, get rid of IoC here.
-      return (SessionFactory) assembler.getComponentInstance(SessionFactory.class);
+      return assembler.getComponentInstance(SessionFactory.class);
     }
     else {
       throw new IllegalDiameterStateException();
     }
   }
 
+  @Override
   public Dictionary getDictionary() throws IllegalDiameterStateException {
     return DictionarySingleton.getDictionary();
   }
 
+  @Override
   public void start() throws IllegalDiameterStateException, InternalException {
     lock.lock();
     try {
@@ -194,6 +220,7 @@ public class StackImpl implements IContainer, StackImplMBean {
     }
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public void start(final Mode mode, long timeOut, TimeUnit timeUnit) throws IllegalDiameterStateException, InternalException {
     lock.lock();
@@ -209,6 +236,7 @@ public class StackImpl implements IContainer, StackImplMBean {
       // considering only "to connect" peers are on the table at this time...
       final CountDownLatch barrier = new CountDownLatch(Mode.ANY_PEER.equals(mode) ? Math.min(peerTable.size(), 1) : peerTable.size());
       StateChangeListener listener = new AbstractStateChangeListener() {
+        @Override
         public void stateChanged(Enum oldState, Enum newState) {
           if (PeerState.OKAY.equals(newState)) {
             barrier.countDown();
@@ -252,17 +280,20 @@ public class StackImpl implements IContainer, StackImplMBean {
     }
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public void stop(long timeOut, TimeUnit timeUnit, int disconnectCause) throws IllegalDiameterStateException, InternalException {
     lock.lock();
     try {
       if (state == StackState.STARTED || state == StackState.CONFIGURED) {
         if (log.isInfoEnabled()) {
-          log.info("(-)(-)(-)(-)(-) Stopping " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" + VersionProperties.instance.getProperty("version") + " (-)(-)(-)(-)(-)");
+          log.info("(-)(-)(-)(-)(-) Stopping " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" +
+              VersionProperties.instance.getProperty("version") + " (-)(-)(-)(-)(-)");
         }
         List<Peer> peerTable = peerManager.getPeerTable();
         final CountDownLatch barrier = new CountDownLatch(peerTable.size());
         StateChangeListener listener = new AbstractStateChangeListener() {
+          @Override
           public void stateChanged(Enum oldState, Enum newState) {
             if (PeerState.DOWN.equals(newState)) {
               barrier.countDown();
@@ -316,7 +347,8 @@ public class StackImpl implements IContainer, StackImplMBean {
         }
         state = StackState.STOPPED;
         if (log.isInfoEnabled()) {
-          log.info("(-)(-)(-)(-)(-) Stopped  " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" + VersionProperties.instance.getProperty("version") + " (-)(-)(-)(-)(-)");
+          log.info("(-)(-)(-)(-)(-) Stopped  " + VersionProperties.instance.getProperty("vendor") + " DIAMETER Stack v" +
+              VersionProperties.instance.getProperty("version") + " (-)(-)(-)(-)(-)");
         }
       }
     }
@@ -325,6 +357,7 @@ public class StackImpl implements IContainer, StackImplMBean {
     }
   }
 
+  @Override
   public void destroy() {
     // Be friendly
     if (state == StackState.STARTED) {
@@ -353,21 +386,25 @@ public class StackImpl implements IContainer, StackImplMBean {
     }
   }
 
+  @Override
   public boolean isActive() {
     return state == StackState.STARTED;
   }
 
+  @Override
   public java.util.logging.Logger getLogger() {
     return java.util.logging.Logger.getAnonymousLogger();
   }
 
+  @Override
   public MetaData getMetaData() {
     if (state == StackState.IDLE) {
       throw new IllegalStateException("Meta data not defined");
     }
-    return (MetaData) assembler.getComponentInstance(IMetaData.class);
+    return assembler.getComponentInstance(IMetaData.class);
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public <T extends BaseSession> T getSession(String sessionId, Class<T> clazz) throws InternalException {
     if (getState() == StackState.IDLE) {
@@ -377,6 +414,7 @@ public class StackImpl implements IContainer, StackImplMBean {
     return bs != null ? (T) bs : null;
   }
 
+  @Override
   public boolean isWrapperFor(Class<?> aClass) throws InternalException {
     boolean isWrap = aClass == PeerTable.class;
     if (!isWrap) {
@@ -391,6 +429,7 @@ public class StackImpl implements IContainer, StackImplMBean {
     return isWrap;
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public <T> T unwrap(Class<T> aClass) throws InternalException {
     Object unwrapObject = null;
@@ -412,42 +451,52 @@ public class StackImpl implements IContainer, StackImplMBean {
 
   // Extended methods
 
+  @Override
   public StackState getState() {
     return state;
   }
 
+  @Override
   public Configuration getConfiguration() {
     return config;
   }
 
+  @Override
   public IAssembler getAssemblerFacility() {
     return assembler;
   }
 
+  @Override
   public void sendMessage(IMessage message) throws RouteException, AvpDataException, IllegalDiameterStateException, IOException {
     peerManager.sendMessage(message);
   }
 
+  @Override
   public void addSessionListener(String sessionId, NetworkReqListener listener) {
     peerManager.addSessionReqListener(sessionId, listener);
   }
 
+  @Override
   public void removeSessionListener(String sessionId) {
     peerManager.removeSessionListener(sessionId);
   }
 
+  @Override
   public ScheduledExecutorService getScheduledFacility() {
     return scheduledFacility;
   }
 
+  @Override
   public IConcurrentFactory getConcurrentFactory() {
     return this.concurrentFactory;
   }
 
+  @Override
   public String configuration() {
     return config != null ? config.toString() : "not set";
   }
 
+  @Override
   public String metaData() {
     try {
       return getMetaData().toString();
@@ -457,6 +506,7 @@ public class StackImpl implements IContainer, StackImplMBean {
     }
   }
 
+  @Override
   public String peerDescription(String name) {
     try {
       for (Peer p : unwrap(PeerTable.class).getPeerTable()) {
@@ -472,6 +522,7 @@ public class StackImpl implements IContainer, StackImplMBean {
     return "not set";
   }
 
+  @Override
   public String peerList() {
     try {
       return unwrap(PeerTable.class).getPeerTable().toString();
@@ -481,6 +532,7 @@ public class StackImpl implements IContainer, StackImplMBean {
     }
   }
 
+  @Override
   public void stop(int disconnectCause) {
     try {
       stop(10, TimeUnit.SECONDS, disconnectCause);

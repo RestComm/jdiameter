@@ -39,7 +39,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 /**
- * 
+ *
  * @author <a href="mailto:jqayyum@gmail.com"> Jehanzeb Qayyum </a>
  */
 public class TLSTransportClient {

@@ -15,10 +15,10 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
- * 
+ *
  * This file incorporates work covered by the following copyright and
  * permission notice:
- * 
+ *
  *   JBoss, Home of Professional Open Source
  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
  *   by the @authors tag. See the copyright.txt in the distribution for a
@@ -58,10 +58,9 @@ import org.jdiameter.server.api.io.INetworkConnectionListener;
 import org.jdiameter.server.api.io.INetworkGuard;
 import org.jdiameter.server.api.io.ITransportLayerFactory;
 import org.jdiameter.server.impl.helpers.ExtensionPoint;
-import org.jdiameter.server.impl.helpers.Parameters;
 
 /**
- * 
+ *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
@@ -79,18 +78,19 @@ public class TransportLayerFactory extends org.jdiameter.client.impl.transport.T
     this.concurrentFactory = concurrentFactory;
     this.metaData = metaData;
     String networkGuardClassName = null;
-    Configuration[] children = config.getChildren(Parameters.Extensions.ordinal());
+    Configuration[] children = config.getChildren(org.jdiameter.client.impl.helpers.Parameters.Extensions.ordinal());
     // extract network guard class name.
-    AppConfiguration internalExtensions = (AppConfiguration) children[ExtensionPoint.Internal.id()];
+    AppConfiguration internalExtensions = (AppConfiguration) children[org.jdiameter.client.impl.helpers.ExtensionPoint.Internal.id()];
     networkGuardClassName = internalExtensions.getStringValue(ExtensionPoint.InternalNetworkGuard.ordinal(),
-        (String) ExtensionPoint.InternalNetworkGuard.defValue());
+        ExtensionPoint.InternalNetworkGuard.defValue());
 
     try {
       // TODO: this should be enough to check if class has interface!?
       this.networkGuardClass = (Class<INetworkGuard>) forName(networkGuardClassName);
 
-      if (!INetworkGuard.class.isAssignableFrom(this.networkGuardClass))
+      if (!INetworkGuard.class.isAssignableFrom(this.networkGuardClass)) {
         throw new TransportException("Specified class does not inherit INetworkGuard interface " + this.networkGuardClass, TransportError.Internal);
+      }
     }
     catch (Exception e) {
       throw new TransportException("Cannot prepare specified guard class " + this.networkGuardClass, TransportError.Internal, e);
@@ -107,6 +107,7 @@ public class TransportLayerFactory extends org.jdiameter.client.impl.transport.T
     }
   }
 
+  @Override
   public INetworkGuard createNetworkGuard(InetAddress inetAddress, int port) throws TransportException {
     try {
       return networkGuardConstructor.newInstance(inetAddress, port, this.concurrentFactory, this.parser, this.metaData);
@@ -116,6 +117,7 @@ public class TransportLayerFactory extends org.jdiameter.client.impl.transport.T
     }
   }
 
+  @Override
   public INetworkGuard createNetworkGuard(InetAddress inetAddress, final int port, final INetworkConnectionListener listener) throws TransportException {
     INetworkGuard guard;
     try {
@@ -128,6 +130,7 @@ public class TransportLayerFactory extends org.jdiameter.client.impl.transport.T
     return guard;
   }
 
+  @Override
   public INetworkGuard createNetworkGuard(InetAddress[] inetAddress, int port) throws TransportException {
     try {
       return networkGuardConstructor.newInstance(inetAddress, port, this.concurrentFactory, this.parser, this.metaData);
@@ -137,6 +140,7 @@ public class TransportLayerFactory extends org.jdiameter.client.impl.transport.T
     }
   }
 
+  @Override
   public INetworkGuard createNetworkGuard(InetAddress[] inetAddress, int port, INetworkConnectionListener listener) throws TransportException {
     INetworkGuard guard;
     try {

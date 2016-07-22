@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.common.impl.statistic;
 
@@ -70,6 +90,7 @@ public class StatisticProcessorImpl implements IStatisticProcessor {
     this.concurrentFactory = concurrentFactory;
   }
 
+  @Override
   public void start() {
     if (!this.statisticFactory.isOn()) {
       return;
@@ -79,6 +100,7 @@ public class StatisticProcessorImpl implements IStatisticProcessor {
 
     // start processor
     this.processorFuture = this.executorService.scheduleAtFixedRate(new Runnable() {
+      @Override
       public void run() {
         try {
           for (IStatisticRecord r : ((StatisticManagerImpl) statisticFactory).getPSStatisticRecord()) {
@@ -98,6 +120,7 @@ public class StatisticProcessorImpl implements IStatisticProcessor {
 
     // start logging actions
     this.logFuture = this.executorService.scheduleAtFixedRate(new Runnable() {
+      @Override
       public void run() {
         boolean oneLine = false;
         for (IStatistic statistic : statisticFactory.getStatistic()) {
@@ -130,20 +153,19 @@ public class StatisticProcessorImpl implements IStatisticProcessor {
     }, statisticFactory.getPause(), statisticFactory.getDelay(), TimeUnit.MILLISECONDS);
   }
 
+  @Override
   public void stop() {
     if (!this.statisticFactory.isOn()) {
       return;
     }
-    if(this.processorFuture!=null)
-    {
-    	this.processorFuture.cancel(false);
-    	this.processorFuture = null;
+    if (this.processorFuture != null) {
+      this.processorFuture.cancel(false);
+      this.processorFuture = null;
     }
-    
-    if(this.logFuture != null)
-    {
-    	this.logFuture.cancel(false);
-    	this.logFuture = null;
+
+    if (this.logFuture != null) {
+      this.logFuture.cancel(false);
+      this.logFuture = null;
     }
     this.concurrentFactory.shutdownNow(executorService);
   }

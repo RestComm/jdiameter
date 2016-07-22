@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.client.impl.controller;
 
@@ -37,6 +57,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
+
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Configuration;
@@ -53,7 +74,6 @@ import org.jdiameter.client.api.IAssembler;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IMetaData;
-import org.jdiameter.client.api.IRequest;
 import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.controller.IPeerTable;
 import org.jdiameter.client.api.fsm.IFsmFactory;
@@ -96,13 +116,13 @@ public class PeerTableImpl implements IPeerTable {
   protected PeerTableImpl() {
   }
 
-  public PeerTableImpl(Configuration globalConfig, MetaData metaData, IContainer stack,IRouter router, IFsmFactory fsmFactory,
+  public PeerTableImpl(Configuration globalConfig, MetaData metaData, IContainer stack, IRouter router, IFsmFactory fsmFactory,
       ITransportLayerFactory transportFactory, IStatisticManager statisticFactory,
       IConcurrentFactory concurrentFactory, IMessageParser parser) {
-    init(stack,router, globalConfig, metaData, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser);
+    init(stack, router, globalConfig, metaData, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser);
   }
 
-  protected void init( IContainer stack,IRouter router, Configuration globalConfig, MetaData metaData, IFsmFactory fsmFactory,
+  protected void init( IContainer stack, IRouter router, Configuration globalConfig, MetaData metaData, IFsmFactory fsmFactory,
       ITransportLayerFactory transportFactory, IStatisticManager statisticFactory,
       IConcurrentFactory concurrentFactory, IMessageParser parser) {
     logger.debug("Initializing Peer Table.");
@@ -123,7 +143,8 @@ public class PeerTableImpl implements IPeerTable {
           String portRange = peerConfig.getStringValue(PeerLocalPortRange.ordinal(), null);
           try {
             // create predefined peer
-            IPeer peer = (IPeer) createPeer(rating, uri, ip, portRange, metaData, globalConfig, peerConfig, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser);
+            IPeer peer = (IPeer) createPeer(rating, uri, ip, portRange, metaData, globalConfig, peerConfig, fsmFactory, transportFactory, statisticFactory,
+                concurrentFactory, parser);
             if (peer != null) {
               //NOTE: this depends on conf, in normal case realm is younger part of FQDN, but in some cases
               //conf peers may contain IPs only... sucks.
@@ -140,17 +161,20 @@ public class PeerTableImpl implements IPeerTable {
     }
   }
 
-  protected Peer createPeer(int rating, String uri, String ip, String portRange, MetaData metaData, Configuration config, Configuration peerConfig, 
-      IFsmFactory fsmFactory, ITransportLayerFactory transportFactory, IStatisticManager statisticFactory, IConcurrentFactory concurrentFactory, IMessageParser parser)  
+  protected Peer createPeer(int rating, String uri, String ip, String portRange, MetaData metaData, Configuration config, Configuration peerConfig,
+      IFsmFactory fsmFactory, ITransportLayerFactory transportFactory, IStatisticManager statisticFactory, IConcurrentFactory concurrentFactory,
+      IMessageParser parser)
           throws InternalException, TransportException, URISyntaxException, UnknownServiceException {
     return new PeerImpl(this, rating, new URI(uri), ip, portRange, metaData.unwrap(IMetaData.class), config,
         peerConfig, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser, this.sessionDatasource);
   }
 
+  @Override
   public List<Peer> getPeerTable() {
     return new ArrayList<Peer>(peerTable.values());
   }
 
+  @Override
   public void sendMessage(IMessage message) throws IllegalDiameterStateException, RouteException, AvpDataException, IOException {
     if (!isStarted) {
       throw new IllegalDiameterStateException("Stack is down");
@@ -160,15 +184,15 @@ public class PeerTableImpl implements IPeerTable {
     IPeer peer;
     if (message.isRequest()) {
       if (logger.isDebugEnabled()) {
-        logger.debug("Send request {} [destHost={}; destRealm={}]", new Object[] {message, 
+        logger.debug("Send request {} [destHost={}; destRealm={}]", new Object[] {message,
             message.getAvps().getAvp(Avp.DESTINATION_HOST) != null ? message.getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString() : "",
                 message.getAvps().getAvp(Avp.DESTINATION_REALM) != null ? message.getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString() : ""});
       }
 
       // Check local request
-      if(router.updateRoute((IRequest)message)) {
-        if(logger.isDebugEnabled()) {
-          logger.debug("Updated route on message {} [destHost={}; destRealm={}]", new Object[] {message, 
+      if (router.updateRoute(message)) {
+        if (logger.isDebugEnabled()) {
+          logger.debug("Updated route on message {} [destHost={}; destRealm={}]", new Object[] {message,
               message.getAvps().getAvp(Avp.DESTINATION_HOST) != null ? message.getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString() : "",
                   message.getAvps().getAvp(Avp.DESTINATION_REALM) != null ? message.getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString() : ""});
         }
@@ -206,27 +230,31 @@ public class PeerTableImpl implements IPeerTable {
       else {
         logger.debug("Message was submitted to be sent, now adding statistics");
         if (message.isRequest()) {
-          if(peer.getStatistic().isEnabled())
+          if (peer.getStatistic().isEnabled()) {
             peer.getStatistic().getRecordByName(IStatisticRecord.Counters.AppGenRequest.name()).inc();
+          }
         }
         else {
-          if(peer.getStatistic().isEnabled())
+          if (peer.getStatistic().isEnabled()) {
             peer.getStatistic().getRecordByName(IStatisticRecord.Counters.AppGenResponse.name()).inc();
+          }
         }
       }
     }
     catch (Exception e) {
       logger.error("Can not send message", e);
       if (message.isRequest()) {
-        if(peer.getStatistic().isEnabled())
+        if (peer.getStatistic().isEnabled()) {
           peer.getStatistic().getRecordByName(IStatisticRecord.Counters.AppGenRejectedRequest.name()).inc();
+        }
       }
       else {
-        if(peer.getStatistic().isEnabled())
+        if (peer.getStatistic().isEnabled()) {
           peer.getStatistic().getRecordByName(IStatisticRecord.Counters.AppGenRejectedResponse.name()).inc();
+        }
       }
 
-      if(e instanceof AvpNotAllowedException) {
+      if (e instanceof AvpNotAllowedException) {
         throw (AvpNotAllowedException) e;
       }
       else {
@@ -235,17 +263,20 @@ public class PeerTableImpl implements IPeerTable {
     }
   }
 
+  @Override
   public void addSessionReqListener(String sessionId, NetworkReqListener listener) {
     // XXX: FT/HA // sessionReqListeners.put(sessionId, listener);
     logger.debug("Adding sessionId [{}] to sessionDatasource", sessionId);
     sessionDatasource.setSessionListener(sessionId, listener);
   }
 
+  @Override
   public Map<String, NetworkReqListener> getSessionReqListeners() {
     // XXX: FT/HA // return sessionReqListeners;
     return null;
   }
 
+  @Override
   public IPeer getPeer(String fqdn) {
     logger.debug("In getPeer for peer with FQDN [{}]. Going to find a matching entry in peerTable", fqdn);
     IPeer peer = (IPeer) peerTable.get(fqdn);
@@ -258,19 +289,22 @@ public class PeerTableImpl implements IPeerTable {
     return peer;
   }
 
+  @Override
   public void removeSessionListener(String sessionId) {
     // XXX: FT/HA // sessionReqListeners.remove(sessionId);
     sessionDatasource.removeSessionListener(sessionId);
   }
 
+  @Override
   public void setAssembler(IAssembler assembler) {
     this.assembler = assembler;
   }
 
   // Life cycle
+  @Override
   public void start() throws IllegalDiameterStateException, IOException {
     logger.debug("Starting PeerTable. Going to call connect on all peers in the peerTable");
-    for(Peer peer : peerTable.values()) {
+    for (Peer peer : peerTable.values()) {
       try {
         peer.connect();
       }
@@ -283,6 +317,7 @@ public class PeerTableImpl implements IPeerTable {
     isStarted = true;
   }
 
+  @Override
   public void stopped() {
     logger.debug("Calling stopped() on PeerTableImpl");
     // XXX: FT/HA // if (sessionReqListeners != null) {
@@ -293,7 +328,7 @@ public class PeerTableImpl implements IPeerTable {
         try {
           m.runTimer();
         }
-        catch(Exception e) {
+        catch (Exception e) {
           logger.debug("Unable to stop timer on message", e);
         }
       }
@@ -305,15 +340,16 @@ public class PeerTableImpl implements IPeerTable {
         // boolean interrupted = false;
         long remWaitTime = 2000;
         logger.debug("Stopping thread group and waiting a max of {}ms for all threads to finish", remWaitTime);
-        while(concurrentFactory.getThreadGroup().activeCount() > 0 && remWaitTime > 0) {
+        while (concurrentFactory.getThreadGroup().activeCount() > 0 && remWaitTime > 0) {
           long waitTime = 250;
           Thread.sleep(waitTime);
           remWaitTime -= waitTime;
-          logger.debug("Waited {}ms. Time remaining to wait: {}ms. {} Thread still active.", new Object[]{waitTime, remWaitTime, concurrentFactory.getThreadGroup().activeCount()});
+          logger.debug("Waited {}ms. Time remaining to wait: {}ms. {} Thread still active.",
+              new Object[]{waitTime, remWaitTime, concurrentFactory.getThreadGroup().activeCount()});
           // it did not terminated, let's interrupt
           // FIXME: remove ASAP, this is very bad, it kills threads in middle of op,
           //        killing FSM of peer for instance, after that its not usable.
-          // if(remWaitTime <= 0 && !interrupted) {
+          // if (remWaitTime <= 0 && !interrupted) {
           //   interrupted = true;
           //   remWaitTime = 2000;
           //   logger.debug("Stopping thread group did not work. Interrupting and waiting a max of {}ms for all threads to finish", remWaitTime);
@@ -328,6 +364,7 @@ public class PeerTableImpl implements IPeerTable {
     router.stop();
   }
 
+  @Override
   public void stopping(int disconnectCause) {
     logger.debug("In stopping. Going to disconnect all peers in peer table");
     isStarted = false;
@@ -341,6 +378,7 @@ public class PeerTableImpl implements IPeerTable {
     }
   }
 
+  @Override
   public void destroy() {
     logger.debug("In destroy. Going to destroy concurrentFactory's thread group");
     if (concurrentFactory != null) {
@@ -350,11 +388,12 @@ public class PeerTableImpl implements IPeerTable {
         // concurrentFactory.getThreadGroup().destroy();
       }
       catch (IllegalThreadStateException itse) {
-        if(logger.isDebugEnabled()) {
-          logger.debug("Failure trying to destroy ThreadGroup probably due to existing active threads. Use stop() before destroy(). (nr_threads={})", concurrentFactory.getThreadGroup().activeCount());
+        if (logger.isDebugEnabled()) {
+          logger.debug("Failure trying to destroy ThreadGroup probably due to existing active threads. Use stop() before destroy(). (nr_threads={})",
+              concurrentFactory.getThreadGroup().activeCount());
         }
       }
-      catch(ThreadDeath td) {
+      catch (ThreadDeath td) {
         // The class ThreadDeath is specifically a subclass of Error rather than Exception, even though it is a
         // "normal occurrence", because many applications catch all occurrences of Exception and then discard the
         // exception.  ....
@@ -370,12 +409,14 @@ public class PeerTableImpl implements IPeerTable {
   }
 
   // Extension interface
+  @Override
   public boolean isWrapperFor(Class<?> aClass) throws InternalException {
     return false;
   }
 
+  @Override
   public <T> T unwrap(Class<T> aClass) throws InternalException {
-    return null; 
+    return null;
   }
 
   protected class PeerTableThreadFactory implements ThreadFactory {
@@ -389,13 +430,14 @@ public class PeerTableImpl implements IPeerTable {
       this.priority = priority;
     }
 
+    @Override
     public Thread newThread(Runnable r) {
       Thread t = new Thread(this.factoryThreadGroup, r);
-      if(logger.isDebugEnabled()) {
+      if (logger.isDebugEnabled()) {
         logger.debug("Creating new thread in thread group JDiameterThreadGroup. Thread name is [{}]", t.getName());
       }
       t.setPriority(this.priority);
-      // TODO ? t.start(); 
+      // TODO ? t.start();
       return t;
     }
   }

@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.mobicents.diameter.stack.management;
 
@@ -70,12 +90,14 @@ public class NetworkPeerImpl implements NetworkPeer {
     this.securityRef = securityRef;
   }
 
+  @Override
   public String getName() {
     return name;
   }
 
+  @Override
   public void setName(String name) {
-    if(!this.name.equals(name)) {
+    if (!this.name.equals(name)) {
       EmptyConfiguration config = getPeerConfiguration(name);
       if (config != null) {
         config.add(PeerName, name);
@@ -84,18 +106,22 @@ public class NetworkPeerImpl implements NetworkPeer {
     }
   }
 
+  @Override
   public Boolean getAttemptConnect() {
     return attemptConnect;
   }
 
+  @Override
   public void setAttemptConnect(Boolean attemptConnect) {
     this.attemptConnect = attemptConnect;
   }
 
+  @Override
   public Integer getRating() {
     return rating;
   }
 
+  @Override
   public void setRating(Integer rating) {
     EmptyConfiguration config = getPeerConfiguration(name);
     if (config != null) {
@@ -104,10 +130,12 @@ public class NetworkPeerImpl implements NetworkPeer {
     }
   }
 
+  @Override
   public String getIp() {
     return ip;
   }
 
+  @Override
   public void setIp(String ip) {
     // TODO: Verify IP Address
     EmptyConfiguration config = getPeerConfiguration(name);
@@ -117,14 +145,17 @@ public class NetworkPeerImpl implements NetworkPeer {
     }
   }
 
+  @Override
   public Integer getPortRangeLow() {
     return portRangeLow;
   }
 
+  @Override
   public Integer getPortRangeHigh() {
     return portRangeHigh;
   }
 
+  @Override
   public void setPortRange(Integer portRangeLow, Integer portRangeHigh) {
     EmptyConfiguration config = getPeerConfiguration(name);
     if (config != null) {
@@ -134,10 +165,12 @@ public class NetworkPeerImpl implements NetworkPeer {
     }
   }
 
+  @Override
   public String getSecurityRef() {
     return securityRef;
   }
 
+  @Override
   public void setSecurityRef(String securityRef) {
     this.securityRef = securityRef;
   }
@@ -149,10 +182,10 @@ public class NetworkPeerImpl implements NetworkPeer {
     StringBuffer toStringBuffer = new StringBuffer();
     try {
       cls = Class.forName(this.getClass().getName());
-      Field fieldlist[] = cls.getDeclaredFields();
+      Field[] fieldlist = cls.getDeclaredFields();
       for (int i = 0; i < fieldlist.length; i++) {
         Field fld = fieldlist[i];
-        if(!Modifier.isStatic(fld.getModifiers())) {
+        if (!Modifier.isStatic(fld.getModifiers())) {
           toStringBuffer.append(fld.getName());
           int dots = 60 - fld.getName().length();
           toStringBuffer.append(dotsString, 0, dots);
@@ -177,24 +210,26 @@ public class NetworkPeerImpl implements NetworkPeer {
 
     return toStringBuffer.toString();
   }
-  
+
   private EmptyConfiguration getPeerConfiguration(String name) {
     XMLConfiguration configuration = (XMLConfiguration) DiameterConfiguration.stack.getMetaData().getConfiguration();
     Configuration[] peerTable = configuration.getChildren(PeerTable.ordinal());
-    
-    for(Configuration curPeer : peerTable) {
-      if(curPeer.getStringValue(PeerName.ordinal(), DEFAULT_STRING).equals(name)) {
+
+    for (Configuration curPeer : peerTable) {
+      if (curPeer.getStringValue(PeerName.ordinal(), DEFAULT_STRING).equals(name)) {
         return (EmptyConfiguration) curPeer;
       }
     }
-    
+
     return null;
   }
-  
+
+  @Override
   public HashMap<String, DiameterStatistic> getStatistics() {
     return statistics;
   }
-  
+
+  @Override
   public void setStatistics(HashMap<String, DiameterStatistic> statistics) {
     this.statistics = statistics;
   }

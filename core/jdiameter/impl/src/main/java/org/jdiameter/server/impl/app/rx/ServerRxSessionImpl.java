@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.server.impl.app.rx;
 
@@ -63,7 +83,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 3GPP IMS Rx Reference Point Server session implementation
- * 
+ *
  * @author <a href="mailto:richard.good@smilecoms.com"> Richard Good </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
@@ -86,8 +106,9 @@ public class ServerRxSessionImpl extends AppRxSessionImpl implements ServerRxSes
   //protected String originHost, originRealm;
   protected IServerRxSessionData sessionData;
 
-  public ServerRxSessionImpl(IServerRxSessionData sessionData, IRxMessageFactory fct, ISessionFactory sf, ServerRxSessionListener lst, IServerRxSessionContext ctx, StateChangeListener<AppSession> stLst)  {
-    super(sf,sessionData);
+  public ServerRxSessionImpl(IServerRxSessionData sessionData, IRxMessageFactory fct, ISessionFactory sf, ServerRxSessionListener lst,
+      IServerRxSessionContext ctx, StateChangeListener<AppSession> stLst)  {
+    super(sf, sessionData);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
@@ -104,31 +125,39 @@ public class ServerRxSessionImpl extends AppRxSessionImpl implements ServerRxSes
     super.addStateChangeNotification(stLst);
   }
 
+  @Override
   public void sendAAAnswer(RxAAAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     handleEvent(new Event(false, null, answer));
   }
 
+  @Override
   public void sendSessionTermAnswer(RxSessionTermAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     handleEvent(new Event(false, null, answer));
   }
 
+  @Override
   public void sendReAuthRequest(RxReAuthRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_RAR, request, null);
   }
 
-  public void sendAbortSessionRequest(RxAbortSessionRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void sendAbortSessionRequest(RxAbortSessionRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_ASR, request, null);
   }
 
+  @Override
   public boolean isStateless() {
     return this.sessionData.isStateless();
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> stateType) {
     return stateType == ServerRxSessionState.class ? (E) this.sessionData.getServerRxSessionState() : null;
   }
 
+  @Override
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
     ServerRxSessionState newState = null;
 
@@ -191,8 +220,9 @@ public class ServerRxSessionImpl extends AppRxSessionImpl implements ServerRxSes
               }
               break;
             default:
-              throw new InternalException("Wrong state: " + ServerRxSessionState.IDLE + " one event: " + eventType + " " + localEvent.getRequest() + " " + localEvent.getAnswer());
-          }//end switch eventType
+              throw new InternalException("Wrong state: " + ServerRxSessionState.IDLE + " one event: " + eventType + " " + localEvent.getRequest() + " " +
+                  localEvent.getAnswer());
+          } //end switch eventType
           break;
 
         case OPEN:
@@ -264,7 +294,7 @@ public class ServerRxSessionImpl extends AppRxSessionImpl implements ServerRxSes
             case SEND_ASR:
               dispatchEvent(localEvent.getRequest());
               break;
-          }//end switch eventtype
+          } //end switch eventtype
           break;
       }
       return true;
@@ -282,7 +312,7 @@ public class ServerRxSessionImpl extends AppRxSessionImpl implements ServerRxSes
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.impl.app.AppSessionImpl#isReplicable()
    */
   @Override
@@ -290,6 +320,7 @@ public class ServerRxSessionImpl extends AppRxSessionImpl implements ServerRxSes
     return true;
   }
 
+  @Override
   public Answer processRequest(Request request) {
     RequestDelivery rd = new RequestDelivery();
     //rd.session = (ServerRxSession) LocalDataSource.INSTANCE.getSession(request.getSessionId());
@@ -299,6 +330,7 @@ public class ServerRxSessionImpl extends AppRxSessionImpl implements ServerRxSes
     return null;
   }
 
+  @Override
   public void receivedSuccessMessage(Request request, Answer answer) {
     AnswerDelivery rd = new AnswerDelivery();
     rd.session = this;
@@ -309,13 +341,14 @@ public class ServerRxSessionImpl extends AppRxSessionImpl implements ServerRxSes
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.impl.app.AppSessionImpl#onTimer(java.lang.String)
    */
   @Override
   public void onTimer(String timerName) {
   }
 
+  @Override
   public void timeoutExpired(Request request) {
     //  context.timeoutExpired(request);
     //FIXME: Should we release ?
@@ -399,6 +432,7 @@ public class ServerRxSessionImpl extends AppRxSessionImpl implements ServerRxSes
     ServerRxSession session;
     Request request;
 
+    @Override
     public void run() {
       try {
         switch (request.getCommandCode()) {
@@ -425,6 +459,7 @@ public class ServerRxSessionImpl extends AppRxSessionImpl implements ServerRxSes
     Answer answer;
     Request request;
 
+    @Override
     public void run() {
       try {
         // FIXME: baranowb: add message validation here!!!

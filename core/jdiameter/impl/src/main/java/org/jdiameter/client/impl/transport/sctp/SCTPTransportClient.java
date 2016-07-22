@@ -1,27 +1,28 @@
- /*
-  * TeleStax, Open Source Cloud Communications
-  * Copyright 2011-2014, TeleStax Inc. and individual contributors
-  * by the @authors tag.
-  *
-  * This program is free software: you can redistribute it and/or modify
-  * under the terms of the GNU Affero General Public License as
-  * published by the Free Software Foundation; either version 3 of
-  * the License, or (at your option) any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU Affero General Public License for more details.
-  *
-  * You should have received a copy of the GNU Affero General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>
-  */
+/*
+ * TeleStax, Open Source Cloud Communications
+ * Copyright 2011-2014, TeleStax Inc. and individual contributors
+ * by the @authors tag.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
 
 package org.jdiameter.client.impl.transport.sctp;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.client.api.io.NotInitializedException;
 import org.mobicents.protocols.api.Association;
@@ -34,16 +35,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
 public class SCTPTransportClient {
 
   // How long to wait for the association to be connected
-  private static final int CONNECT_TIMEOUT = 30000;  
+  private static final int CONNECT_TIMEOUT = 30000;
   // The waiting time between checks for association connection
-  private static final int DELAY = 100;  
+  private static final int DELAY = 100;
 
   private ManagementImpl management = null;
   private AssociationImpl clientAssociation = null;
@@ -61,7 +62,7 @@ public class SCTPTransportClient {
 
   /**
    * Default constructor
-   * 
+   *
    * @param concurrentFactory
    *          factory for create threads
    * @param parenConnection
@@ -80,8 +81,8 @@ public class SCTPTransportClient {
 
     logger.debug("Initializing SCTP client");
 
-    clientAssociationName = origAddress.getAddress().getHostAddress() + "." + origAddress.getPort() + "_" + 
-    						destAddress.getAddress().getHostAddress() + "." + destAddress.getPort();
+    clientAssociationName = origAddress.getAddress().getHostAddress() + "." + origAddress.getPort() + "_" +
+        destAddress.getAddress().getHostAddress() + "." + destAddress.getPort();
 
     try {
 
@@ -110,7 +111,7 @@ public class SCTPTransportClient {
             new Object[] { clientAssociation.getName(), clientAssociation.getHostAddress(), clientAssociation.getHostPort(),
                 clientAssociation.getPeerAddress(), clientAssociation.getPeerPort() });
       }
-      
+
     }
     catch (Exception e) {
       logger.error("Failed to initialize client ", e);
@@ -135,17 +136,18 @@ public class SCTPTransportClient {
     if (getParent() == null) {
       throw new NotInitializedException("No parent connection is set");
     }
-    
+
     logger.debug("Successfuly initialized SCTP Client Host [{}:{}] Peer [{}:{}]", new Object[] { clientAssociation.getHostAddress(),
         clientAssociation.getHostPort(), clientAssociation.getPeerAddress(), clientAssociation.getPeerPort() });
-    logger.debug("Client Association Status: Started[{}] Connected[{}] Up[{}] ", new Object[]{clientAssociation.isStarted(), clientAssociation.isConnected(), clientAssociation.isUp()});
+    logger.debug("Client Association Status: Started[{}] Connected[{}] Up[{}] ",
+        new Object[]{clientAssociation.isStarted(), clientAssociation.isConnected(), clientAssociation.isUp()});
     logger.trace("Client Association [{}]", clientAssociation);
     defer();
   }
 
   private void defer() throws IOException {
     final long endTStamp = System.currentTimeMillis() + CONNECT_TIMEOUT;
-    while(clientAssociation.isStarted() && !clientAssociation.isConnected() && !clientAssociation.isUp()) {
+    while (clientAssociation.isStarted() && !clientAssociation.isConnected() && !clientAssociation.isUp()) {
       try {
         Thread.sleep(DELAY);
       }
@@ -154,11 +156,12 @@ public class SCTPTransportClient {
         Thread.interrupted();
         throw new IOException("Failed to establish SCTP connection, thread was interrupted waiting for connection.");
       }
-      if(endTStamp < System.currentTimeMillis()){
-          throw new IOException("Failed to establish SCTP connection!");
+      if (endTStamp < System.currentTimeMillis()) {
+        throw new IOException("Failed to establish SCTP connection!");
       }
     }
-    logger.debug("Client Association Status: Started[{}] Connected[{}] Up[{}] ", new Object[]{clientAssociation.isStarted(), clientAssociation.isConnected(), clientAssociation.isUp()});
+    logger.debug("Client Association Status: Started[{}] Connected[{}] Up[{}] ",
+        new Object[]{clientAssociation.isStarted(), clientAssociation.isConnected(), clientAssociation.isUp()});
     logger.trace("Client Association [{}]", clientAssociation);
   }
 
@@ -168,7 +171,7 @@ public class SCTPTransportClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.mobicents.protocols.api.AssociationListener#onCommunicationUp(org.mobicents.protocols.api.Association, int, int)
      */
     @Override
@@ -179,7 +182,7 @@ public class SCTPTransportClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.mobicents.protocols.api.AssociationListener#onCommunicationShutdown(org.mobicents.protocols.api.Association)
      */
     @Override
@@ -195,7 +198,7 @@ public class SCTPTransportClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.mobicents.protocols.api.AssociationListener#onCommunicationLost(org.mobicents.protocols.api.Association)
      */
     @Override
@@ -205,7 +208,7 @@ public class SCTPTransportClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.mobicents.protocols.api.AssociationListener#onCommunicationRestart(org.mobicents.protocols.api.Association)
      */
     @Override
@@ -215,7 +218,7 @@ public class SCTPTransportClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.mobicents.protocols.api.AssociationListener#onPayload(org.mobicents.protocols.api.Association,
      * org.mobicents.protocols.api.PayloadData)
      */
@@ -238,7 +241,7 @@ public class SCTPTransportClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.mobicents.protocols.api.AssociationListener#inValidStreamId(org.mobicents.protocols.api.PayloadData)
      */
     @Override

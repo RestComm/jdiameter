@@ -1,21 +1,21 @@
- /*
-  * TeleStax, Open Source Cloud Communications
-  * Copyright 2011-2014, TeleStax Inc. and individual contributors
-  * by the @authors tag.
-  *
-  * This program is free software: you can redistribute it and/or modify
-  * under the terms of the GNU Affero General Public License as
-  * published by the Free Software Foundation; either version 3 of
-  * the License, or (at your option) any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU Affero General Public License for more details.
-  *
-  * You should have received a copy of the GNU Affero General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>
-  */
+/*
+ * TeleStax, Open Source Cloud Communications
+ * Copyright 2011-2014, TeleStax Inc. and individual contributors
+ * by the @authors tag.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
 
 package org.jdiameter.server.impl.io.sctp;
 
@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.common.api.concurrent.DummyConcurrentFactory;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * SCTP implementation of {@link org.jdiameter.server.api.io.INetworkGuard}.
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -52,7 +53,7 @@ public class NetworkGuard implements INetworkGuard {
   protected boolean isWork = false;
   protected Selector selector;
   protected List<SCTPServerConnection> serverConnections;
-  
+
   protected InetAddress[] localAddresses;
 
   @Deprecated
@@ -78,16 +79,16 @@ public class NetworkGuard implements INetworkGuard {
       }
     }
     catch (Exception exc) {
-      try{
+      try {
         destroy();
       }
-      catch(Exception e) {
+      catch (Exception e) {
         // ignore
       }
       throw new Exception(exc);
     }
   }
-  
+
   public void run() {
     try {
       while (isWork) {
@@ -99,12 +100,14 @@ public class NetworkGuard implements INetworkGuard {
     }
   }
 
+  @Override
   public void addListener(INetworkConnectionListener listener) {
     if (!listeners.contains(listener)) {
       listeners.add(listener);
     }
   }
 
+  @Override
   public void remListener(INetworkConnectionListener listener) {
     listeners.remove(listener);
   }
@@ -130,6 +133,7 @@ public class NetworkGuard implements INetworkGuard {
     }
   }
 
+  @Override
   public void destroy() {
     logger.debug("Destroying");
     Iterator<SCTPServerConnection> it = this.serverConnections.iterator();

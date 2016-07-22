@@ -209,7 +209,7 @@ public class TestingFramework
             ArrayList<AvpSet> messagesAVPs = parseAction(action);
             
             // Add AVPs
-            executeAction(action, (Element)action.getElementsByTagName("command").item(0), messagesAVPs);
+            executeAction(action, (Element) action.getElementsByTagName("command").item(0), messagesAVPs);
           }
         }
       }
@@ -311,13 +311,13 @@ public class TestingFramework
         
         if(h2h != null && h2h.length() > 0) {
           // Adding as negative so it becomes immutable...
-          ((MessageImpl)msg).setHopByHopIdentifier(-Long.valueOf(h2h));
+          ((MessageImpl) msg).setHopByHopIdentifier(-Long.valueOf(h2h));
         }
         
         String e2e = command.getAttribute("end-to-end");
         
         if(e2e != null && e2e.length() > 0) {
-          ((MessageImpl)msg).setEndToEndIdentifier(Long.valueOf(e2e));
+          ((MessageImpl) msg).setEndToEndIdentifier(Long.valueOf(e2e));
         }
         
         AvpSet msgAVPs = msg.getAvps();
@@ -550,7 +550,7 @@ public class TestingFramework
       
       if (actionNode.getNodeType() == Node.ELEMENT_NODE)
       {
-        Element actionElem = (Element)actionNode;
+        Element actionElem = (Element) actionNode;
 
         String actionName = actionElem.getNodeName();
         

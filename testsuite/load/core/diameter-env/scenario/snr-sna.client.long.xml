@@ -82,8 +82,8 @@
           <avp name="Vendor-Id" value="10415"></avp>
           <avp name="Auth-Application-Id" value="16777217"></avp>
         </avp>
-	<!-- SUBSCRIBE -->
-	<avp name="Subs-Req-Type" value="0"></avp>
+  <!-- SUBSCRIBE -->
+  <avp name="Subs-Req-Type" value="0"></avp>
       </command>
       <action>
         <start-timer></start-timer>
@@ -99,10 +99,10 @@
     </receive>
     <receive channel="channel-1">
        <action>
-        	<start-timer></start-timer>
- 		<store name="HbH" entity="HbH-id"></store>
-      		<store name="E2E" entity="EtE-id"></store>
-      		<store name="sid" entity="Session-Id"></store>
+          <start-timer></start-timer>
+     <store name="HbH" entity="HbH-id"></store>
+          <store name="E2E" entity="EtE-id"></store>
+          <store name="sid" entity="Session-Id"></store>
       </action>
       <command name="PNR">
       </command>
@@ -121,7 +121,7 @@
       <avp name="Vendor-Specific-Application-Id">
           <avp name="Vendor-Id" value="10415"></avp>
           <avp name="Auth-Application-Id" value="16777217"></avp>
-	  <avp name="Acct-Application-Id" value="0"></avp>
+    <avp name="Acct-Application-Id" value="0"></avp>
         </avp>
       <avp name="Origin-Host" value="uac.mobicents.org"> </avp>
       <avp name="Origin-Realm" value="mobicents.org"> </avp>
@@ -134,7 +134,7 @@
         <!-- For each request, increment the session-ID counter -->
         <inc-counter name="HbH-counter"></inc-counter>
         <inc-counter name="EtE-counter"></inc-counter>
-  	<restore name="sid" entity="Session-Id"> </restore>
+    <restore name="sid" entity="Session-Id"> </restore>
         <set-value name="HbH-id" format="$(HbH-counter)"></set-value>
         <set-value name="EtE-id" format="$(EtE-counter)"></set-value>
       </action>
@@ -153,8 +153,8 @@
           <avp name="Vendor-Id" value="10415"></avp>
           <avp name="Auth-Application-Id" value="16777217"></avp>
         </avp>
-	<!-- UNSUBSCRIBE -->
-	<avp name="Subs-Req-Type" value="1"></avp>
+  <!-- UNSUBSCRIBE -->
+  <avp name="Subs-Req-Type" value="1"></avp>
       </command>
       <action>
         <start-timer></start-timer>

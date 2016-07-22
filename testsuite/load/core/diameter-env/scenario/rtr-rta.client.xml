@@ -47,7 +47,7 @@
       <avp name="Firmware-Revision" value="1"> </avp>
     </command>
   </send>
-  
+
   <receive channel="channel-1">
     <command name="CEA">
     </command>
@@ -55,7 +55,7 @@
 </init>
 
 
-	
+
 <traffic>
   <send channel="channel-1">
     <action>
@@ -63,24 +63,24 @@
       <inc-counter name="HbH-counter"> </inc-counter>
       <inc-counter name="EtE-counter"> </inc-counter>
       <inc-counter name="session-counter"> </inc-counter>
-      <set-value name="HbH-id" 
+      <set-value name="HbH-id"
                  format="$(HbH-counter)"></set-value>
-      <set-value name="EtE-id" 
+      <set-value name="EtE-id"
                  format="$(EtE-counter)"></set-value>
-      <set-value name="Session-Id" 
+      <set-value name="Session-Id"
                  format=".;1096298391;$(session-counter)"></set-value>
     </action>
-	
+
     <command name="RTR">
       <avp name="Session-Id" value="value_is_replaced"> </avp>
       <avp name="Origin-Host" value="uac.mobicents.org"> </avp>
-      <avp name="Origin-Realm" value="mobicents.org"> </avp> 
+      <avp name="Origin-Realm" value="mobicents.org"> </avp>
       <avp name="Destination-Realm" value="mobicents.org"> </avp>
       <avp name="Destination-Host" value="uas.mobicents.org"> </avp>
       <avp name="User-Name" value="sip:xxx@triple.xxx"> </avp>
       <avp name="Auth-Session-State" value="0"> </avp>
       <avp name="DeRegistration-Reason">
-	<avp name="Reason-Code" value="11111"></avp>
+  <avp name="Reason-Code" value="11111"></avp>
       </avp>
 
       <avp name="Vendor-Specific-Application-Id">
@@ -89,13 +89,13 @@
         <avp name="Acct-Application-Id" value="0"></avp>
       </avp>
 
-         
+
     </command>
     <action>
       <start-timer></start-timer>
     </action>
   </send>
-  
+
   <receive channel="channel-1">
     <action>
       <stop-timer></stop-timer>
@@ -104,6 +104,6 @@
     </command>
   </receive>
 </traffic>
- 
+
 </scenario>
 

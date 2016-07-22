@@ -29,7 +29,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
 /**
- * 
+ *
  * @author <a href="mailto:jqayyum@gmail.com"> Jehanzeb Qayyum </a>
  */
 public class DiameterMessageDecoder extends ByteToMessageDecoder {

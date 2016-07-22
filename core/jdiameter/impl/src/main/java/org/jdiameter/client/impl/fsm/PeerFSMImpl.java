@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.client.impl.fsm;
 
@@ -64,7 +84,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
@@ -118,11 +138,13 @@ public class PeerFSMImpl implements IStateMachine {
     runQueueProcessing();
   }
 
+  @Override
   public IStatistic getStatistic() {
     //
     return queueStat;
   }
 
+  @Override
   public void removeStateChangeNotification(StateChangeListener stateChangeListener) {
     listeners.remove(stateChangeListener);
   }
@@ -139,10 +161,12 @@ public class PeerFSMImpl implements IStateMachine {
       mustRun = true;
 
       IStatisticRecord queueSize = statisticFactory.newCounterRecord(IStatisticRecord.Counters.QueueSize, new IStatisticRecord.IntegerValueHolder() {
+        @Override
         public int getValueAsInt() {
           return eventQueue.size();
         }
 
+        @Override
         public String getValueAsString() {
           return String.valueOf(getValueAsInt());
         }
@@ -153,32 +177,35 @@ public class PeerFSMImpl implements IStateMachine {
 
       final IStatisticRecord messagePrcAverageTime = statisticFactory.newCounterRecord(IStatisticRecord.Counters.MessageProcessingTime,
           new IStatisticRecord.DoubleValueHolder() {
-        public double getValueAsDouble() {
-          if(queueStat == null) {
-            return 0;
-          }
-          IStatisticRecord mpta = queueStat.getRecordByName(IStatisticRecord.Counters.MessageProcessingTime.name());
-          org.jdiameter.api.StatisticRecord[] children = mpta.getChilds();
-          if (children.length == 2 && children[1].getValueAsLong() != 0) {
-            long count = children[1].getValueAsLong();
-            return ((float) children[0].getValueAsLong()) / ((float) (count != 0 ? count : 1));
-          }
-          else {
-            return 0;
-          }
-        }
+            @Override
+            public double getValueAsDouble() {
+              if (queueStat == null) {
+                return 0;
+              }
+              IStatisticRecord mpta = queueStat.getRecordByName(IStatisticRecord.Counters.MessageProcessingTime.name());
+              org.jdiameter.api.StatisticRecord[] children = mpta.getChilds();
+              if (children.length == 2 && children[1].getValueAsLong() != 0) {
+                long count = children[1].getValueAsLong();
+                return ((float) children[0].getValueAsLong()) / ((float) (count != 0 ? count : 1));
+              }
+              else {
+                return 0;
+              }
+            }
 
-        public String getValueAsString() {
-          return String.valueOf(getValueAsDouble());
-        }
-      }, timeSumm, timeCount);
+            @Override
+            public String getValueAsString() {
+              return String.valueOf(getValueAsDouble());
+            }
+          }, timeSumm, timeCount);
 
       logger.debug("Initializing QueueStat @ Thread[{}]", Thread.currentThread().getName());
       queueStat = statisticFactory.newStatistic(context.getPeerDescription(), IStatistic.Groups.PeerFSM, queueSize, messagePrcAverageTime);
       logger.debug("Finished Initializing QueueStat @ Thread[{}]", Thread.currentThread().getName());
 
       Runnable fsmQueueProcessor = new Runnable() {
-        public void run() {  
+        @Override
+        public void run() {
           int runningNow = numberOfThreadsRunning.incrementAndGet();
           logger.debug("Starting ... [{}] FSM threads are running", runningNow);
           //PCB changed for multi-thread
@@ -186,7 +213,7 @@ public class PeerFSMImpl implements IStateMachine {
             StateEvent event;
             try {
               event = eventQueue.poll(100, TimeUnit.MILLISECONDS);
-              if(logger.isDebugEnabled() && event != null) {
+              if (logger.isDebugEnabled() && event != null) {
                 logger.debug("Got Event [{}] from Queue", event);
               }
             }
@@ -207,20 +234,21 @@ public class PeerFSMImpl implements IStateMachine {
                 getStates()[state.ordinal()].processEvent(event);
               }
               if (timer != 0 && timer < System.currentTimeMillis()) {
-            	  // ZhixiaoLuo: add lock here to avoid 2 timeout events at the same time if 2 threads get into timer=0
-            	  // ZhixiaoLuo: use double check strategy to avoid locking most normal cases
-                  lock.lock();
-                  try{
-                	  if (timer != 0 && timer < System.currentTimeMillis()) {
-                		  timer = 0;
-                          if(state != DOWN) { //without this check this event is fired in DOWN state.... it should not be.
-                              logger.debug("Sending timeout event");
-                              handleEvent(timeOutEvent); //FIXME: check why timer is not killed?
-                           }
-                	  }
-                  }finally{
-                	  lock.unlock();
+                // ZhixiaoLuo: add lock here to avoid 2 timeout events at the same time if 2 threads get into timer=0
+                // ZhixiaoLuo: use double check strategy to avoid locking most normal cases
+                lock.lock();
+                try {
+                  if (timer != 0 && timer < System.currentTimeMillis()) {
+                    timer = 0;
+                    if (state != DOWN) { //without this check this event is fired in DOWN state.... it should not be.
+                      logger.debug("Sending timeout event");
+                      handleEvent(timeOutEvent); //FIXME: check why timer is not killed?
+                    }
                   }
+                }
+                finally {
+                  lock.unlock();
+                }
               }
             }
             catch (Exception e) {
@@ -254,6 +282,7 @@ public class PeerFSMImpl implements IStateMachine {
     }
   }
 
+  @Override
   public double getQueueInfo() {
     return eventQueue.size() * 1.0 / predefSize;
   }
@@ -266,12 +295,14 @@ public class PeerFSMImpl implements IStateMachine {
     REC_TIMEOUT = config.getLongValue(RecTimeOut.ordinal(), (Long) RecTimeOut.defValue());
   }
 
+  @Override
   public void addStateChangeNotification(StateChangeListener stateChangeListener) {
     if (!listeners.contains(stateChangeListener)) {
       listeners.add(stateChangeListener);
     }
   }
 
+  @Override
   public void remStateChangeNotification(StateChangeListener stateChangeListener) {
     listeners.remove(stateChangeListener);
   }
@@ -285,13 +316,14 @@ public class PeerFSMImpl implements IStateMachine {
       }
     }
     getStates()[state.ordinal()].exitAction();
-    if(logger.isDebugEnabled()) {
+    if (logger.isDebugEnabled()) {
       logger.debug("{} FSM switch state: {} -> {}", new Object[] {context.getPeerDescription(), state, newState});
     }
     state = newState;
     getStates()[state.ordinal()].entryAction();
   }
 
+  @Override
   public boolean handleEvent(StateEvent event) throws InternalError, OverloadException {
     //if (state.getPublicState() == PeerState.DOWN && event.encodeType(EventTypes.class) == EventTypes.START_EVENT) {
     if (logger.isDebugEnabled()) {
@@ -302,15 +334,15 @@ public class PeerFSMImpl implements IStateMachine {
       logger.debug("No FSM threads are running so calling runQueueProcessing()");
       runQueueProcessing();
     }
-    if (event.getData() != null && dictionary!= null && dictionary.isEnabled()) {
+    if (event.getData() != null && dictionary != null && dictionary.isEnabled()) {
       boolean incoming = event.getType() == EventTypes.RECEIVE_MSG_EVENT;
-      if(incoming) {
+      if (incoming) {
         logger.debug("Performing validation to INCOMING message since validator is ENABLED.");
         // outgoing are done elsewhere: see BaseSessionImpl
-        try{
+        try {
           dictionary.validate((Message) event.getData(), incoming);
         }
-        catch(AvpNotAllowedException e) {
+        catch (AvpNotAllowedException e) {
           logger.error("Failed to validate incoming message.", e);
           return false;
         }
@@ -322,7 +354,7 @@ public class PeerFSMImpl implements IStateMachine {
 
     boolean rc = false;
     try {
-      if(logger.isDebugEnabled()) {
+      if (logger.isDebugEnabled()) {
         logger.debug("Placing event [{}] into linked blocking queue with remaining capacity: [{}].", event, eventQueue.remainingCapacity());
         //PCB added logging
         //int queueSize = eventQueue.size();
@@ -352,10 +384,12 @@ public class PeerFSMImpl implements IStateMachine {
     timer = IAC_TIMEOUT - 2 * 1000 + random.nextInt(5) * 1000 + System.currentTimeMillis();
   }
 
+  @Override
   public String toString() {
     return "PeerFSM{" + "context=" + context + ", state=" + state + '}';
   }
 
+  @Override
   public <E> E getState(Class<E> a) {
     if (a == PeerState.class) {
       return (E) state.getPublicState();
@@ -367,9 +401,11 @@ public class PeerFSMImpl implements IStateMachine {
 
   protected abstract class MyState implements org.jdiameter.api.app.State {
 
+    @Override
     public void entryAction() {
     }
 
+    @Override
     public void exitAction() {
     }
 
@@ -415,13 +451,14 @@ public class PeerFSMImpl implements IStateMachine {
   protected org.jdiameter.api.app.State[] getStates() {
     if (states == null) {
       states = new org.jdiameter.api.app.State[] { // todo merge and redesign with server fsm
-          new MyState() // OKEY
-          {
+          new MyState() { // OKEY
+            @Override
             public void entryAction() {
               setInActiveTimer();
               watchdogSent = false;
             }
 
+            @Override
             public boolean processEvent(StateEvent event) {
               switch (event.encodeType(EventTypes.class)) {
                 case DISCONNECT_EVENT:
@@ -448,7 +485,7 @@ public class PeerFSMImpl implements IStateMachine {
                   break;
                 case STOP_EVENT:
                   try {
-                    if(event.getData() == null) {
+                    if (event.getData() == null) {
                       context.sendDprMessage(DisconnectCause.REBOOTING);
                     }
                     else {
@@ -513,8 +550,8 @@ public class PeerFSMImpl implements IStateMachine {
               return true;
             }
           },
-          new MyState() // SUSPECT
-          {
+          new MyState() { // SUSPECT
+            @Override
             public boolean processEvent(StateEvent event) {
               switch (event.encodeType(EventTypes.class)) {
                 case DISCONNECT_EVENT:
@@ -528,7 +565,7 @@ public class PeerFSMImpl implements IStateMachine {
                   break;
                 case STOP_EVENT:
                   try {
-                    if(event.getData() == null) {
+                    if (event.getData() == null) {
                       context.sendDprMessage(DisconnectCause.REBOOTING);
                     }
                     else {
@@ -583,8 +620,8 @@ public class PeerFSMImpl implements IStateMachine {
               return true;
             }
           },
-          new MyState() // DOWN
-          {
+          new MyState() { // DOWN
+            @Override
             public void entryAction() {
               clearTimer();
               //PCB changed multithread FSM
@@ -594,6 +631,7 @@ public class PeerFSMImpl implements IStateMachine {
               context.removeStatistics();
             }
 
+            @Override
             public boolean processEvent(StateEvent event) {
               switch (event.encodeType(EventTypes.class)) {
                 case START_EVENT:
@@ -622,8 +660,8 @@ public class PeerFSMImpl implements IStateMachine {
               return true;
             }
           },
-          new MyState() // REOPEN
-          {
+          new MyState() { // REOPEN
+            @Override
             public boolean processEvent(StateEvent event) {
               switch (event.encodeType(EventTypes.class)) {
                 case CONNECT_EVENT:
@@ -632,7 +670,7 @@ public class PeerFSMImpl implements IStateMachine {
                     setTimer(CEA_TIMEOUT);
                     switchToNextState(FsmState.INITIAL);
                   }
-                  catch(Throwable e) {
+                  catch (Throwable e) {
                     logger.debug("Can not send CER", e);
                     setTimer(REC_TIMEOUT);
                   }
@@ -662,12 +700,13 @@ public class PeerFSMImpl implements IStateMachine {
               return true;
             }
           },
-          new MyState() // INITIAL
-          {
+          new MyState() { // INITIAL
+            @Override
             public void entryAction() {
               setTimer(CEA_TIMEOUT);
             }
 
+            @Override
             public boolean processEvent(StateEvent event) {
               switch (event.encodeType(EventTypes.class)) {
                 case DISCONNECT_EVENT:
@@ -704,8 +743,8 @@ public class PeerFSMImpl implements IStateMachine {
               return true;
             }
           },
-          new MyState() // STOPPING
-          {
+          new MyState() { // STOPPING
+            @Override
             public boolean processEvent(StateEvent event) {
               switch (event.encodeType(EventTypes.class)) {
                 case TIMEOUT_EVENT:

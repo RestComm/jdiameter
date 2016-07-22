@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.client.impl.app.sh;
 
@@ -56,7 +76,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Basic implementation of ShClientSession - can be one time - for UDR,PUR and
+ * Basic implementation of ShClientSession - can be one time - for UDR, PUR and
  * constant for SNR-PNR pair, in case when SNA contains response code from range
  * different than 2001-2004(success codes) user is responsible for maintaing
  * state - releasing etc, same goes if result code is contained
@@ -64,7 +84,7 @@ import org.slf4j.LoggerFactory;
  * If ShSession moves to ShSessionState.TERMINATED - it means that no further
  * messages can be received via it and it should be discarded. <br>
  * <br>
- * 
+ *
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
@@ -82,7 +102,7 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
   protected IShClientSessionData sessionData;
 
   public ShClientSessionImpl(IShClientSessionData sessionData, IShMessageFactory fct, ISessionFactory sf, ClientShSessionListener lst) {
-    super(sf,sessionData);
+    super(sf, sessionData);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
@@ -94,6 +114,7 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
     this.sessionData = sessionData;
   }
 
+  @Override
   public Answer processRequest(Request request) {
     RequestDelivery rd = new RequestDelivery();
     rd.session = this;
@@ -102,11 +123,13 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
     return null;
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> stateType) {
     return null;
   }
 
+  @Override
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
     try {
       sendAndStateLock.lock();
@@ -114,38 +137,40 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
 
       // Do the delivery
       switch ((Event.Type) localEvent.getType()) {
-      case RECEIVE_PUSH_NOTIFICATION_REQUEST:
-        listener.doPushNotificationRequestEvent(this, new PushNotificationRequestImpl( (Request) localEvent.getRequest().getMessage() ));
-        break;
+        case RECEIVE_PUSH_NOTIFICATION_REQUEST:
+          listener.doPushNotificationRequestEvent(this, new PushNotificationRequestImpl( (Request) localEvent.getRequest().getMessage() ));
+          break;
 
-      case RECEIVE_PROFILE_UPDATE_ANSWER:
-        listener.doProfileUpdateAnswerEvent(this, (ProfileUpdateRequest)localEvent.getRequest(), new ProfileUpdateAnswerImpl( (Answer) localEvent.getAnswer().getMessage()));
-        break;
+        case RECEIVE_PROFILE_UPDATE_ANSWER:
+          listener.doProfileUpdateAnswerEvent(this, (ProfileUpdateRequest) localEvent.getRequest(),
+              new ProfileUpdateAnswerImpl((Answer) localEvent.getAnswer().getMessage()));
+          break;
 
-      case RECEIVE_USER_DATA_ANSWER:
-        listener.doUserDataAnswerEvent(this, (UserDataRequest)localEvent.getRequest(), new UserDataAnswerImpl((Answer) localEvent.getAnswer().getMessage()));
-        break;
+        case RECEIVE_USER_DATA_ANSWER:
+          listener.doUserDataAnswerEvent(this, (UserDataRequest) localEvent.getRequest(), new UserDataAnswerImpl((Answer) localEvent.getAnswer().getMessage()));
+          break;
 
-      case RECEIVE_SUBSCRIBE_NOTIFICATIONS_ANSWER:
-        listener.doSubscribeNotificationsAnswerEvent(this, (SubscribeNotificationsRequest)localEvent.getRequest(), new SubscribeNotificationsAnswerImpl( (Answer) localEvent.getAnswer().getMessage()));
-        break;
+        case RECEIVE_SUBSCRIBE_NOTIFICATIONS_ANSWER:
+          listener.doSubscribeNotificationsAnswerEvent(this, (SubscribeNotificationsRequest) localEvent.getRequest(),
+              new SubscribeNotificationsAnswerImpl((Answer) localEvent.getAnswer().getMessage()));
+          break;
 
-      case SEND_PROFILE_UPDATE_REQUEST:
-      case SEND_PUSH_NOTIFICATION_ANSWER:
-      case SEND_SUBSCRIBE_NOTIFICATIONS_REQUEST:
-      case SEND_USER_DATA_REQUEST:
-        Message m = null;
-        Object data = event.getData();
-        m = data instanceof AppEvent ? ((AppEvent)data).getMessage() : (Message) event.getData();
-        session.send(m, this);
-        break;
+        case SEND_PROFILE_UPDATE_REQUEST:
+        case SEND_PUSH_NOTIFICATION_ANSWER:
+        case SEND_SUBSCRIBE_NOTIFICATIONS_REQUEST:
+        case SEND_USER_DATA_REQUEST:
+          Message m = null;
+          Object data = event.getData();
+          m = data instanceof AppEvent ? ((AppEvent) data).getMessage() : (Message) event.getData();
+          session.send(m, this);
+          break;
 
-      case TIMEOUT_EXPIRES:
-        // TODO Anything here?
-        break;
+        case TIMEOUT_EXPIRES:
+          // TODO Anything here?
+          break;
 
-      default:
-        logger.error("Wrong message type={} req={} ans={}", new Object[]{localEvent.getType(), localEvent.getRequest(), localEvent.getAnswer()});
+        default:
+          logger.error("Wrong message type={} req={} ans={}", new Object[]{localEvent.getType(), localEvent.getRequest(), localEvent.getAnswer()});
       }
     }
     catch (IllegalDiameterStateException idse) {
@@ -161,18 +186,25 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
     return true;
   }
 
-  public void sendProfileUpdateRequest(ProfileUpdateRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void sendProfileUpdateRequest(ProfileUpdateRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_PROFILE_UPDATE_REQUEST, request, null);
   }
 
-  public void sendPushNotificationAnswer(PushNotificationAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void sendPushNotificationAnswer(PushNotificationAnswer answer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_PUSH_NOTIFICATION_ANSWER, null, answer);
   }
 
-  public void sendSubscribeNotificationsRequest(SubscribeNotificationsRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void sendSubscribeNotificationsRequest(SubscribeNotificationsRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_SUBSCRIBE_NOTIFICATIONS_REQUEST, request, null);
   }
 
+  @Override
   public void sendUserDataRequest(UserDataRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_USER_DATA_REQUEST, request, null);
   }
@@ -193,6 +225,7 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
     }
   }
 
+  @Override
   public void receivedSuccessMessage(Request request, Answer answer) {
     AnswerDelivery rd = new AnswerDelivery();
     rd.session = this;
@@ -201,6 +234,7 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
     super.scheduler.execute(rd);
   }
 
+  @Override
   public void timeoutExpired(Request request) {
     try {
       if (request.getApplicationId() == factory.getApplicationId()) {
@@ -223,6 +257,7 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
     }
   }
 
+  @Override
   public void release() {
     if (isValid()) {
       try {
@@ -241,6 +276,7 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
     }
   }
 
+  @Override
   public boolean isStateless() {
     return true;
   }
@@ -262,6 +298,7 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
     ClientShSession session;
     Request request;
 
+    @Override
     public void run() {
       try {
         if (request.getApplicationId() == factory.getApplicationId()) {
@@ -283,12 +320,14 @@ public class ShClientSessionImpl extends ShSession implements ClientShSession, E
     Answer answer;
     Request request;
 
+    @Override
     public void run() {
       try {
         sendAndStateLock.lock();
         if (request.getApplicationId() == factory.getApplicationId()) {
           if (request.getCommandCode() == ProfileUpdateRequest.code) {
-            handleEvent(new Event(Event.Type.RECEIVE_PROFILE_UPDATE_ANSWER, factory.createProfileUpdateRequest(request), factory.createProfileUpdateAnswer(answer)));
+            handleEvent(
+                new Event(Event.Type.RECEIVE_PROFILE_UPDATE_ANSWER, factory.createProfileUpdateRequest(request), factory.createProfileUpdateAnswer(answer)));
             return;
           }
           else if (request.getCommandCode() == UserDataRequest.code) {

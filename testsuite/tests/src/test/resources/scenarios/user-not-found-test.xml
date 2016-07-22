@@ -6,69 +6,69 @@
     <!-- Local Peer Configuration -->
     <local-host>localhost</local-host>
     <local-port>13868</local-port>
-    
+
     <!-- Remote Peer Configuration -->
     <!-- remote-host>localhost</remote-host>
     <remote-port>3868</remote-port-->
-    
+
     <!-- Realm Name (equal for local and remote) -->
     <realm-name>mobicents.org</realm-name>
-    
+
     <!-- Message Waiting Timeout -->
     <message-timeout>15000</message-timeout>
-    
+
     <!-- Print AVPs for sent messages (debug) -->
     <print-avps>false</print-avps>
   </configuration>
 
-	<send>
-	  <command name="ACR" code="271" flags="request">
-	  
-			<avp name="Origin-Host" code="264" vendor="0" value="localhost" />
-			<avp name="Origin-Realm" code="296" vendor="0" value="mobicents.org" />
-			
-			<avp name="Session-Id" code="263" vendor="0" value="12345" />
-			
-			<avp name="Vendor-Specific-Application-Id" code="260" vendor="0">
-			  <avp name="Vendor-Id" code="266" vendor="0" value="193" />
-			  <avp name="Acct-Application-Id" code="259" vendor="0" value="19302" />
-			</avp>
-			
-			<avp name="Destination-Realm" code="283" vendor="0" value="mobicents.org" />
-			<avp name="Destination-Host" code="293" vendor="0" value="127.0.0.1" />
-			
-			<avp name="SCAP-Subscription-Id" code="553" vendor="193">
-			  <avp name="SCAP-Subscription-Id-Type" code="555" vendor="193" value="0" />
-			  <avp name="SCAP-Subscription-Id-Data" code="554" vendor="193" value="00001006" />
-			</avp>
-			
-			<avp name="SCAP-Requested-Service-Unit" code="606" vendor="193">
-			  <avp name="SCAP-Unit-Type" code="611" vendor="193" value="2" />
-			  <avp name="SCAP-Unit-Value" code="612" vendor="193">
-			    <avp name="SCAP-Value-Digits" code="617" vendor="193" value="10" />
-			  </avp>
-			</avp>
-			
-			<avp name="Accounting-Record-Number" code="485" vendor="0" value="0" />
-			<avp name="Accounting-Record-Type" code="480" vendor="0" value="1" />
-			
-			<avp name="SCAP-Requested-Action" code="615" vendor="193" value="0" />
-			
-			<avp name="SCAP-Service-Parameter-Info" code="607" vendor="193">
-			  <avp name="SCAP-Service-Parameter-Type" code="608" vendor="193" value="0" />
-			  <avp name="SCAP-Service-Parameter-Value" code="609" vendor="193" value="510" />
-			</avp>
-			
-			<avp name="SCAP-Service-Parameter-Info" code="607" vendor="193">
-			  <avp name="SCAP-Service-Parameter-Type" code="608" vendor="193" value="14" />
-			  <avp name="SCAP-Service-Parameter-Value" code="609" vendor="193" value="20" />
-			</avp>  
-	  </command>
-	</send>
-	
-	<receive>
-	  <command name="ACA" code="271">
-	    <avp name="Result-Code" code="268" vendor="0" value="5241" />
-	  </command>
-	</receive>
+  <send>
+    <command name="ACR" code="271" flags="request">
+
+      <avp name="Origin-Host" code="264" vendor="0" value="localhost" />
+      <avp name="Origin-Realm" code="296" vendor="0" value="mobicents.org" />
+
+      <avp name="Session-Id" code="263" vendor="0" value="12345" />
+
+      <avp name="Vendor-Specific-Application-Id" code="260" vendor="0">
+        <avp name="Vendor-Id" code="266" vendor="0" value="193" />
+        <avp name="Acct-Application-Id" code="259" vendor="0" value="19302" />
+      </avp>
+
+      <avp name="Destination-Realm" code="283" vendor="0" value="mobicents.org" />
+      <avp name="Destination-Host" code="293" vendor="0" value="127.0.0.1" />
+
+      <avp name="SCAP-Subscription-Id" code="553" vendor="193">
+        <avp name="SCAP-Subscription-Id-Type" code="555" vendor="193" value="0" />
+        <avp name="SCAP-Subscription-Id-Data" code="554" vendor="193" value="00001006" />
+      </avp>
+
+      <avp name="SCAP-Requested-Service-Unit" code="606" vendor="193">
+        <avp name="SCAP-Unit-Type" code="611" vendor="193" value="2" />
+        <avp name="SCAP-Unit-Value" code="612" vendor="193">
+          <avp name="SCAP-Value-Digits" code="617" vendor="193" value="10" />
+        </avp>
+      </avp>
+
+      <avp name="Accounting-Record-Number" code="485" vendor="0" value="0" />
+      <avp name="Accounting-Record-Type" code="480" vendor="0" value="1" />
+
+      <avp name="SCAP-Requested-Action" code="615" vendor="193" value="0" />
+
+      <avp name="SCAP-Service-Parameter-Info" code="607" vendor="193">
+        <avp name="SCAP-Service-Parameter-Type" code="608" vendor="193" value="0" />
+        <avp name="SCAP-Service-Parameter-Value" code="609" vendor="193" value="510" />
+      </avp>
+
+      <avp name="SCAP-Service-Parameter-Info" code="607" vendor="193">
+        <avp name="SCAP-Service-Parameter-Type" code="608" vendor="193" value="14" />
+        <avp name="SCAP-Service-Parameter-Value" code="609" vendor="193" value="20" />
+      </avp>
+    </command>
+  </send>
+
+  <receive>
+    <command name="ACA" code="271">
+      <avp name="Result-Code" code="268" vendor="0" value="5241" />
+    </command>
+  </receive>
 </scenario>

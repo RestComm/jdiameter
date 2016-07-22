@@ -1,58 +1,58 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.mobicents.diameter</groupId>
-		<artifactId>restcomm-diameter-mux-parent</artifactId>
-		<version>1.7.0-SNAPSHOT</version> 
-		<relativePath>../pom.xml</relativePath>
-	</parent>
-	
-	<artifactId>restcomm-diameter-mux-jar</artifactId>
+  <parent>
+    <groupId>org.mobicents.diameter</groupId>
+    <artifactId>restcomm-diameter-mux-parent</artifactId>
+    <version>1.7.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
 
-	<name>Restcomm :: Diameter Multiplexer :: ${project.artifactId}</name>
-	
-	<packaging>jar</packaging>
+  <artifactId>restcomm-diameter-mux-jar</artifactId>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.jboss.jbossas</groupId>
-			<artifactId>jboss-as-system-jmx</artifactId>
-			<version>${jboss.version}</version>
-		</dependency>
+  <name>Restcomm :: Diameter Multiplexer :: ${project.artifactId}</name>
 
-		<dependency>
-			<groupId>org.jboss.spec</groupId>
-			<artifactId>jboss-javaee-6.0</artifactId>
-			<version>3.0.3.Final</version>
-			<type>pom</type>
-			<scope>provided</scope>
-		</dependency>
+  <packaging>jar</packaging>
 
-		<dependency>
-			<groupId>org.mobicents.diameter</groupId>
-			<artifactId>jdiameter-api</artifactId>
-		</dependency>
+  <dependencies>
+    <dependency>
+      <groupId>org.jboss.jbossas</groupId>
+      <artifactId>jboss-as-system-jmx</artifactId>
+      <version>${jboss.version}</version>
+    </dependency>
 
-		<dependency>
-			<groupId>org.mobicents.diameter</groupId>
-			<artifactId>jdiameter-impl</artifactId>
-		</dependency>
+    <dependency>
+      <groupId>org.jboss.spec</groupId>
+      <artifactId>jboss-javaee-6.0</artifactId>
+      <version>3.0.3.Final</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
 
-		<dependency>
-			<groupId>org.mobicents.diameter</groupId>
-			<artifactId>jdiameter-ha-api</artifactId>
-		</dependency>
+    <dependency>
+      <groupId>org.mobicents.diameter</groupId>
+      <artifactId>jdiameter-api</artifactId>
+    </dependency>
 
-		<dependency>
-			<groupId>org.mobicents.diameter</groupId>
-			<artifactId>jdiameter-ha-impl</artifactId>
-		</dependency>
-	</dependencies>
+    <dependency>
+      <groupId>org.mobicents.diameter</groupId>
+      <artifactId>jdiameter-impl</artifactId>
+    </dependency>
 
-	<build>
-		<finalName>restcomm-diameter-mux-${project.version}</finalName>
-	</build>
+    <dependency>
+      <groupId>org.mobicents.diameter</groupId>
+      <artifactId>jdiameter-ha-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mobicents.diameter</groupId>
+      <artifactId>jdiameter-ha-impl</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>restcomm-diameter-mux-${project.version}</finalName>
+  </build>
 
 </project>

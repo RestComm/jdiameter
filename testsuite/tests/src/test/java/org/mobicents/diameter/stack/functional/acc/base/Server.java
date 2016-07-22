@@ -4,18 +4,18 @@
  * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
- * 
+ *
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License, v. 2.0.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
+ * v. 2.0 along with this distribution; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
@@ -36,14 +36,13 @@ import org.jdiameter.api.acc.events.AccountRequest;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
-import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.impl.app.acc.AccountAnswerImpl;
 import org.mobicents.diameter.stack.functional.Utils;
 import org.mobicents.diameter.stack.functional.acc.AbstractServer;
 
 /**
  * Base implementation of Server
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -66,7 +65,8 @@ public class Server extends AbstractServer {
       fail("Did not receive INITIAL or answer already sent.", null);
       throw new Exception("Request: " + this.request);
     }
-    AccountAnswer answer = new AccountAnswerImpl((Request) request.getMessage(), request.getAccountingRecordType(), (int) request.getAccountingRecordNumber(), 2001);
+    AccountAnswer answer =
+        new AccountAnswerImpl((Request) request.getMessage(), request.getAccountingRecordType(), (int) request.getAccountingRecordNumber(), 2001);
 
     AvpSet set = answer.getMessage().getAvps();
     set.removeAvp(Avp.DESTINATION_HOST);
@@ -85,7 +85,8 @@ public class Server extends AbstractServer {
       throw new Exception("Request: " + this.request);
     }
 
-    AccountAnswer answer = new AccountAnswerImpl((Request) request.getMessage(), request.getAccountingRecordType(), (int) request.getAccountingRecordNumber(), 2001);
+    AccountAnswer answer =
+        new AccountAnswerImpl((Request) request.getMessage(), request.getAccountingRecordType(), (int) request.getAccountingRecordNumber(), 2001);
 
     AvpSet set = answer.getMessage().getAvps();
     set.removeAvp(Avp.DESTINATION_HOST);
@@ -103,7 +104,8 @@ public class Server extends AbstractServer {
       throw new Exception("Request: " + this.request);
     }
 
-    AccountAnswer answer = new AccountAnswerImpl((Request) request.getMessage(), request.getAccountingRecordType(), (int) request.getAccountingRecordNumber(), 2001);
+    AccountAnswer answer =
+        new AccountAnswerImpl((Request) request.getMessage(), request.getAccountingRecordType(), (int) request.getAccountingRecordNumber(), 2001);
 
     AvpSet set = answer.getMessage().getAvps();
     set.removeAvp(Avp.DESTINATION_HOST);
@@ -120,7 +122,8 @@ public class Server extends AbstractServer {
       fail("Did not receive EVENT or answer already sent.", null);
       throw new Exception("Request: " + this.request);
     }
-    AccountAnswer answer = new AccountAnswerImpl((Request) request.getMessage(), request.getAccountingRecordType(), (int) request.getAccountingRecordNumber(), 2001);
+    AccountAnswer answer =
+        new AccountAnswerImpl((Request) request.getMessage(), request.getAccountingRecordType(), (int) request.getAccountingRecordNumber(), 2001);
 
     AvpSet set = answer.getMessage().getAvps();
     set.removeAvp(Avp.DESTINATION_HOST);
@@ -134,7 +137,7 @@ public class Server extends AbstractServer {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.NetworkReqListener#processRequest(org.jdiameter.api.Request)
    */
   @Override
@@ -145,7 +148,7 @@ public class Server extends AbstractServer {
     }
     if (super.serverAccSession == null) {
       try {
-        super.serverAccSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(request.getSessionId(), getApplicationId(), ServerAccSession.class,
+        super.serverAccSession = this.sessionFactory.getNewAppSession(request.getSessionId(), getApplicationId(), ServerAccSession.class,
             new Object[] { new Boolean(stateless) }); // pass false to be stateful
         ((NetworkReqListener) this.serverAccSession).processRequest(request);
       }
@@ -162,11 +165,13 @@ public class Server extends AbstractServer {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.acc.ServerAccSessionListener#doAccRequestEvent(org.jdiameter.api.acc.ServerAccSession,
    * org.jdiameter.api.acc.events.AccountRequest)
    */
-  public void doAccRequestEvent(ServerAccSession appSession, AccountRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void doAccRequestEvent(ServerAccSession appSession, AccountRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     try {
       Utils.printMessage(log, super.stack.getDictionary(), request.getMessage(), false);
       // INITIAL_REQUEST 1,
@@ -175,41 +180,41 @@ public class Server extends AbstractServer {
       // EVENT_REQUEST 4
 
       switch (request.getAccountingRecordType()) {
-      case ACC_REQUEST_TYPE_INITIAL:
-        if (receiveINITIAL) {
-          fail("Received INITIAL more than once!", null);
-        }
+        case ACC_REQUEST_TYPE_INITIAL:
+          if (receiveINITIAL) {
+            fail("Received INITIAL more than once!", null);
+          }
 
-        receiveINITIAL = true;
-        this.request = request;
-        break;
+          receiveINITIAL = true;
+          this.request = request;
+          break;
 
-      case ACC_REQUEST_TYPE_INTERIM:
-        if (receiveINTERIM) {
-          fail("Received INTERIM more than once!", null);
-        }
-        receiveINTERIM = true;
-        this.request = request;
-        break;
+        case ACC_REQUEST_TYPE_INTERIM:
+          if (receiveINTERIM) {
+            fail("Received INTERIM more than once!", null);
+          }
+          receiveINTERIM = true;
+          this.request = request;
+          break;
 
-      case ACC_REQUEST_TYPE_TERMINATE:
-        if (receiveTERMINATE) {
-          fail("Received TERMINATE more than once!", null);
-        }
-        receiveTERMINATE = true;
-        this.request = request;
-        break;
+        case ACC_REQUEST_TYPE_TERMINATE:
+          if (receiveTERMINATE) {
+            fail("Received TERMINATE more than once!", null);
+          }
+          receiveTERMINATE = true;
+          this.request = request;
+          break;
 
-      case ACC_REQUEST_TYPE_EVENT:
-        if (receiveEVENT) {
-          fail("Received EVENT more than once!", null);
-        }
-        receiveEVENT = true;
-        this.request = request;
-        break;
+        case ACC_REQUEST_TYPE_EVENT:
+          if (receiveEVENT) {
+            fail("Received EVENT more than once!", null);
+          }
+          receiveEVENT = true;
+          this.request = request;
+          break;
 
-      default:
-        fail("No REQ type present?: " + request.getAccountingRecordType(), null);
+        default:
+          fail("No REQ type present?: " + request.getAccountingRecordType(), null);
       }
     }
     catch (Exception e) {
@@ -219,12 +224,13 @@ public class Server extends AbstractServer {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.acc.ServerAccSessionListener#doOtherEvent(org.jdiameter.api.app.AppSession,
    * org.jdiameter.api.app.AppRequestEvent, org.jdiameter.api.app.AppAnswerEvent)
    */
-  public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException,
-  OverloadException {
+  @Override
+  public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 

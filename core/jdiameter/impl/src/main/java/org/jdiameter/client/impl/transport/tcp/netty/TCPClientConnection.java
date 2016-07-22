@@ -294,7 +294,7 @@ public class TCPClientConnection implements IConnection {
   }
 
   // ------------------ helper classes ------------------------
-  private static enum EventType {
+  private enum EventType {
     CONNECTED, DISCONNECTED, MESSAGE_RECEIVED, DATA_EXCEPTION
   }
 

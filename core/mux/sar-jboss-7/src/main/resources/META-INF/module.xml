@@ -21,59 +21,59 @@
   -->
 
 <module xmlns="urn:jboss:module:1.1" name="org.mobicents.diameter">
-    <resources>
-        <resource-root path="."/>  
+  <resources>
+    <resource-root path="."/>
 
-        <resource-root path="slf4j-api-@SLF4J_VERSION@.jar"/>
-        <resource-root path="slf4j-log4j12-@SLF4J_VERSION@.jar"/>
+    <resource-root path="slf4j-api-@SLF4J_VERSION@.jar"/>
+    <resource-root path="slf4j-log4j12-@SLF4J_VERSION@.jar"/>
 
-        <resource-root path="picocontainer-@PICOCONTAINER_VERSION@.jar"/>
+    <resource-root path="picocontainer-@PICOCONTAINER_VERSION@.jar"/>
 
-        <resource-root path="commons-pool-@COMMONS_VERSION@.jar"/>
+    <resource-root path="commons-pool-@COMMONS_VERSION@.jar"/>
 
-        <resource-root path="jdiameter-api-@JDIAMETER_VERSION@.jar"/>
-        <resource-root path="jdiameter-impl-@JDIAMETER_VERSION@.jar"/>
-        <resource-root path="jdiameter-ha-api-@JDIAMETER_VERSION@.jar"/>
-        <resource-root path="jdiameter-ha-impl-@JDIAMETER_VERSION@.jar"/>
-        <!-- Insert resources here -->
-    </resources>
+    <resource-root path="jdiameter-api-@JDIAMETER_VERSION@.jar"/>
+    <resource-root path="jdiameter-impl-@JDIAMETER_VERSION@.jar"/>
+    <resource-root path="jdiameter-ha-api-@JDIAMETER_VERSION@.jar"/>
+    <resource-root path="jdiameter-ha-impl-@JDIAMETER_VERSION@.jar"/>
+    <!-- Insert resources here -->
+  </resources>
 
-    <dependencies>
-        <system export="true">
-            <paths>
-                <path name="javax/xml"/>
-                <path name="javax/xml/datatype"/>
-                <path name="javax/xml/namespace"/>
-                <path name="javax/xml/parsers"/>
-                <path name="javax/xml/stream"/>
-                <path name="javax/xml/stream/events"/>
-                <path name="javax/xml/stream/util"/>
-                <path name="javax/xml/transform"/>
-                <path name="javax/xml/transform/dom"/>
-                <path name="javax/xml/transform/sax"/>
-                <path name="javax/xml/transform/stax"/>
-                <path name="javax/xml/transform/stream"/>
-                <path name="javax/xml/validation"/>
-                <path name="javax/xml/xpath"/>
-                <path name="org/ietf/jgss"/>
-                <path name="org/w3c/dom"/>
-                <path name="org/w3c/dom/bootstrap"/>
-                <path name="org/w3c/dom/css"/>
-                <path name="org/w3c/dom/events"/>
-                <path name="org/w3c/dom/html"/>
-                <path name="org/w3c/dom/ranges"/>
-                <path name="org/w3c/dom/stylesheets"/>
-                <path name="org/w3c/dom/traversal"/>
-                <path name="org/w3c/dom/ls"/>
-                <path name="org/w3c/dom/views"/>
-                <path name="org/w3c/dom/xpath"/>
-                <path name="org/xml/sax"/>
-                <path name="org/xml/sax/ext"/>
-                <path name="org/xml/sax/helpers"/>
-            </paths>
-        </system>
-        <module name="org.apache.log4j"/>
-        <module name="javax.annotation.api" export="true"/>
-    </dependencies>
+  <dependencies>
+    <system export="true">
+      <paths>
+        <path name="javax/xml"/>
+        <path name="javax/xml/datatype"/>
+        <path name="javax/xml/namespace"/>
+        <path name="javax/xml/parsers"/>
+        <path name="javax/xml/stream"/>
+        <path name="javax/xml/stream/events"/>
+        <path name="javax/xml/stream/util"/>
+        <path name="javax/xml/transform"/>
+        <path name="javax/xml/transform/dom"/>
+        <path name="javax/xml/transform/sax"/>
+        <path name="javax/xml/transform/stax"/>
+        <path name="javax/xml/transform/stream"/>
+        <path name="javax/xml/validation"/>
+        <path name="javax/xml/xpath"/>
+        <path name="org/ietf/jgss"/>
+        <path name="org/w3c/dom"/>
+        <path name="org/w3c/dom/bootstrap"/>
+        <path name="org/w3c/dom/css"/>
+        <path name="org/w3c/dom/events"/>
+        <path name="org/w3c/dom/html"/>
+        <path name="org/w3c/dom/ranges"/>
+        <path name="org/w3c/dom/stylesheets"/>
+        <path name="org/w3c/dom/traversal"/>
+        <path name="org/w3c/dom/ls"/>
+        <path name="org/w3c/dom/views"/>
+        <path name="org/w3c/dom/xpath"/>
+        <path name="org/xml/sax"/>
+        <path name="org/xml/sax/ext"/>
+        <path name="org/xml/sax/helpers"/>
+      </paths>
+    </system>
+    <module name="org.apache.log4j"/>
+    <module name="javax.annotation.api" export="true"/>
+  </dependencies>
 
 </module>

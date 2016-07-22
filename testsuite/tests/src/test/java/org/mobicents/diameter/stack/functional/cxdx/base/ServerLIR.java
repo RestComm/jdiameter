@@ -4,18 +4,18 @@
  * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
- * 
+ *
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License, v. 2.0.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
+ * v. 2.0 along with this distribution; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
@@ -33,13 +33,12 @@ import org.jdiameter.api.RouteException;
 import org.jdiameter.api.cxdx.ServerCxDxSession;
 import org.jdiameter.api.cxdx.events.JLocationInfoAnswer;
 import org.jdiameter.api.cxdx.events.JLocationInfoRequest;
-import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.impl.app.cxdx.JLocationInfoAnswerImpl;
 import org.mobicents.diameter.stack.functional.Utils;
 import org.mobicents.diameter.stack.functional.cxdx.AbstractServer;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -51,8 +50,8 @@ public class ServerLIR extends AbstractServer {
   protected JLocationInfoRequest request;
 
   /**
-	 * 
-	 */
+   *
+   */
   public ServerLIR() {
   }
 
@@ -118,7 +117,7 @@ public class ServerLIR extends AbstractServer {
     }
     else {
       try {
-        super.serverCxDxSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(request.getSessionId(), getApplicationId(), ServerCxDxSession.class, (Object) null);
+        super.serverCxDxSession = this.sessionFactory.getNewAppSession(request.getSessionId(), getApplicationId(), ServerCxDxSession.class, (Object) null);
         ((NetworkReqListener) this.serverCxDxSession).processRequest(request);
       }
       catch (Exception e) {
@@ -131,8 +130,8 @@ public class ServerLIR extends AbstractServer {
   }
 
   @Override
-  public void doLocationInformationRequest(ServerCxDxSession session, JLocationInfoRequest request) throws InternalException, IllegalDiameterStateException, RouteException,
-      OverloadException {
+  public void doLocationInformationRequest(ServerCxDxSession session, JLocationInfoRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     if (this.receivedLocationInfo) {
       fail("Received LIR more than once", null);
       return;

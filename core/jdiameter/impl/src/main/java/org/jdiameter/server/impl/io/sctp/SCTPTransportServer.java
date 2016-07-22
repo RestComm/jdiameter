@@ -1,21 +1,21 @@
- /*
-  * TeleStax, Open Source Cloud Communications
-  * Copyright 2011-2014, TeleStax Inc. and individual contributors
-  * by the @authors tag.
-  *
-  * This program is free software: you can redistribute it and/or modify
-  * under the terms of the GNU Affero General Public License as
-  * published by the Free Software Foundation; either version 3 of
-  * the License, or (at your option) any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU Affero General Public License for more details.
-  *
-  * You should have received a copy of the GNU Affero General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>
-  */
+/*
+ * TeleStax, Open Source Cloud Communications
+ * Copyright 2011-2014, TeleStax Inc. and individual contributors
+ * by the @authors tag.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
 
 package org.jdiameter.server.impl.io.sctp;
 
@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -62,7 +62,7 @@ public class SCTPTransportServer {
 
   /**
    * Default constructor
-   * 
+   *
    * @param parentConnectionConnection
    *          connection created this transport
    */
@@ -192,7 +192,8 @@ public class SCTPTransportServer {
     logger.debug("Successfuly initialized SCTP Server Host[{}:{}] Peer[{}:{}]",
         new Object[] { serverAssociation.getHostAddress(), serverAssociation.getHostPort(), serverAssociation.getPeerAddress(),
             serverAssociation.getPeerPort() });
-    logger.debug("Server Association Status: Started[{}] Connected[{}] Up[{}] ", new Object[]{serverAssociation.isStarted(), serverAssociation.isConnected(), serverAssociation.isUp()});
+    logger.debug("Server Association Status: Started[{}] Connected[{}] Up[{}] ",
+        new Object[]{serverAssociation.isStarted(), serverAssociation.isConnected(), serverAssociation.isUp()});
     logger.trace("Server Association [{}]", serverAssociation);
   }
 
@@ -202,7 +203,7 @@ public class SCTPTransportServer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.mobicents.protocols.api.AssociationListener#onCommunicationUp(org.mobicents.protocols.api.Association, int, int)
      */
     @Override
@@ -213,7 +214,7 @@ public class SCTPTransportServer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.mobicents.protocols.api.AssociationListener#onCommunicationShutdown(org.mobicents.protocols.api.Association)
      */
     @Override
@@ -235,7 +236,7 @@ public class SCTPTransportServer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.mobicents.protocols.api.AssociationListener#onCommunicationLost(org.mobicents.protocols.api.Association)
      */
     @Override
@@ -245,7 +246,7 @@ public class SCTPTransportServer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.mobicents.protocols.api.AssociationListener#onCommunicationRestart(org.mobicents.protocols.api.Association)
      */
     @Override
@@ -255,7 +256,7 @@ public class SCTPTransportServer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.mobicents.protocols.api.AssociationListener#onPayload(org.mobicents.protocols.api.Association,
      * org.mobicents.protocols.api.PayloadData)
      */
@@ -282,7 +283,7 @@ public class SCTPTransportServer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.mobicents.protocols.api.AssociationListener#inValidStreamId(org.mobicents.protocols.api.PayloadData)
      */
     @Override

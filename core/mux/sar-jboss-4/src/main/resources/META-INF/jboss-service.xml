@@ -2,11 +2,10 @@
 
 <server>
 
-	<!-- MUX Bean definition -->
-	<mbean
-		code="org.mobicents.diameter.stack.DiameterStackMultiplexer"
-		name="diameter.mobicents:service=DiameterStackMultiplexer"
-	>
-	</mbean>
+  <!-- MUX Bean definition -->
+  <mbean
+    code="org.mobicents.diameter.stack.DiameterStackMultiplexer"
+    name="diameter.mobicents:service=DiameterStackMultiplexer">
+  </mbean>
 
 </server>

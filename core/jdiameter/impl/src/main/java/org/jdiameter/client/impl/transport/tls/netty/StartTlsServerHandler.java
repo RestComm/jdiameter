@@ -37,7 +37,7 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 /**
- * 
+ *
  * @author <a href="mailto:jqayyum@gmail.com"> Jehanzeb Qayyum </a>
  */
 public class StartTlsServerHandler extends ChannelInboundHandlerAdapter {

@@ -4,18 +4,18 @@
  * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
- * 
+ *
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License, v. 2.0.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
+ * v. 2.0 along with this distribution; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
@@ -31,12 +31,11 @@ import org.jdiameter.api.Mode;
 import org.jdiameter.api.sh.ClientShSession;
 import org.jdiameter.api.sh.ClientShSessionListener;
 import org.jdiameter.api.sh.ServerShSession;
-import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.impl.app.sh.ShSessionFactoryImpl;
 import org.mobicents.diameter.stack.functional.TBase;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -51,12 +50,12 @@ public abstract class AbstractClient extends TBase implements ClientShSessionLis
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777217));
       ShSessionFactoryImpl shSessionFactory = new ShSessionFactoryImpl(this.sessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ServerShSession.class, shSessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ClientShSession.class, shSessionFactory);
+      sessionFactory.registerAppFacory(ServerShSession.class, shSessionFactory);
+      sessionFactory.registerAppFacory(ClientShSession.class, shSessionFactory);
 
       shSessionFactory.setClientShSessionListener(this);
 
-      this.clientShSession = ((ISessionFactory) this.sessionFactory)
+      this.clientShSession = this.sessionFactory
           .getNewAppSession(this.sessionFactory.getSessionId("xxTESTxx"), getApplicationId(), ClientShSession.class, (Object) null);
     }
     finally {

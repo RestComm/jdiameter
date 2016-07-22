@@ -15,7 +15,7 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  (c)Copyright 2006 Appium AB
- 
+
 -->
 
 <?xml version="1.0" encoding="ISO-8859-1"?>
@@ -262,11 +262,11 @@
         <setfield name="avp-code" value="11"></setfield>
         <setfield name="flags" value="64"></setfield>
       </define>
-	<define name="Service-Information" type="Grouped">
+      <define name="Service-Information" type="Grouped">
         <setfield name="avp-code" value="873"></setfield>
         <setfield name="flags" value="64"></setfield>
       </define>
-	</avp>
+  </avp>
       <!-- Diameter Rf (3GPP TS 29.329 V7.1.0) AVPs -->
 
     <!-- COMMAND definitions -->

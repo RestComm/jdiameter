@@ -1,42 +1,78 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.client.impl;
 
-import org.jdiameter.api.*;
+import static org.jdiameter.client.impl.helpers.Parameters.MessageTimeOut;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import org.jdiameter.api.Answer;
+import org.jdiameter.api.ApplicationId;
+import org.jdiameter.api.Avp;
+import org.jdiameter.api.AvpSet;
+import org.jdiameter.api.BaseSession;
+import org.jdiameter.api.EventListener;
+import org.jdiameter.api.IllegalDiameterStateException;
+import org.jdiameter.api.InternalException;
+import org.jdiameter.api.Message;
+import org.jdiameter.api.NetworkReqListener;
+import org.jdiameter.api.OverloadException;
+import org.jdiameter.api.Request;
+import org.jdiameter.api.RouteException;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IEventListener;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.parser.IMessageParser;
 
-import static org.jdiameter.client.impl.helpers.Parameters.MessageTimeOut;
-
-import java.util.concurrent.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 /**
  * Implementation for {@link BaseSession}.
- * 
+ *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
@@ -52,18 +88,22 @@ public abstract class BaseSessionImpl implements BaseSession {
   protected transient IMessageParser parser;
   protected NetworkReqListener reqListener;
 
+  @Override
   public long getCreationTime() {
     return creationTime;
   }
 
+  @Override
   public long getLastAccessedTime() {
     return lastAccessedTime;
   }
 
+  @Override
   public boolean isValid() {
     return isValid;
   }
 
+  @Override
   public String getSessionId() {
     return sessionId;
   }
@@ -71,6 +111,7 @@ public abstract class BaseSessionImpl implements BaseSession {
   /* (non-Javadoc)
    * @see org.jdiameter.api.BaseSession#isAppSession()
    */
+  @Override
   public boolean isAppSession() {
     return false;
   }
@@ -78,11 +119,13 @@ public abstract class BaseSessionImpl implements BaseSession {
   /* (non-Javadoc)
    * @see org.jdiameter.api.BaseSession#isReplicable()
    */
+  @Override
   public boolean isReplicable() {
     return false;
   }
 
-  protected void genericSend(Message message, EventListener listener) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  protected void genericSend(Message message, EventListener listener)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     if (isValid) {
       long timeOut = container.getConfiguration().getLongValue(MessageTimeOut.ordinal(), (Long) MessageTimeOut.defValue());
       genericSend(message, listener, timeOut, TimeUnit.MILLISECONDS);
@@ -92,7 +135,8 @@ public abstract class BaseSessionImpl implements BaseSession {
     }
   }
 
-  protected void genericSend(Message aMessage, EventListener listener, long timeout, TimeUnit timeUnit) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  protected void genericSend(Message aMessage, EventListener listener, long timeout, TimeUnit timeUnit)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     if (isValid) {
       lastAccessedTime = System.currentTimeMillis();
 
@@ -103,7 +147,7 @@ public abstract class BaseSessionImpl implements BaseSession {
 
         // Auto set system avps
         if (message.getAvps().getAvpByIndex(0).getCode() != Avp.SESSION_ID && sessionId != null) {
-          // Just to make sure it doesn't get duplicated 
+          // Just to make sure it doesn't get duplicated
           message.getAvps().removeAvp(Avp.SESSION_ID);
           message.getAvps().insertAvp(0, Avp.SESSION_ID, sessionId, true, false, false);
         }
@@ -120,7 +164,7 @@ public abstract class BaseSessionImpl implements BaseSession {
       try {
         container.sendMessage(message);
       }
-      catch(RouteException e) {
+      catch (RouteException e) {
         message.clearTimer();
         throw e;
       }
@@ -145,7 +189,8 @@ public abstract class BaseSessionImpl implements BaseSession {
     return future;
   }
 
-  public Future<Message> send(Message message, long timeOut, TimeUnit timeUnit) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public Future<Message> send(Message message, long timeOut, TimeUnit timeUnit)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     MyFuture future = new MyFuture();
     future.send(message, timeOut, timeUnit);
     return future;
@@ -160,6 +205,7 @@ public abstract class BaseSessionImpl implements BaseSession {
     private CountDownLatch block = new CountDownLatch(1);
     private Message result;
 
+    @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
       lock.lock();
       try {
@@ -174,14 +220,17 @@ public abstract class BaseSessionImpl implements BaseSession {
       return true;
     }
 
+    @Override
     public boolean isCancelled() {
       return canceled;
     }
 
+    @Override
     public boolean isDone() {
       return done;
     }
 
+    @Override
     public Message get() throws InterruptedException, ExecutionException {
       try {
         block.await();
@@ -195,6 +244,7 @@ public abstract class BaseSessionImpl implements BaseSession {
       return rc;
     }
 
+    @Override
     public Message get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
       try {
         block.await(timeout, unit);
@@ -215,13 +265,16 @@ public abstract class BaseSessionImpl implements BaseSession {
     private IEventListener createListener() {
       return new IEventListener() {
 
+        @Override
         public void setValid(boolean value) {
         }
 
+        @Override
         public boolean isValid() {
           return !canceled;
         }
 
+        @Override
         public void receivedSuccessMessage(Request r, Answer a) {
           lock.lock();
           try {
@@ -237,6 +290,7 @@ public abstract class BaseSessionImpl implements BaseSession {
           }
         }
 
+        @Override
         public void timeoutExpired(Request message) {
           lock.lock();
           try {
@@ -257,14 +311,15 @@ public abstract class BaseSessionImpl implements BaseSession {
       genericSend(message, createListener());
     }
 
-    public void send(Message message, long timeOut, TimeUnit timeUnit) throws RouteException, OverloadException, IllegalDiameterStateException, InternalException {
+    public void send(Message message, long timeOut, TimeUnit timeUnit)
+        throws RouteException, OverloadException, IllegalDiameterStateException, InternalException {
       genericSend(message, createListener(), timeOut, timeUnit);
     }
   }
 
   /**
    * Appends an *-Application-Id AVP to the message, if none is present already.
-   * 
+   *
    * @param appId the application-id value
    * @param m the message to append the *-Application-Id
    */
@@ -275,9 +330,9 @@ public abstract class BaseSessionImpl implements BaseSession {
 
     // check if any application-id avp is already present.
     // we could use m.getApplicationIdAvps().size() > 0 but this should spare a few cpu cycles
-    for(Avp avp : m.getAvps()) {
+    for (Avp avp : m.getAvps()) {
       int code = avp.getCode();
-      if(code == Avp.ACCT_APPLICATION_ID || code == Avp.AUTH_APPLICATION_ID || code == Avp.VENDOR_SPECIFIC_APPLICATION_ID) {
+      if (code == Avp.ACCT_APPLICATION_ID || code == Avp.AUTH_APPLICATION_ID || code == Avp.VENDOR_SPECIFIC_APPLICATION_ID) {
         return;
       }
     }
@@ -324,11 +379,12 @@ class MyEventListener implements IEventListener {
   EventListener listener;
   boolean isValid = true;
 
-  public MyEventListener(BaseSessionImpl session, EventListener listener) {
+  MyEventListener(BaseSessionImpl session, EventListener listener) {
     this.session = session;
     this.listener = listener;
   }
 
+  @Override
   public void setValid(boolean value) {
     isValid = value;
     if (!isValid) {
@@ -337,10 +393,12 @@ class MyEventListener implements IEventListener {
     }
   }
 
+  @Override
   public boolean isValid() {
     return isValid;
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public void receivedSuccessMessage(Request request, Answer answer) {
     if (isValid) {
@@ -349,6 +407,7 @@ class MyEventListener implements IEventListener {
     }
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public void timeoutExpired(Request message) {
     if (isValid) {
@@ -357,14 +416,17 @@ class MyEventListener implements IEventListener {
     }
   }
 
+  @Override
   public int hashCode() {
     return listener == null ? 0 : listener.hashCode();
   }
 
+  @Override
   public boolean equals(Object obj) {
     return listener != null && listener.equals(obj);
   }
 
+  @Override
   public String toString() {
     return listener == null ? "null" : listener.toString();
   }

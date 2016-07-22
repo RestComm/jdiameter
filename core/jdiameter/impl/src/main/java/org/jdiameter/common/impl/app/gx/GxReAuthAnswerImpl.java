@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 public class GxReAuthAnswerImpl extends AppAnswerEventImpl implements GxReAuthAnswer {
 
   private static final long serialVersionUID = 1L;
-  protected final static Logger logger = LoggerFactory.getLogger(GxReAuthAnswerImpl.class);
+  protected static final Logger logger = LoggerFactory.getLogger(GxReAuthAnswerImpl.class);
 
   public GxReAuthAnswerImpl(Request message, long resultCode) {
     super(message.createAnswer(resultCode));

@@ -57,11 +57,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
-public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessionListener, ServerCCASessionListener, StateChangeListener<AppSession>, ICCAMessageFactory, IServerCCASessionContext, IClientCCASessionContext {
+public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessionListener, ServerCCASessionListener, StateChangeListener<AppSession>,
+    ICCAMessageFactory, IServerCCASessionContext, IClientCCASessionContext {
 
   // Message timeout value (in milliseconds)
   protected int defaultDirectDebitingFailureHandling = 0;
@@ -80,11 +81,11 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
   protected ICCAMessageFactory messageFactory;
 
 
-  protected final static Logger logger = LoggerFactory.getLogger(CCASessionFactoryImpl.class);
+  protected static final Logger logger = LoggerFactory.getLogger(CCASessionFactoryImpl.class);
   protected ISessionDatasource iss;
   protected ISessionFactory sessionFactory = null;
   protected IAppSessionDataFactory<ICCASessionData> sessionDataFactory;
-  public CCASessionFactoryImpl(){};
+  public CCASessionFactoryImpl() {};
 
   public CCASessionFactoryImpl(SessionFactory sessionFactory) {
     super();
@@ -100,13 +101,14 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
     this.iss = this.sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
 
     this.sessionDataFactory = (IAppSessionDataFactory<ICCASessionData>) this.iss.getDataFactory(ICCASessionData.class);
-    if(this.sessionDataFactory == null) {
+    if (this.sessionDataFactory == null) {
       logger.debug("No factory for CCA Application data, using default/local.");
       this.sessionDataFactory = new CCALocalSessionDataFactory();
     }
   }
 
-  public CCASessionFactoryImpl(SessionFactory sessionFactory, int defaultDirectDebitingFailureHandling, int defaultCreditControlFailureHandling, long defaultValidityTime, long defaultTxTimerValue) {
+  public CCASessionFactoryImpl(SessionFactory sessionFactory, int defaultDirectDebitingFailureHandling, int defaultCreditControlFailureHandling,
+      long defaultValidityTime, long defaultTxTimerValue) {
     this(sessionFactory);
 
     this.defaultDirectDebitingFailureHandling = defaultDirectDebitingFailureHandling;
@@ -118,6 +120,7 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
   /**
    * @return the clientSessionListener
    */
+  @Override
   public ClientCCASessionListener getClientSessionListener() {
     if (clientSessionListener != null) {
       return clientSessionListener;
@@ -131,6 +134,7 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
    * @param clientSessionListener
    *          the clientSessionListener to set
    */
+  @Override
   public void setClientSessionListener(ClientCCASessionListener clientSessionListener) {
     this.clientSessionListener = clientSessionListener;
   }
@@ -138,6 +142,7 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
   /**
    * @return the serverSessionListener
    */
+  @Override
   public ServerCCASessionListener getServerSessionListener() {
     if (serverSessionListener != null) {
       return serverSessionListener;
@@ -151,6 +156,7 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
    * @param serverSessionListener
    *          the serverSessionListener to set
    */
+  @Override
   public void setServerSessionListener(ServerCCASessionListener serverSessionListener) {
     this.serverSessionListener = serverSessionListener;
   }
@@ -158,6 +164,7 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
   /**
    * @return the serverContextListener
    */
+  @Override
   public IServerCCASessionContext getServerContextListener() {
     if (serverContextListener != null) {
       return serverContextListener;
@@ -171,6 +178,7 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
    * @param serverContextListener
    *          the serverContextListener to set
    */
+  @Override
   public void setServerContextListener(IServerCCASessionContext serverContextListener) {
     this.serverContextListener = serverContextListener;
   }
@@ -178,6 +186,7 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
   /**
    * @return the clientContextListener
    */
+  @Override
   public IClientCCASessionContext getClientContextListener() {
     if (clientContextListener != null) {
       return clientContextListener;
@@ -190,6 +199,7 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
   /**
    * @return the messageFactory
    */
+  @Override
   public ICCAMessageFactory getMessageFactory() {
     if (messageFactory != null) {
       return messageFactory;
@@ -203,6 +213,7 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
    * @param messageFactory
    *          the messageFactory to set
    */
+  @Override
   public void setMessageFactory(ICCAMessageFactory messageFactory) {
     this.messageFactory = messageFactory;
   }
@@ -211,6 +222,7 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
    * @param clientContextListener
    *          the clientContextListener to set
    */
+  @Override
   public void setClientContextListener(IClientCCASessionContext clientContextListener) {
     this.clientContextListener = clientContextListener;
   }
@@ -233,6 +245,7 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
   /**
    * @return the stateListener
    */
+  @Override
   public StateChangeListener<AppSession> getStateListener() {
     if (this.stateListener != null) {
       return stateListener;
@@ -246,6 +259,7 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
    * @param stateListener
    *          the stateListener to set
    */
+  @Override
   public void setStateListener(StateChangeListener<AppSession> stateListener) {
     this.stateListener = stateListener;
   }
@@ -255,7 +269,7 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
     if (sessionId == null) {
       throw new IllegalArgumentException("SessionId must not be null");
     }
-    if(!this.iss.exists(sessionId)) {
+    if (!this.iss.exists(sessionId)) {
       return null;
     }
     AppSession appSession = null;
@@ -306,7 +320,8 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
         }
         IClientCCASessionData data = (IClientCCASessionData) this.sessionDataFactory.getAppSessionData(ClientCCASession.class, sessionId);
         data.setApplicationId(applicationId);
-        clientSession = new ClientCCASessionImpl(data, this.getMessageFactory(), sessionFactory, this.getClientSessionListener(), this.getClientContextListener(), this.getStateListener());
+        clientSession = new ClientCCASessionImpl(data, this.getMessageFactory(), sessionFactory, this.getClientSessionListener(),
+            this.getClientContextListener(), this.getStateListener());
         // this goes first!
         iss.addSession(clientSession);
         clientSession.getSessions().get(0).setRequestListener(clientSession);
@@ -326,7 +341,8 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
         }
         IServerCCASessionData data = (IServerCCASessionData) this.sessionDataFactory.getAppSessionData(ServerCCASession.class, sessionId);
         data.setApplicationId(applicationId);
-        serverSession = new ServerCCASessionImpl(data, this.getMessageFactory(), sessionFactory, this.getServerSessionListener(), this.getServerContextListener(), this.getStateListener());
+        serverSession = new ServerCCASessionImpl(data, this.getMessageFactory(), sessionFactory, this.getServerSessionListener(),
+            this.getServerContextListener(), this.getStateListener());
         iss.addSession(serverSession);
         serverSession.getSessions().get(0).setRequestListener(serverSession);
         appSession = serverSession;
@@ -347,132 +363,161 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
 
   // Message Handlers ---------------------------------------------------------
 
+  @Override
   public void doCreditControlRequest(ServerCCASession session, JCreditControlRequest request) throws InternalException {
 
   }
 
+  @Override
   public void doCreditControlAnswer(ClientCCASession session, JCreditControlRequest request, JCreditControlAnswer answer) throws InternalException {
 
   }
 
+  @Override
   public void doReAuthRequest(ClientCCASession session, ReAuthRequest request) throws InternalException {
 
   }
 
+  @Override
   public void doReAuthAnswer(ServerCCASession session, ReAuthRequest request, ReAuthAnswer answer) throws InternalException {
 
   }
 
+  @Override
   public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException {
 
   }
 
   // Message Factory Methods --------------------------------------------------
 
+  @Override
   public JCreditControlAnswer createCreditControlAnswer(Answer answer) {
     return new JCreditControlAnswerImpl(answer);
   }
 
+  @Override
   public JCreditControlRequest createCreditControlRequest(Request req) {
     return new JCreditControlRequestImpl(req);
   }
 
+  @Override
   public ReAuthAnswer createReAuthAnswer(Answer answer) {
     return new ReAuthAnswerImpl(answer);
   }
 
+  @Override
   public ReAuthRequest createReAuthRequest(Request req) {
     return new ReAuthRequestImpl(req);
   }
 
   // Context Methods ----------------------------------------------------------
 
+  @Override
   public void stateChanged(Enum oldState, Enum newState) {
     logger.info("Diameter CCA SessionFactory :: stateChanged :: oldState[{}], newState[{}]", oldState, newState);
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.app.StateChangeListener#stateChanged(java.lang.Object, java.lang.Enum, java.lang.Enum)
    */
+  @Override
   public void stateChanged(AppSession source, Enum oldState, Enum newState) {
     logger.info("Diameter CCA SessionFactory :: stateChanged :: source[{}], oldState[{}], newState[{}]", new Object[]{source, oldState, newState});
   }
 
   // FIXME: add ctx methods proxy calls!
 
+  @Override
   public void sessionSupervisionTimerExpired(ServerCCASession session) {
     // this.resourceAdaptor.sessionDestroyed(session.getSessions().get(0).getSessionId(), session);
     session.release();
   }
 
+  @Override
   public void sessionSupervisionTimerReStarted(ServerCCASession session, ScheduledFuture future) {
     // TODO Complete this method.
   }
 
+  @Override
   public void sessionSupervisionTimerStarted(ServerCCASession session, ScheduledFuture future) {
     // TODO Complete this method.
   }
 
+  @Override
   public void sessionSupervisionTimerStopped(ServerCCASession session, ScheduledFuture future) {
     // TODO Complete this method.
   }
 
+  @Override
   public void timeoutExpired(Request request) {
     // FIXME What should we do when there's a timeout?
   }
 
+  @Override
   public void denyAccessOnDeliverFailure(ClientCCASession clientCCASessionImpl, Message request) {
     // TODO Complete this method.
   }
 
+  @Override
   public void denyAccessOnFailureMessage(ClientCCASession clientCCASessionImpl) {
     // TODO Complete this method.
   }
 
+  @Override
   public void denyAccessOnTxExpire(ClientCCASession clientCCASessionImpl) {
     clientCCASessionImpl.release();
   }
 
+  @Override
   public int getDefaultCCFHValue() {
     return defaultCreditControlFailureHandling;
   }
 
+  @Override
   public int getDefaultDDFHValue() {
     return defaultDirectDebitingFailureHandling;
   }
 
+  @Override
   public long getDefaultTxTimerValue() {
     return defaultTxTimerValue;
   }
 
+  @Override
   public void grantAccessOnDeliverFailure(ClientCCASession clientCCASessionImpl, Message request) {
     // TODO Auto-generated method stub
   }
 
+  @Override
   public void grantAccessOnFailureMessage(ClientCCASession clientCCASessionImpl) {
-    // TODO Auto-generated method stub  
+    // TODO Auto-generated method stub
   }
 
+  @Override
   public void grantAccessOnTxExpire(ClientCCASession clientCCASessionImpl) {
     // TODO Auto-generated method stub
   }
 
+  @Override
   public void indicateServiceError(ClientCCASession clientCCASessionImpl) {
     // TODO Auto-generated method stub
   }
 
+  @Override
   public void txTimerExpired(ClientCCASession session) {
     // this.resourceAdaptor.sessionDestroyed(session.getSessions().get(0).getSessionId(), session);
     session.release();
   }
 
+  @Override
   public long[] getApplicationIds() {
     // FIXME: What should we do here?
     return new long[] { 4 };
   }
 
+  @Override
   public long getDefaultValidityTime() {
     return this.defaultValidityTime;
   }

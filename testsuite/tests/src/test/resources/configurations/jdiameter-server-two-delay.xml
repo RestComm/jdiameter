@@ -34,7 +34,7 @@
     <DwaTimeOut value="10000" />
     <DpaTimeOut value="5000" />
     <RecTimeOut value="10000" />
-    
+
     <BindDelay value="15000" />
 
     <!-- Statistics Logger Configuration -->
@@ -49,7 +49,7 @@
       <Entity name="ConnectionTimer" size="1"/>
       <Entity name="StatisticTimer" size="1"/>
     </Concurrent>
-    <Dictionary enabled="false" sendLevel="MESSAGE" receiveLevel="OFF" />    
+    <Dictionary enabled="false" sendLevel="MESSAGE" receiveLevel="OFF" />
     <!-- To enable clustering uncomment the following lines
     <SessionDatasource value="org.mobicents.diameter.impl.ha.data.ReplicatedDataSource"/>
     <TimerFacility value="org.mobicents.diameter.impl.ha.timer.ReplicatedTimerFacilityImpl"/>

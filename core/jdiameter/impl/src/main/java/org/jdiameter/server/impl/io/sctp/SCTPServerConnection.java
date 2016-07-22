@@ -1,21 +1,21 @@
- /*
-  * TeleStax, Open Source Cloud Communications
-  * Copyright 2011-2014, TeleStax Inc. and individual contributors
-  * by the @authors tag.
-  *
-  * This program is free software: you can redistribute it and/or modify
-  * under the terms of the GNU Affero General Public License as
-  * published by the Free Software Foundation; either version 3 of
-  * the License, or (at your option) any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU Affero General Public License for more details.
-  *
-  * You should have received a copy of the GNU Affero General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>
-  */
+/*
+ * TeleStax, Open Source Cloud Communications
+ * Copyright 2011-2014, TeleStax Inc. and individual contributors
+ * by the @authors tag.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
 
 package org.jdiameter.server.impl.io.sctp;
 
@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -93,14 +93,17 @@ public class SCTPServerConnection implements IConnection {
     server.startNewRemoteConnection(globalServer, association, remoteAddress.getHostAddress(), remotePort);
   }
 
+  @Override
   public long getCreatedTime() {
     return createdTime;
   }
 
+  @Override
   public void connect() throws TransportException {
     // NOP. Only for client. TODO: Consider remove from connection interface
   }
 
+  @Override
   public void disconnect() throws InternalError {
     logger.debug("Disconnecting SCTP Server Connection {}", this.getKey());
     try {
@@ -129,6 +132,7 @@ public class SCTPServerConnection implements IConnection {
     }
   }
 
+  @Override
   public void release() throws IOException {
     logger.debug("Releasing SCTP Server Connection {}", this.getKey());
     try {
@@ -154,6 +158,7 @@ public class SCTPServerConnection implements IConnection {
     return parentGuard;
   }
 
+  @Override
   public void sendMessage(IMessage message) throws TransportException, OverloadException {
     try {
       if (getServer() != null) {
@@ -169,18 +174,22 @@ public class SCTPServerConnection implements IConnection {
     return server;
   }
 
+  @Override
   public boolean isNetworkInitiated() {
     return false;
   }
 
+  @Override
   public boolean isConnected() {
     return getServer() != null && getServer().isConnected();
   }
 
+  @Override
   public InetAddress getRemoteAddress() {
     return getServer().getDestAddress().getAddress();
   }
 
+  @Override
   public int getRemotePort() {
     if (getServer() == null) {
       logger.debug("server is null");
@@ -195,6 +204,7 @@ public class SCTPServerConnection implements IConnection {
     return getServer().getDestAddress().getPort();
   }
 
+  @Override
   public void addConnectionListener(IConnectionListener listener) {
     lock.lock();
     try {
@@ -216,6 +226,7 @@ public class SCTPServerConnection implements IConnection {
     }
   }
 
+  @Override
   public void remAllConnectionListener() {
     lock.lock();
     try {
@@ -226,6 +237,7 @@ public class SCTPServerConnection implements IConnection {
     }
   }
 
+  @Override
   public void remConnectionListener(IConnectionListener listener) {
     lock.lock();
     try {
@@ -236,14 +248,17 @@ public class SCTPServerConnection implements IConnection {
     }
   }
 
+  @Override
   public boolean isWrapperFor(Class<?> aClass) throws InternalException {
     return false;
   }
 
+  @Override
   public <T> T unwrap(Class<T> aClass) throws InternalException {
     return null;
   }
 
+  @Override
   public String getKey() {
     if (this.cachedKey == null) {
       this.cachedKey = new StringBuffer("aaa://").append(getRemoteAddress().getHostName()).append(":").append(getRemotePort())
@@ -283,7 +298,7 @@ public class SCTPServerConnection implements IConnection {
   }
 
   protected void logDetails() throws AvpDataException {
-    if(logger.isDebugEnabled()) {
+    if (logger.isDebugEnabled()) {
       logger.debug("Listeners for {}", this.getKey());
       for (IConnectionListener listener : listeners) {
         logger.debug("Listener [{}]", listener);
@@ -305,19 +320,19 @@ public class SCTPServerConnection implements IConnection {
       // if (processBufferedMessages(event)) {
       for (IConnectionListener listener : listeners) {
         switch (event.type) {
-        case CONNECTED:
-          listener.connectionOpened(getKey());
-          break;
-        case DISCONNECTED:
-          listener.connectionClosed(getKey(), null);
-          break;
-        case MESSAGE_RECEIVED:
-          listener.messageReceived(getKey(), parser.createMessage(event.message));
-          break;
-        case DATA_EXCEPTION:
-          listener.internalError(getKey(), null, new TransportException("Avp Data Exception:",
-              TransportError.ReceivedBrokenMessage, event.exception));
-          break;
+          case CONNECTED:
+            listener.connectionOpened(getKey());
+            break;
+          case DISCONNECTED:
+            listener.connectionClosed(getKey(), null);
+            break;
+          case MESSAGE_RECEIVED:
+            listener.messageReceived(getKey(), parser.createMessage(event.message));
+            break;
+          case DATA_EXCEPTION:
+            listener.internalError(getKey(), null, new TransportException("Avp Data Exception:",
+                TransportError.ReceivedBrokenMessage, event.exception));
+            break;
         }
       }
       // }
@@ -344,7 +359,7 @@ public class SCTPServerConnection implements IConnection {
   // }
 
   // ------------------ helper classes ------------------------
-  private static enum EventType {
+  private enum EventType {
     CONNECTED, DISCONNECTED, MESSAGE_RECEIVED, DATA_EXCEPTION
   }
 

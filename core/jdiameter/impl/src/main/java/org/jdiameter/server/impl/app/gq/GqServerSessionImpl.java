@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.server.impl.app.gq;
 
@@ -74,7 +94,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Server Gq Application session implementation
- * 
+ *
  * @author <a href="mailto:webdev@web-ukraine.info"> Yulian Oifa </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
@@ -94,12 +114,13 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
   protected transient ServerAuthSessionListener listener;
 
   // Ts Timer -----------------------------------------------------------------
-  protected final static String TIMER_NAME_TS = "GQ_TS";
+  protected static final String TIMER_NAME_TS = "GQ_TS";
 
   // Constructors -------------------------------------------------------------
 
-  public GqServerSessionImpl(IServerAuthSessionData sessionData,ISessionFactory sf, ServerAuthSessionListener lst, IAuthMessageFactory fct, StateChangeListener<AppSession> scListener,IServerAuthActionContext context, long tsTimeout, boolean stateless) {
-    super(sf,sessionData);  
+  public GqServerSessionImpl(IServerAuthSessionData sessionData, ISessionFactory sf, ServerAuthSessionListener lst, IAuthMessageFactory fct,
+      StateChangeListener<AppSession> scListener, IServerAuthActionContext context, long tsTimeout, boolean stateless) {
+    super(sf, sessionData);
 
     super.appId = fct.getApplicationId();
     this.listener = lst;
@@ -113,19 +134,25 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
 
   // ServerAuthSession Implementation methods ---------------------------------
 
+  @Override
   public void sendAuthAnswer(AppAnswerEvent appAnswerEvent) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(null, appAnswerEvent);
   }
 
+  @Override
   public void sendReAuthRequest(ReAuthRequest reAuthRequest) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(null, reAuthRequest);
   }
 
-  public void sendAbortSessionRequest(AbortSessionRequest abortSessionRequest) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void sendAbortSessionRequest(AbortSessionRequest abortSessionRequest)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_ASR_REQUEST, abortSessionRequest);
   }
 
-  public void sendSessionTerminationAnswer(SessionTermAnswer sessionTermAnswer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void sendSessionTerminationAnswer(SessionTermAnswer sessionTermAnswer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     sendPost(Event.Type.SEND_STR_ANSWER, sessionTermAnswer);
   }
 
@@ -136,7 +163,7 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
 
       if (type != null) {
         handleEvent(new Event(type, event));
-      }	           
+      }
     }
     catch (Exception e) {
       throw new InternalException(e);
@@ -148,11 +175,11 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
 
   protected void send(Event.Type type, AppEvent event) throws InternalException {
     try {
-      sendAndStateLock.lock();      
+      sendAndStateLock.lock();
       if (type != null) {
         handleEvent(new Event(type, event));
       }
-      session.send(event.getMessage(), this);      
+      session.send(event.getMessage(), this);
     }
     catch (Exception e) {
       throw new InternalException(e);
@@ -162,6 +189,7 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
     }
   }
 
+  @Override
   public boolean isStateless() {
     return sessionData.isStateless();
   }
@@ -175,11 +203,13 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
     }
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> eClass) {
     return eClass == ServerAuthSessionState.class ? (E) sessionData.getServerAuthSessionState() : null;
   }
 
+  @Override
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
     return isStateless() ? handleEventForStatelessSession(event) : handleEventForStatefullSession(event);
   }
@@ -212,7 +242,7 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
   }
 
   public boolean handleEventForStatefullSession(StateEvent event) throws InternalException, OverloadException {
-    ServerAuthSessionState state = sessionData.getServerAuthSessionState(); 
+    ServerAuthSessionState state = sessionData.getServerAuthSessionState();
     ServerAuthSessionState oldState = state;
     try {
       switch (state) {
@@ -331,7 +361,7 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
               // Current State: DISCON
               // Event: ASR successfully sent and ASA Received with Result-Code
               // Action: Cleanup
-              // New State: DISCON 
+              // New State: DISCON
               listener.doAbortSessionAnswerEvent(this, (AbortSessionAnswer) event.getData());
               //setState(IDLE);
               break;
@@ -361,7 +391,7 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
       // post processing
       if (oldState != state) {
         if (OPEN.equals(state) && context != null) {
-          if(context != null) {
+          if (context != null) {
             cancelTsTimer();
             startTsTimer();
           }
@@ -375,6 +405,7 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
     return true;
   }
 
+  @Override
   public void receivedSuccessMessage(Request request, Answer answer) {
     AnswerDelivery rd = new AnswerDelivery();
     rd.session = this;
@@ -383,9 +414,10 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
     super.scheduler.execute(rd);
   }
 
+  @Override
   public void timeoutExpired(Request request) {
     try {
-      if (request.getCommandCode() == AbortSessionRequestImpl.code) {
+      if (request.getCommandCode() == AbortSessionRequest.code) {
         handleEvent(new Event(Event.Type.SEND_ASR_FAILURE, new AbortSessionRequestImpl(request)));
       }
       else {
@@ -397,6 +429,7 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
     }
   }
 
+  @Override
   public Answer processRequest(Request request) {
     RequestDelivery rd = new RequestDelivery();
     rd.session = this;
@@ -430,7 +463,7 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
     try {
       sendAndStateLock.lock();
       Serializable tsTimerId = sessionData.getTsTimerId();
-      if(tsTimerId != null) {
+      if (tsTimerId != null) {
         super.timerFacility.cancel(tsTimerId);
         sessionData.setTsTimerId(null);
       }
@@ -446,7 +479,7 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
    */
   @Override
   public void onTimer(String timerName) {
-    if(timerName.equals(TIMER_NAME_TS)) {
+    if (timerName.equals(TIMER_NAME_TS)) {
       try {
         sendAndStateLock.lock();
         sessionData.setTsTimerId(null);
@@ -479,19 +512,24 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (!super.equals(obj))
+    }
+    if (!super.equals(obj)) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     GqServerSessionImpl other = (GqServerSessionImpl) obj;
     if (sessionData == null) {
-      if (other.sessionData != null)
+      if (other.sessionData != null) {
         return false;
+      }
     }
-    else if (!sessionData.equals(other.sessionData))
+    else if (!sessionData.equals(other.sessionData)) {
       return false;
+    }
     return true;
   }
 
@@ -499,6 +537,7 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
     GqServerSession session;
     Request request;
 
+    @Override
     public void run() {
       if (request != null) {
         try {
@@ -506,7 +545,7 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
           if (request.getCommandCode() == factory.getAuthMessageCommandCode()) {
             handleEvent(new Event(RECEIVE_AUTH_REQUEST, factory.createAuthRequest(request)));
           }
-          else if (request.getCommandCode() == SessionTermRequestImpl.code) {
+          else if (request.getCommandCode() == SessionTermRequest.code) {
             handleEvent(new Event(RECEIVE_STR_REQUEST, new SessionTermRequestImpl(request)));
           }
           else {
@@ -528,13 +567,14 @@ public class GqServerSessionImpl extends AppAuthSessionImpl implements GqServerS
     Answer answer;
     Request request;
 
+    @Override
     public void run() {
       try {
         sendAndStateLock.lock();
-        if (request.getCommandCode() == ReAuthRequestImpl.code) {
-          listener.doReAuthAnswerEvent(session,createReAuthRequest(request), createReAuthAnswer(answer));          
+        if (request.getCommandCode() == ReAuthRequest.code) {
+          listener.doReAuthAnswerEvent(session, createReAuthRequest(request), createReAuthAnswer(answer));
         }
-        else if (request.getCommandCode() == AbortSessionRequestImpl.code) {
+        else if (request.getCommandCode() == AbortSessionRequest.code) {
           handleEvent(new Event(RECEIVE_ASR_ANSWER, new AbortSessionAnswerImpl(answer)));
         }
         else {

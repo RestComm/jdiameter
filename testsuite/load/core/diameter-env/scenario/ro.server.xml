@@ -33,23 +33,23 @@
     <command name="CER">
     </command>
   </receive>
-  
+
   <send channel="channel-1">
     <command name="CEA">
       <avp name="Result-Code" value="2001"> </avp>
       <avp name="Origin-Host" value="uas.mobicents.org"> </avp>
       <avp name="Origin-Realm" value="mobicents.org"> </avp>
       <avp name="Auth-Application-Id" value="4"></avp>
-      <avp name="Host-IP-Address" value="0x00010f80aa3c"> </avp> 
+      <avp name="Host-IP-Address" value="0x00010f80aa3c"> </avp>
       <avp name="Vendor-Id" value="11"> </avp>
       <avp name="Product-Name" value="HP_HSS"> </avp>
-      <avp name="Firmware-Revision" value="1"> </avp>    
+      <avp name="Firmware-Revision" value="1"> </avp>
     </command>
   </send>
 
 
 
-  
+
 </init>
 
 <!-- Traffic -->
@@ -82,7 +82,7 @@
       <avp name="Origin-Realm" value="mobicents.org"> </avp>
       <avp name="CC-Request-Type" value="1"> </avp>
       <avp name="CC-Request-Number" value="0"> </avp>
-      <avp name="Granted-Service-Unit"> 
+      <avp name="Granted-Service-Unit">
           <avp name="CC-Time" value="5000"></avp>
       </avp>
       <avp name="Result-Code" value="2001"> </avp>
@@ -92,7 +92,7 @@
 
 
 
-  <!-- ------ UPDATE ------- -->	
+  <!-- ------ UPDATE ------- -->
 
   <receive channel="channel-1">
     <command name="CCR">
@@ -122,7 +122,7 @@
       <avp name="Origin-Realm" value="mobicents.org"> </avp>
       <avp name="CC-Request-Type" value="2"> </avp>
       <avp name="CC-Request-Number" value="1"> </avp>
-      <avp name="Granted-Service-Unit"> 
+      <avp name="Granted-Service-Unit">
           <avp name="CC-Time" value="5000"></avp>
       </avp>
       <avp name="Result-Code" value="2001"> </avp>
@@ -166,6 +166,6 @@
     </command>
   </send>
 </traffic>
-  
+
 </scenario>
 

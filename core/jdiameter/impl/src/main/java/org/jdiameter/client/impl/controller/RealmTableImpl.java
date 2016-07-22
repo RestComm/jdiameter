@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.client.impl.controller;
 
@@ -51,7 +71,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -74,24 +94,29 @@ public class RealmTableImpl implements IRealmTable {
     this.assembler = con.getAssemblerFacility();
   }
 
+  @Override
   public boolean realmExists(String realmName) {
     // NOTE: this is still valid for local realm
     return (this.realmNameToRealmSet.containsKey(realmName) &&  this.realmNameToRealmSet.get(realmName).size() > 0);
   }
 
-  public Realm addRealm(String realmName, ApplicationId applicationId, LocalAction action, String agentConfiguration, boolean dynamic, long expirationTime, String[] hosts) throws InternalException {
+  @Override
+  public Realm addRealm(String realmName, ApplicationId applicationId, LocalAction action, String agentConfiguration, boolean dynamic, long expirationTime,
+      String[] hosts) throws InternalException {
     logger.debug("Adding realm [{}] into network map", realmName);
 
     IAgentConfiguration agentConf = this.assembler.getComponentInstance(IAgentConfiguration.class);
 
-    if(agentConf != null) {
+    if (agentConf != null) {
       agentConf = agentConf.parse(agentConfiguration);
     }
 
     return addRealm(realmName, applicationId, action, agentConf, dynamic, expirationTime, hosts);
   }
 
-  public Realm addRealm(String realmName, ApplicationId applicationId, LocalAction action, IAgentConfiguration agentConf, boolean dynamic, long expirationTime, String[] hosts) throws InternalException {
+  @Override
+  public Realm addRealm(String realmName, ApplicationId applicationId, LocalAction action, IAgentConfiguration agentConf, boolean dynamic, long expirationTime,
+      String[] hosts) throws InternalException {
     IAgent agent = null;
     switch (action) {
       case LOCAL:
@@ -105,16 +130,17 @@ public class RealmTableImpl implements IRealmTable {
         break;
     }
 
-    RealmImpl realmImpl = new RealmImpl(realmName, applicationId, action, agent,agentConf, dynamic, expirationTime, hosts);
+    RealmImpl realmImpl = new RealmImpl(realmName, applicationId, action, agent, agentConf, dynamic, expirationTime, hosts);
     addRealm(realmImpl);
 
     return realmImpl;
   }
 
-  /* 
+  /*
    * (non-Javadoc)
    * @see org.jdiameter.client.api.controller.IRealmTable#getRealm(java.lang.String, org.jdiameter.api.ApplicationId)
    */
+  @Override
   public Realm getRealm(String realmName, ApplicationId applicationId) {
     RealmSet rs = this.realmNameToRealmSet.get(realmName);
     return rs == null ? null : rs.getRealm(applicationId);
@@ -124,6 +150,7 @@ public class RealmTableImpl implements IRealmTable {
    * (non-Javadoc)
    * @see org.jdiameter.client.api.controller.IRealmTable#removeRealmApplicationId(java.lang.String, org.jdiameter.api.ApplicationId)
    */
+  @Override
   public Realm removeRealmApplicationId(String realmName, ApplicationId appId) {
     RealmSet set = this.realmNameToRealmSet.get(realmName);
 
@@ -144,6 +171,7 @@ public class RealmTableImpl implements IRealmTable {
    * (non-Javadoc)
    * @see org.jdiameter.client.api.controller.IRealmTable#removeRealms(java.lang.String)
    */
+  @Override
   public Collection<Realm> removeRealm(String realmName) {
     RealmSet set = null;
     if (realmName.equals(this.localRealmName)) {
@@ -165,6 +193,7 @@ public class RealmTableImpl implements IRealmTable {
    * (non-Javadoc)
    * @see org.jdiameter.client.api.controller.IRealmTable#getRealms(java.lang.String)
    */
+  @Override
   public Collection<Realm> getRealms(String realmName) {
     RealmSet set = this.realmNameToRealmSet.get(realmName);
     if (set != null) {
@@ -178,6 +207,7 @@ public class RealmTableImpl implements IRealmTable {
    * (non-Javadoc)
    * @see org.jdiameter.client.api.controller.IRealmTable#getRealms()
    */
+  @Override
   public Collection<Realm> getRealms() {
     ArrayList<Realm> rss = new ArrayList<Realm>();
 
@@ -193,6 +223,7 @@ public class RealmTableImpl implements IRealmTable {
    * (non-Javadoc)
    * @see org.jdiameter.client.api.controller.IRealmTable#matchRealm(org.jdiameter.client.api.IRequest)
    */
+  @Override
   public Realm matchRealm(IRequest request) {
     try {
       // once again casting...
@@ -212,6 +243,7 @@ public class RealmTableImpl implements IRealmTable {
    * (non-Javadoc)
    * @see org.jdiameter.client.api.controller.IRealmTable#matchRealm(org.jdiameter.client.api.IAnswer, java.lang.String)
    */
+  @Override
   public Realm matchRealm(IAnswer message, String destRealm) {
     return this.matchRealm((IMessage) message, destRealm);
   }
@@ -220,6 +252,7 @@ public class RealmTableImpl implements IRealmTable {
    * (non-Javadoc)
    * @see org.jdiameter.client.api.controller.IRealmTable#getRealmForPeer(java.lang.String)
    */
+  @Override
   public String getRealmForPeer(String fqdn) {
     //
     Collection<Realm> realms = getRealms();
@@ -235,9 +268,11 @@ public class RealmTableImpl implements IRealmTable {
   /**
    * @param appId
    */
+  @Override
   public void addLocalApplicationId(ApplicationId appId) {
     RealmSet rs = getRealmSet(localRealmName, false);
-    rs.addRealm(new RealmImpl(localRealmName, appId, LocalAction.LOCAL, null,null, true, -1, this.localHost) {
+    rs.addRealm(new RealmImpl(localRealmName, appId, LocalAction.LOCAL, null, null, true, -1, this.localHost) {
+      @Override
       public boolean isLocal() {
         return true;
       }
@@ -247,6 +282,7 @@ public class RealmTableImpl implements IRealmTable {
   /**
    * @param appId
    */
+  @Override
   public void removeLocalApplicationId(ApplicationId appId) {
     RealmSet rs = getRealmSet(localRealmName, false);
     Realm realm = rs.getRealm(appId);
@@ -259,6 +295,7 @@ public class RealmTableImpl implements IRealmTable {
    * @param localRealm
    * @param fqdn
    */
+  @Override
   public void addLocalRealm(String localRealm, String fqdn) {
     this.localRealmName = localRealm;
     this.localHost = fqdn;
@@ -337,7 +374,7 @@ public class RealmTableImpl implements IRealmTable {
           }
         }
         else {
-          if(logger.isDebugEnabled()) {
+          if (logger.isDebugEnabled()) {
             logger.debug("Entry for realm '{}', already exists: {}", realm, this);
           }
         }

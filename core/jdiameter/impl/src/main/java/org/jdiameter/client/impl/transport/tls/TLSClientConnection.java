@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2012, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.client.impl.transport.tls;
 
@@ -49,7 +69,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
@@ -161,18 +181,22 @@ public class TLSClientConnection implements IConnection {
     return ctx.getSocketFactory();
   }
 
+  @Override
   public long getCreatedTime() {
     return createdTime;
   }
 
+  @Override
   public InetAddress getRemoteAddress() {
     return getClient().getDestAddress().getAddress();
   }
 
+  @Override
   public int getRemotePort() {
     return getClient().getDestAddress().getPort();
   }
 
+  @Override
   public void addConnectionListener(IConnectionListener listener) {
     lock.lock();
     try {
@@ -194,6 +218,7 @@ public class TLSClientConnection implements IConnection {
     }
   }
 
+  @Override
   public void remAllConnectionListener() {
     lock.lock();
     try {
@@ -204,6 +229,7 @@ public class TLSClientConnection implements IConnection {
     }
   }
 
+  @Override
   public void remConnectionListener(IConnectionListener listener) {
     lock.lock();
     try {
@@ -214,6 +240,7 @@ public class TLSClientConnection implements IConnection {
     }
   }
 
+  @Override
   public void release() throws IOException {
     try {
       if (getClient() != null) {
@@ -229,22 +256,27 @@ public class TLSClientConnection implements IConnection {
     }
   }
 
+  @Override
   public boolean isWrapperFor(Class<?> aClass) throws InternalException {
     return false;
   }
 
+  @Override
   public <T> T unwrap(Class<T> aClass) throws InternalException {
     return null;
   }
 
+  @Override
   public boolean isConnected() {
     return getClient() != null && getClient().isConnected();
   }
 
+  @Override
   public boolean isNetworkInitiated() {
     return false;
   }
 
+  @Override
   public String getKey() {
     if (this.cachedKey == null) {
       this.cachedKey = new StringBuffer("aaas://").append(getRemoteAddress().getHostName()).append(":").append(getRemotePort()).toString();
@@ -253,6 +285,7 @@ public class TLSClientConnection implements IConnection {
     return this.cachedKey;
   }
 
+  @Override
   public void connect() throws TransportException {
     try {
       getClient().initialize();
@@ -266,6 +299,7 @@ public class TLSClientConnection implements IConnection {
     }
   }
 
+  @Override
   public void disconnect() throws InternalError {
     try {
       if (getClient() != null) {
@@ -277,6 +311,7 @@ public class TLSClientConnection implements IConnection {
     }
   }
 
+  @Override
   public void sendMessage(IMessage message) throws TransportException, OverloadException {
     try {
       if (getClient() != null) {
@@ -363,7 +398,7 @@ public class TLSClientConnection implements IConnection {
   }
 
   // --------------------- helper classes ----------------------
-  private static enum EventType {
+  private enum EventType {
     CONNECTED, DISCONNECTED, MESSAGE_RECEIVED, DATA_EXCEPTION
   }
 

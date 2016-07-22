@@ -4,18 +4,18 @@
  * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
- * 
+ *
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License, v. 2.0.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
+ * v. 2.0 along with this distribution; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
@@ -49,13 +49,12 @@ import org.jdiameter.api.cxdx.events.JServerAssignmentAnswer;
 import org.jdiameter.api.cxdx.events.JServerAssignmentRequest;
 import org.jdiameter.api.cxdx.events.JUserAuthorizationAnswer;
 import org.jdiameter.api.cxdx.events.JUserAuthorizationRequest;
-import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.impl.app.cxdx.CxDxSessionFactoryImpl;
 import org.mobicents.diameter.stack.functional.TBase;
 
 /**
  * @author baranowb
- * 
+ *
  */
 public abstract class AbstractClient extends TBase implements ClientCxDxSessionListener {
 
@@ -68,12 +67,12 @@ public abstract class AbstractClient extends TBase implements ClientCxDxSessionL
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777216));
       CxDxSessionFactoryImpl shSessionFactory = new CxDxSessionFactoryImpl(this.sessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ServerCxDxSession.class, shSessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ClientCxDxSession.class, shSessionFactory);
+      sessionFactory.registerAppFacory(ServerCxDxSession.class, shSessionFactory);
+      sessionFactory.registerAppFacory(ClientCxDxSession.class, shSessionFactory);
 
       shSessionFactory.setClientSessionListener(this);
 
-      this.clientCxDxSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(this.sessionFactory.getSessionId("xxTESTxx"), getApplicationId(), ClientCxDxSession.class,
+      this.clientCxDxSession = this.sessionFactory.getNewAppSession(this.sessionFactory.getSessionId("xxTESTxx"), getApplicationId(), ClientCxDxSession.class,
           null); // true...
     }
     finally {
@@ -107,38 +106,47 @@ public abstract class AbstractClient extends TBase implements ClientCxDxSessionL
 
   // ------- def methods, to fail :)
 
-  public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException,
-      OverloadException {
+  @Override
+  public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer)
+      throws InternalException, IllegalDiameterStateException, RouteException,
+  OverloadException {
     fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
+  @Override
   public void doUserAuthorizationAnswer(ClientCxDxSession session, JUserAuthorizationRequest request, JUserAuthorizationAnswer answer) throws InternalException,
-      IllegalDiameterStateException, RouteException, OverloadException {
+  IllegalDiameterStateException, RouteException, OverloadException {
     fail("Received \"UAA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
+  @Override
   public void doServerAssignmentAnswer(ClientCxDxSession session, JServerAssignmentRequest request, JServerAssignmentAnswer answer) throws InternalException,
-      IllegalDiameterStateException, RouteException, OverloadException {
+  IllegalDiameterStateException, RouteException, OverloadException {
     fail("Received \"SAA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
-  public void doRegistrationTerminationRequest(ClientCxDxSession session, JRegistrationTerminationRequest request) throws InternalException, IllegalDiameterStateException,
-      RouteException, OverloadException {
+  @Override
+  public void doRegistrationTerminationRequest(ClientCxDxSession session, JRegistrationTerminationRequest request)
+      throws InternalException, IllegalDiameterStateException,
+  RouteException, OverloadException {
     fail("Received \"RTR\" event, request[" + request + "], on session[" + session + "]", null);
   }
 
+  @Override
   public void doLocationInformationAnswer(ClientCxDxSession session, JLocationInfoRequest request, JLocationInfoAnswer answer) throws InternalException,
-      IllegalDiameterStateException, RouteException, OverloadException {
+  IllegalDiameterStateException, RouteException, OverloadException {
     fail("Received \"LIA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
-  public void doPushProfileRequest(ClientCxDxSession session, JPushProfileRequest request) throws InternalException, IllegalDiameterStateException, RouteException,
-      OverloadException {
+  @Override
+  public void doPushProfileRequest(ClientCxDxSession session, JPushProfileRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     fail("Received \"PPR\" event, request[" + request + "], on session[" + session + "]", null);
   }
 
+  @Override
   public void doMultimediaAuthAnswer(ClientCxDxSession session, JMultimediaAuthRequest request, JMultimediaAuthAnswer answer) throws InternalException,
-      IllegalDiameterStateException, RouteException, OverloadException {
+  IllegalDiameterStateException, RouteException, OverloadException {
     fail("Received \"MAA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 

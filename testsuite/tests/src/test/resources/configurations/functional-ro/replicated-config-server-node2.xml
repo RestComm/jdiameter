@@ -51,9 +51,9 @@
       </Realm>
     </Realms>
   </Network>
-  
+
   <Extensions>
-  	<SessionDatasource value="org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource"/>
+    <SessionDatasource value="org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource"/>
     <TimerFacility value="org.mobicents.diameter.impl.ha.timer.ReplicatedTimerFacilityImpl"/>
   </Extensions>
 

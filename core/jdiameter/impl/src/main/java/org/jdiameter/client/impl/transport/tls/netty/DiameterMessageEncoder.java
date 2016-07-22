@@ -46,7 +46,7 @@ public class DiameterMessageEncoder extends MessageToByteEncoder<IMessage> {
   protected void encode(ChannelHandlerContext ctx, IMessage msg, ByteBuf out) throws Exception {
     logger.debug("DiameterMessageEncoder");
     logger.debug("Encoding message command code {}", msg.getCommandCode());
-    out.writeBytes(Unpooled.wrappedBuffer(parser.encodeMessage(msg)));
+    out.writeBytes(Unpooled.wrappedBuffer(parser.encodeMessageToBytes(msg)));
   }
 
 }

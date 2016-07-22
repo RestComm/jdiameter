@@ -37,11 +37,11 @@ import org.mobicents.diameter.stack.functional.StackCreator;
 /**
  * JUnit tests for verifying if Proxy-Info AVP is properly copied.
  * Reported at <a href="https://code.google.com/p/jdiameter/issues/detail?id=40">Issue #40</a>.
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class ProxyInfoTest {
-  
+
   private Message message;
 
   private static StackCreator stackCreator = new StackCreator();
@@ -83,10 +83,10 @@ public class ProxyInfoTest {
   public void testAnswerHasProxyInfoOrdered() {
     MessageParser mp = new MessageParser();
     Message newMessage = mp.createEmptyMessage((IMessage) message);
-    
+
     String[] hosts = {"one","two","three"};
     String[] states = {"STATE1","STATE2","STATE3"};
-    
+
     for (int i = 0; i < message.getAvps().getAvps(Avp.PROXY_INFO).size(); i++) {
       Avp origAvp = null;
       Avp copyAvp = null;
@@ -99,7 +99,7 @@ public class ProxyInfoTest {
         Assert.assertNotSame(origAvp, copyAvp);
 
         Assert.assertArrayEquals(origAvp.getRaw(), copyAvp.getRaw());
-        
+
         Assert.assertEquals(copyAvp.getGrouped().getAvp(Avp.PROXY_HOST).getUTF8String(), hosts[i] + ".mobicents.org");
         Assert.assertEquals(copyAvp.getGrouped().getAvp(Avp.PROXY_STATE).getUTF8String(), states[i]);
       }
