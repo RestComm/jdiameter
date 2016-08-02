@@ -251,7 +251,7 @@ public class MessageParser extends ElementParser implements IMessageParser {
   }
 
   @Override
-  public ByteBuffer encodeMessage(IMessage message) throws ParseException {
+  public byte[] encodeMessageToBytes(IMessage message)  throws ParseException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     try {
       byte[] rawData = encodeAvpSet(message.getAvps());
@@ -270,13 +270,19 @@ public class MessageParser extends ElementParser implements IMessageParser {
       data.write(toBytes(message.getHopByHopIdentifier()));
       data.write(toBytes(message.getEndToEndIdentifier()));
       data.write(rawData);
+      return out.toByteArray();
     }
     catch (Exception e) {
       //logger.debug("Error during encode message", e);
       throw new ParseException("Failed to encode message.", e);
     }
-    try {
-      return prepareBuffer(out.toByteArray(), out.size());
+  }
+  
+  @Override
+  public ByteBuffer encodeMessage(IMessage message) throws ParseException {
+    byte[] bytes = encodeMessageToBytes(message);
+    try{
+    	return prepareBuffer(bytes, bytes.length);
     }
     catch (AvpDataException ade) {
       throw new ParseException(ade);
