@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.client.impl.parser;
 
@@ -36,7 +56,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *  
+ *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
@@ -85,39 +105,47 @@ class AvpImpl implements Avp {
     }
   }
 
-  public AvpImpl(int newCode, Avp avp) {
+  AvpImpl (int newCode, Avp avp) {
     this(avp);
     avpCode = newCode;
   }
 
+  @Override
   public int getCode() {
     return avpCode;
   }
 
+  @Override
   public boolean isVendorId() {
     return isVendorSpecific;
   }
 
+  @Override
   public boolean isMandatory() {
     return isMandatory;
   }
 
+  @Override
   public boolean isEncrypted() {
     return isEncrypted;
   }
 
+  @Override
   public long getVendorId() {
     return vendorID;
   }
 
+  @Override
   public byte[] getRaw() throws AvpDataException {
     return rawData;
   }
 
+  @Override
   public byte[] getOctetString() throws AvpDataException {
     return rawData;
   }
 
+  @Override
   public String getUTF8String() throws AvpDataException {
     try {
       return parser.bytesToUtf8String(rawData);
@@ -127,6 +155,7 @@ class AvpImpl implements Avp {
     }
   }
 
+  @Override
   public int getInteger32() throws AvpDataException {
     try {
       return parser.bytesToInt(rawData);
@@ -136,6 +165,7 @@ class AvpImpl implements Avp {
     }
   }
 
+  @Override
   public long getInteger64() throws AvpDataException {
     try {
       return parser.bytesToLong(rawData);
@@ -145,6 +175,7 @@ class AvpImpl implements Avp {
     }
   }
 
+  @Override
   public long getUnsigned32() throws AvpDataException {
     try {
       byte[] u32ext = new byte[8];
@@ -156,6 +187,7 @@ class AvpImpl implements Avp {
     }
   }
 
+  @Override
   public long getUnsigned64() throws AvpDataException {
     try {
       return parser.bytesToLong(rawData);
@@ -165,6 +197,7 @@ class AvpImpl implements Avp {
     }
   }
 
+  @Override
   public float getFloat32() throws AvpDataException {
     try {
       return parser.bytesToFloat(rawData);
@@ -174,6 +207,7 @@ class AvpImpl implements Avp {
     }
   }
 
+  @Override
   public double getFloat64() throws AvpDataException {
     try {
       return parser.bytesToDouble(rawData);
@@ -183,6 +217,7 @@ class AvpImpl implements Avp {
     }
   }
 
+  @Override
   public InetAddress getAddress() throws AvpDataException {
     try {
       return parser.bytesToAddress(rawData);
@@ -192,6 +227,7 @@ class AvpImpl implements Avp {
     }
   }
 
+  @Override
   public Date getTime() throws AvpDataException {
     try {
       return parser.bytesToDate(rawData);
@@ -201,6 +237,7 @@ class AvpImpl implements Avp {
     }
   }
 
+  @Override
   public String getDiameterIdentity() throws AvpDataException {
     try {
       return parser.bytesToOctetString(rawData);
@@ -210,6 +247,7 @@ class AvpImpl implements Avp {
     }
   }
 
+  @Override
   public URI getDiameterURI() throws AvpDataException {
     try {
       return new URI(parser.bytesToOctetString(rawData));
@@ -222,6 +260,7 @@ class AvpImpl implements Avp {
     }
   }
 
+  @Override
   public AvpSet getGrouped() throws AvpDataException {
     try {
       if (groupedData == null) {
@@ -235,14 +274,17 @@ class AvpImpl implements Avp {
     }
   }
 
+  @Override
   public boolean isWrapperFor(Class<?> aClass) throws InternalException {
     return false;
   }
 
+  @Override
   public <T> T unwrap(Class<T> aClass) throws InternalException {
-    return null;  
+    return null;
   }
 
+  @Override
   public byte[] getRawData() {
     return (rawData == null || rawData.length == 0) ? parser.encodeAvpSet(groupedData) : rawData;
   }
@@ -252,8 +294,9 @@ class AvpImpl implements Avp {
 
   @Override
   public String toString() {
-    if(toString == null) {
-      this.toString = new StringBuffer("AvpImpl [avpCode=").append(avpCode).append(", vendorID=").append(vendorID).append("]@").append(super.hashCode()).toString(); 
+    if (toString == null) {
+      this.toString = new StringBuffer("AvpImpl [avpCode=").append(avpCode).append(", vendorID=").append(vendorID).append("]@").append(super.hashCode()).
+          toString();
     }
 
     return this.toString;

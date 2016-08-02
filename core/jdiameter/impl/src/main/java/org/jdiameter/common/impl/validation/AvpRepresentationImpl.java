@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.common.impl.validation;
 
@@ -37,7 +57,7 @@ import org.jdiameter.api.validation.AvpRepresentation;
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @since 1.5.4.0-build404
- * 
+ *
  */
 public class AvpRepresentationImpl implements AvpRepresentation {
 
@@ -100,7 +120,7 @@ public class AvpRepresentationImpl implements AvpRepresentation {
    * fully defined AVP representation. <br>
    * This constructor should be generally used by extending classes, as well as
    * no argument constructor.
-   * 
+   *
    * @param name
    * @param vendor
    */
@@ -115,7 +135,7 @@ public class AvpRepresentationImpl implements AvpRepresentation {
    * This constructor is used my validator to lookup correct representation.
    * Its hash and equals methods will match to fully populated avp
    * representation in any data structure
-   * 
+   *
    * @param code
    * @param vendor
    */
@@ -189,6 +209,7 @@ public class AvpRepresentationImpl implements AvpRepresentation {
     }
   }
 
+  @Override
   public boolean isPositionFixed() {
     return this.positionIndex == _FIX_POSITION_INDEX;
   }
@@ -197,6 +218,7 @@ public class AvpRepresentationImpl implements AvpRepresentation {
     this.positionIndex = index;
   }
 
+  @Override
   public boolean isCountValidForMultiplicity(AvpSet destination, int numberToAdd) {
     AvpSet innerSet = destination.getAvps(getCode(), getVendorId());
 
@@ -207,6 +229,7 @@ public class AvpRepresentationImpl implements AvpRepresentation {
     return this.isCountValidForMultiplicity(count);
   }
 
+  @Override
   public boolean isCountValidForMultiplicity(int avpCount) {
     // This covers not_allowed
     if (!allowed) {
@@ -245,22 +268,27 @@ public class AvpRepresentationImpl implements AvpRepresentation {
     return _FIX_POSITION_INDEX;
   }
 
+  @Override
   public int getPositionIndex() {
     return positionIndex;
   }
 
+  @Override
   public int getCode() {
     return code;
   }
 
+  @Override
   public long getVendorId() {
     return vendor;
   }
 
+  @Override
   public boolean isAllowed() {
     return allowed;
   }
 
+  @Override
   public boolean isAllowed(int avpCode, long vendorId) {
     if (this.isGrouped()) {
       // make better get ?
@@ -280,18 +308,22 @@ public class AvpRepresentationImpl implements AvpRepresentation {
     }
   }
 
+  @Override
   public boolean isAllowed(int avpCode) {
     return this.isAllowed(avpCode, 0L);
   }
 
+  @Override
   public String getMultiplicityIndicator() {
     return multiplicityIndicator;
   }
 
+  @Override
   public String getName() {
     return name;
   }
 
+  @Override
   public boolean isGrouped() {
     return grouped;
   }
@@ -300,6 +332,7 @@ public class AvpRepresentationImpl implements AvpRepresentation {
     this.grouped = grouped;
   }
 
+  @Override
   public List<AvpRepresentation> getChildren() {
     return children;
   }
@@ -327,6 +360,7 @@ public class AvpRepresentationImpl implements AvpRepresentation {
     this.name = name;
   }
 
+  @Override
   public boolean isWeak() {
     return weak;
   }
@@ -335,50 +369,62 @@ public class AvpRepresentationImpl implements AvpRepresentation {
     this.weak = isWeak;
   }
 
+  @Override
   public String getDescription() {
     return description;
   }
 
+  @Override
   public boolean isMayEncrypt() {
     return mayEncrypt;
   }
 
+  @Override
   public String getRuleMandatory() {
     return ruleMandatory;
   }
 
+  @Override
   public int getRuleMandatoryAsInt() {
     return Rule.valueOf(ruleMandatory).ordinal();
   }
 
+  @Override
   public String getRuleProtected() {
     return ruleProtected;
   }
 
+  @Override
   public int getRuleProtectedAsInt() {
     return Rule.valueOf(ruleProtected).ordinal();
   }
 
+  @Override
   public String getRuleVendorBit() {
     return ruleVendorBit;
   }
 
+  @Override
   public int getRuleVendorBitAsInt() {
     return Rule.valueOf(ruleVendorBit).ordinal();
   }
 
+  @Override
   public String getType() {
     return type;
   }
 
+  @Override
   public boolean isProtected() {
     return _protected;
   }
 
+  @Override
   public boolean isMandatory() {
     return _mandatory;
   }
 
+  @Override
   public void validate(Avp avp) throws AvpNotAllowedException {
     if (isGrouped()) {
       try {
@@ -394,6 +440,7 @@ public class AvpRepresentationImpl implements AvpRepresentation {
     }
   }
 
+  @Override
   public void validate(AvpSet avpSet) throws AvpNotAllowedException { //this is used in RAs, cause ... AvpSet is asexual AVP, no code, no vendor
     // let it rip
     for (AvpRepresentation childrenVAvp : getChildren()) {
@@ -401,7 +448,7 @@ public class AvpRepresentationImpl implements AvpRepresentation {
       int count = childSset.size();
 
       if (!childrenVAvp.isCountValidForMultiplicity(count)) {
-        throw new AvpNotAllowedException("AVP: " + childrenVAvp + " has wrong count ,in grouped parent avp - " + (count) + ", allowed: "
+        throw new AvpNotAllowedException("AVP: " + childrenVAvp + " has wrong count, in grouped parent avp - " + (count) + ", allowed: "
             + childrenVAvp.getMultiplicityIndicator(), getCode(), getVendorId());
       }
       if (childrenVAvp.isGrouped()) {
@@ -416,6 +463,7 @@ public class AvpRepresentationImpl implements AvpRepresentation {
     }
   }
 
+  @Override
   public String toString() {
     StringBuffer sb = new StringBuffer();
 

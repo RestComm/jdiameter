@@ -47,7 +47,7 @@
       <avp name="Firmware-Revision" value="1"> </avp>
     </command>
   </send>
-  
+
   <receive channel="channel-1">
     <command name="CEA">
     </command>
@@ -55,7 +55,7 @@
 </init>
 
 
-	
+
 <traffic>
   <send channel="channel-1">
     <action>
@@ -63,14 +63,14 @@
       <inc-counter name="HbH-counter"> </inc-counter>
       <inc-counter name="EtE-counter"> </inc-counter>
       <inc-counter name="session-counter"> </inc-counter>
-      <set-value name="HbH-id" 
+      <set-value name="HbH-id"
                  format="$(HbH-counter)"></set-value>
-      <set-value name="EtE-id" 
+      <set-value name="EtE-id"
                  format="$(EtE-counter)"></set-value>
-      <set-value name="Session-Id" 
+      <set-value name="Session-Id"
                  format=".;1096298391;$(session-counter)"></set-value>
     </action>
-	
+
     <command name="ACR">
       <avp name="Session-Id" value="value_is_replaced"> </avp>
       <avp name="Origin-Host" value="uac.mobicents.org"> </avp>
@@ -85,13 +85,13 @@
         <avp name="Acct-Application-Id" value="19302"></avp>
       </avp>
 
-         
+
     </command>
     <action>
       <start-timer></start-timer>
     </action>
   </send>
-  
+
   <receive channel="channel-1">
     <action>
       <stop-timer></stop-timer>
@@ -100,6 +100,6 @@
     </command>
   </receive>
 </traffic>
- 
+
 </scenario>
 

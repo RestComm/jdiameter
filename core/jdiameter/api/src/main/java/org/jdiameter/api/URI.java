@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.api;
 
@@ -29,7 +49,7 @@ import java.net.UnknownServiceException;
 /**
  * This class handles Diameter URIs.
  * It only implements parts that are needed for the Diameter URI
- * 
+ *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
@@ -45,7 +65,7 @@ public final class URI implements Comparable, Serializable {
   private static final String SCHEME_SEPARATOR = "://";
   private static final String PARAMS_SEPARATOR = ";";
 
-  private static final String DEFAULT_SCHEME = "aaa";    
+  private static final String DEFAULT_SCHEME = "aaa";
   private static final int DEFAULT_PORT = 3868;
 
   private String scheme;
@@ -137,6 +157,7 @@ public final class URI implements Comparable, Serializable {
   /**
    * @return String representation of this URI in RFC 3588 format
    */
+  @Override
   public String toString() {
     StringBuffer rc = new StringBuffer(scheme).append(SCHEME_SEPARATOR).append(host);
     if (port != -1) {
@@ -173,8 +194,9 @@ public final class URI implements Comparable, Serializable {
         port = Integer.parseInt(host.substring(sepIndex + 1));
         host = host.substring(0, sepIndex);
       }
-      if (schemeStartIndex != -1)
+      if (schemeStartIndex != -1) {
         path = uri.substring(schemeStartIndex + 1);
+      }
     }
     catch (Exception e) {
       throw new URISyntaxException(uri, "URI has incorrect format");
@@ -228,6 +250,7 @@ public final class URI implements Comparable, Serializable {
    * @see     java.util.Hashtable
    */
 
+  @Override
   public boolean equals(Object obj) {
     if (this == obj) {
       return true;
@@ -279,6 +302,7 @@ public final class URI implements Comparable, Serializable {
    * @see     java.lang.Object#equals(java.lang.Object)
    * @see     java.util.Hashtable
    */
+  @Override
   public int hashCode() {
     int result;
     result = (scheme != null ? scheme.hashCode() : 0);
@@ -326,6 +350,7 @@ public final class URI implements Comparable, Serializable {
    * @throws ClassCastException if the specified object's type prevents it
    *         from being compared to this Object.
    */
+  @Override
   public int compareTo(Object obj) {
     if (obj instanceof URI) {
       return this.toString().compareTo(obj.toString());

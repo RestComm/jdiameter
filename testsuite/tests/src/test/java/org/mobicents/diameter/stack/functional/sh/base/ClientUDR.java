@@ -4,18 +4,18 @@
  * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
- * 
+ *
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License, v. 2.0.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
+ * v. 2.0 along with this distribution; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
@@ -44,7 +44,7 @@ import org.mobicents.diameter.stack.functional.sh.AbstractClient;
 
 /**
  * Base implementation of Client
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -60,13 +60,14 @@ public class ClientUDR extends AbstractClient {
   protected boolean receivePushNotification;
 
   /**
-	 * 
-	 */
+   *
+   */
   public ClientUDR() {
   }
 
   public void sendUserData() throws Exception {
-    UserDataRequest request = new UserDataRequestImpl(super.clientShSession.getSessions().get(0).createRequest(UserDataRequest.code, getApplicationId(), getServerRealmName()));
+    UserDataRequest request =
+        new UserDataRequestImpl(super.clientShSession.getSessions().get(0).createRequest(UserDataRequest.code, getApplicationId(), getServerRealmName()));
 
     AvpSet avpSet = request.getMessage().getAvps();
     // < User-Data -Request> ::= < Diameter Header: 306, REQ, PXY, 16777217 >
@@ -107,31 +108,36 @@ public class ClientUDR extends AbstractClient {
 
   // ------------ event handlers;
 
-  public void doSubscribeNotificationsAnswerEvent(ClientShSession session, SubscribeNotificationsRequest request, SubscribeNotificationsAnswer answer) throws InternalException,
-      IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void doSubscribeNotificationsAnswerEvent(ClientShSession session, SubscribeNotificationsRequest request, SubscribeNotificationsAnswer answer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     receiveSubscribeNotifications = true;
     fail("Received \"SNA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
+  @Override
   public void doProfileUpdateAnswerEvent(ClientShSession session, ProfileUpdateRequest request, ProfileUpdateAnswer answer) throws InternalException,
-      IllegalDiameterStateException, RouteException, OverloadException {
+  IllegalDiameterStateException, RouteException, OverloadException {
     receiveProfileUpdate = true;
     fail("Received \"PUA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
-  public void doPushNotificationRequestEvent(ClientShSession session, PushNotificationRequest request) throws InternalException, IllegalDiameterStateException, RouteException,
-      OverloadException {
+  @Override
+  public void doPushNotificationRequestEvent(ClientShSession session, PushNotificationRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     receivePushNotification = true;
     fail("Received \"PNR\" event, request[" + request + "], on session[" + session + "]", null);
   }
 
-  public void doUserDataAnswerEvent(ClientShSession session, UserDataRequest request, UserDataAnswer answer) throws InternalException, IllegalDiameterStateException,
-      RouteException, OverloadException {
+  @Override
+  public void doUserDataAnswerEvent(ClientShSession session, UserDataRequest request, UserDataAnswer answer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     receiveUserData = true;
   }
 
-  public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException,
-      OverloadException {
+  @Override
+  public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 

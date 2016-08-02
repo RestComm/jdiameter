@@ -4,24 +4,26 @@
  * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
- * 
+ *
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License, v. 2.0.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
+ * v. 2.0 along with this distribution; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
 package org.mobicents.diameter.stack.dictionary;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.apache.log4j.Logger;
 import org.jdiameter.api.Avp;
@@ -39,11 +41,11 @@ import org.junit.Test;
 
 /**
  * Testsuite for Diameter Dictionary and Validator
- * 
+ *
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public class MessageValidatorTest extends TestCase {
+public class MessageValidatorTest {
 
   private static Logger logger = Logger.getLogger(MessageValidatorTest.class);
 
@@ -77,13 +79,13 @@ public class MessageValidatorTest extends TestCase {
     // <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0"/>
     assertTrue("Session-Id is not allowed in this message, it should be.", msgRep.isAllowed(Avp.SESSION_ID, 0));
 
-    assertTrue("We should allow to add ONE (1) Session-Id AVP, operation indicates that it could not be done.", 
+    assertTrue("We should allow to add ONE (1) Session-Id AVP, operation indicates that it could not be done.",
         msgRep.isCountValidForMultiplicity(set, Avp.SESSION_ID, 0L));
 
     // <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1"/>
     assertTrue("Origin-Host is not allowed in this message, it should be.", msgRep.isAllowed(Avp.ORIGIN_HOST, 0));
 
-    assertFalse("We should allow to add more Origin-Host than zero, operation indicates that it could not be done.", 
+    assertFalse("We should allow to add more Origin-Host than zero, operation indicates that it could not be done.",
         msgRep.isCountValidForMultiplicity(set, Avp.ORIGIN_HOST, 0L));
 
     // <avp name="Acct-Session-Id" code="44" vendor="0" multiplicity="0-1" index="-1" />
@@ -97,16 +99,16 @@ public class MessageValidatorTest extends TestCase {
 
     // <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1"/>
     assertTrue("Proxy-Info is not allowed in this message, it should be.", msgRep.isAllowed(Avp.PROXY_INFO, 0));
-    assertTrue("We should allow to add more Proxy-Info than zero, operation indicates that it could not note be done.", 
+    assertTrue("We should allow to add more Proxy-Info than zero, operation indicates that it could not note be done.",
         msgRep.isCountValidForMultiplicity(set, Avp.PROXY_INFO, 0L));
 
     set.addAvp(Avp.PROXY_INFO, 284L, 0L, true, false);
 
-    assertTrue("We should  allow to add more Proxy-Info than one, operation indicates that it could note be done.", 
+    assertTrue("We should  allow to add more Proxy-Info than one, operation indicates that it could note be done.",
         msgRep.isCountValidForMultiplicity(set, Avp.PROXY_INFO, 0L));
 
     set.addAvp(Avp.PROXY_INFO, 284L, 0L, true, false);
-    assertTrue("We should  allow to add more Proxy-Info than two, operation indicates that it could note be done.", 
+    assertTrue("We should  allow to add more Proxy-Info than two, operation indicates that it could note be done.",
         msgRep.isCountValidForMultiplicity(set, Avp.PROXY_INFO, 0L));
 
     // <!-- FORBBIDEN -->
@@ -1046,7 +1048,7 @@ public class MessageValidatorTest extends TestCase {
     // <avp name="Granted-Service-Unit" code="431" vendor="0" multiplicity="0-1" index="-1" />
     AvpSet gsuAvp = set.addGroupedAvp(Avp.GRANTED_SERVICE_UNIT);
 
-    // <avp name="Granted-Service-Unit" code="431" mandatory="must" vendor-bit="mustnot" 
+    // <avp name="Granted-Service-Unit" code="431" mandatory="must" vendor-bit="mustnot"
     //      vendor-id="None" may-encrypt="yes" protected="may">
     //   <grouped>
     //     <gavp name="Tariff-Time-Change" multiplicity="0-1"/>

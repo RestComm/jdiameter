@@ -4,18 +4,18 @@
  * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
- * 
+ *
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License, v. 2.0.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
+ * v. 2.0 along with this distribution; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
@@ -35,7 +35,7 @@ import org.mobicents.diameter.stack.functional.Utils;
 import org.mobicents.diameter.stack.functional.cxdx.AbstractClient;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -45,7 +45,7 @@ public class ClientLIR extends AbstractClient {
   protected boolean sentLocationInfo;
 
   /**
-   * 
+   *
    */
   public ClientLIR() {
   }
@@ -83,7 +83,7 @@ public class ClientLIR extends AbstractClient {
 
   @Override
   public void doLocationInformationAnswer(ClientCxDxSession session, JLocationInfoRequest request, JLocationInfoAnswer answer) throws InternalException,
-      IllegalDiameterStateException, RouteException, OverloadException {
+  IllegalDiameterStateException, RouteException, OverloadException {
     if (this.receivedLocationInfo) {
       fail("Received LIA more than once", null);
       return;

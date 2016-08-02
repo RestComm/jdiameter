@@ -1,40 +1,40 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.mobicents.diameter</groupId>
-		<artifactId>jdiameter-ha-parent</artifactId>
-		<version>1.7.0-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
-	</parent>
+  <parent>
+    <groupId>org.mobicents.diameter</groupId>
+    <artifactId>jdiameter-ha-parent</artifactId>
+    <version>1.7.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
 
-	<artifactId>jdiameter-ha-api</artifactId>
+  <artifactId>jdiameter-ha-api</artifactId>
 
-	<name>Restcomm :: Diameter Stack HA :: ${project.artifactId}</name>
+  <name>Restcomm :: Diameter Stack HA :: ${project.artifactId}</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.mobicents.diameter</groupId>
-			<artifactId>jdiameter-api</artifactId>
-		</dependency>
+  <dependencies>
+    <dependency>
+      <groupId>org.mobicents.diameter</groupId>
+      <artifactId>jdiameter-api</artifactId>
+    </dependency>
 
-		<!-- clustering deps -->
-		<dependency>
-			<groupId>org.jboss.cache</groupId>
-			<artifactId>jbosscache-core</artifactId>
-			<scope>provided</scope>
-		</dependency>
+    <!-- clustering deps -->
+    <dependency>
+      <groupId>org.jboss.cache</groupId>
+      <artifactId>jbosscache-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
-		<dependency>
-			<groupId>org.jboss.cluster</groupId>
-			<artifactId>jboss-ha-server-cache-jbc</artifactId>
-		</dependency>
+    <dependency>
+      <groupId>org.jboss.cluster</groupId>
+      <artifactId>jboss-ha-server-cache-jbc</artifactId>
+    </dependency>
 
-		<dependency>
-			<groupId>org.mobicents.cluster</groupId>
-			<artifactId>timers</artifactId>
-		</dependency>
-	</dependencies>
+    <dependency>
+      <groupId>org.mobicents.cluster</groupId>
+      <artifactId>timers</artifactId>
+    </dependency>
+  </dependencies>
 
 </project>

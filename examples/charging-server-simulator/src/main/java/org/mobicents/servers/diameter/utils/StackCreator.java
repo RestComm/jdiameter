@@ -28,7 +28,8 @@ public class StackCreator extends StackImpl implements Stack {
 
   private Stack stack = null;
 
-  public StackCreator(Configuration config, NetworkReqListener networkReqListener, EventListener<Request, Answer> eventListener, String identifier, Boolean isServer) {
+  public StackCreator(Configuration config, NetworkReqListener networkReqListener, EventListener<Request, Answer> eventListener, String identifier,
+      Boolean isServer) {
     super();
     this.stack = new org.jdiameter.server.impl.StackImpl();
 
@@ -43,13 +44,13 @@ public class StackCreator extends StackImpl implements Stack {
       Set<ApplicationId> appIds = stack.getMetaData().getLocalPeer().getCommonApplications();
 
       for (ApplicationId appId : appIds) {
-        if(logger.isInfoEnabled()) {
+        if (logger.isInfoEnabled()) {
           logger.info("Diameter " + identifier + " :: Adding Listener for [" + appId + "].");
         }
         network.addNetworkReqListener(networkReqListener, appId);
       }
 
-      if(logger.isInfoEnabled()) {
+      if (logger.isInfoEnabled()) {
         logger.info("Diameter " + identifier + " :: Supporting " + appIds.size() + " applications.");
       }
     }
@@ -58,54 +59,69 @@ public class StackCreator extends StackImpl implements Stack {
     }
   }
 
-  public StackCreator(InputStream streamConfig, NetworkReqListener networkReqListener, EventListener<Request, Answer> eventListener, String dooer, Boolean isServer) throws Exception {
-    this(isServer ? new XMLConfiguration(streamConfig) : new org.jdiameter.client.impl.helpers.XMLConfiguration(streamConfig), networkReqListener, eventListener, dooer, isServer);
+  public StackCreator(InputStream streamConfig, NetworkReqListener networkReqListener, EventListener<Request, Answer> eventListener, String dooer,
+      Boolean isServer) throws Exception {
+    this(isServer ? new XMLConfiguration(streamConfig) : new org.jdiameter.client.impl.helpers.XMLConfiguration(streamConfig), networkReqListener,
+        eventListener, dooer, isServer);
   }
 
-  public StackCreator(String stringConfig, NetworkReqListener networkReqListener, EventListener<Request, Answer> eventListener, String dooer, Boolean isServer) throws Exception {
-    this(isServer ? new XMLConfiguration(new ByteArrayInputStream(stringConfig.getBytes())) : new org.jdiameter.client.impl.helpers.XMLConfiguration(new ByteArrayInputStream(stringConfig.getBytes())), networkReqListener, eventListener, dooer, isServer);
+  public StackCreator(String stringConfig, NetworkReqListener networkReqListener, EventListener<Request, Answer> eventListener, String dooer, Boolean isServer)
+      throws Exception {
+    this(isServer ? new XMLConfiguration(new ByteArrayInputStream(stringConfig.getBytes())) : new org.jdiameter.client.impl.helpers.XMLConfiguration(
+        new ByteArrayInputStream(stringConfig.getBytes())), networkReqListener, eventListener, dooer, isServer);
   }
 
+  @Override
   public void destroy() {
     stack.destroy();
   }
 
+  @Override
   public java.util.logging.Logger getLogger() {
     return stack.getLogger();
   }
 
+  @Override
   public MetaData getMetaData() {
     return stack.getMetaData();
   }
 
+  @Override
   public SessionFactory getSessionFactory() throws IllegalDiameterStateException {
     return stack.getSessionFactory();
   }
 
+  @Override
   public SessionFactory init(Configuration config) throws IllegalDiameterStateException, InternalException {
     return stack.init(config);
   }
 
+  @Override
   public boolean isActive() {
     return stack.isActive();
   }
 
+  @Override
   public boolean isWrapperFor(Class<?> iface) throws InternalException {
     return stack.isWrapperFor(iface);
   }
 
+  @Override
   public void start() throws IllegalDiameterStateException, InternalException {
     stack.start();
   }
 
+  @Override
   public void start(Mode mode, long timeout, TimeUnit unit) throws IllegalDiameterStateException, InternalException {
     stack.start(mode, timeout, unit);
   }
 
+  @Override
   public void stop(long timeout, TimeUnit unit, int disconnectReason) throws IllegalDiameterStateException, InternalException {
     stack.stop(timeout, unit, disconnectReason);
   }
 
+  @Override
   public <T> T unwrap(Class<T> iface) throws InternalException {
     return stack.unwrap(iface);
   }

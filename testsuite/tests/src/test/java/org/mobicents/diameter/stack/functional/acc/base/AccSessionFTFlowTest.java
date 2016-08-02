@@ -4,24 +4,24 @@
  * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
- * 
+ *
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License, v. 2.0.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
+ * v. 2.0 along with this distribution; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
 package org.mobicents.diameter.stack.functional.acc.base;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,9 +46,9 @@ import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Accounting Fault Tolerance Test
- * 
+ *
  * 2 Servers (A, B), 1 Client (C)
- * 
+ *
  * Flow:
  * 1. Client C sends INITIAL ACR to any of the servers, let's consider A;
  * 2. Server A receives INITIAL, creates new session, processes it under session,
@@ -58,7 +58,7 @@ import org.junit.runners.Parameterized.Parameters;
  * 5. Server B receives INTERIM, processes it under session, answers it;
  * 6. Client C sends TERMINATE ACR to B (only peer which is connected);
  * 7. Server B receives TERMINATE, processes it under session, answers it;
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */

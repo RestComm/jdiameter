@@ -1,15 +1,22 @@
 package org.mobicents.diameter.stack;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
-import junit.framework.Assert;
-
-import org.jdiameter.api.*;
+import org.jdiameter.api.Answer;
+import org.jdiameter.api.ApplicationId;
+import org.jdiameter.api.Configuration;
+import org.jdiameter.api.DisconnectCause;
+import org.jdiameter.api.IllegalDiameterStateException;
+import org.jdiameter.api.Mode;
+import org.jdiameter.api.Network;
+import org.jdiameter.api.NetworkReqListener;
+import org.jdiameter.api.Request;
 import org.jdiameter.client.api.StackState;
 import org.jdiameter.server.impl.StackImpl;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class StackLifecycleTest {
@@ -344,6 +351,7 @@ public class StackLifecycleTest {
       Network network = stack.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           //this wont be called.
           return null;
@@ -392,7 +400,7 @@ public class StackLifecycleTest {
 
   /**
    * Creates a client which tries to connect to stack under test.
-   * 
+   *
    * @return
    */
   private boolean tryToConnect() {
@@ -409,6 +417,7 @@ public class StackLifecycleTest {
       Network network = clientStack.unwrap(Network.class);
       network.addNetworkReqListener(new NetworkReqListener() {
 
+        @Override
         public Answer processRequest(Request request) {
           // this wont be called.
           return null;
@@ -428,7 +437,7 @@ public class StackLifecycleTest {
   }
 
   private void shutdownStack(StackImpl stack) {
-    if(stack != null) {
+    if (stack != null) {
       try {
         Thread.sleep(2000);
       }
@@ -465,7 +474,7 @@ public class StackLifecycleTest {
           // ignore
         }
         finally {
-          try {          
+          try {
             stack.destroy();
             Thread.sleep(500);
           }

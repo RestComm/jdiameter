@@ -42,7 +42,7 @@
       <Peer name="aaa://127.0.0.1:13868" attempt_connect="false" rating="1" />
     </Peers>
     <Realms>
-    	<!-- back route to client realm. -->
+      <!-- back route to client realm. -->
       <Realm name="client.mobicents.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
         <ApplicationID>
           <VendorId value="0" />
@@ -50,13 +50,12 @@
           <AcctApplId value="300" />
         </ApplicationID>
       </Realm>
-  
     </Realms>
   </Network>
-  
+
   <Extensions>
-  	 <SessionDatasource value="org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource"/>
-     <TimerFacility value="org.mobicents.diameter.impl.ha.timer.ReplicatedTimerFacilityImpl"/>
+    <SessionDatasource value="org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource"/>
+    <TimerFacility value="org.mobicents.diameter.impl.ha.timer.ReplicatedTimerFacilityImpl"/>
   </Extensions>
 
 </Configuration>

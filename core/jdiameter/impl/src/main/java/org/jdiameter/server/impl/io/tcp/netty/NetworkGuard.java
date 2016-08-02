@@ -53,7 +53,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 /**
  * TCP implementation of {@link org.jdiameter.server.api.io.INetworkGuard}.
- * 
+ *
  * @author <a href="mailto:jqayyum@gmail.com"> Jehanzeb Qayyum </a>
  */
 public class NetworkGuard implements INetworkGuard {
@@ -108,7 +108,7 @@ public class NetworkGuard implements INetworkGuard {
 
     /*
      * bootstrap.bind(port).addListener(new ChannelFutureListener() {
-     * 
+     *
      * @Override public void operationComplete(ChannelFuture channelFuture) throws Exception { if (channelFuture.isSuccess()) {
      * channels.add(channelFuture.channel()); } } });
      */

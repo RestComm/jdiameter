@@ -20,7 +20,7 @@
      </Entry>
     </OverloadMonitor>
   </LocalPeer>
-  
+
   <Parameters>
     <AcceptUndefinedPeer value="true" />
     <DuplicateProtection value="true" />
@@ -35,7 +35,7 @@
     <DpaTimeOut value="5000" />
     <RecTimeOut value="10000" />
   </Parameters>
-  
+
   <Network>
     <Peers>
       <Peer name="aaa://127.0.0.1:4868" attempt_connect="true" rating="1" />

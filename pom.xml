@@ -1,187 +1,303 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">	
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.mobicents</groupId>
-		<artifactId>restcomm-parent</artifactId>
-		<version>2.27.32</version>
-	</parent>
+  <parent>
+    <groupId>org.mobicents</groupId>
+    <artifactId>restcomm-parent</artifactId>
+    <version>2.27.32</version>
+  </parent>
 
-	<groupId>org.mobicents.diameter</groupId>
-	<artifactId>diameter-parent</artifactId>
-	<version>1.7.0-SNAPSHOT</version>
+  <groupId>org.mobicents.diameter</groupId>
+  <artifactId>diameter-parent</artifactId>
+  <version>1.7.0-SNAPSHOT</version>
 
-	<packaging>pom</packaging>
+  <packaging>pom</packaging>
 
-	<name>Restcomm :: Diameter :: ${project.artifactId}</name>
-	<description>Restcomm Diameter</description>
-	<url>https://github.com/RestComm/jdiameter</url>
+  <name>Restcomm :: Diameter :: ${project.artifactId}</name>
+  <description>Restcomm Diameter</description>
+  <url>https://github.com/RestComm/jdiameter</url>
 
-	<ciManagement>
-		<system>Jenkins</system>
-		<url>https://mobicents.ci.cloudbees.com/job/RestComm-jDiameter-1.x/</url>
-	</ciManagement>
+  <ciManagement>
+    <system>Jenkins</system>
+    <url>https://mobicents.ci.cloudbees.com/job/RestComm-jDiameter-1.x/</url>
+  </ciManagement>
 
-	<developers>
-		<developer>
-			<id>ammendonca</id>
-			<name>Alexandre Mendonça</name>
-			<email>brainslog@gmail.com</email>
-			<organization>TeleStax</organization>
-			<organizationUrl>http://www.telestax.com/</organizationUrl>
-			<roles>
-				<role>Project Lead</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-		<developer>
-			<id>baranowb</id>
-			<name>Bartosz Baranowski</name>
-			<email>baranowb@gmail.com</email>
-			<organization>TeleStax</organization>
-			<organizationUrl>http://www.telestax.com/</organizationUrl>
-			<roles>
-				<role>Developer</role>
-			</roles>
-			<timezone>+1</timezone>
-		</developer>
-	</developers>
+  <properties>
+    <mobicents.checkstyle.version>1.0.0.FINAL</mobicents.checkstyle.version>
+    <checkstyle.plugin.version>2.9.1</checkstyle.plugin.version>
+    <checkstyle.consoleOutput>true</checkstyle.consoleOutput>
+    <checkstyle.failOnError>true</checkstyle.failOnError>
+    <version.com.puppycrawl.tools.checkstyle>6.18</version.com.puppycrawl.tools.checkstyle>
+  </properties>
 
-	<licenses>
-		<license>
-			<name>GNU Affero General Public License </name>
-			<url>http://www.gnu.org/licenses/agpl.html</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
+  <developers>
+    <developer>
+      <id>ammendonca</id>
+      <name>Alexandre Mendonça</name>
+      <email>brainslog@gmail.com</email>
+      <organization>TeleStax</organization>
+      <organizationUrl>http://www.telestax.com/</organizationUrl>
+      <roles>
+        <role>Project Lead</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+    <developer>
+      <id>baranowb</id>
+      <name>Bartosz Baranowski</name>
+      <email>baranowb@gmail.com</email>
+      <organization>TeleStax</organization>
+      <organizationUrl>http://www.telestax.com/</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
 
-	<modules>
-		<module>core</module>
-	</modules>
+  <licenses>
+    <license>
+      <name>GNU Affero General Public License </name>
+      <url>http://www.gnu.org/licenses/agpl.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<groupId>org.mobicents.tools</groupId>
-				<inherited>false</inherited>
-				<executions />
-				<configuration>
-					<eclipseProjectName>${project.artifactId}</eclipseProjectName>
-					<generateProjectsForModules>false</generateProjectsForModules>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+  <modules>
+    <module>core</module>
+  </modules>
 
-	<profiles>
-		<profile>
-			<id>testsuite</id>
-			<modules>
-				<module>testsuite</module>
-			</modules>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-release-plugin</artifactId>
-						<configuration>
-							<autoVersionSubmodules>false</autoVersionSubmodules>
-							<resume>false</resume>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>maven-release</id>
-			<modules>
-				<!-- any module not bound to default modules, such as the ones for test, release, etc... -->
-			</modules>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-release-plugin</artifactId>
-						<configuration>
-							<autoVersionSubmodules>false</autoVersionSubmodules>
-							<resume>false</resume>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+  <build>
+    <plugins>
+      <!-- Checkstyle -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.17</version>
 
-	<repositories>
-		<repository>
-			<id>mobicents-public-repository-group</id>
-			<name>Mobicents Public Maven Repository Group</name>
-			<url>https://oss.sonatype.org/content/groups/public</url>
-			<layout>default</layout>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</snapshots>
-		</repository>
+        <executions>
+          <execution>
+            <id>check</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
 
-		<repository>
-			<id>jboss-public-repository-group</id>
-			<name>JBoss Public Maven Repository Group</name>
-			<url>https://repository.jboss.org/nexus/content/groups/public/</url>
-			<layout>default</layout>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</snapshots>
-		</repository>
-	</repositories>
+        <configuration>
+          <consoleOutput>${checkstyle.consoleOutput}</consoleOutput>
+          <failsOnError>${checkstyle.failOnError}</failsOnError>
+          <checkstyleRules>
+            <module name="Checker">
+              <module name="FileTabCharacter">
+                <property name="eachLine" value="true"/>
+              </module>
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>restcomm-public-repository-group</id>
-			<name>Restcomm Public Maven Repository Group</name>
-			<url>https://oss.sonatype.org/content/groups/public</url>
-			<layout>default</layout>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</snapshots>
-		</pluginRepository>
+              <module name="RegexpSingleline">
+                <!-- \s matches whitespace character, $ matches end of line. -->
+                <property name="format" value="\s+$"/>
+                <property name="message" value="Line has trailing spaces."/>
+              </module>
 
-		<pluginRepository>
-			<id>jboss-public-repository-group</id>
-			<name>JBoss Public Maven Repository Group</name>
-			<url>https://repository.jboss.org/nexus/content/groups/public/</url>
-			<layout>default</layout>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
+              <module name="TreeWalker">
 
-	<scm>
-		<connection>scm:git:git@github.com:RestComm/jdiameter.git</connection>
-		<developerConnection>scm:git:https://github.com/RestComm/jdiameter.git</developerConnection>
-		<url>https://github.com/RestComm/jdiameter</url>
-	</scm>
+                <module name="LineLength">
+                  <property name="max" value="160"/>
+                  <property name="ignorePattern" value="^\s*//.*|^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+                </module>
+
+                <module name="Indentation">
+                  <property name="basicOffset" value="2"/>
+                  <property name="braceAdjustment" value="0"/>
+                  <property name="caseIndent" value="2"/>
+                  <property name="throwsIndent" value="4"/>
+                  <property name="lineWrappingIndentation" value="4"/>
+                  <property name="arrayInitIndent" value="2"/>
+                </module>
+
+                <module name="NeedBraces"/>
+
+                <module name="OneStatementPerLine"/>
+
+                <!-- Checks for imports                              -->
+                <module name="AvoidStarImport">
+                  <property name="allowStaticMemberImports" value="true"/>
+                </module>
+                <module name="RedundantImport"/>
+
+                <module name="UnusedImports" />
+
+                <module name="IllegalImport">
+                  <property name="illegalPkgs" value="junit.framework"/>
+                </module>
+
+                <!-- Modifier Checks                                    -->
+                <module name="ModifierOrder"/>
+                <module name="RedundantModifier"/>
+
+                <!-- Checks for blocks. You know, those {}'s         -->
+                <module name="LeftCurly"/>
+
+                <!-- Checks for common coding problems               -->
+                <!-- Disabled until http://sourceforge.net/tracker/?func=detail&aid=2843447&group_id=29721&atid=397078 is fixed-->
+                <!--<module name="DoubleCheckedLocking"/>-->
+                <module name="EmptyStatement"/>
+                <module name="EmptyBlock">
+                  <property name="option" value="TEXT"/>
+                  <property name="tokens" value="LITERAL_TRY, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_SWITCH"/>
+                </module>
+                <module name="EqualsHashCode"/>
+                <module name="IllegalInstantiation"/>
+
+                <!-- Miscellaneous other checks.                   -->
+                <module name="UpperEll"/>
+                <module name="PackageAnnotation"/>
+                <module name="CovariantEquals"/>
+                <module name="ArrayTypeStyle"/>
+
+              </module>
+
+            </module>
+          </checkstyleRules>
+
+          <useFile />
+        </configuration>
+        <dependencies>
+           <dependency>
+            <groupId>com.puppycrawl.tools</groupId>
+            <artifactId>checkstyle</artifactId>
+            <version>${version.com.puppycrawl.tools.checkstyle}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>com.sun</groupId>
+                <artifactId>tools</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <groupId>org.mobicents.tools</groupId>
+        <inherited>false</inherited>
+        <executions />
+        <configuration>
+          <eclipseProjectName>${project.artifactId}</eclipseProjectName>
+          <generateProjectsForModules>false</generateProjectsForModules>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>testsuite</id>
+      <modules>
+        <module>testsuite</module>
+      </modules>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <configuration>
+              <autoVersionSubmodules>false</autoVersionSubmodules>
+              <resume>false</resume>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>maven-release</id>
+      <modules>
+        <!-- any module not bound to default modules, such as the ones for test, release, etc... -->
+      </modules>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <configuration>
+              <autoVersionSubmodules>false</autoVersionSubmodules>
+              <resume>false</resume>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <repositories>
+    <repository>
+      <id>mobicents-public-repository-group</id>
+      <name>Mobicents Public Maven Repository Group</name>
+      <url>https://oss.sonatype.org/content/groups/public</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </snapshots>
+    </repository>
+
+    <repository>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Maven Repository Group</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>restcomm-public-repository-group</id>
+      <name>Restcomm Public Maven Repository Group</name>
+      <url>https://oss.sonatype.org/content/groups/public</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </snapshots>
+    </pluginRepository>
+
+    <pluginRepository>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Maven Repository Group</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <scm>
+    <connection>scm:git:git@github.com:RestComm/jdiameter.git</connection>
+    <developerConnection>scm:git:https://github.com/RestComm/jdiameter.git</developerConnection>
+    <url>https://github.com/RestComm/jdiameter</url>
+  </scm>
 
 </project>

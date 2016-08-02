@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author <a href="mailto:richard.good@smilecoms.com"> Richard Good </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public class RxSessionTermAnswerImpl extends AppAnswerEventImpl implements RxSessionTermAnswer {
 
   private static final long serialVersionUID = 1L;
-  protected final static Logger logger = LoggerFactory.getLogger(RxSessionTermAnswerImpl.class);
+  protected static final Logger logger = LoggerFactory.getLogger(RxSessionTermAnswerImpl.class);
 
   public RxSessionTermAnswerImpl(Request message, long resultCode) {
     super(message.createAnswer(resultCode));

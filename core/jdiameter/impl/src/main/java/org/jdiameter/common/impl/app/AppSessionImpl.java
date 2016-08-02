@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.common.impl.app;
 
@@ -40,7 +60,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Abstract implementation for {@link AppSession}
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -71,7 +91,8 @@ public abstract class AppSessionImpl implements AppSession {
       this.sf = sf;
       this.appSessionData = appSessionData;
       IAssembler assembler = ( this.sf).getContainer().getAssemblerFacility();
-      this.scheduler = assembler.getComponentInstance(IConcurrentFactory.class).getScheduledExecutorService(IConcurrentFactory.ScheduledExecServices.ApplicationSession.name());
+      this.scheduler = assembler.getComponentInstance(IConcurrentFactory.class).
+          getScheduledExecutorService(IConcurrentFactory.ScheduledExecServices.ApplicationSession.name());
       this.timerFacility = assembler.getComponentInstance(ITimerFacility.class);
       this.session = this.sf.getNewSession(this.appSessionData.getSessionId());
       //annoying ;[
@@ -84,26 +105,32 @@ public abstract class AppSessionImpl implements AppSession {
     }
   }
 
+  @Override
   public long getCreationTime() {
     return session.getCreationTime();
   }
 
+  @Override
   public long getLastAccessedTime() {
     return session.getLastAccessedTime();
   }
 
+  @Override
   public boolean isValid() {
     return session == null ? false : session.isValid();
   }
 
+  @Override
   public ApplicationId getSessionAppId() {
     return this.appSessionData.getApplicationId();
   }
 
+  @Override
   public List<Session> getSessions() {
     return this.sessions; //....
   }
 
+  @Override
   public void release() {
     logger.debug("Releasing application session for Session ID '{}' ({}).", getSessionId(), getSessionAppId());
     this.session.setRequestListener(null);
@@ -113,9 +140,10 @@ public abstract class AppSessionImpl implements AppSession {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.BaseSession#getSessionId()
    */
+  @Override
   public String getSessionId() {
     //use local object, its faster :)
     return this.session.getSessionId();
@@ -123,18 +151,20 @@ public abstract class AppSessionImpl implements AppSession {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.BaseSession#isAppSession()
    */
+  @Override
   public boolean isAppSession() {
     return true;
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.BaseSession#isReplicable()
    */
+  @Override
   public boolean isReplicable() {
     // FIXME: make this true?
     return false;
@@ -150,18 +180,23 @@ public abstract class AppSessionImpl implements AppSession {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     AppSessionImpl other = (AppSessionImpl) obj;
     if (appSessionData == null) {
-      if (other.appSessionData != null)
+      if (other.appSessionData != null) {
         return false;
-    } else if (!appSessionData.equals(other.appSessionData))
+      }
+    } else if (!appSessionData.equals(other.appSessionData)) {
       return false;
+    }
     return true;
   }
 

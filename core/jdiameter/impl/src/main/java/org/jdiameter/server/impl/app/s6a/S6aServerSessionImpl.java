@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.server.impl.app.s6a;
 
@@ -57,14 +77,13 @@ import org.jdiameter.common.api.app.s6a.S6aSessionState;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.jdiameter.common.impl.app.s6a.S6aSession;
-import org.jdiameter.server.impl.app.s6a.Event;
 import org.jdiameter.server.impl.app.s6a.Event.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * S6a Server session implementation
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:richard.good@smilecoms.com"> Richard Good </a>
  * @author <a href="mailto:paul.carter-brown@smilecoms.com"> Paul Carter-Brown </a>
@@ -92,34 +111,47 @@ public class S6aServerSessionImpl extends S6aSession implements ServerS6aSession
     this.sessionData = sessionData;
   }
 
-  public void sendAuthenticationInformationAnswer(JAuthenticationInformationAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void sendAuthenticationInformationAnswer(JAuthenticationInformationAnswer answer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_MESSAGE, null, answer);
   }
 
+  @Override
   public void sendPurgeUEAnswer(JPurgeUEAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_MESSAGE, null, answer);
   }
 
-  public void sendUpdateLocationAnswer(JUpdateLocationAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void sendUpdateLocationAnswer(JUpdateLocationAnswer answer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_MESSAGE, null, answer);
   }
 
+  @Override
   public void sendNotifyAnswer(JNotifyAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_MESSAGE, null, answer);
   }
 
-  public void sendCancelLocationRequest(JCancelLocationRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void sendCancelLocationRequest(JCancelLocationRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_MESSAGE, request, null);
   }
 
-  public void sendInsertSubscriberDataRequest(JInsertSubscriberDataRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void sendInsertSubscriberDataRequest(JInsertSubscriberDataRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_MESSAGE, request, null);
   }
 
-  public void sendDeleteSubscriberDataRequest(JDeleteSubscriberDataRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void sendDeleteSubscriberDataRequest(JDeleteSubscriberDataRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_MESSAGE, request, null);
   }
 
+  @Override
   public void sendResetRequest(JResetRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_MESSAGE, request, null);
   }
@@ -128,6 +160,7 @@ public class S6aServerSessionImpl extends S6aSession implements ServerS6aSession
    * (non-Javadoc)
    * @see org.jdiameter.api.app.StateMachine#getState(java.lang.Class)
    */
+  @Override
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> stateType) {
     return stateType == S6aSessionState.class ? (E) this.sessionData.getS6aSessionState() : null;
@@ -137,6 +170,7 @@ public class S6aServerSessionImpl extends S6aSession implements ServerS6aSession
    * (non-Javadoc)
    * @see org.jdiameter.api.app.StateMachine#handleEvent(org.jdiameter.api.app.StateEvent)
    */
+  @Override
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
     try {
       sendAndStateLock.lock();
@@ -232,7 +266,8 @@ public class S6aServerSessionImpl extends S6aSession implements ServerS6aSession
             case RECEIVE_IDA:
               try {
                 super.cancelMsgTimer();
-                listener.doInsertSubscriberDataAnswerEvent(this, (JInsertSubscriberDataRequest) localEvent.getRequest(), (JInsertSubscriberDataAnswer) localEvent.getAnswer());
+                listener.doInsertSubscriberDataAnswerEvent(this, (JInsertSubscriberDataRequest) localEvent.getRequest(),
+                    (JInsertSubscriberDataAnswer) localEvent.getAnswer());
               }
               finally {
                 newState = S6aSessionState.TERMINATED;
@@ -243,7 +278,8 @@ public class S6aServerSessionImpl extends S6aSession implements ServerS6aSession
             case RECEIVE_DSA:
               try {
                 super.cancelMsgTimer();
-                listener.doDeleteSubscriberDataAnswerEvent(this, (JDeleteSubscriberDataRequest) localEvent.getRequest(), (JDeleteSubscriberDataAnswer) localEvent.getAnswer());
+                listener.doDeleteSubscriberDataAnswerEvent(this, (JDeleteSubscriberDataRequest) localEvent.getRequest(),
+                    (JDeleteSubscriberDataAnswer) localEvent.getAnswer());
               }
               finally {
                 newState = S6aSessionState.TERMINATED;
@@ -292,6 +328,7 @@ public class S6aServerSessionImpl extends S6aSession implements ServerS6aSession
    * (non-Javadoc)
    * @see org.jdiameter.api.EventListener#receivedSuccessMessage(org.jdiameter.api.Message, org.jdiameter.api.Message)
    */
+  @Override
   public void receivedSuccessMessage(Request request, Answer answer) {
     AnswerDelivery rd = new AnswerDelivery();
     rd.session = this;
@@ -304,6 +341,7 @@ public class S6aServerSessionImpl extends S6aSession implements ServerS6aSession
    * (non-Javadoc)
    * @see org.jdiameter.api.EventListener#timeoutExpired(org.jdiameter.api.Message)
    */
+  @Override
   public void timeoutExpired(Request request) {
     try {
       handleEvent(new Event(Event.Type.TIMEOUT_EXPIRES, new AppRequestEventImpl(request), null));
@@ -317,6 +355,7 @@ public class S6aServerSessionImpl extends S6aSession implements ServerS6aSession
    * (non-Javadoc)
    * @see org.jdiameter.api.NetworkReqListener#processRequest(org.jdiameter.api.Request)
    */
+  @Override
   public Answer processRequest(Request request) {
     RequestDelivery rd = new RequestDelivery();
     rd.session = this;
@@ -342,7 +381,7 @@ public class S6aServerSessionImpl extends S6aSession implements ServerS6aSession
     this.sessionData.setS6aSessionState(newState);
 
     for (StateChangeListener i : stateListeners) {
-      i.stateChanged(this, (Enum) oldState, (Enum) newState);
+      i.stateChanged(this, oldState, newState);
     }
     if (newState == S6aSessionState.TERMINATED || newState == S6aSessionState.TIMEDOUT) {
       super.cancelMsgTimer();
@@ -370,6 +409,7 @@ public class S6aServerSessionImpl extends S6aSession implements ServerS6aSession
     }
   }
 
+  @Override
   public void release() {
     if (isValid()) {
       try {
@@ -393,6 +433,7 @@ public class S6aServerSessionImpl extends S6aSession implements ServerS6aSession
     ServerS6aSession session;
     Request request;
 
+    @Override
     public void run() {
 
       try {
@@ -430,19 +471,23 @@ public class S6aServerSessionImpl extends S6aSession implements ServerS6aSession
     Answer answer;
     Request request;
 
+    @Override
     public void run() {
       try {
         switch (answer.getCommandCode()) {
           case JCancelLocationAnswer.code:
-            handleEvent(new Event(Event.Type.RECEIVE_CLA, messageFactory.createCancelLocationRequest(request), messageFactory.createCancelLocationAnswer(answer)));
+            handleEvent(new Event(Event.Type.RECEIVE_CLA, messageFactory.createCancelLocationRequest(request),
+                messageFactory.createCancelLocationAnswer(answer)));
             break;
 
           case JInsertSubscriberDataAnswer.code:
-            handleEvent(new Event(Event.Type.RECEIVE_IDA, messageFactory.createInsertSubscriberDataRequest(request), messageFactory.createInsertSubscriberDataAnswer(answer)));
+            handleEvent(new Event(Event.Type.RECEIVE_IDA, messageFactory.createInsertSubscriberDataRequest(request),
+                messageFactory.createInsertSubscriberDataAnswer(answer)));
             break;
 
           case JDeleteSubscriberDataAnswer.code:
-            handleEvent(new Event(Event.Type.RECEIVE_DSA, messageFactory.createDeleteSubscriberDataRequest(request), messageFactory.createDeleteSubscriberDataAnswer(answer)));
+            handleEvent(new Event(Event.Type.RECEIVE_DSA, messageFactory.createDeleteSubscriberDataRequest(request),
+                messageFactory.createDeleteSubscriberDataAnswer(answer)));
             break;
 
           case JResetAnswer.code:

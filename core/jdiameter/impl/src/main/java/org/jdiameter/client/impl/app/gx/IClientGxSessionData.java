@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.client.impl.app.gx;
 
@@ -29,45 +49,45 @@ import org.jdiameter.common.api.app.gx.ClientGxSessionState;
 import org.jdiameter.common.api.app.gx.IGxSessionData;
 
 /**
- * 
+ *
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public interface IClientGxSessionData extends IGxSessionData {
 
-  public boolean isEventBased();
+  boolean isEventBased();
 
-  public void setEventBased(boolean b);
+  void setEventBased(boolean b);
 
-  public boolean isRequestTypeSet();
+  boolean isRequestTypeSet();
 
-  public void setRequestTypeSet(boolean b);
+  void setRequestTypeSet(boolean b);
 
-  public ClientGxSessionState getClientGxSessionState();
+  ClientGxSessionState getClientGxSessionState();
 
-  public void setClientGxSessionState(ClientGxSessionState state);
+  void setClientGxSessionState(ClientGxSessionState state);
 
-  public Serializable getTxTimerId();
+  Serializable getTxTimerId();
 
-  public void setTxTimerId(Serializable txTimerId);
+  void setTxTimerId(Serializable txTimerId);
 
-  public Request getTxTimerRequest();
+  Request getTxTimerRequest();
 
-  public void setTxTimerRequest(Request txTimerRequest);
+  void setTxTimerRequest(Request txTimerRequest);
 
-  public Request getBuffer();
+  Request getBuffer();
 
-  public void setBuffer(Request buffer);
+  void setBuffer(Request buffer);
 
-  public int getGatheredRequestedAction();
+  int getGatheredRequestedAction();
 
-  public void setGatheredRequestedAction(int gatheredRequestedAction);
+  void setGatheredRequestedAction(int gatheredRequestedAction);
 
-  public int getGatheredCCFH();
+  int getGatheredCCFH();
 
-  public void setGatheredCCFH(int gatheredCCFH);
+  void setGatheredCCFH(int gatheredCCFH);
 
-  public int getGatheredDDFH();
+  int getGatheredDDFH();
 
-  public void setGatheredDDFH(int gatheredDDFH);
+  void setGatheredDDFH(int gatheredDDFH);
 }

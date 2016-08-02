@@ -1,186 +1,186 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.mobicents.diameter</groupId>
-		<artifactId>restcomm-diameter-mux-parent</artifactId>
-		<version>1.7.0-SNAPSHOT</version> 
-		<relativePath>../pom.xml</relativePath>
-	</parent>
+  <parent>
+    <groupId>org.mobicents.diameter</groupId>
+    <artifactId>restcomm-diameter-mux-parent</artifactId>
+    <version>1.7.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
 
-	<artifactId>restcomm-diameter-mux-sar-jboss-7</artifactId>
+  <artifactId>restcomm-diameter-mux-sar-jboss-7</artifactId>
 
-	<name>Restcomm :: Diameter Multiplexer :: ${project.artifactId}</name>
+  <name>Restcomm :: Diameter Multiplexer :: ${project.artifactId}</name>
 
-	<packaging>jboss-sar</packaging>
+  <packaging>jboss-sar</packaging>
 
-	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>restcomm-diameter-mux-jar</artifactId>
-			<version>${project.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<!-- Just because we need the right version of slf4j... -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-	</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>restcomm-diameter-mux-jar</artifactId>
+      <version>${project.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- Just because we need the right version of slf4j... -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+  </dependencies>
 
-	<build>
-		<finalName>restcomm-diameter-mux-${project.version}</finalName>
-		<plugins>
-			<!-- Build SAR -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jboss-packaging-maven-plugin</artifactId>
-				<version>2.2</version>
-				<extensions>true</extensions>
-				<configuration>
-					<excludes>
-						<exclude>apache-xerces:xml-apis</exclude>
-						<exclude>org.jboss.logging:jboss-logging-spi</exclude>
-						<exclude>org.jboss:jboss-common-core</exclude>
-						<exclude>org.jboss:jboss-vfs</exclude>
-						<exclude>org.jboss:jbossxb</exclude>
-						<exclude>org.jboss:jboss-reflect</exclude>
-						<exclude>wutka-dtdparser:dtdparser121</exclude>
-						<exclude>javax.activation:activation</exclude>
-						<exclude>sun-jaxb:jaxb-api</exclude>
-						<exclude>org.jboss.deployers:jboss-deployers-core-spi</exclude>
-						<exclude>org.jboss.deployers:jboss-deployers-impl</exclude>
-						<exclude>org.jboss.deployers:jboss-deployers-spi</exclude>
-						<exclude>org.jboss.deployers:jboss-deployers-structure-spi</exclude>
-						<exclude>org.jboss.deployers:jboss-deployers-client-spi</exclude>
-						<exclude>org.jboss.man:jboss-managed</exclude>
-						<exclude>org.jboss.man:jboss-metatype</exclude>
-						<exclude>org.jboss:jboss-mdr</exclude>
-						<exclude>org.jboss.integration:jboss-classloading-spi</exclude>
-						<exclude>org.jboss.cl:jboss-classloading</exclude>
-						<exclude>org.jboss.cl:jboss-classloader</exclude>
-						<exclude>org.jboss.microcontainer:jboss-kernel</exclude>
-						<exclude>org.jboss.microcontainer:jboss-dependency</exclude>
-						<exclude>javassist:javassist</exclude>
-						<exclude>org.jboss.deployers:jboss-deployers-vfs</exclude>
-						<exclude>org.jboss.deployers:jboss-deployers-vfs-spi</exclude>
-						<exclude>stax:stax-api</exclude>
-						<exclude>org.jboss.cl:jboss-classloading-vfs</exclude>
-						<exclude>org.jboss.deployers:jboss-deployers-core</exclude>
-						<exclude>org.jboss.deployers:jboss-deployers-client</exclude>
-						<exclude>org.jboss.jbossas:jboss-as-j2se</exclude>
-						<exclude>oswego-concurrent:concurrent</exclude>
-						<exclude>org.jboss.bootstrap:jboss-bootstrap</exclude>
-						<exclude>org.jboss.jbossas:jboss-as-system</exclude>
-						<exclude>org.jboss.jbossas:jboss-as-system-jmx</exclude>
-						<exclude>org.jboss.aop:jboss-aop</exclude>
-						<exclude>org.apache.ant:ant</exclude>
-						<exclude>org.apache.ant:ant-launcher</exclude>
-						<exclude>qdox:qdox</exclude>
-						<exclude>trove:trove</exclude>
-						<exclude>log4j:log4j</exclude>
-						<exclude>org.jboss.logging:jboss-logging-log4j</exclude>
-						<exclude>org.jboss.integration:jboss-profileservice-spi</exclude>
-						<exclude>org.jboss.microcontainer:jboss-aop-mc-int</exclude>
-						<exclude>org.jboss.jbossas:jboss-as-jmx</exclude>
-						<exclude>org.jboss.jbossas:jboss-as-j2se</exclude>
-						<exclude>org.jboss.jbossas:jboss-as-mbeans</exclude>
-						<exclude>dom4j:dom4j</exclude>
-						<exclude>bcel:bcel</exclude>
-						<exclude>org.jboss.test:jboss-test</exclude>
-						<exclude>org.apache.ant:ant-junit</exclude>
-						<exclude>junit:junit</exclude>
-						<exclude>jboss.profiler.jvmti:jboss-profiler-jvmti</exclude>
-						<exclude>org.jboss.jbossas:jboss-server-manager</exclude>
-						<exclude>org.jboss.naming:jnp-client</exclude>
-						<exclude>org.jboss.security:jbosssx-client</exclude>
-						<exclude>org.jboss.security:jboss-security-spi</exclude>
-						<!--exclude>org.mobicents.diameter:jdiameter-api</exclude>
-						<exclude>org.mobicents.diameter:jdiameter-impl</exclude>
-						<exclude>picocontainer:picocontainer</exclude-->
-						<exclude>xml-apis:xml-apis</exclude>
-						<!--exclude>org.slf4j:slf4j-api</exclude>
-						<exclude>org.slf4j:slf4j-log4j12</exclude-->
-					</excludes>
-				</configuration>
-			</plugin>
+  <build>
+    <finalName>restcomm-diameter-mux-${project.version}</finalName>
+    <plugins>
+      <!-- Build SAR -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jboss-packaging-maven-plugin</artifactId>
+        <version>2.2</version>
+        <extensions>true</extensions>
+        <configuration>
+          <excludes>
+            <exclude>apache-xerces:xml-apis</exclude>
+            <exclude>org.jboss.logging:jboss-logging-spi</exclude>
+            <exclude>org.jboss:jboss-common-core</exclude>
+            <exclude>org.jboss:jboss-vfs</exclude>
+            <exclude>org.jboss:jbossxb</exclude>
+            <exclude>org.jboss:jboss-reflect</exclude>
+            <exclude>wutka-dtdparser:dtdparser121</exclude>
+            <exclude>javax.activation:activation</exclude>
+            <exclude>sun-jaxb:jaxb-api</exclude>
+            <exclude>org.jboss.deployers:jboss-deployers-core-spi</exclude>
+            <exclude>org.jboss.deployers:jboss-deployers-impl</exclude>
+            <exclude>org.jboss.deployers:jboss-deployers-spi</exclude>
+            <exclude>org.jboss.deployers:jboss-deployers-structure-spi</exclude>
+            <exclude>org.jboss.deployers:jboss-deployers-client-spi</exclude>
+            <exclude>org.jboss.man:jboss-managed</exclude>
+            <exclude>org.jboss.man:jboss-metatype</exclude>
+            <exclude>org.jboss:jboss-mdr</exclude>
+            <exclude>org.jboss.integration:jboss-classloading-spi</exclude>
+            <exclude>org.jboss.cl:jboss-classloading</exclude>
+            <exclude>org.jboss.cl:jboss-classloader</exclude>
+            <exclude>org.jboss.microcontainer:jboss-kernel</exclude>
+            <exclude>org.jboss.microcontainer:jboss-dependency</exclude>
+            <exclude>javassist:javassist</exclude>
+            <exclude>org.jboss.deployers:jboss-deployers-vfs</exclude>
+            <exclude>org.jboss.deployers:jboss-deployers-vfs-spi</exclude>
+            <exclude>stax:stax-api</exclude>
+            <exclude>org.jboss.cl:jboss-classloading-vfs</exclude>
+            <exclude>org.jboss.deployers:jboss-deployers-core</exclude>
+            <exclude>org.jboss.deployers:jboss-deployers-client</exclude>
+            <exclude>org.jboss.jbossas:jboss-as-j2se</exclude>
+            <exclude>oswego-concurrent:concurrent</exclude>
+            <exclude>org.jboss.bootstrap:jboss-bootstrap</exclude>
+            <exclude>org.jboss.jbossas:jboss-as-system</exclude>
+            <exclude>org.jboss.jbossas:jboss-as-system-jmx</exclude>
+            <exclude>org.jboss.aop:jboss-aop</exclude>
+            <exclude>org.apache.ant:ant</exclude>
+            <exclude>org.apache.ant:ant-launcher</exclude>
+            <exclude>qdox:qdox</exclude>
+            <exclude>trove:trove</exclude>
+            <exclude>log4j:log4j</exclude>
+            <exclude>org.jboss.logging:jboss-logging-log4j</exclude>
+            <exclude>org.jboss.integration:jboss-profileservice-spi</exclude>
+            <exclude>org.jboss.microcontainer:jboss-aop-mc-int</exclude>
+            <exclude>org.jboss.jbossas:jboss-as-jmx</exclude>
+            <exclude>org.jboss.jbossas:jboss-as-j2se</exclude>
+            <exclude>org.jboss.jbossas:jboss-as-mbeans</exclude>
+            <exclude>dom4j:dom4j</exclude>
+            <exclude>bcel:bcel</exclude>
+            <exclude>org.jboss.test:jboss-test</exclude>
+            <exclude>org.apache.ant:ant-junit</exclude>
+            <exclude>junit:junit</exclude>
+            <exclude>jboss.profiler.jvmti:jboss-profiler-jvmti</exclude>
+            <exclude>org.jboss.jbossas:jboss-server-manager</exclude>
+            <exclude>org.jboss.naming:jnp-client</exclude>
+            <exclude>org.jboss.security:jbosssx-client</exclude>
+            <exclude>org.jboss.security:jboss-security-spi</exclude>
+            <!--exclude>org.mobicents.diameter:jdiameter-api</exclude>
+            <exclude>org.mobicents.diameter:jdiameter-impl</exclude>
+            <exclude>picocontainer:picocontainer</exclude-->
+            <exclude>xml-apis:xml-apis</exclude>
+            <!--exclude>org.slf4j:slf4j-api</exclude>
+            <exclude>org.slf4j:slf4j-log4j12</exclude-->
+          </excludes>
+        </configuration>
+      </plugin>
 
-			<!-- Create module and deployment structure -->
-			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>deploy</id>
-						<phase>install</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<tasks>
-								<condition property="jboss.dir" value="${jboss.home}" else="${env.JBOSS_HOME}">
-									<isset property="jboss.home" />
-								</condition>
-								<!-- The AS7 module structure -->
-								<copy todir="${basedir}/target/jboss-modules/org/mobicents/diameter/main" flatten="true">
-									<fileset dir=".">
-										<include name="src/main/resources/META-INF/module.xml" />
-									</fileset>
-									<filterset>
-										<filter token="COMMONS_VERSION" value="${commons-pool.version}"/>
-										<filter token="PICOCONTAINER_VERSION" value="${picocontainer.version}"/>
-										<filter token="SLF4J_VERSION" value="${slf4j.version}"/>
-										<filter token="JDIAMETER_VERSION" value="${project.version}"/>
-									</filterset>
-								</copy>
-								<copy todir="${basedir}/target/jboss-modules/org/mobicents/diameter/main" flatten="true">
-									<fileset dir="target/${project.build.finalName}">
-										<include name="lib/commons-pool-*" />
-										<include name="lib/picocontainer*" />
-										<include name="lib/slf4j*" />
-										<include name="lib/jdiameter*" />
-									</fileset>
-								</copy>
-								<copy todir="${basedir}/target/jboss-modules/org/mobicents/diameter/main/config">
-									<fileset dir="../common/config">
-										<include name="**" />
-									</fileset>
-								</copy>
-								<!-- The MUX deployment archive -->
-								<copy file="../jar/target/restcomm-diameter-mux-${project.version}.jar" tofile="${basedir}/target/deployments/restcomm-diameter-tmp.zip"/>
-								<zip destfile="${basedir}/target/deployments/restcomm-diameter.zip">
-									<zipfileset src="${basedir}/target/deployments/restcomm-diameter-tmp.zip" excludes="org/mobicents/diameter/stack/DiameterStackMultiplexer.class,org/mobicents/diameter/stack/DiameterStackMultiplexerMBean.class"/>
-								</zip>
-								<move file="${basedir}/target/deployments/restcomm-diameter.zip" tofile="${basedir}/target/deployments/restcomm-diameter.jar"/>
-								<touch file="${basedir}/target/deployments/restcomm-diameter.jar.dodeploy"/>
-								<!-- Clean up some of the mess -->
-								<delete file="${basedir}/target/deployments/restcomm-diameter-tmp.zip"/>
-								<delete dir="target/${project.build.finalName}"/>
-								<delete file="target/${project.build.finalName}.sar"/>
-							</tasks>
-						</configuration>
-					</execution>
-					<execution>
-						<id>undeploy</id>
-						<phase>clean</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<tasks>
-								<delete dir="${env.JBOSS_HOME}/${node}/deployments/${project.build.finalName}.sar" />
-							</tasks>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+      <!-- Create module and deployment structure -->
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>deploy</id>
+            <phase>install</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <condition property="jboss.dir" value="${jboss.home}" else="${env.JBOSS_HOME}">
+                  <isset property="jboss.home" />
+                </condition>
+                <!-- The AS7 module structure -->
+                <copy todir="${basedir}/target/jboss-modules/org/mobicents/diameter/main" flatten="true">
+                  <fileset dir=".">
+                    <include name="src/main/resources/META-INF/module.xml" />
+                  </fileset>
+                  <filterset>
+                    <filter token="COMMONS_VERSION" value="${commons-pool.version}"/>
+                    <filter token="PICOCONTAINER_VERSION" value="${picocontainer.version}"/>
+                    <filter token="SLF4J_VERSION" value="${slf4j.version}"/>
+                    <filter token="JDIAMETER_VERSION" value="${project.version}"/>
+                  </filterset>
+                </copy>
+                <copy todir="${basedir}/target/jboss-modules/org/mobicents/diameter/main" flatten="true">
+                  <fileset dir="target/${project.build.finalName}">
+                    <include name="lib/commons-pool-*" />
+                    <include name="lib/picocontainer*" />
+                    <include name="lib/slf4j*" />
+                    <include name="lib/jdiameter*" />
+                  </fileset>
+                </copy>
+                <copy todir="${basedir}/target/jboss-modules/org/mobicents/diameter/main/config">
+                  <fileset dir="../common/config">
+                    <include name="**" />
+                  </fileset>
+                </copy>
+                <!-- The MUX deployment archive -->
+                <copy file="../jar/target/restcomm-diameter-mux-${project.version}.jar" tofile="${basedir}/target/deployments/restcomm-diameter-tmp.zip"/>
+                <zip destfile="${basedir}/target/deployments/restcomm-diameter.zip">
+                  <zipfileset src="${basedir}/target/deployments/restcomm-diameter-tmp.zip" excludes="org/mobicents/diameter/stack/DiameterStackMultiplexer.class,org/mobicents/diameter/stack/DiameterStackMultiplexerMBean.class"/>
+                </zip>
+                <move file="${basedir}/target/deployments/restcomm-diameter.zip" tofile="${basedir}/target/deployments/restcomm-diameter.jar"/>
+                <touch file="${basedir}/target/deployments/restcomm-diameter.jar.dodeploy"/>
+                <!-- Clean up some of the mess -->
+                <delete file="${basedir}/target/deployments/restcomm-diameter-tmp.zip"/>
+                <delete dir="target/${project.build.finalName}"/>
+                <delete file="target/${project.build.finalName}.sar"/>
+              </tasks>
+            </configuration>
+          </execution>
+          <execution>
+            <id>undeploy</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <delete dir="${env.JBOSS_HOME}/${node}/deployments/${project.build.finalName}.sar" />
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

@@ -4,18 +4,18 @@
  * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
- * 
+ *
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License, v. 2.0.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
+ * v. 2.0 along with this distribution; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
@@ -40,13 +40,12 @@ import org.jdiameter.api.sh.events.PushNotificationRequest;
 import org.jdiameter.api.sh.events.SubscribeNotificationsAnswer;
 import org.jdiameter.api.sh.events.SubscribeNotificationsRequest;
 import org.jdiameter.api.sh.events.UserDataRequest;
-import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.impl.app.sh.SubscribeNotificationsAnswerImpl;
 import org.mobicents.diameter.stack.functional.Utils;
 
 /**
  * Base implementation of Server
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -87,7 +86,7 @@ public class ServerSNR extends org.mobicents.diameter.stack.functional.sh.Abstra
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.NetworkReqListener#processRequest(org.jdiameter.api.Request)
    */
   @Override
@@ -99,7 +98,7 @@ public class ServerSNR extends org.mobicents.diameter.stack.functional.sh.Abstra
     }
     if (super.serverShSession == null) {
       try {
-        super.serverShSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(request.getSessionId(), getApplicationId(), ServerShSession.class, (Object) null);
+        super.serverShSession = this.sessionFactory.getNewAppSession(request.getSessionId(), getApplicationId(), ServerShSession.class, (Object) null);
         ((NetworkReqListener) this.serverShSession).processRequest(request);
       }
       catch (Exception e) {
@@ -115,17 +114,19 @@ public class ServerSNR extends org.mobicents.diameter.stack.functional.sh.Abstra
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.cca.ServerRoSessionListener#doOtherEvent(org.jdiameter.api.app.AppSession,
    * org.jdiameter.api.app.AppRequestEvent, org.jdiameter.api.app.AppAnswerEvent)
    */
-  public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException,
-      OverloadException {
+  @Override
+  public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
-  public void doSubscribeNotificationsRequestEvent(ServerShSession session, SubscribeNotificationsRequest request) throws InternalException, IllegalDiameterStateException,
-      RouteException, OverloadException {
+  @Override
+  public void doSubscribeNotificationsRequestEvent(ServerShSession session, SubscribeNotificationsRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     if (this.receiveSubscribeNotifications) {
       fail("Received SUBSCRIBE more than once!", null);
     }
@@ -134,19 +135,23 @@ public class ServerSNR extends org.mobicents.diameter.stack.functional.sh.Abstra
 
   }
 
-  public void doProfileUpdateRequestEvent(ServerShSession session, ProfileUpdateRequest request) throws InternalException, IllegalDiameterStateException, RouteException,
-      OverloadException {
+  @Override
+  public void doProfileUpdateRequestEvent(ServerShSession session, ProfileUpdateRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     fail("Received \"PUR\" event, request[" + request + "], on session[" + session + "]", null);
     this.receiveProfileUpdate = true;
   }
 
+  @Override
   public void doPushNotificationAnswerEvent(ServerShSession session, PushNotificationRequest request, PushNotificationAnswer answer) throws InternalException,
-      IllegalDiameterStateException, RouteException, OverloadException {
+  IllegalDiameterStateException, RouteException, OverloadException {
     fail("Received \"PUA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
     this.receivePushNotification = true;
   }
 
-  public void doUserDataRequestEvent(ServerShSession session, UserDataRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void doUserDataRequestEvent(ServerShSession session, UserDataRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     fail("Received \"UDR\" event, request[" + request + "], on session[" + session + "]", null);
     this.receiveUserData = true;
   }

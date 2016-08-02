@@ -1,21 +1,21 @@
- /*
-  * TeleStax, Open Source Cloud Communications
-  * Copyright 2011-2016, TeleStax Inc. and individual contributors
-  * by the @authors tag.
-  *
-  * This program is free software: you can redistribute it and/or modify
-  * under the terms of the GNU Affero General Public License as
-  * published by the Free Software Foundation; either version 3 of
-  * the License, or (at your option) any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU Affero General Public License for more details.
-  *
-  * You should have received a copy of the GNU Affero General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>
-  */
+/*
+ * TeleStax, Open Source Cloud Communications
+ * Copyright 2011-2016, TeleStax Inc. and individual contributors
+ * by the @authors tag.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
 
 package org.mobicents.diameter.stack.functional.s13.base;
 
@@ -29,7 +29,6 @@ import org.jdiameter.api.RouteException;
 import org.jdiameter.api.s13.ServerS13Session;
 import org.jdiameter.api.s13.events.JMEIdentityCheckAnswer;
 import org.jdiameter.api.s13.events.JMEIdentityCheckRequest;
-import org.jdiameter.client.api.ISessionFactory;
 import org.mobicents.diameter.stack.functional.Utils;
 import org.mobicents.diameter.stack.functional.s13.AbstractServer;
 
@@ -72,7 +71,7 @@ public class Server extends AbstractServer {
     } else {
       try {
 
-        super.serverS13Session = ((ISessionFactory) this.sessionFactory).getNewAppSession(request.getSessionId(), getApplicationId(), ServerS13Session.class, (Object) null);
+        super.serverS13Session = this.sessionFactory.getNewAppSession(request.getSessionId(), getApplicationId(), ServerS13Session.class, (Object) null);
         ((NetworkReqListener) this.serverS13Session).processRequest(request);
 
       } catch (Exception e) {
@@ -83,14 +82,15 @@ public class Server extends AbstractServer {
     return null;
   }
   @Override
-  public void doMEIdentityCheckRequestEvent(ServerS13Session session, JMEIdentityCheckRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void doMEIdentityCheckRequestEvent(ServerS13Session session, JMEIdentityCheckRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     if (this.receivedECR) {
       fail("Received ECR more than once", null);
       return;
     }
     this.receivedECR = true;
     this.request = request;
-    }
+  }
 
 
   public boolean isReceivedECR() {

@@ -4,18 +4,18 @@
  * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
- * 
+ *
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License, v. 2.0.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
+ * v. 2.0 along with this distribution; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
@@ -38,7 +38,6 @@ import org.jdiameter.api.gx.ClientGxSession;
 import org.jdiameter.api.gx.ClientGxSessionListener;
 import org.jdiameter.api.gx.ServerGxSession;
 import org.jdiameter.api.gx.events.GxCreditControlRequest;
-import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.gx.ClientGxSessionState;
 import org.jdiameter.common.api.app.gx.IClientGxSessionContext;
 import org.jdiameter.common.impl.app.gx.GxCreditControlRequestImpl;
@@ -47,7 +46,7 @@ import org.mobicents.diameter.stack.functional.StateChange;
 import org.mobicents.diameter.stack.functional.TBase;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -69,13 +68,13 @@ public abstract class AbstractClient extends TBase implements ClientGxSessionLis
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777224));
       GxSessionFactoryImpl creditControlSessionFactory = new GxSessionFactoryImpl(this.sessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ServerGxSession.class, creditControlSessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ClientGxSession.class, creditControlSessionFactory);
+      sessionFactory.registerAppFacory(ServerGxSession.class, creditControlSessionFactory);
+      sessionFactory.registerAppFacory(ClientGxSession.class, creditControlSessionFactory);
 
       creditControlSessionFactory.setStateListener(this);
       creditControlSessionFactory.setClientSessionListener(this);
       creditControlSessionFactory.setClientContextListener(this);
-      this.clientGxSession = ((ISessionFactory) this.sessionFactory)
+      this.clientGxSession = this.sessionFactory
           .getNewAppSession(this.sessionFactory.getSessionId("xxTESTxx"), getApplicationId(), ClientGxSession.class, (Object) null);
     }
     finally {
@@ -110,18 +109,20 @@ public abstract class AbstractClient extends TBase implements ClientGxSessionLis
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.api.app.cca.IClientCCASessionContext# getDefaultTxTimerValue()
    */
+  @Override
   public long getDefaultTxTimerValue() {
     return 10;
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.cca.ClientCCASessionListener#getDefaultDDFHValue()
    */
+  @Override
   public int getDefaultDDFHValue() {
     // DDFH_CONTINUE: 1
     return 1;
@@ -129,9 +130,10 @@ public abstract class AbstractClient extends TBase implements ClientGxSessionLis
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.cca.ClientCCASessionListener#getDefaultCCFHValue()
    */
+  @Override
   public int getDefaultCCFHValue() {
     // CCFH_CONTINUE: 1
     return 1;
@@ -139,34 +141,42 @@ public abstract class AbstractClient extends TBase implements ClientGxSessionLis
 
   // ------------ leave those
 
+  @Override
   public void txTimerExpired(ClientGxSession session) {
     // NOP
   }
 
+  @Override
   public void grantAccessOnDeliverFailure(ClientGxSession clientCCASessionImpl, Message request) {
     // NOP
   }
 
+  @Override
   public void denyAccessOnDeliverFailure(ClientGxSession clientCCASessionImpl, Message request) {
     // NOP
   }
 
+  @Override
   public void grantAccessOnTxExpire(ClientGxSession clientCCASessionImpl) {
     // NOP
   }
 
+  @Override
   public void denyAccessOnTxExpire(ClientGxSession clientCCASessionImpl) {
     // NOP
   }
 
+  @Override
   public void grantAccessOnFailureMessage(ClientGxSession clientCCASessionImpl) {
     // NOP
   }
 
+  @Override
   public void denyAccessOnFailureMessage(ClientGxSession clientCCASessionImpl) {
     // NOP
   }
 
+  @Override
   public void indicateServiceError(ClientGxSession clientCCASessionImpl) {
     // NOP
   }

@@ -48,11 +48,7 @@
       <Entity name="ConnectionTimer" size="1" />
       <Entity name="StatisticTimer" size="1" />
     </Concurrent>
-    <Dictionary enabled="false" sendLevel="MESSAGE"
-      receiveLevel="OFF" />
-    <!-- To enable clustering uncomment the following lines <SessionDatasource 
-      value="org.mobicents.diameter.impl.ha.data.ReplicatedDataSource"/> <TimerFacility 
-      value="org.mobicents.diameter.impl.ha.timer.ReplicatedTimerFacilityImpl"/> -->
+    <Dictionary enabled="false" sendLevel="MESSAGE" receiveLevel="OFF" />
   </Parameters>
 
   <Network>

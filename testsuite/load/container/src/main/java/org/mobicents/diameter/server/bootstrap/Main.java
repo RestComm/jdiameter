@@ -47,209 +47,208 @@ import org.jboss.util.StringPropertyReplacer;
  */
 public class Main {
 
-    private final static String HOME_DIR = "DIA_HOME";
-    private final static String BOOT_URL = "/conf/bootstrap-beans.xml";
-    private final static String LOG4J_URL = "/conf/log4j.properties";
-    private final static String LOG4J_URL_XML = "/conf/log4j.xml";
-    public static final String DIA_HOME = "dia.home.dir";
+  private final static String HOME_DIR = "DIA_HOME";
+  private final static String BOOT_URL = "/conf/bootstrap-beans.xml";
+  private final static String LOG4J_URL = "/conf/log4j.properties";
+  private final static String LOG4J_URL_XML = "/conf/log4j.xml";
+  public static final String DIA_HOME = "dia.home.dir";
 
-    public static final String DIA_BIND_ADDRESS = "dia.bind.address";
-    private static int index = 0;
-    private Kernel kernel;
-    private BasicXMLDeployer kernelDeployer;
-    private Controller controller;
-    private static Logger logger = Logger.getLogger(Main.class);
+  public static final String DIA_BIND_ADDRESS = "dia.bind.address";
+  private static int index = 0;
+  private Kernel kernel;
+  private BasicXMLDeployer kernelDeployer;
+  private Controller controller;
+  private static Logger logger = Logger.getLogger(Main.class);
 
-    public static void main(String[] args) throws Throwable {
-        String homeDir = getHomeDir(args);
-        System.setProperty(DIA_HOME, homeDir);
-        if (!initLOG4JProperties(homeDir) && !initLOG4JXml(homeDir)) {
-            //logger.error("Failed to initialize loggin, no configuration. Defaults are used.");
-        	System.err.println("Failed to initialize loggin, no configuration. Defaults are used.");
-        }else
-        {
-        	  logger.info("log4j configured");
-        }
-
-      
-        URL bootURL = getBootURL(args);
-        Main main = new Main();
-
-        main.processCommandLine(args);
-        logger.info("Booting from " + bootURL);
-        main.boot(bootURL);
+  public static void main(String[] args) throws Throwable {
+    String homeDir = getHomeDir(args);
+    System.setProperty(DIA_HOME, homeDir);
+    if (!initLOG4JProperties(homeDir) && !initLOG4JXml(homeDir)) {
+      // logger.error("Failed to initialize loggin, no configuration. Defaults are used.");
+      System.err.println("Failed to initialize loggin, no configuration. Defaults are used.");
+    }
+    else {
+      logger.info("log4j configured");
     }
 
-    private void processCommandLine(String[] args) {
+    URL bootURL = getBootURL(args);
+    Main main = new Main();
 
-        String programName = System.getProperty("program.name", "Mobicents Diameter Test Server");
+    main.processCommandLine(args);
+    logger.info("Booting from " + bootURL);
+    main.boot(bootURL);
+  }
 
-        int c;
-        String arg;
-        LongOpt[] longopts =
-        { new LongOpt("help", LongOpt.NO_ARGUMENT, null, 'h'),
-          new LongOpt("host", LongOpt.REQUIRED_ARGUMENT, null, 'b')
-        };
+  private void processCommandLine(String[] args) {
 
-        Getopt g = new Getopt("MMS", args, "-:b:h", longopts);
-        g.setOpterr(false); // We'll do our own error handling
+    String programName = System.getProperty("program.name", "Mobicents Diameter Test Server");
+
+    int c;
+    String arg;
+    LongOpt[] longopts =
+    { new LongOpt("help", LongOpt.NO_ARGUMENT, null, 'h'),
+      new LongOpt("host", LongOpt.REQUIRED_ARGUMENT, null, 'b')
+    };
+
+    Getopt g = new Getopt("MMS", args, "-:b:h", longopts);
+    g.setOpterr(false); // We'll do our own error handling
+    //
+    while ((c = g.getopt()) != -1) {
+      switch (c) {
+
         //
-        while ((c = g.getopt()) != -1) {
-            switch (c) {
+        case 'b':
+          arg = g.getOptarg();
+          System.setProperty(DIA_BIND_ADDRESS, arg);
 
-                //
-                case 'b':
-                    arg = g.getOptarg();
-                    System.setProperty(DIA_BIND_ADDRESS, arg);
+          break;
+        //
 
-                    break;
-                //
+        case 'h':
+          System.out.println("usage: " + programName + " [options]");
+          System.out.println();
+          System.out.println("options:");
+          System.out.println("  -h, --help          Show this help message");
+          System.out.println("  -b, --host=<host or ip>     Bind address for all Mobicents Media Server services");
+          System.out.println();
+          System.exit(0);
+          break;
 
-                case 'h':
-                    System.out.println("usage: " + programName + " [options]");
-                    System.out.println();
-                    System.out.println("options:");
-                    System.out.println("    -h, --help                    Show this help message");
-                    System.out.println("    -b, --host=<host or ip>       Bind address for all Mobicents Media Server services");
-                    System.out.println();
-                    System.exit(0);
-                    break;
-
-                case ':':
-                    System.out.println("You need an argument for option " + (char) g.getOptopt());
-                    System.exit(0);
-                    break;
-                //
-                case '?':
-                    System.out.println("The option '" + (char) g.getOptopt() + "' is not valid");
-                    System.exit(0);
-                    break;
-                //
-                default:
-                    System.out.println("getopt() returned " + c);
-                    break;
-            }
-        }
-
-        if (System.getProperty(DIA_BIND_ADDRESS) == null) {
-            System.setProperty(DIA_BIND_ADDRESS, "127.0.0.1");
-        }
-
+        case ':':
+          System.out.println("You need an argument for option " + (char) g.getOptopt());
+          System.exit(0);
+          break;
+        //
+        case '?':
+          System.out.println("The option '" + (char) g.getOptopt() + "' is not valid");
+          System.exit(0);
+          break;
+        //
+        default:
+          System.out.println("getopt() returned " + c);
+          break;
+      }
     }
 
-    private static boolean initLOG4JProperties(String homeDir) {
-        String Log4jURL = homeDir + LOG4J_URL;
-
-        try {
-            URL log4jurl = getURL(Log4jURL);
-            InputStream inStreamLog4j = log4jurl.openStream();
-            Properties propertiesLog4j = new Properties();
-            try {
-                propertiesLog4j.load(inStreamLog4j);
-                PropertyConfigurator.configure(propertiesLog4j);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (Exception e) {
-            // e.printStackTrace();
-            logger.info("Failed to initialize LOG4J with properties file.");
-            return false;
-        }
-        return true;
+    if (System.getProperty(DIA_BIND_ADDRESS) == null) {
+      System.setProperty(DIA_BIND_ADDRESS, "127.0.0.1");
     }
 
-    private static boolean initLOG4JXml(String homeDir) {
-        String Log4jURL = homeDir + LOG4J_URL_XML;
+  }
 
-        try {
-            URL log4jurl = getURL(Log4jURL);
-            DOMConfigurator.configure(log4jurl);
-        } catch (Exception e) {
-            // e.printStackTrace();
-            logger.info("Failed to initialize LOG4J with xml file.");
-            return false;
-        }
-        return true;
+  private static boolean initLOG4JProperties(String homeDir) {
+    String Log4jURL = homeDir + LOG4J_URL;
+
+    try {
+      URL log4jurl = getURL(Log4jURL);
+      InputStream inStreamLog4j = log4jurl.openStream();
+      Properties propertiesLog4j = new Properties();
+      try {
+        propertiesLog4j.load(inStreamLog4j);
+        PropertyConfigurator.configure(propertiesLog4j);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    } catch (Exception e) {
+      // e.printStackTrace();
+      logger.info("Failed to initialize LOG4J with properties file.");
+      return false;
     }
+    return true;
+  }
 
-    /**
-     * Gets the Media Server Home directory.
-     * 
-     * @param args
-     *            the command line arguments
-     * @return the path to the home directory.
-     */
-    private static String getHomeDir(String args[]) {
-        if (System.getenv(HOME_DIR) == null) {
-            if (args.length > index) {
-                return args[index++];
-            } else {
-                return ".";
-            }
-        } else {
-            return System.getenv(HOME_DIR);
-        }
+  private static boolean initLOG4JXml(String homeDir) {
+    String Log4jURL = homeDir + LOG4J_URL_XML;
+
+    try {
+      URL log4jurl = getURL(Log4jURL);
+      DOMConfigurator.configure(log4jurl);
+    } catch (Exception e) {
+      // e.printStackTrace();
+      logger.info("Failed to initialize LOG4J with xml file.");
+      return false;
     }
+    return true;
+  }
 
-    /**
-     * Gets the URL which points to the boot descriptor.
-     * 
-     * @param args
-     *            command line arguments.
-     * @return URL of the boot descriptor.
-     */
-    private static URL getBootURL(String args[]) throws Exception {
-        String bootURL = "${" + DIA_HOME + "}" + BOOT_URL;
-        return getURL(bootURL);
+  /**
+   * Gets the Media Server Home directory.
+   *
+   * @param args
+   *      the command line arguments
+   * @return the path to the home directory.
+   */
+  private static String getHomeDir(String args[]) {
+    if (System.getenv(HOME_DIR) == null) {
+      if (args.length > index) {
+        return args[index++];
+      } else {
+        return ".";
+      }
+    } else {
+      return System.getenv(HOME_DIR);
     }
+  }
 
-    protected void boot(URL bootURL) throws Throwable {
-        BasicBootstrap bootstrap = new BasicBootstrap();
-        bootstrap.run();
+  /**
+   * Gets the URL which points to the boot descriptor.
+   *
+   * @param args
+   *      command line arguments.
+   * @return URL of the boot descriptor.
+   */
+  private static URL getBootURL(String args[]) throws Exception {
+    String bootURL = "${" + DIA_HOME + "}" + BOOT_URL;
+    return getURL(bootURL);
+  }
 
-        registerShutdownThread();
+  protected void boot(URL bootURL) throws Throwable {
+    BasicBootstrap bootstrap = new BasicBootstrap();
+    bootstrap.run();
 
-        kernel = bootstrap.getKernel();
-        kernelDeployer = new BasicXMLDeployer(kernel);
+    registerShutdownThread();
 
-        kernelDeployer.deploy(bootURL);
-        kernelDeployer.validate();
+    kernel = bootstrap.getKernel();
+    kernelDeployer = new BasicXMLDeployer(kernel);
 
-        controller = kernel.getController();
-        start(kernel, kernelDeployer);
+    kernelDeployer.deploy(bootURL);
+    kernelDeployer.validate();
+
+    controller = kernel.getController();
+    start(kernel, kernelDeployer);
+  }
+
+  public void start(Kernel kernel, BasicXMLDeployer kernelDeployer) {
+    ControllerContext context = controller.getInstalledContext("MainDeployer");
+    if (context != null) {
+      MainDeployer deployer = (MainDeployer) context.getTarget();
+      deployer.start(kernel, kernelDeployer);
     }
+  }
 
-    public void start(Kernel kernel, BasicXMLDeployer kernelDeployer) {
-        ControllerContext context = controller.getInstalledContext("MainDeployer");
-        if (context != null) {
-            MainDeployer deployer = (MainDeployer) context.getTarget();
-            deployer.start(kernel, kernelDeployer);
-        }
+  public static URL getURL(String url) throws Exception {
+    // replace ${} inputs
+    url = StringPropertyReplacer.replaceProperties(url, System.getProperties());
+    File file = new File(url);
+    if (file.exists() == false) {
+      throw new IllegalArgumentException("No such file: " + url);
     }
+    return file.toURI().toURL();
+  }
 
-    public static URL getURL(String url) throws Exception {
-        // replace ${} inputs
-        url = StringPropertyReplacer.replaceProperties(url, System.getProperties());
-        File file = new File(url);
-        if (file.exists() == false) {
-            throw new IllegalArgumentException("No such file: " + url);
-        }
-        return file.toURI().toURL();
+  protected void registerShutdownThread() {
+    Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownThread()));
+  }
+
+  private class ShutdownThread implements Runnable {
+
+    public void run() {
+      System.out.println("Shutting down");
+      kernelDeployer.shutdown();
+      kernelDeployer = null;
+
+      kernel.getController().shutdown();
+      kernel = null;
     }
-
-    protected void registerShutdownThread() {
-        Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownThread()));
-    }
-
-    private class ShutdownThread implements Runnable {
-
-        public void run() {
-            System.out.println("Shutting down");
-            kernelDeployer.shutdown();
-            kernelDeployer = null;
-
-            kernel.getController().shutdown();
-            kernel = null;
-        }
-    }
+  }
 }

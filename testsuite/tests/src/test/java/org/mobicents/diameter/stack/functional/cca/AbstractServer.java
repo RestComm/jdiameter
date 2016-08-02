@@ -30,7 +30,6 @@ import org.jdiameter.api.Mode;
 import org.jdiameter.api.cca.ClientCCASession;
 import org.jdiameter.api.cca.ServerCCASession;
 import org.jdiameter.api.cca.ServerCCASessionListener;
-import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.cca.IServerCCASessionContext;
 import org.jdiameter.common.api.app.cca.ServerCCASessionState;
 import org.jdiameter.common.impl.app.cca.CCASessionFactoryImpl;
@@ -39,7 +38,7 @@ import org.mobicents.diameter.stack.functional.TBase;
 
 /**
  * @author baranowb
- * 
+ *
  */
 public abstract class AbstractServer extends TBase implements ServerCCASessionListener, IServerCCASessionContext {
 
@@ -60,8 +59,8 @@ public abstract class AbstractServer extends TBase implements ServerCCASessionLi
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(0, 4));
       CCASessionFactoryImpl creditControlSessionFactory = new CCASessionFactoryImpl(this.sessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ServerCCASession.class, creditControlSessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ClientCCASession.class, creditControlSessionFactory);
+      sessionFactory.registerAppFacory(ServerCCASession.class, creditControlSessionFactory);
+      sessionFactory.registerAppFacory(ClientCCASession.class, creditControlSessionFactory);
 
       creditControlSessionFactory.setStateListener(this);
       creditControlSessionFactory.setServerSessionListener(this);
@@ -99,22 +98,27 @@ public abstract class AbstractServer extends TBase implements ServerCCASessionLi
 
   // ----------- conf parts
 
+  @Override
   public void sessionSupervisionTimerExpired(ServerCCASession session) {
     // NOP
   }
 
+  @Override
   public void sessionSupervisionTimerStarted(ServerCCASession session, ScheduledFuture future) {
     // NOP
   }
 
+  @Override
   public void sessionSupervisionTimerReStarted(ServerCCASession session, ScheduledFuture future) {
     // NOP
   }
 
+  @Override
   public void sessionSupervisionTimerStopped(ServerCCASession session, ScheduledFuture future) {
     // NOP
   }
 
+  @Override
   public long getDefaultValidityTime() {
     return 120;
   }

@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.mobicents.diameter.impl.ha.data;
 
@@ -41,9 +61,9 @@ import org.jdiameter.common.api.app.auth.IAuthSessionData;
 import org.jdiameter.common.api.app.cca.ICCASessionData;
 import org.jdiameter.common.api.app.cxdx.ICxDxSessionData;
 import org.jdiameter.common.api.app.gx.IGxSessionData;
-import org.jdiameter.common.api.app.rx.IRxSessionData;
 import org.jdiameter.common.api.app.rf.IRfSessionData;
 import org.jdiameter.common.api.app.ro.IRoSessionData;
+import org.jdiameter.common.api.app.rx.IRxSessionData;
 import org.jdiameter.common.api.app.s13.IS13SessionData;
 import org.jdiameter.common.api.app.sh.IShSessionData;
 import org.jdiameter.common.api.data.ISessionDatasource;
@@ -59,9 +79,9 @@ import org.mobicents.diameter.impl.ha.common.auth.AuthReplicatedSessionDataFacto
 import org.mobicents.diameter.impl.ha.common.cca.CCAReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.cxdx.CxDxReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.gx.GxReplicatedSessionDataFactory;
-import org.mobicents.diameter.impl.ha.common.rx.RxReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.rf.RfReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.ro.RoReplicatedSessionDataFactory;
+import org.mobicents.diameter.impl.ha.common.rx.RxReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.s13.S13ReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.sh.ShReplicatedSessionDataFactory;
 import org.slf4j.Logger;
@@ -84,15 +104,17 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
   private boolean localMode;
 
   // provided by impl, no way to change that, no conf! :)
-  protected HashMap<Class<? extends IAppSessionData>, IAppSessionDataFactory<? extends IAppSessionData>> appSessionDataFactories = new HashMap<Class<? extends IAppSessionData>, IAppSessionDataFactory<? extends IAppSessionData>>();
+  protected HashMap<Class<? extends IAppSessionData>, IAppSessionDataFactory<? extends IAppSessionData>> appSessionDataFactories =
+      new HashMap<Class<? extends IAppSessionData>, IAppSessionDataFactory<? extends IAppSessionData>>();
 
   // Constants
   // ----------------------------------------------------------------
-  public final static String SESSIONS = "/diameter/appsessions";
-  public final static Fqn SESSIONS_FQN = Fqn.fromString(SESSIONS);
+  public static final String SESSIONS = "/diameter/appsessions";
+  public static final Fqn SESSIONS_FQN = Fqn.fromString(SESSIONS);
 
   public ReplicatedSessionDatasource(IContainer container) {
-    this(container, new LocalDataSource(), ReplicatedSessionDatasource.class.getClassLoader().getResource(CLUSTER_DS_DEFAULT_FILE) == null ? "config/" + CLUSTER_DS_DEFAULT_FILE : CLUSTER_DS_DEFAULT_FILE);
+    this(container, new LocalDataSource(), ReplicatedSessionDatasource.class.getClassLoader().getResource(CLUSTER_DS_DEFAULT_FILE) == null ?
+        "config/" + CLUSTER_DS_DEFAULT_FILE : CLUSTER_DS_DEFAULT_FILE);
   }
 
   public ReplicatedSessionDatasource(IContainer container, ISessionDatasource localDataSource, String cacheConfigFilename) {
@@ -140,6 +162,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
    *
    * @see org.jdiameter.common.api.ha.ISessionDatasource#addSession(org.jdiameter .api.BaseSession)
    */
+  @Override
   public void addSession(BaseSession session) {
     // Simple as is, if its replicated, it will be already there :)
     this.localDataSource.addSession(session);
@@ -150,6 +173,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
    *
    * @see org.jdiameter.common.api.ha.ISessionDatasource#getSession(java.lang.String )
    */
+  @Override
   public BaseSession getSession(String sessionId) {
     if (this.localDataSource.exists(sessionId)) {
       return this.localDataSource.getSession(sessionId);
@@ -167,6 +191,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
    *
    * @see org.jdiameter.common.api.ha.ISessionDatasource#getSessionListener(java .lang.String)
    */
+  @Override
   public NetworkReqListener getSessionListener(String sessionId) {
     if (this.localDataSource.exists(sessionId)) {
       return this.localDataSource.getSessionListener(sessionId);
@@ -184,6 +209,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
    *
    * @see org.jdiameter.common.api.ha.ISessionDatasource#removeSession(java.lang .String)
    */
+  @Override
   public void removeSession(String sessionId) {
     logger.debug("removeSession({}) in Local DataSource", sessionId);
 
@@ -200,6 +226,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
    *
    * @see org.jdiameter.common.api.ha.ISessionDatasource#removeSessionListener( java.lang.String)
    */
+  @Override
   public NetworkReqListener removeSessionListener(String sessionId) {
     if (this.localDataSource.exists(sessionId)) {
       return this.localDataSource.removeSessionListener(sessionId);
@@ -218,6 +245,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
    *
    * @see org.jdiameter.common.api.ha.ISessionDatasource#setSessionListener(java .lang.String, org.jdiameter.api.NetworkReqListener)
    */
+  @Override
   public void setSessionListener(String sessionId, NetworkReqListener data) {
     if (this.localDataSource.exists(sessionId)) {
       this.localDataSource.setSessionListener(sessionId, data);
@@ -229,11 +257,13 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
     }
   }
 
+  @Override
   public void start() {
     mobicentsCluster.getMobicentsCache().startCache();
     localMode = mobicentsCluster.getMobicentsCache().isLocalMode();
   }
 
+  @Override
   public void stop() {
     mobicentsCluster.getMobicentsCache().stopCache();
   }
@@ -243,6 +273,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
    *
    * @see org.jdiameter.common.api.data.ISessionDatasource#isClustered()
    */
+  @Override
   public boolean isClustered() {
     return !localMode;
   }
@@ -263,11 +294,13 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
     return this.mobicentsCluster;
   }
 
+  @Override
   public void dataRemoved(Fqn sessionFqn) {
     String sessionId = (String) sessionFqn.getLastElement();
     this.localDataSource.removeSession(sessionId);
   }
 
+  @Override
   public Fqn getBaseFqn() {
     return SESSIONS_FQN;
   }
@@ -289,7 +322,8 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
   private void makeLocal(String sessionId) {
     try {
       // this is APP session, always
-      Class<? extends AppSession> appSessionInterfaceClass = AppSessionDataReplicatedImpl.getAppSessionIface(this.mobicentsCluster.getMobicentsCache(), sessionId);
+      Class<? extends AppSession> appSessionInterfaceClass =
+          AppSessionDataReplicatedImpl.getAppSessionIface(this.mobicentsCluster.getMobicentsCache(), sessionId);
       // get factory;
       // FIXME: make it a field?
       IAppSessionFactory fct = ((ISessionFactory) this.container.getSessionFactory()).getAppSessionFactory(appSessionInterfaceClass);

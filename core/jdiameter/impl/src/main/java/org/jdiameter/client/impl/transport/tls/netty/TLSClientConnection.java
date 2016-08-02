@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 import io.netty.channel.Channel;
 
 /**
- * 
+ *
  * @author <a href="mailto:jqayyum@gmail.com"> Jehanzeb Qayyum </a>
  */
 public class TLSClientConnection implements IConnection {
@@ -317,7 +317,7 @@ public class TLSClientConnection implements IConnection {
   }
 
   // --------------------- helper classes ----------------------
-  private static enum EventType {
+  private enum EventType {
     CONNECTED, DISCONNECTED, MESSAGE_RECEIVED, DATA_EXCEPTION
   }
 

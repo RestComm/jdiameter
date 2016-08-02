@@ -130,7 +130,7 @@
                 </xsi:annotation>
                  <xsi:complexType>
                     <xsi:attribute name="value" type="xsi:integer" use="required"/>
-                </xsi:complexType>                
+                </xsi:complexType>
             </xsi:element>
         </xsi:sequence>
     </xsi:complexType>

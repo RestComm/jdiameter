@@ -4,18 +4,18 @@
  * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
- * 
+ *
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License, v. 2.0.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
+ * v. 2.0 along with this distribution; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
@@ -38,7 +38,6 @@ import org.jdiameter.api.gx.ClientGxSession;
 import org.jdiameter.api.gx.ServerGxSession;
 import org.jdiameter.api.gx.ServerGxSessionListener;
 import org.jdiameter.api.gx.events.GxReAuthRequest;
-import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.gx.IServerGxSessionContext;
 import org.jdiameter.common.api.app.gx.ServerGxSessionState;
 import org.jdiameter.common.impl.app.gx.GxReAuthRequestImpl;
@@ -47,7 +46,7 @@ import org.mobicents.diameter.stack.functional.StateChange;
 import org.mobicents.diameter.stack.functional.TBase;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -70,8 +69,8 @@ public abstract class AbstractServer extends TBase implements ServerGxSessionLis
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777224));
       GxSessionFactoryImpl creditControlSessionFactory = new GxSessionFactoryImpl(this.sessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ServerGxSession.class, creditControlSessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ClientGxSession.class, creditControlSessionFactory);
+      sessionFactory.registerAppFacory(ServerGxSession.class, creditControlSessionFactory);
+      sessionFactory.registerAppFacory(ClientGxSession.class, creditControlSessionFactory);
 
       creditControlSessionFactory.setStateListener(this);
       creditControlSessionFactory.setServerSessionListener(this);
@@ -107,22 +106,27 @@ public abstract class AbstractServer extends TBase implements ServerGxSessionLis
 
   // ----------- conf parts
 
+  @Override
   public void sessionSupervisionTimerExpired(ServerGxSession session) {
     // NOP
   }
 
+  @Override
   public void sessionSupervisionTimerStarted(ServerGxSession session, ScheduledFuture future) {
     // NOP
   }
 
+  @Override
   public void sessionSupervisionTimerReStarted(ServerGxSession session, ScheduledFuture future) {
     // NOP
   }
 
+  @Override
   public void sessionSupervisionTimerStopped(ServerGxSession session, ScheduledFuture future) {
     // NOP
   }
 
+  @Override
   public long getDefaultValidityTime() {
     return 120;
   }
@@ -160,10 +164,10 @@ public abstract class AbstractServer extends TBase implements ServerGxSessionLis
     // *[ Proxy-Info ]
     // *[ Route-Record ]
     // *[ AVP]
-    
+
     return rar;
   }
-  
+
   public String getSessionId() {
     return this.serverGxSession.getSessionId();
   }

@@ -15,10 +15,10 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
- * 
+ *
  * This file incorporates work covered by the following copyright and
  * permission notice:
- * 
+ *
  *   JBoss, Home of Professional Open Source
  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
  *   by the @authors tag. See the copyright.txt in the distribution for a
@@ -42,7 +42,24 @@
 
 package org.jdiameter.client.impl.helpers;
 
-import static org.jdiameter.server.impl.helpers.ExtensionPoint.*;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalAgentConfiguration;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalAgentRedirect;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalConcurrentEntityFactory;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalConcurrentFactory;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalConnectionClass;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalElementParser;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalMessageParser;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalMetaData;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalPeerController;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalPeerFsmFactory;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalRealmController;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalRouterEngine;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalSessionDatasource;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalSessionFactory;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalStatisticFactory;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalStatisticProcessor;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalTimerFacility;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalTransportFactory;
 import static org.jdiameter.client.impl.helpers.Parameters.AcctApplId;
 import static org.jdiameter.client.impl.helpers.Parameters.Agent;
 import static org.jdiameter.client.impl.helpers.Parameters.ApplicationId;
@@ -73,8 +90,8 @@ import static org.jdiameter.client.impl.helpers.Parameters.OwnIPAddress;
 import static org.jdiameter.client.impl.helpers.Parameters.OwnProductName;
 import static org.jdiameter.client.impl.helpers.Parameters.OwnRealm;
 import static org.jdiameter.client.impl.helpers.Parameters.OwnVendorID;
-import static org.jdiameter.client.impl.helpers.Parameters.PeerIp;
 import static org.jdiameter.client.impl.helpers.Parameters.PeerFSMThreadCount;
+import static org.jdiameter.client.impl.helpers.Parameters.PeerIp;
 import static org.jdiameter.client.impl.helpers.Parameters.PeerLocalPortRange;
 import static org.jdiameter.client.impl.helpers.Parameters.PeerName;
 import static org.jdiameter.client.impl.helpers.Parameters.PeerRating;
@@ -131,7 +148,6 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.jdiameter.api.Configuration;
-import org.jdiameter.server.impl.helpers.Parameters;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -140,7 +156,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * This class provide loading and verification configuration for client from XML file
- * 
+ *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
@@ -149,7 +165,7 @@ public class XMLConfiguration extends EmptyConfiguration {
 
   /**
    * Create instance of class and load file from defined input stream
-   * 
+   *
    * @param in input stream
    * @throws Exception
    */
@@ -159,7 +175,7 @@ public class XMLConfiguration extends EmptyConfiguration {
 
   /**
    * Create instance of class and load file from defined input stream
-   * 
+   *
    * @param in input stream
    * @param attributes attributes for DocumentBuilderFactory
    * @param  features features for DocumentBuilderFactory
@@ -171,7 +187,7 @@ public class XMLConfiguration extends EmptyConfiguration {
 
   /**
    * Create instance of class and load file from defined  file name
-   * 
+   *
    * @param filename configuration file name
    * @throws Exception
    */
@@ -181,7 +197,7 @@ public class XMLConfiguration extends EmptyConfiguration {
 
   /**
    * Create instance of class and load file from defined input stream
-   * 
+   *
    * @param filename configuration file name
    * @param attributes attributes for DocumentBuilderFactory
    * @param  features features for DocumentBuilderFactory
@@ -194,26 +210,30 @@ public class XMLConfiguration extends EmptyConfiguration {
   protected XMLConfiguration(Object in, Hashtable<String, Object> attributes, Hashtable<String, Boolean> features, boolean nop) throws Exception {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     factory.setNamespaceAware(true);
-    if (attributes != null)
-      for (String key : attributes.keySet())
+    if (attributes != null) {
+      for (String key : attributes.keySet()) {
         factory.setAttribute(key, attributes.get(key));
-          if (features != null)
-            for (String key : features.keySet())
-              factory.setFeature(key, features.get(key));
-                DocumentBuilder builder = factory.newDocumentBuilder();
-                Document document;
+      }
+    }
+    if (features != null) {
+      for (String key : features.keySet()) {
+        factory.setFeature(key, features.get(key));
+      }
+    }
+    DocumentBuilder builder = factory.newDocumentBuilder();
+    Document document;
 
-                if (in instanceof InputStream) {
-                  document = builder.parse((InputStream) in);
-                }
-                else if (in instanceof String) {
-                  document = builder.parse(new File((String) in));
-                }
-                else {
-                  throw  new Exception("Unknown type of input data");
-                }
-                validate(document);
-                processing(document);
+    if (in instanceof InputStream) {
+      document = builder.parse((InputStream) in);
+    }
+    else if (in instanceof String) {
+      document = builder.parse(new File((String) in));
+    }
+    else {
+      throw  new Exception("Unknown type of input data");
+    }
+    validate(document);
+    processing(document);
   }
 
   protected void validate(Document document) throws Exception {
@@ -279,8 +299,9 @@ public class XMLConfiguration extends EmptyConfiguration {
 
   protected void addIPAddress(Node node) {
     String nodeName = node.getNodeName();
-    if (nodeName.equals("IPAddress"))
+    if (nodeName.equals("IPAddress")) {
       add(OwnIPAddress, getValue(node));
+    }
   }
 
   protected void addApplications(Node node) {
@@ -317,30 +338,59 @@ public class XMLConfiguration extends EmptyConfiguration {
     NodeList c = node.getChildNodes();
     for (int i = 0; i < c.getLength(); i++) {
       String nodeName = c.item(i).getNodeName();
-      if (nodeName.equals("UseUriAsFqdn")) { add(UseUriAsFqdn, Boolean.valueOf(getValue(c.item(i))));   }
-      else if (nodeName.equals("QueueSize")) { add(QueueSize, getIntValue(c.item(i)));                  }
-      else if (nodeName.equals("MessageTimeOut")) { add(MessageTimeOut, getLongValue(c.item(i)));       }
-      else if (nodeName.equals("StopTimeOut")) { add(StopTimeOut, getLongValue(c.item(i)));             }
-      else if (nodeName.equals("CeaTimeOut")) { add(CeaTimeOut, getLongValue(c.item(i)));               }
-      else if (nodeName.equals("IacTimeOut")) { add(IacTimeOut, getLongValue(c.item(i)));               }
-      else if (nodeName.equals("DwaTimeOut")) { add(DwaTimeOut, getLongValue(c.item(i)));               }
-      else if (nodeName.equals("DpaTimeOut")) { add(DpaTimeOut, getLongValue(c.item(i)));               }
-      else if (nodeName.equals("RecTimeOut")) { add(RecTimeOut, getLongValue(c.item(i)));               }
-      else if (nodeName.equals("PeerFSMThreadCount")) { add(PeerFSMThreadCount, getIntValue(c.item(i)));}
-      else if (nodeName.equals("Statistics")) { addStatisticLogger(Statistics, c.item(i));              }
-      else if (nodeName.equals("Concurrent")) { addConcurrent(Concurrent, c.item(i));                   }
-      else if (nodeName.equals("Dictionary")) { addDictionary(Dictionary, c.item(i));                   }
-      else 
+      if (nodeName.equals("UseUriAsFqdn")) {
+        add(UseUriAsFqdn, Boolean.valueOf(getValue(c.item(i))));
+      }
+      else if (nodeName.equals("QueueSize")) {
+        add(QueueSize, getIntValue(c.item(i)));
+      }
+      else if (nodeName.equals("MessageTimeOut")) {
+        add(MessageTimeOut, getLongValue(c.item(i)));
+      }
+      else if (nodeName.equals("StopTimeOut")) {
+        add(StopTimeOut, getLongValue(c.item(i)));
+      }
+      else if (nodeName.equals("CeaTimeOut")) {
+        add(CeaTimeOut, getLongValue(c.item(i)));
+      }
+      else if (nodeName.equals("IacTimeOut")) {
+        add(IacTimeOut, getLongValue(c.item(i)));
+      }
+      else if (nodeName.equals("DwaTimeOut")) {
+        add(DwaTimeOut, getLongValue(c.item(i)));
+      }
+      else if (nodeName.equals("DpaTimeOut")) {
+        add(DpaTimeOut, getLongValue(c.item(i)));
+      }
+      else if (nodeName.equals("RecTimeOut")) {
+        add(RecTimeOut, getLongValue(c.item(i)));
+      }
+      else if (nodeName.equals("PeerFSMThreadCount")) {
+        add(PeerFSMThreadCount, getIntValue(c.item(i)));
+      }
+      else if (nodeName.equals("Statistics")) {
+        addStatisticLogger(Statistics, c.item(i));
+      }
+      else if (nodeName.equals("Concurrent")) {
+        addConcurrent(Concurrent, c.item(i));
+      }
+      else if (nodeName.equals("Dictionary")) {
+        addDictionary(Dictionary, c.item(i));
+      }
+      else {
         appendOtherParameter(c.item(i));
+      }
     }
-  }  
+  }
 
   protected void addConcurrent(org.jdiameter.client.impl.helpers.Parameters name, Node node) {
     NodeList c = node.getChildNodes();
     List<Configuration> items = new ArrayList<Configuration>();
     for (int i = 0; i < c.getLength(); i++) {
       String nodeName = c.item(i).getNodeName();
-      if (nodeName.equals("Entity")) addConcurrentEntity(items, c.item(i));
+      if (nodeName.equals("Entity")) {
+        addConcurrentEntity(items, c.item(i));
+      }
     }
     add(name, items.toArray(new Configuration[items.size()]));
   }
@@ -382,25 +432,25 @@ public class XMLConfiguration extends EmptyConfiguration {
     AppConfiguration dicConfiguration = getInstance();
 
     Node param = node.getAttributes().getNamedItem("class");
-    if(param != null) {
+    if (param != null) {
       String clazz = param.getNodeValue();
       dicConfiguration.add(DictionaryClass, clazz);
     }
 
     param =  node.getAttributes().getNamedItem("enabled");
-    if(param != null) {
+    if (param != null) {
       String enabled = param.getNodeValue();
       dicConfiguration.add(DictionaryEnabled, Boolean.valueOf(enabled));
     }
 
     param =  node.getAttributes().getNamedItem("sendLevel");
-    if(param != null) {
+    if (param != null) {
       String sendLevel = param.getNodeValue();
       dicConfiguration.add(DictionarySendLevel, sendLevel);
     }
 
     param =  node.getAttributes().getNamedItem("receiveLevel");
-    if(param != null) {
+    if (param != null) {
       String receiveLevel = param.getNodeValue();
       dicConfiguration.add(DictionaryReceiveLevel, receiveLevel);
     }
@@ -443,8 +493,9 @@ public class XMLConfiguration extends EmptyConfiguration {
     List<Configuration> items = new ArrayList<Configuration>();
     for (int i = 0; i < c.getLength(); i++) {
       String nodeName = c.item(i).getNodeName();
-      if (nodeName.equals("SecurityData"))
+      if (nodeName.equals("SecurityData")) {
         items.add(addSecurityData(c.item(i)));
+      }
     }
     add(Security, items.toArray(EMPTY_ARRAY));
   }
@@ -463,7 +514,7 @@ public class XMLConfiguration extends EmptyConfiguration {
       if (nodeName.equals("CipherSuites")) {
         sd.add(CipherSuites, cnode.getTextContent().trim());
       }
-      if (nodeName.equals("KeyData")) { 
+      if (nodeName.equals("KeyData")) {
         sd.add(KeyData, getInstance().add(KDManager, cnode.getAttributes().getNamedItem("manager").getNodeValue())
             .add(KDStore, cnode.getAttributes().getNamedItem("store").getNodeValue())
             .add(KDFile, cnode.getAttributes().getNamedItem("file").getNodeValue())
@@ -483,8 +534,12 @@ public class XMLConfiguration extends EmptyConfiguration {
     NodeList c = node.getChildNodes();
     for (int i = 0; i < c.getLength(); i++) {
       String nodeName = c.item(i).getNodeName();
-      if (nodeName.equals("Peers")) addPeers(c.item(i));
-      else if (nodeName.equals("Realms")) addRealms(c.item(i));
+      if (nodeName.equals("Peers")) {
+        addPeers(c.item(i));
+      }
+      else if (nodeName.equals("Realms")) {
+        addRealms(c.item(i));
+      }
     }
   }
 
@@ -493,8 +548,9 @@ public class XMLConfiguration extends EmptyConfiguration {
     ArrayList<Configuration> items = new ArrayList<Configuration>();
     for (int i = 0; i < c.getLength(); i++) {
       String nodeName = c.item(i).getNodeName();
-      if (nodeName.equals("Peer"))
+      if (nodeName.equals("Peer")) {
         items.add(addPeer(c.item(i)));
+      }
     }
     add(PeerTable, items.toArray(EMPTY_ARRAY));
   }
@@ -504,8 +560,9 @@ public class XMLConfiguration extends EmptyConfiguration {
     ArrayList<Configuration> items = new ArrayList<Configuration>();
     for (int i = 0; i < c.getLength(); i++) {
       String nodeName = c.item(i).getNodeName();
-      if (nodeName.equals("Realm"))
+      if (nodeName.equals("Realm")) {
         items.add(addRealm(c.item(i)));
+      }
     }
     add(RealmTable, items.toArray(EMPTY_ARRAY));
   }
@@ -551,9 +608,9 @@ public class XMLConfiguration extends EmptyConfiguration {
     AppConfiguration agentConf = getInstance();
     NodeList agentChildren = node.getChildNodes();
 
-    for(int index = 0; index < agentChildren.getLength(); index++) {
+    for (int index = 0; index < agentChildren.getLength(); index++) {
       Node n = agentChildren.item(index);
-      if(n.getNodeName().equals("Properties")) {
+      if (n.getNodeName().equals("Properties")) {
         agentConf.add(Properties, getProperties(n).toArray(EMPTY_ARRAY));
       }
     }
@@ -564,9 +621,9 @@ public class XMLConfiguration extends EmptyConfiguration {
   protected List<Configuration> getProperties(Node node) {
     List<Configuration> props = new ArrayList<Configuration>();
     NodeList propertiesChildren = node.getChildNodes();
-    for(int index = 0; index < propertiesChildren.getLength(); index++) {
+    for (int index = 0; index < propertiesChildren.getLength(); index++) {
       Node n = propertiesChildren.item(index);
-      if(n.getNodeName().equals("Property")) {
+      if (n.getNodeName().equals("Property")) {
         AppConfiguration property = getInstance();
         property.add(PropertyName, n.getAttributes().getNamedItem(PropertyName.name()).getNodeValue());
         property.add(PropertyValue, n.getAttributes().getNamedItem(PropertyValue.name()).getNodeValue());
@@ -580,8 +637,9 @@ public class XMLConfiguration extends EmptyConfiguration {
   protected Configuration addApplicationID(NodeList node) {
     for (int i = 0; i < node.getLength(); i++) {
       String nodeName = node.item(i).getNodeName();
-      if (nodeName.equals("ApplicationID"))
+      if (nodeName.equals("ApplicationID")) {
         return addApplicationID(node.item(i));
+      }
     }
     return null;
   }
@@ -591,9 +649,15 @@ public class XMLConfiguration extends EmptyConfiguration {
     AppConfiguration e = getInstance();
     for (int i = 0; i < c.getLength(); i++) {
       String nodeName = c.item(i).getNodeName();
-      if (nodeName.equals("VendorId"))   e.add(VendorId,   getLongValue(c.item(i)));
-      else if (nodeName.equals("AuthApplId")) e.add(AuthApplId, getLongValue(c.item(i)));
-      else if (nodeName.equals("AcctApplId")) e.add(AcctApplId, getLongValue(c.item(i)));
+      if (nodeName.equals("VendorId")) {
+        e.add(VendorId,   getLongValue(c.item(i)));
+      }
+      else if (nodeName.equals("AuthApplId")) {
+        e.add(AuthApplId, getLongValue(c.item(i)));
+      }
+      else if (nodeName.equals("AcctApplId")) {
+        e.add(AcctApplId, getLongValue(c.item(i)));
+      }
     }
     return e;
   }
@@ -602,25 +666,61 @@ public class XMLConfiguration extends EmptyConfiguration {
     NodeList c = node.getChildNodes();
     for (int i = 0; i < c.getLength(); i++) {
       String nodeName = c.item(i).getNodeName();
-      if (nodeName.equals("MetaData")) {                         addInternalExtension(InternalMetaData,getValue(c.item(i)));                  }
-      else if (nodeName.equals("MessageParser")) {               addInternalExtension(InternalMessageParser,getValue(c.item(i)));             }
-      else if (nodeName.equals("ElementParser")) {               addInternalExtension(InternalElementParser,getValue(c.item(i)));             }
-      else if (nodeName.equals("RouterEngine")) {                addInternalExtension(InternalRouterEngine,getValue(c.item(i)));              }
-      else if (nodeName.equals("PeerController")) {              addInternalExtension(InternalPeerController,getValue(c.item(i)));            }
-      else if (nodeName.equals("RealmController")) {             addInternalExtension(InternalRealmController,getValue(c.item(i)));           }
-      else if (nodeName.equals("SessionFactory")) {              addInternalExtension(InternalSessionFactory,getValue(c.item(i)));            }
-      else if (nodeName.equals("TransportFactory")) {            addInternalExtension(InternalTransportFactory, getValue(c.item(i)));         }
-      else if (nodeName.equals("Connection")) {                  addInternalExtension(InternalConnectionClass, getValue(c.item(i)));          }
-      else if (nodeName.equals("PeerFsmFactory")) {              addInternalExtension(InternalPeerFsmFactory,getValue(c.item(i)));            }
-      else if (nodeName.equals("StatisticFactory")) {            addInternalExtension(InternalStatisticFactory,getValue(c.item(i)));          }
-      else if (nodeName.equals("ConcurrentFactory")) {           addInternalExtension(InternalConcurrentFactory,getValue(c.item(i)));         }
-      else if (nodeName.equals("ConcurrentEntityFactory")) {     addInternalExtension(InternalConcurrentEntityFactory,getValue(c.item(i)));   }
-      else if (nodeName.equals("SessionDatasource")) {           addInternalExtension(InternalSessionDatasource, getValue(c.item(i)));        }
-      else if (nodeName.equals("TimerFacility")) {               addInternalExtension(InternalTimerFacility, getValue(c.item(i)));            }
+      if (nodeName.equals("MetaData")) {
+        addInternalExtension(InternalMetaData, getValue(c.item(i)));
+      }
+      else if (nodeName.equals("MessageParser")) {
+        addInternalExtension(InternalMessageParser, getValue(c.item(i)));
+      }
+      else if (nodeName.equals("ElementParser")) {
+        addInternalExtension(InternalElementParser, getValue(c.item(i)));
+      }
+      else if (nodeName.equals("RouterEngine")) {
+        addInternalExtension(InternalRouterEngine, getValue(c.item(i)));
+      }
+      else if (nodeName.equals("PeerController")) {
+        addInternalExtension(InternalPeerController, getValue(c.item(i)));
+      }
+      else if (nodeName.equals("RealmController")) {
+        addInternalExtension(InternalRealmController, getValue(c.item(i)));
+      }
+      else if (nodeName.equals("SessionFactory")) {
+        addInternalExtension(InternalSessionFactory, getValue(c.item(i)));
+      }
+      else if (nodeName.equals("TransportFactory")) {
+        addInternalExtension(InternalTransportFactory, getValue(c.item(i)));
+      }
+      else if (nodeName.equals("Connection")) {
+        addInternalExtension(InternalConnectionClass, getValue(c.item(i)));
+      }
+      else if (nodeName.equals("PeerFsmFactory")) {
+        addInternalExtension(InternalPeerFsmFactory, getValue(c.item(i)));
+      }
+      else if (nodeName.equals("StatisticFactory")) {
+        addInternalExtension(InternalStatisticFactory, getValue(c.item(i)));
+      }
+      else if (nodeName.equals("ConcurrentFactory")) {
+        addInternalExtension(InternalConcurrentFactory, getValue(c.item(i)));
+      }
+      else if (nodeName.equals("ConcurrentEntityFactory")) {
+        addInternalExtension(InternalConcurrentEntityFactory, getValue(c.item(i)));
+      }
+      else if (nodeName.equals("SessionDatasource")) {
+        addInternalExtension(InternalSessionDatasource, getValue(c.item(i)));
+      }
+      else if (nodeName.equals("TimerFacility")) {
+        addInternalExtension(InternalTimerFacility, getValue(c.item(i)));
+      }
       //FIXME: possibly should not be in client...
-      else if (nodeName.equals("AgentRedirect")) {               addInternalExtension(InternalAgentRedirect, getValue(c.item(i)));            }
-      else if (nodeName.equals("AgentConfiguration")) {          add(InternalAgentConfiguration,getValue(c.item(i)))   ;     }
-      else if (nodeName.equals("StatisticProcessor")) {          addInternalExtension(InternalStatisticProcessor,getValue(c.item(i)))   ;     }
+      else if (nodeName.equals("AgentRedirect")) {
+        addInternalExtension(InternalAgentRedirect, getValue(c.item(i)));
+      }
+      else if (nodeName.equals("AgentConfiguration")) {
+        add(InternalAgentConfiguration, getValue(c.item(i)))   ;
+      }
+      else if (nodeName.equals("StatisticProcessor")) {
+        addInternalExtension(InternalStatisticProcessor, getValue(c.item(i)))   ;
+      }
       else {
         appendOtherExtension(c.item(i));
       }
@@ -628,9 +728,9 @@ public class XMLConfiguration extends EmptyConfiguration {
   }
 
   protected void addInternalExtension(Ordinal ep, String value) {
-    Configuration[] extensionConfs = this.getChildren(Parameters.Extensions.ordinal());
+    Configuration[] extensionConfs = this.getChildren(org.jdiameter.client.impl.helpers.Parameters.Extensions.ordinal());
     AppConfiguration internalExtensions = (AppConfiguration) extensionConfs[ExtensionPoint.Internal.id()];
-    internalExtensions.add(ep,value);
+    internalExtensions.add(ep, value);
   }
 
   private void appendOtherExtension(Node item) {

@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.server.impl.app.auth;
 
@@ -68,7 +88,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Server Authorization session implementation
- * 
+ *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
@@ -90,12 +110,13 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
   protected transient ServerAuthSessionListener listener;
 
   // Ts Timer -----------------------------------------------------------------
-  protected final static String TIMER_NAME_TS="AUTH_TS";
+  protected static final String TIMER_NAME_TS = "AUTH_TS";
 
   // Constructors -------------------------------------------------------------
 
-  public ServerAuthSessionImpl(IServerAuthSessionData sessionData,ISessionFactory sf, ServerAuthSessionListener lst, IAuthMessageFactory fct, StateChangeListener<AppSession> scListener,IServerAuthActionContext context, long tsTimeout, boolean stateless) {
-    super(sf,sessionData);  
+  public ServerAuthSessionImpl(IServerAuthSessionData sessionData, ISessionFactory sf, ServerAuthSessionListener lst, IAuthMessageFactory fct,
+      StateChangeListener<AppSession> scListener, IServerAuthActionContext context, long tsTimeout, boolean stateless) {
+    super(sf, sessionData);
 
     super.appId = fct.getApplicationId();
     this.listener = lst;
@@ -109,19 +130,25 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
 
   // ServerAuthSession Implementation methods ---------------------------------
 
+  @Override
   public void sendAuthAnswer(AppAnswerEvent appAnswerEvent) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(null, appAnswerEvent);
   }
 
+  @Override
   public void sendReAuthRequest(ReAuthRequest reAuthRequest) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(null, reAuthRequest);
   }
 
-  public void sendAbortSessionRequest(AbortSessionRequest abortSessionRequest) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void sendAbortSessionRequest(AbortSessionRequest abortSessionRequest)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_ASR_REQUEST, abortSessionRequest);
   }
 
-  public void sendSessionTerminationAnswer(SessionTermAnswer sessionTermAnswer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  @Override
+  public void sendSessionTerminationAnswer(SessionTermAnswer sessionTermAnswer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(null, sessionTermAnswer);
   }
 
@@ -141,6 +168,7 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
     }
   }
 
+  @Override
   public boolean isStateless() {
     return sessionData.isStateless();
   }
@@ -154,11 +182,13 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
     }
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> eClass) {
     return eClass == ServerAuthSessionState.class ? (E) sessionData.getServerAuthSessionState() : null;
   }
 
+  @Override
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
     return isStateless() ? handleEventForStatelessSession(event) : handleEventForStatefullSession(event);
   }
@@ -166,21 +196,21 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
   public boolean handleEventForStatelessSession(StateEvent event) throws InternalException, OverloadException {
     try {
       switch (sessionData.getServerAuthSessionState()) {
-      case IDLE:
-        switch ((Event.Type) event.getType()) {
-        case RECEIVE_AUTH_REQUEST:
-          // Current State: IDLE
-          // Event: Service-specific authorization request received, and successfully processed
-          // Action: Send service specific answer
-          // New State: IDLE
-        	setState(IDLE);
-          listener.doAuthRequestEvent(this, (AppRequestEvent) event.getData());
+        case IDLE:
+          switch ((Event.Type) event.getType()) {
+            case RECEIVE_AUTH_REQUEST:
+              // Current State: IDLE
+              // Event: Service-specific authorization request received, and successfully processed
+              // Action: Send service specific answer
+              // New State: IDLE
+              setState(IDLE);
+              listener.doAuthRequestEvent(this, (AppRequestEvent) event.getData());
+              break;
+            default:
+              logger.debug("Unknown event {}", event.getType());
+              break;
+          }
           break;
-        default:
-          logger.debug("Unknown event {}", event.getType());
-          break;
-        }
-        break;
       }
     }
     catch (Throwable t) {
@@ -191,141 +221,141 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
   }
 
   public boolean handleEventForStatefullSession(StateEvent event) throws InternalException, OverloadException {
-    ServerAuthSessionState state = sessionData.getServerAuthSessionState(); 
+    ServerAuthSessionState state = sessionData.getServerAuthSessionState();
     ServerAuthSessionState oldState = state;
     try {
       switch (state) {
-      case IDLE: {
-        switch ((Event.Type) event.getType()) {
-        case RECEIVE_AUTH_REQUEST:
-          try {
-            // Current State: IDLE
-            // Event: Service-specific authorization request received, and user is authorized
-            // Action: Send successful service specific answer
-            // New State: OPEN
-        	  setState(OPEN);
-            listener.doAuthRequestEvent(this, (AppRequestEvent) event.getData());
+        case IDLE: {
+          switch ((Event.Type) event.getType()) {
+            case RECEIVE_AUTH_REQUEST:
+              try {
+                // Current State: IDLE
+                // Event: Service-specific authorization request received, and user is authorized
+                // Action: Send successful service specific answer
+                // New State: OPEN
+                setState(OPEN);
+                listener.doAuthRequestEvent(this, (AppRequestEvent) event.getData());
+              }
+              catch (Exception e) {
+                setState(IDLE);
+              }
+              break;
+            case RECEIVE_STR_REQUEST:
+              try {
+                // Current State: ANY
+                // Event: STR Received
+                // Action: Send STA, Cleanup
+                // New State: IDLE
+                setState(IDLE);
+                listener.doSessionTerminationRequestEvent(this, (SessionTermRequest) event.getData());
+              }
+              catch (Exception e) {
+                logger.debug("Can not handle event", e);
+              }
+              break;
+            case SEND_ASR_REQUEST:
+              setState(DISCONNECTED);
+              break;
+            case TIMEOUT_EXPIRES:
+              if (context != null) {
+                context.accessTimeoutElapses(this);
+              }
+              setState(IDLE);
+              break;
+            default:
+              logger.debug("Unknown event {}", event.getType());
+              break;
           }
-          catch (Exception e) {
-            setState(IDLE);
-          }
-          break;
-        case RECEIVE_STR_REQUEST:
-          try {
-            // Current State: ANY
-            // Event: STR Received
-            // Action: Send STA, Cleanup
-            // New State: IDLE
-        	  setState(IDLE);
-            listener.doSessionTerminationRequestEvent(this, (SessionTermRequest) event.getData());
-          }
-          catch (Exception e) {
-            logger.debug("Can not handle event", e);
-          }
-          break;
-        case SEND_ASR_REQUEST:
-          setState(DISCONNECTED);
-          break;
-        case TIMEOUT_EXPIRES:
-          if (context != null) {
-            context.accessTimeoutElapses(this);
-          }
-          setState(IDLE);
-          break;
-        default:
-          logger.debug("Unknown event {}", event.getType());
           break;
         }
-        break;
-      }
-      case OPEN: {
-        switch ((Event.Type) event.getType()) {
-        case RECEIVE_AUTH_REQUEST:
-          try {
-            // Current State: OPEN
-            // Event: Service-specific authorization request received, and user is authorized
-            // Action: Send successful service specific answer
-            // New State: OPEN
-            listener.doAuthRequestEvent(this, (AppRequestEvent) event.getData());
-          }
-          catch (Exception e) {
-            // Current State: OPEN
-            // Event: Service-specific authorization request received, and user is not authorized
-            // Action: Send failed service specific answer, Cleanup
-            // New State: IDLE
-            setState(IDLE);
-          }
-          break;
-        case RECEIVE_STR_REQUEST:
-          try {
-            setState(IDLE);
-            listener.doSessionTerminationRequestEvent(this, (SessionTermRequest) event.getData());
-          }
-          catch (Exception e) {
-            logger.debug("Can not handle event", e);
-          }
-          break;
-        case SEND_ASR_REQUEST:
-          // Current State: OPEN
-          // Event: Home server wants to terminate the service
-          // Action: Send ASR
-          // New State: DISCON
-          setState(DISCONNECTED);
-          break;
-        case TIMEOUT_EXPIRES:
-          // Current State: OPEN
-          // Event: Authorization-Lifetime (and Auth-Grace-Period) expires on home server.
-          // Action: Cleanup
-          // New State: IDLE
+        case OPEN: {
+          switch ((Event.Type) event.getType()) {
+            case RECEIVE_AUTH_REQUEST:
+              try {
+                // Current State: OPEN
+                // Event: Service-specific authorization request received, and user is authorized
+                // Action: Send successful service specific answer
+                // New State: OPEN
+                listener.doAuthRequestEvent(this, (AppRequestEvent) event.getData());
+              }
+              catch (Exception e) {
+                // Current State: OPEN
+                // Event: Service-specific authorization request received, and user is not authorized
+                // Action: Send failed service specific answer, Cleanup
+                // New State: IDLE
+                setState(IDLE);
+              }
+              break;
+            case RECEIVE_STR_REQUEST:
+              try {
+                setState(IDLE);
+                listener.doSessionTerminationRequestEvent(this, (SessionTermRequest) event.getData());
+              }
+              catch (Exception e) {
+                logger.debug("Can not handle event", e);
+              }
+              break;
+            case SEND_ASR_REQUEST:
+              // Current State: OPEN
+              // Event: Home server wants to terminate the service
+              // Action: Send ASR
+              // New State: DISCON
+              setState(DISCONNECTED);
+              break;
+            case TIMEOUT_EXPIRES:
+              // Current State: OPEN
+              // Event: Authorization-Lifetime (and Auth-Grace-Period) expires on home server.
+              // Action: Cleanup
+              // New State: IDLE
 
-          // Current State: OPEN
-          // Event: Session-Timeout expires on home server
-          // Action: Cleanup
-          // New State: IDLE
-          if (context != null) {
-            context.accessTimeoutElapses(this);
+              // Current State: OPEN
+              // Event: Session-Timeout expires on home server
+              // Action: Cleanup
+              // New State: IDLE
+              if (context != null) {
+                context.accessTimeoutElapses(this);
+              }
+              setState(IDLE);
+              break;
+            default:
+              logger.debug("Unknown event {}", event.getType());
+              break;
           }
-          setState(IDLE);
-          break;
-        default:
-          logger.debug("Unknown event {}", event.getType());
           break;
         }
-        break;
-      }
-      case DISCONNECTED: {
-        switch ((Event.Type) event.getType()) {
-        case SEND_ASR_FAILURE:
-          // Current State: DISCON
-          // Event: Failure to send ASR
-          // Action: Wait, Re-send ASR
-          // New State: DISCON
-          setState(DISCONNECTED);
-          break;
-        case RECEIVE_ASR_ANSWER:
-          // Current State: DISCON
-          // Event: ASR successfully sent and ASA Received with Result-Code
-          // Action: Cleanup
-          // New State: IDLE
-          setState(IDLE);
-          listener.doAbortSessionAnswerEvent(this, (AbortSessionAnswer) event.getData());
-          break;
-        default:
-          logger.debug("Unknown event {}", event.getType());
+        case DISCONNECTED: {
+          switch ((Event.Type) event.getType()) {
+            case SEND_ASR_FAILURE:
+              // Current State: DISCON
+              // Event: Failure to send ASR
+              // Action: Wait, Re-send ASR
+              // New State: DISCON
+              setState(DISCONNECTED);
+              break;
+            case RECEIVE_ASR_ANSWER:
+              // Current State: DISCON
+              // Event: ASR successfully sent and ASA Received with Result-Code
+              // Action: Cleanup
+              // New State: IDLE
+              setState(IDLE);
+              listener.doAbortSessionAnswerEvent(this, (AbortSessionAnswer) event.getData());
+              break;
+            default:
+              logger.debug("Unknown event {}", event.getType());
+              break;
+          }
           break;
         }
-        break;
-      }
-      default: {
-        logger.debug("Unknown state {}", state);
-        break;
-      }
+        default: {
+          logger.debug("Unknown state {}", state);
+          break;
+        }
       }
 
       // post processing
       if (oldState != state) {
         if (OPEN.equals(state) && context != null) {
-          if(context != null) {
+          if (context != null) {
             cancelTsTimer();
             startTsTimer();
           }
@@ -351,6 +381,7 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
     return true;
   }
 
+  @Override
   public void receivedSuccessMessage(Request request, Answer answer) {
     AnswerDelivery rd = new AnswerDelivery();
     rd.session = this;
@@ -359,9 +390,10 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
     super.scheduler.execute(rd);
   }
 
+  @Override
   public void timeoutExpired(Request request) {
     try {
-      if (request.getCommandCode() == AbortSessionRequestImpl.code) {
+      if (request.getCommandCode() == AbortSessionRequest.code) {
         handleEvent(new Event(Event.Type.SEND_ASR_FAILURE, new AbortSessionRequestImpl(request)));
       }
       else {
@@ -373,6 +405,7 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
     }
   }
 
+  @Override
   public Answer processRequest(Request request) {
     RequestDelivery rd = new RequestDelivery();
     rd.session = this;
@@ -405,7 +438,7 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
     try {
       sendAndStateLock.lock();
       Serializable tsTimerId = sessionData.getTsTimerId();
-      if(tsTimerId != null) {
+      if (tsTimerId != null) {
         super.timerFacility.cancel(tsTimerId);
         sessionData.setTsTimerId(null);
       }
@@ -420,7 +453,7 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
    */
   @Override
   public void onTimer(String timerName) {
-    if(timerName.equals(TIMER_NAME_TS)) {
+    if (timerName.equals(TIMER_NAME_TS)) {
       try {
         sendAndStateLock.lock();
         sessionData.setTsTimerId(null);
@@ -445,19 +478,24 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (!super.equals(obj))
+    }
+    if (!super.equals(obj)) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     ServerAuthSessionImpl other = (ServerAuthSessionImpl) obj;
     if (sessionData == null) {
-      if (other.sessionData != null)
+      if (other.sessionData != null) {
         return false;
+      }
     }
-    else if (!sessionData.equals(other.sessionData))
+    else if (!sessionData.equals(other.sessionData)) {
       return false;
+    }
     return true;
   }
 
@@ -486,6 +524,7 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
     ServerAuthSession session;
     Request request;
 
+    @Override
     public void run() {
       if (request != null) {
         if (request.getCommandCode() == factory.getAuthMessageCommandCode()) {
@@ -517,13 +556,14 @@ public class ServerAuthSessionImpl extends AppAuthSessionImpl implements ServerA
     Answer answer;
     Request request;
 
+    @Override
     public void run() {
       try {
         sendAndStateLock.lock();
         if (request.getCommandCode() == factory.getAuthMessageCommandCode()) {
           handleEvent(new Event(RECEIVE_AUTH_REQUEST, factory.createAuthRequest(request)));
         }
-        else if (request.getCommandCode() == AbortSessionRequestImpl.code) {
+        else if (request.getCommandCode() == AbortSessionRequest.code) {
           handleEvent(new Event(RECEIVE_ASR_ANSWER, new AbortSessionAnswerImpl(answer)));
         }
         else {

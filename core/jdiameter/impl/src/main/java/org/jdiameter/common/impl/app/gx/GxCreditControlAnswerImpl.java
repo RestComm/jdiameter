@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author <a href="mailto:carl-magnus.bjorkell@emblacom.com"> Carl-Magnus Björkell </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class GxCreditControlAnswerImpl extends AppAnswerEventImpl implements GxCreditControlAnswer {
 
   private static final long serialVersionUID = 1L;
-  protected final static Logger logger = LoggerFactory.getLogger(GxCreditControlAnswerImpl.class);
+  protected static final Logger logger = LoggerFactory.getLogger(GxCreditControlAnswerImpl.class);
   private static final int CREDIT_CONTROL_FAILURE_HANDLING_AVP_CODE = 427;
   private static final int DIRECT_DEBITING_FAILURE_HANDLING_AVP_CODE = 428;
   private static final int REQUESTED_ACTION_AVP_CODE = 436;
@@ -75,10 +75,12 @@ public class GxCreditControlAnswerImpl extends AppAnswerEventImpl implements GxC
     super(request);
   }
 
+  @Override
   public boolean isCreditControlFailureHandlingAVPPresent() {
     return super.message.getAvps().getAvp(CREDIT_CONTROL_FAILURE_HANDLING_AVP_CODE) != null;
   }
 
+  @Override
   public int getCredidControlFailureHandlingAVPValue() {
     Avp credidControlFailureHandlingAvp = super.message.getAvps().getAvp(CREDIT_CONTROL_FAILURE_HANDLING_AVP_CODE);
     if (credidControlFailureHandlingAvp != null) {
@@ -93,10 +95,12 @@ public class GxCreditControlAnswerImpl extends AppAnswerEventImpl implements GxC
     return -1;
   }
 
+  @Override
   public boolean isDirectDebitingFailureHandlingAVPPresent() {
     return super.message.getAvps().getAvp(DIRECT_DEBITING_FAILURE_HANDLING_AVP_CODE) != null;
   }
 
+  @Override
   public int getDirectDebitingFailureHandlingAVPValue() {
     Avp directDebitingFailureHandlingAvp = super.message.getAvps().getAvp(DIRECT_DEBITING_FAILURE_HANDLING_AVP_CODE);
     if (directDebitingFailureHandlingAvp != null) {
@@ -111,14 +115,17 @@ public class GxCreditControlAnswerImpl extends AppAnswerEventImpl implements GxC
     return -1;
   }
 
+  @Override
   public Avp getValidityTimeAvp() {
     return super.message.getAvps().getAvp(VALIDITY_TIME_AVP_CODE);
   }
 
+  @Override
   public boolean isRequestTypeAVPPresent() {
     return super.message.getAvps().getAvp(CC_REQUEST_TYPE_AVP_CODE) != null;
   }
 
+  @Override
   public int getRequestTypeAVPValue() {
     Avp requestTypeAvp = super.message.getAvps().getAvp(CC_REQUEST_TYPE_AVP_CODE);
     if (requestTypeAvp != null) {

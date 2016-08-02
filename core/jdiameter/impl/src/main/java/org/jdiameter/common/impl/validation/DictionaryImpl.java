@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.common.impl.validation;
 
@@ -53,7 +73,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * Implementation of {@link Dictionary} interface.
- * 
+ *
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @since 1.5.4.0-build404
@@ -95,44 +115,44 @@ public class DictionaryImpl implements Dictionary {
 
     try {
       is = DictionarySingleton.class.getResourceAsStream(confFile);
-      if(is == null) {
-        logger.debug("Failed to locate dictionary configuration file: {}, in class classloader. Trying thread context class loader.", confFile);         
-        is = Thread.currentThread().getContextClassLoader().getResourceAsStream(confFile);  
+      if (is == null) {
+        logger.debug("Failed to locate dictionary configuration file: {}, in class classloader. Trying thread context class loader.", confFile);
+        is = Thread.currentThread().getContextClassLoader().getResourceAsStream(confFile);
       }
 
-      if(is == null) {
-        logger.debug("Failed to locate dictionary configuration file: {}, in thread context class loader. Trying using 'config/' prefix.", confFile);         
-        is = Thread.currentThread().getContextClassLoader().getResourceAsStream("config/" + confFile);  
+      if (is == null) {
+        logger.debug("Failed to locate dictionary configuration file: {}, in thread context class loader. Trying using 'config/' prefix.", confFile);
+        is = Thread.currentThread().getContextClassLoader().getResourceAsStream("config/" + confFile);
       }
 
-      if(is == null) {
+      if (is == null) {
         logger.debug("Failed to locate dictionary configuration file: {}, in thread context class loader. Trying regular file.", confFile);
         File fDict = new File(confFile);
-        if(fDict.exists()) {
+        if (fDict.exists()) {
           is = new FileInputStream(fDict);
         }
         else {
           logger.debug("Failed to locate dictionary configuration file: {}, from regular file. Trying using 'config/' prefix.", confFile);
           fDict = new File("config/" + confFile);
-          if(fDict.exists()) {
+          if (fDict.exists()) {
             is = new FileInputStream(fDict);
           }
         }
       }
 
-      if(is != null) {
-        this.configure(is);        
+      if (is != null) {
+        this.configure(is);
       }
       else {
         this.setEnabled(false);
         logger.warn("Failed to initialize and configure Diameter Dictionary since configuration file was not found. Validator is disabled.");
       }
     }
-    catch(FileNotFoundException fnfe) {
+    catch (FileNotFoundException fnfe) {
       logger.debug("Could not load configuration file: {}, from any known location.", confFile);
     }
     finally {
-      if(is != null) {
+      if (is != null) {
         try {
           is.close();
         }
@@ -144,12 +164,13 @@ public class DictionaryImpl implements Dictionary {
   }
 
   // Parser functions ---------------------------------------------------------
-  
+
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.validation.Dictionary#configure(java.io.InputStream)
    */
+  @Override
   public void configure(InputStream is) {
     if (is == null) {
       logger.error("No input stream to configure dictionary from?");
@@ -158,6 +179,7 @@ public class DictionaryImpl implements Dictionary {
     try {
       long startTime = System.currentTimeMillis();
       this.avpByNameMap = new TreeMap<String, AvpRepresentation>(new Comparator<String>() {
+        @Override
         public int compare(String o1, String o2) {
           return (o1 == null) ? 1 : (o2 == null) ? -1 : o1.compareTo(o2);
         }
@@ -179,12 +201,12 @@ public class DictionaryImpl implements Dictionary {
       this.parseTypeDefs(doc);
       this.parseAvps(doc);
       this.parseCommands(doc);
-      
+
       this.configured = true;
 
       long endTime = System.currentTimeMillis();
 
-      if(logger.isInfoEnabled()) {
+      if (logger.isInfoEnabled()) {
         logger.info("Mobicents Diameter Dictionary loaded in {}ms -- Vendors[{}] Commands[{}] Types[{}] AVPs[{}]",
             new Object[] { (endTime - startTime), vendorMap.size(), commandMap.size(), typedefMap.size(), avpMap.size() });
       }
@@ -223,7 +245,7 @@ public class DictionaryImpl implements Dictionary {
 
   /**
    * Parses the <vendor /> attributes from a Dictionary XML Document
-   * 
+   *
    * @param doc the DOM object representing the XML Document with the Dictionary definitions
    */
   protected void parseVendors(Document doc) {
@@ -247,7 +269,7 @@ public class DictionaryImpl implements Dictionary {
 
   /**
    * Parses the <typedefn /> attributes from a Dictionary XML Document
-   * 
+   *
    * @param doc the DOM object representing the XML Document with the Dictionary definitions
    */
   protected void parseTypeDefs(Document doc) {
@@ -277,7 +299,7 @@ public class DictionaryImpl implements Dictionary {
 
   /**
    * Parses the <typedefn /> attributes from a Dictionary XML Document
-   * 
+   *
    * @param doc the DOM object representing the XML Document with the Dictionary definitions
    */
   protected void parseAvps(Document doc) {
@@ -293,7 +315,7 @@ public class DictionaryImpl implements Dictionary {
 
       String avpName = avpDefnElement.getAttribute("name");
       String avpCode = avpDefnElement.getAttribute("code");
-      String avpVendorId = avpDefnElement.getAttribute("vendor-id");      
+      String avpVendorId = avpDefnElement.getAttribute("vendor-id");
 
       String avpMandatory = avpDefnElement.getAttribute("mandatory");
       String avpProtected = avpDefnElement.getAttribute("protected").equals("") ? "may" : avpDefnElement.getAttribute("protected");
@@ -338,10 +360,10 @@ public class DictionaryImpl implements Dictionary {
 
                 if (!groupedAvpChildElement.hasAttribute("name")) {
                   if (logger.isDebugEnabled()) {
-                    logger.debug(new StringBuffer("[ERROR] Grouped child does not have name, grouped avp:  Name[").append(avpName).append("] Description[").
-                        append("").append("] Code[").append(avpCode).append("] May-Encrypt[").append(avpMayEncrypt).append("] Mandatory[").
-                        append(avpMandatory).append("] Protected [").append(avpProtected).append("] Vendor-Bit [").append(avpVendorBit).append("] Vendor-Id [").
-                        append(avpVendorId).append("] Constrained[").append("").append("] Type [").append(avpType).append("]").toString());
+                    logger.debug(new StringBuffer("[ERROR] Grouped child does not have name, grouped avp:  Name[").append(avpName).append("] Description[")
+                        .append("").append("] Code[").append(avpCode).append("] May-Encrypt[").append(avpMayEncrypt).append("] Mandatory[")
+                        .append(avpMandatory).append("] Protected [").append(avpProtected).append("] Vendor-Bit [").append(avpVendorBit).append("] Vendor-Id [")
+                        .append(avpVendorId).append("] Constrained[").append("").append("] Type [").append(avpType).append("]").toString());
                   }
                   continue;
                 }
@@ -349,22 +371,22 @@ public class DictionaryImpl implements Dictionary {
                   childName = groupedAvpChildElement.getAttribute("name");
                 }
 
-                childMultiplicity = groupedAvpChildElement.hasAttribute("multiplicity") ? 
+                childMultiplicity = groupedAvpChildElement.hasAttribute("multiplicity") ?
                     groupedAvpChildElement.getAttribute("multiplicity") : AvpRepresentation._MP_ZERO_OR_MORE;
 
-                childIndexIndicator = groupedAvpChildElement.hasAttribute("index") ? 
-                    groupedAvpChildElement.getAttribute("index") : "-1";
+                childIndexIndicator = groupedAvpChildElement.hasAttribute("index") ?
+                        groupedAvpChildElement.getAttribute("index") : "-1";
 
                 // have we parsed this child definition already?
                 AvpRepresentation childRep = this.avpByNameMap.get(childName);
                 AvpRepresentationImpl child = null;
-                if(childRep != null) {
+                if (childRep != null) {
                   try {
                     child = (AvpRepresentationImpl) childRep.clone();
                   }
                   catch (CloneNotSupportedException cnse) {
                     // It should not happen, but anyway
-                    if(logger.isWarnEnabled()) {
+                    if (logger.isWarnEnabled()) {
                       logger.warn("Unable to clone AVP " + childRep, cnse);
                     }
                   }
@@ -385,8 +407,8 @@ public class DictionaryImpl implements Dictionary {
             //FIXME: baranowb: why this is like that? This changes type of AVP to primitive ONE..? Checks against type dont make sense, ie to check for Address type...
             avpType = typedefMap.get(avpType);
 
-            if(avpType == null) {
-              logger.warn("Unknown AVP Type ({}) for AVP with code {} and vendor-id {} ", 
+            if (avpType == null) {
+              logger.warn("Unknown AVP Type ({}) for AVP with code {} and vendor-id {} ",
                   new Object[] { avpDefnChildElement.getAttribute("type-name"), avpCode, avpVendorId});
             }
           }
@@ -411,39 +433,42 @@ public class DictionaryImpl implements Dictionary {
         }
 
         resolveWeakLinks(avp);
-        
+
         AvpRepresentation existingAvp = null;
-        if((existingAvp = avpMap.get(avp)) != null) {
+        if ((existingAvp = avpMap.get(avp)) != null) {
           logger.warn("Duplicated AVP Definition for AVP Code: {}, Vendor-Id: {}. See TRACE logs for definitions.", avp.getCode(), avp.getVendorId());
           logger.trace("Existing AVP:\r\n {}\r\n New AVP:\r\n {}", existingAvp, avp);
         }
         else {
           avpMap.put(avp, avp);
         }
-        
+
         AvpRepresentation oldAvp = avpByNameMap.put(avp.getName(), avp);
-        
-        if(oldAvp != null) {
+
+        if (oldAvp != null) {
           logger.debug("[WARN] Overwrited definition of AVP with the same name: Old: {}, New: {}", new Object[] { oldAvp, avp });
         }
       }
       catch (Exception e) {
         if (logger.isDebugEnabled()) {
-          logger.debug(new StringBuffer("[ERROR] Failed Parsing AVP: Name[").append(avpName).append("] Description[").append("N/A").append("] Code[").append(avpCode).append("] May-Encrypt[").append(avpMayEncrypt).append("] Mandatory[").append(avpMandatory).append("] Protected [").append(avpProtected).append("] Vendor-Bit [").append(avpVendorBit).append("] Vendor-Id [").append(avpVendorId).append("] Constrained[").append("N/A").append("] Type [").append(avpType).append("]").toString(), e);
+          logger.debug(new StringBuffer("[ERROR] Failed Parsing AVP: Name[").append(avpName).append("] Description[").append("N/A").
+              append("] Code[").append(avpCode).append("] May-Encrypt[").append(avpMayEncrypt).append("] Mandatory[").append(avpMandatory).
+              append("] Protected [").append(avpProtected).append("] Vendor-Bit [").append(avpVendorBit).append("] Vendor-Id [").append(avpVendorId).
+              append("] Constrained[").append("N/A").append("] Type [").append(avpType).append("]").toString(), e);
         }
       }
     }
 
-    for(AvpRepresentation rep : avpMap.values()) {
+    for (AvpRepresentation rep : avpMap.values()) {
       markWeaks((AvpRepresentationImpl) rep);
     }
   }
 
   private boolean markWeaks(AvpRepresentationImpl rep) {
-    if(rep.isGrouped()) {
+    if (rep.isGrouped()) {
       boolean isWeak = false;
-      for(AvpRepresentation repC : rep.getChildren()) {
-        if(markWeaks((AvpRepresentationImpl) repC)) {
+      for (AvpRepresentation repC : rep.getChildren()) {
+        if (markWeaks((AvpRepresentationImpl) repC)) {
           isWeak = true;
         }
       }
@@ -459,19 +484,19 @@ public class DictionaryImpl implements Dictionary {
   /**
    * For a given AVP resolves the weak links (where AVP definition in grouped
    * AVPs is not yet known, and only added by Name)
-   * 
+   *
    * @param newAvp the AVP which was just defined
    */
   private void resolveWeakLinks(AvpRepresentation newAvp) {
-    for(AvpRepresentation avp : avpMap.values()) {
-      if(avp.isGrouped()) {
-        if(avp.getName().equals(newAvp.getName())) {
+    for (AvpRepresentation avp : avpMap.values()) {
+      if (avp.isGrouped()) {
+        if (avp.getName().equals(newAvp.getName())) {
           continue;
         }
         List<AvpRepresentation> avpChilds = avp.getChildren();
-        for(int n = 0; n < avpChilds.size(); n++) {
+        for (int n = 0; n < avpChilds.size(); n++) {
           AvpRepresentation avpChild = avpChilds.get(n);
-          if(avpChild.getName().equals(newAvp.getName())) {
+          if (avpChild.getName().equals(newAvp.getName())) {
             try {
               AvpRepresentationImpl strongAvp = (AvpRepresentationImpl) newAvp.clone();
               strongAvp.setMultiplicityIndicator(avpChild.getMultiplicityIndicator());
@@ -484,7 +509,7 @@ public class DictionaryImpl implements Dictionary {
             }
             catch (CloneNotSupportedException cnse) {
               // It should not happen, but anyway
-              if(logger.isWarnEnabled()) {
+              if (logger.isWarnEnabled()) {
                 logger.warn("Unable to clone AVP " + newAvp, cnse);
               }
             }
@@ -566,7 +591,7 @@ public class DictionaryImpl implements Dictionary {
                 else {
                   multiplicity = commandAvpElement.getAttribute("multiplicity");
                 }
-                
+
                 index = commandAvpElement.hasAttribute("index") ? commandAvpElement.getAttribute("index") : "-1";
 
                 String avpCode = commandAvpElement.getAttribute("code");
@@ -597,7 +622,7 @@ public class DictionaryImpl implements Dictionary {
                   }
                   catch (CloneNotSupportedException cnse) {
                     // It should not happen, but anyway
-                    if(logger.isWarnEnabled()) {
+                    if (logger.isWarnEnabled()) {
                       logger.warn("Unable to clone AVP " + strongRepresentation, cnse);
                     }
                   }
@@ -618,17 +643,20 @@ public class DictionaryImpl implements Dictionary {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.validation.Dictionary#isConfigured()
    */
+  @Override
   public boolean isConfigured() {
     return this.configured;
   }
 
+  @Override
   public AvpRepresentation getAvp(int code) {
     return getAvp(code, 0);
   }
 
+  @Override
   public AvpRepresentation getAvp(int code, long vendorId) {
     if (!this.configured) {
       return null;
@@ -642,6 +670,7 @@ public class DictionaryImpl implements Dictionary {
     return avp;
   }
 
+  @Override
   public AvpRepresentation getAvp(String avpName) {
     return this.configured ? avpByNameMap.get(avpName) : null;
   }
@@ -666,18 +695,20 @@ public class DictionaryImpl implements Dictionary {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.validation.Dictionary#getMessage(int, boolean)
    */
+  @Override
   public MessageRepresentation getMessage(int commandCode, boolean isRequest) {
     return this.getMessage(commandCode, 0, isRequest);
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.validation.Dictionary#getMessage(int, long, boolean)
    */
+  @Override
   public MessageRepresentation getMessage(int commandCode, long applicationId, boolean isRequest) {
     if (!this.configured) {
       return null;
@@ -694,39 +725,45 @@ public class DictionaryImpl implements Dictionary {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.validation.Dictionary#isValidate()
    */
+  @Override
   public boolean isEnabled() {
     return this.enabled;
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.validation.Dictionary#getSendLevel()
    */
+  @Override
   public ValidatorLevel getSendLevel() {
     return this.sendValidationLevel;
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.validation.Dictionary#getReceiveLevel()
    */
+  @Override
   public ValidatorLevel getReceiveLevel() {
     return this.receiveValidationLevel;
   }
 
+  @Override
   public void setSendLevel(ValidatorLevel level) {
     this.sendValidationLevel = level;
   }
 
+  @Override
   public void setReceiveLevel(ValidatorLevel level) {
     this.receiveValidationLevel = level;
   }
 
+  @Override
   public void setEnabled(boolean enabled) {
     this.enabled = enabled;
   }
@@ -735,6 +772,7 @@ public class DictionaryImpl implements Dictionary {
     this.configured = configured;
   }
 
+  @Override
   public void validate(Message msg, boolean incoming) throws AvpNotAllowedException {
     if (!enabled || !configured) {
       return;
@@ -776,12 +814,12 @@ public class DictionaryImpl implements Dictionary {
 
   protected void printAvpTree(AvpRepresentation rep, String tab) {
     String x = tab + "+-- " + rep.getCode() + "/" + rep.getVendorId();
-    while(x.length() < 25) {
+    while (x.length() < 25) {
       x += ".";
     }
     System.out.println(x + rep.getName() + " > " + rep.getType());
-    if(rep.isGrouped()) {
-      for(AvpRepresentation repC : rep.getChildren()) {
+    if (rep.isGrouped()) {
+      for (AvpRepresentation repC : rep.getChildren()) {
         printAvpTree(repC, "  " + tab);
       }
     }

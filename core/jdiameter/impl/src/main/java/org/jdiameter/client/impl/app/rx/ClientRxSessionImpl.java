@@ -1,24 +1,44 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc. and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ /*
+  * TeleStax, Open Source Cloud Communications
+  * Copyright 2011-2016, TeleStax Inc. and individual contributors
+  * by the @authors tag.
+  *
+  * This program is free software: you can redistribute it and/or modify
+  * under the terms of the GNU Affero General Public License as
+  * published by the Free Software Foundation; either version 3 of
+  * the License, or (at your option) any later version.
+  *
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU Affero General Public License for more details.
+  *
+  * You should have received a copy of the GNU Affero General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+  *
+  * This file incorporates work covered by the following copyright and
+  * permission notice:
+  *
+  *   JBoss, Home of Professional Open Source
+  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+  *   by the @authors tag. See the copyright.txt in the distribution for a
+  *   full listing of individual contributors.
+  *
+  *   This is free software; you can redistribute it and/or modify it
+  *   under the terms of the GNU Lesser General Public License as
+  *   published by the Free Software Foundation; either version 2.1 of
+  *   the License, or (at your option) any later version.
+  *
+  *   This software is distributed in the hope that it will be useful,
+  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  *   Lesser General Public License for more details.
+  *
+  *   You should have received a copy of the GNU Lesser General Public
+  *   License along with this software; if not, write to the Free
+  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
 
 package org.jdiameter.client.impl.app.rx;
 
@@ -135,8 +155,8 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
   // Session Based Queue
   protected ArrayList<Event> eventQueue = new ArrayList<Event>();
 
-  public ClientRxSessionImpl(IClientRxSessionData sessionData, IRxMessageFactory fct, ISessionFactory sf, ClientRxSessionListener lst, IClientRxSessionContext ctx,
-      StateChangeListener<AppSession> stLst) {
+  public ClientRxSessionImpl(IClientRxSessionData sessionData, IRxMessageFactory fct, ISessionFactory sf, ClientRxSessionListener lst,
+      IClientRxSessionContext ctx, StateChangeListener<AppSession> stLst) {
     super(sf, sessionData);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
@@ -145,7 +165,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
       throw new IllegalArgumentException("ApplicationId can not be less than zero");
     }
 
-    this.context = (IClientRxSessionContext) ctx;
+    this.context = ctx;
 
     this.authAppIds = fct.getApplicationIds();
     this.listener = lst;
@@ -157,6 +177,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
     super.addStateChangeNotification(stLst);
   }
 
+  @Override
   public void sendAARequest(RxAARequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     try {
       this.handleEvent(new Event(true, request, null));
@@ -167,6 +188,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
   }
 
 
+  @Override
   public void sendSessionTermRequest(RxSessionTermRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     try {
       this.handleEvent(new Event(true, request, null));
@@ -176,14 +198,17 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
     }
   }
 
+  @Override
   public void sendReAuthAnswer(RxReAuthAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     this.handleEvent(new Event(Event.Type.SEND_RAA, null, answer));
   }
 
+  @Override
   public void sendAbortSessionAnswer(RxAbortSessionAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     this.handleEvent(new Event(Event.Type.SEND_ASA, null, answer));
   }
 
+  @Override
   public boolean isStateless() {
     return false;
   }
@@ -192,11 +217,13 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
     return this.isEventBased;
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> stateType) {
     return stateType == ClientRxSessionState.class ? (E) sessionData.getClientRxSessionState() : null;
   }
 
+  @Override
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
     return this.isEventBased() ? handleEventForEventBased(event) : handleEventForSessionBased(event);
   }
@@ -489,7 +516,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
               catch (Exception e) {
                 handleSendFailure(e, eventType, localEvent.getRequest().getMessage());
               }
-              break;        
+              break;
             default:
               logger.warn("Session Based Handling - Wrong event type ({}) on state {}", eventType, state);
               break;
@@ -511,6 +538,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
     }
   }
 
+  @Override
   public Answer processRequest(Request request) {
     RequestDelivery rd = new RequestDelivery();
     rd.session = this;
@@ -519,6 +547,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
     return null;
   }
 
+  @Override
   public void receivedSuccessMessage(Request request, Answer answer) {
     AnswerDelivery ad = new AnswerDelivery();
     ad.session = this;
@@ -528,6 +557,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
 
   }
 
+  @Override
   public void timeoutExpired(Request request) {
     //        if (request.getCommandCode() == RxAAAnswer.code) {
     //            try {
@@ -693,7 +723,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
   }
 
   protected boolean isFailure(long code) {
-    return (!isProvisional(code) && !isSuccess(code) && ((code >= 3000 && /*code < 4000) || (code >= 5000 &&*/ code < 6000)) && !temporaryErrorCodes.contains(code));
+    return (!isProvisional(code) && !isSuccess(code) && ((code >= 3000 && code < 6000)) && !temporaryErrorCodes.contains(code));
   }
 
   /* (non-Javadoc)
@@ -707,7 +737,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
   /* (non-Javadoc)
    * @see org.jdiameter.common.impl.app.AppSessionImpl#relink(org.jdiameter.client.api.IContainer)
    */
-  private final Message messageFromBuffer(ByteBuffer request) throws InternalException {
+  private Message messageFromBuffer(ByteBuffer request) throws InternalException {
     if (request != null) {
       Message m;
       try {
@@ -734,6 +764,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
     ClientRxSession session;
     Request request;
 
+    @Override
     public void run() {
       try {
         switch (request.getCommandCode()) {
@@ -742,7 +773,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
             break;
           case RxAbortSessionRequest.code:
             handleEvent(new Event(Event.Type.RECEIVE_ASR, factory.createAbortSessionRequest(request), null));
-            break;        
+            break;
           default:
             listener.doOtherEvent(session, new AppRequestEventImpl(request), null);
             break;
@@ -760,6 +791,7 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
     Answer answer;
     Request request;
 
+    @Override
     public void run() {
       try {
         switch (request.getCommandCode()) {
@@ -795,8 +827,8 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
     result = prime * result + (isEventBased ? 1231 : 1237);
     result = prime * result + ((originHost == null) ? 0 : originHost.hashCode());
     result = prime * result + ((originRealm == null) ? 0 : originRealm.hashCode());
-    result = prime * result + ((sessionData == null) ? 0 : (sessionData.getClientRxSessionState() == null ? 0 : 
-        sessionData.getClientRxSessionState().hashCode()));
+    result = prime * result + ((sessionData == null) ? 0 : (sessionData.getClientRxSessionState() == null ? 0 :
+      sessionData.getClientRxSessionState().hashCode()));
     return result;
   }
 
@@ -839,20 +871,24 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
       return false;
     }
     if (sessionData == null) {
-      if (other.sessionData != null)
+      if (other.sessionData != null) {
         return false;
+      }
     }
     else if (sessionData.getClientRxSessionState() == null) {
-        if (other.sessionData.getClientRxSessionState() != null)
-            return false;
-    }
-    else if (!sessionData.getClientRxSessionState().equals(other.sessionData.getClientRxSessionState()))
+      if (other.sessionData.getClientRxSessionState() != null) {
         return false;
+      }
+    }
+    else if (!sessionData.getClientRxSessionState().equals(other.sessionData.getClientRxSessionState())) {
+      return false;
+    }
 
 
     return true;
   }
 
+  @Override
   public void onTimer(String timerName) {
   }
 }

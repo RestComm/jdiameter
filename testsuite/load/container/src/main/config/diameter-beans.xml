@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deployment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="urn:jboss:bean-deployer:2.0 bean-deployer_2_0.xsd"
-	xmlns="urn:jboss:bean-deployer:2.0">
+  xsi:schemaLocation="urn:jboss:bean-deployer:2.0 bean-deployer_2_0.xsd"
+  xmlns="urn:jboss:bean-deployer:2.0">
 
-	<!-- 
-	<bean name="CLIRunner"
-		class="org.mobicents.tests.diameter.CLIRunner">
-		<property name="configurationFile">jdiameter-config.xml</property>
-		<property name="testClass">org.mobicents.tests.diameter.base.acr.ACR</property>
-	</bean>
-	 -->
-	 
-	 <bean name="CLIRunner"
-		class="org.mobicents.tests.diameter.CLIRunner">
-		<property name="configurationFile">jdiameter-config.xml</property>
-		<property name="testClass">${dia.test.runner}</property>
-	</bean>
+  <!--
+  <bean name="CLIRunner"
+    class="org.mobicents.tests.diameter.CLIRunner">
+    <property name="configurationFile">jdiameter-config.xml</property>
+    <property name="testClass">org.mobicents.tests.diameter.base.acr.ACR</property>
+  </bean>
+   -->
+
+   <bean name="CLIRunner" class="org.mobicents.tests.diameter.CLIRunner">
+    <property name="configurationFile">jdiameter-config.xml</property>
+    <property name="testClass">${dia.test.runner}</property>
+  </bean>
 </deployment>

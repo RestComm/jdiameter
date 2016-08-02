@@ -4,18 +4,18 @@
  * contributors as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a full listing
  * of individual contributors.
- * 
+ *
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License, v. 2.0.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
- * v. 2.0 along with this distribution; if not, write to the Free 
+ * v. 2.0 along with this distribution; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
@@ -38,7 +38,6 @@ import org.jdiameter.api.ro.ClientRoSession;
 import org.jdiameter.api.ro.ClientRoSessionListener;
 import org.jdiameter.api.ro.ServerRoSession;
 import org.jdiameter.api.ro.events.RoCreditControlRequest;
-import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.ro.ClientRoSessionState;
 import org.jdiameter.common.api.app.ro.IClientRoSessionContext;
 import org.jdiameter.common.impl.app.ro.RoCreditControlRequestImpl;
@@ -47,7 +46,7 @@ import org.mobicents.diameter.stack.functional.StateChange;
 import org.mobicents.diameter.stack.functional.TBase;
 
 /**
- * 
+ *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
@@ -69,13 +68,13 @@ public abstract class AbstractClient extends TBase implements ClientRoSessionLis
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(0, 4));
       RoSessionFactoryImpl creditControlSessionFactory = new RoSessionFactoryImpl(this.sessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ServerRoSession.class, creditControlSessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ClientRoSession.class, creditControlSessionFactory);
+      sessionFactory.registerAppFacory(ServerRoSession.class, creditControlSessionFactory);
+      sessionFactory.registerAppFacory(ClientRoSession.class, creditControlSessionFactory);
 
       creditControlSessionFactory.setStateListener(this);
       creditControlSessionFactory.setClientSessionListener(this);
       creditControlSessionFactory.setClientContextListener(this);
-      this.clientRoSession = ((ISessionFactory) this.sessionFactory)
+      this.clientRoSession = this.sessionFactory
           .getNewAppSession(this.sessionFactory.getSessionId("xxTESTxx"), getApplicationId(), ClientRoSession.class, (Object) null);
     }
     finally {
@@ -110,18 +109,20 @@ public abstract class AbstractClient extends TBase implements ClientRoSessionLis
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.common.api.app.cca.IClientCCASessionContext# getDefaultTxTimerValue()
    */
+  @Override
   public long getDefaultTxTimerValue() {
     return 10;
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.cca.ClientCCASessionListener#getDefaultDDFHValue()
    */
+  @Override
   public int getDefaultDDFHValue() {
     // DDFH_CONTINUE: 1
     return 1;
@@ -129,9 +130,10 @@ public abstract class AbstractClient extends TBase implements ClientRoSessionLis
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.jdiameter.api.cca.ClientCCASessionListener#getDefaultCCFHValue()
    */
+  @Override
   public int getDefaultCCFHValue() {
     // CCFH_CONTINUE: 1
     return 1;
@@ -139,34 +141,42 @@ public abstract class AbstractClient extends TBase implements ClientRoSessionLis
 
   // ------------ leave those
 
+  @Override
   public void txTimerExpired(ClientRoSession session) {
     // NOP
   }
 
+  @Override
   public void grantAccessOnDeliverFailure(ClientRoSession clientCCASessionImpl, Message request) {
     // NOP
   }
 
+  @Override
   public void denyAccessOnDeliverFailure(ClientRoSession clientCCASessionImpl, Message request) {
     // NOP
   }
 
+  @Override
   public void grantAccessOnTxExpire(ClientRoSession clientCCASessionImpl) {
     // NOP
   }
 
+  @Override
   public void denyAccessOnTxExpire(ClientRoSession clientCCASessionImpl) {
     // NOP
   }
 
+  @Override
   public void grantAccessOnFailureMessage(ClientRoSession clientCCASessionImpl) {
     // NOP
   }
 
+  @Override
   public void denyAccessOnFailureMessage(ClientRoSession clientCCASessionImpl) {
     // NOP
   }
 
+  @Override
   public void indicateServiceError(ClientRoSession clientCCASessionImpl) {
     // NOP
   }
