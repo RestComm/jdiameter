@@ -24,11 +24,14 @@
   </ciManagement>
 
   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
     <mobicents.checkstyle.version>1.0.0.FINAL</mobicents.checkstyle.version>
     <checkstyle.plugin.version>2.9.1</checkstyle.plugin.version>
     <checkstyle.consoleOutput>true</checkstyle.consoleOutput>
     <checkstyle.failOnError>true</checkstyle.failOnError>
     <version.com.puppycrawl.tools.checkstyle>6.18</version.com.puppycrawl.tools.checkstyle>
+    <compile.source>1.7</compile.source>
   </properties>
 
   <developers>
@@ -186,6 +189,14 @@
         <configuration>
           <eclipseProjectName>${project.artifactId}</eclipseProjectName>
           <generateProjectsForModules>false</generateProjectsForModules>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>${compile.source}</source>
+          <target>${compile.source}</target>
         </configuration>
       </plugin>
     </plugins>
