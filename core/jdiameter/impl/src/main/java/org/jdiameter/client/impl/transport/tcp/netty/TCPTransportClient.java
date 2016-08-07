@@ -45,7 +45,7 @@ import io.netty.util.concurrent.EventExecutorGroup;
  */
 public class TCPTransportClient {
   protected EventLoopGroup workerGroup;
-  protected EventExecutorGroup eventExecutorGroup = new DefaultEventExecutorGroup(4);
+  protected EventExecutorGroup eventExecutorGroup = new DefaultEventExecutorGroup(1);
   protected Channel channel;
   protected TCPClientConnection parentConnection;
   protected InetSocketAddress destAddress;
