@@ -27,6 +27,7 @@
       </resource>
     </resources>
 
+    <pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.asciidoctor</groupId>
@@ -156,5 +157,6 @@
         </executions>
       </plugin>
     </plugins>
+    </pluginManagement>
   </build>
 </project>
