@@ -10,7 +10,7 @@
 
   <artifactId>diameter-core-docs-jdocbook-restcomm</artifactId>
 
-  <name>Restcomm :: Diameter Documentation :: ${pom.artifactId}</name>
+  <name>Restcomm :: Diameter Documentation :: ${project.artifactId}</name>
 
   <packaging>jdocbook</packaging>
 
@@ -29,9 +29,9 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>${pom.groupId}</groupId>
+                  <groupId>${project.groupId}</groupId>
                   <artifactId>diameter-core-docs-sources-restcomm</artifactId>
-                  <version>${pom.version}</version>
+                  <version>${project.version}</version>
                   <type>jar</type>
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}/docbook/resources</outputDirectory>
