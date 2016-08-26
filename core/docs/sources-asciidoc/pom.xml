@@ -10,7 +10,7 @@
 
   <artifactId>diameter-core-docs-sources-asciidoc</artifactId>
 
-  <name>Restcomm :: Diameter Documentation :: ${pom.artifactId}</name>
+  <name>Restcomm :: Diameter Documentation :: ${project.artifactId}</name>
 
   <properties>
     <asciidoctor.maven.plugin.version>1.5.3</asciidoctor.maven.plugin.version>
@@ -27,6 +27,7 @@
       </resource>
     </resources>
 
+    <pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.asciidoctor</groupId>
@@ -156,5 +157,6 @@
         </executions>
       </plugin>
     </plugins>
+    </pluginManagement>
   </build>
 </project>
