@@ -28,6 +28,7 @@
     <version.aop.asintegration.core>2.1.8.GA</version.aop.asintegration.core>
     <version.jboss.sx.client>2.0.1-BETA</version.jboss.sx.client>
     <version.jboss.naming.jnp-client>5.0.4.GA</version.jboss.naming.jnp-client>
+    <version.surefire>2.19</version.surefire>
   </properties>
 
   <dependencyManagement>

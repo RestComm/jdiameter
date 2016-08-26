@@ -13,7 +13,7 @@
   <groupId>org.mobicents.servers.diameter.guide</groupId>
   <artifactId>example1</artifactId>
 
-  <name>Restcomm :: Guide :: Example 1 :: ${pom.artifactId}</name>
+  <name>Restcomm :: Guide :: Example 1 :: ${project.artifactId}</name>
 
   <properties>
     <restcomm.diameter.jdiameter.version>1.7.0-SNAPSHOT</restcomm.diameter.jdiameter.version>
@@ -66,6 +66,37 @@
     </dependency>
   </dependencies>
 
+
+      <build>
+        <plugins>
+
+            <!--Maven assembly plugin -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.example.client.ExampleClient</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <!-- bind assembly:single to the package phase so this happens automatically on "mvn package" command -->
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+      </build>
+
+
   <profiles>
     <profile>
       <id>default</id>
@@ -85,147 +116,6 @@
       <properties>
         <maven.test.skip>false</maven.test.skip>
       </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>copy-dependency-jar</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>copy</goal>
-                </goals>
-                <configuration>
-                  <artifactItems>
-                    <artifactItem>
-                      <groupId>org.mobicents.servers.diameter</groupId>
-                      <artifactId>jdiameter-api</artifactId>
-                      <type>jar</type>
-                      <overWrite>true</overWrite>
-                      <outputDirectory>
-                        ${project.build.directory}/run
-                                </outputDirectory>
-                      <destFileName>
-                        jdiameter-api.jar
-                                </destFileName>
-                    </artifactItem>
-                    <artifactItem>
-                      <groupId>org.mobicents.servers.diameter</groupId>
-                      <artifactId>jdiameter-impl</artifactId>
-                      <type>jar</type>
-                      <overWrite>true</overWrite>
-                      <outputDirectory>
-                        ${project.build.directory}/run
-                                </outputDirectory>
-                      <destFileName>
-                        jdiameter-impl.jar
-                                </destFileName>
-                    </artifactItem>
-                    <artifactItem>
-                      <artifactId>picocontainer</artifactId>
-                      <groupId>picocontainer</groupId>
-                      <type>jar</type>
-                      <overWrite>true</overWrite>
-                      <outputDirectory>
-                        ${project.build.directory}/run
-                                </outputDirectory>
-                      <destFileName>
-                        picocontainer.jar
-                                </destFileName>
-                    </artifactItem>
-                    <artifactItem>
-                      <groupId>junit</groupId>
-                      <artifactId>junit</artifactId>
-                      <type>jar</type>
-                      <overWrite>true</overWrite>
-                      <outputDirectory>
-                        ${project.build.directory}/run
-                                </outputDirectory>
-                      <destFileName>
-                        junit.jar
-                                </destFileName>
-                    </artifactItem>
-                    <artifactItem>
-                      <groupId>org.slf4j</groupId>
-                      <artifactId>slf4j-api</artifactId>
-                      <type>jar</type>
-                      <overWrite>true</overWrite>
-                      <outputDirectory>
-                        ${project.build.directory}/run
-                                </outputDirectory>
-                      <destFileName>
-                        slf4j-api.jar
-                                </destFileName>
-                    </artifactItem>
-                    <artifactItem>
-                      <groupId>org.slf4j</groupId>
-                      <artifactId>slf4j-log4j12</artifactId>
-                      <type>jar</type>
-                      <overWrite>true</overWrite>
-                      <outputDirectory>
-                        ${project.build.directory}/run
-                                </outputDirectory>
-                      <destFileName>
-                        slf4j-log4j12.jar
-                                </destFileName>
-                    </artifactItem>
-
-                    <artifactItem>
-                      <groupId>urbanophile</groupId>
-                      <artifactId>java-getopt</artifactId>
-                      <type>jar</type>
-                      <overWrite>true</overWrite>
-                      <outputDirectory>
-                        ${project.build.directory}/run
-                                </outputDirectory>
-                      <destFileName>
-                        java-getopt.jar
-                                </destFileName>
-                    </artifactItem>
-                    <artifactItem>
-                      <groupId>log4j</groupId>
-                      <artifactId>log4j</artifactId>
-                      <type>jar</type>
-                      <overWrite>true</overWrite>
-                      <outputDirectory>
-                        ${project.build.directory}/run
-                                </outputDirectory>
-                      <destFileName>
-                        log4j.jar
-                                </destFileName>
-                    </artifactItem>
-
-                    <artifactItem>
-                      <groupId>org.mobicents.servers.diameter</groupId>
-                      <artifactId>restcomm-diameter-mux-jar</artifactId>
-                      <type>jar</type>
-                      <overWrite>true</overWrite>
-                      <outputDirectory>${project.build.directory}/run</outputDirectory>
-                      <destFileName>mux.jar</destFileName>
-                    </artifactItem>
-                    <!-- This requires default profile to run once -->
-                    <artifactItem>
-                      <groupId>${pom.groupId}</groupId>
-                      <artifactId>${pom.artifactId}</artifactId>
-                      <version>${pom.version}</version>
-                      <type>jar</type>
-                      <overWrite>true</overWrite>
-                      <outputDirectory>
-                        ${project.build.directory}/run
-                                </outputDirectory>
-                      <destFileName>
-                        example1.jar
-                                </destFileName>
-                    </artifactItem>
-                  </artifactItems>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
 
     </profile>
 
