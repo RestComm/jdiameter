@@ -54,26 +54,7 @@ fi
 
 
 
-RUN_CLASSPATH="$TEST_CORE/target/run/testsuite-load.jar"
-RUN_CLASSPATH="$RUN_CLASSPATH:$TEST_CORE/target/xml-apis.jar"
-RUN_CLASSPATH="$RUN_CLASSPATH:$TEST_CORE/target/run/slf4j-log4j12.jar"
-RUN_CLASSPATH="$RUN_CLASSPATH:$TEST_CORE/target/run/slf4j-api.jar"
-RUN_CLASSPATH="$RUN_CLASSPATH:$TEST_CORE/target/run/java-getopt.jar"
-RUN_CLASSPATH="$RUN_CLASSPATH:$TEST_CORE/target/run/picocontainer.jar"
-RUN_CLASSPATH="$RUN_CLASSPATH:$TEST_CORE/target/run/junit.jar"
-RUN_CLASSPATH="$RUN_CLASSPATH:$TEST_CORE/target/run/jdiameter-impl.jar"
-RUN_CLASSPATH="$RUN_CLASSPATH:$TEST_CORE/target/run/jdiameter-api.jar"
-RUN_CLASSPATH="$RUN_CLASSPATH:$TEST_CORE/target/run/log4j.jar"
-RUN_CLASSPATH="$RUN_CLASSPATH:$TEST_CORE/target/run/mux.jar"
-#RUN_CLASSPATH="$RUN_CLASSPATH:$TEST_CORE/target/run/mobicents-media-server-impl.jar"
-#RUN_CLASSPATH="$RUN_CLASSPATH:$TEST_CORE/target/run/mobicents-media-server-spi.jar"
-#RUN_CLASSPATH="$RUN_CLASSPATH:$TEST_CORE/target/run/mp3spi.jar"
-#RUN_CLASSPATH="$RUN_CLASSPATH:$TEST_CORE/target/run/opencsv.jar"
-#RUN_CLASSPATH="$RUN_CLASSPATH:$TEST_CORE/target/run/swing-layout.jar"
-#RUN_CLASSPATH="$RUN_CLASSPATH:$TEST_CORE/target/run/swing-worker.jar"
-#RUN_CLASSPATH="$RUN_CLASSPATH:$TEST_CORE/target/run/tritonus_share.jar"
-#RUN_CLASSPATH="$RUN_CLASSPATH:$TEST_CORE/target/run/vorbisspi.jar"
-#RUN_CLASSPATH="$RUN_CLASSPATH:$TEST_CORE/target/run/jain-sip-ri.jar"
+RUN_CLASSPATH="$TEST_CORE/target/testsuite-load-1.7.0-SNAPSHOT-jar-with-dependencies.jar"
 
 # For Cygwin, switch paths to Windows format before running java
 if $cygwin; then
@@ -148,7 +129,7 @@ executeTest(){
 
       echo "Preparing test tool jar..."
       #mvn -f $TEST_CORE/pom.xml clean install
-      mvn -f $TEST_CORE/pom.xml install
+      #mvn -f $TEST_CORE/pom.xml install
 
       echo ""
       echo "========================================================================="
