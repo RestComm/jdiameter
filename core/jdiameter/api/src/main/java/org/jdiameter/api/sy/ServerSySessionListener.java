@@ -42,32 +42,37 @@
 
 package org.jdiameter.api.sy;
 
- import org.jdiameter.api.IllegalDiameterStateException;
- import org.jdiameter.api.InternalException;
- import org.jdiameter.api.OverloadException;
- import org.jdiameter.api.RouteException;
- import org.jdiameter.api.sy.events.*;
+import org.jdiameter.api.IllegalDiameterStateException;
+import org.jdiameter.api.InternalException;
+import org.jdiameter.api.OverloadException;
+import org.jdiameter.api.RouteException;
 
- /**
-  * This interface defines the possible actions for the different states in the server Sy
-  * Interface state machine.
-  *
-  * @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
-  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
-  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
-  */
- public interface ServerSySessionListener {
+import org.jdiameter.api.sy.events.SpendingLimitAnswer;
+import org.jdiameter.api.sy.events.SpendingLimitRequest;
+import org.jdiameter.api.sy.events.SpendingTerminationRequest;
+import org.jdiameter.api.sy.events.SpendingNotificationAnswer;
+import org.jdiameter.api.sy.events.SpendingTerminationAnswer;
 
-   void doInitialSpendingLimitReportRequest(ClientSySession session, SpendingLimitRequest request, SpendingLimitAnswer answer)
-           throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+/**
+* This interface defines the possible actions for th;e different states in the server Sy
+* Interface state machine.
+*
+* @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
+* @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+* @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+*/
+public interface ServerSySessionListener {
 
-   void doIntermediateSpendingLimitReportRequest(ClientSySession session, SpendingLimitRequest request, SpendingLimitAnswer answer)
-           throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doInitialSpendingLimitReportRequest(ClientSySession session, SpendingLimitRequest request, SpendingLimitAnswer answer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-   void doFinalSpendingLimitReportRequest(ClientSySession session, SpendingTerminationRequest request, SpendingTerminationAnswer answer)
-           throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doIntermediateSpendingLimitReportRequest(ClientSySession session, SpendingLimitRequest request, SpendingLimitAnswer answer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-   void doSpendingLimitReportAnswer(ClientSySession session, SpendingNotificationAnswer answer)
-           throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doFinalSpendingLimitReportRequest(ClientSySession session, SpendingTerminationRequest request, SpendingTerminationAnswer answer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
- }
+  void doSpendingLimitReportAnswer(ClientSySession session, SpendingNotificationAnswer answer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+
+}

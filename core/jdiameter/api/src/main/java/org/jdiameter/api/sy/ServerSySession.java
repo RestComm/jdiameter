@@ -42,34 +42,38 @@
 
 package org.jdiameter.api.sy;
 
- import org.jdiameter.api.IllegalDiameterStateException;
- import org.jdiameter.api.InternalException;
- import org.jdiameter.api.OverloadException;
- import org.jdiameter.api.RouteException;
- import org.jdiameter.api.app.AppSession;
- import org.jdiameter.api.app.StateMachine;
- import org.jdiameter.api.sy.events.*;
+import org.jdiameter.api.IllegalDiameterStateException;
+import org.jdiameter.api.InternalException;
+import org.jdiameter.api.OverloadException;
+import org.jdiameter.api.RouteException;
+import org.jdiameter.api.app.AppSession;
+import org.jdiameter.api.app.StateMachine;
 
- /**
-  * Basic class for Sy Server Interface specific session.
-  * Listener must be injected from constructor of implementation class
-  *
-  * @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
-  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
-  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
-  */
- public interface ServerSySession extends AppSession, StateMachine {
+import org.jdiameter.api.sy.events.SpendingLimitAnswer;
+import org.jdiameter.api.sy.events.SpendingTerminationRequest;
+import org.jdiameter.api.sy.events.SpendingNotificationRequest;
 
-   void sendInitialSpendingLimitReportAnswer(SpendingLimitAnswer answer)
-           throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+/**
+* Basic class for Sy Server Interface specific session.
+* Listener must be injected from constructor of implementation class
+*
+* @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
+* @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+* @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+*/
 
-   void sendIntermediateSpendingLimitReportAnswer(SpendingLimitAnswer request)
-           throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+public interface ServerSySession extends AppSession, StateMachine {
 
-   void sendFinalSpendingLimitReportAnswer(SpendingTerminationRequest request)
-           throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void sendInitialSpendingLimitReportAnswer(SpendingLimitAnswer answer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-   void sendSpendingLimitReportRequest(SpendingNotificationRequest request)
-           throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void sendIntermediateSpendingLimitReportAnswer(SpendingLimitAnswer request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
- }
+  void sendFinalSpendingLimitReportAnswer(SpendingTerminationRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+
+  void sendSpendingLimitReportRequest(SpendingNotificationRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+
+}

@@ -42,22 +42,22 @@
 
 package org.jdiameter.api.sy.events;
 
- import org.jdiameter.api.app.AppRequestEvent;
+import org.jdiameter.api.app.AppRequestEvent;
 
- /**
-  * The Spending-Limit-Request (SLR) message, indicated by the Command-Code field set to 8388635 is sent
-  * by the PCRF ot the OCS to retrieve subscription information that indicates that policy decision depends
-  * on policy counters held on the OCS.
-  *
-  * @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
-  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
-  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
-  */
- public interface SpendingLimitRequest extends AppRequestEvent {
+/**
+* The Spending-Limit-Request (SLR) message, indicated by the Command-Code field set to 8388635 is sent
+* by the PCRF ot the OCS to retrieve subscription information that indicates that policy decision depends
+* on policy counters held on the OCS.
+*
+* @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
+* @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+* @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+*/
+public interface SpendingLimitRequest extends AppRequestEvent {
 
-   String _SHORT_NAME = "SLR";
-   String _LONG_NAME = "Spending-Limit-Request";
+  String _SHORT_NAME = "SLR";
+  String _LONG_NAME = "Spending-Limit-Request";
 
-   int code = 8388635;
+  int code = 8388635;
 
- }
+}

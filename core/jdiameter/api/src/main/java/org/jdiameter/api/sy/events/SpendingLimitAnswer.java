@@ -42,21 +42,21 @@
 
 package org.jdiameter.api.sy.events;
 
- import org.jdiameter.api.app.AppAnswerEvent;
+import org.jdiameter.api.app.AppAnswerEvent;
 
- /**
-  * The Spending-Limit-Answer (SLA) message, indicated by the Command-Code field set to 8388635 is sent
-  * by the OCS to the PCRF as a response to SLR message.
-  *
-  * @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
-  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
-  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
-  */
- public interface SpendingLimitAnswer extends AppAnswerEvent {
+/**
+* The Spending-Limit-Answer (SLA) message, indicated by the Command-Code field set to 8388635 is sent
+* by the OCS to the PCRF as a response to SLR message.
+*
+* @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
+* @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+* @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+*/
+public interface SpendingLimitAnswer extends AppAnswerEvent {
 
-   String _SHORT_NAME = "SLA";
-   String _LONG_NAME = "Spending-Limit-Answer";
+  String _SHORT_NAME = "SLA";
+  String _LONG_NAME = "Spending-Limit-Answer";
 
-   int code = 8388635;
+  int code = 8388635;
 
- }
+}
