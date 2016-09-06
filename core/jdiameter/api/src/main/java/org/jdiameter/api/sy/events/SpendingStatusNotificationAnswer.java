@@ -45,18 +45,18 @@ package org.jdiameter.api.sy.events;
 import org.jdiameter.api.app.AppAnswerEvent;
 
 /**
-* The Spending-Termination-Answer (STA) message, indicated by the Command-Code field set to 275 is sent
-* by the OCS to the PCRF in reply to the STR message.
+* The Spending-Notification-Answer (SNA) message, indicated by the Command-Code field set to 8388636 is sent
+* by the PCRF to the OCS in reply to the SNR message.
 *
 * @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
 * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
 * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
 */
-public interface SpendingTerminationAnswer extends AppAnswerEvent {
+public interface SpendingStatusNotificationAnswer extends AppAnswerEvent {
 
-  String _SHORT_NAME = "STA";
-  String _LONG_NAME = "Spending-Termination-Answer";
+  String _SHORT_NAME = "SNA";
+  String _LONG_NAME = "Spending-Status-Notification-Answer";
 
-  int code = 275;
+  int code = 8388636;
 
 }

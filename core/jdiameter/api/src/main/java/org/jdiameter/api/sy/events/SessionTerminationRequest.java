@@ -45,18 +45,18 @@ package org.jdiameter.api.sy.events;
 import org.jdiameter.api.app.AppAnswerEvent;
 
 /**
-* The Spending-Notification-Request (SNR) message, indicated by the Command-Code field set to 8388636 is sent
-* by the OCS to the PCRF when the OCS detects that status of a policy counter identifier(s) had changed.
+* The Spending-Termination-Request (STR) message, indicated by the Command-Code field set to 275 is sent
+* by the PCRF to the OCS when the PCRF decides that policy decisions no longer depends on policy counters.
 *
 * @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
 * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
 * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
 */
-public interface SpendingNotificationRequest extends AppAnswerEvent {
+public interface SessionTerminationRequest extends AppAnswerEvent {
 
-  String _SHORT_NAME = "SNR";
-  String _LONG_NAME = "Spending-Notification-Request";
+  String _SHORT_NAME = "STR";
+  String _LONG_NAME = "Session-Termination-Request";
 
-  int code = 8388636;
+  int code = 275;
 
 }

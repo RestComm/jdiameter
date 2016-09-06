@@ -6668,16 +6668,15 @@
     <type type-name="Address" />
   </avpdefn>
 
-  <!-- Still to be defined the CODE for this feature
-  <avpdefn name="OC-Supported-Features" code="XXXX" vendor-id="TGPP" mandatory="may" protected="mustnot" may-encrypt="no" vendor-bit="must" >
+  <avpdefn name="OC-Supported-Features" code="621" vendor-id="TGPP" mandatory="may" protected="mustnot" may-encrypt="no" vendor-bit="must" >
     <grouped>
       <avp name="OC-Feature-Vector" />
     </grouped>
   </avpdefn>
-  <avpdefn name="OC-Feature-Vector" code="XXXX" vendor-id="TGPP" mandatory="may" protected="mustnot" may-encrypt="no" vendor-bit="must" >
+  <avpdefn name="OC-Feature-Vector" code="622" vendor-id="TGPP" mandatory="may" protected="mustnot" may-encrypt="no" vendor-bit="must" >
      <type type-name="Unsigned64" />
   </avpdefn>
-  -->
+
   <avpdefn name="UE-SRVCC-Capability" code="1615" vendor-id="TGPP" mandatory="mustnot" protected="mustnot" may-encrypt="no" vendor-bit="must">
     <type type-name="Enumerated">
       <enum code="0" name="UE_SRVCC_NOT_SUPPORTED"/>
@@ -7615,5 +7614,96 @@
   </application>
 
   <!-- ************************ END 3GPP S13/S13' AVPS ******************* -->
+
+  <!-- ***************************** 3GPP Sy AVPS ************************ -->
+
+  <avpdefn name="Policy-Counter-Identifier" code="2901" mandatory="must" protected="may" may-encrypt="no" vendor-bit="mustnot" >
+    <type type-name="UTF8String" />
+  </avpdefn>
+
+  <avpdefn name="Policy-Counter-Status" code="2902" mandatory="must" protected="may" may-encrypt="no" vendor-bit="mustnot" >
+    <type type-name="UTF8String" />
+  </avpdefn>
+
+  <avpdefn name="SL-Request-Type" code="2904" mandatory="must" protected="may" may-encrypt="no" vendor-bit="mustnot" >
+    <type type-name="Enumerated">
+      <enum code="0" name="INITIAL_REQUEST" />
+      <enum code="1" name="INTERMEDIATE_REQUEST" />
+    </type>
+  </avpdefn>
+
+  <avpdefn name="Policy-Counter-Status-Report" code="2903" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="mustnot" >
+    <grouped>
+      <avp name="Policy-Counter-Identifier" multiplicity="1" />
+      <avp name="Policy-Counter-Status" multiplicity="1" />
+      <avp name="Pending-Policy-Counter-Information" multiplicity="0-1" />
+    </grouped>
+  </avpdefn>
+  <avpdefn name="Pending-Policy-Counter-Information" code="2905" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="mustnot" >
+    <grouped>
+      <avp name="Policy-Counter-Status" multiplicity="1" />
+      <avp name="Pending-Policy-Counter-Change-Time" multiplicity="1" />
+    </grouped>
+  </avpdefn>
+  <avpdefn name="Pending-Policy-Counter-Change-Time" code="2906" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot" >
+    <type type-name="Time" />
+  </avpdefn>
+
+  <application id="16777302" vendor-id="TGPP" name="3GPP Sy (Rel13)" URI="http://www.3gpp.org/ftp//Specs/archive/29_series/29.219/29219-d30.zip">
+    <command name="Spending-Limit-Request" code="8388635" request="true">
+      <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+      <!-- DRMP AVP, Diameter-Message-Routing-Priority; IETF draft-ietf-dimedrmp [21] -->
+      <avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="OC-Supported-Features" code="621" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="SL-Request-Type" code="2904" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Subscription-Id" code="443" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Policy-Counter-Identifier" code="2901" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Logical-Access-Id" code="" vendor="" multiplicity="" index="" />
+      <!-- Physical-Access-ID  -->
+      <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0" index="-1" />
+      <avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
+    </command>
+
+    <avpdefn name="OC-OLR" code="623" vendor-id="TGPP" mandatory="may" protected="mustnot" may-encrypt="no" vendor-bit="must" >
+      <grouped>
+        <avp name="OC-Sequence-Number" />
+        <avp name="OC-Report-Type" />
+        <avp name="OC-Reduction-Percentage" />
+        <avp name="OC-Validity-Duration" />
+      </grouped>
+    </avpdefn>
+    <avpdefn name="OC-Sequence-Number" code="624" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot" >
+      <type type-name="Unsigned64" />
+    </avpdefn>
+    <avpdefn name="OC-Validity-Duration" code="625" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot" >
+      <type type-name="Unsigned32" />
+    </avpdefn>
+    <avpdefn name="OC-Report-Type" code="626" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="mustnot" >
+      <type type-name="Enumerated">
+        <enum code="0" name="HOST_REPORT" />
+        <enum code="1" name="REALM_REPORT" />
+      </type>
+    </avpdefn>
+    <avpdefn name="OC-Reduction-Percentage" code="627" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot" >
+      <type type-name="Unsigned32" />
+    </avpdefn>
+
+    <command name="Spending-Limit-Answer" code="8388635" request="false">
+    </command>
+
+    <command name="Spending-Status-Notification-Request" code="8388636" request="true">
+    </command>
+
+    <command name="Spending-Status-Notification-Answer" code="8388636" request="false">
+    </command>
+
+  </application>
+
+  <!-- ***************************** 3GPP Sy AVPS ************************ -->
 
 </dictionary>

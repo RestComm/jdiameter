@@ -45,17 +45,17 @@ package org.jdiameter.api.sy.events;
 import org.jdiameter.api.app.AppAnswerEvent;
 
 /**
-* The Spending-Termination-Request (STR) message, indicated by the Command-Code field set to 275 is sent
-* by the PCRF to the OCS when the PCRF decides that policy decisions no longer depends on policy counters.
+* The Spending-Termination-Answer (STA) message, indicated by the Command-Code field set to 275 is sent
+* by the OCS to the PCRF in reply to the STR message.
 *
 * @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
 * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
 * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
 */
-public interface SpendingTerminationRequest extends AppAnswerEvent {
+public interface SessionTerminationAnswer extends AppAnswerEvent {
 
-  String _SHORT_NAME = "STR";
-  String _LONG_NAME = "Spending-Termination-Request";
+  String _SHORT_NAME = "STA";
+  String _LONG_NAME = "Session-Termination-Answer";
 
   int code = 275;
 
