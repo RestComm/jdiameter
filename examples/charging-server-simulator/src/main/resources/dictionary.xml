@@ -7649,6 +7649,10 @@
     <type type-name="Time" />
   </avpdefn>
 
+  <avpdefn name="Physical-Access-Id" code="313" vendor-id="ETSI" mandatory="may" protected="may" may-encrypt="yes" vendor-bit="must" >
+    <type type-name="UTF8String" />
+  </avpdefn>
+
   <application id="16777302" vendor-id="TGPP" name="3GPP Sy (Rel13)" URI="http://www.3gpp.org/ftp//Specs/archive/29_series/29.219/29219-d30.zip">
     <command name="Spending-Limit-Request" code="8388635" request="true">
       <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
@@ -7663,8 +7667,8 @@
       <avp name="SL-Request-Type" code="2904" vendor="0" multiplicity="1" index="-1" />
       <avp name="Subscription-Id" code="443" vendor="0" multiplicity="1" index="-1" />
       <avp name="Policy-Counter-Identifier" code="2901" vendor="0" multiplicity="1" index="-1" />
-      <avp name="Logical-Access-Id" code="" vendor="" multiplicity="" index="" />
-      <!-- Physical-Access-ID  -->
+      <avp name="Logical-Access-Id" code="302" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Physical-Access-Id" code="313" vendor="0" multiplicity="0-1" index="-1" />
       <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0" index="-1" />
       <avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
     </command>
