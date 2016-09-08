@@ -7617,6 +7617,27 @@
 
   <!-- ***************************** 3GPP Sy AVPS ************************ -->
 
+  <avpdefn name="DRMP" code="TBD1" mandatory="mustnot" protected="mustnot" may-encrypt="no" vendor-bit="mustnot" >
+    <type type-name="Enumerated">
+      <enum code="15" name="PRIORITY_15" />
+      <enum code="14" name="PRIORITY_14" />
+      <enum code="13" name="PRIORITY_13" />
+      <enum code="12" name="PRIORITY_12" />
+      <enum code="11" name="PRIORITY_11" />
+      <enum code="10" name="PRIORITY_10" />
+      <enum code="9" name="PRIORITY_9" />
+      <enum code="8" name="PRIORITY_8" />
+      <enum code="7" name="PRIORITY_7" />
+      <enum code="6" name="PRIORITY_6" />
+      <enum code="5" name="PRIORITY_5" />
+      <enum code="4" name="PRIORITY_4" />
+      <enum code="3" name="PRIORITY_3" />
+      <enum code="2" name="PRIORITY_2" />
+      <enum code="1" name="PRIORITY_1" />
+      <enum code="0" name="PRIORITY_0" />
+    </type>
+  </avpdefn>
+
   <avpdefn name="Policy-Counter-Identifier" code="2901" mandatory="must" protected="may" may-encrypt="no" vendor-bit="mustnot" >
     <type type-name="UTF8String" />
   </avpdefn>
@@ -7653,57 +7674,103 @@
     <type type-name="UTF8String" />
   </avpdefn>
 
-  <application id="16777302" vendor-id="TGPP" name="3GPP Sy (Rel13)" URI="http://www.3gpp.org/ftp//Specs/archive/29_series/29.219/29219-d30.zip">
+  <avpdefn name="OC-OLR" code="623" vendor-id="TGPP" mandatory="may" protected="mustnot" may-encrypt="no" vendor-bit="must" >
+    <grouped>
+      <avp name="OC-Sequence-Number" />
+      <avp name="OC-Report-Type" />
+      <avp name="OC-Reduction-Percentage" />
+      <avp name="OC-Validity-Duration" />
+    </grouped>
+  </avpdefn>
+  <avpdefn name="OC-Sequence-Number" code="624" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot" >
+    <type type-name="Unsigned64" />
+  </avpdefn>
+  <avpdefn name="OC-Validity-Duration" code="625" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot" >
+    <type type-name="Unsigned32" />
+  </avpdefn>
+  <avpdefn name="OC-Report-Type" code="626" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="mustnot" >
+    <type type-name="Enumerated">
+      <enum code="0" name="HOST_REPORT" />
+      <enum code="1" name="REALM_REPORT" />
+    </type>
+  </avpdefn>
+  <avpdefn name="OC-Reduction-Percentage" code="627" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot" >
+    <type type-name="Unsigned32" />
+  </avpdefn>
+
+  <application id="16777302" vendor-id="TGPP" name="3GPP Sy (Rel13)" URI="http://www.3gpp.org/ftp/Specs/archive/29_series/29.219/29219-d30.zip">
     <command name="Spending-Limit-Request" code="8388635" request="true">
       <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
-      <!-- DRMP AVP, Diameter-Message-Routing-Priority; IETF draft-ietf-dimedrmp [21] -->
+      <avp name="DRMP" code="TBD1" vendor="0" multiplicity="0-1" index="-1" />
       <avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="1" index="-1" />
       <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
       <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
       <avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Destination-Realm" code="283" vendor="0" multiplicity="0-1" index="-1" />
       <avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
       <avp name="OC-Supported-Features" code="621" vendor="0" multiplicity="0-1" index="-1" />
       <avp name="SL-Request-Type" code="2904" vendor="0" multiplicity="1" index="-1" />
-      <avp name="Subscription-Id" code="443" vendor="0" multiplicity="1" index="-1" />
-      <avp name="Policy-Counter-Identifier" code="2901" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Subscription-Id" code="443" vendor="0" multiplicity="0+" index="-1" />
+      <avp name="Policy-Counter-Identifier" code="2901" vendor="0" multiplicity="0+" index="-1" />
       <avp name="Logical-Access-Id" code="302" vendor="0" multiplicity="0-1" index="-1" />
       <avp name="Physical-Access-Id" code="313" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0" index="-1" />
+      <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
       <avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
     </command>
 
-    <avpdefn name="OC-OLR" code="623" vendor-id="TGPP" mandatory="may" protected="mustnot" may-encrypt="no" vendor-bit="must" >
-      <grouped>
-        <avp name="OC-Sequence-Number" />
-        <avp name="OC-Report-Type" />
-        <avp name="OC-Reduction-Percentage" />
-        <avp name="OC-Validity-Duration" />
-      </grouped>
-    </avpdefn>
-    <avpdefn name="OC-Sequence-Number" code="624" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot" >
-      <type type-name="Unsigned64" />
-    </avpdefn>
-    <avpdefn name="OC-Validity-Duration" code="625" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot" >
-      <type type-name="Unsigned32" />
-    </avpdefn>
-    <avpdefn name="OC-Report-Type" code="626" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="mustnot" >
-      <type type-name="Enumerated">
-        <enum code="0" name="HOST_REPORT" />
-        <enum code="1" name="REALM_REPORT" />
-      </type>
-    </avpdefn>
-    <avpdefn name="OC-Reduction-Percentage" code="627" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot" >
-      <type type-name="Unsigned32" />
-    </avpdefn>
-
     <command name="Spending-Limit-Answer" code="8388635" request="false">
+      <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+      <avp name="DRMP" code="TBD1" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Result-Code" code="268" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Experimental-Result" code="297" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="OC-Supported-Features" code="621" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="OC-OLR" code="623" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Policy-Counter-Status-Report" code="2903" vendor="0" multiplicity="0+" index="-1" />
+      <avp name="Error-Message" code="281" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
+      <avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Redirect-Host" code="292" vendor="0" multiplicity="0+" index="-1" />
+      <avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
     </command>
 
     <command name="Spending-Status-Notification-Request" code="8388636" request="true">
+      <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+      <avp name="DRMP" code="TBD1" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Destination-Realm" code="283" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="OC-Supported-Features" code="621" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Policy-Counter-Status-Report" code="2903" vendor="0" multiplicity="0+" index="-1" />
+      <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+      <avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
     </command>
 
     <command name="Spending-Status-Notification-Answer" code="8388636" request="false">
+      <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+      <avp name="DRMP" code="TBD1" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Result-Code" code="268" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Experimental-Result" code="297" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="OC-Supported-Features" code="621" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="OC-OLR" code="623" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Error-Message" code="281" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Redirect-Host" code="292" vendor="0" multiplicity="0+" index="-1" />
+      <avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
+      <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
     </command>
 
   </application>
