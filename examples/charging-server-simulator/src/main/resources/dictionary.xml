@@ -7773,6 +7773,39 @@
       <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
     </command>
 
+    <command name="Session-Termination-Request" code="275" request="true">
+      <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+      <avp name="DRMP" code="TBD1" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Termination-Cause" code="295" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Destination-Host" code="293" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="OC-Supported-Features" code="621" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+      <avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
+    </command>
+
+    <command name="Session-Termination-Answer" code="275" request="false">
+      <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+      <avp name="DRMP" code="TBD1" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Result-Code" code="268" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Error-Message" code="281" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
+      <avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="OC-Supported-Features" code="621" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="OC-OLR" code="623" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Redirect-Host" code="292" vendor="0" multiplicity="0+" index="-1" />
+      <avp name="Redirect-Host-Usage" code="261" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Redirect-Max-Cache-Time" code="262" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+    </command>
+
   </application>
 
   <!-- ***************************** 3GPP Sy AVPS ************************ -->
