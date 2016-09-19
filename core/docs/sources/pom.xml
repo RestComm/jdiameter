@@ -10,7 +10,7 @@
 
   <artifactId>diameter-core-docs-sources</artifactId>
 
-  <name>Restcomm :: Diameter Documentation :: ${pom.artifactId}</name>
+  <name>Restcomm :: Diameter Documentation :: ${project.artifactId}</name>
 
   <properties />
 
