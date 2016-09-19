@@ -27,7 +27,8 @@
       </resource>
     </resources>
 
-    <pluginManagement>
+    <!-- if pluginManagement is uncommented the asciidoc documentation is not built anymore-->
+    <!--pluginManagement-->
     <plugins>
       <plugin>
         <groupId>org.asciidoctor</groupId>
@@ -157,6 +158,6 @@
         </executions>
       </plugin>
     </plugins>
-    </pluginManagement>
+    <!--/pluginManagement-->
   </build>
 </project>
