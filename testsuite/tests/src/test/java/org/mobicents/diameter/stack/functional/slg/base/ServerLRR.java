@@ -62,26 +62,7 @@ public class ServerLRR extends AbstractServer {
   protected ProvideLocationRequest provideLocationRequest;
 
   // ------- send methods to trigger answer
-
-  public void sendLocationAnswer() throws Exception {
-    if (!this.receiveLocationRequest || this.provideLocationRequest == null) {
-      fail("Did not receive Provide Location request or answer already sent.", null);
-      throw new Exception("Did not receive Provide Location request or answer already sent. Request: " + this.provideLocationRequest);
-    }
-    ProvideLocationAnswer answer = new ProvideLocationAnswerImpl((Request) this.provideLocationRequest.getMessage(), 2001);
-
-    AvpSet reqSet = provideLocationRequest.getMessage().getAvps();
-
-    AvpSet set = answer.getMessage().getAvps();
-    set.removeAvp(Avp.DESTINATION_HOST);
-    set.removeAvp(Avp.DESTINATION_REALM);
-    set.addAvp(Avp.LOCATION_ESTIMATE, "00100", true);
-    this.serverSLgSession.sendProvideLocationAnswer(answer);
-
-    Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), true);
-    this.provideLocationRequest = null;
-  }
-
+  
   public void sendLocationReport() throws Exception {
     if (super.serverSLgSession == null) {
       super.serverSLgSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(this.sessionFactory.getSessionId("xxTESTxx"), ApplicationId.createByAuthAppId(10415, 16777255), ServerSLgSession.class, (Object) null);
@@ -96,7 +77,7 @@ public class ServerLRR extends AbstractServer {
     avpSet.removeAvp(Avp.ORIGIN_HOST);
     avpSet.addAvp(Avp.ORIGIN_HOST, getServerURI(), true);
     avpSet.addAvp(Avp.DESTINATION_HOST, getClientURI(), true);
-    avpSet.addAvp(Avp.LOCATION_EVENT, 0);
+    avpSet.addAvp(Avp.LOCATION_EVENT, 0, 10415, true, false);
 
     this.serverSLgSession.sendLocationReportRequest(request);
     this.sentLocationReport = true;

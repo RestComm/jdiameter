@@ -96,7 +96,7 @@ public class ClientLRR extends AbstractClient {
     }
     LocationReportAnswer answer = new LocationReportAnswerImpl((Request) request.getMessage(), 2001);
 
-    AvpSet reqSet = request.getMessage().getAvps();
+    //AvpSet reqSet = request.getMessage().getAvps();
 
     AvpSet set = answer.getMessage().getAvps();
     set.removeAvp(Avp.DESTINATION_HOST);

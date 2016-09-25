@@ -63,9 +63,9 @@
 							<testNGArtifactName>none:none</testNGArtifactName>
 							<argLine>-Djava.net.preferIPv4Stack=true</argLine>
 							<forkMode>pertest</forkMode>
-							<excludes>
-								<exclude>**/*$*</exclude>
-							</excludes>
+							<includes>
+								<include>**/*SLgSessionBasicFlowLRRTest*</include>
+							</includes>
 						</configuration>
 					</plugin>
 				</plugins>

@@ -77,4 +77,12 @@ public class Event implements StateEvent {
   public void setData(Object data) {
     // FIXME: What should we do here?! Is it request or answer?
   }
+
+@Override
+public String toString() {
+	return "Event [type=" + type + ", request=" + request + ", answer="
+			+ answer + "]";
+}
+  
+  
 }

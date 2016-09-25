@@ -78,17 +78,24 @@ public class SLhSessionFactoryImpl implements ISLhSessionFactory, StateChangeLis
   protected long messageTimeout = 10000; // 10s default timeout
   protected static final long applicationId = 16777291;
 
+  public SLhSessionFactoryImpl() {
+  }
+  
   public SLhSessionFactoryImpl(SessionFactory sessionFactory) {
     super();
-    this.sessionFactory = (ISessionFactory) sessionFactory;
-    this.sessionDataSource = this.sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
-    this.sessionDataFactory = (IAppSessionDataFactory<ISLhSessionData>) this.sessionDataSource.getDataFactory(ISLhSessionData.class);
-    if(this.sessionDataFactory == null) {
-      logger.debug("No factory for SLh Application data, using default/local.");
-      this.sessionDataFactory = new SLhLocalSessionDataFactory();
-    }
+    init(sessionFactory);
   }
 
+  public void init(SessionFactory sessionFactory) {
+	  this.sessionFactory = (ISessionFactory) sessionFactory;
+	    this.sessionDataSource = this.sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
+	    this.sessionDataFactory = (IAppSessionDataFactory<ISLhSessionData>) this.sessionDataSource.getDataFactory(ISLhSessionData.class);
+	    if(this.sessionDataFactory == null) {
+	      logger.debug("No factory for SLh Application data, using default/local.");
+	      this.sessionDataFactory = new SLhLocalSessionDataFactory();
+	    }
+  }
+  
   /**
    * @return the clientSLhSessionListener
    */

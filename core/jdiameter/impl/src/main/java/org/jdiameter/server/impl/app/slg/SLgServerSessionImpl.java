@@ -152,8 +152,10 @@ public class SLgServerSessionImpl extends SLgSession implements ServerSLgSession
     	  listener.doLocationReportAnswerEvent(this, (LocationReportRequest) localEvent.getRequest(), (LocationReportAnswer) localEvent.getAnswer());
     	  break;
       case SEND_PROVIDE_LOCATION_ANSWER:
+    	  dispatchEvent(localEvent.getAnswer());
+    	  break;
       case SEND_LOCATION_REPORT_REQUEST:
-        dispatchEvent(localEvent.getAnswer());
+        dispatchEvent(localEvent.getRequest());
         break;
       case TIMEOUT_EXPIRES:
         break;

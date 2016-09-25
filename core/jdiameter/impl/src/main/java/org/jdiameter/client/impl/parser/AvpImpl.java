@@ -114,8 +114,8 @@ class AvpImpl implements Avp {
     return rawData;
   }
 
-  public byte[] getOctetString() throws AvpDataException {
-    return rawData;
+  public String getOctetString() throws AvpDataException {
+    return parser.bytesToOctetString(rawData);
   }
 
   public String getUTF8String() throws AvpDataException {

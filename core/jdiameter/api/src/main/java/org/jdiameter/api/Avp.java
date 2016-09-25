@@ -2331,7 +2331,7 @@ public interface Avp extends Wrapper, Serializable {
 	public static final int MSC_NUMBER = 2403;
 	public static final int LCS_CAPABILITIES_SETS = 2404;
 	public static final int GMLC_ADDRESS = 2405;
-	public static final int ADDITIONAL_SERVING_ = 2406;
+	public static final int ADDITIONAL_SERVING_NODE = 2406;
 	public static final int PPR_ADDRESS = 2407;
 	public static final int MME_REALM = 2408;
 	public static final int SGSN_NAME = 2409;
@@ -2380,7 +2380,7 @@ public interface Avp extends Wrapper, Serializable {
    * @throws AvpDataException
    *           if data has incorrect format
    */
-  byte[] getOctetString() throws AvpDataException;
+  String getOctetString() throws AvpDataException;
 
   /**
    * @return data as an integer

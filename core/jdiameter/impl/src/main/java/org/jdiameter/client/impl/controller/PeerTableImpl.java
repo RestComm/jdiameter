@@ -159,7 +159,7 @@ public class PeerTableImpl implements IPeerTable {
     // Get context
     IPeer peer;
     if (message.isRequest()) {
-      if (logger.isDebugEnabled()) {
+      if (logger.isDebugEnabled() && false) {
         logger.debug("Send request {} [destHost={}; destRealm={}]", new Object[] {message, 
             message.getAvps().getAvp(Avp.DESTINATION_HOST) != null ? message.getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString() : "",
                 message.getAvps().getAvp(Avp.DESTINATION_REALM) != null ? message.getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString() : ""});
@@ -167,7 +167,7 @@ public class PeerTableImpl implements IPeerTable {
 
       // Check local request
       if(router.updateRoute((IRequest)message)) {
-        if(logger.isDebugEnabled()) {
+        if(logger.isDebugEnabled() && false) {
           logger.debug("Updated route on message {} [destHost={}; destRealm={}]", new Object[] {message, 
               message.getAvps().getAvp(Avp.DESTINATION_HOST) != null ? message.getAvps().getAvp(Avp.DESTINATION_HOST).getOctetString() : "",
                   message.getAvps().getAvp(Avp.DESTINATION_REALM) != null ? message.getAvps().getAvp(Avp.DESTINATION_REALM).getOctetString() : ""});
