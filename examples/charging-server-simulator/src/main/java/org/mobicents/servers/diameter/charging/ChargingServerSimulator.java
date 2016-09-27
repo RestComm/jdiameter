@@ -34,6 +34,7 @@ import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.impl.app.cca.CCASessionFactoryImpl;
 import org.jdiameter.common.impl.app.cca.JCreditControlAnswerImpl;
 import org.jdiameter.server.impl.app.cca.ServerCCASessionImpl;
+import org.jdiameter.server.impl.sy.ServerSySessionImpl;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.servers.diameter.utils.DiameterUtilities;
 import org.mobicents.servers.diameter.utils.StackCreator;
@@ -135,7 +136,7 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
 
       logger.info("===============================================================================");
       logger.info("");
-      logger.info("== Mobicents Diameter Ro/Rf Server Simulator (" + osLine + ")" );
+      logger.info("== Mobicents Diameter Ro/Rf +Sy Server Simulator (" + osLine + ")" );
       logger.info("");
       logger.info("== " + javaLine);
       logger.info("");
@@ -153,11 +154,13 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
     try {
       long applicationId = request.getApplicationId();
       if (applicationId == 4L) {
-        ServerCCASessionImpl session = (sessionFactory).getNewAppSession(request.getSessionId(),
+        // CCA session
+        ServerCCASessionImpl session = sessionFactory.getNewAppSession(request.getSessionId(),
                 ApplicationId.createByAuthAppId(0, 4), ServerCCASession.class, EMPTY_ARRAY);
         session.processRequest(request);
       } else if (applicationId == 16777302L) {
-        ServerSySessionImpl session = (sessionFactory).getNewAppSession(request.getSessionId(),
+        // Sy session
+        ServerSySessionImpl session = sessionFactory.getNewAppSession(request.getSessionId(),
             ApplicationId.createByAuthAppId(0, 16777302), ServerSySession.class, EMPTY_ARRAY);
         session.processRequest(request);
       } else {

@@ -34,14 +34,17 @@ import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.api.auth.events.SessionTermAnswer;
 import org.jdiameter.api.sy.ServerSySession;
 import org.jdiameter.api.sy.events.SpendingLimitAnswer;
+import org.jdiameter.api.sy.events.SpendingLimitRequest;
 import org.jdiameter.api.sy.events.SpendingStatusNotificationRequest;
+import org.jdiameter.common.api.app.sy.ISyMessageFactory;
+import org.jdiameter.common.api.app.sy.ServerSySessionState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 /**
- * Policy Control Application Server session implementation
+ * Policy and charging control, Spending Limit Report - Sy session implementation
  *
  * @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
  */
@@ -50,8 +53,14 @@ public class ServerSySessionImpl implements ServerSySession, NetworkReqListener,
 
   private static final Logger logger = LoggerFactory.getLogger(ServerSySessionImpl.class);
 
+  protected transient ISyMessageFactory factory = null;
+
   @Override
   public Answer processRequest(Request request) {
+    RequestDelivery rd = new RequestDelivery();
+    rd.session = this;
+    rd.request = request;
+    //super.scheduler.execute(rd);
     return null;
   }
 
@@ -107,6 +116,15 @@ public class ServerSySessionImpl implements ServerSySession, NetworkReqListener,
 
   @Override
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
+
+    ServerSySessionState state = null; //this.sessionData.getServerSySessionState();
+
+    switch(state) {
+      case IDLE:
+        break;
+      case OPEN:
+        break;
+    }
     return false;
   }
 
@@ -149,4 +167,53 @@ public class ServerSySessionImpl implements ServerSySession, NetworkReqListener,
   public String getSessionId() {
     return null;
   }
+
+  private class RequestDelivery implements Runnable {
+    ServerSySession session;
+    Request request;
+
+    @Override
+    public void run() {
+      try {
+        switch (request.getCommandCode()) {
+          case SpendingLimitRequest.code:
+            handleEvent(new Event(true, factory.createSpendingLimitRequest(request), null));
+            break;
+          default:
+            //listener.doOtherEvent(session, new AppRequestEventImpl(request), null);
+            break;
+        }
+      }
+      catch (Exception e) {
+        logger.debug("Failed to process request message", e);
+      }
+    }
+  }
+
+  private class AnswerDelivery implements Runnable {
+    ServerSySession session;
+    Answer answer;
+    Request request;
+
+    @Override
+    public void run() {
+      try {
+        // FIXME: baranowb: add message validation here!!!
+        // We handle CCR, STR, ACR, ASR other go into extension
+        switch (request.getCommandCode()) {
+          /*case ReAuthRequest.code:
+            handleEvent(new Event(Event.Type.RECEIVED_RAA, factory.createReAuthRequest(request), factory.createReAuthAnswer(answer)));
+            break;*/
+          default:
+            //listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
+            break;
+        }
+
+      }
+      catch (Exception e) {
+        logger.debug("Failed to process success message", e);
+      }
+    }
+  }
+
 }
