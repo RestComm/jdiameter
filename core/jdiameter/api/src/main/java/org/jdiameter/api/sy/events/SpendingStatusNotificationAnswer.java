@@ -22,13 +22,12 @@ package org.jdiameter.api.sy.events;
 import org.jdiameter.api.app.AppAnswerEvent;
 
 /**
-* The Spending-Notification-Answer (SNA) message, indicated by the Command-Code field set to 8388636 is sent
-* by the PCRF to the OCS in reply to the SNR message.
-*
-* @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
-* @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
-* @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
-*/
+ * The Spending-Notification-Answer (SNA) message, indicated by the Command-Code field set to 8388636 is sent
+ * by the PCRF to the OCS in reply to the SNR message.
+ *
+ * @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
+ */
+
 public interface SpendingStatusNotificationAnswer extends AppAnswerEvent {
 
   String _SHORT_NAME = "SNA";

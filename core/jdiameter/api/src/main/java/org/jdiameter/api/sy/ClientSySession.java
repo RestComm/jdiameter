@@ -36,9 +36,8 @@ import org.jdiameter.api.sy.events.SpendingStatusNotificationAnswer;
  * Listener must be injected from constructor of implementation class.
  *
  * @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
- * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
- * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
+
 public interface ClientSySession extends AppSession, StateMachine {
 
   void sendSpendingLimitRequest(SpendingLimitRequest request)

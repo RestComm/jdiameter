@@ -32,13 +32,11 @@ import org.jdiameter.api.sy.events.SpendingLimitAnswer;
 import org.jdiameter.api.sy.events.SpendingStatusNotificationRequest;
 
 /**
-* Basic class for Sy Server Interface specific session.
-* Listener must be injected from constructor of implementation class
-*
-* @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
-* @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
-* @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
-*/
+ * Basic class for Sy Server Interface specific session.
+ * Listener must be injected from constructor of implementation class
+ *
+ * @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
+ */
 
 public interface ServerSySession extends AppSession, StateMachine {
 

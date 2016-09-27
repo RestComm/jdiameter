@@ -22,13 +22,12 @@ package org.jdiameter.api.sy.events;
 import org.jdiameter.api.app.AppAnswerEvent;
 
 /**
-* The Spending-Notification-Request (SNR) message, indicated by the Command-Code field set to 8388636 is sent
-* by the OCS to the PCRF when the OCS detects that status of a policy counter identifier(s) had changed.
-*
-* @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
-* @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
-* @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
-*/
+ * The Spending-Notification-Request (SNR) message, indicated by the Command-Code field set to 8388636 is sent
+ * by the OCS to the PCRF when the OCS detects that status of a policy counter identifier(s) had changed.
+ *
+ * @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
+ */
+
 public interface SpendingStatusNotificationRequest extends AppAnswerEvent {
 
   String _SHORT_NAME = "SNR";

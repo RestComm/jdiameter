@@ -32,13 +32,12 @@ import org.jdiameter.api.sy.events.SpendingLimitAnswer;
 import org.jdiameter.api.sy.events.SpendingStatusNotificationRequest;
 
 /**
-* This interface defines the possible actions for the different states in the client
-* Sy Interface state machine.
-*
-* @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
-* @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
-* @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
-*/
+ * This interface defines the possible actions for the different states in the client
+ * Sy Interface state machine.
+ *
+ * @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
+ */
+
 public interface ClientSySessionListener {
 
   void doSpendingLimitAnswer(ClientSySession session, SpendingLimitRequest request, SpendingLimitAnswer answer)
