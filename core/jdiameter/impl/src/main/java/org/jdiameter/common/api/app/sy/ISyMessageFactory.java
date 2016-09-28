@@ -20,6 +20,7 @@
 package org.jdiameter.common.api.app.sy;
 
 import org.jdiameter.api.Request;
+import org.jdiameter.api.auth.events.SessionTermRequest;
 import org.jdiameter.api.sy.events.SpendingLimitRequest;
 import org.jdiameter.api.sy.events.SpendingStatusNotificationRequest;
 
@@ -32,6 +33,8 @@ import org.jdiameter.api.sy.events.SpendingStatusNotificationRequest;
 public interface ISyMessageFactory {
 
   SpendingLimitRequest createSpendingLimitRequest(Request request);
+
+  SessionTermRequest createSessionTerminationRequest(Request request);
 
   SpendingStatusNotificationRequest createSpendingStatusNotificationRequest(Request request);
 

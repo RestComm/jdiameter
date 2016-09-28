@@ -32,6 +32,7 @@ import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.api.auth.events.SessionTermAnswer;
+import org.jdiameter.api.auth.events.SessionTermRequest;
 import org.jdiameter.api.sy.ServerSySession;
 import org.jdiameter.api.sy.events.SpendingLimitAnswer;
 import org.jdiameter.api.sy.events.SpendingLimitRequest;
@@ -179,8 +180,11 @@ public class ServerSySessionImpl implements ServerSySession, NetworkReqListener,
           case SpendingLimitRequest.code:
             handleEvent(new Event(true, factory.createSpendingLimitRequest(request), null));
             break;
+          case SessionTermRequest.code:
+            handleEvent(new Event(true, factory.createSessionTerminationRequest(request), null));
+            break;
           default:
-            //listener.doOtherEvent(session, new AppRequestEventImpl(request), null);
+            logger.debug("Unexpected request received on Sy channel", request);
             break;
         }
       }

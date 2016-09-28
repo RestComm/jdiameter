@@ -22,6 +22,8 @@ package org.jdiameter.server.impl.sy;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.StateEvent;
+import org.jdiameter.api.auth.events.SessionTermAnswer;
+import org.jdiameter.api.auth.events.SessionTermRequest;
 import org.jdiameter.api.sy.events.SpendingLimitAnswer;
 import org.jdiameter.api.sy.events.SpendingLimitRequest;
 
@@ -43,12 +45,32 @@ public class Event implements StateEvent {
   AppRequestEvent request;
   AppAnswerEvent answer;
 
-  public Event(boolean isRequest, SpendingLimitRequest request, SpendingLimitAnswer answer) {
+  public Event(boolean isRequest, SessionTermRequest request, SessionTermAnswer answer) {
 
     this.request = request;
     this.answer = answer;
 
     if (isRequest) {
+      type = Type.RECEIVED_TERMINATION;
+    } else {
+    }
+  }
+
+  public Event(boolean isRequest, SpendingLimitRequest request, SpendingLimitAnswer answer) {
+
+    this.request = request;
+    this.answer = answer;
+
+    int slRequestTypeAvpValue = request.getSLRequestTypeAVPValue();
+    if (isRequest) {
+      switch (slRequestTypeAvpValue) {
+        case 0:
+          type = Type.RECEIVED_INITIAL;
+          break;
+        case 1:
+          type = Type.RECEIVED_INTERMEDIATE;
+          break;
+      }
     } else {
     }
   }
