@@ -37,8 +37,11 @@ import org.jdiameter.api.sy.ServerSySession;
 import org.jdiameter.api.sy.events.SpendingLimitAnswer;
 import org.jdiameter.api.sy.events.SpendingLimitRequest;
 import org.jdiameter.api.sy.events.SpendingStatusNotificationRequest;
+import org.jdiameter.client.api.ISessionFactory;
+import org.jdiameter.common.api.app.IAppSessionData;
 import org.jdiameter.common.api.app.sy.ISyMessageFactory;
 import org.jdiameter.common.api.app.sy.ServerSySessionState;
+import org.jdiameter.common.impl.app.sy.AppSySessionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,18 +53,26 @@ import java.util.List;
  * @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
  */
 
-public class ServerSySessionImpl implements ServerSySession, NetworkReqListener, EventListener<Request, Answer> {
+public class ServerSySessionImpl extends AppSySessionImpl implements ServerSySession, NetworkReqListener, EventListener<Request, Answer> {
 
   private static final Logger logger = LoggerFactory.getLogger(ServerSySessionImpl.class);
 
+  protected IServerSySessionData sessionData;
+
   protected transient ISyMessageFactory factory = null;
+
+  public ServerSySessionImpl(IServerSySessionData data, ISessionFactory sf, IAppSessionData appSessionData) {
+    super(sf, appSessionData);
+
+    this.sessionData = data;
+  }
 
   @Override
   public Answer processRequest(Request request) {
     RequestDelivery rd = new RequestDelivery();
     rd.session = this;
     rd.request = request;
-    //super.scheduler.execute(rd);
+    super.scheduler.execute(rd);
     return null;
   }
 
@@ -82,7 +93,11 @@ public class ServerSySessionImpl implements ServerSySession, NetworkReqListener,
 
   @Override
   public void receivedSuccessMessage(Request request, Answer answer) {
-
+    AnswerDelivery ad = new AnswerDelivery();
+    ad.session = this;
+    ad.request = request;
+    ad.answer = answer;
+    super.scheduler.execute(ad);
   }
 
   @Override
@@ -118,12 +133,25 @@ public class ServerSySessionImpl implements ServerSySession, NetworkReqListener,
   @Override
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
 
-    ServerSySessionState state = null; //this.sessionData.getServerSySessionState();
+    ServerSySessionState state = this.sessionData.getServerSySessionState();
 
+    Event.Type eventType = (Event.Type) event.getType();
     switch(state) {
       case IDLE:
+        switch(eventType) {
+          case RECEIVED_INITIAL:
+            break;
+          case RECEIVED_INTERMEDIATE:
+            break;
+        }
         break;
       case OPEN:
+        switch(eventType) {
+          case RECEIVED_INTERMEDIATE:
+            break;
+          case RECEIVED_TERMINATION:
+            break;
+        }
         break;
     }
     return false;
@@ -162,6 +190,11 @@ public class ServerSySessionImpl implements ServerSySession, NetworkReqListener,
   @Override
   public boolean isReplicable() {
     return false;
+  }
+
+  @Override
+  public void onTimer(String timerName) {
+
   }
 
   @Override
