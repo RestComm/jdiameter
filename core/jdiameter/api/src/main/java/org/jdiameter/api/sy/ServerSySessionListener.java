@@ -39,13 +39,13 @@ import org.jdiameter.api.sy.events.SpendingStatusNotificationRequest;
 
 public interface ServerSySessionListener {
 
-  void doSpendingLimitRequest(ClientSySession session, SpendingLimitRequest request)
+  void doSpendingLimitRequest(ServerSySession session, SpendingLimitRequest request)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-  void doFinalSpendingLimitRequest(ClientSySession session, SessionTermRequest request)
+  void doFinalSpendingLimitRequest(ServerSySession session, SessionTermRequest request)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-  void doSpendingStatusNotificationAnswer(ClientSySession session, SpendingStatusNotificationRequest request, SpendingStatusNotificationAnswer answer)
+  void doSpendingStatusNotificationAnswer(ServerSySession session, SpendingStatusNotificationRequest request, SpendingStatusNotificationAnswer answer)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
 }

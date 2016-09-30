@@ -31,4 +31,6 @@ import org.jdiameter.common.api.app.sy.ServerSySessionState;
 public interface IServerSySessionData extends ISySessionData {
 
   ServerSySessionState getServerSySessionState();
+
+  void setServerSySessionState(ServerSySessionState newState);
 }

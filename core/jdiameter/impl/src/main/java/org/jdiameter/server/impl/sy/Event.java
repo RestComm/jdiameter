@@ -20,12 +20,15 @@
 package org.jdiameter.server.impl.sy;
 
 import org.jdiameter.api.app.AppAnswerEvent;
+import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.api.auth.events.SessionTermAnswer;
 import org.jdiameter.api.auth.events.SessionTermRequest;
 import org.jdiameter.api.sy.events.SpendingLimitAnswer;
 import org.jdiameter.api.sy.events.SpendingLimitRequest;
+import org.jdiameter.api.sy.events.SpendingStatusNotificationAnswer;
+import org.jdiameter.api.sy.events.SpendingStatusNotificationRequest;
 
 /**
  * Policy and charging control, Spending Limit Report - Sy session implementation
@@ -37,11 +40,17 @@ public class Event implements StateEvent {
 
   public enum Type {
     RECEIVED_INITIAL,
+    SENT_INITIAL_RESPONSE,
     RECEIVED_INTERMEDIATE,
-    RECEIVED_TERMINATION
+    SENT_INTERMEDIATE_RESPONSE,
+    RECEIVED_TERMINATION,
+    SENT_TERMINATION_RESPONSE,
+    RECEIVED_STATUS_NOTIFICATION,
+    SENT_STATUS_NOTIFICATION_RESPONSE
   }
 
   Type type;
+
   AppRequestEvent request;
   AppAnswerEvent answer;
 
@@ -53,6 +62,7 @@ public class Event implements StateEvent {
     if (isRequest) {
       type = Type.RECEIVED_TERMINATION;
     } else {
+      type = Type.SENT_TERMINATION_RESPONSE;
     }
   }
 
@@ -72,6 +82,26 @@ public class Event implements StateEvent {
           break;
       }
     } else {
+      switch (slRequestTypeAvpValue) {
+        case 0:
+          type = Type.SENT_INITIAL_RESPONSE;
+          break;
+        case 1:
+          type = Type.SENT_INTERMEDIATE_RESPONSE;
+          break;
+      }
+    }
+  }
+
+  public Event(boolean isRequest, SpendingStatusNotificationRequest request, SpendingStatusNotificationAnswer answer) {
+
+    this.request = request;
+    this.answer = answer;
+
+    if (isRequest) {
+      type = Type.RECEIVED_STATUS_NOTIFICATION;
+    } else {
+      type = Type.SENT_STATUS_NOTIFICATION_RESPONSE;
     }
   }
 
@@ -98,5 +128,9 @@ public class Event implements StateEvent {
   @Override
   public int compareTo(Object o) {
     return 0;
+  }
+
+  public AppEvent getRequest() {
+    return request;
   }
 }

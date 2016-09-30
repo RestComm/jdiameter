@@ -20,6 +20,7 @@
 package org.jdiameter.api.sy.events;
 
 import org.jdiameter.api.app.AppAnswerEvent;
+import org.jdiameter.api.app.AppRequestEvent;
 
 /**
  * The Spending-Notification-Request (SNR) message, indicated by the Command-Code field set to 8388636 is sent
@@ -28,7 +29,7 @@ import org.jdiameter.api.app.AppAnswerEvent;
  * @author <a href="mailto:aferreiraguido@gmail.com"> Alejandro Ferreira Guido </a>
  */
 
-public interface SpendingStatusNotificationRequest extends AppAnswerEvent {
+public interface SpendingStatusNotificationRequest extends AppRequestEvent {
 
   String _SHORT_NAME = "SNR";
   String _LONG_NAME = "Spending-Status-Notification-Request";

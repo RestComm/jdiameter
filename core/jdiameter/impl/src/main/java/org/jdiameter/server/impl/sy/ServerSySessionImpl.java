@@ -29,16 +29,19 @@ import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.RouteException;
+import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.api.auth.events.SessionTermAnswer;
 import org.jdiameter.api.auth.events.SessionTermRequest;
 import org.jdiameter.api.sy.ServerSySession;
+import org.jdiameter.api.sy.ServerSySessionListener;
 import org.jdiameter.api.sy.events.SpendingLimitAnswer;
 import org.jdiameter.api.sy.events.SpendingLimitRequest;
 import org.jdiameter.api.sy.events.SpendingStatusNotificationRequest;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.IAppSessionData;
+import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.sy.ISyMessageFactory;
 import org.jdiameter.common.api.app.sy.ServerSySessionState;
 import org.jdiameter.common.impl.app.sy.AppSySessionImpl;
@@ -46,6 +49,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Policy and charging control, Spending Limit Report - Sy session implementation
@@ -58,13 +63,17 @@ public class ServerSySessionImpl extends AppSySessionImpl implements ServerSySes
   private static final Logger logger = LoggerFactory.getLogger(ServerSySessionImpl.class);
 
   protected IServerSySessionData sessionData;
+  // Session State Handling ---------------------------------------------------
+  protected Lock sendAndStateLock = new ReentrantLock();
 
   protected transient ISyMessageFactory factory = null;
+  protected transient ServerSySessionListener listener = null;
 
-  public ServerSySessionImpl(IServerSySessionData data, ISessionFactory sf, IAppSessionData appSessionData) {
+  public ServerSySessionImpl(IServerSySessionData data, ISessionFactory sf, ServerSySessionListener lst, IAppSessionData appSessionData) {
     super(sf, appSessionData);
 
     this.sessionData = data;
+    this.listener = lst;
   }
 
   @Override
@@ -78,17 +87,17 @@ public class ServerSySessionImpl extends AppSySessionImpl implements ServerSySes
 
   @Override
   public void sendSpendingLimitAnswer(SpendingLimitAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-
+    handleEvent(new Event(false, null, answer));
   }
 
   @Override
   public void sendFinalSpendingLimitAnswer(SessionTermAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-
+    handleEvent(new Event(false, null, answer));
   }
 
   @Override
   public void sendSpendingStatusNotificationRequest(SpendingStatusNotificationRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-
+    handleEvent(new Event(true, request, null));
   }
 
   @Override
@@ -132,29 +141,48 @@ public class ServerSySessionImpl extends AppSySessionImpl implements ServerSySes
 
   @Override
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
+    ServerSySessionState newState = null;
 
-    ServerSySessionState state = this.sessionData.getServerSySessionState();
+    try {
+      ServerSySessionState state = this.sessionData.getServerSySessionState();
 
-    Event.Type eventType = (Event.Type) event.getType();
-    switch(state) {
-      case IDLE:
-        switch(eventType) {
-          case RECEIVED_INITIAL:
-            break;
-          case RECEIVED_INTERMEDIATE:
-            break;
-        }
-        break;
-      case OPEN:
-        switch(eventType) {
-          case RECEIVED_INTERMEDIATE:
-            break;
-          case RECEIVED_TERMINATION:
-            break;
-        }
-        break;
+      Event localEvent = (Event) event;
+
+      Event.Type eventType = (Event.Type) event.getType();
+
+      switch(state) {
+        case IDLE:
+          switch(eventType) {
+            case RECEIVED_INITIAL:
+              listener.doSpendingLimitRequest(this, (SpendingLimitRequest) localEvent.getRequest());
+              break;
+            case SENT_INITIAL_RESPONSE:
+              newState = ServerSySessionState.OPEN;
+              // dispatchEvent()
+              session.send(((AppEvent)localEvent).getMessage());
+              setState(newState);
+              break;
+          }
+          break;
+        case OPEN:
+          switch(eventType) {
+            case RECEIVED_INTERMEDIATE:
+              listener.doSpendingLimitRequest(this, (SpendingLimitRequest) localEvent.getRequest());
+              break;
+            case RECEIVED_TERMINATION:
+              listener.doFinalSpendingLimitRequest(this, (SessionTermRequest) localEvent.getRequest());
+              break;
+          }
+          break;
+      }
+      return false;
     }
-    return false;
+    catch (Exception e) {
+      throw new InternalException(e);
+    }
+    finally {
+      sendAndStateLock.unlock();
+    }
   }
 
   @Override
@@ -175,6 +203,26 @@ public class ServerSySessionImpl extends AppSySessionImpl implements ServerSySes
   @Override
   public boolean isValid() {
     return false;
+  }
+
+  protected void setState(ServerSySessionState newState) {
+    setState(newState, true);
+  }
+
+  protected void setState(ServerSySessionState newState, boolean release) {
+    IAppSessionState oldState = this.sessionData.getServerSySessionState();
+    this.sessionData.setServerSySessionState(newState);
+
+    for (StateChangeListener i : stateListeners) {
+      i.stateChanged(this, (Enum) oldState, (Enum) newState);
+    }
+    if (newState == ServerSySessionState.IDLE) {
+      // do EVERYTHING before this!
+      //stopTcc(false);
+      if (release) {
+        this.release();
+      }
+    }
   }
 
   @Override
