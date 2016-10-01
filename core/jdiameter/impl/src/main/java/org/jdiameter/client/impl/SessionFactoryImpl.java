@@ -162,12 +162,12 @@ public class SessionFactoryImpl implements ISessionFactory {
   }
 
   @Override
-  public void registerAppFacory(Class<? extends AppSession> sessionClass, IAppSessionFactory factory) {
+  public void registerAppFactory(Class<? extends AppSession> sessionClass, IAppSessionFactory factory) {
     appFactories.put(sessionClass, factory);
   }
 
   @Override
-  public void unRegisterAppFacory(Class<? extends AppSession> sessionClass) {
+  public void unRegisterAppFactory(Class<? extends AppSession> sessionClass) {
     appFactories.remove(sessionClass);
   }
 

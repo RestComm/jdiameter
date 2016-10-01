@@ -158,8 +158,10 @@ public class ServerSySessionImpl extends AppSySessionImpl implements ServerSySes
               break;
             case SENT_INITIAL_RESPONSE:
               newState = ServerSySessionState.OPEN;
+
               // dispatchEvent()
               session.send(((AppEvent)localEvent).getMessage());
+
               setState(newState);
               break;
           }
