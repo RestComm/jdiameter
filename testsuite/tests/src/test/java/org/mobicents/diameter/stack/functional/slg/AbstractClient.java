@@ -76,244 +76,245 @@ import org.mobicents.diameter.stack.functional.TBase;
  */
 public abstract class AbstractClient extends TBase implements ClientSLgSessionListener {
 
-    // NOTE: implementing NetworkReqListener since its required for stack to
-    // know we support it... ech.
+  // NOTE: implementing NetworkReqListener since its required for stack to
+  // know we support it... ech.
 
-    protected ClientSLgSession clientSLgSession;
+  protected ClientSLgSession clientSLgSession;
 
-    public void init(InputStream configStream, String clientID) throws Exception {
-        try {
-            super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777255));
-            SLgSessionFactoryImpl sLgSessionFactory = new SLgSessionFactoryImpl(this.sessionFactory);
-            ((ISessionFactory) sessionFactory).registerAppFacory(ServerSLgSession.class, sLgSessionFactory);
-            ((ISessionFactory) sessionFactory).registerAppFacory(ClientSLgSession.class, sLgSessionFactory);
+  public void init(InputStream configStream, String clientID) throws Exception {
+      try {
+          super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777255));
+          SLgSessionFactoryImpl sLgSessionFactory = new SLgSessionFactoryImpl(this.sessionFactory);
+          ((ISessionFactory) sessionFactory).registerAppFacory(ServerSLgSession.class, sLgSessionFactory);
+          ((ISessionFactory) sessionFactory).registerAppFacory(ClientSLgSession.class, sLgSessionFactory);
 
-            sLgSessionFactory .setClientSessionListener(this);
+          sLgSessionFactory .setClientSessionListener(this);
 
-            this.clientSLgSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(this.sessionFactory.getSessionId("xx-SLg-TESTxx"), getApplicationId(), ClientSLgSession.class, null);
-        }
-        finally {
-            try {
-                configStream.close();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+          this.clientSLgSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(this.sessionFactory.getSessionId("xx-SLg-TESTxx"), getApplicationId(), ClientSLgSession.class, null);
+      }
+      finally {
+          try {
+              configStream.close();
+          }
+          catch (Exception e) {
+              e.printStackTrace();
+          }
+      }
 
+  }
+
+  // ----------- delegate methods so
+
+  public void start() throws IllegalDiameterStateException, InternalException {
+      stack.start();
+  }
+
+  public void start(Mode mode, long timeOut, TimeUnit timeUnit) throws IllegalDiameterStateException, InternalException {
+      stack.start(mode, timeOut, timeUnit);
+  }
+
+  public void stop(long timeOut, TimeUnit timeUnit, int disconnectCause) throws IllegalDiameterStateException, InternalException {
+      stack.stop(timeOut, timeUnit, disconnectCause);
+  }
+
+  public void stop(int disconnectCause) {
+      stack.stop(disconnectCause);
+  }
+
+  // ------- def methods, to fail :)
+
+  public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+      fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
+  }
+
+  public void doProvideLocationAnswerEvent(ClientSLgSession session, ProvideLocationRequest request, ProvideLocationAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+      fail("Received \"PLA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
+  }
+
+  public void doLocationReportAnswerEvent(ClientSLgSession session, LocationReportRequest request, LocationReportAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+      fail("Received \"LRA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
+  }
+
+  // ----------- conf parts
+
+  public String getSessionId() {
+      return this.clientSLgSession.getSessionId();
+  }
+
+  public ClientSLgSession getSession() {
+      return this.clientSLgSession;
+  }
+
+  // missing protected abstract attributes TODO
+
+  // ----------- helper
+
+  protected ProvideLocationRequest createPLR(ClientSLgSession slgSession) throws Exception {
+  /*
+   < Provide-Location-Request> ::=	< Diameter Header: 8388620, REQ, PXY, 16777255 >
+							< Session-Id >
+							[ Vendor-Specific-Application-Id ]
+							{ Auth-Session-State }
+							{ Origin-Host }
+							{ Origin-Realm }
+							{ Destination-Host }
+							{ Destination-Realm }
+							{ SLg-Location-Type }
+							[ User-Name ]
+							[ MSISDN ]
+							[ IMEI ]
+							{ LCS-EPS-Client-Name }
+							{ LCS-Client-Type }
+							[ LCS-Requestor-Name ]
+							[ LCS-Priority ]
+							[ LCS-QoS ]
+							[ Velocity-Requested ]
+							[ LCS-Supported-GAD-Shapes ]
+							[ LCS-Service-Type-ID ]
+							[ LCS-Codeword ]
+							[ LCS-Privacy-Check-Non-Session ]
+							[ LCS-Privacy-Check-Session ]
+							[ Service-Selection ]
+							[ Deferred-Location-Type ]
+							[ PLR-Flags ]
+							*[ Supported-Features ]
+							*[ AVP ]
+							*[ Proxy-Info ]
+							*[ Route-Record ]
+  */
+      // Create ProvideLocationRequest
+      ProvideLocationRequest plr = new ProvideLocationRequestImpl(slgSession.getSessions().get(0).createRequest(ProvideLocationRequest.code, getApplicationId(), getServerRealmName()));
+      // < Provide-Location-Request> ::=	< Diameter Header: 8388620, REQ, PXY, 16777255 >
+
+      AvpSet reqSet = plr.getMessage().getAvps();
+
+      if (reqSet.getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
+          AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
+          // 1* [ Vendor-Id ]
+          vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
+          // 0*1{ Auth-Application-Id }
+          vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
+      }
+
+      // { Auth-Session-State }
+      if (reqSet.getAvp(Avp.AUTH_SESSION_STATE) == null) {
+          reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
+      }
+
+      // { Origin-Host }
+      reqSet.removeAvp(Avp.ORIGIN_HOST);
+      reqSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
+
+      // PENDING -  TODO
+      if (reqSet.getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
+          AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
+          // 1* [ Vendor-Id ]
+          vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
+          // 0*1{ Auth-Application-Id }
+          vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
+      }
+
+      // { Auth-Session-State }
+      if (reqSet.getAvp(Avp.AUTH_SESSION_STATE) == null) {
+          reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
+      }
+
+      // { Origin-Host }
+      reqSet.removeAvp(Avp.ORIGIN_HOST);
+      reqSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
+
+      // PENDING - TODO
+      return plr;
+  }
+
+  protected LocationReportRequest createLRR(ClientSLgSession slgSession) throws Exception {
+  /*
+   < Location-Report-Request> ::=	< Diameter Header: 8388621, REQ, PXY, 16777255 >
+													< Session-Id >
+	                        [ Vendor-Specific-Application-Id ]
+	                        { Auth-Session-State }
+	                        { Origin-Host }
+	                        { Origin-Realm }
+	                        { Destination-Host }
+	                        { Destination-Realm }
+	                        { Location-Event }
+	                        [ LCS-EPS-Client-Name ]
+	                        [ User-Name ]
+	                        [ MSISDN]
+	                        [ IMEI ]
+	                        [ Location-Estimate ]
+	                        [ Accuracy-Fulfilment-Indicator ]
+	                        [ Age-Of-Location-Estimate ]
+	                        [ Velocity-Estimate ]
+	                        [ EUTRAN-Positioning-Data ]
+	                        [ ECGI ]
+	                        [ GERAN-Positioning-Info ]
+	                        [ Cell-Global-Identity ]
+	                        [ UTRAN-Positioning-Info ]
+	                        [ Service-Area-Identity ]
+	                        [ LCS-Service-Type-ID ]
+	                        [ Pseudonym-Indicator ]
+	                        [ LCS-QoS-Class ]
+	                        [ Serving-Node ]
+	                        [ LRR-Flags ]
+	                        [ LCS-Reference-Number ]
+	                        [ Deferred-MT-LR-Data]
+	                        [ GMLC-Address ]
+	                        [ Reporting-Amount ]
+	                        [ Periodic-LDR-Information ]
+	                        [ ESMLC-Cell-Info ]
+	                        [ 1xRTT-RCID ] ]
+	                        [ Civic-Address ]
+	                        [ Barometric-Pressure ]
+	                        *[ Supported-Features ]
+	                        *[ AVP ]
+	                        *[ Proxy-Info ]
+                          *[ Route-Record ]
+
+  */
+    // Create ProvideLocationRequest
+    ProvideLocationRequest lrr = new LocationReportRequestImpl(slgSession.getSessions().get(0).createRequest(LocationReportRequest.code, getApplicationId(), getServerRealmName()));
+    // < Location-Report-Request> ::=	< Diameter Header: 8388621, REQ, PXY, 16777255 >
+
+    AvpSet reqSet = lrr.getMessage().getAvps();
+
+    if (reqSet.getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
+        AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
+        // 1* [ Vendor-Id ]
+        vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
+        // 0*1{ Auth-Application-Id }
+        vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
     }
 
-    // ----------- delegate methods so
-
-    public void start() throws IllegalDiameterStateException, InternalException {
-        stack.start();
+    // { Auth-Session-State }
+    if (reqSet.getAvp(Avp.AUTH_SESSION_STATE) == null) {
+        reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
     }
 
-    public void start(Mode mode, long timeOut, TimeUnit timeUnit) throws IllegalDiameterStateException, InternalException {
-        stack.start(mode, timeOut, timeUnit);
+    // { Origin-Host }
+    reqSet.removeAvp(Avp.ORIGIN_HOST);
+    reqSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
+
+    // PENDING -  TODO
+    if (reqSet.getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
+        AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
+        // 1* [ Vendor-Id ]
+        vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
+        // 0*1{ Auth-Application-Id }
+        vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
     }
 
-    public void stop(long timeOut, TimeUnit timeUnit, int disconnectCause) throws IllegalDiameterStateException, InternalException {
-        stack.stop(timeOut, timeUnit, disconnectCause);
+    // { Auth-Session-State }
+    if (reqSet.getAvp(Avp.AUTH_SESSION_STATE) == null) {
+        reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
     }
 
-    public void stop(int disconnectCause) {
-        stack.stop(disconnectCause);
-    }
+    // { Origin-Host }
+    reqSet.removeAvp(Avp.ORIGIN_HOST);
+    reqSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
 
-    // ------- def methods, to fail :)
-
-    public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-        fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
-    }
-
-    public void doProvideLocationAnswerEvent(ClientSLgSession session, ProvideLocationRequest request, ProvideLocationAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-        fail("Received \"PLA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
-    }
-
-    public void doLocationReportAnswerEvent(ClientSLgSession session, LocationReportRequest request, LocationReportAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-        fail("Received \"LRA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
-    }
-
-    // ----------- conf parts
-
-    public String getSessionId() {
-        return this.clientSLgSession.getSessionId();
-    }
-
-    public ClientSLgSession getSession() {
-        return this.clientSLgSession;
-    }
-
-    // missing protected abstract attributes TODO
-
-    // ----------- helper
-
-    protected ProvideLocationRequest createPLR(ClientSLgSession slgSession) throws Exception {
-    /*
-     < Provide-Location-Request> ::=	< Diameter Header: 8388620, REQ, PXY, 16777255 >
-								< Session-Id >
-								[ Vendor-Specific-Application-Id ]
-								{ Auth-Session-State }
-								{ Origin-Host }
-								{ Origin-Realm }
-								{ Destination-Host }
-								{ Destination-Realm }
-								{ SLg-Location-Type }
-								[ User-Name ]
-								[ MSISDN ]
-								[ IMEI ]
-								{ LCS-EPS-Client-Name }
-								{ LCS-Client-Type }
-								[ LCS-Requestor-Name ]
-								[ LCS-Priority ]
-								[ LCS-QoS ]
-								[ Velocity-Requested ]
-								[ LCS-Supported-GAD-Shapes ]
-								[ LCS-Service-Type-ID ]
-								[ LCS-Codeword ]
-								[ LCS-Privacy-Check-Non-Session ]
-								[ LCS-Privacy-Check-Session ]
-								[ Service-Selection ]
-								[ Deferred-Location-Type ]
-								[ PLR-Flags ]
-								*[ Supported-Features ]
-								*[ AVP ]
-								*[ Proxy-Info ]
-								*[ Route-Record ]
-    */
-        // Create ProvideLocationRequest
-        ProvideLocationRequest plr = new ProvideLocationRequestImpl(slgSession.getSessions().get(0).createRequest(ProvideLocationRequest.code, getApplicationId(), getServerRealmName()));
-        // < Provide-Location-Request> ::=	< Diameter Header: 8388620, REQ, PXY, 16777255 >
-
-        AvpSet reqSet = plr.getMessage().getAvps();
-
-        if (reqSet.getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
-            AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-            // 1* [ Vendor-Id ]
-            vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-            // 0*1{ Auth-Application-Id }
-            vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
-        }
-
-        // { Auth-Session-State }
-        if (reqSet.getAvp(Avp.AUTH_SESSION_STATE) == null) {
-            reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
-        }
-
-        // { Origin-Host }
-        reqSet.removeAvp(Avp.ORIGIN_HOST);
-        reqSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
-
-        // PENDING -  TODO
-        if (reqSet.getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
-            AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-            // 1* [ Vendor-Id ]
-            vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-            // 0*1{ Auth-Application-Id }
-            vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
-        }
-
-        // { Auth-Session-State }
-        if (reqSet.getAvp(Avp.AUTH_SESSION_STATE) == null) {
-            reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
-        }
-
-        // { Origin-Host }
-        reqSet.removeAvp(Avp.ORIGIN_HOST);
-        reqSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
-
-        // PENDING - TODO
-        return plr;
-    }
-
-    protected LocationReportRequest createLRR(ClientSLgSession slgSession) throws Exception {
-    /*
-     < Location-Report-Request> ::=	< Diameter Header: 8388621, REQ, PXY, 16777255 >
-								< Session-Id >
-		                        [ Vendor-Specific-Application-Id ]
-		                        { Auth-Session-State }
-		                        { Origin-Host }
-		                        { Origin-Realm }
-		                        { Destination-Host }
-		                        { Destination-Realm }
-		                        { Location-Event }
-		                        [ LCS-EPS-Client-Name ]
-		                        [ User-Name ]
-		                        [ MSISDN]
-		                        [ IMEI ]
-		                        [ Location-Estimate ]
-		                        [ Accuracy-Fulfilment-Indicator ]
-		                        [ Age-Of-Location-Estimate ]
-		                        [ Velocity-Estimate ]
-		                        [ EUTRAN-Positioning-Data ]
-		                        [ ECGI ]
-		                        [ GERAN-Positioning-Info ]
-		                        [ Cell-Global-Identity ]
-		                        [ UTRAN-Positioning-Info ]
-		                        [ Service-Area-Identity ]
-		                        [ LCS-Service-Type-ID ]
-		                        [ Pseudonym-Indicator ]
-		                        [ LCS-QoS-Class ]
-		                        [ Serving-Node ]
-		                        [ LRR-Flags ]
-		                        [ LCS-Reference-Number ]
-		                        [ Deferred-MT-LR-Data]
-		                        [ GMLC-Address ]
-		                        [ Reporting-Amount ]
-		                        [ Periodic-LDR-Information ]
-		                        [ ESMLC-Cell-Info ]
-		                        [ 1xRTT-RCID ] ]
-		                        [ Civic-Address ]
-		                        [ Barometric-Pressure ]
-		                        *[ Supported-Features ]
-		                        *[ AVP ]
-		                        *[ Proxy-Info ]
-                                *[ Route-Record ]
-
-    */
-        // Create ProvideLocationRequest
-        ProvideLocationRequest lrr = new LocationReportRequestImpl(slgSession.getSessions().get(0).createRequest(LocationReportRequest.code, getApplicationId(), getServerRealmName()));
-        // < Location-Report-Request> ::=	< Diameter Header: 8388621, REQ, PXY, 16777255 >
-
-        AvpSet reqSet = lrr.getMessage().getAvps();
-
-        if (reqSet.getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
-            AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-            // 1* [ Vendor-Id ]
-            vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-            // 0*1{ Auth-Application-Id }
-            vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
-        }
-
-        // { Auth-Session-State }
-        if (reqSet.getAvp(Avp.AUTH_SESSION_STATE) == null) {
-            reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
-        }
-
-        // { Origin-Host }
-        reqSet.removeAvp(Avp.ORIGIN_HOST);
-        reqSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
-
-        // PENDING -  TODO
-        if (reqSet.getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
-            AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-            // 1* [ Vendor-Id ]
-            vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-            // 0*1{ Auth-Application-Id }
-            vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
-        }
-
-        // { Auth-Session-State }
-        if (reqSet.getAvp(Avp.AUTH_SESSION_STATE) == null) {
-            reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
-        }
-
-        // { Origin-Host }
-        reqSet.removeAvp(Avp.ORIGIN_HOST);
-        reqSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
-
-        // PENDING - TODO
-        return plr;
-    }
+    // PENDING - TODO
+    return plr;
+  }
 }
+
