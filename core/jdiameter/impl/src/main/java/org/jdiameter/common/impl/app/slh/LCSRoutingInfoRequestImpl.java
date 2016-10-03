@@ -21,6 +21,8 @@
 
 package org.jdiameter.common.impl.app.slh;
 
+import org.jdiameter.api.Avp;
+import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.slh.events.LCSRoutingInfoRequest;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.slf4j.Logger;
@@ -31,18 +33,69 @@ import org.jdiameter.api.Message;
  * @author fernando.mendioroz@telestax.com (Fernando Mendioroz)
  *
  */
-
 public class LCSRoutingInfoRequestImpl extends AppRequestEventImpl implements LCSRoutingInfoRequest {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    protected final static Logger logger = LoggerFactory.getLogger(LCSRoutingInfoRequestImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(LCSRoutingInfoRequestImpl.class);
 
-    public LCSRoutingInfoRequestImpl(Message message) {
-        super(message);
-        message.setRequest(true);
+  public LCSRoutingInfoRequestImpl(Message message) {
+    super(message);
+    message.setRequest(true);
+  }
+
+  @Override
+  public boolean isUserNameAVPPresent() {
+    return super.message.getAvps().getAvp(Avp.USER_NAME) != null; // IE: IMSI
+  }
+
+  @Override
+  public String getUserName() {
+    Avp userNameAvp = super.message.getAvps().getAvp(Avp.USER_NAME);
+    if (userNameAvp != null) {
+      try {
+        return userNameAvp.getUTF8String(); // IE: IMSI mapped to User-Name
+        } catch (AvpDataException e) {
+          logger.debug("Failure trying to obtain User-Name AVP value (IMSI)", e);
+        }
+      }
+    return null;
+  }
+
+  @Override
+  public boolean isMSISDNAVPPresent() {
+    return super.message.getAvps().getAvp(Avp.MSISDN) != null;
+  }
+
+  @Override
+  public byte[] getMSISDN() {
+    Avp msisdnAvp = super.message.getAvps().getAvp(Avp.MSISDN);
+    if (msisdnAvp != null) {
+    try {
+      return msisdnAvp.getOctetString();
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain MSISDN AVP value", e);
+      }
     }
+    return null;
+  }
 
-    /*** TODO ***/
+  @Override
+  public boolean isGMLCNumberAVPPresent() {
+    return super.message.getAvps().getAvp(Avp.GMLC_NUMBER) != null;
+  }
+
+  @Override
+  public byte[] getGMLCNumber() {
+    Avp gmlcNumberAvp = super.message.getAvps().getAvp(Avp.GMLC_NUMBER);
+    if (gmlcNumberAvp != null) {
+      try {
+        return gmlcNumberAvp.getOctetString();
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain GMLC-Number AVP value", e);
+      }
+    }
+    return null;
+  }
 
 }

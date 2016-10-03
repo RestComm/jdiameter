@@ -21,6 +21,7 @@
 
 package org.jdiameter.api.slh.events;
 
+import org.jdiameter.api.Avp;
 import org.jdiameter.api.app.AppRequestEvent;
 
 /**
@@ -34,12 +35,22 @@ import org.jdiameter.api.app.AppRequestEvent;
  * retrieving routing information for LCS (Location Services) for a specified user from the HSS.
  * 
  */
-
 public interface LCSRoutingInfoRequest extends AppRequestEvent {
 
-    public static final String _SHORT_NAME = "RIR";
-    public static final String _LONG_NAME = "LCS-Routing-Info-Request";
+  public static final String _SHORT_NAME = "RIR";
+  public static final String _LONG_NAME = "LCS-Routing-Info-Request";
 
-    public static final int code = 8388622;
+  public static final int code = 8388622;
+
+  boolean isUserNameAVPPresent(); // Mapped IE: IMSI
+  String getUserName(); // Mapped IE: IMSI
+
+  boolean isMSISDNAVPPresent();
+  byte[] getMSISDN();
+
+  boolean isGMLCNumberAVPPresent();
+  byte[] getGMLCNumber();
+
+
 
 }

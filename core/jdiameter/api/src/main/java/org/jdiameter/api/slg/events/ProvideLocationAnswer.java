@@ -36,16 +36,63 @@ import org.jdiameter.api.app.AppAnswerEvent;
  * the target UE from the SGSN at any time, as part of deferred MT-LR procedure. The response contains the acknowledgment of the
  * receipt of the request and other additional information.
  * 
- * The Provide-Location-Answer (PLA) command, indicated by the Command-Code field set to 8388620 and the �R� bit cleared in the
+ * The Provide-Location-Answer (PLA) command, indicated by the Command-Code field set to 8388620 and the "R" bit cleared in the
  * Command Flags field, is sent by the MME or SGSN to the GMLC in response to the Provide-Location-Request command (Provide
  * Subscriber Location operation answer)
  */
 
 public interface ProvideLocationAnswer extends AppAnswerEvent{
 
-    public static final String _SHORT_NAME = "PLA";
-    public static final String _LONG_NAME = "Provide-Location-Answer";
+  public static final String _SHORT_NAME = "PLA";
+  public static final String _LONG_NAME = "Provide-Location-Answer";
 
-    public static final int code = 8388620;
+  public static final int code = 8388620;
+
+  boolean isLocationEstimateAvpPresent();
+  String getLocationEstimate();
+
+  boolean isAccuracyFulfilmentIndicatorAvpPresent();
+  int getAccuracyFulfilmentIndicator();
+
+  boolean isAgeOfLocationEstimateAvpPresent();
+  long getAgeOfLocationEstimate();
+
+  boolean isVelocityEstimateAvpPresent();
+  byte[] getVelocityEstimate();
+
+  boolean isEUTRANPositioningDataAvpPresent();
+  byte[] getEUTRANPositioningData();
+
+  boolean isECGIAvpPresent();
+  byte[] getECGI();
+
+  boolean isGERANPositioningInfoAvpPresent();
+  byte[] getGERANPositioningData();
+  byte[] getGERANGANSSPositioningData();
+
+  boolean isCellGlobalIdentityAvpPresent();
+  byte[] getCellGlobalIdentity();
+
+  boolean isUTRANPositioningInfoAvpPresent();
+  byte[] getUTRANPositioningData();
+  byte[] getUTRANGANSSPositioningData();
+
+  boolean isServiceAreaIdentityAvpPresent();
+  byte[] getServiceAreaIdentity();
+
+  public boolean isServingNodeAvpPresent();
+
+  public boolean isPLAFlagsAvpPresent();
+  public long getPLAFlags();
+
+  public boolean isESMLCCellInfoAvpPresent();
+  public long getCellPortionId();
+
+  public boolean isCivicAddressAvpPresent();
+  public String getCivicAddress();
+
+  public boolean isBarometricPressureAvpPresent();
+  public long getBarometricPressure();
+
 
 }

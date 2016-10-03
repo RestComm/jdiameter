@@ -21,6 +21,7 @@
 
 package org.jdiameter.api.slh.events;
 
+import org.jdiameter.api.Avp;
 import org.jdiameter.api.app.AppAnswerEvent;
 
 /**
@@ -35,12 +36,63 @@ import org.jdiameter.api.app.AppAnswerEvent;
  * (RIR) command.
  * 
  */
-
 public interface LCSRoutingInfoAnswer extends AppAnswerEvent {
 
-    public static final String _SHORT_NAME = "RIA";
-    public static final String _LONG_NAME = "LCS-Routing-Info-Answer";
+  public static final String _SHORT_NAME = "RIA";
+  public static final String _LONG_NAME = "LCS-Routing-Info-Answer";
 
-    public static final int code = 8388622;
+  public static final int code = 8388622;
+
+  boolean isUserNameAVPPresent(); // Mapped IE: IMSI
+  String getUserName(); // Mapped IE: IMSI
+
+  boolean isMSISDNAVPPresent();
+  byte[] getMSISDN();
+
+  public boolean isLMSIAVPPresent();
+  // int getLMSIAVPValue();
+  byte[] getLMSI();
+
+  public boolean isServingNodeAVPPresent();
+  // int getServingNodeAVPValue();
+
+  public boolean isAdditionalServingNodeAVPPresent();
+  // int getAdditionalServingNodeAVPValue();
+
+  boolean isGMLCAddressAVPPresent();
+  // int getGMLCAddressAVPValue();
+  java.net.InetAddress getGMLCAddress();
+
+  boolean isMMENameAVPPresent();
+  // int getMMENameAVPValue();
+  String getMMEName();
+
+  boolean isMSCNumberAVPPresent();
+  // int getMSCNumberAVPValue();
+  byte[] getMSCNumber();
+
+  boolean isLCSCapabilitiesSetsAVPPresent();
+  // int getLCSCapabilitiesSetsAVPValue();
+  long getLCSCapabilitiesSets();
+
+  boolean isPPRAddressAVPPresent();
+  // int getPPRAddressAVPValue();
+  java.net.InetAddress getPPRAddress();
+
+  boolean isMMERealmAVPPresent();
+  // int getMMERealmAVPValue();
+  String getMMERealm();
+
+  boolean isSGSNNameAVPPresent();
+  // int getSGSNNameAVPValue();
+  String getSGSNName();
+
+  boolean isSGSNRealmAVPPresent();
+  // int getSGSNRealmAVPValue();
+  String getSGSNRealm();
+
+  boolean isRIAFlagsAVPPresent();
+  // int getRIAFlagsAVPValue();
+  long getRIAFLags();
 
 }

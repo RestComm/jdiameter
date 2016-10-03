@@ -2693,14 +2693,19 @@ public interface Avp extends Wrapper, Serializable {
   /**
    * SLg (3GPP TS 29.172) Cell-Global-Identity AVP Code (reused from 3GPP TS 29.272)
    */
-  int CELL_GLOBAL_IDENTITY = 1607;
+  int CELL_GLOBAL_IDENTITY = 1604;
 
   /**
    * SLg (3GPP TS 29.172) Visited-PLMN-Id AVP Code (reused from 3GPP TS 29.272)
    */
   int VISITED_PLMN_ID = 1407;
 
-  // Diameter ELP Application (SLg) reused AVPs:
+  /**
+   * SLg (3GPP TS 29.172) Service-Area-Identity AVP Code (reused from 3GPP TS 29.272)
+   */
+  int SERVICE_AREA_IDENTITY = 1607;
+
+	// Diameter ELP Application (SLg) reused AVPs:
   // LCS-Format-Indicator 1237 3GPP TS 32.299;
   // LCS-Name-String 1238 3GPP TS 2.299;
   // LCS-Client-Type 1241 3GPP TS 32.299

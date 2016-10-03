@@ -36,16 +36,90 @@ import org.jdiameter.api.app.AppRequestEvent;
  * the target UE from the SGSN at any time, as part of deferred MT-LR procedure. The response contains the acknowledgment of the
  * receipt of the request and other additional information.
  * 
- * The Provide-Location-Request (PLR) command, indicated by the Command-Code field set to 8388620 and the ‘R’ bit set in the
+ * The Provide-Location-Request (PLR) command, indicated by the Command-Code field set to 8388620 and the "R" bit set in the
  * Command Flags field, is sent by the GMLC in order to request subscriber location to the MME or SGSN (Provide Subscriber
  * Location operation request)
  */
 
 public interface ProvideLocationRequest extends AppRequestEvent {
 
-    public static final String _SHORT_NAME = "PLR";
-    public static final String _LONG_NAME = "Provide-Location-Request";
+  public static final String _SHORT_NAME = "PLR";
+  public static final String _LONG_NAME = "Provide-Location-Request";
 
-    public static final int code = 8388620;
+  public static final int code = 8388620;
+
+  boolean isSLgLocationTypeAVPPresent();
+  int getSLgLocationType();
+
+  boolean isUserNameAVPPresent(); // Mapped IE: IMSI
+  String getUserName(); // Mapped IE: IMSI
+
+  boolean isMSISDNAVPPresent();
+  byte[] getMSISDN();
+
+  boolean isIMEIAVPPresent();
+  String getIMEI();
+
+  boolean isLCSEPSClientNameAVPPresent();
+  String getLSCNameString();
+  int getLCSFormatIndicator();
+
+  boolean isLCSCLientTypeAVPPresent();
+  int getLCSClientType();
+
+  boolean isLCSRequestorNamePresent();
+  String getLCSRequestorIdString();
+
+
+  boolean isLCSPriorityPresent();
+  long getLCSPriority();
+
+  boolean isLCSQoSAVPPresent();
+  int getLCSQoSClass();
+  long getHorizontalAccuracy();
+  long getVerticalAccuracy();
+  int getVerticalRequested();
+  int getResponseTime();
+
+  boolean isVelocityRequestedAVPPresent();
+  byte[] getVelocityRequested();
+
+  boolean isSupportedGADShapesAVPPresent();
+  long getSupportedGADSahpes();
+
+  boolean isLSCServiceTypeIdAVPPresent();
+  long getLSCServiceTypeId();
+
+  boolean isLCSCodewordAVPPresent();
+  String getLCSCodeword();
+
+  boolean isServiceSelectionAVPPresent();
+  String getServiceSelection(); // IE: APN
+
+  boolean isLCSPrivacyCheckSessionAVPPresent();
+  int getLCSPrivacyCheckSession(); // IE: Session-Related Privacy Check
+
+  boolean isLCSPrivacyCheckNonSessionAVPPresent();
+  int getLCSPrivacyCheckNonSession(); // IE: LCS-Privacy-Check-Non-Session
+
+  boolean isDeferredLocationTypeAVPPresent();
+  long getDeferredLocationType();
+
+  boolean isLCSReferenceNumberAVPPresent();
+  byte[] getLCSReferenceNumber();
+
+  boolean isAreaEventInfoAVPPresent();
+  long getAreaType();
+  byte[] getAreaIdentification();
+
+  boolean isGMLCAddressAVPPresent();
+  java.net.InetAddress getGMLCAddress();
+
+  boolean isPLRFlagsAVPPresent();
+  long getPLRFLags();
+
+  boolean isPeriodicLDRInformationAVPPresent();
+  long getReportingAmount();
+  long getReportingInterval();
 
 }
