@@ -70,7 +70,6 @@ public interface ProvideLocationRequest extends AppRequestEvent {
   boolean isLCSRequestorNamePresent();
   String getLCSRequestorIdString();
 
-
   boolean isLCSPriorityPresent();
   long getLCSPriority();
 

@@ -51,15 +51,15 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
 
   @Override
   public int getSLgLocationType(){
-      Avp slgLocationTypeAvp = super.message.getAvps().getAvp(Avp.SLG_LOCATION_TYPE);
-      if (slgLocationTypeAvp != null) {
-          try {
-              return slgLocationTypeAvp.getInteger32();
-          } catch (AvpDataException e) {
-              logger.debug("Failure trying to obtain SLg-Location-Type AVP value (IMSI)", e);
-          }
+    Avp slgLocationTypeAvp = super.message.getAvps().getAvp(Avp.SLG_LOCATION_TYPE);
+    if (slgLocationTypeAvp != null) {
+      try {
+        return slgLocationTypeAvp.getInteger32();
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain SLg-Location-Type AVP value (IMSI)", e);
       }
-      return -1;
+    }
+    return -1;
   }
 
   @Override
@@ -507,15 +507,15 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
 
   @Override
   public long getReportingAmount(){
-      Avp lcsReportingAmountAvp = super.message.getAvps().getAvp(Avp.REPORTING_AMOUNT);
-      if (lcsReportingAmountAvp != null) {
-          try {
-              return lcsReportingAmountAvp.getUnsigned32();
-          } catch (AvpDataException e) {
-              logger.debug("Failure trying to obtain LCS Reporting amount AVP value", e);
-          }
-      }
-      return -1;
+    Avp lcsReportingAmountAvp = super.message.getAvps().getAvp(Avp.REPORTING_AMOUNT);
+    if (lcsReportingAmountAvp != null) {
+        try {
+            return lcsReportingAmountAvp.getUnsigned32();
+        } catch (AvpDataException e) {
+            logger.debug("Failure trying to obtain LCS Reporting amount AVP value", e);
+        }
+    }
+    return -1;
   }
 
   @Override

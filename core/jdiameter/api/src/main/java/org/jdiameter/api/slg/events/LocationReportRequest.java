@@ -33,16 +33,108 @@ import org.jdiameter.api.app.AppRequestEvent;
  * target UE to a GMLC, when a request for location has been implicitly issued or when a Delayed Location Reporting is triggered
  * after receipt of a request for location for a UE transiently not reachable.
  * 
- * The Location-Report-Request (LRR) command, indicated by the Command-Code field set to 8388621 and the ‘R’ bit set in the
+ * The Location-Report-Request (LRR) command, indicated by the Command-Code field set to 8388621 and the "R" bit set in the
  * Command Flags field, is sent by the MME or SGSN in order to provide subscriber location data to the GMLC (Subscriber Location
  * Report operation request)
  */
 
 public interface LocationReportRequest extends AppRequestEvent {
 
-    public static final String _SHORT_NAME = "LRR";
-    public static final String _LONG_NAME = "Location-Report-Request";
+  public static final String _SHORT_NAME = "LRR";
+  public static final String _LONG_NAME = "Location-Report-Request";
 
-    public static final int code = 8388621;
+  public static final int code = 8388621;
+
+  boolean isLocationEventAVPPresent();
+  int getLocationEvent();
+
+  boolean isUserNameAVPPresent(); // Mapped IE: IMSI
+  String getUserName(); // Mapped IE: IMSI
+
+  boolean isMSISDNAVPPresent();
+  byte[] getMSISDN();
+
+  boolean isIMEIAVPPresent();
+  String getIMEI();
+
+  boolean isLCSEPSClientNameAVPPresent();
+  String getLSCNameString();
+  int getLCSFormatIndicator();
+
+  boolean isLocationEstimateAvpPresent();
+  String getLocationEstimate();
+
+  boolean isAccuracyFulfilmentIndicatorAvpPresent();
+  int getAccuracyFulfilmentIndicator();
+
+  boolean isAgeOfLocationEstimateAvpPresent();
+  long getAgeOfLocationEstimate();
+
+  boolean isVelocityEstimateAvpPresent();
+  byte[] getVelocityEstimate();
+
+  boolean isEUTRANPositioningDataAvpPresent();
+  byte[] getEUTRANPositioningData();
+
+  boolean isECGIAvpPresent();
+  byte[] getECGI();
+
+  boolean isGERANPositioningInfoAvpPresent();
+  byte[] getGERANPositioningData();
+  byte[] getGERANGANSSPositioningData();
+
+  boolean isCellGlobalIdentityAvpPresent();
+  byte[] getCellGlobalIdentity();
+
+  boolean isUTRANPositioningInfoAvpPresent();
+  byte[] getUTRANPositioningData();
+  byte[] getUTRANGANSSPositioningData();
+
+  boolean isServiceAreaIdentityAvpPresent();
+  byte[] getServiceAreaIdentity();
+
+  boolean isLCSServiceTypeIDAVPPresent();
+  long getLCSServiceTypeID();
+
+  boolean isPseudonymIndicatorAVPPresent();
+  int getPseudonymIndicator();
+
+  boolean isLCSQoSAVPPresent();
+  int getLCSQoSClass();
+  long getHorizontalAccuracy();
+  long getVerticalAccuracy();
+  int getVerticalRequested();
+  int getResponseTime();
+
+  public boolean isServingNodeAvpPresent();
+
+  boolean isLRRFlagsAVPPresent();
+  long getLRRFLags();
+
+  boolean isLCSReferenceNumberAVPPresent();
+  byte[] getLCSReferenceNumber();
+
+  boolean isDeferredMTLRDataAVPPresent();
+  long getDeferredLocationType();
+  long getTerminationCause();
+
+  boolean isGMLCAddressAVPPresent();
+  java.net.InetAddress getGMLCAddress();
+
+  boolean isPeriodicLDRInformationAVPPresent();
+  boolean isReportingAmountAVPPresent();
+  long getReportingAmount();
+
+  boolean isESMLCCellInfoAvpPresent();
+  long getCellPortionId();
+
+  boolean is1xRTTRCIDAVPPresent();
+  byte[] get1xRTTRCID();
+
+  boolean isCivicAddressAvpPresent();
+  String getCivicAddress();
+
+  boolean isBarometricPressureAvpPresent();
+  long getBarometricPressure();
 
 }

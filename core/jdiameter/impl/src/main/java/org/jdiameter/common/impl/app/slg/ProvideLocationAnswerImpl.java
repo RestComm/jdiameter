@@ -85,13 +85,13 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   @Override
   public int getAccuracyFulfilmentIndicator() {
     Avp lcsAccuracyFulfilmentIndAvp = super.message.getAvps().getAvp(Avp.ACCURACY_FULFILMENT_INDICATOR);
-      if (lcsAccuracyFulfilmentIndAvp != null) {
-        try {
-          return lcsAccuracyFulfilmentIndAvp.getInteger32();
-        } catch (AvpDataException e) {
-          logger.debug("Failure trying to obtain LCS Accuracy fulfilment indicator AVP value", e);
-        }
+		if (lcsAccuracyFulfilmentIndAvp != null) { 
+      try {
+        return lcsAccuracyFulfilmentIndAvp.getInteger32();
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS Accuracy fulfilment indicator AVP value", e);
       }
+    }
     return -1;
   }
 
@@ -103,11 +103,11 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   @Override
   public long getAgeOfLocationEstimate() {
     Avp lcsAgeOfLocEstimateAvp = super.message.getAvps().getAvp(Avp.AGE_OF_LOCATION_ESTIMATE);
-      if (lcsAgeOfLocEstimateAvp != null) {
-        try {
-          return lcsAgeOfLocEstimateAvp.getUnsigned32();
-        } catch (AvpDataException e) {
-          logger.debug("Failure trying to obtain LCS Age of Location Estimate AVP value", e);
+    if (lcsAgeOfLocEstimateAvp != null) {
+      try {
+        return lcsAgeOfLocEstimateAvp.getUnsigned32();
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS Age of Location Estimate AVP value", e);
       }
     }
     return -1;
@@ -121,11 +121,11 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   @Override
   public byte[] getVelocityEstimate() {
     Avp lcsVelEstimateAvp = super.message.getAvps().getAvp(Avp.VELOCITY_ESTIMATE);
-      if (lcsVelEstimateAvp != null) {
-        try {
-          return lcsVelEstimateAvp.getOctetString();
-        } catch (AvpDataException e) {
-          logger.debug("Failure trying to obtain LCS Velocity Estimate AVP value", e);
+    if (lcsVelEstimateAvp != null) {
+      try {
+        return lcsVelEstimateAvp.getOctetString();
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS Velocity Estimate AVP value", e);
       }
     }
     return null;
@@ -139,11 +139,11 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   @Override
   public byte[] getEUTRANPositioningData() {
     Avp lcsEUTRANPosDataAvp = super.message.getAvps().getAvp(Avp.EUTRAN_POSITIONING_DATA);
-      if (lcsEUTRANPosDataAvp != null) {
-        try {
-          return lcsEUTRANPosDataAvp.getOctetString();
-        } catch (AvpDataException e) {
-          logger.debug("Failure trying to obtain LCS E-UTRAN-Positioning-Data AVP value", e);
+    if (lcsEUTRANPosDataAvp != null) {
+      try {
+        return lcsEUTRANPosDataAvp.getOctetString();
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS E-UTRAN-Positioning-Data AVP value", e);
       }
     }
     return null;
@@ -175,11 +175,11 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   @Override
   public byte[] getGERANPositioningData(){
     Avp lcsGERANPositioningDataAvp = super.message.getAvps().getAvp(Avp.GERAN_POSITIONING_DATA);
-      if (lcsGERANPositioningDataAvp != null) {
-        try {
-          return lcsGERANPositioningDataAvp.getOctetString();
-        } catch (AvpDataException e) {
-          logger.debug("Failure trying to obtain LCS GERAN-Positioning-Data AVP value", e);
+    if (lcsGERANPositioningDataAvp != null) {
+      try {
+        return lcsGERANPositioningDataAvp.getOctetString();
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS GERAN-Positioning-Data AVP value", e);
       }
     }
     return null;

@@ -21,9 +21,7 @@
 
 package org.jdiameter.common.impl.app.slg;
 
-import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
-import org.jdiameter.api.Message;
+import org.jdiameter.api.*;
 import org.jdiameter.api.slg.events.LocationReportAnswer;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.slf4j.Logger;
@@ -36,18 +34,119 @@ import org.slf4j.LoggerFactory;
 
 public class LocationReportAnswerImpl extends AppRequestEventImpl implements LocationReportAnswer {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    protected final static Logger logger = LoggerFactory.getLogger(LocationReportAnswerImpl.class);
+  protected final static Logger logger = LoggerFactory.getLogger(LocationReportAnswerImpl.class);
 
-    public LocationReportAnswerImpl(Message message) {
-        super(message);
-        message.setRequest(true);
+  /**
+   *
+   * @param answer
+   */
+  public LocationReportAnswerImpl(Answer answer) {
+      super(answer);
+  }
+
+  /**
+   *
+   * @param request
+   * @param resultCode
+   */
+  public LocationReportAnswerImpl(Request request, long resultCode) {
+      super(request.createAnswer(resultCode));
+  }
+
+  public Avp getResultCodeAvp() throws AvpDataException {
+      return null;
+  }
+
+  @Override
+  public boolean isGMLCAddressAVPPresent(){
+      return super.message.getAvps().getAvp(Avp.GMLC_ADDRESS) != null;
+  }
+
+  @Override
+  public java.net.InetAddress getGMLCAddress(){
+    Avp lcsGMLCAddressAvp = super.message.getAvps().getAvp(Avp.GMLC_ADDRESS);
+    if (lcsGMLCAddressAvp != null) {
+        try {
+            return lcsGMLCAddressAvp.getAddress();
+        } catch (AvpDataException e) {
+            logger.debug("Failure trying to obtain GMLC Address AVP value", e);
+        }
     }
+    return null;
+  }
 
-    public Avp getResultCodeAvp() throws AvpDataException {
-        return null;
+  @Override
+  public boolean isLRAFlagsAVPPresent(){
+      return super.message.getAvps().getAvp(Avp.LRA_FLAGS) != null;
+  }
+
+  @Override
+  public long getLRAFLags(){
+    Avp lcsLRAFlagsAvp = super.message.getAvps().getAvp(Avp.LRA_FLAGS);
+    if (lcsLRAFlagsAvp != null) {
+        try {
+            return lcsLRAFlagsAvp.getUnsigned32();
+        } catch (AvpDataException e) {
+            logger.debug("Failure trying to obtain LCS LRA Flags AVP value", e);
+        }
     }
+    return -1;
+  }
 
-    /*** TODO ***/
+  @Override
+  public boolean isReportingPLMNListAVPPresent(){
+      return super.message.getAvps().getAvp(Avp.REPORTING_PLMN_LIST) != null;
+  }
+
+  @Override
+  public boolean isPLMNIDListAVPPresent(){
+      return super.message.getAvps().getAvp(Avp.PLMN_ID_LIST) != null;
+  }
+
+  @Override
+  public byte[] getVisitedPLMNId() {
+    Avp lcsVisitedPLMNIdAvp = super.message.getAvps().getAvp(Avp.VISITED_PLMN_ID);
+    if (lcsVisitedPLMNIdAvp != null) {
+        try {
+            return lcsVisitedPLMNIdAvp.getOctetString();
+        } catch (AvpDataException e) {
+            logger.debug("Failure trying to obtain LCS Visited PLMN ID AVP value", e);
+        }
+    }
+    return null;
+  }
+
+  @Override
+  public int getPeriodicLocationSupportIndicator() {
+    Avp lcsPeriodicLocationSupportIndicatorAvp = super.message.getAvps().getAvp(Avp.PERIODIC_LOCATION_SUPPORT_INDICATOR);
+    if (lcsPeriodicLocationSupportIndicatorAvp != null) {
+        try {
+            return lcsPeriodicLocationSupportIndicatorAvp.getInteger32();
+        } catch (AvpDataException e) {
+            logger.debug("Failure trying to obtain LCS Periodic Location Support Indicator AVP value", e);
+        }
+    }
+    return -1;
+  }
+
+  @Override
+  public boolean isLCSReferenceNumberAVPPresent(){
+      return super.message.getAvps().getAvp(Avp.LCS_REFERENCE_NUMBER) != null;
+  }
+
+  @Override
+  public byte[] getLCSReferenceNumber(){
+    Avp lcsLCSReferenceNumberAvp = super.message.getAvps().getAvp(Avp.LCS_REFERENCE_NUMBER);
+    if (lcsLCSReferenceNumberAvp != null) {
+        try {
+            return lcsLCSReferenceNumberAvp.getOctetString();
+        } catch (AvpDataException e) {
+            logger.debug("Failure trying to obtain LCS Reference Number AVP value", e);
+        }
+    }
+    return null;
+  }
+
 }

@@ -80,19 +80,18 @@ public interface ProvideLocationAnswer extends AppAnswerEvent{
   boolean isServiceAreaIdentityAvpPresent();
   byte[] getServiceAreaIdentity();
 
-  public boolean isServingNodeAvpPresent();
+  boolean isServingNodeAvpPresent();
 
-  public boolean isPLAFlagsAvpPresent();
-  public long getPLAFlags();
+  boolean isPLAFlagsAvpPresent();
+  long getPLAFlags();
 
-  public boolean isESMLCCellInfoAvpPresent();
-  public long getCellPortionId();
+  boolean isESMLCCellInfoAvpPresent();
+  long getCellPortionId();
 
-  public boolean isCivicAddressAvpPresent();
-  public String getCivicAddress();
+  boolean isCivicAddressAvpPresent();
+  String getCivicAddress();
 
-  public boolean isBarometricPressureAvpPresent();
-  public long getBarometricPressure();
-
+  boolean isBarometricPressureAvpPresent();
+  long getBarometricPressure();
 
 }

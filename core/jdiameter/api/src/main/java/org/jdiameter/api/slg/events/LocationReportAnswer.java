@@ -33,16 +33,30 @@ import org.jdiameter.api.app.AppAnswerEvent;
  * target UE to a GMLC, when a request for location has been implicitly issued or when a Delayed Location Reporting is triggered
  * after receipt of a request for location for a UE transiently not reachable.
  * 
- * The Location-Report-Answer (LRA) command, indicated by the Command-Code field set to 8388621 and the �R� bit cleared in the
+ * The Location-Report-Answer (LRA) command, indicated by the Command-Code field set to 8388621 and the "R" bit cleared in the
  * Command Flags field, is sent by the GMLC to the MME or SGSN in response to the Location-Report-Request command (Subscriber
  * Location Report operation answer)
  */
 
 public interface LocationReportAnswer extends AppAnswerEvent{
 
-    public static final String _SHORT_NAME = "LRA";
-    public static final String _LONG_NAME = "Location-Report-Answer";
+  public static final String _SHORT_NAME = "LRA";
+  public static final String _LONG_NAME = "Location-Report-Answer";
 
-    public static final int code = 8388621;
+  public static final int code = 8388621;
+
+  boolean isGMLCAddressAVPPresent();
+  java.net.InetAddress getGMLCAddress();
+
+  boolean isLRAFlagsAVPPresent();
+  long getLRAFLags();
+
+  boolean isReportingPLMNListAVPPresent();
+  boolean isPLMNIDListAVPPresent();
+  byte[] getVisitedPLMNId();
+  int getPeriodicLocationSupportIndicator();
+
+  boolean isLCSReferenceNumberAVPPresent();
+  byte[] getLCSReferenceNumber();
 
 }
