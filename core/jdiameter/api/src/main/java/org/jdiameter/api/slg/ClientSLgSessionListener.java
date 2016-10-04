@@ -40,13 +40,13 @@ import org.jdiameter.api.slg.events.LocationReportRequest;
 
 public interface ClientSLgSessionListener {
 
-    void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer)
-            throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer)
+          throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-    void doProvideLocationAnswerEvent(ClientSLgSession session, ProvideLocationRequest request, ProvideLocationAnswer answer)
-            throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doProvideLocationAnswerEvent(ClientSLgSession session, ProvideLocationRequest request, ProvideLocationAnswer answer)
+          throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-    void doLocationReportAnswerEvent(ClientSLgSession session, LocationReportRequest request, LocationReportAnswer answer)
-            throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doLocationReportAnswerEvent(ClientSLgSession session, LocationReportRequest request, LocationReportAnswer answer)
+          throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
 }

@@ -32,7 +32,7 @@ import org.jdiameter.api.app.AppRequestEvent;
  * As for 3GPP TS 29.172 v13.0.0, Subscriber Location Report operation is used by an MME or SGSN to provide the location of a
  * target UE to a GMLC, when a request for location has been implicitly issued or when a Delayed Location Reporting is triggered
  * after receipt of a request for location for a UE transiently not reachable.
- * 
+ *
  * The Location-Report-Request (LRR) command, indicated by the Command-Code field set to 8388621 and the "R" bit set in the
  * Command Flags field, is sent by the MME or SGSN in order to provide subscriber location data to the GMLC (Subscriber Location
  * Report operation request)
@@ -40,10 +40,10 @@ import org.jdiameter.api.app.AppRequestEvent;
 
 public interface LocationReportRequest extends AppRequestEvent {
 
-  public static final String _SHORT_NAME = "LRR";
-  public static final String _LONG_NAME = "Location-Report-Request";
+  String _SHORT_NAME = "LRR";
+  String _LONG_NAME = "Location-Report-Request";
 
-  public static final int code = 8388621;
+  int code = 8388621;
 
   boolean isLocationEventAVPPresent();
   int getLocationEvent();
@@ -106,7 +106,7 @@ public interface LocationReportRequest extends AppRequestEvent {
   int getVerticalRequested();
   int getResponseTime();
 
-  public boolean isServingNodeAvpPresent();
+  boolean isServingNodeAvpPresent();
 
   boolean isLRRFlagsAVPPresent();
   long getLRRFLags();

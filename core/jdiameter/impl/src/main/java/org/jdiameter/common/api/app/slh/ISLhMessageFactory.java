@@ -33,15 +33,15 @@ import org.jdiameter.api.slh.events.LCSRoutingInfoRequest;
 
 public interface ISLhMessageFactory {
 
-    LCSRoutingInfoRequest createLCSRoutingInfoRequest(Request request);
+  LCSRoutingInfoRequest createLCSRoutingInfoRequest(Request request);
 
-    LCSRoutingInfoAnswer createLCSRoutingInfoAnswer(Answer answer);
+  LCSRoutingInfoAnswer createLCSRoutingInfoAnswer(Answer answer);
 
-    /**
-     * Returns the Application-Id that this message factory is related to
-     * 
-     * @return the Application-Id value
-     */
-    long getApplicationId();
+  /**
+   * Returns the Application-Id that this message factory is related to
+   *
+   * @return the Application-Id value
+   */
+  long getApplicationId();
 
 }

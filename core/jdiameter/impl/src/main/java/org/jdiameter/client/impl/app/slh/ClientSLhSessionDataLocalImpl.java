@@ -29,6 +29,6 @@ import org.jdiameter.common.impl.app.slh.SLhLocalSessionDataImpl;
  */
 
 public class ClientSLhSessionDataLocalImpl extends SLhLocalSessionDataImpl implements IClientSLhSessionData {
-    public ClientSLhSessionDataLocalImpl() {
-    }
+  public ClientSLhSessionDataLocalImpl() {
+  }
 }

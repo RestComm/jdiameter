@@ -26,7 +26,7 @@ import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.slh.ClientSLhSessionListener;
 import org.jdiameter.api.slh.ServerSLhSessionListener;
 import org.jdiameter.common.api.app.IAppSessionFactory;
-import org.jdiameter.common.api.app.slh.ISLhMessageFactory;
+// import org.jdiameter.common.api.app.slh.ISLhMessageFactory;
 
 /**
  * @author fernando.mendioroz@telestax.com (Fernando Mendioroz)
@@ -34,57 +34,57 @@ import org.jdiameter.common.api.app.slh.ISLhMessageFactory;
  */
 
 public interface ISLhSessionFactory extends IAppSessionFactory {
-   
-    /**
-     * Get stack wide listener for sessions. In local mode it has similar effect
-     * as setting this directly in app session. However clustered session use this value when recreated!
-     *
-     * @return the serverSessionListener
-     */
-    public ServerSLhSessionListener getServerSessionListener();
 
-     /**
-     * Set stack wide listener for sessions. In local mode it has similar effect
-     * as setting this directly in app session. However clustered session use this value when recreated!
-     *
-     * @param serverSessionListener the serverSessionListener to set
-     */
-    public void setServerSessionListener(ServerSLhSessionListener serverSessionListener);
+  /**
+   * Get stack wide listener for sessions. In local mode it has similar effect
+   * as setting this directly in app session. However clustered session use this value when recreated!
+   *
+   * @return the serverSessionListener
+   */
+  ServerSLhSessionListener getServerSessionListener();
 
-     /**
-     * Get stack wide listener for sessions. In local mode it has similar effect
-     * as setting this directly in app session. However clustered session use this value when recreated!
-     *
-     * @return the clientSessionListener
-     */
-    public ClientSLhSessionListener getClientSessionListener();
+   /**
+   * Set stack wide listener for sessions. In local mode it has similar effect
+   * as setting this directly in app session. However clustered session use this value when recreated!
+   *
+   * @param serverSessionListener the serverSessionListener to set
+   */
+  void setServerSessionListener(ServerSLhSessionListener serverSessionListener);
 
-     /**
-     * Set stack wide listener for sessions. In local mode it has similar effect
-     * as setting this directly in app session. However clustered session use this value when recreated!
-     *
-     * @param clientSessionListener the clientSessionListener to set
-     */
-    public void setClientSessionListener(ClientSLhSessionListener clientSessionListener);
+   /**
+   * Get stack wide listener for sessions. In local mode it has similar effect
+   * as setting this directly in app session. However clustered session use this value when recreated!
+   *
+   * @return the clientSessionListener
+   */
+  ClientSLhSessionListener getClientSessionListener();
 
-     /**
-     * @return the messageFactory
-     */
-    public ISLhMessageFactory getMessageFactory();
+   /**
+   * Set stack wide listener for sessions. In local mode it has similar effect
+   * as setting this directly in app session. However clustered session use this value when recreated!
+   *
+   * @param clientSessionListener the clientSessionListener to set
+   */
+  void setClientSessionListener(ClientSLhSessionListener clientSessionListener);
 
-     /**
-     * @param messageFactory the messageFactory to set
-     */
-    public void setMessageFactory(ISLhMessageFactory messageFactory);
+   /**
+   * @return the messageFactory
+   */
+  ISLhMessageFactory getMessageFactory();
 
-     /**
-     * @return the stateListener
-     */
-     public StateChangeListener<AppSession> getStateListener();
+   /**
+   * @param messageFactory the messageFactory to set
+   */
+  void setMessageFactory(ISLhMessageFactory messageFactory);
 
-     /**
-     * @param stateListener the stateListener to set
-     */
-     public void setStateListener(StateChangeListener<AppSession> stateListener);
+   /**
+   * @return the stateListener
+   */
+  StateChangeListener<AppSession> getStateListener();
+
+   /**
+   * @param stateListener the stateListener to set
+   */
+  void setStateListener(StateChangeListener<AppSession> stateListener);
 
 }

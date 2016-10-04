@@ -36,17 +36,17 @@ import org.jdiameter.api.slh.events.LCSRoutingInfoRequest;
 
 public interface ClientSLhSession extends AppSession, StateMachine {
 
-    /**
-     * Send LCS-Routing-Info-Request to server
-     *
-     * @param request LCS-Routing-Info-Request event instance
-     * @throws InternalException The InternalException signals that internal error is occurred.
-     * @throws IllegalDiameterStateException The IllegalStateException signals that session has incorrect state (invalid).
-     * @throws RouteException The NoRouteException signals that no route exist for a given realm.
-     * @throws OverloadException The OverloadException signals that destination host is overloaded.
-     */
+  /**
+   * Send LCS-Routing-Info-Request to server
+   *
+   * @param request LCS-Routing-Info-Request event instance
+   * @throws InternalException The InternalException signals that internal error is occurred.
+   * @throws IllegalDiameterStateException The IllegalStateException signals that session has incorrect state (invalid).
+   * @throws RouteException The NoRouteException signals that no route exist for a given realm.
+   * @throws OverloadException The OverloadException signals that destination host is overloaded.
+   */
 
-    void sendLCSRoutingInfoRequest(LCSRoutingInfoRequest request)
-            throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void sendLCSRoutingInfoRequest(LCSRoutingInfoRequest request)
+          throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
 }

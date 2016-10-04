@@ -35,7 +35,7 @@ import org.jdiameter.api.app.AppRequestEvent;
  * estimate of the target UE and other additional information. This operation is also used by a GMLC to request the location of
  * the target UE from the SGSN at any time, as part of deferred MT-LR procedure. The response contains the acknowledgment of the
  * receipt of the request and other additional information.
- * 
+ *
  * The Provide-Location-Request (PLR) command, indicated by the Command-Code field set to 8388620 and the "R" bit set in the
  * Command Flags field, is sent by the GMLC in order to request subscriber location to the MME or SGSN (Provide Subscriber
  * Location operation request)
@@ -43,10 +43,10 @@ import org.jdiameter.api.app.AppRequestEvent;
 
 public interface ProvideLocationRequest extends AppRequestEvent {
 
-  public static final String _SHORT_NAME = "PLR";
-  public static final String _LONG_NAME = "Provide-Location-Request";
+  String _SHORT_NAME = "PLR";
+  String _LONG_NAME = "Provide-Location-Request";
 
-  public static final int code = 8388620;
+  int code = 8388620;
 
   boolean isSLgLocationTypeAVPPresent();
   int getSLgLocationType();

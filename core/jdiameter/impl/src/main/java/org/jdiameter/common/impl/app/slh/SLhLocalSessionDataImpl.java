@@ -35,31 +35,31 @@ import org.jdiameter.common.api.app.slh.SLhSessionState;
 
 public class SLhLocalSessionDataImpl extends AppSessionDataLocalImpl implements ISLhSessionData {
 
-    protected SLhSessionState state = SLhSessionState.IDLE;
-    protected Request buffer;
-    protected Serializable tsTimerId;
+  protected SLhSessionState state = SLhSessionState.IDLE;
+  protected Request buffer;
+  protected Serializable tsTimerId;
 
-    public void setSLhSessionState(SLhSessionState state) {
-        this.state = state;
-    }
+  public void setSLhSessionState(SLhSessionState state) {
+    this.state = state;
+  }
 
-    public SLhSessionState getSLhSessionState() {
-        return this.state;
-    }
+  public SLhSessionState getSLhSessionState() {
+    return this.state;
+  }
 
-    public Serializable getTsTimerId() {
-        return this.tsTimerId;
-    }
+  public Serializable getTsTimerId() {
+    return this.tsTimerId;
+  }
 
-    public void setTsTimerId(Serializable tid) {
-        this.tsTimerId = tid;
-    }
+  public void setTsTimerId(Serializable tid) {
+    this.tsTimerId = tid;
+  }
 
-    public void setBuffer(Request buffer) {
-        this.buffer = buffer;
-    }
+  public void setBuffer(Request buffer) {
+    this.buffer = buffer;
+  }
 
-    public Request getBuffer() {
-        return this.buffer;
-    }
+  public Request getBuffer() {
+    return this.buffer;
+  }
 }

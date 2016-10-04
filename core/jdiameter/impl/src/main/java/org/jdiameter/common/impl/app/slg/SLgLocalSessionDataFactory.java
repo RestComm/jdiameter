@@ -36,17 +36,17 @@ import org.jdiameter.server.impl.app.slg.ServerSLgSessionDataLocalImpl;
 
 public class SLgLocalSessionDataFactory implements IAppSessionDataFactory<ISLgSessionData> {
 
-    public ISLgSessionData getAppSessionData(Class<? extends AppSession> clazz, String sessionId) {
-        if (clazz.equals(ClientSLgSession.class)) {
-            ClientSLgSessionDataLocalImpl data = new ClientSLgSessionDataLocalImpl();
-            data.setSessionId(sessionId);
-            return data;
-        } else if (clazz.equals(ServerSLgSession.class)) {
-            ServerSLgSessionDataLocalImpl data = new ServerSLgSessionDataLocalImpl();
-            data.setSessionId(sessionId);
-            return data;
-        } else {
-            throw new IllegalArgumentException("Invalid Session Class: " + clazz.toString());
-        }
+  public ISLgSessionData getAppSessionData(Class<? extends AppSession> clazz, String sessionId) {
+    if (clazz.equals(ClientSLgSession.class)) {
+      ClientSLgSessionDataLocalImpl data = new ClientSLgSessionDataLocalImpl();
+      data.setSessionId(sessionId);
+      return data;
+    } else if (clazz.equals(ServerSLgSession.class)) {
+      ServerSLgSessionDataLocalImpl data = new ServerSLgSessionDataLocalImpl();
+      data.setSessionId(sessionId);
+      return data;
+    } else {
+      throw new IllegalArgumentException("Invalid Session Class: " + clazz.toString());
     }
+  }
 }

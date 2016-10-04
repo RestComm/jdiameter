@@ -30,19 +30,18 @@ import org.jdiameter.common.api.app.IAppSessionData;
  * @author fernando.mendioroz@telestax.com (Fernando Mendioroz)
  *
  */
-
 public interface ISLgSessionData extends IAppSessionData {
 
-    public void setSLgSessionState(SLgSessionState state);
+  void setSLgSessionState(SLgSessionState state);
 
-    public SLgSessionState getSLgSessionState();
+  SLgSessionState getSLgSessionState();
 
-    public Serializable getTsTimerId();
+  Serializable getTsTimerId();
 
-    public void setTsTimerId(Serializable tid);
+  void setTsTimerId(Serializable tid);
 
-    public void setBuffer(Request buffer);
+  void setBuffer(Request buffer);
 
-    public Request getBuffer();
+  Request getBuffer();
 
 }

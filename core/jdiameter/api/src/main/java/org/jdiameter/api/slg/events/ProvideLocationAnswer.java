@@ -35,7 +35,7 @@ import org.jdiameter.api.app.AppAnswerEvent;
  * estimate of the target UE and other additional information. This operation is also used by a GMLC to request the location of
  * the target UE from the SGSN at any time, as part of deferred MT-LR procedure. The response contains the acknowledgment of the
  * receipt of the request and other additional information.
- * 
+ *
  * The Provide-Location-Answer (PLA) command, indicated by the Command-Code field set to 8388620 and the "R" bit cleared in the
  * Command Flags field, is sent by the MME or SGSN to the GMLC in response to the Provide-Location-Request command (Provide
  * Subscriber Location operation answer)
@@ -43,10 +43,10 @@ import org.jdiameter.api.app.AppAnswerEvent;
 
 public interface ProvideLocationAnswer extends AppAnswerEvent{
 
-  public static final String _SHORT_NAME = "PLA";
-  public static final String _LONG_NAME = "Provide-Location-Answer";
+  String _SHORT_NAME = "PLA";
+  String _LONG_NAME = "Provide-Location-Answer";
 
-  public static final int code = 8388620;
+  int code = 8388620;
 
   boolean isLocationEstimateAvpPresent();
   String getLocationEstimate();

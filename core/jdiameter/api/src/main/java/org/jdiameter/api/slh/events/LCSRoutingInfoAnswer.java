@@ -21,7 +21,6 @@
 
 package org.jdiameter.api.slh.events;
 
-import org.jdiameter.api.Avp;
 import org.jdiameter.api.app.AppAnswerEvent;
 
 /**
@@ -34,14 +33,14 @@ import org.jdiameter.api.app.AppAnswerEvent;
  * and the "R" bit cleared in the Command Flags field, is sent from HSS to GMLC. The procedure invoked by the GMLC is used for
  * retrieving routing information for LCS (Location Services) for a specified user from the HSS via a LCS-Routing-Info-Request
  * (RIR) command.
- * 
+ *
  */
 public interface LCSRoutingInfoAnswer extends AppAnswerEvent {
 
-  public static final String _SHORT_NAME = "RIA";
-  public static final String _LONG_NAME = "LCS-Routing-Info-Answer";
+  String _SHORT_NAME = "RIA";
+  String _LONG_NAME = "LCS-Routing-Info-Answer";
 
-  public static final int code = 8388622;
+  int code = 8388622;
 
   boolean isUserNameAVPPresent(); // Mapped IE: IMSI
   String getUserName(); // Mapped IE: IMSI
@@ -49,14 +48,14 @@ public interface LCSRoutingInfoAnswer extends AppAnswerEvent {
   boolean isMSISDNAVPPresent();
   byte[] getMSISDN();
 
-  public boolean isLMSIAVPPresent();
+  boolean isLMSIAVPPresent();
   // int getLMSIAVPValue();
   byte[] getLMSI();
 
-  public boolean isServingNodeAVPPresent();
+  boolean isServingNodeAVPPresent();
   // int getServingNodeAVPValue();
 
-  public boolean isAdditionalServingNodeAVPPresent();
+  boolean isAdditionalServingNodeAVPPresent();
   // int getAdditionalServingNodeAVPValue();
 
   boolean isGMLCAddressAVPPresent();

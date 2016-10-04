@@ -60,210 +60,210 @@ import org.slf4j.LoggerFactory;
 public class SLhSessionFactoryImpl implements ISLhSessionFactory, ServerSLhSessionListener, ClientSLhSessionListener,
         ISLhMessageFactory, StateChangeListener<AppSession> {
 
-    private static final Logger logger = LoggerFactory.getLogger(SLhSessionFactoryImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(SLhSessionFactoryImpl.class);
 
-    protected ISessionFactory sessionFactory;
+  protected ISessionFactory sessionFactory;
 
-    protected ServerSLhSessionListener serverSessionListener;
-    protected ClientSLhSessionListener clientSessionListener;
+  protected ServerSLhSessionListener serverSessionListener;
+  protected ClientSLhSessionListener clientSessionListener;
 
-    protected ISLhMessageFactory messageFactory;
-    protected StateChangeListener<AppSession> stateListener;
-    protected ISessionDatasource iss;
-    protected IAppSessionDataFactory<ISLhSessionData> sessionDataFactory;
+  protected ISLhMessageFactory messageFactory;
+  protected StateChangeListener<AppSession> stateListener;
+  protected ISessionDatasource iss;
+  protected IAppSessionDataFactory<ISLhSessionData> sessionDataFactory;
 
-    public SLhSessionFactoryImpl() {
-    };
+  public SLhSessionFactoryImpl() {
+  };
 
-    public SLhSessionFactoryImpl(SessionFactory sessionFactory) {
-        super();
-        init(sessionFactory);
+  public SLhSessionFactoryImpl(SessionFactory sessionFactory) {
+    super();
+    init(sessionFactory);
+  }
+
+  public void init(SessionFactory sessionFactory) {
+    this.sessionFactory = (ISessionFactory) sessionFactory;
+    this.iss = this.sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
+    this.sessionDataFactory = (IAppSessionDataFactory<ISLhSessionData>) this.iss.getDataFactory(ISLhSessionData.class);
+  }
+
+  /**
+   * @return the serverSessionListener
+   */
+  public ServerSLhSessionListener getServerSessionListener() {
+    return serverSessionListener != null ? serverSessionListener : this;
+  }
+
+  /**
+   * @param serverSessionListener the serverSessionListener to set
+   */
+  public void setServerSessionListener(ServerSLhSessionListener serverSessionListener) {
+    this.serverSessionListener = serverSessionListener;
+  }
+
+  /**
+   * @return the serverSessionListener
+   */
+  public ClientSLhSessionListener getClientSessionListener() {
+    return clientSessionListener != null ? clientSessionListener : this;
+  }
+
+  /**
+   * @param serverSessionListener the serverSessionListener to set
+   */
+  public void setClientSessionListener(ClientSLhSessionListener clientSessionListener) {
+    this.clientSessionListener = clientSessionListener;
+  }
+
+  /**
+   * @return the messageFactory
+   */
+  public ISLhMessageFactory getMessageFactory() {
+    return messageFactory != null ? messageFactory : this;
+  }
+
+  /**
+   * @param messageFactory the messageFactory to set
+   */
+  public void setMessageFactory(ISLhMessageFactory messageFactory) {
+    this.messageFactory = messageFactory;
+  }
+
+  /**
+   * @return the stateListener
+   */
+  public StateChangeListener<AppSession> getStateListener() {
+    return stateListener != null ? stateListener : this;
+  }
+
+  /**
+   * @param stateListener the stateListener to set
+   */
+  public void setStateListener(StateChangeListener<AppSession> stateListener) {
+    this.stateListener = stateListener;
+  }
+
+  public AppSession getSession(String sessionId, Class<? extends AppSession> aClass) {
+    if (sessionId == null) {
+      throw new IllegalArgumentException("SessionId must not be null");
     }
-
-    public void init(SessionFactory sessionFactory) {
-        this.sessionFactory = (ISessionFactory) sessionFactory;
-        this.iss = this.sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
-        this.sessionDataFactory = (IAppSessionDataFactory<ISLhSessionData>) this.iss.getDataFactory(ISLhSessionData.class);
+    if (!this.iss.exists(sessionId)) {
+      return null;
     }
-
-    /**
-     * @return the serverSessionListener
-     */
-    public ServerSLhSessionListener getServerSessionListener() {
-        return serverSessionListener != null ? serverSessionListener : this;
+    AppSession appSession = null;
+    try {
+      if (aClass == ServerSLhSession.class) {
+        IServerSLhSessionData sessionData = (IServerSLhSessionData) this.sessionDataFactory
+                .getAppSessionData(ServerSLhSession.class, sessionId);
+        SLhServerSessionImpl serverSession = new SLhServerSessionImpl(sessionData, getMessageFactory(), sessionFactory,
+                this.getServerSessionListener());
+        serverSession.getSessions().get(0).setRequestListener(serverSession);
+        appSession = serverSession;
+      } else if (aClass == ClientSLhSession.class) {
+        IClientSLhSessionData sessionData = (IClientSLhSessionData) this.sessionDataFactory
+                .getAppSessionData(ClientSLhSession.class, sessionId);
+        SLhClientSessionImpl clientSession = new SLhClientSessionImpl(sessionData, getMessageFactory(), sessionFactory,
+                this.getClientSessionListener());
+        clientSession.getSessions().get(0).setRequestListener(clientSession);
+        appSession = clientSession;
+      } else {
+        throw new IllegalArgumentException(
+                "Wrong session class: " + aClass + ". Supported[" + ServerSLhSession.class + "]");
+      }
+    } catch (Exception e) {
+      logger.error("Failure to obtain new SLh Session.", e);
     }
+    return appSession;
+  }
 
-    /**
-     * @param serverSessionListener the serverSessionListener to set
-     */
-    public void setServerSessionListener(ServerSLhSessionListener serverSessionListener) {
-        this.serverSessionListener = serverSessionListener;
-    }
+  public AppSession getNewSession(String sessionId, Class<? extends AppSession> aClass, ApplicationId applicationId,
+          Object[] args) {
+    AppSession appSession = null;
 
-    /**
-     * @return the serverSessionListener
-     */
-    public ClientSLhSessionListener getClientSessionListener() {
-        return clientSessionListener != null ? clientSessionListener : this;
-    }
-
-    /**
-     * @param serverSessionListener the serverSessionListener to set
-     */
-    public void setClientSessionListener(ClientSLhSessionListener clientSessionListener) {
-        this.clientSessionListener = clientSessionListener;
-    }
-
-    /**
-     * @return the messageFactory
-     */
-    public ISLhMessageFactory getMessageFactory() {
-        return messageFactory != null ? messageFactory : this;
-    }
-
-    /**
-     * @param messageFactory the messageFactory to set
-     */
-    public void setMessageFactory(ISLhMessageFactory messageFactory) {
-        this.messageFactory = messageFactory;
-    }
-
-    /**
-     * @return the stateListener
-     */
-    public StateChangeListener<AppSession> getStateListener() {
-        return stateListener != null ? stateListener : this;
-    }
-
-    /**
-     * @param stateListener the stateListener to set
-     */
-    public void setStateListener(StateChangeListener<AppSession> stateListener) {
-        this.stateListener = stateListener;
-    }
-
-    public AppSession getSession(String sessionId, Class<? extends AppSession> aClass) {
+    try {
+      if (aClass == ServerSLhSession.class) {
         if (sessionId == null) {
-            throw new IllegalArgumentException("SessionId must not be null");
+          if (args != null && args.length > 0 && args[0] instanceof Request) {
+            Request request = (Request) args[0];
+            sessionId = request.getSessionId();
+          } else {
+            sessionId = this.sessionFactory.getSessionId();
+          }
         }
-        if (!this.iss.exists(sessionId)) {
-            return null;
+        IServerSLhSessionData sessionData = (IServerSLhSessionData) this.sessionDataFactory
+                .getAppSessionData(ServerSLhSession.class, sessionId);
+        sessionData.setApplicationId(applicationId);
+        SLhServerSessionImpl serverSession = new SLhServerSessionImpl(sessionData, getMessageFactory(), sessionFactory,
+                this.getServerSessionListener());
+
+        iss.addSession(serverSession);
+        serverSession.getSessions().get(0).setRequestListener(serverSession);
+        appSession = serverSession;
+      } else if (aClass == ClientSLhSession.class) {
+        if (sessionId == null) {
+          if (args != null && args.length > 0 && args[0] instanceof Request) {
+            Request request = (Request) args[0];
+            sessionId = request.getSessionId();
+          } else {
+            sessionId = this.sessionFactory.getSessionId();
+          }
         }
-        AppSession appSession = null;
-        try {
-            if (aClass == ServerSLhSession.class) {
-                IServerSLhSessionData sessionData = (IServerSLhSessionData) this.sessionDataFactory
-                        .getAppSessionData(ServerSLhSession.class, sessionId);
-                SLhServerSessionImpl serverSession = new SLhServerSessionImpl(sessionData, getMessageFactory(), sessionFactory,
-                        this.getServerSessionListener());
-                serverSession.getSessions().get(0).setRequestListener(serverSession);
-                appSession = serverSession;
-            } else if (aClass == ClientSLhSession.class) {
-                IClientSLhSessionData sessionData = (IClientSLhSessionData) this.sessionDataFactory
-                        .getAppSessionData(ClientSLhSession.class, sessionId);
-                SLhClientSessionImpl clientSession = new SLhClientSessionImpl(sessionData, getMessageFactory(), sessionFactory,
-                        this.getClientSessionListener());
-                clientSession.getSessions().get(0).setRequestListener(clientSession);
-                appSession = clientSession;
-            } else {
-                throw new IllegalArgumentException(
-                        "Wrong session class: " + aClass + ". Supported[" + ServerSLhSession.class + "]");
-            }
-        } catch (Exception e) {
-            logger.error("Failure to obtain new SLh Session.", e);
-        }
-        return appSession;
+        IClientSLhSessionData sessionData = (IClientSLhSessionData) this.sessionDataFactory
+                .getAppSessionData(ClientSLhSession.class, sessionId);
+        sessionData.setApplicationId(applicationId);
+        SLhClientSessionImpl clientSession = new SLhClientSessionImpl(sessionData, getMessageFactory(), sessionFactory,
+                this.getClientSessionListener());
+
+        iss.addSession(clientSession);
+        clientSession.getSessions().get(0).setRequestListener(clientSession);
+        appSession = clientSession;
+      } else {
+        throw new IllegalArgumentException(
+                  "Wrong session class: " + aClass + ". Supported[" + ServerSLhSession.class + "]");
+      }
+    } catch (Exception e) {
+      logger.error("Failure to obtain new SLh Session.", e);
     }
+    return appSession;
+  }
 
-    public AppSession getNewSession(String sessionId, Class<? extends AppSession> aClass, ApplicationId applicationId,
-            Object[] args) {
-        AppSession appSession = null;
+  public void stateChanged(Enum oldState, Enum newState) {
+    logger.info("Diameter SLh Session Factory :: stateChanged :: oldState[{}], newState[{}]", oldState, newState);
+  }
 
-        try {
-            if (aClass == ServerSLhSession.class) {
-                if (sessionId == null) {
-                    if (args != null && args.length > 0 && args[0] instanceof Request) {
-                        Request request = (Request) args[0];
-                        sessionId = request.getSessionId();
-                    } else {
-                        sessionId = this.sessionFactory.getSessionId();
-                    }
-                }
-                IServerSLhSessionData sessionData = (IServerSLhSessionData) this.sessionDataFactory
-                        .getAppSessionData(ServerSLhSession.class, sessionId);
-                sessionData.setApplicationId(applicationId);
-                SLhServerSessionImpl serverSession = new SLhServerSessionImpl(sessionData, getMessageFactory(), sessionFactory,
-                        this.getServerSessionListener());
+  public long getApplicationId() {
+    return 16777291;
+  }
 
-                iss.addSession(serverSession);
-                serverSession.getSessions().get(0).setRequestListener(serverSession);
-                appSession = serverSession;
-            } else if (aClass == ClientSLhSession.class) {
-                if (sessionId == null) {
-                    if (args != null && args.length > 0 && args[0] instanceof Request) {
-                        Request request = (Request) args[0];
-                        sessionId = request.getSessionId();
-                    } else {
-                        sessionId = this.sessionFactory.getSessionId();
-                    }
-                }
-                IClientSLhSessionData sessionData = (IClientSLhSessionData) this.sessionDataFactory
-                        .getAppSessionData(ClientSLhSession.class, sessionId);
-                sessionData.setApplicationId(applicationId);
-                SLhClientSessionImpl clientSession = new SLhClientSessionImpl(sessionData, getMessageFactory(), sessionFactory,
-                        this.getClientSessionListener());
+  public void stateChanged(AppSession source, Enum oldState, Enum newState) {
+    logger.info("Diameter SLh Session Factory :: stateChanged :: Session, [{}], oldState[{}], newState[{}]",
+            new Object[] { source, oldState, newState });
+  }
 
-                iss.addSession(clientSession);
-                clientSession.getSessions().get(0).setRequestListener(clientSession);
-                appSession = clientSession;
-            } else {
-                throw new IllegalArgumentException(
-                        "Wrong session class: " + aClass + ". Supported[" + ServerSLhSession.class + "]");
-            }
-        } catch (Exception e) {
-            logger.error("Failure to obtain new SLh Session.", e);
-        }
-        return appSession;
-    }
+  public LCSRoutingInfoAnswer createLCSRoutingInfoAnswer(Answer answer) {
+    return new LCSRoutingInfoAnswerImpl(answer);
+  }
 
-    public void stateChanged(Enum oldState, Enum newState) {
-        logger.info("Diameter SLh Session Factory :: stateChanged :: oldState[{}], newState[{}]", oldState, newState);
-    }
+  public LCSRoutingInfoRequest createLCSRoutingInfoRequest(Request request) {
+    return new LCSRoutingInfoRequestImpl(request);
+  }
 
-    public long getApplicationId() {
-        return 16777291;
-    }
+  public void doLCSRoutingInfoRequestEvent(ServerSLhSession appSession, LCSRoutingInfoRequest request)
+          throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+    logger.info("Diameter SLh Session Factory :: doLCSRoutingInfoRequestEvent :: appSession[{}], Request[{}]",
+            appSession, request);
+  }
 
-    public void stateChanged(AppSession source, Enum oldState, Enum newState) {
-        logger.info("Diameter SLh Session Factory :: stateChanged :: Session, [{}], oldState[{}], newState[{}]",
-                new Object[] { source, oldState, newState });
-    }
+  public void doOtherEvent(AppSession appSession, AppRequestEvent request, AppAnswerEvent answer)
+          throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+    logger.info("Diameter SLh Session Factory :: doOtherEvent :: appSession[{}], Request[{}], Answer[{}]",
+            new Object[] { appSession, request, answer });
+  }
 
-    public LCSRoutingInfoAnswer createLCSRoutingInfoAnswer(Answer answer) {
-        return new LCSRoutingInfoAnswerImpl(answer);
-    }
-
-    public LCSRoutingInfoRequest createLCSRoutingInfoRequest(Request request) {
-        return new LCSRoutingInfoRequestImpl(request);
-    }
-
-    public void doLCSRoutingInfoRequestEvent(ServerSLhSession appSession, LCSRoutingInfoRequest request)
-            throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-        logger.info("Diameter SLh Session Factory :: doLCSRoutingInfoRequestEvent :: appSession[{}], Request[{}]",
-                appSession, request);
-    }
-
-    public void doOtherEvent(AppSession appSession, AppRequestEvent request, AppAnswerEvent answer)
-            throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-        logger.info("Diameter SLh Session Factory :: doOtherEvent :: appSession[{}], Request[{}], Answer[{}]",
-                new Object[] { appSession, request, answer });
-    }
-
-    public void doLCSRoutingInfoAnswerEvent(ClientSLhSession appSession, LCSRoutingInfoRequest request,
-            LCSRoutingInfoAnswer answer)
-            throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-        logger.info(
-                "Diameter SLh Session Factory :: doLCSRoutingInfoAnswerEvent :: appSession[{}], Request[{}], Answer[{}]",
-                new Object[] { appSession, request, answer });
-    }
+  public void doLCSRoutingInfoAnswerEvent(ClientSLhSession appSession, LCSRoutingInfoRequest request,
+          LCSRoutingInfoAnswer answer)
+        throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+    logger.info(
+            "Diameter SLh Session Factory :: doLCSRoutingInfoAnswerEvent :: appSession[{}], Request[{}], Answer[{}]",
+            new Object[] { appSession, request, answer });
+  }
 }

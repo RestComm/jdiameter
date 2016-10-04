@@ -37,27 +37,27 @@ import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
  */
 public class ClientSLhSessionDataReplicatedImpl extends SLhSessionDataReplicatedImpl implements IClientSLhSessionData {
 
-    /**
-     * @param nodeFqn
-     * @param mobicentsCluster
-     * @param iface
-     */
-    public ClientSLhSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
-        super(nodeFqn, mobicentsCluster, container);
+  /**
+   * @param nodeFqn
+   * @param mobicentsCluster
+   * @param iface
+   */
+  public ClientSLhSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
+    super(nodeFqn, mobicentsCluster, container);
 
-        if (super.create()) {
-            setAppSessionIface(this, ClientSLhSession.class);
-            setSLhSessionState(SLhSessionState.IDLE);
-        }
+    if (super.create()) {
+      setAppSessionIface(this, ClientSLhSession.class);
+      setSLhSessionState(SLhSessionState.IDLE);
     }
+  }
 
-    /**
-     * @param sessionId
-     * @param mobicentsCluster
-     * @param iface
-     */
-    public ClientSLhSessionDataReplicatedImpl(String sessionId, MobicentsCluster mobicentsCluster, IContainer container) {
-        this(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId), mobicentsCluster, container);
-    }
+  /**
+   * @param sessionId
+   * @param mobicentsCluster
+   * @param iface
+   */
+  public ClientSLhSessionDataReplicatedImpl(String sessionId, MobicentsCluster mobicentsCluster, IContainer container) {
+    this(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId), mobicentsCluster, container);
+  }
 
 }

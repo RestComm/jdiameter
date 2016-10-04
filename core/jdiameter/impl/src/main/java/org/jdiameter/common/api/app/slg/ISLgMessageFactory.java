@@ -35,18 +35,18 @@ import org.jdiameter.api.slg.events.ProvideLocationRequest;
 
 public interface ISLgMessageFactory {
 
-    ProvideLocationRequest createProvideLocationRequest(Request request);
+  ProvideLocationRequest createProvideLocationRequest(Request request);
 
-    ProvideLocationAnswer createProvideLocationAnswer(Answer answer);
+  ProvideLocationAnswer createProvideLocationAnswer(Answer answer);
 
-    LocationReportRequest createLocationReportRequest(Request request);
+  LocationReportRequest createLocationReportRequest(Request request);
 
-    LocationReportAnswer createLocationReportAnswer(Answer answer);
+  LocationReportAnswer createLocationReportAnswer(Answer answer);
 
-    /**
-     * Returns the Application-Id that this message factory is related to
-     * 
-     * @return the Application-Id value
-     */
-    long getApplicationId();
+  /**
+   * Returns the Application-Id that this message factory is related to
+   *
+   * @return the Application-Id value
+   */
+  long getApplicationId();
 }

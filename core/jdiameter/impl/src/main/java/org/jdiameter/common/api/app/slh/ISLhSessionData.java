@@ -33,16 +33,16 @@ import org.jdiameter.common.api.app.IAppSessionData;
 
 public interface ISLhSessionData extends IAppSessionData {
 
-    public void setSLhSessionState(SLhSessionState state);
+  void setSLhSessionState(SLhSessionState state);
 
-    public SLhSessionState getSLhSessionState();
+  SLhSessionState getSLhSessionState();
 
-    public Serializable getTsTimerId();
+  Serializable getTsTimerId();
 
-    public void setTsTimerId(Serializable tid);
+  void setTsTimerId(Serializable tid);
 
-    public void setBuffer(Request buffer);
+  void setBuffer(Request buffer);
 
-    public Request getBuffer();
+  Request getBuffer();
 
 }

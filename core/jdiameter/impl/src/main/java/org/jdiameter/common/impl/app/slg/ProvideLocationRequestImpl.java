@@ -37,7 +37,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
 
   private static final long serialVersionUID = 1L;
 
-  protected final static Logger logger = LoggerFactory.getLogger(ProvideLocationRequestImpl.class);
+  protected static final Logger logger = LoggerFactory.getLogger(ProvideLocationRequestImpl.class);
 
   public ProvideLocationRequestImpl(Message message) {
     super(message);
@@ -123,15 +123,15 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
 
   @Override
   public String getLSCNameString(){
-      Avp lcsEpsClientNameStringAvp = super.message.getAvps().getAvp(Avp.LCS_NAME_STRING);
-      if (lcsEpsClientNameStringAvp != null) {
-          try {
-              return lcsEpsClientNameStringAvp.getUTF8String();
-          } catch (AvpDataException e) {
-              logger.debug("Failure trying to obtain LCS-EPS-Client-Name-String AVP value", e);
-          }
+    Avp lcsEpsClientNameStringAvp = super.message.getAvps().getAvp(Avp.LCS_NAME_STRING);
+    if (lcsEpsClientNameStringAvp != null) {
+      try {
+        return lcsEpsClientNameStringAvp.getUTF8String();
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS-EPS-Client-Name-String AVP value", e);
       }
-      return null;
+    }
+    return null;
   }
 
   @Override
@@ -166,18 +166,18 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-    public boolean isLCSRequestorNamePresent(){
-      return super.message.getAvps().getAvp(Avp.LCS_REQUESTOR_NAME) != null;
+  public boolean isLCSRequestorNamePresent(){
+    return super.message.getAvps().getAvp(Avp.LCS_REQUESTOR_NAME) != null;
   }
 
   @Override
   public String getLCSRequestorIdString(){
     Avp lcsRequestorIdStringAvp = super.message.getAvps().getAvp(Avp.LCS_REQUESTOR_ID_STRING);
-      if (lcsRequestorIdStringAvp != null) {
-        try {
-          return lcsRequestorIdStringAvp.getUTF8String();
-        } catch (AvpDataException e) {
-          logger.debug("Failure trying to obtain LCS-Requestor-Id-String AVP value", e);
+    if (lcsRequestorIdStringAvp != null) {
+      try {
+        return lcsRequestorIdStringAvp.getUTF8String();
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS-Requestor-Id-String AVP value", e);
       }
     }
     return null;
@@ -210,8 +210,8 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   public int getLCSQoSClass(){
     Avp lcsQoSClassAvp = super.message.getAvps().getAvp(Avp.LCS_QOS_CLASS);
     if (lcsQoSClassAvp != null) {
-    try {
-      return lcsQoSClassAvp.getInteger32();
+      try {
+        return lcsQoSClassAvp.getInteger32();
       } catch (AvpDataException e) {
         logger.debug("Failure trying to obtain LCS-QoS-Class AVP value", e);
       }
@@ -261,11 +261,11 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   @Override
   public int getResponseTime(){
     Avp lcsResponseTimeAvp = super.message.getAvps().getAvp(Avp.RESPONSE_TIME);
-      if (lcsResponseTimeAvp != null) {
-        try {
-          return lcsResponseTimeAvp.getInteger32();
-        } catch (AvpDataException e) {
-          logger.debug("Failure trying to obtain LCS-QoS Response Time AVP value", e);
+    if (lcsResponseTimeAvp != null) {
+      try {
+        return lcsResponseTimeAvp.getInteger32();
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS-QoS Response Time AVP value", e);
       }
     }
     return -1;
@@ -291,7 +291,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
 
   @Override
   public boolean isSupportedGADShapesAVPPresent(){
-     return super.message.getAvps().getAvp(Avp.SUPPORTED_GAD_SHAPES) != null;
+    return super.message.getAvps().getAvp(Avp.SUPPORTED_GAD_SHAPES) != null;
   }
 
   @Override
@@ -379,10 +379,10 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
     return -1;
   }
 
-    @Override
-    public boolean isLCSPrivacyCheckNonSessionAVPPresent(){
-        return super.message.getAvps().getAvp(Avp.LCS_PRIVACY_CHECK_NON_SESSION) != null;
-    }
+  @Override
+  public boolean isLCSPrivacyCheckNonSessionAVPPresent(){
+    return super.message.getAvps().getAvp(Avp.LCS_PRIVACY_CHECK_NON_SESSION) != null;
+  }
 
   @Override
   public int getLCSPrivacyCheckNonSession(){
@@ -509,11 +509,11 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   public long getReportingAmount(){
     Avp lcsReportingAmountAvp = super.message.getAvps().getAvp(Avp.REPORTING_AMOUNT);
     if (lcsReportingAmountAvp != null) {
-        try {
-            return lcsReportingAmountAvp.getUnsigned32();
-        } catch (AvpDataException e) {
-            logger.debug("Failure trying to obtain LCS Reporting amount AVP value", e);
-        }
+      try {
+        return lcsReportingAmountAvp.getUnsigned32();
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS Reporting amount AVP value", e);
+      }
     }
     return -1;
   }

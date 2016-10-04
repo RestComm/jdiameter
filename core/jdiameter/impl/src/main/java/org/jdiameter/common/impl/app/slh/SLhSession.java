@@ -42,93 +42,93 @@ import org.jdiameter.common.api.app.slh.ISLhSessionData;
 
 public abstract class SLhSession extends AppSessionImpl implements NetworkReqListener, StateMachine {
 
-    public static final int _TX_TIMEOUT = 30 * 1000;
+  public static final int _TX_TIMEOUT = 30 * 1000;
 
-    protected Lock sendAndStateLock = new ReentrantLock();
+  protected Lock sendAndStateLock = new ReentrantLock();
 
-    @SuppressWarnings("rawtypes")
-    protected transient List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
-    protected transient ISLhMessageFactory messageFactory;
+  @SuppressWarnings("rawtypes")
+  protected transient List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
+  protected transient ISLhMessageFactory messageFactory;
 
-    protected static final String TIMER_NAME_MSG_TIMEOUT = "MSG_TIMEOUT";
-    protected ISLhSessionData sessionData;
+  protected static final String TIMER_NAME_MSG_TIMEOUT = "MSG_TIMEOUT";
+  protected ISLhSessionData sessionData;
 
-    public SLhSession(ISessionFactory sf, ISLhSessionData sessionData) {
-        super(sf, sessionData);
-        this.sessionData = sessionData;
+  public SLhSession(ISessionFactory sf, ISLhSessionData sessionData) {
+    super(sf, sessionData);
+    this.sessionData = sessionData;
+  }
+
+  @SuppressWarnings("rawtypes")
+  public void addStateChangeNotification(StateChangeListener listener) {
+    if (!stateListeners.contains(listener)) {
+      stateListeners.add(listener);
     }
+  }
 
-    @SuppressWarnings("rawtypes")
-    public void addStateChangeNotification(StateChangeListener listener) {
-        if (!stateListeners.contains(listener)) {
-            stateListeners.add(listener);
-        }
+  @SuppressWarnings("rawtypes")
+  public void removeStateChangeNotification(StateChangeListener listener) {
+    stateListeners.remove(listener);
+  }
+
+  public boolean isStateless() {
+    return true;
+  }
+
+  @Override
+  public boolean isReplicable() {
+    return false;
+  }
+
+  protected void startMsgTimer() {
+    try {
+      sendAndStateLock.lock();
+      sessionData.setTsTimerId(super.timerFacility.schedule(getSessionId(), TIMER_NAME_MSG_TIMEOUT, _TX_TIMEOUT));
+    } finally {
+      sendAndStateLock.unlock();
     }
+  }
 
-    @SuppressWarnings("rawtypes")
-    public void removeStateChangeNotification(StateChangeListener listener) {
-        stateListeners.remove(listener);
+  protected void cancelMsgTimer() {
+    try {
+      sendAndStateLock.lock();
+      final Serializable timerId = this.sessionData.getTsTimerId();
+      if (timerId == null) {
+        return;
+      }
+      super.timerFacility.cancel(timerId);
+      this.sessionData.setTsTimerId(null);
+    } finally {
+      sendAndStateLock.unlock();
     }
+  }
 
-    public boolean isStateless() {
-        return true;
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((sessionData == null) ? 0 : sessionData.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
     }
-
-    @Override
-    public boolean isReplicable() {
+    if (!super.equals(obj)) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    SLhSession other = (SLhSession) obj;
+    if (sessionData == null) {
+      if (other.sessionData != null) {
         return false;
+      }
+    } else if (!sessionData.equals(other.sessionData)) {
+      return false;
     }
-
-    protected void startMsgTimer() {
-        try {
-            sendAndStateLock.lock();
-            sessionData.setTsTimerId(super.timerFacility.schedule(getSessionId(), TIMER_NAME_MSG_TIMEOUT, _TX_TIMEOUT));
-        } finally {
-            sendAndStateLock.unlock();
-        }
-    }
-
-    protected void cancelMsgTimer() {
-        try {
-            sendAndStateLock.lock();
-            final Serializable timerId = this.sessionData.getTsTimerId();
-            if (timerId == null) {
-                return;
-            }
-            super.timerFacility.cancel(timerId);
-            this.sessionData.setTsTimerId(null);
-        } finally {
-            sendAndStateLock.unlock();
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((sessionData == null) ? 0 : sessionData.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!super.equals(obj)) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        SLhSession other = (SLhSession) obj;
-        if (sessionData == null) {
-            if (other.sessionData != null) {
-                return false;
-            }
-        } else if (!sessionData.equals(other.sessionData)) {
-            return false;
-        }
-        return true;
-    }
+    return true;
+  }
 }

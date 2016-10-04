@@ -37,7 +37,7 @@ public class LCSRoutingInfoRequestImpl extends AppRequestEventImpl implements LC
 
   private static final long serialVersionUID = 1L;
 
-  protected final static Logger logger = LoggerFactory.getLogger(LCSRoutingInfoRequestImpl.class);
+  protected static final Logger logger = LoggerFactory.getLogger(LCSRoutingInfoRequestImpl.class);
 
   public LCSRoutingInfoRequestImpl(Message message) {
     super(message);
@@ -55,10 +55,10 @@ public class LCSRoutingInfoRequestImpl extends AppRequestEventImpl implements LC
     if (userNameAvp != null) {
       try {
         return userNameAvp.getUTF8String(); // IE: IMSI mapped to User-Name
-        } catch (AvpDataException e) {
-          logger.debug("Failure trying to obtain User-Name AVP value (IMSI)", e);
-        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain User-Name AVP value (IMSI)", e);
       }
+    }
     return null;
   }
 
@@ -71,8 +71,8 @@ public class LCSRoutingInfoRequestImpl extends AppRequestEventImpl implements LC
   public byte[] getMSISDN() {
     Avp msisdnAvp = super.message.getAvps().getAvp(Avp.MSISDN);
     if (msisdnAvp != null) {
-    try {
-      return msisdnAvp.getOctetString();
+      try {
+        return msisdnAvp.getOctetString();
       } catch (AvpDataException e) {
         logger.debug("Failure trying to obtain MSISDN AVP value", e);
       }

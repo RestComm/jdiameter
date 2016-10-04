@@ -21,7 +21,10 @@
 
 package org.jdiameter.common.impl.app.slg;
 
-import org.jdiameter.api.*;
+import org.jdiameter.api.Avp;
+import org.jdiameter.api.Answer;
+import org.jdiameter.api.Request;
+import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.slg.events.ProvideLocationAnswer;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.slf4j.Logger;
@@ -36,7 +39,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
 
   private static final long serialVersionUID = 1L;
 
-  protected final static Logger logger = LoggerFactory.getLogger(ProvideLocationRequestImpl.class);
+  protected static final Logger logger = LoggerFactory.getLogger(ProvideLocationRequestImpl.class);
 
   /**
    *
@@ -53,7 +56,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
    */
   public ProvideLocationAnswerImpl(Request request, long resultCode) {
         super(request.createAnswer(resultCode));
-    }
+  }
 
   public Avp getResultCodeAvp() throws AvpDataException {
     return null;
@@ -85,7 +88,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   @Override
   public int getAccuracyFulfilmentIndicator() {
     Avp lcsAccuracyFulfilmentIndAvp = super.message.getAvps().getAvp(Avp.ACCURACY_FULFILMENT_INDICATOR);
-		if (lcsAccuracyFulfilmentIndAvp != null) { 
+    if (lcsAccuracyFulfilmentIndAvp != null) {
       try {
         return lcsAccuracyFulfilmentIndAvp.getInteger32();
       } catch (AvpDataException e) {
@@ -190,7 +193,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
     Avp lcsGERANGANSSPositioningDataAvp = super.message.getAvps().getAvp(Avp.GERAN_GANSS_POSITIONING_DATA);
     if (lcsGERANGANSSPositioningDataAvp != null) {
       try {
-         return lcsGERANGANSSPositioningDataAvp.getOctetString();
+        return lcsGERANGANSSPositioningDataAvp.getOctetString();
       } catch (AvpDataException e) {
         logger.debug("Failure trying to obtain LCS GERAN-GANSS-Positioning-Data AVP value", e);
       }

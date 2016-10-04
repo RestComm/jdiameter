@@ -29,7 +29,7 @@ import org.jdiameter.api.slh.events.LCSRoutingInfoAnswer;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.net.InetAddress;
+// import java.net.InetAddress;
 
 /**
  * @author fernando.mendioroz@telestax.com (Fernando Mendioroz)
@@ -39,7 +39,7 @@ public class LCSRoutingInfoAnswerImpl extends AppRequestEventImpl implements LCS
 
   private static final long serialVersionUID = 1L;
 
-  protected final static Logger logger = LoggerFactory.getLogger(LCSRoutingInfoAnswer.class);
+  protected static final Logger logger = LoggerFactory.getLogger(LCSRoutingInfoAnswer.class);
 
   /**
    *
@@ -96,20 +96,20 @@ public class LCSRoutingInfoAnswerImpl extends AppRequestEventImpl implements LCS
 
   @Override
   public boolean isLMSIAVPPresent() {
-      return super.message.getAvps().getAvp(Avp.LMSI) != null;
+    return super.message.getAvps().getAvp(Avp.LMSI) != null;
   }
 
   @Override
   public byte[] getLMSI() {
-     Avp localMobileStationIdentityAvp = super.message.getAvps().getAvp(Avp.LMSI);
-     if (localMobileStationIdentityAvp != null) {
-         try {
-         return localMobileStationIdentityAvp.getOctetString();
-         } catch (AvpDataException e) {
-            logger.debug("Failure trying to obtain LMSI AVP value", e);
-         }
-     }
-     return null;
+    Avp localMobileStationIdentityAvp = super.message.getAvps().getAvp(Avp.LMSI);
+    if (localMobileStationIdentityAvp != null) {
+      try {
+        return localMobileStationIdentityAvp.getOctetString();
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LMSI AVP value", e);
+      }
+    }
+    return null;
   }
 
   @Override
@@ -149,11 +149,11 @@ public class LCSRoutingInfoAnswerImpl extends AppRequestEventImpl implements LCS
   public String getMMEName(){
     Avp mmeNameAvp = super.message.getAvps().getAvp(Avp.MME_NAME);
     if (mmeNameAvp != null) {
-        try {
-          return mmeNameAvp.getDiameterIdentity();
-        } catch (AvpDataException e) {
-          logger.debug("Failure trying to obtain MME-Name AVP value", e);
-        }
+      try {
+        return mmeNameAvp.getDiameterIdentity();
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain MME-Name AVP value", e);
+      }
     }
     return null;
   }
@@ -178,7 +178,7 @@ public class LCSRoutingInfoAnswerImpl extends AppRequestEventImpl implements LCS
 
   @Override
   public boolean isLCSCapabilitiesSetsAVPPresent(){
-      return super.message.getAvps().getAvp(Avp.LCS_CAPABILITIES_SETS) != null;
+    return super.message.getAvps().getAvp(Avp.LCS_CAPABILITIES_SETS) != null;
   }
 
   @Override

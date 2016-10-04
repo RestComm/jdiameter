@@ -39,10 +39,10 @@ import org.jdiameter.api.slh.events.LCSRoutingInfoRequest;
 
 public interface ClientSLhSessionListener {
 
-    void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer)
-            throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer)
+          throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-    void doLCSRoutingInfoAnswerEvent(ClientSLhSession session, LCSRoutingInfoRequest request, LCSRoutingInfoAnswer answer)
-            throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+  void doLCSRoutingInfoAnswerEvent(ClientSLhSession session, LCSRoutingInfoRequest request, LCSRoutingInfoAnswer answer)
+          throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
 }

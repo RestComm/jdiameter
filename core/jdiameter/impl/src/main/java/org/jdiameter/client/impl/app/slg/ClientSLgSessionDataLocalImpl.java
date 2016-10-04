@@ -29,6 +29,6 @@ import org.jdiameter.common.impl.app.slg.SLgLocalSessionDataImpl;
  */
 
 public class ClientSLgSessionDataLocalImpl extends SLgLocalSessionDataImpl implements IClientSLgSessionData {
-    public ClientSLgSessionDataLocalImpl() {
-    }
+  public ClientSLgSessionDataLocalImpl() {
+  }
 }

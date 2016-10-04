@@ -45,108 +45,105 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class SLgSessionDataReplicatedImpl extends AppSessionDataReplicatedImpl implements ISLgSessionData {
 
-    private static final Logger logger = LoggerFactory.getLogger(SLgSessionDataReplicatedImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(SLgSessionDataReplicatedImpl.class);
 
-    private static final String STATE = "STATE";
-    private static final String BUFFER = "BUFFER";
-    private static final String TS_TIMERID = "TS_TIMERID";
+  private static final String STATE = "STATE";
+  private static final String BUFFER = "BUFFER";
+  private static final String TS_TIMERID = "TS_TIMERID";
 
-    private IMessageParser messageParser;
+  private IMessageParser messageParser;
 
-    /**
-     * @param nodeFqn
-     * @param mobicentsCluster
-     * @param iface
-     */
-    public SLgSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
-        super(nodeFqn, mobicentsCluster);
-        this.messageParser = container.getAssemblerFacility().getComponentInstance(IMessageParser.class);
+  /**
+   * @param nodeFqn
+   * @param mobicentsCluster
+   * @param iface
+   */
+  public SLgSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
+    super(nodeFqn, mobicentsCluster);
+    this.messageParser = container.getAssemblerFacility().getComponentInstance(IMessageParser.class);
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jdiameter.common.api.app.slg.ISLgSessionData#setSLgSessionState(org.jdiameter.common.api.app.slg.SLgSessionState)
+   */
+  public void setSLgSessionState(SLgSessionState state) {
+    if (exists()) {
+      getNode().put(STATE, state);
+    } else {
+      throw new IllegalStateException();
     }
+  }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.jdiameter.common.api.app.slg.ISLgSessionData#setSLgSessionState(org.jdiameter.common.api.app.slg.SLgSessionState)
-     */
-    public void setSLgSessionState(SLgSessionState state) {
-        if (exists()) {
-            getNode().put(STATE, state);
-        }
-        else {
-            throw new IllegalStateException();
-        }
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jdiameter.common.api.app.slg.ISLgSessionData#getSLgSessionState()
+   */
+  public SLgSessionState getSLgSessionState() {
+    if (exists()) {
+      return (SLgSessionState) getNode().get(STATE);
     }
+    else {
+      throw new IllegalStateException();
+    }
+  }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.jdiameter.common.api.app.slg.ISLgSessionData#getSLgSessionState()
-     */
-    public SLgSessionState getSLgSessionState() {
-        if (exists()) {
-            return (SLgSessionState) getNode().get(STATE);
-        }
-        else {
-            throw new IllegalStateException();
-        }
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jdiameter.common.api.app.slg.ISLgSessionData#getTsTimerId()
+   */
+  public Serializable getTsTimerId() {
+    if (exists()) {
+      return (Serializable) getNode().get(TS_TIMERID);
     }
+    else {
+      throw new IllegalStateException();
+    }
+  }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.jdiameter.common.api.app.slg.ISLgSessionData#getTsTimerId()
-     */
-    public Serializable getTsTimerId() {
-        if (exists()) {
-            return (Serializable) getNode().get(TS_TIMERID);
-        }
-        else {
-            throw new IllegalStateException();
-        }
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jdiameter.common.api.app.slg.ISLgSessionData#setTsTimerId(java.io.Serializable)
+   */
+  public void setTsTimerId(Serializable tid) {
+    if (exists()) {
+      getNode().put(TS_TIMERID, tid);
     }
+    else {
+      throw new IllegalStateException();
+    }
+  }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.jdiameter.common.api.app.slg.ISLgSessionData#setTsTimerId(java.io.Serializable)
-     */
-    public void setTsTimerId(Serializable tid) {
-        if (exists()) {
-            getNode().put(TS_TIMERID, tid);
-        }
-        else {
-            throw new IllegalStateException();
-        }
+  public Request getBuffer() {
+    byte[] data = (byte[]) getNode().get(BUFFER);
+    if (data != null) {
+      try {
+        return (Request) this.messageParser.createMessage(ByteBuffer.wrap(data));
+      } catch (AvpDataException e) {
+        logger.error("Unable to recreate message from buffer.");
+        return null;
+      }
+    } else {
+      return null;
     }
+  }
 
-    public Request getBuffer() {
-        byte[] data = (byte[]) getNode().get(BUFFER);
-        if (data != null) {
-            try {
-                return (Request) this.messageParser.createMessage(ByteBuffer.wrap(data));
-            }
-            catch (AvpDataException e) {
-                logger.error("Unable to recreate message from buffer.");
-                return null;
-            }
-        }
-        else {
-            return null;
-        }
+  public void setBuffer(Request buffer) {
+    if (buffer != null) {
+      try {
+        byte[] data = this.messageParser.encodeMessage((IMessage) buffer).array();
+        getNode().put(BUFFER, data);
+      }
+      catch (ParseException e) {
+        logger.error("Unable to encode message to buffer.");
+      }
     }
-
-    public void setBuffer(Request buffer) {
-        if (buffer != null) {
-            try {
-                byte[] data = this.messageParser.encodeMessage((IMessage) buffer).array();
-                getNode().put(BUFFER, data);
-            }
-            catch (ParseException e) {
-                logger.error("Unable to encode message to buffer.");
-            }
-        }
-        else {
-            getNode().remove(BUFFER);
-        }
+    else {
+      getNode().remove(BUFFER);
     }
+  }
 }
