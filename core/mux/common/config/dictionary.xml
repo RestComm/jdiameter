@@ -7644,6 +7644,10 @@
 		<type type-name="OctetString" />
 	</avpdefn>
 
+    <avpdefn name="3GPP-AAA-Server-Name" code="318" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
+        <type type-name="DiameterIdentity" />
+    </avpdefn>
+
 	<avpdefn name="LCS-Capabilities-Sets" code="2404" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
 		<type type-name="Unsigned32" />
 	</avpdefn>

@@ -49,49 +49,84 @@ public interface LCSRoutingInfoAnswer extends AppAnswerEvent {
   byte[] getMSISDN();
 
   boolean isLMSIAVPPresent();
-  // int getLMSIAVPValue();
   byte[] getLMSI();
 
   boolean isServingNodeAVPPresent();
-  // int getServingNodeAVPValue();
+  // Serving-Node AVP of type grouped, includes:
+  // SGSN-Number, SGSN-Name, SGSN-Realm
+  // MME-Name, MME-Realm
+  // MSC-Number
+  // 3GPP-AAA-Server-Name
+  // LCS-Capabilities-Sets
+  // GMLC-Address
 
-  boolean isAdditionalServingNodeAVPPresent();
-  // int getAdditionalServingNodeAVPValue();
-
-  boolean isGMLCAddressAVPPresent();
-  // int getGMLCAddressAVPValue();
-  java.net.InetAddress getGMLCAddress();
-
-  boolean isMMENameAVPPresent();
-  // int getMMENameAVPValue();
-  String getMMEName();
-
-  boolean isMSCNumberAVPPresent();
-  // int getMSCNumberAVPValue();
-  byte[] getMSCNumber();
-
-  boolean isLCSCapabilitiesSetsAVPPresent();
-  // int getLCSCapabilitiesSetsAVPValue();
-  long getLCSCapabilitiesSets();
-
-  boolean isPPRAddressAVPPresent();
-  // int getPPRAddressAVPValue();
-  java.net.InetAddress getPPRAddress();
-
-  boolean isMMERealmAVPPresent();
-  // int getMMERealmAVPValue();
-  String getMMERealm();
+  boolean isSGSNNumberAVPPresent();
+  byte[] getSGSNNumber();
 
   boolean isSGSNNameAVPPresent();
-  // int getSGSNNameAVPValue();
   String getSGSNName();
 
   boolean isSGSNRealmAVPPresent();
-  // int getSGSNRealmAVPValue();
   String getSGSNRealm();
 
+  boolean isMMENameAVPPresent();
+  String getMMEName();
+
+  boolean isMMERealmAVPPresent();
+  String getMMERealm();
+
+  boolean isMSCNumberAVPPresent();
+  byte[] getMSCNumber();
+
+  boolean is3GPPAAAServerNameAVPPresent();
+  String get3GPPAAAServerName();
+
+  boolean isLCSCapabilitiesSetsAVPPresent();
+  long getLCSCapabilitiesSets();
+
+  boolean isGMLCAddressAVPPresent();
+  java.net.InetAddress getGMLCAddress();
+
+  boolean isAdditionalServingNodeAVPPresent();
+  // Serving-Node AVP of type grouped, includes:
+  // SGSN-Number, SGSN-Name, SGSN-Realm
+  // MME-Name, MME-Realm
+  // MSC-Number
+  // 3GPP-AAA-Server-Name
+  // LCS-Capabilities-Sets
+  // GMLC-Address
+
+  boolean isAdditionalSGSNNumberAVPPresent();
+  byte[] getAdditionalSGSNNumber();
+
+  boolean isAdditionalSGSNNameAVPPresent();
+  String getAdditionalSGSNName();
+
+  boolean isAdditionalSGSNRealmAVPPresent();
+  String getAdditionalSGSNRealm();
+
+  boolean isAdditionalMMENameAVPPresent();
+  String getAdditionalMMEName();
+
+  boolean isAdditionalMMERealmAVPPresent();
+  String getAdditionalMMERealm();
+
+  boolean isAdditionalMSCNumberAVPPresent();
+  byte[] getAdditionalMSCNumber();
+
+  boolean isAdditional3GPPAAAServerNameAVPPresent();
+  String getAdditional3GPPAAAServerName();
+
+  boolean isAdditionalLCSCapabilitiesSetsAVPPresent();
+  long getAdditionalLCSCapabilitiesSets();
+
+  boolean isAdditionalGMLCAddressAVPPresent();
+  java.net.InetAddress getAdditionalGMLCAddress();
+
+  boolean isPPRAddressAVPPresent();
+  java.net.InetAddress getPPRAddress();
+
   boolean isRIAFlagsAVPPresent();
-  // int getRIAFlagsAVPValue();
   long getRIAFLags();
 
 }
