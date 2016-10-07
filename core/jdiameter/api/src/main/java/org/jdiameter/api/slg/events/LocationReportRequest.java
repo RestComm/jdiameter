@@ -58,7 +58,11 @@ public interface LocationReportRequest extends AppRequestEvent {
   String getIMEI();
 
   boolean isLCSEPSClientNameAVPPresent();
+  // LCS-EPS-Client-Name AVP of type grouped, includes:
+  // LCS-Name-String, LCS-Format-Indicator
+  boolean isLSCNameStringAVPPresent();
   String getLSCNameString();
+  boolean isLCSFormatIndicatorAVPPresent();
   int getLCSFormatIndicator();
 
   boolean isLocationEstimateAvpPresent();
@@ -80,14 +84,22 @@ public interface LocationReportRequest extends AppRequestEvent {
   byte[] getECGI();
 
   boolean isGERANPositioningInfoAvpPresent();
+  // GERAN-Positioning-Info AVP of type grouped, includes:
+  // GERAN-Positioning-Data, GERAN-GANSS-Positioning-Data
+  boolean isGERANPositioningDataAVPPresent();
   byte[] getGERANPositioningData();
+  boolean isGERANGANSSPositioningDataAVPPresent();
   byte[] getGERANGANSSPositioningData();
 
   boolean isCellGlobalIdentityAvpPresent();
   byte[] getCellGlobalIdentity();
 
   boolean isUTRANPositioningInfoAvpPresent();
+  // UTRAN-Positioning-Info AVP of type grouped, includes:
+  // UTRAN-Positioning-Data, UTRAN-GANSS-Positioning-Data
+  boolean isUTRANPositioningDataAVPPresent();
   byte[] getUTRANPositioningData();
+  boolean isUTRANGANSSPositioningDataAVPPresent();
   byte[] getUTRANGANSSPositioningData();
 
   boolean isServiceAreaIdentityAvpPresent();

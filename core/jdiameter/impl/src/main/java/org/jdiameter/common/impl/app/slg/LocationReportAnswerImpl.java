@@ -104,16 +104,69 @@ public class LocationReportAnswerImpl extends AppRequestEventImpl implements Loc
   }
 
   @Override
+  public boolean isPrioritizedListIndicatorAVPPresent(){
+    Avp lcsReportingPLMNListAvp = super.message.getAvps().getAvp(Avp.REPORTING_PLMN_LIST);
+    if (lcsReportingPLMNListAvp != null) {
+      try {
+        return lcsReportingPLMNListAvp.getGrouped().getAvp(Avp.PRIORITIZED_LIST_INDICATOR) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain Prioritized-List-Indicator AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public int getPrioritizedListIndicator(){
+    Avp lcsReportingPLMNListAvp = super.message.getAvps().getAvp(Avp.REPORTING_PLMN_LIST);
+    if (lcsReportingPLMNListAvp != null) {
+      try {
+        Avp lcsPrioritizedListIndicatorAvp = lcsReportingPLMNListAvp.getGrouped().getAvp(Avp.PRIORITIZED_LIST_INDICATOR);
+        if (lcsPrioritizedListIndicatorAvp != null){
+          return lcsPrioritizedListIndicatorAvp.getInteger32();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS GERAN-Positioning-Data AVP value", e);
+      }
+    }
+    return -1;
+  }
+
+  @Override
   public boolean isPLMNIDListAVPPresent(){
-    return super.message.getAvps().getAvp(Avp.PLMN_ID_LIST) != null;
+    Avp lcsReportingPLMNListAvp = super.message.getAvps().getAvp(Avp.REPORTING_PLMN_LIST);
+    if (lcsReportingPLMNListAvp != null) {
+      try {
+        return lcsReportingPLMNListAvp.getGrouped().getAvp(Avp.PLMN_ID_LIST) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain PLMN-Id-List AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public boolean isVisitedPLMNIdAVPPResent(){
+    Avp lcsPLMNIdListAvp = super.message.getAvps().getAvp(Avp.PLMN_ID_LIST);
+    if (lcsPLMNIdListAvp != null) {
+      try {
+        return lcsPLMNIdListAvp.getGrouped().getAvp(Avp.VISITED_PLMN_ID) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain Visited-PLMN-Id AVP", e);
+      }
+    }
+    return false;
   }
 
   @Override
   public byte[] getVisitedPLMNId() {
-    Avp lcsVisitedPLMNIdAvp = super.message.getAvps().getAvp(Avp.VISITED_PLMN_ID);
-    if (lcsVisitedPLMNIdAvp != null) {
+    Avp lcsPLMNIdListAvp = super.message.getAvps().getAvp(Avp.PLMN_ID_LIST);
+    if (lcsPLMNIdListAvp != null) {
       try {
-        return lcsVisitedPLMNIdAvp.getOctetString();
+        Avp lcsVisitedPLMNIdAvp = lcsPLMNIdListAvp.getGrouped().getAvp(Avp.VISITED_PLMN_ID);
+        if (lcsVisitedPLMNIdAvp != null){
+          return lcsVisitedPLMNIdAvp.getOctetString();
+        }
       } catch (AvpDataException e) {
         logger.debug("Failure trying to obtain LCS Visited PLMN ID AVP value", e);
       }
@@ -122,11 +175,27 @@ public class LocationReportAnswerImpl extends AppRequestEventImpl implements Loc
   }
 
   @Override
-  public int getPeriodicLocationSupportIndicator() {
-    Avp lcsPeriodicLocationSupportIndicatorAvp = super.message.getAvps().getAvp(Avp.PERIODIC_LOCATION_SUPPORT_INDICATOR);
-    if (lcsPeriodicLocationSupportIndicatorAvp != null) {
+  public boolean isPeriodicLocationSupportIndicatorAVPPresent(){
+    Avp lcsPLMNIdListAvp = super.message.getAvps().getAvp(Avp.PLMN_ID_LIST);
+    if (lcsPLMNIdListAvp != null) {
       try {
-        return lcsPeriodicLocationSupportIndicatorAvp.getInteger32();
+        return lcsPLMNIdListAvp.getGrouped().getAvp(Avp.PERIODIC_LOCATION_SUPPORT_INDICATOR) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain Periodic-Location-Support-Indicator AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public int getPeriodicLocationSupportIndicator() {
+    Avp lcsPLMNIdListAvp = super.message.getAvps().getAvp(Avp.PLMN_ID_LIST);
+    if (lcsPLMNIdListAvp != null) {
+      try {
+        Avp lcsPeriodicLocationSupportIndicatorAvp = lcsPLMNIdListAvp.getGrouped().getAvp(Avp.PERIODIC_LOCATION_SUPPORT_INDICATOR);
+        if (lcsPeriodicLocationSupportIndicatorAvp != null){
+          return lcsPeriodicLocationSupportIndicatorAvp.getInteger32();
+        }
       } catch (AvpDataException e) {
         logger.debug("Failure trying to obtain LCS Periodic Location Support Indicator AVP value", e);
       }

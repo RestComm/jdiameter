@@ -61,23 +61,40 @@ public interface ProvideLocationRequest extends AppRequestEvent {
   String getIMEI();
 
   boolean isLCSEPSClientNameAVPPresent();
+  // LCS-EPS-Client-Name AVP of type grouped, includes:
+  // LCS-Name-String, LCS-Format-Indicator
+  boolean isLSCNameStringAVPPresent();
   String getLSCNameString();
+  boolean isLCSFormatIndicatorAVPPresent();
   int getLCSFormatIndicator();
 
   boolean isLCSCLientTypeAVPPresent();
   int getLCSClientType();
 
   boolean isLCSRequestorNamePresent();
+  // LCS-Requestor-NAme AVP of type grouped, includes:
+  // LCS-Requestor-Id-String, LCS-Format-Indicator
+  boolean isLCSRequestorIdStringAVPPresent();
   String getLCSRequestorIdString();
+  boolean isReqLCSFormatIndicatorAVPPresent();
+  int getReqLCSFormatIndicator();
 
   boolean isLCSPriorityPresent();
   long getLCSPriority();
 
   boolean isLCSQoSAVPPresent();
+  // LCS-QoS AVP of type grouped, includes:
+  // LCS-QoS-Class, Horizontal-Accuracy, Vertical-Accuracy
+  // Vertical-Requested, Response-Time
+  boolean isLCSQoSClassAVPPresent();
   int getLCSQoSClass();
+  boolean isHorizontalAccuracyAVPPresent();
   long getHorizontalAccuracy();
+  boolean isVerticalAccuracyAVPPresent();
   long getVerticalAccuracy();
+  boolean isVerticalRequestedAVPPresent();
   int getVerticalRequested();
+  boolean isResponseTimeAVPPresent();
   int getResponseTime();
 
   boolean isVelocityRequestedAVPPresent();
@@ -108,7 +125,11 @@ public interface ProvideLocationRequest extends AppRequestEvent {
   byte[] getLCSReferenceNumber();
 
   boolean isAreaEventInfoAVPPresent();
+  // Area-Event-Info AVP of type grouped, includes:
+  // Area-Type, Area-Identification
+  boolean isAreaTypeAVPPresent();
   long getAreaType();
+  boolean isAreaIdentificationAVPPresent();
   byte[] getAreaIdentification();
 
   boolean isGMLCAddressAVPPresent();
@@ -117,8 +138,12 @@ public interface ProvideLocationRequest extends AppRequestEvent {
   boolean isPLRFlagsAVPPresent();
   long getPLRFLags();
 
-  boolean isPeriodicLDRInformationAVPPresent();
+  boolean isPeriodicLDRInfoAVPPresent();
+  // Periodic-LDR-Info AVP of type grouped, includes:
+  // Reporting-Amount, Reporting-Interval
+  boolean isReportingAmountAVPPresent();
   long getReportingAmount();
+  boolean isReportingIntervalAVPPresent();
   long getReportingInterval();
 
 }

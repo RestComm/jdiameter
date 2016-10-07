@@ -55,7 +55,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
    * @param resultCode
    */
   public ProvideLocationAnswerImpl(Request request, long resultCode) {
-        super(request.createAnswer(resultCode));
+    super(request.createAnswer(resultCode));
   }
 
   public Avp getResultCodeAvp() throws AvpDataException {
@@ -176,11 +176,27 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public byte[] getGERANPositioningData(){
-    Avp lcsGERANPositioningDataAvp = super.message.getAvps().getAvp(Avp.GERAN_POSITIONING_DATA);
-    if (lcsGERANPositioningDataAvp != null) {
+  public boolean isGERANPositioningDataAVPPresent(){
+    Avp lcsGERANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.GERAN_POSITIONING_INFO);
+    if (lcsGERANPositioningInfoAvp != null) {
       try {
-        return lcsGERANPositioningDataAvp.getOctetString();
+        return lcsGERANPositioningInfoAvp.getGrouped().getAvp(Avp.GERAN_POSITIONING_DATA) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain Reporting-Interval AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public byte[] getGERANPositioningData(){
+    Avp lcsGERANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.GERAN_POSITIONING_INFO);
+    if (lcsGERANPositioningInfoAvp != null) {
+      try {
+        Avp lcsGERANPositioningDataAvp = lcsGERANPositioningInfoAvp.getGrouped().getAvp(Avp.GERAN_POSITIONING_DATA);
+        if (lcsGERANPositioningDataAvp != null){
+          return lcsGERANPositioningDataAvp.getOctetString();
+        }
       } catch (AvpDataException e) {
         logger.debug("Failure trying to obtain LCS GERAN-Positioning-Data AVP value", e);
       }
@@ -189,11 +205,27 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public byte[] getGERANGANSSPositioningData(){
-    Avp lcsGERANGANSSPositioningDataAvp = super.message.getAvps().getAvp(Avp.GERAN_GANSS_POSITIONING_DATA);
-    if (lcsGERANGANSSPositioningDataAvp != null) {
+  public boolean isGERANGANSSPositioningDataAVPPresent(){
+    Avp lcsGERANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.GERAN_POSITIONING_INFO);
+    if (lcsGERANPositioningInfoAvp != null) {
       try {
-        return lcsGERANGANSSPositioningDataAvp.getOctetString();
+        return lcsGERANPositioningInfoAvp.getGrouped().getAvp(Avp.GERAN_GANSS_POSITIONING_DATA) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain GERAN-GANSS-Positioning-Data AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public byte[] getGERANGANSSPositioningData(){
+    Avp lcsGERANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.GERAN_POSITIONING_INFO);
+    if (lcsGERANPositioningInfoAvp != null) {
+      try {
+        Avp lcsGERANGANSSPositioningDataAvp = lcsGERANPositioningInfoAvp.getGrouped().getAvp(Avp.GERAN_GANSS_POSITIONING_DATA);
+        if (lcsGERANGANSSPositioningDataAvp != null){
+          return lcsGERANGANSSPositioningDataAvp.getOctetString();
+        }
       } catch (AvpDataException e) {
         logger.debug("Failure trying to obtain LCS GERAN-GANSS-Positioning-Data AVP value", e);
       }
@@ -225,26 +257,58 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public byte[] getUTRANPositioningData(){
-    Avp lcsUTRANPosDataAvp = super.message.getAvps().getAvp(Avp.UTRAN_ADDITIONAL_POSITIONING_DATA);
-    if (lcsUTRANPosDataAvp != null) {
+  public boolean isUTRANPositioningDataAVPPresent(){
+    Avp lcsUTRANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.UTRAN_POSITIONING_INFO);
+    if (lcsUTRANPositioningInfoAvp != null) {
       try {
-        return lcsUTRANPosDataAvp.getOctetString();
+        return lcsUTRANPositioningInfoAvp.getGrouped().getAvp(Avp.UTRAN_POSITIONING_DATA) != null;
       } catch (AvpDataException e) {
-        logger.debug("Failure trying to obtain LCS UTRAN-Positionin-Data AVP value", e);
+        logger.debug("Failure trying to obtain UTRAN-Positioning-Data AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public byte[] getUTRANPositioningData(){
+    Avp lcsUTRANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.UTRAN_POSITIONING_INFO);
+    if (lcsUTRANPositioningInfoAvp != null) {
+      try {
+        Avp lcsUTRANPositioningDataAvp = lcsUTRANPositioningInfoAvp.getGrouped().getAvp(Avp.UTRAN_POSITIONING_DATA);
+        if (lcsUTRANPositioningDataAvp != null){
+          return lcsUTRANPositioningDataAvp.getOctetString();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS UTRAN-Positioning-Data AVP value", e);
       }
     }
     return null;
   }
 
   @Override
-  public byte[] getUTRANGANSSPositioningData(){
-    Avp lcsUTRANGANSSPosDataAvp = super.message.getAvps().getAvp(Avp.UTRAN_GANSS_POSITIONING_DATA);
-    if (lcsUTRANGANSSPosDataAvp != null) {
+  public boolean isUTRANGANSSPositioningDataAVPPresent(){
+    Avp lcsUTRANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.UTRAN_POSITIONING_INFO);
+    if (lcsUTRANPositioningInfoAvp != null) {
       try {
-        return lcsUTRANGANSSPosDataAvp.getOctetString();
+        return lcsUTRANPositioningInfoAvp.getGrouped().getAvp(Avp.UTRAN_GANSS_POSITIONING_DATA) != null;
       } catch (AvpDataException e) {
-        logger.debug("Failure trying to obtain LCS UTRAN-GANSS-Positionin-Data AVP value", e);
+        logger.debug("Failure trying to obtain UTRAN-GANSS-Positioning-Data AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public byte[] getUTRANGANSSPositioningData(){
+    Avp lcsUTRANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.UTRAN_POSITIONING_INFO);
+    if (lcsUTRANPositioningInfoAvp != null) {
+      try {
+        Avp lcsUTRANGANSSPositioningDataAvp = lcsUTRANPositioningInfoAvp.getGrouped().getAvp(Avp.UTRAN_GANSS_POSITIONING_DATA);
+        if (lcsUTRANGANSSPositioningDataAvp != null){
+          return lcsUTRANGANSSPositioningDataAvp.getOctetString();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS UTRAN-GANSS-Positioning-Data AVP value", e);
       }
     }
     return null;

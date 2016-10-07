@@ -52,8 +52,16 @@ public interface LocationReportAnswer extends AppAnswerEvent{
   long getLRAFLags();
 
   boolean isReportingPLMNListAVPPresent();
+  // Reporting-PLMN-List AVP of type grouped, includes:
+  // PLMN-ID-List, Prioritized-List-Indicator
+  boolean isPrioritizedListIndicatorAVPPresent();
+  int getPrioritizedListIndicator();
   boolean isPLMNIDListAVPPresent();
+  // PLMN-ID-List AVP of type grouped, includes:
+  // Visited-PLMN-Id, Periodic-Location-Support-Indicator
+  boolean isVisitedPLMNIdAVPPResent();
   byte[] getVisitedPLMNId();
+  boolean isPeriodicLocationSupportIndicatorAVPPresent();
   int getPeriodicLocationSupportIndicator();
 
   boolean isLCSReferenceNumberAVPPresent();

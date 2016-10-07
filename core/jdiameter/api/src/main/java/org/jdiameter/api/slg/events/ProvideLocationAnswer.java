@@ -67,14 +67,22 @@ public interface ProvideLocationAnswer extends AppAnswerEvent{
   byte[] getECGI();
 
   boolean isGERANPositioningInfoAvpPresent();
+  // GERAN-Positioning-Info AVP of type grouped, includes:
+  // GERAN-Positioning-Data, GERAN-GANSS-Positioning-Data
+  boolean isGERANPositioningDataAVPPresent();
   byte[] getGERANPositioningData();
+  boolean isGERANGANSSPositioningDataAVPPresent();
   byte[] getGERANGANSSPositioningData();
 
   boolean isCellGlobalIdentityAvpPresent();
   byte[] getCellGlobalIdentity();
 
   boolean isUTRANPositioningInfoAvpPresent();
+  // UTRAN-Positioning-Info AVP of type grouped, includes:
+  // UTRAN-Positioning-Data, UTRAN-GANSS-Positioning-Data
+  boolean isUTRANPositioningDataAVPPresent();
   byte[] getUTRANPositioningData();
+  boolean isUTRANGANSSPositioningDataAVPPresent();
   byte[] getUTRANGANSSPositioningData();
 
   boolean isServiceAreaIdentityAvpPresent();
