@@ -35,7 +35,7 @@ public class Client extends AbstractClient {
 
   protected boolean receivedPLA;
   protected boolean sentPLR;
-	protected boolean receivedLRA;
+  protected boolean receivedLRA;
   protected boolean sentLRR;
 
   public Client() {
@@ -48,7 +48,7 @@ public class Client extends AbstractClient {
     this.sentPLR = true;
   }
 
-	public void sendLocationReportRequest() throws Exception {
+  public void sendLocationReportRequest() throws Exception {
     LocationReportRequest lrr = super.createLRR(super.clientSLgSession);
     super.clientSLgSession.sendLocationReportRequest(lrr);
     Utils.printMessage(log, super.stack.getDictionary(), lrr.getMessage(), true);
@@ -71,18 +71,19 @@ public class Client extends AbstractClient {
     this.receivedPLA = true;
   }
 
-	@Override
+  @Override
   public void doLocationReportAnswerEvent(ClientSLgSession session, LocationReportRequest request, LocationReportAnswer answer)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), false);
 
-    if (this.receivedPLA) {
+    if (this.receivedLRA) {
       fail("Received PLA more than once", null);
       return;
     }
-    this.receivedECA = true;
+    this.receivedLRA = true;
   }
-	//TODO pending methods
+
+  //TODO pending methods
 
   public boolean isReceivedPLA() {
     return receivedPLA;
@@ -92,8 +93,8 @@ public class Client extends AbstractClient {
     return sentPLR;
   }
 
-	public boolean isReceivedLRA() {
-	  return receivedLRA;
+  public boolean isReceivedLRA() {
+	return receivedLRA;
   }
 
   public boolean isSentLRR() {

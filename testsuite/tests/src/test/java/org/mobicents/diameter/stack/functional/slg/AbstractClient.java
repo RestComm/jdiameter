@@ -64,6 +64,7 @@ import org.jdiameter.api.slg.events.ProvideLocationAnswer;
 import org.jdiameter.api.slg.events.LocationReportRequest;
 import org.jdiameter.api.slg.events.LocationReportAnswer;
 import org.jdiameter.client.api.ISessionFactory;
+import org.jdiameter.common.api.app.IAppSessionFactory;
 import org.jdiameter.common.impl.app.slg.ProvideLocationRequestImpl;
 import org.jdiameter.common.impl.app.slg.LocationReportRequestImpl;
 import org.jdiameter.common.impl.app.slg.SLgSessionFactoryImpl;
@@ -82,67 +83,68 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
   protected ClientSLgSession clientSLgSession;
 
   public void init(InputStream configStream, String clientID) throws Exception {
+    try {
+      super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777255));
+      SLgSessionFactoryImpl sLgSessionFactory = new SLgSessionFactoryImpl(this.sessionFactory);
+      sessionFactory.registerAppFacory(ServerSLgSession.class, (IAppSessionFactory) sLgSessionFactory);
+      sessionFactory.registerAppFacory(ClientSLgSession.class, (IAppSessionFactory) sLgSessionFactory);
+
+      sLgSessionFactory .setClientSessionListener(this);
+
+      this.clientSLgSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(this.sessionFactory.getSessionId("xx-SLg-TESTxx"), getApplicationId(),
+              ClientSLgSession.class, null);
+    } finally {
       try {
-          super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777255));
-          SLgSessionFactoryImpl sLgSessionFactory = new SLgSessionFactoryImpl(this.sessionFactory);
-          ((ISessionFactory) sessionFactory).registerAppFacory(ServerSLgSession.class, sLgSessionFactory);
-          ((ISessionFactory) sessionFactory).registerAppFacory(ClientSLgSession.class, sLgSessionFactory);
-
-          sLgSessionFactory .setClientSessionListener(this);
-
-          this.clientSLgSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(this.sessionFactory.getSessionId("xx-SLg-TESTxx"), getApplicationId(), ClientSLgSession.class, null);
+        configStream.close();
+      } catch (Exception e) {
+        e.printStackTrace();
       }
-      finally {
-          try {
-              configStream.close();
-          }
-          catch (Exception e) {
-              e.printStackTrace();
-          }
-      }
-
+    }
   }
 
   // ----------- delegate methods so
 
   public void start() throws IllegalDiameterStateException, InternalException {
-      stack.start();
+    stack.start();
   }
 
   public void start(Mode mode, long timeOut, TimeUnit timeUnit) throws IllegalDiameterStateException, InternalException {
-      stack.start(mode, timeOut, timeUnit);
+    stack.start(mode, timeOut, timeUnit);
   }
 
   public void stop(long timeOut, TimeUnit timeUnit, int disconnectCause) throws IllegalDiameterStateException, InternalException {
-      stack.stop(timeOut, timeUnit, disconnectCause);
+    stack.stop(timeOut, timeUnit, disconnectCause);
   }
 
   public void stop(int disconnectCause) {
-      stack.stop(disconnectCause);
+    stack.stop(disconnectCause);
   }
 
   // ------- def methods, to fail :)
 
-  public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-      fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
+  public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException,
+          RouteException, OverloadException {
+    fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
-  public void doProvideLocationAnswerEvent(ClientSLgSession session, ProvideLocationRequest request, ProvideLocationAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-      fail("Received \"PLA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
+  public void doProvideLocationAnswerEvent(ClientSLgSession session, ProvideLocationRequest request, ProvideLocationAnswer answer) throws InternalException,
+          IllegalDiameterStateException, RouteException, OverloadException {
+    fail("Received \"PLA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
-  public void doLocationReportAnswerEvent(ClientSLgSession session, LocationReportRequest request, LocationReportAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-      fail("Received \"LRA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
+  public void doLocationReportAnswerEvent(ClientSLgSession session, LocationReportRequest request, LocationReportAnswer answer) throws InternalException,
+          IllegalDiameterStateException, RouteException, OverloadException {
+    fail("Received \"LRA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
   // ----------- conf parts
 
   public String getSessionId() {
-      return this.clientSLgSession.getSessionId();
+    return this.clientSLgSession.getSessionId();
   }
 
   public ClientSLgSession getSession() {
-      return this.clientSLgSession;
+    return this.clientSLgSession;
   }
 
   // missing protected abstract attributes TODO
@@ -182,55 +184,56 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
 							*[ Proxy-Info ]
 							*[ Route-Record ]
   */
-      // Create ProvideLocationRequest
-      ProvideLocationRequest plr = new ProvideLocationRequestImpl(slgSession.getSessions().get(0).createRequest(ProvideLocationRequest.code, getApplicationId(), getServerRealmName()));
-      // < Provide-Location-Request> ::=	< Diameter Header: 8388620, REQ, PXY, 16777255 >
+    // Create ProvideLocationRequest
+    ProvideLocationRequest plr = new ProvideLocationRequestImpl(slgSession.getSessions().get(0).createRequest(ProvideLocationRequest.code, getApplicationId(),
+            getServerRealmName()));
+    // < Provide-Location-Request> ::=	< Diameter Header: 8388620, REQ, PXY, 16777255 >
 
-      AvpSet reqSet = plr.getMessage().getAvps();
+    AvpSet reqSet = plr.getMessage().getAvps();
 
-      if (reqSet.getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
-          AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-          // 1* [ Vendor-Id ]
-          vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-          // 0*1{ Auth-Application-Id }
-          vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
-      }
+    if (reqSet.getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
+      AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
+      // 1* [ Vendor-Id ]
+      vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
+      // 0*1{ Auth-Application-Id }
+      vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
+    }
 
-      // { Auth-Session-State }
-      if (reqSet.getAvp(Avp.AUTH_SESSION_STATE) == null) {
-          reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
-      }
+    // { Auth-Session-State }
+    if (reqSet.getAvp(Avp.AUTH_SESSION_STATE) == null) {
+      reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
+    }
 
-      // { Origin-Host }
-      reqSet.removeAvp(Avp.ORIGIN_HOST);
-      reqSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
+    // { Origin-Host }
+    reqSet.removeAvp(Avp.ORIGIN_HOST);
+    reqSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
 
-      // PENDING -  TODO
-      if (reqSet.getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
-          AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-          // 1* [ Vendor-Id ]
-          vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-          // 0*1{ Auth-Application-Id }
-          vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
-      }
+    // PENDING -  TODO
+    if (reqSet.getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
+      AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
+      // 1* [ Vendor-Id ]
+      vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
+      // 0*1{ Auth-Application-Id }
+      vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
+    }
 
-      // { Auth-Session-State }
-      if (reqSet.getAvp(Avp.AUTH_SESSION_STATE) == null) {
-          reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
-      }
+    // { Auth-Session-State }
+    if (reqSet.getAvp(Avp.AUTH_SESSION_STATE) == null) {
+      reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
+    }
 
-      // { Origin-Host }
-      reqSet.removeAvp(Avp.ORIGIN_HOST);
-      reqSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
+    // { Origin-Host }
+    reqSet.removeAvp(Avp.ORIGIN_HOST);
+    reqSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
 
-      // PENDING - TODO
-      return plr;
+    // PENDING - TODO
+    return plr;
   }
 
   protected LocationReportRequest createLRR(ClientSLgSession slgSession) throws Exception {
   /*
    < Location-Report-Request> ::=	< Diameter Header: 8388621, REQ, PXY, 16777255 >
-													< Session-Id >
+							< Session-Id >
 	                        [ Vendor-Specific-Application-Id ]
 	                        { Auth-Session-State }
 	                        { Origin-Host }
@@ -269,26 +272,27 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
 	                        *[ Supported-Features ]
 	                        *[ AVP ]
 	                        *[ Proxy-Info ]
-                          *[ Route-Record ]
+                            *[ Route-Record ]
 
   */
     // Create ProvideLocationRequest
-    ProvideLocationRequest lrr = new LocationReportRequestImpl(slgSession.getSessions().get(0).createRequest(LocationReportRequest.code, getApplicationId(), getServerRealmName()));
+    LocationReportRequest lrr = new LocationReportRequestImpl(slgSession.getSessions().get(0).createRequest(LocationReportRequest.code, getApplicationId(),
+            getServerRealmName()));
     // < Location-Report-Request> ::=	< Diameter Header: 8388621, REQ, PXY, 16777255 >
 
     AvpSet reqSet = lrr.getMessage().getAvps();
 
     if (reqSet.getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
-        AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-        // 1* [ Vendor-Id ]
-        vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-        // 0*1{ Auth-Application-Id }
-        vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
+      AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
+      // 1* [ Vendor-Id ]
+      vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
+      // 0*1{ Auth-Application-Id }
+      vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
     }
 
     // { Auth-Session-State }
     if (reqSet.getAvp(Avp.AUTH_SESSION_STATE) == null) {
-        reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
+      reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
     }
 
     // { Origin-Host }
@@ -297,16 +301,16 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
 
     // PENDING -  TODO
     if (reqSet.getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
-        AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-        // 1* [ Vendor-Id ]
-        vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-        // 0*1{ Auth-Application-Id }
-        vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
+      AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
+      // 1* [ Vendor-Id ]
+      vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
+      // 0*1{ Auth-Application-Id }
+      vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
     }
 
     // { Auth-Session-State }
     if (reqSet.getAvp(Avp.AUTH_SESSION_STATE) == null) {
-        reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
+      reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
     }
 
     // { Origin-Host }
@@ -314,7 +318,7 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
     reqSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
 
     // PENDING - TODO
-    return plr;
+    return lrr;
   }
 }
 

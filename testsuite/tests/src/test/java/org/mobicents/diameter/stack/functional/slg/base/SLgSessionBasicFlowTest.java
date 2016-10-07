@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package org.mobicents.diameter.stack.functional.slh.base;
+package org.mobicents.diameter.stack.functional.slg.base;
 
 import static org.junit.Assert.fail;
 
@@ -43,12 +43,12 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
- *
+ * @author Fernando Mendioroz (fernando.mendioroz@telestax.com)
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
 @RunWith(Parameterized.class)
-public class SLhSessionBasicFlowTest {
+public class SLgSessionBasicFlowTest {
   // TODO: add test on replicated nodes ?
   private Client clientNode;
   private Server serverNode1;
@@ -61,7 +61,7 @@ public class SLhSessionBasicFlowTest {
    * @param node2
    * @param serverCount
    */
-  public SLhSessionBasicFlowTest(String clientConfigUrl, String serverNode1ConfigURL) throws Exception {
+  public SLgSessionBasicFlowTest(String clientConfigUrl, String serverNode1ConfigURL) throws Exception {
     super();
     this.clientConfigURI = new URI(clientConfigUrl);
     this.serverNode1ConfigURI = new URI(serverNode1ConfigURL);
@@ -128,13 +128,13 @@ public class SLhSessionBasicFlowTest {
   }
 
   @Test
-  public void testLCSRoutingInfo() throws Exception {
+  public void testProvideLocation() throws Exception {
     try {
       // pain of parameter tests :) ?
-      clientNode.sendLCSRoutingInfoRequest();
+      clientNode.sendProvideLocationRequest();;
       waitForMessage();
 
-      serverNode1.sendLCSRoutingInfoAnswer();
+      serverNode1.sendProvideLocationAnswer();
       waitForMessage();
     }
     catch (Exception e) {
@@ -142,13 +142,13 @@ public class SLhSessionBasicFlowTest {
       fail(e.toString());
     }
 
-    if (!serverNode1.isReceivedRIR()) {
+    if (!serverNode1.isReceivedPLR()) {
       StringBuilder sb = new StringBuilder("Did not receive RIR! ");
       sb.append("Server ER:\n").append(serverNode1.createErrorReport(this.serverNode1.getErrors()));
 
       fail(sb.toString());
     }
-    if (!clientNode.isReceivedRIA()) {
+    if (!clientNode.isReceivedPLA()) {
       StringBuilder sb = new StringBuilder("Did not receive RIA! ");
       sb.append("Client ER:\n").append(clientNode.createErrorReport(this.clientNode.getErrors()));
 
@@ -179,7 +179,7 @@ public class SLhSessionBasicFlowTest {
     //String replicatedClient = "configurations/functional-slh/replicated-config-client.xml";
     //String replicatedServer1 = "configurations/functional-slh/replicated-config-server-node1.xml";
 
-    Class<SLhSessionBasicFlowTest> t = SLhSessionBasicFlowTest.class;
+    Class<SLgSessionBasicFlowTest> t = SLgSessionBasicFlowTest.class;
     client = t.getClassLoader().getResource(client).toString();
     server1 = t.getClassLoader().getResource(server1).toString();
     //replicatedClient = t.getClassLoader().getResource(replicatedClient).toString();

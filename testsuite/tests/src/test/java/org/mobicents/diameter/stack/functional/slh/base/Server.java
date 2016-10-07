@@ -44,7 +44,7 @@ public class Server extends AbstractServer {
 
   protected LCSRoutingInfoRequest request;
 
-  public void sendLCSRoutingInfoCheckAnswer() throws Exception {
+  public void sendLCSRoutingInfoAnswer() throws Exception {
     if (!receivedRIR || request == null) {
       fail("Did not receive RIR or answer already sent.", null);
       throw new Exception("Did not receive RIR or answer already sent. Request: " + this.request);
@@ -52,13 +52,12 @@ public class Server extends AbstractServer {
 
     LCSRoutingInfoAnswer ria = super.createRIA(request, 2001);
 
-    super.serverSLhSession.sendLCSRoutingInfoCheckAnswer(ria);
+    super.serverSLhSession.sendLCSRoutingInfoAnswer(ria);
 
     this.sentRIA = true;
     request = null;
     Utils.printMessage(log, super.stack.getDictionary(), ria.getMessage(), true);
   }
-
 
   /* (non-Javadoc)
    * @see org.mobicents.diameter.stack.functional.TBase#processRequest(org.jdiameter.api.Request)

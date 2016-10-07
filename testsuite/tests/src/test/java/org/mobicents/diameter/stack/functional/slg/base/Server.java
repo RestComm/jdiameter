@@ -43,39 +43,39 @@ public class Server extends AbstractServer {
 
   protected boolean receivedPLR;
   protected boolean sentPLA;
-	protected boolean receivedLRR;
-	protected boolean sentLRA;
+  protected boolean receivedLRR;
+  protected boolean sentLRA;
 
-  protected ProvideLocationRequest request;
-	protected LocationReportRequest request;
+  protected ProvideLocationRequest plrRequest;
+  protected LocationReportRequest lrrRequest;
 
-  public void sendProvideLocationCheckAnswer() throws Exception {
-    if (!receivedPLR || request == null) {
+  public void sendProvideLocationAnswer() throws Exception {
+    if (!receivedPLR || plrRequest == null) {
       fail("Did not receive PLR or answer already sent.", null);
-      throw new Exception("Did not receive PLR or answer already sent. Request: " + this.request);
+      throw new Exception("Did not receive PLR or answer already sent. Request: " + this.plrRequest);
     }
 
-    ProvideLocationAnswer pla = super.createPLA(request, 2001);
+    ProvideLocationAnswer pla = super.createPLA(plrRequest, 2001);
 
-    super.serverSLgSession.sendProvideLocationCheckAnswer(pla);
+    super.serverSLgSession.sendProvideLocationAnswer(pla);
 
     this.sentPLA = true;
-    request = null;
+    plrRequest = null;
     Utils.printMessage(log, super.stack.getDictionary(), pla.getMessage(), true);
   }
 
-	public void sendLocationReportCheckAnswer() throws Exception {
-    if (!receivedLRR || request == null) {
+	public void sendLocationReportAnswer() throws Exception {
+    if (!receivedLRR || lrrRequest == null) {
       fail("Did not receive LRR or answer already sent.", null);
-      throw new Exception("Did not receive LRR or answer already sent. Request: " + this.request);
+      throw new Exception("Did not receive LRR or answer already sent. Request: " + this.lrrRequest);
     }
 
-    ProvideLocationAnswer lra = super.createLRA(request, 2001);
+    LocationReportAnswer lra = super.createLRA(lrrRequest, 2001);
 
-    super.serverSLgSession.sendProvideLocationCheckAnswer(lra);
+    super.serverSLgSession.sendLocationReportAnswer(lra);
 
     this.sentLRA = true;
-    request = null;
+    lrrRequest = null;
     Utils.printMessage(log, super.stack.getDictionary(), lra.getMessage(), true);
   }
 
@@ -85,7 +85,11 @@ public class Server extends AbstractServer {
   @Override
   public Answer processRequest(Request request) {
     int code = request.getCommandCode();
-    if (code != LCSRoutingInfoRequest.code) {
+    if (code != ProvideLocationRequest.code) {
+      fail("Received Request with code not used by SLg!. Code[" + request.getCommandCode() + "]", null);
+      return null;
+    }
+    if (code != LocationReportRequest.code) {
       fail("Received Request with code not used by SLg!. Code[" + request.getCommandCode() + "]", null);
       return null;
     }
@@ -114,10 +118,10 @@ public class Server extends AbstractServer {
       return;
     }
     this.receivedPLR = true;
-    this.request = request;
+    this.plrRequest = request;
   }
 
-	@Override
+  @Override
   public void doLocationReportRequestEvent(ServerSLgSession session, LocationReportRequest request)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     if (this.receivedLRR) {
@@ -125,7 +129,7 @@ public class Server extends AbstractServer {
       return;
     }
     this.receivedLRR = true;
-    this.request = request;
+    this.lrrRequest = request;
   }
 
   public boolean isReceivedPLR() {
@@ -136,7 +140,7 @@ public class Server extends AbstractServer {
     return sentPLA;
   }
 
-	public boolean isReceivedLRR() {
+  public boolean isReceivedLRR() {
     return receivedLRR;
   }
 

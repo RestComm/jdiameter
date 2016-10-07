@@ -63,7 +63,7 @@ import org.jdiameter.api.slh.events.LCSRoutingInfoRequest;
 import org.jdiameter.api.slh.events.LCSRoutingInfoAnswer;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.impl.app.slh.LCSRoutingInfoRequestImpl;
-import org.jdiameter.common.impl.app.slh.SLgSessionFactoryImpl;
+import org.jdiameter.common.impl.app.slh.SLhSessionFactoryImpl;
 import org.mobicents.diameter.stack.functional.TBase;
 
 /**
@@ -79,39 +79,37 @@ public abstract class AbstractClient extends TBase implements ClientSLhSessionLi
   protected ClientSLhSession clientSLhSession;
 
   public void init(InputStream configStream, String clientID) throws Exception {
-      try {
-          super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777255));
-          SLhSessionFactoryImpl slhSessionFactory = new SLhSessionFactoryImpl(this.sessionFactory);
-          ((ISessionFactory) sessionFactory).registerAppFacory(ServerSLhSession.class, slhSessionFactory);
-          ((ISessionFactory) sessionFactory).registerAppFacory(ClientSLhSession.class, slhSessionFactory);
+    try {
+      super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777255));
+      SLhSessionFactoryImpl slhSessionFactory = new SLhSessionFactoryImpl(this.sessionFactory);
+      ((ISessionFactory) sessionFactory).registerAppFacory(ServerSLhSession.class, slhSessionFactory);
+      ((ISessionFactory) sessionFactory).registerAppFacory(ClientSLhSession.class, slhSessionFactory);
 
-          slhSessionFactory.setClientSessionListener(this);
+      slhSessionFactory.setClientSessionListener(this);
 
-          this.clientSLhSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(this.sessionFactory.getSessionId("xx-SLh-TESTxx"), getApplicationId(), ClientSLhSession.class, null);
-      }
+      this.clientSLhSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(this.sessionFactory.getSessionId("xx-SLh-TESTxx"), getApplicationId(), ClientSLhSession.class, null);
+    }
       finally {
-          try {
-              configStream.close();
-          }
-          catch (Exception e) {
-              e.printStackTrace();
-          }
+        try {
+          configStream.close();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
       }
-
   }
 
   // ----------- delegate methods so
 
   public void start() throws IllegalDiameterStateException, InternalException {
-      stack.start();
+    stack.start();
   }
 
   public void start(Mode mode, long timeOut, TimeUnit timeUnit) throws IllegalDiameterStateException, InternalException {
-      stack.start(mode, timeOut, timeUnit);
+    stack.start(mode, timeOut, timeUnit);
   }
 
   public void stop(long timeOut, TimeUnit timeUnit, int disconnectCause) throws IllegalDiameterStateException, InternalException {
-      stack.stop(timeOut, timeUnit, disconnectCause);
+    stack.stop(timeOut, timeUnit, disconnectCause);
   }
 
   public void stop(int disconnectCause) {
@@ -120,12 +118,14 @@ public abstract class AbstractClient extends TBase implements ClientSLhSessionLi
 
   // ------- def methods, to fail :)
 
-  public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-      fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
+  public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException,
+          RouteException, OverloadException {
+    fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
-  public void doLCSRoutingInfoAnswerEvent(ClientSLhSession session, LCSRoutingInfoRequest request, LCSRoutingInfoAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-      fail("Received \"RIA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
+  public void doLCSRoutingInfoAnswerEvent(ClientSLhSession session, LCSRoutingInfoRequest request, LCSRoutingInfoAnswer answer) throws InternalException,
+          IllegalDiameterStateException, RouteException, OverloadException {
+    fail("Received \"RIA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
   // ----------- conf parts
@@ -162,22 +162,23 @@ public abstract class AbstractClient extends TBase implements ClientSLhSessionLi
 
   */
     // Create LCSRoutingInfoRequest
-    LCSRoutingInfoRequest rir = new LCSRoutingInfoRequestImpl(slhSession.getSessions().get(0).createRequest(LCSRoutingInfoRequest.code, getApplicationId(), getServerRealmName()));
+    LCSRoutingInfoRequest rir = new LCSRoutingInfoRequestImpl(slhSession.getSessions().get(0).createRequest(LCSRoutingInfoRequest.code, getApplicationId(),
+            getServerRealmName()));
     // < LCS-Routing-Info-Request> ::=	< Diameter Header: 8388622, REQ, PXY, 16777291 >
 
     AvpSet reqSet = rir.getMessage().getAvps();
 
     if (reqSet.getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
-        AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-        // 1* [ Vendor-Id ]
-        vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-        // 0*1{ Auth-Application-Id }
-        vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
+      AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
+      // 1* [ Vendor-Id ]
+      vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
+      // 0*1{ Auth-Application-Id }
+      vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
     }
 
     // { Auth-Session-State }
     if (reqSet.getAvp(Avp.AUTH_SESSION_STATE) == null) {
-        reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
+      reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
     }
 
     // { Origin-Host }

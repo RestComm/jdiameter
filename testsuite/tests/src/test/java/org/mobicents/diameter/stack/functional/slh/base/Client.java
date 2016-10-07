@@ -43,7 +43,7 @@ public class Client extends AbstractClient {
   }
 
   public void sendLCSRoutingInfoRequest() throws Exception {
-    LCSRoutingInfoRequest rir = super.createLRR(super.clientSLhSession);
+    LCSRoutingInfoRequest rir = super.createRIR(super.clientSLhSession);
     super.clientSLhSession.sendLCSRoutingInfoRequest(rir);
     Utils.printMessage(log, super.stack.getDictionary(), rir.getMessage(), true);
     this.sentRIR = true;

@@ -57,15 +57,15 @@ import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
-import org.jdiameter.api.slh.ClientSLgSession;
-import org.jdiameter.api.slh.ServerSLgSession;
-import org.jdiameter.api.slh.ServerSLgSessionListener;
+import org.jdiameter.api.slh.ClientSLhSession;
+import org.jdiameter.api.slh.ServerSLhSession;
+import org.jdiameter.api.slh.ServerSLhSessionListener;
 import org.jdiameter.api.slh.events.LCSRoutingInfoRequest;
 import org.jdiameter.api.slh.events.LCSRoutingInfoAnswer;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.impl.app.slh.LCSRoutingInfoAnswerImpl;
 import org.jdiameter.common.impl.app.slh.SLhSessionFactoryImpl;
-import org.mobicents.diameter.stack.functional.TBase
+import org.mobicents.diameter.stack.functional.TBase;
 
 /**
  *
@@ -80,49 +80,48 @@ public abstract class AbstractServer extends TBase implements ServerSLhSessionLi
   protected ServerSLhSession serverSLhSession;
 
   public void init(InputStream configStream, String clientID) throws Exception {
-      try {
-          super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777291));
-          SLhSessionFactoryImpl slhSessionFactory = new SLhSessionFactoryImpl(this.sessionFactory);
-          ((ISessionFactory) sessionFactory).registerAppFacory(ServerSLhSession.class, slhSessionFactory);
-          ((ISessionFactory) sessionFactory).registerAppFacory(ClientSLhSession.class, slhSessionFactory);
-          slhSessionFactory.setServerSessionListener(this);
-      }
+    try {
+      super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777291));
+      SLhSessionFactoryImpl slhSessionFactory = new SLhSessionFactoryImpl(this.sessionFactory);
+      ((ISessionFactory) sessionFactory).registerAppFacory(ServerSLhSession.class, slhSessionFactory);
+      ((ISessionFactory) sessionFactory).registerAppFacory(ClientSLhSession.class, slhSessionFactory);
+      slhSessionFactory.setServerSessionListener(this);
+    }
       finally {
-          try {
-              configStream.close();
-          }
+        try {
+          configStream.close();
+        }
           catch (Exception e) {
-              e.printStackTrace();
+            e.printStackTrace();
           }
       }
-
   }
 
   // ----------- delegate methods so
 
   public void start() throws IllegalDiameterStateException, InternalException {
-      stack.start();
+    stack.start();
   }
 
   public void start(Mode mode, long timeOut, TimeUnit timeUnit) throws IllegalDiameterStateException, InternalException {
-      stack.start(mode, timeOut, timeUnit);
+    stack.start(mode, timeOut, timeUnit);
   }
 
   public void stop(long timeOut, TimeUnit timeUnit, int disconnectCause) throws IllegalDiameterStateException, InternalException {
-      stack.stop(timeOut, timeUnit, disconnectCause);
+    stack.stop(timeOut, timeUnit, disconnectCause);
   }
 
   public void stop(int disconnectCause) {
-      stack.stop(disconnectCause);
+    stack.stop(disconnectCause);
   }
 
   public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException,
           OverloadException {
-      fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
+    fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
   public void doLCSRoutingInfoRequestEvent(ServerSLhSession session, LCSRoutingInfoRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-      fail("Received \"RIR\" event, request[" + request + "], on session[" + session + "]", null);
+    fail("Received \"RIR\" event, request[" + request + "], on session[" + session + "]", null);
   }
 
   // -------- conf
@@ -132,7 +131,7 @@ public abstract class AbstractServer extends TBase implements ServerSLhSessionLi
   }
 
   public void fetchSession(String sessionId) throws InternalException {
-      this.serverSLhSession = stack.getSession(sessionId, ServerSLhSession.class);
+    this.serverSLhSession = stack.getSession(sessionId, ServerSLhSession.class);
   }
 
 
@@ -170,7 +169,7 @@ public abstract class AbstractServer extends TBase implements ServerSLhSessionLi
 			  *[ Route-Record ]
 
  */
-    LCSRoutingInfoAnswer ria = new ProvideLocationAnswerImpl((Request) rir.getMessage(), resultCode);
+    LCSRoutingInfoAnswer ria = new LCSRoutingInfoAnswerImpl((Request) rir.getMessage(), resultCode);
 
     AvpSet reqSet = rir.getMessage().getAvps();
     AvpSet set = ria.getMessage().getAvps();
