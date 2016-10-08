@@ -128,37 +128,40 @@ public abstract class AbstractClient extends TBase implements ClientSLhSessionLi
     fail("Received \"RIA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
-  // ----------- conf parts
+  // ----------- conf
 
   public String getSessionId() {
-      return this.clientSLhSession.getSessionId();
+    return this.clientSLhSession.getSessionId();
   }
 
   public ClientSLhSession getSession() {
-      return this.clientSLhSession;
+    return this.clientSLhSession;
   }
 
-  //protected abstract String PENDING attributes
+  protected abstract String getUserName();
+  protected abstract byte[] getMSISDN();
+  protected abstract byte[] getGMLCNumber();
 
-  // ----------- helper
+  // ----------- 3GPP TS 29.173 reference
 
   protected LCSRoutingInfoRequest createRIR(ClientSLhSession slhSession) throws Exception {
   /*
    < LCS-Routing-Info-Request> ::=	< Diameter Header: 8388622, REQ, PXY, 16777291 >
-												< Session-Id >
-												[ Vendor-Specific-Application-Id ]
-												{ Auth-Session-State }
-												{ Origin-Host }
-												{ Origin-Realm }
-												[ Destination-Host ]
-												{ Destination-Realm }
-												[ User-Name ]
-												[ MSISDN ]
-												[ GMLC-Number ]
-												*[ Supported-Features ]
-												*[ Proxy-Info ]
-												*[ Route-Record ]
-												*[ AVP ]
+
+	< Session-Id >
+	[ Vendor-Specific-Application-Id ]
+	{ Auth-Session-State }
+	{ Origin-Host }
+	{ Origin-Realm }
+	[ Destination-Host ]
+	{ Destination-Realm }
+	[ User-Name ]
+	[ MSISDN ]
+	[ GMLC-Number ]
+	*[ Supported-Features ]
+	*[ Proxy-Info ]
+	*[ Route-Record ]
+	*[ AVP ]
 
   */
     // Create LCSRoutingInfoRequest
@@ -185,7 +188,23 @@ public abstract class AbstractClient extends TBase implements ClientSLhSessionLi
     reqSet.removeAvp(Avp.ORIGIN_HOST);
     reqSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
 
-    //TODO PENDING
+    // [ User-Name ]
+    String userName = getUserName();
+    if (userName != null) {
+      reqSet.addAvp(Avp.USER_NAME, userName, false);
+    }
+
+    // [ MSISDN ]
+    byte[] msisdn = getMSISDN();
+    if (msisdn != null){
+      reqSet.addAvp(Avp.MSISDN, msisdn);
+    }
+
+    // [ GMLC-Number ]
+    byte[] gmlcNumber = getGMLCNumber();
+    if (gmlcNumber != null){
+      reqSet.addAvp(Avp.GMLC_NUMBER, gmlcNumber);
+    }
 
     return rir;
   }

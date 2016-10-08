@@ -127,46 +127,68 @@ public abstract class AbstractServer extends TBase implements ServerSLhSessionLi
   // -------- conf
 
   public String getSessionId() {
-      return this.serverSLhSession.getSessionId();
+    return this.serverSLhSession.getSessionId();
   }
 
   public void fetchSession(String sessionId) throws InternalException {
     this.serverSLhSession = stack.getSession(sessionId, ServerSLhSession.class);
   }
 
-
   public ServerSLhSession getSession() {
-      return this.serverSLhSession;
+    return this.serverSLhSession;
   }
 
-  // protected abstract PENDING attributes
+  protected abstract String getUserName();
+  protected abstract byte[] getMSISDN();
+  protected abstract byte[] getLMSI();
+  protected abstract byte[] getSGSNNumber();
+  protected abstract String getSGSNName();
+  protected abstract String getSGSNRealm();
+  protected abstract String getMMEName();
+  protected abstract String getMMERealm();
+  protected abstract byte[] getMSCNumber();
+  protected abstract String get3GPPAAAServerName();
+  protected abstract long getLCSCapabilitiesSets();
+  protected abstract java.net.InetAddress getGMLCAddress();
+  protected abstract byte[] getAdditionalSGSNNumber();
+  protected abstract String getAdditionalSGSNName();
+  protected abstract String getAdditionalSGSNRealm();
+  protected abstract String getAdditionalMMEName();
+  protected abstract String getAdditionalMMERealm();
+  protected abstract byte[] getAdditionalMSCNumber();
+  protected abstract String getAdditional3GPPAAAServerName();
+  protected abstract long getAdditionalLCSCapabilitiesSets();
+  protected abstract java.net.InetAddress getAdditionalGMLCAddress();
+  protected abstract java.net.InetAddress getPPRAddress();
+  protected abstract long getRIAFLags();
 
-  // ----------- helper
+  // ----------- 3GPP TS 29.173 reference
 
   public LCSRoutingInfoAnswer createRIA(LCSRoutingInfoRequest rir, long resultCode) throws Exception {
 		
 /*
- < LCS-Routing-Info-Answer> ::=	< Diameter Header: 8388622, PXY, 16777291 >
-        < Session-Id >
-				[ Vendor-Specific-Application-Id ]
-				[ Result-Code ]
-				[ Experimental-Result ]
-				{ Auth-Session-State }
-				{ Origin-Host }
-				{ Origin-Realm }
-				*[ Supported-Features ]
-				[ User-Name ]
-				[ MSISDN ]
-				[ LMSI ]
-				[ Serving-Node ]
-				*[ Additional-Serving-Node ]
-				[ GMLC-Address ]
-				[ PPR-Address ]
-				[ RIA-Flags ]
-				*[ AVP ]
-				*[ Failed-AVP ]
-				*[ Proxy-Info ]
-			  *[ Route-Record ]
+  < LCS-Routing-Info-Answer> ::=	< Diameter Header: 8388622, PXY, 16777291 >
+
+    < Session-Id >
+	[ Vendor-Specific-Application-Id ]
+	[ Result-Code ]
+	[ Experimental-Result ]
+	{ Auth-Session-State }
+	{ Origin-Host }
+	{ Origin-Realm }
+	*[ Supported-Features ]
+	[ User-Name ]
+	[ MSISDN ]
+	[ LMSI ]
+	[ Serving-Node ]
+	*[ Additional-Serving-Node ]
+	[ GMLC-Address ]
+	[ PPR-Address ]
+	[ RIA-Flags ]
+	*[ AVP ]
+	*[ Failed-AVP ]
+	*[ Proxy-Info ]
+	*[ Route-Record ]
 
  */
     LCSRoutingInfoAnswer ria = new LCSRoutingInfoAnswerImpl((Request) rir.getMessage(), resultCode);
@@ -192,7 +214,140 @@ public abstract class AbstractServer extends TBase implements ServerSLhSessionLi
         set.addAvp(Avp.AUTH_SESSION_STATE, 1);
     }
 
-    // TODO - PENDING
+    // [ User-Name ]
+    String userName = getUserName();
+    if (userName != null) {
+      set.addAvp(Avp.USER_NAME, userName, false);
+    }
+
+    // [ MSISDN ]
+    byte[] msisdn = getMSISDN();
+    if (msisdn != null){
+      set.addAvp(Avp.MSISDN, msisdn);
+    }
+
+    // [ LMSI ]
+    byte[] lmsi = getLMSI();
+    if (lmsi != null){
+      set.addAvp(Avp.LMSI, lmsi);
+    }
+
+/*
+    Serving-Node ::= <AVP header: 2401 10415>
+    [ SGSN-Number ]
+    [ SGSN-Name ]
+    [ SGSN-Realm ]
+    [ MME-Name ]
+    [ MME-Realm ]
+    [ MSC-Number ]
+    [ 3GPP-AAA-Server-Name ]
+    [ LCS-Capabilities-Sets ]
+    [ GMLC-Address ]
+    *[AVP]
+
+*/
+    AvpSet servingNode = set.addGroupedAvp(Avp.SERVING_NODE, 10415, true, false);
+    byte[] sgsnNumber = getSGSNNumber();
+    String sgsnName= getSGSNName();
+    String sgsnRealm = getSGSNRealm();
+    String mmeName = getMMEName();
+    String mmeRealm = getMMERealm();
+    byte[] mscNumber = getMSCNumber();
+    String tgppAAAServerName= get3GPPAAAServerName();
+    long lcsCapabilitiesSet = getLCSCapabilitiesSets();
+    java.net.InetAddress gmlcAddress = getGMLCAddress();
+
+    if (sgsnNumber != null){
+      servingNode.addAvp(Avp.SGSN_NUMBER, sgsnNumber, 10415, false, false);
+    }
+    if (sgsnName != null){
+      servingNode.addAvp(Avp.SGSN_NAME, sgsnName, 10415, false, false, false);
+    }
+    if (sgsnRealm != null){
+      servingNode.addAvp(Avp.SGSN_REALM, sgsnRealm, 10415, false, false, false);
+    }
+    if (mmeName != null){
+      servingNode.addAvp(Avp.MME_NAME, mmeName, 10415, false, false, false);
+    }
+    if (mmeRealm != null){
+      servingNode.addAvp(Avp.MME_REALM, mmeRealm, 10415, false, false, false);
+    }
+    if (mscNumber != null){
+      servingNode.addAvp(Avp.MSC_NUMBER, mscNumber, 10415, false, false);
+    }
+    if (tgppAAAServerName != null){
+      servingNode.addAvp(Avp.TGPP_AAA_SERVER_NAME, tgppAAAServerName, 10415, false, false, false);
+    }
+    if (lcsCapabilitiesSet != -1){
+      servingNode.addAvp(Avp.LCS_CAPABILITIES_SETS, lcsCapabilitiesSet, 10415, false, false, true);
+    }
+    if (gmlcAddress != null){
+      servingNode.addAvp(Avp.GMLC_ADDRESS, gmlcAddress, 10415, false, false);
+    }
+
+/*
+    Additional-Serving-Node ::=	<AVP header: 2406 10415>
+    [ SGSN-Number ]
+    [ MME-Name ]
+    [ SGSN-Name ]
+    [ SGSN-Realm ]
+    [ MME-Realm ]
+    [ MSC-Number ]
+    [ 3GPP-AAA-Server-Name ]
+    [ LCS-Capabilities-Sets ]
+    [ GMLC-Address ]
+    *[AVP]
+*/
+    AvpSet additionalServingNode = set.addGroupedAvp(Avp.ADDITIONAL_SERVING_NODE, 10415, true, false);
+    byte[] additionalSGSNNumber = getAdditionalSGSNNumber();
+    String additionalSGSNName = getAdditionalSGSNName();
+    String additionalSGSNRealm = getAdditionalSGSNRealm();
+    String additionalMMEName = getAdditionalMMEName();
+    String additionalMMERealm = getAdditionalMMERealm();
+    byte[] additionalMSCNumber = getAdditionalMSCNumber();
+    String additional3GPPAAAServerName = getAdditional3GPPAAAServerName();
+    long additionalLCSCapabilitiesSets = getAdditionalLCSCapabilitiesSets();
+    java.net.InetAddress additionalGMLCAddress = getAdditionalGMLCAddress();
+
+    if (additionalSGSNNumber != null){
+      additionalServingNode.addAvp(Avp.SGSN_NUMBER, additionalSGSNNumber, 10415, false, false);
+    }
+    if (additionalSGSNName != null){
+      additionalServingNode.addAvp(Avp.SGSN_NAME, additionalSGSNName, 10415, false, false, false);
+    }
+    if (additionalSGSNRealm != null){
+      additionalServingNode.addAvp(Avp.SGSN_REALM, additionalSGSNRealm, 10415, false, false, false);
+    }
+    if (additionalMMEName != null){
+      additionalServingNode.addAvp(Avp.MME_NAME, additionalMMEName, 10415, false, false, false);
+    }
+    if (additionalMMERealm != null){
+      additionalServingNode.addAvp(Avp.MME_REALM, additionalMMERealm, 10415, false, false, false);
+    }
+    if (additionalMSCNumber != null){
+      additionalServingNode.addAvp(Avp.MSC_NUMBER, additionalMSCNumber, 10415, false, false);
+    }
+    if (additional3GPPAAAServerName != null){
+      additionalServingNode.addAvp(Avp.TGPP_AAA_SERVER_NAME, additional3GPPAAAServerName, 10415, false, false, false);
+    }
+    if (additionalLCSCapabilitiesSets != -1){
+      additionalServingNode.addAvp(Avp.LCS_CAPABILITIES_SETS, additionalLCSCapabilitiesSets, 10415, false, false, true);
+    }
+    if (additionalGMLCAddress != null){
+      additionalServingNode.addAvp(Avp.GMLC_ADDRESS, additionalGMLCAddress, 10415, false, false);
+    }
+
+    // [ PPR-Address ]
+    java.net.InetAddress pprAddress = getPPRAddress();
+    if (pprAddress != null){
+      set.addAvp(Avp.PPR_ADDRESS, pprAddress);
+    }
+
+    //[ RIA-Flags ]
+    long riafLags = getRIAFLags();
+    if (riafLags != -1){
+      set.addAvp(Avp.RIA_FLAGS, riafLags, true);
+    }
 
     return ria;
   }

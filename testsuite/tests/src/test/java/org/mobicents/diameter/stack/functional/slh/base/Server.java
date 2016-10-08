@@ -32,6 +32,8 @@ import org.jdiameter.api.slh.events.LCSRoutingInfoAnswer;
 import org.mobicents.diameter.stack.functional.Utils;
 import org.mobicents.diameter.stack.functional.slh.AbstractServer;
 
+import java.net.UnknownHostException;
+
 /**
  *
  * @author Fernando Mendioroz (fernando.mendioroz@telestax.com)
@@ -96,6 +98,165 @@ public class Server extends AbstractServer {
     this.request = request;
   }
 
+  @Override
+  protected String getUserName(){
+    // Information Element IMSI Mapped to AVP User-Name
+    String imsi = "748039876543210";
+    return imsi;
+  }
+
+  @Override
+  protected byte[] getMSISDN(){
+    String msisdnString = "59899077937";
+    byte[] msisdn = msisdnString.getBytes();
+    return msisdn;
+  }
+
+  @Override
+  protected byte[] getLMSI(){
+    String lmsiString = "748031234567890";
+    byte[] lmsi = lmsiString.getBytes();
+    return lmsi;
+  }
+
+  @Override
+  protected byte[] getAdditionalSGSNNumber(){
+    String sgsnNumString = "59899004502";
+    byte[] sgsnNumber = sgsnNumString.getBytes();
+    return sgsnNumber;
+  }
+
+  @Override
+  protected String getAdditionalSGSNName(){
+    String sgsnName = "SGSN02";
+    return sgsnName;
+  }
+
+  @Override
+  protected String getAdditionalSGSNRealm(){
+    String sgsnRealm = "sgsn2.restcomm.com";
+    return sgsnRealm;
+  }
+
+  @Override
+  protected String getAdditionalMMEName(){
+    String mmeName = "MME712";
+    return mmeName;
+  }
+
+  @Override
+  protected String getAdditionalMMERealm(){
+    String mmeRealm = "mme2.restcomm.com";
+    return mmeRealm;
+  }
+
+  @Override
+  protected byte[] getAdditionalMSCNumber(){
+    String mscNumString = "59899001210";
+    byte[] mscNumber = mscNumString.getBytes();
+    return mscNumber;
+  }
+
+  @Override
+  protected String getAdditional3GPPAAAServerName(){
+    String tgppAAAServerName = "aaa2.restcomm.com";
+    return tgppAAAServerName;
+  }
+
+  @Override
+  protected long getAdditionalLCSCapabilitiesSets(){
+    long lcsCapabilitiesSets = 88800123;
+    return lcsCapabilitiesSets;
+  }
+
+  @Override
+  protected java.net.InetAddress getAdditionalGMLCAddress(){
+    try {
+      java.net.InetAddress gmlcAddress = java.net.InetAddress.getByName("Restcomm-GMLC02");
+      return gmlcAddress;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  @Override
+  protected byte[] getSGSNNumber(){
+    String sgsnNumString = "59899004501";
+    byte[] sgsnNumber = sgsnNumString.getBytes();
+    return sgsnNumber;
+  }
+
+  @Override
+  protected String getSGSNName(){
+    String sgsnName = "SGSN01";
+    return sgsnName;
+  }
+
+  @Override
+  protected String getSGSNRealm(){
+    String sgsnRealm = "sgsn.restcomm.com";
+    return sgsnRealm;
+  }
+
+  @Override
+  protected String getMMEName(){
+    String mmeName = "MME710";
+    return mmeName;
+  }
+
+  @Override
+  protected String getMMERealm(){
+    String mmeRealm = "mme.restcomm.com";
+    return mmeRealm;
+  }
+
+  @Override
+  protected byte[] getMSCNumber(){
+    String mscNumString = "59899001207";
+    byte[] mscNumber = mscNumString.getBytes();
+    return mscNumber;
+  }
+
+  @Override
+  protected String get3GPPAAAServerName(){
+    String tgppAAAServerName = "aaa.restcomm.com";
+    return tgppAAAServerName;
+  }
+
+  @Override
+  protected long getLCSCapabilitiesSets(){
+    long lcsCapabilitiesSets = 99900123;
+    return lcsCapabilitiesSets;
+  }
+
+  @Override
+  protected java.net.InetAddress getGMLCAddress(){
+    try {
+      java.net.InetAddress gmlcAddress = java.net.InetAddress.getByName("Restcomm-GMLC");
+      return gmlcAddress;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  @Override
+  protected java.net.InetAddress getPPRAddress(){
+    try {
+      java.net.InetAddress pprAddress = java.net.InetAddress.getByName("Restcomm-PPR");
+      return pprAddress;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  @Override
+  protected long getRIAFLags(){
+    long riaFlags = 7890123;
+    return riaFlags;
+  }
 
   public boolean isReceivedRIR() {
     return receivedRIR;

@@ -65,7 +65,26 @@ public class Client extends AbstractClient {
     this.receivedRIA = true;
   }
 
-	//TODO pending methods
+  @Override
+  protected String getUserName(){
+    // Information Element IMSI Mapped to AVP User-Name
+    String imsi = "748039876543210";
+    return imsi;
+  }
+
+  @Override
+  protected byte[] getMSISDN(){
+    String msisdnString = "59899077937";
+    byte[] msisdn = msisdnString.getBytes();
+    return msisdn;
+  }
+
+  @Override
+  protected byte[] getGMLCNumber(){
+    String gmlcNumberString = "759834279";
+    byte[] gmlcNumber = gmlcNumberString.getBytes();
+    return gmlcNumber;
+  }
 
   public boolean isReceivedRIA() {
     return receivedRIA;
