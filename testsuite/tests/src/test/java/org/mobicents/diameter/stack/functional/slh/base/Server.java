@@ -114,9 +114,71 @@ public class Server extends AbstractServer {
 
   @Override
   protected byte[] getLMSI(){
+  /*
+     3GPP TS 29.173 v13.0.0 section 6.4.2
+       The LMSI AVP is of type OctetString and it shall contain the Local Mobile Station Identity (LMSI) allocated by the VLR, as defined in 3GPP TS 23.003
+  */
     String lmsiString = "748031234567890";
     byte[] lmsi = lmsiString.getBytes();
     return lmsi;
+  }
+
+  @Override
+  protected byte[] getSGSNNumber(){
+    String sgsnNumString = "59899004501";
+    byte[] sgsnNumber = sgsnNumString.getBytes();
+    return sgsnNumber;
+  }
+
+  @Override
+  protected String getSGSNName(){
+    String sgsnName = "SGSN01";
+    return sgsnName;
+  }
+
+  @Override
+  protected String getSGSNRealm(){
+    String sgsnRealm = "sgsn.restcomm.com";
+    return sgsnRealm;
+  }
+
+  @Override
+  protected String getMMEName(){
+  /*
+     3GPP TS 29.173 v13.0.0 section 6.4.4
+       TThe MME-Name AVP is of type DiameterIdentity and it shall contain the Diameter identity of the serving MME.
+  */
+    String mmeName = "MME710";
+    return mmeName;
+  }
+
+  @Override
+  protected String getMMERealm(){
+  /*
+     3GPP TS 29.173 v13.0.0 section 6.4.12
+       The MME-Realm AVP is of type DiameterIdentity and it shall contain the Diameter Realm Identity of the serving MME.
+  */
+    String mmeRealm = "mme.restcomm.com";
+    return mmeRealm;
+  }
+
+  @Override
+  protected byte[] getMSCNumber(){
+    String mscNumString = "59899001207";
+    byte[] mscNumber = mscNumString.getBytes();
+    return mscNumber;
+  }
+
+  @Override
+  protected String get3GPPAAAServerName(){
+    String tgppAAAServerName = "aaa.restcomm.com";
+    return tgppAAAServerName;
+  }
+
+  @Override
+  protected long getLCSCapabilitiesSets(){
+    long lcsCapabilitiesSets = 99900123;
+    return lcsCapabilitiesSets;
   }
 
   @Override
@@ -181,59 +243,13 @@ public class Server extends AbstractServer {
   }
 
   @Override
-  protected byte[] getSGSNNumber(){
-    String sgsnNumString = "59899004501";
-    byte[] sgsnNumber = sgsnNumString.getBytes();
-    return sgsnNumber;
-  }
-
-  @Override
-  protected String getSGSNName(){
-    String sgsnName = "SGSN01";
-    return sgsnName;
-  }
-
-  @Override
-  protected String getSGSNRealm(){
-    String sgsnRealm = "sgsn.restcomm.com";
-    return sgsnRealm;
-  }
-
-  @Override
-  protected String getMMEName(){
-    String mmeName = "MME710";
-    return mmeName;
-  }
-
-  @Override
-  protected String getMMERealm(){
-    String mmeRealm = "mme.restcomm.com";
-    return mmeRealm;
-  }
-
-  @Override
-  protected byte[] getMSCNumber(){
-    String mscNumString = "59899001207";
-    byte[] mscNumber = mscNumString.getBytes();
-    return mscNumber;
-  }
-
-  @Override
-  protected String get3GPPAAAServerName(){
-    String tgppAAAServerName = "aaa.restcomm.com";
-    return tgppAAAServerName;
-  }
-
-  @Override
-  protected long getLCSCapabilitiesSets(){
-    long lcsCapabilitiesSets = 99900123;
-    return lcsCapabilitiesSets;
-  }
-
-  @Override
   protected java.net.InetAddress getGMLCAddress(){
+  /*
+    3GPP TS 29.173 v13.0.0 section 6.4.7
+      The GMLC-Address AVP is of type Address and shall contain the IPv4 or IPv6 address of H-GMLC or the V-GMLC associated with the serving node.
+  */
     try {
-      java.net.InetAddress gmlcAddress = java.net.InetAddress.getByName("Restcomm-GMLC");
+      java.net.InetAddress gmlcAddress = java.net.InetAddress.getLocalHost();
       return gmlcAddress;
     } catch (Exception e) {
       e.printStackTrace();
@@ -243,8 +259,12 @@ public class Server extends AbstractServer {
 
   @Override
   protected java.net.InetAddress getPPRAddress(){
+  /*
+     3GPP TS 29.173 v13.0.0 section 6.4.9
+       The PPR-Address AVP is of type Address and contains the IPv4 or IPv6 address of the Privacy Profile Register for the targeted user
+  */
     try {
-      java.net.InetAddress pprAddress = java.net.InetAddress.getByName("Restcomm-PPR");
+      java.net.InetAddress pprAddress = java.net.InetAddress.getLocalHost();
       return pprAddress;
     } catch (Exception e) {
       e.printStackTrace();
@@ -254,7 +274,13 @@ public class Server extends AbstractServer {
 
   @Override
   protected long getRIAFLags(){
-    long riaFlags = 7890123;
+  /*
+  3GPP TS 29.173 v13.0.0 section 6.4.15
+    Bit	Event Type                                        Description
+    0   Combined-MME/SGSN-Supporting-Optimized-LCS-Proc   This bit, when set, indicates that the UE is served by the MME and the SGSN parts of the same
+                                                          combined MME/SGSN and this combined MME/SGSN supports the optimized LCS procedure.
+  */
+    long riaFlags = 1;
     return riaFlags;
   }
 
