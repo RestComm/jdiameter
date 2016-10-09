@@ -52,6 +52,7 @@ import org.jdiameter.api.slh.ServerSLhSession;
 import org.jdiameter.api.slg.ClientSLgSession;
 import org.jdiameter.api.slg.ServerSLgSession;
 import org.jdiameter.client.api.ISessionFactory;
+import org.jdiameter.common.api.app.IAppSessionFactory;
 import org.jdiameter.common.impl.app.acc.AccSessionFactoryImpl;
 import org.jdiameter.common.impl.app.auth.AuthSessionFactoryImpl;
 import org.jdiameter.common.impl.app.cca.CCASessionFactoryImpl;
@@ -316,7 +317,7 @@ public class SessionsWithAppIdTest {
 
 	@Test
   public void testSLgClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ClientSLgSession.class, new SLgSessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFacory(ClientSLgSession.class, (IAppSessionFactory) new SLgSessionFactoryImpl(sessionFactory));
     ClientSLgSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, SLg_APPID, ClientSLgSession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -325,7 +326,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testSLgServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ServerSLgSession.class, new SLgSessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFacory(ServerSLgSession.class, (IAppSessionFactory) new SLgSessionFactoryImpl(sessionFactory));
     ServerSLgSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, SLg_APPID, ServerSLgSession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
