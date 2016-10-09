@@ -89,6 +89,30 @@ public interface ProvideLocationAnswer extends AppAnswerEvent{
   byte[] getServiceAreaIdentity();
 
   boolean isServingNodeAvpPresent();
+  // [ Serving-Node ] IE: Target Serving Node Identity
+  // Serving-Node AVP of type grouped, includes:
+  // SGSN-Number, SGSN-Name, SGSN-Realm.
+  // MME-Name, MME-Realm
+  // MSC-Number
+  // 3GPP-AAA-Server-Name, LCS-Capabilities-Sets, GMLC-Address
+  boolean isSGSNNumberAvpPresent();
+  byte[] getSGSNNumber();
+  boolean isSGSNNameAvpPresent();
+  String getSGSNName();
+  boolean isSGSNRealmAvpPresent();
+  String getSGSNRealm();
+  boolean isMMENameAvpPresent();
+  String getMMEName();
+  boolean isMMERealmAvpPresent();
+  String getMMERealm();
+  boolean isMSCNumberAvpPresent();
+  byte[] getMSCNumber();
+  boolean is3GPPAAAServerNameAvpPResent();
+  String get3GPPAAAServerName();
+  boolean isLCSCapabilitiesSetsAvpPresent();
+  long getLCSCapabilitiesSets();
+  boolean isGMLCAddressAvpPresent();
+  java.net.InetAddress getGMLCAddress();
 
   boolean isPLAFlagsAvpPresent();
   long getPLAFlags();

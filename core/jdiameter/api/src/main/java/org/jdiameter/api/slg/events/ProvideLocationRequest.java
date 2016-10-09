@@ -48,102 +48,114 @@ public interface ProvideLocationRequest extends AppRequestEvent {
 
   int code = 8388620;
 
-  boolean isSLgLocationTypeAVPPresent();
+  boolean isSLgLocationTypeAvpPresent();
   int getSLgLocationType();
 
-  boolean isUserNameAVPPresent(); // Mapped IE: IMSI
+  boolean isUserNameAvpPresent(); // Mapped IE: IMSI
   String getUserName(); // Mapped IE: IMSI
 
-  boolean isMSISDNAVPPresent();
+  boolean isMSISDNAvpPresent();
   byte[] getMSISDN();
 
-  boolean isIMEIAVPPresent();
+  boolean isIMEIAvpPresent();
   String getIMEI();
 
-  boolean isLCSEPSClientNameAVPPresent();
+  boolean isLCSEPSClientNameAvpPresent();
   // LCS-EPS-Client-Name AVP of type grouped, includes:
   // LCS-Name-String, LCS-Format-Indicator
-  boolean isLSCNameStringAVPPresent();
+  boolean isLSCNameStringAvpPresent();
   String getLSCNameString();
-  boolean isLCSFormatIndicatorAVPPresent();
+  boolean isLCSFormatIndicatorAvpPresent();
   int getLCSFormatIndicator();
 
-  boolean isLCSCLientTypeAVPPresent();
+  boolean isLCSCLientTypeAvpPresent();
   int getLCSClientType();
 
   boolean isLCSRequestorNamePresent();
   // LCS-Requestor-NAme AVP of type grouped, includes:
   // LCS-Requestor-Id-String, LCS-Format-Indicator
-  boolean isLCSRequestorIdStringAVPPresent();
+  boolean isLCSRequestorIdStringAvpPresent();
   String getLCSRequestorIdString();
-  boolean isReqLCSFormatIndicatorAVPPresent();
+  boolean isReqLCSFormatIndicatorAvpPresent();
   int getReqLCSFormatIndicator();
 
   boolean isLCSPriorityPresent();
   long getLCSPriority();
 
-  boolean isLCSQoSAVPPresent();
+  boolean isLCSQoSAvpPresent();
   // LCS-QoS AVP of type grouped, includes:
   // LCS-QoS-Class, Horizontal-Accuracy, Vertical-Accuracy
   // Vertical-Requested, Response-Time
-  boolean isLCSQoSClassAVPPresent();
+  boolean isLCSQoSClassAvpPresent();
   int getLCSQoSClass();
-  boolean isHorizontalAccuracyAVPPresent();
+  boolean isHorizontalAccuracyAvpPresent();
   long getHorizontalAccuracy();
-  boolean isVerticalAccuracyAVPPresent();
+  boolean isVerticalAccuracyAvpPresent();
   long getVerticalAccuracy();
-  boolean isVerticalRequestedAVPPresent();
+  boolean isVerticalRequestedAvpPresent();
   int getVerticalRequested();
-  boolean isResponseTimeAVPPresent();
+  boolean isResponseTimeAvpPresent();
   int getResponseTime();
 
-  boolean isVelocityRequestedAVPPresent();
+  boolean isVelocityRequestedAvpPresent();
   byte[] getVelocityRequested();
 
-  boolean isSupportedGADShapesAVPPresent();
+  boolean isSupportedGADShapesAvpPresent();
   long getSupportedGADSahpes();
 
-  boolean isLSCServiceTypeIdAVPPresent();
+  boolean isLSCServiceTypeIdAvpPresent();
   long getLSCServiceTypeId();
 
-  boolean isLCSCodewordAVPPresent();
+  boolean isLCSCodewordAvpPresent();
   String getLCSCodeword();
 
-  boolean isServiceSelectionAVPPresent();
+  boolean isServiceSelectionAvpPresent();
   String getServiceSelection(); // IE: APN
 
-  boolean isLCSPrivacyCheckSessionAVPPresent();
+  boolean isLCSPrivacyCheckSessionAvpPresent();
   int getLCSPrivacyCheckSession(); // IE: Session-Related Privacy Check
 
-  boolean isLCSPrivacyCheckNonSessionAVPPresent();
+  boolean isLCSPrivacyCheckNonSessionAvpPresent();
   int getLCSPrivacyCheckNonSession(); // IE: LCS-Privacy-Check-Non-Session
 
-  boolean isDeferredLocationTypeAVPPresent();
+  boolean isDeferredLocationTypeAvpPresent();
   long getDeferredLocationType();
 
-  boolean isLCSReferenceNumberAVPPresent();
+  boolean isLCSReferenceNumberAvpPresent();
   byte[] getLCSReferenceNumber();
 
-  boolean isAreaEventInfoAVPPresent();
+  boolean isAreaEventInfoAvpPresent();
   // Area-Event-Info AVP of type grouped, includes:
   // Area-Type, Area-Identification
-  boolean isAreaTypeAVPPresent();
+  boolean isAreaTypeAvpPresent();
   long getAreaType();
-  boolean isAreaIdentificationAVPPresent();
+  boolean isAreaIdentificationAvpPresent();
   byte[] getAreaIdentification();
 
-  boolean isGMLCAddressAVPPresent();
+  boolean isGMLCAddressAvpPresent();
   java.net.InetAddress getGMLCAddress();
 
-  boolean isPLRFlagsAVPPresent();
+  boolean isPLRFlagsAvpPresent();
   long getPLRFLags();
 
-  boolean isPeriodicLDRInfoAVPPresent();
+  boolean isPeriodicLDRInfoAvpPresent();
   // Periodic-LDR-Info AVP of type grouped, includes:
   // Reporting-Amount, Reporting-Interval
-  boolean isReportingAmountAVPPresent();
+  boolean isReportingAmountAvpPresent();
   long getReportingAmount();
-  boolean isReportingIntervalAVPPresent();
+  boolean isReportingIntervalAvpPresent();
   long getReportingInterval();
 
+  boolean isReportingPLMNListAvpPresent();
+  // Reporting-PLMN-List AVP of type grouped, includes:
+  // PLMN-ID-List, Prioritized-List-Indicator
+  boolean isPrioritizedListIndicatorAvpPresent();
+  int getPrioritizedListIndicator();
+  boolean isPLMNIDListAvpPresent();
+  // PLMN-ID-List AVP of type grouped, includes:
+  // Visited-PLMN-Id, Periodic-Location-Support-Indicator
+  boolean isVisitedPLMNIdAvpPresent();
+  byte[] getVisitedPLMNId();
+  boolean isPeriodicLocationSupportIndicatorAvpPresent();
+  int getPeriodicLocationSupportIndicator();
 }

@@ -45,7 +45,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isLocationEventAVPPresent(){
+  public boolean isLocationEventAvpPresent(){
     return super.message.getAvps().getAvp(Avp.LOCATION_EVENT) != null;
   }
 
@@ -63,7 +63,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isUserNameAVPPresent() {
+  public boolean isUserNameAvpPresent() {
     return super.message.getAvps().getAvp(Avp.USER_NAME) != null; // IE: IMSI
   }
 
@@ -81,7 +81,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isMSISDNAVPPresent() {
+  public boolean isMSISDNAvpPresent() {
     return super.message.getAvps().getAvp(Avp.MSISDN) != null;
   }
 
@@ -99,7 +99,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isIMEIAVPPresent() {
+  public boolean isIMEIAvpPresent() {
     return super.message.getAvps().getAvp(Avp.TGPP_IMEI) != null;
   }
 
@@ -117,12 +117,12 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isLCSEPSClientNameAVPPresent(){
+  public boolean isLCSEPSClientNameAvpPresent(){
     return super.message.getAvps().getAvp(Avp.LCS_EPS_CLIENT_NAME) != null;
   }
 
   @Override
-  public boolean isLSCNameStringAVPPresent(){
+  public boolean isLSCNameStringAvpPresent(){
     Avp lcsEPSClientNameAvp = super.message.getAvps().getAvp(Avp.LCS_EPS_CLIENT_NAME);
     if (lcsEPSClientNameAvp != null) {
       try {
@@ -151,7 +151,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isLCSFormatIndicatorAVPPresent(){
+  public boolean isLCSFormatIndicatorAvpPresent(){
     Avp lcsEPSClientNameAvp = super.message.getAvps().getAvp(Avp.LCS_EPS_CLIENT_NAME);
     if (lcsEPSClientNameAvp != null) {
       try {
@@ -293,7 +293,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isGERANPositioningDataAVPPresent(){
+  public boolean isGERANPositioningDataAvpPresent(){
     Avp lcsGERANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.GERAN_POSITIONING_INFO);
     if (lcsGERANPositioningInfoAvp != null) {
       try {
@@ -322,7 +322,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isGERANGANSSPositioningDataAVPPresent(){
+  public boolean isGERANGANSSPositioningDataAvpPresent(){
     Avp lcsGERANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.GERAN_POSITIONING_INFO);
     if (lcsGERANPositioningInfoAvp != null) {
       try {
@@ -374,7 +374,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isUTRANPositioningDataAVPPresent(){
+  public boolean isUTRANPositioningDataAvpPresent(){
     Avp lcsUTRANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.UTRAN_POSITIONING_INFO);
     if (lcsUTRANPositioningInfoAvp != null) {
       try {
@@ -403,7 +403,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isUTRANGANSSPositioningDataAVPPresent(){
+  public boolean isUTRANGANSSPositioningDataAvpPresent(){
     Avp lcsUTRANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.UTRAN_POSITIONING_INFO);
     if (lcsUTRANPositioningInfoAvp != null) {
       try {
@@ -450,7 +450,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isLCSServiceTypeIDAVPPresent(){
+  public boolean isLCSServiceTypeIDAvpPresent(){
     return super.message.getAvps().getAvp(Avp.LCS_SERVICE_TYPE_ID) != null;
   }
 
@@ -468,7 +468,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isPseudonymIndicatorAVPPresent(){
+  public boolean isPseudonymIndicatorAvpPresent(){
     return super.message.getAvps().getAvp(Avp.PSEUDONYM_INDICATOR) != null;
   }
 
@@ -486,16 +486,32 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isLCSQoSAVPPresent(){
+  public boolean isLCSQoSAvpPresent(){
     return super.message.getAvps().getAvp(Avp.LCS_QOS) != null;
   }
 
   @Override
-  public int getLCSQoSClass(){
-    Avp lcsQoSClassAvp = super.message.getAvps().getAvp(Avp.LCS_QOS_CLASS);
-    if (lcsQoSClassAvp != null) {
+  public boolean isLCSQoSClassAvpPresent(){
+    Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
+    if (lcsQoSAvp != null) {
       try {
-        return lcsQoSClassAvp.getInteger32();
+        return lcsQoSAvp.getGrouped().getAvp(Avp.LCS_QOS_CLASS) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS-QoS-Class AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public int getLCSQoSClass(){
+    Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
+    if (lcsQoSAvp != null) {
+      try {
+        Avp lcsQoSClassAvp = lcsQoSAvp.getGrouped().getAvp(Avp.LCS_QOS_CLASS);
+        if (lcsQoSClassAvp != null){
+          return lcsQoSClassAvp.getInteger32();
+        }
       } catch (AvpDataException e) {
         logger.debug("Failure trying to obtain LCS-QoS-Class AVP value", e);
       }
@@ -504,52 +520,115 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public long getHorizontalAccuracy(){
-    Avp lcsHorizontalAccuracyAvp = super.message.getAvps().getAvp(Avp.HORIZONTAL_ACCURACY);
-    if (lcsHorizontalAccuracyAvp != null) {
+  public boolean isHorizontalAccuracyAvpPresent(){
+    Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
+    if (lcsQoSAvp != null) {
       try {
-        return lcsHorizontalAccuracyAvp.getUnsigned32();
+        return lcsQoSAvp.getGrouped().getAvp(Avp.HORIZONTAL_ACCURACY) != null;
       } catch (AvpDataException e) {
-        logger.debug("Failure trying to obtain LCS-QoS Horizontal Accuracy AVP value", e);
+        logger.debug("Failure trying to obtain Horizontal-Accuracy AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public long getHorizontalAccuracy(){
+    Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
+    if (lcsQoSAvp != null) {
+      try {
+        Avp lcsQoSHorizontalAccuracyAvp = lcsQoSAvp.getGrouped().getAvp(Avp.HORIZONTAL_ACCURACY);
+        if (lcsQoSHorizontalAccuracyAvp != null){
+          return lcsQoSHorizontalAccuracyAvp.getUnsigned32();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain Horizontal-Accuracy AVP value", e);
       }
     }
     return -1;
+  }
+
+  @Override
+  public boolean isVerticalAccuracyAvpPresent(){
+    Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
+    if (lcsQoSAvp != null) {
+      try {
+        return lcsQoSAvp.getGrouped().getAvp(Avp.VERTICAL_ACCURACY) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain Vertical-Accuracy AVP", e);
+      }
+    }
+    return false;
   }
 
   @Override
   public long getVerticalAccuracy(){
-    Avp lcsVerticalAccuracyAvp = super.message.getAvps().getAvp(Avp.VERTICAL_ACCURACY);
-    if (lcsVerticalAccuracyAvp != null) {
+    Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
+    if (lcsQoSAvp != null) {
       try {
-        return lcsVerticalAccuracyAvp.getUnsigned32();
+        Avp lcsQoSVerticalAccuracyAvp = lcsQoSAvp.getGrouped().getAvp(Avp.HORIZONTAL_ACCURACY);
+        if (lcsQoSVerticalAccuracyAvp != null){
+          return lcsQoSVerticalAccuracyAvp.getUnsigned32();
+        }
       } catch (AvpDataException e) {
-        logger.debug("Failure trying to obtain LCS-QoS Vertical Accuracy AVP value", e);
+        logger.debug("Failure trying to obtain Vertical-Accuracy AVP value", e);
       }
     }
     return -1;
   }
 
   @Override
-  public int getVerticalRequested(){
-    Avp lcsVerticalAccuracyAvp = super.message.getAvps().getAvp(Avp.VERTICAL_REQUESTED);
-    if (lcsVerticalAccuracyAvp != null) {
+  public boolean isVerticalRequestedAvpPresent(){
+    Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
+    if (lcsQoSAvp != null) {
       try {
-        return lcsVerticalAccuracyAvp.getInteger32();
+        return lcsQoSAvp.getGrouped().getAvp(Avp.VERTICAL_REQUESTED) != null;
       } catch (AvpDataException e) {
-        logger.debug("Failure trying to obtain LCS-QoS Vertical Requested AVP value", e);
+        logger.debug("Failure trying to obtain Vertical-Requested AVP", e);
+      }
+    }
+    return false;
+  }
+
+  public int getVerticalRequested(){
+    Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
+    if (lcsQoSAvp != null) {
+      try {
+        Avp lcsQoSVerticalRequestedAvp = lcsQoSAvp.getGrouped().getAvp(Avp.VERTICAL_REQUESTED);
+        if (lcsQoSVerticalRequestedAvp != null){
+          return lcsQoSVerticalRequestedAvp.getInteger32();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain Vertical-Requested AVP value", e);
       }
     }
     return -1;
+  }
+
+  @Override
+  public boolean isResponseTimeAvpPresent(){
+    Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
+    if (lcsQoSAvp != null) {
+      try {
+        return lcsQoSAvp.getGrouped().getAvp(Avp.RESPONSE_TIME) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain Response-Time AVP", e);
+      }
+    }
+    return false;
   }
 
   @Override
   public int getResponseTime(){
-    Avp lcsResponseTimeAvp = super.message.getAvps().getAvp(Avp.RESPONSE_TIME);
-    if (lcsResponseTimeAvp != null) {
+    Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
+    if (lcsQoSAvp != null) {
       try {
-        return lcsResponseTimeAvp.getInteger32();
+        Avp lcsQoSResponseTimeAvp = lcsQoSAvp.getGrouped().getAvp(Avp.RESPONSE_TIME);
+        if (lcsQoSResponseTimeAvp != null){
+          return lcsQoSResponseTimeAvp.getInteger32();
+        }
       } catch (AvpDataException e) {
-        logger.debug("Failure trying to obtain LCS-QoS Response Time AVP value", e);
+        logger.debug("Failure trying to obtain Response-Time AVP value", e);
       }
     }
     return -1;
@@ -561,7 +640,268 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isLRRFlagsAVPPresent(){
+  public boolean isSGSNNumberAvpPresent(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        return lcsServingNodeAvp.getGrouped().getAvp(Avp.SGSN_NUMBER) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS SGSN-Number AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public byte[] getSGSNNumber(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        Avp lcsSGSNNumberAvp = lcsServingNodeAvp.getGrouped().getAvp(Avp.SGSN_NUMBER);
+        if (lcsSGSNNumberAvp != null){
+          return lcsSGSNNumberAvp.getOctetString();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS SGSN-Number AVP value", e);
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public boolean isSGSNNameAvpPresent(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        return lcsServingNodeAvp.getGrouped().getAvp(Avp.SGSN_NAME) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS SGSN-Name AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public String getSGSNName(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        Avp lcsSGSNNameAvp = lcsServingNodeAvp.getGrouped().getAvp(Avp.SGSN_NAME);
+        if (lcsSGSNNameAvp != null){
+          return lcsSGSNNameAvp.getDiameterIdentity();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS SGSN-Name AVP value", e);
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public boolean isSGSNRealmAvpPresent(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        return lcsServingNodeAvp.getGrouped().getAvp(Avp.SGSN_REALM) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS SGSN-Realm AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public String getSGSNRealm(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        Avp lcsSGSNRealmAvp = lcsServingNodeAvp.getGrouped().getAvp(Avp.SGSN_REALM);
+        if (lcsSGSNRealmAvp != null){
+          return lcsSGSNRealmAvp.getDiameterIdentity();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS SGSN-Realm AVP value", e);
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public boolean isMMENameAvpPresent(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        return lcsServingNodeAvp.getGrouped().getAvp(Avp.MME_NAME) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS MME-Name AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public String getMMEName(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        Avp lcsMMENameAvp = lcsServingNodeAvp.getGrouped().getAvp(Avp.MME_NAME);
+        if (lcsMMENameAvp != null){
+          return lcsMMENameAvp.getDiameterIdentity();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS MME-Name AVP value", e);
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public boolean isMMERealmAvpPresent(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        return lcsServingNodeAvp.getGrouped().getAvp(Avp.MME_REALM) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS MME-Realm AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public String getMMERealm(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        Avp lcsMMERealmAvp = lcsServingNodeAvp.getGrouped().getAvp(Avp.MME_REALM);
+        if (lcsMMERealmAvp != null){
+          return lcsMMERealmAvp.getDiameterIdentity();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS MME-Realm AVP value", e);
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public boolean isMSCNumberAvpPresent(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        return lcsServingNodeAvp.getGrouped().getAvp(Avp.MSC_NUMBER) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS MSC-Number AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public byte[] getMSCNumber(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        Avp lcsMSCNumberAvp = lcsServingNodeAvp.getGrouped().getAvp(Avp.MSC_NUMBER);
+        if (lcsMSCNumberAvp != null){
+          return lcsMSCNumberAvp.getOctetString();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS MSC-Number AVP value", e);
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public boolean is3GPPAAAServerNameAvpPresent(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        return lcsServingNodeAvp.getGrouped().getAvp(Avp.TGPP_AAA_SERVER_NAME) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS 3GPP-AAA-Server-Name AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public String get3GPPAAAServerName(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        Avp lcs3GPPAAAServerNameAvp = lcsServingNodeAvp.getGrouped().getAvp(Avp.TGPP_AAA_SERVER_NAME);
+        if (lcs3GPPAAAServerNameAvp != null){
+          return lcs3GPPAAAServerNameAvp.getDiameterIdentity();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS 3GPP-AAA-Server-Name AVP value", e);
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public boolean isLCSCapabilitiesSetsAvpPresent(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        return lcsServingNodeAvp.getGrouped().getAvp(Avp.LCS_CAPABILITIES_SETS) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS-Capabilities-Sets AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public long getLCSCapabilitiesSets(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        Avp lcsCapabilitiesSetsAvp = lcsServingNodeAvp.getGrouped().getAvp(Avp.LCS_CAPABILITIES_SETS);
+        if (lcsCapabilitiesSetsAvp != null){
+          return lcsCapabilitiesSetsAvp.getUnsigned32();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS-Capabilities-Sets AVP value", e);
+      }
+    }
+    return -1;
+  }
+
+  @Override
+  public boolean isGMLCAddressAvpPresent(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        return lcsServingNodeAvp.getGrouped().getAvp(Avp.GMLC_ADDRESS) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS GMLC-Address AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public java.net.InetAddress getGMLCAddress(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        Avp lcsCapabilitiesSetsAvp = lcsServingNodeAvp.getGrouped().getAvp(Avp.GMLC_ADDRESS);
+        if (lcsCapabilitiesSetsAvp != null){
+          return lcsCapabilitiesSetsAvp.getAddress();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS GMLC-Address AVP value", e);
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public boolean isLRRFlagsAvpPresent(){
     return super.message.getAvps().getAvp(Avp.LRR_FLAGS) != null;
   }
 
@@ -579,7 +919,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isLCSReferenceNumberAVPPresent(){
+  public boolean isLCSReferenceNumberAvpPresent(){
     return super.message.getAvps().getAvp(Avp.LCS_REFERENCE_NUMBER) != null;
   }
 
@@ -597,16 +937,32 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isDeferredMTLRDataAVPPresent(){
+  public boolean isDeferredMTLRDataAvpPresent(){
     return super.message.getAvps().getAvp(Avp.DEFERRED_MT_LR_DATA) != null;
   }
 
   @Override
-  public long getDeferredLocationType(){
-    Avp lcsDeferredLocationTypeAvp = super.message.getAvps().getAvp(Avp.DEFERRED_LOCATION_TYPE);
-    if (lcsDeferredLocationTypeAvp != null) {
+  public boolean isDeferredLocationTypeAvpPresent(){
+    Avp lcsDeferredMTLRDataAvp = super.message.getAvps().getAvp(Avp.DEFERRED_MT_LR_DATA);
+    if (lcsDeferredMTLRDataAvp != null) {
       try {
-        return lcsDeferredLocationTypeAvp.getUnsigned32();
+        return lcsDeferredMTLRDataAvp.getGrouped().getAvp(Avp.DEFERRED_LOCATION_TYPE) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS Deferred-Location-Type AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public long getDeferredLocationType(){
+    Avp lcsDeferredMTLRDataAvp = super.message.getAvps().getAvp(Avp.DEFERRED_MT_LR_DATA);
+    if (lcsDeferredMTLRDataAvp != null) {
+      try {
+        Avp deferredLocationType = lcsDeferredMTLRDataAvp.getGrouped().getAvp(Avp.DEFERRED_LOCATION_TYPE);
+        if (deferredLocationType != null){
+          return deferredLocationType.getUnsigned32();
+        }
       } catch (AvpDataException e) {
         logger.debug("Failure trying to obtain LCS Deferred Location Type AVP value", e);
       }
@@ -615,54 +971,110 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public long getTerminationCause(){
-    Avp lcsTerminationCauseAvp = super.message.getAvps().getAvp(Avp.TERMINATION_CAUSE_LCS);
-    if (lcsTerminationCauseAvp != null) {
+  public boolean isTerminationCauseAvpPresent(){
+    Avp lcsDeferredMTLRDataAvp = super.message.getAvps().getAvp(Avp.DEFERRED_MT_LR_DATA);
+    if (lcsDeferredMTLRDataAvp != null) {
       try {
-        return lcsTerminationCauseAvp.getUnsigned32();
+        return lcsDeferredMTLRDataAvp.getGrouped().getAvp(Avp.TERMINATION_CAUSE_LCS) != null;
       } catch (AvpDataException e) {
-        logger.debug("Failure trying to obtain LCS Termination Cause AVP value", e);
+        logger.debug("Failure trying to obtain LCS Termination-Cause AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public long getTerminationCause(){
+    Avp lcsDeferredMTLRDataAvp = super.message.getAvps().getAvp(Avp.DEFERRED_MT_LR_DATA);
+    if (lcsDeferredMTLRDataAvp != null) {
+      try {
+        Avp lcsTerminationCause = lcsDeferredMTLRDataAvp.getGrouped().getAvp(Avp.TERMINATION_CAUSE_LCS);
+        if (lcsTerminationCause != null){
+          return lcsTerminationCause.getUnsigned32();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS Termination-Cause AVP value", e);
       }
     }
     return -1;
   }
 
   @Override
-  public boolean isGMLCAddressAVPPresent(){
-    return super.message.getAvps().getAvp(Avp.GMLC_ADDRESS) != null;
+  public boolean isHGMLCAddressAvpPresent(){
+    return super.message.getAvps().getAvp(Avp.GMLC_ADDRESS) != null; // IE: H-GMLC Address mapped to GMLC-Address AVP
   }
 
   @Override
-  public java.net.InetAddress getGMLCAddress(){
-    Avp lcsGMLCAddressAvp = super.message.getAvps().getAvp(Avp.GMLC_ADDRESS);
-    if (lcsGMLCAddressAvp != null) {
+  public java.net.InetAddress getHGMLCAddress(){
+    Avp lcsHGMLCAddressAvp = super.message.getAvps().getAvp(Avp.GMLC_ADDRESS); // IE: H-GMLC Address mapped to GMLC-Address AVP
+    if (lcsHGMLCAddressAvp != null) {
       try {
-        return lcsGMLCAddressAvp.getAddress();
+        return lcsHGMLCAddressAvp.getAddress();
       } catch (AvpDataException e) {
-        logger.debug("Failure trying to obtain GMLC Address AVP value", e);
+        logger.debug("Failure trying to obtain H-GMLC-Address AVP value", e);
       }
     }
     return null;
   }
 
   @Override
-  public boolean isPeriodicLDRInformationAVPPresent(){
+  public boolean isPeriodicLDRInfoAvpPresent(){
     return super.message.getAvps().getAvp(Avp.PERIODIC_LDR_INFORMATION) != null;
   }
 
   @Override
-  public boolean isReportingAmountAVPPresent(){
-    return super.message.getAvps().getAvp(Avp.REPORTING_AMOUNT) != null;
+  public boolean isReportingAmountAvpPresent(){
+    Avp lcsPeriodicLDRInfoAvp = super.message.getAvps().getAvp(Avp.PERIODIC_LDR_INFORMATION);
+    if (lcsPeriodicLDRInfoAvp != null) {
+      try {
+        return lcsPeriodicLDRInfoAvp.getGrouped().getAvp(Avp.REPORTING_AMOUNT) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS Reporting-Amount AVP", e);
+      }
+    }
+    return false;
   }
 
   @Override
   public long getReportingAmount(){
-    Avp lcsReportingAmountAvp = super.message.getAvps().getAvp(Avp.REPORTING_AMOUNT);
-    if (lcsReportingAmountAvp != null) {
+    Avp lcsPeriodicLDRInfoAvp = super.message.getAvps().getAvp(Avp.PERIODIC_LDR_INFORMATION);
+    if (lcsPeriodicLDRInfoAvp != null) {
       try {
-        return lcsReportingAmountAvp.getUnsigned32();
+        Avp lcsReportingAmountAvp = lcsPeriodicLDRInfoAvp.getGrouped().getAvp(Avp.REPORTING_AMOUNT);
+        if (lcsReportingAmountAvp != null){
+          return lcsReportingAmountAvp.getUnsigned32();
+        }
       } catch (AvpDataException e) {
         logger.debug("Failure trying to obtain LCS Reporting amount AVP value", e);
+      }
+    }
+    return -1;
+  }
+
+  @Override
+  public boolean isReportingIntervalAvpPresent(){
+    Avp lcsPeriodicLDRInfo = super.message.getAvps().getAvp(Avp.PERIODIC_LDR_INFORMATION);
+    if (lcsPeriodicLDRInfo != null) {
+      try {
+        return lcsPeriodicLDRInfo.getGrouped().getAvp(Avp.REPORTING_INTERVAL) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain Reporting-Interval AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public long getReportingInterval(){
+    Avp lcsPeriodicLDRInfo = super.message.getAvps().getAvp(Avp.PERIODIC_LDR_INFORMATION);
+    if (lcsPeriodicLDRInfo != null) {
+      try {
+        Avp lcsReportingIntervalAvp = lcsPeriodicLDRInfo.getGrouped().getAvp(Avp.REPORTING_INTERVAL);
+        if (lcsReportingIntervalAvp != null){
+          return lcsReportingIntervalAvp.getUnsigned32();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS Reporting-Interval AVP value", e);
       }
     }
     return -1;
@@ -687,7 +1099,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean is1xRTTRCIDAVPPresent(){
+  public boolean is1xRTTRCIDAvpPresent(){
     return super.message.getAvps().getAvp(Avp.ONEXRTT_RCID) != null;
   }
 

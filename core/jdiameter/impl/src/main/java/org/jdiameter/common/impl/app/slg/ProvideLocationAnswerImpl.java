@@ -338,6 +338,268 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
+  public boolean isSGSNNumberAvpPresent(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        return lcsServingNodeAvp.getGrouped().getAvp(Avp.SGSN_NUMBER) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS SGSN-Number AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public byte[] getSGSNNumber(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        Avp lcsSGSNNumberAvp = lcsServingNodeAvp.getGrouped().getAvp(Avp.SGSN_NUMBER);
+        if (lcsSGSNNumberAvp != null){
+          return lcsSGSNNumberAvp.getOctetString();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS SGSN-Number AVP value", e);
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public boolean isSGSNNameAvpPresent(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        return lcsServingNodeAvp.getGrouped().getAvp(Avp.SGSN_NAME) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS SGSN-Name AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public String getSGSNName(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        Avp lcsSGSNNameAvp = lcsServingNodeAvp.getGrouped().getAvp(Avp.SGSN_NAME);
+        if (lcsSGSNNameAvp != null){
+          return lcsSGSNNameAvp.getDiameterIdentity();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS SGSN-Name AVP value", e);
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public boolean isSGSNRealmAvpPresent(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        return lcsServingNodeAvp.getGrouped().getAvp(Avp.SGSN_REALM) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS SGSN-Realm AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public String getSGSNRealm(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        Avp lcsSGSNRealmAvp = lcsServingNodeAvp.getGrouped().getAvp(Avp.SGSN_REALM);
+        if (lcsSGSNRealmAvp != null){
+          return lcsSGSNRealmAvp.getDiameterIdentity();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS SGSN-Realm AVP value", e);
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public boolean isMMENameAvpPresent(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        return lcsServingNodeAvp.getGrouped().getAvp(Avp.MME_NAME) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS MME-Name AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public String getMMEName(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        Avp lcsMMENameAvp = lcsServingNodeAvp.getGrouped().getAvp(Avp.MME_NAME);
+        if (lcsMMENameAvp != null){
+          return lcsMMENameAvp.getDiameterIdentity();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS MME-Name AVP value", e);
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public boolean isMMERealmAvpPresent(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        return lcsServingNodeAvp.getGrouped().getAvp(Avp.MME_REALM) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS MME-Realm AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public String getMMERealm(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        Avp lcsMMERealmAvp = lcsServingNodeAvp.getGrouped().getAvp(Avp.MME_REALM);
+        if (lcsMMERealmAvp != null){
+          return lcsMMERealmAvp.getDiameterIdentity();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS MME-Realm AVP value", e);
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public boolean isMSCNumberAvpPresent(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        return lcsServingNodeAvp.getGrouped().getAvp(Avp.MSC_NUMBER) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS MSC-Number AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public byte[] getMSCNumber(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        Avp lcsMSCNumberAvp = lcsServingNodeAvp.getGrouped().getAvp(Avp.MSC_NUMBER);
+        if (lcsMSCNumberAvp != null){
+          return lcsMSCNumberAvp.getOctetString();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS MSC-Number AVP value", e);
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public boolean is3GPPAAAServerNameAvpPResent(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        return lcsServingNodeAvp.getGrouped().getAvp(Avp.TGPP_AAA_SERVER_NAME) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS 3GPP-AAA-Server-Name AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public String get3GPPAAAServerName(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        Avp lcs3GPPAAAServerNameAvp = lcsServingNodeAvp.getGrouped().getAvp(Avp.TGPP_AAA_SERVER_NAME);
+        if (lcs3GPPAAAServerNameAvp != null){
+          return lcs3GPPAAAServerNameAvp.getDiameterIdentity();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS 3GPP-AAA-Server-Name AVP value", e);
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public boolean isLCSCapabilitiesSetsAvpPresent(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        return lcsServingNodeAvp.getGrouped().getAvp(Avp.LCS_CAPABILITIES_SETS) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS-Capabilities-Sets AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public long getLCSCapabilitiesSets(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        Avp lcsCapabilitiesSetsAvp = lcsServingNodeAvp.getGrouped().getAvp(Avp.LCS_CAPABILITIES_SETS);
+        if (lcsCapabilitiesSetsAvp != null){
+          return lcsCapabilitiesSetsAvp.getUnsigned32();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS-Capabilities-Sets AVP value", e);
+      }
+    }
+    return -1;
+  }
+
+  @Override
+  public boolean isGMLCAddressAvpPresent(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        return lcsServingNodeAvp.getGrouped().getAvp(Avp.GMLC_ADDRESS) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS GMLC-Address AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public java.net.InetAddress getGMLCAddress(){
+    Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
+    if (lcsServingNodeAvp != null) {
+      try {
+        Avp lcsCapabilitiesSetsAvp = lcsServingNodeAvp.getGrouped().getAvp(Avp.GMLC_ADDRESS);
+        if (lcsCapabilitiesSetsAvp != null){
+          return lcsCapabilitiesSetsAvp.getAddress();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS GMLC-Address AVP value", e);
+      }
+    }
+    return null;
+  }
+
+
+  @Override
   public boolean isPLAFlagsAvpPresent() {
     return super.message.getAvps().getAvp(Avp.PLA_FLAGS) != null;
   }

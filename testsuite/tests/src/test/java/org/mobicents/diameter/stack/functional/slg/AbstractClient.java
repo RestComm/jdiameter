@@ -178,6 +178,9 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
   protected abstract long getPLRFLags();
   protected abstract long getReportingAmount();
   protected abstract long getReportingInterval();
+  protected abstract int getPrioritizedListIndicator();
+  protected abstract byte[] getVisitedPLMNId();
+  protected abstract int getPeriodicLocationSupportIndicator();
   // Attributes only applying for Location Report Request (LRR)
   protected abstract int getLocationEvent();
   protected abstract String getLocationEstimate();
@@ -248,7 +251,7 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
 	[ Area-Event-Info ]
 	[ GMLC-Address ]
 	[ Periodic-LDR-Information ]
-	[ Reporting-PLMN-List ] not including it in this first implementation
+	[ Reporting-PLMN-List ]
   */
     // Create ProvideLocationRequest
     ProvideLocationRequest plr = new ProvideLocationRequestImpl(slgSession.getSessions().get(0).createRequest(ProvideLocationRequest.code, getApplicationId(),
@@ -449,7 +452,26 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
       periodicLDRInformation.addAvp(Avp.REPORTING_INTERVAL, reportingInterval);
     }
 
-    // [ Reporting-PLMN-List ] not including it in this first implementation
+    // [ Reporting-PLMN-List ]
+    AvpSet reportingPLMNList = reqSet.addGroupedAvp(Avp.REPORTING_PLMN_LIST, 10415, false, false);
+    int prioritizedListIndicator = getPrioritizedListIndicator();
+
+    if (prioritizedListIndicator != -1){
+      reportingPLMNList.addAvp(Avp.PRIORITIZED_LIST_INDICATOR, prioritizedListIndicator);
+    }
+    AvpSet plmnIdList = reqSet.addGroupedAvp(Avp.PLMN_ID_LIST, 10415, false, false);
+    byte[] visitedPLMNId = getVisitedPLMNId();
+    int periodicLocationSupportIndicator = getPeriodicLocationSupportIndicator();
+
+    if (plmnIdList != null){
+      reportingPLMNList.addGroupedAvp(Avp.PLMN_ID_LIST);
+    }
+    if (visitedPLMNId != null){
+      plmnIdList.addAvp(Avp.VISITED_PLMN_ID, visitedPLMNId);
+    }
+    if (periodicLocationSupportIndicator != -1){
+      plmnIdList.addAvp(Avp.PERIODIC_LOCATION_SUPPORT_INDICATOR, periodicLocationSupportIndicator);
+    }
 
     return plr;
   }

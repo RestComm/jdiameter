@@ -45,7 +45,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isSLgLocationTypeAVPPresent(){
+  public boolean isSLgLocationTypeAvpPresent(){
     return super.message.getAvps().getAvp(Avp.SLG_LOCATION_TYPE) != null;
   }
 
@@ -63,7 +63,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isUserNameAVPPresent() {
+  public boolean isUserNameAvpPresent() {
     return super.message.getAvps().getAvp(Avp.USER_NAME) != null; // IE: IMSI
   }
 
@@ -81,7 +81,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isMSISDNAVPPresent() {
+  public boolean isMSISDNAvpPresent() {
     return super.message.getAvps().getAvp(Avp.MSISDN) != null;
   }
 
@@ -99,7 +99,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isIMEIAVPPresent() {
+  public boolean isIMEIAvpPresent() {
     return super.message.getAvps().getAvp(Avp.TGPP_IMEI) != null;
   }
 
@@ -117,12 +117,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLCSEPSClientNameAVPPresent(){
+  public boolean isLCSEPSClientNameAvpPresent(){
     return super.message.getAvps().getAvp(Avp.LCS_EPS_CLIENT_NAME) != null;
   }
 
   @Override
-  public boolean isLSCNameStringAVPPresent(){
+  public boolean isLSCNameStringAvpPresent(){
     Avp lcsEPSClientNameAvp = super.message.getAvps().getAvp(Avp.LCS_EPS_CLIENT_NAME);
     if (lcsEPSClientNameAvp != null) {
       try {
@@ -151,7 +151,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLCSFormatIndicatorAVPPresent(){
+  public boolean isLCSFormatIndicatorAvpPresent(){
     Avp lcsEPSClientNameAvp = super.message.getAvps().getAvp(Avp.LCS_EPS_CLIENT_NAME);
     if (lcsEPSClientNameAvp != null) {
       try {
@@ -180,7 +180,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLCSCLientTypeAVPPresent(){
+  public boolean isLCSCLientTypeAvpPresent(){
     return super.message.getAvps().getAvp(Avp.LCS_CLIENT_TYPE) != null;
   }
 
@@ -203,7 +203,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLCSRequestorIdStringAVPPresent(){
+  public boolean isLCSRequestorIdStringAvpPresent(){
     Avp lcsRequestorNameAvp = super.message.getAvps().getAvp(Avp.LCS_REQUESTOR_NAME);
     if (lcsRequestorNameAvp != null) {
       try {
@@ -232,7 +232,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isReqLCSFormatIndicatorAVPPresent(){
+  public boolean isReqLCSFormatIndicatorAvpPresent(){
     Avp lcsRequestorNameAvp = super.message.getAvps().getAvp(Avp.LCS_REQUESTOR_NAME);
     if (lcsRequestorNameAvp != null) {
       try {
@@ -279,12 +279,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLCSQoSAVPPresent(){
+  public boolean isLCSQoSAvpPresent(){
     return super.message.getAvps().getAvp(Avp.LCS_QOS) != null;
   }
 
   @Override
-  public boolean isLCSQoSClassAVPPresent(){
+  public boolean isLCSQoSClassAvpPresent(){
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -313,7 +313,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isHorizontalAccuracyAVPPresent(){
+  public boolean isHorizontalAccuracyAvpPresent(){
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -342,7 +342,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isVerticalAccuracyAVPPresent(){
+  public boolean isVerticalAccuracyAvpPresent(){
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -371,7 +371,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isVerticalRequestedAVPPresent(){
+  public boolean isVerticalRequestedAvpPresent(){
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -399,7 +399,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isResponseTimeAVPPresent(){
+  public boolean isResponseTimeAvpPresent(){
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -411,6 +411,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
     return false;
   }
 
+  @Override
   public int getResponseTime(){
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
@@ -427,7 +428,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isVelocityRequestedAVPPresent(){
+  public boolean isVelocityRequestedAvpPresent(){
     return super.message.getAvps().getAvp(Avp.VELOCITY_REQUESTED) != null;
   }
 
@@ -438,14 +439,14 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
       try {
         return lcsVelocityRequestedAvp.getOctetString();
       } catch (AvpDataException e) {
-        logger.debug("Failure trying to obtain LCS Velocity Requested AVP value", e);
+        logger.debug("Failure trying to obtain LCS Velocity-Requested AVP value", e);
       }
     }
     return null;
   }
 
   @Override
-  public boolean isSupportedGADShapesAVPPresent(){
+  public boolean isSupportedGADShapesAvpPresent(){
     return super.message.getAvps().getAvp(Avp.SUPPORTED_GAD_SHAPES) != null;
   }
 
@@ -463,7 +464,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLSCServiceTypeIdAVPPresent(){
+  public boolean isLSCServiceTypeIdAvpPresent(){
     return super.message.getAvps().getAvp(Avp.LCS_SERVICE_TYPE_ID) != null;
   }
 
@@ -481,7 +482,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLCSCodewordAVPPresent(){
+  public boolean isLCSCodewordAvpPresent(){
     return super.message.getAvps().getAvp(Avp.LCS_CODEWORD) != null;
   }
 
@@ -499,7 +500,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isServiceSelectionAVPPresent(){
+  public boolean isServiceSelectionAvpPresent(){
     return super.message.getAvps().getAvp(Avp.SERVICE_SELECTION) != null;
   }
 
@@ -517,7 +518,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLCSPrivacyCheckSessionAVPPresent(){
+  public boolean isLCSPrivacyCheckSessionAvpPresent(){
     return super.message.getAvps().getAvp(Avp.LCS_PRIVACY_CHECK_SESSION) != null;
   }
 
@@ -535,7 +536,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLCSPrivacyCheckNonSessionAVPPresent(){
+  public boolean isLCSPrivacyCheckNonSessionAvpPresent(){
     return super.message.getAvps().getAvp(Avp.LCS_PRIVACY_CHECK_NON_SESSION) != null;
   }
 
@@ -553,7 +554,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isDeferredLocationTypeAVPPresent(){
+  public boolean isDeferredLocationTypeAvpPresent(){
     return super.message.getAvps().getAvp(Avp.DEFERRED_LOCATION_TYPE) != null;
   }
 
@@ -571,7 +572,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLCSReferenceNumberAVPPresent(){
+  public boolean isLCSReferenceNumberAvpPresent(){
     return super.message.getAvps().getAvp(Avp.LCS_REFERENCE_NUMBER) != null;
   }
 
@@ -589,12 +590,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isAreaEventInfoAVPPresent(){
+  public boolean isAreaEventInfoAvpPresent(){
     return super.message.getAvps().getAvp(Avp.AREA_EVENT_INFO) != null;
   }
 
   @Override
-  public boolean isAreaTypeAVPPresent(){
+  public boolean isAreaTypeAvpPresent(){
     Avp lcsAreaEventInfoAvp = super.message.getAvps().getAvp(Avp.AREA_EVENT_INFO);
     if (lcsAreaEventInfoAvp != null) {
       try {
@@ -623,7 +624,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isAreaIdentificationAVPPresent(){
+  public boolean isAreaIdentificationAvpPresent(){
     Avp lcsAreaEventInfoAvp = super.message.getAvps().getAvp(Avp.AREA_EVENT_INFO);
     if (lcsAreaEventInfoAvp != null) {
       try {
@@ -652,7 +653,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isGMLCAddressAVPPresent(){
+  public boolean isGMLCAddressAvpPresent(){
     return super.message.getAvps().getAvp(Avp.GMLC_ADDRESS) != null;
   }
 
@@ -670,7 +671,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isPLRFlagsAVPPresent(){
+  public boolean isPLRFlagsAvpPresent(){
     return super.message.getAvps().getAvp(Avp.PLR_FLAGS) != null;
   }
 
@@ -688,12 +689,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isPeriodicLDRInfoAVPPresent(){
+  public boolean isPeriodicLDRInfoAvpPresent(){
     return super.message.getAvps().getAvp(Avp.PERIODIC_LDR_INFORMATION) != null;
   }
 
   @Override
-  public boolean isReportingAmountAVPPresent(){
+  public boolean isReportingAmountAvpPresent(){
     Avp lcsPeriodicLDRInfo = super.message.getAvps().getAvp(Avp.PERIODIC_LDR_INFORMATION);
     if (lcsPeriodicLDRInfo != null) {
       try {
@@ -722,7 +723,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isReportingIntervalAVPPresent(){
+  public boolean isReportingIntervalAvpPresent(){
     Avp lcsPeriodicLDRInfo = super.message.getAvps().getAvp(Avp.PERIODIC_LDR_INFORMATION);
     if (lcsPeriodicLDRInfo != null) {
       try {
@@ -750,4 +751,108 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
     return -1;
   }
 
+  @Override
+  public boolean isReportingPLMNListAvpPresent(){
+    return super.message.getAvps().getAvp(Avp.REPORTING_PLMN_LIST) != null;
+  }
+
+  @Override
+  public boolean isPrioritizedListIndicatorAvpPresent(){
+    Avp lcsReportingPLMNListAvp = super.message.getAvps().getAvp(Avp.REPORTING_PLMN_LIST);
+    if (lcsReportingPLMNListAvp != null) {
+      try {
+        return lcsReportingPLMNListAvp.getGrouped().getAvp(Avp.PRIORITIZED_LIST_INDICATOR) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain Prioritized-List-Indicator AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public int getPrioritizedListIndicator(){
+    Avp lcsReportingPLMNListAvp = super.message.getAvps().getAvp(Avp.REPORTING_PLMN_LIST);
+    if (lcsReportingPLMNListAvp != null) {
+      try {
+        Avp lcsPrioritizedListIndicatorAvp = lcsReportingPLMNListAvp.getGrouped().getAvp(Avp.PRIORITIZED_LIST_INDICATOR);
+        if (lcsPrioritizedListIndicatorAvp != null){
+          return lcsPrioritizedListIndicatorAvp.getInteger32();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS GERAN-Positioning-Data AVP value", e);
+      }
+    }
+    return -1;
+  }
+
+  @Override
+  public boolean isPLMNIDListAvpPresent(){
+    Avp lcsReportingPLMNListAvp = super.message.getAvps().getAvp(Avp.REPORTING_PLMN_LIST);
+    if (lcsReportingPLMNListAvp != null) {
+      try {
+        return lcsReportingPLMNListAvp.getGrouped().getAvp(Avp.PLMN_ID_LIST) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain PLMN-Id-List AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public boolean isVisitedPLMNIdAvpPresent(){
+    Avp lcsPLMNIdListAvp = super.message.getAvps().getAvp(Avp.PLMN_ID_LIST);
+    if (lcsPLMNIdListAvp != null) {
+      try {
+        return lcsPLMNIdListAvp.getGrouped().getAvp(Avp.VISITED_PLMN_ID) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain Visited-PLMN-Id AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public byte[] getVisitedPLMNId() {
+    Avp lcsPLMNIdListAvp = super.message.getAvps().getAvp(Avp.PLMN_ID_LIST);
+    if (lcsPLMNIdListAvp != null) {
+      try {
+        Avp lcsVisitedPLMNIdAvp = lcsPLMNIdListAvp.getGrouped().getAvp(Avp.VISITED_PLMN_ID);
+        if (lcsVisitedPLMNIdAvp != null){
+          return lcsVisitedPLMNIdAvp.getOctetString();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS Visited PLMN ID AVP value", e);
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public boolean isPeriodicLocationSupportIndicatorAvpPresent(){
+    Avp lcsPLMNIdListAvp = super.message.getAvps().getAvp(Avp.PLMN_ID_LIST);
+    if (lcsPLMNIdListAvp != null) {
+      try {
+        return lcsPLMNIdListAvp.getGrouped().getAvp(Avp.PERIODIC_LOCATION_SUPPORT_INDICATOR) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain Periodic-Location-Support-Indicator AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public int getPeriodicLocationSupportIndicator() {
+    Avp lcsPLMNIdListAvp = super.message.getAvps().getAvp(Avp.PLMN_ID_LIST);
+    if (lcsPLMNIdListAvp != null) {
+      try {
+        Avp lcsPeriodicLocationSupportIndicatorAvp = lcsPLMNIdListAvp.getGrouped().getAvp(Avp.PERIODIC_LOCATION_SUPPORT_INDICATOR);
+        if (lcsPeriodicLocationSupportIndicatorAvp != null){
+          return lcsPeriodicLocationSupportIndicatorAvp.getInteger32();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS Periodic Location Support Indicator AVP value", e);
+      }
+    }
+    return -1;
+  }
 }

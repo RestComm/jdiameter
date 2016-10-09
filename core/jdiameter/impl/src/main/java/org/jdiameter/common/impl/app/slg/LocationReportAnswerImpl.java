@@ -63,7 +63,7 @@ public class LocationReportAnswerImpl extends AppRequestEventImpl implements Loc
   }
 
   @Override
-  public boolean isGMLCAddressAVPPresent(){
+  public boolean isGMLCAddressAvpPresent(){
     return super.message.getAvps().getAvp(Avp.GMLC_ADDRESS) != null;
   }
 
@@ -81,7 +81,7 @@ public class LocationReportAnswerImpl extends AppRequestEventImpl implements Loc
   }
 
   @Override
-  public boolean isLRAFlagsAVPPresent(){
+  public boolean isLRAFlagsAvpPresent(){
     return super.message.getAvps().getAvp(Avp.LRA_FLAGS) != null;
   }
 
@@ -99,12 +99,12 @@ public class LocationReportAnswerImpl extends AppRequestEventImpl implements Loc
   }
 
   @Override
-  public boolean isReportingPLMNListAVPPresent(){
+  public boolean isReportingPLMNListAvpPresent(){
     return super.message.getAvps().getAvp(Avp.REPORTING_PLMN_LIST) != null;
   }
 
   @Override
-  public boolean isPrioritizedListIndicatorAVPPresent(){
+  public boolean isPrioritizedListIndicatorAvpPresent(){
     Avp lcsReportingPLMNListAvp = super.message.getAvps().getAvp(Avp.REPORTING_PLMN_LIST);
     if (lcsReportingPLMNListAvp != null) {
       try {
@@ -133,7 +133,7 @@ public class LocationReportAnswerImpl extends AppRequestEventImpl implements Loc
   }
 
   @Override
-  public boolean isPLMNIDListAVPPresent(){
+  public boolean isPLMNIDListAvpPresent(){
     Avp lcsReportingPLMNListAvp = super.message.getAvps().getAvp(Avp.REPORTING_PLMN_LIST);
     if (lcsReportingPLMNListAvp != null) {
       try {
@@ -146,7 +146,7 @@ public class LocationReportAnswerImpl extends AppRequestEventImpl implements Loc
   }
 
   @Override
-  public boolean isVisitedPLMNIdAVPPResent(){
+  public boolean isVisitedPLMNIdAvpPresent(){
     Avp lcsPLMNIdListAvp = super.message.getAvps().getAvp(Avp.PLMN_ID_LIST);
     if (lcsPLMNIdListAvp != null) {
       try {
@@ -175,7 +175,7 @@ public class LocationReportAnswerImpl extends AppRequestEventImpl implements Loc
   }
 
   @Override
-  public boolean isPeriodicLocationSupportIndicatorAVPPresent(){
+  public boolean isPeriodicLocationSupportIndicatorAvpPresent(){
     Avp lcsPLMNIdListAvp = super.message.getAvps().getAvp(Avp.PLMN_ID_LIST);
     if (lcsPLMNIdListAvp != null) {
       try {
@@ -204,7 +204,7 @@ public class LocationReportAnswerImpl extends AppRequestEventImpl implements Loc
   }
 
   @Override
-  public boolean isLCSReferenceNumberAVPPresent(){
+  public boolean isLCSReferenceNumberAvpPresent(){
     return super.message.getAvps().getAvp(Avp.LCS_REFERENCE_NUMBER) != null;
   }
 

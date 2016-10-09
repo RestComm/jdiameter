@@ -45,26 +45,26 @@ public interface LocationReportAnswer extends AppAnswerEvent{
 
   int code = 8388621;
 
-  boolean isGMLCAddressAVPPresent();
+  boolean isGMLCAddressAvpPresent();
   java.net.InetAddress getGMLCAddress();
 
-  boolean isLRAFlagsAVPPresent();
+  boolean isLRAFlagsAvpPresent();
   long getLRAFLags();
 
-  boolean isReportingPLMNListAVPPresent();
+  boolean isReportingPLMNListAvpPresent();
   // Reporting-PLMN-List AVP of type grouped, includes:
   // PLMN-ID-List, Prioritized-List-Indicator
-  boolean isPrioritizedListIndicatorAVPPresent();
+  boolean isPrioritizedListIndicatorAvpPresent();
   int getPrioritizedListIndicator();
-  boolean isPLMNIDListAVPPresent();
+  boolean isPLMNIDListAvpPresent();
   // PLMN-ID-List AVP of type grouped, includes:
   // Visited-PLMN-Id, Periodic-Location-Support-Indicator
-  boolean isVisitedPLMNIdAVPPResent();
+  boolean isVisitedPLMNIdAvpPresent();
   byte[] getVisitedPLMNId();
-  boolean isPeriodicLocationSupportIndicatorAVPPresent();
+  boolean isPeriodicLocationSupportIndicatorAvpPresent();
   int getPeriodicLocationSupportIndicator();
 
-  boolean isLCSReferenceNumberAVPPresent();
+  boolean isLCSReferenceNumberAvpPresent();
   byte[] getLCSReferenceNumber();
 
 }

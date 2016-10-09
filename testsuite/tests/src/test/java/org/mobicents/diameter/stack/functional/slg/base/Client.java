@@ -430,6 +430,48 @@ public class Client extends AbstractClient {
     return reportingInterval;
   }
 
+  @Override
+  protected int getPrioritizedListIndicator(){
+  /*
+  3GPP TS 29.172 v13.0.0 section 7.4.51
+    The Prioritized-List-Indicator AVP is of type Enumerated and it indicates if the PLMN-ID-List is provided in prioritized order or not.
+      NOT_PRIORITIZED  (0)
+      PRIORITIZED (1)
+  */
+    int prioritizedListIndicator = 0;
+    return prioritizedListIndicator;
+  }
+
+  @Override
+  protected byte[] getVisitedPLMNId(){
+  /*
+  3GPP TS 29.172 v13.0.0 section 7.4.49
+    The PLMN-ID-List AVP is of type Grouped.
+      AVP format:
+      PLMN-ID-List ::= <AVP header: 2544 10415>
+        { Visited-PLMN-Id }
+        [ Periodic-Location-Support-Indicator ]
+        *[ AVP ]
+    If not included, the default value of Periodic-Location-Support-Indicator shall be considered as "NOT_SUPPORTED" (0).
+  */
+    String vPlmnIdList = "74803, 74801";
+    byte[] visitedPlmnIdList = vPlmnIdList.getBytes();
+    return visitedPlmnIdList;
+  }
+
+  @Override
+  protected int getPeriodicLocationSupportIndicator(){
+  /*
+  3GPP TS 29.172 v13.0.0 section 7.4.50
+    The Periodic-Location-Support-Indicator AVP is of type Enumerated and it indicates if the given PLMN-ID (indicated by Visited-PLMN-Id)
+    supports periodic location or not.
+      NOT_SUPPORTED (0)
+      SUPPORTED (1)
+  */
+    int periodicLocationSupportIndicator = 1;
+    return periodicLocationSupportIndicator;
+  }
+
   public boolean isReceivedPLA() {
     return receivedPLA;
   }
