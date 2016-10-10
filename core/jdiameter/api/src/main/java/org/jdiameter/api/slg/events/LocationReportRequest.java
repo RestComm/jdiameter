@@ -66,7 +66,7 @@ public interface LocationReportRequest extends AppRequestEvent {
   int getLCSFormatIndicator();
 
   boolean isLocationEstimateAvpPresent();
-  String getLocationEstimate();
+  byte[] getLocationEstimate();
 
   boolean isAccuracyFulfilmentIndicatorAvpPresent();
   int getAccuracyFulfilmentIndicator();

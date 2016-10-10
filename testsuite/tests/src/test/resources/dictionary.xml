@@ -7659,9 +7659,9 @@
   <avpdefn name="Additional-Serving-Node" code="2406" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
     <grouped>
       <avp name="SGSN-Number" multiplicity="0-1" />
-      <avp name="MME-Name" multiplicity="0-1" />
       <avp name="SGSN-Name" multiplicity="0-1" />
       <avp name="SGSN-Realm" multiplicity="0-1" />
+      <avp name="MME-Name" multiplicity="0-1" />
       <avp name="MME-Realm" multiplicity="0-1" />
       <avp name="MSC-Number" multiplicity="0-1" />
       <avp name="3GPP-AAA-Server-Name" multiplicity="0-1" />
@@ -7700,9 +7700,9 @@
       <avp name="Destination-Host" code="293" vendor="0" multiplicity="1" index="-1" />
       <avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
       <avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="MSISDN" code="701" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="GMLC-Number" code="1474" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
+      <avp name="MSISDN" code="701" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="GMLC-Number" code="1474" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Supported-Features" code="628" vendor="0" multiplicity="0+" index="-1" />
       <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
       <avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
     </command>
@@ -7717,7 +7717,7 @@
       <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
       <avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
       <avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="MSISDN" code="701" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="MSISDN" code="701" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="LMSI" code="2400" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Serving-Node" code="2401" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="SGSN-Number" code="1489" vendor="10415" multiplicity="0-1" index="-1" />
@@ -7730,7 +7730,6 @@
       <avp name="LCS-Capabilities-Sets" code="2404" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="GMLC-Address" code="2405" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Additional-Serving-Node" code="2406" vendor="10415" multiplicity="0+" index="-1" />
-      <avp name="GMLC-Address" code="2405" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="PPR-Address" code="2407" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="RIA-Flags" code="2411" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
@@ -7812,7 +7811,15 @@
   </avpdefn>
 
   <avpdefn name="Supported-GAD-Shapes" code="2510" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
-    <type type-name="Unsigned32" />
+    <type type-name="Enumerated">
+      <enum code="0" name="ellipsoidPoint" />
+      <enum code="1" name="ellipsoidPointWithUncertaintyCircle" />
+      <enum code="2" name="ellipsoidPointWithUncertaintyEllipse" />
+      <enum code="3" name="polygon" />
+      <enum code="4" name="ellipsoidPointWithAltitude" />
+      <enum code="5" name="ellipsoidPointWithAltitudeAndUncertaintyElipsoid" />
+      <enum code="6" name="ellipsoidArc" />
+    </type>
   </avpdefn>
 
   <avpdefn name="LCS-Codeword" code="2511" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
@@ -7939,13 +7946,15 @@
 
   <avpdefn name="Area-Event-Info" code="2533" vendor-id="TGPP" mandatory="mustnot" protected="mustnot" may-encrypt="no" vendor-bit="must" >
     <grouped>
-      <avp name="Area" multiplicity="1" />
+      <avp name="Area-Definition" multiplicity="1" />
+      <avp name="Occurrence-Info" multiplicity="0-1" />
+      <avp name="Interval-Time" multiplicity="0-1" />
     </grouped>
   </avpdefn>
 
   <avpdefn name="Area-Definition" code="2534" vendor-id="TGPP" mandatory="mustnot" protected="mustnot" may-encrypt="no" vendor-bit="must" >
     <grouped>
-      <avp name="Area" multiplicity="1+" />
+      <avp name="Area" multiplicity="1-10" />
     </grouped>
   </avpdefn>
 
@@ -7992,7 +8001,7 @@
 
   <avpdefn name="Reporting-PLMN-List" code="2543" vendor-id="TGPP" mandatory="mustnot" protected="mustnot" may-encrypt="no" vendor-bit="must" >
     <grouped>
-      <avp name="PLMN-ID-List" multiplicity="1+" />
+      <avp name="PLMN-ID-List" multiplicity="1-20" />
       <avp name="Prioritized-List-Indicator" multiplicity="0-1" />
     </grouped>
   </avpdefn>
@@ -8000,7 +8009,7 @@
   <avpdefn name="PLMN-ID-List" code="2544" vendor-id="TGPP" mandatory="mustnot" protected="mustnot" may-encrypt="no" vendor-bit="must" >
     <grouped>
       <avp name="Visited-PLMN-Id" multiplicity="1" />
-      <avp name="Periodic-Location-Support-Indicator" multiplicity="1" />
+      <avp name="Periodic-Location-Support-Indicator" multiplicity="0-1" />
     </grouped>
   </avpdefn>
 
@@ -8116,7 +8125,7 @@
       <avp name="Auth-Session-State" code="277" vendor="0" multiplicity="1" index="-1" />
       <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
       <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
-      <avp name="Location-Estimate" code="1242" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Location-Estimate" code="1242" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Accuracy-Fulfilment-Indicator" code="2513" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Age-Of-Location-Estimate" code="2514" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Velocity-Estimate" code="2515" vendor="10415" multiplicity="0-1" index="-1" />
@@ -8124,9 +8133,9 @@
       <avp name="ECGI" code="2517" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="GERAN-Positioning-Info" code="2524" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Cell-Global-Identity" code="1604" vendor="10415" multiplicity="0-1" index="-1" />
-      <avp name="UTRAN-Positioning-Info" code="2527" vendor="104150" multiplicity="0-1" index="-1" />
+      <avp name="UTRAN-Positioning-Info" code="2527" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Service-Area-Identity" code="1607" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Serving-Node" code="2401" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Serving-Node" code="2401" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="SGSN-Number" code="1489" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="SGSN-Name" code="2409" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="SGSN-Realm" code="2410" vendor="10415" multiplicity="0-1" index="-1" />
@@ -8154,25 +8163,25 @@
       <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
       <avp name="Destination-Host" code="293" vendor="0" multiplicity="1" index="-1" />
       <avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
-      <avp name="Location-Event" code="2518" vendor="0" multiplicity="1" index="-1" />
-      <avp name="LCS-EPS-Client-Name" code="2501" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Location-Event" code="2518" vendor="10415" multiplicity="1" index="-1" />
+      <avp name="LCS-EPS-Client-Name" code="2501" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="MSISDN" code="701" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="IMEI" code="1402" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Location-Estimate" code="1242" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Accuracy-Fulfilment-Indicator" code="2513" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Age-Of-Location-Estimate" code="2514" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Velocity-Estimate" code="2515" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="EUTRAN-Positioning-Data" code="2516" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="ECGI" code="2517" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="GERAN-Positioning-Info" code="2524" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Cell-Global-Identity" code="1604" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="UTRAN-Positioning-Info" code="2527" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Service-Area-Identity" code="1607" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="LCS-Service-Type-ID" code="2520" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Pseudonym-Indicator" code="2519" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="LCS-QoS-Class" code="2523" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Serving-Node" code="2401" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="MSISDN" code="701" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="IMEI" code="1402" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Location-Estimate" code="1242" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Accuracy-Fulfilment-Indicator" code="2513" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Age-Of-Location-Estimate" code="2514" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Velocity-Estimate" code="2515" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="EUTRAN-Positioning-Data" code="2516" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="ECGI" code="2517" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="GERAN-Positioning-Info" code="2524" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Cell-Global-Identity" code="1604" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="UTRAN-Positioning-Info" code="2527" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Service-Area-Identity" code="1607" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="LCS-Service-Type-ID" code="2520" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Pseudonym-Indicator" code="2519" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="LCS-QoS-Class" code="2523" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Serving-Node" code="2401" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="SGSN-Number" code="1489" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="SGSN-Name" code="2409" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="SGSN-Realm" code="2410" vendor="10415" multiplicity="0-1" index="-1" />
@@ -8182,19 +8191,19 @@
       <avp name="3GPP-AAA-Server-Name" code="318" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="LCS-Capabilities-Sets" code="2404" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="GMLC-Address" code="2405" vendor="10415" multiplicity="0-1" index="-1" />
-      <avp name="LRR-Flags" code="2530" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="LCS-Reference-Number" code="2531" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Deferred-Location-Type" code="2532" vendor="0" multiplicity="1" index="-1" />
-      <avp name="Termination-Cause" code="2548" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="LRR-Flags" code="2530" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="LCS-Reference-Number" code="2531" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Deferred-Location-Type" code="2532" vendor="10415" multiplicity="1" index="-1" />
+      <avp name="Termination-Cause" code="2548" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Deferred-MT-LR-Data" code="2547" vendor="0" multiplicity="0-1" index="-1" />
       <avp name="GMLC-Address" code="2405" vendor="10415" multiplicity="0-1" index="-1" />
-      <avp name="Reporting-Amount" code="2541" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Periodic-LDR-Information" code="2540" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="ESMLC-Cell-Info" code="2552" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="1xRTT-RCID" code="2554" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Reporting-Amount" code="2541" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Periodic-LDR-Information" code="2540" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="ESMLC-Cell-Info" code="2552" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="1xRTT-RCID" code="2554" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Delayed-Location-Reporting-Data" code="2555" vendor="0" multiplicity="0+" index="-1" />
-      <avp name="Civic-Address" code="2556" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Barometric-Pressure" code="2557" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Civic-Address" code="2556" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Barometric-Pressure" code="2557" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
       <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
       <avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
@@ -8209,9 +8218,9 @@
       <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
       <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
       <avp name="GMLC-Address" code="2405" vendor="10415" multiplicity="0-1" index="-1" />
-      <avp name="LRA-Flags" code="2549" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Reporting-PLMN-List" code="2543" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="LCS-Reference-Number" code="2531" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="LRA-Flags" code="2549" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Reporting-PLMN-List" code="2543" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="LCS-Reference-Number" code="2531" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
       <avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
       <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />

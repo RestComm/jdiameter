@@ -185,11 +185,11 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public String getLocationEstimate() {
+  public byte[] getLocationEstimate() {
     Avp lcsLocationEstimateAvp = super.message.getAvps().getAvp(Avp.LOCATION_ESTIMATE);
     if (lcsLocationEstimateAvp != null) {
       try {
-        return lcsLocationEstimateAvp.getUTF8String();
+        return lcsLocationEstimateAvp.getOctetString();
       } catch (AvpDataException e) {
         logger.debug("Failure trying to obtain LCS Location-Estimate AVP value", e);
       }

@@ -138,7 +138,7 @@ public abstract class AbstractServer extends TBase implements ServerSLgSessionLi
   }
 
   // Attributes for Provide Location Answer (PLA) and Location Report Answer (LRA)
-  protected abstract String getLocationEstimate();
+  protected abstract byte[] getLocationEstimate();
   protected abstract int getAccuracyFulfilmentIndicator();
   protected abstract long getAgeOfLocationEstimate();
   protected abstract byte[] getVelocityEstimate();
@@ -228,9 +228,9 @@ public abstract class AbstractServer extends TBase implements ServerSLgSessionLi
     }
 
     // [ Location-Estimate ]
-    String locationEstimate = getLocationEstimate();
+    byte[] locationEstimate = getLocationEstimate();
     if (locationEstimate != null){
-      set.addAvp(Avp.LOCATION_ESTIMATE, locationEstimate, false);
+      set.addAvp(Avp.LOCATION_ESTIMATE, locationEstimate);
     }
 
     // [ Accuracy-Fulfilment-Indicator ]

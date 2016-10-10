@@ -133,8 +133,9 @@ public class Server extends AbstractServer {
   }
 
   @Override
-  protected String getLocationEstimate(){
-    String locationEstimate = "S35°38'15.37\" WE109°45'21.77\"";
+  protected byte[] getLocationEstimate(){
+    String locEstimate = "S35°38'15.37\" WE109°45'21.77\"";
+    byte[] locationEstimate = locEstimate.getBytes();
     return locationEstimate;
   }
 

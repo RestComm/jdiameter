@@ -595,11 +595,82 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isAreaTypeAvpPresent(){
+  public boolean isOccurrenceInfoAvpPresent(){
     Avp lcsAreaEventInfoAvp = super.message.getAvps().getAvp(Avp.AREA_EVENT_INFO);
     if (lcsAreaEventInfoAvp != null) {
       try {
-        return lcsAreaEventInfoAvp.getGrouped().getAvp(Avp.AREA_TYPE) != null;
+        return lcsAreaEventInfoAvp.getGrouped().getAvp(Avp.OCCURRENCE_INFO) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain Ocurrence-Info AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public int getOccurrenceInfo(){
+    Avp lcsAreaEventInfoAvp = super.message.getAvps().getAvp(Avp.AREA_EVENT_INFO);
+    if (lcsAreaEventInfoAvp != null) {
+      try {
+        Avp lcsOccurrenceInfoAvp = lcsAreaEventInfoAvp.getGrouped().getAvp(Avp.OCCURRENCE_INFO);
+        if (lcsOccurrenceInfoAvp != null){
+          return lcsOccurrenceInfoAvp.getInteger32();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain Ocurrence-Info AVP value", e);
+      }
+    }
+    return -1;
+  }
+
+  @Override
+  public boolean isIntervalTimeAvpPresent(){
+    Avp lcsAreaEventInfoAvp = super.message.getAvps().getAvp(Avp.AREA_EVENT_INFO);
+    if (lcsAreaEventInfoAvp != null) {
+      try {
+        return lcsAreaEventInfoAvp.getGrouped().getAvp(Avp.INTERVAL_TIME) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain Interval-Time AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public long getIntervalTime(){
+    Avp lcsAreaEventInfoAvp = super.message.getAvps().getAvp(Avp.AREA_EVENT_INFO);
+    if (lcsAreaEventInfoAvp != null) {
+      try {
+        Avp lcsIntervalTimeAvp = lcsAreaEventInfoAvp.getGrouped().getAvp(Avp.INTERVAL_TIME);
+        if (lcsIntervalTimeAvp != null){
+          return lcsIntervalTimeAvp.getUnsigned32();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain Interval-Time AVP value", e);
+      }
+    }
+    return -1;
+  }
+
+  @Override
+  public boolean isAreaDefinitionAvpPresent(){
+    Avp lcsAreaEventInfoAvp = super.message.getAvps().getAvp(Avp.AREA_EVENT_INFO);
+    if (lcsAreaEventInfoAvp != null) {
+      try {
+        return lcsAreaEventInfoAvp.getGrouped().getAvp(Avp.AREA_DEFINITION) != null;
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain Area-Definition AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public boolean isAreaTypeAvpPresent(){
+    Avp lcsAreaDefinitionAvp = super.message.getAvps().getAvp(Avp.AREA_DEFINITION);
+    if (lcsAreaDefinitionAvp != null) {
+      try {
+        return lcsAreaDefinitionAvp.getGrouped().getAvp(Avp.AREA_TYPE) != null;
       } catch (AvpDataException e) {
         logger.debug("Failure trying to obtain Area-Type AVP", e);
       }
@@ -609,10 +680,10 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
 
   @Override
   public long getAreaType(){
-    Avp lcsAreaEventInfoAvp = super.message.getAvps().getAvp(Avp.AREA_EVENT_INFO);
-    if (lcsAreaEventInfoAvp != null) {
+    Avp lcsAreaDefinitionAvp = super.message.getAvps().getAvp(Avp.AREA_DEFINITION);
+    if (lcsAreaDefinitionAvp != null) {
       try {
-        Avp lcsAreaTypeAvp = lcsAreaEventInfoAvp.getGrouped().getAvp(Avp.AREA_TYPE);
+        Avp lcsAreaTypeAvp = lcsAreaDefinitionAvp.getGrouped().getAvp(Avp.AREA_TYPE);
         if (lcsAreaTypeAvp != null){
           return lcsAreaTypeAvp.getUnsigned32();
         }
@@ -625,10 +696,10 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
 
   @Override
   public boolean isAreaIdentificationAvpPresent(){
-    Avp lcsAreaEventInfoAvp = super.message.getAvps().getAvp(Avp.AREA_EVENT_INFO);
-    if (lcsAreaEventInfoAvp != null) {
+    Avp lcsAreaDefinitionAvp = super.message.getAvps().getAvp(Avp.AREA_DEFINITION);
+    if (lcsAreaDefinitionAvp != null) {
       try {
-        return lcsAreaEventInfoAvp.getGrouped().getAvp(Avp.AREA_IDENTIFICATION) != null;
+        return lcsAreaDefinitionAvp.getGrouped().getAvp(Avp.AREA_IDENTIFICATION) != null;
       } catch (AvpDataException e) {
         logger.debug("Failure trying to obtain Area-Identification AVP", e);
       }
@@ -638,10 +709,10 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
 
   @Override
   public byte[] getAreaIdentification(){
-    Avp lcsAreaEventInfoAvp = super.message.getAvps().getAvp(Avp.AREA_EVENT_INFO);
-    if (lcsAreaEventInfoAvp != null) {
+    Avp lcsAreaDefinitionAvp = super.message.getAvps().getAvp(Avp.AREA_DEFINITION);
+    if (lcsAreaDefinitionAvp != null) {
       try {
-        Avp lcsAreaIdAvp = lcsAreaEventInfoAvp.getGrouped().getAvp(Avp.AREA_IDENTIFICATION);
+        Avp lcsAreaIdAvp = lcsAreaDefinitionAvp.getGrouped().getAvp(Avp.AREA_DEFINITION);
         if (lcsAreaIdAvp != null){
           return lcsAreaIdAvp.getOctetString();
         }

@@ -252,7 +252,7 @@ public class Client extends AbstractClient {
   }
 
   @Override
-  protected long getSupportedGADSahpes() {
+  protected long getSupportedGADShapes() {
   /*
   3GPP TS 29.172 v13.0.0 section 7.4.12
     The Supported-GAD-Shapes AVP is of type Unsigned32 and it shall contain a bitmask.
@@ -346,6 +346,28 @@ public class Client extends AbstractClient {
     String lcsRefNumber = "579";
     byte[] lcsRefNum = lcsRefNumber.getBytes();
     return lcsRefNum;
+  }
+
+  @Override
+  protected int getOccurrenceInfo(){
+  /*
+  3GPP TS 29.172 v13.0.0 section 7.4.43
+     The Occurrence-Info AVP is of type Enumerated. The following values are defined:
+       ONE_TIME_EVENT (0)
+       MULTIPLE_TIME_EVENT (1)
+  */
+    int occurrenceInfo = 1;
+    return occurrenceInfo;
+  }
+
+  @Override
+  protected long getIntervalTime(){
+  /*
+  3GPP TS 29.172 v13.0.0 section 7.4.44
+     The Interval-Time AVP is of type Unsigned32 and it contains minimum time interval between area reports, in seconds.
+  */
+    long intervalTime = 3600;
+    return intervalTime;
   }
 
   @Override
@@ -497,8 +519,9 @@ public class Client extends AbstractClient {
   }
 
   @Override
-  protected String getLocationEstimate(){
-    String locationEstimate = "N43°38'19.39\" W116°14'28.86\"";
+  protected byte[] getLocationEstimate(){
+    String locEstimate = "N43°38'19.39\" W116°14'28.86\"";
+    byte[] locationEstimate = locEstimate.getBytes();
     return locationEstimate;
   }
 

@@ -49,7 +49,7 @@ public interface ProvideLocationAnswer extends AppAnswerEvent{
   int code = 8388620;
 
   boolean isLocationEstimateAvpPresent();
-  String getLocationEstimate();
+  byte[] getLocationEstimate();
 
   boolean isAccuracyFulfilmentIndicatorAvpPresent();
   int getAccuracyFulfilmentIndicator();

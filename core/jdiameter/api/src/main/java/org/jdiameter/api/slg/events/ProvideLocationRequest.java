@@ -126,6 +126,13 @@ public interface ProvideLocationRequest extends AppRequestEvent {
 
   boolean isAreaEventInfoAvpPresent();
   // Area-Event-Info AVP of type grouped, includes:
+  // Area-Definition, Occurrence-Info, Interval-Time
+  boolean isOccurrenceInfoAvpPresent();
+  int getOccurrenceInfo();
+  boolean isIntervalTimeAvpPresent();
+  long getIntervalTime();
+  boolean isAreaDefinitionAvpPresent();
+  // Area-Definition AVP of type grouped, includes:
   // Area-Type, Area-Identification
   boolean isAreaTypeAvpPresent();
   long getAreaType();

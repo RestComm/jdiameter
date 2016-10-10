@@ -164,7 +164,7 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
   protected abstract int getVerticalRequested();
   protected abstract int getResponseTime();
   protected abstract byte[] getVelocityRequested();
-  protected abstract long getSupportedGADSahpes();
+  protected abstract long getSupportedGADShapes();
   protected abstract long getLSCServiceTypeId();
   protected abstract String getLCSCodeword();
   protected abstract String getServiceSelection(); // IE: APN
@@ -172,6 +172,8 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
   protected abstract int getLCSPrivacyCheckNonSession();
   protected abstract long getDeferredLocationType();
   protected abstract byte[] getLCSReferenceNumber();
+  protected abstract int getOccurrenceInfo();
+  protected abstract long getIntervalTime();
   protected abstract long getAreaType();
   protected abstract byte[] getAreaIdentification();
   protected abstract java.net.InetAddress getGMLCAddress();
@@ -183,7 +185,7 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
   protected abstract int getPeriodicLocationSupportIndicator();
   // Attributes only applying for Location Report Request (LRR)
   protected abstract int getLocationEvent();
-  protected abstract String getLocationEstimate();
+  protected abstract byte[] getLocationEstimate();
   protected abstract int getAccuracyFulfilmentIndicator();
   protected abstract long getAgeOfLocationEstimate();
   protected abstract byte[] getVelocityEstimate();
@@ -369,9 +371,9 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
     }
 
     // [ LCS-Supported-GAD-Shapes ]
-    long supportedGADSahpes = getSupportedGADSahpes();
-    if (supportedGADSahpes != -1){
-      reqSet.addAvp(Avp.SUPPORTED_GAD_SHAPES, supportedGADSahpes);
+    long supportedGADShapes = getSupportedGADShapes();
+    if (supportedGADShapes != -1){
+      reqSet.addAvp(Avp.SUPPORTED_GAD_SHAPES, supportedGADShapes);
     }
 
     // [ LCS-Service-Type-ID ]
@@ -417,16 +419,45 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
     }
 
     // [ Area-Event-Info ]
+/*
+boolean isAreaEventInfoAvpPresent();
+  // Area-Event-Info AVP of type grouped, includes:
+  // Area-Definition, Occurrence-Info, Interval-Time
+  boolean isOccurrenceInfoAvpPresent();
+  int getOccurrenceInfo();
+  boolean isIntervalTimeAvpPresent();
+  long getIntervalTime();
+  boolean isAreaDefinitionAvpPresent();
+  // Area-Definition AVP of type grouped, includes:
+  // Area-Type, Area-Identification
+  boolean isAreaTypeAvpPresent();
+  long getAreaType();
+  boolean isAreaIdentificationAvpPresent();
+  byte[] getAreaIdentification();
+*/
     AvpSet areaEventInfo = reqSet.addGroupedAvp(Avp.AREA_EVENT_INFO, 10415, false, false);
+    int occurrenceInfo = getOccurrenceInfo();
+    long intervalTime = getIntervalTime();
+    AvpSet areaDefinition =reqSet.addGroupedAvp(Avp.AREA_DEFINITION, 10415, false, false);
     long areaType = getAreaType();
     byte[] areaIdentification = getAreaIdentification();
 
+    if (occurrenceInfo != -1){
+      areaEventInfo.addAvp(Avp.OCCURRENCE_INFO, occurrenceInfo);
+    }
+    if (intervalTime != -1){
+      areaEventInfo.addAvp(Avp.INTERVAL_TIME, intervalTime);
+    }
+    if (areaDefinition != null){
+      areaEventInfo.addAvp(areaDefinition);
+    }
     if (areaType != -1){
-      areaEventInfo.addAvp(Avp.AREA_TYPE, areaType);
+      areaDefinition.addAvp(Avp.AREA_TYPE, areaType);
     }
     if (areaIdentification != null){
-      areaEventInfo.addAvp(Avp.AREA_IDENTIFICATION, areaIdentification);
+      areaDefinition.addAvp(Avp.AREA_IDENTIFICATION, areaIdentification);
     }
+
 
     //[ GMLC-Address ]
     java.net.InetAddress gmlcAddress = getGMLCAddress();
@@ -582,9 +613,9 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
     }
 
     // [ Location-Estimate ]
-    String locationEstimate = getLocationEstimate();
+    byte[] locationEstimate = getLocationEstimate();
     if (locationEstimate != null){
-      reqSet.addAvp(Avp.LOCATION_ESTIMATE, locationEstimate, false);
+      reqSet.addAvp(Avp.LOCATION_ESTIMATE, locationEstimate);
     }
 
     // [ Accuracy-Fulfilment-Indicator ]
