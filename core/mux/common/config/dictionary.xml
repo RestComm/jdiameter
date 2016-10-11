@@ -7652,9 +7652,9 @@
 	<type type-name="Unsigned32" />
   </avpdefn>
 
-  <avpdefn name="GMLC-Address" code="2405" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
+  <!--<avpdefn name="GMLC-Address" code="2405" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
 	<type type-name="Address" />
-  </avpdefn>
+  </avpdefn> already defined-->
 
   <avpdefn name="Additional-Serving-Node" code="2406" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
     <grouped>
@@ -7702,7 +7702,7 @@
       <avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
       <avp name="MSISDN" code="701" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="GMLC-Number" code="1474" vendor="10415" multiplicity="0-1" index="-1" />
-      <avp name="Supported-Features" code="628" vendor="0" multiplicity="0+" index="-1" />
+      <avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
       <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
       <avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
     </command>
