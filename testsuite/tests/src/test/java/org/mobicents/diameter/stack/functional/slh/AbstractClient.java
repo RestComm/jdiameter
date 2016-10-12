@@ -80,14 +80,15 @@ public abstract class AbstractClient extends TBase implements ClientSLhSessionLi
 
   public void init(InputStream configStream, String clientID) throws Exception {
     try {
-      super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777255));
+      super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777291));
       SLhSessionFactoryImpl slhSessionFactory = new SLhSessionFactoryImpl(this.sessionFactory);
       ((ISessionFactory) sessionFactory).registerAppFacory(ServerSLhSession.class, slhSessionFactory);
       ((ISessionFactory) sessionFactory).registerAppFacory(ClientSLhSession.class, slhSessionFactory);
 
       slhSessionFactory.setClientSessionListener(this);
 
-      this.clientSLhSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(this.sessionFactory.getSessionId("xx-SLh-TESTxx"), getApplicationId(), ClientSLhSession.class, null);
+      this.clientSLhSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(this.sessionFactory.getSessionId("xx-SLh-TESTxx"), getApplicationId(),
+              ClientSLhSession.class, null);
     }
       finally {
         try {
@@ -113,7 +114,7 @@ public abstract class AbstractClient extends TBase implements ClientSLhSessionLi
   }
 
   public void stop(int disconnectCause) {
-      stack.stop(disconnectCause);
+    stack.stop(disconnectCause);
   }
 
   // ------- def methods, to fail :)
