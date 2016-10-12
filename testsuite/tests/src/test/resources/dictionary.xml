@@ -2978,7 +2978,7 @@
   </avpdefn>
 
   <avpdefn name="Location-Estimate" code="1242" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
-    <type type-name="UTF8String" />
+    <type type-name="OctetString" />
   </avpdefn>
 
   <avpdefn name="Positioning-Data" code="1245" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
