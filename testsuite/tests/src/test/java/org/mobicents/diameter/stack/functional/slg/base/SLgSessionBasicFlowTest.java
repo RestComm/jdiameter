@@ -131,7 +131,7 @@ public class SLgSessionBasicFlowTest {
   public void testProvideLocation() throws Exception {
     try {
       // pain of parameter tests :) ?
-      clientNode.sendProvideLocationRequest();;
+      clientNode.sendProvideLocationRequest();
       waitForMessage();
 
       serverNode1.sendProvideLocationAnswer();

@@ -8099,10 +8099,18 @@
       <avp name="MSISDN" code="701" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="IMEI" code="1402" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="LCS-EPS-Client-Name" code="2501" vendor="10415" multiplicity="1" index="-1" />
+      <avp name="LCS-Name-String" code="1238" vendor="10415" multiplicity="1" index="-1" />
+      <avp name="LCS-Format-Indicator" code="1237" vendor="10415" multiplicity="1" index="-1" />
       <avp name="LCS-Client-Type" code="1241" vendor="10415" multiplicity="1" index="-1" />
       <avp name="LCS-Requestor-Name" code="2502" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="LCS-Requestor-Id-String" code="1240" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="LCS-Priority" code="2503" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="LCS-QoS" code="2504" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="LCS-QoS-Class" code="2523" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Horizontal-Accuracy" code="2505" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Vertical-Accuracy" code="2506" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Vertical-Requested" code="2507" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Response-Time" code="2509" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Velocity-Requested" code="2508" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Supported-GAD-Shapes" code="2510" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="LCS-Service-Type-ID" code="2520" vendor="10415" multiplicity="0-1" index="-1" />
@@ -8111,6 +8119,13 @@
       <avp name="LCS-Privacy-Check-Session" code="2522" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Service-Selection" code="493" vendor="0" multiplicity="0-1" index="-1" />
       <avp name="Deferred-Location-Type" code="2532" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Area-Event-Info" code="2533" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Area-Definition" code="2534" vendor="10415" multiplicity="1" index="-1" />
+      <avp name="Area" code="2535" vendor="10415" multiplicity="1-10" index="-1" />
+      <avp name="Area-Type" code="2536" vendor="10415" multiplicity="1" index="-1" />
+      <avp name="Area-Identification" code="2537" vendor="10415" multiplicity="1" index="-1" />
+      <avp name="Occurrence-Info" code="2538" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="Interval-Time" code="2539" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="PLR-Flags" code="2545" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
       <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
@@ -8165,6 +8180,8 @@
       <avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
       <avp name="Location-Event" code="2518" vendor="10415" multiplicity="1" index="-1" />
       <avp name="LCS-EPS-Client-Name" code="2501" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="LCS-Name-String" code="1238" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="LCS-Format-Indicator" code="1237" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
       <avp name="MSISDN" code="701" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="IMEI" code="1402" vendor="10415" multiplicity="0-1" index="-1" />
@@ -8220,6 +8237,8 @@
       <avp name="GMLC-Address" code="2405" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="LRA-Flags" code="2549" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Reporting-PLMN-List" code="2543" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="PLMN-ID-List" code="2543" vendor="10415" multiplicity="1-20" index="-1" />
+      <avp name="Prioritized-List-Indicator" code="2543" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="LCS-Reference-Number" code="2531" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Supported-Features" code="628" vendor="10415" multiplicity="0+" index="-1" />
       <avp name="Failed-AVP" code="279" vendor="0" multiplicity="0+" index="-1" />
