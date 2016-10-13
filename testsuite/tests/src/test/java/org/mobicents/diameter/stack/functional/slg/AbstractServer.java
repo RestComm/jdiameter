@@ -56,6 +56,7 @@ import org.jdiameter.api.slg.events.ProvideLocationRequest;
 import org.jdiameter.api.slg.events.ProvideLocationAnswer;
 import org.jdiameter.api.slg.events.LocationReportRequest;
 import org.jdiameter.api.slg.events.LocationReportAnswer;
+import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.IAppSessionFactory;
 import org.jdiameter.common.impl.app.slg.ProvideLocationAnswerImpl;
 import org.jdiameter.common.impl.app.slg.LocationReportAnswerImpl;
@@ -78,8 +79,8 @@ public abstract class AbstractServer extends TBase implements ServerSLgSessionLi
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777255));
       SLgSessionFactoryImpl slgSessionFactory = new SLgSessionFactoryImpl(this.sessionFactory);
-      sessionFactory.registerAppFacory(ServerSLgSession.class, (IAppSessionFactory) slgSessionFactory);
-      sessionFactory.registerAppFacory(ClientSLgSession.class, (IAppSessionFactory) slgSessionFactory);
+      ((ISessionFactory) sessionFactory).registerAppFacory(ServerSLgSession.class, slgSessionFactory);
+      ((ISessionFactory) sessionFactory).registerAppFacory(ClientSLgSession.class, slgSessionFactory);
       slgSessionFactory.setServerSessionListener(this);
     } finally {
       try {

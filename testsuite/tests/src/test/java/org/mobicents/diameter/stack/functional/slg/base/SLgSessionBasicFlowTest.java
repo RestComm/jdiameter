@@ -143,13 +143,13 @@ public class SLgSessionBasicFlowTest {
     }
 
     if (!serverNode1.isReceivedPLR()) {
-      StringBuilder sb = new StringBuilder("Did not receive RIR! ");
+      StringBuilder sb = new StringBuilder("Did not receive PLR! ");
       sb.append("Server ER:\n").append(serverNode1.createErrorReport(this.serverNode1.getErrors()));
 
       fail(sb.toString());
     }
     if (!clientNode.isReceivedPLA()) {
-      StringBuilder sb = new StringBuilder("Did not receive RIA! ");
+      StringBuilder sb = new StringBuilder("Did not receive PLA! ");
       sb.append("Client ER:\n").append(clientNode.createErrorReport(this.clientNode.getErrors()));
 
       fail(sb.toString());
@@ -173,8 +173,8 @@ public class SLgSessionBasicFlowTest {
   @Parameters
   public static Collection<Object[]> data() {
 
-    String client = "configurations/functional-slh/config-client.xml";
-    String server1 = "configurations/functional-slh/config-server-node1.xml";
+    String client = "configurations/functional-slg/config-client.xml";
+    String server1 = "configurations/functional-slg/config-server-node1.xml";
 
     //String replicatedClient = "configurations/functional-slh/replicated-config-client.xml";
     //String replicatedServer1 = "configurations/functional-slh/replicated-config-server-node1.xml";

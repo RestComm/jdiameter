@@ -86,8 +86,8 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777255));
       SLgSessionFactoryImpl sLgSessionFactory = new SLgSessionFactoryImpl(this.sessionFactory);
-      sessionFactory.registerAppFacory(ServerSLgSession.class, (IAppSessionFactory) sLgSessionFactory);
-      sessionFactory.registerAppFacory(ClientSLgSession.class, (IAppSessionFactory) sLgSessionFactory);
+      ((ISessionFactory) sessionFactory).registerAppFacory(ServerSLgSession.class, sLgSessionFactory);
+      ((ISessionFactory) sessionFactory).registerAppFacory(ClientSLgSession.class, sLgSessionFactory);
 
       sLgSessionFactory .setClientSessionListener(this);
 

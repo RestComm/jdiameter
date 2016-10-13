@@ -25,6 +25,7 @@ import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.slg.ClientSLgSessionListener;
 import org.jdiameter.api.slg.ServerSLgSessionListener;
+import org.jdiameter.common.api.app.IAppSessionFactory;
 // import org.jdiameter.common.api.app.slg.ISLgMessageFactory;
 
 /**
@@ -32,7 +33,7 @@ import org.jdiameter.api.slg.ServerSLgSessionListener;
  *
  */
 
-public interface ISLgSessionFactory {
+public interface ISLgSessionFactory extends IAppSessionFactory {
 
   /**
    * Get stack wide listener for sessions. In local mode it has similar effect as setting this directly in app session.

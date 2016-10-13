@@ -115,12 +115,13 @@ public abstract class AbstractServer extends TBase implements ServerSLhSessionLi
     stack.stop(disconnectCause);
   }
 
-  public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException,
-          OverloadException {
+  public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException,
+          RouteException, OverloadException {
     fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
-  public void doLCSRoutingInfoRequestEvent(ServerSLhSession session, LCSRoutingInfoRequest request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void doLCSRoutingInfoRequestEvent(ServerSLhSession session, LCSRoutingInfoRequest request) throws InternalException, IllegalDiameterStateException,
+          RouteException, OverloadException {
     fail("Received \"RIR\" event, request[" + request + "], on session[" + session + "]", null);
   }
 
