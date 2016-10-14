@@ -231,37 +231,37 @@ public abstract class AbstractServer extends TBase implements ServerSLgSessionLi
     // [ Location-Estimate ]
     byte[] locationEstimate = getLocationEstimate();
     if (locationEstimate != null){
-      set.addAvp(Avp.LOCATION_ESTIMATE, locationEstimate);
+      set.addAvp(Avp.LOCATION_ESTIMATE, locationEstimate, 10415, true, false);
     }
 
     // [ Accuracy-Fulfilment-Indicator ]
     int accuracyFulfilmentIndicator = getAccuracyFulfilmentIndicator();
     if (accuracyFulfilmentIndicator != -1){
-      set.addAvp(Avp.ACCURACY_FULFILMENT_INDICATOR, accuracyFulfilmentIndicator);
+      set.addAvp(Avp.ACCURACY_FULFILMENT_INDICATOR, accuracyFulfilmentIndicator, 10415, false, false);
     }
 
     // [ Age-Of-Location-Estimate ]
     long ageOfLocationEstimate = getAgeOfLocationEstimate();
     if (ageOfLocationEstimate != -1){
-      set.addAvp(Avp.AGE_OF_LOCATION_ESTIMATE, ageOfLocationEstimate);
+      set.addAvp(Avp.AGE_OF_LOCATION_ESTIMATE, ageOfLocationEstimate, 10415, false, false);
     }
 
     // [ Velocity-Estimate ]
     byte[] velocityEstimate = getVelocityEstimate();
     if (velocityEstimate != null){
-      set.addAvp(Avp.VELOCITY_ESTIMATE, velocityEstimate);
+      set.addAvp(Avp.VELOCITY_ESTIMATE, velocityEstimate, 10415, false, false);
     }
 
     // [ EUTRAN-Positioning-Data ]
     byte[] eutranPositioningData = getEUTRANPositioningData();
     if (eutranPositioningData != null){
-      set.addAvp(Avp.EUTRAN_POSITIONING_DATA, eutranPositioningData);
+      set.addAvp(Avp.EUTRAN_POSITIONING_DATA, eutranPositioningData, 10415, false, false);
     }
 
     // [ ECGI ]
     byte[] ecgi = getECGI();
     if (ecgi != null){
-      set.addAvp(Avp.ECGI, ecgi);
+      set.addAvp(Avp.ECGI, ecgi, 10415, false, false);
     }
 
     // [ GERAN-Positioning-Info ]
@@ -270,16 +270,16 @@ public abstract class AbstractServer extends TBase implements ServerSLgSessionLi
     byte[] geranGanssPositioningData = getGERANGANSSPositioningData();
 
     if (geranPositioningData != null){
-      geranPositioningInfo.addAvp(Avp.GERAN_POSITIONING_DATA, geranPositioningData);
+      geranPositioningInfo.addAvp(Avp.GERAN_POSITIONING_DATA, geranPositioningData, 10415, false, false);
     }
     if (geranGanssPositioningData != null){
-      geranPositioningInfo.addAvp(Avp.GERAN_GANSS_POSITIONING_DATA, geranGanssPositioningData);
+      geranPositioningInfo.addAvp(Avp.GERAN_GANSS_POSITIONING_DATA, geranGanssPositioningData, 10415, false, false);
     }
 
     // [ Cell-Global-Identity ]
     byte[] cellGlobalIdentity = getCellGlobalIdentity();
     if (cellGlobalIdentity != null){
-      set.addAvp(Avp.CELL_GLOBAL_IDENTITY, cellGlobalIdentity);
+      set.addAvp(Avp.CELL_GLOBAL_IDENTITY, cellGlobalIdentity, 10415, false, false);
     }
 
     // [ UTRAN-Positioning-Info ]
@@ -288,16 +288,16 @@ public abstract class AbstractServer extends TBase implements ServerSLgSessionLi
     byte[] utranGanssPositioningData = getUTRANGANSSPositioningData();
 
     if ( utranPositioningData != null){
-      utranPositioningInfo.addAvp(Avp.UTRAN_POSITIONING_DATA, utranPositioningData);
+      utranPositioningInfo.addAvp(Avp.UTRAN_POSITIONING_DATA, utranPositioningData, 10415, false, false);
     }
     if ( utranGanssPositioningData != null){
-      utranPositioningInfo.addAvp(Avp.UTRAN_GANSS_POSITIONING_DATA, utranGanssPositioningData);
+      utranPositioningInfo.addAvp(Avp.UTRAN_GANSS_POSITIONING_DATA, utranGanssPositioningData, 10415, false, false);
     }
 
     // [ Service-Area-Identity ]
     byte[] serviceAreaIdentity = getServiceAreaIdentity();
     if (serviceAreaIdentity != null){
-      set.addAvp(Avp.SERVICE_AREA_IDENTITY, serviceAreaIdentity);
+      set.addAvp(Avp.SERVICE_AREA_IDENTITY, serviceAreaIdentity, 10415, false, false);
     }
 
 // [ Serving-Node ] IE: Target Serving Node Identity
@@ -357,7 +357,7 @@ public abstract class AbstractServer extends TBase implements ServerSLgSessionLi
     // [ PLA-Flags ]
     long plaFlags = getPLAFLags();
     if (plaFlags != -1){
-      set.addAvp(Avp.PLA_FLAGS, plaFlags);
+      set.addAvp(Avp.PLA_FLAGS, plaFlags, 10415, false, false);
     }
 
     // [ ESMLC-Cell-Info ]
@@ -372,22 +372,22 @@ public abstract class AbstractServer extends TBase implements ServerSLgSessionLi
     long cellPortionId = getCellPortionId();
 
     if (ecgi != null){
-      esmlcCellInfo.addAvp(Avp.ECGI, ecgi);
+      esmlcCellInfo.addAvp(Avp.ECGI, ecgi, 10415, false, false);
     }
     if (cellPortionId != -1){
-      esmlcCellInfo.addAvp(Avp.CELL_PORTION_ID, cellPortionId);
+      esmlcCellInfo.addAvp(Avp.CELL_PORTION_ID, cellPortionId, 10415, false, false);
     }
 
     // [ Civic-Address ]
     String civicAddress = getCivicAddress();
     if (civicAddress != null){
-      set.addAvp(Avp.CIVIC_ADDRESS, civicAddress, false);
+      set.addAvp(Avp.CIVIC_ADDRESS, civicAddress, 10415, false, false, false);
     }
 
     // [ Barometric-Pressure ]
     long barometricPressure = getBarometricPressure();
     if (barometricPressure != -1){
-      set.addAvp(Avp.BAROMETRIC_PRESSURE, barometricPressure);
+      set.addAvp(Avp.BAROMETRIC_PRESSURE, barometricPressure, 10415, false, false, true);
     }
 
     return pla;
@@ -442,13 +442,13 @@ public abstract class AbstractServer extends TBase implements ServerSLgSessionLi
     //[ GMLC-Address ]
     java.net.InetAddress gmlcAddress = getGMLCAddress();
     if (gmlcAddress != null){
-      set.addAvp(Avp.GMLC_ADDRESS, gmlcAddress);
+      set.addAvp(Avp.GMLC_ADDRESS, gmlcAddress, 10415, false, false);
     }
 
     // [ LRA-Flags ]
     long lraFlags = getLRAFLags();
     if (lraFlags != -1){
-      set.addAvp(Avp.LRA_FLAGS, lraFlags);
+      set.addAvp(Avp.LRA_FLAGS, lraFlags, 10415, false, false);
     }
 
     //[ Reporting-PLMN-List ]
@@ -470,22 +470,22 @@ public abstract class AbstractServer extends TBase implements ServerSLgSessionLi
     int periodicLocationSupportIndicator = getPeriodicLocationSupportIndicator();
 
     if (visitedPLMNId != null){
-      plmnIdList.addAvp(Avp.VISITED_PLMN_ID, visitedPLMNId);
+      plmnIdList.addAvp(Avp.VISITED_PLMN_ID, visitedPLMNId, 10415, false, false);
     }
     if (periodicLocationSupportIndicator != -1){
-      plmnIdList.addAvp(Avp.PERIODIC_LOCATION_SUPPORT_INDICATOR, periodicLocationSupportIndicator);
+      plmnIdList.addAvp(Avp.PERIODIC_LOCATION_SUPPORT_INDICATOR, periodicLocationSupportIndicator, 10415, false, false);
     }
     if (plmnIdList != null){
       reportingPLMNList.addAvp(plmnIdList);
     }
     if (prioritizedListIndicator != -1){
-      reportingPLMNList.addAvp(Avp.PRIORITIZED_LIST_INDICATOR, prioritizedListIndicator);
+      reportingPLMNList.addAvp(Avp.PRIORITIZED_LIST_INDICATOR, prioritizedListIndicator, 10415, false, false);
     }
 
     // [ LCS-Reference-Number ]
     byte[] lcsReferenceNumber = getLCSReferenceNumber();
     if (lcsReferenceNumber != null){
-      set.addAvp(Avp.LCS_REFERENCE_NUMBER, lcsReferenceNumber);
+      set.addAvp(Avp.LCS_REFERENCE_NUMBER, lcsReferenceNumber, 10415, true, false);
     }
 
     return lra;

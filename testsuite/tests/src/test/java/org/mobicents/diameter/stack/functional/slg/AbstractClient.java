@@ -283,25 +283,25 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
     // { SLg-Location-Type }
     int slgLocationType = getSLgLocationType();
     if (slgLocationType != -1){
-      reqSet.addAvp(Avp.SLG_LOCATION_TYPE, slgLocationType);
+      reqSet.addAvp(Avp.SLG_LOCATION_TYPE, slgLocationType, 10415, true, false);
     }
 
     // [ User-Name ] IE: IMSI
     String userName = getUserName();
     if (userName != null) {
-      reqSet.addAvp(Avp.USER_NAME, userName, false);
+      reqSet.addAvp(Avp.USER_NAME, userName, 10415, true, false, false);
     }
 
     // [ MSISDN ]
     byte[] msisdn = getMSISDN();
     if (msisdn != null){
-      reqSet.addAvp(Avp.MSISDN, msisdn);
+      reqSet.addAvp(Avp.MSISDN, msisdn, 10415, true, false);
     }
 
     // [ IMEI ]
     String imei = getIMEI();
     if (imei != null){
-      reqSet.addAvp(Avp.TGPP_IMEI, imei, false);
+      reqSet.addAvp(Avp.TGPP_IMEI, imei, 10415, false, false, false);
     }
 
     // { LCS-EPS-Client-Name }
@@ -310,16 +310,16 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
     int lcsFormatIndicator = getLCSFormatIndicator();
 
     if (lcsNameString != null){
-      lcsEPSClientName.addAvp(Avp.LCS_NAME_STRING, lcsNameString, false);
+      lcsEPSClientName.addAvp(Avp.LCS_NAME_STRING, lcsNameString, 10415, false, false, false);
     }
     if (lcsFormatIndicator != -1){
-      lcsEPSClientName.addAvp(Avp.LCS_FORMAT_INDICATOR, lcsFormatIndicator);
+      lcsEPSClientName.addAvp(Avp.LCS_FORMAT_INDICATOR, lcsFormatIndicator, 10415, false, false);
     }
 
     // { LCS-Client-Type }
     int lcsClientType = getLCSClientType();
     if (lcsClientType != -1){
-      reqSet.addAvp(Avp.LCS_CLIENT_TYPE, lcsClientType);
+      reqSet.addAvp(Avp.LCS_CLIENT_TYPE, lcsClientType, 10415, false, false);
     }
 
     // [ LCS-Requestor-Name ]
@@ -328,16 +328,16 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
     int reqLCSFormatIndicator = getReqLCSFormatIndicator();
 
     if (lcsRequestorIdString != null){
-      lcsRequestorName.addAvp(Avp.LCS_REQUESTOR_ID_STRING, lcsRequestorIdString, false);
+      lcsRequestorName.addAvp(Avp.LCS_REQUESTOR_ID_STRING, lcsRequestorIdString, 10415, false, false, false);
     }
     if (reqLCSFormatIndicator != -1){
-      lcsRequestorName.addAvp(Avp.LCS_FORMAT_INDICATOR, reqLCSFormatIndicator);
+      lcsRequestorName.addAvp(Avp.LCS_FORMAT_INDICATOR, reqLCSFormatIndicator, 10415, false, false);
     }
 
     // [ LCS-Priority ]
     long lcsPriority = getLCSPriority();
     if (lcsPriority != -1){
-      reqSet.addAvp(Avp.LCS_PRIORITY, lcsPriority);
+      reqSet.addAvp(Avp.LCS_PRIORITY, lcsPriority, 10415, false, false);
     }
 
     // [ LCS-QoS ]
@@ -349,73 +349,73 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
     int responseTime = getResponseTime();
 
     if (lcsQoSClass != -1){
-      lcsQoS.addAvp(Avp.LCS_QOS_CLASS, lcsQoSClass);
+      lcsQoS.addAvp(Avp.LCS_QOS_CLASS, lcsQoSClass, 10415, false, false);
     }
     if (horizontalAccuracy != -1){
-      lcsQoS.addAvp(Avp.HORIZONTAL_ACCURACY, horizontalAccuracy);
+      lcsQoS.addAvp(Avp.HORIZONTAL_ACCURACY, horizontalAccuracy, 10415, false, false, true);
     }
     if(verticalAccuracy != -1){
-      lcsQoS.addAvp(Avp.VERTICAL_ACCURACY, verticalAccuracy);
+      lcsQoS.addAvp(Avp.VERTICAL_ACCURACY, verticalAccuracy, 10415, false, false, true);
     }
     if(verticalRequested != -1){
-      lcsQoS.addAvp(Avp.VERTICAL_REQUESTED, verticalRequested);
+      lcsQoS.addAvp(Avp.VERTICAL_REQUESTED, verticalRequested, 10415, false, false);
     }
     if(responseTime != -1){
-      lcsQoS.addAvp(Avp.RESPONSE_TIME, responseTime);
+      lcsQoS.addAvp(Avp.RESPONSE_TIME, responseTime, 10415, false, false);
     }
 
     // [ Velocity-Requested ]
     byte[] velocityRequested = getVelocityRequested();
     if (velocityRequested != null){
-      reqSet.addAvp(Avp.VELOCITY_REQUESTED, velocityRequested);
+      reqSet.addAvp(Avp.VELOCITY_REQUESTED, velocityRequested, 10415, false, false);
     }
 
     // [ LCS-Supported-GAD-Shapes ]
     long supportedGADShapes = getSupportedGADShapes();
     if (supportedGADShapes != -1){
-      reqSet.addAvp(Avp.SUPPORTED_GAD_SHAPES, supportedGADShapes);
+      reqSet.addAvp(Avp.SUPPORTED_GAD_SHAPES, supportedGADShapes, 10415, false, false, true);
     }
 
     // [ LCS-Service-Type-ID ]
     long lscServiceTypeId = getLSCServiceTypeId();
     if (lscServiceTypeId != -1){
-      reqSet.addAvp(Avp.LCS_SERVICE_TYPE_ID, lscServiceTypeId);
+      reqSet.addAvp(Avp.LCS_SERVICE_TYPE_ID, lscServiceTypeId, 10415, true, false, true);
     }
 
     // [ LCS-Codeword ]
     String lcsCodeword = getLCSCodeword();
     if (lcsCodeword != null){
-      reqSet.addAvp(Avp.LCS_CODEWORD, lcsCodeword, false);
+      reqSet.addAvp(Avp.LCS_CODEWORD, lcsCodeword, 10415, false, false, false);
     }
 
     // [ LCS-Privacy-Check-Session ]
     int lcsPrivacyCheckSession = getLCSPrivacyCheckSession(); // IE: Session-Related Privacy Check
     if (lcsPrivacyCheckSession != -1){
-      reqSet.addAvp(Avp.LCS_PRIVACY_CHECK_SESSION, lcsPrivacyCheckSession);
+      reqSet.addAvp(Avp.LCS_PRIVACY_CHECK_SESSION, lcsPrivacyCheckSession, 10415, false, false);
     }
 
     // [ LCS-Privacy-Check-Non-Session ]
     int lcsPrivacyCheckNonSession = getLCSPrivacyCheckNonSession(); // IE: LCS-Privacy-Check-Non-Session
     if (lcsPrivacyCheckNonSession != -1){
-      reqSet.addAvp(Avp.LCS_PRIVACY_CHECK_NON_SESSION, lcsPrivacyCheckNonSession);
+      reqSet.addAvp(Avp.LCS_PRIVACY_CHECK_NON_SESSION, lcsPrivacyCheckNonSession, 10415, false, false);
     }
 
     //[ Service-Selection ]
     String serviceSelection = getServiceSelection(); // IE: APN
     if (serviceSelection != null){
-      reqSet.addAvp(Avp.SERVICE_SELECTION, serviceSelection, false);
+      reqSet.addAvp(Avp.SERVICE_SELECTION, serviceSelection, 10415, false, false, false);
     }
 
     // [ Deferred-Location-Type ]
     long deferredLocationType = getDeferredLocationType();
     if (deferredLocationType != -1){
-      reqSet.addAvp(Avp.DEFERRED_LOCATION_TYPE, deferredLocationType);
+      reqSet.addAvp(Avp.DEFERRED_LOCATION_TYPE, deferredLocationType, 10415, false, false, true);
     }
 
     // [ LCS-Reference-Number ]
     byte[] lcsReferenceNumber = getLCSReferenceNumber();
     if (lcsReferenceNumber != null){
-      reqSet.addAvp(Avp.LCS_REFERENCE_NUMBER, lcsReferenceNumber);
+      reqSet.addAvp(Avp.LCS_REFERENCE_NUMBER, lcsReferenceNumber, 10415, true, false);
     }
 
     // [ Area-Event-Info ]
@@ -443,26 +443,26 @@ boolean isAreaEventInfoAvpPresent();
     byte[] areaIdentification = getAreaIdentification();
 
     if (occurrenceInfo != -1){
-      areaEventInfo.addAvp(Avp.OCCURRENCE_INFO, occurrenceInfo);
+      areaEventInfo.addAvp(Avp.OCCURRENCE_INFO, occurrenceInfo, 10415, false, false);
     }
     if (intervalTime != -1){
-      areaEventInfo.addAvp(Avp.INTERVAL_TIME, intervalTime);
+      areaEventInfo.addAvp(Avp.INTERVAL_TIME, intervalTime, 10415, false, false, true);
     }
     if (areaDefinition != null){
       areaEventInfo.addAvp(areaDefinition);
     }
     if (areaType != -1){
-      areaDefinition.addAvp(Avp.AREA_TYPE, areaType);
+      areaDefinition.addAvp(Avp.AREA_TYPE, areaType, 10415, false, false, true);
     }
     if (areaIdentification != null){
-      areaDefinition.addAvp(Avp.AREA_IDENTIFICATION, areaIdentification);
+      areaDefinition.addAvp(Avp.AREA_IDENTIFICATION, areaIdentification, 10415, false, false);
     }
 
 
     //[ GMLC-Address ]
     java.net.InetAddress gmlcAddress = getGMLCAddress();
     if (gmlcAddress != null){
-      reqSet.addAvp(Avp.GMLC_ADDRESS, gmlcAddress);
+      reqSet.addAvp(Avp.GMLC_ADDRESS, gmlcAddress, 10415, false, false);
     }
 
     //[ PLR-Flags ]
@@ -477,10 +477,10 @@ boolean isAreaEventInfoAvpPresent();
     long reportingInterval = getReportingInterval();
 
     if (reportingAmount != -1){
-      periodicLDRInformation.addAvp(Avp.REPORTING_AMOUNT, reportingAmount);
+      periodicLDRInformation.addAvp(Avp.REPORTING_AMOUNT, reportingAmount, 10415, false, false, true);
     }
     if (reportingInterval != -1){
-      periodicLDRInformation.addAvp(Avp.REPORTING_INTERVAL, reportingInterval);
+      periodicLDRInformation.addAvp(Avp.REPORTING_INTERVAL, reportingInterval, 10415, false, false, true);
     }
 
     // [ Reporting-PLMN-List ]
@@ -488,20 +488,20 @@ boolean isAreaEventInfoAvpPresent();
     int prioritizedListIndicator = getPrioritizedListIndicator();
 
     if (prioritizedListIndicator != -1){
-      reportingPLMNList.addAvp(Avp.PRIORITIZED_LIST_INDICATOR, prioritizedListIndicator);
+      reportingPLMNList.addAvp(Avp.PRIORITIZED_LIST_INDICATOR, prioritizedListIndicator, 10415, false, false);
     }
     AvpSet plmnIdList = reqSet.addGroupedAvp(Avp.PLMN_ID_LIST, 10415, false, false);
     byte[] visitedPLMNId = getVisitedPLMNId();
     int periodicLocationSupportIndicator = getPeriodicLocationSupportIndicator();
 
     if (plmnIdList != null){
-      reportingPLMNList.addGroupedAvp(Avp.PLMN_ID_LIST);
+      reportingPLMNList.addGroupedAvp(Avp.PLMN_ID_LIST, 10415, false, false);
     }
     if (visitedPLMNId != null){
-      plmnIdList.addAvp(Avp.VISITED_PLMN_ID, visitedPLMNId);
+      plmnIdList.addAvp(Avp.VISITED_PLMN_ID, visitedPLMNId, 10415, false, false);
     }
     if (periodicLocationSupportIndicator != -1){
-      plmnIdList.addAvp(Avp.PERIODIC_LOCATION_SUPPORT_INDICATOR, periodicLocationSupportIndicator);
+      plmnIdList.addAvp(Avp.PERIODIC_LOCATION_SUPPORT_INDICATOR, periodicLocationSupportIndicator, 10415, false, false);
     }
 
     return plr;
@@ -579,7 +579,7 @@ boolean isAreaEventInfoAvpPresent();
     // { Location-Event }
     int locationEvent = getLocationEvent();
     if (locationEvent != -1){
-      reqSet.addAvp(Avp.LOCATION_EVENT, locationEvent);
+      reqSet.addAvp(Avp.LOCATION_EVENT, locationEvent, 10415, true, false);
     }
 
     // { LCS-EPS-Client-Name }
@@ -588,58 +588,58 @@ boolean isAreaEventInfoAvpPresent();
     int lcsFormatIndicator = getLCSFormatIndicator();
 
     if (lcsNameString != null){
-      lcsEPSClientName.addAvp(Avp.LCS_NAME_STRING, lcsNameString, false);
+      lcsEPSClientName.addAvp(Avp.LCS_NAME_STRING, lcsNameString, 10415, false, false, false);
     }
     if (lcsFormatIndicator != -1){
-      lcsEPSClientName.addAvp(Avp.LCS_FORMAT_INDICATOR, lcsFormatIndicator);
+      lcsEPSClientName.addAvp(Avp.LCS_FORMAT_INDICATOR, lcsFormatIndicator, 10415, false, false);
     }
 
     // [ User-Name ] IE: IMSI
     String userName = getUserName();
     if (userName != null) {
-      reqSet.addAvp(Avp.USER_NAME, userName, false);
+      reqSet.addAvp(Avp.USER_NAME, userName, 10415, true, false, false);
     }
 
     // [ MSISDN ]
     byte[] msisdn = getMSISDN();
     if (msisdn != null){
-      reqSet.addAvp(Avp.MSISDN, msisdn);
+      reqSet.addAvp(Avp.MSISDN, msisdn, 10415, true, false);
     }
 
     // [ IMEI ]
     String imei = getIMEI();
     if (imei != null){
-      reqSet.addAvp(Avp.TGPP_IMEI, imei, false);
+      reqSet.addAvp(Avp.TGPP_IMEI, imei, 10415, false, false, false);
     }
 
     // [ Location-Estimate ]
     byte[] locationEstimate = getLocationEstimate();
     if (locationEstimate != null){
-      reqSet.addAvp(Avp.LOCATION_ESTIMATE, locationEstimate);
+      reqSet.addAvp(Avp.LOCATION_ESTIMATE, locationEstimate, 10415, true, false);
     }
 
     // [ Accuracy-Fulfilment-Indicator ]
     int accuracyFulfilmentIndicator = getAccuracyFulfilmentIndicator();
     if (accuracyFulfilmentIndicator != -1){
-      reqSet.addAvp(Avp.ACCURACY_FULFILMENT_INDICATOR, accuracyFulfilmentIndicator);
+      reqSet.addAvp(Avp.ACCURACY_FULFILMENT_INDICATOR, accuracyFulfilmentIndicator, 10415, false, false);
     }
 
     // [ Age-Of-Location-Estimate ]
     long ageOfLocationEstimate = getAgeOfLocationEstimate();
     if (ageOfLocationEstimate != -1){
-      reqSet.addAvp(Avp.AGE_OF_LOCATION_ESTIMATE, ageOfLocationEstimate);
+      reqSet.addAvp(Avp.AGE_OF_LOCATION_ESTIMATE, ageOfLocationEstimate, 10415, false, false, true);
     }
 
     // [ Velocity-Estimate ]
     byte[] velocityEstimate = getVelocityEstimate();
     if (velocityEstimate != null){
-      reqSet.addAvp(Avp.VELOCITY_ESTIMATE, velocityEstimate);
+      reqSet.addAvp(Avp.VELOCITY_ESTIMATE, velocityEstimate, 10415, false, false);
     }
 
     // [ EUTRAN-Positioning-Data ]
     byte[] eutranPositioningData = getEUTRANPositioningData();
     if (eutranPositioningData != null){
-      reqSet.addAvp(Avp.EUTRAN_POSITIONING_DATA, eutranPositioningData);
+      reqSet.addAvp(Avp.EUTRAN_POSITIONING_DATA, eutranPositioningData, 10415, false, false);
     }
 
     // [ ECGI ]
@@ -654,16 +654,16 @@ boolean isAreaEventInfoAvpPresent();
     byte[] geranGanssPositioningData = getGERANGANSSPositioningData();
 
     if (geranPositioningData != null){
-      geranPositioningInfo.addAvp(Avp.GERAN_POSITIONING_DATA, geranPositioningData);
+      geranPositioningInfo.addAvp(Avp.GERAN_POSITIONING_DATA, geranPositioningData, 10415, false, false);
     }
     if (geranGanssPositioningData != null){
-      geranPositioningInfo.addAvp(Avp.GERAN_GANSS_POSITIONING_DATA, geranGanssPositioningData);
+      geranPositioningInfo.addAvp(Avp.GERAN_GANSS_POSITIONING_DATA, geranGanssPositioningData, 10415, false, false);
     }
 
     // [ Cell-Global-Identity ]
     byte[] cellGlobalIdentity = getCellGlobalIdentity();
     if (cellGlobalIdentity != null){
-      reqSet.addAvp(Avp.CELL_GLOBAL_IDENTITY, cellGlobalIdentity);
+      reqSet.addAvp(Avp.CELL_GLOBAL_IDENTITY, cellGlobalIdentity, 10415, false, false);
     }
 
     // [ UTRAN-Positioning-Info ]
@@ -672,34 +672,34 @@ boolean isAreaEventInfoAvpPresent();
     byte[] utranGanssPositioningData = getUTRANGANSSPositioningData();
 
     if (utranPositioningData != null){
-      utranPositioningInfo.addAvp(Avp.UTRAN_POSITIONING_DATA, utranPositioningData);
+      utranPositioningInfo.addAvp(Avp.UTRAN_POSITIONING_DATA, utranPositioningData, 10415, false, false);
     }
     if (utranGanssPositioningData != null){
-      utranPositioningInfo.addAvp(Avp.UTRAN_GANSS_POSITIONING_DATA, utranGanssPositioningData);
+      utranPositioningInfo.addAvp(Avp.UTRAN_GANSS_POSITIONING_DATA, utranGanssPositioningData, 10415, false, false);
     }
 
     // [ Service-Area-Identity ]
     byte[] serviceAreaIdentity = getServiceAreaIdentity();
     if (serviceAreaIdentity != null){
-      reqSet.addAvp(Avp.SERVICE_AREA_IDENTITY, serviceAreaIdentity);
+      reqSet.addAvp(Avp.SERVICE_AREA_IDENTITY, serviceAreaIdentity, 10415, false, false);
     }
 
     // [ LCS-Service-Type-ID ]
     long lscServiceTypeId = getLSCServiceTypeId();
     if (lscServiceTypeId != -1){
-      reqSet.addAvp(Avp.LCS_SERVICE_TYPE_ID, lscServiceTypeId);
+      reqSet.addAvp(Avp.LCS_SERVICE_TYPE_ID, lscServiceTypeId, 10415, false, false, true);
     }
 
     // [ Pseudonym-Indicator ]
     int pseudonymIndicator = getPseudonymIndicator();
     if (pseudonymIndicator != -1){
-      reqSet.addAvp(Avp.PSEUDONYM_INDICATOR, pseudonymIndicator);
+      reqSet.addAvp(Avp.PSEUDONYM_INDICATOR, pseudonymIndicator, 10415, false, false);
     }
 
     // [ LCS-QoS-Class ]
     int lcsQoSClass = getLCSQoSClass();
     if (lcsQoSClass != -1){
-      reqSet.addAvp(Avp.LCS_QOS_CLASS, lcsQoSClass);
+      reqSet.addAvp(Avp.LCS_QOS_CLASS, lcsQoSClass, 10415, false, false);
     }
 
     // [ Serving-Node ] IE: Target Serving Node Identity
@@ -717,7 +717,7 @@ boolean isAreaEventInfoAvpPresent();
     *[AVP]
 
 */
-    AvpSet servingNode = reqSet.addGroupedAvp(Avp.SERVING_NODE, 10415, false, false);
+    AvpSet servingNode = reqSet.addGroupedAvp(Avp.SERVING_NODE, 10415, true, false);
     byte[] sgsnNumber = getSGSNNumber();
     String sgsnName= getSGSNName();
     String sgsnRealm = getSGSNRealm();
@@ -759,13 +759,13 @@ boolean isAreaEventInfoAvpPresent();
     // [ LRR-Flags ]
     long lrrFlags = getLRRFLags();
     if (lrrFlags != -1){
-      reqSet.addAvp(Avp.LRR_FLAGS, lrrFlags);
+      reqSet.addAvp(Avp.LRR_FLAGS, lrrFlags, 10415, false, false);
     }
 
     // [ LCS-Reference-Number ]
     byte[] lcsReferenceNumber = getLCSReferenceNumber();
     if (lcsReferenceNumber != null){
-      reqSet.addAvp(Avp.LCS_REFERENCE_NUMBER, lcsReferenceNumber);
+      reqSet.addAvp(Avp.LCS_REFERENCE_NUMBER, lcsReferenceNumber, 10415, true, false);
     }
 
     // [ Deferred-MT-LR-Data]
@@ -774,10 +774,10 @@ boolean isAreaEventInfoAvpPresent();
     long terminationCause = getTerminationCause();
 
     if (deferredLocationType != -1){
-      deferredMTLRData.addAvp(Avp.DEFERRED_LOCATION_TYPE, deferredLocationType);
+      deferredMTLRData.addAvp(Avp.DEFERRED_LOCATION_TYPE, deferredLocationType, 10415, false, false, true);
     }
     if (terminationCause != -1){
-      deferredMTLRData.addAvp(Avp.TERMINATION_CAUSE, terminationCause);
+      deferredMTLRData.addAvp(Avp.TERMINATION_CAUSE, terminationCause, 10415, false, false, true);
     }
 
     // [ GMLC-Address ]
@@ -800,10 +800,10 @@ for compatibility with OMA MLP and RLP.
     long reportingInterval = getReportingInterval();
 
     if (reportingAmount != -1){
-      periodicLDRInfo.addAvp(Avp.REPORTING_AMOUNT, reportingAmount);
+      periodicLDRInfo.addAvp(Avp.REPORTING_AMOUNT, reportingAmount, 10415, false, false, true);
     }
     if (reportingInterval != -1){
-      periodicLDRInfo.addAvp(Avp.REPORTING_INTERVAL, reportingInterval);
+      periodicLDRInfo.addAvp(Avp.REPORTING_INTERVAL, reportingInterval, 10415, false, false, true);
     }
 
     // [ ESMLC-Cell-Info ]
@@ -818,28 +818,28 @@ for compatibility with OMA MLP and RLP.
     long cellPortionId = getCellPortionId();
 
     if (ecgi != null){
-      esmlcCellInfo.addAvp(Avp.ECGI, ecgi);
+      esmlcCellInfo.addAvp(Avp.ECGI, ecgi, 10415, false, false);
     }
     if (cellPortionId != -1){
-      esmlcCellInfo.addAvp(Avp.CELL_PORTION_ID, cellPortionId);
+      esmlcCellInfo.addAvp(Avp.CELL_PORTION_ID, cellPortionId, 10415, false, false, true);
     }
 
     // [ 1xRTT-RCID ]
     byte[] onexRTTRCID = get1xRTTRCID();
     if (onexRTTRCID != null){
-      reqSet.addAvp(Avp.ONEXRTT_RCID, onexRTTRCID);
+      reqSet.addAvp(Avp.ONEXRTT_RCID, onexRTTRCID, 10415, false, false);
     }
 
     // [ Civic-Address ]
     String civicAddress = getCivicAddress();
     if (civicAddress != null){
-      reqSet.addAvp(Avp.CIVIC_ADDRESS, civicAddress, false);
+      reqSet.addAvp(Avp.CIVIC_ADDRESS, civicAddress, 10415, false, false, false);
     }
 
     // [ Barometric-Pressure ]
     long barometricPressure = getBarometricPressure();
     if (barometricPressure != -1){
-      reqSet.addAvp(Avp.BAROMETRIC_PRESSURE, barometricPressure);
+      reqSet.addAvp(Avp.BAROMETRIC_PRESSURE, barometricPressure, 10415, false, false);
     }
 
     return lrr;
