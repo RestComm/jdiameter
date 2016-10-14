@@ -128,13 +128,19 @@ public class SLgSessionBasicFlowTest {
   }
 
   @Test
-  public void testProvideLocation() throws Exception {
+  public void testLocationBasicFlow() throws Exception {
     try {
       // pain of parameter tests :) ?
       clientNode.sendProvideLocationRequest();
       waitForMessage();
 
       serverNode1.sendProvideLocationAnswer();
+      waitForMessage();
+
+      clientNode.sendLocationReportRequest();
+      waitForMessage();
+
+      serverNode1.sendLocationReportAnswer();
       waitForMessage();
     }
     catch (Exception e) {
@@ -150,6 +156,18 @@ public class SLgSessionBasicFlowTest {
     }
     if (!clientNode.isReceivedPLA()) {
       StringBuilder sb = new StringBuilder("Did not receive PLA! ");
+      sb.append("Client ER:\n").append(clientNode.createErrorReport(this.clientNode.getErrors()));
+
+      fail(sb.toString());
+    }
+    if (!serverNode1.isReceivedLRR()) {
+      StringBuilder sb = new StringBuilder("Did not receive LRR! ");
+      sb.append("Server ER:\n").append(serverNode1.createErrorReport(this.serverNode1.getErrors()));
+
+      fail(sb.toString());
+    }
+    if (!clientNode.isReceivedLRA()) {
+      StringBuilder sb = new StringBuilder("Did not receive LRA! ");
       sb.append("Client ER:\n").append(clientNode.createErrorReport(this.clientNode.getErrors()));
 
       fail(sb.toString());
