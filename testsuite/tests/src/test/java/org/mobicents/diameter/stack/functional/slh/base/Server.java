@@ -234,7 +234,7 @@ public class Server extends AbstractServer {
   @Override
   protected java.net.InetAddress getAdditionalGMLCAddress(){
     try {
-      java.net.InetAddress gmlcAddress = java.net.InetAddress.getByName("Restcomm-GMLC02");
+      java.net.InetAddress gmlcAddress = java.net.InetAddress.getLocalHost();
       return gmlcAddress;
     } catch (Exception e) {
       e.printStackTrace();

@@ -192,19 +192,19 @@ public abstract class AbstractClient extends TBase implements ClientSLhSessionLi
     // [ User-Name ]
     String userName = getUserName();
     if (userName != null) {
-      reqSet.addAvp(Avp.USER_NAME, userName, false);
+      reqSet.addAvp(Avp.USER_NAME, userName, 10415, true, false, false);
     }
 
     // [ MSISDN ]
     byte[] msisdn = getMSISDN();
     if (msisdn != null){
-      reqSet.addAvp(Avp.MSISDN, msisdn);
+      reqSet.addAvp(Avp.MSISDN, msisdn, 10415, true, false);
     }
 
     // [ GMLC-Number ]
     byte[] gmlcNumber = getGMLCNumber();
     if (gmlcNumber != null){
-      reqSet.addAvp(Avp.GMLC_NUMBER, gmlcNumber);
+      reqSet.addAvp(Avp.GMLC_NUMBER, gmlcNumber, 10415, false, false);
     }
 
     return rir;

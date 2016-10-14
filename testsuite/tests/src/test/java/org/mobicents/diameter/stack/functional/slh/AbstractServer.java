@@ -218,19 +218,19 @@ public abstract class AbstractServer extends TBase implements ServerSLhSessionLi
     // [ User-Name ]
     String userName = getUserName();
     if (userName != null) {
-      set.addAvp(Avp.USER_NAME, userName, false);
+      set.addAvp(Avp.USER_NAME, userName, 10415, true, false, false);
     }
 
     // [ MSISDN ]
     byte[] msisdn = getMSISDN();
     if (msisdn != null){
-      set.addAvp(Avp.MSISDN, msisdn);
+      set.addAvp(Avp.MSISDN, msisdn, 10415, true, false);
     }
 
     // [ LMSI ]
     byte[] lmsi = getLMSI();
     if (lmsi != null){
-      set.addAvp(Avp.LMSI, lmsi);
+      set.addAvp(Avp.LMSI, lmsi, 10415, true, false);
     }
 
 /*
@@ -341,13 +341,13 @@ public abstract class AbstractServer extends TBase implements ServerSLhSessionLi
     // [ PPR-Address ]
     java.net.InetAddress pprAddress = getPPRAddress();
     if (pprAddress != null){
-      set.addAvp(Avp.PPR_ADDRESS, pprAddress);
+      set.addAvp(Avp.PPR_ADDRESS, pprAddress, 10415, true, false);
     }
 
     //[ RIA-Flags ]
     long riafLags = getRIAFLags();
     if (riafLags != -1){
-      set.addAvp(Avp.RIA_FLAGS, riafLags, true);
+      set.addAvp(Avp.RIA_FLAGS, riafLags, 10415, true, false);
     }
 
     return ria;
