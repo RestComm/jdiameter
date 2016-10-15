@@ -313,7 +313,6 @@ public abstract class AbstractServer extends TBase implements ServerSLgSessionLi
     [ LCS-Capabilities-Sets ]
     [ GMLC-Address ]
     *[AVP]
-
 */
     AvpSet servingNode = set.addGroupedAvp(Avp.SERVING_NODE, 10415, false, false);
     byte[] sgsnNumber = getSGSNNumber();

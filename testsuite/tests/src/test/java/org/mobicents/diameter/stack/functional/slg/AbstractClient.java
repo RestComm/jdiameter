@@ -420,20 +420,10 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
 
     // [ Area-Event-Info ]
 /*
-boolean isAreaEventInfoAvpPresent();
-  // Area-Event-Info AVP of type grouped, includes:
-  // Area-Definition, Occurrence-Info, Interval-Time
-  boolean isOccurrenceInfoAvpPresent();
-  int getOccurrenceInfo();
-  boolean isIntervalTimeAvpPresent();
-  long getIntervalTime();
-  boolean isAreaDefinitionAvpPresent();
-  // Area-Definition AVP of type grouped, includes:
-  // Area-Type, Area-Identification
-  boolean isAreaTypeAvpPresent();
-  long getAreaType();
-  boolean isAreaIdentificationAvpPresent();
-  byte[] getAreaIdentification();
+    Area-Event-Info AVP of type grouped, includes:
+      Area-Definition, Occurrence-Info, Interval-Time
+    Area-Definition AVP of type grouped, includes:
+      Area-Type, Area-Identification
 */
     AvpSet areaEventInfo = reqSet.addGroupedAvp(Avp.AREA_EVENT_INFO, 10415, false, false);
     int occurrenceInfo = getOccurrenceInfo();

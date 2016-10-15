@@ -801,7 +801,7 @@ public class Client extends AbstractClient {
   }
 
   public boolean isReceivedLRA() {
-	return receivedLRA;
+    return receivedLRA;
   }
 
   public boolean isSentLRR() {
