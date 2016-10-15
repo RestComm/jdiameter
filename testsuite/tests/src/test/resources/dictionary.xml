@@ -8117,6 +8117,7 @@
       <avp name="LCS-Codeword" code="2511" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="LCS-Privacy-Check-Non-Session" code="2521" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="LCS-Privacy-Check-Session" code="2522" vendor="10415" multiplicity="0-1" index="-1" />
+      <avp name="LCS-Privacy-Check" code="2512" vendor="10415" multiplicity="1" index="-1" />
       <avp name="Service-Selection" code="493" vendor="0" multiplicity="0-1" index="-1" />
       <avp name="Deferred-Location-Type" code="2532" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Area-Event-Info" code="2533" vendor="10415" multiplicity="0-1" index="-1" />

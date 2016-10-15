@@ -433,16 +433,16 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public byte[] getVelocityRequested(){
+  public int getVelocityRequested(){
     Avp lcsVelocityRequestedAvp = super.message.getAvps().getAvp(Avp.VELOCITY_REQUESTED);
     if (lcsVelocityRequestedAvp != null) {
       try {
-        return lcsVelocityRequestedAvp.getOctetString();
+        return lcsVelocityRequestedAvp.getInteger32();
       } catch (AvpDataException e) {
         logger.debug("Failure trying to obtain LCS Velocity-Requested AVP value", e);
       }
     }
-    return null;
+    return-1;
   }
 
   @Override
@@ -523,13 +523,29 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public int getLCSPrivacyCheckSession(){
-    Avp lcsPrivacyCheckSessionAvp = super.message.getAvps().getAvp(Avp.LCS_PRIVACY_CHECK_SESSION);
-    if (lcsPrivacyCheckSessionAvp != null) {
+  public boolean isLCSPrivacyCheckAvpPresent(){
+    Avp lcPrivacyCheckSessionAvp = super.message.getAvps().getAvp(Avp.LCS_PRIVACY_CHECK_SESSION);
+    if (lcPrivacyCheckSessionAvp != null) {
       try {
-        return lcsPrivacyCheckSessionAvp.getInteger32();
+        return lcPrivacyCheckSessionAvp.getGrouped().getAvp(Avp.LCS_PRIVACY_CHECK) != null;
       } catch (AvpDataException e) {
-        logger.debug("Failure trying to obtain LCS Privacy Check Session AVP value", e);
+        logger.debug("Failure trying to obtain LCS-Privacy-Check AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public int getLCSPrivacyCheck(){
+    Avp lcPrivacyCheckSessionAvp = super.message.getAvps().getAvp(Avp.LCS_PRIVACY_CHECK_SESSION);
+    if (lcPrivacyCheckSessionAvp != null) {
+      try {
+        Avp lcsPrivacyCheckAvp = lcPrivacyCheckSessionAvp.getGrouped().getAvp(Avp.LCS_PRIVACY_CHECK);
+        if (lcsPrivacyCheckAvp != null){
+          return lcsPrivacyCheckAvp.getInteger32();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS-Privacy-Check AVP value", e);
       }
     }
     return -1;
@@ -541,13 +557,29 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public int getLCSPrivacyCheckNonSession(){
-    Avp lcsPrivacyCheckNonSessionAvp = super.message.getAvps().getAvp(Avp.LCS_PRIVACY_CHECK_NON_SESSION);
-    if (lcsPrivacyCheckNonSessionAvp != null) {
+  public boolean isLCSPrivacyCheckNSAvpPresent(){
+    Avp lcPrivacyCheckNonSessionAvp = super.message.getAvps().getAvp(Avp.LCS_PRIVACY_CHECK_NON_SESSION);
+    if (lcPrivacyCheckNonSessionAvp != null) {
       try {
-        return lcsPrivacyCheckNonSessionAvp.getInteger32();
+        return lcPrivacyCheckNonSessionAvp.getGrouped().getAvp(Avp.LCS_PRIVACY_CHECK) != null;
       } catch (AvpDataException e) {
-        logger.debug("Failure trying to obtain LCS Privacy Check Non Session AVP value", e);
+        logger.debug("Failure trying to obtain LCS-Privacy-Check AVP", e);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public int getLCSPrivacyCheckNS(){
+    Avp lcPrivacyCheckNonSessionAvp = super.message.getAvps().getAvp(Avp.LCS_PRIVACY_CHECK_NON_SESSION);
+    if (lcPrivacyCheckNonSessionAvp != null) {
+      try {
+        Avp lcsPrivacyCheckAvp = lcPrivacyCheckNonSessionAvp.getGrouped().getAvp(Avp.LCS_PRIVACY_CHECK);
+        if (lcsPrivacyCheckAvp != null){
+          return lcsPrivacyCheckAvp.getInteger32();
+        }
+      } catch (AvpDataException e) {
+        logger.debug("Failure trying to obtain LCS-Privacy-Check AVP value", e);
       }
     }
     return -1;

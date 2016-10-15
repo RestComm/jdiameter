@@ -98,7 +98,7 @@ public interface ProvideLocationRequest extends AppRequestEvent {
   int getResponseTime();
 
   boolean isVelocityRequestedAvpPresent();
-  byte[] getVelocityRequested();
+  int getVelocityRequested();
 
   boolean isSupportedGADShapesAvpPresent();
   long getSupportedGADSahpes();
@@ -112,11 +112,17 @@ public interface ProvideLocationRequest extends AppRequestEvent {
   boolean isServiceSelectionAvpPresent();
   String getServiceSelection(); // IE: APN
 
-  boolean isLCSPrivacyCheckSessionAvpPresent();
-  int getLCSPrivacyCheckSession(); // IE: Session-Related Privacy Check
+  boolean isLCSPrivacyCheckSessionAvpPresent(); // IE: Session-Related Privacy Check
+  // LCS-Privacy-Check-Session of type grouped, includes
+  // LCS-Privacy-Check
+  boolean isLCSPrivacyCheckAvpPresent();
+  int getLCSPrivacyCheck();
 
-  boolean isLCSPrivacyCheckNonSessionAvpPresent();
-  int getLCSPrivacyCheckNonSession(); // IE: LCS-Privacy-Check-Non-Session
+  boolean isLCSPrivacyCheckNonSessionAvpPresent(); // IE: Non-Session-Related Privacy Check
+  // LCS-Privacy-Check-Non-Session of type grouped, includes
+  // LCS-Privacy-Check
+  boolean isLCSPrivacyCheckNSAvpPresent();
+  int getLCSPrivacyCheckNS();
 
   boolean isDeferredLocationTypeAvpPresent();
   long getDeferredLocationType();

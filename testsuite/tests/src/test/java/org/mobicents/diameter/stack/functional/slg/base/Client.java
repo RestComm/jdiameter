@@ -229,18 +229,6 @@ public class Client extends AbstractClient {
   }
 
   @Override
-  protected byte[] getVelocityRequested() {
-  /*
-  3GPP TS 29.172 v13.0.0 section 7.4.10
-    VELOCITY_IS_NOT_REQUESTED (0)
-    VELOCITY_IS_REQUESTED (1)
-   */
-    String velocityRequested = "0";
-    byte[] velReq = velocityRequested.getBytes();
-    return velReq;
-  }
-
-  @Override
   protected int getResponseTime() {
   /*
   3GPP TS 29.172 v13.0.0 section 7.4.11
@@ -249,6 +237,17 @@ public class Client extends AbstractClient {
   */
     int responseTime = 1;
     return responseTime;
+  }
+
+  @Override
+  protected int getVelocityRequested() {
+  /*
+  3GPP TS 29.172 v13.0.0 section 7.4.10
+    VELOCITY_IS_NOT_REQUESTED (0)
+    VELOCITY_IS_REQUESTED (1)
+   */
+    int velocityRequested = 0;
+    return velocityRequested;
   }
 
   @Override
@@ -288,8 +287,17 @@ public class Client extends AbstractClient {
   }
 
   @Override
+  protected String getServiceSelection() {
+    String apn = "restcomm.org";
+    return apn;
+  }
+
+  @Override
   protected int getLCSPrivacyCheckSession() {
   /*
+  3GPP TS 291.172 v13.0.0 section 7.4.22
+  LCS-Privacy-Check-Session ::= <AVP header: 2522 10415>
+    { LCS-Privacy-Check }
   3GPP TS 29.172 v13.0.0 section 7.4.14
     ALLOWED_WITHOUT_NOTIFICATION (0)
     ALLOWED_WITH_NOTIFICATION (1)
@@ -304,6 +312,9 @@ public class Client extends AbstractClient {
   @Override
   protected int getLCSPrivacyCheckNonSession() {
   /*
+  3GPP TS 291.172 v13.0.0 section 7.4.22
+  LCS-Privacy-Check-Non-Session ::= <AVP header: 2521 10415>
+    { LCS-Privacy-Check }
   3GPP TS 29.172 v13.0.0 section 7.4.14
     ALLOWED_WITHOUT_NOTIFICATION (0)
     ALLOWED_WITH_NOTIFICATION (1)
@@ -311,14 +322,8 @@ public class Client extends AbstractClient {
     RESTRICTED_IF_NO_RESPONSE (3)
     NOT_ALLOWED (4)
   */
-    int lcsPrivacyCheckNonSession = 0;
+    int lcsPrivacyCheckNonSession = 4;
     return lcsPrivacyCheckNonSession;
-  }
-
-  @Override
-  protected String getServiceSelection() {
-    String apn = "restcomm.org";
-    return apn;
   }
 
   @Override

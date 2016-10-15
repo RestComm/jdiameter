@@ -163,7 +163,7 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
   protected abstract long getVerticalAccuracy();
   protected abstract int getVerticalRequested();
   protected abstract int getResponseTime();
-  protected abstract byte[] getVelocityRequested();
+  protected abstract int getVelocityRequested();
   protected abstract long getSupportedGADShapes();
   protected abstract long getLSCServiceTypeId();
   protected abstract String getLCSCodeword();
@@ -365,8 +365,8 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
     }
 
     // [ Velocity-Requested ]
-    byte[] velocityRequested = getVelocityRequested();
-    if (velocityRequested != null){
+    int velocityRequested = getVelocityRequested();
+    if (velocityRequested != -1){
       reqSet.addAvp(Avp.VELOCITY_REQUESTED, velocityRequested, 10415, false, false);
     }
 
@@ -388,22 +388,26 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
       reqSet.addAvp(Avp.LCS_CODEWORD, lcsCodeword, 10415, false, false, false);
     }
 
-    // [ LCS-Privacy-Check-Session ]
-    int lcsPrivacyCheckSession = getLCSPrivacyCheckSession(); // IE: Session-Related Privacy Check
-    if (lcsPrivacyCheckSession != -1){
-      reqSet.addAvp(Avp.LCS_PRIVACY_CHECK_SESSION, lcsPrivacyCheckSession, 10415, false, false);
-    }
-
-    // [ LCS-Privacy-Check-Non-Session ]
-    int lcsPrivacyCheckNonSession = getLCSPrivacyCheckNonSession(); // IE: LCS-Privacy-Check-Non-Session
-    if (lcsPrivacyCheckNonSession != -1){
-      reqSet.addAvp(Avp.LCS_PRIVACY_CHECK_NON_SESSION, lcsPrivacyCheckNonSession, 10415, false, false);
-    }
-
     //[ Service-Selection ]
     String serviceSelection = getServiceSelection(); // IE: APN
     if (serviceSelection != null){
-      reqSet.addAvp(Avp.SERVICE_SELECTION, serviceSelection, 10415, false, false, false);
+     reqSet.addAvp(Avp.SERVICE_SELECTION, serviceSelection, false, false, false);
+    }
+
+    // [ LCS-Privacy-Check-Session ] // IE: Session-Related Privacy Check
+    AvpSet lcsPrivacyCheckSession = reqSet.addGroupedAvp(Avp.LCS_PRIVACY_CHECK_SESSION, 10415, false, false);
+    int lcsPrivacyCheck = getLCSPrivacyCheckSession();
+
+      if (lcsPrivacyCheck != -1){
+        lcsPrivacyCheckSession.addAvp(Avp.LCS_PRIVACY_CHECK, lcsPrivacyCheck, 10415, false, false);
+    }
+
+    // [ LCS-Privacy-Check-Non-Session ] // IE: Non-Session-Related Privacy Check
+    AvpSet lcsPrivacyCheckNonSession = reqSet.addGroupedAvp(Avp.LCS_PRIVACY_CHECK_SESSION, 10415, false, false);
+    int lcsPrivacyCheckNS = getLCSPrivacyCheckNonSession();
+
+    if (lcsPrivacyCheckNS != -1){
+        lcsPrivacyCheckNonSession.addAvp(Avp.LCS_PRIVACY_CHECK, lcsPrivacyCheck, 10415, false, false);
     }
 
     // [ Deferred-Location-Type ]
@@ -458,7 +462,7 @@ public abstract class AbstractClient extends TBase implements ClientSLgSessionLi
     //[ PLR-Flags ]
     long plrfLags = getPLRFLags();
     if (plrfLags != -1){
-      reqSet.addAvp(Avp.PLR_FLAGS, plrfLags);
+      reqSet.addAvp(Avp.PLR_FLAGS, plrfLags, 10415, false, false, true);
     }
 
     // [ Periodic-LDR-Information ]
