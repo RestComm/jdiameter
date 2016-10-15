@@ -56,7 +56,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
       try {
         return slgLocationTypeAvp.getInteger32();
       } catch (AvpDataException e) {
-        logger.debug("Failure trying to obtain SLg-Location-Type AVP value (IMSI)", e);
+        logger.debug("Failure trying to obtain SLg-Location-Type AVP value", e);
       }
     }
     return -1;
@@ -359,7 +359,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
-        Avp lcsQoSVerticalAccuracyAvp = lcsQoSAvp.getGrouped().getAvp(Avp.HORIZONTAL_ACCURACY);
+        Avp lcsQoSVerticalAccuracyAvp = lcsQoSAvp.getGrouped().getAvp(Avp.VERTICAL_ACCURACY);
         if (lcsQoSVerticalAccuracyAvp != null){
           return lcsQoSVerticalAccuracyAvp.getUnsigned32();
         }
