@@ -120,12 +120,12 @@ public abstract class AbstractDeferredServer extends TBase implements ServerSLgS
     fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
-  public void doProvideLocationRequestEvent(ServerSLgSession session, ProvideLocationRequest request) throws InternalException, IllegalDiameterStateException,
+  /*public void doProvideLocationRequestEvent(ServerSLgSession session, ProvideLocationRequest request) throws InternalException, IllegalDiameterStateException,
           RouteException, OverloadException {
     fail("Received \"PLR\" event, request[" + request + "], on session[" + session + "]", null);
-  }
+  }*/
 
-  public void doLocationReportRequestEvent(ServerSLgSession session, ProvideLocationRequest request) throws InternalException, IllegalDiameterStateException,
+  public void doLocationReportRequestEvent(ServerSLgSession session, LocationReportRequest request) throws InternalException, IllegalDiameterStateException,
           RouteException, OverloadException {
     fail("Received \"LRR\" event, request[" + request + "], on session[" + session + "]", null);
   }

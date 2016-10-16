@@ -137,7 +137,7 @@ public abstract class AbstractImmediateServer extends TBase implements ServerSLg
     return this.serverSLgSession;
   }
 
-  // Attributes for Provide Location Answer (PLA) and Location Report Answer (LRA)
+  // Attributes for Provide Location Answer (PLA)
   protected abstract byte[] getLocationEstimate();
   protected abstract int getAccuracyFulfilmentIndicator();
   protected abstract long getAgeOfLocationEstimate();
