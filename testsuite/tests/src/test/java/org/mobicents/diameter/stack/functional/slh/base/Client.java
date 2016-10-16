@@ -50,7 +50,7 @@ public class Client extends AbstractClient {
   }
 
   /* (non-Javadoc)
-   * @see org.mobicents.diameter.stack.functional.slh.AbstractClient#doLCSRoutingInfoAnswerEvent(
+   * @see org.mobicents.diameter.stack.functional.slh.AbstractImmediateClient#doLCSRoutingInfoAnswerEvent(
    *    org.jdiameter.api.slh.ClientSLhSession, org.jdiameter.api.slh.events.LCSRoutingInfoRequest, org.jdiameter.api.slh.events.LCSRoutingInfoAnswer)
    */
   @Override

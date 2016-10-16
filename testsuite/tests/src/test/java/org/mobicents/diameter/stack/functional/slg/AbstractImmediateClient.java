@@ -64,7 +64,6 @@ import org.jdiameter.api.slg.events.ProvideLocationAnswer;
 import org.jdiameter.api.slg.events.LocationReportRequest;
 import org.jdiameter.api.slg.events.LocationReportAnswer;
 import org.jdiameter.client.api.ISessionFactory;
-import org.jdiameter.common.api.app.IAppSessionFactory;
 import org.jdiameter.common.impl.app.slg.ProvideLocationRequestImpl;
 import org.jdiameter.common.impl.app.slg.LocationReportRequestImpl;
 import org.jdiameter.common.impl.app.slg.SLgSessionFactoryImpl;
@@ -75,7 +74,7 @@ import org.mobicents.diameter.stack.functional.TBase;
  * @author Fernando Mendioroz (fernando.mendioroz@telestax.com)
  *
  */
-public abstract class AbstractClient extends TBase implements ClientSLgSessionListener {
+public abstract class AbstractImmediateClient extends TBase implements ClientSLgSessionListener {
 
   // NOTE: implementing NetworkReqListener since its required for stack to
   // know we support it... ech.

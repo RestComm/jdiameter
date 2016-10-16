@@ -15,6 +15,29 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ *   JBoss, Home of Professional Open Source
+ *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+ *   by the @authors tag. See the copyright.txt in the distribution for a
+ *   full listing of individual contributors.
+ *
+ *   This is free software; you can redistribute it and/or modify it
+ *   under the terms of the GNU Lesser General Public License as
+ *   published by the Free Software Foundation; either version 2.1 of
+ *   the License, or (at your option) any later version.
+ *
+ *   This software is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *   Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public
+ *   License along with this software; if not, write to the Free
+ *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
 package org.mobicents.diameter.stack.functional.slg.base;
@@ -26,19 +49,15 @@ import org.jdiameter.api.RouteException;
 import org.jdiameter.api.slg.ClientSLgSession;
 import org.jdiameter.api.slg.events.ProvideLocationRequest;
 import org.jdiameter.api.slg.events.ProvideLocationAnswer;
-import org.jdiameter.api.slg.events.LocationReportRequest;
-import org.jdiameter.api.slg.events.LocationReportAnswer;
 import org.mobicents.diameter.stack.functional.Utils;
-import org.mobicents.diameter.stack.functional.slg.AbstractClient;
+import org.mobicents.diameter.stack.functional.slg.AbstractImmediateClient;
 
-public class Client extends AbstractClient {
+public class ClientPLR extends AbstractImmediateClient {
 
   protected boolean receivedPLA;
   protected boolean sentPLR;
-  protected boolean receivedLRA;
-  protected boolean sentLRR;
 
-  public Client() {
+  public ClientPLR() {
   }
 
   public void sendProvideLocationRequest() throws Exception {
@@ -48,15 +67,8 @@ public class Client extends AbstractClient {
     this.sentPLR = true;
   }
 
-  public void sendLocationReportRequest() throws Exception {
-    LocationReportRequest lrr = super.createLRR(super.clientSLgSession);
-    super.clientSLgSession.sendLocationReportRequest(lrr);
-    Utils.printMessage(log, super.stack.getDictionary(), lrr.getMessage(), true);
-    this.sentPLR = true;
-  }
-
   /* (non-Javadoc)
-   * @see org.mobicents.diameter.stack.functional.slg.AbstractClient#doProvideLocationAnswerEvent(
+   * @see org.mobicents.diameter.stack.functional.slg.AbstractImmediateClient#doProvideLocationAnswerEvent(
    *    org.jdiameter.api.slg.ClientSLgSession, org.jdiameter.api.slg.events.ProvideLocationRequest, org.jdiameter.api.slg.events.ProvideLocationAnswer)
    */
   @Override
@@ -71,19 +83,7 @@ public class Client extends AbstractClient {
     this.receivedPLA = true;
   }
 
-  @Override
-  public void doLocationReportAnswerEvent(ClientSLgSession session, LocationReportRequest request, LocationReportAnswer answer)
-      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), false);
-
-    if (this.receivedLRA) {
-      fail("Received PLA more than once", null);
-      return;
-    }
-    this.receivedLRA = true;
-  }
-
-  // PLR/PLA methods
+  // PLR methods
 
   // { SLg-Location-Type }
   protected int getSLgLocationType(){
@@ -805,11 +805,11 @@ public class Client extends AbstractClient {
     return barometricPressure;
   }
 
-  public boolean isReceivedLRA() {
+  /*public boolean isReceivedLRA() {
     return receivedLRA;
   }
 
   public boolean isSentLRR() {
     return sentLRR;
-  }
+  }*/
 }
