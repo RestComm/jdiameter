@@ -372,18 +372,17 @@ public class ServerPLA extends AbstractImmediateServer {
     The Civic-Address AVP is of type UTF8String.
     It contains the XML document carried in the "Civic Address" Information Element as defined in 3GPP TS 29.171.
   */
-    String civicAddress = "<civicAddress xml:lang='en-GB'" +
-      "           xmlns=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr\"\n" +
-      "           xmlns:cdc=\"http://devon.canals.example.com/civic\">\n" +
-      "        <country>UK</country>\n" +
-      "        <A1>Devon</A1>\n" +
-      "        <A3>Monkokehampton</A3>\n" +
-      "        <RD>Deckport</RD>\n" +
-      "        <STS>Cross</STS>\n" +
-      "\n" +
-      "        <cdc:bridge>21451338</cdc:bridge>\n" +
-      "\n" +
-      "      </civicAddress>";
+    String civicAddress = "<civicAddress xml:lang=\"en-US\"\n" +
+      "        xmlns=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr\"\n" +
+      "        xmlns:cae=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr:ext\">\n" +
+      "     <country>US</country>\n" +
+      "     <A1>CA</A1>\n" +
+      "     <A2>Sacramento</A2>\n" +
+      "     <RD>Colorado</RD>\n" +
+      "     <HNO>223</HNO>\n" +
+      "     <cae:STP>Boulevard</cae:STP>\n" +
+      "     <cae:HNP>A</cae:HNP>\n" +
+      "   </civicAddress>"; // From IETF RFC 6848, XML Example with Street Type Prefix and House Number Prefix
     return civicAddress;
   }
 

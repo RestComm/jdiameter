@@ -496,7 +496,7 @@ public class ClientLRR extends AbstractDeferredClient {
       "\n" +
       "        <cdc:bridge>21451338</cdc:bridge>\n" +
       "\n" +
-      "      </civicAddress>";
+      "      </civicAddress>"; // From IETF RFC 6848, Extended Civic Address Example
     return civicAddress;
   }
 
