@@ -59,7 +59,6 @@ import org.jdiameter.api.slg.ServerSLgSession;
 import org.jdiameter.api.slg.ServerSLgSessionListener;
 import org.jdiameter.api.slg.events.LocationReportAnswer;
 import org.jdiameter.api.slg.events.LocationReportRequest;
-import org.jdiameter.api.slg.events.ProvideLocationRequest;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.impl.app.slg.LocationReportAnswerImpl;
 import org.jdiameter.common.impl.app.slg.SLgSessionFactoryImpl;
@@ -119,11 +118,6 @@ public abstract class AbstractDeferredServer extends TBase implements ServerSLgS
           OverloadException {
     fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
-
-  /*public void doProvideLocationRequestEvent(ServerSLgSession session, ProvideLocationRequest request) throws InternalException, IllegalDiameterStateException,
-          RouteException, OverloadException {
-    fail("Received \"PLR\" event, request[" + request + "], on session[" + session + "]", null);
-  }*/
 
   public void doLocationReportRequestEvent(ServerSLgSession session, LocationReportRequest request) throws InternalException, IllegalDiameterStateException,
           RouteException, OverloadException {

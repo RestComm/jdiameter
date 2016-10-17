@@ -485,7 +485,18 @@ public class ClientLRR extends AbstractDeferredClient {
     The Civic-Address AVP is of type UTF8String.
     It contains the XML document carried in the "Civic Address" Information Element as defined in 3GPP TS 29.171.
   */
-    String civicAddress = "<avpdefn name='Civic-Address' ><type street='5th Avenue' /></avpdefn>";
+    String civicAddress = "<civicAddress xml:lang='en-GB'" +
+      "           xmlns=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr\"\n" +
+      "           xmlns:cdc=\"http://devon.canals.example.com/civic\">\n" +
+      "        <country>UK</country>\n" +
+      "        <A1>Devon</A1>\n" +
+      "        <A3>Monkokehampton</A3>\n" +
+      "        <RD>Deckport</RD>\n" +
+      "        <STS>Cross</STS>\n" +
+      "\n" +
+      "        <cdc:bridge>21451338</cdc:bridge>\n" +
+      "\n" +
+      "      </civicAddress>";
     return civicAddress;
   }
 

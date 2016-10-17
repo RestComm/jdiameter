@@ -125,14 +125,14 @@ public abstract class AbstractDeferredClient extends TBase implements ClientSLgS
     fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
+  public void doLocationReportAnswerEvent(ClientSLgSession session, LocationReportRequest request, LocationReportAnswer answer) throws InternalException,
+    IllegalDiameterStateException, RouteException, OverloadException {
+    fail("Received \"LRA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
+  }
+
   public void doProvideLocationAnswerEvent(ClientSLgSession session, ProvideLocationRequest request, ProvideLocationAnswer answer) throws InternalException,
           IllegalDiameterStateException, RouteException, OverloadException {
     fail("Received \"PLA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
-  }
-
-  public void doLocationReportAnswerEvent(ClientSLgSession session, LocationReportRequest request, LocationReportAnswer answer) throws InternalException,
-          IllegalDiameterStateException, RouteException, OverloadException {
-    fail("Received \"LRA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
   // ----------- conf parts
@@ -234,7 +234,7 @@ public abstract class AbstractDeferredClient extends TBase implements ClientSLgS
     *[ Route-Record ]
 
   */
-    // Create ProvideLocationRequest
+    // Create LocationReportRequest
     LocationReportRequest lrr = new LocationReportRequestImpl(slgSession.getSessions().get(0).createRequest(LocationReportRequest.code, getApplicationId(),
             getServerRealmName()));
     // < Location-Report-Request> ::=	< Diameter Header: 8388621, REQ, PXY, 16777255 >
