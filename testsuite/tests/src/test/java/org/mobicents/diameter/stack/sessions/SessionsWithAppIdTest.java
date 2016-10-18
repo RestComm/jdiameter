@@ -110,7 +110,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testAccountingClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ClientAccSession.class, new AccSessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(ClientAccSession.class, new AccSessionFactoryImpl(sessionFactory));
     ClientAccSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, BASE_ACCT_APPID, ClientAccSession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -119,7 +119,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testAccountingServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ServerAccSession.class, new AccSessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(ServerAccSession.class, new AccSessionFactoryImpl(sessionFactory));
     ServerAccSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, BASE_ACCT_APPID, ServerAccSession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -128,7 +128,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void tesAuthClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ClientAuthSession.class, new AuthSessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(ClientAuthSession.class, new AuthSessionFactoryImpl(sessionFactory));
     ClientAuthSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, BASE_AUTH_APPID, ClientAuthSession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -137,7 +137,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testAuthServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ServerAuthSession.class, new AuthSessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(ServerAuthSession.class, new AuthSessionFactoryImpl(sessionFactory));
     ServerAuthSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, BASE_AUTH_APPID, ServerAuthSession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -146,7 +146,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testCCAClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ClientCCASession.class, new CCASessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(ClientCCASession.class, new CCASessionFactoryImpl(sessionFactory));
     ClientCCASession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, CCA_APPID, ClientCCASession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -155,7 +155,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testCCAServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ServerCCASession.class, new CCASessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(ServerCCASession.class, new CCASessionFactoryImpl(sessionFactory));
     ServerCCASession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, CCA_APPID, ServerCCASession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -164,7 +164,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testRoClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ClientRoSession.class, new RoSessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(ClientRoSession.class, new RoSessionFactoryImpl(sessionFactory));
     ClientRoSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, RO_APPID, ClientRoSession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -173,7 +173,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testRoServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ServerRoSession.class, new RoSessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(ServerRoSession.class, new RoSessionFactoryImpl(sessionFactory));
     ServerRoSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, RO_APPID, ServerRoSession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -182,7 +182,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testRfClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ClientRfSession.class, new RfSessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(ClientRfSession.class, new RfSessionFactoryImpl(sessionFactory));
     ClientRfSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, RF_APPID, ClientRfSession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -191,7 +191,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testRfServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ServerRfSession.class, new RfSessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(ServerRfSession.class, new RfSessionFactoryImpl(sessionFactory));
     ServerRfSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, RF_APPID, ServerRfSession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -200,7 +200,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testShClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ClientShSession.class, new ShSessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(ClientShSession.class, new ShSessionFactoryImpl(sessionFactory));
     ClientShSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, SH_APPID, ClientShSession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -209,7 +209,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testShServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ServerShSession.class, new ShSessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(ServerShSession.class, new ShSessionFactoryImpl(sessionFactory));
     ServerShSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, SH_APPID, ServerShSession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -218,7 +218,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testCxDxClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ClientCxDxSession.class, new CxDxSessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(ClientCxDxSession.class, new CxDxSessionFactoryImpl(sessionFactory));
     ClientCxDxSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, CXDX_APPID, ClientCxDxSession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -227,7 +227,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testCxDxServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ServerCxDxSession.class, new CxDxSessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(ServerCxDxSession.class, new CxDxSessionFactoryImpl(sessionFactory));
     ServerCxDxSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, CXDX_APPID, ServerCxDxSession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -236,7 +236,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testGqClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(GqClientSession.class, new GqSessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(GqClientSession.class, new GqSessionFactoryImpl(sessionFactory));
     GqClientSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, GQ_APPID, GqClientSession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -245,7 +245,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testGqServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(GqServerSession.class, new GqSessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(GqServerSession.class, new GqSessionFactoryImpl(sessionFactory));
     GqServerSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, GQ_APPID, GqServerSession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -254,7 +254,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testGxClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ClientGxSession.class, new GxSessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(ClientGxSession.class, new GxSessionFactoryImpl(sessionFactory));
     ClientGxSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, GX_APPID, ClientGxSession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -263,7 +263,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testGxServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ServerGxSession.class, new GxSessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(ServerGxSession.class, new GxSessionFactoryImpl(sessionFactory));
     ServerGxSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, GX_APPID, ServerGxSession.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -272,7 +272,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testS13ClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ClientS13Session.class, new S13SessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(ClientS13Session.class, new S13SessionFactoryImpl(sessionFactory));
     ClientS13Session session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, S13_APPID, ClientS13Session.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();
@@ -281,7 +281,7 @@ public class SessionsWithAppIdTest {
 
   @Test
   public void testS13ServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ServerS13Session.class, new S13SessionFactoryImpl(sessionFactory));
+    ((ISessionFactory) sessionFactory).registerAppFactory(ServerS13Session.class, new S13SessionFactoryImpl(sessionFactory));
     ServerS13Session session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, S13_APPID, ServerS13Session.class);
 
     ApplicationId sessionAppId = session.getSessionAppId();

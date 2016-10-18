@@ -28,13 +28,10 @@ import org.jdiameter.api.cca.ClientCCASession;
 import org.jdiameter.api.cca.ServerCCASession;
 import org.jdiameter.api.cca.events.JCreditControlAnswer;
 import org.jdiameter.api.cca.events.JCreditControlRequest;
-import org.jdiameter.api.sy.ClientSySession;
-import org.jdiameter.api.sy.ServerSySession;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.impl.app.cca.CCASessionFactoryImpl;
 import org.jdiameter.common.impl.app.cca.JCreditControlAnswerImpl;
 import org.jdiameter.server.impl.app.cca.ServerCCASessionImpl;
-import org.jdiameter.server.impl.sy.ServerSySessionImpl;
 import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.servers.diameter.utils.DiameterUtilities;
 import org.mobicents.servers.diameter.utils.StackCreator;
@@ -53,7 +50,6 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
   private static final Object[] EMPTY_ARRAY = new Object[]{};
 
   private ApplicationId roAppId = ApplicationId.createByAuthAppId(10415L, 4L);
-  private ApplicationId syAppId = ApplicationId.createByAuthAppId(10415L, 16777302L);
 
   private HashMap<String, Long> accounts = new HashMap<String, Long>();
   private HashMap<String, Long> reserved = new HashMap<String, Long>();
@@ -81,8 +77,6 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
       network.addNetworkReqListener(this, roAppId);
       network.addNetworkReqListener(this, ApplicationId.createByAuthAppId(0, 4));
 
-      network.addNetworkReqListener(this, syAppId);
-
       this.stackCreator.start(Mode.ALL_PEERS, 30000, TimeUnit.MILLISECONDS);
 
       printLogo();
@@ -92,9 +86,6 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
 
       sessionFactory.registerAppFactory(ServerCCASession.class, this);
       sessionFactory.registerAppFactory(ClientCCASession.class, this);
-
-      sessionFactory.registerAppFactory(ServerSySession.class, this);
-      sessionFactory.registerAppFactory(ClientSySession.class, this);
 
       // Read users from properties file
       Properties properties = new Properties();
@@ -136,7 +127,7 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
 
       logger.info("===============================================================================");
       logger.info("");
-      logger.info("== Mobicents Diameter Ro/Rf +Sy Server Simulator (" + osLine + ")" );
+      logger.info("== Mobicents Diameter Ro/Rf Server Simulator (" + osLine + ")" );
       logger.info("");
       logger.info("== " + javaLine);
       logger.info("");
@@ -152,20 +143,9 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
       logger.info("<< Received Request [" + request + "]");
     }
     try {
-      long applicationId = request.getApplicationId();
-      if (applicationId == 4L) {
-        // CCA session
-        ServerCCASessionImpl session = sessionFactory.getNewAppSession(request.getSessionId(),
-                ApplicationId.createByAuthAppId(0, 4), ServerCCASession.class, EMPTY_ARRAY);
-        session.processRequest(request);
-      } else if (applicationId == 16777302L) {
-        // Sy session
-        ServerSySessionImpl session = sessionFactory.getNewAppSession(request.getSessionId(),
-            ApplicationId.createByAuthAppId(0, 16777302), ServerSySession.class, EMPTY_ARRAY);
-        session.processRequest(request);
-      } else {
-        logger.error(">< Failure handling received request, no appId!");
-      }
+      ServerCCASessionImpl session =
+          (sessionFactory).getNewAppSession(request.getSessionId(), ApplicationId.createByAuthAppId(0, 4), ServerCCASession.class, EMPTY_ARRAY);
+      session.processRequest(request);
     }
     catch (InternalException e) {
       logger.error(">< Failure handling received request.", e);

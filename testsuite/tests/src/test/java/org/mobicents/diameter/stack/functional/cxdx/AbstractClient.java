@@ -67,8 +67,8 @@ public abstract class AbstractClient extends TBase implements ClientCxDxSessionL
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777216));
       CxDxSessionFactoryImpl shSessionFactory = new CxDxSessionFactoryImpl(this.sessionFactory);
-      sessionFactory.registerAppFacory(ServerCxDxSession.class, shSessionFactory);
-      sessionFactory.registerAppFacory(ClientCxDxSession.class, shSessionFactory);
+      sessionFactory.registerAppFactory(ServerCxDxSession.class, shSessionFactory);
+      sessionFactory.registerAppFactory(ClientCxDxSession.class, shSessionFactory);
 
       shSessionFactory.setClientSessionListener(this);
 

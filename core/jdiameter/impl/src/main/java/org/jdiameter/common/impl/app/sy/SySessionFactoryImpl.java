@@ -37,6 +37,7 @@ import org.jdiameter.api.sy.events.SpendingLimitAnswer;
 import org.jdiameter.api.sy.events.SpendingLimitRequest;
 import org.jdiameter.api.sy.events.SpendingStatusNotificationAnswer;
 import org.jdiameter.api.sy.events.SpendingStatusNotificationRequest;
+import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.sy.ISyMessageFactory;
 import org.jdiameter.common.api.app.sy.ISySessionFactory;
 
@@ -48,6 +49,10 @@ import org.jdiameter.common.api.app.sy.ISySessionFactory;
 
 public class SySessionFactoryImpl implements ISySessionFactory, ClientSySessionListener, ServerSySessionListener, StateChangeListener<AppSession>,
     ISyMessageFactory {
+
+  public SySessionFactoryImpl(ISessionFactory sessionFactory) {
+
+  }
 
   @Override
   public SpendingLimitRequest createSpendingLimitRequest(Request request) {

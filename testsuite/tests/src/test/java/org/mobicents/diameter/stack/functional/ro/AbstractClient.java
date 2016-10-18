@@ -68,8 +68,8 @@ public abstract class AbstractClient extends TBase implements ClientRoSessionLis
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(0, 4));
       RoSessionFactoryImpl creditControlSessionFactory = new RoSessionFactoryImpl(this.sessionFactory);
-      sessionFactory.registerAppFacory(ServerRoSession.class, creditControlSessionFactory);
-      sessionFactory.registerAppFacory(ClientRoSession.class, creditControlSessionFactory);
+      sessionFactory.registerAppFactory(ServerRoSession.class, creditControlSessionFactory);
+      sessionFactory.registerAppFactory(ClientRoSession.class, creditControlSessionFactory);
 
       creditControlSessionFactory.setStateListener(this);
       creditControlSessionFactory.setClientSessionListener(this);

@@ -82,8 +82,8 @@ public class ClientPNR extends AbstractClient {
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777217));
       ShSessionFactoryImpl shSessionFactory = new ShSessionFactoryImpl(this.sessionFactory);
-      sessionFactory.registerAppFacory(ServerShSession.class, shSessionFactory);
-      sessionFactory.registerAppFacory(ClientShSession.class, shSessionFactory);
+      sessionFactory.registerAppFactory(ServerShSession.class, shSessionFactory);
+      sessionFactory.registerAppFactory(ClientShSession.class, shSessionFactory);
       shSessionFactory.setClientShSessionListener(this);
     }
     finally {

@@ -58,8 +58,8 @@ public abstract class AbstractServer extends TBase implements ServerS13SessionLi
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777252));
       S13SessionFactoryImpl s13SessionFactory = new S13SessionFactoryImpl(this.sessionFactory);
-      sessionFactory.registerAppFacory(ServerS13Session.class, s13SessionFactory);
-      sessionFactory.registerAppFacory(ClientS13Session.class, s13SessionFactory);
+      sessionFactory.registerAppFactory(ServerS13Session.class, s13SessionFactory);
+      sessionFactory.registerAppFactory(ClientS13Session.class, s13SessionFactory);
       s13SessionFactory.setServerSessionListener(this);
     }
     finally {

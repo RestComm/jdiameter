@@ -65,8 +65,8 @@ public class ClientPPR extends AbstractClient {
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777216));
       CxDxSessionFactoryImpl cxdxSessionFactory = new CxDxSessionFactoryImpl(this.sessionFactory);
-      sessionFactory.registerAppFacory(ServerCxDxSession.class, cxdxSessionFactory);
-      sessionFactory.registerAppFacory(ClientCxDxSession.class, cxdxSessionFactory);
+      sessionFactory.registerAppFactory(ServerCxDxSession.class, cxdxSessionFactory);
+      sessionFactory.registerAppFactory(ClientCxDxSession.class, cxdxSessionFactory);
       cxdxSessionFactory.setClientSessionListener(this);
     }
     finally {
