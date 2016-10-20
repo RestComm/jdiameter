@@ -65,23 +65,23 @@ public class ServerLRA extends AbstractDeferredServer {
 
   protected boolean receivedLRR;
   protected boolean sentLRA;
-  protected boolean receivedPLR;
+  protected boolean received_PLR;
 
-  protected LocationReportRequest request;
-  protected ProvideLocationRequest plrRequest;
+  protected LocationReportRequest locationReportRequest;
+  protected ProvideLocationRequest provideLocationRequest;
 
   public void sendLocationReportAnswer() throws Exception {
-    if (!receivedLRR || request == null) {
+    if (!receivedLRR || locationReportRequest == null) {
       fail("Did not receive LRR or answer already sent.", null);
-      throw new Exception("Did not receive LRR or answer already sent. Request: " + this.request);
+      throw new Exception("Did not receive LRR or answer already sent. Request: " + this.locationReportRequest);
     }
 
-    LocationReportAnswer lra = super.createLRA(request, 2001);
+    LocationReportAnswer lra = super.createLRA(locationReportRequest, 2001);
 
     super.serverSLgSession.sendLocationReportAnswer(lra);
 
     this.sentLRA = true;
-    request = null;
+    locationReportRequest = null;
     Utils.printMessage(log, super.stack.getDictionary(), lra.getMessage(), true);
   }
 
@@ -120,18 +120,18 @@ public class ServerLRA extends AbstractDeferredServer {
       return;
     }
     this.receivedLRR = true;
-    this.request = request;
+    this.locationReportRequest = request;
   }
 
   @Override
   public void doProvideLocationRequestEvent(ServerSLgSession session, ProvideLocationRequest request)
     throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    if (this.receivedPLR) {
+    if (this.received_PLR) {
       fail("Received PLR more than once", null);
       return;
     }
-    this.receivedPLR = true;
-    this.plrRequest = request;
+    this.received_PLR = true;
+    this.provideLocationRequest = request;
   }
 
   @Override

@@ -68,8 +68,8 @@ public class ClientLRR extends AbstractDeferredClient {
   }
 
   /* (non-Javadoc)
-   * @see org.mobicents.diameter.stack.functional.slg.AbstractImmediateClient#doProvideLocationAnswerEvent(
-   *    org.jdiameter.api.slg.ClientSLgSession, org.jdiameter.api.slg.events.ProvideLocationRequest, org.jdiameter.api.slg.events.ProvideLocationAnswer)
+   * @see org.mobicents.diameter.stack.functional.slg.AbstractIDeferredClient#doLocationReportAnswerEvent(
+   *    org.jdiameter.api.slg.ClientSLgSession, org.jdiameter.api.slg.events.LocationReportRequest, org.jdiameter.api.slg.events.LocationReportAnswer)
   */
 
   @Override
@@ -438,16 +438,16 @@ public class ClientLRR extends AbstractDeferredClient {
   protected long getTerminationCause() {
   /*
   3GPP TS 29.172 v13.0.0 section 7.4.55
-    "Normal"											0
-    "Error Undefined"									1
-    "Internal Timeout"									2
-    "Congestion"										3
-    "MT_LR_Restart"									    4
-    "Privacy Violation"									5
-    "Shape of Location Estimate Not Supported"		    6
-    "Subscriber Termination"							7
-    "UE Termination"									8
-    "Network Termination"								9
+    "Normal"											                   0
+    "Error Undefined"									               1
+    "Internal Timeout"									             2
+    "Congestion"										                 3
+    "MT_LR_Restart"									                 4
+    "Privacy Violation"									             5
+    "Shape of Location Estimate Not Supported"		   6
+    "Subscriber Termination"							           7
+    "UE Termination"									               8
+    "Network Termination"								             9
   */
     long terminationCause = 7;
     return terminationCause;
@@ -512,12 +512,11 @@ public class ClientLRR extends AbstractDeferredClient {
   }
 
   public boolean isReceivedLRA() {
-
     return receivedLRA;
   }
 
   public boolean isSentLRR() {
-        return sentLRR;
-    }
+    return sentLRR;
+  }
 }
 
