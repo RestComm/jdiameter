@@ -65,7 +65,7 @@ public class ServerLRA extends AbstractDeferredServer {
 
   protected boolean receivedLRR;
   protected boolean sentLRA;
-  protected boolean received_PLR;
+  protected boolean receivedPLR;
 
   protected LocationReportRequest locationReportRequest;
   protected ProvideLocationRequest provideLocationRequest;
@@ -126,11 +126,11 @@ public class ServerLRA extends AbstractDeferredServer {
   @Override
   public void doProvideLocationRequestEvent(ServerSLgSession session, ProvideLocationRequest request)
     throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    if (this.received_PLR) {
+    if (this.receivedPLR) {
       fail("Received PLR more than once", null);
       return;
     }
-    this.received_PLR = true;
+    this.receivedPLR = true;
     this.provideLocationRequest = request;
   }
 

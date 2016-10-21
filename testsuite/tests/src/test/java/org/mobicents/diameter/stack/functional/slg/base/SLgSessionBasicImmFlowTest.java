@@ -160,11 +160,6 @@ public class SLgSessionBasicImmFlowTest {
       serverNode1.sendProvideLocationAnswer();
       waitForMessage();
 
-      /*clientNode.sendLocationReportRequest();
-      waitForMessage();
-
-      serverNode1.sendLocationReportAnswer();
-      waitForMessage();*/
     }
     catch (Exception e) {
       e.printStackTrace();
@@ -183,18 +178,6 @@ public class SLgSessionBasicImmFlowTest {
 
       fail(sb.toString());
     }
-    /*if (!serverNode1.isReceivedLRR()) {
-      StringBuilder sb = new StringBuilder("Did not receive LRR! ");
-      sb.append("Server ER:\n").append(serverNode1.createErrorReport(this.serverNode1.getErrors()));
-
-      fail(sb.toString());
-    }
-    if (!clientNode.isReceivedLRA()) {
-      StringBuilder sb = new StringBuilder("Did not receive LRA! ");
-      sb.append("Client ER:\n").append(clientNode.createErrorReport(this.clientNode.getErrors()));
-
-      fail(sb.toString());
-    }*/
 
     if (!clientNode.isPassed()) {
       StringBuilder sb = new StringBuilder();

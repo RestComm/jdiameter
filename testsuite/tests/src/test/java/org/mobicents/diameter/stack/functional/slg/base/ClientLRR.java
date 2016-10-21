@@ -438,16 +438,16 @@ public class ClientLRR extends AbstractDeferredClient {
   protected long getTerminationCause() {
   /*
   3GPP TS 29.172 v13.0.0 section 7.4.55
-    "Normal"											                   0
-    "Error Undefined"									               1
-    "Internal Timeout"									             2
-    "Congestion"										                 3
-    "MT_LR_Restart"									                 4
-    "Privacy Violation"									             5
-    "Shape of Location Estimate Not Supported"		   6
-    "Subscriber Termination"							           7
-    "UE Termination"									               8
-    "Network Termination"								             9
+    "Normal"											               0
+    "Error Undefined"									           1
+    "Internal Timeout"									         2
+    "Congestion"										             3
+    "MT_LR_Restart"									             4
+    "Privacy Violation"									         5
+    "Shape of Location Estimate Not Supported"	 6
+    "Subscriber Termination"							       7
+    "UE Termination"									           8
+    "Network Termination"								         9
   */
     long terminationCause = 7;
     return terminationCause;

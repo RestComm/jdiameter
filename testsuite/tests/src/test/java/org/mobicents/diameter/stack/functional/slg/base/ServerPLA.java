@@ -67,21 +67,21 @@ public class ServerPLA extends AbstractImmediateServer {
   protected boolean sentPLA;
   protected boolean receivedLRR;
 
-  protected ProvideLocationRequest request;
-  protected LocationReportRequest lrrRequest;
+  protected ProvideLocationRequest provideLocationRequest;
+  protected LocationReportRequest locationReportRequest;
 
   public void sendProvideLocationAnswer() throws Exception {
-    if (!receivedPLR || request == null) {
+    if (!receivedPLR || provideLocationRequest == null) {
         fail("Did not receive PLR or answer already sent.", null);
-        throw new Exception("Did not receive PLR or answer already sent. Request: " + this.request);
+        throw new Exception("Did not receive PLR or answer already sent. Request: " + this.provideLocationRequest);
     }
 
-    ProvideLocationAnswer pla = super.createPLA(request, 2001);
+    ProvideLocationAnswer pla = super.createPLA(provideLocationRequest, 2001);
 
     super.serverSLgSession.sendProvideLocationAnswer(pla);
 
     this.sentPLA = true;
-    request = null;
+    provideLocationRequest = null;
     Utils.printMessage(log, super.stack.getDictionary(), pla.getMessage(), true);
   }
 
@@ -121,7 +121,7 @@ public class ServerPLA extends AbstractImmediateServer {
         return;
     }
     this.receivedPLR = true;
-    this.request = request;
+    this.provideLocationRequest = request;
   }
 
   @Override
@@ -132,7 +132,7 @@ public class ServerPLA extends AbstractImmediateServer {
       return;
     }
     this.receivedLRR = true;
-    this.lrrRequest = request;
+    this.locationReportRequest = request;
   }
 
   @Override

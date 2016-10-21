@@ -231,7 +231,7 @@ public abstract class AbstractDeferredClient extends TBase implements ClientSLgS
 	*[ Supported-Features ]
 	*[ AVP ]
 	*[ Proxy-Info ]
-    *[ Route-Record ]
+  *[ Route-Record ]
 
   */
     // Create LocationReportRequest
