@@ -276,6 +276,11 @@ public class SLgServerSessionImpl extends SLgSession
                     new Event(Event.Type.RECEIVE_PLR, messageFactory.createProvideLocationRequest(request), null));
             break;
 
+          case LocationReportRequest.code:
+            handleEvent(
+                    new Event(Event.Type.RECEIVE_LRR, messageFactory.createLocationReportRequest(request), null));
+            break;
+
           default:
             listener.doOtherEvent(session, new AppRequestEventImpl(request), null);
             break;
