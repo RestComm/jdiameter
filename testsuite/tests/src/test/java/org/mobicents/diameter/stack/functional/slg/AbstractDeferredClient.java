@@ -145,7 +145,7 @@ public abstract class AbstractDeferredClient extends TBase implements ClientSLgS
     return this.clientSLgSession;
   }
 
-  // Attributes for Provide Location Request (PLR) and Location Report Request (LRR)
+  // Attributes for Location Report Request (LRR)
   protected abstract String getUserName(); // IE: IMSI
   protected abstract byte[] getMSISDN();
   protected abstract String getIMEI();
