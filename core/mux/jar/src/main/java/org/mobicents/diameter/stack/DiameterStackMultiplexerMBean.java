@@ -43,12 +43,14 @@
 package org.mobicents.diameter.stack;
 
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Set;
 
 import javax.management.MBeanException;
 
 import org.jboss.system.ServiceMBean;
 import org.jdiameter.api.ApplicationId;
+import org.jdiameter.api.Peer;
 import org.jdiameter.api.Stack;
 import org.mobicents.diameter.api.DiameterMessageFactory;
 import org.mobicents.diameter.api.DiameterProvider;
@@ -336,5 +338,5 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean {
   boolean _LocalPeer_isActive() throws MBeanException;
 
   boolean _Network_Peers_isPeerConnected(String name) throws MBeanException;
-
+  List<Peer> _Network_Peers_retrievePeer() throws MBeanException;
 }

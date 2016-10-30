@@ -442,5 +442,10 @@ public class RealmTableImpl implements IRealmTable {
   public <T> T unwrap(Class<T> iface) throws InternalException {
     return null;
   }
+  
+  @Override
+  public List<String> getAllRealmSet(){
+    return allRealmsSet;
+}
 
 }
