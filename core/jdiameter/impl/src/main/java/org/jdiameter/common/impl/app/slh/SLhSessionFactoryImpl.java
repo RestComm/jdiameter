@@ -129,7 +129,7 @@ public class SLhSessionFactoryImpl implements ISLhSessionFactory, ServerSLhSessi
   }
 
   /**
-   * @param serverSessionListener the serverSessionListener to set
+   * @param clientSessionListener the serverSessionListener to set
    */
   public void setClientSessionListener(ClientSLhSessionListener clientSessionListener) {
     this.clientSessionListener = clientSessionListener;
