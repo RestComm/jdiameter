@@ -71,7 +71,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public int getLocationEvent(){
+  public int getLocationEvent() {
     Avp slgLocationEventAvp = super.message.getAvps().getAvp(Avp.LOCATION_EVENT);
     if (slgLocationEventAvp != null) {
       try {
@@ -237,7 +237,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isAgeOfLocationEstimateAvpPresent(){
+  public boolean isAgeOfLocationEstimateAvpPresent() {
     return super.message.getAvps().getAvp(Avp.AGE_OF_LOCATION_ESTIMATE) != null;
   }
 
@@ -296,7 +296,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public byte[] getECGI(){
+  public byte[] getECGI() {
     Avp lcsECGIAvp = super.message.getAvps().getAvp(Avp.ECGI);
     if (lcsECGIAvp != null) {
       try {
@@ -377,7 +377,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public byte[] getCellGlobalIdentity(){
+  public byte[] getCellGlobalIdentity() {
     Avp lcsCellGlobalIdAvp = super.message.getAvps().getAvp(Avp.CELL_GLOBAL_IDENTITY);
     if (lcsCellGlobalIdAvp != null) {
       try {
@@ -390,12 +390,12 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isUTRANPositioningInfoAvpPresent(){
+  public boolean isUTRANPositioningInfoAvpPresent() {
     return super.message.getAvps().getAvp(Avp.UTRAN_POSITIONING_INFO) != null;
   }
 
   @Override
-  public boolean isUTRANPositioningDataAvpPresent(){
+  public boolean isUTRANPositioningDataAvpPresent() {
     Avp lcsUTRANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.UTRAN_POSITIONING_INFO);
     if (lcsUTRANPositioningInfoAvp != null) {
       try {
@@ -408,7 +408,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public byte[] getUTRANPositioningData(){
+  public byte[] getUTRANPositioningData() {
     Avp lcsUTRANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.UTRAN_POSITIONING_INFO);
     if (lcsUTRANPositioningInfoAvp != null) {
       try {
@@ -424,7 +424,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isUTRANGANSSPositioningDataAvpPresent(){
+  public boolean isUTRANGANSSPositioningDataAvpPresent() {
     Avp lcsUTRANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.UTRAN_POSITIONING_INFO);
     if (lcsUTRANPositioningInfoAvp != null) {
       try {
@@ -437,7 +437,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public byte[] getUTRANGANSSPositioningData(){
+  public byte[] getUTRANGANSSPositioningData() {
     Avp lcsUTRANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.UTRAN_POSITIONING_INFO);
     if (lcsUTRANPositioningInfoAvp != null) {
       try {
@@ -453,12 +453,12 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isServiceAreaIdentityAvpPresent(){
+  public boolean isServiceAreaIdentityAvpPresent() {
     return super.message.getAvps().getAvp(Avp.SERVICE_AREA_IDENTITY) != null;
   }
 
   @Override
-  public byte[] getServiceAreaIdentity(){
+  public byte[] getServiceAreaIdentity() {
     Avp lcsServiceAreaIdentityAvp = super.message.getAvps().getAvp(Avp.SERVICE_AREA_IDENTITY);
     if (lcsServiceAreaIdentityAvp != null) {
       try {
@@ -471,12 +471,12 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isLCSServiceTypeIDAvpPresent(){
+  public boolean isLCSServiceTypeIDAvpPresent() {
     return super.message.getAvps().getAvp(Avp.LCS_SERVICE_TYPE_ID) != null;
   }
 
   @Override
-  public long getLCSServiceTypeID(){
+  public long getLCSServiceTypeID() {
     Avp lcsLCSServiceTypeIDAvp = super.message.getAvps().getAvp(Avp.LCS_SERVICE_TYPE_ID);
     if (lcsLCSServiceTypeIDAvp != null) {
       try {
@@ -489,12 +489,12 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isPseudonymIndicatorAvpPresent(){
+  public boolean isPseudonymIndicatorAvpPresent() {
     return super.message.getAvps().getAvp(Avp.PSEUDONYM_INDICATOR) != null;
   }
 
   @Override
-  public int getPseudonymIndicator(){
+  public int getPseudonymIndicator() {
     Avp lcsPseudonymIndicatorAvp = super.message.getAvps().getAvp(Avp.PSEUDONYM_INDICATOR);
     if (lcsPseudonymIndicatorAvp != null) {
       try {
@@ -512,7 +512,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isLCSQoSClassAvpPresent(){
+  public boolean isLCSQoSClassAvpPresent() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -525,7 +525,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public int getLCSQoSClass(){
+  public int getLCSQoSClass() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -541,7 +541,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isHorizontalAccuracyAvpPresent(){
+  public boolean isHorizontalAccuracyAvpPresent() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -554,7 +554,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public long getHorizontalAccuracy(){
+  public long getHorizontalAccuracy() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -570,7 +570,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isVerticalAccuracyAvpPresent(){
+  public boolean isVerticalAccuracyAvpPresent() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -583,7 +583,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public long getVerticalAccuracy(){
+  public long getVerticalAccuracy() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -599,7 +599,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isVerticalRequestedAvpPresent(){
+  public boolean isVerticalRequestedAvpPresent() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -611,7 +611,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
     return false;
   }
 
-  public int getVerticalRequested(){
+  public int getVerticalRequested() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -627,7 +627,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isResponseTimeAvpPresent(){
+  public boolean isResponseTimeAvpPresent() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -640,7 +640,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public int getResponseTime(){
+  public int getResponseTime() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -661,7 +661,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isSGSNNumberAvpPresent(){
+  public boolean isSGSNNumberAvpPresent() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -674,7 +674,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public byte[] getSGSNNumber(){
+  public byte[] getSGSNNumber() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -690,7 +690,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isSGSNNameAvpPresent(){
+  public boolean isSGSNNameAvpPresent() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -703,7 +703,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public String getSGSNName(){
+  public String getSGSNName() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -719,7 +719,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isSGSNRealmAvpPresent(){
+  public boolean isSGSNRealmAvpPresent() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -732,7 +732,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public String getSGSNRealm(){
+  public String getSGSNRealm() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -748,7 +748,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isMMENameAvpPresent(){
+  public boolean isMMENameAvpPresent() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -761,7 +761,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public String getMMEName(){
+  public String getMMEName() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -777,7 +777,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isMMERealmAvpPresent(){
+  public boolean isMMERealmAvpPresent() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -790,7 +790,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public String getMMERealm(){
+  public String getMMERealm() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -806,7 +806,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isMSCNumberAvpPresent(){
+  public boolean isMSCNumberAvpPresent() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -819,7 +819,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public byte[] getMSCNumber(){
+  public byte[] getMSCNumber() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -835,7 +835,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean is3GPPAAAServerNameAvpPresent(){
+  public boolean is3GPPAAAServerNameAvpPresent() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -848,7 +848,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public String get3GPPAAAServerName(){
+  public String get3GPPAAAServerName() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -864,7 +864,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isLCSCapabilitiesSetsAvpPresent(){
+  public boolean isLCSCapabilitiesSetsAvpPresent() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -877,7 +877,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public long getLCSCapabilitiesSets(){
+  public long getLCSCapabilitiesSets() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -893,7 +893,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isGMLCAddressAvpPresent(){
+  public boolean isGMLCAddressAvpPresent() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -906,7 +906,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public java.net.InetAddress getGMLCAddress(){
+  public java.net.InetAddress getGMLCAddress() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -927,7 +927,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public long getLRRFLags(){
+  public long getLRRFLags() {
     Avp lcsLRRFlagsAvp = super.message.getAvps().getAvp(Avp.LRR_FLAGS);
     if (lcsLRRFlagsAvp != null) {
       try {
@@ -940,12 +940,12 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isLCSReferenceNumberAvpPresent(){
+  public boolean isLCSReferenceNumberAvpPresent() {
     return super.message.getAvps().getAvp(Avp.LCS_REFERENCE_NUMBER) != null;
   }
 
   @Override
-  public byte[] getLCSReferenceNumber(){
+  public byte[] getLCSReferenceNumber() {
     Avp lcsLCSReferenceNumberAvp = super.message.getAvps().getAvp(Avp.LCS_REFERENCE_NUMBER);
     if (lcsLCSReferenceNumberAvp != null) {
       try {
@@ -958,12 +958,12 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isDeferredMTLRDataAvpPresent(){
+  public boolean isDeferredMTLRDataAvpPresent() {
     return super.message.getAvps().getAvp(Avp.DEFERRED_MT_LR_DATA) != null;
   }
 
   @Override
-  public boolean isDeferredLocationTypeAvpPresent(){
+  public boolean isDeferredLocationTypeAvpPresent() {
     Avp lcsDeferredMTLRDataAvp = super.message.getAvps().getAvp(Avp.DEFERRED_MT_LR_DATA);
     if (lcsDeferredMTLRDataAvp != null) {
       try {
@@ -976,7 +976,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public long getDeferredLocationType(){
+  public long getDeferredLocationType() {
     Avp lcsDeferredMTLRDataAvp = super.message.getAvps().getAvp(Avp.DEFERRED_MT_LR_DATA);
     if (lcsDeferredMTLRDataAvp != null) {
       try {
@@ -992,7 +992,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isTerminationCauseAvpPresent(){
+  public boolean isTerminationCauseAvpPresent() {
     Avp lcsDeferredMTLRDataAvp = super.message.getAvps().getAvp(Avp.DEFERRED_MT_LR_DATA);
     if (lcsDeferredMTLRDataAvp != null) {
       try {
@@ -1005,7 +1005,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public long getTerminationCause(){
+  public long getTerminationCause() {
     Avp lcsDeferredMTLRDataAvp = super.message.getAvps().getAvp(Avp.DEFERRED_MT_LR_DATA);
     if (lcsDeferredMTLRDataAvp != null) {
       try {
@@ -1021,12 +1021,12 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isHGMLCAddressAvpPresent(){
+  public boolean isHGMLCAddressAvpPresent() {
     return super.message.getAvps().getAvp(Avp.GMLC_ADDRESS) != null; // IE: H-GMLC Address mapped to GMLC-Address AVP
   }
 
   @Override
-  public java.net.InetAddress getHGMLCAddress(){
+  public java.net.InetAddress getHGMLCAddress() {
     Avp lcsHGMLCAddressAvp = super.message.getAvps().getAvp(Avp.GMLC_ADDRESS); // IE: H-GMLC Address mapped to GMLC-Address AVP
     if (lcsHGMLCAddressAvp != null) {
       try {
@@ -1039,12 +1039,12 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isPeriodicLDRInfoAvpPresent(){
+  public boolean isPeriodicLDRInfoAvpPresent() {
     return super.message.getAvps().getAvp(Avp.PERIODIC_LDR_INFORMATION) != null;
   }
 
   @Override
-  public boolean isReportingAmountAvpPresent(){
+  public boolean isReportingAmountAvpPresent() {
     Avp lcsPeriodicLDRInfoAvp = super.message.getAvps().getAvp(Avp.PERIODIC_LDR_INFORMATION);
     if (lcsPeriodicLDRInfoAvp != null) {
       try {
@@ -1057,7 +1057,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public long getReportingAmount(){
+  public long getReportingAmount() {
     Avp lcsPeriodicLDRInfoAvp = super.message.getAvps().getAvp(Avp.PERIODIC_LDR_INFORMATION);
     if (lcsPeriodicLDRInfoAvp != null) {
       try {
@@ -1073,7 +1073,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isReportingIntervalAvpPresent(){
+  public boolean isReportingIntervalAvpPresent() {
     Avp lcsPeriodicLDRInfo = super.message.getAvps().getAvp(Avp.PERIODIC_LDR_INFORMATION);
     if (lcsPeriodicLDRInfo != null) {
       try {
@@ -1086,7 +1086,7 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public long getReportingInterval(){
+  public long getReportingInterval() {
     Avp lcsPeriodicLDRInfo = super.message.getAvps().getAvp(Avp.PERIODIC_LDR_INFORMATION);
     if (lcsPeriodicLDRInfo != null) {
       try {
@@ -1102,12 +1102,12 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isESMLCCellInfoAvpPresent(){
+  public boolean isESMLCCellInfoAvpPresent() {
     return super.message.getAvps().getAvp(Avp.ESMLC_CELL_INFO) != null;
   }
 
   @Override
-  public long getCellPortionId(){
+  public long getCellPortionId() {
     Avp lcsCellPortionIdAvp = super.message.getAvps().getAvp(Avp.CELL_PORTION_ID);
     if (lcsCellPortionIdAvp != null) {
       try {
@@ -1120,12 +1120,12 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean is1xRTTRCIDAvpPresent(){
+  public boolean is1xRTTRCIDAvpPresent() {
     return super.message.getAvps().getAvp(Avp.ONEXRTT_RCID) != null;
   }
 
   @Override
-  public byte[] get1xRTTRCID(){
+  public byte[] get1xRTTRCID() {
     Avp lcs1xRTTRCIDAvp = super.message.getAvps().getAvp(Avp.ONEXRTT_RCID);
     if (lcs1xRTTRCIDAvp != null) {
       try {
@@ -1138,12 +1138,12 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isCivicAddressAvpPresent(){
+  public boolean isCivicAddressAvpPresent() {
     return super.message.getAvps().getAvp(Avp.CIVIC_ADDRESS) != null;
   }
 
   @Override
-  public String getCivicAddress(){
+  public String getCivicAddress() {
     Avp lcsCivicAddressAvp = super.message.getAvps().getAvp(Avp.CIVIC_ADDRESS);
     if (lcsCivicAddressAvp != null) {
       try {
@@ -1156,12 +1156,12 @@ public class LocationReportRequestImpl extends AppRequestEventImpl implements Lo
   }
 
   @Override
-  public boolean isBarometricPressureAvpPresent(){
+  public boolean isBarometricPressureAvpPresent() {
     return super.message.getAvps().getAvp(Avp.BAROMETRIC_PRESSURE) != null;
   }
 
   @Override
-  public long getBarometricPressure(){
+  public long getBarometricPressure() {
     Avp lcsBarometricPressureAvp = super.message.getAvps().getAvp(Avp.BAROMETRIC_PRESSURE);
     if (lcsBarometricPressureAvp != null) {
       try {

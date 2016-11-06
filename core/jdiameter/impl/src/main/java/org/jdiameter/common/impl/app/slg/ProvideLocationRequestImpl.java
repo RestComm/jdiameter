@@ -71,7 +71,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public int getSLgLocationType(){
+  public int getSLgLocationType() {
     Avp slgLocationTypeAvp = super.message.getAvps().getAvp(Avp.SLG_LOCATION_TYPE);
     if (slgLocationTypeAvp != null) {
       try {
@@ -138,12 +138,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLCSEPSClientNameAvpPresent(){
+  public boolean isLCSEPSClientNameAvpPresent() {
     return super.message.getAvps().getAvp(Avp.LCS_EPS_CLIENT_NAME) != null;
   }
 
   @Override
-  public boolean isLSCNameStringAvpPresent(){
+  public boolean isLSCNameStringAvpPresent() {
     Avp lcsEPSClientNameAvp = super.message.getAvps().getAvp(Avp.LCS_EPS_CLIENT_NAME);
     if (lcsEPSClientNameAvp != null) {
       try {
@@ -156,7 +156,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public String getLSCNameString(){
+  public String getLSCNameString() {
     Avp lcsEPSClientNameAvp = super.message.getAvps().getAvp(Avp.LCS_EPS_CLIENT_NAME);
     if (lcsEPSClientNameAvp != null) {
       try {
@@ -172,7 +172,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLCSFormatIndicatorAvpPresent(){
+  public boolean isLCSFormatIndicatorAvpPresent() {
     Avp lcsEPSClientNameAvp = super.message.getAvps().getAvp(Avp.LCS_EPS_CLIENT_NAME);
     if (lcsEPSClientNameAvp != null) {
       try {
@@ -185,7 +185,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public int getLCSFormatIndicator(){
+  public int getLCSFormatIndicator() {
     Avp lcsEPSClientNameAvp = super.message.getAvps().getAvp(Avp.LCS_EPS_CLIENT_NAME);
     if (lcsEPSClientNameAvp != null) {
       try {
@@ -201,12 +201,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLCSCLientTypeAvpPresent(){
+  public boolean isLCSCLientTypeAvpPresent() {
     return super.message.getAvps().getAvp(Avp.LCS_CLIENT_TYPE) != null;
   }
 
   @Override
-  public int getLCSClientType(){
+  public int getLCSClientType() {
     Avp lcsClientTypeAvp = super.message.getAvps().getAvp(Avp.LCS_CLIENT_TYPE);
     if (lcsClientTypeAvp != null) {
       try {
@@ -219,12 +219,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLCSRequestorNamePresent(){
+  public boolean isLCSRequestorNamePresent() {
     return super.message.getAvps().getAvp(Avp.LCS_REQUESTOR_NAME) != null;
   }
 
   @Override
-  public boolean isLCSRequestorIdStringAvpPresent(){
+  public boolean isLCSRequestorIdStringAvpPresent() {
     Avp lcsRequestorNameAvp = super.message.getAvps().getAvp(Avp.LCS_REQUESTOR_NAME);
     if (lcsRequestorNameAvp != null) {
       try {
@@ -237,7 +237,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public String getLCSRequestorIdString(){
+  public String getLCSRequestorIdString() {
     Avp lcsRequestorNameAvp = super.message.getAvps().getAvp(Avp.LCS_REQUESTOR_NAME);
     if (lcsRequestorNameAvp != null) {
       try {
@@ -253,7 +253,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isReqLCSFormatIndicatorAvpPresent(){
+  public boolean isReqLCSFormatIndicatorAvpPresent() {
     Avp lcsRequestorNameAvp = super.message.getAvps().getAvp(Avp.LCS_REQUESTOR_NAME);
     if (lcsRequestorNameAvp != null) {
       try {
@@ -266,7 +266,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public int getReqLCSFormatIndicator(){
+  public int getReqLCSFormatIndicator() {
     Avp lcsRequestorNameAvp = super.message.getAvps().getAvp(Avp.LCS_REQUESTOR_NAME);
     if (lcsRequestorNameAvp != null) {
       try {
@@ -282,12 +282,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLCSPriorityPresent(){
+  public boolean isLCSPriorityPresent() {
     return super.message.getAvps().getAvp(Avp.LCS_PRIORITY) != null;
   }
 
   @Override
-  public long getLCSPriority(){
+  public long getLCSPriority() {
     Avp lcsPriorityAvp = super.message.getAvps().getAvp(Avp.LCS_PRIORITY);
     if (lcsPriorityAvp != null) {
       try {
@@ -300,12 +300,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLCSQoSAvpPresent(){
+  public boolean isLCSQoSAvpPresent() {
     return super.message.getAvps().getAvp(Avp.LCS_QOS) != null;
   }
 
   @Override
-  public boolean isLCSQoSClassAvpPresent(){
+  public boolean isLCSQoSClassAvpPresent() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -318,7 +318,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public int getLCSQoSClass(){
+  public int getLCSQoSClass() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -334,7 +334,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isHorizontalAccuracyAvpPresent(){
+  public boolean isHorizontalAccuracyAvpPresent() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -347,7 +347,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public long getHorizontalAccuracy(){
+  public long getHorizontalAccuracy() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -363,7 +363,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isVerticalAccuracyAvpPresent(){
+  public boolean isVerticalAccuracyAvpPresent() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -376,7 +376,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public long getVerticalAccuracy(){
+  public long getVerticalAccuracy() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -392,7 +392,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isVerticalRequestedAvpPresent(){
+  public boolean isVerticalRequestedAvpPresent() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -404,7 +404,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
     return false;
   }
 
-  public int getVerticalRequested(){
+  public int getVerticalRequested() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -420,7 +420,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isResponseTimeAvpPresent(){
+  public boolean isResponseTimeAvpPresent() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -433,7 +433,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public int getResponseTime(){
+  public int getResponseTime() {
     Avp lcsQoSAvp = super.message.getAvps().getAvp(Avp.LCS_QOS);
     if (lcsQoSAvp != null) {
       try {
@@ -449,12 +449,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isVelocityRequestedAvpPresent(){
+  public boolean isVelocityRequestedAvpPresent() {
     return super.message.getAvps().getAvp(Avp.VELOCITY_REQUESTED) != null;
   }
 
   @Override
-  public int getVelocityRequested(){
+  public int getVelocityRequested() {
     Avp lcsVelocityRequestedAvp = super.message.getAvps().getAvp(Avp.VELOCITY_REQUESTED);
     if (lcsVelocityRequestedAvp != null) {
       try {
@@ -467,12 +467,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isSupportedGADShapesAvpPresent(){
+  public boolean isSupportedGADShapesAvpPresent() {
     return super.message.getAvps().getAvp(Avp.SUPPORTED_GAD_SHAPES) != null;
   }
 
   @Override
-  public long getSupportedGADSahpes(){
+  public long getSupportedGADSahpes() {
     Avp lcsSupportedGADShapesAvp = super.message.getAvps().getAvp(Avp.SUPPORTED_GAD_SHAPES);
     if (lcsSupportedGADShapesAvp != null) {
       try {
@@ -485,12 +485,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLSCServiceTypeIdAvpPresent(){
+  public boolean isLSCServiceTypeIdAvpPresent() {
     return super.message.getAvps().getAvp(Avp.LCS_SERVICE_TYPE_ID) != null;
   }
 
   @Override
-  public long getLSCServiceTypeId(){
+  public long getLSCServiceTypeId() {
     Avp lcsServiceTypeIdAvp = super.message.getAvps().getAvp(Avp.LCS_SERVICE_TYPE_ID);
     if (lcsServiceTypeIdAvp != null) {
       try {
@@ -503,12 +503,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLCSCodewordAvpPresent(){
+  public boolean isLCSCodewordAvpPresent() {
     return super.message.getAvps().getAvp(Avp.LCS_CODEWORD) != null;
   }
 
   @Override
-  public String getLCSCodeword(){
+  public String getLCSCodeword() {
     Avp lcsCodewordAvp = super.message.getAvps().getAvp(Avp.LCS_CODEWORD);
     if (lcsCodewordAvp != null) {
       try {
@@ -521,12 +521,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isServiceSelectionAvpPresent(){
+  public boolean isServiceSelectionAvpPresent() {
     return super.message.getAvps().getAvp(Avp.SERVICE_SELECTION) != null;
   }
 
   @Override
-  public String getServiceSelection(){
+  public String getServiceSelection() {
     Avp lcsServiceSelectionAvp = super.message.getAvps().getAvp(Avp.SERVICE_SELECTION);
     if (lcsServiceSelectionAvp != null) {
       try {
@@ -539,12 +539,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLCSPrivacyCheckSessionAvpPresent(){
+  public boolean isLCSPrivacyCheckSessionAvpPresent() {
     return super.message.getAvps().getAvp(Avp.LCS_PRIVACY_CHECK_SESSION) != null;
   }
 
   @Override
-  public boolean isLCSPrivacyCheckAvpPresent(){
+  public boolean isLCSPrivacyCheckAvpPresent() {
     Avp lcPrivacyCheckSessionAvp = super.message.getAvps().getAvp(Avp.LCS_PRIVACY_CHECK_SESSION);
     if (lcPrivacyCheckSessionAvp != null) {
       try {
@@ -557,7 +557,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public int getLCSPrivacyCheck(){
+  public int getLCSPrivacyCheck() {
     Avp lcPrivacyCheckSessionAvp = super.message.getAvps().getAvp(Avp.LCS_PRIVACY_CHECK_SESSION);
     if (lcPrivacyCheckSessionAvp != null) {
       try {
@@ -573,12 +573,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLCSPrivacyCheckNonSessionAvpPresent(){
+  public boolean isLCSPrivacyCheckNonSessionAvpPresent() {
     return super.message.getAvps().getAvp(Avp.LCS_PRIVACY_CHECK_NON_SESSION) != null;
   }
 
   @Override
-  public boolean isLCSPrivacyCheckNSAvpPresent(){
+  public boolean isLCSPrivacyCheckNSAvpPresent() {
     Avp lcPrivacyCheckNonSessionAvp = super.message.getAvps().getAvp(Avp.LCS_PRIVACY_CHECK_NON_SESSION);
     if (lcPrivacyCheckNonSessionAvp != null) {
       try {
@@ -591,7 +591,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public int getLCSPrivacyCheckNS(){
+  public int getLCSPrivacyCheckNS() {
     Avp lcPrivacyCheckNonSessionAvp = super.message.getAvps().getAvp(Avp.LCS_PRIVACY_CHECK_NON_SESSION);
     if (lcPrivacyCheckNonSessionAvp != null) {
       try {
@@ -607,12 +607,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isDeferredLocationTypeAvpPresent(){
+  public boolean isDeferredLocationTypeAvpPresent() {
     return super.message.getAvps().getAvp(Avp.DEFERRED_LOCATION_TYPE) != null;
   }
 
   @Override
-  public long getDeferredLocationType(){
+  public long getDeferredLocationType() {
     Avp lcsDeferredLocationTypeAvp = super.message.getAvps().getAvp(Avp.DEFERRED_LOCATION_TYPE);
     if (lcsDeferredLocationTypeAvp != null) {
       try {
@@ -625,12 +625,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isLCSReferenceNumberAvpPresent(){
+  public boolean isLCSReferenceNumberAvpPresent() {
     return super.message.getAvps().getAvp(Avp.LCS_REFERENCE_NUMBER) != null;
   }
 
   @Override
-  public byte[] getLCSReferenceNumber(){
+  public byte[] getLCSReferenceNumber() {
     Avp lcsLCSReferenceNumberAvp = super.message.getAvps().getAvp(Avp.LCS_REFERENCE_NUMBER);
     if (lcsLCSReferenceNumberAvp != null) {
       try {
@@ -643,12 +643,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isAreaEventInfoAvpPresent(){
+  public boolean isAreaEventInfoAvpPresent() {
     return super.message.getAvps().getAvp(Avp.AREA_EVENT_INFO) != null;
   }
 
   @Override
-  public boolean isOccurrenceInfoAvpPresent(){
+  public boolean isOccurrenceInfoAvpPresent() {
     Avp lcsAreaEventInfoAvp = super.message.getAvps().getAvp(Avp.AREA_EVENT_INFO);
     if (lcsAreaEventInfoAvp != null) {
       try {
@@ -661,7 +661,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public int getOccurrenceInfo(){
+  public int getOccurrenceInfo() {
     Avp lcsAreaEventInfoAvp = super.message.getAvps().getAvp(Avp.AREA_EVENT_INFO);
     if (lcsAreaEventInfoAvp != null) {
       try {
@@ -677,7 +677,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isIntervalTimeAvpPresent(){
+  public boolean isIntervalTimeAvpPresent() {
     Avp lcsAreaEventInfoAvp = super.message.getAvps().getAvp(Avp.AREA_EVENT_INFO);
     if (lcsAreaEventInfoAvp != null) {
       try {
@@ -690,7 +690,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public long getIntervalTime(){
+  public long getIntervalTime() {
     Avp lcsAreaEventInfoAvp = super.message.getAvps().getAvp(Avp.AREA_EVENT_INFO);
     if (lcsAreaEventInfoAvp != null) {
       try {
@@ -706,7 +706,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isAreaDefinitionAvpPresent(){
+  public boolean isAreaDefinitionAvpPresent() {
     Avp lcsAreaEventInfoAvp = super.message.getAvps().getAvp(Avp.AREA_EVENT_INFO);
     if (lcsAreaEventInfoAvp != null) {
       try {
@@ -719,7 +719,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isAreaTypeAvpPresent(){
+  public boolean isAreaTypeAvpPresent() {
     Avp lcsAreaDefinitionAvp = super.message.getAvps().getAvp(Avp.AREA_DEFINITION);
     if (lcsAreaDefinitionAvp != null) {
       try {
@@ -732,7 +732,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public long getAreaType(){
+  public long getAreaType() {
     Avp lcsAreaDefinitionAvp = super.message.getAvps().getAvp(Avp.AREA_DEFINITION);
     if (lcsAreaDefinitionAvp != null) {
       try {
@@ -748,7 +748,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isAreaIdentificationAvpPresent(){
+  public boolean isAreaIdentificationAvpPresent() {
     Avp lcsAreaDefinitionAvp = super.message.getAvps().getAvp(Avp.AREA_DEFINITION);
     if (lcsAreaDefinitionAvp != null) {
       try {
@@ -761,7 +761,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public byte[] getAreaIdentification(){
+  public byte[] getAreaIdentification() {
     Avp lcsAreaDefinitionAvp = super.message.getAvps().getAvp(Avp.AREA_DEFINITION);
     if (lcsAreaDefinitionAvp != null) {
       try {
@@ -777,12 +777,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isGMLCAddressAvpPresent(){
+  public boolean isGMLCAddressAvpPresent() {
     return super.message.getAvps().getAvp(Avp.GMLC_ADDRESS) != null;
   }
 
   @Override
-  public java.net.InetAddress getGMLCAddress(){
+  public java.net.InetAddress getGMLCAddress() {
     Avp lcsGMLCAddressAvp = super.message.getAvps().getAvp(Avp.GMLC_ADDRESS);
     if (lcsGMLCAddressAvp != null) {
       try {
@@ -795,12 +795,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isPLRFlagsAvpPresent(){
+  public boolean isPLRFlagsAvpPresent() {
     return super.message.getAvps().getAvp(Avp.PLR_FLAGS) != null;
   }
 
   @Override
-  public long getPLRFLags(){
+  public long getPLRFLags() {
     Avp lcsPLRFlagsAvp = super.message.getAvps().getAvp(Avp.PLR_FLAGS);
     if (lcsPLRFlagsAvp != null) {
       try {
@@ -813,12 +813,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isPeriodicLDRInfoAvpPresent(){
+  public boolean isPeriodicLDRInfoAvpPresent() {
     return super.message.getAvps().getAvp(Avp.PERIODIC_LDR_INFORMATION) != null;
   }
 
   @Override
-  public boolean isReportingAmountAvpPresent(){
+  public boolean isReportingAmountAvpPresent() {
     Avp lcsPeriodicLDRInfo = super.message.getAvps().getAvp(Avp.PERIODIC_LDR_INFORMATION);
     if (lcsPeriodicLDRInfo != null) {
       try {
@@ -831,7 +831,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public long getReportingAmount(){
+  public long getReportingAmount() {
     Avp lcsPeriodicLDRInfo = super.message.getAvps().getAvp(Avp.PERIODIC_LDR_INFORMATION);
     if (lcsPeriodicLDRInfo != null) {
       try {
@@ -847,7 +847,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isReportingIntervalAvpPresent(){
+  public boolean isReportingIntervalAvpPresent() {
     Avp lcsPeriodicLDRInfo = super.message.getAvps().getAvp(Avp.PERIODIC_LDR_INFORMATION);
     if (lcsPeriodicLDRInfo != null) {
       try {
@@ -860,7 +860,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public long getReportingInterval(){
+  public long getReportingInterval() {
     Avp lcsPeriodicLDRInfo = super.message.getAvps().getAvp(Avp.PERIODIC_LDR_INFORMATION);
     if (lcsPeriodicLDRInfo != null) {
       try {
@@ -876,12 +876,12 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isReportingPLMNListAvpPresent(){
+  public boolean isReportingPLMNListAvpPresent() {
     return super.message.getAvps().getAvp(Avp.REPORTING_PLMN_LIST) != null;
   }
 
   @Override
-  public boolean isPrioritizedListIndicatorAvpPresent(){
+  public boolean isPrioritizedListIndicatorAvpPresent() {
     Avp lcsReportingPLMNListAvp = super.message.getAvps().getAvp(Avp.REPORTING_PLMN_LIST);
     if (lcsReportingPLMNListAvp != null) {
       try {
@@ -894,7 +894,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public int getPrioritizedListIndicator(){
+  public int getPrioritizedListIndicator() {
     Avp lcsReportingPLMNListAvp = super.message.getAvps().getAvp(Avp.REPORTING_PLMN_LIST);
     if (lcsReportingPLMNListAvp != null) {
       try {
@@ -910,7 +910,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isPLMNIDListAvpPresent(){
+  public boolean isPLMNIDListAvpPresent() {
     Avp lcsReportingPLMNListAvp = super.message.getAvps().getAvp(Avp.REPORTING_PLMN_LIST);
     if (lcsReportingPLMNListAvp != null) {
       try {
@@ -923,7 +923,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isVisitedPLMNIdAvpPresent(){
+  public boolean isVisitedPLMNIdAvpPresent() {
     Avp lcsPLMNIdListAvp = super.message.getAvps().getAvp(Avp.PLMN_ID_LIST);
     if (lcsPLMNIdListAvp != null) {
       try {
@@ -952,7 +952,7 @@ public class ProvideLocationRequestImpl extends AppRequestEventImpl implements P
   }
 
   @Override
-  public boolean isPeriodicLocationSupportIndicatorAvpPresent(){
+  public boolean isPeriodicLocationSupportIndicatorAvpPresent() {
     Avp lcsPLMNIdListAvp = super.message.getAvps().getAvp(Avp.PLMN_ID_LIST);
     if (lcsPLMNIdListAvp != null) {
       try {
