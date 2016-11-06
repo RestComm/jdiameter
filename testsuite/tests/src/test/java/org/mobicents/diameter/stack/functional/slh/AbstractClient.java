@@ -68,7 +68,7 @@ import org.mobicents.diameter.stack.functional.TBase;
 
 /**
  *
- * @author Fernando Mendioroz (fernando.mendioroz@telestax.com)
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
  *
  */
 public abstract class AbstractClient extends TBase implements ClientSLhSessionListener {

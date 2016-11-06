@@ -34,7 +34,7 @@ import org.mobicents.diameter.impl.ha.server.slg.ServerSLgSessionDataReplicatedI
 
 /**
  *
- * @author Fernando Mendioroz (fernando.mendioroz@telestax.com)
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
  *
  */
 public class SLgReplicatedSessionDataFactory implements IAppSessionDataFactory<ISLgSessionData> {

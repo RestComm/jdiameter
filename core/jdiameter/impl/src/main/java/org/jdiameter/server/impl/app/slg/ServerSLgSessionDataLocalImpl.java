@@ -24,7 +24,7 @@ package org.jdiameter.server.impl.app.slg;
 import org.jdiameter.common.impl.app.slg.SLgLocalSessionDataImpl;
 
 /**
- * @author fernando.mendioroz@telestax.com (Fernando Mendioroz)
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
  *
  */
 

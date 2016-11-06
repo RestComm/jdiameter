@@ -52,6 +52,11 @@ import org.jdiameter.api.slg.events.ProvideLocationAnswer;
 import org.mobicents.diameter.stack.functional.Utils;
 import org.mobicents.diameter.stack.functional.slg.AbstractImmediateClient;
 
+/**
+ *
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
+ *
+ */
 public class ClientPLR extends AbstractImmediateClient {
 
   protected boolean receivedPLA;

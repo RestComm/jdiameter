@@ -55,7 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author fernando.mendioroz@telestax.com (Fernando Mendioroz)
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
  *
  */
 
@@ -110,7 +110,7 @@ public class SLgSessionFactoryImpl implements ISLgSessionFactory, ServerSLgSessi
   }
 
   /**
-   * @param serverSessionListener the serverSessionListener to set
+   * @param clientSessionListener theclientSessionListener to set
    */
   public void setClientSessionListener(ClientSLgSessionListener clientSessionListener) {
     this.clientSessionListener = clientSessionListener;

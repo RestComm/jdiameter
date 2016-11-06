@@ -69,7 +69,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  *
- * @author Fernando Mendioroz (fernando.mendioroz@telestax.com)
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
  *
  */
 public abstract class AbstractDeferredServer extends TBase implements ServerSLgSessionListener {

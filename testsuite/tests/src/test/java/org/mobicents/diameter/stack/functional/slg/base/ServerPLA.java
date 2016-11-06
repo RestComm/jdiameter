@@ -58,7 +58,7 @@ import org.mobicents.diameter.stack.functional.slg.AbstractImmediateServer;
 
 /**
  *
- * @author Fernando Mendioroz (fernando.mendioroz@telestax.com)
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
  *
  */
 public class ServerPLA extends AbstractImmediateServer {

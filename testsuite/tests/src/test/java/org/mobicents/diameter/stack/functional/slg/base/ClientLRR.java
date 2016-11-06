@@ -52,6 +52,11 @@ import org.jdiameter.api.slg.events.LocationReportAnswer;
 import org.mobicents.diameter.stack.functional.Utils;
 import org.mobicents.diameter.stack.functional.slg.AbstractDeferredClient;
 
+/**
+ *
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
+ *
+ */
 public class ClientLRR extends AbstractDeferredClient {
 
   protected boolean receivedLRA;

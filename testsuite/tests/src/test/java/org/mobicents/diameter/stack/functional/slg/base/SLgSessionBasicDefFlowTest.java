@@ -44,8 +44,9 @@ import org.junit.runners.Parameterized.Parameters;
 
 /**
  *
- * @author Fernando Mendioroz (fernando.mendioroz@telestax.com)
- *
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
+ * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
 @RunWith(Parameterized.class)
 public class SLgSessionBasicDefFlowTest {
@@ -56,10 +57,10 @@ public class SLgSessionBasicDefFlowTest {
   private URI serverNode1ConfigURI;
 
   /**
-   * @param clientNode
-   * @param node1
-   * @param node2
-   * @param serverCount
+   * @param clientConfigUrl
+   * // @param node1
+   * // @param node2
+   * @param serverNode1ConfigURL
    */
 
   public SLgSessionBasicDefFlowTest(String clientConfigUrl, String serverNode1ConfigURL) throws Exception {

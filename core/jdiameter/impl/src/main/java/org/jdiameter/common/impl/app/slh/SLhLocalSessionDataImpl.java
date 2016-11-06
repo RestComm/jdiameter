@@ -29,7 +29,7 @@ import org.jdiameter.common.api.app.slh.ISLhSessionData;
 import org.jdiameter.common.api.app.slh.SLhSessionState;
 
 /**
- * @author fernando.mendioroz@telestax.com (Fernando Mendioroz)
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
  *
  */
 

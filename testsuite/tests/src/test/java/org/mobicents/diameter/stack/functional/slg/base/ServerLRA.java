@@ -58,7 +58,7 @@ import org.mobicents.diameter.stack.functional.slg.AbstractDeferredServer;
 
 /**
  *
- * @author Fernando Mendioroz (fernando.mendioroz@telestax.com)
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
  *
  */
 public class ServerLRA extends AbstractDeferredServer {

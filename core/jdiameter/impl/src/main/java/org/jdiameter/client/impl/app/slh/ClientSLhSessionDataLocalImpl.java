@@ -24,7 +24,7 @@ package org.jdiameter.client.impl.app.slh;
 import org.jdiameter.common.impl.app.slh.SLhLocalSessionDataImpl;
 
 /**
- * @author fernando.mendioroz@telestax.com (Fernando Mendioroz)
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
  *
  */
 

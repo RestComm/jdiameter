@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Fernando Mendioroz (fernando.mendioroz@telestax.com)
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
  *
  */
 public abstract class SLgSessionDataReplicatedImpl extends AppSessionDataReplicatedImpl implements ISLgSessionData {
@@ -56,7 +56,7 @@ public abstract class SLgSessionDataReplicatedImpl extends AppSessionDataReplica
   /**
    * @param nodeFqn
    * @param mobicentsCluster
-   * @param iface
+   * @param container
    */
   public SLgSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
     super(nodeFqn, mobicentsCluster);

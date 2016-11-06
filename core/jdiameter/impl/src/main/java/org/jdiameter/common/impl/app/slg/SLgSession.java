@@ -36,7 +36,7 @@ import org.jdiameter.common.api.app.slg.ISLgMessageFactory;
 import org.jdiameter.common.api.app.slg.ISLgSessionData;
 
 /**
- * @author fernando.mendioroz@telestax.com (Fernando Mendioroz)
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
  *
  */
 

@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author fernando.mendioroz@telestax.com (Fernando Mendioroz)
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
  *
  */
 
@@ -63,7 +63,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isLocationEstimateAvpPresent(){
+  public boolean isLocationEstimateAvpPresent() {
     return super.message.getAvps().getAvp(Avp.LOCATION_ESTIMATE) != null;
   }
 
@@ -81,7 +81,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isAccuracyFulfilmentIndicatorAvpPresent(){
+  public boolean isAccuracyFulfilmentIndicatorAvpPresent() {
     return super.message.getAvps().getAvp(Avp.ACCURACY_FULFILMENT_INDICATOR) != null;
   }
 
@@ -99,7 +99,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isAgeOfLocationEstimateAvpPresent(){
+  public boolean isAgeOfLocationEstimateAvpPresent() {
     return super.message.getAvps().getAvp(Avp.AGE_OF_LOCATION_ESTIMATE) != null;
   }
 
@@ -117,7 +117,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isVelocityEstimateAvpPresent(){
+  public boolean isVelocityEstimateAvpPresent() {
     return super.message.getAvps().getAvp(Avp.VELOCITY_ESTIMATE) != null;
   }
 
@@ -135,7 +135,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isEUTRANPositioningDataAvpPresent(){
+  public boolean isEUTRANPositioningDataAvpPresent() {
     return super.message.getAvps().getAvp(Avp.EUTRAN_POSITIONING_DATA) != null;
   }
 
@@ -153,7 +153,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isECGIAvpPresent(){
+  public boolean isECGIAvpPresent() {
     return super.message.getAvps().getAvp(Avp.ECGI) != null;
   }
 
@@ -205,7 +205,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isGERANGANSSPositioningDataAVPPresent(){
+  public boolean isGERANGANSSPositioningDataAVPPresent() {
     Avp lcsGERANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.GERAN_POSITIONING_INFO);
     if (lcsGERANPositioningInfoAvp != null) {
       try {
@@ -218,7 +218,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public byte[] getGERANGANSSPositioningData(){
+  public byte[] getGERANGANSSPositioningData() {
     Avp lcsGERANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.GERAN_POSITIONING_INFO);
     if (lcsGERANPositioningInfoAvp != null) {
       try {
@@ -234,12 +234,12 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isCellGlobalIdentityAvpPresent(){
+  public boolean isCellGlobalIdentityAvpPresent() {
     return super.message.getAvps().getAvp(Avp.CELL_GLOBAL_IDENTITY) != null;
   }
 
   @Override
-  public byte[] getCellGlobalIdentity(){
+  public byte[] getCellGlobalIdentity() {
     Avp lcsCellGlobalIdAvp = super.message.getAvps().getAvp(Avp.CELL_GLOBAL_IDENTITY);
     if (lcsCellGlobalIdAvp != null) {
       try {
@@ -252,12 +252,12 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isUTRANPositioningInfoAvpPresent(){
+  public boolean isUTRANPositioningInfoAvpPresent() {
     return super.message.getAvps().getAvp(Avp.UTRAN_POSITIONING_INFO) != null;
   }
 
   @Override
-  public boolean isUTRANPositioningDataAVPPresent(){
+  public boolean isUTRANPositioningDataAVPPresent() {
     Avp lcsUTRANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.UTRAN_POSITIONING_INFO);
     if (lcsUTRANPositioningInfoAvp != null) {
       try {
@@ -270,7 +270,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public byte[] getUTRANPositioningData(){
+  public byte[] getUTRANPositioningData() {
     Avp lcsUTRANPositioningInfoAvp = super.message.getAvps().getAvp(Avp.UTRAN_POSITIONING_INFO);
     if (lcsUTRANPositioningInfoAvp != null) {
       try {
@@ -315,12 +315,12 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isServiceAreaIdentityAvpPresent(){
+  public boolean isServiceAreaIdentityAvpPresent() {
     return super.message.getAvps().getAvp(Avp.SERVICE_AREA_IDENTITY) != null;
   }
 
   @Override
-  public byte[] getServiceAreaIdentity(){
+  public byte[] getServiceAreaIdentity() {
     Avp lcsServiceAreaIdentityAvp = super.message.getAvps().getAvp(Avp.SERVICE_AREA_IDENTITY);
     if (lcsServiceAreaIdentityAvp != null) {
       try {
@@ -351,7 +351,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public byte[] getSGSNNumber(){
+  public byte[] getSGSNNumber() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -367,7 +367,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isSGSNNameAvpPresent(){
+  public boolean isSGSNNameAvpPresent() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -380,7 +380,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public String getSGSNName(){
+  public String getSGSNName() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -396,7 +396,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isSGSNRealmAvpPresent(){
+  public boolean isSGSNRealmAvpPresent() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -409,7 +409,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public String getSGSNRealm(){
+  public String getSGSNRealm() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -425,7 +425,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isMMENameAvpPresent(){
+  public boolean isMMENameAvpPresent() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -438,7 +438,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public String getMMEName(){
+  public String getMMEName() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -454,7 +454,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isMMERealmAvpPresent(){
+  public boolean isMMERealmAvpPresent() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -467,7 +467,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public String getMMERealm(){
+  public String getMMERealm() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -483,7 +483,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isMSCNumberAvpPresent(){
+  public boolean isMSCNumberAvpPresent() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -496,7 +496,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public byte[] getMSCNumber(){
+  public byte[] getMSCNumber() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -512,7 +512,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean is3GPPAAAServerNameAvpPResent(){
+  public boolean is3GPPAAAServerNameAvpPResent() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -525,7 +525,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public String get3GPPAAAServerName(){
+  public String get3GPPAAAServerName() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -541,7 +541,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isLCSCapabilitiesSetsAvpPresent(){
+  public boolean isLCSCapabilitiesSetsAvpPresent() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -554,7 +554,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public long getLCSCapabilitiesSets(){
+  public long getLCSCapabilitiesSets() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -570,7 +570,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isGMLCAddressAvpPresent(){
+  public boolean isGMLCAddressAvpPresent() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -583,7 +583,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public java.net.InetAddress getGMLCAddress(){
+  public java.net.InetAddress getGMLCAddress() {
     Avp lcsServingNodeAvp = super.message.getAvps().getAvp(Avp.SERVING_NODE);
     if (lcsServingNodeAvp != null) {
       try {
@@ -618,12 +618,12 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isESMLCCellInfoAvpPresent(){
+  public boolean isESMLCCellInfoAvpPresent() {
     return super.message.getAvps().getAvp(Avp.ESMLC_CELL_INFO) != null;
   }
 
   @Override
-  public long getCellPortionId(){
+  public long getCellPortionId() {
     Avp lcsCellPortionIdAvp = super.message.getAvps().getAvp(Avp.CELL_PORTION_ID);
     if (lcsCellPortionIdAvp != null) {
       try {
@@ -636,7 +636,7 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isCivicAddressAvpPresent(){
+  public boolean isCivicAddressAvpPresent() {
     return super.message.getAvps().getAvp(Avp.CIVIC_ADDRESS) != null;
   }
 
@@ -654,12 +654,12 @@ public class ProvideLocationAnswerImpl extends AppRequestEventImpl implements Pr
   }
 
   @Override
-  public boolean isBarometricPressureAvpPresent(){
+  public boolean isBarometricPressureAvpPresent() {
     return super.message.getAvps().getAvp(Avp.BAROMETRIC_PRESSURE) != null;
   }
 
   @Override
-  public long getBarometricPressure(){
+  public long getBarometricPressure() {
     Avp lcsBarometricPressureAvp = super.message.getAvps().getAvp(Avp.BAROMETRIC_PRESSURE);
     if (lcsBarometricPressureAvp != null) {
       try {

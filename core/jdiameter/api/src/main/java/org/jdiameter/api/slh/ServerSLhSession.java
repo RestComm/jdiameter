@@ -30,7 +30,7 @@ import org.jdiameter.api.app.StateMachine;
 import org.jdiameter.api.slh.events.LCSRoutingInfoAnswer;
 
 /**
- * @author fernando.mendioroz@telestax.com (Fernando Mendioroz)
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
  *
  */
 

@@ -24,7 +24,7 @@ package org.jdiameter.api.slg.events;
 import org.jdiameter.api.app.AppAnswerEvent;
 
 /**
- * @author fernando.mendioroz@telestax.com (Fernando Mendioroz)
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
  *
  */
 

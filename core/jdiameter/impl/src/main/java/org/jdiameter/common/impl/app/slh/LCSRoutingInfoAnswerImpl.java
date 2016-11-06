@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 // import java.net.InetAddress;
 
 /**
- * @author fernando.mendioroz@telestax.com (Fernando Mendioroz)
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
  *
  */
 public class LCSRoutingInfoAnswerImpl extends AppRequestEventImpl implements LCSRoutingInfoAnswer {
