@@ -136,14 +136,14 @@ public class ServerPLA extends AbstractImmediateServer {
   }
 
   @Override
-  protected byte[] getLocationEstimate(){
+  protected byte[] getLocationEstimate() {
       String locEstimate = "S35°38'15.37\" WE109°45'21.77\"";
       byte[] locationEstimate = locEstimate.getBytes();
       return locationEstimate;
   }
 
   @Override
-  protected int getAccuracyFulfilmentIndicator(){
+  protected int getAccuracyFulfilmentIndicator() {
 /*
   3GPP TS 29.172 v13.0.0 section 7.4.15
     REQUESTED_ACCURACY_FULFILLED (0)
@@ -171,7 +171,7 @@ public class ServerPLA extends AbstractImmediateServer {
     The Velocity-Estimate AVP is of type OctetString.
     It is composed of 4 or more octets with an internal structure according to 3GPP TS 23.032 [3].
 */
-      String vel = "200mph";
+      String vel = "210";
       byte[] velocityEstimate = vel.getBytes();
       return velocityEstimate;
   }
@@ -183,7 +183,7 @@ public class ServerPLA extends AbstractImmediateServer {
     The EUTRAN-Positioning-Data AVP is of type OctetString.
     It shall contain the encoded content of the "Positioning-Data" Information Element as defined in 3GPP TS 29.171 [7].
 */
-    String eutran = "eNB453ltea23";
+    String eutran = "654E423435336C7465613233";
     byte[] eutranPositioningData = eutran.getBytes();
     return eutranPositioningData;
   }
@@ -195,7 +195,7 @@ public class ServerPLA extends AbstractImmediateServer {
     The ECGI AVP is of type OctetString. It indicates the E-UTRAN Cell Global Identifier.
     It is coded according to clause 8.21.5, in 3GPP TS 29.274 [8].
 */
-    String eCgi = "eNB9437";
+    String eCgi = "654E4239343337";
     byte[] ecgi = eCgi.getBytes();
     return ecgi;
   }
@@ -207,7 +207,7 @@ public class ServerPLA extends AbstractImmediateServer {
     The GERAN-Positioning-Data AVP is of type OctetString.
     It shall contain the encoded content of the "Positioning Data" Information Element as defined in 3GPP TS 49.031 [20]
   */
-    String geran = "BTS943BSC3";
+    String geran = "42545339343342534333";
     byte[] geranPositioningData = geran.getBytes();
     return geranPositioningData;
   }
@@ -219,14 +219,14 @@ public class ServerPLA extends AbstractImmediateServer {
     The GERAN-GANSS-Positioning-Data  AVP is of type OctetString.
     It shall contain the encoded content of the "GANSS Positioning Data" Information Element as defined in 3GPP TS 49.031 [20]
   */
-    String geranGanss = "BTS73RNC1Ganss43";
+    String geranGanss = "4254533733524E4331473433";
     byte[] geranGanssPositioningData = geranGanss.getBytes();
     return geranGanssPositioningData;
   }
 
   @Override
   protected byte[] getCellGlobalIdentity() {
-    String cgi = "9342784713907";
+    String cgi = "A342784713907";
     byte[] CellGlobalIdentity = cgi.getBytes();
     return CellGlobalIdentity;
   }
@@ -239,7 +239,7 @@ public class ServerPLA extends AbstractImmediateServer {
     It shall contain the encoded content of the "positioningDataDiscriminator" and the "positioningDataSet" included in the
     "positionData" Information Element as defined in 3GPP TS 25.413 [21].
   */
-    String utran = "NB943RNC1";
+    String utran = "4E42393433524E4331";
     byte[] utranPositioningData = utran.getBytes();
     return utranPositioningData;
   }
@@ -252,7 +252,7 @@ public class ServerPLA extends AbstractImmediateServer {
     It shall contain the encoded content of the "positioningDataDiscriminator" and the "positioningDataSet" included in the
     "positionData" Information Element as defined in 3GPP TS 25.413 [21].
   */
-    String utranGanss = "NB031RNC5Ganss43";
+    String utranGanss = "4E42303331524E4335473433";
     byte[] utranGanssPositioningData = utranGanss.getBytes();
     return utranGanssPositioningData;
   }
@@ -264,63 +264,63 @@ public class ServerPLA extends AbstractImmediateServer {
   SAI shall contain the current service area of the target UE. The Service Area Identifier (SAI) is used to globally identify a service area.
   This Information Element is applicable only when the UE is attached to UTRAN access and when the message is sent by the SGSN or combined MME/SGSN
   */
-    String sai = "service-area-umts-3";
+    String sai = "736572766963652D617265612D756D74732D33";
     byte[] serviceAreaIdentity = sai.getBytes();
     return serviceAreaIdentity;
   }
 
   @Override
-  protected byte[] getSGSNNumber(){
+  protected byte[] getSGSNNumber() {
     String sgsnNumString = "59899004501";
     byte[] sgsnNumber = sgsnNumString.getBytes();
     return sgsnNumber;
   }
 
   @Override
-  protected String getSGSNName(){
+  protected String getSGSNName() {
     String sgsnName = "SGSN01";
     return sgsnName;
   }
 
   @Override
-  protected String getSGSNRealm(){
+  protected String getSGSNRealm() {
     String sgsnRealm = "sgsn.restcomm.com";
     return sgsnRealm;
   }
 
   @Override
-  protected String getMMEName(){
+  protected String getMMEName() {
     String mmeName = "MME710";
     return mmeName;
   }
 
   @Override
-  protected String getMMERealm(){
+  protected String getMMERealm() {
     String mmeRealm = "mme.restcomm.com";
     return mmeRealm;
   }
 
   @Override
-  protected byte[] getMSCNumber(){
+  protected byte[] getMSCNumber() {
     String mscNumString = "59899001207";
     byte[] mscNumber = mscNumString.getBytes();
     return mscNumber;
   }
 
   @Override
-  protected String get3GPPAAAServerName(){
+  protected String get3GPPAAAServerName() {
     String tgppAAAServerName = "aaa.restcomm.com";
     return tgppAAAServerName;
   }
 
   @Override
-  protected long getLCSCapabilitiesSets(){
+  protected long getLCSCapabilitiesSets() {
     long lcsCapabilitiesSets = 99900123;
     return lcsCapabilitiesSets;
   }
 
   @Override
-  protected java.net.InetAddress getGMLCAddress(){
+  protected java.net.InetAddress getGMLCAddress() {
   /*
   3GPP TS 29.173 v13.0.0 section 6.4.7
     The GMLC-Address AVP is of type Address and shall contain the IPv4 or IPv6 address of H-GMLC or the V-GMLC associated with the serving node.

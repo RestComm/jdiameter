@@ -135,7 +135,7 @@ public class ServerLRA extends AbstractDeferredServer {
   }
 
   @Override
-  protected java.net.InetAddress getGMLCAddress(){
+  protected java.net.InetAddress getGMLCAddress() {
   /*
     3GPP TS 29.173 v13.0.0 section 6.4.7
       The GMLC-Address AVP is of type Address and shall contain the IPv4 or IPv6 address of H-GMLC or the V-GMLC associated with the serving node.
@@ -162,7 +162,7 @@ public class ServerLRA extends AbstractDeferredServer {
   }
 
   @Override
-  protected int getPrioritizedListIndicator(){
+  protected int getPrioritizedListIndicator() {
   /*
   3GPP TS 29.172 v13.0.0 section 7.4.51
     The Prioritized-List-Indicator AVP is of type Enumerated and it indicates if the PLMN-ID-List is provided in prioritized order or not.
@@ -174,7 +174,7 @@ public class ServerLRA extends AbstractDeferredServer {
   }
 
   @Override
-  protected byte[] getVisitedPLMNId(){
+  protected byte[] getVisitedPLMNId() {
   /*
   3GPP TS 29.172 v13.0.0 section 7.4.49
     The PLMN-ID-List AVP is of type Grouped.
@@ -185,13 +185,13 @@ public class ServerLRA extends AbstractDeferredServer {
         *[ AVP ]
     If not included, the default value of Periodic-Location-Support-Indicator shall be considered as "NOT_SUPPORTED" (0).
   */
-    String vPlmnIdList = "74803, 74801";
+    String vPlmnIdList = "37343830332C203734383031";
     byte[] visitedPlmnIdList = vPlmnIdList.getBytes();
     return visitedPlmnIdList;
   }
 
   @Override
-  protected int getPeriodicLocationSupportIndicator(){
+  protected int getPeriodicLocationSupportIndicator() {
   /*
   3GPP TS 29.172 v13.0.0 section 7.4.50
     The Periodic-Location-Support-Indicator AVP is of type Enumerated and it indicates if the given PLMN-ID (indicated by Visited-PLMN-Id)
@@ -209,7 +209,7 @@ public class ServerLRA extends AbstractDeferredServer {
     3GPP TS 29.172 v13.0.0 section 7.4.37
       The LCS-Reference-Number AVP is of type OctetString of length 1. It shall contain the reference number identifying the deferred location request.
   */
-    String lcsRefNumber = "579";
+    String lcsRefNumber = "4C4353353739";
     byte[] lcsRefNum = lcsRefNumber.getBytes();
     return lcsRefNum;
   }

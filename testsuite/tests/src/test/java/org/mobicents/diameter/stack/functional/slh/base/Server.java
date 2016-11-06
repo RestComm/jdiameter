@@ -122,21 +122,21 @@ public class Server extends AbstractServer {
   }
 
   @Override
-  protected String getUserName(){
+  protected String getUserName() {
     // Information Element IMSI Mapped to AVP User-Name
     String imsi = "748039876543210";
     return imsi;
   }
 
   @Override
-  protected byte[] getMSISDN(){
+  protected byte[] getMSISDN() {
     String msisdnString = "59899077937";
     byte[] msisdn = msisdnString.getBytes();
     return msisdn;
   }
 
   @Override
-  protected byte[] getLMSI(){
+  protected byte[] getLMSI() {
   /*
      3GPP TS 29.173 v13.0.0 section 6.4.2
        The LMSI AVP is of type OctetString and it shall contain the Local Mobile Station Identity (LMSI) allocated by the VLR, as defined in 3GPP TS 23.003
@@ -147,26 +147,26 @@ public class Server extends AbstractServer {
   }
 
   @Override
-  protected byte[] getSGSNNumber(){
+  protected byte[] getSGSNNumber() {
     String sgsnNumString = "59899004501";
     byte[] sgsnNumber = sgsnNumString.getBytes();
     return sgsnNumber;
   }
 
   @Override
-  protected String getSGSNName(){
+  protected String getSGSNName() {
     String sgsnName = "SGSN01";
     return sgsnName;
   }
 
   @Override
-  protected String getSGSNRealm(){
+  protected String getSGSNRealm() {
     String sgsnRealm = "sgsn.restcomm.com";
     return sgsnRealm;
   }
 
   @Override
-  protected String getMMEName(){
+  protected String getMMEName() {
   /*
      3GPP TS 29.173 v13.0.0 section 6.4.4
        TThe MME-Name AVP is of type DiameterIdentity and it shall contain the Diameter identity of the serving MME.
@@ -176,7 +176,7 @@ public class Server extends AbstractServer {
   }
 
   @Override
-  protected String getMMERealm(){
+  protected String getMMERealm() {
   /*
      3GPP TS 29.173 v13.0.0 section 6.4.12
        The MME-Realm AVP is of type DiameterIdentity and it shall contain the Diameter Realm Identity of the serving MME.
@@ -186,76 +186,76 @@ public class Server extends AbstractServer {
   }
 
   @Override
-  protected byte[] getMSCNumber(){
+  protected byte[] getMSCNumber() {
     String mscNumString = "59899001207";
     byte[] mscNumber = mscNumString.getBytes();
     return mscNumber;
   }
 
   @Override
-  protected String get3GPPAAAServerName(){
+  protected String get3GPPAAAServerName() {
     String tgppAAAServerName = "aaa.restcomm.com";
     return tgppAAAServerName;
   }
 
   @Override
-  protected long getLCSCapabilitiesSets(){
+  protected long getLCSCapabilitiesSets() {
     long lcsCapabilitiesSets = 99900123;
     return lcsCapabilitiesSets;
   }
 
   @Override
-  protected byte[] getAdditionalSGSNNumber(){
+  protected byte[] getAdditionalSGSNNumber() {
     String sgsnNumString = "59899004502";
     byte[] sgsnNumber = sgsnNumString.getBytes();
     return sgsnNumber;
   }
 
   @Override
-  protected String getAdditionalSGSNName(){
+  protected String getAdditionalSGSNName() {
     String sgsnName = "SGSN02";
     return sgsnName;
   }
 
   @Override
-  protected String getAdditionalSGSNRealm(){
+  protected String getAdditionalSGSNRealm() {
     String sgsnRealm = "sgsn2.restcomm.com";
     return sgsnRealm;
   }
 
   @Override
-  protected String getAdditionalMMEName(){
+  protected String getAdditionalMMEName() {
     String mmeName = "MME712";
     return mmeName;
   }
 
   @Override
-  protected String getAdditionalMMERealm(){
+  protected String getAdditionalMMERealm() {
     String mmeRealm = "mme2.restcomm.com";
     return mmeRealm;
   }
 
   @Override
-  protected byte[] getAdditionalMSCNumber(){
+  protected byte[] getAdditionalMSCNumber() {
     String mscNumString = "59899001210";
     byte[] mscNumber = mscNumString.getBytes();
     return mscNumber;
   }
 
   @Override
-  protected String getAdditional3GPPAAAServerName(){
+  protected String getAdditional3GPPAAAServerName() {
     String tgppAAAServerName = "aaa2.restcomm.com";
     return tgppAAAServerName;
   }
 
   @Override
-  protected long getAdditionalLCSCapabilitiesSets(){
+  protected long getAdditionalLCSCapabilitiesSets() {
     long lcsCapabilitiesSets = 88800123;
     return lcsCapabilitiesSets;
   }
 
   @Override
-  protected java.net.InetAddress getAdditionalGMLCAddress(){
+  protected java.net.InetAddress getAdditionalGMLCAddress() {
     try {
       java.net.InetAddress gmlcAddress = java.net.InetAddress.getLocalHost();
       return gmlcAddress;
@@ -266,7 +266,7 @@ public class Server extends AbstractServer {
   }
 
   @Override
-  protected java.net.InetAddress getGMLCAddress(){
+  protected java.net.InetAddress getGMLCAddress() {
   /*
     3GPP TS 29.173 v13.0.0 section 6.4.7
       The GMLC-Address AVP is of type Address and shall contain the IPv4 or IPv6 address of H-GMLC or the V-GMLC associated with the serving node.
@@ -281,7 +281,7 @@ public class Server extends AbstractServer {
   }
 
   @Override
-  protected java.net.InetAddress getPPRAddress(){
+  protected java.net.InetAddress getPPRAddress() {
   /*
      3GPP TS 29.173 v13.0.0 section 6.4.9
        The PPR-Address AVP is of type Address and contains the IPv4 or IPv6 address of the Privacy Profile Register for the targeted user
@@ -296,7 +296,7 @@ public class Server extends AbstractServer {
   }
 
   @Override
-  protected long getRIAFLags(){
+  protected long getRIAFLags() {
   /*
   3GPP TS 29.173 v13.0.0 section 6.4.15
     Bit	Event Type                                        Description

@@ -91,7 +91,7 @@ public class ClientPLR extends AbstractImmediateClient {
   // PLR methods
 
   // { SLg-Location-Type }
-  protected int getSLgLocationType(){
+  protected int getSLgLocationType() {
   /*
   3GPP TS 29.172 v13.0.0 section 7.4.2
     The SLg-Location-Type AVP is of type Enumerated. The following values are defined:
@@ -107,12 +107,12 @@ public class ClientPLR extends AbstractImmediateClient {
   }
 
   @Override
-  protected String getLCSNameString(){
+  protected String getLCSNameString() {
     String lcsNameString = "Restcomm Geolocation API";
     return lcsNameString;
   }
 
-  protected int getLCSFormatIndicator(){
+  protected int getLCSFormatIndicator() {
   /*
     "0" = "LOGICAL_NAME"
     "1" = "EMAIL_ADDRESS"
@@ -125,27 +125,27 @@ public class ClientPLR extends AbstractImmediateClient {
   }
 
   @Override
-  protected String getUserName(){
+  protected String getUserName() {
     // Information Element IMSI Mapped to AVP User-Name
     String imsi = "748039876543210";
     return imsi;
   }
 
   @Override
-  protected byte[] getMSISDN(){
+  protected byte[] getMSISDN() {
     String msisdnString = "59899077937";
     byte[] msisdn = msisdnString.getBytes();
     return msisdn;
   }
 
   @Override
-  protected String getIMEI(){
+  protected String getIMEI() {
     String imei = "011714004661057";
     return imei;
   }
 
   @Override
-  protected int getLCSClientType(){
+  protected int getLCSClientType() {
   /*
     "0" = "EMERGENCY_SERVICES"
     "1" = "VALUE_ADDED_SERVICES"
@@ -157,13 +157,13 @@ public class ClientPLR extends AbstractImmediateClient {
   }
 
   @Override
-  protected String getLCSRequestorIdString(){
+  protected String getLCSRequestorIdString() {
     String lcsRequestorIdString = "restcomm_geolocation_23";
     return lcsRequestorIdString;
   }
 
   @Override
-  protected int getReqLCSFormatIndicator(){
+  protected int getReqLCSFormatIndicator() {
   /*
     "0" = "LOGICAL_NAME"
     "1" = "EMAIL_ADDRESS"
@@ -176,7 +176,7 @@ public class ClientPLR extends AbstractImmediateClient {
   }
 
   @Override
-  protected long getLCSPriority(){
+  protected long getLCSPriority() {
   /*
   3GPP TS 29.172 v13.0.0 section 7.4.5
     The LCS-Priority AVP is of type Unsigned32. It indicates the priority of the location request.
@@ -188,7 +188,7 @@ public class ClientPLR extends AbstractImmediateClient {
   }
 
   @Override
-  protected int getLCSQoSClass(){
+  protected int getLCSQoSClass() {
   /*
     3GPP TS 29.172 v13.0.0 section 7.4.27
       ASSURED (0)
@@ -353,13 +353,13 @@ public class ClientPLR extends AbstractImmediateClient {
     3GPP TS 29.172 v13.0.0 section 7.4.37
       The LCS-Reference-Number AVP is of type OctetString of length 1. It shall contain the reference number identifying the deferred location request.
   */
-    String lcsRefNumber = "579";
+    String lcsRefNumber = "4C4353353739";
     byte[] lcsRefNum = lcsRefNumber.getBytes();
     return lcsRefNum;
   }
 
   @Override
-  protected int getOccurrenceInfo(){
+  protected int getOccurrenceInfo() {
   /*
   3GPP TS 29.172 v13.0.0 section 7.4.43
      The Occurrence-Info AVP is of type Enumerated. The following values are defined:
@@ -371,7 +371,7 @@ public class ClientPLR extends AbstractImmediateClient {
   }
 
   @Override
-  protected long getIntervalTime(){
+  protected long getIntervalTime() {
   /*
   3GPP TS 29.172 v13.0.0 section 7.4.44
      The Interval-Time AVP is of type Unsigned32 and it contains minimum time interval between area reports, in seconds.
@@ -402,13 +402,13 @@ public class ClientPLR extends AbstractImmediateClient {
      The Area-Identification AVP is of type OctetString and shall contain the identification of the area applicable
      for the change of area event based deferred location reporting. Octets are coded as described in 3GPP TS 29.002 [24].
   */
-    String areaId = "area51";
+    String areaId = "617265613531";
     byte[] areaIdentification = areaId.getBytes();
     return areaIdentification;
   }
 
   @Override
-  protected java.net.InetAddress getGMLCAddress(){
+  protected java.net.InetAddress getGMLCAddress() {
 
     try {
       java.net.InetAddress gmlcAddress = java.net.InetAddress.getLocalHost();
@@ -463,7 +463,7 @@ public class ClientPLR extends AbstractImmediateClient {
   }
 
   @Override
-  protected int getPrioritizedListIndicator(){
+  protected int getPrioritizedListIndicator() {
   /*
   3GPP TS 29.172 v13.0.0 section 7.4.51
     The Prioritized-List-Indicator AVP is of type Enumerated and it indicates if the PLMN-ID-List is provided in prioritized order or not.
@@ -475,7 +475,7 @@ public class ClientPLR extends AbstractImmediateClient {
   }
 
   @Override
-  protected byte[] getVisitedPLMNId(){
+  protected byte[] getVisitedPLMNId() {
   /*
   3GPP TS 29.172 v13.0.0 section 7.4.49
     The PLMN-ID-List AVP is of type Grouped.
@@ -486,13 +486,13 @@ public class ClientPLR extends AbstractImmediateClient {
         *[ AVP ]
     If not included, the default value of Periodic-Location-Support-Indicator shall be considered as "NOT_SUPPORTED" (0).
   */
-    String vPlmnIdList = "74803, 74801";
+    String vPlmnIdList = "37343830332C203734383031";
     byte[] visitedPlmnIdList = vPlmnIdList.getBytes();
     return visitedPlmnIdList;
   }
 
   @Override
-  protected int getPeriodicLocationSupportIndicator(){
+  protected int getPeriodicLocationSupportIndicator() {
   /*
   3GPP TS 29.172 v13.0.0 section 7.4.50
     The Periodic-Location-Support-Indicator AVP is of type Enumerated and it indicates if the given PLMN-ID (indicated by Visited-PLMN-Id)
