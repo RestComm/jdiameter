@@ -27,7 +27,7 @@ import org.jdiameter.api.slh.events.LCSRoutingInfoAnswer;
 import org.jdiameter.api.slh.events.LCSRoutingInfoRequest;
 
 /**
- * @author fernando.mendioroz@telestax.com (Fernando Mendioroz)
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
  *
  */
 

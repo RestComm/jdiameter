@@ -21,11 +21,6 @@
 
 package org.jdiameter.client.impl.app.slg;
 
-/**
- * @author fernando.mendioroz@telestax.com (Fernando Mendioroz)
- *
- */
-
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.IllegalDiameterStateException;

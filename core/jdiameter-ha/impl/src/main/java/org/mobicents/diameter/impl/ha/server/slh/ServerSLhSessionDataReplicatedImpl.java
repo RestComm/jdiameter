@@ -32,7 +32,7 @@ import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 
 /**
  *
- * @author Fernando Mendioroz (fernando.mendioroz@telestax.com)
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
  *
  */
 public class ServerSLhSessionDataReplicatedImpl extends SLhSessionDataReplicatedImpl implements IServerSLhSessionData {
@@ -40,7 +40,7 @@ public class ServerSLhSessionDataReplicatedImpl extends SLhSessionDataReplicated
   /**
    * @param nodeFqn
    * @param mobicentsCluster
-   * @param iface
+   * @param container
    */
   public ServerSLhSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
     super(nodeFqn, mobicentsCluster, container);
@@ -54,7 +54,7 @@ public class ServerSLhSessionDataReplicatedImpl extends SLhSessionDataReplicated
   /**
    * @param sessionId
    * @param mobicentsCluster
-   * @param iface
+   * @param container
    */
   public ServerSLhSessionDataReplicatedImpl(String sessionId, MobicentsCluster mobicentsCluster, IContainer container) {
     this(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId), mobicentsCluster, container);

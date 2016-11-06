@@ -27,7 +27,7 @@ import org.jdiameter.api.Request;
 import org.jdiameter.common.api.app.IAppSessionData;
 
 /**
- * @author fernando.mendioroz@telestax.com (Fernando Mendioroz)
+ * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
  *
  */
 
