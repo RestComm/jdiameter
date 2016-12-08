@@ -200,7 +200,7 @@ public class Server extends AbstractServer {
 
   @Override
   protected long getLCSCapabilitiesSets() {
-    long lcsCapabilitiesSets = 99900123;
+    long lcsCapabilitiesSets = 99900123L;
     return lcsCapabilitiesSets;
   }
 
@@ -250,7 +250,7 @@ public class Server extends AbstractServer {
 
   @Override
   protected long getAdditionalLCSCapabilitiesSets() {
-    long lcsCapabilitiesSets = 88800123;
+    long lcsCapabilitiesSets = 88800123L;
     return lcsCapabilitiesSets;
   }
 

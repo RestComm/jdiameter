@@ -236,7 +236,7 @@ public abstract class AbstractImmediateServer extends TBase implements ServerSLg
     // [ Age-Of-Location-Estimate ]
     long ageOfLocationEstimate = getAgeOfLocationEstimate();
     if (ageOfLocationEstimate != -1){
-      set.addAvp(Avp.AGE_OF_LOCATION_ESTIMATE, ageOfLocationEstimate, 10415, false, false);
+      set.addAvp(Avp.AGE_OF_LOCATION_ESTIMATE, ageOfLocationEstimate, 10415, false, false, true);
     }
 
     // [ Velocity-Estimate ]
@@ -349,7 +349,7 @@ public abstract class AbstractImmediateServer extends TBase implements ServerSLg
     // [ PLA-Flags ]
     long plaFlags = getPLAFLags();
     if (plaFlags != -1){
-      set.addAvp(Avp.PLA_FLAGS, plaFlags, 10415, false, false);
+      set.addAvp(Avp.PLA_FLAGS, plaFlags, 10415, false, false, true);
     }
 
     // [ ESMLC-Cell-Info ]
@@ -367,7 +367,7 @@ public abstract class AbstractImmediateServer extends TBase implements ServerSLg
       esmlcCellInfo.addAvp(Avp.ECGI, ecgi, 10415, false, false);
     }
     if (cellPortionId != -1){
-      esmlcCellInfo.addAvp(Avp.CELL_PORTION_ID, cellPortionId, 10415, false, false);
+      esmlcCellInfo.addAvp(Avp.CELL_PORTION_ID, cellPortionId, 10415, false, false, true);
     }
 
     // [ Civic-Address ]

@@ -201,7 +201,7 @@ public abstract class AbstractDeferredServer extends TBase implements ServerSLgS
     // [ LRA-Flags ]
     long lraFlags = getLRAFLags();
     if (lraFlags != -1){
-      set.addAvp(Avp.LRA_FLAGS, lraFlags, 10415, false, false);
+      set.addAvp(Avp.LRA_FLAGS, lraFlags, 10415, false, false, true);
     }
 
     //[ Reporting-PLMN-List ]

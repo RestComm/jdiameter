@@ -347,7 +347,7 @@ public abstract class AbstractServer extends TBase implements ServerSLhSessionLi
     //[ RIA-Flags ]
     long riafLags = getRIAFLags();
     if (riafLags != -1){
-      set.addAvp(Avp.RIA_FLAGS, riafLags, 10415, true, false);
+      set.addAvp(Avp.RIA_FLAGS, riafLags, 10415, true, false, true);
     }
 
     return ria;

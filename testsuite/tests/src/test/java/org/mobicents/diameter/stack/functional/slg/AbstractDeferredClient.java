@@ -441,7 +441,7 @@ public abstract class AbstractDeferredClient extends TBase implements ClientSLgS
     // [ LRR-Flags ]
     long lrrFlags = getLRRFLags();
     if (lrrFlags != -1){
-      reqSet.addAvp(Avp.LRR_FLAGS, lrrFlags, 10415, false, false);
+      reqSet.addAvp(Avp.LRR_FLAGS, lrrFlags, 10415, false, false, true);
     }
 
     // [ LCS-Reference-Number ]
@@ -521,7 +521,7 @@ for compatibility with OMA MLP and RLP.
     // [ Barometric-Pressure ]
     long barometricPressure = getBarometricPressure();
     if (barometricPressure != -1){
-      reqSet.addAvp(Avp.BAROMETRIC_PRESSURE, barometricPressure, 10415, false, false);
+      reqSet.addAvp(Avp.BAROMETRIC_PRESSURE, barometricPressure, 10415, false, false, true);
     }
 
     return lrr;

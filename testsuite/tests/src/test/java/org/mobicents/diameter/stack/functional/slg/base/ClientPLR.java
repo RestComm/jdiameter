@@ -393,7 +393,7 @@ public class ClientPLR extends AbstractImmediateClient {
      "Cell Global ID"		4
      "UTRAN Cell ID"		5
   */
-    long areaType = 3;
+    long areaType = 3L;
     return areaType;
   }
 
