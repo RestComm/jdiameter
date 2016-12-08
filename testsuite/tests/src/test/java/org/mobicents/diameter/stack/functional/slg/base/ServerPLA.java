@@ -160,7 +160,7 @@ public class ServerPLA extends AbstractImmediateServer {
     The Age-Of-Location-Estimate AVP is of type Unsigned32.
     It indicates how long ago the location estimate was obtained in minutes, as indicated in 3GPP TS 29.002 [19].
 */
-      long ageOfLocationEstimate = 37;
+      long ageOfLocationEstimate = 37L;
       return ageOfLocationEstimate;
   }
 
@@ -315,7 +315,7 @@ public class ServerPLA extends AbstractImmediateServer {
 
   @Override
   protected long getLCSCapabilitiesSets() {
-    long lcsCapabilitiesSets = 99900123;
+    long lcsCapabilitiesSets = 99900123L;
     return lcsCapabilitiesSets;
   }
 
@@ -350,7 +350,7 @@ public class ServerPLA extends AbstractImmediateServer {
                                                     (e.g. UE is in extended idle mode DRX or in Power Saving Mode), and that the location information
                                                     will be returned in a subsequent Subscriber Location Report when the UE becomes reachable.
   */
-    long plaFlags = 8;
+    long plaFlags = 8L;
     return plaFlags;
   }
 
@@ -361,7 +361,7 @@ public class ServerPLA extends AbstractImmediateServer {
     The Cell-Portion-ID AVP is of type Unsigned32. It indicates the current Cell Portion location of the target UE as provided by the E-SMLC.
     It shall contain the value of the "Cell Portion ID" Information Element as defined in 3GPP TS 29.171
   */
-    long cellPortionId = 34923;
+    long cellPortionId = 34923L;
     return cellPortionId;
   }
 
@@ -393,7 +393,7 @@ public class ServerPLA extends AbstractImmediateServer {
     The Barometric-Pressure AVP is of type Unsigned32.
     It contains the "Barometric Pressure" Information Element as defined in 3GPP TS 29.171.
   */
-    long barometricPressure = 101327;
+    long barometricPressure = 101327L;
     return barometricPressure;
   }
 

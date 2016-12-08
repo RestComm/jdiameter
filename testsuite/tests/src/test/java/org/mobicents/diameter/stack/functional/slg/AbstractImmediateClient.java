@@ -449,16 +449,15 @@ public abstract class AbstractImmediateClient extends TBase implements ClientSLg
     // [ Reporting-PLMN-List ]
     AvpSet reportingPLMNList = reqSet.addGroupedAvp(Avp.REPORTING_PLMN_LIST, 10415, false, false);
     int prioritizedListIndicator = getPrioritizedListIndicator();
-
-    if (prioritizedListIndicator != -1){
-      reportingPLMNList.addAvp(Avp.PRIORITIZED_LIST_INDICATOR, prioritizedListIndicator, 10415, false, false);
-    }
     AvpSet plmnIdList = reqSet.addGroupedAvp(Avp.PLMN_ID_LIST, 10415, false, false);
     byte[] visitedPLMNId = getVisitedPLMNId();
     int periodicLocationSupportIndicator = getPeriodicLocationSupportIndicator();
 
+    if (prioritizedListIndicator != -1){
+      reportingPLMNList.addAvp(Avp.PRIORITIZED_LIST_INDICATOR, prioritizedListIndicator, 10415, false, false);
+    }
     if (plmnIdList != null){
-      reportingPLMNList.addGroupedAvp(Avp.PLMN_ID_LIST, 10415, false, false);
+      reportingPLMNList.addAvp(plmnIdList);
     }
     if (visitedPLMNId != null){
       plmnIdList.addAvp(Avp.VISITED_PLMN_ID, visitedPLMNId, 10415, false, false);

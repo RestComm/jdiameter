@@ -56,6 +56,8 @@ import org.jdiameter.api.slg.events.ProvideLocationRequest;
 import org.mobicents.diameter.stack.functional.Utils;
 import org.mobicents.diameter.stack.functional.slg.AbstractDeferredServer;
 
+import static sun.jdbc.odbc.JdbcOdbcObject.hexStringToByteArray;
+
 /**
  *
  * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
@@ -185,8 +187,7 @@ public class ServerLRA extends AbstractDeferredServer {
         *[ AVP ]
     If not included, the default value of Periodic-Location-Support-Indicator shall be considered as "NOT_SUPPORTED" (0).
   */
-    String vPlmnIdList = "37343830332C203734383031";
-    byte[] visitedPlmnIdList = vPlmnIdList.getBytes();
+    byte[] visitedPlmnIdList = hexStringToByteArray("471800");
     return visitedPlmnIdList;
   }
 

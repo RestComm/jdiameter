@@ -222,17 +222,17 @@ public abstract class AbstractDeferredServer extends TBase implements ServerSLgS
     byte[] visitedPLMNId = getVisitedPLMNId();
     int periodicLocationSupportIndicator = getPeriodicLocationSupportIndicator();
 
+    if (prioritizedListIndicator != -1){
+      reportingPLMNList.addAvp(Avp.PRIORITIZED_LIST_INDICATOR, prioritizedListIndicator, 10415, false, false);
+    }
+    if (plmnIdList != null){
+      reportingPLMNList.addAvp(plmnIdList);
+    }
     if (visitedPLMNId != null){
       plmnIdList.addAvp(Avp.VISITED_PLMN_ID, visitedPLMNId, 10415, false, false);
     }
     if (periodicLocationSupportIndicator != -1){
       plmnIdList.addAvp(Avp.PERIODIC_LOCATION_SUPPORT_INDICATOR, periodicLocationSupportIndicator, 10415, false, false);
-    }
-    if (plmnIdList != null){
-      reportingPLMNList.addAvp(plmnIdList);
-    }
-    if (prioritizedListIndicator != -1){
-      reportingPLMNList.addAvp(Avp.PRIORITIZED_LIST_INDICATOR, prioritizedListIndicator, 10415, false, false);
     }
 
     // [ LCS-Reference-Number ]

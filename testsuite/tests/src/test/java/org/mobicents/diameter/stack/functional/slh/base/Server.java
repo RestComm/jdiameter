@@ -303,7 +303,7 @@ public class Server extends AbstractServer {
     0   Combined-MME/SGSN-Supporting-Optimized-LCS-Proc   This bit, when set, indicates that the UE is served by the MME and the SGSN parts of the same
                                                           combined MME/SGSN and this combined MME/SGSN supports the optimized LCS procedure.
   */
-    long riaFlags = 1;
+    long riaFlags = 1L;
     return riaFlags;
   }
 

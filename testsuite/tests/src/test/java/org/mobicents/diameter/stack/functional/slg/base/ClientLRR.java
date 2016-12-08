@@ -176,7 +176,7 @@ public class ClientLRR extends AbstractDeferredClient {
   3GPP TS 29.172 v13.0.0 section 7.4.46
      The Reporting-Amount AVP is of type Unsigned32 and it contains reporting frequency. Its minimum value shall be 1 and maximum value shall be 8639999.
   */
-    long reportingAmount = 8639910;
+    long reportingAmount = 8639910L;
     return reportingAmount;
   }
 
@@ -186,7 +186,7 @@ public class ClientLRR extends AbstractDeferredClient {
   3GPP TS 29.172 v13.0.0 section 7.4.47
      The Interval-Time  AVP is of type Unsigned32 and it contains reporting frequency. Its minimum value shall be 1 and maximum value shall be 8639999.
   */
-    long reportingInterval = 8639998;
+    long reportingInterval = 8639998L;
     return reportingInterval;
   }
 
@@ -231,7 +231,7 @@ public class ClientLRR extends AbstractDeferredClient {
       The Age-Of-Location-Estimate AVP is of type Unsigned32.
       It indicates how long ago the location estimate was obtained in minutes, as indicated in 3GPP TS 29.002 [19].
   */
-    long ageOfLocationEstimate = 37;
+    long ageOfLocationEstimate = 374312L;
     return ageOfLocationEstimate;
   }
 
@@ -342,7 +342,7 @@ public class ClientLRR extends AbstractDeferredClient {
 
   @Override
   protected long getLSCServiceTypeId() {
-    long lcsServiceTypeId = 234;
+    long lcsServiceTypeId = 234567012L;
     return lcsServiceTypeId;
   }
 
@@ -414,7 +414,7 @@ public class ClientLRR extends AbstractDeferredClient {
 
   @Override
   protected long getLCSCapabilitiesSets() {
-    long lcsCapabilitiesSets = 99900123;
+    long lcsCapabilitiesSets = 99900123L;
     return lcsCapabilitiesSets;
   }
 
@@ -465,7 +465,7 @@ public class ClientLRR extends AbstractDeferredClient {
     The Cell-Portion-ID AVP is of type Unsigned32. It indicates the current Cell Portion location of the target UE as provided by the E-SMLC.
     It shall contain the value of the "Cell Portion ID" Information Element as defined in 3GPP TS 29.171
   */
-    long cellPortionId = 34923;
+    long cellPortionId = 349232432L;
     return cellPortionId;
   }
 
@@ -512,7 +512,7 @@ public class ClientLRR extends AbstractDeferredClient {
     The Barometric-Pressure AVP is of type Unsigned32.
     It contains the "Barometric Pressure" Information Element as defined in 3GPP TS 29.171.
   */
-    long barometricPressure = 101327;
+    long barometricPressure = 101327L;
     return barometricPressure;
   }
 

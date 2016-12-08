@@ -52,6 +52,8 @@ import org.jdiameter.api.slg.events.ProvideLocationAnswer;
 import org.mobicents.diameter.stack.functional.Utils;
 import org.mobicents.diameter.stack.functional.slg.AbstractImmediateClient;
 
+import static sun.jdbc.odbc.JdbcOdbcObject.hexStringToByteArray;
+
 /**
  *
  * @author <a href="mailto:fernando.mendioroz@telestax.com"> Fernando Mendioroz </a>
@@ -206,7 +208,7 @@ public class ClientPLR extends AbstractImmediateClient {
     The horizontal location error should be less than the error indicated by the uncertainty code with 67% confidence.
     Bits 7 to 31 shall be ignored
   */
-    long horizontalAccuracy = 120;
+    long horizontalAccuracy = 120L;
     return horizontalAccuracy;
   }
 
@@ -218,7 +220,7 @@ public class ClientPLR extends AbstractImmediateClient {
     The Vertical location error should be less than the error indicated by the uncertainty code with 67% confidence.
     Bits 7 to 31 shall be ignored
   */
-    long verticalAccuracy = 3237;
+    long verticalAccuracy = 3237L;
     return verticalAccuracy;
   }
 
@@ -270,13 +272,13 @@ public class ClientPLR extends AbstractImmediateClient {
     ellipsoidPointWithAltitudeAndUncertaintyElipsoid (5)
     ellipsoidArc (6)
   */
-    long supportedGADShapes = 3;
+    long supportedGADShapes = 3L;
     return supportedGADShapes;
   }
 
   @Override
   protected long getLSCServiceTypeId() {
-    long lcsServiceTypeId = 234;
+    long lcsServiceTypeId = 234L;
     return lcsServiceTypeId;
   }
 
@@ -343,7 +345,7 @@ public class ClientPLR extends AbstractImmediateClient {
                             the value of Occurrence-Info AVP is always treated as set to “ONE_TIME_EVENT”.
     4   Periodic-LDR        An event where a defined periodic timer expires in the UE and activates a location report or a location request.
   */
-    long deferredLocationType = 8;
+    long deferredLocationType = 8L;
     return deferredLocationType;
   }
 
@@ -376,7 +378,7 @@ public class ClientPLR extends AbstractImmediateClient {
   3GPP TS 29.172 v13.0.0 section 7.4.44
      The Interval-Time AVP is of type Unsigned32 and it contains minimum time interval between area reports, in seconds.
   */
-    long intervalTime = 3600;
+    long intervalTime = 3600L;
     return intervalTime;
   }
 
@@ -438,7 +440,7 @@ public class ClientPLR extends AbstractImmediateClient {
                                                       PLA-Flags IE; and receiving the location information in a subsequent SUBSCRIBER LOCATION REPORT
                                                       when the UE becomes reachable.
   */
-    long plrFlags = 4;
+    long plrFlags = 4L;
     return plrFlags;
   }
 
@@ -448,7 +450,7 @@ public class ClientPLR extends AbstractImmediateClient {
   3GPP TS 29.172 v13.0.0 section 7.4.46
      The Reporting-Amount AVP is of type Unsigned32 and it contains reporting frequency. Its minimum value shall be 1 and maximum value shall be 8639999.
   */
-    long reportingAmount = 8639910;
+    long reportingAmount = 8639910L;
     return reportingAmount;
   }
 
@@ -458,7 +460,7 @@ public class ClientPLR extends AbstractImmediateClient {
   3GPP TS 29.172 v13.0.0 section 7.4.47
      The Interval-Time  AVP is of type Unsigned32 and it contains reporting frequency. Its minimum value shall be 1 and maximum value shall be 8639999.
   */
-    long reportingInterval = 8639998;
+    long reportingInterval = 8639998L;
     return reportingInterval;
   }
 
@@ -486,8 +488,7 @@ public class ClientPLR extends AbstractImmediateClient {
         *[ AVP ]
     If not included, the default value of Periodic-Location-Support-Indicator shall be considered as "NOT_SUPPORTED" (0).
   */
-    String vPlmnIdList = "37343830332C203734383031";
-    byte[] visitedPlmnIdList = vPlmnIdList.getBytes();
+    byte[] visitedPlmnIdList = hexStringToByteArray("473800");
     return visitedPlmnIdList;
   }
 
