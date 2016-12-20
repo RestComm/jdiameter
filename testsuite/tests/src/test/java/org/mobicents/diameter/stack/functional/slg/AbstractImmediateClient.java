@@ -306,7 +306,7 @@ public abstract class AbstractImmediateClient extends TBase implements ClientSLg
     // [ LCS-Priority ]
     long lcsPriority = getLCSPriority();
     if (lcsPriority != -1){
-      reqSet.addAvp(Avp.LCS_PRIORITY, lcsPriority, 10415, false, false);
+      reqSet.addAvp(Avp.LCS_PRIORITY, lcsPriority, 10415, false, false, true);
     }
 
     // [ LCS-QoS ]
