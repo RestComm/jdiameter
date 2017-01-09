@@ -97,10 +97,15 @@
     </classpath>
   </taskdef>
 
-  <target name="checkout" unless="skip.checkout" depends="init, checkout-core, checkout-rhq-plugin, checkout-slee-diameter-package, checkout-examples" />
+  <!--target name="checkout" unless="skip.checkout" depends="init, checkout-core, checkout-rhq-plugin, checkout-slee-diameter-package, checkout-examples" />
   <target name="build-src" unless="skip.build-src" depends="build-src-core, build-rhq-plugin, build-src-resources, build-src-examples" />
   <target name="prepare-text-content" depends="prepare-text-content-core, prepare-text-content-resources, prepare-text-content-examples" />
-  <target name="copy-jars" depends="copy-jars-core, copy-rhq-plugin, copy-jars-resources, copy-jars-examples" />
+  <target name="copy-jars" depends="copy-jars-core, copy-rhq-plugin, copy-jars-resources, copy-jars-examples" /-->
+
+  <target name="checkout" unless="skip.checkout" depends="init, checkout-core, checkout-rhq-plugin, checkout-slee-diameter-package" />
+  <target name="build-src" unless="skip.build-src" depends="build-src-core, build-rhq-plugin, build-src-resources" />
+  <target name="prepare-text-content" depends="prepare-text-content-core, prepare-text-content-resources" />
+  <target name="copy-jars" depends="copy-jars-core, copy-rhq-plugin, copy-jars-resources" />
 
   <!-- Checkout section -->
 
