@@ -62,8 +62,8 @@ public class ConcurrentEntityFactory implements IConcurrentEntityFactory {
   }
 
   @Override
-  public ThreadFactory newThreadFactory(String threadPoolName) {
-    return new BaseThreadFactory(threadPoolName);
+  public ThreadFactory newThreadFactory() {
+    return new BaseThreadFactory();
   }
 
   @Override

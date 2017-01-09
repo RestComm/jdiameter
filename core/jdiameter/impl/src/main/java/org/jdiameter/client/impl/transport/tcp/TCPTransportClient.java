@@ -162,12 +162,7 @@ public class TCPTransportClient implements Runnable {
       throw new NotInitializedException("No parent connection is set is set");
     }
     if (selfThread == null || !selfThread.isAlive()) {
-      selfThread = concurrentFactory.getThread("TCPReader", this);
-    }
-
-    if (!selfThread.isAlive()) {
-      selfThread.setDaemon(true);
-      selfThread.start();
+      concurrentFactory.getThreadPool().execute(this);
     }
   }
 
