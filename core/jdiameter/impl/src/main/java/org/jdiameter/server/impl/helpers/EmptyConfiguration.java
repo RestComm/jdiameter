@@ -42,6 +42,14 @@
 
 package org.jdiameter.server.impl.helpers;
 
+import org.jdiameter.api.ConfigurationListener;
+import org.jdiameter.api.MutableConfiguration;
+import org.jdiameter.client.impl.helpers.ExtensionPoint;
+
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalAgentConfiguration;
 import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalAgentProxy;
 import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalAgentRedirect;
@@ -63,14 +71,6 @@ import static org.jdiameter.client.impl.helpers.Parameters.Extensions;
 import static org.jdiameter.server.impl.helpers.ExtensionPoint.InternalNetWork;
 import static org.jdiameter.server.impl.helpers.ExtensionPoint.InternalNetworkGuard;
 import static org.jdiameter.server.impl.helpers.ExtensionPoint.InternalOverloadManager;
-
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.jdiameter.api.ConfigurationListener;
-import org.jdiameter.api.MutableConfiguration;
-import org.jdiameter.client.impl.helpers.ExtensionPoint;
 
 /**
  * This class allow create configuration class for stack
@@ -211,7 +211,22 @@ public class EmptyConfiguration extends org.jdiameter.client.impl.helpers.EmptyC
     }
   }
 
-  @Override
+  public void setIntArrayValue(int key, int[] value) {
+    List<ConfigurationListener> list = listeners.get(key);
+    if (list != null)  {
+      boolean commit = true;
+      for (ConfigurationListener l : list) {
+        commit &= l.elementChanged(key, value);
+      }
+      if (commit) {
+        putValue(key, value);
+      }
+    }
+    else {
+      putValue(key, value);
+    }
+  }
+
   public void setBooleanValue(int key, boolean value) {
     List<ConfigurationListener> list = listeners.get(key);
     if (list != null)  {

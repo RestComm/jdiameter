@@ -42,9 +42,6 @@
 
 package org.jdiameter.common.impl.data;
 
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.jdiameter.api.BaseSession;
 import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.client.api.IContainer;
@@ -77,6 +74,9 @@ import org.jdiameter.common.impl.app.sh.ShLocalSessionDataFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Local implementation of session datasource for {@link ISessionDatasource}
  *
@@ -89,7 +89,7 @@ public class LocalDataSource implements ISessionDatasource {
   protected HashMap<Class<? extends IAppSessionData>, IAppSessionDataFactory<? extends IAppSessionData>> appSessionDataFactories =
       new HashMap<Class<? extends IAppSessionData>, IAppSessionDataFactory<? extends IAppSessionData>>();
 
-  private ConcurrentHashMap<String, SessionEntry> sessionIdToEntry = new ConcurrentHashMap<String, LocalDataSource.SessionEntry>();
+  protected ConcurrentHashMap<String, SessionEntry> sessionIdToEntry = new ConcurrentHashMap<String, SessionEntry>();
 
   private static final Logger logger = LoggerFactory.getLogger(LocalDataSource.class);
 
@@ -152,23 +152,34 @@ public class LocalDataSource implements ISessionDatasource {
 
   @Override
   public void addSession(BaseSession session) {
-    logger.debug("addSession({})", session);
-    SessionEntry se = null;
+    addSession(session, SessionEntry.class);
+  }
+
+  protected <T extends SessionEntry> void addSession(BaseSession session, Class<T> sessionWraperType) {
+    logger.debug("addSession({}) => {}", session.getSessionId(), session);
+    T se = null;
 
     String sessionId = session.getSessionId();
     //FIXME: check here replicable vs not replicable?
     if (this.sessionIdToEntry.containsKey(sessionId)) {
-      se = this.sessionIdToEntry.get(sessionId);
-      if ( !(se.session instanceof ISession) || se.session.isReplicable()) { //must be not replicable so we can "overwrite"
-        throw new IllegalArgumentException("Sessin with id: " + sessionId + ", already exists!");
-      }
-      else {
-        this.sessionIdToEntry.put(sessionId, se);
+      se = sessionWraperType.cast(this.sessionIdToEntry.get(sessionId));
+      if( se != null && (!(se.session instanceof ISession) || se.session.isReplicable()) ) { //must be not replicable so we can "overwrite"
+        throw new IllegalArgumentException("Session with id: " + sessionId + ", already exists!");
       }
     }
-    else {
-      se = new SessionEntry();
+
+    if(se == null) {
+      try {
+        se = sessionWraperType.newInstance();
+      } catch (InstantiationException e) {
+        logger.warn("Cannot instantiate session object of type: " + sessionWraperType.getCanonicalName(), e);
+        throw new IllegalArgumentException("Cannot instantiate session object of type: " + sessionWraperType.getCanonicalName(), e);
+      } catch (IllegalAccessException e) {
+        logger.warn("Cannot instantiate session object of type: " + sessionWraperType.getCanonicalName(), e);
+        throw new IllegalArgumentException("Cannot instantiate session object of type: " + sessionWraperType.getCanonicalName(), e);
+      }
     }
+
     se.session = session;
     this.sessionIdToEntry.put(session.getSessionId(), se);
   }
@@ -217,7 +228,7 @@ public class LocalDataSource implements ISessionDatasource {
   }
 
   //simple class to reduce collections overhead.
-  private class SessionEntry {
+  protected static class SessionEntry {
     BaseSession session;
     NetworkReqListener listener;
 

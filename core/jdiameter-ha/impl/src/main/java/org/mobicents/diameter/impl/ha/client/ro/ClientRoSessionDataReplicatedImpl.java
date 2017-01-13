@@ -74,6 +74,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   private static final String REQUEST_TYPE = "REQUEST_TYPE";
   private static final String STATE = "STATE";
   private static final String TXTIMER_ID = "TXTIMER_ID";
+  private static final String RETRANSMISSION_TIMER_ID = "RETRANSMISSION_TIMER_ID";
   private static final String TXTIMER_REQUEST = "TXTIMER_REQUEST";
   private static final String BUFFER = "BUFFER";
   private static final String GRA = "GRA";
@@ -181,6 +182,24 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   public void setTxTimerId(Serializable txTimerId) {
     if (exists()) {
       getNode().put(TXTIMER_ID, txTimerId);
+    }
+    else {
+      throw new IllegalStateException();
+    }
+  }
+
+  public Serializable getRetransmissionTimerId() {
+    if (exists()) {
+      return (Serializable) getNode().get(RETRANSMISSION_TIMER_ID);
+    }
+    else {
+      throw new IllegalStateException();
+    }
+  }
+
+  public void setRetransmissionTimerId(Serializable txTimerId) {
+    if (exists()) {
+      getNode().put(RETRANSMISSION_TIMER_ID, txTimerId);
     }
     else {
       throw new IllegalStateException();

@@ -42,11 +42,11 @@
 
 package org.jdiameter.client.impl.app.ro;
 
-import java.io.Serializable;
-
 import org.jdiameter.api.Request;
 import org.jdiameter.common.api.app.AppSessionDataLocalImpl;
 import org.jdiameter.common.api.app.ro.ClientRoSessionState;
+
+import java.io.Serializable;
 
 /**
  *
@@ -58,9 +58,9 @@ public class ClientRoSessionDataLocalImpl extends AppSessionDataLocalImpl implem
   protected boolean isEventBased = true;
   protected boolean requestTypeSet = false;
   protected ClientRoSessionState state = ClientRoSessionState.IDLE;
-  protected Serializable txTimerId;
-  //protected JCreditControlRequest txTimerRequest;
-  protected Request txTimerRequest;
+  protected Serializable txTimerId = null;
+  protected Serializable retransmissionTimerId = null;
+  protected Request txTimerRequest = null;
 
   // Event Based Buffer
   //protected Message buffer = null;
@@ -125,6 +125,14 @@ public class ClientRoSessionDataLocalImpl extends AppSessionDataLocalImpl implem
   @Override
   public void setTxTimerRequest(Request txTimerRequest) {
     this.txTimerRequest = txTimerRequest;
+  }
+
+  public Serializable getRetransmissionTimerId() {
+    return retransmissionTimerId;
+  }
+
+  public void setRetransmissionTimerId(Serializable retransmissionTimerId) {
+    this.retransmissionTimerId = retransmissionTimerId;
   }
 
   @Override

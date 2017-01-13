@@ -43,9 +43,19 @@
               <outputDirectory>${basedir}/target/classes/config</outputDirectory>
               <resources>
                 <resource>
-                  <directory>../common/config</directory>
-                  <filtering>false</filtering>
-                </resource>
+                                    <directory>../common/config</directory>
+                                    <filtering>false</filtering>
+                                    <excludes>
+                                        <exclude>jdiameter-config_*.xml</exclude>
+                                    </excludes>
+                                </resource>
+                                <resource>
+                                    <directory>../common/config</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>${jdiameter.mux.config.file}</include>
+                                    </includes>
+                                </resource>
               </resources>
             </configuration>
           </execution>
@@ -141,6 +151,7 @@
                 <condition property="jboss.dir" value="${jboss.home}" else="${env.JBOSS_HOME}">
                   <isset property="jboss.home" />
                 </condition>
+                                <move file="target/${project.build.finalName}/config/${jdiameter.mux.config.file}" tofile="target/${project.build.finalName}/config/jdiameter-config.xml" />
                 <copy todir="${jboss.dir}/server/${node}/deploy/${project.build.finalName}.sar">
                   <fileset dir="target/${project.build.finalName}">
                     <include name="**" />

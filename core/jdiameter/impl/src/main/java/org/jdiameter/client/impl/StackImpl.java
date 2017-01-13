@@ -42,20 +42,6 @@
 
 package org.jdiameter.client.impl;
 
-import static org.jdiameter.client.impl.helpers.ExtensionPoint.ControllerLayer;
-import static org.jdiameter.client.impl.helpers.ExtensionPoint.StackLayer;
-import static org.jdiameter.client.impl.helpers.ExtensionPoint.TransportLayer;
-import static org.jdiameter.client.impl.helpers.Parameters.Assembler;
-import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.ProcessingMessageTimer;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.BaseSession;
 import org.jdiameter.api.Configuration;
@@ -70,6 +56,7 @@ import org.jdiameter.api.PeerState;
 import org.jdiameter.api.PeerTable;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.SessionFactory;
+import org.jdiameter.api.SessionPersistenceStorage;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.validation.Dictionary;
 import org.jdiameter.api.validation.ValidatorLevel;
@@ -87,6 +74,20 @@ import org.jdiameter.common.api.statistic.IStatisticProcessor;
 import org.jdiameter.common.api.timer.ITimerFacility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.ControllerLayer;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.StackLayer;
+import static org.jdiameter.client.impl.helpers.ExtensionPoint.TransportLayer;
+import static org.jdiameter.client.impl.helpers.Parameters.Assembler;
+import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.ProcessingMessageTimer;
 
 /**
  * Use stack extension point
@@ -402,6 +403,15 @@ public class StackImpl implements IContainer, StackImplMBean {
       throw new IllegalStateException("Meta data not defined");
     }
     return assembler.getComponentInstance(IMetaData.class);
+  }
+
+  @Override
+  public SessionPersistenceStorage getSessionPersistenceStorage() {
+    if (state == StackState.IDLE) {
+      throw new IllegalStateException("Session storage not defined");
+    }
+    ISessionDatasource sds = assembler.getComponentInstance(ISessionDatasource.class);
+    return sds instanceof SessionPersistenceStorage ? (SessionPersistenceStorage) sds : null;
   }
 
   @Override

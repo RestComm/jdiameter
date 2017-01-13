@@ -42,11 +42,11 @@
 
 package org.jdiameter.client.api;
 
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.client.api.controller.IPeer;
+
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This interface extends basic message interface
@@ -169,6 +169,37 @@ public interface IMessage extends IRequest, IAnswer {
    * @return true if request has timeout
    */
   boolean isTimeOut();
+
+  /**
+   * Tells if there are any timers set to monitor potential retransmissions
+   * @return true if potential retransmissions will be handled
+   */
+  boolean isRetransmissionSupervised();
+
+  /**
+   * Marks that message to be under supervision timers guarding retransmissions
+   * @param arg true if supervision is active
+   */
+  void setRetransmissionSupervised(boolean arg);
+
+  /**
+   * Tells if the number of allowed retransmissions for this message is
+   * already exceeded or not.
+   * @return false if no more retransmissions are allowed
+   */
+  boolean isRetransmissionAllowed();
+
+  /**
+   * Sets the number of allowed retransmissions for this message that can be performed
+   * in case of failure detection.
+   * @param arg number of allowed retransmissions
+   */
+  void setNumberOfRetransAllowed(int arg);
+
+  /**
+   * Decrements the number of allowed retransmissions for this message.
+   */
+  void decrementNumberOfRetransAllowed();
 
   /**
    * Set event listener

@@ -107,7 +107,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
 
   public ServerCCASessionImpl(IServerCCASessionData data, ICCAMessageFactory fct, ISessionFactory sf, ServerCCASessionListener lst,
       IServerCCASessionContext ctx, StateChangeListener<AppSession> stLst) {
-    super(sf, data);
+    super(null, sf, data);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }

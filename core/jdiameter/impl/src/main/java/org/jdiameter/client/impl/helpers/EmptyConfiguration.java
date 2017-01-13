@@ -42,6 +42,10 @@
 
 package org.jdiameter.client.impl.helpers;
 
+import org.jdiameter.api.Configuration;
+
+import java.util.concurrent.ConcurrentHashMap;
+
 import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalAgentConfiguration;
 import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalAgentRedirect;
 import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalConnectionClass;
@@ -59,10 +63,6 @@ import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalTimerFaci
 import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalTransportFactory;
 import static org.jdiameter.client.impl.helpers.Parameters.ExtensionName;
 import static org.jdiameter.client.impl.helpers.Parameters.Extensions;
-
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.jdiameter.api.Configuration;
 
 /**
  * This class allow create configuration class for stack
@@ -212,7 +212,13 @@ public class EmptyConfiguration implements AppConfiguration {
   /**
    * @see org.jdiameter.api.Configuration class
    */
-  @Override
+  public int[] getIntArrayValue(int i, int[] ints) {
+    return (int[]) (isAttributeExist(i) ? elements.get(i) : ints);
+  }
+
+  /**
+   * @see org.jdiameter.api.Configuration class
+   */
   public boolean getBooleanValue(int i, boolean b) {
     return (Boolean) (isAttributeExist(i) ? elements.get(i) : b);
   }

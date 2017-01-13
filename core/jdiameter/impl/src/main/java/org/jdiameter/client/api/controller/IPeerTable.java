@@ -42,16 +42,17 @@
 
 package org.jdiameter.client.api.controller;
 
-import java.io.IOException;
-import java.util.Map;
+ import org.jdiameter.api.AvpDataException;
+ import org.jdiameter.api.IllegalDiameterStateException;
+ import org.jdiameter.api.NetworkReqListener;
+ import org.jdiameter.api.NoMorePeersAvailableException;
+ import org.jdiameter.api.PeerTable;
+ import org.jdiameter.api.RouteException;
+ import org.jdiameter.client.api.IAssembler;
+ import org.jdiameter.client.api.IMessage;
 
-import org.jdiameter.api.AvpDataException;
-import org.jdiameter.api.IllegalDiameterStateException;
-import org.jdiameter.api.NetworkReqListener;
-import org.jdiameter.api.PeerTable;
-import org.jdiameter.api.RouteException;
-import org.jdiameter.client.api.IAssembler;
-import org.jdiameter.client.api.IMessage;
+ import java.io.IOException;
+ import java.util.Map;
 
 /**
  *  This interface provide additional methods for PeerTable interface
@@ -94,7 +95,7 @@ public interface IPeerTable extends PeerTable {
    * @throws RouteException
    * @throws AvpDataException
    */
-  void sendMessage(IMessage message) throws IllegalDiameterStateException, IOException, RouteException, AvpDataException;
+  void sendMessage(IMessage message) throws IllegalDiameterStateException, IOException, RouteException, NoMorePeersAvailableException, AvpDataException;
 
   /**
    * Register session lister

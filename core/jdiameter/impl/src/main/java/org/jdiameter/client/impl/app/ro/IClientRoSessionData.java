@@ -42,11 +42,11 @@
 
 package org.jdiameter.client.impl.app.ro;
 
-import java.io.Serializable;
-
 import org.jdiameter.api.Request;
 import org.jdiameter.common.api.app.ro.ClientRoSessionState;
 import org.jdiameter.common.api.app.ro.IRoSessionData;
+
+import java.io.Serializable;
 
 /**
  *
@@ -74,6 +74,10 @@ public interface IClientRoSessionData extends IRoSessionData {
   Request getTxTimerRequest();
 
   void setTxTimerRequest(Request txTimerRequest);
+
+  Serializable getRetransmissionTimerId();
+
+  void setRetransmissionTimerId(Serializable retransmissionTimerId);
 
   Request getBuffer();
 

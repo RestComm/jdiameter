@@ -280,6 +280,38 @@
                    <xsi:attribute name="value" type="xsi:long" use="required"/>
                </xsi:complexType>
             </xsi:element>
+            <xsi:element name="TxTimeOut" minOccurs="0" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Tx timer as described in chapter 13. of RFC 4006 defined in miliseconds.</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                   <xsi:attribute name="value" type="xsi:long" use="required"/>
+               </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="RetransmissionTimeOut" minOccurs="0" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Retransmission stop timer which defines how long the stack should carry on with retransmissions in case of delivery failures.</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                   <xsi:attribute name="value" type="xsi:long" use="required"/>
+               </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="RetransmissionRequiredResCodes" minOccurs="0" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Comma delimited list of result codes which make an initial request to be retransmitted.</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                   <xsi:attribute name="value" type="xsi:string" use="required"/>
+               </xsi:complexType>
+            </xsi:element>
+            <xsi:element name="SessionInactivityTimeOut" minOccurs="0" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Session inactivity timeout in seconds used for session persistence.</xsi:documentation>
+                </xsi:annotation>
+                <xsi:complexType>
+                   <xsi:attribute name="value" type="xsi:integer" use="required"/>
+               </xsi:complexType>
+            </xsi:element>
             <xsi:element name="BindDelay" minOccurs="0" maxOccurs="1">
                 <xsi:annotation>
                     <xsi:documentation>Server Socket bind delay in milliseconds.</xsi:documentation>

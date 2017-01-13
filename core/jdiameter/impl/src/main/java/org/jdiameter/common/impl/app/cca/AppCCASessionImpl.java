@@ -52,14 +52,15 @@ import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.cca.CCASession;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.IAppSessionData;
-import org.jdiameter.common.impl.app.AppSessionImpl;
+import org.jdiameter.common.api.data.ISessionDatasource;
+import org.jdiameter.common.impl.app.AppRoutingAwareSessionImpl;
 
 /**
  *
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public abstract class AppCCASessionImpl extends AppSessionImpl implements CCASession, NetworkReqListener {
+public abstract class AppCCASessionImpl extends AppRoutingAwareSessionImpl implements CCASession,NetworkReqListener {
 
   protected Lock sendAndStateLock = new ReentrantLock();
 
@@ -68,8 +69,8 @@ public abstract class AppCCASessionImpl extends AppSessionImpl implements CCASes
   //FIXME: use FastList ?
   protected List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
 
-  public AppCCASessionImpl(ISessionFactory sf, IAppSessionData data)  {
-    super(sf, data);
+  public AppCCASessionImpl(ISessionDatasource sessionStorage, ISessionFactory sf, IAppSessionData data)  {
+    super(sessionStorage, sf, data);
   }
 
   @Override

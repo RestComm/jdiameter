@@ -87,6 +87,13 @@ public interface MutableConfiguration extends Configuration {
   void setByteArrayValue(int key, byte[] value);
 
   /**
+   * Set int array value to configuration
+   * @param key key of value
+   * @param value int array value
+   */
+  void setIntArrayValue(int key, int[] value);
+
+  /**
    * Set boolean value to configuration
    * @param key key of value
    * @param value boolean value

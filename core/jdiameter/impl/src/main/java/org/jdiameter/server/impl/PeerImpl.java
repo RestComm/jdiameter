@@ -42,14 +42,6 @@
 
 package org.jdiameter.server.impl;
 
-import static org.jdiameter.api.PeerState.DOWN;
-import static org.jdiameter.api.PeerState.INITIAL;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.util.Map;
-import java.util.Set;
-
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
@@ -85,6 +77,14 @@ import org.jdiameter.server.api.IPeer;
 import org.jdiameter.server.api.IStateMachine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.util.Map;
+import java.util.Set;
+
+import static org.jdiameter.api.PeerState.DOWN;
+import static org.jdiameter.api.PeerState.INITIAL;
 
 /**
  *
@@ -205,9 +205,10 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
   @Override
   public String toString() {
     if (fsm != null) {
-      return "SPeer{" + "Uri=" + uri + "; State=" + fsm.getState(PeerState.class) + "; con=" + connection + "; incCon" + incConnections + " }";
+      return "SPeer{" + "Uri=" + uri + "; State=" + fsm.getState(PeerState.class)
+              +  "; Rating=" + rating + "; con="+ connection +"; incCon="+incConnections+" }";
     }
-    return "SPeer{" + "Uri=" + uri + "; State=" + fsm + "; con=" + connection + "; incCon" + incConnections + " }";
+    return "SPeer{" + "Uri=" + uri + "; State=" + fsm +  "; Rating=" + rating + "; con="+ connection +"; incCon="+incConnections+" }";
   }
 
   protected class LocalActionConext extends ActionContext {

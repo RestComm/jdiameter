@@ -53,7 +53,7 @@ Further explanation of each child element, and the applicable attributes, is pro
 The <LocalPeer> element contains parameters that affect the local Diameter peer.
 The available elements and attributes are listed for reference.
 
-.<LocalPeer> Elements and Attributes
+=== <LocalPeer> Elements and Attributes
 <URI>::
   Specifies the URI for the local peer.
   The URI has the following format: "aaa://FQDN:port".
@@ -79,28 +79,28 @@ The available elements and attributes are listed for reference.
 <Entry>::
   Supports <ApplicationID> child elements that specify the ID of the tracked application(s). It also supports the following properties: 
 
-index
-  Defines the index of this overload monitor, so priorities/orders can be specified.
+  index:::
+    Defines the index of this overload monitor, so priorities/orders can be specified.
 
-lowThreshold
-  The low threshold for activation of the overload monitor.
+  lowThreshold:::
+    The low threshold for activation of the overload monitor.
 
-highThreshold
-  The high threshold for activation of the overload monitor.
+  highThreshold:::
+    The high threshold for activation of the overload monitor.
 
 <ApplicationID>::
   Parent element containing child elements that specify information about the application.
   The child elements create a unique application identifier.
   The child elements are:
 
-<VendorId>
-Specifies the vendor ID for application definition. It supports a single property: "value".
+  <VendorId>:::
+    Specifies the vendor ID for application definition. It supports a single property: "value".
 
-<AuthAppId>
-The Authentication Application ID for application definition. It supports a single property: "value".
+  <AuthAppId>:::
+    The Authentication Application ID for application definition. It supports a single property: "value".
 
-<AcctAplId>
-The Account Application ID for application definition. It supports a single property: "value".
+  <AcctAplId>:::
+    The Account Application ID for application definition. It supports a single property: "value".
 
 <Applications>::
   Contains a child element <ApplicationID>, which defines the list of default supported applications.
@@ -112,8 +112,8 @@ The Account Application ID for application definition. It supports a single prop
 
 	<AcceptUndefinedPeer value="true"/>
 	<DuplicateProtection value="true"/>
-  <DuplicateTimer value="240000"/>
-  <DuplicateSize value="5000"/>
+    <DuplicateTimer value="240000"/>
+    <DuplicateSize value="5000"/>
 	<UseUriAsFqdn value="true"/> <!-- Needed for Ericsson SDK Emulator -->
 	<QueueSize value="10000"/>
 	<MessageTimeOut value="60000"/>
@@ -123,6 +123,10 @@ The Account Application ID for application definition. It supports a single prop
 	<DwaTimeOut value="10000"/>
 	<DpaTimeOut value="5000"/>
 	<RecTimeOut value="10000"/>
+	<TxTimeOut value="10000" />
+    <RetransmissionTimeOut value="45000" />
+    <RetransmissionRequiredResCodes value="3004,3005" />
+    <SessionInactivityTimeOut value="600" />
 
 	<!-- Peer FSM Thread Count Configuration -->
 	<PeerFSMThreadCount value="3" />
@@ -145,7 +149,7 @@ The <Parameters> element contains elements that specify parameters for the Diame
 The available elements and attributes are listed for reference.
 If not specified otherwise, each tag supports a single property - "value", which indicates the value of the tag.
 
-.<Parameters> Elements and Attributes
+=== <Parameters> Elements and Attributes
 <AcceptUndefinedPeer>::
   Specifies whether the stack will accept connections from undefined peers.
   The default value is `false`.
@@ -197,6 +201,26 @@ If not specified otherwise, each tag supports a single property - "value", which
   Determines how long it takes for the reconnection procedure to timeout.
   The delay is in milliseconds.
 
+<TxTimeOut>::
+  Sets the value of Tx timer as specified in http://tools.ietf.org/html/rfc4006#section-13[Section 13 of RFC4006].
+  Namely, it controls the waiting time in the client in the Pending state (upon request dispatch).
+  The delay is in milliseconds.
+
+<RetransmissionTimeOut>::
+  Controls the total response timeout that is strictly related to [parameter]`TxTimeOut` timer and determines the total waiting time
+  in the Pending state including all possible Tx timer expiries along with corresponding retransmissions if any happened.
+  Namely, defines how long the stack should wait for the answer message from remote peers and carry on with retransmissions in case of
+  delivery failures before providing request failure notification to the application.
+  The delay is in milliseconds.
+
+<RetransmissionRequiredResCodes>::
+  Defines a comma delimited list of protocol errors received in Result-Code AVP (as defined in https://tools.ietf.org/html/rfc6733#section-7.1[Section 7.1 of RFC6733])
+  which make an initial request to be retransmitted to another remote peer (with T flag set to `false`).
+
+<SessionInactivityTimeOut>::
+  Determines how much time the persistence record should be kept if there is no request sent within a session.
+  Irrelevant when session persistent routing is not enabled. The delay is in seconds.
+
 <PeerFSMThreadCount>::
   Determines the number of threads for handling events in the Peer FSM.
 
@@ -205,37 +229,37 @@ If not specified otherwise, each tag supports a single property - "value", which
   It supports multiple [parameter]`Entity` child elements. [parameter]`Entity` elements configure thread groups.
   These elements support the following properties:
 
-name
-Specifies the name of the entity.
+  name:::
+    Specifies the name of the entity.
 
-size
-Specifies the thread pool size of the entity.
-
+  size:::
+    Specifies the thread pool size of the entity.
++
 The default supported entities are:
 
-ThreadGroup
-Determines the maximum thread count in other entities.
+  ThreadGroup:::
+    Determines the maximum thread count in other entities.
 
-ProcessingMessageTimer
-Determines the thread count for message processing tasks.
+  ProcessingMessageTimer:::
+    Determines the thread count for message processing tasks.
 
-DuplicationMessageTimer
-Specifies the thread pool for identifying duplicate messages.
+  DuplicationMessageTimer:::
+    Specifies the thread pool for identifying duplicate messages.
 
-RedirectMessageTimer
-Specifies the thread pool for redirecting messages that do not need any further processing.
+  RedirectMessageTimer:::
+    Specifies the thread pool for redirecting messages that do not need any further processing.
 
-PeerOverloadTimer
-Determines the thread pool for managing the overload monitor.
+  PeerOverloadTimer:::
+    Determines the thread pool for managing the overload monitor.
 
-ConnectionTimer
-Determines the thread pool for managing tasks regarding peer connection FSM.
+  ConnectionTimer:::
+    Determines the thread pool for managing tasks regarding peer connection FSM.
 
-StatisticTimer
-Determines the thread pool for statistic gathering tasks.
+  StatisticTimer:::
+    Determines the thread pool for statistic gathering tasks.
 
-ApplicationSession
-Determines the thread pool for managing the invocation of application session FSMs, which will invoke listeners.
+  ApplicationSession:::
+    Determines the thread pool for managing the invocation of application session FSMs, which will invoke listeners.
 
 [source,xml]
 ----
@@ -262,40 +286,40 @@ Determines the thread pool for managing the invocation of application session FS
 The <Network> element contains elements that specify parameters for external peers.
 The available elements and attributes are listed for reference.
 
-.<Network> Elements and Attributes
+=== <Network> Elements and Attributes
 <Peers>::
   Parent element containing the child element <Peer>, which specifies external peers and the way they connect.
   <Peer> specifies the name of external peers, whether they should be treated as a server or client, and what rating the peer has externally.
-
++
 <Peer> supports the following properties:
 
-name
-Specifies the name of the peer in the form of a URI. The structure is "aaa://[fqdn|ip]:port" (for example, "aaa://192.168.1.1:3868").
+  name:::
+    Specifies the name of the peer in the form of a URI. The structure is "aaa://[fqdn|ip]:port" (for example, "aaa://192.168.1.1:3868").
 
-attempt_connect
-Determines if the stack should try to connect to this peer. This property accepts boolean values.
+  attempt_connect:::
+    Determines if the stack should try to connect to this peer. This property accepts boolean values.
 
-rating
-Specifies the rating of this peer in order to achieve peer priorities/sorting.
+  rating:::
+    Specifies the rating of this peer in order to achieve peer priorities/sorting.
 
 <Realms>::
   Parent element containing the child element <Realm>, which specifies all realms that connect into the Diameter network.
   <Realm> contains attributes and elements that describe different realms configured for the Core.
   It supports <ApplicationID> child elements, which define the applications supported.
-
++
 <Realm> supports the following parameters:
 
-peers
-Comma separated list of peers. Each peer is represented by an IP Address or FQDN.
+  peers:::
+    Comma separated list of peers. Each peer is represented by an IP Address or FQDN.
 
-local_action
-Determines the action the Local Peer will play on the specified realm: Act as a LOCAL peer.
+  local_action:::
+    Determines the action the Local Peer will play on the specified realm: Act as a LOCAL peer.
 
-dynamic
-Specifies if this realm is dynamic. That is, peers that connect to peers with this realm name will be added to the realm peer list if not present already.
+  dynamic:::
+    Specifies if this realm is dynamic. That is, peers that connect to peers with this realm name will be added to the realm peer list if not present already.
 
-exp_time
-The time before a peer belonging to this realm is removed if no connection is available.
+  exp_time:::
+    The time before a peer belonging to this realm is removed if no connection is available.
 
 
 Below is an example configuration file for a server supporting the CCA, Sh and Ro Applications:
@@ -336,6 +360,10 @@ Below is an example configuration file for a server supporting the CCA, Sh and R
 		<DwaTimeOut value="10000" />
 		<DpaTimeOut value="5000" />
 		<RecTimeOut value="10000" />
+        <TxTimeOut value="10000" />
+        <RetransmissionTimeOut value="45000" />
+        <RetransmissionRequiredResCodes value="3004,3005" />
+		<SessionInactivityTimeOut value="600"/>
 
 		<PeerFSMThreadCount value="3" />
 
@@ -495,3 +523,81 @@ The following content is sufficient for the JBoss Cache configuration file:
 
 </jbosscache>
 ----
+
+[[_jdiameter_failover_configuration]]
+== Failover configuration
+
+Apart from a default routing scheme, which does not require any additional configuration,
+there is an option of activating failure aware routing that extends capabilities of basic
+router with extra features related to failure detection, peer priority handling and load
+balancing. Rating of a particular peer is taken into consideration when deciding about
+an order of peers usage in case of failure detection. The highest rating peers are used first,
+then lower priorities peers next, etc. If several peers are marked with the same rating,
+load balancing algorithm is executed among them. In case of all higher priority peers failure,
+lower priority peers are considered. Afterwards, in case any higher priority peer becomes
+available again and session persistence is enabled as well, only new sessions requests are 
+targeted again to higher priority peers, i.e. currently handled session stays assigned to 
+the peer selected beforehand.
+
+In order to enable a/m extended routing feature, the following entry has to be added to the `Extensions`
+section of [path]_jdiameter-config.xml_:
+
+[source,xml]
+----
+<RouterEngine>org.jdiameter.server.impl.FailureAwareRouter</RouterEngine>
+----
+
+The above mentioned feature of failure aware routing is based on a failure detection mechanism which can report either peer unavailability or
+request delivery failure. As such, it can take place in the event of any of the following situations:
+
+* peer is marked as unavailable by Diameter Base watchdog mechanism defined in http://tools.ietf.org/html/rfc3539#section-3.4[Section 3.4 of RFC3539]
+and http://tools.ietf.org/html/rfc3588#section-5.6[Section 5.6 of RFC3588]
+* an error code, which is included in [parameter]`RetransmissionRequiredResCodes` list, is received in Result-Code AVP from the remote peer
+* either Tx timeout (specified by [parameter]`TxTimeOut` configuration parameter) or retransmission timeout (specified by [parameter]`RetransmissionTimeOut`
+configuration parameter) have expired
+
+When there is an ongoing session and regardless of failure aware routing being enabled or not, failure detection mechanism can perform one or multiple
+retransmissions of a request which delivery failure had been reported for. The decision, whether to retransmit or not, is determined by the value of
+Credit-Control-Failure-Handling AVP received from the remote peer beforehand. If CCFH action had not been imposed by the remote peer, a default `CONTINUE`
+action is assumed. When it comes to specific failure procedures, following recommendations stated in http://tools.ietf.org/html/rfc4006#section-5.7[Section 5.7 of RFC4006],
+the Diameter stack implements several modes of behaviour:
+
+,===
+CCFH value,Event,Action
+
+CONTINUE / RETRY_AND_TERMINATE,Tx timeout expired,attempt retransmission (T flag set to `true`)
+TERMINATE,Tx timeout expired,report `RequestTxTimeout` event
+CONTINUE / RETRY_AND_TERMINATE,error result code returned (included in [parameter]`RetransmissionRequiredResCodes`),attempt retransmission (T flag set to `false`)
+TERMINATE,error result code returned (included in [parameter]`RetransmissionRequiredResCodes`),attempt retransmission (T flag set to `false`)
+CONTINUE / RETRY_AND_TERMINATE,retransmission timeout expired,report `RequestTxTimeout` event
+,===
+
+Additionally, along with an extended routing policy, it is also highly advised to enable session
+persistence as well. Otherwise, routing decisions will be made for every single request within
+a particular session what may eventually result in multiple undesirable reselections of remote
+destination peer.
+
+[[_jdiameter_session_persistence_configuration]]
+== Session persistence
+
+Session persistence enforces sticky sessions that map a single diameter session to a single peer
+which had been selected to process such a session. Session persistence record is created after
+a peer had answered the first (initial) request for that session. Furthermore, it can be updated
+in the event of peer reselection by failover algorithm. Finally, it is removed when session is finished
+normally, an error indication answer is received or session inactivity timeout expires. Replication of
+session persistence records is not supported.
+
+The following list defines the requirements for enabling session persistence:
+
+* Add the following entry to the `Parameters` section of [path]_jdiameter-config.xml_: 
++
+[source,xml]
+----
+<SessionDatasource>org.jdiameter.common.impl.data.RoutingAwareDataSource</SessionDatasource>
+----
+
+* Customize the value of `SessionInactivityTimeOut` in the `Extensions` section of [path]_jdiameter-config.xml_
+
+If enabled, session persistence feature supports two types of applications, i.e. CCA (defined in 
+http://tools.ietf.org/html/rfc4006[RFC4006]) and Ro (defined in http://www.3gpp.org/DynaReport/32240.htm[3GPP TS 32.240]
+and http://www.3gpp.org/DynaReport/32299.htm[3GPP TS 32.299]) by virtue of their session based specificity.
