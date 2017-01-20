@@ -19,12 +19,12 @@
 
 package org.mobicents.diameter.impl.ha.server.s13;
 
-import org.jboss.cache.Fqn;
+import org.infinispan.tree.Fqn;
 import org.jdiameter.api.s13.ServerS13Session;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.common.api.app.s13.S13SessionState;
 import org.jdiameter.server.impl.app.s13.IServerS13SessionData;
-import org.mobicents.cluster.MobicentsCluster;
+import org.restcomm.cluster.MobicentsCluster;
 import org.mobicents.diameter.impl.ha.common.s13.S13SessionDataReplicatedImpl;
 import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 
@@ -40,7 +40,7 @@ public class ServerS13SessionDataReplicatedImpl extends S13SessionDataReplicated
    * @param mobicentsCluster
    * @param iface
    */
-  public ServerS13SessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
+  public ServerS13SessionDataReplicatedImpl(Fqn nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
     super(nodeFqn, mobicentsCluster, container);
 
     if (super.create()) {
