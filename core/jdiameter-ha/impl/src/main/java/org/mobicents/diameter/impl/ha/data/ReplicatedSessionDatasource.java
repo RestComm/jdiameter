@@ -46,7 +46,7 @@ import java.util.HashMap;
 
 import javax.transaction.TransactionManager;
 
-import org.jboss.cache.Fqn;
+import org.infinispan.tree.Fqn;
 import org.jdiameter.api.BaseSession;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.NetworkReqListener;
@@ -68,11 +68,11 @@ import org.jdiameter.common.api.app.s13.IS13SessionData;
 import org.jdiameter.common.api.app.sh.IShSessionData;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.impl.data.LocalDataSource;
-import org.mobicents.cache.MobicentsCache;
-import org.mobicents.cluster.DataRemovalListener;
-import org.mobicents.cluster.DefaultMobicentsCluster;
-import org.mobicents.cluster.MobicentsCluster;
-import org.mobicents.cluster.election.DefaultClusterElector;
+import org.restcomm.cache.MobicentsCache;
+import org.restcomm.cluster.DataRemovalListener;
+import org.restcomm.cluster.DefaultMobicentsCluster;
+import org.restcomm.cluster.MobicentsCluster;
+import org.restcomm.cluster.election.DefaultClusterElector;
 import org.mobicents.diameter.impl.ha.common.AppSessionDataReplicatedImpl;
 import org.mobicents.diameter.impl.ha.common.acc.AccReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.auth.AuthReplicatedSessionDataFactory;
@@ -121,12 +121,14 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
     super();
     this.localDataSource = localDataSource;
 
-    MobicentsCache mcCache = new MobicentsCache(cacheConfigFilename);
+    MobicentsCache mcCache = null;
     TransactionManager txMgr = null;
     try {
-      Class<?> txMgrClass = Class.forName(mcCache.getJBossCache().getConfiguration().getTransactionManagerLookupClass());
-      Object txMgrLookup = txMgrClass.getConstructor(new Class[]{}).newInstance(new Object[]{});
-      txMgr = (TransactionManager) txMgrClass.getMethod("getTransactionManager", new Class[]{}).invoke(txMgrLookup, new Object[]{});
+      mcCache = new MobicentsCache(cacheConfigFilename);
+      //Class<?> txMgrClass = Class.forName(mcCache.getJBossCache().getConfiguration().getTransactionManagerLookupClass());
+      //Object txMgrLookup = txMgrClass.getConstructor(new Class[]{}).newInstance(new Object[]{});
+      //txMgr = (TransactionManager) txMgrClass.getMethod("getTransactionManager", new Class[]{}).invoke(txMgrLookup, new Object[]{});
+      txMgr = mcCache.getJBossCache().getCache().getAdvancedCache().getTransactionManager();
     }
     catch (Exception e) {
       logger.debug("Could not fetch TxMgr. Not using one.", e);

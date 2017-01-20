@@ -33,18 +33,30 @@
     </dependency>
 
     <!-- clustering deps -->
+    <!--
     <dependency>
       <groupId>org.jboss.cluster</groupId>
       <artifactId>jboss-ha-server-cache-jbc</artifactId>
     </dependency>
+    -->
+    <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-tree</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <dependency>
-      <groupId>org.mobicents.cluster</groupId>
+      <groupId>org.restcomm.cluster</groupId>
       <artifactId>cache</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.mobicents.cluster</groupId>
+      <groupId>org.restcomm.cluster</groupId>
       <artifactId>timers</artifactId>
     </dependency>
   </dependencies>

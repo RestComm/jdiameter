@@ -48,7 +48,7 @@ import org.jdiameter.api.auth.ServerAuthSession;
 import org.jdiameter.common.api.app.IAppSessionDataFactory;
 import org.jdiameter.common.api.app.auth.IAuthSessionData;
 import org.jdiameter.common.api.data.ISessionDatasource;
-import org.mobicents.cluster.MobicentsCluster;
+import org.restcomm.cluster.MobicentsCluster;
 import org.mobicents.diameter.impl.ha.client.auth.ClientAuthSessionDataReplicatedImpl;
 import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 import org.mobicents.diameter.impl.ha.server.auth.ServerAuthSessionDataReplicatedImpl;

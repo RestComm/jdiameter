@@ -42,14 +42,14 @@
 
 package org.mobicents.diameter.impl.ha.common;
 
-import org.jboss.cache.Fqn;
-import org.jboss.cache.Node;
+import org.infinispan.tree.Fqn;
+import org.infinispan.tree.Node;
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.common.api.app.IAppSessionData;
-import org.mobicents.cache.MobicentsCache;
-import org.mobicents.cluster.MobicentsCluster;
-import org.mobicents.cluster.cache.ClusteredCacheData;
+import org.restcomm.cache.MobicentsCache;
+import org.restcomm.cluster.MobicentsCluster;
+import org.restcomm.cluster.cache.ClusteredCacheData;
 import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 
 /**
@@ -67,7 +67,7 @@ public class AppSessionDataReplicatedImpl extends ClusteredCacheData implements 
    * @param nodeFqn
    * @param mobicentsCluster
    */
-  public AppSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster) {
+  public AppSessionDataReplicatedImpl(Fqn nodeFqn, MobicentsCluster mobicentsCluster) {
     super(nodeFqn, mobicentsCluster);
   }
 

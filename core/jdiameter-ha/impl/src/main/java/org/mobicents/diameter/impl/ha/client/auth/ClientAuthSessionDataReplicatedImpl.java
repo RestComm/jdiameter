@@ -44,11 +44,11 @@ package org.mobicents.diameter.impl.ha.client.auth;
 
 import java.io.Serializable;
 
-import org.jboss.cache.Fqn;
+import org.infinispan.tree.Fqn;
 import org.jdiameter.api.auth.ClientAuthSession;
 import org.jdiameter.client.impl.app.auth.IClientAuthSessionData;
 import org.jdiameter.common.api.app.auth.ClientAuthSessionState;
-import org.mobicents.cluster.MobicentsCluster;
+import org.restcomm.cluster.MobicentsCluster;
 import org.mobicents.diameter.impl.ha.common.AppSessionDataReplicatedImpl;
 import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 
@@ -70,7 +70,7 @@ public class ClientAuthSessionDataReplicatedImpl extends AppSessionDataReplicate
    * @param mobicentsCluster
    * @param iface
    */
-  public ClientAuthSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster) {
+  public ClientAuthSessionDataReplicatedImpl(Fqn nodeFqn, MobicentsCluster mobicentsCluster) {
     super(nodeFqn, mobicentsCluster);
 
     if (super.create()) {
