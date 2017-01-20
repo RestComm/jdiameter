@@ -15,12 +15,42 @@
 
   <packaging>jboss-sar</packaging>
 
+  <properties>
+    <version.wildfly.core>2.2.0.Final</version.wildfly.core>
+
+    <module.name>org.mobicents.diameter.extension</module.name>
+    <module.path>org/mobicents/diameter/extension</module.path>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.wildfly.core</groupId>
+        <artifactId>wildfly-controller</artifactId>
+        <version>${version.wildfly.core}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.wildfly.core</groupId>
+        <artifactId>wildfly-jmx</artifactId>
+        <version>${version.wildfly.core}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.wildfly.core</groupId>
+        <artifactId>wildfly-server</artifactId>
+        <version>${version.wildfly.core}</version>
+        <scope>provided</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>restcomm-diameter-mux-jar</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>
+      <!--<scope>runtime</scope>-->
     </dependency>
     <!-- Just because we need the right version of slf4j... -->
     <dependency>
@@ -32,6 +62,22 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <version>${slf4j.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.wildfly.core</groupId>
+      <artifactId>wildfly-controller</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.wildfly.core</groupId>
+      <artifactId>wildfly-jmx</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.wildfly.core</groupId>
+      <artifactId>wildfly-server</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
@@ -128,9 +174,12 @@
                   <isset property="jboss.home" />
                 </condition>
                 <!-- The AS7 module structure -->
-                <copy todir="${basedir}/target/jboss-modules/org/mobicents/diameter/main" flatten="true">
+                <!-- The jDiameter module structure org.mobicents.diameter -->
+                <property name="DIAMETER" value="org/mobicents/diameter"/>
+                <copy todir="${basedir}/target/jboss-modules/${DIAMETER}/main"
+                      flatten="true">
                   <fileset dir=".">
-                    <include name="src/main/resources/META-INF/module.xml" />
+                    <include name="src/main/resources/META-INF/module.xml"/>
                   </fileset>
                   <filterset>
                     <filter token="COMMONS_VERSION" value="${commons-pool.version}"/>
@@ -139,30 +188,64 @@
                     <filter token="JDIAMETER_VERSION" value="${project.version}"/>
                   </filterset>
                 </copy>
-                <copy todir="${basedir}/target/jboss-modules/org/mobicents/diameter/main" flatten="true">
+                <copy todir="${basedir}/target/jboss-modules/${DIAMETER}/main"
+                      flatten="true">
                   <fileset dir="target/${project.build.finalName}">
-                    <include name="lib/commons-pool-*" />
-                    <include name="lib/picocontainer*" />
-                    <include name="lib/slf4j*" />
-                    <include name="lib/jdiameter*" />
+                    <include name="lib/commons-pool-*"/>
+                    <include name="lib/picocontainer*"/>
+                    <include name="lib/slf4j*"/>
+                    <include name="lib/jdiameter*"/>
                   </fileset>
                 </copy>
-                <copy todir="${basedir}/target/jboss-modules/org/mobicents/diameter/main/config">
+                <copy todir="${basedir}/target/jboss-modules/${DIAMETER}/main/config">
                   <fileset dir="../common/config">
-                    <include name="**" />
+                    <include name="**"/>
                   </fileset>
                 </copy>
-                <!-- The MUX deployment archive -->
-                <copy file="../jar/target/restcomm-diameter-mux-${project.version}.jar" tofile="${basedir}/target/deployments/restcomm-diameter-tmp.zip"/>
-                <zip destfile="${basedir}/target/deployments/restcomm-diameter.zip">
-                  <zipfileset src="${basedir}/target/deployments/restcomm-diameter-tmp.zip" excludes="org/mobicents/diameter/stack/DiameterStackMultiplexer.class,org/mobicents/diameter/stack/DiameterStackMultiplexerMBean.class"/>
+
+                <!-- The MUX module structure org.mobicents.diameter.mux -->
+                <property name="MUX" value="org/mobicents/diameter/mux"/>
+                <copy file="../jar/target/restcomm-diameter-mux-${project.version}.jar"
+                      tofile="${basedir}/target/jboss-modules/${MUX}/main/restcomm-diameter-mux-${project.version}.jar"/>
+                <copy todir="${basedir}/target/jboss-modules/${MUX}/main"
+                      flatten="true">
+                  <fileset dir="../jar">
+                    <include name="src/main/module/module.xml"/>
+                  </fileset>
+                  <filterset>
+                    <filter token="PROJECT_ARTIFACT" value="restcomm-diameter-mux"/>
+                    <filter token="JDIAMETER_MUX_VERSION" value="${project.version}"/>
+                  </filterset>
+                </copy>
+                <!-- The Extension module structure org.mobicents.diameter.extension -->
+                <property name="EXTENSION" value="org/mobicents/diameter/extension"/>
+                <zip destfile="${basedir}/target/${project.build.finalName}.zip">
+                  <zipfileset src="${basedir}/target/${project.build.finalName}.sar"
+                              excludes="lib/**, META-INF/module.xml, META-INF/jboss-service.xml"/>
                 </zip>
-                <move file="${basedir}/target/deployments/restcomm-diameter.zip" tofile="${basedir}/target/deployments/restcomm-diameter.jar"/>
-                <touch file="${basedir}/target/deployments/restcomm-diameter.jar.dodeploy"/>
+                <!--<move file="${basedir}/target/${project.build.finalName}.zip" tofile="${basedir}/target/${project.build.finalName}.jar"/>-->
+
+                <copy file="${basedir}/target/${project.build.finalName}.zip"
+                      tofile="${basedir}/target/jboss-modules/${EXTENSION}/main/${project.artifactId}-${project.version}.jar"/>
+                <copy todir="${basedir}/target/jboss-modules/${EXTENSION}/main"
+                      flatten="true">
+                  <fileset dir=".">
+                    <include name="src/main/module/module.xml"/>
+                  </fileset>
+                  <filterset>
+                    <filter token="PROJECT_ARTIFACT" value="${project.artifactId}"/>
+                    <filter token="JDIAMETER_EXTENSION_VERSION" value="${project.version}"/>
+                  </filterset>
+                </copy>
+
                 <!-- Clean up some of the mess -->
-                <delete file="${basedir}/target/deployments/restcomm-diameter-tmp.zip"/>
                 <delete dir="target/${project.build.finalName}"/>
                 <delete file="target/${project.build.finalName}.sar"/>
+                <delete file="target/${project.build.finalName}.zip"/>
+
+                <!-- Copy to JBOSS: DIAMETER, MUX and EXTENSION -->
+                <!-- Update JBOSS configuration for EXTENSION -->
+                <!-- Add dependencies on DIAMETER and MUX in the ORG.JBOSS.AS.SERVER module.xml -->
               </tasks>
             </configuration>
           </execution>
@@ -174,12 +257,37 @@
             </goals>
             <configuration>
               <tasks>
-                <delete dir="${env.JBOSS_HOME}/${node}/deployments/${project.build.finalName}.sar" />
+                <!-- Remove from JBOSS: DIAMETER, MUX and EXTENSION -->
+                <!-- Update JBOSS configuration without EXTENSION -->
+                <!-- Remove dependencies on DIAMETER and MUX in the ORG.JBOSS.AS.SERVER module.xml -->
               </tasks>
             </configuration>
           </execution>
         </executions>
       </plugin>
+      <!--
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2.1</version>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assemble/descriptor.xml
+            </descriptor>
+          </descriptors>
+          <appendAssemblyId>false</appendAssemblyId>
+          <finalName>module</finalName>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      -->
     </plugins>
   </build>
 
