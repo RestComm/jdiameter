@@ -106,9 +106,10 @@
   <target name="checkout" unless="skip.checkout" depends="init, checkout-core, checkout-rhq-plugin" />
   <!--<target name="build-src" unless="skip.build-src" depends="build-src-core, build-rhq-plugin, build-src-resources" />-->
   <target name="build-src" unless="skip.build-src" depends="build-src-core, build-rhq-plugin" />
-  <target name="prepare-text-content" depends="prepare-text-content-core" />
   <!--<target name="prepare-text-content" depends="prepare-text-content-core, prepare-text-content-resources" />-->
-  <target name="copy-jars" depends="copy-jars-core, copy-rhq-plugin, copy-jars-resources" />
+  <target name="prepare-text-content" depends="prepare-text-content-core" />
+  <!--<target name="copy-jars" depends="copy-jars-core, copy-rhq-plugin, copy-jars-resources" />-->
+  <target name="copy-jars" depends="copy-jars-core, copy-rhq-plugin" />
 
   <!-- Checkout section -->
 
