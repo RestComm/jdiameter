@@ -19,16 +19,12 @@
     <!-- Third party -->
     <get.opt.version>1.0.9</get.opt.version>
     <picocontainer.version>2.13.5</picocontainer.version>
-    <slf4j.version>1.5.8</slf4j.version>
+    <slf4j.version>1.7.2</slf4j.version>
     <junit.version>4.11</junit.version>
-    <version.jboss.microcontainer>2.2.0.M2</version.jboss.microcontainer>
-    <version.jboss.aop>2.1.8.GA</version.jboss.aop>
-    <version.aop.asintegration.mc>2.1.8.GA</version.aop.asintegration.mc>
-    <version.aop.asintegration.jmx>2.1.8.GA</version.aop.asintegration.jmx>
-    <version.aop.asintegration.core>2.1.8.GA</version.aop.asintegration.core>
-    <version.jboss.sx.client>2.0.1-BETA</version.jboss.sx.client>
-    <version.jboss.naming.jnp-client>5.0.4.GA</version.jboss.naming.jnp-client>
     <version.surefire>2.19</version.surefire>
+
+    <version.infinispan>8.2.4.Final</version.infinispan>
+    <version.jboss.logging>3.3.0.Final</version.jboss.logging>
   </properties>
 
   <dependencyManagement>
@@ -85,59 +81,23 @@
         <artifactId>slf4j-log4j12</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
+
       <dependency>
-        <groupId>org.jboss.microcontainer</groupId>
-        <artifactId>jboss-kernel</artifactId>
-        <version>${version.jboss.microcontainer}</version>
-        <!-- <scope>provided</scope> -->
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-core</artifactId>
+        <version>${version.infinispan}</version>
       </dependency>
       <dependency>
-        <groupId>org.jboss.microcontainer</groupId>
-        <artifactId>jboss-dependency</artifactId>
-        <version>${version.jboss.microcontainer}</version>
-        <!-- <scope>provided</scope> -->
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-commons</artifactId>
+        <version>${version.infinispan}</version>
       </dependency>
       <dependency>
-        <groupId>org.jboss.microcontainer</groupId>
-        <artifactId>jboss-aop-mc-int</artifactId>
-        <version>${version.jboss.microcontainer}</version>
-        <!-- <scope>provided</scope> -->
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-tree</artifactId>
+        <version>${version.infinispan}</version>
       </dependency>
-      <dependency>
-        <groupId>org.jboss.aop</groupId>
-        <artifactId>jboss-aop</artifactId>
-        <version>${version.jboss.aop}</version>
-        <!-- <scope>provided</scope> -->
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.aop</groupId>
-        <artifactId>jboss-aop-asintegration-mc</artifactId>
-        <version>${version.aop.asintegration.mc}</version>
-        <!-- <scope>provided</scope> -->
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.aop</groupId>
-        <artifactId>jboss-aop-asintegration-core</artifactId>
-        <version>${version.aop.asintegration.core}</version>
-        <!-- <scope>provided</scope> -->
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.aop</groupId>
-        <artifactId>jboss-aop-asintegration-jmx</artifactId>
-        <version>${version.aop.asintegration.jmx}</version>
-        <!-- <scope>provided</scope> -->
-      </dependency>
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jbosssx-client</artifactId>
-        <version>${version.jboss.sx.client}</version>
-        <!-- <scope>provided</scope> -->
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.naming</groupId>
-        <artifactId>jnp-client</artifactId>
-        <version>${version.jboss.naming.jnp-client}</version>
-      </dependency>
+
     </dependencies>
   </dependencyManagement>
 

@@ -24,6 +24,7 @@
     <jdiameter.version>1.5.9.0-build538-SNAPSHOT</jdiameter.version>
     <restcomm.cluster.version>3.0.0.8</restcomm.cluster.version>
     <version.infinispan>8.2.4.Final</version.infinispan>
+    <version.jboss.logging>3.3.0.Final</version.jboss.logging>
   </properties>
 
   <dependencyManagement>
@@ -40,17 +41,22 @@
       </dependency>
 
       <dependency>
+        <groupId>org.jboss.logging</groupId>
+        <artifactId>jboss-logging</artifactId>
+        <version>${version.jboss.logging}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.infinispan</groupId>
         <artifactId>infinispan-core</artifactId>
         <version>${version.infinispan}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.infinispan</groupId>
         <artifactId>infinispan-tree</artifactId>
         <version>${version.infinispan}</version>
-        <scope>provided</scope>
       </dependency>
+
       <dependency>
         <groupId>org.restcomm.cluster</groupId>
         <artifactId>core</artifactId>

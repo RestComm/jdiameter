@@ -31,7 +31,7 @@
     <checkstyle.consoleOutput>true</checkstyle.consoleOutput>
     <checkstyle.failOnError>true</checkstyle.failOnError>
     <version.com.puppycrawl.tools.checkstyle>6.18</version.com.puppycrawl.tools.checkstyle>
-    <compile.source>1.7</compile.source>
+    <compile.source>1.8</compile.source>
   </properties>
 
   <developers>

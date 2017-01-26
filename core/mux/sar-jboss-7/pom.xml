@@ -124,6 +124,7 @@
             <exclude>org.jboss.jbossas:jboss-as-j2se</exclude>
             <exclude>oswego-concurrent:concurrent</exclude>
             <exclude>org.jboss.bootstrap:jboss-bootstrap</exclude>
+            <exclude>org.jboss.logging:jboss-logging</exclude>
             <exclude>org.jboss.jbossas:jboss-as-system</exclude>
             <exclude>org.jboss.jbossas:jboss-as-system-jmx</exclude>
             <exclude>org.jboss.aop:jboss-aop</exclude>
