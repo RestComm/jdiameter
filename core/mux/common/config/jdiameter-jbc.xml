@@ -28,8 +28,10 @@
 
   <cache-container name="${jboss.partition.name:DefaultPartition}-restcomm-diameter" statistics="false" default-cache="asyncCache">
     <transport stack="udp"/>
+    <jmx duplicate-domains="true"/>
     <replicated-cache name="asyncCache" mode="ASYNC">
       <locking acquire-timeout="20000"/>
+      <transaction mode="BATCH"/>
     </replicated-cache>
   </cache-container>
 

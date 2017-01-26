@@ -20,9 +20,13 @@
         <stack-file name="udp" path="default-configs/default-jgroups-udp.xml"/>
     </jgroups>
 
-    <cache-container name="jdiameter-cache" statistics="true" default-cache="asyncCache">
+    <cache-container name="jdiameter-cache" statistics="false" default-cache="asyncCache">
         <transport stack="udp"/>
-        <replicated-cache name="asyncCache" mode="ASYNC"/>
+        <jmx duplicate-domains="true"/>
+        <replicated-cache name="asyncCache" mode="ASYNC">
+            <locking acquire-timeout="20000"/>
+            <transaction mode="BATCH"/>
+        </replicated-cache>
     </cache-container>
 
 </infinispan>
