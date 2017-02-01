@@ -9,7 +9,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>restcomm-diameter-mux-sar-jboss-7</artifactId>
+  <artifactId>restcomm-diameter-mux-sar-wildfly</artifactId>
 
   <name>Restcomm :: Diameter Multiplexer :: ${project.artifactId}</name>
 

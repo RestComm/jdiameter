@@ -75,16 +75,16 @@
     <profile>
       <id>maven-release</id>
       <modules>
-        <module>sar-jboss-7</module>
+        <module>sar-wildfly</module>
       </modules>
     </profile>
     <profile>
-      <id>jboss7</id>
+      <id>wildfly</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-        <module>sar-jboss-7</module>
+        <module>sar-wildfly</module>
       </modules>
     </profile>
   </profiles>
