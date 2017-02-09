@@ -25,26 +25,28 @@
       <artifactId>jdiameter-impl</artifactId>
     </dependency>
 
-    <!--  cache  -->
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging-log4j</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
     <!-- clustering deps -->
     <dependency>
-      <groupId>org.jboss.cluster</groupId>
-      <artifactId>jboss-ha-server-cache-jbc</artifactId>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.mobicents.cluster</groupId>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-tree</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.restcomm.cluster</groupId>
       <artifactId>cache</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.mobicents.cluster</groupId>
+      <groupId>org.restcomm.cluster</groupId>
       <artifactId>timers</artifactId>
     </dependency>
   </dependencies>

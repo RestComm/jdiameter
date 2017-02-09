@@ -102,10 +102,14 @@
   <target name="prepare-text-content" depends="prepare-text-content-core, prepare-text-content-resources, prepare-text-content-examples" />
   <target name="copy-jars" depends="copy-jars-core, copy-rhq-plugin, copy-jars-resources, copy-jars-examples" /-->
 
-  <target name="checkout" unless="skip.checkout" depends="init, checkout-core, checkout-rhq-plugin, checkout-slee-diameter-package" />
-  <target name="build-src" unless="skip.build-src" depends="build-src-core, build-rhq-plugin, build-src-resources" />
-  <target name="prepare-text-content" depends="prepare-text-content-core, prepare-text-content-resources" />
-  <target name="copy-jars" depends="copy-jars-core, copy-rhq-plugin, copy-jars-resources" />
+  <!--<target name="checkout" unless="skip.checkout" depends="init, checkout-core, checkout-rhq-plugin, checkout-slee-diameter-package" />-->
+  <target name="checkout" unless="skip.checkout" depends="init, checkout-core, checkout-rhq-plugin" />
+  <!--<target name="build-src" unless="skip.build-src" depends="build-src-core, build-rhq-plugin, build-src-resources" />-->
+  <target name="build-src" unless="skip.build-src" depends="build-src-core, build-rhq-plugin" />
+  <!--<target name="prepare-text-content" depends="prepare-text-content-core, prepare-text-content-resources" />-->
+  <target name="prepare-text-content" depends="prepare-text-content-core" />
+  <!--<target name="copy-jars" depends="copy-jars-core, copy-rhq-plugin, copy-jars-resources" />-->
+  <target name="copy-jars" depends="copy-jars-core, copy-rhq-plugin" />
 
   <!-- Checkout section -->
 
@@ -205,6 +209,7 @@
     </copy>
 
     <!-- Copy fixed AS5 MUX jar file -->
+    <!--
     <copy todir="${zip_dir}/core/mux" flatten="true">
       <fileset dir="${checkout_base_dir}/core/mux/sar-jboss-5/target/">
         <include name="restcomm-diameter-mux-*/lib/restcomm-diameter-mux-*.jar" />
@@ -227,12 +232,16 @@
       <mapper type="glob" from="restcomm-diameter-mux*.sar" to="restcomm-diameter-mux.sar"/>
     </copy>
     <unzip src="${checkout_base_dir}/core/mux/sar-jboss-${DEFAULT_SAR_CONFIGURATION}/target/restcomm-diameter-mux.sar" dest="${zip_dir}/core/mux/${RELEASE_NAME}-diameter-mux.sar/"/>
+    -->
+
     <!-- Replace with fixed AS5 MUX jar file -->
+    <!--
     <copy todir="${zip_dir}/core/mux/${RELEASE_NAME}-diameter-mux.sar/lib/">
       <fileset dir="${zip_dir}/core/mux/">
         <include name="*.jar" />
       </fileset>
     </copy>
+    -->
   </target>
 
   <target name="copy-jars-resources">
@@ -423,7 +432,7 @@
       <param name="algorithm" value="sha1" />
     </antcall>
 
-    <antcall target="build-and-package-mux" />
+    <!--<antcall target="build-and-package-mux" />-->
     <antcall target="build-and-package-mux-alternative" />
 
     <!-- <antcall target="clean" /> -->

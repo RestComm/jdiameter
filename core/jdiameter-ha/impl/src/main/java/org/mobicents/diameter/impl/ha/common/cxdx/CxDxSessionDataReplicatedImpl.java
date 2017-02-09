@@ -45,7 +45,7 @@ package org.mobicents.diameter.impl.ha.common.cxdx;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-import org.jboss.cache.Fqn;
+import org.infinispan.tree.Fqn;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Request;
 import org.jdiameter.client.api.IContainer;
@@ -54,7 +54,7 @@ import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.api.parser.ParseException;
 import org.jdiameter.common.api.app.cxdx.CxDxSessionState;
 import org.jdiameter.common.api.app.cxdx.ICxDxSessionData;
-import org.mobicents.cluster.MobicentsCluster;
+import org.restcomm.cluster.MobicentsCluster;
 import org.mobicents.diameter.impl.ha.common.AppSessionDataReplicatedImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +79,7 @@ public abstract class CxDxSessionDataReplicatedImpl extends AppSessionDataReplic
    * @param mobicentsCluster
    * @param iface
    */
-  public CxDxSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
+  public CxDxSessionDataReplicatedImpl(Fqn nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
     super(nodeFqn, mobicentsCluster);
     this.messageParser = container.getAssemblerFacility().getComponentInstance(IMessageParser.class);
   }

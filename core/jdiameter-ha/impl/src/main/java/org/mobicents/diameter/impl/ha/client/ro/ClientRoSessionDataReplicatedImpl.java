@@ -45,7 +45,7 @@ package org.mobicents.diameter.impl.ha.client.ro;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-import org.jboss.cache.Fqn;
+import org.infinispan.tree.Fqn;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.ro.ClientRoSession;
@@ -55,7 +55,7 @@ import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.api.parser.ParseException;
 import org.jdiameter.client.impl.app.ro.IClientRoSessionData;
 import org.jdiameter.common.api.app.ro.ClientRoSessionState;
-import org.mobicents.cluster.MobicentsCluster;
+import org.restcomm.cluster.MobicentsCluster;
 import org.mobicents.diameter.impl.ha.common.AppSessionDataReplicatedImpl;
 import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 import org.slf4j.Logger;
@@ -87,7 +87,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
    * @param mobicentsCluster
    * @param iface
    */
-  public ClientRoSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
+  public ClientRoSessionDataReplicatedImpl(Fqn nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
     super(nodeFqn, mobicentsCluster);
 
     if (super.create()) {

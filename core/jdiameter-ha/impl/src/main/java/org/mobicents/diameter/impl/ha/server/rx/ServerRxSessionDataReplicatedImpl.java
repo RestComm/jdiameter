@@ -42,11 +42,11 @@
 
 package org.mobicents.diameter.impl.ha.server.rx;
 
-import org.jboss.cache.Fqn;
+import org.infinispan.tree.Fqn;
 import org.jdiameter.api.rx.ServerRxSession;
 import org.jdiameter.common.api.app.rx.ServerRxSessionState;
 import org.jdiameter.server.impl.app.rx.IServerRxSessionData;
-import org.mobicents.cluster.MobicentsCluster;
+import org.restcomm.cluster.MobicentsCluster;
 import org.mobicents.diameter.impl.ha.common.AppSessionDataReplicatedImpl;
 import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 
@@ -65,7 +65,7 @@ public class ServerRxSessionDataReplicatedImpl extends AppSessionDataReplicatedI
    * @param mobicentsCluster
    * @param iface
    */
-  public ServerRxSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster) {
+  public ServerRxSessionDataReplicatedImpl(Fqn nodeFqn, MobicentsCluster mobicentsCluster) {
     super(nodeFqn, mobicentsCluster);
 
     if (super.create()) {
