@@ -64,7 +64,7 @@
 
     <!-- jboss-x. to be used as building profile -->
     <property name="DEFAULT_SAR_CONFIGURATION"     value="5" />
-    <property name="ALTERNATIVE_SAR_CONFIGURATION" value="7" />
+    <property name="ALTERNATIVE_SAR_CONFIGURATION" value="wildfly" />
 
     <property name="JAINSLEE_RA_LIST"      value="base,cca,sh-client,sh-server,ro,rf,cx-dx,gx,gq,rx,s6a" />
     <property name="JAINSLEE_RA_DOCS_LIST" value="base,cca,sh-client,sh-server,ro,rf,cx-dx,gx,gq,rx,s6a" />
@@ -80,7 +80,7 @@
 
     <property name="zip_file_name"         value="${RELEASE_NAME}-diameter-${RELEASE_VERSION}" />
     <property name="mux_zip_file_name"     value="${RELEASE_NAME}-diameter-mux-jboss${DEFAULT_SAR_CONFIGURATION}-${RELEASE_VERSION}.zip" />
-    <property name="alt_mux_zip_file_name" value="${RELEASE_NAME}-diameter-mux-jboss${ALTERNATIVE_SAR_CONFIGURATION}-${RELEASE_VERSION}.zip" />
+    <property name="alt_mux_zip_file_name" value="${RELEASE_NAME}-diameter-mux-${ALTERNATIVE_SAR_CONFIGURATION}-${RELEASE_VERSION}.zip" />
   </target>
 
   <property name="failoncopy" value="true" />
@@ -483,7 +483,7 @@
 
   <target name="build-and-package-mux-alternative" description="Create zip file: ${basedir}/${alt_mux_zip_file_name}">
     <exec executable="${mvn.executable}" dir="${checkout_base_dir}/core/mux">
-      <arg line="-f pom.xml ${release.build.goals} -Pjboss${ALTERNATIVE_SAR_CONFIGURATION}" />
+      <arg line="-f pom.xml ${release.build.goals} -P${ALTERNATIVE_SAR_CONFIGURATION}" />
     </exec>
 
     <mkdir dir="${alt_mux_zip_dir}" />
@@ -497,7 +497,7 @@
     </copy>
 
     <copy todir="${alt_mux_zip_dir}">
-      <fileset dir="${checkout_base_dir}/core/mux/sar-jboss-${ALTERNATIVE_SAR_CONFIGURATION}/target" includes="jboss-modules/**, deployments/**"/>
+      <fileset dir="${checkout_base_dir}/core/mux/sar-${ALTERNATIVE_SAR_CONFIGURATION}/target" includes="jboss-modules/**, deployments/**"/>
     </copy>
     <zip destfile="${basedir}/${alt_mux_zip_file_name}" basedir="${alt_mux_zip_dir}"/>
     <antcall target="checksum">
