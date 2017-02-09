@@ -31,7 +31,7 @@
     <checkstyle.consoleOutput>true</checkstyle.consoleOutput>
     <checkstyle.failOnError>true</checkstyle.failOnError>
     <version.com.puppycrawl.tools.checkstyle>6.18</version.com.puppycrawl.tools.checkstyle>
-    <compile.source>1.7</compile.source>
+    <compile.source>1.8</compile.source>
   </properties>
 
   <developers>
@@ -80,6 +80,28 @@
           <additionalparam>-Xdoclint:none</additionalparam>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.7</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>restcomm-releases-repository</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+        </configuration>
+        <executions>
+          <execution>
+            <id>deploy-to-sonatype</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>deploy</goal>
+              <!--goal>close</goal-->
+              <goal>release</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
       <!-- Checkstyle -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
