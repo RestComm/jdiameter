@@ -17,9 +17,38 @@
 
   <modules>
     <module>api</module>
-    <module>impl-jboss5</module>
-    <module>impl-wildfly</module>
+    <!--<module>impl-jboss5</module>-->
+    <!--<module>impl-wildfly</module>-->
   </modules>
+
+  <profiles>
+    <profile>
+      <id>jboss5</id>
+      <activation>
+        <!--<activeByDefault>false</activeByDefault>-->
+        <property>
+          <name>ha.impl</name>
+          <value>jboss5</value>
+        </property>
+      </activation>
+      <modules>
+        <module>impl-jboss5</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wildfly</id>
+      <activation>
+        <!--<activeByDefault>true</activeByDefault>-->
+        <property>
+          <name>ha.impl</name>
+          <value>wildfly</value>
+        </property>
+      </activation>
+      <modules>
+        <module>impl-wildfly</module>
+      </modules>
+    </profile>
+  </profiles>
 
   <properties>
     <jdiameter.version>1.5.9.0-build538-SNAPSHOT</jdiameter.version>
@@ -79,16 +108,19 @@
         <groupId>org.restcomm.cluster</groupId>
         <artifactId>core</artifactId>
         <version>${restcomm.cluster.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.restcomm.cluster</groupId>
         <artifactId>cache</artifactId>
         <version>${restcomm.cluster.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.restcomm.cluster</groupId>
         <artifactId>timers</artifactId>
         <version>${restcomm.cluster.version}</version>
+        <scope>provided</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

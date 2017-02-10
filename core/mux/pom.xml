@@ -43,11 +43,6 @@
           <value>jboss5</value>
         </property>
       </activation>
-      <!--
-      <properties>
-        <ha.impl>jboss5</ha.impl>
-      </properties>
-      -->
       <modules>
         <module>sar-jboss-5</module>
       </modules>
@@ -61,11 +56,6 @@
           <value>wildfly</value>
         </property>
       </activation>
-      <!--
-      <properties>
-        <ha.impl>wildfly</ha.impl>
-      </properties>
-      -->
       <modules>
         <module>sar-wildfly</module>
       </modules>

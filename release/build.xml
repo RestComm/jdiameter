@@ -38,8 +38,8 @@
 
     <property name="TOOLS_RHQ_PLUGIN_VERSION" value="1.0.0.BETA2" />
 
+    <!-- These properties are not active now. They should be reworked. -->
     <property name="SLEE_DIAMETER_PACKAGE_VERSION" value="${SLEE_RAS_MASTER_VERSION}" />
-
     <property name="RA_base_VERSION"      value="${SLEE_RAS_MASTER_VERSION}" />
     <property name="RA_cca_VERSION"       value="${SLEE_RAS_MASTER_VERSION}" />
     <property name="RA_sh-client_VERSION" value="${SLEE_RAS_MASTER_VERSION}" />
@@ -51,7 +51,6 @@
     <property name="RA_gq_VERSION"        value="${SLEE_RAS_MASTER_VERSION}" />
     <property name="RA_rx_VERSION"        value="${SLEE_RAS_MASTER_VERSION}" />
     <property name="RA_s6a_VERSION"       value="${SLEE_RAS_MASTER_VERSION}" />
-
     <property name="EXAMPLE_JAINSLEE_base_VERSION"    value="2.4.1.FINAL" />
     <property name="EXAMPLE_JAINSLEE_openims_VERSION" value="2.4.1.FINAL" />
 
@@ -59,16 +58,15 @@
     <property name="JAINSLEE_VERSION"              value="2.8.25.54" />
     <property name="JAINSLEE_SIP11_RA_VERSION"     value="2.7.0.FINAL" />
     <property name="JAINSLEE_SIP_SERVICES_VERSION" value="2.4.0.FINAL" />
-
     <property name="JBOSS_VERSION" value="5.1.0.GA" />
-
-    <!-- jboss-x. to be used as building profile -->
-    <property name="DEFAULT_SAR_CONFIGURATION"     value="5" />
-    <property name="ALTERNATIVE_SAR_CONFIGURATION" value="wildfly" />
 
     <property name="JAINSLEE_RA_LIST"      value="base,cca,sh-client,sh-server,ro,rf,cx-dx,gx,gq,rx,s6a" />
     <property name="JAINSLEE_RA_DOCS_LIST" value="base,cca,sh-client,sh-server,ro,rf,cx-dx,gx,gq,rx,s6a" />
     <property name="JAINSLEE_EXAMPLE_LIST" value="base,openims" />
+
+    <!-- jboss-x. to be used as building profile -->
+    <property name="JBOSS5_SAR_CONFIGURATION" value="jboss-5" />
+    <property name="WILDFLY_SAR_CONFIGURATION" value="wildfly" />
 
     <!-- Directories Configuration -->
     <property name="downloads_dir"     value="${basedir}/downloads" />
@@ -79,8 +77,8 @@
     <property name="alt_mux_zip_dir" value="${basedir}/diameter/alt-mux-zip" />
 
     <property name="zip_file_name"         value="${RELEASE_NAME}-diameter-${RELEASE_VERSION}" />
-    <property name="mux_zip_file_name"     value="${RELEASE_NAME}-diameter-mux-jboss${DEFAULT_SAR_CONFIGURATION}-${RELEASE_VERSION}.zip" />
-    <property name="alt_mux_zip_file_name" value="${RELEASE_NAME}-diameter-mux-${ALTERNATIVE_SAR_CONFIGURATION}-${RELEASE_VERSION}.zip" />
+    <property name="mux_zip_file_name"     value="${RELEASE_NAME}-diameter-mux-${JBOSS5_SAR_CONFIGURATION}-${RELEASE_VERSION}.zip" />
+    <property name="alt_mux_zip_file_name" value="${RELEASE_NAME}-diameter-mux-${WILDFLY_SAR_CONFIGURATION}-${RELEASE_VERSION}.zip" />
   </target>
 
   <property name="failoncopy" value="true" />
@@ -97,10 +95,12 @@
     </classpath>
   </taskdef>
 
-  <!--target name="checkout" unless="skip.checkout" depends="init, checkout-core, checkout-rhq-plugin, checkout-slee-diameter-package, checkout-examples" />
+  <!--
+  target name="checkout" unless="skip.checkout" depends="init, checkout-core, checkout-rhq-plugin, checkout-slee-diameter-package, checkout-examples" />
   <target name="build-src" unless="skip.build-src" depends="build-src-core, build-rhq-plugin, build-src-resources, build-src-examples" />
   <target name="prepare-text-content" depends="prepare-text-content-core, prepare-text-content-resources, prepare-text-content-examples" />
-  <target name="copy-jars" depends="copy-jars-core, copy-rhq-plugin, copy-jars-resources, copy-jars-examples" /-->
+  <target name="copy-jars" depends="copy-jars-core, copy-rhq-plugin, copy-jars-resources, copy-jars-examples" />
+  -->
 
   <!--<target name="checkout" unless="skip.checkout" depends="init, checkout-core, checkout-rhq-plugin, checkout-slee-diameter-package" />-->
   <target name="checkout" unless="skip.checkout" depends="init, checkout-core, checkout-rhq-plugin" />
@@ -150,11 +150,21 @@
 
   <target name="build-src-core" unless="skip.build-src">
     <exec failonerror="true" executable="${mvn.executable}" dir="${checkout_base_dir}">
-      <arg line="versions:set -DnewVersion=${diameter.release.version}" />
+      <arg line="versions:set -DnewVersion=${diameter.release.version} -Dha.impl=jboss5" />
     </exec>
     <exec executable="${mvn.executable}" dir="${checkout_base_dir}/">
-      <arg line="-f pom.xml ${release.build.goals} -Pmaven-release" />
+      <!--<arg line="-f pom.xml ${release.build.goals} -Pmaven-release" />-->
+      <arg line="-f pom.xml ${release.build.goals} -Pmaven-release -Dha.impl=jboss5" />
     </exec>
+    <!--
+    <exec failonerror="true" executable="${mvn.executable}" dir="${checkout_base_dir}">
+      <arg line="versions:set -DnewVersion=${diameter.release.version} -Dha.impl=wildfly" />
+    </exec>
+    <exec executable="${mvn.executable}" dir="${checkout_base_dir}/">
+      <!- -<arg line="-f pom.xml ${release.build.goals} -Pmaven-release" />- ->
+      <arg line="-f pom.xml ${release.build.goals} -Dha.impl=wildfly" />
+    </exec>
+    -->
   </target>
 
   <target name="build-src-resources" unless="skip.build-src">
@@ -203,13 +213,15 @@
       <fileset dir="${checkout_base_dir}/core/jdiameter-ha/api/target">
         <include name="jdiameter-ha-api-*.jar" />
       </fileset>
-      <fileset dir="${checkout_base_dir}/core/jdiameter-ha/impl/target">
+      <fileset dir="${checkout_base_dir}/core/jdiameter-ha/impl-jboss5/target">
         <include name="jdiameter-ha-impl-*.jar" />
       </fileset>
+        <fileset dir="${checkout_base_dir}/core/jdiameter-ha/impl-wildfly/target">
+            <include name="jdiameter-ha-impl-*.jar" />
+        </fileset>
     </copy>
 
     <!-- Copy fixed AS5 MUX jar file -->
-    <!--
     <copy todir="${zip_dir}/core/mux" flatten="true">
       <fileset dir="${checkout_base_dir}/core/mux/sar-jboss-5/target/">
         <include name="restcomm-diameter-mux-*/lib/restcomm-diameter-mux-*.jar" />
@@ -225,23 +237,21 @@
         <include name="**/*" />
       </fileset>
     </copy>
-    <copy todir="${checkout_base_dir}/core/mux/sar-jboss-${DEFAULT_SAR_CONFIGURATION}/target/">
-      <fileset dir="${checkout_base_dir}/core/mux/sar-jboss-${DEFAULT_SAR_CONFIGURATION}/target/">
+    <copy todir="${checkout_base_dir}/core/mux/sar-${JBOSS5_SAR_CONFIGURATION}/target/">
+      <fileset dir="${checkout_base_dir}/core/mux/sar-${JBOSS5_SAR_CONFIGURATION}/target/">
         <include name="restcomm-diameter-mux*.sar" />
       </fileset>
       <mapper type="glob" from="restcomm-diameter-mux*.sar" to="restcomm-diameter-mux.sar"/>
     </copy>
-    <unzip src="${checkout_base_dir}/core/mux/sar-jboss-${DEFAULT_SAR_CONFIGURATION}/target/restcomm-diameter-mux.sar" dest="${zip_dir}/core/mux/${RELEASE_NAME}-diameter-mux.sar/"/>
-    -->
+    <unzip src="${checkout_base_dir}/core/mux/sar-${JBOSS5_SAR_CONFIGURATION}/target/restcomm-diameter-mux.sar"
+           dest="${zip_dir}/core/mux/${RELEASE_NAME}-diameter-mux.sar/"/>
 
     <!-- Replace with fixed AS5 MUX jar file -->
-    <!--
     <copy todir="${zip_dir}/core/mux/${RELEASE_NAME}-diameter-mux.sar/lib/">
       <fileset dir="${zip_dir}/core/mux/">
         <include name="*.jar" />
       </fileset>
     </copy>
-    -->
   </target>
 
   <target name="copy-jars-resources">
@@ -432,7 +442,7 @@
       <param name="algorithm" value="sha1" />
     </antcall>
 
-    <!--<antcall target="build-and-package-mux" />-->
+    <antcall target="build-and-package-mux" />
     <antcall target="build-and-package-mux-alternative" />
 
     <!-- <antcall target="clean" /> -->
@@ -440,7 +450,8 @@
 
   <target name="build-and-package-mux" description="Create zip file: ${basedir}/${mux_zip_file_name}">
     <exec executable="${mvn.executable}" dir="${checkout_base_dir}/core/mux">
-      <arg line="-f pom.xml ${release.build.goals} -Pjboss${DEFAULT_SAR_CONFIGURATION}" />
+      <!--<arg line="-f pom.xml ${release.build.goals} -Pjboss${DEFAULT_SAR_CONFIGURATION}" />-->
+      <arg line="-f pom.xml ${release.build.goals} -Dha.impl=jboss5" />
     </exec>
 
     <mkdir dir="${mux_zip_dir}" />
@@ -454,7 +465,7 @@
     </copy>
 
     <copy todir="${mux_zip_dir}/">
-      <fileset dir="${checkout_base_dir}/core/mux/sar-jboss-${DEFAULT_SAR_CONFIGURATION}/target/">
+      <fileset dir="${checkout_base_dir}/core/mux/sar-${JBOSS5_SAR_CONFIGURATION}/target/">
         <include name="restcomm-diameter-mux*/**" />
         <exclude name="restcomm-diameter-mux*.sar" />
       </fileset>
@@ -483,7 +494,8 @@
 
   <target name="build-and-package-mux-alternative" description="Create zip file: ${basedir}/${alt_mux_zip_file_name}">
     <exec executable="${mvn.executable}" dir="${checkout_base_dir}/core/mux">
-      <arg line="-f pom.xml ${release.build.goals} -P${ALTERNATIVE_SAR_CONFIGURATION}" />
+      <!--<arg line="-f pom.xml ${release.build.goals} -P${WILDFLY_SAR_CONFIGURATION}" />-->
+      <arg line="-f pom.xml ${release.build.goals} -Dha.impl=wildfly" />
     </exec>
 
     <mkdir dir="${alt_mux_zip_dir}" />
@@ -497,7 +509,7 @@
     </copy>
 
     <copy todir="${alt_mux_zip_dir}">
-      <fileset dir="${checkout_base_dir}/core/mux/sar-${ALTERNATIVE_SAR_CONFIGURATION}/target" includes="jboss-modules/**, deployments/**"/>
+      <fileset dir="${checkout_base_dir}/core/mux/sar-${WILDFLY_SAR_CONFIGURATION}/target" includes="jboss-modules/**, deployments/**"/>
     </copy>
     <zip destfile="${basedir}/${alt_mux_zip_file_name}" basedir="${alt_mux_zip_dir}"/>
     <antcall target="checksum">
