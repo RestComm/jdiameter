@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<structure>
+  <context>
+    <path name=""/>
+    <metaDataPath>
+      <path name="META-INF"/>
+    </metaDataPath>
+    <classpath>
+      <path name="" />
+      <path name="" suffixes=".rar" />
+      <path name="" suffixes=".xml" />
+      <path name="lib" suffixes=".jar" />
+    </classpath>
+  </context>
+</structure>

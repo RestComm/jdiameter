@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<deployment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:jboss:bean-deployer:2.0">
+
+  <!-- Mobicents Diameter Mux MBean -->
+  <bean name="Mobicents.Diameter.StackMuxMBean" class="org.mobicents.diameter.stack.DiameterStackMultiplexer">
+    <annotation>@org.jboss.aop.microcontainer.aspects.jmx.JMX(name="diameter.mobicents:service=DiameterStackMultiplexer", exposedInterface=org.mobicents.diameter.stack.DiameterStackMultiplexerMBean.class, registerDirectly=true)</annotation>
+    <demand>TransactionManager</demand>
+  </bean>
+
+</deployment>

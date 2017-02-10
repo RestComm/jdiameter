@@ -201,13 +201,22 @@
                 <copy todir="${basedir}/target/jboss-modules/${DIAMETER}/main/config">
                   <fileset dir="../common/config">
                     <include name="**"/>
+                    <exclude name="jdiameter-jbc.xml"/>
                   </fileset>
                 </copy>
 
                 <!-- The MUX module structure org.mobicents.diameter.mux -->
                 <property name="MUX" value="org/mobicents/diameter/mux"/>
                 <copy file="../jar/target/restcomm-diameter-mux-${project.version}.jar"
+                      tofile="${basedir}/target/jboss-modules/${MUX}/main/restcomm-diameter-mux-${project.version}-tmp.zip"/>
+                <zip destfile="${basedir}/target/jboss-modules/${MUX}/main/restcomm-diameter-mux-${project.version}.zip">
+                  <zipfileset src="${basedir}/target/jboss-modules/${MUX}/main/restcomm-diameter-mux-${project.version}-tmp.zip"
+                              excludes="org/mobicents/diameter/stack/DiameterStackMultiplexer.class,
+                                        org/mobicents/diameter/stack/DiameterStackMultiplexerMBean.class"/>
+                </zip>
+                <move file="${basedir}/target/jboss-modules/${MUX}/main/restcomm-diameter-mux-${project.version}.zip"
                       tofile="${basedir}/target/jboss-modules/${MUX}/main/restcomm-diameter-mux-${project.version}.jar"/>
+
                 <copy todir="${basedir}/target/jboss-modules/${MUX}/main"
                       flatten="true">
                   <fileset dir="../jar">
@@ -243,6 +252,7 @@
                 <delete dir="target/${project.build.finalName}"/>
                 <delete file="target/${project.build.finalName}.sar"/>
                 <delete file="target/${project.build.finalName}.zip"/>
+                <delete file="${basedir}/target/jboss-modules/${MUX}/main/restcomm-diameter-mux-${project.version}-tmp.zip"/>
 
                 <!-- Copy to JBOSS: DIAMETER, MUX and EXTENSION -->
                 <!-- Update JBOSS configuration for EXTENSION -->
@@ -266,29 +276,6 @@
           </execution>
         </executions>
       </plugin>
-      <!--
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2.1</version>
-        <configuration>
-          <descriptors>
-            <descriptor>src/main/assemble/descriptor.xml
-            </descriptor>
-          </descriptors>
-          <appendAssemblyId>false</appendAssemblyId>
-          <finalName>module</finalName>
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      -->
     </plugins>
   </build>
 

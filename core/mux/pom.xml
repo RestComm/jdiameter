@@ -17,6 +17,7 @@
     <!-- Restcomm Diameter Components Versions -->
     <jdiameter.version>1.5.9.0-build538-SNAPSHOT</jdiameter.version>
     <jdiameter-ha.version>1.1.0-SNAPSHOT</jdiameter-ha.version>
+    <!--<ha.impl>wildfly</ha.impl>-->
   </properties>
 
   <packaging>pom</packaging>
@@ -24,6 +25,52 @@
   <modules>
     <module>jar</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>maven-release</id>
+      <modules>
+        <module>sar-jboss-5</module>
+        <module>sar-wildfly</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>jboss5</id>
+      <activation>
+        <!--<activeByDefault>false</activeByDefault>-->
+        <property>
+          <name>ha.impl</name>
+          <value>jboss5</value>
+        </property>
+      </activation>
+      <!--
+      <properties>
+        <ha.impl>jboss5</ha.impl>
+      </properties>
+      -->
+      <modules>
+        <module>sar-jboss-5</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wildfly</id>
+      <activation>
+        <!--<activeByDefault>true</activeByDefault>-->
+        <property>
+          <name>ha.impl</name>
+          <value>wildfly</value>
+        </property>
+      </activation>
+      <!--
+      <properties>
+        <ha.impl>wildfly</ha.impl>
+      </properties>
+      -->
+      <modules>
+        <module>sar-wildfly</module>
+      </modules>
+    </profile>
+  </profiles>
 
   <dependencyManagement>
     <dependencies>
@@ -44,7 +91,7 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>jdiameter-ha-impl</artifactId>
+        <artifactId>jdiameter-ha-impl-${ha.impl}</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>
@@ -70,23 +117,5 @@
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>maven-release</id>
-      <modules>
-        <module>sar-wildfly</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>wildfly</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-        <module>sar-wildfly</module>
-      </modules>
-    </profile>
-  </profiles>
 
 </project>
