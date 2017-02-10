@@ -203,7 +203,7 @@
   <!-- Copy jars section -->
 
   <target name="copy-jars-core">
-    <copy todir="${zip_dir}/core/jdiameter">
+    <copy todir="${zip_dir}/core/jdiameter" failonerror="false">
       <fileset dir="${checkout_base_dir}/core/jdiameter/api/target">
         <include name="jdiameter-api-*.jar" />
       </fileset>
@@ -213,12 +213,12 @@
       <fileset dir="${checkout_base_dir}/core/jdiameter-ha/api/target">
         <include name="jdiameter-ha-api-*.jar" />
       </fileset>
-      <fileset dir="${checkout_base_dir}/core/jdiameter-ha/impl-jboss5/target">
+      <!--<fileset dir="${checkout_base_dir}/core/jdiameter-ha/impl-jboss5/target">
         <include name="jdiameter-ha-impl-*.jar" />
       </fileset>
-        <fileset dir="${checkout_base_dir}/core/jdiameter-ha/impl-wildfly/target">
-            <include name="jdiameter-ha-impl-*.jar" />
-        </fileset>
+      <fileset dir="${checkout_base_dir}/core/jdiameter-ha/impl-wildfly/target">
+        <include name="jdiameter-ha-impl-*.jar" />
+      </fileset>-->
     </copy>
 
     <!-- Copy fixed AS5 MUX jar file -->
