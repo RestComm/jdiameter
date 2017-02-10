@@ -29,7 +29,7 @@
     </dependency>
     <dependency>
       <groupId>org.mobicents.diameter</groupId>
-      <artifactId>jdiameter-ha-impl</artifactId>
+      <artifactId>jdiameter-ha-impl-${ha.impl}</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -44,16 +44,6 @@
       <groupId>urbanophile</groupId>
       <artifactId>java-getopt</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>org.infinispan</groupId>
-      <artifactId>infinispan-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.infinispan</groupId>
-      <artifactId>infinispan-tree</artifactId>
-    </dependency>
-
   </dependencies>
 
   <profiles>
