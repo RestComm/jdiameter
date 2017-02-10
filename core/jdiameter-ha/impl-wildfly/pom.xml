@@ -9,7 +9,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>jdiameter-ha-impl</artifactId>
+  <artifactId>jdiameter-ha-impl-wildfly</artifactId>
 
   <name>Restcomm :: Diameter Stack HA :: ${project.artifactId}</name>
 
