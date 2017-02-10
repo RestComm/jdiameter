@@ -20,17 +20,24 @@
     </dependency>
 
     <!-- clustering deps -->
-    <!--
+    <!-- JBoss 5: JBoss Cache -->
     <dependency>
       <groupId>org.jboss.cache</groupId>
       <artifactId>jbosscache-core</artifactId>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
       <groupId>org.jboss.cluster</groupId>
       <artifactId>jboss-ha-server-cache-jbc</artifactId>
     </dependency>
-    -->
+
+    <dependency>
+      <groupId>org.mobicents.cluster</groupId>
+      <artifactId>timers</artifactId>
+    </dependency>
+
+    <!-- WildFly: Infinispan Cache -->
     <dependency>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-core</artifactId>

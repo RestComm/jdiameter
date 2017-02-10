@@ -17,11 +17,13 @@
 
   <modules>
     <module>api</module>
-    <module>impl</module>
+    <module>impl-jboss5</module>
+    <module>impl-wildfly</module>
   </modules>
 
   <properties>
     <jdiameter.version>1.5.9.0-build538-SNAPSHOT</jdiameter.version>
+    <mobicents.cluster.version>1.15.11</mobicents.cluster.version>
     <restcomm.cluster.version>3.0.0.8</restcomm.cluster.version>
     <version.infinispan>8.2.4.Final</version.infinispan>
     <version.jboss.logging>3.3.0.Final</version.jboss.logging>
@@ -38,6 +40,22 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>jdiameter-impl</artifactId>
         <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mobicents.cluster</groupId>
+        <artifactId>core</artifactId>
+        <version>${mobicents.cluster.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mobicents.cluster</groupId>
+        <artifactId>cache</artifactId>
+        <version>${mobicents.cluster.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mobicents.cluster</groupId>
+        <artifactId>timers</artifactId>
+        <version>${mobicents.cluster.version}</version>
       </dependency>
 
       <dependency>
