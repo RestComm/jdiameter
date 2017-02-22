@@ -177,7 +177,7 @@
                 <!-- The AS7 module structure -->
                 <!-- The jDiameter module structure org.mobicents.diameter -->
                 <property name="DIAMETER" value="org/mobicents/diameter"/>
-                <copy todir="${basedir}/target/jboss-modules/${DIAMETER}/main"
+                <copy todir="${basedir}/target/modules/${DIAMETER}/main"
                       flatten="true">
                   <fileset dir=".">
                     <include name="src/main/resources/META-INF/module.xml"/>
@@ -189,7 +189,7 @@
                     <filter token="JDIAMETER_VERSION" value="${project.version}"/>
                   </filterset>
                 </copy>
-                <copy todir="${basedir}/target/jboss-modules/${DIAMETER}/main"
+                <copy todir="${basedir}/target/modules/${DIAMETER}/main"
                       flatten="true">
                   <fileset dir="target/${project.build.finalName}">
                     <include name="lib/commons-pool-*"/>
@@ -198,7 +198,7 @@
                     <include name="lib/jdiameter*"/>
                   </fileset>
                 </copy>
-                <copy todir="${basedir}/target/jboss-modules/${DIAMETER}/main/config">
+                <copy todir="${basedir}/target/modules/${DIAMETER}/main/config">
                   <fileset dir="../common/config">
                     <include name="**"/>
                     <exclude name="jdiameter-jbc.xml"/>
@@ -208,16 +208,16 @@
                 <!-- The MUX module structure org.mobicents.diameter.mux -->
                 <property name="MUX" value="org/mobicents/diameter/mux"/>
                 <copy file="../jar/target/restcomm-diameter-mux-${project.version}.jar"
-                      tofile="${basedir}/target/jboss-modules/${MUX}/main/restcomm-diameter-mux-${project.version}-tmp.zip"/>
-                <zip destfile="${basedir}/target/jboss-modules/${MUX}/main/restcomm-diameter-mux-${project.version}.zip">
-                  <zipfileset src="${basedir}/target/jboss-modules/${MUX}/main/restcomm-diameter-mux-${project.version}-tmp.zip"
+                      tofile="${basedir}/target/modules/${MUX}/main/restcomm-diameter-mux-${project.version}-tmp.zip"/>
+                <zip destfile="${basedir}/target/modules/${MUX}/main/restcomm-diameter-mux-${project.version}.zip">
+                  <zipfileset src="${basedir}/target/modules/${MUX}/main/restcomm-diameter-mux-${project.version}-tmp.zip"
                               excludes="org/mobicents/diameter/stack/DiameterStackMultiplexer.class,
                                         org/mobicents/diameter/stack/DiameterStackMultiplexerMBean.class"/>
                 </zip>
-                <move file="${basedir}/target/jboss-modules/${MUX}/main/restcomm-diameter-mux-${project.version}.zip"
-                      tofile="${basedir}/target/jboss-modules/${MUX}/main/restcomm-diameter-mux-${project.version}.jar"/>
+                <move file="${basedir}/target/modules/${MUX}/main/restcomm-diameter-mux-${project.version}.zip"
+                      tofile="${basedir}/target/modules/${MUX}/main/restcomm-diameter-mux-${project.version}.jar"/>
 
-                <copy todir="${basedir}/target/jboss-modules/${MUX}/main"
+                <copy todir="${basedir}/target/modules/${MUX}/main"
                       flatten="true">
                   <fileset dir="../jar">
                     <include name="src/main/module/module.xml"/>
@@ -236,8 +236,8 @@
                 <!--<move file="${basedir}/target/${project.build.finalName}.zip" tofile="${basedir}/target/${project.build.finalName}.jar"/>-->
 
                 <copy file="${basedir}/target/${project.build.finalName}.zip"
-                      tofile="${basedir}/target/jboss-modules/${EXTENSION}/main/${project.artifactId}-${project.version}.jar"/>
-                <copy todir="${basedir}/target/jboss-modules/${EXTENSION}/main"
+                      tofile="${basedir}/target/modules/${EXTENSION}/main/${project.artifactId}-${project.version}.jar"/>
+                <copy todir="${basedir}/target/modules/${EXTENSION}/main"
                       flatten="true">
                   <fileset dir=".">
                     <include name="src/main/module/module.xml"/>
@@ -252,7 +252,7 @@
                 <delete dir="target/${project.build.finalName}"/>
                 <delete file="target/${project.build.finalName}.sar"/>
                 <delete file="target/${project.build.finalName}.zip"/>
-                <delete file="${basedir}/target/jboss-modules/${MUX}/main/restcomm-diameter-mux-${project.version}-tmp.zip"/>
+                <delete file="${basedir}/target/modules/${MUX}/main/restcomm-diameter-mux-${project.version}-tmp.zip"/>
 
                 <!-- Copy to JBOSS: DIAMETER, MUX and EXTENSION -->
                 <!-- Update JBOSS configuration for EXTENSION -->

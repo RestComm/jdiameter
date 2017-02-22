@@ -443,7 +443,7 @@
     </antcall>
 
     <antcall target="build-and-package-mux" />
-    <antcall target="build-and-package-mux-alternative" />
+    <antcall target="build-and-package-mux-wildfly" />
 
     <!-- <antcall target="clean" /> -->
   </target>
@@ -492,7 +492,7 @@
     </antcall>
   </target>
 
-  <target name="build-and-package-mux-alternative" description="Create zip file: ${basedir}/${alt_mux_zip_file_name}">
+  <target name="build-and-package-mux-wildfly" description="Create zip file: ${basedir}/${alt_mux_zip_file_name}">
     <exec executable="${mvn.executable}" dir="${checkout_base_dir}/core/mux">
       <!--<arg line="-f pom.xml ${release.build.goals} -P${WILDFLY_SAR_CONFIGURATION}" />-->
       <arg line="-f pom.xml ${release.build.goals} -Dha.impl=wildfly" />
@@ -500,6 +500,8 @@
 
     <mkdir dir="${alt_mux_zip_dir}" />
 
+    <!-- TODO: Uncomment mux README.TXT after changing it -->
+    <!--
     <copy todir="${alt_mux_zip_dir}" file="${checkout_base_dir}/core/mux/release/README.TXT" failonerror="${failoncopy}">
       <filterchain>
         <replacetokens>
@@ -507,10 +509,15 @@
         </replacetokens>
       </filterchain>
     </copy>
+    -->
 
     <copy todir="${alt_mux_zip_dir}">
-      <fileset dir="${checkout_base_dir}/core/mux/sar-${WILDFLY_SAR_CONFIGURATION}/target" includes="jboss-modules/**, deployments/**"/>
+      <fileset dir="${checkout_base_dir}/core/mux/sar-${WILDFLY_SAR_CONFIGURATION}/target" includes="modules/**, deployments/**"/>
     </copy>
+
+    <copy file="${checkout_base_dir}/release/release-build-wildfly.xml" tofile="${alt_mux_zip_dir}/build.xml"
+          failonerror="true"/>
+
     <zip destfile="${basedir}/${alt_mux_zip_file_name}" basedir="${alt_mux_zip_dir}"/>
     <antcall target="checksum">
       <param name="source.file" value="${basedir}/${alt_mux_zip_file_name}" />
