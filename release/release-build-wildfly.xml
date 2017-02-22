@@ -9,7 +9,7 @@
 	<property name="jboss.deploy" value="${jboss.home}/standalone/deployments" />
 
 	<property name="jboss.modules.path" value="${jboss.home}/modules/system/layers/base" />
-	<property name="restcomm-ss7.path" value="${jboss.modules.path}/org/mobicents/ss7" />
+	<property name="restcomm-diameter.path" value="${jboss.modules.path}/org/mobicents/diameter" />
 
 	<condition property="file_url" value="file:/">
 		<os family="windows" />
@@ -23,52 +23,30 @@
 
 	<target name="deploy">
 
-		<!-- Copy jSS7 Extension with Modules -->
-		<copy overwrite="true" todir="${restcomm-ss7.path}">
-			<fileset dir="./restcomm-ss7-service/extension">
-				<include name="**" />
-			</fileset>
-			<fileset dir="./restcomm-ss7-service/modules">
+		<!-- Copy Diameter Modules -->
+		<copy overwrite="true" todir="${jboss.modules.path}">
+			<fileset dir="./modules">
 				<include name="**" />
 			</fileset>
 		</copy>
 
-		<!-- Update WildFly configuration with adding jSS7 Extension and Subsystem -->
+		<!-- Update WildFly configuration with adding Diameter Extension and Subsystem -->
 		<replace file="${jboss.home}/standalone/configuration/standalone.xml">
 			<replacetoken><![CDATA[</extensions>]]></replacetoken>
 			<replacevalue><![CDATA[    <extension module="org.mobicents.ss7.extension"/>
 	</extensions>]]></replacevalue>
 		</replace>
 
-		<loadfile property="subsystem.config" srcFile="${basedir}/wildfly-jss7-subsystem.txt" failonerror="true"/>
-		<replace file="${jboss.home}/standalone/configuration/standalone.xml" value="${subsystem.config}">
+		<replace file="${jboss.home}/standalone/configuration/standalone.xml">
 			<replacetoken><![CDATA[</profile>]]></replacetoken>
-			<replacevalue><![CDATA[
+			<replacevalue><![CDATA[    <subsystem xmlns="urn:mobicents:diameter-mux:1.0">
 	</profile>]]></replacevalue>
 		</replace>
-
-		<copy overwrite="true" todir="${jboss.home}/bin">
-			<fileset dir="./shell/bin">
-				<include name="**" />
-			</fileset>			
-		</copy>
-
-		<copy overwrite="true" todir="${jboss.home}/lib">
-			<fileset dir="./shell/lib">
-				<include name="**" />
-			</fileset>			
-		</copy>
-
-		<copy overwrite="true" todir="${jboss.deploy}">
-			<fileset dir="./../oam/new-ui">
-				<include name="**" />
-			</fileset>			
-		</copy>
 
 	</target>
 
 	<target name="undeploy">
-		<delete dir="${restcomm-ss7.path}" />
+		<delete dir="${restcomm-diameter.path}" />
 		<delete file="${jboss.deploy}/jss7-management-console.war" />
 		<delete file="${jboss.deploy}/jolokia.war" />
 		<delete file="${jboss.home}/bin/ss7-cli.sh" />
