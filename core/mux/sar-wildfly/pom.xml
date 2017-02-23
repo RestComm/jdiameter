@@ -18,8 +18,8 @@
   <properties>
     <version.wildfly.core>2.2.0.Final</version.wildfly.core>
 
-    <module.name>org.mobicents.diameter.extension</module.name>
-    <module.path>org/mobicents/diameter/extension</module.path>
+    <module.name>org.restcomm.diameter.extension</module.name>
+    <module.path>org/restcomm/diameter/extension</module.path>
   </properties>
 
   <dependencyManagement>
@@ -175,8 +175,8 @@
                   <isset property="jboss.home" />
                 </condition>
                 <!-- The AS7 module structure -->
-                <!-- The jDiameter module structure org.mobicents.diameter -->
-                <property name="DIAMETER" value="org/mobicents/diameter"/>
+                <!-- The jDiameter module structure org.restcomm.diameter.lib -->
+                <property name="DIAMETER" value="lib"/>
                 <copy todir="${basedir}/target/modules/${DIAMETER}/main"
                       flatten="true">
                   <fileset dir=".">
@@ -205,8 +205,8 @@
                   </fileset>
                 </copy>
 
-                <!-- The MUX module structure org.mobicents.diameter.mux -->
-                <property name="MUX" value="org/mobicents/diameter/mux"/>
+                <!-- The MUX module structure org.restcomm.diameter.mux -->
+                <property name="MUX" value="mux"/>
                 <copy file="../jar/target/restcomm-diameter-mux-${project.version}.jar"
                       tofile="${basedir}/target/modules/${MUX}/main/restcomm-diameter-mux-${project.version}-tmp.zip"/>
                 <zip destfile="${basedir}/target/modules/${MUX}/main/restcomm-diameter-mux-${project.version}.zip">
@@ -227,8 +227,8 @@
                     <filter token="JDIAMETER_MUX_VERSION" value="${project.version}"/>
                   </filterset>
                 </copy>
-                <!-- The Extension module structure org.mobicents.diameter.extension -->
-                <property name="EXTENSION" value="org/mobicents/diameter/extension"/>
+                <!-- The Extension module structure org.restcomm.diameter.extension -->
+                <property name="EXTENSION" value="extension"/>
                 <zip destfile="${basedir}/target/${project.build.finalName}.zip">
                   <zipfileset src="${basedir}/target/${project.build.finalName}.sar"
                               excludes="lib/**, META-INF/module.xml, META-INF/jboss-service.xml"/>

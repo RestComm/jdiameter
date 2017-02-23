@@ -9,7 +9,7 @@
 	<property name="jboss.deploy" value="${jboss.home}/standalone/deployments" />
 
 	<property name="jboss.modules.path" value="${jboss.home}/modules/system/layers/base" />
-	<property name="restcomm-diameter.path" value="${jboss.modules.path}/org/mobicents/diameter" />
+	<property name="restcomm-diameter.path" value="${jboss.modules.path}/org/restcomm/diameter" />
 
 	<condition property="file_url" value="file:/">
 		<os family="windows" />
@@ -33,13 +33,13 @@
 		<!-- Update WildFly configuration with adding Diameter Extension and Subsystem -->
 		<replace file="${jboss.home}/standalone/configuration/standalone.xml">
 			<replacetoken><![CDATA[</extensions>]]></replacetoken>
-			<replacevalue><![CDATA[    <extension module="org.mobicents.ss7.extension"/>
+			<replacevalue><![CDATA[    <extension module="org.restcomm.diameter.extension"/>
 	</extensions>]]></replacevalue>
 		</replace>
 
 		<replace file="${jboss.home}/standalone/configuration/standalone.xml">
 			<replacetoken><![CDATA[</profile>]]></replacetoken>
-			<replacevalue><![CDATA[    <subsystem xmlns="urn:mobicents:diameter-mux:1.0">
+			<replacevalue><![CDATA[    <subsystem xmlns="urn:restcomm:diameter-mux:1.0">
 	</profile>]]></replacevalue>
 		</replace>
 
@@ -47,10 +47,16 @@
 
 	<target name="undeploy">
 		<delete dir="${restcomm-diameter.path}" />
-		<delete file="${jboss.deploy}/jss7-management-console.war" />
-		<delete file="${jboss.deploy}/jolokia.war" />
-		<delete file="${jboss.home}/bin/ss7-cli.sh" />
-		<delete file="${jboss.home}/bin/ss7-cli.bat" />
+
+		<replace file="${jboss.home}/standalone/configuration/standalone.xml">
+			<replacetoken><![CDATA[<extension module="org.restcomm.diameter.extension"/>]]></replacetoken>
+			<replacevalue><![CDATA[]]></replacevalue>
+		</replace>
+
+		<replace file="${jboss.home}/standalone/configuration/standalone.xml">
+			<replacetoken><![CDATA[<subsystem xmlns="urn:restcomm:diameter-mux:1.0">]]></replacetoken>
+			<replacevalue><![CDATA[]]></replacevalue>
+		</replace>
 	</target>
 
 </project>

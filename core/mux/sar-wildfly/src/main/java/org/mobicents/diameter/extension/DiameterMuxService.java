@@ -16,7 +16,7 @@ public class DiameterMuxService implements Service<DiameterMuxService> {
     private final Logger log = Logger.getLogger(DiameterMuxService.class);
 
     public static ServiceName getServiceName() {
-        return ServiceName.of("mobicents","diameter-mux");
+        return ServiceName.of("restcomm","diameter-mux");
     }
 
     private final InjectedValue<MBeanServer> mbeanServer = new InjectedValue<MBeanServer>();
