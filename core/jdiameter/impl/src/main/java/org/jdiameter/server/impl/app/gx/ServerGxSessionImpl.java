@@ -410,8 +410,14 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
    */
   @Override
   public void onTimer(String timerName) {
-    if (timerName.equals(TCC_TIMER_NAME)) {
+    if (timerName.equals(IDLE_SESSION_TIMER_NAME)) {
+      checkIdleAppSession();
+    }
+    else if (timerName.equals(TCC_TIMER_NAME)) {
       new TccScheduledTask(this).run();
+    }
+    else {
+      logger.warn("Received an unknown timer '{}' for Session-ID '{}'", timerName, getSessionId());
     }
   }
 

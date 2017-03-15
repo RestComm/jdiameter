@@ -115,7 +115,7 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
   @Override
   public Request createRequest(int commandCode, ApplicationId appId, String destRealm) {
     if (isValid) {
-      lastAccessedTime = System.currentTimeMillis();
+      setLastAccessTime();
       IRequest m = parser.createEmptyMessage(IRequest.class, commandCode, getAppId(appId));
       m.setNetworkRequest(false);
       m.setRequest(true);
@@ -135,7 +135,7 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
   @Override
   public Request createRequest(int commandCode, ApplicationId appId, String destRealm, String destHost) {
     if (isValid) {
-      lastAccessedTime = System.currentTimeMillis();
+      setLastAccessTime();
       IRequest m = parser.createEmptyMessage(IRequest.class, commandCode, getAppId(appId));
       m.setNetworkRequest(false);
       m.setRequest(true);
@@ -158,7 +158,7 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
   @Override
   public Request createRequest(Request prevRequest) {
     if (isValid) {
-      lastAccessedTime = System.currentTimeMillis();
+      setLastAccessTime();
       IRequest request = parser.createEmptyMessage(Request.class, (IMessage) prevRequest);
       request.setRequest(true);
       request.setNetworkRequest(false);

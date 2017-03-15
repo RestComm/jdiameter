@@ -42,6 +42,8 @@
 
 package org.jdiameter.common.impl.app;
 
+import static org.jdiameter.client.impl.helpers.Parameters.SessionTimeOut;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -76,9 +78,11 @@ public abstract class AppSessionImpl implements AppSession {
 
   protected ISessionFactory sf = null;
 
-  protected ScheduledExecutorService scheduler = null;
+  protected static ScheduledExecutorService scheduler = null;
 
-  protected ITimerFacility timerFacility;
+  protected static ITimerFacility timerFacility;
+
+  protected long maxIdleTime = 0;
 
   public AppSessionImpl(ISessionFactory sf, IAppSessionData appSessionData) {
     if (sf == null) {
@@ -91,9 +95,12 @@ public abstract class AppSessionImpl implements AppSession {
       this.sf = sf;
       this.appSessionData = appSessionData;
       IAssembler assembler = ( this.sf).getContainer().getAssemblerFacility();
-      this.scheduler = assembler.getComponentInstance(IConcurrentFactory.class).
-          getScheduledExecutorService(IConcurrentFactory.ScheduledExecServices.ApplicationSession.name());
-      this.timerFacility = assembler.getComponentInstance(ITimerFacility.class);
+      if (scheduler == null)  {
+        this.scheduler = assembler.getComponentInstance(IConcurrentFactory.class).
+            getScheduledExecutorService(IConcurrentFactory.ScheduledExecServices.ApplicationSession.name());
+      }
+      this.timerFacility = timerFacility != null ? timerFacility : assembler.getComponentInstance(ITimerFacility.class);
+      this.maxIdleTime = this.sf.getContainer().getConfiguration().getLongValue(SessionTimeOut.ordinal(), (Long) SessionTimeOut.defValue());
       this.session = this.sf.getNewSession(this.appSessionData.getSessionId());
       //annoying ;[
       ArrayList<Session> list = new ArrayList<Session>();
@@ -201,5 +208,13 @@ public abstract class AppSessionImpl implements AppSession {
   }
 
   public abstract void onTimer(String timerName);
+
+  protected void checkIdleAppSession() {
+    if (!isValid() || (maxIdleTime > 0 && System.currentTimeMillis() - getLastAccessedTime() > maxIdleTime)) {
+      logger.debug("Terminating idle/invalid application session [{}] with SID[{}]", this, getSessionId());
+      release();
+    }
+  }
+
 
 }

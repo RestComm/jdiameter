@@ -562,7 +562,10 @@ public class GqClientSessionImpl extends AppAuthSessionImpl implements GqClientS
    */
   @Override
   public void onTimer(String timerName) {
-    if (timerName.equals(TIMER_NAME_TS)) {
+    if (timerName.equals(IDLE_SESSION_TIMER_NAME)) {
+      checkIdleAppSession();
+    }
+    else if (timerName.equals(TIMER_NAME_TS)) {
       try {
         sendAndStateLock.lock();
         sessionData.setTsTimerId(null);
@@ -578,6 +581,9 @@ public class GqClientSessionImpl extends AppAuthSessionImpl implements GqClientS
       finally {
         sendAndStateLock.unlock();
       }
+    }
+    else {
+      logger.warn("Received an unknown timer '{}' for Session-ID '{}'", timerName, getSessionId());
     }
   }
 

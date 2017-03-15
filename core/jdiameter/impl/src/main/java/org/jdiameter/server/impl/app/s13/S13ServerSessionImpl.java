@@ -212,7 +212,10 @@ public class S13ServerSessionImpl extends S13Session implements ServerS13Session
 
   @Override
   public void onTimer(String timerName) {
-    if (timerName.equals(S13Session.TIMER_NAME_MSG_TIMEOUT)) {
+    if (timerName.equals(IDLE_SESSION_TIMER_NAME)) {
+      checkIdleAppSession();
+    }
+    else if (timerName.equals(S13Session.TIMER_NAME_MSG_TIMEOUT)) {
       try {
         sendAndStateLock.lock();
         try {
@@ -225,6 +228,9 @@ public class S13ServerSessionImpl extends S13Session implements ServerS13Session
       } finally {
         sendAndStateLock.unlock();
       }
+    }
+    else {
+      logger.warn("Received an unknown timer '{}' for Session-ID '{}'", timerName, getSessionId());
     }
   }
 
