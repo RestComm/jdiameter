@@ -62,6 +62,7 @@ import org.jdiameter.client.api.IRequest;
 import org.jdiameter.client.api.ISession;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.common.api.data.ISessionDatasource;
+import org.jdiameter.common.api.timer.ITimerFacility;
 
 /**
  * Implementation for {@link ISession}
@@ -174,6 +175,9 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
   public void release() {
     isValid = false;
     if (container != null) {
+      if (istTimerId != null) {
+        container.getAssemblerFacility().getComponentInstance(ITimerFacility.class).cancel(istTimerId);
+      }
       container.removeSessionListener(sessionId);
       // FIXME
       container.getAssemblerFacility().getComponentInstance(ISessionDatasource.class).removeSession(sessionId);

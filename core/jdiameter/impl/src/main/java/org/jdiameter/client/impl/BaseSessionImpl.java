@@ -98,7 +98,7 @@ public abstract class BaseSessionImpl implements BaseSession {
   protected transient IMessageParser parser;
   protected NetworkReqListener reqListener;
 
-  private Serializable istTimerId;
+  protected Serializable istTimerId;
 
   @Override
   public long getCreationTime() {
@@ -112,14 +112,16 @@ public abstract class BaseSessionImpl implements BaseSession {
 
   protected long setLastAccessTime() {
     lastAccessedTime = System.currentTimeMillis();
-    maxIdleTime = container.getConfiguration().getLongValue(SessionTimeOut.ordinal(), (Long) SessionTimeOut.defValue());
-    if (maxIdleTime > 0) {
-      IAssembler assembler = container.getAssemblerFacility();
-      ITimerFacility timerFacility = assembler.getComponentInstance(ITimerFacility.class);
-      if (istTimerId != null) {
-        timerFacility.cancel(istTimerId);
+    if (sessionId != null) {
+      maxIdleTime = container.getConfiguration().getLongValue(SessionTimeOut.ordinal(), (Long) SessionTimeOut.defValue());
+      if (maxIdleTime > 0) {
+        IAssembler assembler = container.getAssemblerFacility();
+        ITimerFacility timerFacility = assembler.getComponentInstance(ITimerFacility.class);
+        if (istTimerId != null) {
+          timerFacility.cancel(istTimerId);
+        }
+        istTimerId = timerFacility.schedule(this.getSessionId(), IDLE_SESSION_TIMER_NAME, maxIdleTime);
       }
-      istTimerId = timerFacility.schedule(this.getSessionId(), IDLE_SESSION_TIMER_NAME, maxIdleTime);
     }
     return lastAccessedTime;
   }
