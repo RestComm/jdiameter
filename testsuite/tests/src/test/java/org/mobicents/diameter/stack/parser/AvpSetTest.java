@@ -59,5 +59,27 @@ public class AvpSetTest {
 
   }
 
+  @Test(timeout = 500)
+  public void decodeWithVendorIdZero() throws IOException, AvpDataException {
+    byte avpCode = 123;
+    byte vendorId = 1;
+    byte[] avpSetBytes = new byte[] {
+        0, 0, 1, 3, 64, 0, 0, 12, 0, 0, 0, 3, 0, 0, 1, 41, 0, 0, 0, 20, 0, 0, 1, 42, 0, 0, 0, 12, 0, 0, 7, -47, 0, 0, 0,
+        1, 0, 0, 0, 26, 109, 111, 98, 105, 99, 101, 110, 116, 115, 45, 100, 105, 97, 109, 101, 116, 101, 114, 0, 0, 0,
+        0, 0, avpCode, -64, 0, 0, 15, 0, 0, 0, vendorId, 88, 88, 88, 0
+    };
+    AvpSet avpVendor1 = elementParser.decodeAvpSet(avpSetBytes);
+    Assert.assertNotNull(avpVendor1.getAvp(123, 1));
+    
+    vendorId = 0;
+    avpSetBytes = new byte[] {
+        0, 0, 1, 3, 64, 0, 0, 12, 0, 0, 0, 3, 0, 0, 1, 41, 0, 0, 0, 20, 0, 0, 1, 42, 0, 0, 0, 12, 0, 0, 7, -47, 0, 0, 0,
+        1, 0, 0, 0, 26, 109, 111, 98, 105, 99, 101, 110, 116, 115, 45, 100, 105, 97, 109, 101, 116, 101, 114, 0, 0, 0,
+        0, 0, avpCode, -64, 0, 0, 15, 0, 0, 0, vendorId, 88, 88, 88, 0
+    };
+    AvpSet avpVendor0 = elementParser.decodeAvpSet(avpSetBytes);
+    Assert.assertNotNull(avpVendor0.getAvp(123, 0));
+  }
+
 
 }
