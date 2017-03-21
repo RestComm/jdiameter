@@ -24,7 +24,7 @@
 	<target name="deploy">
 
 		<!-- Copy Diameter Modules -->
-		<copy overwrite="true" todir="${jboss.modules.path}">
+		<copy overwrite="true" todir="${restcomm-diameter.path}">
 			<fileset dir="./modules">
 				<include name="**" />
 			</fileset>
@@ -39,7 +39,7 @@
 
 		<replace file="${jboss.home}/standalone/configuration/standalone.xml">
 			<replacetoken><![CDATA[</profile>]]></replacetoken>
-			<replacevalue><![CDATA[    <subsystem xmlns="urn:restcomm:diameter-mux:1.0">
+			<replacevalue><![CDATA[    <subsystem xmlns="urn:restcomm:diameter-mux:1.0"/>
 	</profile>]]></replacevalue>
 		</replace>
 
