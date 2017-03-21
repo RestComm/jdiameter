@@ -33,12 +33,12 @@ public class DiameterMuxExtension implements Extension {
     /**
      * The name space used for the {@code substystem} element
      */
-    public static final String NAMESPACE = "urn:restcomm:diameter-mux:1.0";
+    public static final String NAMESPACE = "urn:org.restcomm:diameter-mux:1.0";
 
     /**
      * The name of our subsystem within the model.
      */
-    public static final String SUBSYSTEM_NAME = "diameter-mux";
+    public static final String SUBSYSTEM_NAME = "restcomm-diameter-mux";
 
     /**
      * The parser used for parsing our subsystem
