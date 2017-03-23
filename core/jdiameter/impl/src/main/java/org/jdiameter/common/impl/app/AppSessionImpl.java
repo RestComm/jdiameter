@@ -210,7 +210,7 @@ public abstract class AppSessionImpl implements AppSession {
   public abstract void onTimer(String timerName);
 
   protected void checkIdleAppSession() {
-    if (!isValid() || (maxIdleTime > 0 && System.currentTimeMillis() - getLastAccessedTime() > maxIdleTime)) {
+    if (!isValid() || (maxIdleTime > 0 && System.currentTimeMillis() - getLastAccessedTime() >= maxIdleTime)) {
       logger.debug("Terminating idle/invalid application session [{}] with SID[{}]", this, getSessionId());
       release();
     }

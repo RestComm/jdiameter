@@ -128,7 +128,7 @@ public abstract class BaseSessionImpl implements BaseSession {
 
   public void onTimer(String timerName) {
     if (timerName.equals(IDLE_SESSION_TIMER_NAME)) {
-      if (!isValid() || (maxIdleTime > 0 && System.currentTimeMillis() - getLastAccessedTime() > maxIdleTime)) {
+      if (!isValid() || (maxIdleTime > 0 && System.currentTimeMillis() - getLastAccessedTime() >= maxIdleTime)) {
         logger.debug("Terminating idle/invalid application session [{}] with SID[{}]", this, getSessionId());
         this.release();
       }
