@@ -42,7 +42,7 @@ public interface ServerSySessionListener {
   void doSpendingLimitRequest(ServerSySession session, SpendingLimitRequest request)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-  void doFinalSpendingLimitRequest(ServerSySession session, SessionTermRequest request)
+  void doSessionTerminationRequest(ServerSySession session, SessionTermRequest request)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
   void doSpendingStatusNotificationAnswer(ServerSySession session, SpendingStatusNotificationRequest request, SpendingStatusNotificationAnswer answer)

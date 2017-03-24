@@ -35,6 +35,4 @@ public interface SpendingLimitAnswer extends AppAnswerEvent {
 
   int code = 8388635;
 
-  int getRequestSLTypeAVPValue();
-
 }

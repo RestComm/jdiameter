@@ -71,7 +71,7 @@ public class Event implements StateEvent {
     this.request = request;
     this.answer = answer;
 
-    int slRequestTypeAvpValue = request.getSLRequestTypeAVPValue();
+    int slRequestTypeAvpValue = request.getSLRequestType();
     if (isRequest) {
       switch (slRequestTypeAvpValue) {
         case 0:

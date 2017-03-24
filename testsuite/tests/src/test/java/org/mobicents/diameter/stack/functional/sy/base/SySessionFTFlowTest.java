@@ -185,7 +185,7 @@ public class SySessionFTFlowTest {
       fail(sb.toString());
     }
     if (!clientNode.isReceivedINTERMEDIATE()) {
-      StringBuilder sb = new StringBuilder("Did not receive INTERIM! ");
+      StringBuilder sb = new StringBuilder("Did not receive INTERMEDIATE! ");
       sb.append("Client ER:\n").append(clientNode.createErrorReport(this.clientNode.getErrors()));
 
       fail(sb.toString());

@@ -43,7 +43,7 @@ public interface ServerSySession extends AppSession, StateMachine {
   void sendSpendingLimitAnswer(SpendingLimitAnswer answer)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-  void sendFinalSpendingLimitAnswer(SessionTermAnswer answer)
+  void sendSessionTerminationAnswer(SessionTermAnswer answer)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
   void sendSpendingStatusNotificationRequest(SpendingStatusNotificationRequest request)

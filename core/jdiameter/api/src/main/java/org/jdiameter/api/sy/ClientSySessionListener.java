@@ -43,7 +43,7 @@ public interface ClientSySessionListener {
   void doSpendingLimitAnswer(ClientSySession session, SpendingLimitRequest request, SpendingLimitAnswer answer)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-  void doFinalSpendingLimitAnswer(ClientSySession session, SessionTermRequest request, SessionTermAnswer answer)
+  void doSessionTerminationAnswer(ClientSySession session, SessionTermRequest request, SessionTermAnswer answer)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
   void doSpendingStatusNotificationRequest(ClientSySession session, SpendingStatusNotificationRequest request)

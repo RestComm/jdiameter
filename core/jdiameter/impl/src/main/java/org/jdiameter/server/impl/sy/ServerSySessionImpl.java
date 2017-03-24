@@ -91,7 +91,7 @@ public class ServerSySessionImpl extends AppSySessionImpl implements ServerSySes
   }
 
   @Override
-  public void sendFinalSpendingLimitAnswer(SessionTermAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void sendSessionTerminationAnswer(SessionTermAnswer answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     handleEvent(new Event(false, null, answer));
   }
 
@@ -172,7 +172,7 @@ public class ServerSySessionImpl extends AppSySessionImpl implements ServerSySes
               listener.doSpendingLimitRequest(this, (SpendingLimitRequest) localEvent.getRequest());
               break;
             case RECEIVED_TERMINATION:
-              listener.doFinalSpendingLimitRequest(this, (SessionTermRequest) localEvent.getRequest());
+              listener.doSessionTerminationRequest(this, (SessionTermRequest) localEvent.getRequest());
               break;
           }
           break;
