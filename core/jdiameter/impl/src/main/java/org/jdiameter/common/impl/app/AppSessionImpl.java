@@ -78,9 +78,9 @@ public abstract class AppSessionImpl implements AppSession {
 
   protected ISessionFactory sf = null;
 
-  protected static ScheduledExecutorService scheduler = null;
+  protected ScheduledExecutorService scheduler = null;
 
-  protected static ITimerFacility timerFacility;
+  protected ITimerFacility timerFacility;
 
   protected long maxIdleTime = 0;
 
@@ -95,11 +95,9 @@ public abstract class AppSessionImpl implements AppSession {
       this.sf = sf;
       this.appSessionData = appSessionData;
       IAssembler assembler = ( this.sf).getContainer().getAssemblerFacility();
-      if (scheduler == null)  {
-        this.scheduler = assembler.getComponentInstance(IConcurrentFactory.class).
-            getScheduledExecutorService(IConcurrentFactory.ScheduledExecServices.ApplicationSession.name());
-      }
-      this.timerFacility = timerFacility != null ? timerFacility : assembler.getComponentInstance(ITimerFacility.class);
+      this.scheduler = assembler.getComponentInstance(IConcurrentFactory.class).
+          getScheduledExecutorService(IConcurrentFactory.ScheduledExecServices.ApplicationSession.name());
+      this.timerFacility = assembler.getComponentInstance(ITimerFacility.class);
       this.maxIdleTime = this.sf.getContainer().getConfiguration().getLongValue(SessionTimeOut.ordinal(), (Long) SessionTimeOut.defValue());
       this.session = this.sf.getNewSession(this.appSessionData.getSessionId());
       //annoying ;[
