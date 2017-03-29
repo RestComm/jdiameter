@@ -39,9 +39,25 @@
 
 		<replace file="${jboss.home}/standalone/configuration/standalone.xml">
 			<replacetoken><![CDATA[</profile>]]></replacetoken>
-			<replacevalue><![CDATA[    <subsystem xmlns="urn:restcomm:diameter-mux:1.0"/>
+			<replacevalue><![CDATA[    <subsystem xmlns="urn:org.restcomm:diameter-mux:1.0"/>
 	</profile>]]></replacevalue>
 		</replace>
+
+		<!-- adding "org.restcomm.diameter.lib" into /org/restcomm/slee/container/lib/main/module.xml -->
+		<xmltask source="${jboss.modules.path}/org/restcomm/slee/container/lib/main/module.xml" dest="${jboss.modules.path}/org/restcomm/slee/container/lib/main/module.xml">
+			<remove path="/:module/:dependencies/:module[@name='org.restcomm.diameter.lib']"/>
+			<insert path="/:module/:dependencies/:module[last()]" position="after">
+				<![CDATA[<module name="org.restcomm.diameter.lib" export="true"/>]]> 
+			</insert>
+		</xmltask>
+
+		<!-- adding "org.restcomm.diameter.mux" into /org/restcomm/slee/container/lib/main/module.xml -->
+		<xmltask source="${jboss.modules.path}/org/restcomm/slee/container/lib/main/module.xml" dest="${jboss.modules.path}/org/restcomm/slee/container/lib/main/module.xml">
+			<remove path="/:module/:dependencies/:module[@name='org.restcomm.diameter.mux']"/>
+			<insert path="/:module/:dependencies/:module[last()]" position="after">
+				<![CDATA[<module name="org.restcomm.diameter.mux" export="true"/>]]> 
+			</insert>
+		</xmltask>
 
 	</target>
 
@@ -54,9 +70,17 @@
 		</replace>
 
 		<replace file="${jboss.home}/standalone/configuration/standalone.xml">
-			<replacetoken><![CDATA[<subsystem xmlns="urn:restcomm:diameter-mux:1.0">]]></replacetoken>
+			<replacetoken><![CDATA[<subsystem xmlns="urn:org.restcomm:diameter-mux:1.0">]]></replacetoken>
 			<replacevalue><![CDATA[]]></replacevalue>
 		</replace>
+
+		<xmltask source="${jboss.modules.path}/org/restcomm/slee/container/lib/main/module.xml" dest="${jboss.modules.path}/org/restcomm/slee/container/lib/main/module.xml">
+			<remove path="/:module/:dependencies/:module[@name='org.restcomm.diameter.lib']"/>
+		</xmltask>
+
+		<xmltask source="${jboss.modules.path}/org/restcomm/slee/container/lib/main/module.xml" dest="${jboss.modules.path}/org/restcomm/slee/container/lib/main/module.xml">
+			<remove path="/:module/:dependencies/:module[@name='org.restcomm.diameter.mux']"/>
+		</xmltask>
 	</target>
 
 </project>
