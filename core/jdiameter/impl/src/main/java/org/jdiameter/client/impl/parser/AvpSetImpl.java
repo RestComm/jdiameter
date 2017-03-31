@@ -240,7 +240,7 @@ class AvpSetImpl implements AvpSet {
   public Avp insertAvp(int index, int avpCode, long value, long vndId, boolean mFlag, boolean pFlag, boolean asUnsigned) {
     int flags = ((vndId != 0 ? 0x80 : 0) | (mFlag ? 0x40 : 0) | (pFlag ? 0x20 : 0));
     Avp res = new AvpImpl(avpCode, flags, vndId, asUnsigned ? parser.intU32ToBytes(value) : parser.int64ToBytes(value));
-        this.avps.add(index, res);
+    this.avps.add(index, res);
     return res;
   }
 
