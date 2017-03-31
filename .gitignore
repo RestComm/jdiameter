@@ -17,6 +17,7 @@
 # Maven #
 #########
 target
+\$\{env.JBOSS_HOME\}
 
 # OS generated files #
 ######################
