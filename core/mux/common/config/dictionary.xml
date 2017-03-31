@@ -38,6 +38,7 @@
   <vendor vendor-id="Vodafone" code="12645" name="Vodafone" />
   <vendor vendor-id="ETSI" code="13019" name="ETSI" />
   <vendor vendor-id="CableLabs" code="4491" name="Cable Labs" />
+	<vendor vendor-id="TMPL" code="35797" name="T-Mobile PL"/>
 
   <avpdefn name="User-Name" code="1" mandatory="must" protected="may" may-encrypt="yes" vendor-bit="mustnot" >
     <type type-name="UTF8String" />
@@ -2103,6 +2104,7 @@
       <avp name="Granted-Service-Unit" code="431" vendor="0" multiplicity="0-1" index="-1" />
       <avp name="Multiple-Services-Credit-Control" code="456" vendor="0" multiplicity="0+" index="-1" />
       <avp name="Cost-Information" code="423" vendor="0" multiplicity="0-1" index="-1" />
+      <avp name="Remaining-Balance" code="2021" vendor="0" multiplicity="0-1" index="-1" />
       <avp name="Final-Unit-Indication" code="430" vendor="0" multiplicity="0-1" index="-1" />
       <avp name="Check-Balance-Result" code="422" vendor="0" multiplicity="0-1" index="-1" />
       <avp name="Credit-Control-Failure-Handling" code="427" vendor="0" multiplicity="0-1" index="-1" />
@@ -3243,6 +3245,13 @@
     <type type-name="Unsigned32" />
   </avpdefn>
 
+	<avpdefn name="Remaining-Balance" code="2021" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must">
+		<grouped>
+			<avp name="Unit-Value"/>
+			<avp name="Currency-Code"/>
+		</grouped>
+	</avpdefn>
+
   <avpdefn name="Recipient-Info" code="2026" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
     <grouped>
       <avp name="Destination-Interface" />
@@ -3329,83 +3338,273 @@
     <type type-name="Address" />
   </avpdefn>
 
+  <!--- TMPL AVP's
+  TMPL specific AVPs (vendor id 35797)
+  -->
+
+  <avpdefn name="Ptc-Content-Information" code="256" vendor-id="TMPL" vendor-bit="must">
+    <grouped>
+      <avp name="Ptc-Content-MAC-Charge"/>
+      <avp name="Ptc-Content-Subscription-Id"/>
+      <avp name="Ptc-Content-Service-Id"/>
+      <avp name="Ptc-Content-Rate-Type"/>
+      <avp name="Ptc-Content-Used-Quantity"/>
+      <avp name="Ptc-Content-Invoice-Data"/>
+      <avp name="Ptc-Content-Channel"/>
+      <avp name="Ptc-Content-Provider"/>
+      <avp name="Ptc-Content-Operation-Type"/>
+      <avp name="Ptc-Content-Request-Type"/>
+      <avp name="Ptc-Content-User-Status"/>
+      <avp name="Ptc-Content-Payment-Point-Id"/>
+      <avp name="Ptc-Content-Payment-Point-Name"/>
+      <avp name="Ptc-Content-Subscription-Name"/>
+      <avp name="Ptc-Content-VAT-Rate"/>
+      <avp name="Ptc-Content-XCG-Transaction-Id"/>
+      <avp name="Ptc-Content-XCG-Backed-Out-Transaction-Id"/>
+      <avp name="Ptc-Content-XCG-Amount-Limit-Used"/>
+      <avp name="Ptc-Content-XCG-Amount-Limit-Remaining"/>
+      <avp name="Ptc-Content-XCG-Amount-Validity-Date"/>
+      <avp name="Ptc-Content-XCG-Quantity-Limit-Remaining"/>
+      <avp name="Ptc-Content-XCG-Quantity-Limit-Used"/>
+      <avp name="Ptc-Content-XCG-Quantity-Limit-Validity-Date"/>
+      <avp name="Ptc-Content-XCG-External-Transaction-Id"/>
+      <avp name="Ptc-Content-XCG-Premium-Blocking-Verification"/>
+      <avp name="Ptc-Content-XCG-Adults-Only"/>
+      <avp name="Ptc-Brand-ID"/>
+      <avp name="Ptc-Content-Payment-Definition-Type"/>
+      <avp name="Ptc-Content-Send-IPK"/>
+    </grouped>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-MAC-Charge" code="257" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Unsigned32"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-Subscription-Id" code="258" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="UTF8String"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-Service-Id" code="259" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="UTF8String"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-Rate-Type" code="260" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Enumerated"/>
+    <enum code="1" name="STANDARD"/>
+    <enum code="2" name="RENEWAL"/>
+    <enum code="4" name="FREE"/>
+    <enum code="8" name="PROMOTION"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-Used-Quantity" code="261" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Unsigned32"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-Invoice-Data" code="262" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="UTF8String"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-Channel" code="263" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="UTF8String"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-Provider" code="264" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="UTF8String"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-Operation-Type" code="265" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Enumerated"/>
+    <enum code="100" name="Download"/>
+    <enum code="117" name="Upload"/>
+    <enum code="99" name="Charge"/>
+    <enum code="102" name="Monthly-Fee"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-Request-Type" code="266" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Enumerated"/>
+    <enum code="1" name="Online"/>
+    <enum code="2" name="Batch-Request"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-User-Status" code="267" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Enumerated"/>
+    <enum code="1" name="Prepaid-User"/>
+    <enum code="2" name="Postpaid-User"/>
+    <enum code="3" name="Mixed-User"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-Payment-Point-Id" code="268" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="UTF8String"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-Payment-Point-Name" code="269" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="UTF8String"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-Subscription-Name" code="270" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="UTF8String"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-VAT-Rate" code="271" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="UTF8String"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-XCG-Transaction-Id" code="272" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="UTF8String"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-XCG-Backed-Out-Transaction-Id" code="273" vendor-bit="may" vendor-id="TMPL">
+    <type type-name="UTF8String"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-XCG-Amount-Limit-Used" code="274" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Unsigned64"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-XCG-Amount-Limit-Remaining" code="275" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Unsigned64"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-XCG-Amount-Validity-Date" code="276" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Time"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-XCG-Quantity-Limit-Remaining" code="277" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Unsigned32"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-XCG-Quantity-Limit-Used" code="278" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Unsigned32"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-XCG-Quantity-Limit-Validity-Date" code="279" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Time"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-XCG-External-Transaction-Id" code="280" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="UTF8String"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-XCG-Premium-Blocking-Verification" code="281" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Unsigned32"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-XCG-Adults-Only" code="282" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Unsigned32"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Brand-ID" code="283" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Unsigned32"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-Payment-Definition-Type" code="284" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Unsigned32"/>
+  </avpdefn>
+  <avpdefn name="Ptc-Content-Send-IPK" code="285" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Unsigned32"/>
+  </avpdefn>
+  <avpdefn name="User-Interaction-Request" code="9900" vendor-bit="must" vendor-id="TMPL">
+    <grouped>
+      <avp name="User-Interaction-Failure-Handling"/>
+      <avp name="User-Interaction-Charging-Flag"/>
+      <avp name="User-Interaction-Parameters"/>
+    </grouped>
+  </avpdefn>
+  <avpdefn name="User-Interaction-Failure-Handling" code="9901" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Enumerated"/>
+    <enum code="0" name="Continue"/>
+    <enum code="1" name="Release"/>
+  </avpdefn>
+  <avpdefn name="User-Interaction-Charging-Flag" code="9902" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Enumerated"/>
+    <enum code="0" name="Free of Charge"/>
+    <enum code="1" name="Chargeable"/>
+  </avpdefn>
+  <avpdefn name="User-Interaction-Parameters" code="9903" vendor-bit="must" vendor-id="TMPL">
+    <grouped>
+      <avp name="Interaction-Mode"/>
+      <avp name="Interaction-Type"/>
+      <avp name="Interaction-Data"/>
+      <avp name="Variable-Part"/>
+    </grouped>
+  </avpdefn>
+  <avpdefn name="Interaction-Mode" code="9904" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Enumerated"/>
+    <enum code="0" name="Passive"/>
+    <enum code="1" name="Active"/>
+  </avpdefn>
+  <avpdefn name="Interaction-Type" code="9905" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Enumerated"/>
+    <enum code="0" name="Bearer specific"/>
+    <enum code="1" name="Announcement"/>
+    <enum code="2" name="SMS"/>
+    <enum code="3" name="USSD"/>
+    <enum code="4" name="Tone"/>
+  </avpdefn>
+  <avpdefn name="Interaction-Data" code="9906" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="UTF8String"/>
+  </avpdefn>
+  <avpdefn name="Variable-Part" code="9907" vendor-bit="must" vendor-id="TMPL">
+    <grouped>
+      <avp name="Variable-Part-Language"/>
+    </grouped>
+  </avpdefn>
+  <avpdefn name="Variable-Part-Language" code="9916" vendor-bit="must" vendor-id="TMPL">
+    <type type-name="Enumerated"/>
+    <enum code="1" name="Polish"/>
+    <enum code="2" name="English"/>
+  </avpdefn>
+
+
   <!-- Conflicts with Base Accounting Messages
   <application id="3" vendor-id="TGPP" name="3GPP Rf (Rel7 v7.1.0)">
     <command name="Accounting-Request" code="271" request="true">
-      <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
-      <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
-      <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
-      <avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
-      <avp name="Accounting-Record-Type" code="480" vendor="0" multiplicity="1" index="-1" />
-      <avp name="Accounting-Record-Number" code="485" vendor="0" multiplicity="1" index="-1" />
-      <avp name="Acct-Application-Id" code="259" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Acct-Interim-Interval" code="85" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Event-Timestamp" code="55" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
-      <avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
-      <avp name="Service-Context-Id" code="461" vendor="0" multiplicity="1" index="-1" />
-      <avp name="Service-Information" code="873" vendor="10415" multiplicity="0-1" index="-1" />
-      <avp name="Class" code="25" vendor="0" multiplicity="0+" index="-1" />
-      <avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
-      <avp name="Accounting-Sub-Session-Id" code="287" vendor="0" multiplicity="0" index="-1" />
-      <avp name="Acct-Session-Id" code="44" vendor="0" multiplicity="0" index="-1" />
-      <avp name="Acct-Multi-Session-Id" code="50" vendor="0" multiplicity="0" index="-1" />
-      <avp name="Accounting-Realtime-Required" code="483" vendor="0" multiplicity="0" index="-1" />
-      <avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1" />
-      <avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" />
-      <avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
-      <avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
+    <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+    <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+    <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+    <avp name="Destination-Realm" code="283" vendor="0" multiplicity="1" index="-1" />
+    <avp name="Accounting-Record-Type" code="480" vendor="0" multiplicity="1" index="-1" />
+    <avp name="Accounting-Record-Number" code="485" vendor="0" multiplicity="1" index="-1" />
+    <avp name="Acct-Application-Id" code="259" vendor="0" multiplicity="0-1" index="-1" />
+    <avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
+    <avp name="Acct-Interim-Interval" code="85" vendor="0" multiplicity="0-1" index="-1" />
+    <avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+    <avp name="Event-Timestamp" code="55" vendor="0" multiplicity="0-1" index="-1" />
+    <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+    <avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
+    <avp name="Service-Context-Id" code="461" vendor="0" multiplicity="1" index="-1" />
+    <avp name="Service-Information" code="873" vendor="10415" multiplicity="0-1" index="-1" />
+    <avp name="Class" code="25" vendor="0" multiplicity="0+" index="-1" />
+    <avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
+    <avp name="Accounting-Sub-Session-Id" code="287" vendor="0" multiplicity="0" index="-1" />
+    <avp name="Acct-Session-Id" code="44" vendor="0" multiplicity="0" index="-1" />
+    <avp name="Acct-Multi-Session-Id" code="50" vendor="0" multiplicity="0" index="-1" />
+    <avp name="Accounting-Realtime-Required" code="483" vendor="0" multiplicity="0" index="-1" />
+    <avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1" />
+    <avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0" index="-1" />
+    <avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
+    <avp name="Result-Code" code="268" vendor="0" multiplicity="0" index="-1" />
     </command>
 
     <command name="Accounting-Answer" code="271" request="false">
-      <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
-      <avp name="Result-Code" code="268" vendor="0" multiplicity="1" index="-1" />
-      <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
-      <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
-      <avp name="Accounting-Record-Type" code="480" vendor="0" multiplicity="1" index="-1" />
-      <avp name="Accounting-Record-Number" code="485" vendor="0" multiplicity="1" index="-1" />
-      <avp name="Acct-Application-Id" code="259" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Acct-Interim-Interval" code="85" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Event-Timestamp" code="55" vendor="0" multiplicity="0-1" index="-1" />
-      <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
-      <avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
-      <avp name="Class" code="25" vendor="0" multiplicity="0+" index="-1" />
-      <avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
-      <avp name="Accounting-Sub-Session-Id" code="287" vendor="0" multiplicity="0" index="-1" />
-      <avp name="Acct-Session-Id" code="44" vendor="0" multiplicity="0" index="-1" />
-      <avp name="Acct-Multi-Session-Id" code="50" vendor="0" multiplicity="0" index="-1" />
-      <avp name="Accounting-Realtime-Required" code="483" vendor="0" multiplicity="0" index="-1" />
-      <avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1" />
-      <avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
-      <avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
+    <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
+    <avp name="Result-Code" code="268" vendor="0" multiplicity="1" index="-1" />
+    <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
+    <avp name="Origin-Realm" code="296" vendor="0" multiplicity="1" index="-1" />
+    <avp name="Accounting-Record-Type" code="480" vendor="0" multiplicity="1" index="-1" />
+    <avp name="Accounting-Record-Number" code="485" vendor="0" multiplicity="1" index="-1" />
+    <avp name="Acct-Application-Id" code="259" vendor="0" multiplicity="0-1" index="-1" />
+    <avp name="User-Name" code="1" vendor="0" multiplicity="0-1" index="-1" />
+    <avp name="Error-Reporting-Host" code="294" vendor="0" multiplicity="0-1" index="-1" />
+    <avp name="Acct-Interim-Interval" code="85" vendor="0" multiplicity="0-1" index="-1" />
+    <avp name="Origin-State-Id" code="278" vendor="0" multiplicity="0-1" index="-1" />
+    <avp name="Event-Timestamp" code="55" vendor="0" multiplicity="0-1" index="-1" />
+    <avp name="Proxy-Info" code="284" vendor="0" multiplicity="0+" index="-1" />
+    <avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
+    <avp name="Class" code="25" vendor="0" multiplicity="0+" index="-1" />
+    <avp name="Vendor-Specific-Application-Id" code="260" vendor="0" multiplicity="0" index="-1" />
+    <avp name="Accounting-Sub-Session-Id" code="287" vendor="0" multiplicity="0" index="-1" />
+    <avp name="Acct-Session-Id" code="44" vendor="0" multiplicity="0" index="-1" />
+    <avp name="Acct-Multi-Session-Id" code="50" vendor="0" multiplicity="0" index="-1" />
+    <avp name="Accounting-Realtime-Required" code="483" vendor="0" multiplicity="0" index="-1" />
+    <avp name="Auth-Application-Id" code="258" vendor="0" multiplicity="0" index="-1" />
+    <avp name="Experimental-Result" code="297" vendor="0" multiplicity="0" index="-1" />
+    <avp name="Destination-Realm" code="283" vendor="0" multiplicity="0" index="-1" />
     </command>
 
   </application>
 
   <avpdefn name="3GPP-Multiple-Services-Credit-Control" code="456" mandatory="must" protected="may" may-encrypt="no" vendor-bit="mustnot" >
     <grouped>
-      <avp name="Granted-Service-Unit" multiplicity="0-1" />
-      <avp name="Requested-Service-Unit" multiplicity="0-1" />
-      <avp name="Used-Service-Unit" multiplicity="0+" />
-      <avp name="Rating-Group" multiplicity="0-1" />
-      <avp name="Validity-Time" multiplicity="0-1" />
-      <avp name="Result-Code" multiplicity="0-1" />
-      <avp name="Final-Unit-Indication" multiplicity="0-1" />
-      <avp name="Time-Quota-Threshold" multiplicity="0-1" />
-      <avp name="Volume-Quota-Threshold" multiplicity="0-1" />
-      <avp name="Quota-Holding-Time" multiplicity="0-1" />
-      <avp name="Quota-Consumption-Time" multiplicity="0-1" />
-      <avp name="Reporting-Reason" multiplicity="0+" />
-      <avp name="Trigger-Type" multiplicity="0+" />
-      <avp name="PS-Furnish-Charging-Information" multiplicity="0-1" />
-      <avp name="Tariff-Change-Usage" multiplicity="0" />
-      <avp name="Service-Identifier" multiplicity="0" />
-      <avp name="G-S-U-Pool-Reference" multiplicity="0" />
+    <avp name="Granted-Service-Unit" multiplicity="0-1" />
+    <avp name="Requested-Service-Unit" multiplicity="0-1" />
+    <avp name="Used-Service-Unit" multiplicity="0+" />
+    <avp name="Rating-Group" multiplicity="0-1" />
+    <avp name="Validity-Time" multiplicity="0-1" />
+    <avp name="Result-Code" multiplicity="0-1" />
+    <avp name="Final-Unit-Indication" multiplicity="0-1" />
+    <avp name="Time-Quota-Threshold" multiplicity="0-1" />
+    <avp name="Volume-Quota-Threshold" multiplicity="0-1" />
+    <avp name="Quota-Holding-Time" multiplicity="0-1" />
+    <avp name="Quota-Consumption-Time" multiplicity="0-1" />
+    <avp name="Reporting-Reason" multiplicity="0+" />
+    <avp name="Trigger-Type" multiplicity="0+" />
+    <avp name="PS-Furnish-Charging-Information" multiplicity="0-1" />
+    <avp name="Tariff-Change-Usage" multiplicity="0" />
+    <avp name="Service-Identifier" multiplicity="0" />
+    <avp name="G-S-U-Pool-Reference" multiplicity="0" />
     </grouped>
   </avpdefn>
   -->
@@ -7572,6 +7771,11 @@
   <avpdefn name="MBMS-Required-QoS" code="913" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
     <type type-name="UTF8String" />
   </avpdefn>
+
+  <avpdefn name="Alternate-Charged-Party-Address" code="1280" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
+	<type type-name="UTF8String" />
+  </avpdefn>
+
 
   <!-- ************************** 3GPP S13/S13' AVPS ********************* -->
 
