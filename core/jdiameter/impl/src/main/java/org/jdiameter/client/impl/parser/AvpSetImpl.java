@@ -134,24 +134,24 @@ class AvpSetImpl implements AvpSet {
   }
 
   @Override
-    public int getAvpIndex(int avpCode) {
-        for (Avp avp : this.avps) {
-            if (avp.getCode() == avpCode ) {
-                return this.avps.indexOf(avp);
-            }
-        }
-        return -1;
+  public int getAvpIndex(int avpCode) {
+    for (Avp avp : this.avps) {
+      if (avp.getCode() == avpCode) {
+        return this.avps.indexOf(avp);
+      }
     }
+    return -1;
+  }
 
   @Override
-    public int getAvpIndex(int avpCode, long vendorId) {
-        for (Avp avp : this.avps) {
-            if (avp.getCode() == avpCode && avp.getVendorId() == vendorId) {
-                return this.avps.indexOf(avp);
-            }
-        }
-        return -1;
+  public int getAvpIndex(int avpCode, long vendorId) {
+    for (Avp avp : this.avps) {
+      if (avp.getCode() == avpCode && avp.getVendorId() == vendorId) {
+        return this.avps.indexOf(avp);
+      }
     }
+    return -1;
+  }
 
   @Override
   public AvpSet removeAvp(int avpCode) {
