@@ -42,52 +42,6 @@
 
 package org.jdiameter.client.impl.controller;
 
-import static org.jdiameter.api.Avp.ACCT_APPLICATION_ID;
-import static org.jdiameter.api.Avp.AUTH_APPLICATION_ID;
-import static org.jdiameter.api.Avp.DESTINATION_HOST;
-import static org.jdiameter.api.Avp.DESTINATION_REALM;
-import static org.jdiameter.api.Avp.DISCONNECT_CAUSE;
-import static org.jdiameter.api.Avp.ERROR_MESSAGE;
-import static org.jdiameter.api.Avp.FIRMWARE_REVISION;
-import static org.jdiameter.api.Avp.HOST_IP_ADDRESS;
-import static org.jdiameter.api.Avp.ORIGIN_HOST;
-import static org.jdiameter.api.Avp.ORIGIN_REALM;
-import static org.jdiameter.api.Avp.ORIGIN_STATE_ID;
-import static org.jdiameter.api.Avp.PRODUCT_NAME;
-import static org.jdiameter.api.Avp.RESULT_CODE;
-import static org.jdiameter.api.Avp.SUPPORTED_VENDOR_ID;
-import static org.jdiameter.api.Avp.VENDOR_ID;
-import static org.jdiameter.api.Avp.VENDOR_SPECIFIC_APPLICATION_ID;
-import static org.jdiameter.api.Message.CAPABILITIES_EXCHANGE_REQUEST;
-import static org.jdiameter.api.Message.DEVICE_WATCHDOG_REQUEST;
-import static org.jdiameter.api.Message.DISCONNECT_PEER_REQUEST;
-import static org.jdiameter.client.api.fsm.EventTypes.CEA_EVENT;
-import static org.jdiameter.client.api.fsm.EventTypes.CER_EVENT;
-import static org.jdiameter.client.api.fsm.EventTypes.CONNECT_EVENT;
-import static org.jdiameter.client.api.fsm.EventTypes.DISCONNECT_EVENT;
-import static org.jdiameter.client.api.fsm.EventTypes.DPA_EVENT;
-import static org.jdiameter.client.api.fsm.EventTypes.DPR_EVENT;
-import static org.jdiameter.client.api.fsm.EventTypes.DWA_EVENT;
-import static org.jdiameter.client.api.fsm.EventTypes.DWR_EVENT;
-import static org.jdiameter.client.api.fsm.EventTypes.INTERNAL_ERROR;
-import static org.jdiameter.client.api.fsm.EventTypes.RECEIVE_MSG_EVENT;
-import static org.jdiameter.client.api.fsm.EventTypes.STOP_EVENT;
-import static org.jdiameter.client.impl.helpers.Parameters.SecurityRef;
-import static org.jdiameter.client.impl.helpers.Parameters.UseUriAsFqdn;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
@@ -134,6 +88,53 @@ import org.jdiameter.server.impl.MutablePeerTableImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static org.jdiameter.api.Avp.ACCT_APPLICATION_ID;
+import static org.jdiameter.api.Avp.AUTH_APPLICATION_ID;
+import static org.jdiameter.api.Avp.DESTINATION_HOST;
+import static org.jdiameter.api.Avp.DESTINATION_REALM;
+import static org.jdiameter.api.Avp.DISCONNECT_CAUSE;
+import static org.jdiameter.api.Avp.ERROR_MESSAGE;
+import static org.jdiameter.api.Avp.FIRMWARE_REVISION;
+import static org.jdiameter.api.Avp.HOST_IP_ADDRESS;
+import static org.jdiameter.api.Avp.ORIGIN_HOST;
+import static org.jdiameter.api.Avp.ORIGIN_REALM;
+import static org.jdiameter.api.Avp.ORIGIN_STATE_ID;
+import static org.jdiameter.api.Avp.PRODUCT_NAME;
+import static org.jdiameter.api.Avp.RESULT_CODE;
+import static org.jdiameter.api.Avp.SUPPORTED_VENDOR_ID;
+import static org.jdiameter.api.Avp.VENDOR_ID;
+import static org.jdiameter.api.Avp.VENDOR_SPECIFIC_APPLICATION_ID;
+import static org.jdiameter.api.Message.CAPABILITIES_EXCHANGE_REQUEST;
+import static org.jdiameter.api.Message.DEVICE_WATCHDOG_REQUEST;
+import static org.jdiameter.api.Message.DISCONNECT_PEER_REQUEST;
+import static org.jdiameter.client.api.fsm.EventTypes.CEA_EVENT;
+import static org.jdiameter.client.api.fsm.EventTypes.CER_EVENT;
+import static org.jdiameter.client.api.fsm.EventTypes.CONNECT_EVENT;
+import static org.jdiameter.client.api.fsm.EventTypes.DISCONNECT_EVENT;
+import static org.jdiameter.client.api.fsm.EventTypes.DPA_EVENT;
+import static org.jdiameter.client.api.fsm.EventTypes.DPR_EVENT;
+import static org.jdiameter.client.api.fsm.EventTypes.DWA_EVENT;
+import static org.jdiameter.client.api.fsm.EventTypes.DWR_EVENT;
+import static org.jdiameter.client.api.fsm.EventTypes.INTERNAL_ERROR;
+import static org.jdiameter.client.api.fsm.EventTypes.RECEIVE_MSG_EVENT;
+import static org.jdiameter.client.api.fsm.EventTypes.STOP_EVENT;
+import static org.jdiameter.client.impl.helpers.Parameters.PeerRating;
+import static org.jdiameter.client.impl.helpers.Parameters.SecurityRef;
+import static org.jdiameter.client.impl.helpers.Parameters.UseUriAsFqdn;
+
 /**
  * Client Peer implementation
  *
@@ -176,7 +177,6 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   protected IConnection connection;
   protected IConnectionListener connListener = new IConnectionListener() {
 
-    @Override
     public void connectionOpened(String connKey) {
       logger.debug("Connection to {} is open", uri);
       try {
@@ -187,7 +187,6 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       }
     }
 
-    @Override
     public void connectionClosed(String connKey, List notSent) {
       logger.debug("Connection from {} is closed", uri);
       for (IMessage request : peerRequests.values()) {
@@ -211,12 +210,11 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       }
     }
 
-    @Override
     public void messageReceived(String connKey, IMessage message) {
       boolean req = message.isRequest();
       try {
         int type = message.getCommandCode();
-        logger.debug("Receive message type [{}] to peer [{}]", new Object[] {type, connKey});
+        logger.debug("Receive message type [{}] to peer [{}]", new Object[]{type, connKey});
         switch (type) {
           case CAPABILITIES_EXCHANGE_REQUEST:
             fsm.handleEvent(new FsmEvent(req ? CER_EVENT : CEA_EVENT, message, connKey));
@@ -248,7 +246,6 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       }
     }
 
-    @Override
     public void internalError(String connKey, IMessage message, TransportException cause) {
       try {
         logger.debug("internalError ", cause);
@@ -260,20 +257,26 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
   };
 
-  public PeerImpl(final PeerTableImpl table, int rating, URI remotePeer, String ip,  String portRange, IMetaData metaData, Configuration config,
-      Configuration peerConfig, IFsmFactory fsmFactory, ITransportLayerFactory trFactory, IStatisticManager statisticFactory,
-      IConcurrentFactory concurrentFactory, IMessageParser parser, final ISessionDatasource sessionDataSource) throws InternalException, TransportException {
+  public PeerImpl(final PeerTableImpl table, int rating, URI remotePeer, String ip, String portRange, IMetaData metaData, Configuration config,
+                  Configuration peerConfig, IFsmFactory fsmFactory, ITransportLayerFactory trFactory, IStatisticManager statisticFactory,
+                  IConcurrentFactory concurrentFactory, IMessageParser parser, final ISessionDatasource sessionDataSource) throws InternalException,
+      TransportException {
     this(table, rating, remotePeer, ip, portRange, metaData, config, peerConfig, fsmFactory, trFactory, parser, statisticFactory, concurrentFactory, null,
         sessionDataSource);
   }
 
   protected PeerImpl(final PeerTableImpl table, int rating, URI remotePeer, String ip, String portRange, IMetaData metaData,
-      Configuration config, Configuration peerConfig, IFsmFactory fsmFactory, ITransportLayerFactory trFactory,
-      IMessageParser parser, IStatisticManager statisticFactory, IConcurrentFactory concurrentFactory,
-      IConnection connection, final ISessionDatasource sessionDataSource) throws InternalException, TransportException {
+                     Configuration config, Configuration peerConfig, IFsmFactory fsmFactory, ITransportLayerFactory trFactory,
+                     IMessageParser parser, IStatisticManager statisticFactory, IConcurrentFactory concurrentFactory,
+                     IConnection connection, final ISessionDatasource sessionDataSource) throws InternalException, TransportException {
     super(remotePeer, statisticFactory);
     this.table = table;
-    this.rating = rating;
+    if (peerConfig != null) {
+      this.rating = peerConfig.getIntValue(PeerRating.ordinal(), 0);
+    }
+    else {
+      this.rating = rating;
+    }
     this.router = table.router;
     this.metaData = metaData;
     // XXX: FT/HA // this.slc = table.getSessionReqListeners();
@@ -291,7 +294,6 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     this.fsm = fsmFactory.createInstanceFsm(actionContext, concurrentFactory, config);
     this.fsm.addStateChangeNotification(
         new AbstractStateChangeListener() {
-          @Override
           public void stateChanged(Enum oldState, Enum newState) {
             PeerState s = (PeerState) newState;
             if (PeerState.DOWN.equals(s)) {
@@ -324,8 +326,8 @@ public class PeerImpl extends AbstractPeer implements IPeer {
           boolean portNotAvailable = false;
           int limit = 0;
           int maxTries = endRange - startRange + 1;
-          logger.debug("Selecting local port randomly from range '{}-{}'. Doing {} tries (some ports may not be tested, others tested more than once).",
-              new Object[]{startRange, endRange, maxTries});
+          logger.debug("Selecting local port randomly from range '{}-{}'. Doing {} tries (some ports may not be tested, others tested more than once).", new
+              Object[]{startRange, endRange, maxTries});
 
           do {
             portNotAvailable = false;
@@ -366,7 +368,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       this.connection.addConnectionListener(connListener);
     }
     this.parser = parser;
-    this.addresses = new InetAddress[] {remoteAddress};
+    this.addresses = new InetAddress[]{remoteAddress};
     this.useUriAsFQDN = config.getBooleanValue(UseUriAsFqdn.ordinal(), (Boolean) UseUriAsFqdn.defValue());
   }
 
@@ -383,48 +385,39 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
   }
 
-  @Override
   public IStatistic getStatistic() {
     return statistic;
   }
 
-  @Override
   public void addPeerStateListener(final PeerStateListener listener) {
     fsm.addStateChangeNotification(new AbstractStateChangeListener() {
 
-      @Override
       public void stateChanged(Enum oldState, Enum newState) {
         listener.stateChanged((PeerState) oldState, (PeerState) newState);
       }
 
-      @Override
       public int hashCode() {
         return listener.hashCode();
       }
 
-      @Override
       public boolean equals(Object obj) {
         return listener.equals(obj);
       }
     });
   }
 
-  @Override
   public void removePeerStateListener(final PeerStateListener listener) {
     //FIXME: fix this... cmon
     if (listener != null) {
       fsm.remStateChangeNotification(new AbstractStateChangeListener() {
-        @Override
         public void stateChanged(Enum oldState, Enum newState) {
           listener.stateChanged((PeerState) oldState, (PeerState) newState);
         }
 
-        @Override
         public int hashCode() {
           return listener.hashCode();
         }
 
-        @Override
         public boolean equals(Object obj) {
           return listener.equals(obj);
         }
@@ -433,7 +426,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   }
 
   private IMessage processRedirectAnswer(IMessage request, IMessage answer) {
-    int resultCode  = ResultCode.SUCCESS;
+    int resultCode = ResultCode.SUCCESS;
 
     try {
       //it will try to find next hope and send it...
@@ -480,7 +473,6 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     return answer;
   }
 
-  @Override
   public void connect() throws InternalException, IOException, IllegalDiameterStateException {
     if (getState(PeerState.class) != PeerState.DOWN) {
       throw new IllegalDiameterStateException("Invalid state:" + getState(PeerState.class));
@@ -493,7 +485,6 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
   }
 
-  @Override
   public void disconnect(int disconnectCause) throws InternalException, IllegalDiameterStateException {
     super.disconnect(disconnectCause);
     if (getState(PeerState.class) != PeerState.DOWN) {
@@ -510,74 +501,60 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
   }
 
-  @Override
   public <E> E getState(Class<E> enumc) {
     return fsm.getState(enumc);
   }
 
-  @Override
   public URI getUri() {
     return uri;
   }
 
-  @Override
   public InetAddress[] getIPAddresses() {
     return addresses;
   }
 
-  @Override
   public String getRealmName() {
     return realmName;
   }
 
-  @Override
   public long getVendorId() {
     return vendorID;
   }
 
-  @Override
   public String getProductName() {
     return productName;
   }
 
-  @Override
   public long getFirmware() {
     return firmWare;
   }
 
-  @Override
   public Set<ApplicationId> getCommonApplications() {
     return commonApplications;
   }
 
-  @Override
   public long getHopByHopIdentifier() {
     return hopByHopId.incrementAndGet();
   }
 
-  @Override
   public void addMessage(IMessage message) {
     peerRequests.put(message.getHopByHopIdentifier(), message);
   }
 
-  @Override
   public void remMessage(IMessage message) {
     peerRequests.remove(message.getHopByHopIdentifier());
   }
 
-  @Override
   public IMessage[] remAllMessage() {
     IMessage[] m = peerRequests.values().toArray(new IMessage[peerRequests.size()]);
     peerRequests.clear();
     return m;
   }
 
-  @Override
   public boolean handleMessage(EventTypes type, IMessage message, String key) throws TransportException, OverloadException, InternalException {
     return !stopping && fsm.handleEvent(new FsmEvent(type, message, key));
   }
 
-  @Override
   public boolean sendMessage(IMessage message) throws TransportException, OverloadException, InternalException {
     if (dictionary != null && dictionary.isEnabled()) {
       logger.debug("Message validation is ENABLED. Going to validate message before sending.");
@@ -586,41 +563,34 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     return !stopping && fsm.handleEvent(new FsmEvent(EventTypes.SEND_MSG_EVENT, message));
   }
 
-  @Override
   public boolean hasValidConnection() {
     return connection != null && connection.isConnected();
   }
 
-  @Override
   public void setRealm(String realm) {
     realmName = realm;
   }
 
-  @Override
   public void addStateChangeListener(StateChangeListener listener) {
     fsm.addStateChangeNotification(listener);
   }
 
-  @Override
   public void remStateChangeListener(StateChangeListener listener) {
     fsm.remStateChangeNotification(listener);
   }
 
-  @Override
   public void addConnectionListener(IConnectionListener listener) {
     if (connection != null) {
       connection.addConnectionListener(listener);
     }
   }
 
-  @Override
   public void remConnectionListener(IConnectionListener listener) {
     if (connection != null) {
       connection.remConnectionListener(listener);
     }
   }
 
-  @Override
   public int getRating() {
     return rating;
   }
@@ -630,7 +600,6 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     return getState(PeerState.class) == PeerState.OKAY;
   }
 
-  @Override
   public String toString() {
     return "CPeer{" + "Uri=" + uri + "; State=" + (fsm != null ? fsm.getState(PeerState.class) : "n/a") + "; Rating=" + rating + "; Con=" + connection + "}";
   }
@@ -673,7 +642,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     return newAppId;
   }
 
-  protected void sendErrorAnswer(IRequest request, String errorMessage, int resultCode, Avp ...avpsToAdd) {
+  protected void sendErrorAnswer(IRequest request, String errorMessage, int resultCode, Avp... avpsToAdd) {
     logger.debug("Could not process request. Result Code = [{}], Error Message: [{}]", resultCode, errorMessage);
     request.setRequest(false);
     // Not setting error flag, depends on error code. Will be set @ PeerImpl.ActionContext.sendMessage(IMessage)
@@ -715,13 +684,11 @@ public class PeerImpl extends AbstractPeer implements IPeer {
 
   protected class ActionContext implements IContext {
 
-    @Override
     public String toString() {
-      return new StringBuilder("ActionContext [getPeerDescription()=").append(getPeerDescription()).append(", isConnected()=").append(isConnected()).
-          append(", isRestoreConnection()=").append(isRestoreConnection()).append("]").toString();
+      return new StringBuilder("ActionContext [getPeerDescription()=").append(getPeerDescription()).append(", isConnected()=").append(isConnected()).append
+          (", isRestoreConnection()=").append(isRestoreConnection()).append("]").toString();
     }
 
-    @Override
     public void connect() throws InternalException, IOException, IllegalDiameterStateException {
       try {
         connection.connect();
@@ -742,7 +709,6 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       }
     }
 
-    @Override
     public void disconnect() throws InternalException, IllegalDiameterStateException {
       if (connection != null) {
         connection.disconnect();
@@ -752,17 +718,14 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       }
     }
 
-    @Override
     public String getPeerDescription() {
       return uri.toString();
     }
 
-    @Override
     public boolean isConnected() {
       return (connection != null) && connection.isConnected();
     }
 
-    @Override
     public boolean sendMessage(IMessage message) throws TransportException, OverloadException {
       // Check message
       if (message.isTimeOut()) {
@@ -814,7 +777,6 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       return true;
     }
 
-    @Override
     public void sendCerMessage() throws TransportException, OverloadException {
       logger.debug("Send CER message");
       IMessage message = parser.createEmptyMessage(CAPABILITIES_EXCHANGE_REQUEST, 0);
@@ -842,12 +804,10 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       sendMessage(message);
     }
 
-    @Override
     public void sendCeaMessage(int resultCode, Message cer, String errMessage) throws TransportException, OverloadException {
 
     }
 
-    @Override
     public void sendDwrMessage() throws TransportException, OverloadException {
       logger.debug("Send DWR message");
       IMessage message = parser.createEmptyMessage(DEVICE_WATCHDOG_REQUEST, 0);
@@ -864,7 +824,6 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       sendMessage(message);
     }
 
-    @Override
     public void sendDwaMessage(IMessage dwr, int resultCode, String errorMessage) throws TransportException, OverloadException {
       logger.debug("Send DWA message");
       IMessage message = parser.createEmptyMessage(dwr);
@@ -885,12 +844,10 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       sendMessage(message);
     }
 
-    @Override
     public boolean isRestoreConnection() {
       return true;
     }
 
-    @Override
     public void sendDprMessage(int disconnectCause) throws TransportException, OverloadException {
       logger.debug("Send DPR message with Disconnect-Cause [{}]", disconnectCause);
       IMessage message = parser.createEmptyMessage(DISCONNECT_PEER_REQUEST, 0);
@@ -902,14 +859,13 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       sendMessage(message);
     }
 
-    @Override
     public void sendDpaMessage(IMessage dpr, int resultCode, String errorMessage) throws TransportException, OverloadException {
       logger.debug("Send DPA message");
       IMessage message = parser.createEmptyMessage(dpr);
       message.setRequest(false);
       message.setHopByHopIdentifier(dpr.getHopByHopIdentifier());
       message.setEndToEndIdentifier(dpr.getEndToEndIdentifier());
-      message.getAvps().addAvp(RESULT_CODE,  resultCode, true, false, true);
+      message.getAvps().addAvp(RESULT_CODE, resultCode, true, false, true);
       message.getAvps().addAvp(ORIGIN_HOST, metaData.getLocalPeer().getUri().getFQDN(), true, false, true);
       message.getAvps().addAvp(ORIGIN_REALM, metaData.getLocalPeer().getRealmName(), true, false, true);
       if (errorMessage != null) {
@@ -918,21 +874,19 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       sendMessage(message);
     }
 
-    @Override
     public int processCerMessage(String key, IMessage message) {
       return 0;
     }
 
-    @Override
     public boolean processCeaMessage(String key, IMessage message) {
       boolean rc = true;
       try {
-        Avp origHost  = message.getAvps().getAvp(ORIGIN_HOST);
+        Avp origHost = message.getAvps().getAvp(ORIGIN_HOST);
         Avp origRealm = message.getAvps().getAvp(ORIGIN_REALM);
-        Avp vendorId  = message.getAvps().getAvp(VENDOR_ID);
-        Avp prdName   = message.getAvps().getAvp(PRODUCT_NAME);
+        Avp vendorId = message.getAvps().getAvp(VENDOR_ID);
+        Avp prdName = message.getAvps().getAvp(PRODUCT_NAME);
         Avp resCode = message.getAvps().getAvp(RESULT_CODE);
-        Avp frmId     = message.getAvps().getAvp(FIRMWARE_REVISION);
+        Avp frmId = message.getAvps().getAvp(FIRMWARE_REVISION);
         if (origHost == null || origRealm == null || vendorId == null) {
           logger.warn("Incorrect CEA message (missing mandatory AVPs)");
         }
@@ -977,7 +931,6 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       return rc;
     }
 
-    @Override
     public boolean receiveMessage(IMessage message) {
       logger.debug("Receiving message in client.");
       boolean isProcessed = false;
@@ -1066,12 +1019,10 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       return isProcessed;
     }
 
-    @Override
     public int processDwrMessage(IMessage iMessage) {
       return ResultCode.SUCCESS;
     }
 
-    @Override
     public int processDprMessage(IMessage iMessage) {
       return ResultCode.SUCCESS;
     }
@@ -1116,7 +1067,6 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     /* (non-Javadoc)
      * @see org.jdiameter.client.api.fsm.IContext#removePeerStatistics()
      */
-    @Override
     public void removeStatistics() {
       removePeerStatistics();
     }
@@ -1124,7 +1074,6 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     /* (non-Javadoc)
      * @see org.jdiameter.client.api.fsm.IContext#createPeerStatistics()
      */
-    @Override
     public void createStatistics() {
       createPeerStatistics();
     }

@@ -1,44 +1,24 @@
- /*
-  * TeleStax, Open Source Cloud Communications
-  * Copyright 2011-2016, TeleStax Inc. and individual contributors
-  * by the @authors tag.
-  *
-  * This program is free software: you can redistribute it and/or modify
-  * under the terms of the GNU Affero General Public License as
-  * published by the Free Software Foundation; either version 3 of
-  * the License, or (at your option) any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU Affero General Public License for more details.
-  *
-  * You should have received a copy of the GNU Affero General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>
-  *
-  * This file incorporates work covered by the following copyright and
-  * permission notice:
-  *
-  *   JBoss, Home of Professional Open Source
-  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
-  *   by the @authors tag. See the copyright.txt in the distribution for a
-  *   full listing of individual contributors.
-  *
-  *   This is free software; you can redistribute it and/or modify it
-  *   under the terms of the GNU Lesser General Public License as
-  *   published by the Free Software Foundation; either version 2.1 of
-  *   the License, or (at your option) any later version.
-  *
-  *   This software is distributed in the hope that it will be useful,
-  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  *   Lesser General Public License for more details.
-  *
-  *   You should have received a copy of the GNU Lesser General Public
-  *   License along with this software; if not, write to the Free
-  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
-  */
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2010, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 
 package org.jdiameter.api.ro;
 
@@ -69,11 +49,11 @@ public interface ClientRoSessionListener {
    *
    * @param session parent application session (FSM)
    * @param request request object
-   * @param answer answer object
-   * @throws InternalException The InternalException signals that internal error has occurred.
+   * @param answer  answer object
+   * @throws InternalException             The InternalException signals that internal error has occurred.
    * @throws IllegalDiameterStateException The IllegalStateException signals that session has incorrect state (invalid).
-   * @throws RouteException The NoRouteException signals that no route exist for a given realm.
-   * @throws OverloadException The OverloadException signals that destination host is overloaded.
+   * @throws RouteException                The NoRouteException signals that no route exist for a given realm.
+   * @throws OverloadException             The OverloadException signals that destination host is overloaded.
    */
   void doCreditControlAnswer(ClientRoSession session, RoCreditControlRequest request, RoCreditControlAnswer answer)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
@@ -83,10 +63,10 @@ public interface ClientRoSessionListener {
    *
    * @param session parent application session (FSM)
    * @param request request object
-   * @throws InternalException The InternalException signals that internal error has occurred.
+   * @throws InternalException             The InternalException signals that internal error has occurred.
    * @throws IllegalDiameterStateException The IllegalStateException signals that session has incorrect state (invalid).
-   * @throws RouteException The NoRouteException signals that no route exist for a given realm.
-   * @throws OverloadException The OverloadException signals that destination host is overloaded.
+   * @throws RouteException                The NoRouteException signals that no route exist for a given realm.
+   * @throws OverloadException             The OverloadException signals that destination host is overloaded.
    */
   void doReAuthRequest(ClientRoSession session, ReAuthRequest request)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
@@ -96,25 +76,39 @@ public interface ClientRoSessionListener {
    *
    * @param session parent application session (FSM)
    * @param request request object
-   * @param answer answer object
-   * @throws InternalException The InternalException signals that internal error has occurred.
+   * @param answer  answer object
+   * @throws InternalException             The InternalException signals that internal error has occurred.
    * @throws IllegalDiameterStateException The IllegalStateException signals that session has incorrect state (invalid).
-   * @throws RouteException The NoRouteException signals that no route exist for a given realm.
-   * @throws OverloadException The OverloadException signals that destination host is overloaded.
+   * @throws RouteException                The NoRouteException signals that no route exist for a given realm.
+   * @throws OverloadException             The OverloadException signals that destination host is overloaded.
    */
   void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
   /**
    * Notifies this ClientRoSessionListener that message delivery timeout expired and there was no response from
-   * any of remote peers in spite of numerous retransmissions and performing failover algorithm.
+   * one of remote peers.
    *
    * @param session parent application session (FSM)
-   * @param msg request object
-   * @throws InternalException The InternalException signals that internal error has occurred.
+   * @param msg     request object
+   * @throws InternalException             The InternalException signals that internal error has occurred.
    * @throws IllegalDiameterStateException The IllegalStateException signals that session has incorrect state (invalid).
-   * @throws RouteException The NoRouteException signals that no route exist for a given realm.
-   * @throws OverloadException The OverloadException signals that destination host is overloaded.
+   * @throws RouteException                The NoRouteException signals that no route exist for a given realm.
+   * @throws OverloadException             The OverloadException signals that destination host is overloaded.
+   */
+  void doRequestTxTimeout(ClientRoSession session, Message msg, Peer peer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+
+  /**
+   * Notifies this ClientRoSessionListener that message delivery timeout expired and there was no response from
+   * any of remote peers in spite of numerous retransmissions and performing failover algorithm if enabled.
+   *
+   * @param session parent application session (FSM)
+   * @param msg     request object
+   * @throws InternalException             The InternalException signals that internal error has occurred.
+   * @throws IllegalDiameterStateException The IllegalStateException signals that session has incorrect state (invalid).
+   * @throws RouteException                The NoRouteException signals that no route exist for a given realm.
+   * @throws OverloadException             The OverloadException signals that destination host is overloaded.
    */
   void doRequestTimeout(ClientRoSession session, Message msg, Peer peer)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
@@ -122,14 +116,14 @@ public interface ClientRoSessionListener {
   /**
    * Notifies this ClientRoSessionListener that message cannot be delivered due to lack of remote peers being available at the moment.
    *
-   * @param cause root cause containing detailed description
+   * @param cause   root cause containing detailed description
    * @param session parent application session (FSM)
-   * @param msg request object
-   * @param peer last remote peer that has been selected for routing
-   * @throws InternalException The InternalException signals that internal error has occurred.
+   * @param msg     request object
+   * @param peer    last remote peer that has been selected for routing
+   * @throws InternalException             The InternalException signals that internal error has occurred.
    * @throws IllegalDiameterStateException The IllegalStateException signals that session has incorrect state (invalid).
-   * @throws RouteException The NoRouteException signals that no route exist for a given realm.
-   * @throws OverloadException The OverloadException signals that destination host is overloaded.
+   * @throws RouteException                The NoRouteException signals that no route exist for a given realm.
+   * @throws OverloadException             The OverloadException signals that destination host is overloaded.
    */
   void doPeerUnavailability(RouteException cause, ClientRoSession session, Message msg, Peer peer)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;

@@ -64,20 +64,32 @@ public class FailureAwareRouter extends WeightedRoundRobinRouter {
     if (sds instanceof IRoutingAwareSessionDatasource) {
       this.sessionDatasource = (IRoutingAwareSessionDatasource) sds;
     }
-    if(logger.isDebugEnabled()) {
-      logger.debug("Constructor for FailureAwareRouter (session persistent routing {})", isSessionPersistentRoutingEnabled() ? "enabled" : "disabled");
-    }
+
+    logger.debug("Constructor for FailureAwareRouter (session persistent routing {})", isSessionPersistentRoutingEnabled() ? "enabled" : "disabled");
   }
 
   /**
    * Narrows down the subset of peers selected by {@link RouterImpl} superclass to those with
    * the highest rating only.
    *
-   * @see org.jdiameter.client.impl.router.RouterImpl#getAvailablePeers(java.lang.String, java.lang.String[], org.jdiameter.client.api.controller.IPeerTable)
+   * @see org.jdiameter.client.impl.router.RouterImpl#getAvailablePeers(java.lang.String, java.lang.String[], org.jdiameter.client.api.controller.IPeerTable,
+   * org.jdiameter.client.api.IMessage)
    */
   @Override
-  protected List<IPeer> getAvailablePeers(String destRealm, String[] peers, IPeerTable manager) {
-    List<IPeer> selectedPeers = super.getAvailablePeers(destRealm, peers, manager);
+  protected List<IPeer> getAvailablePeers(String destRealm, String[] peers, IPeerTable manager, IMessage message) {
+    List<IPeer> selectedPeers = super.getAvailablePeers(destRealm, peers, manager, message);
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("All available peers: {}", selectedPeers);
+    }
+    selectedPeers = narrowToAnswerablePeers(selectedPeers, message.getSessionId());
+    if (logger.isDebugEnabled()) {
+      logger.debug("All answerable peers: {}", selectedPeers);
+    }
+
+    if (message.isRetransmissionSupervised()) {
+      message.setNumberOfRetransAllowed(selectedPeers.size() - 1);
+    }
 
     int maxRating = findMaximumRating(selectedPeers);
     if (maxRating >= 0 && maxRating != lastSelectedRating) {
@@ -85,12 +97,29 @@ public class FailureAwareRouter extends WeightedRoundRobinRouter {
       resetRoundRobinContext();
     }
 
-    selectedPeers = narrowToRatingBasedSubset(selectedPeers, maxRating);
-    if(logger.isDebugEnabled()) {
-      logger.debug("Final subset of peers with rating [{}]: {}", maxRating, selectedPeers);
+    selectedPeers = narrowToSelectablePeersSubset(selectedPeers, maxRating, message);
+    if (logger.isDebugEnabled()) {
+      logger.debug("Final subset of selectable peers (max rating [{}]): {}", maxRating, selectedPeers);
     }
 
     return selectedPeers;
+  }
+
+  private List<IPeer> narrowToAnswerablePeers(List<IPeer> availablePeers, String sessionId) {
+    List<String> unAnswerablePeers = sessionDatasource.getUnanswerablePeers(sessionId);
+
+    if (unAnswerablePeers != null) {
+      for (String peerFqdn : unAnswerablePeers) {
+        for (IPeer peer : availablePeers) {
+          if (peer.getUri().getFQDN().equals(peerFqdn)) {
+            availablePeers.remove(peer);
+            break;
+          }
+        }
+      }
+    }
+
+    return availablePeers;
   }
 
   /**
@@ -102,44 +131,30 @@ public class FailureAwareRouter extends WeightedRoundRobinRouter {
   @Override
   public IPeer selectPeer(List<IPeer> availablePeers, IMessage message) {
     IPeer peer = null;
-    String sessionAssignedPeer = null;
-
-    if (isSessionPersistentRoutingEnabled()) {
-      sessionAssignedPeer = sessionDatasource.getSessionPeer(message.getSessionId());
-      if (sessionAssignedPeer != null) {
-        if(logger.isDebugEnabled()) {
-          logger.debug("Sticky sessions are enabled and peer [{}] is assigned to the current session [{}]",
-                  new Object[]{sessionAssignedPeer, message.getSessionId()});
-        }
-        peer = findPeer(sessionAssignedPeer, availablePeers);
-        if (peer != null) {
-          return peer;
-        }
-        else {
-          if(logger.isDebugEnabled()) {
-            logger.debug("Peer [{}] assigned to session [{}] so far is not available anymore", sessionAssignedPeer, message.getSessionId());
-          }
-        }
-      } else {
-        if(logger.isDebugEnabled()) {
-          logger.debug("Sticky sessions are enabled and no peer has been yet assigned to the current session [{}]", message.getSessionId());
-        }
-      }
-    }
-
-    if(logger.isDebugEnabled()) {
+    if (logger.isDebugEnabled()) {
       logger.debug(super.dumpRoundRobinContext());
     }
     peer = super.selectPeer(availablePeers);
 
+    if (peer == null) {
+      return null;
+    }
     if (isSessionPersistentRoutingEnabled()) {
-      if (sessionAssignedPeer != null) {
-        if(logger.isDebugEnabled()) {
-          logger.debug("Peer reselection took place from [{}] to [{}] on session [{}]",
-                  new Object[]{sessionAssignedPeer, peer.getUri().getFQDN(), message.getSessionId()});
+      String sessionAssignedPeer = sessionDatasource.getSessionPeer(message.getSessionId());
+      if (sessionAssignedPeer != null && !peer.getUri().getFQDN().equals(sessionAssignedPeer)) {
+        if (logger.isDebugEnabled()) {
+          logger.debug("Peer reselection took place from [{}] to [{}] on session [{}]", new Object[]{sessionAssignedPeer, peer.getUri().getFQDN(), message
+              .getSessionId()});
         }
         sessionDatasource.setSessionPeer(message.getSessionId(), peer);
       }
+      else if (sessionAssignedPeer == null) {
+        sessionDatasource.setSessionPeer(message.getSessionId(), peer);
+        if (logger.isDebugEnabled()) {
+          logger.debug("Peer [{}] selected and assigned to session [{}]", new Object[]{peer.getUri().getFQDN(), message.getSessionId()});
+        }
+      }
+
     }
 
     return peer;
@@ -155,9 +170,9 @@ public class FailureAwareRouter extends WeightedRoundRobinRouter {
   }
 
   /*
- * (non-Javadoc)
- * @see org.jdiameter.client.impl.router.RouterImpl#getLastSelectedRating()
- */
+   * (non-Javadoc)
+   * @see org.jdiameter.client.impl.router.RouterImpl#getLastSelectedRating()
+   */
   @Override
   protected int getLastSelectedRating() {
     return this.lastSelectedRating;
@@ -195,13 +210,30 @@ public class FailureAwareRouter extends WeightedRoundRobinRouter {
    * *********************** Local helper methods *************************
    ***********************************************************************/
 
-  private List<IPeer> narrowToRatingBasedSubset(List<IPeer> peers, int rating) {
+  private List<IPeer> narrowToSelectablePeersSubset(List<IPeer> peers, int rating, IMessage message) {
     List<IPeer> peersSubset = new ArrayList<IPeer>(5);
+    String sessionAssignedPeer = sessionDatasource.getSessionPeer(message.getSessionId());
     for (IPeer peer : peers) {
+      if (isSessionPersistentRoutingEnabled() && sessionAssignedPeer != null) {
+        if (peer.getUri().getFQDN().equals(sessionAssignedPeer)) {
+          if (logger.isDebugEnabled()) {
+            logger.debug("Sticky sessions are enabled and peer [{}] is assigned to the current session [{}]", new Object[]{sessionAssignedPeer, message
+                .getSessionId()});
+          }
+          peersSubset.clear();
+          peersSubset.add(peer);
+          break;
+        }
+      }
       if (peer.getRating() == rating) {
         peersSubset.add(peer);
       }
     }
+
+    if (logger.isDebugEnabled() && sessionAssignedPeer == null) {
+      logger.debug("Sticky sessions are enabled and no peer has been yet assigned to the current session [{}]", message.getSessionId());
+    }
+
     return peersSubset;
   }
 
@@ -211,15 +243,6 @@ public class FailureAwareRouter extends WeightedRoundRobinRouter {
       maxRating = Math.max(maxRating, peer.getRating());
     }
     return maxRating;
-  }
-
-  private IPeer findPeer(String fqdn, List<IPeer> peers) {
-    for (IPeer peer : peers) {
-      if (peer.getUri().getFQDN().equals(fqdn)) {
-        return peer;
-      }
-    }
-    return null;
   }
 
   private boolean isSessionPersistentRoutingEnabled() {

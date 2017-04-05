@@ -24,6 +24,8 @@ package org.jdiameter.api;
 
 /**
  * Signals that no peer is available for routing.
+ *
+ * @author <a href="mailto:info@pro-ids.com"> ProIDS sp. z o.o.</a>
  */
 public class NoMorePeersAvailableException extends RouteException {
 
@@ -35,6 +37,7 @@ public class NoMorePeersAvailableException extends RouteException {
 
   /**
    * Constructor with reason string and routing details
+   *
    * @param message reason string
    */
   public NoMorePeersAvailableException(String message, boolean spre, String rrcd, int lspr) {
@@ -46,8 +49,9 @@ public class NoMorePeersAvailableException extends RouteException {
 
   /**
    * Constructor with reason string and parent exception
+   *
    * @param message message reason string
-   * @param cause parent exception
+   * @param cause   parent exception
    */
   public NoMorePeersAvailableException(String message, Throwable cause) {
     super(message, cause);
@@ -55,6 +59,7 @@ public class NoMorePeersAvailableException extends RouteException {
 
   /**
    * Constructor with reason string
+   *
    * @param message reason string
    */
   public NoMorePeersAvailableException(String message) {

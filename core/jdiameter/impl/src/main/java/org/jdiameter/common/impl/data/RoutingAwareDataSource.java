@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -90,8 +91,29 @@ public class RoutingAwareDataSource extends LocalDataSource implements IRoutingA
     if (se != null && se instanceof RoutingAwareSessionEntry) {
       String oldPeer = ((RoutingAwareSessionEntry) se).peer;
       ((RoutingAwareSessionEntry) se).peer = null;
+      ((RoutingAwareSessionEntry) se).getUnanswerablePeers().add(oldPeer);
       return oldPeer;
-    } else {
+    }
+    else {
+      return null;
+    }
+  }
+
+  @Override
+  public void clearUnanswerablePeers(String sessionId) {
+    SessionEntry se = sessionIdToEntry.get(sessionId);
+    if (se != null && se instanceof RoutingAwareSessionEntry) {
+      ((RoutingAwareSessionEntry) se).getUnanswerablePeers().clear();
+    }
+  }
+
+  @Override
+  public List<String> getUnanswerablePeers(String sessionId) {
+    SessionEntry se = sessionIdToEntry.get(sessionId);
+    if (se != null && se instanceof RoutingAwareSessionEntry) {
+      return ((RoutingAwareSessionEntry) se).getUnanswerablePeers();
+    }
+    else {
       return null;
     }
   }
@@ -128,12 +150,18 @@ public class RoutingAwareDataSource extends LocalDataSource implements IRoutingA
    * a specific peer that is bound to a particular session. Extra info is used for session persistent routing.
    */
   protected static class RoutingAwareSessionEntry extends SessionEntry {
+    private List<String> unanswerable = new ArrayList<String>();
     String peer;
+
+    public List<String> getUnanswerablePeers() {
+      return unanswerable;
+    }
 
     @Override
     public String toString() {
       StringBuilder builder = new StringBuilder();
-      builder.append("RoutingAwareSessionEntry [peer=").append(peer).append(", toString()=").append(super.toString()).append("]");
+      builder.append("RoutingAwareSessionEntry [peer=").append(peer).append(", unanswerable=[").append(Arrays.toString(unanswerable.toArray())).append("], " +
+          "toString()=").append(super.toString()).append("]");
       return builder.toString();
     }
 
@@ -146,11 +174,10 @@ public class RoutingAwareDataSource extends LocalDataSource implements IRoutingA
      */
     public String preetyPrint(String key, DateFormat dateFormat) {
       StringBuilder builder = new StringBuilder("{id=[");
-      builder.append(key)
-              .append("], peer=[")
-              .append(peer).append("], timestamp=[")
-              .append(dateFormat.format(new Date(session.getLastAccessedTime())))
-              .append("]}").toString();
+      builder.append(key).append("], peer=[").append(peer)
+          .append("], timestamp=[").append(dateFormat.format(new Date(session.getLastAccessedTime())))
+          .append("], unanswerable=[").append(Arrays.toString(unanswerable.toArray()))
+          .append("]}").toString();
       return builder.toString();
     }
   }

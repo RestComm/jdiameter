@@ -1,53 +1,26 @@
- /*
-  * TeleStax, Open Source Cloud Communications
-  * Copyright 2011-2016, TeleStax Inc. and individual contributors
-  * by the @authors tag.
-  *
-  * This program is free software: you can redistribute it and/or modify
-  * under the terms of the GNU Affero General Public License as
-  * published by the Free Software Foundation; either version 3 of
-  * the License, or (at your option) any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU Affero General Public License for more details.
-  *
-  * You should have received a copy of the GNU Affero General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>
-  *
-  * This file incorporates work covered by the following copyright and
-  * permission notice:
-  *
-  *   JBoss, Home of Professional Open Source
-  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
-  *   by the @authors tag. See the copyright.txt in the distribution for a
-  *   full listing of individual contributors.
-  *
-  *   This is free software; you can redistribute it and/or modify it
-  *   under the terms of the GNU Lesser General Public License as
-  *   published by the Free Software Foundation; either version 2.1 of
-  *   the License, or (at your option) any later version.
-  *
-  *   This software is distributed in the hope that it will be useful,
-  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  *   Lesser General Public License for more details.
-  *
-  *   You should have received a copy of the GNU Lesser General Public
-  *   License along with this software; if not, write to the Free
-  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
-  */
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2006, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 
 package org.jdiameter.client.impl.parser;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.ApplicationId;
@@ -62,12 +35,20 @@ import org.jdiameter.client.impl.router.RouterImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Represents a Diameter message.
  *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:grzegorz.figiel@pro-ids.com"> Grzegorz Figiel (ProIDS sp. z o.o.)</a>
  */
 public class MessageImpl implements IMessage {
 
@@ -101,7 +82,6 @@ public class MessageImpl implements IMessage {
   /**
    * Create empty message
    *
-   * @param parser
    * @param commandCode
    * @param appId
    */
@@ -116,7 +96,6 @@ public class MessageImpl implements IMessage {
   /**
    * Create empty message
    *
-   * @param parser
    * @param commandCode
    * @param applicationId
    * @param flags
@@ -172,7 +151,7 @@ public class MessageImpl implements IMessage {
   private String[] routingInfo = {null, null};
 
   private void addRoutingInfo(MessageImpl request) {
-    for (Avp a :request.getAvps()) {
+    for (Avp a : request.getAvps()) {
       if (a.getCode() == Avp.ORIGIN_HOST) {
         try {
           routingInfo[0] = a.getDiameterIdentity();
@@ -202,17 +181,14 @@ public class MessageImpl implements IMessage {
     return routingInfo;
   }
 
-  @Override
   public byte getVersion() {
     return (byte) version;
   }
 
-  @Override
   public boolean isRequest() {
     return (flags & 0x80) != 0;
   }
 
-  @Override
   public void setRequest(boolean b) {
     if (b) {
       flags |= 0x80;
@@ -222,12 +198,10 @@ public class MessageImpl implements IMessage {
     }
   }
 
-  @Override
   public boolean isProxiable() {
     return (flags & 0x40) != 0;
   }
 
-  @Override
   public void setProxiable(boolean b) {
     if (b) {
       flags |= 0x40;
@@ -237,12 +211,10 @@ public class MessageImpl implements IMessage {
     }
   }
 
-  @Override
   public boolean isError() {
     return (flags & 0x20) != 0;
   }
 
-  @Override
   public void setError(boolean b) {
     if (b) {
       flags |= 0x20;
@@ -252,12 +224,10 @@ public class MessageImpl implements IMessage {
     }
   }
 
-  @Override
   public boolean isReTransmitted() {
     return (flags & 0x10) != 0;
   }
 
-  @Override
   public void setReTransmitted(boolean b) {
     if (b) {
       flags |= 0x10;
@@ -279,8 +249,21 @@ public class MessageImpl implements IMessage {
     return this.numberOfRetransAllowed > 0;
   }
 
+  public int getCcSessionFailover() {
+    try {
+      Avp avpCcSessionFailover = avpSet.getAvp(Avp.CC_SESSION_FAILOVER);
+      if (avpCcSessionFailover != null) {
+        return avpCcSessionFailover.getInteger32();
+      }
+    }
+    catch (AvpDataException ade) {
+      logger.error("Failed to fetch CC-Session-Failover", ade);
+    }
+    return SESSION_FAILOVER_NOT_SUPPORTED_VALUE;
+  }
+
   public void setNumberOfRetransAllowed(int arg) {
-    if(this.numberOfRetransAllowed < 0) {
+    if (this.numberOfRetransAllowed < 0) {
       this.numberOfRetransAllowed = arg;
     }
   }
@@ -289,12 +272,10 @@ public class MessageImpl implements IMessage {
     this.numberOfRetransAllowed--;
   }
 
-  @Override
   public int getCommandCode() {
     return this.commandCode;
   }
 
-  @Override
   public String getSessionId() {
     try {
       Avp avpSessionId = avpSet.getAvp(Avp.SESSION_ID);
@@ -306,13 +287,11 @@ public class MessageImpl implements IMessage {
     }
   }
 
-  @Override
   public Answer createAnswer() {
     MessageImpl answer = new MessageImpl(this);
     return answer;
   }
 
-  @Override
   public Answer createAnswer(long resultCode) {
     MessageImpl answer = new MessageImpl(this);
     try {
@@ -326,7 +305,6 @@ public class MessageImpl implements IMessage {
     return answer;
   }
 
-  @Override
   public Answer createAnswer(long vendorId, long experimentalResultCode) {
     MessageImpl answer = new MessageImpl(this);
     try {
@@ -341,17 +319,14 @@ public class MessageImpl implements IMessage {
     return answer;
   }
 
-  @Override
   public long getApplicationId() {
     return applicationId;
   }
 
-  @Override
   public ApplicationId getSingleApplicationId() {
     return getSingleApplicationId(this.applicationId);
   }
 
-  @Override
   public List<ApplicationId> getApplicationIdAvps() {
     if (this.applicationIds != null) {
       return this.applicationIds;
@@ -398,7 +373,6 @@ public class MessageImpl implements IMessage {
     return this.applicationIds;
   }
 
-  @Override
   public ApplicationId getSingleApplicationId(long applicationId) {
     logger.debug("In getSingleApplicationId for application id [{}]", applicationId);
     List<ApplicationId> appIds = getApplicationIdAvps();
@@ -444,17 +418,14 @@ public class MessageImpl implements IMessage {
     return toReturn;
   }
 
-  @Override
   public long getHopByHopIdentifier() {
     return hopByHopId;
   }
 
-  @Override
   public long getEndToEndIdentifier() {
     return endToEndId;
   }
 
-  @Override
   public AvpSet getAvps() {
     return avpSet;
   }
@@ -462,38 +433,32 @@ public class MessageImpl implements IMessage {
   protected void copyHeader(MessageImpl request) {
     endToEndId = request.endToEndId;
     hopByHopId = request.hopByHopId;
-    version    = request.version;
-    flags      = request.flags;
-    peer       = request.peer;
+    version = request.version;
+    flags = request.flags;
+    peer = request.peer;
   }
 
-  @Override
   public Avp getResultCode() {
     return getAvps().getAvp(Avp.RESULT_CODE);
   }
 
-  @Override
   public void setNetworkRequest(boolean isNetworkRequest) {
     this.isNetworkRequest = isNetworkRequest;
   }
 
-  @Override
   public boolean isNetworkRequest() {
     return isNetworkRequest;
   }
 
-  @Override
   public boolean isWrapperFor(Class<?> aClass) throws InternalException {
     return false;
   }
 
-  @Override
   public <T> T unwrap(Class<T> aClass) throws InternalException {
     return null;
   }
 
   // Inner API
-  @Override
   public void setHopByHopIdentifier(long hopByHopId) {
     if (hopByHopId < 0) {
       this.hopByHopId = -hopByHopId;
@@ -506,87 +471,71 @@ public class MessageImpl implements IMessage {
     }
   }
 
-  @Override
   public void setEndToEndIdentifier(long endByEndId) {
     this.endToEndId = endByEndId;
   }
 
-  @Override
   public IPeer getPeer() {
     return peer;
   }
 
-  @Override
   public void setPeer(IPeer peer) {
     this.peer = peer;
   }
 
-  @Override
   public int getState() {
     return state;
   }
 
-  @Override
   public long getHeaderApplicationId() {
     return applicationId;
   }
 
-  @Override
   public void setHeaderApplicationId(long applicationId) {
     this.applicationId = applicationId;
   }
 
-  @Override
   public int getFlags() {
     return flags;
   }
 
-  @Override
   public void setState(int newState) {
     state = newState;
   }
 
-  @Override
   public void createTimer(ScheduledExecutorService scheduledFacility, long timeOut, TimeUnit timeUnit) {
     timerTask = new TimerTask(this);
     timerTask.setTimerHandler(scheduledFacility, scheduledFacility.schedule(timerTask, timeOut, timeUnit));
   }
 
-  @Override
   public void runTimer() {
     if (timerTask != null && !timerTask.isDone() && !timerTask.isCancelled()) {
       timerTask.run();
     }
   }
 
-  @Override
   public boolean isTimeOut() {
     return timerTask != null && timerTask.isDone() && !timerTask.isCancelled();
   }
 
-  @Override
   public void setListener(IEventListener listener) {
     this.listener = listener;
   }
 
-  @Override
   public IEventListener getEventListener() {
     return listener;
   }
 
-  @Override
   public void clearTimer() {
     if (timerTask != null) {
       timerTask.cancel();
     }
   }
 
-  @Override
   public String toString() {
     return "MessageImpl{" + "commandCode=" + commandCode + ", flags=" + flags + '}';
   }
 
-  @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -601,7 +550,6 @@ public class MessageImpl implements IMessage {
         endToEndId == message.endToEndId && hopByHopId == message.hopByHopId;
   }
 
-  @Override
   public int hashCode() {
     long result;
     result = commandCode;
@@ -611,7 +559,6 @@ public class MessageImpl implements IMessage {
     return new Long(result).hashCode();
   }
 
-  @Override
   public String getDuplicationKey() {
     try {
       return getDuplicationKey(getAvps().getAvp(Avp.ORIGIN_HOST).getDiameterIdentity(), getEndToEndIdentifier());
@@ -622,12 +569,10 @@ public class MessageImpl implements IMessage {
   }
 
 
-  @Override
   public String getDuplicationKey(String host, long endToEndId) {
     return host + endToEndId;
   }
 
-  @Override
   public Object clone() {
     try {
       return parser.createMessage(parser.encodeMessage(this));
@@ -652,12 +597,11 @@ public class MessageImpl implements IMessage {
       this.timerHandler = timerHandler;
     }
 
-    @Override
     public void run() {
       try {
         if (message != null && message.state != STATE_ANSWERED) {
           IEventListener listener = null;
-          if (message.listener  instanceof IEventListener) {
+          if (message.listener instanceof IEventListener) {
             listener = message.listener;
           }
           if (listener != null && listener.isValid()) {

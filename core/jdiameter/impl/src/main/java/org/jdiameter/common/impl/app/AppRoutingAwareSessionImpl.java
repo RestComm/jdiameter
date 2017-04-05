@@ -65,8 +65,8 @@ public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
   public AppRoutingAwareSessionImpl(ISessionDatasource sessionStorage, ISessionFactory sessionFactory, IAppSessionData appSessionData) {
     super(sessionFactory, appSessionData);
     peerTable = sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(IPeerTable.class);
-    sesInactivityTimerVal = sessionFactory.getContainer().getConfiguration().getIntValue(SessionInactivityTimeOut.ordinal(),
-            (Integer) SessionInactivityTimeOut.defValue()) * 1000;
+    sesInactivityTimerVal = sessionFactory.getContainer().getConfiguration().getIntValue(SessionInactivityTimeOut.ordinal(), (Integer)
+        SessionInactivityTimeOut.defValue()) * 1000;
     if (sessionStorage instanceof IRoutingAwareSessionDatasource) {
       sessionPersistenceStorage = (IRoutingAwareSessionDatasource) sessionStorage;
     }
@@ -93,20 +93,23 @@ public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
     try {
       IPeer peer = null;
       if (reqEvent.getMessage() instanceof IMessage) {
+        sessionPersistenceStorage.clearUnanswerablePeers(this.getSessionId());
         peer = ((IMessage) reqEvent.getMessage()).getPeer();
       }
       else {
-        logger.warn("Cannot retrieve message detailed context for session [{}]", this.getSessionId());
+        logger.warn("Cannot retrieve message detailed context for Session-Id/activityId [{}]", this.getSessionId());
       }
 
       if (peer == null) {
-        logger.warn("Taking peer from AVP as no peer is assigned yet to the following message in session [{}]: [{}]",
-                this.getSessionId(), reqEvent.getMessage().getAvps());
+        logger.warn("Taking peer from Origin-Host AVP as no peer is assigned yet to the following message in session [{}]: [{}]", this.getSessionId(),
+            reqEvent.getMessage().getAvps());
         peer = peerTable.getPeer(ansEvent.getOriginHost());
       }
 
       sessionPersistenceStorage.setSessionPeer(this.getSessionId(), peer);
-      logger.debug("Session persistent routing will be enforced for session [{}] with peer [{}]", this.getSessionId(), peer);
+      if (logger.isDebugEnabled()) {
+        logger.debug("Session persistent routing will be enforced for Session-Id [{}] with peer [{}]", this.getSessionId(), peer);
+      }
 
     } catch (Exception ex) {
       logger.error("Cannot update session persistence data, default routing will be applied", ex);
