@@ -513,6 +513,15 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                               metaData, config, null, fsmFactory, transportFactory, parser, statisticFactory, concurrentFactory);
                           logger.debug("Created new peer instance [{}] and adding to peer table", peer);
                           peer.setRealm(realm);
+
+                          Collection<Realm> realms = router.getRealmTable().getRealms(realm);
+                          for (Realm r : realms) {
+                            if (r.getName().equals(realm)) {
+                              logger.debug("Found the realm [{}] for the new peer [{}], adding it to it", realm, peer);
+                              ((IRealm) r).addPeerName(host);
+                            }
+                          }
+
                           appendPeerToPeerTable(peer);
                           logger.debug("Handle [{}] message on peer [{}]", message, peer);
                           peer.handleMessage(message.isRequest() ? EventTypes.CER_EVENT : EventTypes.CER_EVENT, message, connKey);
