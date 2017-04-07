@@ -62,6 +62,7 @@ import org.jdiameter.client.api.IRequest;
 import org.jdiameter.client.api.ISession;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.common.api.data.ISessionDatasource;
+import org.jdiameter.common.api.timer.ITimerFacility;
 
 /**
  * Implementation for {@link ISession}
@@ -115,7 +116,7 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
   @Override
   public Request createRequest(int commandCode, ApplicationId appId, String destRealm) {
     if (isValid) {
-      lastAccessedTime = System.currentTimeMillis();
+      setLastAccessTime();
       IRequest m = parser.createEmptyMessage(IRequest.class, commandCode, getAppId(appId));
       m.setNetworkRequest(false);
       m.setRequest(true);
@@ -135,7 +136,7 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
   @Override
   public Request createRequest(int commandCode, ApplicationId appId, String destRealm, String destHost) {
     if (isValid) {
-      lastAccessedTime = System.currentTimeMillis();
+      setLastAccessTime();
       IRequest m = parser.createEmptyMessage(IRequest.class, commandCode, getAppId(appId));
       m.setNetworkRequest(false);
       m.setRequest(true);
@@ -158,7 +159,7 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
   @Override
   public Request createRequest(Request prevRequest) {
     if (isValid) {
-      lastAccessedTime = System.currentTimeMillis();
+      setLastAccessTime();
       IRequest request = parser.createEmptyMessage(Request.class, (IMessage) prevRequest);
       request.setRequest(true);
       request.setNetworkRequest(false);
@@ -174,6 +175,9 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
   public void release() {
     isValid = false;
     if (container != null) {
+      if (istTimerId != null) {
+        container.getAssemblerFacility().getComponentInstance(ITimerFacility.class).cancel(istTimerId);
+      }
       container.removeSessionListener(sessionId);
       // FIXME
       container.getAssemblerFacility().getComponentInstance(ISessionDatasource.class).removeSession(sessionId);

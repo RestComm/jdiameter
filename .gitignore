@@ -28,6 +28,7 @@ target
 *.jar
 *.war
 *.ear
+core/mux/sar-jboss-5/${env.JBOSS_HOME}/
 
 ###### OS generated files ######
 ################################

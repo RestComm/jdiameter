@@ -167,6 +167,14 @@
                     <xsi:attribute name="value" type="xsi:long" use="required"/>
                 </xsi:complexType>
             </xsi:element>
+            <xsi:element name="SessionTimeOut" minOccurs="0" maxOccurs="1">
+                <xsi:annotation>
+                    <xsi:documentation>Session idle time out in milliseconds.</xsi:documentation>
+                </xsi:annotation>
+                 <xsi:complexType>
+                    <xsi:attribute name="value" type="xsi:long" use="required"/>
+                </xsi:complexType>
+            </xsi:element>
             <xsi:element name="StopTimeOut" minOccurs="1" maxOccurs="1">
                 <xsi:annotation>
                     <xsi:documentation>Default stop time out in milliseconds.</xsi:documentation>

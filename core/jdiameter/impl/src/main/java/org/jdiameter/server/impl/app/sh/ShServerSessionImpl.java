@@ -341,7 +341,12 @@ public class ShServerSessionImpl extends ShSession implements ServerShSession, E
 
   @Override
   public void onTimer(String timerName) {
-    logger.trace("onTimer({})", timerName);
+    if (timerName.equals(IDLE_SESSION_TIMER_NAME)) {
+      checkIdleAppSession();
+    }
+    else {
+      logger.warn("Received an unknown timer '{}' for Session-ID '{}'", timerName, getSessionId());
+    }
   }
 
   private class RequestDelivery implements Runnable {

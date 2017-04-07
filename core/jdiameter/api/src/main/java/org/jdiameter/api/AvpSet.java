@@ -53,6 +53,8 @@ import java.util.Date;
  * Serializable interface allows use this class in SLEE Event objects
  *
  * @author erick.svenson@yahoo.com
+ * @author <a href="mailto:grzegorz.figiel@pro-ids.com"> Grzegorz Figiel [ProIDS] </a>
+ *
  * @version 1.5.1  Final
  */
 public interface AvpSet extends Iterable<Avp>, Serializable, Wrapper {
@@ -93,6 +95,21 @@ public interface AvpSet extends Iterable<Avp>, Serializable, Wrapper {
    * @return array Avp instance
    */
   AvpSet getAvps(int avpCode, long vendorId);
+
+  /**
+   * Get position of the first instance of the AVP
+   * @param avpCode code of the Avp
+   * @return index (position) of the first occurrence of the Avp. -1 in case Avp is not found
+   */
+  int getAvpIndex(int avpCode);
+
+  /**
+   * Get position of the first instance of the AVP
+   * @param avpCode code of the Avp
+   * @param vendorId vendorId of the Avp
+   * @return index (position) of the first occurrence of the Avp. -1 in case Avp is not found
+   */
+  int getAvpIndex(int avpCode, long vendorId);
 
   /**
    * Remove AVPs with avpCode

@@ -157,7 +157,7 @@
                 <!-- The MUX deployment archive -->
                 <copy file="../jar/target/restcomm-diameter-mux-${project.version}.jar" tofile="${basedir}/target/deployments/restcomm-diameter-tmp.zip"/>
                 <zip destfile="${basedir}/target/deployments/restcomm-diameter.zip">
-                  <zipfileset src="${basedir}/target/deployments/restcomm-diameter-tmp.zip" excludes="org/mobicents/diameter/stack/DiameterStackMultiplexer.class,org/mobicents/diameter/stack/DiameterStackMultiplexerMBean.class"/>
+                  <zipfileset src="${basedir}/target/deployments/restcomm-diameter-tmp.zip" excludes="org/mobicents/diameter/stack/DiameterStackMultiplexer.class,org/mobicents/diameter/stack/DiameterStackMultiplexer$1.class,org/mobicents/diameter/stack/DiameterStackMultiplexerMBean.class"/>
                 </zip>
                 <move file="${basedir}/target/deployments/restcomm-diameter.zip" tofile="${basedir}/target/deployments/restcomm-diameter.jar"/>
                 <touch file="${basedir}/target/deployments/restcomm-diameter.jar.dodeploy"/>

@@ -135,6 +135,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.SDUseClientMode;
 import static org.jdiameter.client.impl.helpers.Parameters.Security;
 import static org.jdiameter.client.impl.helpers.Parameters.SecurityRef;
 import static org.jdiameter.client.impl.helpers.Parameters.SessionInactivityTimeOut;
+import static org.jdiameter.client.impl.helpers.Parameters.SessionTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.Statistics;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsActiveList;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsEnabled;
@@ -350,7 +351,9 @@ public class XMLConfiguration extends EmptyConfiguration {
         add(DpaTimeOut, getLongValue(c.item(i)));
       } else if (nodeName.equals("RecTimeOut")) {
         add(RecTimeOut, getLongValue(c.item(i)));
-      } else if (nodeName.equals("BindDelay")) {
+      } else if (nodeName.equals("SessionTimeOut")) {
+        add(SessionTimeOut, getLongValue(c.item(i)));
+      } else if (nodeName.equals("BindDelay"))  {
         add(BindDelay, getLongValue(c.item(i)));
       } else if (nodeName.equals("ThreadPool")) {
         addThreadPool(c.item(i));

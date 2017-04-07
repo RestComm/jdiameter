@@ -46,6 +46,7 @@ import java.io.Serializable;
 
 import org.jdiameter.api.BaseSession;
 import org.jdiameter.client.api.IContainer;
+import org.jdiameter.client.impl.BaseSessionImpl;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.api.timer.ITimerFacility;
 import org.jdiameter.common.impl.app.AppSessionImpl;
@@ -129,13 +130,25 @@ public class ReplicatedTimerFacilityImpl implements ITimerFacility {
       try {
         DiameterTimerTaskData data = (DiameterTimerTaskData) getData();
         BaseSession bSession = sessionDataSource.getSession(data.getSessionId());
-        if (bSession == null || !bSession.isAppSession()) {
+        if (bSession == null) {
           // FIXME: error ?
+          logger.error("Base Session is null for sessionId: {}", data.getSessionId());
           return;
         }
         else {
-          AppSessionImpl impl = (AppSessionImpl) bSession;
-          impl.onTimer(data.getTimerName());
+          try {
+            if (!bSession.isAppSession()) {
+              BaseSessionImpl impl = (BaseSessionImpl) bSession;
+              impl.onTimer(data.getTimerName());
+            }
+            else {
+              AppSessionImpl impl = (AppSessionImpl) bSession;
+              impl.onTimer(data.getTimerName());
+            }
+          }
+          catch (Exception e) {
+            logger.error("Caught exception from session object!", e);
+          }
         }
       }
       catch (Exception e) {

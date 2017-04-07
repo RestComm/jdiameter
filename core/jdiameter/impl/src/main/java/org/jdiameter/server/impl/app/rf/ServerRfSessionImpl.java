@@ -392,7 +392,10 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
    */
   @Override
   public void onTimer(String timerName) {
-    if (timerName.equals(TIMER_NAME_TS)) {
+    if (timerName.equals(IDLE_SESSION_TIMER_NAME)) {
+      checkIdleAppSession();
+    }
+    else if (timerName.equals(TIMER_NAME_TS)) {
       if (context != null) {
         try {
           context.sessionTimeoutElapses(ServerRfSessionImpl.this);
@@ -402,6 +405,9 @@ public class ServerRfSessionImpl extends AppRfSessionImpl implements EventListen
         }
       }
       setState(IDLE);
+    }
+    else {
+      logger.warn("Received an unknown timer '{}' for Session-ID '{}'", timerName, getSessionId());
     }
   }
 

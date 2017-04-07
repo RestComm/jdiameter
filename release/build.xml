@@ -111,14 +111,14 @@
 
   <target name="checkout-core" unless="skip.checkout">
     <echo>Checkout Diameter Core (jDiameter @tag:${CORE_JDIAMETER_TAG})</echo>
-    <exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
+    <exec failonerror="true" executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
       <arg line="-f components-checkout.xml validate -P checkout -Ddiameter.core.jdiameter.tag=${CORE_JDIAMETER_TAG}" />
     </exec>
   </target>
 
   <target name="checkout-slee-diameter-package" unless="skip.checkout">
     <echo>Checkout Diameter SLEE Diameter Package v${SLEE_DIAMETER_PACKAGE_VERSION}</echo>
-    <exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
+    <exec failonerror="true" executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
       <arg line="-f components-checkout.xml validate -P checkout-slee-diameter-package -Dslee.diameter.package.tag=${SLEE_DIAMETER_PACKAGE_VERSION}" />
     </exec>
   </target>
@@ -128,7 +128,7 @@
     <for delimiter="," param="example.name" list="${JAINSLEE_EXAMPLE_LIST}">
       <sequential>
         <echo>Checkout Diameter Example @{example.name} v${EXAMPLE_JAINSLEE_@{example.name}_VERSION}</echo>
-        <exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
+        <exec failonerror="true" executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
           <arg line="-f components-checkout.xml validate -P checkout-example -Dexample_name=@{example.name} -Dexample_version=${EXAMPLE_JAINSLEE_@{example.name}_VERSION}" />
         </exec>
       </sequential>
@@ -137,7 +137,7 @@
 
   <target name="checkout-rhq-plugin" unless="skip.checkout">
     <echo>Checkout Diameter RHQ Plugin</echo>
-    <exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
+    <exec failonerror="true" executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
       <arg line="-f components-checkout.xml validate -P checkout-rhq-plugin -Ddiameter.tools.rhq-plugin.tag=${TOOLS_RHQ_PLUGIN_TAG}" />
     </exec>
   </target>
@@ -148,15 +148,15 @@
     <exec failonerror="true" executable="${mvn.executable}" dir="${checkout_base_dir}">
       <arg line="versions:set -DnewVersion=${diameter.release.version}" />
     </exec>
-    <exec executable="${mvn.executable}" dir="${checkout_base_dir}/">
+    <exec failonerror="true" executable="${mvn.executable}" dir="${checkout_base_dir}/">
       <arg line="-f pom.xml ${release.build.goals} -Pmaven-release" />
     </exec>
   </target>
 
   <target name="build-src-resources" unless="skip.build-src">
     <echo>Building JAIN SLEE Diameter Package v${SLEE_DIAMETER_PACKAGE_VERSION}</echo>
-    <exec executable="${mvn.executable}" dir="${checkout_base_dir}/slee-diameter/">
-      <arg line="-f pom.xml install -Pmaven-release" />
+    <exec failonerror="true" executable="${mvn.executable}" dir="${checkout_base_dir}/slee-diameter/">
+      <arg line="-f pom.xml install -Pmaven-release -Drestcomm.diameter.jdiameter.version=${RELEASE_VERSION} -Drestcomm.diameter.mux.version=${RELEASE_VERSION}" />
     </exec>
   </target>
 
@@ -164,7 +164,7 @@
     <for delimiter="," param="example.name" list="${JAINSLEE_EXAMPLE_LIST}">
       <sequential>
         <echo>Build Diameter @{example.name} Example</echo>
-        <exec executable="${mvn.executable}" dir="${checkout_base_dir}/slee-diameter/examples/@{example.name}">
+        <exec failonerror="true" executable="${mvn.executable}" dir="${checkout_base_dir}/slee-diameter/examples/@{example.name}">
           <arg line="-f pom.xml install" />
         </exec>
       </sequential>
@@ -177,11 +177,11 @@
     <exec failonerror="true" executable="${mvn.executable}" dir="${checkout_base_dir}/diameter-rhq-plugin">
       <arg line="versions:set -DnewVersion=${diameter.release.version}" />
     </exec>
-    <exec executable="${mvn.executable}" dir="${checkout_base_dir}/diameter-rhq-plugin">
+    <exec failonerror="true" executable="${mvn.executable}" dir="${checkout_base_dir}/diameter-rhq-plugin">
       <arg line="${release.build.goals} -Drestcomm.diameter.version=${diameter.release.version}" />
     </exec>
     <echo>Build Diameter RHQ Plugin Documentation</echo>
-    <exec executable="${mvn.executable}" dir="${checkout_base_dir}/diameter-rhq-plugin/docs">
+    <exec failonerror="true" executable="${mvn.executable}" dir="${checkout_base_dir}/diameter-rhq-plugin/docs">
       <arg line="${release.build.goals} -Drestcomm.diameter.version=${diameter.release.version} -P${DOCS_PROFILE}" />
     </exec>
   </target>
@@ -430,7 +430,7 @@
   </target>
 
   <target name="build-and-package-mux" description="Create zip file: ${basedir}/${mux_zip_file_name}">
-    <exec executable="${mvn.executable}" dir="${checkout_base_dir}/core/mux">
+    <exec failonerror="true" executable="${mvn.executable}" dir="${checkout_base_dir}/core/mux">
       <arg line="-f pom.xml ${release.build.goals} -Pjboss${DEFAULT_SAR_CONFIGURATION}" />
     </exec>
 
@@ -473,7 +473,7 @@
   </target>
 
   <target name="build-and-package-mux-alternative" description="Create zip file: ${basedir}/${alt_mux_zip_file_name}">
-    <exec executable="${mvn.executable}" dir="${checkout_base_dir}/core/mux">
+    <exec failonerror="true" executable="${mvn.executable}" dir="${checkout_base_dir}/core/mux">
       <arg line="-f pom.xml ${release.build.goals} -Pjboss${ALTERNATIVE_SAR_CONFIGURATION}" />
     </exec>
 

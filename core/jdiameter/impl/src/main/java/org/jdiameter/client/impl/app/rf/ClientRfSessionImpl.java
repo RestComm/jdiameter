@@ -608,7 +608,10 @@ public class ClientRfSessionImpl extends AppRfSessionImpl implements EventListen
    */
   @Override
   public void onTimer(String timerName) {
-    if (timerName.equals(TIMER_NAME_INTERIM)) {
+    if (timerName.equals(IDLE_SESSION_TIMER_NAME)) {
+      checkIdleAppSession();
+    }
+    else if (timerName.equals(TIMER_NAME_INTERIM)) {
       if (context != null) {
         try {
           Request interimRecord = createInterimRecord();
@@ -625,6 +628,9 @@ public class ClientRfSessionImpl extends AppRfSessionImpl implements EventListen
           sendAndStateLock.unlock();
         }
       }
+    }
+    else {
+      logger.warn("Received an unknown timer '{}' for Session-ID '{}'", timerName, getSessionId());
     }
   }
 
