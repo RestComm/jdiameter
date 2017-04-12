@@ -19,13 +19,13 @@
 
 package org.jdiameter.common.impl.app.ro;
 
-import java.util.concurrent.ScheduledFuture;
-
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.Message;
+import org.jdiameter.api.Peer;
 import org.jdiameter.api.Request;
+import org.jdiameter.api.RouteException;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
@@ -39,6 +39,7 @@ import org.jdiameter.api.ro.ServerRoSession;
 import org.jdiameter.api.ro.ServerRoSessionListener;
 import org.jdiameter.api.ro.events.RoCreditControlAnswer;
 import org.jdiameter.api.ro.events.RoCreditControlRequest;
+import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.impl.app.ro.ClientRoSessionImpl;
 import org.jdiameter.client.impl.app.ro.IClientRoSessionData;
@@ -56,11 +57,14 @@ import org.jdiameter.server.impl.app.ro.ServerRoSessionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ScheduledFuture;
+
 /**
  * Default Diameter Ro Session Factory implementation
  *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:grzegorz.figiel@pro-ids.com"> Grzegorz Figiel (ProIDS sp. z o.o.)</a>
  */
 public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionListener, ServerRoSessionListener, StateChangeListener<AppSession>,
     IRoMessageFactory, IServerRoSessionContext, IClientRoSessionContext {
@@ -68,6 +72,7 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   // Message timeout value (in milliseconds)
   protected int defaultDirectDebitingFailureHandling = 0;
   protected int defaultCreditControlFailureHandling = 0;
+  protected int defaultCreditControlSessionFailover = IMessage.SESSION_FAILOVER_NOT_SUPPORTED_VALUE;
 
   // its seconds
   protected long defaultValidityTime = 60;
@@ -94,8 +99,8 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
     this.sessionDataFactory = (IAppSessionDataFactory<IRoSessionData>) this.iss.getDataFactory(IRoSessionData.class);
   }
 
-  public RoSessionFactoryImpl(SessionFactory sessionFactory, int defaultDirectDebitingFailureHandling, int defaultCreditControlFailureHandling,
-      long defaultValidityTime, long defaultTxTimerValue) {
+  public RoSessionFactoryImpl(SessionFactory sessionFactory, int defaultDirectDebitingFailureHandling, int defaultCreditControlFailureHandling, long
+      defaultValidityTime, long defaultTxTimerValue) {
     this(sessionFactory);
 
     this.defaultDirectDebitingFailureHandling = defaultDirectDebitingFailureHandling;
@@ -107,7 +112,6 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   /**
    * @return the clientSessionListener
    */
-  @Override
   public ClientRoSessionListener getClientSessionListener() {
     if (clientSessionListener != null) {
       return clientSessionListener;
@@ -118,10 +122,8 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   }
 
   /**
-   * @param clientSessionListener
-   *          the clientSessionListener to set
+   * @param clientSessionListener the clientSessionListener to set
    */
-  @Override
   public void setClientSessionListener(ClientRoSessionListener clientSessionListener) {
     this.clientSessionListener = clientSessionListener;
   }
@@ -129,7 +131,6 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   /**
    * @return the serverSessionListener
    */
-  @Override
   public ServerRoSessionListener getServerSessionListener() {
     if (serverSessionListener != null) {
       return serverSessionListener;
@@ -140,10 +141,8 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   }
 
   /**
-   * @param serverSessionListener
-   *          the serverSessionListener to set
+   * @param serverSessionListener the serverSessionListener to set
    */
-  @Override
   public void setServerSessionListener(ServerRoSessionListener serverSessionListener) {
     this.serverSessionListener = serverSessionListener;
   }
@@ -151,7 +150,6 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   /**
    * @return the serverContextListener
    */
-  @Override
   public IServerRoSessionContext getServerContextListener() {
     if (serverContextListener != null) {
       return serverContextListener;
@@ -162,10 +160,8 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   }
 
   /**
-   * @param serverContextListener
-   *          the serverContextListener to set
+   * @param serverContextListener the serverContextListener to set
    */
-  @Override
   public void setServerContextListener(IServerRoSessionContext serverContextListener) {
     this.serverContextListener = serverContextListener;
   }
@@ -173,7 +169,6 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   /**
    * @return the clientContextListener
    */
-  @Override
   public IClientRoSessionContext getClientContextListener() {
     if (clientContextListener != null) {
       return clientContextListener;
@@ -186,7 +181,6 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   /**
    * @return the messageFactory
    */
-  @Override
   public IRoMessageFactory getMessageFactory() {
     if (messageFactory != null) {
       return messageFactory;
@@ -197,19 +191,15 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   }
 
   /**
-   * @param messageFactory
-   *          the messageFactory to set
+   * @param messageFactory the messageFactory to set
    */
-  @Override
   public void setMessageFactory(IRoMessageFactory messageFactory) {
     this.messageFactory = messageFactory;
   }
 
   /**
-   * @param clientContextListener
-   *          the clientContextListener to set
+   * @param clientContextListener the clientContextListener to set
    */
-  @Override
   public void setClientContextListener(IClientRoSessionContext clientContextListener) {
     this.clientContextListener = clientContextListener;
   }
@@ -222,8 +212,7 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   }
 
   /**
-   * @param sessionFactory
-   *          the sessionFactory to set
+   * @param sessionFactory the sessionFactory to set
    */
   public void setSessionFactory(SessionFactory sessionFactory) {
     this.sessionFactory = (ISessionFactory) sessionFactory;
@@ -232,7 +221,6 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   /**
    * @return the stateListener
    */
-  @Override
   public StateChangeListener<AppSession> getStateListener() {
     if (this.stateListener != null) {
       return stateListener;
@@ -243,15 +231,12 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   }
 
   /**
-   * @param stateListener
-   *          the stateListener to set
+   * @param stateListener the stateListener to set
    */
-  @Override
   public void setStateListener(StateChangeListener<AppSession> stateListener) {
     this.stateListener = stateListener;
   }
 
-  @Override
   public AppSession getNewSession(String sessionId, Class<? extends AppSession> aClass, ApplicationId applicationId, Object[] args) {
     AppSession appSession = null;
     try {
@@ -270,8 +255,8 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
 
         IClientRoSessionData sessionData = (IClientRoSessionData) this.sessionDataFactory.getAppSessionData(ClientRoSession.class, sessionId);
         sessionData.setApplicationId(applicationId);
-        clientSession = new ClientRoSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, this.getClientSessionListener(),
-            this.getClientContextListener(), this.getStateListener());
+        clientSession = new ClientRoSessionImpl(sessionData, this.getMessageFactory(), iss, sessionFactory, this.getClientSessionListener(), this
+            .getClientContextListener(), this.getStateListener());
         // this goes first!
         iss.addSession(clientSession);
         clientSession.getSessions().get(0).setRequestListener(clientSession);
@@ -320,8 +305,8 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
     try {
       if (aClass == ClientRoSession.class) {
         IClientRoSessionData sessionData = (IClientRoSessionData) this.sessionDataFactory.getAppSessionData(ClientRoSession.class, sessionId);
-        ClientRoSessionImpl clientSession = new ClientRoSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, this.getClientSessionListener(),
-            this.getClientContextListener(), this.getStateListener());
+        ClientRoSessionImpl clientSession = new ClientRoSessionImpl(sessionData, this.getMessageFactory(), iss, sessionFactory, this.getClientSessionListener
+            (), this.getClientContextListener(), this.getStateListener());
         // this goes first!
         clientSession.getSessions().get(0).setRequestListener(clientSession);
         appSession = clientSession;
@@ -347,56 +332,58 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
 
   // Message Handlers ---------------------------------------------------------
 
-  @Override
   public void doCreditControlRequest(ServerRoSession session, RoCreditControlRequest request) throws InternalException {
 
   }
 
-  @Override
   public void doCreditControlAnswer(ClientRoSession session, RoCreditControlRequest request, RoCreditControlAnswer answer) throws InternalException {
 
   }
 
-  @Override
   public void doReAuthRequest(ClientRoSession session, ReAuthRequest request) throws InternalException {
 
   }
 
-  @Override
   public void doReAuthAnswer(ServerRoSession session, ReAuthRequest request, ReAuthAnswer answer) throws InternalException {
 
   }
 
-  @Override
   public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException {
+
+  }
+
+  public void doRequestTxTimeout(ClientRoSession session, Message msg, Peer peer) throws InternalException {
+
+  }
+
+  public void doRequestTimeout(ClientRoSession session, Message msg, Peer peer) throws InternalException {
+
+  }
+
+  public void doPeerUnavailability(RouteException cause, ClientRoSession session, Message msg, Peer peer) throws InternalException {
 
   }
 
   // Message Factory Methods --------------------------------------------------
 
-  @Override
   public RoCreditControlAnswer createCreditControlAnswer(Answer answer) {
     return new RoCreditControlAnswerImpl(answer);
   }
 
-  @Override
   public RoCreditControlRequest createCreditControlRequest(Request req) {
     return new RoCreditControlRequestImpl(req);
   }
 
-  @Override
   public ReAuthAnswer createReAuthAnswer(Answer answer) {
     return new ReAuthAnswerImpl(answer);
   }
 
-  @Override
   public ReAuthRequest createReAuthRequest(Request req) {
     return new ReAuthRequestImpl(req);
   }
 
   // Context Methods ----------------------------------------------------------
 
-  @Override
   @SuppressWarnings("unchecked")
   public void stateChanged(Enum oldState, Enum newState) {
     logger.info("Diameter Ro SessionFactory :: stateChanged :: oldState[{}], newState[{}]", oldState, newState);
@@ -407,7 +394,6 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
    *
    * @see org.jdiameter.api.app.StateChangeListener#stateChanged(java.lang.Object, java.lang.Enum, java.lang.Enum)
    */
-  @Override
   @SuppressWarnings("unchecked")
   public void stateChanged(AppSession source, Enum oldState, Enum newState) {
     logger.info("Diameter Ro SessionFactory :: stateChanged :: source[{}], oldState[{}], newState[{}]", new Object[]{source, oldState, newState});
@@ -415,100 +401,85 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
 
   // FIXME: add ctx methods proxy calls!
 
-  @Override
   public void sessionSupervisionTimerExpired(ServerRoSession session) {
     // this.resourceAdaptor.sessionDestroyed(session.getSessions().get(0).getSessionId(), session);
     session.release();
   }
 
-  @Override
   @SuppressWarnings("unchecked")
   public void sessionSupervisionTimerReStarted(ServerRoSession session, ScheduledFuture future) {
     // TODO Complete this method.
   }
 
-  @Override
   @SuppressWarnings("unchecked")
   public void sessionSupervisionTimerStarted(ServerRoSession session, ScheduledFuture future) {
     // TODO Complete this method.
   }
 
-  @Override
   @SuppressWarnings("unchecked")
   public void sessionSupervisionTimerStopped(ServerRoSession session, ScheduledFuture future) {
     // TODO Complete this method.
   }
 
-  @Override
   public void timeoutExpired(Request request) {
     // FIXME What should we do when there's a timeout?
   }
 
-  @Override
   public void denyAccessOnDeliverFailure(ClientRoSession clientRoSessionImpl, Message request) {
     // TODO Complete this method.
   }
 
-  @Override
   public void denyAccessOnFailureMessage(ClientRoSession clientRoSessionImpl) {
     // TODO Complete this method.
   }
 
-  @Override
   public void denyAccessOnTxExpire(ClientRoSession clientRoSessionImpl) {
     // this.resourceAdaptor.sessionDestroyed(clientRoSessionImpl.getSessions().get(0).getSessionId(),
     // clientRoSessionImpl);
     clientRoSessionImpl.release();
   }
 
-  @Override
   public int getDefaultCCFHValue() {
     return defaultCreditControlFailureHandling;
   }
 
-  @Override
+  public int getDefaultCCSFValue() {
+    return defaultCreditControlSessionFailover;
+  }
+
   public int getDefaultDDFHValue() {
     return defaultDirectDebitingFailureHandling;
   }
 
-  @Override
   public long getDefaultTxTimerValue() {
     return defaultTxTimerValue;
   }
 
-  @Override
   public void grantAccessOnDeliverFailure(ClientRoSession clientRoSessionImpl, Message request) {
     // TODO Auto-generated method stub
   }
 
-  @Override
   public void grantAccessOnFailureMessage(ClientRoSession clientRoSessionImpl) {
     // TODO Auto-generated method stub
   }
 
-  @Override
   public void grantAccessOnTxExpire(ClientRoSession clientRoSessionImpl) {
     // TODO Auto-generated method stub
   }
 
-  @Override
   public void indicateServiceError(ClientRoSession clientRoSessionImpl) {
     // TODO Auto-generated method stub
   }
 
-  @Override
   public void txTimerExpired(ClientRoSession session) {
-    // this.resourceAdaptor.sessionDestroyed(session.getSessions().get(0).getSessionId(), session);
-    session.release();
+    // TODO Auto-generated method stub
   }
 
-  @Override
   public long[] getApplicationIds() {
     // FIXME: What should we do here?
-    return new long[] { 4 };
+    return new long[]{4};
   }
 
-  @Override
   public long getDefaultValidityTime() {
     return this.defaultValidityTime;
   }

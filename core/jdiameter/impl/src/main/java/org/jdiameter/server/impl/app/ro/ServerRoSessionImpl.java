@@ -108,7 +108,7 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
 
   public ServerRoSessionImpl(IServerRoSessionData sessionData, IRoMessageFactory fct, ISessionFactory sf, ServerRoSessionListener lst,
       IServerRoSessionContext ctx, StateChangeListener<AppSession> stLst) {
-    super(sf, sessionData);
+    super(null, sf, sessionData);
     if (sessionData == null) {
       throw new IllegalArgumentException("SessionData can not be null");
     }

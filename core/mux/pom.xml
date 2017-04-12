@@ -17,6 +17,8 @@
     <!-- Restcomm Diameter Components Versions -->
     <jdiameter.version>1.5.9.0-build538-SNAPSHOT</jdiameter.version>
     <jdiameter-ha.version>1.1.0-SNAPSHOT</jdiameter-ha.version>
+        <!-- Name of mux config file to be attached to final build -->
+        <jdiameter.mux.config.file>jdiameter-config_baseline.xml</jdiameter.mux.config.file>
   </properties>
 
   <packaging>pom</packaging>
@@ -93,6 +95,12 @@
         <module>sar-jboss-7</module>
       </modules>
     </profile>
+        <profile>
+            <id>failover-config-enabled</id>
+            <properties>
+                <jdiameter.mux.config.file>jdiameter-config_ext_routing_failover.xml</jdiameter.mux.config.file>
+            </properties>
+        </profile>
   </profiles>
 
 </project>

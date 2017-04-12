@@ -1,54 +1,46 @@
- /*
-  * TeleStax, Open Source Cloud Communications
-  * Copyright 2011-2016, TeleStax Inc. and individual contributors
-  * by the @authors tag.
-  *
-  * This program is free software: you can redistribute it and/or modify
-  * under the terms of the GNU Affero General Public License as
-  * published by the Free Software Foundation; either version 3 of
-  * the License, or (at your option) any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU Affero General Public License for more details.
-  *
-  * You should have received a copy of the GNU Affero General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>
-  *
-  * This file incorporates work covered by the following copyright and
-  * permission notice:
-  *
-  *   JBoss, Home of Professional Open Source
-  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
-  *   by the @authors tag. See the copyright.txt in the distribution for a
-  *   full listing of individual contributors.
-  *
-  *   This is free software; you can redistribute it and/or modify it
-  *   under the terms of the GNU Lesser General Public License as
-  *   published by the Free Software Foundation; either version 2.1 of
-  *   the License, or (at your option) any later version.
-  *
-  *   This software is distributed in the hope that it will be useful,
-  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  *   Lesser General Public License for more details.
-  *
-  *   You should have received a copy of the GNU Lesser General Public
-  *   License along with this software; if not, write to the Free
-  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
-  */
+/*
+ * TeleStax, Open Source Cloud Communications
+ * Copyright 2011-2016, TeleStax Inc. and individual contributors
+ * by the @authors tag.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ *   JBoss, Home of Professional Open Source
+ *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
+ *   by the @authors tag. See the copyright.txt in the distribution for a
+ *   full listing of individual contributors.
+ *
+ *   This is free software; you can redistribute it and/or modify it
+ *   under the terms of the GNU Lesser General Public License as
+ *   published by the Free Software Foundation; either version 2.1 of
+ *   the License, or (at your option) any later version.
+ *
+ *   This software is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *   Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public
+ *   License along with this software; if not, write to the Free
+ *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 
 package org.jdiameter.client.impl.app.cca;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.AvpDataException;
@@ -77,12 +69,21 @@ import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.cca.ClientCCASessionState;
 import org.jdiameter.common.api.app.cca.ICCAMessageFactory;
 import org.jdiameter.common.api.app.cca.IClientCCASessionContext;
+import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.jdiameter.common.impl.app.cca.AppCCASessionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Client Credit-Control Application session implementation
@@ -112,7 +113,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   protected static final long TX_TIMER_DEFAULT_VALUE = 30 * 60 * 1000; // miliseconds
 
 
-  protected long[] authAppIds = new long[] { 4 };
+  protected long[] authAppIds = new long[]{4};
 
   protected static final int CCFH_TERMINATE = 0;
   protected static final int CCFH_CONTINUE = 1;
@@ -121,11 +122,13 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   private static final int DDFH_TERMINATE_OR_BUFFER = 0;
   private static final int DDFH_CONTINUE = 1;
 
-  // CC-Request-Type Values ---------------------------------------------------
+  // Requested-Action Values --------------------------------------------------
   private static final int DIRECT_DEBITING = 0;
   private static final int REFUND_ACCOUNT = 1;
   private static final int CHECK_BALANCE = 2;
   private static final int PRICE_ENQUIRY = 3;
+
+  // CC-Request-Type  ---------------------------------------------------------
   private static final int EVENT_REQUEST = 4;
 
   // Error Codes --------------------------------------------------------------
@@ -147,9 +150,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     temporaryErrorCodes = Collections.unmodifiableSet(tmp);
   }
 
-  public ClientCCASessionImpl(IClientCCASessionData data, ICCAMessageFactory fct, ISessionFactory sf, ClientCCASessionListener lst,
-      IClientCCASessionContext ctx, StateChangeListener<AppSession> stLst) {
-    super(sf, data);
+  public ClientCCASessionImpl(IClientCCASessionData data, ICCAMessageFactory fct, ISessionDatasource sds, ISessionFactory sf, ClientCCASessionListener lst,
+                              IClientCCASessionContext ctx, StateChangeListener<AppSession> stLst) {
+    super(sds, sf, data);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
@@ -180,7 +183,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
   @Override
   public void sendCreditControlRequest(JCreditControlRequest request)
-      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+          throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     extractFHAVPs(request, null);
     this.handleEvent(new Event(true, request, null));
   }
@@ -229,8 +232,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               setState(ClientCCASessionState.PENDING_EVENT);
               try {
                 dispatchEvent(localEvent.getRequest());
-              }
-              catch (Exception e) {
+              } catch (Exception e) {
                 // This handles failure to send in PendingI state in FSM table
                 logger.debug("Failure handling send event request", e);
                 handleSendFailure(e, eventType, localEvent.getRequest().getMessage());
@@ -260,8 +262,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                 }
 
                 deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
-              }
-              catch (AvpDataException e) {
+              } catch (AvpDataException e) {
                 logger.debug("Failure handling received answer event", e);
                 setState(ClientCCASessionState.IDLE, false);
               }
@@ -299,11 +300,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
       dispatch();
       return true;
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new InternalException(e);
-    }
-    finally {
+    } finally {
       sendAndStateLock.unlock();
     }
   }
@@ -327,8 +326,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               setState(ClientCCASessionState.PENDING_INITIAL);
               try {
                 dispatchEvent(localEvent.getRequest());
-              }
-              catch (Exception e) {
+              } catch (Exception e) {
                 // This handles failure to send in PendingI state in FSM table
                 handleSendFailure(e, eventType, localEvent.getRequest().getMessage());
               }
@@ -351,8 +349,13 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                 // New State: OPEN
                 stopTx();
                 setState(ClientCCASessionState.OPEN);
-              }
-              else if (isProvisional(resultCode) || isFailure(resultCode)) {
+                //Session persistence record shall be created after a peer had answered the
+                //first (initial) request for that session
+                if (isSessionPersistenceEnabled()) {
+                  initSessionPersistenceContext(localEvent.getRequest(), localEvent.getAnswer());
+                  startSessionInactivityTimer();
+                }
+              } else if (isProvisional(resultCode) || isFailure(resultCode)) {
                 handleFailureMessage((JCreditControlAnswer) answer, (JCreditControlRequest) localEvent.getRequest(), eventType);
               }
               deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
@@ -402,11 +405,13 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Action: Send RAA followed by CC update request, start Tx
               // New State: PENDING_U
               startTx((JCreditControlRequest) localEvent.getRequest());
+              if (isSessionPersistenceEnabled()) {
+                startSessionInactivityTimer();
+              }
               setState(ClientCCASessionState.PENDING_UPDATE);
               try {
                 dispatchEvent(localEvent.getRequest());
-              }
-              catch (Exception e) {
+              } catch (Exception e) {
                 // This handles failure to send in PendingI state in FSM table
                 handleSendFailure(e, eventType, localEvent.getRequest().getMessage());
               }
@@ -426,11 +431,13 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Event: User service terminated
               // Action: Send CC termination request
               // New State: PENDING_T
+              if (isSessionPersistenceEnabled()) {
+                stopSessionInactivityTimer();
+              }
               setState(ClientCCASessionState.PENDING_TERMINATION);
               try {
                 dispatchEvent(localEvent.getRequest());
-              }
-              catch (Exception e) {
+              } catch (Exception e) {
                 handleSendFailure(e, eventType, localEvent.getRequest().getMessage());
               }
               break;
@@ -440,8 +447,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
             case SEND_RAA:
               try {
                 dispatchEvent(localEvent.getAnswer());
-              }
-              catch (Exception e) {
+              } catch (Exception e) {
                 handleSendFailure(e, eventType, localEvent.getRequest().getMessage());
               }
               break;
@@ -464,8 +470,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                 // New State: OPEN
                 stopTx();
                 setState(ClientCCASessionState.OPEN);
-              }
-              else if (isProvisional(resultCode) || isFailure(resultCode)) {
+              } else if (isProvisional(resultCode) || isFailure(resultCode)) {
                 handleFailureMessage((JCreditControlAnswer) answer, (JCreditControlRequest) localEvent.getRequest(), eventType);
               }
               deliverCCAnswer((JCreditControlRequest) localEvent.getRequest(), (JCreditControlAnswer) localEvent.getAnswer());
@@ -497,8 +502,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // New State: PENDING_U
               try {
                 dispatchEvent(localEvent.getAnswer());
-              }
-              catch (Exception e) {
+              } catch (Exception e) {
                 handleSendFailure(e, eventType, localEvent.getRequest().getMessage());
               }
               break;
@@ -516,8 +520,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                 // New State: PENDING_T
                 dispatchEvent(localEvent.getRequest());
                 // No transition
-              }
-              catch (Exception e) {
+              } catch (Exception e) {
                 // This handles failure to send in PendingI state in FSM table
                 // handleSendFailure(e, eventType);
               }
@@ -551,11 +554,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
       dispatch();
       return true;
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new InternalException(e);
-    }
-    finally {
+    } finally {
       sendAndStateLock.unlock();
     }
   }
@@ -584,8 +585,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     if (request.getCommandCode() == JCreditControlAnswer.code) {
       try {
         handleSendFailure(null, null, request);
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         logger.debug("Failure processing timeout message for request", e);
       }
     }
@@ -602,8 +602,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     //this.txFuture = scheduler.schedule(new TxTimerTask(this, request), txTimerValue, TimeUnit.SECONDS);
     try {
       this.sessionData.setTxTimerRequest((Request) ((AppEventImpl) request).getMessage());
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new IllegalArgumentException("Failed to store request.", e);
     }
     this.sessionData.setTxTimerId(this.timerFacility.schedule(this.getSessionId(), TX_TIMER_NAME, TX_TIMER_DEFAULT_VALUE));
@@ -628,6 +627,15 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     }
     else if (timerName.equals(TX_TIMER_NAME)) {
       new TxTimerTask(this, this.sessionData.getTxTimerRequest()).run();
+    } else {
+      try {
+        sendAndStateLock.lock();
+        super.onTimer(timerName);
+      } catch (Exception ex) {
+        logger.error("Cannot properly handle timer expiry", ex);
+      } finally {
+        sendAndStateLock.unlock();
+      }
     }
     else {
       logger.warn("Received an unknown timer '{}' for Session-ID '{}'", timerName, getSessionId());
@@ -645,7 +653,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       this.sessionData.setClientCCASessionState(newState);
 
       for (StateChangeListener i : stateListeners) {
-        i.stateChanged(this,(Enum) oldState, (Enum) newState);
+        i.stateChanged(this, (Enum) oldState, (Enum) newState);
       }
 
       if (newState == ClientCCASessionState.IDLE) {
@@ -653,9 +661,16 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           this.release();
         }
         stopTx();
+
+        if (isSessionPersistenceEnabled()) {
+          stopSessionInactivityTimer();
+          if (!release) {
+            String oldPeer = flushSessionPersistenceContext();
+            logger.debug("Session state reset, routing context for peer [{}] was removed from session [{}]", oldPeer, this.getSessionId());
+          }
+        }
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       if (logger.isDebugEnabled()) {
         logger.debug("Failure switching to state " + this.sessionData.getClientCCASessionState() + " (release=" + release + ")", e);
       }
@@ -668,15 +683,12 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       try {
         this.sendAndStateLock.lock();
         super.release();
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         logger.debug("Failed to release session", e);
-      }
-      finally {
+      } finally {
         sendAndStateLock.unlock();
       }
-    }
-    else {
+    } else {
       logger.debug("Trying to release an already invalid session, with Session ID '{}'", getSessionId());
     }
   }
@@ -698,8 +710,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // New State: IDLE
               setState(ClientCCASessionState.IDLE);
               context.indicateServiceError(this);
-            }
-            else if (gatheredRequestedAction == DIRECT_DEBITING) {
+            } else if (gatheredRequestedAction == DIRECT_DEBITING) {
               switch (getLocalDDFH()) {
                 case DDFH_TERMINATE_OR_BUFFER:
                   // Current State: PENDING_E
@@ -721,8 +732,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                 default:
                   logger.warn("Invalid Direct-Debiting-Failure-Handling AVP value {}", getLocalDDFH());
               }
-            }
-            else if (gatheredRequestedAction == REFUND_ACCOUNT) {
+            } else if (gatheredRequestedAction == REFUND_ACCOUNT) {
               // Current State: PENDING_E
               // Event: Failure to send or Tx expired; requested action REFUND_ACCOUNT
               // Action: Store request with T-flag
@@ -730,8 +740,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               setState(ClientCCASessionState.IDLE, false);
               request.setReTransmitted(true);
               this.sessionData.setBuffer((Request) request);
-            }
-            else {
+            } else {
               logger.warn("Invalid Requested-Action AVP value {}", gatheredRequestedAction);
             }
             break;
@@ -781,8 +790,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         }
       }
       dispatch();
-    }
-    finally {
+    } finally {
       this.sendAndStateLock.unlock();
     }
   }
@@ -806,16 +814,14 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                 context.denyAccessOnFailureMessage(this);
                 deliverCCAnswer(request, answer);
                 setState(ClientCCASessionState.IDLE);
-              }
-              else if (gatheredRequestedAction == DIRECT_DEBITING && txTimerId == null) {
+              } else if (gatheredRequestedAction == DIRECT_DEBITING && txTimerId == null) {
                 // Current State: PENDING_E
                 // Event: Failed answer or answer received w/ result code END_USER_SERVICE DENIED or USER_UNKNOWN; requested action DIRECT_DEBITING; Tx expired
                 // Action: -
                 // New State: IDLE
                 setState(ClientCCASessionState.IDLE);
               }
-            }
-            else if (resultCode == CREDIT_CONTROL_NOT_APPLICABLE && gatheredRequestedAction == DIRECT_DEBITING) {
+            } else if (resultCode == CREDIT_CONTROL_NOT_APPLICABLE && gatheredRequestedAction == DIRECT_DEBITING) {
               // Current State: PENDING_E
               // Event: CC event answer received with result code CREDIT_CONTROL_NOT_APPLICABLE; requested action DIRECT_DEBITING
               // Action: Grant service to end user
@@ -823,8 +829,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               context.grantAccessOnFailureMessage(this);
               deliverCCAnswer(request, answer);
               setState(ClientCCASessionState.IDLE);
-            }
-            else if (temporaryErrorCodes.contains(resultCode)) {
+            } else if (temporaryErrorCodes.contains(resultCode)) {
               if (gatheredRequestedAction == CHECK_BALANCE || gatheredRequestedAction == PRICE_ENQUIRY) {
                 // Current State: PENDING_E
                 // Event: Failure to send, temporary error, failed CC event answer received or Tx expired; requested action CHECK_BALANCE or PRICE_ENQUIRY
@@ -833,8 +838,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                 context.indicateServiceError(this);
                 deliverCCAnswer(request, answer);
                 setState(ClientCCASessionState.IDLE);
-              }
-              else if (gatheredRequestedAction == DIRECT_DEBITING) {
+              } else if (gatheredRequestedAction == DIRECT_DEBITING) {
                 if (getLocalDDFH() == DDFH_CONTINUE) {
                   // Current State: PENDING_E
                   // Event: Failure to send, temporary error, failed CC event answer received or Tx expired; requested action DIRECT_DEBITING; DDFH equal to CONTINUE
@@ -843,8 +847,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                   context.grantAccessOnFailureMessage(this);
                   deliverCCAnswer(request, answer);
                   setState(ClientCCASessionState.IDLE);
-                }
-                else if (getLocalDDFH() == DDFH_TERMINATE_OR_BUFFER && txTimerId != null) {
+                } else if (getLocalDDFH() == DDFH_TERMINATE_OR_BUFFER && txTimerId != null) {
                   // Current State: PENDING_E
                   // Event: Failed CC event answer received or temporary error; requested action DIRECT_DEBITING; DDFH equal to TERMINATE_OR_BUFFER and Tx running
                   // Action: Terminate end user�s service
@@ -853,21 +856,18 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                   deliverCCAnswer(request, answer);
                   setState(ClientCCASessionState.IDLE);
                 }
-              }
-              else if (gatheredRequestedAction == REFUND_ACCOUNT) {
+              } else if (gatheredRequestedAction == REFUND_ACCOUNT) {
                 // Current State: PENDING_E
                 // Event: Temporary error, and requested action REFUND_ACCOUNT
                 // Action: Store request
                 // New State: IDLE
                 this.sessionData.setBuffer((Request) request.getMessage());
                 setState(ClientCCASessionState.IDLE, false);
-              }
-              else {
+              } else {
                 logger.warn("Invalid combination for CCA Client FSM: State {}, Result-Code {}, Requested-Action {}, DDFH {}, Tx {}",
-                    new Object[]{state, resultCode, gatheredRequestedAction, getLocalDDFH(), txTimerId});
+                        new Object[]{state, resultCode, gatheredRequestedAction, getLocalDDFH(), txTimerId});
               }
-            }
-            else { // Failure
+            } else { // Failure
               if (gatheredRequestedAction == CHECK_BALANCE || gatheredRequestedAction == PRICE_ENQUIRY) {
                 // Current State: PENDING_E
                 // Event: Failure to send, temporary error, failed CC event answer received or Tx expired; requested action CHECK_BALANCE or PRICE_ENQUIRY
@@ -876,8 +876,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                 context.indicateServiceError(this);
                 deliverCCAnswer(request, answer);
                 setState(ClientCCASessionState.IDLE);
-              }
-              else if (gatheredRequestedAction == DIRECT_DEBITING) {
+              } else if (gatheredRequestedAction == DIRECT_DEBITING) {
                 if (getLocalDDFH() == DDFH_CONTINUE) {
                   // Current State: PENDING_E
                   // Event: Failure to send, temporary error, failed CC event answer received or Tx expired; requested action DIRECT_DEBITING; DDFH equal to CONTINUE
@@ -886,8 +885,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                   context.grantAccessOnFailureMessage(this);
                   deliverCCAnswer(request, answer);
                   setState(ClientCCASessionState.IDLE);
-                }
-                else if (getLocalDDFH() == DDFH_TERMINATE_OR_BUFFER && txTimerId != null) {
+                } else if (getLocalDDFH() == DDFH_TERMINATE_OR_BUFFER && txTimerId != null) {
                   // Current State: PENDING_E
                   // Event: Failed CC event answer received or temporary error; requested action DIRECT_DEBITING; DDFH equal to TERMINATE_OR_BUFFER and Tx running
                   // Action: Terminate end user�s service
@@ -896,8 +894,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                   deliverCCAnswer(request, answer);
                   setState(ClientCCASessionState.IDLE);
                 }
-              }
-              else if (gatheredRequestedAction == REFUND_ACCOUNT) {
+              } else if (gatheredRequestedAction == REFUND_ACCOUNT) {
                 // Current State: PENDING_E
                 // Event: Failed CC event answer received; requested action REFUND_ACCOUNT
                 // Action: Indicate service error and delete request
@@ -906,10 +903,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                 context.indicateServiceError(this);
                 deliverCCAnswer(request, answer);
                 setState(ClientCCASessionState.IDLE);
-              }
-              else {
+              } else {
                 logger.warn("Invalid combination for CCA Client FSM: State {}, Result-Code {}, Requested-Action {}, DDFH {}, Tx {}",
-                    new Object[]{state, resultCode, gatheredRequestedAction, getLocalDDFH(), txTimerId});
+                        new Object[]{state, resultCode, gatheredRequestedAction, getLocalDDFH(), txTimerId});
               }
             }
             break;
@@ -937,16 +933,14 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // New State: IDLE
               context.grantAccessOnFailureMessage(this);
               setState(ClientCCASessionState.IDLE, false);
-            }
-            else if ((resultCode == END_USER_SERVICE_DENIED) || (resultCode == USER_UNKNOWN)) {
+            } else if ((resultCode == END_USER_SERVICE_DENIED) || (resultCode == USER_UNKNOWN)) {
               // Current State: PENDING_I
               // Event: CC initial answer received with result code END_USER_SERVICE_DENIED or USER_UNKNOWN
               // Action: Terminate end user�s service
               // New State: IDLE
               context.denyAccessOnFailureMessage(this);
               setState(ClientCCASessionState.IDLE, false);
-            }
-            else {
+            } else {
               // Temporary errors and others
               switch (getLocalCCFH()) {
                 case CCFH_CONTINUE:
@@ -981,16 +975,14 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // New State: IDLE
               context.grantAccessOnFailureMessage(this);
               setState(ClientCCASessionState.IDLE, false);
-            }
-            else if (resultCode == END_USER_SERVICE_DENIED) {
+            } else if (resultCode == END_USER_SERVICE_DENIED) {
               // Current State: PENDING_U
               // Event: CC update answer received with result code END_USER_SERVICE_DENIED
               // Action: Terminate end user�s service
               // New State: IDLE
               context.denyAccessOnFailureMessage(this);
               setState(ClientCCASessionState.IDLE, false);
-            }
-            else {
+            } else {
               // Temporary errors and others
               switch (getLocalCCFH()) {
                 case CCFH_CONTINUE:
@@ -1021,8 +1013,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
             logger.warn("Wrong event type ({}) on state {}", eventType, state);
         }
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       if (logger.isDebugEnabled()) {
         logger.debug("Failure handling failure message for Event " + answer + " (" + eventType + ") and Request " + request, e);
       }
@@ -1042,8 +1033,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         // New State: IDLE
         context.indicateServiceError(this);
         setState(ClientCCASessionState.IDLE);
-      }
-      else if (gatheredRequestedAction == DIRECT_DEBITING) {
+      } else if (gatheredRequestedAction == DIRECT_DEBITING) {
         int gatheredDDFH = this.sessionData.getGatheredDDFH();
         if (gatheredDDFH == DDFH_TERMINATE_OR_BUFFER) {
           // Current State: PENDING_E
@@ -1053,8 +1043,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
 
           this.sessionData.setBuffer((Request) message);
           setState(ClientCCASessionState.IDLE, false);
-        }
-        else {
+        } else {
           // Current State: PENDING_E
           // Event: Tx expired; requested action DIRECT_DEBITING
           // Action: Grant service to end user
@@ -1062,8 +1051,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           context.grantAccessOnTxExpire(this);
           setState(ClientCCASessionState.PENDING_EVENT);
         }
-      }
-      else if (gatheredRequestedAction == REFUND_ACCOUNT) {
+      } else if (gatheredRequestedAction == REFUND_ACCOUNT) {
         // Current State: PENDING_E
         // Event: Failure to send or Tx expired; requested action REFUND_ACCOUNT
         // Action: Store request with T-flag
@@ -1111,6 +1099,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Action: Grant service to end user
               // New State: PENDING_U
               context.grantAccessOnTxExpire(this);
+              if (isSessionPersistenceEnabled()) {
+                stopSessionInactivityTimer();
+              }
               break;
 
             case CCFH_TERMINATE:
@@ -1151,12 +1142,10 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         setState(ClientCCASessionState.PENDING_BUFFERED);
         try {
           dispatchEvent(new AppRequestEventImpl(buffer));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
           try {
             handleSendFailure(e, Event.Type.SEND_EVENT_REQUEST, buffer);
-          }
-          catch (Exception e1) {
+          } catch (Exception e1) {
             logger.error("Failure handling buffer send failure", e1);
           }
         }
@@ -1167,8 +1156,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       if (this.sessionData.getClientCCASessionState() == ClientCCASessionState.OPEN && eventQueue.size() > 0) {
         try {
           this.handleEvent(eventQueue.remove(0));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
           logger.error("Failure handling queued event", e);
         }
       }
@@ -1178,8 +1166,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   protected void deliverCCAnswer(JCreditControlRequest request, JCreditControlAnswer answer) {
     try {
       listener.doCreditControlAnswer(this, request, answer);
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       logger.warn("Failure delivering CCA Answer", e);
     }
   }
@@ -1190,16 +1177,14 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         if (answer.isCreditControlFailureHandlingAVPPresent()) {
           this.sessionData.setGatheredCCFH(answer.getCredidControlFailureHandlingAVPValue());
         }
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         logger.debug("Failure trying to obtain Credit-Control-Failure-Handling AVP value", e);
       }
       try {
         if (answer.isDirectDebitingFailureHandlingAVPPresent()) {
           this.sessionData.setGatheredDDFH(answer.getDirectDebitingFailureHandlingAVPValue());
         }
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         logger.debug("Failure trying to obtain Direct-Debit-Failure-Handling AVP value", e);
       }
       if (!this.sessionData.isRequestTypeSet()) {
@@ -1207,14 +1192,12 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         // No need to check if it exists.. it must, if not fail with exception
         this.sessionData.setEventBased(answer.getRequestTypeAVPValue() == EVENT_REQUEST);
       }
-    }
-    else if (request != null) {
+    } else if (request != null) {
       try {
         if (request.isRequestedActionAVPPresent()) {
           this.sessionData.setGatheredRequestedAction(request.getRequestedActionAVPValue());
         }
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         logger.debug("Failure trying to obtain Request-Action AVP value", e);
       }
 
@@ -1229,8 +1212,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   protected void deliverRAR(ReAuthRequest request) {
     try {
       listener.doReAuthRequest(this, request);
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       logger.debug("Failure delivering RAR", e);
     }
   }
@@ -1277,23 +1259,18 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         sessionData.setTxTimerId(null);
         try {
           context.txTimerExpired(session);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
           logger.debug("Failure handling TX Timer Expired", e);
         }
         JCreditControlRequest req = factory.createCreditControlRequest(request);
         handleEvent(new Event(Event.Type.Tx_TIMER_FIRED, req, null));
-      }
-      catch (InternalException e) {
+      } catch (InternalException e) {
         logger.error("Internal Exception", e);
-      }
-      catch (OverloadException e) {
+      } catch (OverloadException e) {
         logger.error("Overload Exception", e);
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         logger.error("Exception", e);
-      }
-      finally {
+      } finally {
         sendAndStateLock.unlock();
       }
     }
@@ -1315,8 +1292,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
             listener.doOtherEvent(session, new AppRequestEventImpl(request), null);
             break;
         }
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         logger.debug("Failure processing request", e);
       }
     }
@@ -1334,7 +1310,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           case JCreditControlAnswer.code:
             JCreditControlRequest _request = factory.createCreditControlRequest(request);
             JCreditControlAnswer _answer = factory.createCreditControlAnswer(answer);
-            extractFHAVPs(null, _answer );
+            extractFHAVPs(null, _answer);
             handleEvent(new Event(false, _request, _answer));
             break;
 
@@ -1342,8 +1318,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
             listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
             break;
         }
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         logger.debug("Failure processing success message", e);
       }
     }
@@ -1373,8 +1348,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
       if (other.sessionData != null) {
         return false;
       }
-    }
-    else if (!sessionData.equals(other.sessionData)) {
+    } else if (!sessionData.equals(other.sessionData)) {
       return false;
     }
     return true;

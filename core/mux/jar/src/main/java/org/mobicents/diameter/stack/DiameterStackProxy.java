@@ -42,11 +42,6 @@
 
 package org.mobicents.diameter.stack;
 
-import java.io.IOException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.BaseSession;
 import org.jdiameter.api.Configuration;
@@ -57,6 +52,7 @@ import org.jdiameter.api.Mode;
 import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.SessionFactory;
+import org.jdiameter.api.SessionPersistenceStorage;
 import org.jdiameter.api.Stack;
 import org.jdiameter.api.validation.Dictionary;
 import org.jdiameter.client.api.IAssembler;
@@ -64,6 +60,11 @@ import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.StackState;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
+
+import java.io.IOException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 public class DiameterStackProxy implements Stack, IContainer {
 
@@ -174,6 +175,11 @@ public class DiameterStackProxy implements Stack, IContainer {
     return ((IContainer) realStack).getAssemblerFacility();
   }
 
+  @Override
+  public SessionPersistenceStorage getSessionPersistenceStorage() {
+    return ((IContainer)realStack).getSessionPersistenceStorage();
+  }
+
   /* (non-Javadoc)
    * @see org.jdiameter.api.Stack#getDictionary()
    */
@@ -181,5 +187,4 @@ public class DiameterStackProxy implements Stack, IContainer {
   public Dictionary getDictionary() throws IllegalDiameterStateException {
     return realStack.getDictionary();
   }
-
 }

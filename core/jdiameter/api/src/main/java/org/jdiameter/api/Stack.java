@@ -135,6 +135,13 @@ public interface Stack extends Wrapper {
   SessionFactory getSessionFactory()  throws IllegalDiameterStateException;
 
   /**
+   * Return SessionPersistenceStorage instance
+   * @return SessionPersistenceStorage instance
+   * @throws IllegalDiameterStateException if stack is not configured
+   */
+  SessionPersistenceStorage getSessionPersistenceStorage();
+
+  /**
    * Return Dictionary instance
    * @return Dictionary instance
    * @throws IllegalDiameterStateException if stack is not configured

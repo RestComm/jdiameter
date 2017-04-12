@@ -42,6 +42,28 @@
 
 package org.jdiameter.client.impl.helpers;
 
+import org.jdiameter.api.Configuration;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import java.io.File;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+
 import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalAgentConfiguration;
 import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalAgentRedirect;
 import static org.jdiameter.client.impl.helpers.ExtensionPoint.InternalConcurrentEntityFactory;
@@ -103,12 +125,14 @@ import static org.jdiameter.client.impl.helpers.Parameters.QueueSize;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 import static org.jdiameter.client.impl.helpers.Parameters.RecTimeOut;
+import static org.jdiameter.client.impl.helpers.Parameters.RetransmissionRequiredResCodes;
 import static org.jdiameter.client.impl.helpers.Parameters.SDEnableSessionCreation;
 import static org.jdiameter.client.impl.helpers.Parameters.SDName;
 import static org.jdiameter.client.impl.helpers.Parameters.SDProtocol;
 import static org.jdiameter.client.impl.helpers.Parameters.SDUseClientMode;
 import static org.jdiameter.client.impl.helpers.Parameters.Security;
 import static org.jdiameter.client.impl.helpers.Parameters.SecurityRef;
+import static org.jdiameter.client.impl.helpers.Parameters.SessionInactivityTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.Statistics;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsActiveList;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsEnabled;
@@ -123,6 +147,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.ThreadPool;
 import static org.jdiameter.client.impl.helpers.Parameters.ThreadPoolPriority;
 import static org.jdiameter.client.impl.helpers.Parameters.ThreadPoolSize;
 import static org.jdiameter.client.impl.helpers.Parameters.TrustData;
+import static org.jdiameter.client.impl.helpers.Parameters.TxTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.UseUriAsFqdn;
 import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryExpTime;
@@ -130,29 +155,7 @@ import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryIsDynamic;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmHosts;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmLocalAction;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmName;
-
-import java.io.File;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
-
-import org.jdiameter.api.Configuration;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import static org.jdiameter.server.impl.helpers.Parameters.RetransmissionTimeOut;
 
 /**
  * This class provide loading and verification configuration for client from XML file
@@ -176,9 +179,9 @@ public class XMLConfiguration extends EmptyConfiguration {
   /**
    * Create instance of class and load file from defined input stream
    *
-   * @param in input stream
+   * @param in         input stream
    * @param attributes attributes for DocumentBuilderFactory
-   * @param  features features for DocumentBuilderFactory
+   * @param features   features for DocumentBuilderFactory
    * @throws Exception
    */
   public XMLConfiguration(InputStream in, Hashtable<String, Object> attributes, Hashtable<String, Boolean> features) throws Exception {
@@ -198,9 +201,9 @@ public class XMLConfiguration extends EmptyConfiguration {
   /**
    * Create instance of class and load file from defined input stream
    *
-   * @param filename configuration file name
+   * @param filename   configuration file name
    * @param attributes attributes for DocumentBuilderFactory
-   * @param  features features for DocumentBuilderFactory
+   * @param features   features for DocumentBuilderFactory
    * @throws Exception
    */
   public XMLConfiguration(String filename, Hashtable<String, Object> attributes, Hashtable<String, Boolean> features) throws Exception {
@@ -225,12 +228,10 @@ public class XMLConfiguration extends EmptyConfiguration {
 
     if (in instanceof InputStream) {
       document = builder.parse((InputStream) in);
-    }
-    else if (in instanceof String) {
+    } else if (in instanceof String) {
       document = builder.parse(new File((String) in));
-    }
-    else {
-      throw  new Exception("Unknown type of input data");
+    } else {
+      throw new Exception("Unknown type of input data");
     }
     validate(document);
     processing(document);
@@ -251,17 +252,13 @@ public class XMLConfiguration extends EmptyConfiguration {
       String nodeName = c.item(i).getNodeName();
       if (nodeName.equals("LocalPeer")) {
         addLocalPeer(c.item(i));
-      }
-      else if (nodeName.equals("Parameters")) {
+      } else if (nodeName.equals("Parameters")) {
         addParameters(c.item(i));
-      }
-      else if (nodeName.equals("Network")) {
+      } else if (nodeName.equals("Network")) {
         addNetwork(c.item(i));
-      }
-      else if (nodeName.equals("Security")) {
+      } else if (nodeName.equals("Security")) {
         addSecurity(c.item(i));
-      }
-      else if (nodeName.equals("Extensions")) {
+      } else if (nodeName.equals("Extensions")) {
         addExtensions(c.item(i));
       }
     }
@@ -323,11 +320,9 @@ public class XMLConfiguration extends EmptyConfiguration {
       String nodeName = c.item(i).getNodeName();
       if (nodeName.equals("VendorId")) {
         e.add(VendorId, getLongValue(c.item(i)));
-      }
-      else if (nodeName.equals("AuthApplId")) {
+      } else if (nodeName.equals("AuthApplId")) {
         e.add(AuthApplId, getLongValue(c.item(i)));
-      }
-      else if (nodeName.equals("AcctApplId")) {
+      } else if (nodeName.equals("AcctApplId")) {
         e.add(AcctApplId, getLongValue(c.item(i)));
       }
     }
@@ -340,46 +335,52 @@ public class XMLConfiguration extends EmptyConfiguration {
       String nodeName = c.item(i).getNodeName();
       if (nodeName.equals("UseUriAsFqdn")) {
         add(UseUriAsFqdn, Boolean.valueOf(getValue(c.item(i))));
-      }
-      else if (nodeName.equals("QueueSize")) {
+      } else if (nodeName.equals("QueueSize")) {
         add(QueueSize, getIntValue(c.item(i)));
-      }
-      else if (nodeName.equals("MessageTimeOut")) {
+      } else if (nodeName.equals("MessageTimeOut")) {
         add(MessageTimeOut, getLongValue(c.item(i)));
-      }
-      else if (nodeName.equals("StopTimeOut")) {
+      } else if (nodeName.equals("StopTimeOut")) {
         add(StopTimeOut, getLongValue(c.item(i)));
-      }
-      else if (nodeName.equals("CeaTimeOut")) {
+      } else if (nodeName.equals("CeaTimeOut")) {
         add(CeaTimeOut, getLongValue(c.item(i)));
-      }
-      else if (nodeName.equals("IacTimeOut")) {
+      } else if (nodeName.equals("IacTimeOut")) {
         add(IacTimeOut, getLongValue(c.item(i)));
-      }
-      else if (nodeName.equals("DwaTimeOut")) {
+      } else if (nodeName.equals("DwaTimeOut")) {
         add(DwaTimeOut, getLongValue(c.item(i)));
-      }
-      else if (nodeName.equals("DpaTimeOut")) {
+      } else if (nodeName.equals("DpaTimeOut")) {
         add(DpaTimeOut, getLongValue(c.item(i)));
-      }
-      else if (nodeName.equals("RecTimeOut")) {
+      } else if (nodeName.equals("RecTimeOut")) {
         add(RecTimeOut, getLongValue(c.item(i)));
-      }
-      else if (nodeName.equals("PeerFSMThreadCount")) {
+      } else if (nodeName.equals("PeerFSMThreadCount")) {
         add(PeerFSMThreadCount, getIntValue(c.item(i)));
-      }
-      else if (nodeName.equals("Statistics")) {
+      } else if (nodeName.equals("Statistics")) {
         addStatisticLogger(Statistics, c.item(i));
-      }
-      else if (nodeName.equals("Concurrent")) {
+      } else if (nodeName.equals("Concurrent")) {
         addConcurrent(Concurrent, c.item(i));
-      }
-      else if (nodeName.equals("Dictionary")) {
+      } else if (nodeName.equals("Dictionary")) {
         addDictionary(Dictionary, c.item(i));
-      }
-      else {
+      } else if (nodeName.equals("SessionInactivityTimeOut")) {
+        add(SessionInactivityTimeOut, getIntValue(c.item(i)));
+      } else if (nodeName.equals("TxTimeOut")) {
+        add(TxTimeOut, getLongValue(c.item(i)));
+      } else if (nodeName.equals("RetransmissionTimeOut")) {
+        add(RetransmissionTimeOut, getLongValue(c.item(i)));
+      } else if (nodeName.equals("RetransmissionRequiredResCodes")) {
+        addRetransmissionRequiredResCodes(c.item(i));
+      } else {
         appendOtherParameter(c.item(i));
       }
+    }
+  }
+
+  protected void addRetransmissionRequiredResCodes(Node node) {
+    String[] codesArray = getValue(node).replaceAll(" ", "").split(",");
+    if (codesArray.length > 0) {
+      int[] parsedCodesArray = new int[codesArray.length];
+      for (int i = 0; i < codesArray.length; i++) {
+        parsedCodesArray[i] = Integer.parseInt(codesArray[i]);
+      }
+      add(RetransmissionRequiredResCodes, parsedCodesArray);
     }
   }
 
@@ -417,15 +418,14 @@ public class XMLConfiguration extends EmptyConfiguration {
     String active_records;
     if (node.getAttributes().getNamedItem("active_records") != null) {
       active_records = node.getAttributes().getNamedItem("active_records").getNodeValue();
-    }
-    else {
+    } else {
       active_records = (String) StatisticsActiveList.defValue();
     }
 
     add(name, getInstance().add(StatisticsLoggerPause, Long.parseLong(pause))
-        .add(StatisticsLoggerDelay, Long.parseLong(delay))
-        .add(StatisticsEnabled, Boolean.parseBoolean(enabled))
-        .add(StatisticsActiveList, active_records));
+            .add(StatisticsLoggerDelay, Long.parseLong(delay))
+            .add(StatisticsEnabled, Boolean.parseBoolean(enabled))
+            .add(StatisticsActiveList, active_records));
   }
 
   protected void addDictionary(org.jdiameter.client.impl.helpers.Parameters name, Node node) {
@@ -437,19 +437,19 @@ public class XMLConfiguration extends EmptyConfiguration {
       dicConfiguration.add(DictionaryClass, clazz);
     }
 
-    param =  node.getAttributes().getNamedItem("enabled");
+    param = node.getAttributes().getNamedItem("enabled");
     if (param != null) {
       String enabled = param.getNodeValue();
       dicConfiguration.add(DictionaryEnabled, Boolean.valueOf(enabled));
     }
 
-    param =  node.getAttributes().getNamedItem("sendLevel");
+    param = node.getAttributes().getNamedItem("sendLevel");
     if (param != null) {
       String sendLevel = param.getNodeValue();
       dicConfiguration.add(DictionarySendLevel, sendLevel);
     }
 
-    param =  node.getAttributes().getNamedItem("receiveLevel");
+    param = node.getAttributes().getNamedItem("receiveLevel");
     if (param != null) {
       String receiveLevel = param.getNodeValue();
       dicConfiguration.add(DictionaryReceiveLevel, receiveLevel);
@@ -471,11 +471,9 @@ public class XMLConfiguration extends EmptyConfiguration {
       int v = Integer.parseInt(n.getNodeValue());
       if (n.getNodeName().equals("size")) {
         threadPoolConfiguration.add(ThreadPoolSize, v);
-      }
-      else if (n.getNodeName().equals("priority")) {
+      } else if (n.getNodeName().equals("priority")) {
         threadPoolConfiguration.add(ThreadPoolPriority, v);
-      }
-      else {
+      } else {
         //log.error("Unkonwn attribute on " + item.getNodeName() + ", attribute name: " + n.getNodeName());
       }
     }
@@ -502,9 +500,9 @@ public class XMLConfiguration extends EmptyConfiguration {
 
   protected Configuration addSecurityData(Node node) {
     AppConfiguration sd = getInstance().add(SDName, node.getAttributes().getNamedItem("name").getNodeValue())
-        .add(SDProtocol, node.getAttributes().getNamedItem("protocol").getNodeValue())
-        .add(SDEnableSessionCreation, Boolean.valueOf(node.getAttributes().getNamedItem("enable_session_creation").getNodeValue()))
-        .add(SDUseClientMode, Boolean.valueOf(node.getAttributes().getNamedItem("use_client_mode").getNodeValue()));
+            .add(SDProtocol, node.getAttributes().getNamedItem("protocol").getNodeValue())
+            .add(SDEnableSessionCreation, Boolean.valueOf(node.getAttributes().getNamedItem("enable_session_creation").getNodeValue()))
+            .add(SDUseClientMode, Boolean.valueOf(node.getAttributes().getNamedItem("use_client_mode").getNodeValue()));
 
     NodeList c = node.getChildNodes();
 
@@ -516,15 +514,15 @@ public class XMLConfiguration extends EmptyConfiguration {
       }
       if (nodeName.equals("KeyData")) {
         sd.add(KeyData, getInstance().add(KDManager, cnode.getAttributes().getNamedItem("manager").getNodeValue())
-            .add(KDStore, cnode.getAttributes().getNamedItem("store").getNodeValue())
-            .add(KDFile, cnode.getAttributes().getNamedItem("file").getNodeValue())
-            .add(KDPwd, cnode.getAttributes().getNamedItem("pwd").getNodeValue()));
+                .add(KDStore, cnode.getAttributes().getNamedItem("store").getNodeValue())
+                .add(KDFile, cnode.getAttributes().getNamedItem("file").getNodeValue())
+                .add(KDPwd, cnode.getAttributes().getNamedItem("pwd").getNodeValue()));
       }
       if (nodeName.equals("TrustData")) {
         sd.add(TrustData, getInstance().add(TDManager, cnode.getAttributes().getNamedItem("manager").getNodeValue())
-            .add(TDStore, cnode.getAttributes().getNamedItem("store").getNodeValue())
-            .add(TDFile, cnode.getAttributes().getNamedItem("file").getNodeValue())
-            .add(TDPwd, cnode.getAttributes().getNamedItem("pwd").getNodeValue()));
+                .add(TDStore, cnode.getAttributes().getNamedItem("store").getNodeValue())
+                .add(TDFile, cnode.getAttributes().getNamedItem("file").getNodeValue())
+                .add(TDPwd, cnode.getAttributes().getNamedItem("pwd").getNodeValue()));
       }
     }
     return sd;
@@ -536,8 +534,7 @@ public class XMLConfiguration extends EmptyConfiguration {
       String nodeName = c.item(i).getNodeName();
       if (nodeName.equals("Peers")) {
         addPeers(c.item(i));
-      }
-      else if (nodeName.equals("Realms")) {
+      } else if (nodeName.equals("Realms")) {
         addRealms(c.item(i));
       }
     }
@@ -569,8 +566,8 @@ public class XMLConfiguration extends EmptyConfiguration {
 
   protected Configuration addPeer(Node node) {
     AppConfiguration peerConfig = getInstance()
-        .add(PeerRating, new Integer(node.getAttributes().getNamedItem("rating").getNodeValue()))
-        .add(PeerName, node.getAttributes().getNamedItem("name").getNodeValue());
+            .add(PeerRating, new Integer(node.getAttributes().getNamedItem("rating").getNodeValue()))
+            .add(PeerName, node.getAttributes().getNamedItem("name").getNodeValue());
     if (node.getAttributes().getNamedItem("ip") != null) {
       peerConfig.add(PeerIp, node.getAttributes().getNamedItem("ip").getNodeValue());
     }
@@ -587,12 +584,12 @@ public class XMLConfiguration extends EmptyConfiguration {
   protected Configuration addRealm(Node node) {
 
     AppConfiguration realmEntry = getInstance().
-        add(ApplicationId, new Configuration[] {addApplicationID(node.getChildNodes())}).
-        add(RealmName,  getAttrValue(node, "name")).
-        add(RealmHosts, getAttrValue(node, "peers")).
-        add(RealmLocalAction,    getAttrValue(node, "local_action")).
-        add(RealmEntryIsDynamic, Boolean.valueOf(getAttrValue(node, "dynamic"))).
-        add(RealmEntryExpTime,   Long.valueOf(getAttrValue(node, "exp_time")));
+            add(ApplicationId, new Configuration[]{addApplicationID(node.getChildNodes())}).
+            add(RealmName, getAttrValue(node, "name")).
+            add(RealmHosts, getAttrValue(node, "peers")).
+            add(RealmLocalAction, getAttrValue(node, "local_action")).
+            add(RealmEntryIsDynamic, Boolean.valueOf(getAttrValue(node, "dynamic"))).
+            add(RealmEntryExpTime, Long.valueOf(getAttrValue(node, "exp_time")));
 
     NodeList childNodes = node.getChildNodes();
     for (int i = 0; i < childNodes.getLength(); i++) {
@@ -650,12 +647,10 @@ public class XMLConfiguration extends EmptyConfiguration {
     for (int i = 0; i < c.getLength(); i++) {
       String nodeName = c.item(i).getNodeName();
       if (nodeName.equals("VendorId")) {
-        e.add(VendorId,   getLongValue(c.item(i)));
-      }
-      else if (nodeName.equals("AuthApplId")) {
+        e.add(VendorId, getLongValue(c.item(i)));
+      } else if (nodeName.equals("AuthApplId")) {
         e.add(AuthApplId, getLongValue(c.item(i)));
-      }
-      else if (nodeName.equals("AcctApplId")) {
+      } else if (nodeName.equals("AcctApplId")) {
         e.add(AcctApplId, getLongValue(c.item(i)));
       }
     }
@@ -668,60 +663,43 @@ public class XMLConfiguration extends EmptyConfiguration {
       String nodeName = c.item(i).getNodeName();
       if (nodeName.equals("MetaData")) {
         addInternalExtension(InternalMetaData, getValue(c.item(i)));
-      }
-      else if (nodeName.equals("MessageParser")) {
+      } else if (nodeName.equals("MessageParser")) {
         addInternalExtension(InternalMessageParser, getValue(c.item(i)));
-      }
-      else if (nodeName.equals("ElementParser")) {
+      } else if (nodeName.equals("ElementParser")) {
         addInternalExtension(InternalElementParser, getValue(c.item(i)));
-      }
-      else if (nodeName.equals("RouterEngine")) {
+      } else if (nodeName.equals("RouterEngine")) {
         addInternalExtension(InternalRouterEngine, getValue(c.item(i)));
-      }
-      else if (nodeName.equals("PeerController")) {
+      } else if (nodeName.equals("PeerController")) {
         addInternalExtension(InternalPeerController, getValue(c.item(i)));
-      }
-      else if (nodeName.equals("RealmController")) {
+      } else if (nodeName.equals("RealmController")) {
         addInternalExtension(InternalRealmController, getValue(c.item(i)));
-      }
-      else if (nodeName.equals("SessionFactory")) {
+      } else if (nodeName.equals("SessionFactory")) {
         addInternalExtension(InternalSessionFactory, getValue(c.item(i)));
-      }
-      else if (nodeName.equals("TransportFactory")) {
+      } else if (nodeName.equals("TransportFactory")) {
         addInternalExtension(InternalTransportFactory, getValue(c.item(i)));
-      }
-      else if (nodeName.equals("Connection")) {
+      } else if (nodeName.equals("Connection")) {
         addInternalExtension(InternalConnectionClass, getValue(c.item(i)));
-      }
-      else if (nodeName.equals("PeerFsmFactory")) {
+      } else if (nodeName.equals("PeerFsmFactory")) {
         addInternalExtension(InternalPeerFsmFactory, getValue(c.item(i)));
-      }
-      else if (nodeName.equals("StatisticFactory")) {
+      } else if (nodeName.equals("StatisticFactory")) {
         addInternalExtension(InternalStatisticFactory, getValue(c.item(i)));
-      }
-      else if (nodeName.equals("ConcurrentFactory")) {
+      } else if (nodeName.equals("ConcurrentFactory")) {
         addInternalExtension(InternalConcurrentFactory, getValue(c.item(i)));
-      }
-      else if (nodeName.equals("ConcurrentEntityFactory")) {
+      } else if (nodeName.equals("ConcurrentEntityFactory")) {
         addInternalExtension(InternalConcurrentEntityFactory, getValue(c.item(i)));
-      }
-      else if (nodeName.equals("SessionDatasource")) {
+      } else if (nodeName.equals("SessionDatasource")) {
         addInternalExtension(InternalSessionDatasource, getValue(c.item(i)));
-      }
-      else if (nodeName.equals("TimerFacility")) {
+      } else if (nodeName.equals("TimerFacility")) {
         addInternalExtension(InternalTimerFacility, getValue(c.item(i)));
       }
       //FIXME: possibly should not be in client...
       else if (nodeName.equals("AgentRedirect")) {
         addInternalExtension(InternalAgentRedirect, getValue(c.item(i)));
-      }
-      else if (nodeName.equals("AgentConfiguration")) {
-        add(InternalAgentConfiguration, getValue(c.item(i)))   ;
-      }
-      else if (nodeName.equals("StatisticProcessor")) {
-        addInternalExtension(InternalStatisticProcessor, getValue(c.item(i)))   ;
-      }
-      else {
+      } else if (nodeName.equals("AgentConfiguration")) {
+        add(InternalAgentConfiguration, getValue(c.item(i)));
+      } else if (nodeName.equals("StatisticProcessor")) {
+        addInternalExtension(InternalStatisticProcessor, getValue(c.item(i)));
+      } else {
         appendOtherExtension(c.item(i));
       }
     }

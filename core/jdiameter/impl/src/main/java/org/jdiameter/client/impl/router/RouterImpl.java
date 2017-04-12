@@ -1,77 +1,26 @@
- /*
-  * TeleStax, Open Source Cloud Communications
-  * Copyright 2011-2016, TeleStax Inc. and individual contributors
-  * by the @authors tag.
-  *
-  * This program is free software: you can redistribute it and/or modify
-  * under the terms of the GNU Affero General Public License as
-  * published by the Free Software Foundation; either version 3 of
-  * the License, or (at your option) any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU Affero General Public License for more details.
-  *
-  * You should have received a copy of the GNU Affero General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>
-  *
-  * This file incorporates work covered by the following copyright and
-  * permission notice:
-  *
-  *   JBoss, Home of Professional Open Source
-  *   Copyright 2007-2011, Red Hat, Inc. and individual contributors
-  *   by the @authors tag. See the copyright.txt in the distribution for a
-  *   full listing of individual contributors.
-  *
-  *   This is free software; you can redistribute it and/or modify it
-  *   under the terms of the GNU Lesser General Public License as
-  *   published by the Free Software Foundation; either version 2.1 of
-  *   the License, or (at your option) any later version.
-  *
-  *   This software is distributed in the hope that it will be useful,
-  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  *   Lesser General Public License for more details.
-  *
-  *   You should have received a copy of the GNU Lesser General Public
-  *   License along with this software; if not, write to the Free
-  *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
-  */
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2006-2011, Red Hat, Inc. and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 
 package org.jdiameter.client.impl.router;
-
-import static org.jdiameter.client.impl.helpers.Parameters.AcctApplId;
-import static org.jdiameter.client.impl.helpers.Parameters.Agent;
-import static org.jdiameter.client.impl.helpers.Parameters.ApplicationId;
-import static org.jdiameter.client.impl.helpers.Parameters.AuthApplId;
-import static org.jdiameter.client.impl.helpers.Parameters.OwnRealm;
-import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
-import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
-import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
-import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryExpTime;
-import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryIsDynamic;
-import static org.jdiameter.server.impl.helpers.Parameters.RealmHosts;
-import static org.jdiameter.server.impl.helpers.Parameters.RealmLocalAction;
-import static org.jdiameter.server.impl.helpers.Parameters.RealmName;
-import static org.jdiameter.server.impl.helpers.Parameters.RequestTable;
-import static org.jdiameter.server.impl.helpers.Parameters.RequestTableClearSize;
-import static org.jdiameter.server.impl.helpers.Parameters.RequestTableSize;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.UnknownServiceException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-//PCB added for thread safe
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Avp;
@@ -83,6 +32,7 @@ import org.jdiameter.api.InternalException;
 import org.jdiameter.api.LocalAction;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.MetaData;
+import org.jdiameter.api.NoMorePeersAvailableException;
 import org.jdiameter.api.PeerState;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.URI;
@@ -102,6 +52,38 @@ import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.server.api.agent.IAgentConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.UnknownServiceException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import static org.jdiameter.client.impl.helpers.Parameters.AcctApplId;
+import static org.jdiameter.client.impl.helpers.Parameters.Agent;
+import static org.jdiameter.client.impl.helpers.Parameters.ApplicationId;
+import static org.jdiameter.client.impl.helpers.Parameters.AuthApplId;
+import static org.jdiameter.client.impl.helpers.Parameters.OwnRealm;
+import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
+import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
+import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryExpTime;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryIsDynamic;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmHosts;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmLocalAction;
+import static org.jdiameter.server.impl.helpers.Parameters.RealmName;
+import static org.jdiameter.server.impl.helpers.Parameters.RequestTable;
+import static org.jdiameter.server.impl.helpers.Parameters.RequestTableClearSize;
+import static org.jdiameter.server.impl.helpers.Parameters.RequestTableSize;
+
+//PCB added for thread safe
 
 /**
  * Diameter Routing Core
@@ -168,8 +150,8 @@ public class RouterImpl implements IRouter {
     }
     if (config.getChildren(RequestTable.ordinal()) != null) {
       AppConfiguration requestTableConfig = (AppConfiguration) config.getChildren(org.jdiameter.server.impl.helpers.Parameters.RequestTable.ordinal())[0];
-      int tSize = requestTableConfig.getIntValue(RequestTableSize.ordinal(),(Integer) RequestTableSize.defValue());
-      int tClearSize = requestTableConfig.getIntValue(RequestTableClearSize.ordinal(),(Integer) RequestTableClearSize.defValue());
+      int tSize = requestTableConfig.getIntValue(RequestTableSize.ordinal(), (Integer) RequestTableSize.defValue());
+      int tClearSize = requestTableConfig.getIntValue(RequestTableClearSize.ordinal(), (Integer) RequestTableClearSize.defValue());
       if (tSize > 0 && tClearSize >= tSize) {
         logger.warn("Configuration entry RequestTable, attribute 'clear_size' [{}] should not be greater than 'size' [{}]. Adjusting.", tSize, tClearSize);
         while (tClearSize >= tSize) {
@@ -209,8 +191,8 @@ public class RouterImpl implements IRouter {
                         appId = org.jdiameter.api.ApplicationId.createByAccAppId(vnd, acc);
                       }
                       if (logger.isDebugEnabled()) {
-                        logger.debug("Realm [{}] has application Acct [{}] Auth [{}] Vendor [{}]",
-                            new Object[]{name, appId.getAcctAppId(), appId.getAuthAppId(), appId.getVendorId()});
+                        logger.debug("Realm [{}] has application Acct [{}] Auth [{}] Vendor [{}]", new Object[]{name, appId.getAcctAppId(), appId
+                            .getAuthAppId(), appId.getVendorId()});
                       }
                       break;
                     }
@@ -244,7 +226,6 @@ public class RouterImpl implements IRouter {
     }
   }
 
-  @Override
   public void registerRequestRouteInfo(IRequest request) {
     logger.debug("Entering registerRequestRouteInfo");
     if (REQUEST_TABLE_SIZE == 0) {
@@ -312,7 +293,6 @@ public class RouterImpl implements IRouter {
         .append(message.getHopByHopIdentifier()).toString();
   }
 
-  @Override
   public String[] getRequestRouteInfo(IMessage message) {
     if (REQUEST_TABLE_SIZE == 0) {
       return ((MessageImpl) message).getRoutingInfo(); // using answer stored routing info
@@ -325,7 +305,7 @@ public class RouterImpl implements IRouter {
       if (logger.isDebugEnabled()) {
         logger.debug("getRequestRouteInfo found host [{}] and realm [{}] for Message key Id [{}]", new Object[]{ans.getHost(), ans.getRealm(), messageKey});
       }
-      return new String[] {ans.getHost(), ans.getRealm()};
+      return new String[]{ans.getHost(), ans.getRealm()};
     }
     else {
       if (logger.isWarnEnabled()) {
@@ -336,7 +316,6 @@ public class RouterImpl implements IRouter {
   }
 
   //PCB added
-  @Override
   public void garbageCollectRequestRouteInfo(IMessage message) {
     if (REQUEST_TABLE_SIZE == 0) {
       return; // we don't have anything to do as we are storing routing info at answer message
@@ -346,7 +325,6 @@ public class RouterImpl implements IRouter {
     requestEntryMap.remove(messageKey);
   }
 
-  @Override
   public IPeer getPeer(IMessage message, IPeerTable manager) throws RouteException, AvpDataException {
     logger.debug("Getting a peer for message [{}]", message);
     //FIXME: add ability to send without matching realm+peer pair?, that is , route based on peer table entries?
@@ -368,7 +346,7 @@ public class RouterImpl implements IRouter {
         destHost = avpHost.getDiameterIdentity();
       }
       if (logger.isDebugEnabled()) {
-        logger.debug("Looking up peer for request: [{}], DestHost=[{}], DestRealm=[{}]", new Object[] {message, destHost, destRealm});
+        logger.debug("Looking up peer for request: [{}], DestHost=[{}], DestRealm=[{}]", new Object[]{message, destHost, destRealm});
       }
 
       matchedRealm = (IRealm) this.realmTable.matchRealm(message);
@@ -390,7 +368,7 @@ public class RouterImpl implements IRouter {
       //FIXME: if no info, should not send it ?
       //FIXME: add strict deff in route back table so stack does not have to lookup?
       if (logger.isDebugEnabled()) {
-        logger.debug("Looking up peer for answer: [{}], DestHost=[{}], DestRealm=[{}]", new Object[] {message, destHost, destRealm});
+        logger.debug("Looking up peer for answer: [{}], DestHost=[{}], DestRealm=[{}]", new Object[]{message, destHost, destRealm});
       }
       matchedRealm = (IRealm) this.realmTable.matchRealm(message, destRealm);
     }
@@ -429,47 +407,26 @@ public class RouterImpl implements IRouter {
       return c;
     }
     else {
-      logger.debug("Finding peer by destination host avp [host={}] did not find anything. Now going to try finding one by destination realm [{}]",
-          destHost, destRealm);
+      logger.debug("Finding peer by destination host avp [host={}] did not find anything. Now going to try finding one by destination realm [{}]", destHost,
+          destRealm);
       String[] peers = matchedRealm.getPeerNames();
       if (peers == null || peers.length == 0) {
         throw new RouteException("Unable to find context by route information [" + destRealm + " ," + destHost + "]");
       }
 
-      // Collect peers
-      ArrayList<IPeer> availablePeers = new ArrayList<IPeer>(5);
-      logger.debug("Looping through peers in realm [{}]", destRealm);
-      for (String peerName : peers) {
-        IPeer localPeer = manager.getPeer(peerName);
-        if (logger.isDebugEnabled()) {
-          logger.debug("Checking peer [{}] for name [{}]", new Object[]{localPeer, peerName});
-        }
-        // ammendonca: added peer state check.. should not be needed but
-        // hasValidConnection is returning true for disconnected peers in *FTFlowTests
-        if (localPeer != null && localPeer.getState(PeerState.class) == PeerState.OKAY) {
-          if (localPeer.hasValidConnection()) {
-            if (logger.isDebugEnabled()) {
-              logger.debug("Found available peer to add to available peer list with uri [{}] with a valid connection", localPeer.getUri().toString());
-            }
-            availablePeers.add(localPeer);
-          }
-          else {
-            if (logger.isDebugEnabled()) {
-              logger.debug("Found a peer with uri [{}] with no valid connection", localPeer.getUri());
-            }
-          }
-        }
-      }
+      List<IPeer> availablePeers = getAvailablePeers(destRealm, peers, manager, message);
 
       if (logger.isDebugEnabled()) {
-        logger.debug("Performing Realm routing. Realm [{}] has the following peers available [{}] from list [{}]",
-            new Object[] {destRealm, availablePeers, Arrays.asList(peers)});
+        logger.debug("Performing Realm routing. Realm [{}] has the following peers available {} from list {}", new Object[]{destRealm, availablePeers, Arrays
+            .asList(peers)});
       }
 
       // Balancing
-      IPeer peer = selectPeer(availablePeers);
+      IPeer peer = selectPeer(availablePeers, message);
       if (peer == null) {
-        throw new RouteException("Unable to find valid connection to peer[" + destHost + "] in realm[" + destRealm + "]");
+        throw new NoMorePeersAvailableException(
+            "Unable to find a valid connection within realm [" + destRealm + "]",
+            isSessionAware(), dumpRoundRobinContext(), getLastSelectedRating());
       }
       else {
         if (logger.isDebugEnabled()) {
@@ -481,12 +438,47 @@ public class RouterImpl implements IRouter {
     }
   }
 
-  @Override
+  protected List<IPeer> getAvailablePeers(String destRealm, String[] peers, IPeerTable manager, IMessage message) {
+    return getPeers(destRealm, peers, manager, PeerState.OKAY);
+  }
+
+  private List<IPeer> getPeers(String destRealm, String[] peers, IPeerTable manager, PeerState state) {
+    List<IPeer> availablePeers = new ArrayList<IPeer>(5);
+    logger.debug("Looping through peers in realm [{}]", destRealm);
+    for (String peerName : peers) {
+      IPeer localPeer = manager.getPeer(peerName);
+      if (logger.isDebugEnabled()) {
+        logger.debug("Checking peer [{}] for name [{}]", new Object[]{localPeer, peerName});
+      }
+
+      if (localPeer != null && localPeer.getState(PeerState.class) == state) {
+        if (localPeer.hasValidConnection()) {
+          if (logger.isDebugEnabled()) {
+            logger.debug(
+                "Found available peer to add to available peer list with uri [{}] with a valid connection",
+                localPeer.getUri().toString());
+          }
+          availablePeers.add(localPeer);
+        }
+        else {
+          if (logger.isDebugEnabled()) {
+            logger.debug("Found a peer with uri [{}] with no valid connection", localPeer.getUri());
+          }
+        }
+      }
+    }
+
+    return availablePeers;
+  }
+
+  public boolean isSessionAware() {
+    return false;
+  }
+
   public IRealmTable getRealmTable() {
     return this.realmTable;
   }
 
-  @Override
   public void processRedirectAnswer(IRequest request, IAnswer answer, IPeerTable table) throws InternalException, RouteException {
     try {
       Avp destinationRealmAvp = request.getAvps().getAvp(Avp.DESTINATION_REALM);
@@ -501,7 +493,7 @@ public class RouterImpl implements IRouter {
         int i = 0;
         // loop detected
         for (Avp avp : avps) {
-          String r =  avp.getDiameterIdentity();
+          String r = avp.getDiameterIdentity();
           if (r.equals(metaData.getLocalPeer().getUri().getFQDN())) {
             throw new RouteException("Loop detected");
           }
@@ -566,7 +558,7 @@ public class RouterImpl implements IRouter {
         if (REDIRECT_TABLE_SIZE > redirectTable.size()) {
           RedirectEntry e = new RedirectEntry(primaryKey, secondaryKey, redirectCacheTime, redirectUsage, redirectHosts, destinationRealm);
           redirectTable.add(e);
-          //redirectProcessing(answer, destRealm.getOctetString(), destHost !=null ? destHost.getOctetString():null);
+          //redirectProcessing(answer,destRealm.getOctetString(),destHost !=null ? destHost.getOctetString():null);
           //we dont have to elect?
           updateRoute(request, e.getRedirectHost());
         }
@@ -624,10 +616,9 @@ public class RouterImpl implements IRouter {
   private void updateRoute(IRequest request, String destHost) {
     // Realm does not change I think... :)
     request.getAvps().removeAvp(Avp.DESTINATION_HOST);
-    request.getAvps().addAvp(Avp.DESTINATION_HOST, destHost, true, false,  true);
+    request.getAvps().addAvp(Avp.DESTINATION_HOST, destHost, true, false, true);
   }
 
-  @Override
   public boolean updateRoute(IRequest message) throws RouteException, AvpDataException {
     AvpSet set = message.getAvps();
     Avp destRealmAvp = set.getAvp(Avp.DESTINATION_REALM);
@@ -667,7 +658,7 @@ public class RouterImpl implements IRouter {
             break;
           case REALM_AND_APPLICATION: // Usage type: REALM AND APPLICATION
             matchedEntry = destRealm != null & appId != null & e.primaryKey != null & e.secondaryKey != null & destRealm.equals(e.primaryKey)
-              & appId.equals(e.secondaryKey);
+                & appId.equals(e.secondaryKey);
             break;
           case ALL_APPLICATION: // Usage type: ALL APPLICATION
             matchedEntry = appId != null & e.secondaryKey != null & appId.equals(e.secondaryKey);
@@ -685,7 +676,7 @@ public class RouterImpl implements IRouter {
           //String newDestRealm = getRealmForPeer(destHost);
           //setRouteInfo(message, destRealm, newDestHost);
           updateRoute(message, newDestHost);
-          logger.debug("Redirect message from host={}; to new-host={}, realm={} ", new Object[] { destHost, newDestHost, destRealm});
+          logger.debug("Redirect message from host={}; to new-host={}, realm={} ", new Object[]{destHost, newDestHost, destRealm});
           return true;
         }
       }
@@ -700,7 +691,6 @@ public class RouterImpl implements IRouter {
     return null;
   }
 
-  @Override
   public void start() {
     if (isStopped) {
       //redirectScheduler = concurrentFactory.getScheduledExecutorService(RedirectMessageTimer.name());
@@ -709,7 +699,6 @@ public class RouterImpl implements IRouter {
     }
   }
 
-  @Override
   public void stop() {
     isStopped = true;
     // if (redirectEntryHandler != null) {
@@ -730,7 +719,6 @@ public class RouterImpl implements IRouter {
     //}
   }
 
-  @Override
   public void destroy() {
     try {
       if (!isStopped) {
@@ -745,6 +733,10 @@ public class RouterImpl implements IRouter {
     //redirectScheduler = null;
     redirectTable = null;
     requestEntryMap = null;
+  }
+
+  protected IPeer selectPeer(List<IPeer> availablePeers, IMessage message) {
+    return selectPeer(availablePeers);
   }
 
   protected IPeer selectPeer(List<IPeer> availablePeers) {
@@ -873,7 +865,6 @@ public class RouterImpl implements IRouter {
       return createTime + liveTime;
     }
 
-    @Override
     public int hashCode() {
       int result = (primaryKey != null ? primaryKey.hashCode() : 0);
       result = 31 * result + (secondaryKey != null ? secondaryKey.hashCode() : 0);
@@ -883,7 +874,6 @@ public class RouterImpl implements IRouter {
       return result;
     }
 
-    @Override
     public boolean equals(Object other) {
       if (other == this) {
         return true;
@@ -938,7 +928,6 @@ public class RouterImpl implements IRouter {
       return super.hashCode();
     }
 
-    @Override
     public boolean equals(Object o) {
       if (this == o) {
         return true;
@@ -950,9 +939,31 @@ public class RouterImpl implements IRouter {
       return hopByHopId == that.hopByHopId;
     }
 
-    @Override
     public String toString() {
-      return "AnswerEntry {" + "createTime=" + createTime + ", hopByHopId=" + hopByHopId + '}';
+      return "AnswerEntry{" + "createTime=" + createTime + ", hopByHopId=" + hopByHopId + '}';
+    }
+  }
+
+  protected String dumpRoundRobinContext() {
+    return "Load balancing is not supported";
+  }
+
+  protected int getLastSelectedRating() {
+    return Integer.MIN_VALUE;
+  }
+
+  @Override
+  public boolean isWrapperFor(Class<?> aClass) {
+    return aClass == IRouter.class;
+  }
+
+  @Override
+  public <T> T unwrap(Class<T> aClass) {
+    if (aClass == IRouter.class) {
+      return aClass.cast(this);
+    }
+    else {
+      return null;
     }
   }
 }

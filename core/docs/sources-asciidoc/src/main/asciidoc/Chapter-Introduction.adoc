@@ -1,7 +1,7 @@
 [[_introduction]]
 = Introduction to {this-platform}  Diameter
 
-Diameter is a computer networking protocol for Authentication, Authorization and Accounting (), as defined in RFC3588.
+Diameter is a computer networking protocol for Authentication, Authorization and Accounting (AAA), as defined in RFC3588.
 It is a successor to RADIUS, and has been designed to overcome certain RADIUS limitations:
 
 * No transport reliability and flexibility (Diameter uses TCP/SCTP instead of UDP).
