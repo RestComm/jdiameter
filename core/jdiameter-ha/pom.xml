@@ -51,9 +51,12 @@
   </profiles>
 
   <properties>
-    <jdiameter.version>1.5.9.0-build538-SNAPSHOT</jdiameter.version>
-    <mobicents.cluster.version>1.15.11</mobicents.cluster.version>
-    <restcomm.cluster.version>3.0.0.8</restcomm.cluster.version>
+    <!--<jdiameter.version>1.5.9.0-build538-SNAPSHOT</jdiameter.version>-->
+
+    <mobicents.cluster.version>1.15.26</mobicents.cluster.version>
+
+    <restcomm.cluster.version>3.0.0.10</restcomm.cluster.version>
+
     <version.infinispan>8.2.4.Final</version.infinispan>
     <version.jboss.logging>3.3.0.Final</version.jboss.logging>
   </properties>
@@ -108,19 +111,19 @@
         <groupId>org.restcomm.cluster</groupId>
         <artifactId>core</artifactId>
         <version>${restcomm.cluster.version}</version>
-        <scope>provided</scope>
+        <!--<scope>provided</scope>-->
       </dependency>
       <dependency>
         <groupId>org.restcomm.cluster</groupId>
         <artifactId>cache</artifactId>
         <version>${restcomm.cluster.version}</version>
-        <scope>provided</scope>
+        <!--<scope>provided</scope>-->
       </dependency>
       <dependency>
         <groupId>org.restcomm.cluster</groupId>
         <artifactId>timers</artifactId>
         <version>${restcomm.cluster.version}</version>
-        <scope>provided</scope>
+        <!--<scope>provided</scope>-->
       </dependency>
     </dependencies>
   </dependencyManagement>
