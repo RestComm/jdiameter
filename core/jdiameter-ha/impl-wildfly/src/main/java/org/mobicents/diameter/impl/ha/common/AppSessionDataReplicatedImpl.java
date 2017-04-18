@@ -43,7 +43,6 @@
 package org.mobicents.diameter.impl.ha.common;
 
 import org.infinispan.tree.Fqn;
-import org.infinispan.tree.Node;
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.common.api.app.IAppSessionData;
@@ -76,13 +75,19 @@ public class AppSessionDataReplicatedImpl extends ClusteredCacheData implements 
   }
 
   public static void setAppSessionIface(ClusteredCacheData ccd, Class<? extends AppSession> iface) {
-    Node n = ccd.getMobicentsCache().getJBossCache().getNode(ccd.getNodeFqn());
-    n.put(SIFACE, iface);
+    //Node n = ccd.getMobicentsCache().getJBossCache().getNode(ccd.getNodeFqn());
+    //n.put(SIFACE, iface);
+    ccd.getMobicentsCache().getJBossCache()
+            .getNode(ccd.getNodeFqn())
+            .put(SIFACE, iface);
   }
 
   public static Class<? extends AppSession> getAppSessionIface(MobicentsCache mcCache, String sessionId) {
-    Node n = mcCache.getJBossCache().getNode(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId));
-    return (Class<AppSession>) n.get(SIFACE);
+    //Node n = mcCache.getJBossCache().getNode(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId));
+    //return (Class<AppSession>) n.get(SIFACE);
+    return (Class<AppSession>) mcCache.getJBossCache()
+            .getNode(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId))
+            .get(SIFACE);
   }
 
   @Override
