@@ -8,7 +8,7 @@ import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.ServiceVerificationHandler;
 import org.jboss.as.jmx.MBeanServerService;
 import org.jboss.dmr.ModelNode;
-import org.jboss.logging.Logger;
+//import org.jboss.logging.Logger;
 import org.jboss.msc.service.ServiceController;
 
 import org.jboss.msc.service.ServiceName;
@@ -24,7 +24,7 @@ class SubsystemAdd extends AbstractBoottimeAddStepHandler {
 
     static final SubsystemAdd INSTANCE = new SubsystemAdd();
 
-    private final Logger log = Logger.getLogger(SubsystemAdd.class);
+    //private final Logger log = Logger.getLogger(SubsystemAdd.class);
 
     private SubsystemAdd() {
     }
@@ -32,7 +32,7 @@ class SubsystemAdd extends AbstractBoottimeAddStepHandler {
     /** {@inheritDoc} */
     @Override
     protected void populateModel(ModelNode operation, ModelNode model) throws OperationFailedException {
-        log.info("Populating the model");
+        //log.info("Populating the model");
         model.setEmptyObject();
     }
 

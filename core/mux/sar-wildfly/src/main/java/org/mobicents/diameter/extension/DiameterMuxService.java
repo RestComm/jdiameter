@@ -1,19 +1,16 @@
 package org.mobicents.diameter.extension;
 
-import org.jboss.logging.Logger;
+//import org.jboss.logging.Logger;
 import org.jboss.msc.service.*;
 import org.jboss.msc.value.InjectedValue;
 import org.mobicents.diameter.stack.DiameterStackMultiplexerAS7;
-import org.mobicents.diameter.stack.DiameterStackMultiplexerAS7MBean;
 
 import javax.management.MBeanServer;
-import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
-import javax.management.StandardMBean;
 
 public class DiameterMuxService implements Service<DiameterMuxService> {
 
-    private final Logger log = Logger.getLogger(DiameterMuxService.class);
+    //private final Logger log = Logger.getLogger(DiameterMuxService.class);
 
     public static ServiceName getServiceName() {
         return ServiceName.of("restcomm","diameter-mux");
@@ -33,7 +30,7 @@ public class DiameterMuxService implements Service<DiameterMuxService> {
 
     @Override
     public void start(StartContext context) throws StartException {
-        log.info("Starting DiameterMuxService");
+        //log.info("Starting DiameterMuxService");
 
         diameterMuxBean = new DiameterStackMultiplexerAS7();
         //try {
@@ -49,7 +46,7 @@ public class DiameterMuxService implements Service<DiameterMuxService> {
 
     @Override
     public void stop(StopContext context) {
-        log.info("Stopping DiameterMuxService");
+        //log.info("Stopping DiameterMuxService");
 
         diameterMuxBean.stopService();
         unregisterMBean(DiameterStackMultiplexerAS7.OBJECT_NAME);
@@ -67,7 +64,7 @@ public class DiameterMuxService implements Service<DiameterMuxService> {
         try {
             getMbeanServer().getValue().unregisterMBean(new ObjectName(name));
         } catch (Throwable e) {
-            log.error("failed to unregister mbean", e);
+            //log.error("failed to unregister mbean", e);
         }
     }
 }
