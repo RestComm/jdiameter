@@ -17,15 +17,17 @@
 
   <modules>
     <module>api</module>
+    <module>impl</module>
     <!--<module>impl-jboss5</module>-->
     <!--<module>impl-wildfly</module>-->
   </modules>
 
   <profiles>
+    <!--
     <profile>
       <id>jboss5</id>
       <activation>
-        <!--<activeByDefault>false</activeByDefault>-->
+        <!- -<activeByDefault>false</activeByDefault>- ->
         <property>
           <name>ha.impl</name>
           <value>jboss5</value>
@@ -38,7 +40,7 @@
     <profile>
       <id>wildfly</id>
       <activation>
-        <!--<activeByDefault>true</activeByDefault>-->
+        <!- -<activeByDefault>true</activeByDefault>- ->
         <property>
           <name>ha.impl</name>
           <value>wildfly</value>
@@ -48,17 +50,18 @@
         <module>impl-wildfly</module>
       </modules>
     </profile>
+    -->
   </profiles>
 
   <properties>
     <!--<jdiameter.version>1.5.9.0-build538-SNAPSHOT</jdiameter.version>-->
-
-    <mobicents.cluster.version>1.15.26</mobicents.cluster.version>
-
+    <!--
+    <mobicents.cluster.version>1.15.0-SNAPSHOT</mobicents.cluster.version>
     <restcomm.cluster.version>3.0.0.10</restcomm.cluster.version>
+    -->
 
-    <version.infinispan>8.2.4.Final</version.infinispan>
-    <version.jboss.logging>3.3.0.Final</version.jboss.logging>
+    <!--<cluster.version>1.15.0-SNAPSHOT</cluster.version>-->
+    <cluster.version>3.0.0-SNAPSHOT</cluster.version>
   </properties>
 
   <dependencyManagement>
@@ -74,6 +77,7 @@
         <version>${project.version}</version>
       </dependency>
 
+      <!--
       <dependency>
         <groupId>org.mobicents.cluster</groupId>
         <artifactId>core</artifactId>
@@ -89,13 +93,14 @@
         <artifactId>timers</artifactId>
         <version>${mobicents.cluster.version}</version>
       </dependency>
+      -->
 
+      <!--
       <dependency>
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging</artifactId>
         <version>${version.jboss.logging}</version>
       </dependency>
-
       <dependency>
         <groupId>org.infinispan</groupId>
         <artifactId>infinispan-core</artifactId>
@@ -106,23 +111,24 @@
         <artifactId>infinispan-tree</artifactId>
         <version>${version.infinispan}</version>
       </dependency>
+      -->
 
       <dependency>
         <groupId>org.restcomm.cluster</groupId>
         <artifactId>core</artifactId>
-        <version>${restcomm.cluster.version}</version>
+        <version>${cluster.version}</version>
         <!--<scope>provided</scope>-->
       </dependency>
       <dependency>
         <groupId>org.restcomm.cluster</groupId>
         <artifactId>cache</artifactId>
-        <version>${restcomm.cluster.version}</version>
+        <version>${cluster.version}</version>
         <!--<scope>provided</scope>-->
       </dependency>
       <dependency>
         <groupId>org.restcomm.cluster</groupId>
         <artifactId>timers</artifactId>
-        <version>${restcomm.cluster.version}</version>
+        <version>${cluster.version}</version>
         <!--<scope>provided</scope>-->
       </dependency>
     </dependencies>

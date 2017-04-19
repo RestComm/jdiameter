@@ -39,26 +39,30 @@
     </profile>
     <profile>
       <id>jboss5</id>
+      <!--
       <activation>
-        <!--<activeByDefault>false</activeByDefault>-->
+        <!- -<activeByDefault>false</activeByDefault>- ->
         <property>
           <name>ha.impl</name>
           <value>jboss5</value>
         </property>
       </activation>
+      -->
       <modules>
         <module>sar-jboss-5</module>
       </modules>
     </profile>
     <profile>
       <id>wildfly</id>
+      <!--
       <activation>
-        <!--<activeByDefault>true</activeByDefault>-->
+        <!- -<activeByDefault>true</activeByDefault>- ->
         <property>
           <name>ha.impl</name>
           <value>wildfly</value>
         </property>
       </activation>
+      -->
       <modules>
         <module>sar-wildfly</module>
       </modules>
@@ -84,7 +88,8 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>jdiameter-ha-impl-${ha.impl}</artifactId>
+        <!--<artifactId>jdiameter-ha-impl-${ha.impl}</artifactId>-->
+        <artifactId>jdiameter-ha-impl</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>

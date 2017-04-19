@@ -47,7 +47,8 @@
 
     <dependency>
       <groupId>org.mobicents.diameter</groupId>
-      <artifactId>jdiameter-ha-impl-${ha.impl}</artifactId>
+      <!--<artifactId>jdiameter-ha-impl-${ha.impl}</artifactId>-->
+      <artifactId>jdiameter-ha-impl</artifactId>
     </dependency>
   </dependencies>
 
