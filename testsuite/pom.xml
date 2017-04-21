@@ -22,7 +22,6 @@
     <slf4j.version>1.7.2</slf4j.version>
     <junit.version>4.11</junit.version>
     <version.surefire>2.19</version.surefire>
-    <ha.impl>wildfly</ha.impl>
   </properties>
 
   <dependencyManagement>
@@ -45,7 +44,7 @@
       </dependency>
       <dependency>
         <groupId>org.mobicents.diameter</groupId>
-        <artifactId>jdiameter-ha-impl-${ha.impl}</artifactId>
+        <artifactId>jdiameter-ha-impl</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
