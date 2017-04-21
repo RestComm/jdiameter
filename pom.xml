@@ -234,7 +234,7 @@
   </build>
 
   <profiles>
-    <!--
+
     <profile>
       <id>jboss5</id>
       <activation>
@@ -253,7 +253,7 @@
         <cluster.version>3.0.0-SNAPSHOT</cluster.version>
       </properties>
     </profile>
-    -->
+
     <profile>
       <id>testsuite</id>
       <modules>
