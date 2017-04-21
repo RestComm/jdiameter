@@ -19,8 +19,6 @@
     <jdiameter.version>1.5.9.0-build538-SNAPSHOT</jdiameter.version>
     <jdiameter-ha.version>1.1.0-SNAPSHOT</jdiameter-ha.version>
     -->
-
-    <!--<ha.impl>wildfly</ha.impl>-->
   </properties>
 
   <packaging>pom</packaging>
@@ -41,11 +39,7 @@
       <id>jboss5</id>
       <!--
       <activation>
-        <!- -<activeByDefault>false</activeByDefault>- ->
-        <property>
-          <name>ha.impl</name>
-          <value>jboss5</value>
-        </property>
+        <activeByDefault>false</activeByDefault>
       </activation>
       -->
       <modules>
@@ -56,11 +50,7 @@
       <id>wildfly</id>
       <!--
       <activation>
-        <!- -<activeByDefault>true</activeByDefault>- ->
-        <property>
-          <name>ha.impl</name>
-          <value>wildfly</value>
-        </property>
+        <activeByDefault>false</activeByDefault>
       </activation>
       -->
       <modules>
@@ -88,7 +78,6 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <!--<artifactId>jdiameter-ha-impl-${ha.impl}</artifactId>-->
         <artifactId>jdiameter-ha-impl</artifactId>
         <version>${project.version}</version>
       </dependency>

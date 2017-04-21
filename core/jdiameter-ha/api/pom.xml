@@ -53,10 +53,12 @@
     </dependency>
     -->
 
+    <!--
     <dependency>
       <groupId>org.restcomm.cluster</groupId>
       <artifactId>timers</artifactId>
     </dependency>
+    -->
   </dependencies>
 
 </project>

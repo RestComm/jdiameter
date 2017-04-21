@@ -18,50 +18,10 @@
   <modules>
     <module>api</module>
     <module>impl</module>
-    <!--<module>impl-jboss5</module>-->
-    <!--<module>impl-wildfly</module>-->
   </modules>
 
-  <profiles>
-    <!--
-    <profile>
-      <id>jboss5</id>
-      <activation>
-        <!- -<activeByDefault>false</activeByDefault>- ->
-        <property>
-          <name>ha.impl</name>
-          <value>jboss5</value>
-        </property>
-      </activation>
-      <modules>
-        <module>impl-jboss5</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>wildfly</id>
-      <activation>
-        <!- -<activeByDefault>true</activeByDefault>- ->
-        <property>
-          <name>ha.impl</name>
-          <value>wildfly</value>
-        </property>
-      </activation>
-      <modules>
-        <module>impl-wildfly</module>
-      </modules>
-    </profile>
-    -->
-  </profiles>
-
   <properties>
-    <!--<jdiameter.version>1.5.9.0-build538-SNAPSHOT</jdiameter.version>-->
-    <!--
-    <mobicents.cluster.version>1.15.0-SNAPSHOT</mobicents.cluster.version>
-    <restcomm.cluster.version>3.0.0.10</restcomm.cluster.version>
-    -->
-
     <!--<cluster.version>1.15.0-SNAPSHOT</cluster.version>-->
-    <cluster.version>3.0.0-SNAPSHOT</cluster.version>
   </properties>
 
   <dependencyManagement>
@@ -76,42 +36,6 @@
         <artifactId>jdiameter-impl</artifactId>
         <version>${project.version}</version>
       </dependency>
-
-      <!--
-      <dependency>
-        <groupId>org.mobicents.cluster</groupId>
-        <artifactId>core</artifactId>
-        <version>${mobicents.cluster.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mobicents.cluster</groupId>
-        <artifactId>cache</artifactId>
-        <version>${mobicents.cluster.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mobicents.cluster</groupId>
-        <artifactId>timers</artifactId>
-        <version>${mobicents.cluster.version}</version>
-      </dependency>
-      -->
-
-      <!--
-      <dependency>
-        <groupId>org.jboss.logging</groupId>
-        <artifactId>jboss-logging</artifactId>
-        <version>${version.jboss.logging}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.infinispan</groupId>
-        <artifactId>infinispan-core</artifactId>
-        <version>${version.infinispan}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.infinispan</groupId>
-        <artifactId>infinispan-tree</artifactId>
-        <version>${version.infinispan}</version>
-      </dependency>
-      -->
 
       <dependency>
         <groupId>org.restcomm.cluster</groupId>

@@ -126,9 +126,11 @@
             <exclude>org.slf4j:slf4j-api</exclude>
             <exclude>org.slf4j:slf4j-log4j12</exclude>
             -->
+            <!--
             <exclude>org.restcomm.cluster:core</exclude>
             <exclude>org.restcomm.cluster:cache</exclude>
             <exclude>org.restcomm.cluster:timers</exclude>
+            -->
           </excludes>
         </configuration>
       </plugin>
@@ -152,6 +154,8 @@
                   <zipfileset src="target/${project.build.finalName}/lib/restcomm-diameter-mux-jar-${project.version}.jar" excludes="META-INF/*.xml,org/mobicents/diameter/stack/*AS7*.class"/>
                 </zip>
                 <move file="target/${project.build.finalName}/restcomm-diameter.zip" tofile="target/${project.build.finalName}/lib/restcomm-diameter-mux-jar-${project.version}.jar" />
+                <move file="target/${project.build.finalName}/config/jdiameter-jbc.xml"
+                      tofile="target/${project.build.finalName}/config/jdiameter-cache.xml"/>
 
                 <copy todir="${jboss.dir}/server/${node}/deploy/${project.build.finalName}.sar">
                   <fileset dir="target/${project.build.finalName}">
