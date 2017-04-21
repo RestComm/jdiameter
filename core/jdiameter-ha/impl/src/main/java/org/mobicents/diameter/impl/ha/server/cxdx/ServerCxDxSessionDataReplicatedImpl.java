@@ -42,7 +42,7 @@
 
 package org.mobicents.diameter.impl.ha.server.cxdx;
 
-import org.jboss.cache.Fqn;
+import org.restcomm.cache.FqnWrapper;
 import org.jdiameter.api.cxdx.ServerCxDxSession;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.common.api.app.cxdx.CxDxSessionState;
@@ -59,12 +59,12 @@ import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 public class ServerCxDxSessionDataReplicatedImpl extends CxDxSessionDataReplicatedImpl implements IServerCxDxSessionData {
 
   /**
-   * @param nodeFqn
+   * @param nodeFqnWrapper
    * @param mobicentsCluster
-   * @param iface
+   * @param container
    */
-  public ServerCxDxSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
-    super(nodeFqn, mobicentsCluster, container);
+  public ServerCxDxSessionDataReplicatedImpl(FqnWrapper nodeFqnWrapper, MobicentsCluster mobicentsCluster, IContainer container) {
+    super(nodeFqnWrapper, mobicentsCluster, container);
 
     if (super.create()) {
       setAppSessionIface(this, ServerCxDxSession.class);
@@ -75,10 +75,13 @@ public class ServerCxDxSessionDataReplicatedImpl extends CxDxSessionDataReplicat
   /**
    * @param sessionId
    * @param mobicentsCluster
-   * @param iface
+   * @param container
    */
   public ServerCxDxSessionDataReplicatedImpl(String sessionId, MobicentsCluster mobicentsCluster, IContainer container) {
-    this(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId), mobicentsCluster, container);
+    this(
+      FqnWrapper.fromRelativeElementsWrapper(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId),
+      mobicentsCluster, container
+    );
   }
 
 }

@@ -42,7 +42,7 @@
 
 package org.mobicents.diameter.impl.ha.client.rx;
 
-import org.jboss.cache.Fqn;
+import org.restcomm.cache.FqnWrapper;
 import org.jdiameter.api.rx.ClientRxSession;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.impl.app.rx.IClientRxSessionData;
@@ -63,12 +63,12 @@ public class ClientRxSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   private static final String STATE = "STATE";
 
   /**
-   * @param nodeFqn
+   * @param nodeFqnWrapper
    * @param mobicentsCluster
-   * @param iface
+   * @param container
    */
-  public ClientRxSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
-    super(nodeFqn, mobicentsCluster);
+  public ClientRxSessionDataReplicatedImpl(FqnWrapper nodeFqnWrapper, MobicentsCluster mobicentsCluster, IContainer container) {
+    super(nodeFqnWrapper, mobicentsCluster);
 
     if (super.create()) {
       setAppSessionIface(this, ClientRxSession.class);
@@ -79,16 +79,19 @@ public class ClientRxSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   /**
    * @param sessionId
    * @param mobicentsCluster
-   * @param iface
+   * @param container
    */
   public ClientRxSessionDataReplicatedImpl(String sessionId, MobicentsCluster mobicentsCluster, IContainer container) {
-    this(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId), mobicentsCluster, container);
+    this(
+      FqnWrapper.fromRelativeElementsWrapper(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId),
+      mobicentsCluster, container
+    );
   }
 
   @Override
   public boolean isEventBased() {
     if (exists()) {
-      return toPrimitive((Boolean) getNode().get(EVENT_BASED), true);
+      return toPrimitive((Boolean) getNodeValue(EVENT_BASED), true);
     } else {
       throw new IllegalStateException();
     }
@@ -97,7 +100,7 @@ public class ClientRxSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setEventBased(boolean isEventBased) {
     if (exists()) {
-      getNode().put(EVENT_BASED, isEventBased);
+      putNodeValue(EVENT_BASED, isEventBased);
     } else {
       throw new IllegalStateException();
     }
@@ -106,7 +109,7 @@ public class ClientRxSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public boolean isRequestTypeSet() {
     if (exists()) {
-      return toPrimitive((Boolean) getNode().get(REQUEST_TYPE), false);
+      return toPrimitive((Boolean) getNodeValue(REQUEST_TYPE), false);
     } else {
       throw new IllegalStateException();
     }
@@ -115,7 +118,7 @@ public class ClientRxSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setRequestTypeSet(boolean requestTypeSet) {
     if (exists()) {
-      getNode().put(REQUEST_TYPE, requestTypeSet);
+      putNodeValue(REQUEST_TYPE, requestTypeSet);
     } else {
       throw new IllegalStateException();
     }
@@ -124,7 +127,7 @@ public class ClientRxSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public ClientRxSessionState getClientRxSessionState() {
     if (exists()) {
-      return (ClientRxSessionState) getNode().get(STATE);
+      return (ClientRxSessionState) getNodeValue(STATE);
     } else {
       throw new IllegalStateException();
     }
@@ -133,7 +136,7 @@ public class ClientRxSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setClientRxSessionState(ClientRxSessionState state) {
     if (exists()) {
-      getNode().put(STATE, state);
+      putNodeValue(STATE, state);
     } else {
       throw new IllegalStateException();
     }

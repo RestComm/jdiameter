@@ -46,7 +46,6 @@ import java.util.HashMap;
 
 import javax.transaction.TransactionManager;
 
-import org.jboss.cache.Fqn;
 import org.jdiameter.api.BaseSession;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.NetworkReqListener;
@@ -68,6 +67,7 @@ import org.jdiameter.common.api.app.s13.IS13SessionData;
 import org.jdiameter.common.api.app.sh.IShSessionData;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.impl.data.LocalDataSource;
+import org.restcomm.cache.FqnWrapper;
 import org.restcomm.cache.MobicentsCache;
 import org.restcomm.cluster.DataRemovalListener;
 import org.restcomm.cluster.DefaultMobicentsCluster;
@@ -96,7 +96,7 @@ import org.slf4j.LoggerFactory;
 public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemovalListener {
 
   private static final Logger logger = LoggerFactory.getLogger(ReplicatedSessionDatasource.class);
-  public static final String CLUSTER_DS_DEFAULT_FILE = "jdiameter-jbc.xml";
+  public static final String CLUSTER_DS_DEFAULT_FILE = "jdiameter-cache.xml";
   private IContainer container;
   private ISessionDatasource localDataSource;
 
@@ -110,7 +110,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
   // Constants
   // ----------------------------------------------------------------
   public static final String SESSIONS = "/diameter/appsessions";
-  public static final Fqn SESSIONS_FQN = Fqn.fromString(SESSIONS);
+  public static final FqnWrapper SESSIONS_FQN = FqnWrapper.fromStringWrapper(SESSIONS);
 
   public ReplicatedSessionDatasource(IContainer container) {
     this(container, new LocalDataSource(), ReplicatedSessionDatasource.class.getClassLoader().getResource(CLUSTER_DS_DEFAULT_FILE) == null ?
@@ -121,14 +121,17 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
     super();
     this.localDataSource = localDataSource;
 
-    MobicentsCache mcCache = new MobicentsCache(cacheConfigFilename);
+    MobicentsCache mcCache = null;
     TransactionManager txMgr = null;
     try {
-      Class<?> txMgrClass = Class.forName(mcCache.getJBossCache().getConfiguration().getTransactionManagerLookupClass());
-      Object txMgrLookup = txMgrClass.getConstructor(new Class[]{}).newInstance(new Object[]{});
-      txMgr = (TransactionManager) txMgrClass.getMethod("getTransactionManager", new Class[]{}).invoke(txMgrLookup, new Object[]{});
-    }
-    catch (Exception e) {
+      mcCache = new MobicentsCache(cacheConfigFilename);
+
+      // TODO: TxManager
+
+      //Class<?> txMgrClass = Class.forName(mcCache.getJBossCache().getConfiguration().getTransactionManagerLookupClass());
+      //Object txMgrLookup = txMgrClass.getConstructor(new Class[]{}).newInstance(new Object[]{});
+      //txMgr = (TransactionManager) txMgrClass.getMethod("getTransactionManager", new Class[]{}).invoke(txMgrLookup, new Object[]{});
+    } catch (Exception e) {
       logger.debug("Could not fetch TxMgr. Not using one.", e);
       // let's not have Tx Manager than...
     }
@@ -295,13 +298,13 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
   }
 
   @Override
-  public void dataRemoved(Fqn sessionFqn) {
+  public void dataRemoved(FqnWrapper sessionFqn) {
     String sessionId = (String) sessionFqn.getLastElement();
     this.localDataSource.removeSession(sessionId);
   }
 
   @Override
-  public Fqn getBaseFqn() {
+  public FqnWrapper getBaseFqn() {
     return SESSIONS_FQN;
   }
 
@@ -310,7 +313,9 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
    * @return
    */
   private boolean existReplicated(String sessionId) {
-    if (!this.localMode && this.mobicentsCluster.getMobicentsCache().getJBossCache().getNode(Fqn.fromRelativeElements(SESSIONS_FQN, sessionId)) != null) {
+    if (!this.localMode &&
+        this.mobicentsCluster.getMobicentsCache()
+          .getCacheNode(FqnWrapper.fromRelativeElementsWrapper(SESSIONS_FQN, sessionId)) != null) {
       return true;
     }
     return false;

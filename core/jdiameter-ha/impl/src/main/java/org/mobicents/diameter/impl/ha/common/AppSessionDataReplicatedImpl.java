@@ -42,7 +42,7 @@
 
 package org.mobicents.diameter.impl.ha.common;
 
-import org.jboss.cache.Fqn;
+import org.restcomm.cache.FqnWrapper;
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.common.api.app.IAppSessionData;
@@ -63,42 +63,42 @@ public class AppSessionDataReplicatedImpl extends ClusteredCacheData implements 
   protected static final String SIFACE = "SIFACE";
 
   /**
-   * @param nodeFqn
+   * @param nodeFqnWrapper
    * @param mobicentsCluster
    */
-  public AppSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster) {
-    super(nodeFqn, mobicentsCluster);
+  public AppSessionDataReplicatedImpl(FqnWrapper nodeFqnWrapper, MobicentsCluster mobicentsCluster) {
+    super(nodeFqnWrapper, mobicentsCluster);
   }
 
   public AppSessionDataReplicatedImpl(String sessionId, MobicentsCluster mobicentsCluster) {
-    this(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId), mobicentsCluster);
+    this(
+      FqnWrapper.fromRelativeElementsWrapper(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId),
+      mobicentsCluster
+    );
   }
 
   public static void setAppSessionIface(ClusteredCacheData ccd, Class<? extends AppSession> iface) {
-    //Node n = ccd.getMobicentsCache().getJBossCache().getNode(ccd.getNodeFqn());
-    //n.put(SIFACE, iface);
-    ccd.getMobicentsCache().getJBossCache()
-            .getNode(ccd.getNodeFqn())
-            .put(SIFACE, iface);
+    ccd.getMobicentsCache().putCacheNodeValue(ccd.getNodeFqnWrapper(), SIFACE, iface);
   }
 
   public static Class<? extends AppSession> getAppSessionIface(MobicentsCache mcCache, String sessionId) {
-    //Node n = mcCache.getJBossCache().getNode(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId));
-    //return (Class<AppSession>) n.get(SIFACE);
-    return (Class<AppSession>) mcCache.getJBossCache()
-            .getNode(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId))
-            .get(SIFACE);
+    @SuppressWarnings("unchecked")
+    Class<AppSession> value = (Class<AppSession>) mcCache.getCacheNodeValue(
+            FqnWrapper.fromRelativeElementsWrapper(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId),
+            SIFACE
+    );
+    return value;
   }
 
   @Override
   public String getSessionId() {
-    return (String) super.getNodeFqn().getLastElement();
+    return (String) super.getNodeFqnLastElement();
   }
 
   @Override
   public void setApplicationId(ApplicationId applicationId) {
     if (exists()) {
-      getNode().put(APID, applicationId);
+      putNodeValue(APID, applicationId);
     }
     else {
       throw new IllegalStateException();
@@ -108,7 +108,7 @@ public class AppSessionDataReplicatedImpl extends ClusteredCacheData implements 
   @Override
   public ApplicationId getApplicationId() {
     if (exists()) {
-      return (ApplicationId) getNode().get(APID);
+      return (ApplicationId) getNodeValue(APID);
     }
     else {
       throw new IllegalStateException();

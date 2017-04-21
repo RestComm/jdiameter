@@ -44,7 +44,7 @@ package org.mobicents.diameter.impl.ha.server.ro;
 
 import java.io.Serializable;
 
-import org.jboss.cache.Fqn;
+import org.restcomm.cache.FqnWrapper;
 import org.jdiameter.api.ro.ServerRoSession;
 import org.jdiameter.common.api.app.ro.ServerRoSessionState;
 import org.jdiameter.server.impl.app.ro.IServerRoSessionData;
@@ -64,12 +64,11 @@ public class ServerRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   private static final String STATE = "STATE";
 
   /**
-   * @param nodeFqn
+   * @param nodeFqnWrapper
    * @param mobicentsCluster
-   * @param iface
    */
-  public ServerRoSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster) {
-    super(nodeFqn, mobicentsCluster);
+  public ServerRoSessionDataReplicatedImpl(FqnWrapper nodeFqnWrapper, MobicentsCluster mobicentsCluster) {
+    super(nodeFqnWrapper, mobicentsCluster);
 
     if (super.create()) {
       setAppSessionIface(this, ServerRoSession.class);
@@ -80,10 +79,12 @@ public class ServerRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   /**
    * @param sessionId
    * @param mobicentsCluster
-   * @param iface
    */
   public ServerRoSessionDataReplicatedImpl(String sessionId, MobicentsCluster mobicentsCluster) {
-    this(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId), mobicentsCluster);
+    this(
+      FqnWrapper.fromRelativeElementsWrapper(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId),
+      mobicentsCluster
+    );
   }
 
   /*
@@ -94,7 +95,7 @@ public class ServerRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public boolean isStateless() {
     if (exists()) {
-      return toPrimitive((Boolean) getNode().get(STATELESS), true);
+      return toPrimitive((Boolean) getNodeValue(STATELESS), true);
     }
     else {
       throw new IllegalStateException();
@@ -109,7 +110,7 @@ public class ServerRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setStateless(boolean stateless) {
     if (exists()) {
-      getNode().put(STATELESS, stateless);
+      putNodeValue(STATELESS, stateless);
     }
     else {
       throw new IllegalStateException();
@@ -124,7 +125,7 @@ public class ServerRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public ServerRoSessionState getServerRoSessionState() {
     if (exists()) {
-      return (ServerRoSessionState) getNode().get(STATE);
+      return (ServerRoSessionState) getNodeValue(STATE);
     }
     else {
       throw new IllegalStateException();
@@ -140,7 +141,7 @@ public class ServerRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setServerRoSessionState(ServerRoSessionState state) {
     if (exists()) {
-      getNode().put(STATE, state);
+      putNodeValue(STATE, state);
     }
     else {
       throw new IllegalStateException();
@@ -155,7 +156,7 @@ public class ServerRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setTccTimerId(Serializable tccTimerId) {
     if (exists()) {
-      getNode().put(TCCID, tccTimerId);
+      putNodeValue(TCCID, tccTimerId);
     }
     else {
       throw new IllegalStateException();
@@ -170,7 +171,7 @@ public class ServerRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public Serializable getTccTimerId() {
     if (exists()) {
-      return (Serializable) getNode().get(TCCID);
+      return (Serializable) getNodeValue(TCCID);
     }
     else {
       throw new IllegalStateException();

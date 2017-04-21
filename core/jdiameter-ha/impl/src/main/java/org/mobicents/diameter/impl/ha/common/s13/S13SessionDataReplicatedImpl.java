@@ -22,7 +22,7 @@ package org.mobicents.diameter.impl.ha.common.s13;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-import org.jboss.cache.Fqn;
+import org.restcomm.cache.FqnWrapper;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Request;
 import org.jdiameter.client.api.IContainer;
@@ -52,12 +52,12 @@ public abstract class S13SessionDataReplicatedImpl extends AppSessionDataReplica
   private IMessageParser messageParser;
 
   /**
-   * @param nodeFqn
+   * @param nodeFqnWrapper
    * @param mobicentsCluster
-   * @param iface
+   * @param container
    */
-  public S13SessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
-    super(nodeFqn, mobicentsCluster);
+  public S13SessionDataReplicatedImpl(FqnWrapper nodeFqnWrapper, MobicentsCluster mobicentsCluster, IContainer container) {
+    super(nodeFqnWrapper, mobicentsCluster);
     this.messageParser = container.getAssemblerFacility().getComponentInstance(IMessageParser.class);
   }
 
@@ -69,7 +69,7 @@ public abstract class S13SessionDataReplicatedImpl extends AppSessionDataReplica
   @Override
   public void setS13SessionState(S13SessionState state) {
     if (exists()) {
-      getNode().put(STATE, state);
+      putNodeValue(STATE, state);
     }
     else {
       throw new IllegalStateException();
@@ -84,7 +84,7 @@ public abstract class S13SessionDataReplicatedImpl extends AppSessionDataReplica
   @Override
   public S13SessionState getS13SessionState() {
     if (exists()) {
-      return (S13SessionState) getNode().get(STATE);
+      return (S13SessionState) getNodeValue(STATE);
     }
     else {
       throw new IllegalStateException();
@@ -99,7 +99,7 @@ public abstract class S13SessionDataReplicatedImpl extends AppSessionDataReplica
   @Override
   public Serializable getTsTimerId() {
     if (exists()) {
-      return (Serializable) getNode().get(TS_TIMERID);
+      return (Serializable) getNodeValue(TS_TIMERID);
     }
     else {
       throw new IllegalStateException();
@@ -114,7 +114,7 @@ public abstract class S13SessionDataReplicatedImpl extends AppSessionDataReplica
   @Override
   public void setTsTimerId(Serializable tid) {
     if (exists()) {
-      getNode().put(TS_TIMERID, tid);
+      putNodeValue(TS_TIMERID, tid);
     }
     else {
       throw new IllegalStateException();
@@ -123,7 +123,7 @@ public abstract class S13SessionDataReplicatedImpl extends AppSessionDataReplica
 
   @Override
   public Request getBuffer() {
-    byte[] data = (byte[]) getNode().get(BUFFER);
+    byte[] data = (byte[]) getNodeValue(BUFFER);
     if (data != null) {
       try {
         return this.messageParser.createMessage(ByteBuffer.wrap(data));
@@ -143,14 +143,14 @@ public abstract class S13SessionDataReplicatedImpl extends AppSessionDataReplica
     if (buffer != null) {
       try {
         byte[] data = this.messageParser.encodeMessage((IMessage) buffer).array();
-        getNode().put(BUFFER, data);
+        putNodeValue(BUFFER, data);
       }
       catch (ParseException e) {
         logger.error("Unable to encode message to buffer.");
       }
     }
     else {
-      getNode().remove(BUFFER);
+      removeNodeValue(BUFFER);
     }
   }
 }

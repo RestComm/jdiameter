@@ -45,7 +45,7 @@ package org.mobicents.diameter.impl.ha.client.ro;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-import org.jboss.cache.Fqn;
+import org.restcomm.cache.FqnWrapper;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.ro.ClientRoSession;
@@ -83,12 +83,12 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   private IMessageParser messageParser;
 
   /**
-   * @param nodeFqn
+   * @param nodeFqnWrapper
    * @param mobicentsCluster
-   * @param iface
+   * @param container
    */
-  public ClientRoSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
-    super(nodeFqn, mobicentsCluster);
+  public ClientRoSessionDataReplicatedImpl(FqnWrapper nodeFqnWrapper, MobicentsCluster mobicentsCluster, IContainer container) {
+    super(nodeFqnWrapper, mobicentsCluster);
 
     if (super.create()) {
       setAppSessionIface(this, ClientRoSession.class);
@@ -101,16 +101,19 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   /**
    * @param sessionId
    * @param mobicentsCluster
-   * @param iface
+   * @param container
    */
   public ClientRoSessionDataReplicatedImpl(String sessionId, MobicentsCluster mobicentsCluster, IContainer container) {
-    this(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId), mobicentsCluster, container);
+    this(
+      FqnWrapper.fromRelativeElementsWrapper(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId),
+      mobicentsCluster, container
+    );
   }
 
   @Override
   public boolean isEventBased() {
     if (exists()) {
-      return toPrimitive((Boolean) getNode().get(EVENT_BASED), true);
+      return toPrimitive((Boolean) getNodeValue(EVENT_BASED), true);
     }
     else {
       throw new IllegalStateException();
@@ -120,7 +123,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setEventBased(boolean isEventBased) {
     if (exists()) {
-      getNode().put(EVENT_BASED, isEventBased);
+      putNodeValue(EVENT_BASED, isEventBased);
     }
     else {
       throw new IllegalStateException();
@@ -130,7 +133,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public boolean isRequestTypeSet() {
     if (exists()) {
-      return toPrimitive((Boolean) getNode().get(REQUEST_TYPE), false);
+      return toPrimitive((Boolean) getNodeValue(REQUEST_TYPE), false);
     }
     else {
       throw new IllegalStateException();
@@ -140,7 +143,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setRequestTypeSet(boolean requestTypeSet) {
     if (exists()) {
-      getNode().put(REQUEST_TYPE, requestTypeSet);
+      putNodeValue(REQUEST_TYPE, requestTypeSet);
     }
     else {
       throw new IllegalStateException();
@@ -150,7 +153,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public ClientRoSessionState getClientRoSessionState() {
     if (exists()) {
-      return (ClientRoSessionState) getNode().get(STATE);
+      return (ClientRoSessionState) getNodeValue(STATE);
     }
     else {
       throw new IllegalStateException();
@@ -160,7 +163,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setClientRoSessionState(ClientRoSessionState state) {
     if (exists()) {
-      getNode().put(STATE, state);
+      putNodeValue(STATE, state);
     }
     else {
       throw new IllegalStateException();
@@ -170,7 +173,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public Serializable getTxTimerId() {
     if (exists()) {
-      return (Serializable) getNode().get(TXTIMER_ID);
+      return (Serializable) getNodeValue(TXTIMER_ID);
     }
     else {
       throw new IllegalStateException();
@@ -180,7 +183,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setTxTimerId(Serializable txTimerId) {
     if (exists()) {
-      getNode().put(TXTIMER_ID, txTimerId);
+      putNodeValue(TXTIMER_ID, txTimerId);
     }
     else {
       throw new IllegalStateException();
@@ -190,7 +193,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public Request getTxTimerRequest() {
     if (exists()) {
-      byte[] data = (byte[]) getNode().get(TXTIMER_REQUEST);
+      byte[] data = (byte[]) getNodeValue(TXTIMER_REQUEST);
       if (data != null) {
         try {
           return this.messageParser.createMessage(ByteBuffer.wrap(data));
@@ -215,14 +218,14 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
       if (txTimerRequest != null) {
         try {
           byte[] data = this.messageParser.encodeMessage((IMessage) txTimerRequest).array();
-          getNode().put(TXTIMER_REQUEST, data);
+          putNodeValue(TXTIMER_REQUEST, data);
         }
         catch (ParseException e) {
           logger.error("Unable to encode Tx Timer Request to buffer.");
         }
       }
       else {
-        getNode().remove(TXTIMER_REQUEST);
+        removeNodeValue(TXTIMER_REQUEST);
       }
     }
     else {
@@ -232,7 +235,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
 
   @Override
   public Request getBuffer() {
-    byte[] data = (byte[]) getNode().get(BUFFER);
+    byte[] data = (byte[]) getNodeValue(BUFFER);
     if (data != null) {
       try {
         return this.messageParser.createMessage(ByteBuffer.wrap(data));
@@ -252,21 +255,21 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
     if (buffer != null) {
       try {
         byte[] data = this.messageParser.encodeMessage((IMessage) buffer).array();
-        getNode().put(BUFFER, data);
+        putNodeValue(BUFFER, data);
       }
       catch (ParseException e) {
         logger.error("Unable to encode message to buffer.");
       }
     }
     else {
-      getNode().remove(BUFFER);
+      removeNodeValue(BUFFER);
     }
   }
 
   @Override
   public int getGatheredRequestedAction() {
     if (exists()) {
-      return toPrimitive((Integer) getNode().get(GRA));
+      return toPrimitive((Integer) getNodeValue(GRA));
     }
     else {
       throw new IllegalStateException();
@@ -276,7 +279,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setGatheredRequestedAction(int gatheredRequestedAction) {
     if (exists()) {
-      getNode().put(GRA, gatheredRequestedAction);
+      putNodeValue(GRA, gatheredRequestedAction);
     }
     else {
       throw new IllegalStateException();
@@ -286,7 +289,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public int getGatheredCCFH() {
     if (exists()) {
-      return toPrimitive((Integer) getNode().get(GCCFH));
+      return toPrimitive((Integer) getNodeValue(GCCFH));
     }
     else {
       throw new IllegalStateException();
@@ -296,7 +299,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setGatheredCCFH(int gatheredCCFH) {
     if (exists()) {
-      getNode().put(GCCFH, gatheredCCFH);
+      putNodeValue(GCCFH, gatheredCCFH);
     }
     else {
       throw new IllegalStateException();
@@ -306,7 +309,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public int getGatheredDDFH() {
     if (exists()) {
-      return toPrimitive((Integer) getNode().get(GDDFH));
+      return toPrimitive((Integer) getNodeValue(GDDFH));
     }
     else {
       throw new IllegalStateException();
@@ -316,7 +319,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setGatheredDDFH(int gatheredDDFH) {
     if (exists()) {
-      getNode().put(GDDFH, gatheredDDFH);
+      putNodeValue(GDDFH, gatheredDDFH);
     }
     else {
       throw new IllegalStateException();

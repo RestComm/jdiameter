@@ -45,7 +45,7 @@ package org.mobicents.diameter.impl.ha.client.rf;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-import org.jboss.cache.Fqn;
+import org.restcomm.cache.FqnWrapper;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.rf.ClientRfSession;
@@ -79,12 +79,12 @@ public class ClientRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   private IMessageParser messageParser;
 
   /**
-   * @param nodeFqn
+   * @param nodeFqnWrapper
    * @param mobicentsCluster
-   * @param iface
+   * @param container
    */
-  public ClientRfSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
-    super(nodeFqn, mobicentsCluster);
+  public ClientRfSessionDataReplicatedImpl(FqnWrapper nodeFqnWrapper, MobicentsCluster mobicentsCluster, IContainer container) {
+    super(nodeFqnWrapper, mobicentsCluster);
 
     if (super.create()) {
       setAppSessionIface(this, ClientRfSession.class);
@@ -97,16 +97,19 @@ public class ClientRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   /**
    * @param sessionId
    * @param mobicentsCluster
-   * @param iface
+   * @param container
    */
   public ClientRfSessionDataReplicatedImpl(String sessionId, MobicentsCluster mobicentsCluster, IContainer container) {
-    this(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId), mobicentsCluster, container);
+    this(
+      FqnWrapper.fromRelativeElementsWrapper(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId),
+      mobicentsCluster, container
+    );
   }
 
   @Override
   public ClientRfSessionState getClientRfSessionState() {
     if (exists()) {
-      return (ClientRfSessionState) getNode().get(STATE);
+      return (ClientRfSessionState) getNodeValue(STATE);
     }
     else {
       throw new IllegalStateException();
@@ -116,7 +119,7 @@ public class ClientRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setClientRfSessionState(ClientRfSessionState state) {
     if (exists()) {
-      getNode().put(STATE, state);
+      putNodeValue(STATE, state);
     }
     else {
       throw new IllegalStateException();
@@ -125,7 +128,7 @@ public class ClientRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
 
   @Override
   public Request getBuffer() {
-    byte[] data = (byte[]) getNode().get(BUFFER);
+    byte[] data = (byte[]) getNodeValue(BUFFER);
     if (data != null) {
       try {
         return this.messageParser.createMessage(ByteBuffer.wrap(data));
@@ -146,14 +149,14 @@ public class ClientRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
 
       try {
         byte[] data = this.messageParser.encodeMessage((IMessage) buffer).array();
-        getNode().put(BUFFER, data);
+        putNodeValue(BUFFER, data);
       }
       catch (ParseException e) {
         logger.error("Unable to encode message to buffer.");
       }
     }
     else {
-      getNode().remove(BUFFER);
+      removeNodeValue(BUFFER);
     }
   }
 
@@ -165,7 +168,7 @@ public class ClientRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public Serializable getTsTimerId() {
     if (exists()) {
-      return (Serializable) getNode().get(TS_TIMERID);
+      return (Serializable) getNodeValue(TS_TIMERID);
     }
     else {
       throw new IllegalStateException();
@@ -180,7 +183,7 @@ public class ClientRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setTsTimerId(Serializable tid) {
     if (exists()) {
-      getNode().put(TS_TIMERID, tid);
+      putNodeValue(TS_TIMERID, tid);
     }
     else {
       throw new IllegalStateException();
@@ -195,7 +198,7 @@ public class ClientRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public String getDestinationHost() {
     if (exists()) {
-      return (String) getNode().get(DESTINATION_HOST);
+      return (String) getNodeValue(DESTINATION_HOST);
     }
     else {
       throw new IllegalStateException();
@@ -210,7 +213,7 @@ public class ClientRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setDestinationHost(String destinationHost) {
     if (exists()) {
-      getNode().put(DESTINATION_HOST, destinationHost);
+      putNodeValue(DESTINATION_HOST, destinationHost);
     }
     else {
       throw new IllegalStateException();
@@ -225,7 +228,7 @@ public class ClientRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public String getDestinationRealm() {
     if (exists()) {
-      return (String) getNode().get(DESTINATION_REALM);
+      return (String) getNodeValue(DESTINATION_REALM);
     }
     else {
       throw new IllegalStateException();
@@ -240,7 +243,7 @@ public class ClientRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setDestinationRealm(String destinationRealm) {
     if (exists()) {
-      getNode().put(DESTINATION_REALM, destinationRealm);
+      putNodeValue(DESTINATION_REALM, destinationRealm);
     }
     else {
       throw new IllegalStateException();
