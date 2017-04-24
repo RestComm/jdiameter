@@ -122,20 +122,17 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
     this.localDataSource = localDataSource;
 
     MobicentsCache mcCache = null;
-    TransactionManager txMgr = null;
     try {
       mcCache = new MobicentsCache(cacheConfigFilename);
-
-      // TODO: TxManager
-
-      //Class<?> txMgrClass = Class.forName(mcCache.getJBossCache().getConfiguration().getTransactionManagerLookupClass());
-      //Object txMgrLookup = txMgrClass.getConstructor(new Class[]{}).newInstance(new Object[]{});
-      //txMgr = (TransactionManager) txMgrClass.getMethod("getTransactionManager", new Class[]{}).invoke(txMgrLookup, new Object[]{});
     } catch (Exception e) {
-      logger.debug("Could not fetch TxMgr. Not using one.", e);
-      // let's not have Tx Manager than...
+      logger.debug("Could not create MobicentsCache: ", e);
     }
 
+    TransactionManager txMgr = null;
+    if (mcCache != null) {
+      txMgr = mcCache.getTxManager();
+    }
+    
     this.mobicentsCluster = new DefaultMobicentsCluster(mcCache, txMgr, new DefaultClusterElector());
     this.mobicentsCluster.addDataRemovalListener(this); // register, so we know WHEN some other node removes session.
     this.mobicentsCluster.startCluster();
