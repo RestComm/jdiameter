@@ -36,25 +36,6 @@
         <artifactId>jdiameter-impl</artifactId>
         <version>${project.version}</version>
       </dependency>
-
-      <dependency>
-        <groupId>org.restcomm.cluster</groupId>
-        <artifactId>core</artifactId>
-        <version>${cluster.version}</version>
-        <!--<scope>provided</scope>-->
-      </dependency>
-      <dependency>
-        <groupId>org.restcomm.cluster</groupId>
-        <artifactId>cache</artifactId>
-        <version>${cluster.version}</version>
-        <!--<scope>provided</scope>-->
-      </dependency>
-      <dependency>
-        <groupId>org.restcomm.cluster</groupId>
-        <artifactId>timers</artifactId>
-        <version>${cluster.version}</version>
-        <!--<scope>provided</scope>-->
-      </dependency>
     </dependencies>
   </dependencyManagement>
 

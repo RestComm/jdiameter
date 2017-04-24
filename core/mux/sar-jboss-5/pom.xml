@@ -22,6 +22,22 @@
       <version>${project.version}</version>
       <scope>runtime</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.restcomm.cluster</groupId>
+      <artifactId>core</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.restcomm.cluster</groupId>
+      <artifactId>cache</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.restcomm.cluster</groupId>
+      <artifactId>timers</artifactId>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <build>

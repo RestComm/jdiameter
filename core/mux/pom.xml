@@ -39,22 +39,18 @@
     -->
     <profile>
       <id>jboss5</id>
-      <!--
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>
-      -->
       <modules>
         <module>sar-jboss-5</module>
       </modules>
     </profile>
     <profile>
       <id>wildfly</id>
-      <!--
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>
-      -->
       <modules>
         <module>sar-wildfly</module>
       </modules>
@@ -82,22 +78,6 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>jdiameter-ha-impl</artifactId>
         <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.restcomm.cluster</groupId>
-        <artifactId>core</artifactId>
-        <version>${cluster.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.restcomm.cluster</groupId>
-        <artifactId>cache</artifactId>
-        <version>${cluster.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.restcomm.cluster</groupId>
-        <artifactId>timers</artifactId>
-        <version>${cluster.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

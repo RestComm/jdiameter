@@ -241,7 +241,7 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <cluster.version>1.15.27</cluster.version>
+        <cluster.version>1.15.28</cluster.version>
       </properties>
     </profile>
     <profile>
@@ -250,7 +250,7 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <cluster.version>3.0.0.11</cluster.version>
+        <cluster.version>3.0.0.12</cluster.version>
       </properties>
     </profile>
 
@@ -291,6 +291,29 @@
       </build>
     </profile>
   </profiles>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.restcomm.cluster</groupId>
+        <artifactId>core</artifactId>
+        <version>${cluster.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.restcomm.cluster</groupId>
+        <artifactId>cache</artifactId>
+        <version>${cluster.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.restcomm.cluster</groupId>
+        <artifactId>timers</artifactId>
+        <version>${cluster.version}</version>
+        <scope>provided</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <repositories>
     <repository>
