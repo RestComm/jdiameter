@@ -150,10 +150,16 @@
 
   <target name="build-src-core" unless="skip.build-src">
     <exec failonerror="true" executable="${mvn.executable}" dir="${checkout_base_dir}">
-      <arg line="versions:set -DnewVersion=${diameter.release.version}" />
+      <arg line="versions:set -DnewVersion=${diameter.release.version} -Pjboss5,maven-release" />
     </exec>
-    <exec executable="${mvn.executable}" dir="${checkout_base_dir}/">
-      <arg line="-f pom.xml ${release.build.goals} -Pmaven-release" />
+    <exec failonerror="true" executable="${mvn.executable}" dir="${checkout_base_dir}">
+      <arg line="versions:set -DnewVersion=${diameter.release.version} -Pwildfly,maven-release" />
+    </exec>
+    <exec failonerror="true" executable="${mvn.executable}" dir="${checkout_base_dir}/">
+      <arg line="-f pom.xml ${release.build.goals} -Pjboss5,maven-release" />
+    </exec>
+    <exec failonerror="true" executable="${mvn.executable}" dir="${checkout_base_dir}/">
+      <arg line="-f pom.xml ${release.build.goals} -Pwildfly,maven-release" />
     </exec>
   </target>
 

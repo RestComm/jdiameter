@@ -28,6 +28,7 @@
   </modules>
 
   <profiles>
+    <!--
     <profile>
       <id>maven-release</id>
       <modules>
@@ -35,6 +36,7 @@
         <module>sar-wildfly</module>
       </modules>
     </profile>
+    -->
     <profile>
       <id>jboss5</id>
       <!--
