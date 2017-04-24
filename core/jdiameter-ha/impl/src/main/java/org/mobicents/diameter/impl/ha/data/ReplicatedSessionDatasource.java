@@ -132,7 +132,6 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
     if (mcCache != null) {
       txMgr = mcCache.getTxManager();
     }
-    
     this.mobicentsCluster = new DefaultMobicentsCluster(mcCache, txMgr, new DefaultClusterElector());
     this.mobicentsCluster.addDataRemovalListener(this); // register, so we know WHEN some other node removes session.
     this.mobicentsCluster.startCluster();
