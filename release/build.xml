@@ -150,21 +150,11 @@
 
   <target name="build-src-core" unless="skip.build-src">
     <exec failonerror="true" executable="${mvn.executable}" dir="${checkout_base_dir}">
-      <arg line="versions:set -DnewVersion=${diameter.release.version} -Dha.impl=jboss5" />
+      <arg line="versions:set -DnewVersion=${diameter.release.version}" />
     </exec>
     <exec executable="${mvn.executable}" dir="${checkout_base_dir}/">
-      <!--<arg line="-f pom.xml ${release.build.goals} -Pmaven-release" />-->
-      <arg line="-f pom.xml ${release.build.goals} -Pmaven-release -Dha.impl=jboss5" />
+      <arg line="-f pom.xml ${release.build.goals} -Pmaven-release" />
     </exec>
-    <!--
-    <exec failonerror="true" executable="${mvn.executable}" dir="${checkout_base_dir}">
-      <arg line="versions:set -DnewVersion=${diameter.release.version} -Dha.impl=wildfly" />
-    </exec>
-    <exec executable="${mvn.executable}" dir="${checkout_base_dir}/">
-      <!- -<arg line="-f pom.xml ${release.build.goals} -Pmaven-release" />- ->
-      <arg line="-f pom.xml ${release.build.goals} -Dha.impl=wildfly" />
-    </exec>
-    -->
   </target>
 
   <target name="build-src-resources" unless="skip.build-src">
@@ -213,12 +203,9 @@
       <fileset dir="${checkout_base_dir}/core/jdiameter-ha/api/target">
         <include name="jdiameter-ha-api-*.jar" />
       </fileset>
-      <!--<fileset dir="${checkout_base_dir}/core/jdiameter-ha/impl-jboss5/target">
+      <fileset dir="${checkout_base_dir}/core/jdiameter-ha/impl/target">
         <include name="jdiameter-ha-impl-*.jar" />
       </fileset>
-      <fileset dir="${checkout_base_dir}/core/jdiameter-ha/impl-wildfly/target">
-        <include name="jdiameter-ha-impl-*.jar" />
-      </fileset>-->
     </copy>
 
     <!-- Copy fixed AS5 MUX jar file -->
@@ -442,17 +429,16 @@
       <param name="algorithm" value="sha1" />
     </antcall>
 
-    <antcall target="build-and-package-mux" />
+    <antcall target="build-and-package-mux-jboss5" />
     <antcall target="build-and-package-mux-wildfly" />
 
     <!-- <antcall target="clean" /> -->
   </target>
 
-  <target name="build-and-package-mux" description="Create zip file: ${basedir}/${mux_zip_file_name}">
+  <target name="build-and-package-mux-jboss5" description="Create zip file: ${basedir}/${mux_zip_file_name}">
     <exec executable="${mvn.executable}" dir="${checkout_base_dir}/core/mux">
-      <!--<arg line="-f pom.xml ${release.build.goals} -Pjboss${DEFAULT_SAR_CONFIGURATION}" />-->
-      <arg line="-f pom.xml ${release.build.goals} -Dha.impl=jboss5" />
-    </exec>
+      <arg line="-f pom.xml ${release.build.goals} -Pjboss5" />
+   </exec>
 
     <mkdir dir="${mux_zip_dir}" />
 
@@ -494,8 +480,7 @@
 
   <target name="build-and-package-mux-wildfly" description="Create zip file: ${basedir}/${alt_mux_zip_file_name}">
     <exec executable="${mvn.executable}" dir="${checkout_base_dir}/core/mux">
-      <!--<arg line="-f pom.xml ${release.build.goals} -P${WILDFLY_SAR_CONFIGURATION}" />-->
-      <arg line="-f pom.xml ${release.build.goals} -Dha.impl=wildfly" />
+      <arg line="-f pom.xml ${release.build.goals} -Pwildfly" />
     </exec>
 
     <mkdir dir="${alt_mux_zip_dir}" />

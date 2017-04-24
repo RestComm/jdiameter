@@ -241,7 +241,7 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <cluster.version>1.15.0-SNAPSHOT</cluster.version>
+        <cluster.version>1.15.27</cluster.version>
       </properties>
     </profile>
     <profile>
@@ -250,7 +250,7 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <cluster.version>3.0.0-SNAPSHOT</cluster.version>
+        <cluster.version>3.0.0.11</cluster.version>
       </properties>
     </profile>
 
