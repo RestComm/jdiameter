@@ -241,7 +241,7 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <cluster.version>1.15.28</cluster.version>
+        <cluster.version>1.15.29</cluster.version>
       </properties>
     </profile>
     <profile>
@@ -250,7 +250,7 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-        <cluster.version>3.0.0.12</cluster.version>
+        <cluster.version>3.0.0.13</cluster.version>
       </properties>
     </profile>
 
