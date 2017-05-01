@@ -281,6 +281,9 @@ public class NetworkGuard implements INetworkGuard {
         }
         serverSocket = null;
       }
+      if (binder != null) {
+        binder.shutdown();
+      }
     }
 
     @Override
