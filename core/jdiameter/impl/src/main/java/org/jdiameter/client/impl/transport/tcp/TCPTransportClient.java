@@ -313,6 +313,9 @@ public class TCPTransportClient implements Runnable {
     if (rc == -1) {
       throw new IOException("Connection closed");
     }
+    else if (rc == 0) {
+      logger.error("socketChannel.write(bytes) - returned zero indicating that perhaps the write buffer is full");
+    }
     if (logger.isDebugEnabled()) {
       logger.debug("Sent a byte buffer of size [{}] over the TCP nio socket [{}]", bytes.array().length, socketDescription);
     }
@@ -392,6 +395,7 @@ public class TCPTransportClient implements Runnable {
         // ZhixiaoLuo: fix #28, if unlucky storage.limit < data.length(1024), then always failed to do storage.put(data)
         // ZhixiaoLuo: and get BufferOverflowException in append(data)
         storage.clear();
+        logger.error("Invalid message version detected [" + vers + "]");
         return false;
       }
       // extract the message length, so we know how much to read
