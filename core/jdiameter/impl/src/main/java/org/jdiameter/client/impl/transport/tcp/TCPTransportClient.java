@@ -124,13 +124,24 @@ public class TCPTransportClient implements Runnable {
       throw new NotInitializedException("Destination address is not set");
     }
     socketChannel = SelectorProvider.provider().openSocketChannel();
-    if (origAddress != null) {
-      socketChannel.socket().bind(origAddress);
+
+    try {
+      if (origAddress != null) {
+        socketChannel.socket().bind(origAddress);
+      }
+
+      socketChannel.connect(destAddress);
+      //PCB added logging
+      socketChannel.configureBlocking(BLOCKING_IO);
+      getParent().onConnected();
     }
-    socketChannel.connect(destAddress);
-    //PCB added logging
-    socketChannel.configureBlocking(BLOCKING_IO);
-    getParent().onConnected();
+    catch (IOException e) {
+      if (origAddress != null) {
+        socketChannel.socket().close();
+      }
+      socketChannel.close();
+      throw e;
+    }
   }
 
   public TCPClientConnection getParent() {
