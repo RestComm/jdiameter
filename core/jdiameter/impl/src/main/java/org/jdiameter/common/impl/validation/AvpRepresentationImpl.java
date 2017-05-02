@@ -68,6 +68,7 @@ public class AvpRepresentationImpl implements AvpRepresentation {
   protected String ruleMandatory;
   protected String ruleProtected;
   protected String ruleVendorBit;
+  protected String originalType;
   protected String type; // String, in case user defines his own type
 
   // Usually this will be -1, as only SessionId has fixed position
@@ -100,6 +101,7 @@ public class AvpRepresentationImpl implements AvpRepresentation {
     this.ruleMandatory = clone.ruleMandatory;
     this.ruleProtected = clone.ruleProtected;
     this.ruleVendorBit = clone.ruleVendorBit;
+    this.originalType = clone.originalType;
     this.type = clone.type;
     if (this.multiplicityIndicator.equals(_MP_NOT_ALLOWED)) {
       this.allowed = false;
@@ -176,7 +178,7 @@ public class AvpRepresentationImpl implements AvpRepresentation {
   }
 
   public AvpRepresentationImpl(String name, String description, int code, boolean mayEncrypt, String ruleMandatory, String ruleProtected,
-      String ruleVendorBit, long vendorId, String type) {
+      String ruleVendorBit, long vendorId, String originalType, String type) {
 
     // zero and more, since its definition.
     this(-1, code, vendorId, _MP_ZERO_OR_MORE, name);
@@ -198,6 +200,7 @@ public class AvpRepresentationImpl implements AvpRepresentation {
       this.ruleVendorBit = _DEFAULT_VENDOR;
     }
 
+    this.originalType = originalType;
     this.type = type;
     this._mandatory = this.ruleMandatory.equals("must");
     this._protected = this.ruleProtected.equals("must");
@@ -410,6 +413,11 @@ public class AvpRepresentationImpl implements AvpRepresentation {
   }
 
   @Override
+  public String getOriginalType() {
+    return originalType;
+  }
+
+  @Override
   public String getType() {
     return type;
   }
@@ -531,6 +539,7 @@ public class AvpRepresentationImpl implements AvpRepresentation {
     clone.ruleMandatory = this.ruleMandatory;
     clone.ruleProtected = this.ruleProtected;
     clone.ruleVendorBit = this.ruleVendorBit;
+    clone.originalType = this.originalType;
     clone.type = this.type;
 
     List<AvpRepresentation> cloneChildren = new ArrayList<AvpRepresentation>();

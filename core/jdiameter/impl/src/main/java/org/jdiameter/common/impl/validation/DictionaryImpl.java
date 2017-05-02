@@ -331,7 +331,8 @@ public class DictionaryImpl implements Dictionary {
       // <grouped> <avp name="PoC-Change-Time" multiplicity="1" /> ... </grouped>
       //  OR
       // <type type-name="Enumerated"> <enum code="0" name="MULTICAST" /> ... </enumerated>
-      String avpType = UNDEFINED_AVP_TYPE;
+      String avpOriginalType = UNDEFINED_AVP_TYPE;
+      String avpType = avpOriginalType;
       List<AvpRepresentation> groupedAvpChilds = new ArrayList<AvpRepresentation>();
 
       NodeList avpDefnChildNodes = avpNode.getChildNodes();
@@ -342,7 +343,8 @@ public class DictionaryImpl implements Dictionary {
           Element avpDefnChildElement = (Element) avpDefnChildNode;
 
           if (avpDefnChildElement.getNodeName().equals("grouped")) {
-            avpType = "Grouped";
+            avpOriginalType = "Grouped";
+            avpType = avpOriginalType;
 
             // Let's fetch the childs
             // Format: <avp name="PoC-Change-Time" multiplicity="1" />
@@ -403,7 +405,8 @@ public class DictionaryImpl implements Dictionary {
             }
           }
           else if (avpDefnChildElement.getNodeName().equals("type")) {
-            avpType = avpDefnChildElement.getAttribute("type-name");
+            avpOriginalType = avpDefnChildElement.getAttribute("type-name");
+            avpType = avpOriginalType;
             //FIXME: baranowb: why this is like that? This changes type of AVP to primitive ONE..? Checks against type dont make sense, ie to check for Address type...
             avpType = typedefMap.get(avpType);
 
@@ -422,7 +425,7 @@ public class DictionaryImpl implements Dictionary {
         AvpRepresentationImpl avp = null;
 
         avp = new AvpRepresentationImpl(avpName, "N/A", Integer.valueOf(avpCode), avpMayEncrypt.equals("yes"), avpMandatory,
-            avpProtected, avpVendorBit, vendorCode, avpType);
+            avpProtected, avpVendorBit, vendorCode, avpOriginalType, avpType);
 
         if (avp.isGrouped()) {
           avp.setChildren(groupedAvpChilds);
@@ -454,7 +457,8 @@ public class DictionaryImpl implements Dictionary {
           logger.debug(new StringBuffer("[ERROR] Failed Parsing AVP: Name[").append(avpName).append("] Description[").append("N/A").
               append("] Code[").append(avpCode).append("] May-Encrypt[").append(avpMayEncrypt).append("] Mandatory[").append(avpMandatory).
               append("] Protected [").append(avpProtected).append("] Vendor-Bit [").append(avpVendorBit).append("] Vendor-Id [").append(avpVendorId).
-              append("] Constrained[").append("N/A").append("] Type [").append(avpType).append("]").toString(), e);
+              append("] Constrained[").append("N/A").append("] OriginalType [").append(avpOriginalType).
+              append("] Type [").append(avpType).append("]").toString(), e);
         }
       }
     }
