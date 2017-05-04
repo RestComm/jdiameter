@@ -246,6 +246,7 @@ public class ServerRxSessionImpl extends AppRxSessionImpl implements ServerRxSes
                   // Action: Send AA update answer with Result-Code != SUCCESS
                   // New State: IDLE
                   // It's a failure, we wait for Tcc to fire -- FIXME: Alexandre: Should we?
+                  newState = ServerRxSessionState.IDLE;
                 }
               }
               catch (AvpDataException e) {
@@ -271,6 +272,7 @@ public class ServerRxSessionImpl extends AppRxSessionImpl implements ServerRxSes
                   // Action: Send AA update answer with Result-Code != SUCCESS
                   // New State: IDLE
                   // It's a failure, we wait for Tcc to fire -- FIXME: Alexandre: Should we?
+                  newState = ServerRxSessionState.IDLE;
                 }
               }
               catch (AvpDataException e) {

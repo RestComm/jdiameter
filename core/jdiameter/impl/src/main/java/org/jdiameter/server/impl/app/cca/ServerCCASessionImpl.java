@@ -200,7 +200,12 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
                 // Action: Send CC initial answer, reserve units, start Tcc
                 // New State: OPEN
                 if (isSuccess(resultCode)) {
-                  startTcc(answer.getValidityTimeAvp());
+                  Avp vtAvp = answer.getValidityTimeAvp();
+                  if (vtAvp == null) {
+                    Avp mscc = answer.getMessage().getAvps().getAvp(Avp.MULTIPLE_SERVICES_CREDIT_CONTROL);
+                    vtAvp = mscc != null ? mscc.getGrouped().getAvp(Avp.VALIDITY_TIME) : null;
+                  }
+                  startTcc(vtAvp);
                   newState = ServerCCASessionState.OPEN;
                 }
                 // Current State: IDLE
@@ -253,7 +258,12 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
                   // Event: CC update request received and successfully processed
                   // Action: Send CC update answer, debit used units, reserve new units, restart Tcc
                   // New State: OPEN
-                  startTcc(answer.getValidityTimeAvp());
+                  Avp vtAvp = answer.getValidityTimeAvp();
+                  if (vtAvp == null) {
+                    Avp mscc = answer.getMessage().getAvps().getAvp(Avp.MULTIPLE_SERVICES_CREDIT_CONTROL);
+                    vtAvp = mscc != null ? mscc.getGrouped().getAvp(Avp.VALIDITY_TIME) : null;
+                  }
+                  startTcc(vtAvp);
                 }
                 else {
                   // Current State: OPEN
@@ -396,6 +406,8 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
     else {
       tccTimeout = 2 * context.getDefaultValidityTime();
     }
+
+    logger.debug("Starting TCC timer with Validity-Avp[{}] and tccTimeout[{}] seconds", validityAvp, tccTimeout);
 
     if (sessionData.getTccTimerId() != null) {
       stopTcc(true);

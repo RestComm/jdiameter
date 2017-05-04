@@ -252,12 +252,16 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
                   // New State: IDLE
 
                   // It's a failure, we wait for Tcc to fire -- FIXME: Alexandre: Should we?
+                  newState = ServerGxSessionState.IDLE;
                 }
               }
               catch (AvpDataException e) {
                 throw new InternalException(e);
               }
               dispatchEvent(localEvent.getAnswer());
+              if (newState != null) {
+                setState(newState);
+              }
               break;
             case RECEIVED_TERMINATE:
               listener.doCreditControlRequest(this, (GxCreditControlRequest) localEvent.getRequest());
