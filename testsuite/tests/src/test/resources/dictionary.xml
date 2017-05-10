@@ -2980,7 +2980,7 @@
   </avpdefn>
 
   <avpdefn name="Location-Estimate" code="1242" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
-    <type type-name="UTF8String" />
+    <type type-name="OctetString" /> <!-- changed from UTF8String (Rel 7) to OctetString as for 3GPP TS 32.299 (last release: 14.1.0)-->
   </avpdefn>
 
   <avpdefn name="Positioning-Data" code="1245" vendor-id="TGPP" mandatory="must" protected="may" may-encrypt="no" vendor-bit="must" >
