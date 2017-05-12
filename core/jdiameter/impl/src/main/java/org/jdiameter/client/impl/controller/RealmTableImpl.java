@@ -200,7 +200,7 @@ public class RealmTableImpl implements IRealmTable {
       Collection<Realm> present = set.values();
       return new ArrayList<Realm>(present);
     }
-    return null;
+    return new ArrayList<Realm>(0);
   }
 
   /*

@@ -256,6 +256,9 @@ public class RouterImpl implements IRouter {
       // requestEntryTableLock.writeLock().lock();
       long hopByHopId = request.getHopByHopIdentifier();
       Avp hostAvp = request.getAvps().getAvp(Avp.ORIGIN_HOST);
+      // we store the peer FQDN instead of Origin-Host as we want to route back to it, in case of proxied requests this
+      // should be the FQDN of the proxy, otherwise it's (should be) the same as Origin-Host
+      String host = ((IMessage)request).getPeer() != null ? ((IMessage)request).getPeer().getUri().getFQDN() : hostAvp.getDiameterIdentity();
       Avp realmAvp = request.getAvps().getAvp(Avp.ORIGIN_REALM);
 
       AnswerEntry entry;
@@ -269,12 +272,10 @@ public class RouterImpl implements IRouter {
           logger.trace("Route-Record in Request with HbH [{}]: [{}]", request.getHopByHopIdentifier(), rrAvpHost);
           rrStrings.add(rrAvpHost);
         }
-        entry = new AnswerEntry(hopByHopId, hostAvp != null ? hostAvp.getDiameterIdentity() : null,
-            realmAvp != null ? realmAvp.getDiameterIdentity() : null, rrStrings);
+        entry = new AnswerEntry(hopByHopId, host, realmAvp != null ? realmAvp.getDiameterIdentity() : null, rrStrings);
       }
       else {
-        entry = new AnswerEntry(hopByHopId, hostAvp != null ? hostAvp.getDiameterIdentity() : null,
-            realmAvp != null ? realmAvp.getDiameterIdentity() : null);
+        entry = new AnswerEntry(hopByHopId, host, realmAvp != null ? realmAvp.getDiameterIdentity() : null);
       }
 
       int s = requestEntryMap.size();
@@ -310,7 +311,7 @@ public class RouterImpl implements IRouter {
       }
 
       String messageKey = makeRoutingKey(request);
-      logger.debug("Adding request key [{}] to RequestRoute map for routing answers back to the requesting peer", messageKey);
+      logger.debug("Adding request key [{}] to RequestRoute map with entry [{}] for routing answers back to the requesting peer", messageKey, entry);
       requestEntryMap.put(messageKey, entry);
       // requestSortedEntryTable.add(hopByHopId);
     }
@@ -451,9 +452,14 @@ public class RouterImpl implements IRouter {
     //  }
 
     // Check realm name
-    //TODO: check only if it exists?
     if (matchedRealm == null) {
-      throw new RouteException("Unknown realm name [" + destRealm + "]");
+      if (message.getAvps().getAvp(Avp.ROUTE_RECORD) == null) {
+        // if it doesn't come through a proxy, we fail with unknown realm...
+        throw new RouteException("Unknown realm name [" + destRealm + "]");
+      }
+      else {
+        logger.debug("Realm [{}] not found, but message has Route-Record AVP so it came from proxy peer [{}]. Proceeding...", destRealm, destHost);
+      }
     }
 
     // THIS IS GET PEER, NOT ROUTE!!!!!!!
@@ -1012,7 +1018,7 @@ public class RouterImpl implements IRouter {
 
     @Override
     public String toString() {
-      return "AnswerEntry {" + "createTime=" + createTime + ", hopByHopId=" + hopByHopId + '}';
+      return "AnswerEntry {" + "createTime=" + createTime + ", hopByHopId=" + hopByHopId + ", host=" + host + ", realm=" + realm+ "}";
     }
   }
 }

@@ -343,6 +343,9 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
       logger.debug("Receiving message in server.");
       boolean isProcessed = false;
 
+      // we set the peer in the message so we can later reply directly
+      message.setPeer(PeerImpl.this);
+
       if (message.isRequest()) {
         IRequest req = message;
         Avp destRealmAvp = req.getAvps().getAvp(Avp.DESTINATION_REALM);
@@ -409,6 +412,8 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                 // or REALM_NOT_SERVED ?
                 return true;
               }
+
+              message.setPeer(PeerImpl.this);
 
               switch (action) {
                 case LOCAL: // always call listener - this covers realms
@@ -613,6 +618,8 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                 }
                 isProcessed = true;
                 if (isProcessed && answer != null) {
+                  // we use the peer from the request to reply directly
+                  answer.setPeer(message.getPeer());
                   sendMessage(answer);
                 }
                 if (statistic.isEnabled()) {
