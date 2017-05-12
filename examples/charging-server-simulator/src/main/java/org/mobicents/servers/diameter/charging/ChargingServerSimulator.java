@@ -19,6 +19,7 @@ import org.jdiameter.api.Network;
 import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.Peer;
 import org.jdiameter.api.Request;
+import org.jdiameter.api.ResultCode;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
@@ -197,9 +198,9 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
         }
         JCreditControlAnswer cca = null;
         try {
-          long requestedUnits = ccrAvps.getAvp(437).getGrouped().getAvp(420).getInteger32();
-          String subscriptionId = ccrAvps.getAvp(443).getGrouped().getAvp(444).getUTF8String();
-          String serviceContextId = ccrAvps.getAvp(461).getUTF8String();
+          long requestedUnits = ccrAvps.getAvp(Avp.REQUESTED_SERVICE_UNIT).getGrouped().getAvp(Avp.CC_TIME).getInteger32();
+          String subscriptionId = ccrAvps.getAvp(Avp.SUBSCRIPTION_ID).getGrouped().getAvp(Avp.SUBSCRIPTION_ID_DATA).getUTF8String();
+          String serviceContextId = ccrAvps.getAvp(Avp.SERVICE_CONTEXT_ID).getUTF8String();
 
           if (logger.isInfoEnabled()) {
             logger.info(">> '" + subscriptionId + "' requested " + requestedUnits + " units for '" + serviceContextId + "'.");
@@ -219,12 +220,12 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
             }
             else {
               // Check if not first request, should have Used-Service-Unit AVP
-              if (ccrAvps.getAvp(415) != null && ccrAvps.getAvp(415).getUnsigned32() >= 1) {
-                Avp usedServiceUnit = ccrAvps.getAvp(446);
+              if (ccrAvps.getAvp(Avp.CC_REQUEST_NUMBER) != null && ccrAvps.getAvp(Avp.CC_REQUEST_NUMBER).getUnsigned32() >= 1) {
+                Avp usedServiceUnit = ccrAvps.getAvp(Avp.USED_SERVICE_UNIT);
                 if (usedServiceUnit != null) {
                   Long wereReserved = reserved.remove(subscriptionId + "_" + serviceContextId);
                   wereReserved = wereReserved == null ? 0 : wereReserved;
-                  long wereUsed = usedServiceUnit.getGrouped().getAvp(420).getUnsigned32();
+                  long wereUsed = usedServiceUnit.getGrouped().getAvp(Avp.CC_TIME).getUnsigned32();
                   long remaining = wereReserved - wereUsed;
 
                   if (logger.isInfoEnabled()) {
@@ -236,7 +237,7 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
               }
 
               long grantedUnits = Math.min(requestedUnits, balance);
-              cca = createCCA(session, request, grantedUnits, 2001);
+              cca = createCCA(session, request, grantedUnits, ResultCode.SUCCESS);
 
               reserved.put(subscriptionId + "_" + serviceContextId, grantedUnits);
               balance -= grantedUnits;
@@ -300,7 +301,7 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
                 //                          *[ Restriction-Filter-Rule ]
                 //                          *[ Filter-Id ]
                 //                           [ Redirect-Server ]
-                AvpSet finalUnitIndicationAvp = cca.getMessage().getAvps().addGroupedAvp(430);
+                AvpSet finalUnitIndicationAvp = cca.getMessage().getAvps().addGroupedAvp(Avp.FINAL_UNIT_INDICATION);
 
                 // 8.35.  Final-Unit-Action AVP
                 //
@@ -328,7 +329,7 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
                 //   according to the IP packet filters identified by the Filter-Id
                 //   AVP.  All the packets not matching the filters MUST be dropped
                 //   (see section 5.6.3).
-                finalUnitIndicationAvp.addAvp(449, 0);
+                finalUnitIndicationAvp.addAvp(Avp.FINAL_UNIT_ACTION, 0);
               }
             }
           }
@@ -342,7 +343,7 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
             }
           }
 
-          //cca.getMessage().getAvps().addAvp(461, serviceContextId, false);
+          //cca.getMessage().getAvps().addAvp(Avp.SERVICE_CONTEXT_ID, serviceContextId, false);
           session.sendCreditControlAnswer(cca);
         }
         catch (Exception e) {
@@ -355,8 +356,8 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
           logger.info("<< Received Credit-Control-Request [TERMINATION]");
         }
         try {
-          String subscriptionId = ccrAvps.getAvp(443).getGrouped().getAvp(444).getUTF8String();
-          String serviceContextId = ccrAvps.getAvp(461).getUTF8String();
+          String subscriptionId = ccrAvps.getAvp(Avp.SUBSCRIPTION_ID).getGrouped().getAvp(Avp.SUBSCRIPTION_ID_DATA).getUTF8String();
+          String serviceContextId = ccrAvps.getAvp(Avp.SERVICE_CONTEXT_ID).getUTF8String();
 
           if (logger.isInfoEnabled()) {
             logger.info(">> '" + subscriptionId + "' requested service termination for '" + serviceContextId + "'.");
@@ -364,11 +365,11 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
 
           Long balance = accounts.get(subscriptionId);
 
-          if (ccrAvps.getAvp(415) != null && ccrAvps.getAvp(415).getUnsigned32() >= 1) {
-            Avp usedServiceUnit = ccrAvps.getAvp(446);
+          if (ccrAvps.getAvp(Avp.CC_REQUEST_NUMBER) != null && ccrAvps.getAvp(Avp.CC_REQUEST_NUMBER).getUnsigned32() >= 1) {
+            Avp usedServiceUnit = ccrAvps.getAvp(Avp.USED_SERVICE_UNIT);
             if (usedServiceUnit != null) {
               long wereReserved = reserved.remove(subscriptionId + "_" + serviceContextId);
-              long wereUsed = usedServiceUnit.getGrouped().getAvp(420).getUnsigned32();
+              long wereUsed = usedServiceUnit.getGrouped().getAvp(Avp.CC_TIME).getUnsigned32();
               long remaining = wereReserved - wereUsed;
 
               if (logger.isInfoEnabled()) {
@@ -384,7 +385,7 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
           }
           accounts.put(subscriptionId, balance);
 
-          cca = createCCA(session, request, -1, 2001);
+          cca = createCCA(session, request, -1, ResultCode.SUCCESS);
           // 8.7.  Cost-Information AVP
           //
           // The Cost-Information AVP (AVP Code 423) is of type Grouped, and it is
@@ -489,11 +490,11 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
 
     //  { CC-Request-Type }
     // Using the same as the one present in request
-    ccaAvps.addAvp(ccrAvps.getAvp(416));
+    ccaAvps.addAvp(ccrAvps.getAvp(Avp.CC_REQUEST_TYPE));
 
     //  { CC-Request-Number }
     // Using the same as the one present in request
-    ccaAvps.addAvp(ccrAvps.getAvp(415));
+    ccaAvps.addAvp(ccrAvps.getAvp(Avp.CC_REQUEST_NUMBER));
 
     //  [ User-Name ]
     //  [ CC-Session-Failover ]
@@ -528,10 +529,10 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
     //                          [ CC-Service-Specific-Units ]
     //                         *[ AVP ]
     if (grantedUnits >= 0) {
-      AvpSet gsuAvp = ccaAvps.addGroupedAvp(431);
+      AvpSet gsuAvp = ccaAvps.addGroupedAvp(Avp.GRANTED_SERVICE_UNIT);
       // Fetch AVP/Value from Request
-      // gsuAvp.addAvp(ccrAvps.getAvp(437).getGrouped().getAvp(420));
-      gsuAvp.addAvp(420, grantedUnits, true);
+      // gsuAvp.addAvp(ccrAvps.getAvp(Avp.REQUESTED_SERVICE_UNIT).getGrouped().getAvp(Avp.CC_TIME));
+      gsuAvp.addAvp(Avp.CC_TIME, grantedUnits, true);
     }
 
     // *[ Multiple-Services-Credit-Control ]
