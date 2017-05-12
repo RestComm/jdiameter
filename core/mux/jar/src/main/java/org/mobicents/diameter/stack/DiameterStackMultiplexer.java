@@ -606,11 +606,11 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
       Configuration[] oldIPAddressesConfig = getMutableConfiguration().getChildren(OwnIPAddresses.ordinal());
 
       List <Configuration> newIPAddressesConfig = new ArrayList <Configuration> (Arrays.asList(oldIPAddressesConfig));
-      
+
       AppConfiguration newIPAddress = getClientConfiguration().add(OwnIPAddress, ipAddress);
       newIPAddressesConfig.add(newIPAddress);
 
-      getMutableConfiguration().setChildren( OwnIPAddresses.ordinal(), 
+      getMutableConfiguration().setChildren( OwnIPAddresses.ordinal(),
                                         (Configuration[]) newIPAddressesConfig.toArray(new Configuration[newIPAddressesConfig.size()]));
       if (logger.isInfoEnabled()) {
         logger.info("Local Peer IP Address successfully changed to " + ipAddress + ". Restart to Diameter stack is needed to apply changes.");
@@ -624,7 +624,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   @Override
   public List<Peer> _Network_Peers_retrievePeer() throws MBeanException {
     try {
-      NetworkImpl n = (NetworkImpl) stack.unwrap(Network.class); 
+      NetworkImpl n = (NetworkImpl) stack.unwrap(Network.class);
       return n.getListPeers();
     }
     catch (InternalException e) {
@@ -953,9 +953,9 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   @Override
   public String[] _Network_Realms_getRealms() throws MBeanException {
     try{
-      org.jdiameter.server.impl.NetworkImpl n = (org.jdiameter.server.impl.NetworkImpl) stack.unwrap(org.jdiameter.api.Network.class);  
+      org.jdiameter.server.impl.NetworkImpl n = (org.jdiameter.server.impl.NetworkImpl) stack.unwrap(org.jdiameter.api.Network.class);
       List <String> list = n.getRealmTable().getAllRealmSet();
-      String [] stringArray = list.toArray(new String[list.size()]);		    
+      String [] stringArray = list.toArray(new String[list.size()]);
       return stringArray;
     }
     catch (Exception e) {

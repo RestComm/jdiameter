@@ -272,11 +272,11 @@ public class NetworkImpl implements INetwork {
     this.manager = manager;
   }
 
-  public List<Peer> getListPeers() {  
+  public List<Peer> getListPeers() {
     return manager.getPeerTable();
   }
-  
-  public IRealmTable getRealmTable(){
+
+  public IRealmTable getRealmTable() {
     return this.router.getRealmTable();
   }
 
