@@ -298,19 +298,19 @@
         <groupId>org.restcomm.cluster</groupId>
         <artifactId>core</artifactId>
         <version>${cluster.version}</version>
-        <scope>provided</scope>
+        <!--<scope>provided</scope>-->
       </dependency>
       <dependency>
         <groupId>org.restcomm.cluster</groupId>
         <artifactId>cache</artifactId>
         <version>${cluster.version}</version>
-        <scope>provided</scope>
+        <!--<scope>provided</scope>-->
       </dependency>
       <dependency>
         <groupId>org.restcomm.cluster</groupId>
         <artifactId>timers</artifactId>
         <version>${cluster.version}</version>
-        <scope>provided</scope>
+        <!--<scope>provided</scope>-->
       </dependency>
     </dependencies>
   </dependencyManagement>

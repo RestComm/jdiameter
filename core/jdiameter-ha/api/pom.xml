@@ -32,11 +32,6 @@
       <groupId>org.jboss.cluster</groupId>
       <artifactId>jboss-ha-server-cache-jbc</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>org.mobicents.cluster</groupId>
-      <artifactId>timers</artifactId>
-    </dependency>
     -->
 
     <!-- WildFly: Infinispan Cache -->
@@ -53,12 +48,10 @@
     </dependency>
     -->
 
-    <!--
     <dependency>
       <groupId>org.restcomm.cluster</groupId>
       <artifactId>timers</artifactId>
     </dependency>
-    -->
   </dependencies>
 
 </project>
