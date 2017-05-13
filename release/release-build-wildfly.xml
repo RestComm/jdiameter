@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="Release_build" default="deploy">
 
+	<path id="xmltask.path">
+		<pathelement path="${basedir}/xmltask.jar" />
+	</path>
+	<taskdef name="xmltask" classpathref="xmltask.path" classname="com.oopsconsultancy.xmltask.ant.XmlTask" />
+
 	<property name="home" value="${ant.file.Release_build}/../" />
 
 	<!-- SYSTEM RELATED -->

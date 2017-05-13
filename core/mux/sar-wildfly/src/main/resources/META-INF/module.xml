@@ -34,7 +34,7 @@
     <resource-root path="jdiameter-api-@JDIAMETER_VERSION@.jar"/>
     <resource-root path="jdiameter-impl-@JDIAMETER_VERSION@.jar"/>
     <resource-root path="jdiameter-ha-api-@JDIAMETER_VERSION@.jar"/>
-    <resource-root path="jdiameter-ha-impl-wildfly-@JDIAMETER_VERSION@.jar"/>
+    <resource-root path="jdiameter-ha-impl-@JDIAMETER_VERSION@.jar"/>
     <!-- Insert resources here -->
   </resources>
 

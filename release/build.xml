@@ -91,7 +91,7 @@
 
   <taskdef onerror="fail" resource="net/sf/antcontrib/antlib.xml">
     <classpath>
-      <pathelement location="${diameter.release.sf}/../ant-contrib-1.0b3.jar" />
+      <pathelement location="${ant.file.diameter.release.sf}/../ant-contrib-1.0b3.jar" />
     </classpath>
   </taskdef>
 
@@ -115,14 +115,14 @@
 
   <target name="checkout-core" unless="skip.checkout">
     <echo>Checkout Diameter Core (jDiameter @tag:${CORE_JDIAMETER_TAG})</echo>
-    <exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
+    <exec executable="${mvn.executable}" dir="${ant.file.diameter.release.sf}/../">
       <arg line="-f components-checkout.xml validate -P checkout -Ddiameter.core.jdiameter.tag=${CORE_JDIAMETER_TAG}" />
     </exec>
   </target>
 
   <target name="checkout-slee-diameter-package" unless="skip.checkout">
     <echo>Checkout Diameter SLEE Diameter Package v${SLEE_DIAMETER_PACKAGE_VERSION}</echo>
-    <exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
+    <exec executable="${mvn.executable}" dir="${ant.file.diameter.release.sf}/../">
       <arg line="-f components-checkout.xml validate -P checkout-slee-diameter-package -Dslee.diameter.package.tag=${SLEE_DIAMETER_PACKAGE_VERSION}" />
     </exec>
   </target>
@@ -141,7 +141,7 @@
 
   <target name="checkout-rhq-plugin" unless="skip.checkout">
     <echo>Checkout Diameter RHQ Plugin</echo>
-    <exec executable="${mvn.executable}" dir="${ant.file.diameter.release}/../">
+    <exec executable="${mvn.executable}" dir="${ant.file.diameter.release.sf}/../">
       <arg line="-f components-checkout.xml validate -P checkout-rhq-plugin -Ddiameter.tools.rhq-plugin.tag=${TOOLS_RHQ_PLUGIN_TAG}" />
     </exec>
   </target>
@@ -507,6 +507,9 @@
     </copy>
 
     <copy file="${checkout_base_dir}/release/release-build-wildfly.xml" tofile="${alt_mux_zip_dir}/build.xml"
+          failonerror="true"/>
+
+    <copy file="${checkout_base_dir}/release/xmltask.jar" tofile="${alt_mux_zip_dir}/xmltask.jar"
           failonerror="true"/>
 
     <zip destfile="${basedir}/${alt_mux_zip_file_name}" basedir="${alt_mux_zip_dir}"/>
