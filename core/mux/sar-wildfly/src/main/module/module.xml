@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:jboss:module:1.3" name="org.restcomm.diameter.extension">
+
+    <resources>
+        <resource-root path="@PROJECT_ARTIFACT@-@JDIAMETER_EXTENSION_VERSION@.jar"/>
+    </resources>
+
+    <dependencies>
+        <module name="javax.api"/>
+        <module name="org.jboss.staxmapper"/>
+        <module name="org.jboss.as.controller"/>
+        <module name="org.jboss.as.server"/>
+        <module name="org.jboss.as.jmx"/>
+
+        <module name="org.apache.log4j"/>
+        <module name="org.apache.commons.lang"/>
+        <module name="org.jboss.msc"/>
+        <module name="org.jboss.logging"/>
+
+        <module name="org.restcomm.diameter.lib"/>
+        <module name="org.restcomm.diameter.mux"/>
+    </dependencies>
+
+</module>

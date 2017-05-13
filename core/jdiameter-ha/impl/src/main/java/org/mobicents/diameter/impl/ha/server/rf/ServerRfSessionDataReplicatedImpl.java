@@ -44,11 +44,11 @@ package org.mobicents.diameter.impl.ha.server.rf;
 
 import java.io.Serializable;
 
-import org.jboss.cache.Fqn;
+import org.restcomm.cache.FqnWrapper;
 import org.jdiameter.api.rf.ServerRfSession;
 import org.jdiameter.common.api.app.rf.ServerRfSessionState;
 import org.jdiameter.server.impl.app.rf.IServerRfSessionData;
-import org.mobicents.cluster.MobicentsCluster;
+import org.restcomm.cluster.MobicentsCluster;
 import org.mobicents.diameter.impl.ha.common.AppSessionDataReplicatedImpl;
 import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 
@@ -65,12 +65,11 @@ public class ServerRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   private static final String TS_TIMEOUT = "TS_TIMEOUT";
 
   /**
-   * @param nodeFqn
+   * @param nodeFqnWrapper
    * @param mobicentsCluster
-   * @param iface
    */
-  public ServerRfSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster) {
-    super(nodeFqn, mobicentsCluster);
+  public ServerRfSessionDataReplicatedImpl(FqnWrapper nodeFqnWrapper, MobicentsCluster mobicentsCluster) {
+    super(nodeFqnWrapper, mobicentsCluster);
 
     if (super.create()) {
       setAppSessionIface(this, ServerRfSession.class);
@@ -81,10 +80,12 @@ public class ServerRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   /**
    * @param sessionId
    * @param mobicentsCluster
-   * @param iface
    */
   public ServerRfSessionDataReplicatedImpl(String sessionId, MobicentsCluster mobicentsCluster) {
-    this(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId), mobicentsCluster);
+    this(
+      FqnWrapper.fromRelativeElementsWrapper(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId),
+      mobicentsCluster
+    );
   }
 
   /*
@@ -95,7 +96,7 @@ public class ServerRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public boolean isStateless() {
     if (exists()) {
-      return toPrimitive((Boolean) getNode().get(STATELESS), true);
+      return toPrimitive((Boolean) getNodeValue(STATELESS), true);
     }
     else {
       throw new IllegalStateException();
@@ -110,7 +111,7 @@ public class ServerRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setStateless(boolean stateless) {
     if (exists()) {
-      getNode().put(STATELESS, stateless);
+      putNodeValue(STATELESS, stateless);
     }
     else {
       throw new IllegalStateException();
@@ -125,7 +126,7 @@ public class ServerRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public ServerRfSessionState getServerRfSessionState() {
     if (exists()) {
-      return (ServerRfSessionState) getNode().get(STATE);
+      return (ServerRfSessionState) getNodeValue(STATE);
     }
     else {
       throw new IllegalStateException();
@@ -141,7 +142,7 @@ public class ServerRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setServerRfSessionState(ServerRfSessionState state) {
     if (exists()) {
-      getNode().put(STATE, state);
+      putNodeValue(STATE, state);
     }
     else {
       throw new IllegalStateException();
@@ -156,7 +157,7 @@ public class ServerRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setTsTimerId(Serializable tccTimerId) {
     if (exists()) {
-      getNode().put(TS_TIMERID, tccTimerId);
+      putNodeValue(TS_TIMERID, tccTimerId);
     }
     else {
       throw new IllegalStateException();
@@ -171,7 +172,7 @@ public class ServerRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public Serializable getTsTimerId() {
     if (exists()) {
-      return (Serializable) getNode().get(TS_TIMERID);
+      return (Serializable) getNodeValue(TS_TIMERID);
     }
     else {
       throw new IllegalStateException();
@@ -186,7 +187,7 @@ public class ServerRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public long getTsTimeout() {
     if (exists()) {
-      return toPrimitive((Long) getNode().get(TS_TIMEOUT));
+      return toPrimitive((Long) getNodeValue(TS_TIMEOUT));
     }
     else {
       throw new IllegalStateException();
@@ -201,7 +202,7 @@ public class ServerRfSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setTsTimeout(long l) {
     if (exists()) {
-      getNode().put(TS_TIMEOUT, l);
+      putNodeValue(TS_TIMEOUT, l);
     }
     else {
       throw new IllegalStateException();

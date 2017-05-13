@@ -50,11 +50,11 @@ import org.jdiameter.client.impl.BaseSessionImpl;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.api.timer.ITimerFacility;
 import org.jdiameter.common.impl.app.AppSessionImpl;
-import org.mobicents.cluster.MobicentsCluster;
+import org.restcomm.cluster.MobicentsCluster;
 import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
-import org.mobicents.timers.FaultTolerantScheduler;
-import org.mobicents.timers.TimerTask;
-import org.mobicents.timers.TimerTaskData;
+import org.restcomm.timers.FaultTolerantScheduler;
+import org.restcomm.timers.TimerTask;
+import org.restcomm.timers.TimerTaskData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +111,7 @@ public class ReplicatedTimerFacilityImpl implements ITimerFacility {
     return id;
   }
 
-  private final class TimerTaskFactory implements org.mobicents.timers.TimerTaskFactory {
+  private final class TimerTaskFactory implements org.restcomm.timers.TimerTaskFactory {
 
     @Override
     public TimerTask newTimerTask(TimerTaskData data) {

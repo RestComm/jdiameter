@@ -44,11 +44,11 @@ package org.mobicents.diameter.impl.ha.server.cca;
 
 import java.io.Serializable;
 
-import org.jboss.cache.Fqn;
+import org.restcomm.cache.FqnWrapper;
 import org.jdiameter.api.cca.ServerCCASession;
 import org.jdiameter.common.api.app.cca.ServerCCASessionState;
 import org.jdiameter.server.impl.app.cca.IServerCCASessionData;
-import org.mobicents.cluster.MobicentsCluster;
+import org.restcomm.cluster.MobicentsCluster;
 import org.mobicents.diameter.impl.ha.common.AppSessionDataReplicatedImpl;
 import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 
@@ -64,12 +64,11 @@ public class ServerCCASessionDataReplicatedImpl extends AppSessionDataReplicated
   private static final String STATE = "STATE";
 
   /**
-   * @param nodeFqn
+   * @param nodeFqnWrapper
    * @param mobicentsCluster
-   * @param iface
    */
-  public ServerCCASessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster) {
-    super(nodeFqn, mobicentsCluster);
+  public ServerCCASessionDataReplicatedImpl(FqnWrapper nodeFqnWrapper, MobicentsCluster mobicentsCluster) {
+    super(nodeFqnWrapper, mobicentsCluster);
 
     if (super.create()) {
       setAppSessionIface(this, ServerCCASession.class);
@@ -80,10 +79,12 @@ public class ServerCCASessionDataReplicatedImpl extends AppSessionDataReplicated
   /**
    * @param sessionId
    * @param mobicentsCluster
-   * @param iface
    */
   public ServerCCASessionDataReplicatedImpl(String sessionId, MobicentsCluster mobicentsCluster) {
-    this(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId), mobicentsCluster);
+    this(
+      FqnWrapper.fromRelativeElementsWrapper(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId),
+      mobicentsCluster
+    );
   }
 
   /*
@@ -94,7 +95,7 @@ public class ServerCCASessionDataReplicatedImpl extends AppSessionDataReplicated
   @Override
   public boolean isStateless() {
     if (exists()) {
-      return toPrimitive((Boolean) getNode().get(STATELESS), true);
+      return toPrimitive((Boolean) getNodeValue(STATELESS), true);
     }
     else {
       throw new IllegalStateException();
@@ -109,7 +110,7 @@ public class ServerCCASessionDataReplicatedImpl extends AppSessionDataReplicated
   @Override
   public void setStateless(boolean stateless) {
     if (exists()) {
-      getNode().put(STATELESS, stateless);
+      putNodeValue(STATELESS, stateless);
     }
     else {
       throw new IllegalStateException();
@@ -124,7 +125,7 @@ public class ServerCCASessionDataReplicatedImpl extends AppSessionDataReplicated
   @Override
   public ServerCCASessionState getServerCCASessionState() {
     if (exists()) {
-      return (ServerCCASessionState) getNode().get(STATE);
+      return (ServerCCASessionState) getNodeValue(STATE);
     }
     else {
       throw new IllegalStateException();
@@ -140,7 +141,7 @@ public class ServerCCASessionDataReplicatedImpl extends AppSessionDataReplicated
   @Override
   public void setServerCCASessionState(ServerCCASessionState state) {
     if (exists()) {
-      getNode().put(STATE, state);
+      putNodeValue(STATE, state);
     }
     else {
       throw new IllegalStateException();
@@ -155,7 +156,7 @@ public class ServerCCASessionDataReplicatedImpl extends AppSessionDataReplicated
   @Override
   public void setTccTimerId(Serializable tccTimerId) {
     if (exists()) {
-      getNode().put(TCCID, tccTimerId);
+      putNodeValue(TCCID, tccTimerId);
     }
     else {
       throw new IllegalStateException();
@@ -170,7 +171,7 @@ public class ServerCCASessionDataReplicatedImpl extends AppSessionDataReplicated
   @Override
   public Serializable getTccTimerId() {
     if (exists()) {
-      return (Serializable) getNode().get(TCCID);
+      return (Serializable) getNodeValue(TCCID);
     }
     else {
       throw new IllegalStateException();

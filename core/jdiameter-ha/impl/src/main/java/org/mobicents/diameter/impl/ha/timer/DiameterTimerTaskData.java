@@ -44,8 +44,8 @@ package org.mobicents.diameter.impl.ha.timer;
 
 import java.io.Serializable;
 
-import org.mobicents.timers.PeriodicScheduleStrategy;
-import org.mobicents.timers.TimerTaskData;
+import org.restcomm.timers.PeriodicScheduleStrategy;
+import org.restcomm.timers.TimerTaskData;
 
 /**
  * Diameter timer task data holder.

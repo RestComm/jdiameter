@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:jboss:module:1.3" name="org.restcomm.diameter.mux">
+
+    <resources>
+        <resource-root path="@PROJECT_ARTIFACT@-@JDIAMETER_MUX_VERSION@.jar"/>
+    </resources>
+
+    <dependencies>
+    	<module name="org.apache.log4j"/>
+        <module name="org.restcomm.diameter.lib"/>
+    </dependencies>
+
+</module>

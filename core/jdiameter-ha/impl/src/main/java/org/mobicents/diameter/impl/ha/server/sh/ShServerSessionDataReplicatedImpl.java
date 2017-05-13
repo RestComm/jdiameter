@@ -42,10 +42,10 @@
 
 package org.mobicents.diameter.impl.ha.server.sh;
 
-import org.jboss.cache.Fqn;
+ import org.restcomm.cache.FqnWrapper;
 import org.jdiameter.api.sh.ServerShSession;
 import org.jdiameter.server.impl.app.sh.IShServerSessionData;
-import org.mobicents.cluster.MobicentsCluster;
+import org.restcomm.cluster.MobicentsCluster;
 import org.mobicents.diameter.impl.ha.common.AppSessionDataReplicatedImpl;
 import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 
@@ -57,12 +57,11 @@ import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 public class ShServerSessionDataReplicatedImpl extends AppSessionDataReplicatedImpl implements IShServerSessionData {
 
   /**
-   * @param nodeFqn
+   * @param nodeFqnWrapper
    * @param mobicentsCluster
-   * @param iface
    */
-  public ShServerSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster) {
-    super(nodeFqn, mobicentsCluster);
+  public ShServerSessionDataReplicatedImpl(FqnWrapper nodeFqnWrapper, MobicentsCluster mobicentsCluster) {
+    super(nodeFqnWrapper, mobicentsCluster);
 
     if (super.create()) {
       setAppSessionIface(this, ServerShSession.class);
@@ -72,10 +71,12 @@ public class ShServerSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   /**
    * @param sessionId
    * @param mobicentsCluster
-   * @param iface
    */
   public ShServerSessionDataReplicatedImpl(String sessionId, MobicentsCluster mobicentsCluster) {
-    this(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId), mobicentsCluster);
+    this(
+      FqnWrapper.fromRelativeElementsWrapper(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId),
+      mobicentsCluster
+    );
   }
 
 }

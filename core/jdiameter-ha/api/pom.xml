@@ -20,6 +20,8 @@
     </dependency>
 
     <!-- clustering deps -->
+    <!-- JBoss 5: JBoss Cache -->
+    <!--
     <dependency>
       <groupId>org.jboss.cache</groupId>
       <artifactId>jbosscache-core</artifactId>
@@ -35,6 +37,28 @@
       <groupId>org.mobicents.cluster</groupId>
       <artifactId>timers</artifactId>
     </dependency>
+    -->
+
+    <!-- WildFly: Infinispan Cache -->
+    <!--
+    <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-tree</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    -->
+
+    <!--
+    <dependency>
+      <groupId>org.restcomm.cluster</groupId>
+      <artifactId>timers</artifactId>
+    </dependency>
+    -->
   </dependencies>
 
 </project>

@@ -19,12 +19,12 @@
 
 package org.mobicents.diameter.impl.ha.client.s13;
 
-import org.jboss.cache.Fqn;
+import org.restcomm.cache.FqnWrapper;
 import org.jdiameter.api.s13.ClientS13Session;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.impl.app.s13.IClientS13SessionData;
 import org.jdiameter.common.api.app.s13.S13SessionState;
-import org.mobicents.cluster.MobicentsCluster;
+import org.restcomm.cluster.MobicentsCluster;
 import org.mobicents.diameter.impl.ha.common.s13.S13SessionDataReplicatedImpl;
 import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 
@@ -36,12 +36,12 @@ import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 public class ClientS13SessionDataReplicatedImpl extends S13SessionDataReplicatedImpl implements IClientS13SessionData {
 
   /**
-   * @param nodeFqn
+   * @param nodeFqnWrapper
    * @param mobicentsCluster
-   * @param iface
+   * @param container
    */
-  public ClientS13SessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
-    super(nodeFqn, mobicentsCluster, container);
+  public ClientS13SessionDataReplicatedImpl(FqnWrapper nodeFqnWrapper, MobicentsCluster mobicentsCluster, IContainer container) {
+    super(nodeFqnWrapper, mobicentsCluster, container);
 
     if (super.create()) {
       setAppSessionIface(this, ClientS13Session.class);
@@ -52,10 +52,13 @@ public class ClientS13SessionDataReplicatedImpl extends S13SessionDataReplicated
   /**
    * @param sessionId
    * @param mobicentsCluster
-   * @param iface
+   * @param container
    */
   public ClientS13SessionDataReplicatedImpl(String sessionId, MobicentsCluster mobicentsCluster, IContainer container) {
-    this(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId), mobicentsCluster, container);
+    this(
+      FqnWrapper.fromRelativeElementsWrapper(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId),
+      mobicentsCluster, container
+    );
   }
 
 }
