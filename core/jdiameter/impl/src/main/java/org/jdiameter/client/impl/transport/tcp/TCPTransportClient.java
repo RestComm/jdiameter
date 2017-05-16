@@ -60,6 +60,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.client.api.io.NotInitializedException;
+import org.jdiameter.client.impl.parser.MessageParser;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -303,7 +304,14 @@ public class TCPTransportClient implements Runnable {
 
   public void sendMessage(ByteBuffer bytes) throws IOException {
     if (logger.isDebugEnabled()) {
-      logger.debug("About to send a byte buffer of size [{}] over the TCP nio socket [{}]", bytes.array().length, socketDescription);
+      if (logger.isTraceEnabled()) {
+        String hex = MessageParser.byteArrayToHexString(bytes.array());
+        logger.trace("About to send a byte buffer of size [{}] over the TCP nio socket [{}]\n{}",
+            new Object[]{bytes.array().length, socketDescription, hex});
+      }
+      else {
+        logger.debug("About to send a byte buffer of size [{}] over the TCP nio socket [{}]", bytes.array().length, socketDescription);
+      }
     }
     int rc = 0;
     // PCB - removed locking
