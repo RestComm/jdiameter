@@ -223,9 +223,10 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean {
    * @param name the name/uri of the peer
    * @param attemptConnect indicates if the stack should try to connect to this peer or wait for incoming connection
    * @param rating the peer rating for decision on message routing
+   * @param realm name of the realm
    * @throws MBeanException if the operation is unable to perform correctly
    */
-  void _Network_Peers_addPeer(String name, boolean attemptConnect, int rating) throws MBeanException;
+  void _Network_Peers_addPeer(String name, boolean attemptConnect, int rating, String realm) throws MBeanException;
 
   /**
    * Removes a peer definition from stack.

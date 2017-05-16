@@ -719,13 +719,13 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
   /*
    * (non-Javadoc)
-   * @see org.mobicents.diameter.stack.DiameterStackMultiplexerMBean#_Network_Peers_addPeer(java.lang.String, boolean, int)
+   * @see org.mobicents.diameter.stack.DiameterStackMultiplexerMBean#_Network_Peers_addPeer(java.lang.String, boolean, int, String)
    */
   @Override
-  public void _Network_Peers_addPeer(String name, boolean attemptConnect, int rating) throws MBeanException {
+  public void _Network_Peers_addPeer(String name, boolean attemptConnect, int rating, String realm) throws MBeanException {
     try {
       NetworkImpl n = (NetworkImpl) stack.unwrap(Network.class);
-      /*Peer p =*/ n.addPeer(name, "", attemptConnect); // FIXME: This requires realm...
+      /*Peer p =*/ n.addPeer(name, realm, attemptConnect);
     }
     catch (IllegalArgumentException e) {
       logger.warn(e.getMessage());

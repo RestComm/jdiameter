@@ -181,8 +181,9 @@ public interface DiameterStackMultiplexerAS7MBean {
    * @param name the name/uri of the peer
    * @param attemptConnect indicates if the stack should try to connect to this peer or wait for incoming connection
    * @param rating the peer rating for decision on message routing
+   * @param realm name of the realm
    */
-  void _Network_Peers_addPeer(String name, boolean attemptConnect, int rating);
+  void _Network_Peers_addPeer(String name, boolean attemptConnect, int rating, String realm);
 
   /**
    * Removes a peer definition from stack.
