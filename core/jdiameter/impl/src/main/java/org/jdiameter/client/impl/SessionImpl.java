@@ -42,6 +42,7 @@
 
 package org.jdiameter.client.impl;
 
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import org.jdiameter.api.Answer;
@@ -63,6 +64,8 @@ import org.jdiameter.client.api.ISession;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.api.timer.ITimerFacility;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation for {@link ISession}
@@ -72,6 +75,10 @@ import org.jdiameter.common.api.timer.ITimerFacility;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class SessionImpl extends BaseSessionImpl implements ISession {
+
+  private static final Logger logger = LoggerFactory.getLogger(SessionImpl.class);
+
+  private Semaphore lock = new Semaphore(1); // container lock
 
   SessionImpl(IContainer container) {
     setContainer(container);
@@ -84,8 +91,17 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
   }
 
   void setContainer(IContainer container) {
-    this.container = container;
-    this.parser = container.getAssemblerFacility().getComponentInstance(IMessageParser.class);
+    try {
+      lock.acquire(); // allow container change only if not releasing
+      this.container = container;
+      this.parser = (IMessageParser) container.getAssemblerFacility().getComponentInstance(IMessageParser.class);
+    }
+    catch (InterruptedException e) {
+      logger.error("failure getting lock", e);
+    }
+    finally {
+      lock.release();
+    }
   }
 
   @Override
@@ -174,17 +190,27 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
   @Override
   public void release() {
     isValid = false;
-    if (container != null) {
-      if (istTimerId != null) {
-        container.getAssemblerFacility().getComponentInstance(ITimerFacility.class).cancel(istTimerId);
+    try {
+      lock.acquire(); // prevent container NullPointerException
+
+      if (container != null) {
+        if (istTimerId != null) {
+          container.getAssemblerFacility().getComponentInstance(ITimerFacility.class).cancel(istTimerId);
+        }
+        container.removeSessionListener(sessionId);
+        container.getAssemblerFacility().getComponentInstance(ISessionDatasource.class).removeSession(sessionId);
       }
-      container.removeSessionListener(sessionId);
-      // FIXME
-      container.getAssemblerFacility().getComponentInstance(ISessionDatasource.class).removeSession(sessionId);
+
+      container = null;
+      parser = null;
+      reqListener = null;
     }
-    container = null;
-    parser = null;
-    reqListener = null;
+    catch (InterruptedException e) {
+      logger.error("failure getting lock", e);
+    }
+    finally {
+      lock.release();
+    }
   }
 
   @Override
