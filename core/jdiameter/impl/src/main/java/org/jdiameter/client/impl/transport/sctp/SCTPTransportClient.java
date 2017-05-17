@@ -46,6 +46,9 @@ public class SCTPTransportClient {
   // The waiting time between checks for association connection
   private static final int DELAY = 100;
 
+  public static final String SCTP_BUFFER_SIZE_PARAMETER = "org.restcomm.sctp.bufferSize";
+  public static final String SCTP_BUFFER_SIZE_DEFAULT = "65535";
+
   private ManagementImpl management = null;
   private AssociationImpl clientAssociation = null;
   private SCTPClientConnection parentConnection;
@@ -89,6 +92,8 @@ public class SCTPTransportClient {
       if (this.management == null) {
         this.management = new ManagementImpl(clientAssociationName);
         this.management.setSingleThread(true);
+        this.management.setBufferSize(Integer.valueOf(System.getProperty(SCTP_BUFFER_SIZE_PARAMETER, SCTP_BUFFER_SIZE_DEFAULT)));
+        logger.debug("SCTP Client Buffer Size set to {}", this.management.getBufferSize());
         this.management.start();
         this.management.setConnectDelay(1000); // Try connecting every 1 secs -- Note: 1st attempt is also delayed!
         // Clear any saved connections, we will get them from jdiameter-config.xml

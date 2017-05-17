@@ -25,6 +25,7 @@ import java.nio.ByteBuffer;
 
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.client.api.io.NotInitializedException;
+import org.jdiameter.client.impl.transport.sctp.SCTPTransportClient;
 import org.mobicents.protocols.api.Association;
 import org.mobicents.protocols.api.AssociationListener;
 import org.mobicents.protocols.api.IpChannelType;
@@ -135,6 +136,9 @@ public class SCTPTransportServer {
       if (this.management == null) {
         this.management = new ManagementImpl("server-management-" + origAddress.getAddress().getHostAddress() + "."
             + origAddress.getPort());
+        this.management.setBufferSize(Integer.valueOf(System.getProperty(
+            SCTPTransportClient.SCTP_BUFFER_SIZE_PARAMETER, SCTPTransportClient.SCTP_BUFFER_SIZE_DEFAULT)));
+        logger.debug("SCTP Server Buffer Size set to {}", this.management.getBufferSize());
         this.management.setSingleThread(true);
         this.management.start();
         // Clear any saved connections, we will get them from jdiameter-config.xml
