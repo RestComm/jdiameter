@@ -1,4 +1,0 @@
-language: java
-
-# Enable container-based infrastructure, see https://docs.travis-ci.com/user/ci-environment/
-sudo: false

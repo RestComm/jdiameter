@@ -890,11 +890,5 @@ public class ClientRxSessionImpl extends AppRxSessionImpl implements ClientRxSes
 
   @Override
   public void onTimer(String timerName) {
-    if (timerName.equals(IDLE_SESSION_TIMER_NAME)) {
-      checkIdleAppSession();
-    }
-    else {
-      logger.warn("Received an unknown timer '{}' for Session-ID '{}'", timerName, getSessionId());
-    }
   }
 }

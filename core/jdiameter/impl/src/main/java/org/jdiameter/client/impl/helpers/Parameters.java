@@ -123,10 +123,6 @@ public class Parameters extends Ordinal {
    * Reconnect time out property
    */
   public static final Parameters RecTimeOut = new Parameters("RecTimeOut", Long.class, 10000L);
-  /**
-   * Idle session time out property
-   */
-  public static final Parameters SessionTimeOut = new Parameters("SessionTimeOut", Long.class, 0L);
 
   /**
    * Peer FSM Thread Count property

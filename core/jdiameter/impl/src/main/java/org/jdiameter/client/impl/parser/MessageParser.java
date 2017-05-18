@@ -250,40 +250,6 @@ public class MessageParser extends ElementParser implements IMessageParser {
     }
   }
 
-  public static String byteArrayToHexString(byte[] in, boolean columnize) {
-    if (in == null || in.length <= 0) {
-      return "";
-    }
-    String pseudo = "0123456789ABCDEF";
-
-    StringBuffer out = new StringBuffer(in.length * 3);
-
-    for (int i = 0; i < in.length; i++) {
-      byte ch = in[i];
-      out.append(pseudo.charAt((int) ((ch & 0xF0) >> 4)));
-      out.append(pseudo.charAt((int) (ch & 0x0F)));
-
-      if (columnize) {
-        if ((i + 1) % 16 == 0) {
-          out.append("\n");
-        }
-        else if ((i + 1) % 4 == 0) {
-          out.append(" ");
-        }
-      }
-    }
-
-    return out.toString();
-  }
-
-  public static String byteArrayToHexStringLine(byte[] in) {
-    return byteArrayToHexString(in, false);
-  }
-
-  public static String byteArrayToHexString(byte[] in) {
-    return byteArrayToHexString(in, true);
-  }
-
   @Override
   public ByteBuffer encodeMessage(IMessage message) throws ParseException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();

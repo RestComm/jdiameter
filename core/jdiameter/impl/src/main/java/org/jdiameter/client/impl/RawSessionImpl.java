@@ -75,7 +75,7 @@ public class RawSessionImpl extends BaseSessionImpl implements RawSession {
   @Override
   public  Message createMessage(int commandCode, ApplicationId appId, Avp... avps) {
     if ( isValid ) {
-      setLastAccessTime();
+      lastAccessedTime = System.currentTimeMillis();
       IMessage m = parser.createEmptyMessage(commandCode, getAppId(appId));
       m.getAvps().addAvp(avps);
       appendAppId(appId, m);
@@ -88,7 +88,7 @@ public class RawSessionImpl extends BaseSessionImpl implements RawSession {
   @Override
   public Message createMessage(int commandCode, ApplicationId appId, long hopByHopIdentifier, long endToEndIdentifier, Avp... avps) {
     if ( isValid ) {
-      setLastAccessTime();
+      lastAccessedTime = System.currentTimeMillis();
       IMessage m = parser.createEmptyMessage(commandCode, getAppId(appId));
       if (hopByHopIdentifier >= 0) {
         m.setHopByHopIdentifier(-hopByHopIdentifier);
@@ -107,7 +107,7 @@ public class RawSessionImpl extends BaseSessionImpl implements RawSession {
   @Override
   public Message createMessage(Message message, boolean copyAvps) {
     if ( isValid ) {
-      setLastAccessTime();
+      lastAccessedTime = System.currentTimeMillis();
       IMessage newMessage = null;
       IMessage inner = (IMessage) message;
       if (copyAvps) {

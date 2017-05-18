@@ -200,7 +200,7 @@ public class RealmTableImpl implements IRealmTable {
       Collection<Realm> present = set.values();
       return new ArrayList<Realm>(present);
     }
-    return new ArrayList<Realm>(0);
+    return null;
   }
 
   /*
@@ -441,11 +441,6 @@ public class RealmTableImpl implements IRealmTable {
   @Override
   public <T> T unwrap(Class<T> iface) throws InternalException {
     return null;
-  }
-
-  @Override
-  public List<String> getAllRealmSet() {
-    return allRealmsSet;
   }
 
 }

@@ -45,7 +45,7 @@ package org.mobicents.diameter.impl.ha.client.acc;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-import org.restcomm.cache.FqnWrapper;
+import org.jboss.cache.Fqn;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.acc.ClientAccSession;
@@ -55,7 +55,7 @@ import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.api.parser.ParseException;
 import org.jdiameter.client.impl.app.acc.IClientAccSessionData;
 import org.jdiameter.common.api.app.acc.ClientAccSessionState;
-import org.restcomm.cluster.MobicentsCluster;
+import org.mobicents.cluster.MobicentsCluster;
 import org.mobicents.diameter.impl.ha.common.AppSessionDataReplicatedImpl;
 import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 import org.slf4j.Logger;
@@ -79,12 +79,12 @@ public class ClientAccSessionDataReplicatedImpl extends AppSessionDataReplicated
   private IMessageParser messageParser;
 
   /**
-   * @param nodeFqnWrapper
+   * @param nodeFqn
    * @param mobicentsCluster
-   * @param container
+   * @param iface
    */
-  public ClientAccSessionDataReplicatedImpl(FqnWrapper nodeFqnWrapper, MobicentsCluster mobicentsCluster, IContainer container) {
-    super(nodeFqnWrapper, mobicentsCluster);
+  public ClientAccSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
+    super(nodeFqn, mobicentsCluster);
 
     if (super.create()) {
       setAppSessionIface(this, ClientAccSession.class);
@@ -97,13 +97,10 @@ public class ClientAccSessionDataReplicatedImpl extends AppSessionDataReplicated
   /**
    * @param sessionId
    * @param mobicentsCluster
-   * @param container
+   * @param iface
    */
   public ClientAccSessionDataReplicatedImpl(String sessionId, MobicentsCluster mobicentsCluster, IContainer container) {
-    this(
-      FqnWrapper.fromRelativeElementsWrapper(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId),
-      mobicentsCluster, container
-    );
+    this(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId), mobicentsCluster, container);
   }
 
   /*
@@ -115,7 +112,7 @@ public class ClientAccSessionDataReplicatedImpl extends AppSessionDataReplicated
   @Override
   public void setClientAccSessionState(ClientAccSessionState state) {
     if (exists()) {
-      putNodeValue(STATE, state);
+      getNode().put(STATE, state);
     }
     else {
       throw new IllegalStateException();
@@ -130,7 +127,7 @@ public class ClientAccSessionDataReplicatedImpl extends AppSessionDataReplicated
   @Override
   public ClientAccSessionState getClientAccSessionState() {
     if (exists()) {
-      return (ClientAccSessionState) getNodeValue(STATE);
+      return (ClientAccSessionState) getNode().get(STATE);
     }
     else {
       throw new IllegalStateException();
@@ -145,7 +142,7 @@ public class ClientAccSessionDataReplicatedImpl extends AppSessionDataReplicated
   @Override
   public void setInterimTimerId(Serializable tid) {
     if (exists()) {
-      putNodeValue(INTERIM_TIMERID, tid);
+      getNode().put(INTERIM_TIMERID, tid);
     }
     else {
       throw new IllegalStateException();
@@ -160,7 +157,7 @@ public class ClientAccSessionDataReplicatedImpl extends AppSessionDataReplicated
   @Override
   public Serializable getInterimTimerId() {
     if (exists()) {
-      return (Serializable) getNodeValue(INTERIM_TIMERID);
+      return (Serializable) getNode().get(INTERIM_TIMERID);
     }
     else {
       throw new IllegalStateException();
@@ -175,7 +172,7 @@ public class ClientAccSessionDataReplicatedImpl extends AppSessionDataReplicated
   @Override
   public void setDestinationHost(String destHost) {
     if (exists()) {
-      putNodeValue(DEST_HOST, destHost);
+      getNode().put(DEST_HOST, destHost);
     }
     else {
       throw new IllegalStateException();
@@ -190,7 +187,7 @@ public class ClientAccSessionDataReplicatedImpl extends AppSessionDataReplicated
   @Override
   public String getDestinationHost() {
     if (exists()) {
-      return (String) getNodeValue(DEST_HOST);
+      return (String) getNode().get(DEST_HOST);
     }
     else {
       throw new IllegalStateException();
@@ -205,7 +202,7 @@ public class ClientAccSessionDataReplicatedImpl extends AppSessionDataReplicated
   @Override
   public void setDestinationRealm(String destRealm) {
     if (exists()) {
-      putNodeValue(DEST_REALM, destRealm);
+      getNode().put(DEST_REALM, destRealm);
     }
     else {
       throw new IllegalStateException();
@@ -220,7 +217,7 @@ public class ClientAccSessionDataReplicatedImpl extends AppSessionDataReplicated
   @Override
   public String getDestinationRealm() {
     if (exists()) {
-      return (String) getNodeValue(DEST_REALM);
+      return (String) getNode().get(DEST_REALM);
     }
     else {
       throw new IllegalStateException();
@@ -229,7 +226,7 @@ public class ClientAccSessionDataReplicatedImpl extends AppSessionDataReplicated
 
   @Override
   public Request getBuffer() {
-    byte[] data = (byte[]) getNodeValue(BUFFER);
+    byte[] data = (byte[]) getNode().get(BUFFER);
     if (data != null) {
       try {
         return this.messageParser.createMessage(ByteBuffer.wrap(data));
@@ -249,14 +246,14 @@ public class ClientAccSessionDataReplicatedImpl extends AppSessionDataReplicated
     if (buffer != null) {
       try {
         byte[] data = this.messageParser.encodeMessage((IMessage) buffer).array();
-        putNodeValue(BUFFER, data);
+        getNode().put(BUFFER, data);
       }
       catch (ParseException e) {
         logger.error("Unable to encode message to buffer.");
       }
     }
     else {
-      removeNodeValue(BUFFER);
+      getNode().remove(BUFFER);
     }
   }
 

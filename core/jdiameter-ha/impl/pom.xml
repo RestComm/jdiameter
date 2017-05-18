@@ -25,33 +25,26 @@
       <artifactId>jdiameter-impl</artifactId>
     </dependency>
 
-    <!-- javax.transaction dependency -->
-    <!-- works for JBoss 5.1 -->
+    <!--  cache  -->
+    <dependency>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging-log4j</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- clustering deps -->
     <dependency>
       <groupId>org.jboss.cluster</groupId>
       <artifactId>jboss-ha-server-cache-jbc</artifactId>
     </dependency>
 
-    <!--
     <dependency>
-      <groupId>javax</groupId>
-      <artifactId>javaee-api</artifactId>
-      <version>6.0</version>
-    </dependency>
-    -->
-
-    <dependency>
-      <groupId>org.restcomm.cluster</groupId>
-      <artifactId>core</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.restcomm.cluster</groupId>
+      <groupId>org.mobicents.cluster</groupId>
       <artifactId>cache</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.restcomm.cluster</groupId>
+      <groupId>org.mobicents.cluster</groupId>
       <artifactId>timers</artifactId>
     </dependency>
   </dependencies>

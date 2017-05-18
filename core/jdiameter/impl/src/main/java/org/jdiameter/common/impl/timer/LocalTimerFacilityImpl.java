@@ -55,7 +55,6 @@ import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.jdiameter.api.BaseSession;
 import org.jdiameter.client.api.IContainer;
-import org.jdiameter.client.impl.BaseSessionImpl;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.api.timer.ITimerFacility;
@@ -97,7 +96,6 @@ public class LocalTimerFacilityImpl implements ITimerFacility {
     if (f != null && f instanceof TimerTaskHandle) {
       TimerTaskHandle timerTaskHandle = (TimerTaskHandle) f;
       if (timerTaskHandle.future != null) {
-        logger.debug("Cancelling timer with id [{}] and delay [{}]", timerTaskHandle.id, timerTaskHandle.future.getDelay(TimeUnit.MILLISECONDS));
         if (executor.remove((Runnable) timerTaskHandle.future)) {
           timerTaskHandle.future.cancel(false);
           returnTimerTaskHandle(timerTaskHandle);
@@ -169,24 +167,18 @@ public class LocalTimerFacilityImpl implements ITimerFacility {
     public void run() {
       try {
         BaseSession bSession = sessionDataSource.getSession(sessionId);
-        if (bSession == null) {
+        if (bSession == null || !bSession.isAppSession()) {
           // FIXME: error ?
           logger.error("Base Session is null for sessionId: {}", sessionId);
           return;
         }
         else {
           try {
-            if (!bSession.isAppSession()) {
-              BaseSessionImpl impl = (BaseSessionImpl) bSession;
-              impl.onTimer(timerName);
-            }
-            else {
-              AppSessionImpl impl = (AppSessionImpl) bSession;
-              impl.onTimer(timerName);
-            }
+            AppSessionImpl impl = (AppSessionImpl) bSession;
+            impl.onTimer(timerName);
           }
           catch (Exception e) {
-            logger.error("Caught exception from session object!", e);
+            logger.error("Caught exception from app session object!", e);
           }
         }
       }

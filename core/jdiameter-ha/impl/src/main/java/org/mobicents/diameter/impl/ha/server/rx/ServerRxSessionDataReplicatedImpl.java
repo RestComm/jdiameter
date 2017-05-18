@@ -42,11 +42,11 @@
 
 package org.mobicents.diameter.impl.ha.server.rx;
 
-import org.restcomm.cache.FqnWrapper;
+import org.jboss.cache.Fqn;
 import org.jdiameter.api.rx.ServerRxSession;
 import org.jdiameter.common.api.app.rx.ServerRxSessionState;
 import org.jdiameter.server.impl.app.rx.IServerRxSessionData;
-import org.restcomm.cluster.MobicentsCluster;
+import org.mobicents.cluster.MobicentsCluster;
 import org.mobicents.diameter.impl.ha.common.AppSessionDataReplicatedImpl;
 import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 
@@ -61,11 +61,12 @@ public class ServerRxSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   private static final String STATE = "STATE";
 
   /**
-   * @param nodeFqnWrapper
+   * @param nodeFqn
    * @param mobicentsCluster
+   * @param iface
    */
-  public ServerRxSessionDataReplicatedImpl(FqnWrapper nodeFqnWrapper, MobicentsCluster mobicentsCluster) {
-    super(nodeFqnWrapper, mobicentsCluster);
+  public ServerRxSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster) {
+    super(nodeFqn, mobicentsCluster);
 
     if (super.create()) {
       setAppSessionIface(this, ServerRxSession.class);
@@ -76,12 +77,10 @@ public class ServerRxSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   /**
    * @param sessionId
    * @param mobicentsCluster
+   * @param iface
    */
   public ServerRxSessionDataReplicatedImpl(String sessionId, MobicentsCluster mobicentsCluster) {
-    this(
-      FqnWrapper.fromRelativeElementsWrapper(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId),
-      mobicentsCluster
-    );
+    this(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId), mobicentsCluster);
   }
 
   /*
@@ -92,7 +91,7 @@ public class ServerRxSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public boolean isStateless() {
     if (exists()) {
-      return toPrimitive((Boolean) getNodeValue(STATELESS), true);
+      return toPrimitive((Boolean) getNode().get(STATELESS), true);
     } else {
       throw new IllegalStateException();
     }
@@ -106,7 +105,7 @@ public class ServerRxSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setStateless(boolean stateless) {
     if (exists()) {
-      putNodeValue(STATELESS, stateless);
+      getNode().put(STATELESS, stateless);
     } else {
       throw new IllegalStateException();
     }
@@ -120,7 +119,7 @@ public class ServerRxSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public ServerRxSessionState getServerRxSessionState() {
     if (exists()) {
-      return (ServerRxSessionState) getNodeValue(STATE);
+      return (ServerRxSessionState) getNode().get(STATE);
     } else {
       throw new IllegalStateException();
     }
@@ -136,7 +135,7 @@ public class ServerRxSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   public void setServerRxSessionState(ServerRxSessionState state) {
 
     if (exists()) {
-      putNodeValue(STATE, state);
+      getNode().put(STATE, state);
     } else {
       throw new IllegalStateException();
     }

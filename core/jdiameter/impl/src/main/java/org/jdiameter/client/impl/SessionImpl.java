@@ -42,7 +42,6 @@
 
 package org.jdiameter.client.impl;
 
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import org.jdiameter.api.Answer;
@@ -63,9 +62,6 @@ import org.jdiameter.client.api.IRequest;
 import org.jdiameter.client.api.ISession;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.common.api.data.ISessionDatasource;
-import org.jdiameter.common.api.timer.ITimerFacility;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementation for {@link ISession}
@@ -75,10 +71,6 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 public class SessionImpl extends BaseSessionImpl implements ISession {
-
-  private static final Logger logger = LoggerFactory.getLogger(SessionImpl.class);
-
-  private Semaphore lock = new Semaphore(1); // container lock
 
   SessionImpl(IContainer container) {
     setContainer(container);
@@ -91,17 +83,8 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
   }
 
   void setContainer(IContainer container) {
-    try {
-      lock.acquire(); // allow container change only if not releasing
-      this.container = container;
-      this.parser = (IMessageParser) container.getAssemblerFacility().getComponentInstance(IMessageParser.class);
-    }
-    catch (InterruptedException e) {
-      logger.error("failure getting lock", e);
-    }
-    finally {
-      lock.release();
-    }
+    this.container = container;
+    this.parser = container.getAssemblerFacility().getComponentInstance(IMessageParser.class);
   }
 
   @Override
@@ -132,7 +115,7 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
   @Override
   public Request createRequest(int commandCode, ApplicationId appId, String destRealm) {
     if (isValid) {
-      setLastAccessTime();
+      lastAccessedTime = System.currentTimeMillis();
       IRequest m = parser.createEmptyMessage(IRequest.class, commandCode, getAppId(appId));
       m.setNetworkRequest(false);
       m.setRequest(true);
@@ -152,7 +135,7 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
   @Override
   public Request createRequest(int commandCode, ApplicationId appId, String destRealm, String destHost) {
     if (isValid) {
-      setLastAccessTime();
+      lastAccessedTime = System.currentTimeMillis();
       IRequest m = parser.createEmptyMessage(IRequest.class, commandCode, getAppId(appId));
       m.setNetworkRequest(false);
       m.setRequest(true);
@@ -175,7 +158,7 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
   @Override
   public Request createRequest(Request prevRequest) {
     if (isValid) {
-      setLastAccessTime();
+      lastAccessedTime = System.currentTimeMillis();
       IRequest request = parser.createEmptyMessage(Request.class, (IMessage) prevRequest);
       request.setRequest(true);
       request.setNetworkRequest(false);
@@ -190,27 +173,14 @@ public class SessionImpl extends BaseSessionImpl implements ISession {
   @Override
   public void release() {
     isValid = false;
-    try {
-      lock.acquire(); // prevent container NullPointerException
-
-      if (container != null) {
-        if (istTimerId != null) {
-          container.getAssemblerFacility().getComponentInstance(ITimerFacility.class).cancel(istTimerId);
-        }
-        container.removeSessionListener(sessionId);
-        container.getAssemblerFacility().getComponentInstance(ISessionDatasource.class).removeSession(sessionId);
-      }
-
-      container = null;
-      parser = null;
-      reqListener = null;
+    if (container != null) {
+      container.removeSessionListener(sessionId);
+      // FIXME
+      container.getAssemblerFacility().getComponentInstance(ISessionDatasource.class).removeSession(sessionId);
     }
-    catch (InterruptedException e) {
-      logger.error("failure getting lock", e);
-    }
-    finally {
-      lock.release();
-    }
+    container = null;
+    parser = null;
+    reqListener = null;
   }
 
   @Override

@@ -48,7 +48,7 @@ import org.jdiameter.api.ro.ServerRoSession;
 import org.jdiameter.common.api.app.IAppSessionDataFactory;
 import org.jdiameter.common.api.app.ro.IRoSessionData;
 import org.jdiameter.common.api.data.ISessionDatasource;
-import org.restcomm.cluster.MobicentsCluster;
+import org.mobicents.cluster.MobicentsCluster;
 import org.mobicents.diameter.impl.ha.client.ro.ClientRoSessionDataReplicatedImpl;
 import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 import org.mobicents.diameter.impl.ha.server.ro.ServerRoSessionDataReplicatedImpl;

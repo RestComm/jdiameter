@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.mobicents</groupId>
     <artifactId>restcomm-parent</artifactId>
-    <version>2.27.47</version>
+    <version>2.27.32</version>
   </parent>
 
   <groupId>org.mobicents.diameter</groupId>
@@ -32,8 +32,6 @@
     <checkstyle.failOnError>true</checkstyle.failOnError>
     <version.com.puppycrawl.tools.checkstyle>6.18</version.com.puppycrawl.tools.checkstyle>
     <compile.source>1.7</compile.source>
-
-    <!--<version.cluster>1.15.0-SNAPSHOT</version.cluster>-->
   </properties>
 
   <developers>
@@ -75,35 +73,6 @@
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <additionalparam>-Xdoclint:none</additionalparam>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.7</version>
-        <extensions>true</extensions>
-        <configuration>
-          <serverId>restcomm-releases-repository</serverId>
-          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-        </configuration>
-        <executions>
-          <execution>
-            <id>deploy-to-sonatype</id>
-            <phase>deploy</phase>
-            <goals>
-              <goal>deploy</goal>
-              <!--goal>close</goal-->
-              <goal>release</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
       <!-- Checkstyle -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -234,26 +203,6 @@
   </build>
 
   <profiles>
-
-    <profile>
-      <id>jboss5</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <properties>
-        <cluster.version>1.15.29</cluster.version>
-      </properties>
-    </profile>
-    <profile>
-      <id>wildfly</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <properties>
-        <cluster.version>3.0.0.13</cluster.version>
-      </properties>
-    </profile>
-
     <profile>
       <id>testsuite</id>
       <modules>
@@ -291,29 +240,6 @@
       </build>
     </profile>
   </profiles>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.restcomm.cluster</groupId>
-        <artifactId>core</artifactId>
-        <version>${cluster.version}</version>
-        <!--<scope>provided</scope>-->
-      </dependency>
-      <dependency>
-        <groupId>org.restcomm.cluster</groupId>
-        <artifactId>cache</artifactId>
-        <version>${cluster.version}</version>
-        <!--<scope>provided</scope>-->
-      </dependency>
-      <dependency>
-        <groupId>org.restcomm.cluster</groupId>
-        <artifactId>timers</artifactId>
-        <version>${cluster.version}</version>
-        <!--<scope>provided</scope>-->
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <repositories>
     <repository>

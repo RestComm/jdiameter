@@ -63,7 +63,6 @@ import org.jdiameter.client.api.io.IConnectionListener;
 import org.jdiameter.client.api.io.TransportError;
 import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.api.parser.IMessageParser;
-import org.jdiameter.client.impl.parser.MessageParser;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -299,13 +298,7 @@ public class TCPClientConnection implements IConnection {
 
   protected void onMessageReceived(ByteBuffer message) throws AvpDataException {
     if (logger.isDebugEnabled()) {
-      if (logger.isTraceEnabled()) {
-        String hex = MessageParser.byteArrayToHexString(message.array());
-        logger.trace("Received message of size [{}]\n{}", new Object[] { message.array().length, hex });
-      }
-      else {
-        logger.debug("Received message of size [{}]", message.array().length);
-      }
+      logger.debug("Received message of size [{}]", message.array().length);
     }
     onEvent(new Event(EventType.MESSAGE_RECEIVED, message));
   }

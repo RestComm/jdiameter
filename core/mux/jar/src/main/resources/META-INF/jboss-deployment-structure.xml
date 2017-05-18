@@ -1,0 +1,12 @@
+<jboss-deployment-structure>
+
+    <deployment>
+
+        <dependencies>
+            <module name="org.slf4j" />
+            <module name="org.mobicents.diameter" />
+        </dependencies>
+
+    </deployment>
+
+</jboss-deployment-structure>

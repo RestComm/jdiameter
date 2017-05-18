@@ -252,16 +252,12 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
                   // New State: IDLE
 
                   // It's a failure, we wait for Tcc to fire -- FIXME: Alexandre: Should we?
-                  newState = ServerGxSessionState.IDLE;
                 }
               }
               catch (AvpDataException e) {
                 throw new InternalException(e);
               }
               dispatchEvent(localEvent.getAnswer());
-              if (newState != null) {
-                setState(newState);
-              }
               break;
             case RECEIVED_TERMINATE:
               listener.doCreditControlRequest(this, (GxCreditControlRequest) localEvent.getRequest());
@@ -414,14 +410,8 @@ public class ServerGxSessionImpl extends AppGxSessionImpl implements ServerGxSes
    */
   @Override
   public void onTimer(String timerName) {
-    if (timerName.equals(IDLE_SESSION_TIMER_NAME)) {
-      checkIdleAppSession();
-    }
-    else if (timerName.equals(TCC_TIMER_NAME)) {
+    if (timerName.equals(TCC_TIMER_NAME)) {
       new TccScheduledTask(this).run();
-    }
-    else {
-      logger.warn("Received an unknown timer '{}' for Session-ID '{}'", timerName, getSessionId());
     }
   }
 

@@ -45,7 +45,7 @@ package org.mobicents.diameter.impl.ha.common.cxdx;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-import org.restcomm.cache.FqnWrapper;
+import org.jboss.cache.Fqn;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Request;
 import org.jdiameter.client.api.IContainer;
@@ -54,7 +54,7 @@ import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.api.parser.ParseException;
 import org.jdiameter.common.api.app.cxdx.CxDxSessionState;
 import org.jdiameter.common.api.app.cxdx.ICxDxSessionData;
-import org.restcomm.cluster.MobicentsCluster;
+import org.mobicents.cluster.MobicentsCluster;
 import org.mobicents.diameter.impl.ha.common.AppSessionDataReplicatedImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,12 +75,12 @@ public abstract class CxDxSessionDataReplicatedImpl extends AppSessionDataReplic
   private IMessageParser messageParser;
 
   /**
-   * @param nodeFqnWrapper
+   * @param nodeFqn
    * @param mobicentsCluster
-   * @param container
+   * @param iface
    */
-  public CxDxSessionDataReplicatedImpl(FqnWrapper nodeFqnWrapper, MobicentsCluster mobicentsCluster, IContainer container) {
-    super(nodeFqnWrapper, mobicentsCluster);
+  public CxDxSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
+    super(nodeFqn, mobicentsCluster);
     this.messageParser = container.getAssemblerFacility().getComponentInstance(IMessageParser.class);
   }
 
@@ -92,7 +92,7 @@ public abstract class CxDxSessionDataReplicatedImpl extends AppSessionDataReplic
   @Override
   public void setCxDxSessionState(CxDxSessionState state) {
     if (exists()) {
-      putNodeValue(STATE, state);
+      getNode().put(STATE, state);
     }
     else {
       throw new IllegalStateException();
@@ -107,7 +107,7 @@ public abstract class CxDxSessionDataReplicatedImpl extends AppSessionDataReplic
   @Override
   public CxDxSessionState getCxDxSessionState() {
     if (exists()) {
-      return (CxDxSessionState) getNodeValue(STATE);
+      return (CxDxSessionState) getNode().get(STATE);
     }
     else {
       throw new IllegalStateException();
@@ -122,7 +122,7 @@ public abstract class CxDxSessionDataReplicatedImpl extends AppSessionDataReplic
   @Override
   public Serializable getTsTimerId() {
     if (exists()) {
-      return (Serializable) getNodeValue(TS_TIMERID);
+      return (Serializable) getNode().get(TS_TIMERID);
     }
     else {
       throw new IllegalStateException();
@@ -137,7 +137,7 @@ public abstract class CxDxSessionDataReplicatedImpl extends AppSessionDataReplic
   @Override
   public void setTsTimerId(Serializable tid) {
     if (exists()) {
-      putNodeValue(TS_TIMERID, tid);
+      getNode().put(TS_TIMERID, tid);
     }
     else {
       throw new IllegalStateException();
@@ -146,7 +146,7 @@ public abstract class CxDxSessionDataReplicatedImpl extends AppSessionDataReplic
 
   @Override
   public Request getBuffer() {
-    byte[] data = (byte[]) getNodeValue(BUFFER);
+    byte[] data = (byte[]) getNode().get(BUFFER);
     if (data != null) {
       try {
         return this.messageParser.createMessage(ByteBuffer.wrap(data));
@@ -166,14 +166,14 @@ public abstract class CxDxSessionDataReplicatedImpl extends AppSessionDataReplic
     if (buffer != null) {
       try {
         byte[] data = this.messageParser.encodeMessage((IMessage) buffer).array();
-        putNodeValue(BUFFER, data);
+        getNode().put(BUFFER, data);
       }
       catch (ParseException e) {
         logger.error("Unable to encode message to buffer.");
       }
     }
     else {
-      removeNodeValue(BUFFER);
+      getNode().remove(BUFFER);
     }
   }
 }

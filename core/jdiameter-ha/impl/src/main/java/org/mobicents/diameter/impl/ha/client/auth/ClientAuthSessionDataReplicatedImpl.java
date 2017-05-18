@@ -44,11 +44,11 @@ package org.mobicents.diameter.impl.ha.client.auth;
 
 import java.io.Serializable;
 
-import org.restcomm.cache.FqnWrapper;
+import org.jboss.cache.Fqn;
 import org.jdiameter.api.auth.ClientAuthSession;
 import org.jdiameter.client.impl.app.auth.IClientAuthSessionData;
 import org.jdiameter.common.api.app.auth.ClientAuthSessionState;
-import org.restcomm.cluster.MobicentsCluster;
+import org.mobicents.cluster.MobicentsCluster;
 import org.mobicents.diameter.impl.ha.common.AppSessionDataReplicatedImpl;
 import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 
@@ -66,11 +66,12 @@ public class ClientAuthSessionDataReplicatedImpl extends AppSessionDataReplicate
   private static final String TS_TIMERID = "TS_TIMERID";
 
   /**
-   * @param nodeFqnWrapper
+   * @param nodeFqn
    * @param mobicentsCluster
+   * @param iface
    */
-  public ClientAuthSessionDataReplicatedImpl(FqnWrapper nodeFqnWrapper, MobicentsCluster mobicentsCluster) {
-    super(nodeFqnWrapper, mobicentsCluster);
+  public ClientAuthSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster) {
+    super(nodeFqn, mobicentsCluster);
 
     if (super.create()) {
       setAppSessionIface(this, ClientAuthSession.class);
@@ -81,12 +82,10 @@ public class ClientAuthSessionDataReplicatedImpl extends AppSessionDataReplicate
   /**
    * @param sessionId
    * @param mobicentsCluster
+   * @param iface
    */
   public ClientAuthSessionDataReplicatedImpl(String sessionId, MobicentsCluster mobicentsCluster) {
-    this(
-      FqnWrapper.fromRelativeElementsWrapper(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId),
-      mobicentsCluster
-    );
+    this(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId), mobicentsCluster);
   }
 
   /*
@@ -98,7 +97,7 @@ public class ClientAuthSessionDataReplicatedImpl extends AppSessionDataReplicate
   @Override
   public void setClientAuthSessionState(ClientAuthSessionState state) {
     if (exists()) {
-      putNodeValue(STATE, state);
+      getNode().put(STATE, state);
     }
     else {
       throw new IllegalStateException();
@@ -113,7 +112,7 @@ public class ClientAuthSessionDataReplicatedImpl extends AppSessionDataReplicate
   @Override
   public ClientAuthSessionState getClientAuthSessionState() {
     if (exists()) {
-      return (ClientAuthSessionState) getNodeValue(STATE);
+      return (ClientAuthSessionState) getNode().get(STATE);
     }
     else {
       throw new IllegalStateException();
@@ -128,7 +127,7 @@ public class ClientAuthSessionDataReplicatedImpl extends AppSessionDataReplicate
   @Override
   public boolean isStateless() {
     if (exists()) {
-      return toPrimitive((Boolean) getNodeValue(STATELESS), true);
+      return toPrimitive((Boolean) getNode().get(STATELESS), true);
     }
     else {
       throw new IllegalStateException();
@@ -143,7 +142,7 @@ public class ClientAuthSessionDataReplicatedImpl extends AppSessionDataReplicate
   @Override
   public void setStateless(boolean b) {
     if (exists()) {
-      putNodeValue(STATELESS, b);
+      getNode().put(STATELESS, b);
     }
     else {
       throw new IllegalStateException();
@@ -159,7 +158,7 @@ public class ClientAuthSessionDataReplicatedImpl extends AppSessionDataReplicate
   @Override
   public String getDestinationHost() {
     if (exists()) {
-      return (String) getNodeValue(DESTINATION_HOST);
+      return (String) getNode().get(DESTINATION_HOST);
     }
     else {
       throw new IllegalStateException();
@@ -174,7 +173,7 @@ public class ClientAuthSessionDataReplicatedImpl extends AppSessionDataReplicate
   @Override
   public void setDestinationHost(String host) {
     if (exists()) {
-      putNodeValue(DESTINATION_HOST, host);
+      getNode().put(DESTINATION_HOST, host);
     }
     else {
       throw new IllegalStateException();
@@ -189,7 +188,7 @@ public class ClientAuthSessionDataReplicatedImpl extends AppSessionDataReplicate
   @Override
   public String getDestinationRealm() {
     if (exists()) {
-      return (String) getNodeValue(DESTINATION_REALM);
+      return (String) getNode().get(DESTINATION_REALM);
     }
     else {
       throw new IllegalStateException();
@@ -204,7 +203,7 @@ public class ClientAuthSessionDataReplicatedImpl extends AppSessionDataReplicate
   @Override
   public void setDestinationRealm(String realm) {
     if (exists()) {
-      putNodeValue(DESTINATION_REALM, realm);
+      getNode().put(DESTINATION_REALM, realm);
     }
     else {
       throw new IllegalStateException();
@@ -219,7 +218,7 @@ public class ClientAuthSessionDataReplicatedImpl extends AppSessionDataReplicate
   @Override
   public Serializable getTsTimerId() {
     if (exists()) {
-      return (Serializable) getNodeValue(TS_TIMERID);
+      return (Serializable) getNode().get(TS_TIMERID);
     }
     else {
       throw new IllegalStateException();
@@ -234,7 +233,7 @@ public class ClientAuthSessionDataReplicatedImpl extends AppSessionDataReplicate
   @Override
   public void setTsTimerId(Serializable tid) {
     if (exists()) {
-      putNodeValue(TS_TIMERID, tid);
+      getNode().put(TS_TIMERID, tid);
     }
     else {
       throw new IllegalStateException();

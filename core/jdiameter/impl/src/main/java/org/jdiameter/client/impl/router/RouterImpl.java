@@ -256,27 +256,9 @@ public class RouterImpl implements IRouter {
       // requestEntryTableLock.writeLock().lock();
       long hopByHopId = request.getHopByHopIdentifier();
       Avp hostAvp = request.getAvps().getAvp(Avp.ORIGIN_HOST);
-      // we store the peer FQDN instead of Origin-Host as we want to route back to it, in case of proxied requests this
-      // should be the FQDN of the proxy, otherwise it's (should be) the same as Origin-Host
-      String host = ((IMessage)request).getPeer() != null ? ((IMessage)request).getPeer().getUri().getFQDN() : hostAvp.getDiameterIdentity();
       Avp realmAvp = request.getAvps().getAvp(Avp.ORIGIN_REALM);
-
-      AnswerEntry entry;
-      AvpSet rrAvps = request.getAvps().getAvps(Avp.ROUTE_RECORD);
-      if (rrAvps.size() > 0) {
-        logger.debug("Found [{}] Route-Record AVP(s) in Request with HbH [{}], storing them for copying and routing.",
-            rrAvps.size(), request.getHopByHopIdentifier());
-        ArrayList<String> rrStrings = new ArrayList<String>();
-        for(Avp rrAvp : rrAvps) {
-          String rrAvpHost = rrAvp.getDiameterIdentity();
-          logger.trace("Route-Record in Request with HbH [{}]: [{}]", request.getHopByHopIdentifier(), rrAvpHost);
-          rrStrings.add(rrAvpHost);
-        }
-        entry = new AnswerEntry(hopByHopId, host, realmAvp != null ? realmAvp.getDiameterIdentity() : null, rrStrings);
-      }
-      else {
-        entry = new AnswerEntry(hopByHopId, host, realmAvp != null ? realmAvp.getDiameterIdentity() : null);
-      }
+      AnswerEntry entry = new AnswerEntry(hopByHopId, hostAvp != null ? hostAvp.getDiameterIdentity() : null,
+          realmAvp != null ? realmAvp.getDiameterIdentity() : null);
 
       int s = requestEntryMap.size();
       // PCB added logging
@@ -311,7 +293,7 @@ public class RouterImpl implements IRouter {
       }
 
       String messageKey = makeRoutingKey(request);
-      logger.debug("Adding request key [{}] to RequestRoute map with entry [{}] for routing answers back to the requesting peer", messageKey, entry);
+      logger.debug("Adding request key [{}] to RequestRoute map for routing answers back to the requesting peer", messageKey);
       requestEntryMap.put(messageKey, entry);
       // requestSortedEntryTable.add(hopByHopId);
     }
@@ -330,10 +312,10 @@ public class RouterImpl implements IRouter {
         .append(message.getHopByHopIdentifier()).toString();
   }
 
-  private String[] getRequestRouteInfoAndCopyProxyAvps(IMessage message, boolean copy) {
+  @Override
+  public String[] getRequestRouteInfo(IMessage message) {
     if (REQUEST_TABLE_SIZE == 0) {
       return ((MessageImpl) message).getRoutingInfo(); // using answer stored routing info
-      // TODO: Handle copy Proxy AVPs in this case...
     }
 
     // using request table
@@ -343,18 +325,7 @@ public class RouterImpl implements IRouter {
       if (logger.isDebugEnabled()) {
         logger.debug("getRequestRouteInfo found host [{}] and realm [{}] for Message key Id [{}]", new Object[]{ans.getHost(), ans.getRealm(), messageKey});
       }
-      if (ans.getRouteRecords() != null && ans.getRouteRecords().size() > 0) {
-        AvpSet msgRouteRecords = message.getAvps().getAvps(Avp.ROUTE_RECORD);
-        if (msgRouteRecords.size() > 0) {
-          logger.debug("We had Route-Records to insert but the message already has some... not doing anything");
-        }
-        else {
-          for (String rr : ans.getRouteRecords()) {
-            message.getAvps().addAvp(Avp.ROUTE_RECORD, rr, true);
-          }
-        }
-      }
-      return new String[] { ans.getHost(), ans.getRealm() };
+      return new String[] {ans.getHost(), ans.getRealm()};
     }
     else {
       if (logger.isWarnEnabled()) {
@@ -362,11 +333,6 @@ public class RouterImpl implements IRouter {
       }
       return null;
     }
-  }
-
-  @Override
-  public String[] getRequestRouteInfo(IMessage message) {
-    return getRequestRouteInfoAndCopyProxyAvps(message, false);
   }
 
   //PCB added
@@ -409,39 +375,24 @@ public class RouterImpl implements IRouter {
     }
     else {
       //answer, search
-      info = getRequestRouteInfoAndCopyProxyAvps(message, true);
-
-      // check for route-record AVPs
-      AvpSet rrAvps = message.getAvps().getAvps(Avp.ROUTE_RECORD);
-      if (rrAvps.size() > 0) {
-        // we want to send it back to the last
-        Avp destHostAvp = rrAvps.getAvpByIndex(rrAvps.size()-1);
-        logger.debug("Got Route-Record AVP to route the answer with HbH [{}] to: [{}]", message.getHopByHopIdentifier(), destHostAvp.getDiameterIdentity());
-
-        String matchedRealmName = this.realmTable.getRealmForPeer(destHostAvp.getDiameterIdentity());
-        logger.debug("Got a Realm for the answer with HbH [{}] routing via Route-Record: [{}]", message.getHopByHopIdentifier(), matchedRealmName);
-
-        matchedRealm = (IRealm) this.realmTable.matchRealm((IAnswer) message, matchedRealmName);
+      info = getRequestRouteInfo(message);
+      if (info != null) {
+        destHost = info[0];
+        destRealm = info[1];
+        logger.debug("Message is an answer. Host is [{}] and Realm is [{}] as per hopbyhop info from request", destHost, destRealm);
+        if (destRealm == null) {
+          logger.warn("Destination-Realm was null for hopbyhop id " + message.getHopByHopIdentifier());
+        }
       }
       else {
-        if (info != null) {
-          destHost = info[0];
-          destRealm = info[1];
-          logger.debug("Message is an answer. Host is [{}] and Realm is [{}] as per hopbyhop info from request", destHost, destRealm);
-          if (destRealm == null) {
-            logger.warn("Destination-Realm was null for hopbyhop id " + message.getHopByHopIdentifier());
-          }
-        }
-        else {
-          logger.debug("No Host and realm found based on hopbyhop id of the answer associated request");
-        }
-        //FIXME: if no info, should not send it ?
-        //FIXME: add strict deff in route back table so stack does not have to lookup?
-        if (logger.isDebugEnabled()) {
-          logger.debug("Looking up peer for answer: [{}], DestHost=[{}], DestRealm=[{}]", new Object[] {message, destHost, destRealm});
-        }
-        matchedRealm = (IRealm) this.realmTable.matchRealm((IAnswer) message, destRealm);
+        logger.debug("No Host and realm found based on hopbyhop id of the answer associated request");
       }
+      //FIXME: if no info, should not send it ?
+      //FIXME: add strict deff in route back table so stack does not have to lookup?
+      if (logger.isDebugEnabled()) {
+        logger.debug("Looking up peer for answer: [{}], DestHost=[{}], DestRealm=[{}]", new Object[] {message, destHost, destRealm});
+      }
+      matchedRealm = (IRealm) this.realmTable.matchRealm(message, destRealm);
     }
 
     //  IPeer peer = getPeerPredProcessing(message, destRealm, destHost);
@@ -452,14 +403,9 @@ public class RouterImpl implements IRouter {
     //  }
 
     // Check realm name
+    //TODO: check only if it exists?
     if (matchedRealm == null) {
-      if (message.getAvps().getAvp(Avp.ROUTE_RECORD) == null) {
-        // if it doesn't come through a proxy, we fail with unknown realm...
-        throw new RouteException("Unknown realm name [" + destRealm + "]");
-      }
-      else {
-        logger.debug("Realm [{}] not found, but message has Route-Record AVP so it came from proxy peer [{}]. Proceeding...", destRealm, destHost);
-      }
+      throw new RouteException("Unknown realm name [" + destRealm + "]");
     }
 
     // THIS IS GET PEER, NOT ROUTE!!!!!!!
@@ -960,7 +906,6 @@ public class RouterImpl implements IRouter {
     final long createTime = System.nanoTime();
     Long hopByHopId;
     String host, realm;
-    ArrayList<String> routeRecords;
 
     public AnswerEntry(Long hopByHopId) {
       this.hopByHopId = hopByHopId;
@@ -970,13 +915,6 @@ public class RouterImpl implements IRouter {
       this.hopByHopId = hopByHopId;
       this.host = host;
       this.realm = realm;
-    }
-
-    public AnswerEntry(Long hopByHopId, String host, String realm, ArrayList<String> routeRecords) throws InternalError {
-      this.hopByHopId = hopByHopId;
-      this.host = host;
-      this.realm = realm;
-      this.routeRecords = routeRecords;
     }
 
     public long getCreateTime() {
@@ -993,10 +931,6 @@ public class RouterImpl implements IRouter {
 
     public String getRealm() {
       return realm;
-    }
-
-    public ArrayList<String> getRouteRecords() {
-      return routeRecords;
     }
 
     @Override
@@ -1018,7 +952,7 @@ public class RouterImpl implements IRouter {
 
     @Override
     public String toString() {
-      return "AnswerEntry {" + "createTime=" + createTime + ", hopByHopId=" + hopByHopId + ", host=" + host + ", realm=" + realm+ "}";
+      return "AnswerEntry {" + "createTime=" + createTime + ", hopByHopId=" + hopByHopId + '}';
     }
   }
 }

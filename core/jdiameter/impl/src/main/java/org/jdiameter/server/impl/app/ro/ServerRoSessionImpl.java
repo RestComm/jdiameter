@@ -200,9 +200,7 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
                 // Action: Send CC initial answer, reserve units, start Tcc
                 // New State: OPEN
                 if (isSuccess(resultCode)) {
-                  Avp mscc = answer.getMessage().getAvps().getAvp(Avp.MULTIPLE_SERVICES_CREDIT_CONTROL);
-                  Avp vtAvp = mscc != null ? mscc.getGrouped().getAvp(Avp.VALIDITY_TIME) : null;
-                  startTcc(vtAvp);
+                  startTcc(answer.getValidityTimeAvp());
                   newState = ServerRoSessionState.OPEN;
                 }
                 // Current State: IDLE
@@ -256,9 +254,7 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
                   // Event: CC update request received and successfully processed
                   // Action: Send CC update answer, debit used units, reserve new units, restart Tcc
                   // New State: OPEN
-                  Avp mscc = answer.getMessage().getAvps().getAvp(Avp.MULTIPLE_SERVICES_CREDIT_CONTROL);
-                  Avp vtAvp = mscc != null ? mscc.getGrouped().getAvp(Avp.VALIDITY_TIME) : null;
-                  startTcc(vtAvp);
+                  startTcc(answer.getValidityTimeAvp());
                 }
                 else {
                   // Current State: OPEN
@@ -394,36 +390,36 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
   }
 
   private void startTcc(Avp validityAvp) {
-    long tccTimeout;
-
-    if (validityAvp != null) {
-      try {
-        tccTimeout = 2 * validityAvp.getUnsigned32();
-      }
-      catch (AvpDataException e) {
-        logger.debug("Unable to retrieve Validity-Time AVP value, using default.", e);
-        tccTimeout = 2 * context.getDefaultValidityTime();
-      }
-    }
-    else {
-      tccTimeout = 2 * context.getDefaultValidityTime();
-    }
-
-    logger.debug("Starting TCC timer with Validity-Avp[{}] and tccTimeout[{}] seconds", validityAvp, tccTimeout);
-
-    if (sessionData.getTccTimerId() != null) {
-      stopTcc(true);
-      //tccFuture = super.scheduler.schedule(new TccScheduledTask(this), defaultValue, TimeUnit.SECONDS);
-      this.sessionData.setTccTimerId(super.timerFacility.schedule(this.getSessionId(), TCC_TIMER_NAME, tccTimeout * 1000));
-      // FIXME: this accepts Future!
-      context.sessionSupervisionTimerReStarted(this, null);
-    }
-    else {
-      //tccFuture = super.scheduler.schedule(new TccScheduledTask(this), defaultValue, TimeUnit.SECONDS);
-      this.sessionData.setTccTimerId(super.timerFacility.schedule(this.getSessionId(),  TCC_TIMER_NAME, tccTimeout * 1000));
-      //FIXME: this accepts Future!
-      context.sessionSupervisionTimerStarted(this, null);
-    }
+    // There is no Validity-Time
+    //long tccTimeout;
+    //
+    //if(validityAvp != null) {
+    //  try {
+    //    tccTimeout = 2 * validityAvp.getUnsigned32();
+    //  }
+    //  catch (AvpDataException e) {
+    //    logger.debug("Unable to retrieve Validity-Time AVP value, using default.", e);
+    //    tccTimeout = 2 * context.getDefaultValidityTime();
+    //  }
+    //}
+    //else {
+    //  tccTimeout = 2 * context.getDefaultValidityTime();
+    //}
+    //
+    //if(tccTimerId != null) {
+    //  stopTcc(true);
+    //  //tccFuture = super.scheduler.schedule(new TccScheduledTask(this), defaultValue, TimeUnit.SECONDS);
+    //  tccTimerId = super.timerFacility.schedule(this.sessionId, TCC_TIMER_NAME, tccTimeout * 1000);
+    //  // FIXME: this accepts Future!
+    //  context.sessionSupervisionTimerReStarted(this, null);
+    //}
+    //else {
+    //  //tccFuture = super.scheduler.schedule(new TccScheduledTask(this), defaultValue, TimeUnit.SECONDS);
+    //  tccTimerId = super.timerFacility.schedule(this.sessionId, TCC_TIMER_NAME, tccTimeout * 1000);
+    //  //FIXME: this accepts Future!
+    //  context.sessionSupervisionTimerStarted(this, null);
+    //}
+    //super.sessionDataSource.updateSession(this);
   }
 
   /*
@@ -433,24 +429,18 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
    */
   @Override
   public void onTimer(String timerName) {
-    if (timerName.equals(IDLE_SESSION_TIMER_NAME)) {
-      checkIdleAppSession();
-    }
-    else if (timerName.equals(TCC_TIMER_NAME)) {
+    if (timerName.equals(TCC_TIMER_NAME)) {
       new TccScheduledTask(this).run();
-    }
-    else {
-      logger.warn("Received an unknown timer '{}' for Session-ID '{}'", timerName, getSessionId());
     }
   }
 
   private void stopTcc(boolean willRestart) {
-    Serializable tccTimerId = this.sessionData.getTccTimerId();
+    Serializable tccTimerId = sessionData.getTccTimerId();
     if (tccTimerId != null) {
       // tccFuture.cancel(false);
       super.timerFacility.cancel(tccTimerId);
       // ScheduledFuture f = tccFuture;
-      this.sessionData.setTccTimerId(null);
+      sessionData.setTccTimerId(null);
       if (!willRestart) {
         context.sessionSupervisionTimerStopped(this, null);
       }

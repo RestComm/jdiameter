@@ -43,7 +43,6 @@
 package org.jdiameter.client.api.controller;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.InternalException;
@@ -97,5 +96,4 @@ public interface IRealmTable extends RealmTable {
   Realm addRealm(String name, ApplicationId appId, LocalAction locAction, IAgentConfiguration agentConfImpl, boolean isDynamic, long expirationTime,
       String[] hosts) throws InternalException;
 
-  List<String> getAllRealmSet();
 }

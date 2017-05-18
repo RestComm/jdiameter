@@ -391,10 +391,7 @@ public class S6aServerSessionImpl extends S6aSession implements ServerS6aSession
 
   @Override
   public void onTimer(String timerName) {
-    if (timerName.equals(IDLE_SESSION_TIMER_NAME)) {
-      checkIdleAppSession();
-    }
-    else if (timerName.equals(S6aSession.TIMER_NAME_MSG_TIMEOUT)) {
+    if (timerName.equals(S6aSession.TIMER_NAME_MSG_TIMEOUT)) {
       try {
         sendAndStateLock.lock();
         try {
@@ -409,9 +406,6 @@ public class S6aServerSessionImpl extends S6aSession implements ServerS6aSession
       finally {
         sendAndStateLock.unlock();
       }
-    }
-    else {
-      logger.warn("Received an unknown timer '{}' for Session-ID '{}'", timerName, getSessionId());
     }
   }
 

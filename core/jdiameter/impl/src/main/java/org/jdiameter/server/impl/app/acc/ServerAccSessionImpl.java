@@ -407,10 +407,7 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
    */
   @Override
   public void onTimer(String timerName) {
-    if (timerName.equals(IDLE_SESSION_TIMER_NAME)) {
-      checkIdleAppSession();
-    }
-    else if (timerName.equals(TIMER_NAME_TS)) {
+    if (timerName.equals(TIMER_NAME_TS)) {
       if (context != null) {
         try {
           context.sessionTimeoutElapses(ServerAccSessionImpl.this);
@@ -422,7 +419,7 @@ public class ServerAccSessionImpl extends AppAccSessionImpl implements EventList
       setState(IDLE);
     }
     else {
-      logger.warn("Received an unknown timer '{}' for Session-ID '{}'", timerName, getSessionId());
+      // FIXME: ???
     }
   }
 

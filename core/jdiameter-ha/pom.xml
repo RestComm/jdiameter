@@ -21,7 +21,8 @@
   </modules>
 
   <properties>
-    <!--<cluster.version>1.15.0-SNAPSHOT</cluster.version>-->
+    <jdiameter.version>1.5.9.0-build538-SNAPSHOT</jdiameter.version>
+    <restcomm.cluster.version>1.15.11</restcomm.cluster.version>
   </properties>
 
   <dependencyManagement>
@@ -35,6 +36,21 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>jdiameter-impl</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mobicents.cluster</groupId>
+        <artifactId>core</artifactId>
+        <version>${restcomm.cluster.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mobicents.cluster</groupId>
+        <artifactId>cache</artifactId>
+        <version>${restcomm.cluster.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mobicents.cluster</groupId>
+        <artifactId>timers</artifactId>
+        <version>${restcomm.cluster.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

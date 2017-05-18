@@ -72,7 +72,6 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -100,7 +99,6 @@ import org.jdiameter.api.MutableConfiguration;
 import org.jdiameter.api.MutablePeerTable;
 import org.jdiameter.api.Network;
 import org.jdiameter.api.NetworkReqListener;
-import org.jdiameter.api.Peer;
 import org.jdiameter.api.PeerTable;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.ResultCode;
@@ -605,13 +603,12 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     if (IP_PATTERN.matcher(ipAddress).matches()) {
       Configuration[] oldIPAddressesConfig = getMutableConfiguration().getChildren(OwnIPAddresses.ordinal());
 
-      List <Configuration> newIPAddressesConfig = new ArrayList <Configuration> (Arrays.asList(oldIPAddressesConfig));
-
+      List<Configuration> newIPAddressesConfig  = Arrays.asList(oldIPAddressesConfig);
       AppConfiguration newIPAddress = getClientConfiguration().add(OwnIPAddress, ipAddress);
       newIPAddressesConfig.add(newIPAddress);
 
-      getMutableConfiguration().setChildren( OwnIPAddresses.ordinal(),
-                                        (Configuration[]) newIPAddressesConfig.toArray(new Configuration[newIPAddressesConfig.size()]));
+      getMutableConfiguration().setChildren(OwnIPAddresses.ordinal(), (Configuration[]) newIPAddressesConfig.toArray());
+
       if (logger.isInfoEnabled()) {
         logger.info("Local Peer IP Address successfully changed to " + ipAddress + ". Restart to Diameter stack is needed to apply changes.");
       }
@@ -621,16 +618,6 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     }
   }
 
-  @Override
-  public List<Peer> _Network_Peers_retrievePeer() throws MBeanException {
-    try {
-      NetworkImpl n = (NetworkImpl) stack.unwrap(Network.class);
-      return n.getListPeers();
-    }
-    catch (InternalException e) {
-      throw new MBeanException(e, "Failed to retrieve peer");
-    }
-  }
   /*
    * (non-Javadoc)
    * @see org.mobicents.diameter.stack.DiameterStackMultiplexerMBean#_LocalPeer_removeIPAddress(java.lang.String)
@@ -719,13 +706,13 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
   /*
    * (non-Javadoc)
-   * @see org.mobicents.diameter.stack.DiameterStackMultiplexerMBean#_Network_Peers_addPeer(java.lang.String, boolean, int, String)
+   * @see org.mobicents.diameter.stack.DiameterStackMultiplexerMBean#_Network_Peers_addPeer(java.lang.String, boolean, int)
    */
   @Override
-  public void _Network_Peers_addPeer(String name, boolean attemptConnect, int rating, String realm) throws MBeanException {
+  public void _Network_Peers_addPeer(String name, boolean attemptConnect, int rating) throws MBeanException {
     try {
       NetworkImpl n = (NetworkImpl) stack.unwrap(Network.class);
-      /*Peer p =*/ n.addPeer(name, realm, attemptConnect);
+      /*Peer p =*/ n.addPeer(name, "", attemptConnect); // FIXME: This requires realm...
     }
     catch (IllegalArgumentException e) {
       logger.warn(e.getMessage());
@@ -952,15 +939,14 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
   @Override
   public String[] _Network_Realms_getRealms() throws MBeanException {
-    try{
-      org.jdiameter.server.impl.NetworkImpl n = (org.jdiameter.server.impl.NetworkImpl) stack.unwrap(org.jdiameter.api.Network.class);
-      List <String> list = n.getRealmTable().getAllRealmSet();
-      String [] stringArray = list.toArray(new String[list.size()]);
-      return stringArray;
+    Configuration[] realmEntries = getMutableConfiguration().getChildren(RealmTable.ordinal())[0].getChildren(RealmEntry.ordinal());
+    String[] realmNames = new String[realmEntries.length];
+
+    for (int i = 0; i < realmEntries.length; i++) {
+      realmNames[i] = realmEntries[i].getStringValue(RealmName.ordinal(), DEFAULT_STRING);
     }
-    catch (Exception e) {
-      throw new MBeanException(e);
-    }
+
+    return realmNames;
   }
 
   @Override

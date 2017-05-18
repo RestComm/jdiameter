@@ -286,13 +286,11 @@ public class ElementParser implements IElementParser {
         throw new AvpDataException("Not enough data in buffer!");
       }
       long vendor = 0;
-      boolean hasVendor = false;
       if ((flags & 0x80) != 0) {
         vendor = in.readInt();
-        hasVendor = true;
       }
       // Determine body L = length - 4(code) -1(flags) -3(length) [-4(vendor)]
-      byte[] rawData = new byte[length - (8 + (hasVendor ? 4 : 0))];
+      byte[] rawData = new byte[length - (8 + (vendor == 0 ? 0 : 4))];
       in.read(rawData);
       // skip remaining.
       // TODO: Do we need to padd everything? Or on send stack should properly fill byte[] ... ?

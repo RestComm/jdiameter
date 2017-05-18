@@ -10,7 +10,7 @@
       <!--outputDirectory>lib/</outputDirectory-->
       <unpack>true</unpack>
       <includes>
-        <include>org.mobicents.diameter:restcomm-diameter-mux-jar</include>
+        <include>org.mobicents.diameter:mobicents-diameter-mux-jar</include>
         <include>org.mobicents.diameter:jdiameter-api</include>
         <include>org.mobicents.diameter:jdiameter-impl</include>
         <include>org.slf4j:slf4j-api</include>

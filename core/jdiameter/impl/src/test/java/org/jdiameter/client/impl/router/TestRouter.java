@@ -312,10 +312,6 @@ public class TestRouter {
         public <T> T unwrap(Class<T> iface) throws InternalException {
             return null;
         }
-        
-        public List<String> getAllRealmSet(){
-          return null;
-        }
     }
 
     private static class PeerTest extends AbstractPeer implements IPeer {

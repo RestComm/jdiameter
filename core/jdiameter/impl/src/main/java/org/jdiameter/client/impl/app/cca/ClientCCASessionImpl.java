@@ -623,14 +623,8 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
    */
   @Override
   public void onTimer(String timerName) {
-    if (timerName.equals(IDLE_SESSION_TIMER_NAME)) {
-      checkIdleAppSession();
-    }
-    else if (timerName.equals(TX_TIMER_NAME)) {
+    if (timerName.equals(TX_TIMER_NAME)) {
       new TxTimerTask(this, this.sessionData.getTxTimerRequest()).run();
-    }
-    else {
-      logger.warn("Received an unknown timer '{}' for Session-ID '{}'", timerName, getSessionId());
     }
   }
 

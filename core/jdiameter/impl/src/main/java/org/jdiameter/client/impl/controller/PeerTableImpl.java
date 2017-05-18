@@ -211,8 +211,8 @@ public class PeerTableImpl implements IPeerTable {
     else {
       logger.debug("Message is an answer");
       peer = message.getPeer();
-      if (peer == null || !peer.hasValidConnection()) {
-        logger.debug("Peer is null [{}] or with invalid connection so we will use router.getPeer to find a peer", peer == null);
+      if (peer == null) {
+        logger.debug("Peer is null so we will use router.getPeer to find a peer");
         peer = router.getPeer(message, this);
         if (peer == null) {
           throw new RouteException( "Cannot found remote context for sending message" );

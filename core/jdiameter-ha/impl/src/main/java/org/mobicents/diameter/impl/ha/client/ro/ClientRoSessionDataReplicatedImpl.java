@@ -45,7 +45,7 @@ package org.mobicents.diameter.impl.ha.client.ro;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-import org.restcomm.cache.FqnWrapper;
+import org.jboss.cache.Fqn;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.ro.ClientRoSession;
@@ -55,7 +55,7 @@ import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.api.parser.ParseException;
 import org.jdiameter.client.impl.app.ro.IClientRoSessionData;
 import org.jdiameter.common.api.app.ro.ClientRoSessionState;
-import org.restcomm.cluster.MobicentsCluster;
+import org.mobicents.cluster.MobicentsCluster;
 import org.mobicents.diameter.impl.ha.common.AppSessionDataReplicatedImpl;
 import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
 import org.slf4j.Logger;
@@ -83,12 +83,12 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   private IMessageParser messageParser;
 
   /**
-   * @param nodeFqnWrapper
+   * @param nodeFqn
    * @param mobicentsCluster
-   * @param container
+   * @param iface
    */
-  public ClientRoSessionDataReplicatedImpl(FqnWrapper nodeFqnWrapper, MobicentsCluster mobicentsCluster, IContainer container) {
-    super(nodeFqnWrapper, mobicentsCluster);
+  public ClientRoSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
+    super(nodeFqn, mobicentsCluster);
 
     if (super.create()) {
       setAppSessionIface(this, ClientRoSession.class);
@@ -101,19 +101,16 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   /**
    * @param sessionId
    * @param mobicentsCluster
-   * @param container
+   * @param iface
    */
   public ClientRoSessionDataReplicatedImpl(String sessionId, MobicentsCluster mobicentsCluster, IContainer container) {
-    this(
-      FqnWrapper.fromRelativeElementsWrapper(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId),
-      mobicentsCluster, container
-    );
+    this(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId), mobicentsCluster, container);
   }
 
   @Override
   public boolean isEventBased() {
     if (exists()) {
-      return toPrimitive((Boolean) getNodeValue(EVENT_BASED), true);
+      return toPrimitive((Boolean) getNode().get(EVENT_BASED), true);
     }
     else {
       throw new IllegalStateException();
@@ -123,7 +120,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setEventBased(boolean isEventBased) {
     if (exists()) {
-      putNodeValue(EVENT_BASED, isEventBased);
+      getNode().put(EVENT_BASED, isEventBased);
     }
     else {
       throw new IllegalStateException();
@@ -133,7 +130,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public boolean isRequestTypeSet() {
     if (exists()) {
-      return toPrimitive((Boolean) getNodeValue(REQUEST_TYPE), false);
+      return toPrimitive((Boolean) getNode().get(REQUEST_TYPE), false);
     }
     else {
       throw new IllegalStateException();
@@ -143,7 +140,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setRequestTypeSet(boolean requestTypeSet) {
     if (exists()) {
-      putNodeValue(REQUEST_TYPE, requestTypeSet);
+      getNode().put(REQUEST_TYPE, requestTypeSet);
     }
     else {
       throw new IllegalStateException();
@@ -153,7 +150,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public ClientRoSessionState getClientRoSessionState() {
     if (exists()) {
-      return (ClientRoSessionState) getNodeValue(STATE);
+      return (ClientRoSessionState) getNode().get(STATE);
     }
     else {
       throw new IllegalStateException();
@@ -163,7 +160,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setClientRoSessionState(ClientRoSessionState state) {
     if (exists()) {
-      putNodeValue(STATE, state);
+      getNode().put(STATE, state);
     }
     else {
       throw new IllegalStateException();
@@ -173,7 +170,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public Serializable getTxTimerId() {
     if (exists()) {
-      return (Serializable) getNodeValue(TXTIMER_ID);
+      return (Serializable) getNode().get(TXTIMER_ID);
     }
     else {
       throw new IllegalStateException();
@@ -183,7 +180,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setTxTimerId(Serializable txTimerId) {
     if (exists()) {
-      putNodeValue(TXTIMER_ID, txTimerId);
+      getNode().put(TXTIMER_ID, txTimerId);
     }
     else {
       throw new IllegalStateException();
@@ -193,7 +190,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public Request getTxTimerRequest() {
     if (exists()) {
-      byte[] data = (byte[]) getNodeValue(TXTIMER_REQUEST);
+      byte[] data = (byte[]) getNode().get(TXTIMER_REQUEST);
       if (data != null) {
         try {
           return this.messageParser.createMessage(ByteBuffer.wrap(data));
@@ -218,14 +215,14 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
       if (txTimerRequest != null) {
         try {
           byte[] data = this.messageParser.encodeMessage((IMessage) txTimerRequest).array();
-          putNodeValue(TXTIMER_REQUEST, data);
+          getNode().put(TXTIMER_REQUEST, data);
         }
         catch (ParseException e) {
           logger.error("Unable to encode Tx Timer Request to buffer.");
         }
       }
       else {
-        removeNodeValue(TXTIMER_REQUEST);
+        getNode().remove(TXTIMER_REQUEST);
       }
     }
     else {
@@ -235,7 +232,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
 
   @Override
   public Request getBuffer() {
-    byte[] data = (byte[]) getNodeValue(BUFFER);
+    byte[] data = (byte[]) getNode().get(BUFFER);
     if (data != null) {
       try {
         return this.messageParser.createMessage(ByteBuffer.wrap(data));
@@ -255,21 +252,21 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
     if (buffer != null) {
       try {
         byte[] data = this.messageParser.encodeMessage((IMessage) buffer).array();
-        putNodeValue(BUFFER, data);
+        getNode().put(BUFFER, data);
       }
       catch (ParseException e) {
         logger.error("Unable to encode message to buffer.");
       }
     }
     else {
-      removeNodeValue(BUFFER);
+      getNode().remove(BUFFER);
     }
   }
 
   @Override
   public int getGatheredRequestedAction() {
     if (exists()) {
-      return toPrimitive((Integer) getNodeValue(GRA));
+      return toPrimitive((Integer) getNode().get(GRA));
     }
     else {
       throw new IllegalStateException();
@@ -279,7 +276,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setGatheredRequestedAction(int gatheredRequestedAction) {
     if (exists()) {
-      putNodeValue(GRA, gatheredRequestedAction);
+      getNode().put(GRA, gatheredRequestedAction);
     }
     else {
       throw new IllegalStateException();
@@ -289,7 +286,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public int getGatheredCCFH() {
     if (exists()) {
-      return toPrimitive((Integer) getNodeValue(GCCFH));
+      return toPrimitive((Integer) getNode().get(GCCFH));
     }
     else {
       throw new IllegalStateException();
@@ -299,7 +296,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setGatheredCCFH(int gatheredCCFH) {
     if (exists()) {
-      putNodeValue(GCCFH, gatheredCCFH);
+      getNode().put(GCCFH, gatheredCCFH);
     }
     else {
       throw new IllegalStateException();
@@ -309,7 +306,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public int getGatheredDDFH() {
     if (exists()) {
-      return toPrimitive((Integer) getNodeValue(GDDFH));
+      return toPrimitive((Integer) getNode().get(GDDFH));
     }
     else {
       throw new IllegalStateException();
@@ -319,7 +316,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   @Override
   public void setGatheredDDFH(int gatheredDDFH) {
     if (exists()) {
-      putNodeValue(GDDFH, gatheredDDFH);
+      getNode().put(GDDFH, gatheredDDFH);
     }
     else {
       throw new IllegalStateException();

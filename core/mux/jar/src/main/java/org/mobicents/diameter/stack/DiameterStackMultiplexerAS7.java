@@ -1,5 +1,6 @@
 /*
  * TeleStax, Open Source Cloud Communications
+ *
  * Copyright 2011-2015, Telestax Inc. and individual contributors
  * by the @authors tag.
  *
@@ -19,955 +20,274 @@
 
 package org.mobicents.diameter.stack;
 
-import static org.jdiameter.client.impl.helpers.Parameters.CeaTimeOut;
-import static org.jdiameter.client.impl.helpers.Parameters.Concurrent;
-import static org.jdiameter.client.impl.helpers.Parameters.ConcurrentEntityDescription;
-import static org.jdiameter.client.impl.helpers.Parameters.ConcurrentEntityName;
-import static org.jdiameter.client.impl.helpers.Parameters.ConcurrentEntityPoolSize;
-import static org.jdiameter.client.impl.helpers.Parameters.DpaTimeOut;
-import static org.jdiameter.client.impl.helpers.Parameters.DwaTimeOut;
-import static org.jdiameter.client.impl.helpers.Parameters.IacTimeOut;
-import static org.jdiameter.client.impl.helpers.Parameters.MessageTimeOut;
-import static org.jdiameter.client.impl.helpers.Parameters.OwnDiameterURI;
-import static org.jdiameter.client.impl.helpers.Parameters.OwnIPAddress;
-import static org.jdiameter.client.impl.helpers.Parameters.OwnRealm;
-import static org.jdiameter.client.impl.helpers.Parameters.OwnVendorID;
-import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
-import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
-import static org.jdiameter.client.impl.helpers.Parameters.RecTimeOut;
-import static org.jdiameter.client.impl.helpers.Parameters.StatisticsLoggerDelay;
-import static org.jdiameter.client.impl.helpers.Parameters.StatisticsLoggerPause;
-import static org.jdiameter.client.impl.helpers.Parameters.StopTimeOut;
-import static org.jdiameter.client.impl.helpers.Parameters.UseUriAsFqdn;
-import static org.jdiameter.server.impl.helpers.Parameters.AcceptUndefinedPeer;
-import static org.jdiameter.server.impl.helpers.Parameters.DuplicateTimer;
-import static org.jdiameter.server.impl.helpers.Parameters.OwnIPAddresses;
-import static org.jdiameter.server.impl.helpers.Parameters.RealmHosts;
-import static org.jdiameter.server.impl.helpers.Parameters.RealmName;
-
-import java.io.InputStream;
 import java.net.InetAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.regex.Pattern;
 
-import org.jdiameter.api.Answer;
-import org.jdiameter.api.ApplicationAlreadyUseException;
+import javax.ejb.Local;
+
 import org.jdiameter.api.ApplicationId;
-import org.jdiameter.api.Avp;
-import org.jdiameter.api.Configuration;
-import org.jdiameter.api.DisconnectCause;
-import org.jdiameter.api.EventListener;
-import org.jdiameter.api.InternalException;
-import org.jdiameter.api.LocalAction;
-import org.jdiameter.api.Message;
-import org.jdiameter.api.MutableConfiguration;
-import org.jdiameter.api.MutablePeerTable;
-import org.jdiameter.api.Network;
-import org.jdiameter.api.NetworkReqListener;
-import org.jdiameter.api.PeerTable;
-import org.jdiameter.api.Request;
-import org.jdiameter.api.ResultCode;
-import org.jdiameter.api.Session;
 import org.jdiameter.api.Stack;
-import org.jdiameter.client.api.controller.IRealm;
-import org.jdiameter.client.api.controller.IRealmTable;
-import org.jdiameter.client.impl.DictionarySingleton;
-import org.jdiameter.client.impl.controller.PeerImpl;
-import org.jdiameter.client.impl.helpers.AppConfiguration;
-import org.jdiameter.common.impl.validation.DictionaryImpl;
-import org.jdiameter.server.impl.NetworkImpl;
-import org.jdiameter.server.impl.StackImpl;
-import org.jdiameter.server.impl.helpers.XMLConfiguration;
 import org.mobicents.diameter.api.DiameterMessageFactory;
 import org.mobicents.diameter.api.DiameterProvider;
-import org.mobicents.diameter.dictionary.AvpDictionary;
 import org.mobicents.diameter.stack.management.DiameterConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
 
-public class DiameterStackMultiplexerAS7 implements DiameterStackMultiplexerAS7MBean, DiameterProvider, NetworkReqListener, EventListener<Request, Answer>,
-    DiameterMessageFactory {
+@Local
+public interface DiameterStackMultiplexerAS7 {
 
-  private static final Logger logger = LoggerFactory.getLogger(DiameterStackMultiplexerAS7.class);
+  String MBEAN_NAME_PREFIX = "diameter:Service=DiameterStackMultiplexer,Name=";
 
-  public static final String OBJECT_NAME = "diameter.mobicents:service=DiameterStackMultiplexer";
+  void registerListener(DiameterListener listener, ApplicationId[] appIds) throws IllegalStateException;
 
-  protected Stack stack = null;
+  void unregisterListener(DiameterListener listener);
 
-  protected HashMap<DiameterListener, Collection<org.jdiameter.api.ApplicationId>> listenerToAppId =
-      new HashMap<DiameterListener, Collection<org.jdiameter.api.ApplicationId>>(3);
-  protected HashMap<Long, DiameterListener> appIdToListener = new HashMap<Long, DiameterListener>(3);
+  //For sake of simplicity in the pre Gamma :)
+  Stack getStack();
 
-  // This is for synch
-  protected ReentrantLock lock = new ReentrantLock();
+  DiameterProvider getProvider();
 
-  protected DiameterProvider provider;
+  DiameterMessageFactory getMessageFactory();
 
-  // ===== STACK MANAGEMENT =====
+  DiameterStackMultiplexerAS7 getMultiplexerMBean();
 
-  private void initStack() throws Exception {
-    initStack(this.getClass().getClassLoader().getResourceAsStream("config/jdiameter-config.xml"));
-  }
+  // MANAGEMENT OPERATIONS
 
-  private void initStack(InputStream is) throws Exception {
-    try {
-      // Create and configure stack
-      this.stack = new StackImpl();
+  // Get a Serializable Configuration
 
-      // Load the configuration
-      Configuration config = new XMLConfiguration(is);
+  DiameterConfiguration getDiameterConfiguration();
 
-      this.stack.init(config);
+  // Local Peer ----------------------------------------------------------
 
-      Network network = stack.unwrap(Network.class);
-
-      Set<org.jdiameter.api.ApplicationId> appIds = stack.getMetaData().getLocalPeer().getCommonApplications();
-
-      if (logger.isInfoEnabled()) {
-        logger.info("Diameter Stack Mux :: Supporting {} applications.", appIds.size());
-      }
-      //network.addNetworkReqListener(this, ApplicationId.createByAccAppId(193, 19302));
-
-      for (org.jdiameter.api.ApplicationId appId : appIds) {
-        if (logger.isInfoEnabled()) {
-          logger.info("Diameter Stack Mux :: Adding Listener for [{}].", appId);
-        }
-        network.addNetworkReqListener(this, appId);
-
-        if (appId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE) {
-          this.appIdToListener.put(appId.getAcctAppId(), null);
-        }
-        else if (appId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE) {
-          this.appIdToListener.put(appId.getAuthAppId(), null);
-        }
-      }
-
-      try {
-        if (logger.isInfoEnabled()) {
-          logger.info("Parsing AVP Dictionary file...");
-        }
-        AvpDictionary.INSTANCE.parseDictionary(Thread.currentThread().getContextClassLoader().getResourceAsStream("dictionary.xml"));
-        if (logger.isInfoEnabled()) {
-          logger.info("AVP Dictionary file successfuly parsed!");
-        }
-      }
-      catch (Exception e) {
-        logger.error("Error while parsing dictionary file.", e);
-      }
-
-      this.stack.start();
-    }
-    finally {
-      if (is != null) {
-        is.close();
-      }
-
-      is = null;
-    }
-
-    if (logger.isInfoEnabled()) {
-      logger.info("Diameter Stack Mux :: Successfully initialized stack.");
-    }
-  }
-
-  private void doStopStack(int disconnectCause) throws Exception {
-    try {
-      if (logger.isInfoEnabled()) {
-        logger.info("Stopping Diameter Mux Stack...");
-      }
-
-      stack.stop(10, TimeUnit.SECONDS, disconnectCause);
-
-      if (logger.isInfoEnabled()) {
-        logger.info("Diameter Mux Stack Stopped Successfully.");
-      }
-    }
-    catch (Exception e) {
-      logger.error("Failure while stopping stack", e);
-    }
-
-    stack.destroy();
-  }
-
-  private DiameterListener findListener(Message message) {
-    List<org.jdiameter.api.ApplicationId> appIds = message.getApplicationIdAvps();
-
-    if (appIds.size() > 0) {
-      for (org.jdiameter.api.ApplicationId appId : appIds) {
-        if (logger.isDebugEnabled()) {
-          logger.debug("Diameter Stack Mux :: findListener :: AVP AppId [" + appId + "]");
-        }
-
-        DiameterListener listener;
-
-        Long appIdValue = appId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE ? appId.getAcctAppId() : appId.getAuthAppId();
-
-        if ((listener = this.appIdToListener.get(appIdValue)) != null) {
-          if (logger.isDebugEnabled()) {
-            logger.debug("Diameter Stack Mux :: findListener :: Found Listener [" + listener + "]");
-          }
-
-          return listener;
-        }
-      }
-    }
-    else {
-      Long appId = message.getApplicationId();
-
-      if (logger.isDebugEnabled()) {
-        logger.debug("Diameter Stack Mux :: findListener :: Header AppId [" + appId + "]");
-      }
-
-      DiameterListener listener;
-
-      if ((listener = this.appIdToListener.get(appId)) != null) {
-        if (logger.isDebugEnabled()) {
-          logger.debug("Diameter Stack Mux :: findListener :: Found Listener [" + listener + "]");
-        }
-
-        return listener;
-      }
-    }
-
-    if (logger.isInfoEnabled()) {
-      logger.info("Diameter Stack Mux :: findListener :: No Listener Found.");
-    }
-
-    return null;
-  }
-
-  // ===== NetworkReqListener IMPLEMENTATION =====
-
-  @Override
-  public Answer processRequest(Request request) {
-    if (logger.isInfoEnabled()) {
-      logger.info("Diameter Stack Mux :: processRequest :: Command-Code [" + request.getCommandCode() + "]");
-    }
-
-    DiameterListener listener = findListener(request);
-
-    if (listener != null) {
-      return listener.processRequest(request);
-    }
-    else {
-      try {
-        Answer answer = request.createAnswer(ResultCode.APPLICATION_UNSUPPORTED);
-        //this.stack.getSessionFactory().getNewRawSession().send(answer);
-        return answer;
-      }
-      catch (Exception e) {
-        logger.error("Failed to create APPLICATION UNSUPPORTED answer.", e);
-      }
-    }
-    return null;
-  }
-
-  // ===== EventListener<Request, Answer> IMPLEMENTATION =====
-
-  @Override
-  public void receivedSuccessMessage(Request request, Answer answer) {
-    DiameterListener listener = findListener(request);
-
-    if (listener != null) {
-      listener.receivedSuccessMessage(request, answer);
-    }
-  }
-
-  @Override
-  public void timeoutExpired(Request request) {
-    DiameterListener listener = findListener(request);
-
-    if (listener != null) {
-      listener.timeoutExpired(request);
-    }
-  }
-
-  // ===== SERVICE LIFECYCLE MANAGEMENT =====
-
-  public void startService() { //throws Exception {
-    try {
-      logger.debug("startService");
-      initStack();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  public void stopService() { // throws Exception {
-    try {
-      doStopStack(DisconnectCause.REBOOTING);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  @Override
-  public String sendMessage(Message message) {
-    try {
-      Avp sessionId = null;
-      Session session = null;
-
-      if ((sessionId = message.getAvps().getAvp(Avp.SESSION_ID)) == null) {
-        session = stack.getSessionFactory().getNewSession();
-      }
-      else {
-        session = stack.getSessionFactory().getNewSession(sessionId.getUTF8String());
-      }
-
-      session.send(message);
-
-      return session.getSessionId();
-    }
-    catch (Exception e) {
-      logger.error("", e);
-    }
-
-    return null;
-  }
-
-  @Override
-  public Message sendMessageSync(Message message) {
-    try {
-      Avp sessionId = null;
-      Session session = null;
-
-      if ((sessionId = message.getAvps().getAvp(Avp.SESSION_ID)) == null) {
-        session = stack.getSessionFactory().getNewSession();
-      }
-      else {
-        session = stack.getSessionFactory().getNewSession(sessionId.getUTF8String());
-      }
-
-      Future<Message> answer = session.send(message);
-
-      return answer.get();
-    }
-    catch (Exception e) {
-      logger.error("", e);
-    }
-
-    return null;
-  }
-
-  @Override
-  public Message createMessage(boolean isRequest, int commandCode, long applicationId) {
-    try {
-      Message message = this.stack.getSessionFactory().getNewRawSession().
-          createMessage(commandCode, org.jdiameter.api.ApplicationId.createByAccAppId(applicationId), new Avp[]{});
-      message.setRequest(isRequest);
-
-      return  message;
-    }
-    catch (Exception e) {
-      logger.error("Failure while creating message.", e);
-    }
-
-    return null;
-  }
-
-  @Override
-  public Message createRequest(int commandCode, long applicationId) {
-    return createMessage(true, commandCode, applicationId);
-  }
-
-  @Override
-  public Message createAnswer(int commandCode, long applicationId) {
-    return createMessage(false, commandCode, applicationId);
-  }
-
-  // ===== MBEAN OPERATIONS =====
-
-  @Override
-  public DiameterStackMultiplexerAS7MBean getMultiplexerMBean() {
-    return (DiameterStackMultiplexerAS7MBean)this;
-  }
-
-  @Override
-  public DiameterMessageFactory getMessageFactory() {
-    return this;
-  }
-
-  @Override
-  public DiameterProvider getProvider() {
-    return this;
-  }
-
-  @Override
-  public Stack getStack() {
-    return new DiameterStackProxy(this.stack);
-  }
-
-  @Override
-  public void registerListener(DiameterListener listener, org.jdiameter.api.ApplicationId[] appIds) throws IllegalStateException {
-    if (listener == null) {
-      logger.warn("Trying to register a null Listener. Give up...");
-      return;
-    }
-
-    int curAppIdIndex = 0;
-
-    try {
-      lock.lock();
-
-      // Register the selected appIds in the stack
-      Network network = stack.unwrap(Network.class);
-
-      if (logger.isInfoEnabled()) {
-        logger.info("Diameter Stack Mux :: Registering  " + appIds.length + " applications.");
-      }
-
-      for (; curAppIdIndex < appIds.length; curAppIdIndex++) {
-        org.jdiameter.api.ApplicationId appId = appIds[curAppIdIndex];
-        if (logger.isInfoEnabled()) {
-          logger.info("Diameter Stack Mux :: Adding Listener for [" + appId + "].");
-        }
-        network.addNetworkReqListener(this, appId);
-
-        if (appId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE) {
-          this.appIdToListener.put(appId.getAcctAppId(), listener);
-        }
-        else if (appId.getAuthAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE) {
-          this.appIdToListener.put(appId.getAuthAppId(), listener);
-        }
-      }
-
-      // And add the listener and it's holder
-      Collection<org.jdiameter.api.ApplicationId> registeredAppIds = this.listenerToAppId.get(listener);
-
-      // Merge the existing (if any) with new.
-      if (registeredAppIds != null) {
-        registeredAppIds.addAll(Arrays.asList(appIds));
-      }
-      else {
-        this.listenerToAppId.put(listener, Arrays.asList(appIds));
-      }
-    }
-    catch (ApplicationAlreadyUseException aaue) {
-      // Let's remove what we've done so far...
-      try {
-        Network network = stack.unwrap(Network.class);
-
-        for (; curAppIdIndex >= 0; curAppIdIndex--) {
-          ApplicationId appId = appIds[curAppIdIndex];
-          Long appIdValue = appId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE ? appId.getAcctAppId() : appId.getAuthAppId();
-
-          // Remove the app id from map
-          this.appIdToListener.remove(appIdValue);
-
-          // Unregister it from stack listener
-          network.removeNetworkReqListener(appId);
-        }
-      }
-      catch (Exception e) {
-        logger.error("", e);
-      }
-    }
-    catch (Exception e) {
-      logger.error("", e);
-    }
-    finally {
-      lock.unlock();
-    }
-  }
-
-  @Override
-  public void unregisterListener(DiameterListener listener) {
-    if (logger.isInfoEnabled()) {
-      logger.info("Diameter Stack Mux :: unregisterListener :: Listener [" + listener + "]");
-    }
-
-    if (listener == null) {
-      logger.warn("Diameter Stack Mux :: unregisterListener :: Trying to unregister a null Listener. Give up...");
-      return;
-    }
-
-    try {
-      lock.lock();
-
-      Collection<org.jdiameter.api.ApplicationId> appIds = this.listenerToAppId.remove(listener);
-
-      if (appIds == null) {
-        logger.warn("Diameter Stack Mux :: unregisterListener :: Listener has no App-Ids registered. Give up...");
-        return;
-      }
-
-      Network network = stack.unwrap(Network.class);
-
-      for (org.jdiameter.api.ApplicationId appId : appIds) {
-        try {
-          if (logger.isInfoEnabled()) {
-            logger.info("Diameter Stack Mux :: unregisterListener :: Unregistering AppId [" + appId + "]");
-          }
-
-          Long appIdValue = appId.getAcctAppId() != org.jdiameter.api.ApplicationId.UNDEFINED_VALUE ? appId.getAcctAppId() : appId.getAuthAppId();
-
-          // Remove the appid from map
-          this.appIdToListener.remove(appIdValue);
-
-          // and unregister the listener from stack
-          network.removeNetworkReqListener(appId);
-        }
-        catch (Exception e) {
-          logger.error("", e);
-        }
-      }
-    }
-    catch (InternalException ie) {
-      logger.error("", ie);
-    }
-    finally {
-      lock.unlock();
-    }
-  }
-
-  //  management operations ----------------------------------------------
-
-  /*
-   *  -- MutableConfiguration Parameters --
-   * Levels  Parameters name
-   * Runtime
-   *  y DuplicateTimer
-   *  y AcceptUndefinedPeer
-   *  y MessageTimeOut
-   *  y StopTimeOut
-   *  y CeaTimeOut
-   *  y IacTimeOut
-   *  y DwaTimeOut
-   *  y DpaTimeOut
-   *  y RecTimeOut
-   *  y PeerTable, Peer, PeerName, PeerRating, PeerAttemptConnection (by NetWork interface)
-   *  y RealmTable, Realm, RealmEntry RealmName, RealmHosts, RealmLocalAction, RealmEntryIsDynamic, RealmEntryExpTime (by NetWork interface)
-   * Restart stack
-   *  y OwnDiameterURI
-   *  y OwnIPAddresses, OwnIPAddress
-   *  y OwnRealm
-   *  y OwnVendorID
-   *  n OwnProductName
-   *  n OwnFirmwareRevision
-   *  n ApplicationId, VendorId, AuthApplId, AcctApplId
-   * Not changeable
-   *  n OverloadMonitor, OverloadMonitorEntry, OverloadMonitorData, OverloadEntryIndex, OverloadEntryhighThreshold, OverloadEntrylowThreshold
-   *  n DuplicateProtection
-   *  n QueueSize
+  /**
+   * Changes the URI of the Local Peer.
+   *
+   * @param uri the new URI to be used by the Local Peer
    */
+  void _LocalPeer_setURI(String uri);
 
-  private final String DEFAULT_STRING = "default_string";
-
-  private MutableConfiguration getMutableConfiguration() {
-    return (MutableConfiguration) stack.getMetaData().getConfiguration();
-  }
-
-  private AppConfiguration getClientConfiguration() {
-    return org.jdiameter.client.impl.helpers.EmptyConfiguration.getInstance();
-  }
-
-  final Pattern IP_PATTERN = Pattern.compile("\\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
-      + "\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b");
-
-  @Override
-  public void _LocalPeer_addIPAddress(String ipAddress) {
-    // validate ip address
-    if (IP_PATTERN.matcher(ipAddress).matches()) {
-      Configuration[] oldIPAddressesConfig = getMutableConfiguration().getChildren(OwnIPAddresses.ordinal());
-
-      List<Configuration> newIPAddressesConfig  = Arrays.asList(oldIPAddressesConfig);
-      AppConfiguration newIPAddress = getClientConfiguration().add(OwnIPAddress, ipAddress);
-      newIPAddressesConfig.add(newIPAddress);
-
-      getMutableConfiguration().setChildren(OwnIPAddresses.ordinal(), (Configuration[]) newIPAddressesConfig.toArray());
-
-      if (logger.isInfoEnabled()) {
-        logger.info("Local Peer IP Address successfully changed to " + ipAddress + ". Restart to Diameter stack is needed to apply changes.");
-      }
-    }
-    else {
-      throw new RuntimeException(new IllegalArgumentException("Invalid IP address entered (" + ipAddress + ")"));
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.mobicents.diameter.stack.DiameterStackMultiplexerMBean#_LocalPeer_removeIPAddress(java.lang.String)
+  /**
+   * Adds an IP Address to the Local Peer.
+   * @param ipAddress the IP Address to be added, if not present
    */
-  @Override
-  public void _LocalPeer_removeIPAddress(String ipAddress) {
-    Configuration[] oldIPAddressesConfig = getMutableConfiguration().getChildren(OwnIPAddresses.ordinal());
+  void _LocalPeer_addIPAddress(String ipAddress);
 
-    Configuration ipAddressToRemove = null;
-
-    List<Configuration> newIPAddressesConfig  = Arrays.asList(oldIPAddressesConfig);
-    for (Configuration curIPAddress : newIPAddressesConfig) {
-      if (curIPAddress.getStringValue(OwnIPAddress.ordinal(), DEFAULT_STRING).equals(ipAddress)) {
-        ipAddressToRemove = curIPAddress;
-        break;
-      }
-    }
-
-    if (ipAddressToRemove != null) {
-      newIPAddressesConfig.remove(ipAddressToRemove);
-
-      getMutableConfiguration().setChildren(OwnIPAddresses.ordinal(), (Configuration[]) newIPAddressesConfig.toArray());
-
-      if (logger.isInfoEnabled()) {
-        logger.info("Local Peer IP Address " + ipAddress + " successfully added. Restart to Diameter stack is needed to apply changes.");
-      }
-    }
-    else {
-      if (logger.isInfoEnabled()) {
-        logger.info("Local Peer IP Address " + ipAddress + " not found. No changes were made.");
-      }
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.mobicents.diameter.stack.DiameterStackMultiplexerMBean#_LocalPeer_setRealm(java.lang.String)
+  /**
+   * Removes an IP Address from the Local Peer.
+   *
+   * @param ipAddress the IP Address to be removed, if present
    */
-  @Override
-  public void _LocalPeer_setRealm(String realm) {
-    getMutableConfiguration().setStringValue(OwnRealm.ordinal(), realm);
+  void _LocalPeer_removeIPAddress(String ipAddress);
 
-    if (logger.isInfoEnabled()) {
-      logger.info("Local Peer Realm successfully changed to '" + realm + "'. Restart to Diameter stack is needed to apply changes.");
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.mobicents.diameter.stack.DiameterStackMultiplexerMBean#_LocalPeer_setURI(java.lang.String)
+  /**
+   * Changes the Realm of the Local Peer.
+   *
+   * @param realm the new Realm to be used by the Local Peer
    */
-  @Override
-  public void _LocalPeer_setURI(String uri) {
-    // validate uri
-    try {
-      new URI(uri);
+  void _LocalPeer_setRealm(String realm);
 
-      getMutableConfiguration().setStringValue(OwnDiameterURI.ordinal(), uri);
-
-      if (logger.isInfoEnabled()) {
-        logger.info("Local Peer URI successfully changed to '" + uri + "'. Restart to Diameter stack is needed to apply changes.");
-      }
-    }
-    catch (URISyntaxException use) {
-      throw new RuntimeException(use);
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.mobicents.diameter.stack.DiameterStackMultiplexerMBean#_LocalPeer_setVendorId(java.lang.String)
+  /**
+   * Sets the Local Peer Vendor-Id.
+   *
+   * @param vendorId the new Vendor-Id for the Peer
    */
-  @Override
-  public void _LocalPeer_setVendorId(long vendorId) {
-    // validate vendor-id
-    try {
-      getMutableConfiguration().setLongValue(OwnVendorID.ordinal(), vendorId);
-      if (logger.isInfoEnabled()) {
-        logger.info("Local Peer Vendor-Id successfully changed to '" + vendorId + "'. Restart to Diameter stack is needed to apply changes.");
-      }
-    }
-    catch (NumberFormatException nfe) {
-      throw new RuntimeException(nfe);
-    }
-  }
+  void _LocalPeer_setVendorId(long vendorId);
 
-  /*
-   * (non-Javadoc)
-   * @see org.mobicents.diameter.stack.DiameterStackMultiplexerMBean#_Network_Peers_addPeer(java.lang.String, boolean, int, String)
+  // Parameters ----------------------------------------------------------
+
+  /**
+   * Sets whether the stack will accept connections from unknown peers or not (default: true)
+   *
+   * @param acceptUndefinedPeer indicates if the stack will accept unknown connections
    */
-  @Override
-  public void _Network_Peers_addPeer(String name, boolean attemptConnect, int rating, String realm) {
-    try {
-      NetworkImpl n = (NetworkImpl) stack.unwrap(Network.class);
-      /*Peer p =*/ n.addPeer(name, realm, attemptConnect);
-    }
-    catch (IllegalArgumentException e) {
-      logger.warn(e.getMessage());
-    }
-    catch (InternalException e) {
-      throw new RuntimeException("Failed to add peer with name '" + name + "'", e);
-    }
-  }
+  void _Parameters_setAcceptUndefinedPeer(boolean acceptUndefinedPeer);
 
-  /*
-   * (non-Javadoc)
-   * @see org.mobicents.diameter.stack.DiameterStackMultiplexerMBean#_Network_Peers_removePeer(java.lang.String)
+  /**
+   * Sets whether the stack will use URI (aaa://IP_ADDRESS:PORT) as FQDN. Some Peers require it.
+   *
+   * @param useUriAsFqdn indicates if the stack will use URI as FQDN
    */
-  @Override
-  public void _Network_Peers_removePeer(String name) {
-    try {
-      MutablePeerTable n = (MutablePeerTable) stack.unwrap(PeerTable.class);
-      n.removePeer(name);
-    }
-    catch (InternalException e) {
-      throw new RuntimeException("Failed to remove peer with name '" + name + "'", e);
-    }
-  }
+  void _Parameters_setUseUriAsFqdn(boolean useUriAsFqdn);
 
-  @Override
-  public void _Network_Realms_addPeerToRealm(String realmName, String peerName, boolean attemptConnect) {
-    try {
-      NetworkImpl n = (NetworkImpl) stack.unwrap(Network.class);
-      /*Peer p =*/ n.addPeer(peerName, realmName, attemptConnect);
-    }
-    catch (IllegalArgumentException e) {
-      logger.warn(e.getMessage());
-    }
-    catch (InternalException e) {
-      throw new RuntimeException("Failed to add peer with name '" + peerName + "' to realm '" + realmName + "'", e);
-    }
-  }
+  /**
+   * Sets the value to consider a message as a duplicate, in ms. (default: 240000, 4 minutes).
+   *
+   * @param duplicateTimer the amount of time, in ms.
+   */
+  void _Parameters_setDuplicateTimer(long duplicateTimer);
 
-  @Override
-  public void _Network_Realms_addRealm(String name, String peers, long appVendorId, long appAcctId, long appAuthId, String localAction,
-      String agentConfiguration, boolean isDynamic, int expTime) {
-    try {
-      org.jdiameter.server.impl.NetworkImpl n = (org.jdiameter.server.impl.NetworkImpl) stack.unwrap(org.jdiameter.api.Network.class);
-      ApplicationId appId = appAcctId == 0 ? org.jdiameter.api.ApplicationId.createByAuthAppId(appVendorId, appAuthId) :
-          org.jdiameter.api.ApplicationId.createByAccAppId(appVendorId, appAcctId);
-      org.jdiameter.api.Realm r = n.addRealm(name, appId, LocalAction.valueOf(localAction), agentConfiguration, isDynamic, expTime);
-      for (String peer : peers.split(",")) {
-        ((IRealm) r).addPeerName(peer);
-      }
-    }
-    catch (InternalException e) {
-      throw new RuntimeException("Failed to add realm with name '" + name + "'.", e);
-    }
-  }
+  // Parameters : Timeouts -----------------------------------------------
 
-  @Override
-  public void _Network_Realms_addRealm(String name, String peers, long appVendorId, long appAcctId, long appAuthId) {
-    _Network_Realms_addRealm(name, peers, appVendorId, appAcctId, appAuthId, "LOCAL", null, false, 1);
-  }
+  /**
+   * Sets the timeout for general Diameter messages, in ms. (default: 60000, 1 minute).
+   *
+   * @param messageTimeout the amount of time, in ms.
+   */
+  void _Parameters_setMessageTimeout(long messageTimeout);
 
-  @Override
-  public void _Network_Realms_removePeerFromRealm(String realmName, String peerName) {
-    try {
-      IRealmTable rt = stack.unwrap(IRealmTable.class);
-      for (org.jdiameter.api.Realm r : rt.getRealms()) {
-        if (r.getName().equals(realmName)) {
-          ((IRealm) r).removePeerName(peerName);
-        }
-      }
-    }
-    catch (InternalException e) {
-      throw new RuntimeException("Failed to add peer '" + peerName + "' from realm with '" + realmName + "'.", e);
-    }
-  }
+  /**
+   * Sets the timeout for stopping the stack. (default: 10000, 10 seconds).
+   *
+   * @param stopTimeout the amount of time, in ms.
+   */
+  void _Parameters_setStopTimeout(long stopTimeout);
 
-  @Override
-  public void _Network_Realms_removeRealm(String name) {
-    try {
-      org.jdiameter.server.impl.NetworkImpl n = (org.jdiameter.server.impl.NetworkImpl) stack.unwrap(org.jdiameter.api.Network.class);
-      n.remRealm(name);
-    }
-    catch (InternalException e) {
-      throw new RuntimeException("Failed to remove realm '" + name + "'.", e);
-    }
-  }
+  /**
+   * Sets the timeout for CEA messages. (default: 10000, 10 seconds).
+   *
+   * @param ceaTimeout the amount of time, in ms.
+   */
+  void _Parameters_setCeaTimeout(long ceaTimeout);
 
-  @Override
-  public void _Parameters_setAcceptUndefinedPeer(boolean acceptUndefinedPeer) {
-    getMutableConfiguration().setBooleanValue(AcceptUndefinedPeer.ordinal(), acceptUndefinedPeer);
-  }
+  /**
+   * Sets the timeout for inactiveness. (default: 20000, 20 seconds).
+   *
+   * @param iacTimeout the amount of time, in ms.
+   */
+  void _Parameters_setIacTimeout(long iacTimeout);
 
-  @Override
-  public void _Parameters_setUseUriAsFqdn(boolean useUriAsFqdn) {
-    getMutableConfiguration().setBooleanValue(UseUriAsFqdn.ordinal(), useUriAsFqdn);
-  }
+  /**
+   * Sets the timeout for DWA messages. (default: 10000, 10 seconds).
+   *
+   * @param dwaTimeout the amount of time, in ms.
+   */
+  void _Parameters_setDwaTimeout(long dwaTimeout);
 
-  @Override
-  public void _Parameters_setDuplicateTimer(long duplicateTimer) {
-    getMutableConfiguration().setLongValue(DuplicateTimer.ordinal(), duplicateTimer);
-  }
+  /**
+   * Sets the timeout for DPA messages. (default: 5000, 5 seconds).
+   *
+   * @param dpaTimeout the amount of time, in ms.
+   */
+  void _Parameters_setDpaTimeout(long dpaTimeout);
 
-  @Override
-  public void _Parameters_setMessageTimeout(long messageTimeout) {
-    getMutableConfiguration().setLongValue(MessageTimeOut.ordinal(), messageTimeout);
-  }
+  /**
+   * Sets the timeout for reconnecting. (default: 10000, 10 seconds).
+   *
+   * @param recTimeout the amount of time, in ms.
+   */
+  void _Parameters_setRecTimeout(long recTimeout);
 
-  @Override
-  public void _Parameters_setStopTimeout(long stopTimeout) {
-    getMutableConfiguration().setLongValue(StopTimeOut.ordinal(), stopTimeout);
-  }
+  void _Parameters_setConcurrentEntity(String name, String desc, Integer size);
 
-  @Override
-  public void _Parameters_setCeaTimeout(long stopTimeout) {
-    getMutableConfiguration().setLongValue(CeaTimeOut.ordinal(), stopTimeout);
-  }
+  void _Parameters_setStatisticLoggerDelay(long delay);
 
-  @Override
-  public void _Parameters_setIacTimeout(long stopTimeout) {
-    getMutableConfiguration().setLongValue(IacTimeOut.ordinal(), stopTimeout);
-  }
+  void _Parameters_setStatisticLoggerPause(long pause);
 
-  @Override
-  public void _Parameters_setDwaTimeout(long stopTimeout) {
-    getMutableConfiguration().setLongValue(DwaTimeOut.ordinal(), stopTimeout);
-  }
+  // Network : Peers -----------------------------------------------------
 
-  @Override
-  public void _Parameters_setDpaTimeout(long stopTimeout) {
-    getMutableConfiguration().setLongValue(DpaTimeOut.ordinal(), stopTimeout);
-  }
+  /**
+   * Adds a peer definition to the stack. Same as <peer/> element in XML Configuration.
+   *
+   * @param name the name/uri of the peer
+   * @param attemptConnect indicates if the stack should try to connect to this peer or wait for incoming connection
+   * @param rating the peer rating for decision on message routing
+   */
+  void _Network_Peers_addPeer(String name, boolean attemptConnect, int rating);
 
-  @Override
-  public void _Parameters_setRecTimeout(long stopTimeout) {
-    getMutableConfiguration().setLongValue(RecTimeOut.ordinal(), stopTimeout);
-  }
+  /**
+   * Removes a peer definition from stack.
+   *
+   * @param name the name/uri of the peer
+   */
+  void _Network_Peers_removePeer(String name);
 
-  @Override
-  public void _Parameters_setConcurrentEntity(String name, String desc, Integer size) {
-    for (Configuration c : getMutableConfiguration().getChildren(Concurrent.ordinal())) {
-      if (name.equals(c.getStringValue(ConcurrentEntityName.ordinal(), null))) {
-        ((AppConfiguration) c).add(ConcurrentEntityPoolSize, size);
-        if (desc != null) {
-          ((AppConfiguration) c).add(ConcurrentEntityDescription, desc);
-        }
-      }
-    }
-  }
-  @Override
-  public void _Parameters_setStatisticLoggerDelay(long delay)  {
-    getMutableConfiguration().setLongValue(StatisticsLoggerDelay.ordinal(), delay);
-  }
+  // Network : Realms ----------------------------------------------------
 
-  @Override
-  public void _Parameters_setStatisticLoggerPause(long pause) {
-    getMutableConfiguration().setLongValue(StatisticsLoggerPause.ordinal(), pause);
-  }
+  /**
+   * Adds a new Realm to the stack. Same as <realm/> element in XML Configuration.
+   *
+   * @param name the name of the Realm
+   * @param peers the Realm peer hosts, separated by comma
+   * @param appVendorId the vendor-id of the application supported by this realm
+   * @param appAcctId the accounting-id of the application supported by this realm
+   * @param appAuthId the authorization-id of the application supported by this realm
+   */
+  void _Network_Realms_addRealm(String name, String peers, long appVendorId, long appAcctId, long appAuthId);
 
-  @Override
-  public void _Validation_setEnabled(boolean enableValidation) {
-    ((DictionaryImpl) DictionarySingleton.getDictionary()).setEnabled(enableValidation) ;
-  }
+  void _Network_Realms_addRealm(String name, String peers, long appVendorId, long appAcctId, long appAuthId, String localAction, String agentConfiguration,
+      boolean isDynamic, int expTime);
 
-  @Override
-  public String dumpStackConfiguration() {
-    return getMutableConfiguration().toString();
-  }
+  /**
+   * Removes a Realm from the stack.
+   *
+   * @param name the name of the Realm
+   */
+  void _Network_Realms_removeRealm(String name);
 
-  @Override
-  public void startStack() {
-    try {
-      this.stack.start();
-    }
-    catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
+  /**
+   * Adds a new Peer host to the Realm
+   *
+   * @param realmName the name of the Realm
+   * @param peerName the name/host of the Peer to be added
+   * @param attemptConnecting either try or not to connect the peer (client/server)
+   */
+  void _Network_Realms_addPeerToRealm(String realmName, String peerName, boolean attemptConnecting);
 
-  @Override
-  public void stopStack(int disconnectCause) {
-    try {
-      this.stack.stop(getMutableConfiguration().getLongValue(StopTimeOut.ordinal(), 10000L), TimeUnit.MILLISECONDS, disconnectCause);
-    }
-    catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
+  /**
+   * Removes a Peer host from the Realm
+   *
+   * @param realmName the name of the Realm
+   * @param peerName the name/host of the Peer to be removed
+   */
+  void _Network_Realms_removePeerFromRealm(String realmName, String peerName);
 
-  // Getters ------------------------------------------------------------- //
+  // Stack Operation -----------------------------------------------------
 
-  @Override
-  public String _LocalPeer_getProductName() {
-    return this.stack.getMetaData().getLocalPeer().getProductName();
-  }
+  /**
+   * Operation to stop the stack.
+   *
+   */
+  void stopStack(int disconnectCause);
 
-  @Override
-  public Long _LocalPeer_getVendorId() {
-    return this.stack.getMetaData().getLocalPeer().getVendorId();
-  }
+  /**
+   * Operation to start the stack.
+   *
+   */
+  void startStack();
 
-  @Override
-  public Long _LocalPeer_getFirmware() {
-    return this.stack.getMetaData().getLocalPeer().getFirmware();
-  }
+  // Validation ----------------------------------------------------------
 
-  @Override
-  public String _LocalPeer_getURI() {
-    return this.stack.getMetaData().getLocalPeer().getUri().toString();
-  }
+  /**
+   * Sets whether validation on Diameter messages/AVPs should be performed or not.
+   *
+   * @param enableValidation flag indicating if validation should be performed
+   */
+  void _Validation_setEnabled(boolean enableValidation);
 
-  @Override
-  public String _LocalPeer_getRealmName() {
-    return this.stack.getMetaData().getLocalPeer().getRealmName();
-  }
+  // Configuration Dump --------------------------------------------------
 
-  @Override
-  public InetAddress[] _LocalPeer_getIPAddresses() {
-    return this.stack.getMetaData().getLocalPeer().getIPAddresses();
-  }
+  /**
+   * Dumps full stack configuration.
+   *
+   * @return a String with stack configuration
+   */
+  String dumpStackConfiguration();
 
-  @Override
-  public Set<ApplicationId> _LocalPeer_getCommonApplicationIds() {
-    return this.stack.getMetaData().getLocalPeer().getCommonApplications();
-  }
+  // Information dump methods --------------------------------------------
 
-  @Override
-  public String[] _Network_Realms_getRealms() {
-    Configuration[] realmEntries = getMutableConfiguration().getChildren(RealmTable.ordinal())[0].getChildren(RealmEntry.ordinal());
-    String[] realmNames = new String[realmEntries.length];
+  String _LocalPeer_getProductName();
 
-    for (int i = 0; i < realmEntries.length; i++) {
-      realmNames[i] = realmEntries[i].getStringValue(RealmName.ordinal(), DEFAULT_STRING);
-    }
+  Long _LocalPeer_getVendorId();
 
-    return realmNames;
-  }
+  Long _LocalPeer_getFirmware();
 
-  @Override
-  public String[] _Network_Realms_getRealmPeers(String realmName) {
-    Configuration[] realmEntries = getMutableConfiguration().getChildren(RealmTable.ordinal())[0].getChildren(RealmEntry.ordinal());
-    String[] realmHosts = new String[realmEntries.length];
+  String _LocalPeer_getURI();
 
-    for (Configuration realmEntry : realmEntries) {
-      if (realmEntry.getStringValue(RealmName.ordinal(), DEFAULT_STRING).equals(realmName)) {
+  String _LocalPeer_getRealmName();
 
-        String realmHostsString = realmEntry.getStringValue(RealmHosts.ordinal(), DEFAULT_STRING);
-        if (!realmHostsString.equals(DEFAULT_STRING)) {
-          realmHosts = realmHostsString.replaceAll(" ", "").split(",");
-        }
-      }
-    }
+  InetAddress[] _LocalPeer_getIPAddresses();
 
-    return realmHosts;
-  }
+  Set<ApplicationId> _LocalPeer_getCommonApplicationIds();
 
-  @Override
-  public DiameterConfiguration getDiameterConfiguration() {
-    return new DiameterConfiguration(stack);
-  }
+  String[] _Network_Realms_getRealms();
 
-  @Override
-  public boolean _LocalPeer_isActive() {
-    return this.stack.isActive();
-  }
+  String[] _Network_Realms_getRealmPeers(String realmName);
 
-  @Override
-  public boolean _Network_Peers_isPeerConnected(String name) {
-    try {
-      MutablePeerTable n = (MutablePeerTable) stack.unwrap(PeerTable.class);
-      PeerImpl p = ((PeerImpl) n.getPeer(name));
-      return p != null ? p.getContext().isConnected() : false;
-    }
-    catch (Exception e) {
-      throw new RuntimeException("Failed to get connection availability for peer with name '" + "'.", e);
-    }
-  }
+  boolean _LocalPeer_isActive();
+
+  boolean _Network_Peers_isPeerConnected(String name);
 
 }

@@ -46,15 +46,14 @@ import java.io.Serializable;
 
 import org.jdiameter.api.BaseSession;
 import org.jdiameter.client.api.IContainer;
-import org.jdiameter.client.impl.BaseSessionImpl;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.api.timer.ITimerFacility;
 import org.jdiameter.common.impl.app.AppSessionImpl;
-import org.restcomm.cluster.MobicentsCluster;
+import org.mobicents.cluster.MobicentsCluster;
 import org.mobicents.diameter.impl.ha.data.ReplicatedSessionDatasource;
-import org.restcomm.timers.FaultTolerantScheduler;
-import org.restcomm.timers.TimerTask;
-import org.restcomm.timers.TimerTaskData;
+import org.mobicents.timers.FaultTolerantScheduler;
+import org.mobicents.timers.TimerTask;
+import org.mobicents.timers.TimerTaskData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +110,7 @@ public class ReplicatedTimerFacilityImpl implements ITimerFacility {
     return id;
   }
 
-  private final class TimerTaskFactory implements org.restcomm.timers.TimerTaskFactory {
+  private final class TimerTaskFactory implements org.mobicents.timers.TimerTaskFactory {
 
     @Override
     public TimerTask newTimerTask(TimerTaskData data) {
@@ -130,25 +129,13 @@ public class ReplicatedTimerFacilityImpl implements ITimerFacility {
       try {
         DiameterTimerTaskData data = (DiameterTimerTaskData) getData();
         BaseSession bSession = sessionDataSource.getSession(data.getSessionId());
-        if (bSession == null) {
+        if (bSession == null || !bSession.isAppSession()) {
           // FIXME: error ?
-          logger.error("Base Session is null for sessionId: {}", data.getSessionId());
           return;
         }
         else {
-          try {
-            if (!bSession.isAppSession()) {
-              BaseSessionImpl impl = (BaseSessionImpl) bSession;
-              impl.onTimer(data.getTimerName());
-            }
-            else {
-              AppSessionImpl impl = (AppSessionImpl) bSession;
-              impl.onTimer(data.getTimerName());
-            }
-          }
-          catch (Exception e) {
-            logger.error("Caught exception from session object!", e);
-          }
+          AppSessionImpl impl = (AppSessionImpl) bSession;
+          impl.onTimer(data.getTimerName());
         }
       }
       catch (Exception e) {

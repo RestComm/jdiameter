@@ -46,6 +46,7 @@ import java.util.HashMap;
 
 import javax.transaction.TransactionManager;
 
+import org.jboss.cache.Fqn;
 import org.jdiameter.api.BaseSession;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.NetworkReqListener;
@@ -65,14 +66,15 @@ import org.jdiameter.common.api.app.ro.IRoSessionData;
 import org.jdiameter.common.api.app.rx.IRxSessionData;
 import org.jdiameter.common.api.app.s13.IS13SessionData;
 import org.jdiameter.common.api.app.sh.IShSessionData;
+import org.jdiameter.common.api.app.slh.ISLhSessionData;
+import org.jdiameter.common.api.app.slg.ISLgSessionData;
 import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.impl.data.LocalDataSource;
-import org.restcomm.cache.FqnWrapper;
-import org.restcomm.cache.MobicentsCache;
-import org.restcomm.cluster.DataRemovalListener;
-import org.restcomm.cluster.DefaultMobicentsCluster;
-import org.restcomm.cluster.MobicentsCluster;
-import org.restcomm.cluster.election.DefaultClusterElector;
+import org.mobicents.cache.MobicentsCache;
+import org.mobicents.cluster.DataRemovalListener;
+import org.mobicents.cluster.DefaultMobicentsCluster;
+import org.mobicents.cluster.MobicentsCluster;
+import org.mobicents.cluster.election.DefaultClusterElector;
 import org.mobicents.diameter.impl.ha.common.AppSessionDataReplicatedImpl;
 import org.mobicents.diameter.impl.ha.common.acc.AccReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.auth.AuthReplicatedSessionDataFactory;
@@ -84,6 +86,8 @@ import org.mobicents.diameter.impl.ha.common.ro.RoReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.rx.RxReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.s13.S13ReplicatedSessionDataFactory;
 import org.mobicents.diameter.impl.ha.common.sh.ShReplicatedSessionDataFactory;
+import org.mobicents.diameter.impl.ha.common.slh.SLhReplicatedSessionDataFactory;
+import org.mobicents.diameter.impl.ha.common.slg.SLgReplicatedSessionDataFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +100,7 @@ import org.slf4j.LoggerFactory;
 public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemovalListener {
 
   private static final Logger logger = LoggerFactory.getLogger(ReplicatedSessionDatasource.class);
-  public static final String CLUSTER_DS_DEFAULT_FILE = "jdiameter-cache.xml";
+  public static final String CLUSTER_DS_DEFAULT_FILE = "jdiameter-jbc.xml";
   private IContainer container;
   private ISessionDatasource localDataSource;
 
@@ -110,7 +114,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
   // Constants
   // ----------------------------------------------------------------
   public static final String SESSIONS = "/diameter/appsessions";
-  public static final FqnWrapper SESSIONS_FQN = FqnWrapper.fromStringWrapper(SESSIONS);
+  public static final Fqn SESSIONS_FQN = Fqn.fromString(SESSIONS);
 
   public ReplicatedSessionDatasource(IContainer container) {
     this(container, new LocalDataSource(), ReplicatedSessionDatasource.class.getClassLoader().getResource(CLUSTER_DS_DEFAULT_FILE) == null ?
@@ -121,23 +125,24 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
     super();
     this.localDataSource = localDataSource;
 
-    MobicentsCache mcCache = null;
+    MobicentsCache mcCache = new MobicentsCache(cacheConfigFilename);
+    TransactionManager txMgr = null;
     try {
-      mcCache = new MobicentsCache(cacheConfigFilename);
-    } catch (Exception e) {
-      logger.debug("Could not create MobicentsCache: ", e);
+      Class<?> txMgrClass = Class.forName(mcCache.getJBossCache().getConfiguration().getTransactionManagerLookupClass());
+      Object txMgrLookup = txMgrClass.getConstructor(new Class[]{}).newInstance(new Object[]{});
+      txMgr = (TransactionManager) txMgrClass.getMethod("getTransactionManager", new Class[]{}).invoke(txMgrLookup, new Object[]{});
+    }
+    catch (Exception e) {
+      logger.debug("Could not fetch TxMgr. Not using one.", e);
+      // let's not have Tx Manager than...
     }
 
-    TransactionManager txMgr = null;
-    if (mcCache != null) {
-      txMgr = mcCache.getTxManager();
-    }
     this.mobicentsCluster = new DefaultMobicentsCluster(mcCache, txMgr, new DefaultClusterElector());
     this.mobicentsCluster.addDataRemovalListener(this); // register, so we know WHEN some other node removes session.
     this.mobicentsCluster.startCluster();
 
     this.container = container;
-    // this is coded, its tied to specific impl of SessionDatasource
+    // this is coded, it's tied to specific impl of SessionDatasource
     appSessionDataFactories.put(IAuthSessionData.class, new AuthReplicatedSessionDataFactory(this));
     appSessionDataFactories.put(IAccSessionData.class, new AccReplicatedSessionDataFactory(this));
     appSessionDataFactories.put(ICCASessionData.class, new CCAReplicatedSessionDataFactory(this));
@@ -148,6 +153,8 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
     appSessionDataFactories.put(IGxSessionData.class, new GxReplicatedSessionDataFactory(this));
     appSessionDataFactories.put(IRxSessionData.class, new RxReplicatedSessionDataFactory(this));
     appSessionDataFactories.put(IS13SessionData.class, new S13ReplicatedSessionDataFactory(this));
+    appSessionDataFactories.put(ISLhSessionData.class, new SLhReplicatedSessionDataFactory(this));
+    appSessionDataFactories.put(ISLgSessionData.class, new SLgReplicatedSessionDataFactory(this));
 
   }
 
@@ -294,13 +301,13 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
   }
 
   @Override
-  public void dataRemoved(FqnWrapper sessionFqn) {
+  public void dataRemoved(Fqn sessionFqn) {
     String sessionId = (String) sessionFqn.getLastElement();
     this.localDataSource.removeSession(sessionId);
   }
 
   @Override
-  public FqnWrapper getBaseFqn() {
+  public Fqn getBaseFqn() {
     return SESSIONS_FQN;
   }
 
@@ -309,9 +316,7 @@ public class ReplicatedSessionDatasource implements ISessionDatasource, DataRemo
    * @return
    */
   private boolean existReplicated(String sessionId) {
-    if (!this.localMode &&
-        this.mobicentsCluster.getMobicentsCache()
-          .getCacheNode(FqnWrapper.fromRelativeElementsWrapper(SESSIONS_FQN, sessionId)) != null) {
+    if (!this.localMode && this.mobicentsCluster.getMobicentsCache().getJBossCache().getNode(Fqn.fromRelativeElements(SESSIONS_FQN, sessionId)) != null) {
       return true;
     }
     return false;

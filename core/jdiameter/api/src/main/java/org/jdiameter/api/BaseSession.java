@@ -104,6 +104,4 @@ public interface BaseSession {
    * @return session-id as String (Session-Id AVP)
    */
   String getSessionId();
-
-  String IDLE_SESSION_TIMER_NAME = "IDLE_SESSION_TIMER";
 }

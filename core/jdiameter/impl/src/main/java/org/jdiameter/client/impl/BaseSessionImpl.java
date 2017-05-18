@@ -43,9 +43,7 @@
 package org.jdiameter.client.impl;
 
 import static org.jdiameter.client.impl.helpers.Parameters.MessageTimeOut;
-import static org.jdiameter.client.impl.helpers.Parameters.SessionTimeOut;
 
-import java.io.Serializable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -67,14 +65,10 @@ import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
-import org.jdiameter.client.api.IAssembler;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IEventListener;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.parser.IMessageParser;
-import org.jdiameter.common.api.timer.ITimerFacility;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementation for {@link BaseSession}.
@@ -85,20 +79,14 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class BaseSessionImpl implements BaseSession {
 
-  private static final Logger logger = LoggerFactory.getLogger(BaseSessionImpl.class);
-
   protected final long creationTime = System.currentTimeMillis();
   protected long lastAccessedTime = creationTime;
   protected boolean isValid = true;
   protected String sessionId;
 
-  protected long maxIdleTime = 0;
-
   protected transient IContainer container;
   protected transient IMessageParser parser;
   protected NetworkReqListener reqListener;
-
-  protected Serializable istTimerId;
 
   @Override
   public long getCreationTime() {
@@ -108,31 +96,6 @@ public abstract class BaseSessionImpl implements BaseSession {
   @Override
   public long getLastAccessedTime() {
     return lastAccessedTime;
-  }
-
-  protected long setLastAccessTime() {
-    lastAccessedTime = System.currentTimeMillis();
-    if (sessionId != null) {
-      maxIdleTime = container.getConfiguration().getLongValue(SessionTimeOut.ordinal(), (Long) SessionTimeOut.defValue());
-      if (maxIdleTime > 0) {
-        IAssembler assembler = container.getAssemblerFacility();
-        ITimerFacility timerFacility = assembler.getComponentInstance(ITimerFacility.class);
-        if (istTimerId != null) {
-          timerFacility.cancel(istTimerId);
-        }
-        istTimerId = timerFacility.schedule(this.getSessionId(), IDLE_SESSION_TIMER_NAME, maxIdleTime);
-      }
-    }
-    return lastAccessedTime;
-  }
-
-  public void onTimer(String timerName) {
-    if (timerName.equals(IDLE_SESSION_TIMER_NAME)) {
-      if (!isValid() || (maxIdleTime > 0 && System.currentTimeMillis() - getLastAccessedTime() >= maxIdleTime)) {
-        logger.debug("Terminating idle/invalid application session [{}] with SID[{}]", this, getSessionId());
-        this.release();
-      }
-    }
   }
 
   @Override
@@ -175,7 +138,7 @@ public abstract class BaseSessionImpl implements BaseSession {
   protected void genericSend(Message aMessage, EventListener listener, long timeout, TimeUnit timeUnit)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     if (isValid) {
-      setLastAccessTime();
+      lastAccessedTime = System.currentTimeMillis();
 
       IMessage message = (IMessage) aMessage;
       IEventListener localListener = createListenerWrapper(listener);
@@ -439,7 +402,7 @@ class MyEventListener implements IEventListener {
   @SuppressWarnings("unchecked")
   public void receivedSuccessMessage(Request request, Answer answer) {
     if (isValid) {
-      session.setLastAccessTime();
+      session.lastAccessedTime = System.currentTimeMillis();
       listener.receivedSuccessMessage(request, answer);
     }
   }
@@ -448,7 +411,7 @@ class MyEventListener implements IEventListener {
   @SuppressWarnings("unchecked")
   public void timeoutExpired(Request message) {
     if (isValid) {
-      session.setLastAccessTime();
+      session.lastAccessedTime = System.currentTimeMillis();
       listener.timeoutExpired(message);
     }
   }

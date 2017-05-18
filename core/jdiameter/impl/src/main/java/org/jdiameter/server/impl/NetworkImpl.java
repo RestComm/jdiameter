@@ -43,7 +43,6 @@
 package org.jdiameter.server.impl;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jdiameter.api.ApplicationAlreadyUseException;
@@ -58,7 +57,6 @@ import org.jdiameter.api.Selector;
 import org.jdiameter.api.Statistic;
 import org.jdiameter.api.URI;
 import org.jdiameter.client.api.IMessage;
-import org.jdiameter.client.api.controller.IRealmTable;
 import org.jdiameter.common.api.statistic.IStatistic;
 import org.jdiameter.common.api.statistic.IStatisticManager;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
@@ -270,14 +268,6 @@ public class NetworkImpl implements INetwork {
   @Override
   public void setPeerManager(IMutablePeerTable manager) {
     this.manager = manager;
-  }
-
-  public List<Peer> getListPeers() {
-    return manager.getPeerTable();
-  }
-
-  public IRealmTable getRealmTable() {
-    return this.router.getRealmTable();
   }
 
 }

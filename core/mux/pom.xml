@@ -15,10 +15,8 @@
 
   <properties>
     <!-- Restcomm Diameter Components Versions -->
-    <!--
     <jdiameter.version>1.5.9.0-build538-SNAPSHOT</jdiameter.version>
     <jdiameter-ha.version>1.1.0-SNAPSHOT</jdiameter-ha.version>
-    -->
   </properties>
 
   <packaging>pom</packaging>
@@ -26,36 +24,6 @@
   <modules>
     <module>jar</module>
   </modules>
-
-  <profiles>
-    <!--
-    <profile>
-      <id>maven-release</id>
-      <modules>
-        <module>sar-jboss-5</module>
-        <module>sar-wildfly</module>
-      </modules>
-    </profile>
-    -->
-    <profile>
-      <id>jboss5</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <modules>
-        <module>sar-jboss-5</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>wildfly</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <modules>
-        <module>sar-wildfly</module>
-      </modules>
-    </profile>
-  </profiles>
 
   <dependencyManagement>
     <dependencies>
@@ -92,15 +60,39 @@
           <resume>false</resume>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.17</version>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>maven-release</id>
+      <modules>
+        <module>sar-jboss-4</module>
+        <module>sar-jboss-7</module>
+        <module>sar-jboss-5</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>jboss4</id>
+      <modules>
+        <module>sar-jboss-4</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>jboss5</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>sar-jboss-5</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>jboss7</id>
+      <modules>
+        <module>sar-jboss-7</module>
+      </modules>
+    </profile>
+  </profiles>
 
 </project>

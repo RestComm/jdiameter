@@ -175,8 +175,6 @@ public interface AvpRepresentation {
 
   int getRuleVendorBitAsInt();
 
-  String getOriginalType();
-
   String getType();
 
   boolean isProtected();
