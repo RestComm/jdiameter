@@ -132,6 +132,8 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
   private static final Logger logger = LoggerFactory.getLogger(DiameterStackMultiplexer.class);
 
+  public static final String OBJECT_NAME = "diameter.mobicents:service=DiameterStackMultiplexer";
+
   protected Stack stack = null;
 
   protected HashMap<DiameterListener, Collection<org.jdiameter.api.ApplicationId>> listenerToAppId =

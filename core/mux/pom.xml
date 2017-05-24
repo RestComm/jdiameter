@@ -19,6 +19,9 @@
     <jdiameter.version>1.5.9.0-build538-SNAPSHOT</jdiameter.version>
     <jdiameter-ha.version>1.1.0-SNAPSHOT</jdiameter-ha.version>
     -->
+
+    <version.wildfly.as>10.1.0.Final</version.wildfly.as>
+    <version.wildfly.core>2.2.0.Final</version.wildfly.core>
   </properties>
 
   <packaging>pom</packaging>
@@ -78,6 +81,31 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>jdiameter-ha-impl</artifactId>
         <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.wildfly.core</groupId>
+        <artifactId>wildfly-controller</artifactId>
+        <version>${version.wildfly.core}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.wildfly.core</groupId>
+        <artifactId>wildfly-jmx</artifactId>
+        <version>${version.wildfly.core}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.wildfly</groupId>
+        <artifactId>wildfly-system-jmx</artifactId>
+        <version>${version.wildfly.as}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.wildfly.core</groupId>
+        <artifactId>wildfly-server</artifactId>
+        <version>${version.wildfly.core}</version>
+        <scope>provided</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

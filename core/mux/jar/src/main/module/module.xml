@@ -6,7 +6,9 @@
     </resources>
 
     <dependencies>
+        <module name="javax.api"/>
     	<module name="org.apache.log4j"/>
+        <module name="org.jboss.as.system-jmx"/>
         <module name="org.restcomm.diameter.lib"/>
     </dependencies>
 

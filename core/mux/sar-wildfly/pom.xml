@@ -16,34 +16,9 @@
   <packaging>jboss-sar</packaging>
 
   <properties>
-    <version.wildfly.core>2.2.0.Final</version.wildfly.core>
-
     <module.name>org.restcomm.diameter.extension</module.name>
     <module.path>org/restcomm/diameter/extension</module.path>
   </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.wildfly.core</groupId>
-        <artifactId>wildfly-controller</artifactId>
-        <version>${version.wildfly.core}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.wildfly.core</groupId>
-        <artifactId>wildfly-jmx</artifactId>
-        <version>${version.wildfly.core}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.wildfly.core</groupId>
-        <artifactId>wildfly-server</artifactId>
-        <version>${version.wildfly.core}</version>
-        <scope>provided</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <dependencies>
     <dependency>
@@ -72,6 +47,11 @@
     <dependency>
       <groupId>org.wildfly.core</groupId>
       <artifactId>wildfly-jmx</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.wildfly</groupId>
+      <artifactId>wildfly-system-jmx</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -219,9 +199,7 @@
                 <copy file="../jar/target/restcomm-diameter-mux-${project.version}.jar"
                       tofile="${basedir}/target/modules/${MUX}/main/restcomm-diameter-mux-${project.version}-tmp.zip"/>
                 <zip destfile="${basedir}/target/modules/${MUX}/main/restcomm-diameter-mux-${project.version}.zip">
-                  <zipfileset src="${basedir}/target/modules/${MUX}/main/restcomm-diameter-mux-${project.version}-tmp.zip"
-                              excludes="org/mobicents/diameter/stack/DiameterStackMultiplexer.class,
-                                        org/mobicents/diameter/stack/DiameterStackMultiplexerMBean.class"/>
+                  <zipfileset src="${basedir}/target/modules/${MUX}/main/restcomm-diameter-mux-${project.version}-tmp.zip"/>
                 </zip>
                 <move file="${basedir}/target/modules/${MUX}/main/restcomm-diameter-mux-${project.version}.zip"
                       tofile="${basedir}/target/modules/${MUX}/main/restcomm-diameter-mux-${project.version}.jar"/>

@@ -167,7 +167,7 @@
                   <isset property="jboss.home" />
                 </condition>
                 <zip destfile="target/${project.build.finalName}/restcomm-diameter.zip">
-                  <zipfileset src="target/${project.build.finalName}/lib/restcomm-diameter-mux-jar-${project.version}.jar" excludes="META-INF/*.xml,org/mobicents/diameter/stack/*AS7*.class"/>
+                  <zipfileset src="target/${project.build.finalName}/lib/restcomm-diameter-mux-jar-${project.version}.jar" excludes="META-INF/*.xml"/>
                 </zip>
                 <move file="target/${project.build.finalName}/restcomm-diameter.zip" tofile="target/${project.build.finalName}/lib/restcomm-diameter-mux-jar-${project.version}.jar" />
                 <move file="target/${project.build.finalName}/config/jdiameter-jbc.xml"

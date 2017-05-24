@@ -21,6 +21,11 @@
       <artifactId>jboss-as-system-jmx</artifactId>
       <version>${jboss.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.wildfly</groupId>
+      <artifactId>wildfly-system-jmx</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.jboss.spec</groupId>
