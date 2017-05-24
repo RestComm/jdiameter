@@ -298,7 +298,7 @@ public class DictionaryImpl implements Dictionary {
   }
 
   /**
-   * Parses the <typedefn /> attributes from a Dictionary XML Document
+   * Parses the <avpdefn /> attributes from a Dictionary XML Document
    *
    * @param doc the DOM object representing the XML Document with the Dictionary definitions
    */

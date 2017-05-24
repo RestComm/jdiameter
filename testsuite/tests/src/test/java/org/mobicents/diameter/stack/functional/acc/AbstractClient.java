@@ -69,8 +69,8 @@ public abstract class AbstractClient extends TBase implements ClientAccSessionLi
     try {
       super.init(configStream, clientID, ApplicationId.createByAccAppId(0, 300));
       AccSessionFactoryImpl creditControlSessionFactory = new AccSessionFactoryImpl(this.sessionFactory);
-      sessionFactory.registerAppFacory(ServerAccSession.class, creditControlSessionFactory);
-      sessionFactory.registerAppFacory(ClientAccSession.class, creditControlSessionFactory);
+      sessionFactory.registerAppFactory(ServerAccSession.class, creditControlSessionFactory);
+      sessionFactory.registerAppFactory(ClientAccSession.class, creditControlSessionFactory);
 
       creditControlSessionFactory.setStateListener(this);
       creditControlSessionFactory.setClientSessionListener(this);

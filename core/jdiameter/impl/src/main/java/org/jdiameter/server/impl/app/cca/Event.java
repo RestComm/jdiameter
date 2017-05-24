@@ -67,7 +67,7 @@ public class Event implements StateEvent {
     SENT_TERMINATE_RESPONSE,
     // These have no transition, no state resources, timers
     SENT_RAR,
-    RECEIVED_RAA;
+    RECEIVED_RAA
   }
 
   Type type;

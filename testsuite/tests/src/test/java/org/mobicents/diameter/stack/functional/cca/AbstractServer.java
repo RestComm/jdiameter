@@ -59,8 +59,8 @@ public abstract class AbstractServer extends TBase implements ServerCCASessionLi
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(0, 4));
       CCASessionFactoryImpl creditControlSessionFactory = new CCASessionFactoryImpl(this.sessionFactory);
-      sessionFactory.registerAppFacory(ServerCCASession.class, creditControlSessionFactory);
-      sessionFactory.registerAppFacory(ClientCCASession.class, creditControlSessionFactory);
+      sessionFactory.registerAppFactory(ServerCCASession.class, creditControlSessionFactory);
+      sessionFactory.registerAppFactory(ClientCCASession.class, creditControlSessionFactory);
 
       creditControlSessionFactory.setStateListener(this);
       creditControlSessionFactory.setServerSessionListener(this);

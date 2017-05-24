@@ -69,8 +69,8 @@ public abstract class AbstractServer extends TBase implements ServerGxSessionLis
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777224));
       GxSessionFactoryImpl creditControlSessionFactory = new GxSessionFactoryImpl(this.sessionFactory);
-      sessionFactory.registerAppFacory(ServerGxSession.class, creditControlSessionFactory);
-      sessionFactory.registerAppFacory(ClientGxSession.class, creditControlSessionFactory);
+      sessionFactory.registerAppFactory(ServerGxSession.class, creditControlSessionFactory);
+      sessionFactory.registerAppFactory(ClientGxSession.class, creditControlSessionFactory);
 
       creditControlSessionFactory.setStateListener(this);
       creditControlSessionFactory.setServerSessionListener(this);

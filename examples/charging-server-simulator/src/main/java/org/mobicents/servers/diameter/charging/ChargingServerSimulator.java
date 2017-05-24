@@ -85,8 +85,8 @@ public class ChargingServerSimulator extends CCASessionFactoryImpl implements Ne
       sessionFactory = (ISessionFactory) stackCreator.getSessionFactory();
       init(sessionFactory); // damn.. this doesn't looks good
 
-      sessionFactory.registerAppFacory(ServerCCASession.class, this);
-      sessionFactory.registerAppFacory(ClientCCASession.class, this);
+      sessionFactory.registerAppFactory(ServerCCASession.class, this);
+      sessionFactory.registerAppFactory(ClientCCASession.class, this);
 
       // Read users from properties file
       Properties properties = new Properties();
