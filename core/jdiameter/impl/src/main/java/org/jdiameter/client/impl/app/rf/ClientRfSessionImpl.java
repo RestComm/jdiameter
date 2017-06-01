@@ -662,7 +662,7 @@ public class ClientRfSessionImpl extends AppRfSessionImpl implements EventListen
   @Override
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> eClass) {
-    return eClass == ClientRfSessionState.class ? (E)  this.sessionData.getTsTimerId() : null;
+    return eClass == ClientRfSessionState.class ? (E)  this.sessionData.getClientRfSessionState() : null;
   }
 
   @Override

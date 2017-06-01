@@ -26,9 +26,11 @@ import java.io.InputStream;
 
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Configuration;
+import org.jdiameter.api.InternalException;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.acc.ClientAccSession;
 import org.jdiameter.api.acc.ServerAccSession;
+import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.auth.ClientAuthSession;
 import org.jdiameter.api.auth.ServerAuthSession;
 import org.jdiameter.api.cca.ClientCCASession;
@@ -48,6 +50,21 @@ import org.jdiameter.api.s13.ServerS13Session;
 import org.jdiameter.api.sh.ClientShSession;
 import org.jdiameter.api.sh.ServerShSession;
 import org.jdiameter.client.api.ISessionFactory;
+import org.jdiameter.common.api.app.IAppSessionFactory;
+import org.jdiameter.common.api.app.acc.ClientAccSessionState;
+import org.jdiameter.common.api.app.acc.ServerAccSessionState;
+import org.jdiameter.common.api.app.auth.ClientAuthSessionState;
+import org.jdiameter.common.api.app.auth.ServerAuthSessionState;
+import org.jdiameter.common.api.app.cca.ClientCCASessionState;
+import org.jdiameter.common.api.app.cca.ServerCCASessionState;
+import org.jdiameter.common.api.app.cxdx.CxDxSessionState;
+import org.jdiameter.common.api.app.gx.ClientGxSessionState;
+import org.jdiameter.common.api.app.gx.ServerGxSessionState;
+import org.jdiameter.common.api.app.rf.ClientRfSessionState;
+import org.jdiameter.common.api.app.rf.ServerRfSessionState;
+import org.jdiameter.common.api.app.ro.ClientRoSessionState;
+import org.jdiameter.common.api.app.ro.ServerRoSessionState;
+import org.jdiameter.common.api.app.s13.S13SessionState;
 import org.jdiameter.common.impl.app.acc.AccSessionFactoryImpl;
 import org.jdiameter.common.impl.app.auth.AuthSessionFactoryImpl;
 import org.jdiameter.common.impl.app.cca.CCASessionFactoryImpl;
@@ -107,184 +124,306 @@ public class SessionsWithAppIdTest {
   }
 
   private static Integer lowSessionId = 523;
+  
+  private <T extends AppSession> T getAppSession(Class<? extends AppSession> sessionClass, IAppSessionFactory appSessionFactory, ApplicationId appId) throws InternalException {
+    ((ISessionFactory) sessionFactory).registerAppFacory(sessionClass, appSessionFactory);
+    return sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, appId, sessionClass);
+  }
 
   @Test
   public void testAccountingClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ClientAccSession.class, new AccSessionFactoryImpl(sessionFactory));
-    ClientAccSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, BASE_ACCT_APPID, ClientAccSession.class);
+    ClientAccSession session = getAppSession(ClientAccSession.class, new AccSessionFactoryImpl(sessionFactory), BASE_ACCT_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", BASE_ACCT_APPID, sessionAppId);
+  }
+  
+  @Test
+  public void testAccountingClientSessionStartsIdleState() throws Exception {
+    ClientAccSession session = getAppSession(ClientAccSession.class, new AccSessionFactoryImpl(sessionFactory), BASE_ACCT_APPID);
+
+    ClientAccSessionState state = session.getState(ClientAccSessionState.class);
+    Assert.assertEquals(state.IDLE, state);
   }
 
   @Test
   public void testAccountingServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ServerAccSession.class, new AccSessionFactoryImpl(sessionFactory));
-    ServerAccSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, BASE_ACCT_APPID, ServerAccSession.class);
+    ServerAccSession session = getAppSession(ServerAccSession.class, new AccSessionFactoryImpl(sessionFactory), BASE_ACCT_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", BASE_ACCT_APPID, sessionAppId);
   }
 
   @Test
-  public void tesAuthClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ClientAuthSession.class, new AuthSessionFactoryImpl(sessionFactory));
-    ClientAuthSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, BASE_AUTH_APPID, ClientAuthSession.class);
+  public void testAccountingServerSessionStartsIdleState() throws Exception {
+    ServerAccSession session = getAppSession(ServerAccSession.class, new AccSessionFactoryImpl(sessionFactory), BASE_ACCT_APPID);
+
+    ServerAccSessionState state = session.getState(ServerAccSessionState.class);
+    Assert.assertEquals(state.IDLE, state);
+  }
+
+  @Test
+  public void testAuthClientSessionHasAppId() throws Exception {
+    ClientAuthSession session = getAppSession(ClientAuthSession.class, new AuthSessionFactoryImpl(sessionFactory), BASE_AUTH_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", BASE_AUTH_APPID, sessionAppId);
+  }
+
+  @Test
+  public void testAuthClientSessionStartsIdleState() throws Exception {
+    ClientAuthSession session = getAppSession(ClientAuthSession.class, new AuthSessionFactoryImpl(sessionFactory), BASE_AUTH_APPID);
+
+    ClientAuthSessionState state = session.getState(ClientAuthSessionState.class);
+    Assert.assertEquals(state.IDLE, state);
   }
 
   @Test
   public void testAuthServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ServerAuthSession.class, new AuthSessionFactoryImpl(sessionFactory));
-    ServerAuthSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, BASE_AUTH_APPID, ServerAuthSession.class);
+    ServerAuthSession session = getAppSession(ServerAuthSession.class, new AuthSessionFactoryImpl(sessionFactory), BASE_AUTH_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", BASE_AUTH_APPID, sessionAppId);
   }
 
   @Test
+  public void testAuthServerSessionStartsIdleState() throws Exception {
+    ServerAuthSession session = getAppSession(ServerAuthSession.class, new AuthSessionFactoryImpl(sessionFactory), BASE_AUTH_APPID);
+
+    ServerAuthSessionState state = session.getState(ServerAuthSessionState.class);
+    Assert.assertEquals(state.IDLE, state);
+  }
+
+  @Test
   public void testCCAClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ClientCCASession.class, new CCASessionFactoryImpl(sessionFactory));
-    ClientCCASession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, CCA_APPID, ClientCCASession.class);
+    ClientCCASession session = getAppSession(ClientCCASession.class, new CCASessionFactoryImpl(sessionFactory), CCA_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", CCA_APPID, sessionAppId);
+  }
+
+  @Test
+  public void testCCAClientSessionStartsIdleState() throws Exception {
+    ClientCCASession session = getAppSession(ClientCCASession.class, new CCASessionFactoryImpl(sessionFactory), CCA_APPID);
+
+    ClientCCASessionState state = session.getState(ClientCCASessionState.class);
+    Assert.assertEquals(state.IDLE, state);
   }
 
   @Test
   public void testCCAServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ServerCCASession.class, new CCASessionFactoryImpl(sessionFactory));
-    ServerCCASession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, CCA_APPID, ServerCCASession.class);
+    ServerCCASession session = getAppSession(ServerCCASession.class, new CCASessionFactoryImpl(sessionFactory), CCA_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", CCA_APPID, sessionAppId);
   }
 
   @Test
+  public void testCCAServerSessionStartsIdleState() throws Exception {
+    ServerCCASession session = getAppSession(ServerCCASession.class, new CCASessionFactoryImpl(sessionFactory), CCA_APPID);
+
+    ServerCCASessionState state = session.getState(ServerCCASessionState.class);
+    Assert.assertEquals(state.IDLE, state);
+  }
+
+  @Test
   public void testRoClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ClientRoSession.class, new RoSessionFactoryImpl(sessionFactory));
-    ClientRoSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, RO_APPID, ClientRoSession.class);
+    ClientRoSession session = getAppSession(ClientRoSession.class, new RoSessionFactoryImpl(sessionFactory), RO_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", RO_APPID, sessionAppId);
+  }
+
+  @Test
+  public void testRoClientSessionStartsIdleState() throws Exception {
+    ClientRoSession session = getAppSession(ClientRoSession.class, new RoSessionFactoryImpl(sessionFactory), RO_APPID);
+
+    ClientRoSessionState state = session.getState(ClientRoSessionState.class);
+    Assert.assertEquals(state.IDLE, state);
   }
 
   @Test
   public void testRoServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ServerRoSession.class, new RoSessionFactoryImpl(sessionFactory));
-    ServerRoSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, RO_APPID, ServerRoSession.class);
+    ServerRoSession session = getAppSession(ServerRoSession.class, new RoSessionFactoryImpl(sessionFactory), RO_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", RO_APPID, sessionAppId);
   }
 
   @Test
+  public void testRoServerSessionStartsIdleState() throws Exception {
+    ServerRoSession session = getAppSession(ServerRoSession.class, new RoSessionFactoryImpl(sessionFactory), RO_APPID);
+
+    ServerRoSessionState state = session.getState(ServerRoSessionState.class);
+    Assert.assertEquals(state.IDLE, state);
+  }
+
+  @Test
   public void testRfClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ClientRfSession.class, new RfSessionFactoryImpl(sessionFactory));
-    ClientRfSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, RF_APPID, ClientRfSession.class);
+    ClientRfSession session = getAppSession(ClientRfSession.class, new RfSessionFactoryImpl(sessionFactory), RF_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", RF_APPID, sessionAppId);
+  }
+
+  @Test
+  public void testRfClientSessionStartsIdleState() throws Exception {
+    ClientRfSession session = getAppSession(ClientRfSession.class, new RfSessionFactoryImpl(sessionFactory), RF_APPID);
+
+    ClientRfSessionState state = session.getState(ClientRfSessionState.class);
+    Assert.assertEquals(state.IDLE, state);
   }
 
   @Test
   public void testRfServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ServerRfSession.class, new RfSessionFactoryImpl(sessionFactory));
-    ServerRfSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, RF_APPID, ServerRfSession.class);
+    ServerRfSession session = getAppSession(ServerRfSession.class, new RfSessionFactoryImpl(sessionFactory), RF_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", RF_APPID, sessionAppId);
   }
 
   @Test
+  public void testRfServerSessionStartsIdleState() throws Exception {
+    ServerRfSession session = getAppSession(ServerRfSession.class, new RfSessionFactoryImpl(sessionFactory), RF_APPID);
+
+    ServerRfSessionState state = session.getState(ServerRfSessionState.class);
+    Assert.assertEquals(state.IDLE, state);
+  }
+
+  @Test
   public void testShClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ClientShSession.class, new ShSessionFactoryImpl(sessionFactory));
-    ClientShSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, SH_APPID, ClientShSession.class);
+    ClientShSession session = getAppSession(ClientShSession.class, new ShSessionFactoryImpl(sessionFactory), SH_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", SH_APPID, sessionAppId);
   }
+
+  // Session State N/A for Sh
 
   @Test
   public void testShServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ServerShSession.class, new ShSessionFactoryImpl(sessionFactory));
-    ServerShSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, SH_APPID, ServerShSession.class);
+    ServerShSession session = getAppSession(ServerShSession.class, new ShSessionFactoryImpl(sessionFactory), SH_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", SH_APPID, sessionAppId);
   }
 
+  // Session State N/A for Sh
+
   @Test
   public void testCxDxClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ClientCxDxSession.class, new CxDxSessionFactoryImpl(sessionFactory));
-    ClientCxDxSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, CXDX_APPID, ClientCxDxSession.class);
+    ClientCxDxSession session = getAppSession(ClientCxDxSession.class, new CxDxSessionFactoryImpl(sessionFactory), CXDX_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", CXDX_APPID, sessionAppId);
+  }
+
+  @Test
+  public void testCxDxClientSessionStartsIdleState() throws Exception {
+    ClientCxDxSession session = getAppSession(ClientCxDxSession.class, new CxDxSessionFactoryImpl(sessionFactory), CXDX_APPID);
+
+    CxDxSessionState state = session.getState(CxDxSessionState.class);
+    Assert.assertEquals(state.IDLE, state);
   }
 
   @Test
   public void testCxDxServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ServerCxDxSession.class, new CxDxSessionFactoryImpl(sessionFactory));
-    ServerCxDxSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, CXDX_APPID, ServerCxDxSession.class);
+    ServerCxDxSession session = getAppSession(ServerCxDxSession.class, new CxDxSessionFactoryImpl(sessionFactory), CXDX_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", CXDX_APPID, sessionAppId);
   }
 
   @Test
+  public void testCxDxServerSessionStartsIdleState() throws Exception {
+    ServerCxDxSession session = getAppSession(ServerCxDxSession.class, new CxDxSessionFactoryImpl(sessionFactory), CXDX_APPID);
+
+    CxDxSessionState state = session.getState(CxDxSessionState.class);
+    Assert.assertEquals(state.IDLE, state);
+  }
+
+  @Test
   public void testGqClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(GqClientSession.class, new GqSessionFactoryImpl(sessionFactory));
-    GqClientSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, GQ_APPID, GqClientSession.class);
+    GqClientSession session = getAppSession(GqClientSession.class, new GqSessionFactoryImpl(sessionFactory), GQ_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", GQ_APPID, sessionAppId);
   }
+
+  // Session State N/A for Gq
 
   @Test
   public void testGqServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(GqServerSession.class, new GqSessionFactoryImpl(sessionFactory));
-    GqServerSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, GQ_APPID, GqServerSession.class);
+    GqServerSession session = getAppSession(GqServerSession.class, new GqSessionFactoryImpl(sessionFactory), GQ_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", GQ_APPID, sessionAppId);
   }
 
+  // Session State N/A for Gq
+
   @Test
   public void testGxClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ClientGxSession.class, new GxSessionFactoryImpl(sessionFactory));
-    ClientGxSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, GX_APPID, ClientGxSession.class);
+    ClientGxSession session = getAppSession(ClientGxSession.class, new GxSessionFactoryImpl(sessionFactory), GX_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", GX_APPID, sessionAppId);
+  }
+
+  @Test
+  public void testGxClientSessionStartsIdleState() throws Exception {
+    ClientGxSession session = getAppSession(ClientGxSession.class, new GxSessionFactoryImpl(sessionFactory), GX_APPID);
+
+    ClientGxSessionState state = session.getState(ClientGxSessionState.class);
+    Assert.assertEquals(state.IDLE, state);
   }
 
   @Test
   public void testGxServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ServerGxSession.class, new GxSessionFactoryImpl(sessionFactory));
-    ServerGxSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, GX_APPID, ServerGxSession.class);
+    ServerGxSession session = getAppSession(ServerGxSession.class, new GxSessionFactoryImpl(sessionFactory), GX_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", GX_APPID, sessionAppId);
   }
 
   @Test
+  public void testGxServerSessionStartsIdleState() throws Exception {
+    ServerGxSession session = getAppSession(ServerGxSession.class, new GxSessionFactoryImpl(sessionFactory), GX_APPID);
+
+    ServerGxSessionState state = session.getState(ServerGxSessionState.class);
+    Assert.assertEquals(state.IDLE, state);
+  }
+
+  @Test
   public void testS13ClientSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ClientS13Session.class, new S13SessionFactoryImpl(sessionFactory));
-    ClientS13Session session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, S13_APPID, ClientS13Session.class);
+    ClientS13Session session = getAppSession(ClientS13Session.class, new S13SessionFactoryImpl(sessionFactory), S13_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", S13_APPID, sessionAppId);
   }
 
   @Test
+  public void testS13ClientSessionStartsIdleState() throws Exception {
+    ClientS13Session session = getAppSession(ClientS13Session.class, new S13SessionFactoryImpl(sessionFactory), S13_APPID);
+
+    S13SessionState state = session.getState(S13SessionState.class);
+    Assert.assertEquals(state.IDLE, state);
+  }
+
+  @Test
   public void testS13ServerSessionHasAppId() throws Exception {
-    ((ISessionFactory) sessionFactory).registerAppFacory(ServerS13Session.class, new S13SessionFactoryImpl(sessionFactory));
-    ServerS13Session session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, S13_APPID, ServerS13Session.class);
+    ServerS13Session session = getAppSession(ServerS13Session.class, new S13SessionFactoryImpl(sessionFactory), S13_APPID);
 
     ApplicationId sessionAppId = session.getSessionAppId();
     Assert.assertEquals("Session Application-Id should be the same as indicated.", S13_APPID, sessionAppId);
   }
+
+  @Test
+  public void testS13ServerSessionStartsIdleState() throws Exception {
+    ServerS13Session session = getAppSession(ServerS13Session.class, new S13SessionFactoryImpl(sessionFactory), S13_APPID);
+
+    S13SessionState state = session.getState(S13SessionState.class);
+    Assert.assertEquals(state.IDLE, state);
+  }
+
 }
