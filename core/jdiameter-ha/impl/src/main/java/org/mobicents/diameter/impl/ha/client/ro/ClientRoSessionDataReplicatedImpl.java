@@ -62,9 +62,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:grzegorz.figiel@pro-ids.com"> Grzegorz Figiel (ProIDS sp. z o.o.)</a>
  */
 public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedImpl implements IClientRoSessionData {
 
@@ -74,18 +74,20 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   private static final String REQUEST_TYPE = "REQUEST_TYPE";
   private static final String STATE = "STATE";
   private static final String TXTIMER_ID = "TXTIMER_ID";
+  private static final String RETRANSMISSION_TIMER_ID = "RETRANSMISSION_TIMER_ID";
   private static final String TXTIMER_REQUEST = "TXTIMER_REQUEST";
   private static final String BUFFER = "BUFFER";
   private static final String GRA = "GRA";
   private static final String GDDFH = "GDDFH";
   private static final String GCCFH = "GCCFH";
+  private static final String GCCSF = "GCCSF";
 
   private IMessageParser messageParser;
 
   /**
    * @param nodeFqn
    * @param mobicentsCluster
-   * @param iface
+   * @param container
    */
   public ClientRoSessionDataReplicatedImpl(Fqn<?> nodeFqn, MobicentsCluster mobicentsCluster, IContainer container) {
     super(nodeFqn, mobicentsCluster);
@@ -101,7 +103,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   /**
    * @param sessionId
    * @param mobicentsCluster
-   * @param iface
+   * @param container
    */
   public ClientRoSessionDataReplicatedImpl(String sessionId, MobicentsCluster mobicentsCluster, IContainer container) {
     this(Fqn.fromRelativeElements(ReplicatedSessionDatasource.SESSIONS_FQN, sessionId), mobicentsCluster, container);
@@ -181,6 +183,26 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   public void setTxTimerId(Serializable txTimerId) {
     if (exists()) {
       getNode().put(TXTIMER_ID, txTimerId);
+    }
+    else {
+      throw new IllegalStateException();
+    }
+  }
+
+  @Override
+  public Serializable getRetransmissionTimerId() {
+    if (exists()) {
+      return (Serializable) getNode().get(RETRANSMISSION_TIMER_ID);
+    }
+    else {
+      throw new IllegalStateException();
+    }
+  }
+
+  @Override
+  public void setRetransmissionTimerId(Serializable txTimerId) {
+    if (exists()) {
+      getNode().put(RETRANSMISSION_TIMER_ID, txTimerId);
     }
     else {
       throw new IllegalStateException();
@@ -317,6 +339,26 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
   public void setGatheredDDFH(int gatheredDDFH) {
     if (exists()) {
       getNode().put(GDDFH, gatheredDDFH);
+    }
+    else {
+      throw new IllegalStateException();
+    }
+  }
+
+  @Override
+  public int getGatheredCCSF() {
+    if (exists()) {
+      return toPrimitive((Integer) getNode().get(GCCSF));
+    }
+    else {
+      throw new IllegalStateException();
+    }
+  }
+
+  @Override
+  public void setGatheredCCSF(int gatheredCCSF) {
+    if (exists()) {
+      getNode().put(GCCSF, gatheredCCSF);
     }
     else {
       throw new IllegalStateException();

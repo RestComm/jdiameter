@@ -45,6 +45,16 @@
                 <resource>
                   <directory>../common/config</directory>
                   <filtering>false</filtering>
+                  <excludes>
+                    <exclude>jdiameter-config_*.xml</exclude>
+                  </excludes>
+                </resource>
+                <resource>
+                  <directory>../common/config</directory>
+                  <filtering>false</filtering>
+                  <includes>
+                    <include>${jdiameter.mux.config.file}</include>
+                  </includes>
                 </resource>
               </resources>
             </configuration>
@@ -141,7 +151,8 @@
                 <condition property="jboss.dir" value="${jboss.home}" else="${env.JBOSS_HOME}">
                   <isset property="jboss.home" />
                 </condition>
-                <zip destfile="target/${project.build.finalName}/restcomm-diameter.zip">
+								<move file="target/${project.build.finalName}/config/${jdiameter.mux.config.file}" tofile="target/${project.build.finalName}/config/jdiameter-config.xml" />
+                                <zip destfile="target/${project.build.finalName}/restcomm-diameter.zip">
                   <zipfileset src="target/${project.build.finalName}/lib/restcomm-diameter-mux-jar-${project.version}.jar" excludes="META-INF/*.xml,org/mobicents/diameter/stack/*AS7*.class"/>
                 </zip>
                 <move file="target/${project.build.finalName}/restcomm-diameter.zip" tofile="target/${project.build.finalName}/lib/restcomm-diameter-mux-jar-${project.version}.jar" />

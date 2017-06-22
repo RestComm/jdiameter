@@ -49,6 +49,7 @@ import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.NetworkReqListener;
+import org.jdiameter.api.NoMorePeersAvailableException;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.Stack;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
@@ -102,7 +103,7 @@ public interface IContainer extends Stack {
    * @throws IllegalDiameterStateException
    * @throws IOException
    */
-  void sendMessage(IMessage session) throws RouteException, AvpDataException, IllegalDiameterStateException, IOException;
+  void sendMessage(IMessage session) throws RouteException, NoMorePeersAvailableException, AvpDataException, IllegalDiameterStateException, IOException;
 
 
   /**

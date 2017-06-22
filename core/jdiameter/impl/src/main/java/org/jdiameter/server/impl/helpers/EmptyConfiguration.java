@@ -212,6 +212,22 @@ public class EmptyConfiguration extends org.jdiameter.client.impl.helpers.EmptyC
   }
 
   @Override
+  public void setIntArrayValue(int key, int[] value) {
+    List<ConfigurationListener> list = listeners.get(key);
+    if (list != null)  {
+      boolean commit = true;
+      for (ConfigurationListener l : list) {
+        commit &= l.elementChanged(key, value);
+      }
+      if (commit) {
+        putValue(key, value);
+      }
+    }
+    else {
+      putValue(key, value);
+    }
+  }
+
   public void setBooleanValue(int key, boolean value) {
     List<ConfigurationListener> list = listeners.get(key);
     if (list != null)  {

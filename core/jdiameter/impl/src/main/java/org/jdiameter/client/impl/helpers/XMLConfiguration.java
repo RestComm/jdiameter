@@ -103,12 +103,14 @@ import static org.jdiameter.client.impl.helpers.Parameters.QueueSize;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 import static org.jdiameter.client.impl.helpers.Parameters.RecTimeOut;
+import static org.jdiameter.client.impl.helpers.Parameters.RetransmissionRequiredResCodes;
 import static org.jdiameter.client.impl.helpers.Parameters.SDEnableSessionCreation;
 import static org.jdiameter.client.impl.helpers.Parameters.SDName;
 import static org.jdiameter.client.impl.helpers.Parameters.SDProtocol;
 import static org.jdiameter.client.impl.helpers.Parameters.SDUseClientMode;
 import static org.jdiameter.client.impl.helpers.Parameters.Security;
 import static org.jdiameter.client.impl.helpers.Parameters.SecurityRef;
+import static org.jdiameter.client.impl.helpers.Parameters.SessionInactivityTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.Statistics;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsActiveList;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsEnabled;
@@ -123,6 +125,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.ThreadPool;
 import static org.jdiameter.client.impl.helpers.Parameters.ThreadPoolPriority;
 import static org.jdiameter.client.impl.helpers.Parameters.ThreadPoolSize;
 import static org.jdiameter.client.impl.helpers.Parameters.TrustData;
+import static org.jdiameter.client.impl.helpers.Parameters.TxTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.UseUriAsFqdn;
 import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryExpTime;
@@ -130,6 +133,7 @@ import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryIsDynamic;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmHosts;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmLocalAction;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmName;
+import static org.jdiameter.server.impl.helpers.Parameters.RetransmissionTimeOut;
 
 import java.io.File;
 import java.io.InputStream;
@@ -377,9 +381,32 @@ public class XMLConfiguration extends EmptyConfiguration {
       else if (nodeName.equals("Dictionary")) {
         addDictionary(Dictionary, c.item(i));
       }
+      else if (nodeName.equals("SessionInactivityTimeOut")) {
+        add(SessionInactivityTimeOut, getIntValue(c.item(i)));
+      }
+      else if (nodeName.equals("TxTimeOut")) {
+        add(TxTimeOut, getLongValue(c.item(i)));
+      }
+      else if (nodeName.equals("RetransmissionTimeOut")) {
+        add(RetransmissionTimeOut, getLongValue(c.item(i)));
+      }
+      else if (nodeName.equals("RetransmissionRequiredResCodes")) {
+        addRetransmissionRequiredResCodes(c.item(i));
+      }
       else {
         appendOtherParameter(c.item(i));
       }
+    }
+  }
+
+  protected void addRetransmissionRequiredResCodes(Node node) {
+    String[] codesArray = getValue(node).replaceAll(" ", "").split(",");
+    if (codesArray.length > 0) {
+      int[] parsedCodesArray = new int[codesArray.length];
+      for (int i = 0; i < codesArray.length; i++) {
+        parsedCodesArray[i] = Integer.parseInt(codesArray[i]);
+      }
+      add(RetransmissionRequiredResCodes, parsedCodesArray);
     }
   }
 
@@ -716,10 +743,10 @@ public class XMLConfiguration extends EmptyConfiguration {
         addInternalExtension(InternalAgentRedirect, getValue(c.item(i)));
       }
       else if (nodeName.equals("AgentConfiguration")) {
-        add(InternalAgentConfiguration, getValue(c.item(i)))   ;
+        add(InternalAgentConfiguration, getValue(c.item(i)));
       }
       else if (nodeName.equals("StatisticProcessor")) {
-        addInternalExtension(InternalStatisticProcessor, getValue(c.item(i)))   ;
+        addInternalExtension(InternalStatisticProcessor, getValue(c.item(i)));
       }
       else {
         appendOtherExtension(c.item(i));

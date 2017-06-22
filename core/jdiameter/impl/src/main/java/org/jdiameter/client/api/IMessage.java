@@ -57,6 +57,8 @@ import org.jdiameter.client.api.controller.IPeer;
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:grzegorz.figiel@pro-ids.com"> Grzegorz Figiel (ProIDS sp. z o.o.)</a>
+ * @version 1.5.0.1
  */
 public interface IMessage extends IRequest, IAnswer {
 
@@ -81,37 +83,53 @@ public interface IMessage extends IRequest, IAnswer {
   int STATE_ANSWERED = 3;
 
   /**
+   * Default CC-Session-Failover AVP value - NOT_SUPPORTED(0) according to RFC 4006.
+   */
+  int SESSION_FAILOVER_NOT_SUPPORTED_VALUE = 0;
+
+  /**
+   * CC-Session-Failover AVP value - SUPPORTED(1) according to RFC 4006.
+   */
+  int SESSION_FAILOVER_SUPPORTED_VALUE = 1;
+
+  /**
    * Return state of message
+   *
    * @return state of message
    */
   int getState();
 
   /**
    * Set new state
+   *
    * @param newState new state value
    */
   void setState(int newState);
 
   /**
    * Return header applicationId
+   *
    * @return header applicationId
    */
   long getHeaderApplicationId();
 
   /**
    * Set header message application id
+   *
    * @param applicationId header message application id
    */
   void setHeaderApplicationId(long applicationId);
 
   /**
    * Return flags as inteher
+   *
    * @return flags as inteher
    */
   int getFlags();
 
   /**
    * Create timer for request timout procedure
+   *
    * @param scheduledFacility timer facility
    * @param timeOut value of timeout
    * @param timeUnit time unit
@@ -142,48 +160,96 @@ public interface IMessage extends IRequest, IAnswer {
 
   /**
    * Return attached peer
+   *
    * @return attached peer
    */
   IPeer getPeer();
 
   /**
    * Attach message to peer
+   *
    * @param peer attached peer
    */
   void setPeer(IPeer peer);
 
   /**
    * Return application id
+   *
    * @return application id
    */
   ApplicationId getSingleApplicationId();
 
   /**
    * Return application id
+   *
    * @return application id
    */
   ApplicationId getSingleApplicationId(long id);
 
   /**
    * Check timeout
+   *
    * @return true if request has timeout
    */
   boolean isTimeOut();
 
   /**
+   * Tells if there are any timers set to monitor potential retransmissions
+   *
+   * @return true if potential retransmissions will be handled
+   */
+  boolean isRetransmissionSupervised();
+
+  /**
+   * Marks that message to be under supervision timers guarding retransmissions
+   *
+   * @param arg true if supervision is active
+   */
+  void setRetransmissionSupervised(boolean arg);
+
+  /**
+   * Tells if the number of allowed retransmissions for this message is
+   * already exceeded or not.
+   *
+   * @return false if no more retransmissions are allowed
+   */
+  boolean isRetransmissionAllowed();
+
+  /**
+   * @return value of CC-Session-Failover AVP.
+   */
+  int getCcSessionFailover();
+
+  /**
+   * Sets the number of allowed retransmissions for this message that can be performed
+   * in case of failure detection.
+   *
+   * @param arg number of allowed retransmissions
+   */
+  void setNumberOfRetransAllowed(int arg);
+
+  /**
+   * Decrements the number of allowed retransmissions for this message.
+   */
+  void decrementNumberOfRetransAllowed();
+
+  /**
    * Set event listener
+   *
    * @param listener event listener
    */
   void setListener(IEventListener listener);
 
   /**
    * Return event listener
+   *
    * @return event listener
    */
   IEventListener getEventListener();
 
   /**
    * Return duplication key of message
+   *
    * @return duplication key of message
    */
   String getDuplicationKey();
@@ -198,6 +264,7 @@ public interface IMessage extends IRequest, IAnswer {
 
   /**
    * Create clone object
+   *
    * @return clone
    */
   Object clone();

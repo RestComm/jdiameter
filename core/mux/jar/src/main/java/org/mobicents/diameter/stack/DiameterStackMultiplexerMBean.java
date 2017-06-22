@@ -207,6 +207,43 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean {
    */
   void _Parameters_setRecTimeout(long recTimeout) throws MBeanException;
 
+  /**
+   * Sets the timeout value for session inactivity timer which defines how much time
+   * the persistence record should be kept if there is no request sent within a session.
+   * Irrelevant when session persistent routing is not enabled, defaults to 1800 seconds.
+   *
+   * @param timeout the amount of time, in seconds.
+   * @throws MBeanException if the operation is unable to perform correctly
+   */
+  void _Parameters_setSessionInactivityTimeout(int timeout) throws MBeanException;
+
+  /**
+   * Sets the waiting time in the client in the Pending state. (default: 10000, 10 seconds).
+   *
+   * @param txTimeout the amount of time, in ms.
+   * @throws MBeanException if the operation is unable to perform correctly
+   */
+  void _Parameters_setTxTimeout(long txTimeout) throws MBeanException;
+
+  /**
+   * Defines one of failover algorithm stop conditions. Namely, in case of consecutive peers
+   * failures the failover algorithm will try to retransmit a given message to other peers
+   * until retransmission timeout expires
+   *
+   * @param retransmissionTimeout the amount of time, in ms.
+   * @throws MBeanException if the operation is unable to perform correctly
+   */
+  void _Parameters_setRetransmissionTimeout(long retransmissionTimeout) throws MBeanException;
+
+  /**
+   * Defines a list of result codes which make an initial request to be retransmitted to
+   * another remote peer.
+   *
+   * @param resCodes comma delimited list of result codes
+   * @throws MBeanException if the operation is unable to perform correctly
+   */
+  void _Parameters_setRetransmissionRequiredResCodes(String resCodes) throws MBeanException;
+
   void _Parameters_setConcurrentEntity(String name, String desc, Integer size) throws MBeanException;
 
   void _Parameters_setStatisticLoggerDelay(long delay) throws MBeanException;
@@ -337,4 +374,14 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean {
 
   boolean _Network_Peers_isPeerConnected(String name) throws MBeanException;
 
+  // Sessions : routing persistence map ------------------------------------
+
+  /**
+   * Gets the current state of session persistence map used for routing and lists
+   * all sticky sessions that are currently in operation.
+   *
+   * @param maxLimit maximum number of records to be listed (0 corresponds to no limit)
+   * @throws MBeanException if the operation is unable to perform correctly
+   */
+  String _Network_Sessions_getPersistenceMap(int maxLimit) throws MBeanException;
 }

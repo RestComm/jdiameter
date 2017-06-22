@@ -45,6 +45,7 @@ package org.jdiameter.client.api.router;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.RouteException;
+import org.jdiameter.api.Wrapper;
 import org.jdiameter.client.api.IAnswer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IRequest;
@@ -54,12 +55,13 @@ import org.jdiameter.client.api.controller.IRealmTable;
 
 /**
  * This class describe Router functionality
+ * This class describes Router functionality
  *
  * @author erick.svenson@yahoo.com
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
-public interface IRouter  {
+public interface IRouter extends Wrapper {
 
   /**
    * Return peer from inner peer table by predefined parameters. Fetches peer based on message content, that is HBH or realm/host avp contents.
@@ -130,4 +132,9 @@ public interface IRouter  {
    */
   boolean updateRoute(IRequest message) throws RouteException, AvpDataException;
 
+  /**
+   * Tells whether session persistence is preserved while making routing decisions among peers.
+   * @return true if sticky sessions are applied
+   */
+  boolean isSessionAware();
 }

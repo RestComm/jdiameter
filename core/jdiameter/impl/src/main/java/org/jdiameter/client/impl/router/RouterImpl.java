@@ -83,6 +83,7 @@ import org.jdiameter.api.InternalException;
 import org.jdiameter.api.LocalAction;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.MetaData;
+import org.jdiameter.api.NoMorePeersAvailableException;
 import org.jdiameter.api.PeerState;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.URI;
@@ -469,7 +470,8 @@ public class RouterImpl implements IRouter {
       // Balancing
       IPeer peer = selectPeer(availablePeers);
       if (peer == null) {
-        throw new RouteException("Unable to find valid connection to peer[" + destHost + "] in realm[" + destRealm + "]");
+        throw new NoMorePeersAvailableException(
+            "Unable to find a valid connection within realm [" + destRealm + "]");
       }
       else {
         if (logger.isDebugEnabled()) {
@@ -481,7 +483,10 @@ public class RouterImpl implements IRouter {
     }
   }
 
-  @Override
+  public boolean isSessionAware() {
+    return false;
+  }
+
   public IRealmTable getRealmTable() {
     return this.realmTable;
   }
@@ -953,6 +958,29 @@ public class RouterImpl implements IRouter {
     @Override
     public String toString() {
       return "AnswerEntry {" + "createTime=" + createTime + ", hopByHopId=" + hopByHopId + '}';
+    }
+  }
+
+  protected String dumpRoundRobinContext() {
+    return "Load balancing is not supported";
+  }
+
+  protected int getLastSelectedRating() {
+    return Integer.MIN_VALUE;
+  }
+
+  @Override
+  public boolean isWrapperFor(Class<?> aClass) {
+    return aClass == IRouter.class;
+  }
+
+  @Override
+  public <T> T unwrap(Class<T> aClass) {
+    if (aClass == IRouter.class) {
+      return aClass.cast(this);
+    }
+    else {
+      return null;
     }
   }
 }

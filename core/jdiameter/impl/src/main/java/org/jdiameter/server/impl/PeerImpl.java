@@ -205,9 +205,10 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
   @Override
   public String toString() {
     if (fsm != null) {
-      return "SPeer{" + "Uri=" + uri + "; State=" + fsm.getState(PeerState.class) + "; con=" + connection + "; incCon" + incConnections + " }";
+      return "SPeer{" + "Uri=" + uri + "; State=" + fsm.getState(PeerState.class)
+              +  "; Rating=" + rating + "; con="+ connection +"; incCon="+incConnections+" }";
     }
-    return "SPeer{" + "Uri=" + uri + "; State=" + fsm + "; con=" + connection + "; incCon" + incConnections + " }";
+    return "SPeer{" + "Uri=" + uri + "; State=" + fsm +  "; Rating=" + rating + "; con="+ connection +"; incCon="+incConnections+" }";
   }
 
   protected class LocalActionConext extends ActionContext {

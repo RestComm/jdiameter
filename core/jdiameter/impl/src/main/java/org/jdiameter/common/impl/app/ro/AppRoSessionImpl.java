@@ -52,14 +52,15 @@ import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateMachine;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.ro.IRoSessionData;
-import org.jdiameter.common.impl.app.AppSessionImpl;
+import org.jdiameter.common.api.data.ISessionDatasource;
+import org.jdiameter.common.impl.app.AppRoutingAwareSessionImpl;
 
 /**
  *
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  */
-public abstract class AppRoSessionImpl extends AppSessionImpl implements NetworkReqListener, StateMachine {
+public abstract class AppRoSessionImpl extends AppRoutingAwareSessionImpl implements NetworkReqListener, StateMachine {
 
   protected Lock sendAndStateLock = new ReentrantLock();
 
@@ -67,8 +68,8 @@ public abstract class AppRoSessionImpl extends AppSessionImpl implements Network
   //FIXME: change this to single ref!
   protected transient List<StateChangeListener> stateListeners = new CopyOnWriteArrayList<StateChangeListener>();
 
-  public AppRoSessionImpl(ISessionFactory sf, IRoSessionData sessionData)  {
-    super(sf, sessionData);
+  public AppRoSessionImpl(ISessionDatasource sessionStorage, ISessionFactory sf, IRoSessionData sessionData)  {
+    super(sessionStorage, sf, sessionData);
   }
 
   @Override

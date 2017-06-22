@@ -58,9 +58,13 @@ import static org.jdiameter.client.impl.helpers.Parameters.OwnVendorID;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 import static org.jdiameter.client.impl.helpers.Parameters.RecTimeOut;
+import static org.jdiameter.client.impl.helpers.Parameters.RetransmissionRequiredResCodes;
+import static org.jdiameter.client.impl.helpers.Parameters.RetransmissionTimeOut;
+import static org.jdiameter.client.impl.helpers.Parameters.SessionInactivityTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsLoggerDelay;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsLoggerPause;
 import static org.jdiameter.client.impl.helpers.Parameters.StopTimeOut;
+import static org.jdiameter.client.impl.helpers.Parameters.TxTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.UseUriAsFqdn;
 import static org.jdiameter.server.impl.helpers.Parameters.AcceptUndefinedPeer;
 import static org.jdiameter.server.impl.helpers.Parameters.DuplicateTimer;
@@ -103,6 +107,7 @@ import org.jdiameter.api.PeerTable;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.ResultCode;
 import org.jdiameter.api.Session;
+import org.jdiameter.api.SessionPersistenceStorage;
 import org.jdiameter.api.Stack;
 import org.jdiameter.client.api.controller.IRealm;
 import org.jdiameter.client.api.controller.IRealmTable;
@@ -584,6 +589,7 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
    *  n QueueSize
    */
 
+  private static final String NEW_LINE = System.getProperty("line.separator");
   private final String DEFAULT_STRING = "default_string";
 
   private MutableConfiguration getMutableConfiguration() throws MBeanException {
@@ -849,6 +855,31 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     getMutableConfiguration().setLongValue(RecTimeOut.ordinal(), stopTimeout);
   }
 
+  public void _Parameters_setSessionInactivityTimeout(int timeout) throws MBeanException {
+    getMutableConfiguration().setIntValue(SessionInactivityTimeOut.ordinal(), timeout);
+  }
+
+  public void _Parameters_setTxTimeout(long txTimeout) throws MBeanException {
+    getMutableConfiguration().setLongValue(TxTimeOut.ordinal(), txTimeout);
+  }
+
+  public void _Parameters_setRetransmissionTimeout(long retransmissionTimeout) throws MBeanException {
+    getMutableConfiguration().setLongValue(RetransmissionTimeOut.ordinal(), retransmissionTimeout);
+  }
+
+  public void _Parameters_setRetransmissionRequiredResCodes(String resCodes) throws MBeanException {
+    if(resCodes != null && resCodes.length() > 0) {
+      String[] codesArray = resCodes.replaceAll(" ", "").split(",");
+      if(codesArray.length > 0) {
+        int[] parsedCodesArray = new int[codesArray.length];
+        for(int i=0; i < codesArray.length; i++) {
+          parsedCodesArray[i] = Integer.parseInt(codesArray[i]);
+        }
+        getMutableConfiguration().setIntArrayValue(RetransmissionRequiredResCodes.ordinal(), parsedCodesArray);
+      }
+    }
+  }
+
   @Override
   public void _Parameters_setConcurrentEntity(String name, String desc, Integer size) throws MBeanException {
     for (Configuration c : getMutableConfiguration().getChildren(Concurrent.ordinal())) {
@@ -989,5 +1020,23 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     }
   }
 
+  public String _Network_Sessions_getPersistenceMap(int maxLimit) throws MBeanException {
+    try {
+      SessionPersistenceStorage sds = stack.getSessionPersistenceStorage();
+      if(sds == null) {
+        return "Session persistence is not supported in current configuration!!";
+      }
 
+      StringBuilder sb = new StringBuilder();
+      List<String> sessions = sds.dumpStickySessions(maxLimit);
+      for(String session : sessions) {
+        sb.append(session).append(NEW_LINE);
+      }
+
+      return sb.length() > 0 ? sb.toString() : "No sessions found";
+    }
+    catch (Exception e) {
+      throw new MBeanException(e, "Failed to get session storage");
+    }
+  }
 }

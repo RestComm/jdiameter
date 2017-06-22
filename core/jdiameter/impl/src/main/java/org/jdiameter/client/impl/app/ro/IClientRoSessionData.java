@@ -52,6 +52,7 @@ import org.jdiameter.common.api.app.ro.IRoSessionData;
  *
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:grzegorz.figiel@pro-ids.com"> Grzegorz Figiel (ProIDS sp. z o.o.)</a>
  */
 public interface IClientRoSessionData extends IRoSessionData {
 
@@ -75,6 +76,10 @@ public interface IClientRoSessionData extends IRoSessionData {
 
   void setTxTimerRequest(Request txTimerRequest);
 
+  Serializable getRetransmissionTimerId();
+
+  void setRetransmissionTimerId(Serializable retransmissionTimerId);
+
   Request getBuffer();
 
   void setBuffer(Request buffer);
@@ -90,4 +95,9 @@ public interface IClientRoSessionData extends IRoSessionData {
   int getGatheredDDFH();
 
   void setGatheredDDFH(int gatheredDDFH);
+
+  int getGatheredCCSF();
+
+  void setGatheredCCSF(int gatheredCCSF);
+
 }

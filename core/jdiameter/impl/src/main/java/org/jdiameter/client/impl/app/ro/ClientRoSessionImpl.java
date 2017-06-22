@@ -58,6 +58,7 @@ import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.NetworkReqListener;
+import org.jdiameter.api.NoMorePeersAvailableException;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
@@ -77,22 +78,30 @@ import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.api.parser.ParseException;
+import org.jdiameter.client.api.router.IRouter;
 import org.jdiameter.client.impl.app.ro.Event.Type;
 import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.ro.ClientRoSessionState;
 import org.jdiameter.common.api.app.ro.IClientRoSessionContext;
 import org.jdiameter.common.api.app.ro.IRoMessageFactory;
+import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
+import org.jdiameter.common.impl.app.auth.ReAuthAnswerImpl;
 import org.jdiameter.common.impl.app.ro.AppRoSessionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.jdiameter.client.impl.helpers.Parameters.RetransmissionRequiredResCodes;
+import static org.jdiameter.client.impl.helpers.Parameters.RetransmissionTimeOut;
+import static org.jdiameter.client.impl.helpers.Parameters.TxTimeOut;
 
 /**
  * Client Credit-Control Application session implementation
  *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:grzegorz.figiel@pro-ids.com"> Grzegorz Figiel (ProIDS sp. z o.o.)</a>
  */
 public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSession, NetworkReqListener, EventListener<Request, Answer> {
 
@@ -107,13 +116,18 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   protected transient ClientRoSessionListener listener;
   protected transient IClientRoSessionContext context;
   protected transient IMessageParser parser;
+  protected transient IRouter router;
 
   // Tx Timer -----------------------------------------------------------------
-
   protected static final String TX_TIMER_NAME = "Ro_CLIENT_TX_TIMER";
-  protected static final long TX_TIMER_DEFAULT_VALUE = 30 * 60 * 1000; // miliseconds
+  protected final long txTimerVal;
 
-  protected long[] authAppIds = new long[] { 4 };
+  // Response Timer -----------------------------------------------------------
+  protected static final String RETRANSMISSION_TIMER_NAME = "Ro_CLIENT_RETRANSMISSION_TIMER";
+  protected final long retransmissionTimerVal;
+
+  protected long[] authAppIds = new long[]{4};
+  protected final Set<Long> retrRequiredErrorCodes;
 
   // Requested Action + Credit-Control and Direct-Debiting Failure-Handling ---
   protected static final int CCFH_TERMINATE = 0;
@@ -123,11 +137,13 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   private static final int DDFH_TERMINATE_OR_BUFFER = 0;
   private static final int DDFH_CONTINUE = 1;
 
-  // CC-Request-Type Values ---------------------------------------------------
+  // Requested-Action Values --------------------------------------------------
   private static final int DIRECT_DEBITING = 0;
   private static final int REFUND_ACCOUNT = 1;
   private static final int CHECK_BALANCE = 2;
   private static final int PRICE_ENQUIRY = 3;
+
+  // CC-Request-Type  ---------------------------------------------------------
   private static final int EVENT_REQUEST = 4;
 
   // Error Codes --------------------------------------------------------------
@@ -152,9 +168,9 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   // Session Based Queue
   protected ArrayList<Event> eventQueue = new ArrayList<Event>();
 
-  public ClientRoSessionImpl(IClientRoSessionData sessionData, IRoMessageFactory fct, ISessionFactory sf, ClientRoSessionListener lst,
-      IClientRoSessionContext ctx, StateChangeListener<AppSession> stLst) {
-    super(sf, sessionData);
+  public ClientRoSessionImpl(IClientRoSessionData sessionData, IRoMessageFactory fct, ISessionDatasource sds, ISessionFactory sf, ClientRoSessionListener
+      lst, IClientRoSessionContext ctx, StateChangeListener<AppSession> stLst) {
+    super(sds, sf, sessionData);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
@@ -171,10 +187,19 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     this.factory = fct;
 
     IContainer icontainer = sf.getContainer();
+
     this.parser = icontainer.getAssemblerFacility().getComponentInstance(IMessageParser.class);
+    this.router = icontainer.getAssemblerFacility().getComponentInstance(IRouter.class);
+    this.txTimerVal = icontainer.getConfiguration().getLongValue(TxTimeOut.ordinal(), (Long) TxTimeOut.defValue());
+    this.retransmissionTimerVal = icontainer.getConfiguration().getLongValue(RetransmissionTimeOut.ordinal(), (Long) RetransmissionTimeOut.defValue());
+
+    Set<Long> tmpErrCodes = new HashSet<>();
+    for (int val : icontainer.getConfiguration().getIntArrayValue(RetransmissionRequiredResCodes.ordinal(), new int[0])) {
+      tmpErrCodes.add(new Long(val));
+    }
+    this.retrRequiredErrorCodes = Collections.unmodifiableSet(tmpErrCodes);
 
     super.addStateChangeNotification(stLst);
-
   }
 
   protected int getLocalCCFH() {
@@ -185,9 +210,13 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     return sessionData.getGatheredDDFH() >= 0 ? sessionData.getGatheredDDFH() : context.getDefaultDDFHValue();
   }
 
-  @Override
-  public void sendCreditControlRequest(RoCreditControlRequest request)
-      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  protected boolean isSessionFailoverSupported() {
+    return sessionData.getGatheredCCSF() > 0;
+  }
+
+
+  public void sendCreditControlRequest(RoCreditControlRequest request) throws InternalException, IllegalDiameterStateException, RouteException,
+      OverloadException {
     try {
       extractFHAVPs(request, null);
       this.handleEvent(new Event(true, request, null));
@@ -237,7 +266,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               // Event: Client or device requests a one-time service
               // Action: Send CC event request, start Tx
               // New State: PENDING_E
-              startTx((RoCreditControlRequest) localEvent.getRequest());
+              startTx(localEvent.getRequest().getMessage());
               setState(ClientRoSessionState.PENDING_EVENT);
               try {
                 dispatchEvent(localEvent.getRequest());
@@ -279,6 +308,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               }
               break;
             case Tx_TIMER_FIRED:
+              deliverRequestTxTimeout(localEvent.getRequest().getMessage());
               handleTxExpires(localEvent.getRequest().getMessage());
               break;
             default:
@@ -335,10 +365,16 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               // Event: Client or device requests access/service
               // Action: Send CC initial request, start Tx
               // New State: PENDING_I
-              startTx((RoCreditControlRequest) localEvent.getRequest());
+              startTx(localEvent.getRequest().getMessage());
               setState(ClientRoSessionState.PENDING_INITIAL);
+              // RFC 4006: For new credit-control sessions, failover to an alternative
+              // credit-control server SHOULD be performed if possible.
+              sessionData.setGatheredCCSF(IMessage.SESSION_FAILOVER_SUPPORTED_VALUE);
               try {
                 dispatchEvent(localEvent.getRequest());
+              }
+              catch (NoMorePeersAvailableException nmpae) {
+                handlePeerUnavailability(localEvent.getRequest().getMessage(), nmpae);
               }
               catch (Exception e) {
                 // This handles failure to send in PendingI state in FSM table
@@ -355,6 +391,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
           AppAnswerEvent answer = (AppAnswerEvent) localEvent.getAnswer();
           switch (eventType) {
             case RECEIVED_INITIAL_ANSWER:
+              sessionData.setGatheredCCSF(((IMessage) localEvent.getAnswer().getMessage()).getCcSessionFailover());
               long resultCode = answer.getResultCodeAvp().getUnsigned32();
               if (isSuccess(resultCode)) {
                 // Current State: PENDING_I
@@ -363,14 +400,34 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
                 // New State: OPEN
                 stopTx();
                 setState(ClientRoSessionState.OPEN);
+                //Session persistence record shall be created after a peer had answered
+                //the first (initial) request for that session
+                if (isSessionPersistenceEnabled()) {
+                  initSessionPersistenceContext(localEvent.getRequest(), localEvent.getAnswer());
+                  startSessionInactivityTimer();
+                }
+              }
+              else if (retrRequiredErrorCodes.contains(resultCode)) {
+                handleRetransmissionDueToError(eventType, localEvent.getRequest().getMessage());
+                break;
               }
               else if (isProvisional(resultCode) || isFailure(resultCode)) {
                 handleFailureMessage((RoCreditControlAnswer) answer, (RoCreditControlRequest) localEvent.getRequest(), eventType);
               }
+
               deliverRoAnswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
               break;
             case Tx_TIMER_FIRED:
-              handleTxExpires(localEvent.getRequest().getMessage());
+              deliverRequestTxTimeout(localEvent.getRequest().getMessage());
+              if (isRetransmissionRequired()) {
+                handleRetransmissionDueToTimeout(eventType, localEvent.getRequest());
+              }
+              else {
+                handleRetransmissionFailure((RoCreditControlRequest) localEvent.getRequest());
+              }
+              break;
+            case RETRANSMISSION_TIMER_FIRED:
+              handleRetransmissionFailure((RoCreditControlRequest) localEvent.getRequest());
               break;
             case SEND_UPDATE_REQUEST:
             case SEND_TERMINATE_REQUEST:
@@ -413,10 +470,16 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               // Event: RAR received
               // Action: Send RAA followed by CC update request, start Tx
               // New State: PENDING_U
-              startTx((RoCreditControlRequest) localEvent.getRequest());
+              startTx(localEvent.getRequest().getMessage());
+              if (isSessionPersistenceEnabled()) {
+                startSessionInactivityTimer();
+              }
               setState(ClientRoSessionState.PENDING_UPDATE);
               try {
                 dispatchEvent(localEvent.getRequest());
+              }
+              catch (NoMorePeersAvailableException nmpae) {
+                handlePeerUnavailability(localEvent.getRequest().getMessage(), nmpae);
               }
               catch (Exception e) {
                 // This handles failure to send in PendingI state in FSM table
@@ -438,9 +501,18 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               // Event: User service terminated
               // Action: Send CC termination request
               // New State: PENDING_T
+
+              // In all cases start Tx in order to assure failover
+              startTx(localEvent.getRequest().getMessage());
+              if (isSessionPersistenceEnabled()) {
+                stopSessionInactivityTimer();
+              }
               setState(ClientRoSessionState.PENDING_TERMINATION);
               try {
                 dispatchEvent(localEvent.getRequest());
+              }
+              catch (NoMorePeersAvailableException nmpae) {
+                handlePeerUnavailability(localEvent.getRequest().getMessage(), nmpae);
               }
               catch (Exception e) {
                 handleSendFailure(e, eventType, localEvent.getRequest().getMessage());
@@ -468,6 +540,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
           answer = (AppAnswerEvent) localEvent.getAnswer();
           switch (eventType) {
             case RECEIVED_UPDATE_ANSWER:
+              sessionData.setGatheredCCSF(((IMessage) localEvent.getAnswer().getMessage()).getCcSessionFailover());
               long resultCode = answer.getResultCodeAvp().getUnsigned32();
               if (isSuccess(resultCode)) {
                 // Current State: PENDING_U
@@ -477,15 +550,28 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
                 stopTx();
                 setState(ClientRoSessionState.OPEN);
               }
+              else if (retrRequiredErrorCodes.contains(resultCode)) {
+                handleRetransmissionDueToError(eventType, localEvent.getRequest().getMessage());
+                break;
+              }
               else if (isProvisional(resultCode) || isFailure(resultCode)) {
                 handleFailureMessage((RoCreditControlAnswer) answer, (RoCreditControlRequest) localEvent.getRequest(), eventType);
               }
+
               deliverRoAnswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
               break;
             case Tx_TIMER_FIRED:
-              handleTxExpires(localEvent.getRequest().getMessage());
+              deliverRequestTxTimeout(localEvent.getRequest().getMessage());
+              if (isRetransmissionRequired()) {
+                handleRetransmissionDueToTimeout(eventType, localEvent.getRequest());
+              }
+              else {
+                handleRetransmissionFailure((RoCreditControlRequest) localEvent.getRequest());
+              }
               break;
-
+            case RETRANSMISSION_TIMER_FIRED:
+              handleRetransmissionFailure((RoCreditControlRequest) localEvent.getRequest());
+              break;
             case SEND_UPDATE_REQUEST:
             case SEND_TERMINATE_REQUEST:
               // Current State: PENDING_U
@@ -547,8 +633,27 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
 
               //FIXME: Alex broke this, setting back "true" ?
               //setState(ClientRoSessionState.IDLE, false);
+              sessionData.setGatheredCCSF(((IMessage) localEvent.getAnswer().getMessage()).getCcSessionFailover());
+              long resultCode = ((AppAnswerEvent) localEvent.getAnswer()).getResultCodeAvp().getUnsigned32();
+              if (retrRequiredErrorCodes.contains(resultCode)) {
+                handleRetransmissionDueToError(eventType, localEvent.getRequest().getMessage());
+                break;
+              }
+
               deliverRoAnswer((RoCreditControlRequest) localEvent.getRequest(), (RoCreditControlAnswer) localEvent.getAnswer());
               setState(ClientRoSessionState.IDLE, true);
+              break;
+            case Tx_TIMER_FIRED:
+              deliverRequestTxTimeout(localEvent.getRequest().getMessage());
+              if (isRetransmissionRequired()) {
+                handleRetransmissionDueToTimeout(eventType, localEvent.getRequest());
+              }
+              else {
+                handleRetransmissionFailure((RoCreditControlRequest) localEvent.getRequest());
+              }
+              break;
+            case RETRANSMISSION_TIMER_FIRED:
+              handleRetransmissionFailure((RoCreditControlRequest) localEvent.getRequest());
               break;
             default:
               logger.warn("Wrong event type ({}) on state {}", eventType, state);
@@ -596,6 +701,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     if (request.getCommandCode() == RoCreditControlAnswer.code) {
       try {
         sendAndStateLock.lock();
+        stopTx();
         handleSendFailure(null, null, request);
       }
       catch (Exception e) {
@@ -607,30 +713,52 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     }
   }
 
-  protected void startTx(RoCreditControlRequest request) {
-    long txTimerValue = context.getDefaultTxTimerValue();
-    if (txTimerValue < 0) {
-      txTimerValue = TX_TIMER_DEFAULT_VALUE;
-    }
-    stopTx();
-
-    logger.debug("Scheduling TX Timer {}", txTimerValue);
-    //this.txFuture = scheduler.schedule(new TxTimerTask(this, request), txTimerValue, TimeUnit.SECONDS);
+  protected void startTx(Message message) {
+    stopTx(false);
+    logger.debug("Scheduling Tx timer in [{}] ms", this.txTimerVal);
     try {
-      sessionData.setTxTimerRequest((Request) request.getMessage());
-      sessionData.setTxTimerId(this.timerFacility.schedule(this.sessionData.getSessionId(), TX_TIMER_NAME, TX_TIMER_DEFAULT_VALUE));
+      sessionData.setTxTimerRequest((Request) message);
+      sessionData.setTxTimerId(this.timerFacility.schedule(this.sessionData.getSessionId(), TX_TIMER_NAME, this.txTimerVal));
     }
     catch (Exception e) {
       throw new IllegalArgumentException("Failed to store request.", e);
     }
   }
 
-  protected void stopTx() {
+  protected void stopTx(boolean stopDependant) {
     Serializable txTimerId = this.sessionData.getTxTimerId();
     if (txTimerId != null) {
+      if (stopDependant) {
+        stopFailoverStopTimer();
+      }
+      logger.debug("Stopping Tx timer [{}]", txTimerId);
       timerFacility.cancel(txTimerId);
       sessionData.setTxTimerId(null);
       sessionData.setTxTimerRequest(null);
+    }
+  }
+
+  protected void stopTx() {
+    stopTx(true);
+  }
+
+  protected void startFailoverStopTimer() {
+    long timerVal = this.retransmissionTimerVal - this.txTimerVal;
+    if (timerVal <= 0) {
+      logger.warn("Value of Tx timer cannot exceed failover stop timer: [{}] vs. [{}] (taking default values)", this.txTimerVal, this.retransmissionTimerVal);
+      timerVal = this.txTimerVal + (((Long) RetransmissionTimeOut.defValue()) - ((Long) TxTimeOut.defValue()));
+    }
+    logger.debug("Scheduling failover stop timer in [{}] ms", timerVal);
+    stopFailoverStopTimer();
+    sessionData.setRetransmissionTimerId(this.timerFacility.schedule(this.sessionData.getSessionId(), RETRANSMISSION_TIMER_NAME, timerVal));
+  }
+
+  protected void stopFailoverStopTimer() {
+    Serializable failoverStopTimerId = this.sessionData.getRetransmissionTimerId();
+    if (failoverStopTimerId != null) {
+      logger.debug("Stopping failover stop timer [{}]", failoverStopTimerId);
+      timerFacility.cancel(failoverStopTimerId);
+      sessionData.setRetransmissionTimerId(null);
     }
   }
 
@@ -641,6 +769,21 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   public void onTimer(String timerName) {
     if (timerName.equals(TX_TIMER_NAME)) {
       new TxTimerTask(this, sessionData.getTxTimerRequest()).run();
+    }
+    else if (timerName.equals(RETRANSMISSION_TIMER_NAME)) {
+      new RetransmissionTimerTask(this, sessionData.getTxTimerRequest()).run();
+    }
+    else {
+      try {
+        sendAndStateLock.lock();
+        super.onTimer(timerName);
+      }
+      catch (Exception ex) {
+        logger.error("Cannot properly handle timer expiry", ex);
+      }
+      finally {
+        sendAndStateLock.unlock();
+      }
     }
   }
 
@@ -655,7 +798,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
       IAppSessionState oldState = state;
       sessionData.setClientRoSessionState(newState);
       for (StateChangeListener i : stateListeners) {
-        i.stateChanged(this,(Enum) oldState, (Enum) newState);
+        i.stateChanged(this, (Enum) oldState, newState);
       }
 
       if (newState == ClientRoSessionState.IDLE) {
@@ -663,6 +806,14 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
           this.release();
         }
         stopTx();
+
+        if (isSessionPersistenceEnabled()) {
+          stopSessionInactivityTimer();
+          if (!release) {
+            String oldPeer = flushSessionPersistenceContext();
+            logger.debug("Session state reset, routing context for peer [{}] was removed from session [{}]", oldPeer, this.getSessionId());
+          }
+        }
       }
     }
     catch (Exception e) {
@@ -693,7 +844,10 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   }
 
   protected void handleSendFailure(Exception e, Event.Type eventType, Message request) throws Exception {
-    logger.debug("Failed to send message, type: {} message: {}, failure: {}", new Object[]{eventType, request, e != null ? e.getLocalizedMessage() : ""});
+    logger.warn("Failed to send message", e);
+    if (logger.isDebugEnabled()) {
+      logger.debug("Failed to send message, type: {} message: {}, failure: {}", new Object[]{eventType, request, e != null ? e.getLocalizedMessage() : ""});
+    }
     try {
       ClientRoSessionState state = sessionData.getClientRoSessionState();
       // Event Based ----------------------------------------------------------
@@ -1141,6 +1295,100 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
           break;
       }
     }
+
+    this.release();
+  }
+
+  protected void handleRetransmissionFailure(RoCreditControlRequest req) {
+    try {
+      deliverRequestTimeout(req.getMessage());
+      resetMessageStatus(req.getMessage());
+    }
+    catch (InternalException e) {
+      logger.error("Cannot remove the expired message from either peer or rouoter tables for session [{}]", this.getSessionId());
+    }
+
+    setState(ClientRoSessionState.IDLE, true);
+  }
+
+  protected void handlePeerUnavailability(Message msg, NoMorePeersAvailableException nmpae) {
+    logger.warn("No more peers available for sending diameter message: ", nmpae.getMessage());
+    if (logger.isDebugEnabled()) {
+      logger.debug("nmpa exception: {}", nmpae);
+    }
+    deliverPeerUnavailabilityError(msg, nmpae);
+    resetMessageStatus(msg);
+    setState(ClientRoSessionState.IDLE, true);
+  }
+
+  protected void handleRetransmission(Type eventType, IMessage msg, boolean tFlagSetting) {
+    msg.setReTransmitted(tFlagSetting);
+    if (this.sessionData.getRetransmissionTimerId() == null) {
+      startFailoverStopTimer();
+    }
+
+    if (isSessionPersistenceEnabled()) {
+      String oldPeer = flushSessionPersistenceContext();
+      logger.debug("Routing context for peer [{}] was removed from session [{}] due to retransmission", oldPeer, this.getSessionId());
+    }
+
+    resetMessageStatus(msg);
+    startTx(msg);
+
+    try {
+      dispatchEvent(msg);
+    }
+    catch (NoMorePeersAvailableException nmpae) {
+      handlePeerUnavailability(msg, nmpae);
+    }
+    catch (Exception e1) {
+      logger.error("Cannot retransmit an old request", e1);
+      try {
+        handleSendFailure(e1, eventType, msg);
+      }
+      catch (Exception e2) {
+        logger.error("Failure handling error", e2);
+      }
+    }
+  }
+
+  protected void handleRetransmissionDueToError(Type eventType, Message msg) {
+    IMessage imsg = (IMessage) msg;
+    logger.warn("Message will be retransmitted due to error response [{}] ", msg);
+
+    try {
+      if (imsg.isRetransmissionAllowed()) {
+        if (isSessionFailoverSupported()) {
+          handleRetransmission(eventType, imsg, false);
+          imsg.decrementNumberOfRetransAllowed();
+        }
+        else {
+          handleSendFailure(new Exception("Failover unsupported for session ID: " + sessionData.getSessionId()), eventType, msg);
+        }
+      }
+      else {
+        NoMorePeersAvailableException cause = new NoMorePeersAvailableException("No more peers available for retransmission");
+        cause.setSessionPersistentRoutingEnabled(router.isSessionAware());
+        handlePeerUnavailability(msg, cause);
+      }
+    }
+    catch (Exception e) {
+      logger.error("Failure handling send failure error in handleRetransmissionDueToError", e);
+    }
+  }
+
+  protected void handleRetransmissionDueToTimeout(Type eventType, AppEvent event) throws InternalException {
+    if (isSessionFailoverSupported()) {
+      handleRetransmission(eventType, (IMessage) event.getMessage(), true);
+    }
+    else {
+      logger.warn("Failed to send message. Failover unsupported for session ID: {}", sessionData.getSessionId());
+      if (logger.isDebugEnabled()) {
+        logger.debug("Failed to send message, type: {} message: {}, failure: Failover unsupported for session ID: {}", new Object[]{eventType, event
+            .getMessage(), sessionData.getSessionId()});
+      }
+      handleRetransmissionFailure((RoCreditControlRequest) event);
+    }
   }
 
   /**
@@ -1184,6 +1432,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   }
 
   protected void deliverRoAnswer(RoCreditControlRequest request, RoCreditControlAnswer answer) {
+    logger.debug("Propagating answer event to listener [{}] on {} session", listener, isValid() ? "valid" : "invalid");
     try {
       if (isValid()) {
         listener.doCreditControlAnswer(this, request, answer);
@@ -1191,6 +1440,52 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     }
     catch (Exception e) {
       logger.warn("Failure delivering Ro Answer", e);
+    }
+  }
+
+  protected void deliverRAR(ReAuthRequest request) {
+    logger.debug("Propagating RAR event to listener [{}] on {} session", listener, isValid() ? "valid" : "invalid");
+    try {
+      listener.doReAuthRequest(this, request);
+    }
+    catch (Exception e) {
+      logger.warn("Failure delivering RAR", e);
+    }
+  }
+
+  protected void deliverRequestTxTimeout(Message msg) {
+    logger.debug("Propagating Tx timeout event to listener [{}] on {} session", listener, isValid() ? "valid" : "invalid");
+    try {
+      if (isValid()) {
+        listener.doRequestTxTimeout(this, msg, ((IMessage) msg).getPeer());
+      }
+    }
+    catch (Exception e) {
+      logger.warn("Failure delivering request tx timeout", e);
+    }
+  }
+
+  protected void deliverRequestTimeout(Message msg) {
+    logger.debug("Propagating timeout event to listener [{}] on {} session", listener, isValid() ? "valid" : "invalid");
+    try {
+      if (isValid()) {
+        listener.doRequestTimeout(this, msg, ((IMessage) msg).getPeer());
+      }
+    }
+    catch (Exception e) {
+      logger.warn("Failure delivering request timeout", e);
+    }
+  }
+
+  protected void deliverPeerUnavailabilityError(Message msg, NoMorePeersAvailableException cause) {
+    logger.debug("Propagating peer unavailability error event to listener [{}] on {} session", listener, isValid() ? "valid" : "invalid");
+    try {
+      if (isValid()) {
+        listener.doPeerUnavailability(cause, this, msg, ((IMessage) msg).getPeer());
+      }
+    }
+    catch (Exception e) {
+      logger.warn("Failure delivering peer unavailability error", e);
     }
   }
 
@@ -1236,17 +1531,15 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     }
   }
 
-  protected void deliverRAR(ReAuthRequest request) {
-    try {
-      listener.doReAuthRequest(this, request);
+  protected void dispatchEvent(IMessage message) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+    if (message.isRequest()) {
+      message.setRetransmissionSupervised(true);
     }
-    catch (Exception e) {
-      logger.debug("Failure delivering RAR", e);
-    }
+    session.send(message, this);
   }
 
   protected void dispatchEvent(AppEvent event) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    session.send(event.getMessage(), this);
+    dispatchEvent((IMessage) event.getMessage());
   }
 
   protected boolean isProvisional(long resultCode) {
@@ -1258,7 +1551,12 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   }
 
   protected boolean isFailure(long code) {
-    return (!isProvisional(code) && !isSuccess(code) && ((code >= 3000 && code < 6000)) && !temporaryErrorCodes.contains(code));
+    return (!isProvisional(code) && !isSuccess(code) && ((code >= 3000 && /*code < 4000) || (code >= 5000 &&*/ code < 6000)) && !temporaryErrorCodes.contains
+        (code));
+  }
+
+  protected boolean isRetransmissionRequired() {
+    return (getLocalCCFH() == CCFH_CONTINUE || getLocalCCFH() == CCFH_RETRY_AND_TERMINATE);
   }
 
   /* (non-Javadoc)
@@ -1268,7 +1566,6 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   public boolean isReplicable() {
     return true;
   }
-
 
   private class TxTimerTask implements Runnable {
     private ClientRoSession session = null;
@@ -1280,21 +1577,46 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
       this.request = request;
     }
 
-    @Override
     public void run() {
       try {
         sendAndStateLock.lock();
-        logger.debug("Fired TX Timer");
+        logger.debug("Fired Tx timer");
         sessionData.setTxTimerId(null);
         sessionData.setTxTimerRequest(null);
-        try {
-          context.txTimerExpired(session);
-        }
-        catch (Exception e) {
-          logger.debug("Failure handling TX Timer Expired", e);
-        }
+
         RoCreditControlRequest req = factory.createCreditControlRequest(request);
         handleEvent(new Event(Event.Type.Tx_TIMER_FIRED, req, null));
+      }
+      catch (InternalException e) {
+        logger.error("Internal Exception", e);
+      }
+      catch (OverloadException e) {
+        logger.error("Overload Exception", e);
+      }
+      catch (Exception e) {
+        logger.error("Exception", e);
+      }
+      finally {
+        sendAndStateLock.unlock();
+      }
+    }
+  }
+
+  private class RetransmissionTimerTask implements Runnable {
+    private Request request = null;
+
+    private RetransmissionTimerTask(ClientRoSession session, Request request) {
+      super();
+      this.request = request;
+    }
+
+    public void run() {
+      try {
+        sendAndStateLock.lock();
+        logger.debug("Fired failover stop timer (Retransmission timout occured)");
+        stopTx(false);
+        sessionData.setRetransmissionTimerId(null);
+        handleEvent(new Event(Event.Type.RETRANSMISSION_TIMER_FIRED, factory.createCreditControlRequest(request), null));
       }
       catch (InternalException e) {
         logger.error("Internal Exception", e);
@@ -1334,15 +1656,24 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     }
   }
 
+  private void resetMessageStatus(Message message) {
+    IMessage msg = (IMessage) message;
+    msg.clearTimer();
+    msg.setState(IMessage.STATE_NOT_SENT);
+    if (msg.getPeer() != null) {
+      msg.getPeer().remMessage(msg);
+    }
+    router.garbageCollectRequestRouteInfo(msg);
+  }
+
   private class RequestDelivery implements Runnable {
     ClientRoSession session;
     Request request;
 
-    @Override
     public void run() {
       try {
         switch (request.getCommandCode()) {
-          case ReAuthAnswer.code:
+          case ReAuthAnswerImpl.code:
             handleEvent(new Event(Event.Type.RECEIVED_RAR, factory.createReAuthRequest(request), null));
             break;
 
@@ -1362,14 +1693,13 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     Answer answer;
     Request request;
 
-    @Override
     public void run() {
       try {
         switch (request.getCommandCode()) {
           case RoCreditControlAnswer.code:
             RoCreditControlRequest _request = factory.createCreditControlRequest(request);
             RoCreditControlAnswer _answer = factory.createCreditControlAnswer(answer);
-            extractFHAVPs(null, _answer );
+            extractFHAVPs(null, _answer);
             handleEvent(new Event(false, _request, _answer));
             break;
 

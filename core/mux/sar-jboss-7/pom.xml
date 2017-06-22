@@ -149,10 +149,13 @@
                 </copy>
                 <copy todir="${basedir}/target/jboss-modules/org/mobicents/diameter/main/config">
                   <fileset dir="../common/config">
-                    <include name="**" />
+                    <include name="**"/>
+                    <exclude name="jdiameter-config_*.xml"/>
                   </fileset>
                 </copy>
-                <!-- The MUX deployment archive -->
+                <copy file="../common/config/${jdiameter.mux.config.file}"
+                      tofile="${basedir}/target/jboss-modules/org/mobicents/diameter/main/config/jdiameter-config.xml"/>
+                  <!-- The MUX deployment archive -->
                 <copy file="../jar/target/restcomm-diameter-mux-${project.version}.jar" tofile="${basedir}/target/deployments/restcomm-diameter-tmp.zip"/>
                 <zip destfile="${basedir}/target/deployments/restcomm-diameter.zip">
                   <zipfileset src="${basedir}/target/deployments/restcomm-diameter-tmp.zip" excludes="org/mobicents/diameter/stack/DiameterStackMultiplexer.class,org/mobicents/diameter/stack/DiameterStackMultiplexerMBean.class"/>

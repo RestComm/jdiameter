@@ -77,6 +77,7 @@ import org.jdiameter.common.api.app.IAppSessionState;
 import org.jdiameter.common.api.app.cca.ClientCCASessionState;
 import org.jdiameter.common.api.app.cca.ICCAMessageFactory;
 import org.jdiameter.common.api.app.cca.IClientCCASessionContext;
+import org.jdiameter.common.api.data.ISessionDatasource;
 import org.jdiameter.common.impl.app.AppAnswerEventImpl;
 import org.jdiameter.common.impl.app.AppEventImpl;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
@@ -121,11 +122,13 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
   private static final int DDFH_TERMINATE_OR_BUFFER = 0;
   private static final int DDFH_CONTINUE = 1;
 
-  // CC-Request-Type Values ---------------------------------------------------
+  // Requested-Action Values --------------------------------------------------
   private static final int DIRECT_DEBITING = 0;
   private static final int REFUND_ACCOUNT = 1;
   private static final int CHECK_BALANCE = 2;
   private static final int PRICE_ENQUIRY = 3;
+
+  // CC-Request-Type  ---------------------------------------------------------
   private static final int EVENT_REQUEST = 4;
 
   // Error Codes --------------------------------------------------------------
@@ -147,9 +150,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     temporaryErrorCodes = Collections.unmodifiableSet(tmp);
   }
 
-  public ClientCCASessionImpl(IClientCCASessionData data, ICCAMessageFactory fct, ISessionFactory sf, ClientCCASessionListener lst,
-      IClientCCASessionContext ctx, StateChangeListener<AppSession> stLst) {
-    super(sf, data);
+  public ClientCCASessionImpl(IClientCCASessionData data, ICCAMessageFactory fct, ISessionDatasource sds, ISessionFactory sf, ClientCCASessionListener lst,
+                              IClientCCASessionContext ctx, StateChangeListener<AppSession> stLst) {
+    super(sds, sf, data);
     if (lst == null) {
       throw new IllegalArgumentException("Listener can not be null");
     }
@@ -351,6 +354,12 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                 // New State: OPEN
                 stopTx();
                 setState(ClientCCASessionState.OPEN);
+                //Session persistence record shall be created after a peer had answered the
+                //first (initial) request for that session
+                if (isSessionPersistenceEnabled()) {
+                  initSessionPersistenceContext(localEvent.getRequest(), localEvent.getAnswer());
+                  startSessionInactivityTimer();
+                }
               }
               else if (isProvisional(resultCode) || isFailure(resultCode)) {
                 handleFailureMessage((JCreditControlAnswer) answer, (JCreditControlRequest) localEvent.getRequest(), eventType);
@@ -402,6 +411,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Action: Send RAA followed by CC update request, start Tx
               // New State: PENDING_U
               startTx((JCreditControlRequest) localEvent.getRequest());
+              if (isSessionPersistenceEnabled()) {
+                startSessionInactivityTimer();
+              }
               setState(ClientCCASessionState.PENDING_UPDATE);
               try {
                 dispatchEvent(localEvent.getRequest());
@@ -426,6 +438,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Event: User service terminated
               // Action: Send CC termination request
               // New State: PENDING_T
+              if (isSessionPersistenceEnabled()) {
+                stopSessionInactivityTimer();
+              }
               setState(ClientCCASessionState.PENDING_TERMINATION);
               try {
                 dispatchEvent(localEvent.getRequest());
@@ -626,6 +641,18 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     if (timerName.equals(TX_TIMER_NAME)) {
       new TxTimerTask(this, this.sessionData.getTxTimerRequest()).run();
     }
+    else {
+      try {
+        sendAndStateLock.lock();
+        super.onTimer(timerName);
+      }
+      catch (Exception ex) {
+        logger.error("Cannot properly handle timer expiry", ex);
+      }
+      finally {
+        sendAndStateLock.unlock();
+      }
+    }
   }
 
   protected void setState(ClientCCASessionState newState) {
@@ -647,6 +674,14 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
           this.release();
         }
         stopTx();
+
+        if (isSessionPersistenceEnabled()) {
+          stopSessionInactivityTimer();
+          if (!release) {
+            String oldPeer = flushSessionPersistenceContext();
+            logger.debug("Session state reset, routing context for peer [{}] was removed from session [{}]", oldPeer, this.getSessionId());
+          }
+        }
       }
     }
     catch (Exception e) {
@@ -1105,6 +1140,9 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Action: Grant service to end user
               // New State: PENDING_U
               context.grantAccessOnTxExpire(this);
+              if (isSessionPersistenceEnabled()) {
+                stopSessionInactivityTimer();
+              }
               break;
 
             case CCFH_TERMINATE:

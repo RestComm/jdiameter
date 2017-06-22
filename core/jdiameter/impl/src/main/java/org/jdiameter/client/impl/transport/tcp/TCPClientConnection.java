@@ -387,6 +387,15 @@ public class TCPClientConnection implements IConnection {
     }
   }
 
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("TCPClientConnection [createdTime=").append(createdTime)
+        .append(", cachedKey=").append(cachedKey).append(", isConnected=")
+        .append(isConnected()).append("]");
+    return builder.toString();
+  }
+
   //------------------ helper classes ------------------------
   private enum EventType {
     CONNECTED, DISCONNECTED, MESSAGE_RECEIVED, DATA_EXCEPTION

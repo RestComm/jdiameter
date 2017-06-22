@@ -43,7 +43,6 @@
 package org.jdiameter.server.impl;
 
 import static org.jdiameter.client.impl.helpers.Parameters.PeerName;
-import static org.jdiameter.client.impl.helpers.Parameters.PeerTable;
 import static org.jdiameter.client.impl.helpers.Parameters.StopTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.UseUriAsFqdn;
 import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledExecServices.ConnectionTimer;
@@ -100,6 +99,7 @@ import org.jdiameter.client.api.io.IConnectionListener;
 import org.jdiameter.client.api.io.TransportException;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.impl.controller.PeerTableImpl;
+import org.jdiameter.client.impl.helpers.Parameters;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.statistic.IStatisticManager;
 import org.jdiameter.server.api.IFsmFactory;
@@ -226,6 +226,30 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     init(stack, router, config, metaData, fsmFactory, transportFactory, statisticFactory, concurrentFactory, parser);
     logger.debug("MutablePeerTableImpl has finished initialisation");
   }
+
+  protected Configuration getPeerConfig(String fqdn) throws URISyntaxException, UnknownServiceException {
+    if (logger.isDebugEnabled()) {
+      logger.debug("Searching configuration for peer fqdn: " + fqdn);
+    }
+    Configuration result = null;
+    Configuration[] peers = config.getChildren(Parameters.PeerTable.ordinal());
+    if (peers != null && peers.length > 0) {
+      for (Configuration peerConfig : peers) {
+        if (peerConfig.isAttributeExist(PeerName.ordinal())) {
+          String peerConfigFqdn = new URI(peerConfig.getStringValue(PeerName.ordinal(), "")).getFQDN();
+          if (fqdn.equals(peerConfigFqdn)) {
+            result = peerConfig;
+            break;
+          }
+        }
+      }
+    }
+    if (logger.isDebugEnabled()) {
+      logger.debug("Peer configuration {}found for FQDN: {}", (result == null ? "not " : ""), fqdn);
+    }
+    return result;
+  }
+
 
   @Override
   protected Peer createPeer(int rating, String uri, String ip, String portRange, MetaData metaData, Configuration globalConfig,
@@ -445,7 +469,8 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                     try {
                       realm = message.getAvps().getAvp(Avp.ORIGIN_REALM).getDiameterIdentity();
                       logger.debug("Origin-Realm in new received message is [{}]", realm);
-                    } catch (AvpDataException e) {
+                    }
+                    catch (AvpDataException e) {
                       logger.warn("Unable to retrieve find Origin-Realm AVP in CER", e);
                       unregister(true);
                       return;
@@ -510,7 +535,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
                           }
 
                           peer = newPeerInstance(0, uri, connection.getRemoteAddress().getHostAddress(), null, false, connection,
-                              metaData, config, null, fsmFactory, transportFactory, parser, statisticFactory, concurrentFactory);
+                              metaData, config, getPeerConfig(uri.getFQDN()), fsmFactory, transportFactory, parser, statisticFactory, concurrentFactory);
                           logger.debug("Created new peer instance [{}] and adding to peer table", peer);
                           peer.setRealm(realm);
                           appendPeerToPeerTable(peer);
@@ -563,7 +588,7 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
             }
           }
         }
-        );
+    );
   }
 
   private void appendPeerToPeerTable(IPeer peer) {
@@ -639,15 +664,8 @@ public class MutablePeerTableImpl extends PeerTableImpl implements IMutablePeerT
     //TODO: add sKey here, now it adds peer to all realms.
     //TODO: better, separate addPeer from realm!
     try {
-      Configuration peerConfig = null;
-      Configuration[] peers = config.getChildren(PeerTable.ordinal());
-      // find peer config
-      for (Configuration c : peers) {
-        if (peerURI.getFQDN().equals(c.getStringValue(PeerName.ordinal(), ""))) {
-          peerConfig = c;
-          break;
-        }
-      }
+      Configuration peerConfig = getPeerConfig(peerURI.getFQDN());
+
       if (peerConfig == null) {
         peerConfig = new EmptyConfiguration(false).add(PeerAttemptConnection, connecting);
       }

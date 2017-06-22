@@ -103,12 +103,15 @@ import static org.jdiameter.client.impl.helpers.Parameters.QueueSize;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 import static org.jdiameter.client.impl.helpers.Parameters.RecTimeOut;
+import static org.jdiameter.client.impl.helpers.Parameters.RetransmissionRequiredResCodes;
+import static org.jdiameter.client.impl.helpers.Parameters.RetransmissionTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.SDEnableSessionCreation;
 import static org.jdiameter.client.impl.helpers.Parameters.SDName;
 import static org.jdiameter.client.impl.helpers.Parameters.SDProtocol;
 import static org.jdiameter.client.impl.helpers.Parameters.SDUseClientMode;
 import static org.jdiameter.client.impl.helpers.Parameters.Security;
 import static org.jdiameter.client.impl.helpers.Parameters.SecurityRef;
+import static org.jdiameter.client.impl.helpers.Parameters.SessionInactivityTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.Statistics;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsActiveList;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsEnabled;
@@ -123,6 +126,7 @@ import static org.jdiameter.client.impl.helpers.Parameters.ThreadPool;
 import static org.jdiameter.client.impl.helpers.Parameters.ThreadPoolPriority;
 import static org.jdiameter.client.impl.helpers.Parameters.ThreadPoolSize;
 import static org.jdiameter.client.impl.helpers.Parameters.TrustData;
+import static org.jdiameter.client.impl.helpers.Parameters.TxTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.UseUriAsFqdn;
 import static org.jdiameter.client.impl.helpers.Parameters.VendorId;
 import static org.jdiameter.server.impl.helpers.ExtensionPoint.InternalNetWork;
@@ -385,9 +389,32 @@ public class XMLConfiguration extends EmptyConfiguration {
       else if (nodeName.equals("RequestTable")) {
         addRequestTable(RequestTable, c.item(i));
       }
+      else if (nodeName.equals("SessionInactivityTimeOut")) {
+        add(SessionInactivityTimeOut, getIntValue(c.item(i)));
+      }
+      else if (nodeName.equals("TxTimeOut")) {
+        add(TxTimeOut, getLongValue(c.item(i)));
+      }
+      else if (nodeName.equals("RetransmissionTimeOut")) {
+        add(RetransmissionTimeOut, getLongValue(c.item(i)));
+      }
+      else if (nodeName.equals("RetransmissionRequiredResCodes")) {
+        addRetransmissionRequiredResCodes(c.item(i));
+      }
       else {
         appendOtherParameter(c.item(i));
       }
+    }
+  }
+
+  protected void addRetransmissionRequiredResCodes(Node node) {
+    String[] codesArray = getValue(node).replaceAll(" ", "").split(",");
+    if (codesArray.length > 0) {
+      int[] parsedCodesArray = new int[codesArray.length];
+      for (int i = 0; i < codesArray.length; i++) {
+        parsedCodesArray[i] = Integer.parseInt(codesArray[i]);
+      }
+      add(RetransmissionRequiredResCodes, parsedCodesArray);
     }
   }
 
@@ -453,7 +480,8 @@ public class XMLConfiguration extends EmptyConfiguration {
     String active_records;
     if (node.getAttributes().getNamedItem("active_records") != null) {
       active_records = node.getAttributes().getNamedItem("active_records").getNodeValue();
-    } else {
+    }
+    else {
       active_records = (String) StatisticsActiveList.defValue();
     }
     add(name,
@@ -553,6 +581,7 @@ public class XMLConfiguration extends EmptyConfiguration {
     }
     return sd;
   }
+
   protected void addNetwork(Node node) {
     NodeList c = node.getChildNodes();
     for (int i = 0; i < c.getLength(); i++) {

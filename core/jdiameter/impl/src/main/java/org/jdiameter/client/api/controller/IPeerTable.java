@@ -48,6 +48,7 @@ import java.util.Map;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.NetworkReqListener;
+import org.jdiameter.api.NoMorePeersAvailableException;
 import org.jdiameter.api.PeerTable;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.client.api.IAssembler;
@@ -94,7 +95,7 @@ public interface IPeerTable extends PeerTable {
    * @throws RouteException
    * @throws AvpDataException
    */
-  void sendMessage(IMessage message) throws IllegalDiameterStateException, IOException, RouteException, AvpDataException;
+  void sendMessage(IMessage message) throws IllegalDiameterStateException, IOException, RouteException, NoMorePeersAvailableException, AvpDataException;
 
   /**
    * Register session lister

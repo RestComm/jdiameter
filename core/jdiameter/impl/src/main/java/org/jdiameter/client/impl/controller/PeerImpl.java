@@ -72,6 +72,7 @@ import static org.jdiameter.client.api.fsm.EventTypes.DWR_EVENT;
 import static org.jdiameter.client.api.fsm.EventTypes.INTERNAL_ERROR;
 import static org.jdiameter.client.api.fsm.EventTypes.RECEIVE_MSG_EVENT;
 import static org.jdiameter.client.api.fsm.EventTypes.STOP_EVENT;
+import static org.jdiameter.client.impl.helpers.Parameters.PeerRating;
 import static org.jdiameter.client.impl.helpers.Parameters.SecurityRef;
 import static org.jdiameter.client.impl.helpers.Parameters.UseUriAsFqdn;
 
@@ -191,7 +192,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     public void connectionClosed(String connKey, List notSent) {
       logger.debug("Connection from {} is closed", uri);
       for (IMessage request : peerRequests.values()) {
-        if (request.getState() == IMessage.STATE_SENT) {
+        if (request.getState() == IMessage.STATE_SENT && !request.isRetransmissionSupervised()) {
           request.setReTransmitted(true);
           request.setState(IMessage.STATE_NOT_SENT);
           try {
@@ -273,7 +274,12 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       IConnection connection, final ISessionDatasource sessionDataSource) throws InternalException, TransportException {
     super(remotePeer, statisticFactory);
     this.table = table;
-    this.rating = rating;
+    if (peerConfig != null) {
+      this.rating = peerConfig.getIntValue(PeerRating.ordinal(), 0);
+    }
+    else {
+      this.rating = rating;
+    }
     this.router = table.router;
     this.metaData = metaData;
     // XXX: FT/HA // this.slc = table.getSessionReqListeners();
@@ -632,7 +638,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
 
   @Override
   public String toString() {
-    return "CPeer{" + "Uri=" + uri + "; State=" + (fsm != null ? fsm.getState(PeerState.class) : "n/a") + "; Con=" + connection + "}";
+    return "CPeer{" + "Uri=" + uri + "; State=" + (fsm != null ? fsm.getState(PeerState.class) : "n/a") + "; Rating=" + rating + "; Con=" + connection + "}";
   }
 
   protected void fillIPAddressTable(IMessage message) {

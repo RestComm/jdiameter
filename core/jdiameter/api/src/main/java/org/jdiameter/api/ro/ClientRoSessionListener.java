@@ -44,7 +44,9 @@ package org.jdiameter.api.ro;
 
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
+import org.jdiameter.api.Message;
 import org.jdiameter.api.OverloadException;
+import org.jdiameter.api.Peer;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
@@ -101,6 +103,49 @@ public interface ClientRoSessionListener {
    * @throws OverloadException The OverloadException signals that destination host is overloaded.
    */
   void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+
+  /**
+   * Notifies this ClientRoSessionListener that message delivery timeout expired and there was no response from
+   * one of remote peers.
+   *
+   * @param session parent application session (FSM)
+   * @param msg     request object
+   * @throws InternalException             The InternalException signals that internal error has occurred.
+   * @throws IllegalDiameterStateException The IllegalStateException signals that session has incorrect state (invalid).
+   * @throws RouteException                The NoRouteException signals that no route exist for a given realm.
+   * @throws OverloadException             The OverloadException signals that destination host is overloaded.
+   */
+  void doRequestTxTimeout(ClientRoSession session, Message msg, Peer peer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+
+  /**
+   * Notifies this ClientRoSessionListener that message delivery timeout expired and there was no response from
+   * any of remote peers in spite of numerous retransmissions and performing failover algorithm if enabled.
+   *
+   * @param session parent application session (FSM)
+   * @param msg     request object
+   * @throws InternalException             The InternalException signals that internal error has occurred.
+   * @throws IllegalDiameterStateException The IllegalStateException signals that session has incorrect state (invalid).
+   * @throws RouteException                The NoRouteException signals that no route exist for a given realm.
+   * @throws OverloadException             The OverloadException signals that destination host is overloaded.
+   */
+  void doRequestTimeout(ClientRoSession session, Message msg, Peer peer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+
+  /**
+   * Notifies this ClientRoSessionListener that message cannot be delivered due to lack of remote peers being available at the moment.
+   *
+   * @param cause   root cause containing detailed description
+   * @param session parent application session (FSM)
+   * @param msg     request object
+   * @param peer    last remote peer that has been selected for routing
+   * @throws InternalException             The InternalException signals that internal error has occurred.
+   * @throws IllegalDiameterStateException The IllegalStateException signals that session has incorrect state (invalid).
+   * @throws RouteException                The NoRouteException signals that no route exist for a given realm.
+   * @throws OverloadException             The OverloadException signals that destination host is overloaded.
+   */
+  void doPeerUnavailability(RouteException cause, ClientRoSession session, Message msg, Peer peer)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
   /**

@@ -70,6 +70,7 @@ import org.jdiameter.api.PeerState;
 import org.jdiameter.api.PeerTable;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.SessionFactory;
+import org.jdiameter.api.SessionPersistenceStorage;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.validation.Dictionary;
 import org.jdiameter.api.validation.ValidatorLevel;
@@ -402,6 +403,15 @@ public class StackImpl implements IContainer, StackImplMBean {
       throw new IllegalStateException("Meta data not defined");
     }
     return assembler.getComponentInstance(IMetaData.class);
+  }
+
+  @Override
+  public SessionPersistenceStorage getSessionPersistenceStorage() {
+    if (state == StackState.IDLE) {
+      throw new IllegalStateException("Session storage not defined");
+    }
+    ISessionDatasource sds = assembler.getComponentInstance(ISessionDatasource.class);
+    return sds instanceof SessionPersistenceStorage ? (SessionPersistenceStorage) sds : null;
   }
 
   @Override

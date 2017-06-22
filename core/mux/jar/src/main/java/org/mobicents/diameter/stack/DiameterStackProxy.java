@@ -57,6 +57,7 @@ import org.jdiameter.api.Mode;
 import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.SessionFactory;
+import org.jdiameter.api.SessionPersistenceStorage;
 import org.jdiameter.api.Stack;
 import org.jdiameter.api.validation.Dictionary;
 import org.jdiameter.client.api.IAssembler;
@@ -172,6 +173,11 @@ public class DiameterStackProxy implements Stack, IContainer {
   @Override
   public IAssembler getAssemblerFacility() {
     return ((IContainer) realStack).getAssemblerFacility();
+  }
+
+  @Override
+  public SessionPersistenceStorage getSessionPersistenceStorage() {
+    return ((IContainer)realStack).getSessionPersistenceStorage();
   }
 
   /* (non-Javadoc)

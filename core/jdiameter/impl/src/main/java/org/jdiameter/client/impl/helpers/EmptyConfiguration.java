@@ -213,6 +213,13 @@ public class EmptyConfiguration implements AppConfiguration {
    * @see org.jdiameter.api.Configuration class
    */
   @Override
+  public int[] getIntArrayValue(int i, int[] ints) {
+    return (int[]) (isAttributeExist(i) ? elements.get(i) : ints);
+  }
+
+  /**
+   * @see org.jdiameter.api.Configuration class
+   */
   public boolean getBooleanValue(int i, boolean b) {
     return (Boolean) (isAttributeExist(i) ? elements.get(i) : b);
   }

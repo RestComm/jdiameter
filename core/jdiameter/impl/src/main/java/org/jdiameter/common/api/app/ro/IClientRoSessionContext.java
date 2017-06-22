@@ -51,6 +51,7 @@ import org.jdiameter.api.ro.ClientRoSession;
  *
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
+ * @author <a href="mailto:grzegorz.figiel@pro-ids.com"> Grzegorz Figiel (ProIDS sp. z o.o.)</a>
  */
 public interface IClientRoSessionContext {
 
@@ -61,6 +62,8 @@ public interface IClientRoSessionContext {
   int getDefaultCCFHValue();
 
   int getDefaultDDFHValue();
+
+  int getDefaultCCSFValue();
 
   void grantAccessOnDeliverFailure(ClientRoSession clientCCASessionImpl, Message request);
 

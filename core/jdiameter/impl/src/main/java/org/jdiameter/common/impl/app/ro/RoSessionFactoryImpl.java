@@ -25,7 +25,9 @@ import org.jdiameter.api.Answer;
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.Message;
+import org.jdiameter.api.Peer;
 import org.jdiameter.api.Request;
+import org.jdiameter.api.RouteException;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
@@ -39,6 +41,7 @@ import org.jdiameter.api.ro.ServerRoSession;
 import org.jdiameter.api.ro.ServerRoSessionListener;
 import org.jdiameter.api.ro.events.RoCreditControlAnswer;
 import org.jdiameter.api.ro.events.RoCreditControlRequest;
+import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.impl.app.ro.ClientRoSessionImpl;
 import org.jdiameter.client.impl.app.ro.IClientRoSessionData;
@@ -61,6 +64,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:brainslog@gmail.com"> Alexandre Mendonca </a>
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
+ * @author <a href="mailto:grzegorz.figiel@pro-ids.com"> Grzegorz Figiel (ProIDS sp. z o.o.)</a>
  */
 public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionListener, ServerRoSessionListener, StateChangeListener<AppSession>,
     IRoMessageFactory, IServerRoSessionContext, IClientRoSessionContext {
@@ -68,6 +72,7 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   // Message timeout value (in milliseconds)
   protected int defaultDirectDebitingFailureHandling = 0;
   protected int defaultCreditControlFailureHandling = 0;
+  protected int defaultCreditControlSessionFailover = IMessage.SESSION_FAILOVER_NOT_SUPPORTED_VALUE;
 
   // its seconds
   protected long defaultValidityTime = 60;
@@ -270,8 +275,8 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
 
         IClientRoSessionData sessionData = (IClientRoSessionData) this.sessionDataFactory.getAppSessionData(ClientRoSession.class, sessionId);
         sessionData.setApplicationId(applicationId);
-        clientSession = new ClientRoSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, this.getClientSessionListener(),
-            this.getClientContextListener(), this.getStateListener());
+        clientSession = new ClientRoSessionImpl(sessionData, this.getMessageFactory(), iss, sessionFactory, this.getClientSessionListener(), this
+            .getClientContextListener(), this.getStateListener());
         // this goes first!
         iss.addSession(clientSession);
         clientSession.getSessions().get(0).setRequestListener(clientSession);
@@ -320,8 +325,8 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
     try {
       if (aClass == ClientRoSession.class) {
         IClientRoSessionData sessionData = (IClientRoSessionData) this.sessionDataFactory.getAppSessionData(ClientRoSession.class, sessionId);
-        ClientRoSessionImpl clientSession = new ClientRoSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, this.getClientSessionListener(),
-            this.getClientContextListener(), this.getStateListener());
+        ClientRoSessionImpl clientSession = new ClientRoSessionImpl(sessionData, this.getMessageFactory(), iss, sessionFactory, this.getClientSessionListener
+            (), this.getClientContextListener(), this.getStateListener());
         // this goes first!
         clientSession.getSessions().get(0).setRequestListener(clientSession);
         appSession = clientSession;
@@ -369,6 +374,21 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
 
   @Override
   public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException {
+
+  }
+
+  @Override
+  public void doRequestTxTimeout(ClientRoSession session, Message msg, Peer peer) throws InternalException {
+
+  }
+
+  @Override
+  public void doRequestTimeout(ClientRoSession session, Message msg, Peer peer) throws InternalException {
+
+  }
+
+  @Override
+  public void doPeerUnavailability(RouteException cause, ClientRoSession session, Message msg, Peer peer) throws InternalException {
 
   }
 
@@ -467,6 +487,11 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   }
 
   @Override
+  public int getDefaultCCSFValue() {
+    return defaultCreditControlSessionFailover;
+  }
+
+  @Override
   public int getDefaultDDFHValue() {
     return defaultDirectDebitingFailureHandling;
   }
@@ -498,14 +523,13 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
 
   @Override
   public void txTimerExpired(ClientRoSession session) {
-    // this.resourceAdaptor.sessionDestroyed(session.getSessions().get(0).getSessionId(), session);
-    session.release();
+    // TODO Auto-generated method stub
   }
 
   @Override
   public long[] getApplicationIds() {
     // FIXME: What should we do here?
-    return new long[] { 4 };
+    return new long[]{4};
   }
 
   @Override

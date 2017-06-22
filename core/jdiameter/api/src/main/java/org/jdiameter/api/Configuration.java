@@ -106,6 +106,16 @@ public interface Configuration {
   byte[] getByteArrayValue(int key, byte[] defaultValue);
 
   /**
+   * Returns the int[] point value of the given key.
+   *
+   * @param key the key
+   * @param defaultValue the Default Value
+   * @return the value, or <code>defaultValue</code> if the key was not found or was found
+   *   but was not a int[] point number
+   */
+  int[] getIntArrayValue(int key, int[] defaultValue);
+
+  /**
    * Returns the boolean point value of the given key.
    *
    * @param key the key

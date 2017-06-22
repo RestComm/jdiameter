@@ -32,8 +32,8 @@ import java.util.List;
 /**
  * Weighted round-robin router implementation
  *
- * @see <a href="http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling">http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling</a>
  * @author <a href="mailto:n.sowen@2scale.net">Nils Sowen</a>
+ * @see <a href="http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling">http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling</a>
  */
 public class WeightedRoundRobinRouter extends RouterImpl {
 
@@ -52,7 +52,7 @@ public class WeightedRoundRobinRouter extends RouterImpl {
   /**
    * Select peer by weighted round-robin scheduling
    * As documented in http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling
-   *
+   * <p>
    * <p>
    * The weighted round-robin scheduling is designed to better handle servers
    * with different processing capacities. Each server can be assigned a weight,
@@ -106,7 +106,7 @@ public class WeightedRoundRobinRouter extends RouterImpl {
    * <p>
    * This method is internally synchronized due to concurrent modifications to lastSelectedPeer and currentWeight.
    * Please consider this when relying on heavy throughput.
-   *
+   * <p>
    * Please note: if the list of availablePeers changes between calls (e.g. if a peer becomes active or inactive),
    * the balancing algorithm is disturbed and might be distributed uneven.
    * This is likely to happen if peers are flapping.
@@ -168,5 +168,25 @@ public class WeightedRoundRobinRouter extends RouterImpl {
    */
   protected int gcd(int a, int b) {
     return (b == 0) ? a : gcd(b, a % b);
+  }
+
+  /**
+   * Resets all round-robin counters/variables in order to make the whole algorithm
+   * start from scratch.
+   */
+  protected synchronized void resetRoundRobinContext() {
+    lastSelectedPeer = -1;
+    currentWeight = 0;
+  }
+
+  /**
+   * Gets a readable format of the current round-robin context, i.e. last selected
+   * peer and current weight
+   *
+   * @return readable summary of round-robin context
+   */
+  @Override
+  protected String dumpRoundRobinContext() {
+    return String.format("Current round-robin context is: lastSelectedPeer=[%d] currentWeight=[%d]", lastSelectedPeer, currentWeight);
   }
 }
