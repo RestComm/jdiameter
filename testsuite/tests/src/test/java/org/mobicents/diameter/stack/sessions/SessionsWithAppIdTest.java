@@ -49,6 +49,10 @@ import org.jdiameter.api.s13.ClientS13Session;
 import org.jdiameter.api.s13.ServerS13Session;
 import org.jdiameter.api.sh.ClientShSession;
 import org.jdiameter.api.sh.ServerShSession;
+import org.jdiameter.api.slh.ClientSLhSession;
+import org.jdiameter.api.slh.ServerSLhSession;
+import org.jdiameter.api.slg.ClientSLgSession;
+import org.jdiameter.api.slg.ServerSLgSession;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.api.app.IAppSessionFactory;
 import org.jdiameter.common.api.app.acc.ClientAccSessionState;
@@ -75,6 +79,8 @@ import org.jdiameter.common.impl.app.rf.RfSessionFactoryImpl;
 import org.jdiameter.common.impl.app.ro.RoSessionFactoryImpl;
 import org.jdiameter.common.impl.app.s13.S13SessionFactoryImpl;
 import org.jdiameter.common.impl.app.sh.ShSessionFactoryImpl;
+import org.jdiameter.common.impl.app.slh.SLhSessionFactoryImpl;
+import org.jdiameter.common.impl.app.slg.SLgSessionFactoryImpl;
 import org.jdiameter.server.impl.StackImpl;
 import org.junit.Assert;
 import org.junit.Test;
@@ -102,6 +108,8 @@ public class SessionsWithAppIdTest {
   private static final ApplicationId GQ_APPID = ApplicationId.createByAuthAppId(10415, 16777222);
   private static final ApplicationId GX_APPID = ApplicationId.createByAuthAppId(10415, 16777224);
   private static final ApplicationId S13_APPID = ApplicationId.createByAuthAppId(10415, 16777252);
+  private static final ApplicationId SLh_APPID = ApplicationId.createByAuthAppId(10415, 16777291);
+  private static final ApplicationId SLg_APPID = ApplicationId.createByAuthAppId(10415, 16777255);
 
 
   static {
@@ -424,6 +432,42 @@ public class SessionsWithAppIdTest {
 
     S13SessionState state = session.getState(S13SessionState.class);
     Assert.assertEquals(state.IDLE, state);
+  }
+
+  @Test
+  public void testSLhClientSessionHasAppId() throws Exception {
+    ((ISessionFactory) sessionFactory).registerAppFacory(ClientSLhSession.class, new SLhSessionFactoryImpl(sessionFactory));
+    ClientSLhSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, SLh_APPID, ClientSLhSession.class);
+
+    ApplicationId sessionAppId = session.getSessionAppId();
+    Assert.assertEquals("Session Application-Id should be the same as indicated.", SLh_APPID, sessionAppId);
+  }
+
+  @Test
+  public void testSLhServerSessionHasAppId() throws Exception {
+    ((ISessionFactory) sessionFactory).registerAppFacory(ServerSLhSession.class, new SLhSessionFactoryImpl(sessionFactory));
+    ServerSLhSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, SLh_APPID, ServerSLhSession.class);
+
+    ApplicationId sessionAppId = session.getSessionAppId();
+    Assert.assertEquals("Session Application-Id should be the same as indicated.", SLh_APPID, sessionAppId);
+  }
+
+  @Test
+  public void testSLgClientSessionHasAppId() throws Exception {
+    ((ISessionFactory) sessionFactory).registerAppFacory(ClientSLgSession.class, new SLgSessionFactoryImpl(sessionFactory));
+    ClientSLgSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, SLg_APPID, ClientSLgSession.class);
+
+    ApplicationId sessionAppId = session.getSessionAppId();
+    Assert.assertEquals("Session Application-Id should be the same as indicated.", SLg_APPID, sessionAppId);
+  }
+
+  @Test
+  public void testSLgServerSessionHasAppId() throws Exception {
+    ((ISessionFactory) sessionFactory).registerAppFacory(ServerSLgSession.class, new SLgSessionFactoryImpl(sessionFactory));
+    ServerSLgSession session = sessionFactory.getNewAppSession("accesspoint7.acme.com;1876543210;" + lowSessionId++, SLg_APPID, ServerSLgSession.class);
+
+    ApplicationId sessionAppId = session.getSessionAppId();
+    Assert.assertEquals("Session Application-Id should be the same as indicated.", SLg_APPID, sessionAppId);
   }
 
 }
