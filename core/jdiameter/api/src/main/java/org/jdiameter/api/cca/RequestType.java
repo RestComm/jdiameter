@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package org.jdiameter.api;
+package org.jdiameter.api.cca;
 
 /**
  * This enumerated class defines CC-Request-Type AVP possible values as described in RFC 4006:
