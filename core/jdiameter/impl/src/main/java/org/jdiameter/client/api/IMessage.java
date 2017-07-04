@@ -83,16 +83,6 @@ public interface IMessage extends IRequest, IAnswer {
   int STATE_ANSWERED = 3;
 
   /**
-   * Default CC-Session-Failover AVP value - NOT_SUPPORTED(0) according to RFC 4006.
-   */
-  int SESSION_FAILOVER_NOT_SUPPORTED_VALUE = 0;
-
-  /**
-   * CC-Session-Failover AVP value - SUPPORTED(1) according to RFC 4006.
-   */
-  int SESSION_FAILOVER_SUPPORTED_VALUE = 1;
-
-  /**
    * Return state of message
    *
    * @return state of message
@@ -192,46 +182,6 @@ public interface IMessage extends IRequest, IAnswer {
    * @return true if request has timeout
    */
   boolean isTimeOut();
-
-  /**
-   * Tells if there are any timers set to monitor potential retransmissions
-   *
-   * @return true if potential retransmissions will be handled
-   */
-  boolean isRetransmissionSupervised();
-
-  /**
-   * Marks that message to be under supervision timers guarding retransmissions
-   *
-   * @param arg true if supervision is active
-   */
-  void setRetransmissionSupervised(boolean arg);
-
-  /**
-   * Tells if the number of allowed retransmissions for this message is
-   * already exceeded or not.
-   *
-   * @return false if no more retransmissions are allowed
-   */
-  boolean isRetransmissionAllowed();
-
-  /**
-   * @return value of CC-Session-Failover AVP.
-   */
-  int getCcSessionFailover();
-
-  /**
-   * Sets the number of allowed retransmissions for this message that can be performed
-   * in case of failure detection.
-   *
-   * @param arg number of allowed retransmissions
-   */
-  void setNumberOfRetransAllowed(int arg);
-
-  /**
-   * Decrements the number of allowed retransmissions for this message.
-   */
-  void decrementNumberOfRetransAllowed();
 
   /**
    * Set event listener
