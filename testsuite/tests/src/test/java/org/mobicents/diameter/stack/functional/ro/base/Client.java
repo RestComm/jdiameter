@@ -23,7 +23,9 @@ package org.mobicents.diameter.stack.functional.ro.base;
 
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
+import org.jdiameter.api.Message;
 import org.jdiameter.api.OverloadException;
+import org.jdiameter.api.Peer;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
@@ -169,6 +171,21 @@ public class Client extends AbstractClient {
     fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
+  @Override
+  public void doRequestTxTimeout(ClientRoSession clientRoSession, Message message, Peer peer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+
+  }
+
+  @Override
+  public void doRequestTimeout(ClientRoSession clientRoSession, Message message, Peer peer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+
+  }
+
+  @Override
+  public void doPeerUnavailability(RouteException e, ClientRoSession clientRoSession, Message message, Peer peer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+
+  }
+
   // ------------ getters for some vars;
 
   public boolean isSentINITIAL() {
@@ -215,4 +232,8 @@ public class Client extends AbstractClient {
     return "tralalalal ID";
   }
 
+  @Override
+  public int getDefaultCCSFValue() {
+    return 0;
+  }
 }
