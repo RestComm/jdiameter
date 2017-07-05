@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 
-import static org.jdiameter.client.impl.helpers.Parameters.SessionInactivityTimeOut;
+import static org.jdiameter.client.impl.helpers.Parameters.SessionTimeOut;
 
 /**
  * Routing aware extension of {@link AppSessionImpl} that enables proper diameter session
@@ -40,8 +40,6 @@ import static org.jdiameter.client.impl.helpers.Parameters.SessionInactivityTime
  * session to a single peer which is processing the session.
  */
 public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
-
-  private static final String SESSION_INACTIVITY_TIMER_NAME = "Ro_CLIENT_SESSION_INACTIVITY_TIMER";
 
   private static final Logger logger = LoggerFactory.getLogger(AppRoutingAwareSessionImpl.class);
 
@@ -62,8 +60,8 @@ public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
   public AppRoutingAwareSessionImpl(ISessionDatasource sessionStorage, ISessionFactory sessionFactory, IAppSessionData appSessionData) {
     super(sessionFactory, appSessionData);
     peerTable = sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(IPeerTable.class);
-    sesInactivityTimerVal = sessionFactory.getContainer().getConfiguration().getIntValue(SessionInactivityTimeOut.ordinal(), (Integer)
-        SessionInactivityTimeOut.defValue()) * 1000;
+    sesInactivityTimerVal = sessionFactory.getContainer().getConfiguration().getIntValue(SessionTimeOut.ordinal(), (Integer)
+        SessionTimeOut.defValue()) * 1000;
     if (sessionStorage instanceof IRoutingAwareSessionDatasource) {
       sessionPersistenceStorage = (IRoutingAwareSessionDatasource) sessionStorage;
     }
@@ -134,7 +132,7 @@ public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
   protected void startSessionInactivityTimer() {
     logger.debug("Scheduling session inactivity timer equal to [{}] ms", sesInactivityTimerVal);
     stopSessionInactivityTimer();
-    this.sesInactivityTimerId = this.timerFacility.schedule(this.getSessionId(), SESSION_INACTIVITY_TIMER_NAME, sesInactivityTimerVal);
+    this.sesInactivityTimerId = this.timerFacility.schedule(this.getSessionId(), IDLE_SESSION_TIMER_NAME, sesInactivityTimerVal);
   }
 
   /**
@@ -156,7 +154,8 @@ public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
    */
   @Override
   public void onTimer(String timerName) {
-    if (timerName.equals(SESSION_INACTIVITY_TIMER_NAME)) {
+    if (timerName.equals(IDLE_SESSION_TIMER_NAME)) {
+      checkIdleAppSession();
       //no need to interfere with session state machine (simply remove routing context used for sticky sessions based routing)
       String oldPeer = flushSessionPersistenceContext();
       logger.debug("Session inactivity timer expired so routing context for peer [{}] was removed from session [{}]", oldPeer, this.getSessionId());
