@@ -93,7 +93,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.jdiameter.client.impl.helpers.Parameters.RetransmissionRequiredResCodes;
-import static org.jdiameter.client.impl.helpers.Parameters.RetransmissionTimeOut;
+import static org.jdiameter.client.impl.helpers.Parameters.MessageTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.TxTimeOut;
 
 /**
@@ -191,7 +191,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     this.parser = icontainer.getAssemblerFacility().getComponentInstance(IMessageParser.class);
     this.router = icontainer.getAssemblerFacility().getComponentInstance(IRouter.class);
     this.txTimerVal = icontainer.getConfiguration().getLongValue(TxTimeOut.ordinal(), (Long) TxTimeOut.defValue());
-    this.retransmissionTimerVal = icontainer.getConfiguration().getLongValue(RetransmissionTimeOut.ordinal(), (Long) RetransmissionTimeOut.defValue());
+    this.retransmissionTimerVal = icontainer.getConfiguration().getLongValue(MessageTimeOut.ordinal(), (Long) MessageTimeOut.defValue());
 
     Set<Long> tmpErrCodes = new HashSet<>();
     for (int val : icontainer.getConfiguration().getIntArrayValue(RetransmissionRequiredResCodes.ordinal(), new int[0])) {
@@ -746,7 +746,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     long timerVal = this.retransmissionTimerVal - this.txTimerVal;
     if (timerVal <= 0) {
       logger.warn("Value of Tx timer cannot exceed failover stop timer: [{}] vs. [{}] (taking default values)", this.txTimerVal, this.retransmissionTimerVal);
-      timerVal = this.txTimerVal + (((Long) RetransmissionTimeOut.defValue()) - ((Long) TxTimeOut.defValue()));
+      timerVal = this.txTimerVal + (((Long) MessageTimeOut.defValue()) - ((Long) TxTimeOut.defValue()));
     }
     logger.debug("Scheduling failover stop timer in [{}] ms", timerVal);
     stopFailoverStopTimer();
