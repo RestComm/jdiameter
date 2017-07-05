@@ -78,6 +78,7 @@
       <!-- Sh (OpenIMS) -->
       <!-- Peer name="aaa://hss.open-ims.test" attempt_connect="true" rating="1" /-->
     </Peers>
+
     <Realms>
       <!-- Ericsson SDK Client/Emulator and Testsuite -->
       <Realm name="restcomm.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">

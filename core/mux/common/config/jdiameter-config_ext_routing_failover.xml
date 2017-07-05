@@ -3,10 +3,12 @@
 
   <LocalPeer>
     <URI value="aaa://uas.restcomm.org:3868" />
+    <!-- URI value="aaa://restcomm.open-ims.test:1812" /--> <!-- OpenIMS Example -->
     <IPAddresses>
       <IPAddress value="127.0.0.1" />
     </IPAddresses>
     <Realm value="restcomm.org" />
+    <!-- Realm value="open-ims.test" / --> <!-- OpenIMS Example -->
     <VendorID value="193" />
     <ProductName value="jDiameter" />
     <FirmwareRevision value="1" />
@@ -26,7 +28,7 @@
     <DuplicateProtection value="false" />
     <DuplicateTimer value="240000" />
     <DuplicateSize value="5000" />
-    <UseUriAsFqdn value="false" />
+    <UseUriAsFqdn value="false" /> <!-- Needed for Ericsson Emulator (set to true) -->
     <QueueSize value="10000" />
     <MessageTimeOut value="60000" />
     <StopTimeOut value="10000" />
@@ -35,15 +37,16 @@
     <DwaTimeOut value="5000" />
     <DpaTimeOut value="5000" />
     <RecTimeOut value="10000" />
-    <TxTimeOut value="10000" />
-    <RetransmissionTimeOut value="45000" />
-    <RetransmissionRequiredResCodes value="3004,3005" />
-    <SessionInactivityTimeOut value="600" />
+    <!--<TxTimeOut value="10000" />-->
+    <!--<RetransmissionRequiredResCodes value="3004,3005" />-->
+    <!--<SessionTimeOut value="600"/>-->
 
+    <!-- Peer FSM Thread Count Configuration -->
     <PeerFSMThreadCount value="3" />
 
+    <!-- Statistics Configuration -->
     <Statistics pause="30000" delay="30000" enabled="false" active_records="Concurrent,ScheduledExecService,Network,ScheduledExecService,AppGenRequestPerSecond,NetGenRequestPerSecond,Peer,Peer.local,PeerFSM"/>
-	
+
     <Concurrent>
       <Entity name="ThreadGroup" size="64"/> <!-- Common Thread Pool -->
       <Entity name="ProcessingMessageTimer" size="1"/>
@@ -54,17 +57,33 @@
       <Entity name="StatisticTimer" size="1"/>
     </Concurrent>
 
-    <Dictionary enabled="false" sendLevel="MESSAGE" receiveLevel="OFF" />    
-    
+    <Dictionary enabled="false" sendLevel="MESSAGE" receiveLevel="OFF" />
+
+    <!-- Router Request Table Cache Size and ClearSize -->
     <RequestTable size="10240" clear_size="2048" />
   </Parameters>
 
   <Network>
     <Peers>
+      <!-- Testsuite -->
+      <Peer name="aaa://127.0.0.1:21812" attempt_connect="false" rating="1" />
+
+      <!-- Ericsson SDK Client -->
+      <!-- Peer name="aaa://127.0.0.1:11812" attempt_connect="false" rating="1"/-->
+
+      <!-- Ericsson SDK Emulator -->
+      <!-- Peer name="aaa://127.0.0.1:21812" attempt_connect="true" rating="1" /-->
+
+      <!-- Sh / CCA / Cx/Dx -->
+      <!-- Peer name="aaa://uac.restcomm.org" attempt_connect="false" rating="1" /-->
+
+      <!-- Sh (OpenIMS) -->
+      <!-- Peer name="aaa://hss.open-ims.test" attempt_connect="true" rating="1" /-->
+
       <!-- Testsuite UACs -->
       <Peer name="aaa://uac1-prio1.restcomm.org:21100" attempt_connect="false" rating="1" />
       <Peer name="aaa://uac2-prio2.restcomm.org:22100" attempt_connect="false" rating="2" />
-      
+
       <!-- Testsuite UASs -->
       <Peer name="aaa://uas1-prio1.restcomm.org:31100" attempt_connect="true" rating="1" />
       <Peer name="aaa://uas2-prio1.restcomm.org:31200" attempt_connect="true" rating="1" />
@@ -72,8 +91,35 @@
       <Peer name="aaa://uas4-prio2.restcomm.org:32100" attempt_connect="true" rating="2" />
       <Peer name="aaa://uas5-prio2.restcomm.org:32200" attempt_connect="true" rating="2" />
     </Peers>
-    
+
     <Realms>
+      <!-- Ericsson SDK Client/Emulator and Testsuite -->
+      <Realm name="restcomm.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+        <ApplicationID>
+          <VendorId value="193" />
+          <AuthApplId value="0" />
+          <AcctApplId value="19302" />
+        </ApplicationID>
+      </Realm>
+
+      <!-- Sh -->
+      <!-- Realm name="restcomm.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+        <ApplicationID>
+          <VendorId value="10415" />
+          <AuthApplId value="16777217" />
+          <AcctApplId value="0" />
+        </ApplicationID>
+      </Realm-->
+
+      <!-- Sh (OpenIMS) -->
+      <!-- Realm name="open-ims.test" peers="hss.open-ims.test,restcomm.open-ims.test" local_action="LOCAL" dynamic="false" exp_time="1">
+        <ApplicationID>
+          <VendorId value="10415" />
+          <AuthApplId value="16777217" />
+          <AcctApplId value="0" />
+        </ApplicationID>
+      </Realm-->
+
       <!--  CCA -->
       <Realm name="restcomm.org" peers="uas1-prio1.restcomm.org,uas2-prio1.restcomm.org,uas3-prio1.restcomm.org,uas4-prio2.restcomm.org,uas5-prio2.restcomm.org,uac1-prio1.restcomm.org,uac2-prio1.restcomm.org" local_action="LOCAL" dynamic="false" exp_time="1">
         <ApplicationID>
@@ -82,7 +128,7 @@
           <AcctApplId value="0" />
         </ApplicationID>
       </Realm>
-      
+
       <!--  Ro -->
       <Realm name="restcomm.org" peers="uas1-prio1.restcomm.org,uas2-prio1.restcomm.org,uas3-prio1.restcomm.org,uas4-prio2.restcomm.org,uas5-prio2.restcomm.org,uac1-prio1.restcomm.org,uac2-prio2.restcomm.org" local_action="LOCAL" dynamic="false" exp_time="1">
         <ApplicationID>
@@ -91,12 +137,23 @@
           <AcctApplId value="0" />
         </ApplicationID>
       </Realm>
+
+      <!-- Cx/Dx -->
+      <!-- Realm name="restcomm.org" peers="127.0.0.1" local_action="LOCAL" dynamic="false" exp_time="1">
+        <ApplicationID>
+          <VendorId value="10415" />
+          <AuthApplId value="16777216" />
+          <AcctApplId value="0" />
+        </ApplicationID>
+      </Realm-->
     </Realms>
   </Network>
 
   <Extensions>
+    <!-- To enable loadbalancing failover uncomment the following lines
     <RouterEngine value="org.jdiameter.server.impl.FailureAwareRouter" />
     <SessionDatasource value="org.jdiameter.common.impl.data.RoutingAwareDataSource" />
+    -->
   </Extensions>
 
 </Configuration>
