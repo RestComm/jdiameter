@@ -408,7 +408,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
                 }
               }
               else if (retrRequiredErrorCodes.contains(resultCode)) {
-                handleRetransmissionDueToError(eventType, localEvent.getRequest().getMessage());
+                handleRetransmissionDueToError(eventType, (ICCAMessage) localEvent.getRequest().getMessage());
                 break;
               }
               else if (isProvisional(resultCode) || isFailure(resultCode)) {
@@ -551,7 +551,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
                 setState(ClientRoSessionState.OPEN);
               }
               else if (retrRequiredErrorCodes.contains(resultCode)) {
-                handleRetransmissionDueToError(eventType, localEvent.getRequest().getMessage());
+                handleRetransmissionDueToError(eventType, (ICCAMessage) localEvent.getRequest().getMessage());
                 break;
               }
               else if (isProvisional(resultCode) || isFailure(resultCode)) {
@@ -636,7 +636,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               sessionData.setGatheredCCSF(((ICCAMessage) localEvent.getAnswer().getMessage()).getCcSessionFailover());
               long resultCode = ((AppAnswerEvent) localEvent.getAnswer()).getResultCodeAvp().getUnsigned32();
               if (retrRequiredErrorCodes.contains(resultCode)) {
-                handleRetransmissionDueToError(eventType, localEvent.getRequest().getMessage());
+                handleRetransmissionDueToError(eventType, (ICCAMessage) localEvent.getRequest().getMessage());
                 break;
               }
 
@@ -1352,15 +1352,14 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     }
   }
 
-  protected void handleRetransmissionDueToError(Type eventType, Message msg) {
-    ICCAMessage imsg = (ICCAMessage) msg;
+  protected void handleRetransmissionDueToError(Type eventType, ICCAMessage msg) {
     logger.warn("Message will be retransmitted due to error response [{}] ", msg);
 
     try {
-      if (imsg.isRetransmissionAllowed()) {
+      if (msg.isRetransmissionAllowed()) {
         if (isSessionFailoverSupported()) {
-          handleRetransmission(eventType, imsg, false);
-          imsg.decrementNumberOfRetransAllowed();
+          handleRetransmission(eventType, msg, false);
+          msg.decrementNumberOfRetransAllowed();
         }
         else {
           handleSendFailure(new Exception("Failover unsupported for session ID: " + sessionData.getSessionId()), eventType, msg);
@@ -1637,7 +1636,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     if (request != null) {
       Message m;
       try {
-        m = parser.createMessage(request);
+        m = parser.createCCAMessage(request);
         return m;
       }
       catch (AvpDataException e) {

@@ -60,6 +60,7 @@ import org.jdiameter.api.AvpSet;
 import org.jdiameter.api.Request;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IRequest;
+import org.jdiameter.client.api.app.cca.ICCAMessage;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.api.parser.ParseException;
 import org.jdiameter.client.impl.helpers.UIDGenerator;
@@ -129,9 +130,22 @@ public class MessageParser extends ElementParser implements IMessageParser {
   }
 
   @Override
+  public ICCAMessage createCCAMessage(byte[] message) throws AvpDataException {
+    return new CCAMessageImpl((CCAMessageImpl)createMessage(message));
+  }
+
+  @Override
+  public ICCAMessage createCCAMessage(ByteBuffer data) throws AvpDataException {
+    byte[] message = data.array();
+    return createCCAMessage(message);
+  }
+
+  @Override
   public <T> T createMessage(Class<?> iface, ByteBuffer data) throws AvpDataException {
     if (iface == IMessage.class) {
       return (T) createMessage(data);
+    } else if (iface == ICCAMessage.class) {
+      return (T) createCCAMessage(data);
     }
     return null;
   }

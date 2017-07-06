@@ -215,7 +215,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
       byte[] data = (byte[]) getNode().get(TXTIMER_REQUEST);
       if (data != null) {
         try {
-          return this.messageParser.createMessage(ByteBuffer.wrap(data));
+          return this.messageParser.createCCAMessage(ByteBuffer.wrap(data));
         }
         catch (AvpDataException e) {
           logger.error("Unable to recreate Tx Timer Request from buffer.");
@@ -257,7 +257,7 @@ public class ClientRoSessionDataReplicatedImpl extends AppSessionDataReplicatedI
     byte[] data = (byte[]) getNode().get(BUFFER);
     if (data != null) {
       try {
-        return this.messageParser.createMessage(ByteBuffer.wrap(data));
+        return this.messageParser.createCCAMessage(ByteBuffer.wrap(data));
       }
       catch (AvpDataException e) {
         logger.error("Unable to recreate message from buffer.");

@@ -155,7 +155,7 @@ public class MessageImpl implements IMessage {
    *
    * @param request parent request
    */
-  MessageImpl(MessageImpl request) {
+  private MessageImpl(MessageImpl request) {
     this(request.getCommandCode(), request.getHeaderApplicationId());
     copyHeader(request);
     setRequest(false);

@@ -110,6 +110,7 @@ import org.jdiameter.api.validation.Dictionary;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.IMetaData;
 import org.jdiameter.client.api.IRequest;
+import org.jdiameter.client.api.app.cca.ICCAMessage;
 import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.fsm.EventTypes;
 import org.jdiameter.client.api.fsm.FsmEvent;
@@ -192,7 +193,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     public void connectionClosed(String connKey, List notSent) {
       logger.debug("Connection from {} is closed", uri);
       for (IMessage request : peerRequests.values()) {
-        if (request.getState() == IMessage.STATE_SENT && !request.isRetransmissionSupervised()) {
+        if (request.getState() == IMessage.STATE_SENT && !((ICCAMessage) request).isRetransmissionSupervised()) {
           request.setReTransmitted(true);
           request.setState(IMessage.STATE_NOT_SENT);
           try {

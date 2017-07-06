@@ -88,13 +88,9 @@ public class CCAMessageImpl extends MessageImpl implements ICCAMessage {
     super(commandCode, applicationId, flags, hopByHopId, endToEndId, avpSet);
   }
 
-  /**
-   * Create Answer
-   *
-   * @param request parent request
-   */
-  private CCAMessageImpl(MessageImpl request) {
-    super(request);
+  public CCAMessageImpl(MessageImpl message) {
+    super(message.getCommandCode(), message.getApplicationId(), (short) message.getFlags(), message.getHopByHopIdentifier(), message.getEndToEndIdentifier(),
+        (AvpSetImpl) message.getAvps());
   }
 
   @Override

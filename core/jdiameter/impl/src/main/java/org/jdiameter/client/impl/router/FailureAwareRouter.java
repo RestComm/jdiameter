@@ -33,8 +33,6 @@ import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.controller.IPeerTable;
 import org.jdiameter.client.api.controller.IRealm;
 import org.jdiameter.client.api.controller.IRealmTable;
-import org.jdiameter.client.impl.parser.CCAMessageImpl;
-import org.jdiameter.client.impl.parser.MessageImpl;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.data.IRoutingAwareSessionDatasource;
 import org.jdiameter.common.api.data.ISessionDatasource;
