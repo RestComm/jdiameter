@@ -388,7 +388,7 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   }
 
   @Override
-  public void doPeerUnavailability(RouteException cause, ClientRoSession session, Message msg, Peer peer) throws InternalException {
+  public void doPeerUnavailability(ClientRoSession session, Message msg, Peer peer, RouteException cause) throws InternalException {
 
   }
 

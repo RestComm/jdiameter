@@ -145,7 +145,7 @@ public interface ClientRoSessionListener {
    * @throws RouteException                The NoRouteException signals that no route exist for a given realm.
    * @throws OverloadException             The OverloadException signals that destination host is overloaded.
    */
-  void doPeerUnavailability(RouteException cause, ClientRoSession session, Message msg, Peer peer)
+  void doPeerUnavailability(ClientRoSession session, Message msg, Peer peer, RouteException cause)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
   /**

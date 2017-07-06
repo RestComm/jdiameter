@@ -1480,7 +1480,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     logger.debug("Propagating peer unavailability error event to listener [{}] on {} session", listener, isValid() ? "valid" : "invalid");
     try {
       if (isValid()) {
-        listener.doPeerUnavailability(cause, this, msg, ((ICCAMessage) msg).getPeer());
+        listener.doPeerUnavailability(this, msg, ((ICCAMessage) msg).getPeer(), cause);
       }
     }
     catch (Exception e) {
