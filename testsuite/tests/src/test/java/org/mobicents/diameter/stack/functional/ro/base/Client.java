@@ -182,7 +182,8 @@ public class Client extends AbstractClient {
   }
 
   @Override
-  public void doPeerUnavailability(RouteException e, ClientRoSession clientRoSession, Message message, Peer peer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void doPeerUnavailability(ClientRoSession clientRoSession, Message message, Peer peer, RouteException e) throws InternalException, IllegalDiameterStateException,
+      RouteException, OverloadException {
 
   }
 

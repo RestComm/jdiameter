@@ -94,7 +94,7 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
   }
 
   /**
-   * @param sessionFactory2
+   * @param sessionFactory
    */
   public void init(SessionFactory sessionFactory) {
     this.sessionFactory = (ISessionFactory) sessionFactory;
