@@ -176,7 +176,6 @@ public class SLgClientSessionImpl extends SLgSession
             case RECEIVE_PLA:
               newState = SLgSessionState.TERMINATED;
               setState(newState);
-              super.cancelMsgTimer();
               listener.doProvideLocationAnswerEvent(this, (ProvideLocationRequest) localEvent.getRequest(),
                   (ProvideLocationAnswer) localEvent.getAnswer());
               break;
@@ -184,7 +183,6 @@ public class SLgClientSessionImpl extends SLgSession
             case RECEIVE_LRA:
               newState = SLgSessionState.TERMINATED;
               setState(newState);
-              super.cancelMsgTimer();
               listener.doLocationReportAnswerEvent(this, (LocationReportRequest) localEvent.getRequest(),
                   (LocationReportAnswer) localEvent.getAnswer());
               break;

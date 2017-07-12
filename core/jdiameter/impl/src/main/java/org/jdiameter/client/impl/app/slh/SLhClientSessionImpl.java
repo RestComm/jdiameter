@@ -167,7 +167,6 @@ public class SLhClientSessionImpl extends SLhSession
             case RECEIVE_RIA:
               newState = SLhSessionState.TERMINATED;
               setState(newState);
-              super.cancelMsgTimer();
               listener.doLCSRoutingInfoAnswerEvent(this, (LCSRoutingInfoRequest) localEvent.getRequest(),
                   (LCSRoutingInfoAnswer) localEvent.getAnswer());
               break;
