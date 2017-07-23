@@ -82,7 +82,7 @@ public class DictionaryImpl implements Dictionary {
 
   private static transient Logger logger = LoggerFactory.getLogger(DictionaryImpl.class);
 
-  public static final Dictionary INSTANCE = new DictionaryImpl("dictionary.xml");
+  public static DictionaryImpl INSTANCE;
 
   private static final String UNDEFINED_AVP_TYPE = "UNDEFINED";
 
@@ -106,11 +106,42 @@ public class DictionaryImpl implements Dictionary {
 
   private boolean configured = false;
 
-  private DictionaryImpl(String confFile) {
-    this.init(confFile);
+  private DictionaryImpl(InputStream is) {
+    init(is);
   }
 
-  private void init(String confFile) {
+  public static DictionaryImpl getInstance(InputStream is) {
+    if (INSTANCE == null) {
+      synchronized(DictionaryImpl.class) {
+        if (INSTANCE == null) {
+          if(is == null) {
+            //Maintaining 1.7.0 behaviour
+            String confFile = "dictionary.xml";
+            is = getInputStream(confFile);
+          }
+          INSTANCE = new DictionaryImpl(is);
+        }
+      }
+    }
+    return INSTANCE;
+  }
+
+  public static DictionaryImpl getInstance(String confFile) {
+    if (INSTANCE == null) {
+      synchronized(DictionaryImpl.class) {
+        if (INSTANCE == null) {
+          if(confFile == null) {
+            confFile = "dictionary.xml";
+          }
+          InputStream is = getInputStream(confFile);
+          INSTANCE = new DictionaryImpl(is);
+        }
+      }
+    }
+    return INSTANCE;
+  }
+
+  private static InputStream getInputStream(String confFile) {
     InputStream is = null;
 
     try {
@@ -139,7 +170,16 @@ public class DictionaryImpl implements Dictionary {
           }
         }
       }
+    }
+    catch (FileNotFoundException fnfe) {
+      logger.debug("Could not load configuration file: {}, from any known location.", confFile);
+    }
+    return is;
+  }
 
+  private void init(InputStream is) {
+
+    try {
       if (is != null) {
         this.configure(is);
       }
@@ -147,9 +187,6 @@ public class DictionaryImpl implements Dictionary {
         this.setEnabled(false);
         logger.warn("Failed to initialize and configure Diameter Dictionary since configuration file was not found. Validator is disabled.");
       }
-    }
-    catch (FileNotFoundException fnfe) {
-      logger.debug("Could not load configuration file: {}, from any known location.", confFile);
     }
     finally {
       if (is != null) {

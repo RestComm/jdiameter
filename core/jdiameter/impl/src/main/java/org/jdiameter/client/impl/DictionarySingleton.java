@@ -22,6 +22,8 @@
 
 package org.jdiameter.client.impl;
 
+import java.io.InputStream;
+
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.validation.Dictionary;
 import org.jdiameter.api.validation.ValidatorLevel;
@@ -36,22 +38,28 @@ import org.jdiameter.common.impl.validation.DictionaryImpl;
  */
 public class DictionarySingleton {
 
-  private static Dictionary SINGLETON = DictionaryImpl.INSTANCE; // default
-
   private DictionarySingleton() {
     // defeat instantiation
   }
 
   public static Dictionary getDictionary() {
-    return SINGLETON;
+    return DictionaryImpl.getInstance((String) null);
+  }
+
+  public static Dictionary getDictionary(String confFile) {
+    return DictionaryImpl.getInstance(confFile);
+  }
+
+  public static Dictionary getDictionary(InputStream is) {
+    return DictionaryImpl.getInstance(is);
   }
 
   static void init(String clazz, boolean validatorEnabled, ValidatorLevel validatorSendLevel, ValidatorLevel validatorReceiveLevel) throws InternalException {
     try {
-      SINGLETON = (Dictionary) Class.forName(clazz).getField("INSTANCE").get(null);
-      SINGLETON.setEnabled(validatorEnabled);
-      SINGLETON.setSendLevel(validatorSendLevel);
-      SINGLETON.setReceiveLevel(validatorReceiveLevel);
+      Class.forName(clazz).getMethod("getInstance", String.class).invoke(null, new Object[] {null});
+      DictionaryImpl.INSTANCE.setEnabled(validatorEnabled);
+      DictionaryImpl.INSTANCE.setSendLevel(validatorSendLevel);
+      DictionaryImpl.INSTANCE.setReceiveLevel(validatorReceiveLevel);
     }
     catch (Exception e) {
       throw new InternalException(e);
