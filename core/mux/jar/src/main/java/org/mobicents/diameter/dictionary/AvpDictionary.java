@@ -74,13 +74,7 @@ public class AvpDictionary {
 
   private HashMap<AvpRepresentation, AvpRepresentation> avpMap = new HashMap<AvpRepresentation, AvpRepresentation>();
 
-  private Map<String, AvpRepresentation> nameToCodeMap = new TreeMap<String, AvpRepresentation>(new Comparator<String>() {
-
-    @Override
-    public int compare(String o1, String o2) {
-      return (o1 == null) ? 1 : (o2 == null) ? -1 : o1.compareTo(o2);
-    }
-  });
+  private Map<String, AvpRepresentation> nameToCodeMap = new HashMap<String, AvpRepresentation>();
 
   private AvpDictionary() {
     // Exists only to defeat instantiation.
@@ -105,16 +99,14 @@ public class AvpDictionary {
 
   public void parseDictionary(InputStream is) throws Exception {
     // we override default conf here.
-    this.stackDictionary = (DictionaryImpl) DictionarySingleton.getDictionary();
+    this.stackDictionary = (DictionaryImpl) DictionarySingleton.getDictionary(is);
     this.avpMap.clear();
     this.nameToCodeMap.clear();
 
     //dont like that....
     // fill AVP Map
-    Map<org.jdiameter.api.validation.AvpRepresentation, org.jdiameter.api.validation.AvpRepresentation> map = this.stackDictionary.getAvpMap();
-    for (org.jdiameter.api.validation.AvpRepresentation key:map.keySet()) {
-      AvpRepresentationImpl value = (AvpRepresentationImpl) map.get(key);
-      AvpRepresentation avp = new AvpRepresentation(value);
+    for (org.jdiameter.api.validation.AvpRepresentation value:this.stackDictionary.getAvpMap().values()) {
+      AvpRepresentation avp = new AvpRepresentation((AvpRepresentationImpl) value);
       this.avpMap.put(avp, avp);
       this.nameToCodeMap.put(avp.getName(), avp);
     }
