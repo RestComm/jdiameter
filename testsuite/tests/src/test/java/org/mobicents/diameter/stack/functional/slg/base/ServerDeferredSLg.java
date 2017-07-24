@@ -1,24 +1,3 @@
-/*
- *
- * TeleStax, Open Source Cloud Communications
- * Copyright 2011-2017, Telestax Inc and individual contributors
- * by the @authors tag.
- *
- * This program is free software: you can redistribute it and/or modify
- * under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>
- *
- */
-
 package org.mobicents.diameter.stack.functional.slg.base;
 
 import org.jdiameter.api.Answer;
@@ -28,9 +7,11 @@ import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
+import org.jdiameter.api.slg.ClientSLgSession;
 import org.jdiameter.api.slg.ServerSLgSession;
 import org.jdiameter.api.slg.events.LocationReportRequest;
 import org.jdiameter.api.slg.events.LocationReportAnswer;
+import org.jdiameter.api.slg.events.ProvideLocationAnswer;
 import org.jdiameter.api.slg.events.ProvideLocationRequest;
 import org.mobicents.diameter.stack.functional.Utils;
 import org.mobicents.diameter.stack.functional.slg.AbstractDeferredServer;
@@ -42,14 +23,15 @@ import static sun.jdbc.odbc.JdbcOdbcObject.hexStringToByteArray;
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
-public class ServerLRA extends AbstractDeferredServer {
+
+public class ServerDeferredSLg extends AbstractDeferredServer {
 
   protected boolean receivedLRR;
   protected boolean sentLRA;
-  protected boolean receivedPLR;
+  protected boolean receivedPLA;
 
+  protected ClientSLgSession clientSLgSession;
   protected LocationReportRequest locationReportRequest;
-  protected ProvideLocationRequest provideLocationRequest;
 
   public void sendLocationReportAnswer() throws Exception {
     if (!receivedLRR || locationReportRequest == null) {
@@ -59,7 +41,7 @@ public class ServerLRA extends AbstractDeferredServer {
 
     LocationReportAnswer lra = super.createLRA(locationReportRequest, 2001);
 
-    super.serverSLgSession.sendLocationReportAnswer(lra);
+    this.clientSLgSession.sendLocationReportAnswer(lra);
 
     this.sentLRA = true;
     locationReportRequest = null;
@@ -105,15 +87,18 @@ public class ServerLRA extends AbstractDeferredServer {
   }
 
   @Override
-  public void doProvideLocationRequestEvent(ServerSLgSession session, ProvideLocationRequest request)
+  public void doProvideLocationAnswerEvent(ClientSLgSession session, ProvideLocationRequest request, ProvideLocationAnswer answer)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    if (this.receivedPLR) {
-      fail("Received PLR more than once", null);
+    Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), false);
+
+    if (this.receivedPLA) {
+      fail("Received PLA more than once", null);
       return;
     }
-    this.receivedPLR = true;
-    this.provideLocationRequest = request;
+    this.receivedPLA = true;
   }
+
+  // PLA methods
 
   @Override
   protected java.net.InetAddress getGMLCAddress() {
@@ -203,4 +188,3 @@ public class ServerLRA extends AbstractDeferredServer {
   }
 
 }
-

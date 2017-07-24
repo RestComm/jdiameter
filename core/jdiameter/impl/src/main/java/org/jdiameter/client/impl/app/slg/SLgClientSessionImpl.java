@@ -34,6 +34,7 @@ import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.api.slg.ClientSLgSession;
 import org.jdiameter.api.slg.ClientSLgSessionListener;
+import org.jdiameter.api.slg.ServerSLgSession;
 import org.jdiameter.api.slg.events.LocationReportAnswer;
 import org.jdiameter.api.slg.events.LocationReportRequest;
 import org.jdiameter.api.slg.events.ProvideLocationAnswer;
@@ -97,10 +98,15 @@ public class SLgClientSessionImpl extends SLgSession
     send(Event.Type.SEND_MESSAGE, request, null);
   }
 
-  public void sendLocationReportRequest(LocationReportRequest request)
+  public void sendLocationReportAnswer(LocationReportAnswer answer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+    send(Event.Type.SEND_MESSAGE, null, answer);
+  }
+
+  /*public void sendLocationReportRequest(LocationReportRequest request)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_MESSAGE, request, null);
-  }
+  }*/
 
   public void receivedSuccessMessage(Request request, Answer answer) {
     AnswerDelivery rd = new AnswerDelivery();
@@ -180,11 +186,18 @@ public class SLgClientSessionImpl extends SLgSession
                   (ProvideLocationAnswer) localEvent.getAnswer());
               break;
 
-            case RECEIVE_LRA:
-              newState = SLgSessionState.TERMINATED;
+            case RECEIVE_LRR:
+              /*newState = SLgSessionState.TERMINATED;
               setState(newState);
               listener.doLocationReportAnswerEvent(this, (LocationReportRequest) localEvent.getRequest(),
                   (LocationReportAnswer) localEvent.getAnswer());
+              break;*/
+              this.sessionData.setBuffer((Request) ((AppEvent) event.getData()).getMessage());
+              super.cancelMsgTimer();
+              super.startMsgTimer();
+              newState = SLgSessionState.MESSAGE_SENT_RECEIVED;
+              setState(newState);
+              listener.doLocationReportRequestEvent((ServerSLgSession) this, (LocationReportRequest) event.getData());
               break;
 
             default:
@@ -293,6 +306,11 @@ public class SLgClientSessionImpl extends SLgSession
       try {
         switch (request.getCommandCode()) {
 
+          case LocationReportRequest.code:
+            handleEvent(
+                new Event(Event.Type.RECEIVE_LRR, messageFactory.createLocationReportRequest(request), null));
+            break;
+
           default:
             listener.doOtherEvent(session, new AppRequestEventImpl(request), null);
             break;
@@ -315,11 +333,6 @@ public class SLgClientSessionImpl extends SLgSession
           case ProvideLocationAnswer.code:
             handleEvent(new Event(Event.Type.RECEIVE_PLA, messageFactory.createProvideLocationRequest(request),
                 messageFactory.createProvideLocationAnswer(answer)));
-            break;
-
-          case LocationReportAnswer.code:
-            handleEvent(new Event(Event.Type.RECEIVE_LRA, messageFactory.createLocationReportRequest(request),
-                messageFactory.createLocationReportAnswer(answer)));
             break;
 
           default:

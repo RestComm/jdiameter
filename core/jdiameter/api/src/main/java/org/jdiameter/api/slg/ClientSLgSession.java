@@ -27,7 +27,8 @@ import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.app.StateMachine;
-import org.jdiameter.api.slg.events.LocationReportRequest;
+import org.jdiameter.api.slg.events.LocationReportAnswer;
+// import org.jdiameter.api.slg.events.LocationReportRequest;
 import org.jdiameter.api.slg.events.ProvideLocationRequest;
 
 /**
@@ -50,15 +51,15 @@ public interface ClientSLgSession extends AppSession, StateMachine {
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
   /**
-   * Send Location-Report-Request to server
+   * Send Location-Report-Answer to server
    *
-   * @param request Location-Report-Request event instance
+   * @param answer Location-Report-Answer event instance
    * @throws InternalException The InternalException signals that internal error is occurred.
    * @throws IllegalDiameterStateException The IllegalStateException signals that session has incorrect state (invalid).
    * @throws RouteException The NoRouteException signals that no route exist for a given realm.
    * @throws OverloadException The OverloadException signals that destination host is overloaded.
    */
-  void sendLocationReportRequest(LocationReportRequest request)
+  void sendLocationReportAnswer(LocationReportAnswer answer)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
 }

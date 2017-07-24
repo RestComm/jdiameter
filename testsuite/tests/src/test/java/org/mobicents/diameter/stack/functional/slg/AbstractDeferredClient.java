@@ -38,10 +38,8 @@ import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.slg.ClientSLgSession;
 import org.jdiameter.api.slg.ClientSLgSessionListener;
 import org.jdiameter.api.slg.ServerSLgSession;
-import org.jdiameter.api.slg.events.ProvideLocationRequest;
-import org.jdiameter.api.slg.events.ProvideLocationAnswer;
-import org.jdiameter.api.slg.events.LocationReportRequest;
 import org.jdiameter.api.slg.events.LocationReportAnswer;
+import org.jdiameter.api.slg.events.LocationReportRequest;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.impl.app.slg.LocationReportRequestImpl;
 import org.jdiameter.common.impl.app.slg.SLgSessionFactoryImpl;
@@ -63,10 +61,10 @@ public abstract class AbstractDeferredClient extends TBase implements ClientSLgS
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777255));
       SLgSessionFactoryImpl sLgSessionFactory = new SLgSessionFactoryImpl(this.sessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ServerSLgSession.class, sLgSessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ClientSLgSession.class, sLgSessionFactory);
+      sessionFactory.registerAppFacory(ServerSLgSession.class, sLgSessionFactory);
+      sessionFactory.registerAppFacory(ClientSLgSession.class, sLgSessionFactory);
 
-      sLgSessionFactory .setClientSessionListener(this);
+      sLgSessionFactory.setClientSessionListener(this);
 
       this.clientSLgSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(this.sessionFactory.getSessionId("xx-SLg-TESTxx"), getApplicationId(),
           ClientSLgSession.class, null);
@@ -107,11 +105,6 @@ public abstract class AbstractDeferredClient extends TBase implements ClientSLgS
   public void doLocationReportAnswerEvent(ClientSLgSession session, LocationReportRequest request, LocationReportAnswer answer) throws InternalException,
       IllegalDiameterStateException, RouteException, OverloadException {
     fail("Received \"LRA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
-  }
-
-  public void doProvideLocationAnswerEvent(ClientSLgSession session, ProvideLocationRequest request, ProvideLocationAnswer answer) throws InternalException,
-      IllegalDiameterStateException, RouteException, OverloadException {
-    fail("Received \"PLA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
   // ----------- conf parts

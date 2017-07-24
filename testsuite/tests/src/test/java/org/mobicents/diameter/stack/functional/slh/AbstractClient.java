@@ -51,80 +51,78 @@ import org.mobicents.diameter.stack.functional.TBase;
  *
  */
 public abstract class AbstractClient extends TBase implements ClientSLhSessionListener {
+  // NOTE: implementing NetworkReqListener since its required for stack to
+  // know we support it... ech.
 
-    // NOTE: implementing NetworkReqListener since its required for stack to
-    // know we support it... ech.
+  protected ClientSLhSession clientSLhSession;
 
-    protected ClientSLhSession clientSLhSession;
+  public void init(InputStream configStream, String clientID) throws Exception {
+    try {
+      super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777291));
+      SLhSessionFactoryImpl slhSessionFactory = new SLhSessionFactoryImpl(this.sessionFactory);
+      (sessionFactory).registerAppFacory(ServerSLhSession.class, slhSessionFactory);
+      (sessionFactory).registerAppFacory(ClientSLhSession.class, slhSessionFactory);
 
-    public void init(InputStream configStream, String clientID) throws Exception {
-        try {
-            super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777291));
-            SLhSessionFactoryImpl slhSessionFactory = new SLhSessionFactoryImpl(this.sessionFactory);
-            ((ISessionFactory) sessionFactory).registerAppFacory(ServerSLhSession.class, slhSessionFactory);
-            ((ISessionFactory) sessionFactory).registerAppFacory(ClientSLhSession.class, slhSessionFactory);
+      slhSessionFactory.setClientSessionListener(this);
 
-            slhSessionFactory.setClientSessionListener(this);
-
-            this.clientSLhSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(this.sessionFactory.getSessionId("xx-SLh-TESTxx"), getApplicationId(),
-              ClientSLhSession.class, null);
-        }
-        finally {
-            try {
-                configStream.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+      this.clientSLhSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(this.sessionFactory.getSessionId("xx-SLh-TESTxx"), getApplicationId(),
+          ClientSLhSession.class, null);
+    } finally {
+      try {
+        configStream.close();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
+  }
 
-    // ----------- delegate methods so
+  // ----------- delegate methods so
 
-    public void start() throws IllegalDiameterStateException, InternalException {
-        stack.start();
-    }
+  public void start() throws IllegalDiameterStateException, InternalException {
+    stack.start();
+  }
 
-    public void start(Mode mode, long timeOut, TimeUnit timeUnit) throws IllegalDiameterStateException, InternalException {
-        stack.start(mode, timeOut, timeUnit);
-    }
+  public void start(Mode mode, long timeOut, TimeUnit timeUnit) throws IllegalDiameterStateException, InternalException {
+    stack.start(mode, timeOut, timeUnit);
+  }
 
-    public void stop(long timeOut, TimeUnit timeUnit, int disconnectCause) throws IllegalDiameterStateException, InternalException {
-        stack.stop(timeOut, timeUnit, disconnectCause);
-    }
+  public void stop(long timeOut, TimeUnit timeUnit, int disconnectCause) throws IllegalDiameterStateException, InternalException {
+    stack.stop(timeOut, timeUnit, disconnectCause);
+  }
 
-    public void stop(int disconnectCause) {
+  public void stop(int disconnectCause) {
         stack.stop(disconnectCause);
     }
 
-    // ------- def methods, to fail :)
+  // ------- def methods, to fail :)
 
-    public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException,
+  public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException,
       RouteException, OverloadException {
-        fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
-    }
+    fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
+  }
 
-    public void doLCSRoutingInfoAnswerEvent(ClientSLhSession session, LCSRoutingInfoRequest request, LCSRoutingInfoAnswer answer) throws InternalException,
+  public void doLCSRoutingInfoAnswerEvent(ClientSLhSession session, LCSRoutingInfoRequest request, LCSRoutingInfoAnswer answer) throws InternalException,
       IllegalDiameterStateException, RouteException, OverloadException {
-        fail("Received \"RIA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
-    }
+    fail("Received \"RIA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
+  }
 
-    // ----------- conf
+  // ----------- conf
 
-    public String getSessionId() {
+  public String getSessionId() {
         return this.clientSLhSession.getSessionId();
     }
 
-    public ClientSLhSession getSession() {
+  public ClientSLhSession getSession() {
         return this.clientSLhSession;
     }
 
-    protected abstract String getUserName();
-    protected abstract byte[] getMSISDN();
-    protected abstract byte[] getGMLCNumber();
+  protected abstract String getUserName();
+  protected abstract byte[] getMSISDN();
+  protected abstract byte[] getGMLCNumber();
 
-    // ----------- 3GPP TS 29.173 reference
+  // ----------- 3GPP TS 29.173 reference
 
-    protected LCSRoutingInfoRequest createRIR(ClientSLhSession slhSession) throws Exception {
+  protected LCSRoutingInfoRequest createRIR(ClientSLhSession slhSession) throws Exception {
   /*
    < LCS-Routing-Info-Request> ::=	< Diameter Header: 8388622, REQ, PXY, 16777291 >
 
@@ -144,49 +142,49 @@ public abstract class AbstractClient extends TBase implements ClientSLhSessionLi
 	*[ AVP ]
 
   */
-        // Create LCSRoutingInfoRequest
-        LCSRoutingInfoRequest rir = new LCSRoutingInfoRequestImpl(slhSession.getSessions().get(0).createRequest(LCSRoutingInfoRequest.code, getApplicationId(),
-          getServerRealmName()));
-        // < LCS-Routing-Info-Request> ::=	< Diameter Header: 8388622, REQ, PXY, 16777291 >
+    // Create LCSRoutingInfoRequest
+    LCSRoutingInfoRequest rir = new LCSRoutingInfoRequestImpl(slhSession.getSessions().get(0).createRequest(LCSRoutingInfoRequest.code, getApplicationId(),
+        getServerRealmName()));
+    // < LCS-Routing-Info-Request> ::=	< Diameter Header: 8388622, REQ, PXY, 16777291 >
 
-        AvpSet reqSet = rir.getMessage().getAvps();
+    AvpSet reqSet = rir.getMessage().getAvps();
 
-        if (reqSet.getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
-            AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-            // 1* [ Vendor-Id ]
-            vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-            // 0*1{ Auth-Application-Id }
-            vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
-        }
-
-        // { Auth-Session-State }
-        if (reqSet.getAvp(Avp.AUTH_SESSION_STATE) == null) {
-            reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
-        }
-
-        // { Origin-Host }
-        reqSet.removeAvp(Avp.ORIGIN_HOST);
-        reqSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
-
-        // [ User-Name ]
-        String userName = getUserName();
-        if (userName != null) {
-            reqSet.addAvp(Avp.USER_NAME, userName, 10415, true, false, false);
-        }
-
-        // [ MSISDN ]
-        byte[] msisdn = getMSISDN();
-        if (msisdn != null){
-            reqSet.addAvp(Avp.MSISDN, msisdn, 10415, true, false);
-        }
-
-        // [ GMLC-Number ]
-        byte[] gmlcNumber = getGMLCNumber();
-        if (gmlcNumber != null){
-            reqSet.addAvp(Avp.GMLC_NUMBER, gmlcNumber, 10415, false, false);
-        }
-
-        return rir;
+    if (reqSet.getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
+      AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
+      // 1* [ Vendor-Id ]
+      vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
+      // 0*1{ Auth-Application-Id }
+      vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
     }
+
+    // { Auth-Session-State }
+    if (reqSet.getAvp(Avp.AUTH_SESSION_STATE) == null) {
+      reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
+    }
+
+    // { Origin-Host }
+    reqSet.removeAvp(Avp.ORIGIN_HOST);
+    reqSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
+
+    // [ User-Name ]
+    String userName = getUserName();
+    if (userName != null) {
+      reqSet.addAvp(Avp.USER_NAME, userName, 10415, true, false, false);
+    }
+
+    // [ MSISDN ]
+    byte[] msisdn = getMSISDN();
+    if (msisdn != null){
+      reqSet.addAvp(Avp.MSISDN, msisdn, 10415, true, false);
+    }
+
+    // [ GMLC-Number ]
+    byte[] gmlcNumber = getGMLCNumber();
+    if (gmlcNumber != null){
+      reqSet.addAvp(Avp.GMLC_NUMBER, gmlcNumber, 10415, false, false);
+    }
+
+    return rir;
+  }
 
 }

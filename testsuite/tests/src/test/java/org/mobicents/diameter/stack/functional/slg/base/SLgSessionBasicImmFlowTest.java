@@ -53,8 +53,8 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class SLgSessionBasicImmFlowTest {
   // TODO: add test on replicated nodes ?
-  private ClientPLR clientNode;
-  private ServerPLA serverNode1;
+  private ClientImmediateSLg clientNode;
+  private ServerImmediateSLg serverNode1;
   private URI clientConfigURI;
   private URI serverNode1ConfigURI;
 
@@ -73,8 +73,8 @@ public class SLgSessionBasicImmFlowTest {
   @Before
   public void setUp() throws Exception {
     try {
-      this.clientNode = new ClientPLR();
-      this.serverNode1 = new ServerPLA();
+      this.clientNode = new ClientImmediateSLg();
+      this.serverNode1 = new ServerImmediateSLg();
 
       this.serverNode1.init(new FileInputStream(new File(this.serverNode1ConfigURI)), "SERVER1");
       this.serverNode1.start();

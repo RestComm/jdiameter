@@ -26,8 +26,11 @@ import org.jdiameter.api.InternalException;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.slg.ClientSLgSession;
-import org.jdiameter.api.slg.events.LocationReportRequest;
+import org.jdiameter.api.slg.ServerSLgSession;
 import org.jdiameter.api.slg.events.LocationReportAnswer;
+import org.jdiameter.api.slg.events.LocationReportRequest;
+import org.jdiameter.api.slg.events.ProvideLocationAnswer;
+import org.jdiameter.api.slg.events.ProvideLocationRequest;
 import org.mobicents.diameter.stack.functional.Utils;
 import org.mobicents.diameter.stack.functional.slg.AbstractDeferredClient;
 
@@ -36,17 +39,23 @@ import org.mobicents.diameter.stack.functional.slg.AbstractDeferredClient;
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
-public class ClientLRR extends AbstractDeferredClient {
+
+public class ClientDeferredSLg extends AbstractDeferredClient {
 
   protected boolean receivedLRA;
+  protected boolean receivedLRR;
+  protected boolean receivedPLA;
   protected boolean sentLRR;
 
-  public ClientLRR() {
+  protected ServerSLgSession serverSLgSession;
+  protected LocationReportRequest locationReportRequest;
+
+  public ClientDeferredSLg() {
   }
 
   public void sendLocationReportRequest() throws Exception {
     LocationReportRequest lrr = super.createLRR(super.clientSLgSession);
-    super.clientSLgSession.sendLocationReportRequest(lrr);
+    this.serverSLgSession.sendLocationReportRequest(lrr);
     Utils.printMessage(log, super.stack.getDictionary(), lrr.getMessage(), true);
     this.sentLRR = true;
   }
@@ -57,8 +66,8 @@ public class ClientLRR extends AbstractDeferredClient {
   */
 
   @Override
-  public void doLocationReportAnswerEvent(ClientSLgSession session, LocationReportRequest request, LocationReportAnswer answer)
-      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  public void doLocationReportAnswerEvent(ClientSLgSession session, LocationReportRequest request, LocationReportAnswer answer) throws InternalException,
+      IllegalDiameterStateException, RouteException, OverloadException {
     Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), false);
 
     if (this.receivedLRA) {
@@ -67,6 +76,31 @@ public class ClientLRR extends AbstractDeferredClient {
     }
     this.receivedLRA = true;
   }
+
+  @Override
+  public void doLocationReportRequestEvent(ServerSLgSession session, LocationReportRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+    if (this.receivedLRR) {
+      fail("Received LRR more than once", null);
+      return;
+    }
+    this.receivedLRR = true;
+    this.locationReportRequest = request;
+  }
+
+  @Override
+  public void doProvideLocationAnswerEvent(ClientSLgSession session, ProvideLocationRequest request, ProvideLocationAnswer answer)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+    Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), false);
+
+    if (this.receivedPLA) {
+      fail("Received PLA more than once", null);
+      return;
+    }
+    this.receivedPLA = true;
+  }
+
+  // PLR methods
 
   @Override
   protected String getLCSNameString() {
@@ -503,5 +537,5 @@ public class ClientLRR extends AbstractDeferredClient {
     return sentLRR;
   }
 
-}
 
+}

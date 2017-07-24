@@ -63,8 +63,8 @@ public abstract class AbstractImmediateClient extends TBase implements ClientSLg
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777255));
       SLgSessionFactoryImpl sLgSessionFactory = new SLgSessionFactoryImpl(this.sessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ServerSLgSession.class, sLgSessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ClientSLgSession.class, sLgSessionFactory);
+      sessionFactory.registerAppFacory(ServerSLgSession.class, sLgSessionFactory);
+      sessionFactory.registerAppFacory(ClientSLgSession.class, sLgSessionFactory);
 
       sLgSessionFactory .setClientSessionListener(this);
 
@@ -107,11 +107,6 @@ public abstract class AbstractImmediateClient extends TBase implements ClientSLg
   public void doProvideLocationAnswerEvent(ClientSLgSession session, ProvideLocationRequest request, ProvideLocationAnswer answer) throws InternalException,
       IllegalDiameterStateException, RouteException, OverloadException {
     fail("Received \"PLA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
-  }
-
-  public void doLocationReportAnswerEvent(ClientSLgSession session, LocationReportRequest request, LocationReportAnswer answer) throws InternalException,
-      IllegalDiameterStateException, RouteException, OverloadException {
-    fail("Received \"LRA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
   // ----------- conf parts

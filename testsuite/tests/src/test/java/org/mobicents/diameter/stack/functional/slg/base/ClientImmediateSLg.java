@@ -26,6 +26,8 @@ import org.jdiameter.api.InternalException;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.slg.ClientSLgSession;
+import org.jdiameter.api.slg.ServerSLgSession;
+import org.jdiameter.api.slg.events.LocationReportRequest;
 import org.jdiameter.api.slg.events.ProvideLocationRequest;
 import org.jdiameter.api.slg.events.ProvideLocationAnswer;
 import org.mobicents.diameter.stack.functional.Utils;
@@ -38,12 +40,15 @@ import static sun.jdbc.odbc.JdbcOdbcObject.hexStringToByteArray;
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
-public class ClientPLR extends AbstractImmediateClient {
+public class ClientImmediateSLg extends AbstractImmediateClient {
 
   protected boolean receivedPLA;
   protected boolean sentPLR;
+  protected boolean receivedLRR;
 
-  public ClientPLR() {
+  protected LocationReportRequest locationReportRequest;
+
+  public ClientImmediateSLg() {
   }
 
   public void sendProvideLocationRequest() throws Exception {
@@ -67,6 +72,17 @@ public class ClientPLR extends AbstractImmediateClient {
       return;
     }
     this.receivedPLA = true;
+  }
+
+  @Override
+  public void doLocationReportRequestEvent(ServerSLgSession session, LocationReportRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+    if (this.receivedLRR) {
+      fail("Received LRR more than once", null);
+      return;
+    }
+    this.receivedLRR = true;
+    this.locationReportRequest = request;
   }
 
   // PLR methods

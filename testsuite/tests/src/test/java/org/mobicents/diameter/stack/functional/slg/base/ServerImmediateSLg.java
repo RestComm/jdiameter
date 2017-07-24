@@ -28,7 +28,9 @@ import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
+import org.jdiameter.api.slg.ClientSLgSession;
 import org.jdiameter.api.slg.ServerSLgSession;
+import org.jdiameter.api.slg.events.LocationReportAnswer;
 import org.jdiameter.api.slg.events.LocationReportRequest;
 import org.jdiameter.api.slg.events.ProvideLocationRequest;
 import org.jdiameter.api.slg.events.ProvideLocationAnswer;
@@ -40,14 +42,13 @@ import org.mobicents.diameter.stack.functional.slg.AbstractImmediateServer;
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
-public class ServerPLA extends AbstractImmediateServer {
+public class ServerImmediateSLg extends AbstractImmediateServer {
 
   protected boolean receivedPLR;
   protected boolean sentPLA;
-  protected boolean receivedLRR;
+  protected boolean receivedLRA;
 
   protected ProvideLocationRequest provideLocationRequest;
-  protected LocationReportRequest locationReportRequest;
 
   public void sendProvideLocationAnswer() throws Exception {
     if (!receivedPLR || provideLocationRequest == null) {
@@ -104,14 +105,15 @@ public class ServerPLA extends AbstractImmediateServer {
   }
 
   @Override
-  public void doLocationReportRequestEvent(ServerSLgSession session, LocationReportRequest request)
+  public void doLocationReportAnswerEvent(ClientSLgSession session, LocationReportRequest request, LocationReportAnswer answer)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    if (this.receivedLRR) {
-      fail("Received LRR more than once", null);
+    Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), false);
+
+    if (this.receivedLRA) {
+      fail("Received PLA more than once", null);
       return;
     }
-    this.receivedLRR = true;
-    this.locationReportRequest = request;
+    this.receivedLRA = true;
   }
 
   @Override

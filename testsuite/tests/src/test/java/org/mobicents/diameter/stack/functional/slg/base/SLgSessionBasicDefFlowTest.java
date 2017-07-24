@@ -53,8 +53,8 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class SLgSessionBasicDefFlowTest {
   // TODO: add test on replicated nodes ?
-  private ClientLRR clientNode;
-  private ServerLRA serverNode1;
+  private ClientDeferredSLg clientNode;
+  private ServerDeferredSLg serverNode1;
   private URI clientConfigURI;
   private URI serverNode1ConfigURI;
 
@@ -74,8 +74,8 @@ public class SLgSessionBasicDefFlowTest {
   @Before
   public void setUp() throws Exception {
     try {
-      this.clientNode = new ClientLRR();
-      this.serverNode1 = new ServerLRA();
+      this.clientNode = new ClientDeferredSLg();
+      this.serverNode1 = new ServerDeferredSLg();
 
       this.serverNode1.init(new FileInputStream(new File(this.serverNode1ConfigURI)), "SERVER1");
       this.serverNode1.start();

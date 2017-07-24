@@ -32,6 +32,7 @@ import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
+import org.jdiameter.api.slg.ClientSLgSession;
 import org.jdiameter.api.slg.ServerSLgSession;
 import org.jdiameter.api.slg.ServerSLgSessionListener;
 import org.jdiameter.api.slg.events.LocationReportAnswer;
@@ -84,10 +85,15 @@ public class SLgServerSessionImpl extends SLgSession
     send(Event.Type.SEND_MESSAGE, null, answer);
   }
 
-  public void sendLocationReportAnswer(LocationReportAnswer answer)
+  public void sendLocationReportRequest(LocationReportRequest request)
+      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+    send(Event.Type.SEND_MESSAGE, request, null);
+  }
+
+  /*public void sendLocationReportAnswer(LocationReportAnswer answer)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     send(Event.Type.SEND_MESSAGE, null, answer);
-  }
+  }*/
 
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> stateType) {
@@ -121,13 +127,11 @@ public class SLgServerSessionImpl extends SLgSession
               listener.doProvideLocationRequestEvent(this, (ProvideLocationRequest) event.getData());
               break;
 
-            case RECEIVE_LRR:
-              this.sessionData.setBuffer((Request) ((AppEvent) event.getData()).getMessage());
-              super.cancelMsgTimer();
-              super.startMsgTimer();
-              newState = SLgSessionState.MESSAGE_SENT_RECEIVED;
+            case RECEIVE_LRA:
+              newState = SLgSessionState.TERMINATED;
               setState(newState);
-              listener.doLocationReportRequestEvent(this, (LocationReportRequest) event.getData());
+              listener.doLocationReportAnswerEvent((ClientSLgSession) this, (LocationReportRequest) localEvent.getRequest(),
+                  (LocationReportAnswer) localEvent.getAnswer());
               break;
 
             case SEND_MESSAGE:
@@ -271,14 +275,10 @@ public class SLgServerSessionImpl extends SLgSession
     public void run() {
       try {
         switch (request.getCommandCode()) {
+
           case ProvideLocationRequest.code:
             handleEvent(
                 new Event(Event.Type.RECEIVE_PLR, messageFactory.createProvideLocationRequest(request), null));
-            break;
-
-          case LocationReportRequest.code:
-            handleEvent(
-                new Event(Event.Type.RECEIVE_LRR, messageFactory.createLocationReportRequest(request), null));
             break;
 
           default:
@@ -299,6 +299,12 @@ public class SLgServerSessionImpl extends SLgSession
     public void run() {
       try {
         switch (answer.getCommandCode()) {
+
+          case LocationReportAnswer.code:
+            handleEvent(new Event(Event.Type.RECEIVE_LRA, messageFactory.createLocationReportRequest(request),
+                messageFactory.createLocationReportAnswer(answer)));
+            break;
+
           default:
             listener.doOtherEvent(session, new AppRequestEventImpl(request), new AppAnswerEventImpl(answer));
             break;

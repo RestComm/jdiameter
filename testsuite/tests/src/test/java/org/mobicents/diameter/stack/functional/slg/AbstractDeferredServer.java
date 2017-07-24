@@ -34,11 +34,10 @@ import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.slg.ClientSLgSession;
+import org.jdiameter.api.slg.ClientSLgSessionListener;
 import org.jdiameter.api.slg.ServerSLgSession;
-import org.jdiameter.api.slg.ServerSLgSessionListener;
 import org.jdiameter.api.slg.events.LocationReportAnswer;
 import org.jdiameter.api.slg.events.LocationReportRequest;
-import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.common.impl.app.slg.LocationReportAnswerImpl;
 import org.jdiameter.common.impl.app.slg.SLgSessionFactoryImpl;
 import org.mobicents.diameter.stack.functional.TBase;
@@ -51,7 +50,7 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
-public abstract class AbstractDeferredServer extends TBase implements ServerSLgSessionListener {
+public abstract class AbstractDeferredServer extends TBase implements ClientSLgSessionListener {
 
   // NOTE: implementing NetworkReqListener since its required for stack to
   // know we support it... ech.
@@ -62,9 +61,9 @@ public abstract class AbstractDeferredServer extends TBase implements ServerSLgS
     try {
       super.init(configStream, clientID, ApplicationId.createByAuthAppId(10415, 16777255));
       SLgSessionFactoryImpl slgSessionFactory = new SLgSessionFactoryImpl(this.sessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ServerSLgSession.class, slgSessionFactory);
-      ((ISessionFactory) sessionFactory).registerAppFacory(ClientSLgSession.class, slgSessionFactory);
-      slgSessionFactory.setServerSessionListener(this);
+      sessionFactory.registerAppFacory(ServerSLgSession.class, slgSessionFactory);
+      sessionFactory.registerAppFacory(ClientSLgSession.class, slgSessionFactory);
+      slgSessionFactory.setClientSessionListener(this);
     } finally {
       try {
         configStream.close();
@@ -98,8 +97,8 @@ public abstract class AbstractDeferredServer extends TBase implements ServerSLgS
     fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
-  public void doLocationReportRequestEvent(ServerSLgSession session, LocationReportRequest request) throws InternalException, IllegalDiameterStateException,
-      RouteException, OverloadException {
+  public void doLocationReportRequestEvent(ServerSLgSession session, LocationReportRequest request) throws InternalException,
+      IllegalDiameterStateException, RouteException, OverloadException {
     fail("Received \"LRR\" event, request[" + request + "], on session[" + session + "]", null);
   }
   // -------- conf
