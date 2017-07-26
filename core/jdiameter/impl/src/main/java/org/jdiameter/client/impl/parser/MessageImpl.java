@@ -627,19 +627,6 @@ public class MessageImpl implements IMessage {
     return this.numberOfRetransAllowed > 0;
   }
 
-  public int getCcSessionFailover() {
-    try {
-      Avp avpCcSessionFailover = avpSet.getAvp(Avp.CC_SESSION_FAILOVER);
-      if (avpCcSessionFailover != null) {
-        return avpCcSessionFailover.getInteger32();
-      }
-    }
-    catch (AvpDataException ade) {
-      logger.error("Failed to fetch CC-Session-Failover", ade);
-    }
-    return SESSION_FAILOVER_NOT_SUPPORTED_VALUE;
-  }
-
   public void setNumberOfRetransAllowed(int arg) {
     if (this.numberOfRetransAllowed < 0) {
       this.numberOfRetransAllowed = arg;

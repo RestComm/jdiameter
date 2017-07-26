@@ -52,6 +52,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.jdiameter.api.Answer;
+import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.EventListener;
 import org.jdiameter.api.IllegalDiameterStateException;
@@ -391,7 +392,19 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
           AppAnswerEvent answer = (AppAnswerEvent) localEvent.getAnswer();
           switch (eventType) {
             case RECEIVED_INITIAL_ANSWER:
-              sessionData.setGatheredCCSF(((IMessage) localEvent.getAnswer().getMessage()).getCcSessionFailover());
+
+              Message message = localEvent.getAnswer().getMessage();
+              int ccSessionFailover = IMessage.SESSION_FAILOVER_NOT_SUPPORTED_VALUE;
+
+              Avp avpCcSessionFailover = message.getAvps().getAvp(Avp.CC_SESSION_FAILOVER);
+              if (avpCcSessionFailover != null) {
+                ccSessionFailover = avpCcSessionFailover.getInteger32();
+              }
+              else {
+                logger.warn("Failed to fetch CC-Session-Failover");
+              }
+
+              sessionData.setGatheredCCSF(ccSessionFailover);
               long resultCode = answer.getResultCodeAvp().getUnsigned32();
               if (isSuccess(resultCode)) {
                 // Current State: PENDING_I
@@ -540,7 +553,19 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
           answer = (AppAnswerEvent) localEvent.getAnswer();
           switch (eventType) {
             case RECEIVED_UPDATE_ANSWER:
-              sessionData.setGatheredCCSF(((IMessage) localEvent.getAnswer().getMessage()).getCcSessionFailover());
+
+              Message message = localEvent.getAnswer().getMessage();
+              int ccSessionFailover = IMessage.SESSION_FAILOVER_NOT_SUPPORTED_VALUE;
+
+              Avp avpCcSessionFailover = message.getAvps().getAvp(Avp.CC_SESSION_FAILOVER);
+              if (avpCcSessionFailover != null) {
+                ccSessionFailover = avpCcSessionFailover.getInteger32();
+              }
+              else {
+                logger.warn("Failed to fetch CC-Session-Failover");
+              }
+
+              sessionData.setGatheredCCSF(ccSessionFailover);
               long resultCode = answer.getResultCodeAvp().getUnsigned32();
               if (isSuccess(resultCode)) {
                 // Current State: PENDING_U
@@ -633,7 +658,18 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
 
               //FIXME: Alex broke this, setting back "true" ?
               //setState(ClientRoSessionState.IDLE, false);
-              sessionData.setGatheredCCSF(((IMessage) localEvent.getAnswer().getMessage()).getCcSessionFailover());
+              Message message = localEvent.getAnswer().getMessage();
+              int ccSessionFailover = IMessage.SESSION_FAILOVER_NOT_SUPPORTED_VALUE;
+
+              Avp avpCcSessionFailover = message.getAvps().getAvp(Avp.CC_SESSION_FAILOVER);
+              if (avpCcSessionFailover != null) {
+                ccSessionFailover = avpCcSessionFailover.getInteger32();
+              }
+              else {
+                logger.warn("Failed to fetch CC-Session-Failover");
+              }
+
+              sessionData.setGatheredCCSF(ccSessionFailover);
               long resultCode = ((AppAnswerEvent) localEvent.getAnswer()).getResultCodeAvp().getUnsigned32();
               if (retrRequiredErrorCodes.contains(resultCode)) {
                 handleRetransmissionDueToError(eventType, (IMessage) localEvent.getRequest().getMessage());

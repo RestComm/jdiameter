@@ -252,11 +252,6 @@ public interface IMessage extends IRequest, IAnswer {
   boolean isRetransmissionAllowed();
 
   /**
-   * @return value of CC-Session-Failover AVP.
-   */
-  int getCcSessionFailover();
-
-  /**
    * Sets the number of allowed retransmissions for this message that can be performed
    * in case of failure detection.
    *
