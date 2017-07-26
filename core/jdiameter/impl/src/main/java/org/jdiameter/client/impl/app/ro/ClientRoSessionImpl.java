@@ -74,8 +74,8 @@ import org.jdiameter.api.ro.ClientRoSessionListener;
 import org.jdiameter.api.ro.events.RoCreditControlAnswer;
 import org.jdiameter.api.ro.events.RoCreditControlRequest;
 import org.jdiameter.client.api.IContainer;
+import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.ISessionFactory;
-import org.jdiameter.client.api.app.cca.ICCAMessage;
 import org.jdiameter.client.api.parser.IMessageParser;
 import org.jdiameter.client.api.parser.ParseException;
 import org.jdiameter.client.api.router.IRouter;
@@ -369,7 +369,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               setState(ClientRoSessionState.PENDING_INITIAL);
               // RFC 4006: For new credit-control sessions, failover to an alternative
               // credit-control server SHOULD be performed if possible.
-              sessionData.setGatheredCCSF(ICCAMessage.SESSION_FAILOVER_SUPPORTED_VALUE);
+              sessionData.setGatheredCCSF(IMessage.SESSION_FAILOVER_SUPPORTED_VALUE);
               try {
                 dispatchEvent(localEvent.getRequest());
               }
@@ -391,7 +391,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
           AppAnswerEvent answer = (AppAnswerEvent) localEvent.getAnswer();
           switch (eventType) {
             case RECEIVED_INITIAL_ANSWER:
-              sessionData.setGatheredCCSF(((ICCAMessage) localEvent.getAnswer().getMessage()).getCcSessionFailover());
+              sessionData.setGatheredCCSF(((IMessage) localEvent.getAnswer().getMessage()).getCcSessionFailover());
               long resultCode = answer.getResultCodeAvp().getUnsigned32();
               if (isSuccess(resultCode)) {
                 // Current State: PENDING_I
@@ -408,7 +408,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
                 }
               }
               else if (retrRequiredErrorCodes.contains(resultCode)) {
-                handleRetransmissionDueToError(eventType, (ICCAMessage) localEvent.getRequest().getMessage());
+                handleRetransmissionDueToError(eventType, (IMessage) localEvent.getRequest().getMessage());
                 break;
               }
               else if (isProvisional(resultCode) || isFailure(resultCode)) {
@@ -540,7 +540,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
           answer = (AppAnswerEvent) localEvent.getAnswer();
           switch (eventType) {
             case RECEIVED_UPDATE_ANSWER:
-              sessionData.setGatheredCCSF(((ICCAMessage) localEvent.getAnswer().getMessage()).getCcSessionFailover());
+              sessionData.setGatheredCCSF(((IMessage) localEvent.getAnswer().getMessage()).getCcSessionFailover());
               long resultCode = answer.getResultCodeAvp().getUnsigned32();
               if (isSuccess(resultCode)) {
                 // Current State: PENDING_U
@@ -551,7 +551,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
                 setState(ClientRoSessionState.OPEN);
               }
               else if (retrRequiredErrorCodes.contains(resultCode)) {
-                handleRetransmissionDueToError(eventType, (ICCAMessage) localEvent.getRequest().getMessage());
+                handleRetransmissionDueToError(eventType, (IMessage) localEvent.getRequest().getMessage());
                 break;
               }
               else if (isProvisional(resultCode) || isFailure(resultCode)) {
@@ -633,10 +633,10 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
 
               //FIXME: Alex broke this, setting back "true" ?
               //setState(ClientRoSessionState.IDLE, false);
-              sessionData.setGatheredCCSF(((ICCAMessage) localEvent.getAnswer().getMessage()).getCcSessionFailover());
+              sessionData.setGatheredCCSF(((IMessage) localEvent.getAnswer().getMessage()).getCcSessionFailover());
               long resultCode = ((AppAnswerEvent) localEvent.getAnswer()).getResultCodeAvp().getUnsigned32();
               if (retrRequiredErrorCodes.contains(resultCode)) {
-                handleRetransmissionDueToError(eventType, (ICCAMessage) localEvent.getRequest().getMessage());
+                handleRetransmissionDueToError(eventType, (IMessage) localEvent.getRequest().getMessage());
                 break;
               }
 
@@ -1321,7 +1321,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     setState(ClientRoSessionState.IDLE, true);
   }
 
-  protected void handleRetransmission(Type eventType, ICCAMessage msg, boolean tFlagSetting) {
+  protected void handleRetransmission(Type eventType, IMessage msg, boolean tFlagSetting) {
     msg.setReTransmitted(tFlagSetting);
     if (this.sessionData.getRetransmissionTimerId() == null) {
       startFailoverStopTimer();
@@ -1352,7 +1352,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     }
   }
 
-  protected void handleRetransmissionDueToError(Type eventType, ICCAMessage msg) {
+  protected void handleRetransmissionDueToError(Type eventType, IMessage msg) {
     logger.warn("Message will be retransmitted due to error response [{}] ", msg);
 
     try {
@@ -1378,7 +1378,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
 
   protected void handleRetransmissionDueToTimeout(Type eventType, AppEvent event) throws InternalException {
     if (isSessionFailoverSupported()) {
-      handleRetransmission(eventType, (ICCAMessage) event.getMessage(), true);
+      handleRetransmission(eventType, (IMessage) event.getMessage(), true);
     }
     else {
       logger.warn("Failed to send message. Failover unsupported for session ID: {}", sessionData.getSessionId());
@@ -1456,7 +1456,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     logger.debug("Propagating Tx timeout event to listener [{}] on {} session", listener, isValid() ? "valid" : "invalid");
     try {
       if (isValid()) {
-        listener.doRequestTxTimeout(this, msg, ((ICCAMessage) msg).getPeer());
+        listener.doRequestTxTimeout(this, msg, ((IMessage) msg).getPeer());
       }
     }
     catch (Exception e) {
@@ -1468,7 +1468,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     logger.debug("Propagating timeout event to listener [{}] on {} session", listener, isValid() ? "valid" : "invalid");
     try {
       if (isValid()) {
-        listener.doRequestTimeout(this, msg, ((ICCAMessage) msg).getPeer());
+        listener.doRequestTimeout(this, msg, ((IMessage) msg).getPeer());
       }
     }
     catch (Exception e) {
@@ -1480,7 +1480,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     logger.debug("Propagating peer unavailability error event to listener [{}] on {} session", listener, isValid() ? "valid" : "invalid");
     try {
       if (isValid()) {
-        listener.doPeerUnavailability(this, msg, ((ICCAMessage) msg).getPeer(), cause);
+        listener.doPeerUnavailability(this, msg, ((IMessage) msg).getPeer(), cause);
       }
     }
     catch (Exception e) {
@@ -1530,7 +1530,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     }
   }
 
-  protected void dispatchEvent(ICCAMessage message) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
+  protected void dispatchEvent(IMessage message) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     if (message.isRequest()) {
       message.setRetransmissionSupervised(true);
     }
@@ -1538,7 +1538,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   }
 
   protected void dispatchEvent(AppEvent event) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    dispatchEvent((ICCAMessage) event.getMessage());
+    dispatchEvent((IMessage) event.getMessage());
   }
 
   protected boolean isProvisional(long resultCode) {
@@ -1636,7 +1636,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     if (request != null) {
       Message m;
       try {
-        m = parser.createCCAMessage(request);
+        m = parser.createMessage(request);
         return m;
       }
       catch (AvpDataException e) {
@@ -1646,7 +1646,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
     return null;
   }
 
-  private ByteBuffer messageToBuffer(ICCAMessage msg) throws InternalException {
+  private ByteBuffer messageToBuffer(IMessage msg) throws InternalException {
     try {
       return parser.encodeMessage(msg);
     }
@@ -1656,9 +1656,9 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   }
 
   private void resetMessageStatus(Message message) {
-    ICCAMessage msg = (ICCAMessage) message;
+    IMessage msg = (IMessage) message;
     msg.clearTimer();
-    msg.setState(ICCAMessage.STATE_NOT_SENT);
+    msg.setState(IMessage.STATE_NOT_SENT);
     if (msg.getPeer() != null) {
       msg.getPeer().remMessage(msg);
     }

@@ -28,7 +28,6 @@ import org.jdiameter.api.PeerState;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
-import org.jdiameter.client.api.app.cca.ICCAMessage;
 import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.controller.IPeerTable;
 import org.jdiameter.client.api.controller.IRealm;
@@ -80,7 +79,7 @@ public class FailureAwareRouter extends WeightedRoundRobinRouter {
    * Narrows down the subset of peers selected by {@link RouterImpl} superclass to those with
    * the highest rating only.
    */
-  protected List<IPeer> getAvailablePeers(String destRealm, String[] peers, IPeerTable manager, ICCAMessage message) {
+  protected List<IPeer> getAvailablePeers(String destRealm, String[] peers, IPeerTable manager, IMessage message) {
     List<IPeer> selectedPeers = getPeers(destRealm, peers, manager, PeerState.OKAY);
 
     if (logger.isDebugEnabled()) {
@@ -216,7 +215,7 @@ public class FailureAwareRouter extends WeightedRoundRobinRouter {
         throw new RouteException("Unable to find context by route information [" + destRealm + " ," + destHost + "]");
       }
 
-      List<IPeer> availablePeers = getAvailablePeers(destRealm, peers, manager, (ICCAMessage) message);
+      List<IPeer> availablePeers = getAvailablePeers(destRealm, peers, manager, message);
 
       if (logger.isDebugEnabled()) {
         logger.debug("Performing Realm routing. Realm [{}] has the following peers available [{}] from list [{}]",

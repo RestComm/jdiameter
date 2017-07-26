@@ -97,6 +97,9 @@ public class MessageImpl implements IMessage {
   // Potential place for dirt, but Application IDs don't change during message life time.
   transient List<ApplicationId> applicationIds;
 
+  boolean isRetransSupervisionActive = false;
+  int numberOfRetransAllowed = Integer.MIN_VALUE;
+
   /**
    * Create empty message
    *
@@ -609,6 +612,42 @@ public class MessageImpl implements IMessage {
     catch (Exception e) {
       throw new IllegalArgumentException(e);
     }
+  }
+
+  @Override
+  public boolean isRetransmissionSupervised() {
+    return this.isRetransSupervisionActive;
+  }
+
+  public void setRetransmissionSupervised(boolean arg) {
+    this.isRetransSupervisionActive = arg;
+  }
+
+  public boolean isRetransmissionAllowed() {
+    return this.numberOfRetransAllowed > 0;
+  }
+
+  public int getCcSessionFailover() {
+    try {
+      Avp avpCcSessionFailover = avpSet.getAvp(Avp.CC_SESSION_FAILOVER);
+      if (avpCcSessionFailover != null) {
+        return avpCcSessionFailover.getInteger32();
+      }
+    }
+    catch (AvpDataException ade) {
+      logger.error("Failed to fetch CC-Session-Failover", ade);
+    }
+    return SESSION_FAILOVER_NOT_SUPPORTED_VALUE;
+  }
+
+  public void setNumberOfRetransAllowed(int arg) {
+    if (this.numberOfRetransAllowed < 0) {
+      this.numberOfRetransAllowed = arg;
+    }
+  }
+
+  public void decrementNumberOfRetransAllowed() {
+    this.numberOfRetransAllowed--;
   }
 
   protected static class TimerTask implements Runnable {

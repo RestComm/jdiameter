@@ -46,7 +46,6 @@ import java.nio.ByteBuffer;
 
 import org.jdiameter.api.AvpDataException;
 import org.jdiameter.client.api.IMessage;
-import org.jdiameter.client.api.app.cca.ICCAMessage;
 
  /**
  * Basic interface for diameter message parsers.
@@ -66,27 +65,11 @@ public interface IMessageParser {
   IMessage createMessage(ByteBuffer data) throws AvpDataException;
 
   /**
-   * Create message from bytebuffer
-   * @param data message bytebuffer
-   * @return instance of message
-   * @throws AvpDataException
-   */
-  ICCAMessage createCCAMessage(ByteBuffer data) throws AvpDataException;
-
-  /**
    * Create message from byte array
    * @return instance of message
    * @throws AvpDataException
    */
   IMessage createMessage(byte[] message) throws AvpDataException;
-
-  /**
-   * Create message from byte array
-   *
-   * @return instance of message
-   * @throws AvpDataException
-   */
-  ICCAMessage createCCAMessage(byte[] message) throws AvpDataException;
 
   /**
    * Created specified type of message
