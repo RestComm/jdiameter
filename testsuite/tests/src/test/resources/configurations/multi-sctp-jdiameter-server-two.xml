@@ -74,8 +74,8 @@
 
   <Extensions>
     <!-- Set SCTP classes as extension points for Connection and Network Guard -->
-    <Connection value="org.jdiameter.client.impl.transport.sctp.SCTPClientConnection" />
-    <NetworkGuard value="org.jdiameter.server.impl.io.sctp.NetworkGuard" />
+    <Connection value="org.jdiameter.client.impl.transport.sctp.netty.SCTPClientConnection" />
+    <NetworkGuard value="org.jdiameter.server.impl.io.sctp.netty.NetworkGuard" />
   </Extensions>
 
 </Configuration>
