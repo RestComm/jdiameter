@@ -1,0 +1,205 @@
+<!--
+  TeleStax, Open Source Cloud Communications
+  Copyright 2017, TeleStax Inc. and individual contributors
+  by the @authors tag.
+
+  This program is free software: you can redistribute it and/or modify
+  under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation; either version 3 of
+  the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Affero General Public License for more details.
+
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>
+-->
+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<scenario>
+
+  <!-- Counters definition for Hop-by-Hop, End-to-End and Session-Id -->
+  <counter>
+    <counterdef name="HbH-counter" init="1000"></counterdef>
+    <counterdef name="EtE-counter" init="2000"></counterdef>
+    <counterdef name="session-counter" init="0"></counterdef>
+  </counter>
+
+  <!--
+    Init Section
+    Initiate the connection by sending a CER and expecting a success (2001) CEA.
+  -->
+  <init>
+    <send channel="channel-1">
+      <command name="CER">
+        <avp name="Origin-Host" value="seagull-client"></avp>
+        <avp name="Origin-Realm" value="seagull.restcomm.org"></avp>
+        <avp name="Host-IP-Address" value="0x7f000001"></avp><!-- IPV4 127.0.0.1-->
+        <avp name="Vendor-Id" value="193"></avp>
+        <avp name="Product-Name" value="Seagull"></avp>
+        <avp name="Origin-State-Id" value="73135748"></avp>
+        <avp name="Supported-Vendor-Id" value="0"></avp>
+        <avp name="Auth-Application-Id" value="0"></avp>
+        <avp name="Acct-Application-Id" value="3"></avp>
+        <avp name="Firmware-Revision" value="1"></avp>
+      </command>
+    </send>
+
+    <receive channel="channel-1">
+      <action>
+        <check-value name="Result-Code" behaviour="error"></check-value>
+      </action>
+      <command name="CEA">
+        <avp name="Result-Code" value="2001"></avp>
+      </command>
+    </receive>
+  </init>
+
+  <!--
+    Default Section
+    We may receive some DWR, typically if idle for some time, answer with success DWA.
+  -->
+  <default bevaviour="ignore">
+    <receive channel="channel-1">
+      <command name="DWR">
+      </command>
+      <action>
+        <store name="HbH" entity="HbH-id"></store>
+        <store name="E2E" entity="EtE-id"></store>
+      </action>
+    </receive>
+
+    <send channel="channel-1">
+      <action>
+        <restore name="HbH" entity="HbH-id"></restore>
+        <restore name="E2E" entity="EtE-id"></restore>
+      </action>
+      <command name="DWA">
+        <avp name="Origin-Host" value="cdf.HOME_DOMAIN"></avp>
+        <avp name="Origin-Realm" value="HOME_DOMAIN"></avp>
+        <avp name="Result-Code" value="2001"></avp>
+      </command>
+    </send>
+  </default>
+
+  <!--
+    Traffic Section
+    This is the main action, we send some messages and expect them to be answered with success.
+  -->
+  <traffic>
+    <send channel="channel-1">
+      <action>
+        <inc-counter name="HbH-counter"></inc-counter>
+        <inc-counter name="EtE-counter"></inc-counter>
+        <inc-counter name="session-counter"></inc-counter>
+
+        <set-value name="HbH-id" format="$(HbH-counter)"></set-value>
+        <set-value name="EtE-id" format="$(EtE-counter)"></set-value>
+        <set-value name="Session-Id" format="seagull-client;1876543210;$(session-counter)"></set-value>
+      </action>
+
+      <command name="ACR">
+        <avp name="Session-Id" value="value_is_replaced"></avp>
+        <avp name="Origin-Host" value="seagull-client"></avp>
+        <avp name="Origin-Realm" value="seagull.restcomm.org"></avp>
+        <avp name="Destination-Host" value="server01.restcomm.org"></avp>
+        <avp name="Destination-Realm" value="restcomm.org"></avp>
+        <avp name="Acct-Application-Id" value="3"></avp>
+        <avp name="Accounting-Record-Type" value="2"></avp> <!-- START_RECORD -->
+        <avp name="Accounting-Record-Number" value="0"></avp>
+      </command>
+      <action>
+        <start-timer></start-timer>
+      </action>
+    </send>
+
+    <receive channel="channel-1">
+      <action>
+        <stop-timer></stop-timer>
+        <check-value name="Result-Code" behaviour="error"></check-value>
+        <store name="sid" entity="Session-Id"> </store>
+      </action>
+      <command name="ACA">
+        <avp name="Result-Code" value="2001"></avp>
+      </command>
+    </receive>
+
+    <wait-ms value="2000"></wait-ms>
+
+    <send channel="channel-1">
+      <action>
+        <inc-counter name="HbH-counter"></inc-counter>
+        <inc-counter name="EtE-counter"></inc-counter>
+
+        <set-value name="HbH-id" format="$(HbH-counter)"></set-value>
+        <set-value name="EtE-id" format="$(EtE-counter)"></set-value>
+        <restore name="sid" entity="Session-Id"></restore>
+      </action>
+
+      <command name="ACR">
+        <avp name="Session-Id" value="value_is_replaced"></avp>
+        <avp name="Origin-Host" value="seagull-client"></avp>
+        <avp name="Origin-Realm" value="seagull.restcomm.org"></avp>
+        <avp name="Destination-Host" value="server01.restcomm.org"></avp>
+        <avp name="Destination-Realm" value="restcomm.org"></avp>
+        <avp name="Acct-Application-Id" value="3"></avp>
+        <avp name="Accounting-Record-Type" value="3"></avp> <!-- INTERIM_RECORD -->
+        <avp name="Accounting-Record-Number" value="1"></avp>
+      </command>
+      <action>
+        <start-timer></start-timer>
+      </action>
+    </send>
+
+    <receive channel="channel-1">
+      <action>
+        <stop-timer></stop-timer>
+        <check-value name="Result-Code" behaviour="error"></check-value>
+      </action>
+      <command name="ACA">
+        <avp name="Result-Code" value="2001"></avp>
+      </command>
+    </receive>
+
+    <wait-ms value="2000"></wait-ms>
+
+    <send channel="channel-1">
+      <action>
+        <inc-counter name="HbH-counter"></inc-counter>
+        <inc-counter name="EtE-counter"></inc-counter>
+
+        <set-value name="HbH-id" format="$(HbH-counter)"></set-value>
+        <set-value name="EtE-id" format="$(EtE-counter)"></set-value>
+        <restore name="sid" entity="Session-Id"></restore>
+      </action>
+
+      <command name="ACR">
+        <avp name="Session-Id" value="value_is_replaced"></avp>
+        <avp name="Origin-Host" value="seagull-client"></avp>
+        <avp name="Origin-Realm" value="seagull.restcomm.org"></avp>
+        <avp name="Destination-Host" value="server01.restcomm.org"></avp>
+        <avp name="Destination-Realm" value="restcomm.org"></avp>
+        <avp name="Acct-Application-Id" value="3"></avp>
+        <avp name="Accounting-Record-Type" value="4"></avp> <!-- STOP_RECORD -->
+        <avp name="Accounting-Record-Number" value="2"></avp>
+      </command>
+      <action>
+        <start-timer></start-timer>
+      </action>
+    </send>
+
+    <receive channel="channel-1">
+      <action>
+        <stop-timer></stop-timer>
+        <check-value name="Result-Code" behaviour="error"></check-value>
+      </action>
+      <command name="ACA">
+        <avp name="Result-Code" value="2001"></avp>
+      </command>
+    </receive>
+
+  </traffic>
+
+</scenario>

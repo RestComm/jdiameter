@@ -1,0 +1,49 @@
+<!--
+  TeleStax, Open Source Cloud Communications
+  Copyright 2017, TeleStax Inc. and individual contributors
+  by the @authors tag.
+
+  This program is free software: you can redistribute it and/or modify
+  under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation; either version 3 of
+  the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Affero General Public License for more details.
+
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>
+-->
+
+<assembly>
+  <id>standalone</id>
+  <formats>
+    <format>jar</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <dependencySets>
+    <dependencySet>
+      <!-- TODO: Try to use dependencies unpacked -->
+      <!--outputDirectory>lib/</outputDirectory-->
+      <unpack>true</unpack>
+      <includes>
+        <include>org.mobicents.diameter:restcomm-diameter-mux-jar</include>
+        <include>org.mobicents.diameter:jdiameter-api</include>
+        <include>org.mobicents.diameter:jdiameter-impl</include>
+        <include>org.slf4j:slf4j-api</include>
+        <include>org.slf4j:slf4j-log4j12</include>
+        <include>log4j:log4j</include>
+        <include>commons-pool:commons-pool</include>
+        <include>org.picocontainer:picocontainer</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
+  <fileSets>
+    <fileSet>
+      <directory>target/classes</directory>
+      <outputDirectory></outputDirectory>
+    </fileSet>
+  </fileSets>
+</assembly>

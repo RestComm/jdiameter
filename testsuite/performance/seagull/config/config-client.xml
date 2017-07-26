@@ -1,0 +1,80 @@
+<!--
+  TeleStax, Open Source Cloud Communications
+  Copyright 2017, TeleStax Inc. and individual contributors
+  by the @authors tag.
+
+  This program is free software: you can redistribute it and/or modify
+  under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation; either version 3 of
+  the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Affero General Public License for more details.
+
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>
+-->
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<configuration name="Simple IP Client Conf">
+
+  <define entity="transport"
+    name="trans-1"
+    file="libtrans_ip.so"
+    create_function="create_cipio_instance"
+    delete_function="delete_cipio_instance"
+    init-args="type=tcp">
+  </define>
+
+  <define entity="channel"
+    name="channel-1"
+    protocol="diameter-v1"
+    transport="trans-1"
+    open-args="mode=client;dest=127.0.0.1:3868">
+  </define>
+
+  <define entity="traffic-param" name="call-rate" value="1"></define>
+  <define entity="traffic-param" name="call-timeout-ms" value="5000"></define>
+  <define entity="traffic-param" name="number-calls" value="1000"></define>
+
+  <define entity="traffic-param" name="display-period" value="1"></define>
+  <define entity="traffic-param" name="display-scenario-stat" value="true"></define>
+  <define entity="traffic-param" name="display-protocol-stat" value="true"></define>
+
+  <define entity="traffic-param" name="log-stat-period" value="10"></define>
+  <define entity="traffic-param" name="log-stat-file" value="logs/client-stat.csv"></define>
+
+  <define entity="traffic-param" name="log-protocol-stat-period" value="60"></define>
+  <define entity="traffic-param" name="log-protocol-stat-name" value="all"></define>
+  <define entity="traffic-param" name="log-protocol-stat-file" value="logs/client-protocol-stat.csv"></define>
+
+  <define entity="traffic-param" name="data-log-period" value="1"></define>
+  <define entity="traffic-param" name="data-log-number" value="1000"></define>
+  <define entity="traffic-param" name="data-log-file" value="logs/client-rtt.csv"></define>
+  <define entity="traffic-param" name="data-log-rtdistrib" value="3000"></define>
+
+  <!--
+    Tuning parameters
+    max-send/receive defines the maximum sent/received messages in a scheduling loop (it is currently computed)
+    max-simultaneous-calls defines the maximum number of simultaneous calls that can be placed (requires more memory)
+  -->
+  <define entity="traffic-param" name="max-send" value="100000"></define>
+  <define entity="traffic-param" name="max-receive" value="100000"></define>
+  <define entity="traffic-param" name="max-simultaneous-calls" value="5000000"></define>
+
+  <!--
+    Statistics
+    response-time-repartition define the intervals in which the response time measures are going to be spreaded
+  -->
+  <define entity="traffic-param" name="response-time-repartition" value="5,10,15,20,30,40,50,75,100,150,200,250,300,400,500,1000"></define>
+
+  <!--
+    Defines the value of the timer set when listening to the system, waiting for the messages. Counter in milliseconds.
+    For low call-rate, set a value at least lower than the smallest "wait" in the scenario.
+    Be careful, the lower the value, the more CPU time will used.
+  -->
+  <define entity="traffic-param" name="select-timeout-ms" value="5"></define>
+
+</configuration>

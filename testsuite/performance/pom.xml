@@ -1,0 +1,180 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <packaging>jar</packaging>
+
+  <parent>
+    <groupId>org.mobicents.diameter</groupId>
+    <artifactId>diameter-parent</artifactId>
+    <version>1.7.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.restcomm.diameter.server.base.accounting</groupId>
+  <artifactId>base-accounting-server</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+
+  <name>Restcomm :: Examples :: ${project.artifactId}</name>
+
+  <properties>
+    <!-- Mobicents Diameter Components Versions -->
+    <restcomm.diameter.jdiameter.version>1.7.0-SNAPSHOT</restcomm.diameter.jdiameter.version>
+    <restcomm.diameter.mux.version>1.7.0-SNAPSHOT</restcomm.diameter.mux.version>
+    <!-- Thirdparty Dependencies Versions -->
+    <slf4j.version>1.5.8</slf4j.version>
+    <jbosscache.version>3.2.5.GA</jbosscache.version>
+    <commons-pool.version>1.5.5</commons-pool.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.cache</groupId>
+        <artifactId>jbosscache-core</artifactId>
+        <version>${jbosscache.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-pool</groupId>
+        <artifactId>commons-pool</artifactId>
+        <version>${commons-pool.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.cache</groupId>
+      <artifactId>jbosscache-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-pool</groupId>
+      <artifactId>commons-pool</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mobicents.diameter</groupId>
+      <artifactId>jdiameter-api</artifactId>
+      <version>${restcomm.diameter.jdiameter.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mobicents.diameter</groupId>
+      <artifactId>jdiameter-impl</artifactId>
+      <version>${restcomm.diameter.jdiameter.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mobicents.diameter</groupId>
+      <artifactId>restcomm-diameter-mux-jar</artifactId>
+      <version>${restcomm.diameter.mux.version}</version>
+    </dependency>
+  </dependencies>
+
+  <profiles>
+    <profile>
+      <id>maven-release</id>
+      <modules>
+        <!-- any module not bound to default modules, such as the ones for test, release, etc... -->
+      </modules>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <configuration>
+              <autoVersionSubmodules>true</autoVersionSubmodules>
+              <resume>false</resume>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>release</id>
+      <build />
+    </profile>
+  </profiles>
+
+  <build>
+    <finalName>restcomm-${project.artifactId}-b${buildNumber}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <format>{0,date,yyyyMMdd.HHmm}</format>
+          <items>
+            <item>timestamp</item>
+          </items>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/standalone.xml</descriptor>
+          </descriptors>
+          <archive>
+            <manifest>
+              <addClasspath>false</addClasspath>
+              <!--classpathPrefix>lib/</classpathPrefix-->
+              <mainClass>org.restcomm.diameter.base.accounting.BaseAccountingServer</mainClass>
+            </manifest>
+            <manifestEntries>
+              <Class-Path>config/</Class-Path>
+            </manifestEntries>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>install</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <groupId>org.mobicents.tools</groupId>
+        <inherited>false</inherited>
+        <executions />
+        <configuration>
+          <eclipseProjectName>${project.artifactId}</eclipseProjectName>
+          <generateProjectsForModules>false</generateProjectsForModules>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <scm>
+    <connection>scm:git:https://github.com/restcomm/jdiameter.git</connection>
+    <developerConnection>scm:git:git@github.com:restcomm/jdiameter.git</developerConnection>
+    <url>https://github.com/restcomm/jdiameter</url>
+  </scm>
+
+</project>
