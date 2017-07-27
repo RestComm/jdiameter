@@ -415,7 +415,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
                 setState(ClientRoSessionState.OPEN);
                 //Session persistence record shall be created after a peer had answered
                 //the first (initial) request for that session
-                if (isSessionPersistenceEnabled()) {
+                if (sf.isSessionPersistenceEnabled()) {
                   initSessionPersistenceContext(localEvent.getRequest(), localEvent.getAnswer());
                   startSessionInactivityTimer();
                 }
@@ -484,7 +484,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               // Action: Send RAA followed by CC update request, start Tx
               // New State: PENDING_U
               startTx(localEvent.getRequest().getMessage());
-              if (isSessionPersistenceEnabled()) {
+              if (sf.isSessionPersistenceEnabled()) {
                 startSessionInactivityTimer();
               }
               setState(ClientRoSessionState.PENDING_UPDATE);
@@ -517,7 +517,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
 
               // In all cases start Tx in order to assure failover
               startTx(localEvent.getRequest().getMessage());
-              if (isSessionPersistenceEnabled()) {
+              if (sf.isSessionPersistenceEnabled()) {
                 stopSessionInactivityTimer();
               }
               setState(ClientRoSessionState.PENDING_TERMINATION);
@@ -843,7 +843,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
         }
         stopTx();
 
-        if (isSessionPersistenceEnabled()) {
+        if (sf.isSessionPersistenceEnabled()) {
           stopSessionInactivityTimer();
           if (!release) {
             String oldPeer = flushSessionPersistenceContext();
@@ -1363,7 +1363,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
       startFailoverStopTimer();
     }
 
-    if (isSessionPersistenceEnabled()) {
+    if (sf.isSessionPersistenceEnabled()) {
       String oldPeer = flushSessionPersistenceContext();
       logger.debug("Routing context for peer [{}] was removed from session [{}] due to retransmission", oldPeer, this.getSessionId());
     }

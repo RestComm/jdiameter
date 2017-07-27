@@ -103,4 +103,11 @@ public interface ISessionFactory extends SessionFactory {
    */
   IContainer getContainer();
 
+  /**
+   * Tells whether session persistent routing is enabled for session created by this factory.
+   *
+   * @return true if enabled
+   */
+  boolean isSessionPersistenceEnabled();
+
 }

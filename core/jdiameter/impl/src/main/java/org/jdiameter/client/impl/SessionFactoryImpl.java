@@ -55,6 +55,7 @@ import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.api.StackState;
 import org.jdiameter.client.impl.helpers.UIDGenerator;
 import org.jdiameter.common.api.app.IAppSessionFactory;
+import org.jdiameter.common.api.data.IRoutingAwareSessionDatasource;
 import org.jdiameter.common.api.data.ISessionDatasource;
 
 /**
@@ -68,6 +69,8 @@ public class SessionFactoryImpl implements ISessionFactory {
 
   private IContainer stack;
 
+  private boolean isSessionPersistenceEnabled = false;
+
   @SuppressWarnings("rawtypes")
   private Map<Class, IAppSessionFactory> appFactories = new ConcurrentHashMap<Class, IAppSessionFactory>();
   private ISessionDatasource dataSource;
@@ -77,6 +80,10 @@ public class SessionFactoryImpl implements ISessionFactory {
   public SessionFactoryImpl(IContainer stack) {
     this.stack = stack;
     this.dataSource = this.stack.getAssemblerFacility().getComponentInstance(ISessionDatasource.class);
+
+    if(dataSource instanceof IRoutingAwareSessionDatasource) {
+      isSessionPersistenceEnabled = true;
+    }
   }
 
   @Override
@@ -182,6 +189,11 @@ public class SessionFactoryImpl implements ISessionFactory {
   @Override
   public IContainer getContainer() {
     return stack;
+  }
+
+  @Override
+  public boolean isSessionPersistenceEnabled() {
+    return isSessionPersistenceEnabled;
   }
 
 }

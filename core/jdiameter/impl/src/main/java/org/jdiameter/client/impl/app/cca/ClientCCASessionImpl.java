@@ -150,6 +150,29 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
     temporaryErrorCodes = Collections.unmodifiableSet(tmp);
   }
 
+  public ClientCCASessionImpl(IClientCCASessionData data, ICCAMessageFactory fct, ISessionFactory sf, ClientCCASessionListener lst,
+      IClientCCASessionContext ctx, StateChangeListener<AppSession> stLst) {
+    super(null, sf, data);
+    if (lst == null) {
+      throw new IllegalArgumentException("Listener can not be null");
+    }
+    if (data == null) {
+      throw new IllegalArgumentException("SessionData can not be null");
+    }
+    if (fct.getApplicationIds() == null) {
+      throw new IllegalArgumentException("ApplicationId can not be less than zero");
+    }
+
+    this.sessionData = data;
+    this.context = ctx;
+
+    this.authAppIds = fct.getApplicationIds();
+    this.listener = lst;
+    this.factory = fct;
+    super.addStateChangeNotification(stLst);
+
+  }
+
   public ClientCCASessionImpl(IClientCCASessionData data, ICCAMessageFactory fct, ISessionDatasource sds, ISessionFactory sf, ClientCCASessionListener lst,
                               IClientCCASessionContext ctx, StateChangeListener<AppSession> stLst) {
     super(sds, sf, data);
@@ -356,7 +379,8 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                 setState(ClientCCASessionState.OPEN);
                 //Session persistence record shall be created after a peer had answered the
                 //first (initial) request for that session
-                if (isSessionPersistenceEnabled()) {
+                if (sf.isSessionPersistenceEnabled()) {
+
                   initSessionPersistenceContext(localEvent.getRequest(), localEvent.getAnswer());
                   startSessionInactivityTimer();
                 }
@@ -411,7 +435,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Action: Send RAA followed by CC update request, start Tx
               // New State: PENDING_U
               startTx((JCreditControlRequest) localEvent.getRequest());
-              if (isSessionPersistenceEnabled()) {
+              if (sf.isSessionPersistenceEnabled()) {
                 startSessionInactivityTimer();
               }
               setState(ClientCCASessionState.PENDING_UPDATE);
@@ -438,7 +462,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Event: User service terminated
               // Action: Send CC termination request
               // New State: PENDING_T
-              if (isSessionPersistenceEnabled()) {
+              if (sf.isSessionPersistenceEnabled()) {
                 stopSessionInactivityTimer();
               }
               setState(ClientCCASessionState.PENDING_TERMINATION);
@@ -675,7 +699,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         }
         stopTx();
 
-        if (isSessionPersistenceEnabled()) {
+        if (sf.isSessionPersistenceEnabled()) {
           stopSessionInactivityTimer();
           if (!release) {
             String oldPeer = flushSessionPersistenceContext();
@@ -1140,7 +1164,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Action: Grant service to end user
               // New State: PENDING_U
               context.grantAccessOnTxExpire(this);
-              if (isSessionPersistenceEnabled()) {
+              if (sf.isSessionPersistenceEnabled()) {
                 stopSessionInactivityTimer();
               }
               break;

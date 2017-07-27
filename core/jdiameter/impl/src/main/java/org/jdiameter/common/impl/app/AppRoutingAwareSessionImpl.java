@@ -60,20 +60,12 @@ public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
   public AppRoutingAwareSessionImpl(ISessionDatasource sessionStorage, ISessionFactory sessionFactory, IAppSessionData appSessionData) {
     super(sessionFactory, appSessionData);
     peerTable = sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(IPeerTable.class);
+    //TODO [bk] to be removed - sesInactivityTimerVal
     sesInactivityTimerVal = sessionFactory.getContainer().getConfiguration().getIntValue(SessionTimeOut.ordinal(), (Integer)
         SessionTimeOut.defValue()) * 1000;
     if (sessionStorage instanceof IRoutingAwareSessionDatasource) {
       sessionPersistenceStorage = (IRoutingAwareSessionDatasource) sessionStorage;
     }
-  }
-
-  /**
-   * Tells whether session persistent routing is enabled for this session.
-   *
-   * @return true if enabled
-   */
-  protected boolean isSessionPersistenceEnabled() {
-    return this.sessionPersistenceStorage != null;
   }
 
   /**
@@ -129,6 +121,7 @@ public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
    * Starts maximum session inactivity timer which defines how much time the persistence record
    * should be kept if there is no request sent within a session.
    */
+  //TODO [bk] obsolete IDLE_SESSION_TIMER_NAME is started in Base session impl
   protected void startSessionInactivityTimer() {
     logger.debug("Scheduling session inactivity timer equal to [{}] ms", sesInactivityTimerVal);
     stopSessionInactivityTimer();

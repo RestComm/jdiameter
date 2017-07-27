@@ -278,8 +278,14 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
         ClientCCASessionImpl clientSession = null;
         IClientCCASessionData data = (IClientCCASessionData) this.sessionDataFactory.getAppSessionData(ClientCCASession.class, sessionId);
 
-        clientSession = new ClientCCASessionImpl(data, this.getMessageFactory(), iss, sessionFactory, this.getClientSessionListener(),
-            this.getClientContextListener(), this.getStateListener());
+        if (!sessionFactory.isSessionPersistenceEnabled()) {
+          clientSession = new ClientCCASessionImpl(data, this.getMessageFactory(), sessionFactory,
+              this.getClientSessionListener(), this.getClientContextListener(), this.getStateListener());
+        }
+        else {
+          clientSession = new ClientCCASessionImpl(data, this.getMessageFactory(), iss, sessionFactory,
+              this.getClientSessionListener(), this.getClientContextListener(), this.getStateListener());
+        }
         clientSession.getSessions().get(0).setRequestListener(clientSession);
         appSession = clientSession;
       }
@@ -320,8 +326,14 @@ public class CCASessionFactoryImpl implements ICCASessionFactory, ClientCCASessi
         }
         IClientCCASessionData data = (IClientCCASessionData) this.sessionDataFactory.getAppSessionData(ClientCCASession.class, sessionId);
         data.setApplicationId(applicationId);
-        clientSession = new ClientCCASessionImpl(data, this.getMessageFactory(), iss, sessionFactory,
-                this.getClientSessionListener(), this.getClientContextListener(), this.getStateListener());
+        if (!sessionFactory.isSessionPersistenceEnabled()) {
+          clientSession = new ClientCCASessionImpl(data, this.getMessageFactory(), sessionFactory,
+              this.getClientSessionListener(), this.getClientContextListener(), this.getStateListener());
+        }
+        else {
+          clientSession = new ClientCCASessionImpl(data, this.getMessageFactory(), iss, sessionFactory,
+              this.getClientSessionListener(), this.getClientContextListener(), this.getStateListener());
+        }
         // this goes first!
         iss.addSession(clientSession);
         clientSession.getSessions().get(0).setRequestListener(clientSession);
