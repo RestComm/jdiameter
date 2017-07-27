@@ -42,9 +42,7 @@
 
 package org.jdiameter.api;
 
- import java.io.Serializable;
-
- /**
+/**
  * The session delivery objects are responsible for delivering all incoming Message to a specific session.
  * It determines the Diameter Session object that the message belongs to by querying the message's session id AVP.
  * The delivery object searches the local session database for a matching session. If no matching session is found,
@@ -106,8 +104,6 @@ public interface BaseSession {
    * @return session-id as String (Session-Id AVP)
    */
   String getSessionId();
-
-  Serializable getIdleSessionTimer();
 
   String IDLE_SESSION_TIMER_NAME = "IDLE_SESSION_TIMER";
 }

@@ -101,11 +101,6 @@ public abstract class BaseSessionImpl implements BaseSession {
   protected Serializable istTimerId;
 
   @Override
-  public Serializable getIdleSessionTimer() {
-    return istTimerId;
-  }
-
-  @Override
   public long getCreationTime() {
     return creationTime;
   }
