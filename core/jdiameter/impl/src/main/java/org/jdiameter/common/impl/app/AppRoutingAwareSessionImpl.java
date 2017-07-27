@@ -46,9 +46,6 @@ public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
   private transient IPeerTable peerTable = null;
   private transient IRoutingAwareSessionDatasource sessionPersistenceStorage = null;
 
-  private final int sesInactivityTimerVal;
-  private Serializable sesInactivityTimerId = null;
-
   /**
    * Parameterized constructor. If session persistence is supposed to be enabled, sessionStorage
    * argument should be of type {@link org.jdiameter.common.impl.data.RoutingAwareDataSource}.
@@ -60,9 +57,6 @@ public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
   public AppRoutingAwareSessionImpl(ISessionDatasource sessionStorage, ISessionFactory sessionFactory, IAppSessionData appSessionData) {
     super(sessionFactory, appSessionData);
     peerTable = sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(IPeerTable.class);
-    //TODO [bk] to be removed - sesInactivityTimerVal
-    sesInactivityTimerVal = sessionFactory.getContainer().getConfiguration().getIntValue(SessionTimeOut.ordinal(), (Integer)
-        SessionTimeOut.defValue()) * 1000;
     if (sessionStorage instanceof IRoutingAwareSessionDatasource) {
       sessionPersistenceStorage = (IRoutingAwareSessionDatasource) sessionStorage;
     }
@@ -118,24 +112,13 @@ public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
   }
 
   /**
-   * Starts maximum session inactivity timer which defines how much time the persistence record
-   * should be kept if there is no request sent within a session.
-   */
-  //TODO [bk] obsolete IDLE_SESSION_TIMER_NAME is started in Base session impl
-  protected void startSessionInactivityTimer() {
-    logger.debug("Scheduling session inactivity timer equal to [{}] ms", sesInactivityTimerVal);
-    stopSessionInactivityTimer();
-    this.sesInactivityTimerId = this.timerFacility.schedule(this.getSessionId(), IDLE_SESSION_TIMER_NAME, sesInactivityTimerVal);
-  }
-
-  /**
    * Stops session inactivity timer.
    */
   protected void stopSessionInactivityTimer() {
-    if (this.sesInactivityTimerId != null) {
-      logger.debug("Stopping session inactivity timer [{}]", this.sesInactivityTimerId);
-      timerFacility.cancel(this.sesInactivityTimerId);
-      this.sesInactivityTimerId = null;
+    Serializable idleSessionTimer = session.getIdleSessionTimer();
+    if (idleSessionTimer != null) {
+      logger.debug("Stopping session inactivity timer [{}]", idleSessionTimer);
+      timerFacility.cancel(idleSessionTimer);
     }
   }
 
