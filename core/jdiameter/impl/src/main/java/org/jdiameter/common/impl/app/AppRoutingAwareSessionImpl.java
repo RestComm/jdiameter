@@ -46,8 +46,8 @@ public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
   private transient IPeerTable peerTable = null;
   private transient IRoutingAwareSessionDatasource sessionPersistenceStorage = null;
 
-  private final int sesInactivityTimerVal;
-  private Serializable sesInactivityTimerId = null;
+  private final int idleSessionTimeout;
+  private Serializable idleSessionTimerId = null;
 
   /**
    * Parameterized constructor. If session persistence is supposed to be enabled, sessionStorage
@@ -60,8 +60,7 @@ public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
   public AppRoutingAwareSessionImpl(ISessionDatasource sessionStorage, ISessionFactory sessionFactory, IAppSessionData appSessionData) {
     super(sessionFactory, appSessionData);
     peerTable = sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(IPeerTable.class);
-    //TODO [bk] to be removed - sesInactivityTimerVal
-    sesInactivityTimerVal = sessionFactory.getContainer().getConfiguration().getIntValue(SessionTimeOut.ordinal(), (Integer)
+    idleSessionTimeout = sessionFactory.getContainer().getConfiguration().getIntValue(SessionTimeOut.ordinal(), (Integer)
         SessionTimeOut.defValue()) * 1000;
     if (sessionStorage instanceof IRoutingAwareSessionDatasource) {
       sessionPersistenceStorage = (IRoutingAwareSessionDatasource) sessionStorage;
@@ -121,21 +120,20 @@ public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
    * Starts maximum session inactivity timer which defines how much time the persistence record
    * should be kept if there is no request sent within a session.
    */
-  //TODO [bk] obsolete IDLE_SESSION_TIMER_NAME is started in Base session impl
-  protected void startSessionInactivityTimer() {
-    logger.debug("Scheduling session inactivity timer equal to [{}] ms", sesInactivityTimerVal);
-    stopSessionInactivityTimer();
-    this.sesInactivityTimerId = this.timerFacility.schedule(this.getSessionId(), IDLE_SESSION_TIMER_NAME, sesInactivityTimerVal);
+  protected void startIdleSessionTimer() {
+    logger.debug("Scheduling idle session (inactivity) timer equal to [{}] ms", idleSessionTimeout);
+    stopIdleSessionTimerTimer();
+    this.idleSessionTimerId = this.timerFacility.schedule(this.getSessionId(), IDLE_SESSION_TIMER_NAME, idleSessionTimeout);
   }
 
   /**
    * Stops session inactivity timer.
    */
-  protected void stopSessionInactivityTimer() {
-    if (this.sesInactivityTimerId != null) {
-      logger.debug("Stopping session inactivity timer [{}]", this.sesInactivityTimerId);
-      timerFacility.cancel(this.sesInactivityTimerId);
-      this.sesInactivityTimerId = null;
+  protected void stopIdleSessionTimerTimer() {
+    if (this.idleSessionTimerId != null) {
+      logger.debug("Stopping idle session (inactivity) timer [{}]", this.idleSessionTimerId);
+      timerFacility.cancel(this.idleSessionTimerId);
+      this.idleSessionTimerId = null;
     }
   }
 
@@ -151,7 +149,7 @@ public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
       checkIdleAppSession();
       //no need to interfere with session state machine (simply remove routing context used for sticky sessions based routing)
       String oldPeer = flushSessionPersistenceContext();
-      logger.debug("Session inactivity timer expired so routing context for peer [{}] was removed from session [{}]", oldPeer, this.getSessionId());
+      logger.debug("Idle session (inactivity) timer expired so routing context for peer [{}] was removed from session [{}]", oldPeer, this.getSessionId());
     }
   }
 }
