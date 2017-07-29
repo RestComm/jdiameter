@@ -35,18 +35,19 @@ import org.jdiameter.api.slg.events.LocationReportRequest;
 import org.jdiameter.api.slg.events.ProvideLocationRequest;
 import org.jdiameter.api.slg.events.ProvideLocationAnswer;
 import org.mobicents.diameter.stack.functional.Utils;
-import org.mobicents.diameter.stack.functional.slg.AbstractImmediateServer;
+import org.mobicents.diameter.stack.functional.slg.AbstractSLgServer;
 
 /**
  *
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
-public class ServerImmediateSLg extends AbstractImmediateServer {
+public class ServerSLg extends AbstractSLgServer {
 
   protected boolean receivedPLR;
-  protected boolean sentPLA;
   protected boolean receivedLRA;
+  protected boolean sentPLA;
+  protected boolean sentLRR;
 
   protected ProvideLocationRequest provideLocationRequest;
 
@@ -65,6 +66,12 @@ public class ServerImmediateSLg extends AbstractImmediateServer {
     Utils.printMessage(log, super.stack.getDictionary(), pla.getMessage(), true);
   }
 
+  public void sendLocationReportRequest() throws Exception {
+    LocationReportRequest lrr = super.createLRR(super.serverSLgSession);
+    this.serverSLgSession.sendLocationReportRequest(lrr);
+    Utils.printMessage(log, super.stack.getDictionary(), lrr.getMessage(), true);
+    this.sentLRR = true;
+  }
 
   /* (non-Javadoc)
    * @see org.mobicents.diameter.stack.functional.TBase#processRequest(org.jdiameter.api.Request)
@@ -115,6 +122,8 @@ public class ServerImmediateSLg extends AbstractImmediateServer {
     }
     this.receivedLRA = true;
   }
+
+  // PLA methods
 
   @Override
   protected byte[] getLocationEstimate() {
@@ -385,5 +394,305 @@ public class ServerImmediateSLg extends AbstractImmediateServer {
   public boolean isSentPLA() {
     return sentPLA;
   }
+
+  // LRR methods
+
+  @Override
+  protected String getUserName() {
+    // Information Element IMSI Mapped to AVP User-Name
+    String imsi = "748039876543210";
+    return imsi;
+  }
+
+  @Override
+  protected byte[] getMSISDN() {
+    String msisdnString = "59899077937";
+    byte[] msisdn = msisdnString.getBytes();
+    return msisdn;
+  }
+
+  @Override
+  protected String getIMEI() {
+    String imei = "011714004661057";
+    return imei;
+  }
+
+  @Override
+  protected long getDeferredLocationType() {
+  /*
+  3GPP TS 29.172 v13.0.0 section 7.4.36
+    Bit	Event Type          Description
+    0   UE-Available        Any event in which the SGSN has established a contact with the UE.
+    1   Entering-Into-Area  An event where the UE enters a pre-defined geographical area.
+    2   Leaving-From-Area   An event where the UE leaves a pre-defined geographical area.
+    3   Being-Inside-Area   An event where the UE is currently within the pre-defined geographical area.For this event,
+                            the value of Occurrence-Info AVP is always treated as set to “ONE_TIME_EVENT”.
+    4   Periodic-LDR        An event where a defined periodic timer expires in the UE and activates a location report or a location request.
+  */
+    long deferredLocationType = 8L;
+    return deferredLocationType;
+  }
+
+  protected int getSLgLocationType() {
+  /*
+  3GPP TS 29.172 v13.0.0 section 7.4.2
+    The SLg-Location-Type AVP is of type Enumerated. The following values are defined:
+    CURRENT_LOCATION (0)
+    CURRENT_OR_LAST_KNOWN_LOCATION (1)
+    INITIAL_LOCATION (2)
+    ACTIVATE_DEFERRED_LOCATION (3)
+    CANCEL_DEFERRED_LOCATION (4)
+    NOTIFICATION_VERIFICATION_ONLY (5)
+  */
+    int slgLocationType = 0;
+    return slgLocationType;
+  }
+
+  @Override
+  protected String getLCSNameString() {
+    String lcsNameString = "Restcomm Geolocation API";
+    return lcsNameString;
+  }
+
+  protected int getLCSFormatIndicator() {
+  /*
+    "0" = "LOGICAL_NAME"
+    "1" = "EMAIL_ADDRESS"
+    "2" = "MSISDN"
+    "3" = "URL"
+    "4" = "SIP_URL"
+  */
+    int lcsFormatIndicator = 2;
+    return lcsFormatIndicator;
+  }
+
+  @Override
+  protected int getLocationEvent() {
+  /*
+    3GPP TS 29.172 v13.0.0 section 7.4.20
+      EMERGENCY_CALL_ORIGINATION (0)
+      EMERGENCY_CALL_RELEASE (1)
+      MO_LR (2)
+      EMERGENCY_CALL_HANDOVER (3)
+      DEFERRED_MT_LR_RESPONSE (4)
+      DEFERRED_MO_LR_TTTP_INITIATION (5)
+      DELAYED_LOCATION_REPORTING (6)
+  */
+    int locationEvent = 4;
+    return locationEvent;
+  }
+
+  @Override
+  protected long getLSCServiceTypeId() {
+    long lcsServiceTypeId = 234567012L;
+    return lcsServiceTypeId;
+  }
+
+  @Override
+  protected long getReportingInterval() {
+  /*
+  3GPP TS 29.172 v13.0.0 section 7.4.47
+     The Interval-Time  AVP is of type Unsigned32 and it contains reporting frequency. Its minimum value shall be 1 and maximum value shall be 8639999.
+  */
+    long reportingInterval = 8639998L;
+    return reportingInterval;
+  }
+
+  @Override
+  protected int getPseudonymIndicator() {
+  /*
+    3GPP TS 29.172 v13.0.0 section 7.4.21
+      PSEUDONYM_NOT_REQUESTED (0)
+      PSEUDONYM_REQUESTED (1)
+  */
+    int pseudonymIndicator = 0;
+    return pseudonymIndicator;
+  }
+
+  @Override
+  protected int getLCSQoSClass() {
+  /*
+    3GPP TS 29.172 v13.0.0 section 7.4.27
+      ASSURED (0)
+      BEST EFFORT (1)
+  */
+    int lcsQoSClass = 1;
+    return lcsQoSClass;
+  }
+
+  @Override
+  protected long getReportingAmount() {
+  /*
+  3GPP TS 29.172 v13.0.0 section 7.4.46
+     The Reporting-Amount AVP is of type Unsigned32 and it contains reporting frequency. Its minimum value shall be 1 and maximum value shall be 8639999.
+  */
+    long reportingAmount = 8639910L;
+    return reportingAmount;
+  }
+
+  @Override
+  protected long getLRRFLags() {
+  /*
+  3GPP TS 29.172 v13.0.0 section 7.4.35
+  Bit	Event Type                                    Description
+  0   Lgd/SLg-Indicator                             This bit, when set, indicates that the Location Report Request message is sent on the Lgd interface,
+                                                    i.e. the source node is an SGSN (or a combined MME/SGSN to which the UE is attached via UTRAN or GERAN).
+                                                    This bit, when cleared, indicates that the Location Report Request message is sent on the SLg interface,
+                                                    i.e. the source node is an MME (or a combined MME/SGSN to which the UE is attached via E-UTRAN).
+  1   MO-LR-ShortCircuit-Indicator                  This bit, when set, indicates that the MO-LR short circuit feature is used by the UE for
+                                                    location estimate. This bit is applicable only when for deferred MT-LR procedure and
+                                                    when the message is sent over Lgd interface.
+  2   MO-LR-ShortCircuit-Requested                  This bit, when set, indicates that the UE is requesting to use MO-LR short circuit feature
+                                                    for location estimate.
+                                                    This bit is applicable only when periodic MO-LR TTTP procedure is initiated by the UE and when the
+                                                    message is sent over Lgd interface.
+  */
+    long lrrFlags = 1;
+    return lrrFlags;
+  }
+
+  @Override
+  protected long getTerminationCause() {
+  /*
+  3GPP TS 29.172 v13.0.0 section 7.4.55
+    "Normal"								    0
+    "Error Undefined"					        1
+    "Internal Timeout"						    2
+    "Congestion"							    3
+    "MT_LR_Restart"							    4
+    "Privacy Violation"						    5
+    "Shape of Location Estimate Not Supported"	6
+    "Subscriber Termination"					7
+    "UE Termination"							8
+    "Network Termination"						9
+  */
+    long terminationCause = 7;
+    return terminationCause;
+  }
+
+  @Override
+  protected byte[] get1xRTTRCID() {
+  /*
+  3GPP TS 29.172 v13.0.0 section 7.4.59
+    The 1xRTT-RCID AVP is of type OctetString.
+    It indicates the 1xRTT Reference Cell Id that consists of a Cell Identification Discriminator and a Cell Identification and shall be formatted
+    according to octets 3 through the end of the Cell Identifier element defined in subclause 4.2.17 in 3GPP2 A.S0014-D [22].
+    The allowable cell discriminator values are "0000 0010", and "0000 0111".
+  */
+    String oxrttrcid = "00000010";
+    byte[] onexrttrcid = oxrttrcid.getBytes();
+    return onexrttrcid;
+  }
+
+  @Override
+  protected byte[] getLCSReferenceNumber() {
+  /*
+    3GPP TS 29.172 v13.0.0 section 7.4.37
+      The LCS-Reference-Number AVP is of type OctetString of length 1. It shall contain the reference number identifying the deferred location request.
+  */
+    String lcsRefNumber = "4C4353353739";
+    byte[] lcsRefNum = lcsRefNumber.getBytes();
+    return lcsRefNum;
+  }
+
+  /*@Override
+  protected String getLCSNameString() */
+
+  /*@Override
+  protected byte[] getLocationEstimate()*/
+
+  /*@Override
+  protected int getAccuracyFulfilmentIndicator()*/
+
+  /*@Override
+  protected long getAgeOfLocationEstimate()*/
+
+  /*@Override
+  protected byte[] getVelocityEstimate()*/
+
+  /*@Override
+  protected byte[] getEUTRANPositioningData()*/
+
+  /*@Override
+  protected byte[] getECGI()*/
+
+  /*@Override
+  protected byte[] getGERANPositioningData()*/
+
+  /*@Override
+  protected byte[] getGERANGANSSPositioningData()*/
+
+  /*@Override
+  protected byte[] getCellGlobalIdentity()*/
+
+  /*@Override
+  protected byte[] getUTRANPositioningData()*/
+
+  /*@Override
+  protected byte[] getUTRANGANSSPositioningData()*/
+
+  /*@Override
+  protected byte[] getServiceAreaIdentity()*/
+
+  /*@Override
+  protected long getCellPortionId()*/
+
+  /*@Override
+  protected byte[] getSGSNNumber()*/
+
+  /*@Override
+  protected String getSGSNName()*/
+
+  /*@Override
+  protected String getSGSNRealm()*/
+
+  /*@Override
+  protected String getMMEName()*/
+
+  /*@Override
+  protected String getMMERealm()*/
+
+  /*@Override
+  protected byte[] getMSCNumber()*/
+
+  /*@Override
+  protected String get3GPPAAAServerName()*/
+
+  /*@Override
+  protected long getLCSCapabilitiesSets()*/
+
+  /*@Override
+  protected String getCivicAddress() {
+  /*
+  3GPP TS 29.172 v13.0.0 section 7.4.61
+    The Civic-Address AVP is of type UTF8String.
+    It contains the XML document carried in the "Civic Address" Information Element as defined in 3GPP TS 29.171.
+  */
+  /*  String civicAddress = "<civicAddress xml:lang='en-GB'" +
+        "           xmlns=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr\"\n" +
+        "           xmlns:cdc=\"http://devon.canals.example.com/civic\">\n" +
+        "        <country>UK</country>\n" +
+        "        <A1>Devon</A1>\n" +
+        "        <A3>Monkokehampton</A3>\n" +
+        "        <RD>Deckport</RD>\n" +
+        "        <STS>Cross</STS>\n" +
+        "\n" +
+        "        <cdc:bridge>21451338</cdc:bridge>\n" +
+        "\n" +
+        "      </civicAddress>"; // From IETF RFC 6848, Extended Civic Address Example
+    return civicAddress;
+  }*/
+
+  /*@Override
+  protected long getBarometricPressure()*/
+
+  public boolean isReceivedLRA() {
+    return receivedLRA;
+  }
+
+  public boolean isSentLRR() {
+    return sentLRR;
+  }
+
 
 }

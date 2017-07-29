@@ -51,21 +51,20 @@ import org.junit.runners.Parameterized.Parameters;
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
 @RunWith(Parameterized.class)
-public class SLgSessionBasicDefFlowTest {
+public class SLgSessionBasicLRRFlowTest {
   // TODO: add test on replicated nodes ?
-  private ClientDeferredSLg clientNode;
-  private ServerDeferredSLg serverNode1;
+  private ClientSLg clientNode;
+  private ServerSLg serverNode1;
   private URI clientConfigURI;
   private URI serverNode1ConfigURI;
 
   /**
    * @param clientConfigUrl
-   * // @param node1
-   * // @param node2
    * @param serverNode1ConfigURL
+   * // @param node2
+   * // @param serverCount
    */
-
-  public SLgSessionBasicDefFlowTest(String clientConfigUrl, String serverNode1ConfigURL) throws Exception {
+  public SLgSessionBasicLRRFlowTest(String clientConfigUrl, String serverNode1ConfigURL) throws Exception {
     super();
     this.clientConfigURI = new URI(clientConfigUrl);
     this.serverNode1ConfigURI = new URI(serverNode1ConfigURL);
@@ -74,8 +73,8 @@ public class SLgSessionBasicDefFlowTest {
   @Before
   public void setUp() throws Exception {
     try {
-      this.clientNode = new ClientDeferredSLg();
-      this.serverNode1 = new ServerDeferredSLg();
+      this.clientNode = new ClientSLg();
+      this.serverNode1 = new ServerSLg();
 
       this.serverNode1.init(new FileInputStream(new File(this.serverNode1ConfigURI)), "SERVER1");
       this.serverNode1.start();
@@ -132,29 +131,30 @@ public class SLgSessionBasicDefFlowTest {
   }
 
   @Test
-  public void testLocationReportBasicFlow() throws Exception {
+  public void testLocationReportRequestBasicFlow() throws Exception {
     try {
       // pain of parameter tests :) ?
-      clientNode.sendLocationReportRequest();
+      serverNode1.sendLocationReportRequest();
       waitForMessage();
 
-      serverNode1.sendLocationReportAnswer();
+      clientNode.sendLocationReportAnswer();
       waitForMessage();
+
     }
     catch (Exception e) {
       e.printStackTrace();
       fail(e.toString());
     }
 
-    if (!serverNode1.isReceivedLRR()) {
+    if (!clientNode.isReceivedLRR()) {
       StringBuilder sb = new StringBuilder("Did not receive LRR! ");
-      sb.append("Server ER:\n").append(serverNode1.createErrorReport(this.serverNode1.getErrors()));
+      sb.append("Client ER:\n").append(clientNode.createErrorReport(this.clientNode.getErrors()));
 
       fail(sb.toString());
     }
-    if (!clientNode.isReceivedLRA()) {
+    if (!serverNode1.isReceivedLRA()) {
       StringBuilder sb = new StringBuilder("Did not receive LRA! ");
-      sb.append("Client ER:\n").append(clientNode.createErrorReport(this.clientNode.getErrors()));
+      sb.append("Server ER:\n").append(serverNode1.createErrorReport(this.serverNode1.getErrors()));
 
       fail(sb.toString());
     }
@@ -183,7 +183,7 @@ public class SLgSessionBasicDefFlowTest {
     //String replicatedClient = "configurations/functional-slh/replicated-config-client.xml";
     //String replicatedServer1 = "configurations/functional-slh/replicated-config-server-node1.xml";
 
-    Class<SLgSessionBasicDefFlowTest> t = SLgSessionBasicDefFlowTest.class;
+    Class<SLgSessionBasicLRRFlowTest> t = SLgSessionBasicLRRFlowTest.class;
     client = t.getClassLoader().getResource(client).toString();
     server1 = t.getClassLoader().getResource(server1).toString();
     //replicatedClient = t.getClassLoader().getResource(replicatedClient).toString();

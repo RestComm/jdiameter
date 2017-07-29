@@ -21,17 +21,21 @@
 
 package org.mobicents.diameter.stack.functional.slg.base;
 
+import org.jdiameter.api.Answer;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
+import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.OverloadException;
+import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.slg.ClientSLgSession;
 import org.jdiameter.api.slg.ServerSLgSession;
+import org.jdiameter.api.slg.events.LocationReportAnswer;
 import org.jdiameter.api.slg.events.LocationReportRequest;
 import org.jdiameter.api.slg.events.ProvideLocationRequest;
 import org.jdiameter.api.slg.events.ProvideLocationAnswer;
 import org.mobicents.diameter.stack.functional.Utils;
-import org.mobicents.diameter.stack.functional.slg.AbstractImmediateClient;
+import org.mobicents.diameter.stack.functional.slg.AbstractSLgClient;
 
 import static sun.jdbc.odbc.JdbcOdbcObject.hexStringToByteArray;
 
@@ -40,15 +44,16 @@ import static sun.jdbc.odbc.JdbcOdbcObject.hexStringToByteArray;
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
-public class ClientImmediateSLg extends AbstractImmediateClient {
+public class ClientSLg extends AbstractSLgClient {
 
   protected boolean receivedPLA;
-  protected boolean sentPLR;
   protected boolean receivedLRR;
+  protected boolean sentPLR;
+  protected boolean sentLRA;
 
   protected LocationReportRequest locationReportRequest;
 
-  public ClientImmediateSLg() {
+  public ClientSLg() {
   }
 
   public void sendProvideLocationRequest() throws Exception {
@@ -56,6 +61,21 @@ public class ClientImmediateSLg extends AbstractImmediateClient {
     super.clientSLgSession.sendProvideLocationRequest(plr);
     Utils.printMessage(log, super.stack.getDictionary(), plr.getMessage(), true);
     this.sentPLR = true;
+  }
+
+  public void sendLocationReportAnswer() throws Exception {
+    if (!receivedLRR || locationReportRequest == null) {
+      fail("Did not receive LRR or answer already sent.", null);
+      throw new Exception("Did not receive LRR or answer already sent. Request: " + this.locationReportRequest);
+    }
+
+    LocationReportAnswer lra = super.createLRA(locationReportRequest, 2001);
+
+    this.clientSLgSession.sendLocationReportAnswer(lra);
+
+    this.sentLRA = true;
+    locationReportRequest = null;
+    Utils.printMessage(log, super.stack.getDictionary(), lra.getMessage(), true);
   }
 
   /* (non-Javadoc)
@@ -83,6 +103,30 @@ public class ClientImmediateSLg extends AbstractImmediateClient {
     }
     this.receivedLRR = true;
     this.locationReportRequest = request;
+  }
+
+  @Override
+  public Answer processRequest(Request request) {
+    int code = request.getCommandCode();
+    if (code != LocationReportRequest.code) {
+      fail("Received Request with code not used by SLg!. Code[" + request.getCommandCode() + "]", null);
+      return null;
+    }
+    if (super.serverSLgSession != null) {
+      // do fail?
+      fail("Received Request in base listener, not in app specific!" + code, null);
+    } else {
+      try {
+
+        super.serverSLgSession = this.sessionFactory.getNewAppSession(request.getSessionId(), getApplicationId(), ServerSLgSession.class, (Object) null);
+        ((NetworkReqListener) this.serverSLgSession).processRequest(request);
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        fail(null, e);
+      }
+    }
+    return null;
   }
 
   // PLR methods
@@ -507,5 +551,44 @@ public class ClientImmediateSLg extends AbstractImmediateClient {
   public boolean isSentPLR() {
     return sentPLR;
   }
+
+  // LRA methods
+
+  /*@Override
+  protected java.net.InetAddress getGMLCAddress()*/
+
+  @Override
+  protected long getLRAFLags() {
+  /*
+  3GPP TS 29.172 v13.0.0 section 7.4.56
+    Bit	Event Type                    Description
+    0   MO-LR-ShortCircuit-Indicator  This bit, when set, indicates that the MO-LR short circuit feature is used for obtaining location estimate.
+                                      This bit is applicable only when the message is sent over Lgd interface.
+  */
+    long lraFlags = 0;
+    return lraFlags;
+  }
+
+  /*@Override
+  protected int getPrioritizedListIndicator()*/
+
+  /*@Override
+  protected byte[] getVisitedPLMNId()*/
+
+  /*@Override
+  protected int getPeriodicLocationSupportIndicator()*/
+
+  /*@Override
+  protected byte[] getLCSReferenceNumber()*/
+
+
+  public boolean isReceivedLRR() {
+    return receivedLRR;
+  }
+
+  public boolean isSentLRA() {
+    return sentLRA;
+  }
+
 
 }

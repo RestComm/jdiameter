@@ -75,7 +75,7 @@ public class SLgSessionFactoryImpl implements ISLgSessionFactory, ServerSLgSessi
   protected IAppSessionDataFactory<ISLgSessionData> sessionDataFactory;
 
   public SLgSessionFactoryImpl() {
-  };
+  }
 
   public SLgSessionFactoryImpl(SessionFactory sessionFactory) {
     super();
