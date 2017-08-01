@@ -32,7 +32,6 @@ import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.AppEvent;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
-import org.jdiameter.api.slg.ClientSLgSession;
 import org.jdiameter.api.slg.ServerSLgSession;
 import org.jdiameter.api.slg.ServerSLgSessionListener;
 import org.jdiameter.api.slg.events.LocationReportAnswer;
