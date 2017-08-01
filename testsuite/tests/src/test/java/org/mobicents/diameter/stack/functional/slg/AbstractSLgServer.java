@@ -30,6 +30,7 @@ import org.jdiameter.api.Mode;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
+import org.jdiameter.api.Session;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
@@ -40,6 +41,7 @@ import org.jdiameter.api.slg.events.LocationReportAnswer;
 import org.jdiameter.api.slg.events.LocationReportRequest;
 import org.jdiameter.api.slg.events.ProvideLocationAnswer;
 import org.jdiameter.api.slg.events.ProvideLocationRequest;
+import org.jdiameter.client.impl.SessionImpl;
 import org.jdiameter.common.impl.app.slg.LocationReportRequestImpl;
 import org.jdiameter.common.impl.app.slg.ProvideLocationAnswerImpl;
 import org.jdiameter.common.impl.app.slg.SLgSessionFactoryImpl;
@@ -106,7 +108,7 @@ public abstract class AbstractSLgServer extends TBase implements ServerSLgSessio
     fail("Received \"PLR\" event, request[" + request + "], on session[" + session + "]", null);
   }
 
-  public void doLocationReportAnswerEvent(ClientSLgSession session, LocationReportRequest request, LocationReportAnswer answer) throws InternalException,
+  public void doLocationReportAnswerEvent(ServerSLgSession session, LocationReportRequest request, LocationReportAnswer answer) throws InternalException,
       IllegalDiameterStateException, RouteException, OverloadException {
     fail("Received \"LRA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }

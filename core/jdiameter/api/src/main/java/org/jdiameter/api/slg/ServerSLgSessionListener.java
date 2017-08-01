@@ -45,7 +45,7 @@ public interface ServerSLgSessionListener {
   void doProvideLocationRequestEvent(ServerSLgSession session, ProvideLocationRequest request)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
-  void doLocationReportAnswerEvent(ClientSLgSession session, LocationReportRequest request, LocationReportAnswer answer)
+  void doLocationReportAnswerEvent(ServerSLgSession session, LocationReportRequest request, LocationReportAnswer answer)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
 }

@@ -110,7 +110,7 @@ public class SLgSessionFactoryImpl implements ISLgSessionFactory, ServerSLgSessi
   }
 
   /**
-   * @param clientSessionListener theclientSessionListener to set
+   * @param clientSessionListener the clientSessionListener to set
    */
   public void setClientSessionListener(ClientSLgSessionListener clientSessionListener) {
     this.clientSessionListener = clientSessionListener;
@@ -270,13 +270,13 @@ public class SLgSessionFactoryImpl implements ISLgSessionFactory, ServerSLgSessi
     return new LocationReportAnswerImpl(answer);
   }
 
-  public void doLocationReportRequestEvent(ServerSLgSession appSession, LocationReportRequest request)
+  public void doLocationReportRequestEvent(ClientSLgSession appSession, LocationReportRequest request)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     logger.info("Diameter SLg Session Factory :: doLocationReportRequestEvent :: appSession[{}], Request[{}]", appSession,
         request);
   }
 
-  public void doLocationReportAnswerEvent(ClientSLgSession appSession, LocationReportRequest request,
+  public void doLocationReportAnswerEvent(ServerSLgSession appSession, LocationReportRequest request,
                                           LocationReportAnswer answer)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     logger.info("Diameter SLg Session Factory :: doLocationReportAnswerEvent :: appSession[{}], Request[{}], Answer[{}]",

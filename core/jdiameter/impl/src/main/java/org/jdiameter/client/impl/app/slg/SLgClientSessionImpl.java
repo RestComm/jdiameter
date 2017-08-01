@@ -103,11 +103,6 @@ public class SLgClientSessionImpl extends SLgSession
     send(Event.Type.SEND_MESSAGE, null, answer);
   }
 
-  /*public void sendLocationReportRequest(LocationReportRequest request)
-      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    send(Event.Type.SEND_MESSAGE, request, null);
-  }*/
-
   public void receivedSuccessMessage(Request request, Answer answer) {
     AnswerDelivery rd = new AnswerDelivery();
     rd.session = this;
@@ -187,17 +182,12 @@ public class SLgClientSessionImpl extends SLgSession
               break;
 
             case RECEIVE_LRR:
-              /*newState = SLgSessionState.TERMINATED;
-              setState(newState);
-              listener.doLocationReportAnswerEvent(this, (LocationReportRequest) localEvent.getRequest(),
-                  (LocationReportAnswer) localEvent.getAnswer());
-              break;*/
               this.sessionData.setBuffer((Request) ((AppEvent) event.getData()).getMessage());
               super.cancelMsgTimer();
               super.startMsgTimer();
               newState = SLgSessionState.MESSAGE_SENT_RECEIVED;
               setState(newState);
-              listener.doLocationReportRequestEvent((ServerSLgSession) this, (LocationReportRequest) event.getData());
+              listener.doLocationReportRequestEvent(this, (LocationReportRequest) event.getData());
               break;
 
             default:

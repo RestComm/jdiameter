@@ -90,11 +90,6 @@ public class SLgServerSessionImpl extends SLgSession
     send(Event.Type.SEND_MESSAGE, request, null);
   }
 
-  /*public void sendLocationReportAnswer(LocationReportAnswer answer)
-      throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    send(Event.Type.SEND_MESSAGE, null, answer);
-  }*/
-
   @SuppressWarnings("unchecked")
   public <E> E getState(Class<E> stateType) {
     return stateType == SLgSessionState.class ? (E) this.sessionData.getSLgSessionState() : null;
@@ -130,7 +125,7 @@ public class SLgServerSessionImpl extends SLgSession
             case RECEIVE_LRA:
               newState = SLgSessionState.TERMINATED;
               setState(newState);
-              listener.doLocationReportAnswerEvent((ClientSLgSession) this, (LocationReportRequest) localEvent.getRequest(),
+              listener.doLocationReportAnswerEvent(this, (LocationReportRequest) localEvent.getRequest(),
                   (LocationReportAnswer) localEvent.getAnswer());
               break;
 

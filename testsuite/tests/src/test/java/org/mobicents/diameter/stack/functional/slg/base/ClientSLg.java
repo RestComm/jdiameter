@@ -95,7 +95,7 @@ public class ClientSLg extends AbstractSLgClient {
   }
 
   @Override
-  public void doLocationReportRequestEvent(ServerSLgSession session, LocationReportRequest request)
+  public void doLocationReportRequestEvent(ClientSLgSession session, LocationReportRequest request)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     if (this.receivedLRR) {
       fail("Received LRR more than once", null);

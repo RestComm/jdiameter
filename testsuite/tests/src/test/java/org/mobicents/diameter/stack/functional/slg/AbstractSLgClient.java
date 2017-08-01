@@ -30,6 +30,7 @@ import org.jdiameter.api.Mode;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
+import org.jdiameter.api.Session;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
 import org.jdiameter.api.app.AppSession;
@@ -112,7 +113,7 @@ public abstract class AbstractSLgClient extends TBase implements ClientSLgSessio
     fail("Received \"PLA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
-  public void doLocationReportRequestEvent(ServerSLgSession session, LocationReportRequest request) throws InternalException, IllegalDiameterStateException,
+  public void doLocationReportRequestEvent(ClientSLgSession session, LocationReportRequest request) throws InternalException, IllegalDiameterStateException,
       RouteException, OverloadException {
     fail("Received \"LRR\" event, request[" + request + "], on session[" + session + "]", null);
   }
@@ -130,10 +131,6 @@ public abstract class AbstractSLgClient extends TBase implements ClientSLgSessio
   public void fetchSession(String sessionId) throws InternalException {
     this.serverSLgSession = stack.getSession(sessionId, ServerSLgSession.class);
   }
-
-  /*public ServerSLgSession getServerSLgSession() {
-    return this.serverSLgSession;
-  }*/
 
   // Attributes for Provide Location Request (PLR) and Location Report Answer
   protected abstract int getSLgLocationType();

@@ -112,7 +112,7 @@ public class ServerSLg extends AbstractSLgServer {
   }
 
   @Override
-  public void doLocationReportAnswerEvent(ClientSLgSession session, LocationReportRequest request, LocationReportAnswer answer)
+  public void doLocationReportAnswerEvent(ServerSLgSession session, LocationReportRequest request, LocationReportAnswer answer)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
     Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), false);
 
