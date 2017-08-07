@@ -129,7 +129,9 @@ public class ClientSLg extends AbstractSLgClient {
     return null;
   }
 
-  // PLR methods
+  //*********************************************************
+  //***************** PLR methods ***************************
+  //*********************************************************
 
   // { SLg-Location-Type }
   protected int getSLgLocationType() {
@@ -552,7 +554,12 @@ public class ClientSLg extends AbstractSLgClient {
     return sentPLR;
   }
 
-  // LRA methods
+
+  //*********************************************************
+  //***************** LRA methods ***************************
+  //*********************************************************
+
+  // (commented LRA methods are already defined above for PLR)
 
   /*@Override
   protected java.net.InetAddress getGMLCAddress()*/

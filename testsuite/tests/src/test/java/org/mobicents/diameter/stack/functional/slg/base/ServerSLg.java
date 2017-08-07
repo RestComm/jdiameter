@@ -67,6 +67,14 @@ public class ServerSLg extends AbstractSLgServer {
   }
 
   public void sendLocationReportRequest() throws Exception {
+    try {
+
+      super.serverSLgSession = this.sessionFactory.getNewAppSession("xx-SLg-TESTxx", getApplicationId(), ServerSLgSession.class, (Object) null);
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail(null, e);
+    }
     LocationReportRequest lrr = super.createLRR(super.serverSLgSession);
     this.serverSLgSession.sendLocationReportRequest(lrr);
     Utils.printMessage(log, super.stack.getDictionary(), lrr.getMessage(), true);
@@ -123,7 +131,9 @@ public class ServerSLg extends AbstractSLgServer {
     this.receivedLRA = true;
   }
 
-  // PLA methods
+  //*********************************************************
+  //***************** PLA methods ***************************
+  //*********************************************************
 
   @Override
   protected byte[] getLocationEstimate() {
@@ -395,7 +405,12 @@ public class ServerSLg extends AbstractSLgServer {
     return sentPLA;
   }
 
-  // LRR methods
+
+  //*********************************************************
+  //***************** LRR methods ***************************
+  //*********************************************************
+
+  // (some of LRR methods are already defined above for PLA)
 
   @Override
   protected String getUserName() {

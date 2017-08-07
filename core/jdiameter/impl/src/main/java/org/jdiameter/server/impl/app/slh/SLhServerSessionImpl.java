@@ -94,7 +94,7 @@ public class SLhServerSessionImpl extends SLhSession implements ServerSLhSession
         return false;
       }
       final SLhSessionState state = this.sessionData.getSLhSessionState();
-      SLhSessionState newState = null;
+      SLhSessionState newState;
       Event localEvent = (Event) event;
       Event.Type eventType = (Type) event.getType();
 
@@ -204,7 +204,7 @@ public class SLhServerSessionImpl extends SLhSession implements ServerSLhSession
     this.sessionData.setSLhSessionState(newState);
 
     for (StateChangeListener i : stateListeners) {
-      i.stateChanged(this, (Enum) oldState, (Enum) newState);
+      i.stateChanged(this, oldState, newState);
     }
     if (newState == SLhSessionState.TERMINATED || newState == SLhSessionState.TIMEDOUT) {
       super.cancelMsgTimer();

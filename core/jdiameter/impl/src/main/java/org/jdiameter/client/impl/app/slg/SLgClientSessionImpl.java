@@ -136,7 +136,7 @@ public class SLgClientSessionImpl extends SLgSession
         return false;
       }
       final SLgSessionState state = this.sessionData.getSLgSessionState();
-      SLgSessionState newState = null;
+      SLgSessionState newState;
       Event localEvent = (Event) event;
       Event.Type eventType = (Type) event.getType();
       switch (state) {
@@ -218,7 +218,7 @@ public class SLgClientSessionImpl extends SLgSession
     this.sessionData.setSLgSessionState(newState);
 
     for (StateChangeListener i : stateListeners) {
-      i.stateChanged(this, (Enum) oldState, (Enum) newState);
+      i.stateChanged(this, oldState, newState);
     }
     if (newState == SLgSessionState.TERMINATED || newState == SLgSessionState.TIMEDOUT) {
       super.cancelMsgTimer();
