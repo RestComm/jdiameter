@@ -119,8 +119,6 @@ class AvpSetImpl implements AvpSet {
     return result;
   }
 
-
-
   @Override
   public AvpSet getAvps(int avpCode, long vendorId) {
     AvpSet result = new AvpSetImpl();
@@ -130,6 +128,24 @@ class AvpSetImpl implements AvpSet {
       }
     }
     return result;
+  }
+
+  public int getAvpIndex(int avpCode) {
+    for (Avp avp : this.avps) {
+      if (avp.getCode() == avpCode ) {
+        return this.avps.indexOf(avp);
+      }
+    }
+    return -1;
+  }
+
+  public int getAvpIndex(int avpCode, long vendorId) {
+    for (Avp avp : this.avps) {
+      if (avp.getCode() == avpCode && avp.getVendorId() == vendorId) {
+        return this.avps.indexOf(avp);
+      }
+    }
+    return -1;
   }
 
   @Override

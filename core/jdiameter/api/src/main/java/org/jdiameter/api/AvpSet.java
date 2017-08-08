@@ -95,6 +95,21 @@ public interface AvpSet extends Iterable<Avp>, Serializable, Wrapper {
   AvpSet getAvps(int avpCode, long vendorId);
 
   /**
+   * Get position of the first instance of the AVP
+   * @param avpCode code of the Avp
+   * @return index (position) of the first occurrence of the Avp. -1 in case Avp is not found
+   */
+  int getAvpIndex(int avpCode);
+
+  /**
+   * Get position of the first instance of the AVP
+   * @param avpCode code of the Avp
+   * @param vendorId vendorId of the Avp
+   * @return index (position) of the first occurrence of the Avp. -1 in case Avp is not found
+   */
+  int getAvpIndex(int avpCode, long vendorId);
+
+  /**
    * Remove AVPs with avpCode
    * @param avpCode code of Avp
    * @return array of removed Avps instance
