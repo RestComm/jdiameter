@@ -46,7 +46,7 @@ public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
   private transient IPeerTable peerTable = null;
   private transient IRoutingAwareSessionDatasource sessionPersistenceStorage = null;
 
-  private final int idleSessionTimeout;
+  private final long idleSessionTimeout;
   private Serializable idleSessionTimerId = null;
 
   /**
@@ -60,7 +60,7 @@ public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
   public AppRoutingAwareSessionImpl(ISessionDatasource sessionStorage, ISessionFactory sessionFactory, IAppSessionData appSessionData) {
     super(sessionFactory, appSessionData);
     peerTable = sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(IPeerTable.class);
-    idleSessionTimeout = sessionFactory.getContainer().getConfiguration().getIntValue(SessionTimeOut.ordinal(), (Integer)
+    idleSessionTimeout = sessionFactory.getContainer().getConfiguration().getLongValue(SessionTimeOut.ordinal(), (Long)
         SessionTimeOut.defValue()) * 1000;
     if (sessionStorage instanceof IRoutingAwareSessionDatasource) {
       sessionPersistenceStorage = (IRoutingAwareSessionDatasource) sessionStorage;
