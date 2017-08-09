@@ -51,7 +51,7 @@ import org.junit.runners.Parameterized.Parameters;
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
 @RunWith(Parameterized.class)
-public class SLgSessionBasicSLgFlowTest {
+public class SLgSessionBasicFlowTest {
   // TODO: add test on replicated nodes ?
   private ClientSLg clientNode;
   private ServerSLg serverNode1;
@@ -64,7 +64,7 @@ public class SLgSessionBasicSLgFlowTest {
    * // @param node2
    * // @param serverCount
    */
-  public SLgSessionBasicSLgFlowTest(String clientConfigUrl, String serverNode1ConfigURL) throws Exception {
+  public SLgSessionBasicFlowTest(String clientConfigUrl, String serverNode1ConfigURL) throws Exception {
     super();
     this.clientConfigURI = new URI(clientConfigUrl);
     this.serverNode1ConfigURI = new URI(serverNode1ConfigURL);
@@ -201,7 +201,7 @@ public class SLgSessionBasicSLgFlowTest {
     //String replicatedClient = "configurations/functional-slh/replicated-config-client.xml";
     //String replicatedServer1 = "configurations/functional-slh/replicated-config-server-node1.xml";
 
-    Class<SLgSessionBasicSLgFlowTest> t = SLgSessionBasicSLgFlowTest.class;
+    Class<SLgSessionBasicFlowTest> t = SLgSessionBasicFlowTest.class;
     client = t.getClassLoader().getResource(client).toString();
     server1 = t.getClassLoader().getResource(server1).toString();
     //replicatedClient = t.getClassLoader().getResource(replicatedClient).toString();

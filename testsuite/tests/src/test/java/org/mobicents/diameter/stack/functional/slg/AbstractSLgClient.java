@@ -69,7 +69,7 @@ public abstract class AbstractSLgClient extends TBase implements ClientSLgSessio
       sessionFactory.registerAppFacory(ServerSLgSession.class, sLgSessionFactory);
       sessionFactory.registerAppFacory(ClientSLgSession.class, sLgSessionFactory);
 
-      sLgSessionFactory .setClientSessionListener(this);
+      sLgSessionFactory.setClientSessionListener(this);
 
       this.clientSLgSession = ((ISessionFactory) this.sessionFactory).getNewAppSession(this.sessionFactory.getSessionId("xx-SLg-TESTxx"), getApplicationId(),
           ClientSLgSession.class, null);

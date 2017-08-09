@@ -59,7 +59,6 @@ public abstract class AbstractSLgServer extends TBase implements ServerSLgSessio
   // know we support it... ech.
 
   protected ServerSLgSession serverSLgSession;
-  protected ClientSLgSession clientSLgSession;
 
   public void init(InputStream configStream, String clientID) throws Exception {
     try {
@@ -94,6 +93,8 @@ public abstract class AbstractSLgServer extends TBase implements ServerSLgSessio
   public void stop(int disconnectCause) {
     stack.stop(disconnectCause);
   }
+
+  // ------- def methods, to fail :)
 
   public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException,
       RouteException,

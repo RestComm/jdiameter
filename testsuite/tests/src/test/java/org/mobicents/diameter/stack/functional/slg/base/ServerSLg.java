@@ -125,7 +125,7 @@ public class ServerSLg extends AbstractSLgServer {
     Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), false);
 
     if (this.receivedLRA) {
-      fail("Received PLA more than once", null);
+      fail("Received LRA more than once", null);
       return;
     }
     this.receivedLRA = true;
