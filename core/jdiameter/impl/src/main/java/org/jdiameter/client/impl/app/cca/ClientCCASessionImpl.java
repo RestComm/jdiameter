@@ -382,7 +382,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                 if (sf.isSessionPersistenceEnabled()) {
 
                   initSessionPersistenceContext(localEvent.getRequest(), localEvent.getAnswer());
-                  startIdleSessionTimer();
+//                  startIdleSessionTimer();
                 }
               }
               else if (isProvisional(resultCode) || isFailure(resultCode)) {
@@ -436,7 +436,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // New State: PENDING_U
               startTx((JCreditControlRequest) localEvent.getRequest());
               if (sf.isSessionPersistenceEnabled()) {
-                startIdleSessionTimer();
+//                startIdleSessionTimer();
               }
               setState(ClientCCASessionState.PENDING_UPDATE);
               try {
@@ -463,7 +463,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Action: Send CC termination request
               // New State: PENDING_T
               if (sf.isSessionPersistenceEnabled()) {
-                stopIdleSessionTimerTimer();
+//                stopIdleSessionTimerTimer();
               }
               setState(ClientCCASessionState.PENDING_TERMINATION);
               try {
@@ -700,7 +700,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         stopTx();
 
         if (sf.isSessionPersistenceEnabled()) {
-          stopIdleSessionTimerTimer();
+//          stopIdleSessionTimerTimer();
           if (!release) {
             String oldPeer = flushSessionPersistenceContext();
             logger.debug("Session state reset, routing context for peer [{}] was removed from session [{}]", oldPeer, this.getSessionId());
@@ -1165,7 +1165,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // New State: PENDING_U
               context.grantAccessOnTxExpire(this);
               if (sf.isSessionPersistenceEnabled()) {
-                stopIdleSessionTimerTimer();
+//                stopIdleSessionTimerTimer();
               }
               break;
 

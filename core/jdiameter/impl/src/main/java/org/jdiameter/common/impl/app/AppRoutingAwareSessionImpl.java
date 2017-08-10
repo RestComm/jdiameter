@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 
-import static org.jdiameter.client.impl.helpers.Parameters.SessionTimeOut;
+//import static org.jdiameter.client.impl.helpers.Parameters.SessionTimeOut;
 
 /**
  * Routing aware extension of {@link AppSessionImpl} that enables proper diameter session
@@ -46,7 +46,7 @@ public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
   private transient IPeerTable peerTable = null;
   private transient IRoutingAwareSessionDatasource sessionPersistenceStorage = null;
 
-  private final long idleSessionTimeout;
+//  private final long idleSessionTimeout;
   private Serializable idleSessionTimerId = null;
 
   /**
@@ -60,8 +60,8 @@ public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
   public AppRoutingAwareSessionImpl(ISessionDatasource sessionStorage, ISessionFactory sessionFactory, IAppSessionData appSessionData) {
     super(sessionFactory, appSessionData);
     peerTable = sessionFactory.getContainer().getAssemblerFacility().getComponentInstance(IPeerTable.class);
-    idleSessionTimeout = sessionFactory.getContainer().getConfiguration().getLongValue(SessionTimeOut.ordinal(), (Long)
-        SessionTimeOut.defValue()) * 1000;
+//    idleSessionTimeout = sessionFactory.getContainer().getConfiguration().getLongValue(SessionTimeOut.ordinal(), (Long)
+//        SessionTimeOut.defValue()) * 1000;
     if (sessionStorage instanceof IRoutingAwareSessionDatasource) {
       sessionPersistenceStorage = (IRoutingAwareSessionDatasource) sessionStorage;
     }
@@ -116,26 +116,26 @@ public abstract class AppRoutingAwareSessionImpl extends AppSessionImpl {
     }
   }
 
-  /**
-   * Starts maximum session inactivity timer which defines how much time the persistence record
-   * should be kept if there is no request sent within a session.
-   */
-  protected void startIdleSessionTimer() {
-    logger.debug("Scheduling idle session (inactivity) timer equal to [{}] ms", idleSessionTimeout);
-    stopIdleSessionTimerTimer();
-    this.idleSessionTimerId = this.timerFacility.schedule(this.getSessionId(), IDLE_SESSION_TIMER_NAME, idleSessionTimeout);
-  }
-
-  /**
-   * Stops session inactivity timer.
-   */
-  protected void stopIdleSessionTimerTimer() {
-    if (this.idleSessionTimerId != null) {
-      logger.debug("Stopping idle session (inactivity) timer [{}]", this.idleSessionTimerId);
-      timerFacility.cancel(this.idleSessionTimerId);
-      this.idleSessionTimerId = null;
-    }
-  }
+//  /**
+//   * Starts maximum session inactivity timer which defines how much time the persistence record
+//   * should be kept if there is no request sent within a session.
+//   */
+//  protected void startIdleSessionTimer() {
+//    logger.debug("Scheduling idle session (inactivity) timer equal to [{}] ms", idleSessionTimeout);
+//    stopIdleSessionTimerTimer();
+//    this.idleSessionTimerId = this.timerFacility.schedule(this.getSessionId(), IDLE_SESSION_TIMER_NAME, idleSessionTimeout);
+//  }
+//
+//  /**
+//   * Stops session inactivity timer.
+//   */
+//  protected void stopIdleSessionTimerTimer() {
+//    if (this.idleSessionTimerId != null) {
+//      logger.debug("Stopping idle session (inactivity) timer [{}]", this.idleSessionTimerId);
+//      timerFacility.cancel(this.idleSessionTimerId);
+//      this.idleSessionTimerId = null;
+//    }
+//  }
 
   /**
    * Handles expiry of session inactivity timer. Should be called by any subclasses which define
