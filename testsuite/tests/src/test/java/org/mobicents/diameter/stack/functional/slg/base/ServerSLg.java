@@ -67,18 +67,11 @@ public class ServerSLg extends AbstractSLgServer {
   }
 
   public void sendLocationReportRequest() throws Exception {
-    try {
-
-      super.serverSLgSession = this.sessionFactory.getNewAppSession("xx-SLg-TESTxx", getApplicationId(), ServerSLgSession.class, (Object) null);
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      fail(null, e);
-    }
+    super.serverSLgSession = this.sessionFactory.getNewAppSession(this.sessionFactory.getSessionId("xx-SLg-TESTxx"), getApplicationId(), ServerSLgSession.class, (Object) null);
     LocationReportRequest lrr = super.createLRR(super.serverSLgSession);
     this.serverSLgSession.sendLocationReportRequest(lrr);
-    Utils.printMessage(log, super.stack.getDictionary(), lrr.getMessage(), true);
     this.sentLRR = true;
+    Utils.printMessage(log, super.stack.getDictionary(), lrr.getMessage(), true);
   }
 
   /* (non-Javadoc)

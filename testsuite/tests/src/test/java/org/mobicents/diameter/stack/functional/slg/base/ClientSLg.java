@@ -112,15 +112,13 @@ public class ClientSLg extends AbstractSLgClient {
       fail("Received Request with code not used by SLg!. Code[" + request.getCommandCode() + "]", null);
       return null;
     }
-    if (super.clientSLgSession != null) {
+    if (super.clientSLgSession.getSessionId().equals(request.getSessionId())) {
       // do fail?
       fail("Received Request in base listener, not in app specific!" + code, null);
     } else {
       try {
-
         super.clientSLgSession = this.sessionFactory.getNewAppSession(request.getSessionId(), getApplicationId(), ClientSLgSession.class, (Object) null);
         ((NetworkReqListener) this.clientSLgSession).processRequest(request);
-
       } catch (Exception e) {
         e.printStackTrace();
         fail(null, e);

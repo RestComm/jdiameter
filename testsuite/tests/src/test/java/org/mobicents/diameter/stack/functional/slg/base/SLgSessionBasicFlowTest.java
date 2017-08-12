@@ -131,7 +131,7 @@ public class SLgSessionBasicFlowTest {
   }
 
   @Test
-  public void testLocationReportRequestBasicFlow() throws Exception {
+  public void testSLgImmediateAndDeferredBasicFlow() throws Exception {
     try {
       // pain of parameter tests :) ?
       clientNode.sendProvideLocationRequest();
@@ -198,16 +198,16 @@ public class SLgSessionBasicFlowTest {
     String client = "configurations/functional-slg/config-client.xml";
     String server1 = "configurations/functional-slg/config-server-node1.xml";
 
-    //String replicatedClient = "configurations/functional-slh/replicated-config-client.xml";
-    //String replicatedServer1 = "configurations/functional-slh/replicated-config-server-node1.xml";
+    String replicatedClient = "configurations/functional-slg/replicated-config-client.xml";
+    String replicatedServer1 = "configurations/functional-slg/replicated-config-server-node1.xml";
 
     Class<SLgSessionBasicFlowTest> t = SLgSessionBasicFlowTest.class;
     client = t.getClassLoader().getResource(client).toString();
     server1 = t.getClassLoader().getResource(server1).toString();
-    //replicatedClient = t.getClassLoader().getResource(replicatedClient).toString();
-    //replicatedServer1 = t.getClassLoader().getResource(replicatedServer1).toString();
+    replicatedClient = t.getClassLoader().getResource(replicatedClient).toString();
+    replicatedServer1 = t.getClassLoader().getResource(replicatedServer1).toString();
 
-    return Arrays.asList(new Object[][] { { client, server1 }/*, { replicatedClient, replicatedServer1 } */});
+    return Arrays.asList(new Object[][] { { client, server1 }, { replicatedClient, replicatedServer1 }});
   }
 
   private void waitForMessage() {

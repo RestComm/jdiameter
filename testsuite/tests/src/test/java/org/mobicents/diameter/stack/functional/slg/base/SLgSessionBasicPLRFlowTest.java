@@ -180,8 +180,8 @@ public class SLgSessionBasicPLRFlowTest {
     String client = "configurations/functional-slg/config-client.xml";
     String server1 = "configurations/functional-slg/config-server-node1.xml";
 
-    //String replicatedClient = "configurations/functional-slh/replicated-config-client.xml";
-    //String replicatedServer1 = "configurations/functional-slh/replicated-config-server-node1.xml";
+    //String replicatedClient = "configurations/functional-slg/replicated-config-client.xml";
+    //String replicatedServer1 = "configurations/functional-slg/replicated-config-server-node1.xml";
 
     Class<SLgSessionBasicPLRFlowTest> t = SLgSessionBasicPLRFlowTest.class;
     client = t.getClassLoader().getResource(client).toString();
