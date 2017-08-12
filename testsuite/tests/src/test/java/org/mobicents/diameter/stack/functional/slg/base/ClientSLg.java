@@ -116,6 +116,7 @@ public class ClientSLg extends AbstractSLgClient {
       // do fail?
       fail("Received Request in base listener, not in app specific!" + code, null);
     } else {
+      super.clientSLgSession.release();
       try {
         super.clientSLgSession = this.sessionFactory.getNewAppSession(request.getSessionId(), getApplicationId(), ClientSLgSession.class, (Object) null);
         ((NetworkReqListener) this.clientSLgSession).processRequest(request);

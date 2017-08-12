@@ -207,7 +207,7 @@ public class SLgSessionBasicFlowTest {
     replicatedClient = t.getClassLoader().getResource(replicatedClient).toString();
     replicatedServer1 = t.getClassLoader().getResource(replicatedServer1).toString();
 
-    return Arrays.asList(new Object[][] { { client, server1 }, { replicatedClient, replicatedServer1 }});
+    return Arrays.asList(new Object[][] { { client, server1 }, { replicatedClient, replicatedServer1 } });
   }
 
   private void waitForMessage() {
