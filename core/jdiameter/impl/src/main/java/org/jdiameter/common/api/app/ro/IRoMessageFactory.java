@@ -57,6 +57,16 @@ import org.jdiameter.api.ro.events.RoCreditControlRequest;
  */
 public interface IRoMessageFactory {
 
+  /**
+   * Default CC-Session-Failover AVP value - NOT_SUPPORTED(0) according to RFC 4006.
+   */
+  int SESSION_FAILOVER_NOT_SUPPORTED_VALUE = 0;
+
+  /**
+   * CC-Session-Failover AVP value - SUPPORTED(1) according to RFC 4006.
+   */
+  int SESSION_FAILOVER_SUPPORTED_VALUE = 1;
+
   ReAuthRequest createReAuthRequest(Request request);
 
   ReAuthAnswer createReAuthAnswer(Answer answer);

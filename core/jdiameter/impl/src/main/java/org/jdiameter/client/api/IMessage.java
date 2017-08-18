@@ -63,16 +63,6 @@ import org.jdiameter.client.api.controller.IPeer;
 public interface IMessage extends IRequest, IAnswer {
 
   /**
-   * Default CC-Session-Failover AVP value - NOT_SUPPORTED(0) according to RFC 4006.
-   */
-  int SESSION_FAILOVER_NOT_SUPPORTED_VALUE = 0;
-
-  /**
-   * CC-Session-Failover AVP value - SUPPORTED(1) according to RFC 4006.
-   */
-  int SESSION_FAILOVER_SUPPORTED_VALUE = 1;
-
-  /**
    * The message is not sent to the network
    */
   int STATE_NOT_SENT = 0;

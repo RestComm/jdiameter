@@ -370,7 +370,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               setState(ClientRoSessionState.PENDING_INITIAL);
               // RFC 4006: For new credit-control sessions, failover to an alternative
               // credit-control server SHOULD be performed if possible.
-              sessionData.setGatheredCCSF(IMessage.SESSION_FAILOVER_SUPPORTED_VALUE);
+              sessionData.setGatheredCCSF(IRoMessageFactory.SESSION_FAILOVER_SUPPORTED_VALUE);
               try {
                 dispatchEvent(localEvent.getRequest());
               }
@@ -394,7 +394,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
             case RECEIVED_INITIAL_ANSWER:
 
               Message message = localEvent.getAnswer().getMessage();
-              int ccSessionFailover = IMessage.SESSION_FAILOVER_NOT_SUPPORTED_VALUE;
+              int ccSessionFailover = IRoMessageFactory.SESSION_FAILOVER_NOT_SUPPORTED_VALUE;
 
               Avp avpCcSessionFailover = message.getAvps().getAvp(Avp.CC_SESSION_FAILOVER);
               if (avpCcSessionFailover != null) {
@@ -555,7 +555,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
             case RECEIVED_UPDATE_ANSWER:
 
               Message message = localEvent.getAnswer().getMessage();
-              int ccSessionFailover = IMessage.SESSION_FAILOVER_NOT_SUPPORTED_VALUE;
+              int ccSessionFailover = IRoMessageFactory.SESSION_FAILOVER_NOT_SUPPORTED_VALUE;
 
               Avp avpCcSessionFailover = message.getAvps().getAvp(Avp.CC_SESSION_FAILOVER);
               if (avpCcSessionFailover != null) {
@@ -659,7 +659,7 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               //FIXME: Alex broke this, setting back "true" ?
               //setState(ClientRoSessionState.IDLE, false);
               Message message = localEvent.getAnswer().getMessage();
-              int ccSessionFailover = IMessage.SESSION_FAILOVER_NOT_SUPPORTED_VALUE;
+              int ccSessionFailover = IRoMessageFactory.SESSION_FAILOVER_NOT_SUPPORTED_VALUE;
 
               Avp avpCcSessionFailover = message.getAvps().getAvp(Avp.CC_SESSION_FAILOVER);
               if (avpCcSessionFailover != null) {

@@ -41,7 +41,6 @@ import org.jdiameter.api.ro.ServerRoSession;
 import org.jdiameter.api.ro.ServerRoSessionListener;
 import org.jdiameter.api.ro.events.RoCreditControlAnswer;
 import org.jdiameter.api.ro.events.RoCreditControlRequest;
-import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.ISessionFactory;
 import org.jdiameter.client.impl.app.ro.ClientRoSessionImpl;
 import org.jdiameter.client.impl.app.ro.IClientRoSessionData;
@@ -72,7 +71,7 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   // Message timeout value (in milliseconds)
   protected int defaultDirectDebitingFailureHandling = 0;
   protected int defaultCreditControlFailureHandling = 0;
-  protected int defaultCreditControlSessionFailover = IMessage.SESSION_FAILOVER_NOT_SUPPORTED_VALUE;
+  protected int defaultCreditControlSessionFailover = IRoMessageFactory.SESSION_FAILOVER_NOT_SUPPORTED_VALUE;
 
   // its seconds
   protected long defaultValidityTime = 60;
