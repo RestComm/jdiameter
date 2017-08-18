@@ -50,7 +50,7 @@ import org.mobicents.diameter.stack.functional.TBase;
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
-public abstract class AbstractClient extends TBase implements ClientSLhSessionListener {
+public abstract class AbstractSLhClient extends TBase implements ClientSLhSessionListener {
   // NOTE: implementing NetworkReqListener since its required for stack to
   // know we support it... ech.
 

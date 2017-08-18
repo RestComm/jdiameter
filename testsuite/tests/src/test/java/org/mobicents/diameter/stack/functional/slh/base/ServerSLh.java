@@ -32,16 +32,14 @@ import org.jdiameter.api.slh.ServerSLhSession;
 import org.jdiameter.api.slh.events.LCSRoutingInfoRequest;
 import org.jdiameter.api.slh.events.LCSRoutingInfoAnswer;
 import org.mobicents.diameter.stack.functional.Utils;
-import org.mobicents.diameter.stack.functional.slh.AbstractServer;
-
-import java.net.UnknownHostException;
+import org.mobicents.diameter.stack.functional.slh.AbstractSLhServer;
 
 /**
  *
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
-public class Server extends AbstractServer {
+public class ServerSLh extends AbstractSLhServer {
 
   protected boolean receivedRIR;
   protected boolean sentRIA;
@@ -60,7 +58,7 @@ public class Server extends AbstractServer {
 
     this.sentRIA = true;
     request = null;
-    Utils.printMessage(log, super.stack.getDictionary(), ria.getMessage(), true);
+    Utils.printMessage(log, super.stack.getDictionary(), ria.getMessage(), isSentRIA());
   }
 
   /* (non-Javadoc)

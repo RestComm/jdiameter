@@ -52,8 +52,8 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class SLhSessionBasicFlowTest {
   // TODO: add test on replicated nodes ?
-  private Client clientNode;
-  private Server serverNode1;
+  private ClientSLh clientNode;
+  private ServerSLh serverNode1;
   private URI clientConfigURI;
   private URI serverNode1ConfigURI;
 
@@ -72,8 +72,8 @@ public class SLhSessionBasicFlowTest {
   @Before
   public void setUp() throws Exception {
     try {
-      this.clientNode = new Client();
-      this.serverNode1 = new Server();
+      this.clientNode = new ClientSLh();
+      this.serverNode1 = new ServerSLh();
 
       this.serverNode1.init(new FileInputStream(new File(this.serverNode1ConfigURI)), "SERVER1");
       this.serverNode1.start();

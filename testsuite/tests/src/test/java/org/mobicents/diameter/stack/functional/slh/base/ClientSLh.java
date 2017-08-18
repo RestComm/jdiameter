@@ -29,26 +29,26 @@ import org.jdiameter.api.slh.ClientSLhSession;
 import org.jdiameter.api.slh.events.LCSRoutingInfoRequest;
 import org.jdiameter.api.slh.events.LCSRoutingInfoAnswer;
 import org.mobicents.diameter.stack.functional.Utils;
-import org.mobicents.diameter.stack.functional.slh.AbstractClient;
+import org.mobicents.diameter.stack.functional.slh.AbstractSLhClient;
 
 /**
  *
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
-public class Client extends AbstractClient {
+public class ClientSLh extends AbstractSLhClient {
 
   protected boolean receivedRIA;
   protected boolean sentRIR;
 
-  public Client() {
+  public ClientSLh() {
   }
 
   public void sendLCSRoutingInfoRequest() throws Exception {
     LCSRoutingInfoRequest rir = super.createRIR(super.clientSLhSession);
     super.clientSLhSession.sendLCSRoutingInfoRequest(rir);
-    Utils.printMessage(log, super.stack.getDictionary(), rir.getMessage(), true);
     this.sentRIR = true;
+    Utils.printMessage(log, super.stack.getDictionary(), rir.getMessage(), isSentRIR());
   }
 
   /* (non-Javadoc)
@@ -58,7 +58,7 @@ public class Client extends AbstractClient {
   @Override
   public void doLCSRoutingInfoAnswerEvent(ClientSLhSession session, LCSRoutingInfoRequest request, LCSRoutingInfoAnswer answer)
     throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), false);
+    Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), isReceivedRIA());
 
     if (this.receivedRIA) {
       fail("Received RIA more than once", null);

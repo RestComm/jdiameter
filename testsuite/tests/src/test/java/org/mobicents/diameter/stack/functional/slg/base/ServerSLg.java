@@ -63,7 +63,7 @@ public class ServerSLg extends AbstractSLgServer {
 
     this.sentPLA = true;
     provideLocationRequest = null;
-    Utils.printMessage(log, super.stack.getDictionary(), pla.getMessage(), true);
+    Utils.printMessage(log, super.stack.getDictionary(), pla.getMessage(), isSentPLA());
   }
 
   public void sendLocationReportRequest() throws Exception {
@@ -76,7 +76,7 @@ public class ServerSLg extends AbstractSLgServer {
     LocationReportRequest lrr = super.createLRR(super.serverSLgSession);
     this.serverSLgSession.sendLocationReportRequest(lrr);
     this.sentLRR = true;
-    Utils.printMessage(log, super.stack.getDictionary(), lrr.getMessage(), true);
+    Utils.printMessage(log, super.stack.getDictionary(), lrr.getMessage(), isSentLRR());
   }
 
   /* (non-Javadoc)

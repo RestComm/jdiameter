@@ -59,8 +59,8 @@ public class ClientSLg extends AbstractSLgClient {
   public void sendProvideLocationRequest() throws Exception {
     ProvideLocationRequest plr = super.createPLR(super.clientSLgSession);
     super.clientSLgSession.sendProvideLocationRequest(plr);
-    Utils.printMessage(log, super.stack.getDictionary(), plr.getMessage(), true);
     this.sentPLR = true;
+    Utils.printMessage(log, super.stack.getDictionary(), plr.getMessage(), isSentPLR());
   }
 
   public void sendLocationReportAnswer() throws Exception {
@@ -75,7 +75,7 @@ public class ClientSLg extends AbstractSLgClient {
 
     this.sentLRA = true;
     locationReportRequest = null;
-    Utils.printMessage(log, super.stack.getDictionary(), lra.getMessage(), true);
+    Utils.printMessage(log, super.stack.getDictionary(), lra.getMessage(), isSentLRA());
   }
 
   /* (non-Javadoc)
@@ -85,8 +85,8 @@ public class ClientSLg extends AbstractSLgClient {
   @Override
   public void doProvideLocationAnswerEvent(ClientSLgSession session, ProvideLocationRequest request, ProvideLocationAnswer answer)
       throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), false);
 
+    Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), isReceivedPLA());
     if (this.receivedPLA) {
       fail("Received PLA more than once", null);
       return;
