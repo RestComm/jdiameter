@@ -29,15 +29,12 @@ import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.slg.ClientSLgSession;
-import org.jdiameter.api.slg.ServerSLgSession;
 import org.jdiameter.api.slg.events.LocationReportAnswer;
 import org.jdiameter.api.slg.events.LocationReportRequest;
 import org.jdiameter.api.slg.events.ProvideLocationRequest;
 import org.jdiameter.api.slg.events.ProvideLocationAnswer;
 import org.mobicents.diameter.stack.functional.Utils;
 import org.mobicents.diameter.stack.functional.slg.AbstractSLgClient;
-
-import static sun.jdbc.odbc.JdbcOdbcObject.hexStringToByteArray;
 
 /**
  *
@@ -528,7 +525,8 @@ public class ClientSLg extends AbstractSLgClient {
         *[ AVP ]
     If not included, the default value of Periodic-Location-Support-Indicator shall be considered as "NOT_SUPPORTED" (0).
   */
-    byte[] visitedPlmnIdList = hexStringToByteArray("473800");
+    String vPlmnIdList = "473800";
+    byte[] visitedPlmnIdList = vPlmnIdList.getBytes();
     return visitedPlmnIdList;
   }
 

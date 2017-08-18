@@ -150,6 +150,15 @@ public class SLgClientSessionImpl extends SLgSession
               setState(newState); // FIXME: is this ok to be here?
               break;
 
+            case RECEIVE_LRR:
+              this.sessionData.setBuffer((Request) ((AppEvent) event.getData()).getMessage());
+              super.cancelMsgTimer();
+              super.startMsgTimer();
+              newState = SLgSessionState.MESSAGE_SENT_RECEIVED;
+              setState(newState);
+              listener.doLocationReportRequestEvent(this, (LocationReportRequest) event.getData());
+              break;
+
             default:
               logger.error("Invalid Event Type {} for SLg Client Session at state {}.", eventType,
                   sessionData.getSLgSessionState());
@@ -178,15 +187,6 @@ public class SLgClientSessionImpl extends SLgSession
               setState(newState);
               listener.doProvideLocationAnswerEvent(this, (ProvideLocationRequest) localEvent.getRequest(),
                   (ProvideLocationAnswer) localEvent.getAnswer());
-              break;
-
-            case RECEIVE_LRR:
-              this.sessionData.setBuffer((Request) ((AppEvent) event.getData()).getMessage());
-              super.cancelMsgTimer();
-              super.startMsgTimer();
-              newState = SLgSessionState.MESSAGE_SENT_RECEIVED;
-              setState(newState);
-              listener.doLocationReportRequestEvent(this, (LocationReportRequest) event.getData());
               break;
 
             default:

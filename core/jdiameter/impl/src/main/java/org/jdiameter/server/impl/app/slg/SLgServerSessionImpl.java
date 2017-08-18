@@ -121,13 +121,6 @@ public class SLgServerSessionImpl extends SLgSession
               listener.doProvideLocationRequestEvent(this, (ProvideLocationRequest) event.getData());
               break;
 
-            case RECEIVE_LRA:
-              newState = SLgSessionState.TERMINATED;
-              setState(newState);
-              listener.doLocationReportAnswerEvent(this, (LocationReportRequest) localEvent.getRequest(),
-                  (LocationReportAnswer) localEvent.getAnswer());
-              break;
-
             case SEND_MESSAGE:
               super.session.send(((AppEvent) event.getData()).getMessage(), this);
               newState = SLgSessionState.MESSAGE_SENT_RECEIVED;
@@ -145,6 +138,13 @@ public class SLgServerSessionImpl extends SLgSession
             case TIMEOUT_EXPIRES:
               newState = SLgSessionState.TIMEDOUT;
               setState(newState);
+              break;
+
+            case RECEIVE_LRA:
+              newState = SLgSessionState.TERMINATED;
+              setState(newState);
+              listener.doLocationReportAnswerEvent(this, (LocationReportRequest) localEvent.getRequest(),
+                  (LocationReportAnswer) localEvent.getAnswer());
               break;
 
             case SEND_MESSAGE:

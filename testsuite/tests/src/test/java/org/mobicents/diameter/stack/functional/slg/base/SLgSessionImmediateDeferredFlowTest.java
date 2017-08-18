@@ -51,7 +51,7 @@ import org.junit.runners.Parameterized.Parameters;
  * @author <a href="mailto:baranowb@gmail.com"> Bartosz Baranowski </a>
  */
 @RunWith(Parameterized.class)
-public class SLgSessionBasicPLRFlowTest {
+public class SLgSessionImmediateDeferredFlowTest {
   // TODO: add test on replicated nodes ?
   private ClientSLg clientNode;
   private ServerSLg serverNode1;
@@ -64,7 +64,7 @@ public class SLgSessionBasicPLRFlowTest {
    * // @param node2
    * // @param serverCount
    */
-  public SLgSessionBasicPLRFlowTest(String clientConfigUrl, String serverNode1ConfigURL) throws Exception {
+  public SLgSessionImmediateDeferredFlowTest(String clientConfigUrl, String serverNode1ConfigURL) throws Exception {
     super();
     this.clientConfigURI = new URI(clientConfigUrl);
     this.serverNode1ConfigURI = new URI(serverNode1ConfigURL);
@@ -131,13 +131,19 @@ public class SLgSessionBasicPLRFlowTest {
   }
 
   @Test
-  public void testProvideLocationRequestBasicFlow() throws Exception {
+  public void testSLgImmediateAndDeferredBasicFlow() throws Exception {
     try {
       // pain of parameter tests :) ?
       clientNode.sendProvideLocationRequest();
       waitForMessage();
 
       serverNode1.sendProvideLocationAnswer();
+      waitForMessage();
+
+      serverNode1.sendLocationReportRequest();
+      waitForMessage();
+
+      clientNode.sendLocationReportAnswer();
       waitForMessage();
 
     }
@@ -155,6 +161,18 @@ public class SLgSessionBasicPLRFlowTest {
     if (!clientNode.isReceivedPLA()) {
       StringBuilder sb = new StringBuilder("Did not receive PLA! ");
       sb.append("Client ER:\n").append(clientNode.createErrorReport(this.clientNode.getErrors()));
+
+      fail(sb.toString());
+    }
+    if (!clientNode.isReceivedLRR()) {
+      StringBuilder sb = new StringBuilder("Did not receive LRR! ");
+      sb.append("Client ER:\n").append(clientNode.createErrorReport(this.clientNode.getErrors()));
+
+      fail(sb.toString());
+    }
+    if (!serverNode1.isReceivedLRA()) {
+      StringBuilder sb = new StringBuilder("Did not receive LRA! ");
+      sb.append("Server ER:\n").append(serverNode1.createErrorReport(this.serverNode1.getErrors()));
 
       fail(sb.toString());
     }
@@ -180,16 +198,16 @@ public class SLgSessionBasicPLRFlowTest {
     String client = "configurations/functional-slg/config-client.xml";
     String server1 = "configurations/functional-slg/config-server-node1.xml";
 
-    //String replicatedClient = "configurations/functional-slg/replicated-config-client.xml";
-    //String replicatedServer1 = "configurations/functional-slg/replicated-config-server-node1.xml";
+    String replicatedClient = "configurations/functional-slg/replicated-config-client.xml";
+    String replicatedServer1 = "configurations/functional-slg/replicated-config-server-node1.xml";
 
-    Class<SLgSessionBasicPLRFlowTest> t = SLgSessionBasicPLRFlowTest.class;
+    Class<SLgSessionImmediateDeferredFlowTest> t = SLgSessionImmediateDeferredFlowTest.class;
     client = t.getClassLoader().getResource(client).toString();
     server1 = t.getClassLoader().getResource(server1).toString();
-    //replicatedClient = t.getClassLoader().getResource(replicatedClient).toString();
-    //replicatedServer1 = t.getClassLoader().getResource(replicatedServer1).toString();
+    replicatedClient = t.getClassLoader().getResource(replicatedClient).toString();
+    replicatedServer1 = t.getClassLoader().getResource(replicatedServer1).toString();
 
-    return Arrays.asList(new Object[][] { { client, server1 }/*, { replicatedClient, replicatedServer1 } */});
+    return Arrays.asList(new Object[][] { { client, server1 }, { replicatedClient, replicatedServer1 } });
   }
 
   private void waitForMessage() {
