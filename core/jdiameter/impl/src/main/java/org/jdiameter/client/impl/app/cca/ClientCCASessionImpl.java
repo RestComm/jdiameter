@@ -380,9 +380,7 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
                 //Session persistence record shall be created after a peer had answered the
                 //first (initial) request for that session
                 if (sf.isSessionPersistenceEnabled()) {
-
                   initSessionPersistenceContext(localEvent.getRequest(), localEvent.getAnswer());
-//                  startIdleSessionTimer();
                 }
               }
               else if (isProvisional(resultCode) || isFailure(resultCode)) {
@@ -435,9 +433,6 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Action: Send RAA followed by CC update request, start Tx
               // New State: PENDING_U
               startTx((JCreditControlRequest) localEvent.getRequest());
-              if (sf.isSessionPersistenceEnabled()) {
-//                startIdleSessionTimer();
-              }
               setState(ClientCCASessionState.PENDING_UPDATE);
               try {
                 dispatchEvent(localEvent.getRequest());
@@ -462,9 +457,6 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Event: User service terminated
               // Action: Send CC termination request
               // New State: PENDING_T
-              if (sf.isSessionPersistenceEnabled()) {
-//                stopIdleSessionTimerTimer();
-              }
               setState(ClientCCASessionState.PENDING_TERMINATION);
               try {
                 dispatchEvent(localEvent.getRequest());
@@ -700,7 +692,6 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
         stopTx();
 
         if (sf.isSessionPersistenceEnabled()) {
-//          stopIdleSessionTimerTimer();
           if (!release) {
             String oldPeer = flushSessionPersistenceContext();
             logger.debug("Session state reset, routing context for peer [{}] was removed from session [{}]", oldPeer, this.getSessionId());
@@ -1164,9 +1155,6 @@ public class ClientCCASessionImpl extends AppCCASessionImpl implements ClientCCA
               // Action: Grant service to end user
               // New State: PENDING_U
               context.grantAccessOnTxExpire(this);
-              if (sf.isSessionPersistenceEnabled()) {
-//                stopIdleSessionTimerTimer();
-              }
               break;
 
             case CCFH_TERMINATE:

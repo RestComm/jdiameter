@@ -417,7 +417,6 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
                 //the first (initial) request for that session
                 if (sf.isSessionPersistenceEnabled()) {
                   initSessionPersistenceContext(localEvent.getRequest(), localEvent.getAnswer());
-//                  startIdleSessionTimer();
                 }
               }
               else if (retrRequiredErrorCodes.contains(resultCode)) {
@@ -484,9 +483,6 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
               // Action: Send RAA followed by CC update request, start Tx
               // New State: PENDING_U
               startTx(localEvent.getRequest().getMessage());
-              if (sf.isSessionPersistenceEnabled()) {
-//                startIdleSessionTimer();
-              }
               setState(ClientRoSessionState.PENDING_UPDATE);
               try {
                 dispatchEvent(localEvent.getRequest());
@@ -517,9 +513,6 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
 
               // In all cases start Tx in order to assure failover
               startTx(localEvent.getRequest().getMessage());
-              if (sf.isSessionPersistenceEnabled()) {
-//                stopIdleSessionTimerTimer();
-              }
               setState(ClientRoSessionState.PENDING_TERMINATION);
               try {
                 dispatchEvent(localEvent.getRequest());
@@ -844,7 +837,6 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
         stopTx();
 
         if (sf.isSessionPersistenceEnabled()) {
-//          stopIdleSessionTimerTimer();
           if (!release) {
             String oldPeer = flushSessionPersistenceContext();
             logger.debug("Session state reset, routing context for peer [{}] was removed from session [{}]", oldPeer, this.getSessionId());
