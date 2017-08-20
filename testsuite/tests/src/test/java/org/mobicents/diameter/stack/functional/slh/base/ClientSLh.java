@@ -52,7 +52,7 @@ public class ClientSLh extends AbstractSLhClient {
   }
 
   /* (non-Javadoc)
-   * @see org.mobicents.diameter.stack.functional.slh.AbstractImmediateClient#doLCSRoutingInfoAnswerEvent(
+   * @see org.mobicents.diameter.stack.functional.slh.AbstractSLhClient#doLCSRoutingInfoAnswerEvent(
    *    org.jdiameter.api.slh.ClientSLhSession, org.jdiameter.api.slh.events.LCSRoutingInfoRequest, org.jdiameter.api.slh.events.LCSRoutingInfoAnswer)
    */
   @Override
@@ -66,6 +66,10 @@ public class ClientSLh extends AbstractSLhClient {
     }
     this.receivedRIA = true;
   }
+
+  //*********************************************************//
+  //***************** RIR methods ***************************//
+  //*********************************************************//
 
   @Override
   protected String getUserName() {

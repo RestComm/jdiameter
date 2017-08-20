@@ -51,6 +51,7 @@ import org.mobicents.diameter.stack.functional.TBase;
  *
  */
 public abstract class AbstractSLhClient extends TBase implements ClientSLhSessionListener {
+
   // NOTE: implementing NetworkReqListener since its required for stack to
   // know we support it... ech.
 
@@ -116,14 +117,26 @@ public abstract class AbstractSLhClient extends TBase implements ClientSLhSessio
         return this.clientSLhSession;
     }
 
+  // ----------- 3GPP TS 29.173 v14.0.0 reference ----------- //
+/*
+  5.2.1	Send Routing Information for LCS
+  5.2.1.1	General
+  This procedure is used between the GMLC and the HSS.  The procedure is invoked by the GMLC and is used:
+    -	To retrieve routing information for LCS for a specified user from the HSS.
+*/
+
   protected abstract String getUserName();
   protected abstract byte[] getMSISDN();
   protected abstract byte[] getGMLCNumber();
 
-  // ----------- 3GPP TS 29.173 reference
-
   protected LCSRoutingInfoRequest createRIR(ClientSLhSession slhSession) throws Exception {
   /*
+  3GPP TS 29.173 v14.0.0 reference
+  6.2.3	LCS-Routing-Info-Request (RIR) Command
+  The LCS-Routing-Info-Request (RIR) command, indicated by the Command-Code field set to 8388622
+  and the "R" bit set in the Command Flags field, is sent from GMLC to HSS.
+  Message Format:
+
    < LCS-Routing-Info-Request> ::=	< Diameter Header: 8388622, REQ, PXY, 16777291 >
 
 	< Session-Id >

@@ -98,6 +98,11 @@ public class ServerSLh extends AbstractSLhServer {
     this.request = request;
   }
 
+
+  //*********************************************************//
+  //***************** RIA methods ***************************//
+  //*********************************************************//
+
   @Override
   protected String getUserName() {
     // Information Element IMSI Mapped to AVP User-Name

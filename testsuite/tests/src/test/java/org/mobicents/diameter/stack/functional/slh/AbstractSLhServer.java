@@ -118,6 +118,28 @@ public abstract class AbstractSLhServer extends TBase implements ServerSLhSessio
     return this.serverSLhSession;
   }
 
+// ----------- 3GPP TS 29.173 v14.0.0 reference ----------- //
+/*
+  5.2.1	Send Routing Information for LCS
+  5.2.1.1	General
+  This procedure is used between the GMLC and the HSS.  The procedure is invoked by the GMLC and is used:
+    -	To retrieve routing information for LCS for a specified user from the HSS.
+
+  5.2.1.2	Detailed Behaviour of the HSS
+  Upon reception of the Send Routing Info for LCS request, the HSS shall, in the following order:
+  1.	Check whether the requesting GMLC belongs to a network authorized to request UE location information.
+        If not, Experimental-Result shall be set to DIAMETER_ERROR_UNAUTHORIZED_REQUESTING_NETWORK in the
+        Send Routing Information for LCS Response.
+  2.	Check that the User Identity for whom data is asked exists in HSS. If not, Experimental-Result
+        shall be set to DIAMETER_ERROR_USER_UNKNOWN in the Send Routing Information for LCS Response.
+    2a.	If both IMSI and MSISDN are present in the request, check whether they identify the same User.
+        If not, the HSS Result-Code shall be set to DIAMETER_CONTRADICTING_AVPS in the
+        Send Routing Information for LCS Response.
+  3.	Check that there is at least one serving node associated with the targeted user.
+        If not, Experimental-Result shall be set to DIAMETER_ERROR_ABSENT_USER in the
+        Send Routing Information for LCS Response.
+*/
+
   protected abstract String getUserName();
   protected abstract byte[] getMSISDN();
   protected abstract byte[] getLMSI();
@@ -142,11 +164,14 @@ public abstract class AbstractSLhServer extends TBase implements ServerSLhSessio
   protected abstract java.net.InetAddress getPPRAddress();
   protected abstract long getRIAFLags();
 
-  // ----------- 3GPP TS 29.173 reference
-
   public LCSRoutingInfoAnswer createRIA(LCSRoutingInfoRequest rir, long resultCode) throws Exception {
 
 /*
+  3GPP TS 29.173 v14.0.0 reference
+  6.2.4	LCS-Routing-Info-Answer (RIA) Command
+  The LCS-Routing-Info-Answer (RIA) command, indicated by the Command-Code field set to 8388622 and the 'R' bit cleared in the Command Flags field, is sent from HSS to GMLC.
+  Message Format:
+
   < LCS-Routing-Info-Answer> ::=	< Diameter Header: 8388622, PXY, 16777291 >
 
     < Session-Id >

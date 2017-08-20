@@ -28,7 +28,6 @@ import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.Mode;
 import org.jdiameter.api.OverloadException;
-import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
@@ -38,10 +37,7 @@ import org.jdiameter.api.slg.ServerSLgSession;
 import org.jdiameter.api.slg.ServerSLgSessionListener;
 import org.jdiameter.api.slg.events.LocationReportAnswer;
 import org.jdiameter.api.slg.events.LocationReportRequest;
-import org.jdiameter.api.slg.events.ProvideLocationAnswer;
-import org.jdiameter.api.slg.events.ProvideLocationRequest;
 import org.jdiameter.common.impl.app.slg.LocationReportRequestImpl;
-import org.jdiameter.common.impl.app.slg.ProvideLocationAnswerImpl;
 import org.jdiameter.common.impl.app.slg.SLgSessionFactoryImpl;
 import org.mobicents.diameter.stack.functional.TBase;
 
@@ -53,10 +49,27 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
-public abstract class AbstractSLgServer extends TBase implements ServerSLgSessionListener {
+public abstract class AbstractSLgDeferredServer extends TBase implements ServerSLgSessionListener {
 
   // NOTE: implementing NetworkReqListener since its required for stack to
   // know we support it... ech.
+
+/*
+  3GPP TS 23.172 v14.2.0 - Functional stage 2 description of Location Services (LCS).
+  4.4.2	Deferred Location Request
+  Request for location contingent on some current or future events where the response from the LCS Server
+  to the LCS Client may occur some time after the request was sent.
+  4.4.2.1	Types of event (summarized)
+    a)	UE available: Any event in which the MSC/SGSN/MME has established a contact with the UE.
+    b)	Change of Area: An event where the UE enters or leaves a pre-defined geographical area
+        or if the UE is currently within the pre-defined geographical area.
+    c)	Periodic Location: An event where a defined periodic timer expires in the UE
+        and activates a location report or a location request.
+    d)	Motion: An event where the UE moves by more than some predefined linear distance from a previous
+        location. The motion event may be reported one time only, or several times.
+        The motion event report shall contain an indication of the event occurrence.
+        A location estimate may be included in the report if requested by the LCS client.
+*/
 
   protected ServerSLgSession serverSLgSession;
 
@@ -102,11 +115,6 @@ public abstract class AbstractSLgServer extends TBase implements ServerSLgSessio
     fail("Received \"Other\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
-  public void doProvideLocationRequestEvent(ServerSLgSession session, ProvideLocationRequest request) throws InternalException, IllegalDiameterStateException,
-      RouteException, OverloadException {
-    fail("Received \"PLR\" event, request[" + request + "], on session[" + session + "]", null);
-  }
-
   public void doLocationReportAnswerEvent(ServerSLgSession session, LocationReportRequest request, LocationReportAnswer answer) throws InternalException,
       IllegalDiameterStateException, RouteException, OverloadException {
     fail("Received \"LRA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
@@ -126,7 +134,38 @@ public abstract class AbstractSLgServer extends TBase implements ServerSLgSessio
     return this.serverSLgSession;
   }
 
-  // Attributes for Provide Location Answer (PLA)
+  // ----------- 3GPP TS 29.172 v14.1.0 reference ----------- //
+/*
+  6.3	Subscriber Location Report
+  6.3.1	General
+  The Subscriber Location Report operation is used by an MME or SGSN to provide the location of a target UE
+  to a GMLC, when a request for location has been implicitly issued or when a Delayed Location Reporting
+  is triggered after receipt of a request for location for a UE transiently not reachable.
+*/
+
+  // ----------- 3GPP TS 29.172 v14.1.0 reference ----------- //
+/*
+  6.3	Subscriber Location Report
+  6.3.1	General
+  The Subscriber Location Report operation is used by an MME or SGSN to provide the location of a target UE
+  to a GMLC, when a request for location has been implicitly issued or when a Delayed Location Reporting
+  is triggered after receipt of a request for location for a UE transiently not reachable.
+*/
+
+  // Attributes for Location Report Request (LRR)
+  protected abstract String getUserName(); // IE: IMSI
+  protected abstract byte[] getMSISDN();
+  protected abstract String getIMEI();
+  protected abstract String getLCSNameString();
+  protected abstract int getLCSFormatIndicator();
+  protected abstract int getLCSQoSClass();
+  protected abstract long getLSCServiceTypeId();
+  protected abstract long getDeferredLocationType();
+  protected abstract byte[] getLCSReferenceNumber();
+  protected abstract java.net.InetAddress getGMLCAddress();
+  protected abstract long getReportingAmount();
+  protected abstract long getReportingInterval();
+  protected abstract int getLocationEvent();
   protected abstract byte[] getLocationEstimate();
   protected abstract int getAccuracyFulfilmentIndicator();
   protected abstract long getAgeOfLocationEstimate();
@@ -139,6 +178,7 @@ public abstract class AbstractSLgServer extends TBase implements ServerSLgSessio
   protected abstract byte[] getUTRANPositioningData();
   protected abstract byte[] getUTRANGANSSPositioningData();
   protected abstract byte[] getServiceAreaIdentity();
+  protected abstract int getPseudonymIndicator();
   protected abstract byte[] getSGSNNumber();
   protected abstract String getSGSNName();
   protected abstract String getSGSNRealm();
@@ -147,300 +187,12 @@ public abstract class AbstractSLgServer extends TBase implements ServerSLgSessio
   protected abstract byte[] getMSCNumber();
   protected abstract String get3GPPAAAServerName();
   protected abstract long getLCSCapabilitiesSets();
-  protected abstract long getPLAFLags();
-  protected abstract long getCellPortionId();
-  protected abstract String getCivicAddress();
-  protected abstract long getBarometricPressure();
-  protected abstract java.net.InetAddress getGMLCAddress();
-
-  // Attributes for Location Report Request (LRR)
-  protected abstract String getUserName(); // IE: IMSI
-  protected abstract byte[] getMSISDN();
-  protected abstract String getIMEI();
-  protected abstract String getLCSNameString();
-  protected abstract int getLCSFormatIndicator();
-  protected abstract int getLCSQoSClass();
-  protected abstract long getLSCServiceTypeId();
-  protected abstract long getDeferredLocationType();
-  protected abstract byte[] getLCSReferenceNumber();
-  //protected abstract java.net.InetAddress getGMLCAddress();
-  protected abstract long getReportingAmount();
-  protected abstract long getReportingInterval();
-  protected abstract int getLocationEvent();
-  /*protected abstract byte[] getLocationEstimate();
-  protected abstract int getAccuracyFulfilmentIndicator();
-  protected abstract long getAgeOfLocationEstimate();
-  protected abstract byte[] getVelocityEstimate();
-  protected abstract byte[] getEUTRANPositioningData();
-  protected abstract byte[] getECGI();
-  protected abstract byte[] getGERANPositioningData();
-  protected abstract byte[] getGERANGANSSPositioningData();
-  protected abstract byte[] getCellGlobalIdentity();
-  protected abstract byte[] getUTRANPositioningData();
-  protected abstract byte[] getUTRANGANSSPositioningData();
-  protected abstract byte[] getServiceAreaIdentity();*/
-  protected abstract int getPseudonymIndicator();
-  /*protected abstract byte[] getSGSNNumber();
-  protected abstract String getSGSNName();
-  protected abstract String getSGSNRealm();
-  protected abstract String getMMEName();
-  protected abstract String getMMERealm();
-  protected abstract byte[] getMSCNumber();
-  protected abstract String get3GPPAAAServerName();
-  protected abstract long getLCSCapabilitiesSets();*/
   protected abstract long getLRRFLags();
   protected abstract long getTerminationCause();
-  // protected abstract long getCellPortionId();
+  protected abstract long getCellPortionId();
   protected abstract byte[] get1xRTTRCID();
-  /*protected abstract String getCivicAddress();
-  protected abstract long getBarometricPressure();*/
-
-  // ----------- 3GPP TS 29.172 v14.1.0 reference ----------- //
-/*
-  6.2	Provide Subscriber Location
-  6.2.1	General
-  The Provide Subscriber Location operation is used by a GMLC to request the location of a
-  target UE from the MME or SGSN at any time, as part of EPC-MT-LR or PS-MT-LR positioning procedures.
-  The response contains a location estimate of the target UE and other additional information.
-  The Provide Subscriber Location operation is also used by a GMLC to request the location of
-  the target UE from the SGSN or MME at any time, as part of deferred MT-LR procedure.
-  The response contains the acknowledgment of the receipt of the request and other additional information.
-*/
-
-  public ProvideLocationAnswer createPLA(ProvideLocationRequest plr, long resultCode) throws Exception {
-  /*
-  3GPP TS 29.172 v14.1.0 reference
-  7.3.2	Provide-Location-Answer (PLA) Command
-  The Provide-Location-Answer (PLA) command, indicated by the Command-Code field set to 8388620 and
-  the ‘R’ bit cleared in the Command Flags field, is sent by the MME or SGSN to the GMLC in response
-  to the Provide-Location-Request command.
-  Message Format:
-
-   < Provide-Location-Answer > ::=	< Diameter Header: 8388620, PXY, 16777255 >
-	< Session-Id >
-	[ Vendor-Specific-Application-Id ]
-	[ Result-Code ]
-	[ Experimental-Result ]
-	{ Auth-Session-State }
-	{ Origin-Host }
-	{ Origin-Realm }
-	[ Location-Estimate ]
-	[ Accuracy-Fulfilment-Indicator ]
-	[ Age-Of-Location-Estimate]
-	[ Velocity-Estimate ]
-	[ EUTRAN-Positioning-Data]
-	[ ECGI ]
-	[ GERAN-Positioning-Info ]
-	[ Cell-Global-Identity ]
-	[ UTRAN-Positioning-Info ]
-	[ Service-Area-Identity ]
-	[ Serving-Node ]
-	[ PLA-Flags ]
-	[ ESMLC-Cell-Info ]
-	[ Civic-Address ]
-	[ Barometric-Pressure ]
-	*[ Supported-Features ]
-	*[ AVP ]
-	*[ Failed-AVP ]
-	*[ Proxy-Info ]
-	*[ Route-Record ]
-
-  */
-    ProvideLocationAnswer pla = new ProvideLocationAnswerImpl((Request) plr.getMessage(), resultCode);
-
-    AvpSet reqSet = plr.getMessage().getAvps();
-    AvpSet set = pla.getMessage().getAvps();
-    set.removeAvp(Avp.DESTINATION_HOST);
-    set.removeAvp(Avp.DESTINATION_REALM);
-    set.addAvp(reqSet.getAvp(Avp.AUTH_APPLICATION_ID));
-
-    // { Vendor-Specific-Application-Id }
-    if (set.getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
-      AvpSet vendorSpecificApplicationId = set.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-      // 1* [ Vendor-Id ]
-      vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-      // 0*1{ Auth-Application-Id }
-      vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
-    }
-    // [ Result-Code ]
-    // [ Experimental-Result ]
-    // { Auth-Session-State }
-    if (set.getAvp(Avp.AUTH_SESSION_STATE) == null) {
-      set.addAvp(Avp.AUTH_SESSION_STATE, 1);
-    }
-
-    // [ Location-Estimate ]
-    byte[] locationEstimate = getLocationEstimate();
-    if (locationEstimate != null){
-      set.addAvp(Avp.LOCATION_ESTIMATE, locationEstimate, 10415, true, false);
-    }
-
-    // [ Accuracy-Fulfilment-Indicator ]
-    int accuracyFulfilmentIndicator = getAccuracyFulfilmentIndicator();
-    if (accuracyFulfilmentIndicator != -1){
-      set.addAvp(Avp.ACCURACY_FULFILMENT_INDICATOR, accuracyFulfilmentIndicator, 10415, false, false);
-    }
-
-    // [ Age-Of-Location-Estimate ]
-    long ageOfLocationEstimate = getAgeOfLocationEstimate();
-    if (ageOfLocationEstimate != -1){
-      set.addAvp(Avp.AGE_OF_LOCATION_ESTIMATE, ageOfLocationEstimate, 10415, false, false, true);
-    }
-
-    // [ Velocity-Estimate ]
-    byte[] velocityEstimate = getVelocityEstimate();
-    if (velocityEstimate != null){
-      set.addAvp(Avp.VELOCITY_ESTIMATE, velocityEstimate, 10415, false, false);
-    }
-
-    // [ EUTRAN-Positioning-Data ]
-    byte[] eutranPositioningData = getEUTRANPositioningData();
-    if (eutranPositioningData != null){
-      set.addAvp(Avp.EUTRAN_POSITIONING_DATA, eutranPositioningData, 10415, false, false);
-    }
-
-    // [ ECGI ]
-    byte[] ecgi = getECGI();
-    if (ecgi != null){
-      set.addAvp(Avp.ECGI, ecgi, 10415, false, false);
-    }
-
-    // [ GERAN-Positioning-Info ]
-    AvpSet geranPositioningInfo = set.addGroupedAvp(Avp.GERAN_POSITIONING_INFO, 10415, false, false);
-    byte[] geranPositioningData = getGERANPositioningData();
-    byte[] geranGanssPositioningData = getGERANGANSSPositioningData();
-
-    if (geranPositioningData != null){
-      geranPositioningInfo.addAvp(Avp.GERAN_POSITIONING_DATA, geranPositioningData, 10415, false, false);
-    }
-    if (geranGanssPositioningData != null){
-      geranPositioningInfo.addAvp(Avp.GERAN_GANSS_POSITIONING_DATA, geranGanssPositioningData, 10415, false, false);
-    }
-
-    // [ Cell-Global-Identity ]
-    byte[] cellGlobalIdentity = getCellGlobalIdentity();
-    if (cellGlobalIdentity != null){
-      set.addAvp(Avp.CELL_GLOBAL_IDENTITY, cellGlobalIdentity, 10415, false, false);
-    }
-
-    // [ UTRAN-Positioning-Info ]
-    AvpSet utranPositioningInfo = set.addGroupedAvp(Avp.UTRAN_POSITIONING_INFO, 10415, false, false);
-    byte[] utranPositioningData = getUTRANPositioningData();
-    byte[] utranGanssPositioningData = getUTRANGANSSPositioningData();
-
-    if ( utranPositioningData != null){
-      utranPositioningInfo.addAvp(Avp.UTRAN_POSITIONING_DATA, utranPositioningData, 10415, false, false);
-    }
-    if ( utranGanssPositioningData != null){
-      utranPositioningInfo.addAvp(Avp.UTRAN_GANSS_POSITIONING_DATA, utranGanssPositioningData, 10415, false, false);
-    }
-
-    // [ Service-Area-Identity ]
-    byte[] serviceAreaIdentity = getServiceAreaIdentity();
-    if (serviceAreaIdentity != null){
-      set.addAvp(Avp.SERVICE_AREA_IDENTITY, serviceAreaIdentity, 10415, false, false);
-    }
-
-// [ Serving-Node ] IE: Target Serving Node Identity
-/*
-  Serving-Node ::= <AVP header: 2401 10415>
-    [ SGSN-Number ]
-    [ SGSN-Name ]
-    [ SGSN-Realm ]
-    [ MME-Name ]
-    [ MME-Realm ]
-    [ MSC-Number ]
-    [ 3GPP-AAA-Server-Name ]
-    [ LCS-Capabilities-Sets ]
-    [ GMLC-Address ]
-    *[AVP]
-*/
-    AvpSet servingNode = set.addGroupedAvp(Avp.SERVING_NODE, 10415, false, false);
-    byte[] sgsnNumber = getSGSNNumber();
-    String sgsnName= getSGSNName();
-    String sgsnRealm = getSGSNRealm();
-    String mmeName = getMMEName();
-    String mmeRealm = getMMERealm();
-    byte[] mscNumber = getMSCNumber();
-    String tgppAAAServerName= get3GPPAAAServerName();
-    long lcsCapabilitiesSet = getLCSCapabilitiesSets();
-    java.net.InetAddress gmlcAddress = getGMLCAddress();
-
-    if (sgsnNumber != null){
-      servingNode.addAvp(Avp.SGSN_NUMBER, sgsnNumber, 10415, false, false);
-    }
-    if (sgsnName != null){
-      servingNode.addAvp(Avp.SGSN_NAME, sgsnName, 10415, false, false, false);
-    }
-    if (sgsnRealm != null){
-      servingNode.addAvp(Avp.SGSN_REALM, sgsnRealm, 10415, false, false, false);
-    }
-    if (mmeName != null){
-      servingNode.addAvp(Avp.MME_NAME, mmeName, 10415, false, false, false);
-    }
-    if (mmeRealm != null){
-      servingNode.addAvp(Avp.MME_REALM, mmeRealm, 10415, false, false, false);
-    }
-    if (mscNumber != null){
-      servingNode.addAvp(Avp.MSC_NUMBER, mscNumber, 10415, false, false);
-    }
-    if (tgppAAAServerName != null){
-      servingNode.addAvp(Avp.TGPP_AAA_SERVER_NAME, tgppAAAServerName, 10415, false, false, false);
-    }
-    if (lcsCapabilitiesSet != -1){
-      servingNode.addAvp(Avp.LCS_CAPABILITIES_SETS, lcsCapabilitiesSet, 10415, false, false, true);
-    }
-    if (gmlcAddress != null){
-      servingNode.addAvp(Avp.GMLC_ADDRESS, gmlcAddress, 10415, false, false);
-    }
-
-    // [ PLA-Flags ]
-    long plaFlags = getPLAFLags();
-    if (plaFlags != -1){
-      set.addAvp(Avp.PLA_FLAGS, plaFlags, 10415, false, false, true);
-    }
-
-    // [ ESMLC-Cell-Info ]
-/*
-  ESMLC-Cell-Info ::= <AVP header: 2552 10415>
-    [ ECGI ]
-    [ Cell-Portion-ID ]
-    *[ AVP ]
-*/
-    AvpSet esmlcCellInfo = set.addGroupedAvp(Avp.ESMLC_CELL_INFO, 10415, false, false);
-    // ECGI attribute already defined
-    long cellPortionId = getCellPortionId();
-
-    if (ecgi != null){
-      esmlcCellInfo.addAvp(Avp.ECGI, ecgi, 10415, false, false);
-    }
-    if (cellPortionId != -1){
-      esmlcCellInfo.addAvp(Avp.CELL_PORTION_ID, cellPortionId, 10415, false, false, true);
-    }
-
-    // [ Civic-Address ]
-    String civicAddress = getCivicAddress();
-    if (civicAddress != null){
-      set.addAvp(Avp.CIVIC_ADDRESS, civicAddress, 10415, false, false, false);
-    }
-
-    // [ Barometric-Pressure ]
-    long barometricPressure = getBarometricPressure();
-    if (barometricPressure != -1){
-      set.addAvp(Avp.BAROMETRIC_PRESSURE, barometricPressure, 10415, false, false, true);
-    }
-
-    return pla;
-  }
-
-  // ----------- 3GPP TS 29.172 v14.1.0 reference ----------- //
-/*
-  6.3	Subscriber Location Report
-  6.3.1	General
-  The Subscriber Location Report operation is used by an MME or SGSN to provide the location of a target UE
-  to a GMLC, when a request for location has been implicitly issued or when a Delayed Location Reporting
-  is triggered after receipt of a request for location for a UE transiently not reachable.
-*/
+  protected abstract String getCivicAddress();
+  protected abstract long getBarometricPressure();
 
   protected LocationReportRequest createLRR(ServerSLgSession slgSession) throws Exception {
   /*
@@ -786,6 +538,5 @@ for compatibility with OMA MLP and RLP.
 
     return lrr;
   }
-
 
 }

@@ -28,7 +28,6 @@ import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.Mode;
 import org.jdiameter.api.OverloadException;
-import org.jdiameter.api.Request;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
@@ -36,12 +35,9 @@ import org.jdiameter.api.app.AppSession;
 import org.jdiameter.api.slg.ClientSLgSession;
 import org.jdiameter.api.slg.ClientSLgSessionListener;
 import org.jdiameter.api.slg.ServerSLgSession;
-import org.jdiameter.api.slg.events.LocationReportAnswer;
-import org.jdiameter.api.slg.events.LocationReportRequest;
 import org.jdiameter.api.slg.events.ProvideLocationAnswer;
 import org.jdiameter.api.slg.events.ProvideLocationRequest;
 import org.jdiameter.client.api.ISessionFactory;
-import org.jdiameter.common.impl.app.slg.LocationReportAnswerImpl;
 import org.jdiameter.common.impl.app.slg.ProvideLocationRequestImpl;
 import org.jdiameter.common.impl.app.slg.SLgSessionFactoryImpl;
 import org.mobicents.diameter.stack.functional.TBase;
@@ -51,13 +47,21 @@ import java.util.concurrent.TimeUnit;
 
 /**
  *
- *@author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
+ * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
  *
  */
-public abstract class AbstractSLgClient extends TBase implements ClientSLgSessionListener {
+public abstract class AbstractSLgImmediateClient extends TBase implements ClientSLgSessionListener {
 
   // NOTE: implementing NetworkReqListener since its required for stack to
   // know we support it... ech.
+
+/*
+  3GPP TS 23.172 v14.2.0 - Functional stage 2 description of Location Services (LCS).
+  4.4	Types of Location Request
+  4.4.1	Immediate Location Request
+  Request for location where the LCS Server replies immediately to the LCS Client with the
+  current location estimate if this could be obtained.
+*/
 
   protected ClientSLgSession clientSLgSession;
   protected ServerSLgSession serverSLgSession;
@@ -112,11 +116,6 @@ public abstract class AbstractSLgClient extends TBase implements ClientSLgSessio
     fail("Received \"PLA\" event, request[" + request + "], answer[" + answer + "], on session[" + session + "]", null);
   }
 
-  public void doLocationReportRequestEvent(ClientSLgSession session, LocationReportRequest request) throws InternalException, IllegalDiameterStateException,
-      RouteException, OverloadException {
-    fail("Received \"LRR\" event, request[" + request + "], on session[" + session + "]", null);
-  }
-
   // ----------- conf parts
 
   public String getSessionId() {
@@ -131,6 +130,7 @@ public abstract class AbstractSLgClient extends TBase implements ClientSLgSessio
     this.serverSLgSession = stack.getSession(sessionId, ServerSLgSession.class);
   }
 
+
   // ----------- 3GPP TS 29.172 v14.1.0 reference ----------- //
 /*
   6.2	Provide Subscriber Location
@@ -141,9 +141,9 @@ public abstract class AbstractSLgClient extends TBase implements ClientSLgSessio
   The Provide Subscriber Location operation is also used by a GMLC to request the location of
   the target UE from the SGSN or MME at any time, as part of deferred MT-LR procedure.
   The response contains the acknowledgment of the receipt of the request and other additional information.
-*/
 
-  // Attributes for Provide Location Request (PLR) and Location Report Answer (LRA)
+*/
+  // Attributes for Provide Location Request (PLR)
   protected abstract int getSLgLocationType();
   protected abstract String getUserName(); // IE: IMSI
   protected abstract byte[] getMSISDN();
@@ -470,130 +470,6 @@ public abstract class AbstractSLgClient extends TBase implements ClientSLgSessio
     }
 
     return plr;
-  }
-
-  // ----------- 3GPP TS 29.172 v14.1.0 reference ----------- //
-/*
-  6.3	Subscriber Location Report
-  6.3.1	General
-  The Subscriber Location Report operation is used by an MME or SGSN to provide the location of a target UE
-  to a GMLC, when a request for location has been implicitly issued or when a Delayed Location Reporting
-  is triggered after receipt of a request for location for a UE transiently not reachable.
-*/
-
-  // Attributes for Location Report Answer (LRA)
-  protected abstract long getLRAFLags();
-/* Following Commented attributes already defined earlier for PLR
-  protected abstract java.net.InetAddress getGMLCAddress();
-  protected abstract byte[] getVisitedPLMNId();
-  protected abstract int getPrioritizedListIndicator();
-  protected abstract int getPeriodicLocationSupportIndicator();
-  protected abstract byte[] getLCSReferenceNumber();
-*/
-
-
-  public LocationReportAnswer createLRA(LocationReportRequest lrr, long resultCode) throws Exception {
-  /*
-  3GPP TS 29.172 v14.1.0 reference
-  7.3.4	Location-Report-Answer (LRA) Command
-  The Location-Report-Answer (LRA) command, indicated by the Command-Code field set to 8388621 and
-  the ‘R’ bit cleared in the Command Flags field, is sent by the GMLC to the MME or SGSN in response
-  to the Location-Report-Request command.
-
-  Message Format
-  < Location-Report-Answer > ::=	< Diameter Header: 8388621, PXY, 16777255>
-
-    < Session-Id >
-	[ Vendor-Specific-Application-Id ]
-	[ Result-Code ]
-	[ Experimental-Result ]
-	{ Auth-Session-State }
-	{ Origin-Host }
-	{ Origin-Realm }
-	[ GMLC-Address ]
-	[ LRA-Flags ]
-	[ Reporting-PLMN-List ]
-	[ LCS-Reference-Number ]
-	*[ Supported-Features ]
-	*[ AVP ]
-	*[ Failed-AVP ]
-	*[ Proxy-Info ]
-	*[ Route-Record ]
-
-  */
-    LocationReportAnswer lra = new LocationReportAnswerImpl((Request) lrr.getMessage(), resultCode);
-
-    AvpSet reqSet = lrr.getMessage().getAvps();
-    AvpSet set = lra.getMessage().getAvps();
-    set.removeAvp(Avp.DESTINATION_HOST);
-    set.removeAvp(Avp.DESTINATION_REALM);
-    set.addAvp(reqSet.getAvp(Avp.AUTH_APPLICATION_ID));
-
-    // { Vendor-Specific-Application-Id }
-    if (set.getAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID) == null) {
-      AvpSet vendorSpecificApplicationId = set.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-      // 1* [ Vendor-Id ]
-      vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-      // 0*1{ Auth-Application-Id }
-      vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
-    }
-    // [ Result-Code ]
-    // [ Experimental-Result ]
-    // { Auth-Session-State }
-    if (set.getAvp(Avp.AUTH_SESSION_STATE) == null) {
-      set.addAvp(Avp.AUTH_SESSION_STATE, 1);
-    }
-
-    //[ GMLC-Address ]
-    java.net.InetAddress gmlcAddress = getGMLCAddress();
-    if (gmlcAddress != null){
-      set.addAvp(Avp.GMLC_ADDRESS, gmlcAddress, 10415, false, false);
-    }
-
-    // [ LRA-Flags ]
-    long lraFlags = getLRAFLags();
-    if (lraFlags != -1){
-      set.addAvp(Avp.LRA_FLAGS, lraFlags, 10415, false, false, true);
-    }
-
-    //[ Reporting-PLMN-List ]
-/*
-  Reporting-PLMN-List ::= <AVP header: 2543 10415>
-    1*20{ PLMN-ID-List }
-    [ Prioritized-List-Indicator ]
-    *[ AVP ]
-
-  PLMN-ID-List ::= <AVP header: 2544 10415>
-    { Visited-PLMN-Id }
-    [ Periodic-Location-Support-Indicator ]
-    *[ AVP ]
-*/
-    AvpSet reportingPLMNList = set.addGroupedAvp(Avp.REPORTING_PLMN_LIST, 10415, false, false);
-    int prioritizedListIndicator = getPrioritizedListIndicator();
-    AvpSet plmnIdList = set.addGroupedAvp(Avp.PLMN_ID_LIST, 10415, false, false);
-    byte[] visitedPLMNId = getVisitedPLMNId();
-    int periodicLocationSupportIndicator = getPeriodicLocationSupportIndicator();
-
-    if (prioritizedListIndicator != -1){
-      reportingPLMNList.addAvp(Avp.PRIORITIZED_LIST_INDICATOR, prioritizedListIndicator, 10415, false, false);
-    }
-    if (plmnIdList != null){
-      reportingPLMNList.addAvp(plmnIdList);
-    }
-    if (visitedPLMNId != null){
-      plmnIdList.addAvp(Avp.VISITED_PLMN_ID, visitedPLMNId, 10415, false, false);
-    }
-    if (periodicLocationSupportIndicator != -1){
-      plmnIdList.addAvp(Avp.PERIODIC_LOCATION_SUPPORT_INDICATOR, periodicLocationSupportIndicator, 10415, false, false);
-    }
-
-    // [ LCS-Reference-Number ]
-    byte[] lcsReferenceNumber = getLCSReferenceNumber();
-    if (lcsReferenceNumber != null){
-      set.addAvp(Avp.LCS_REFERENCE_NUMBER, lcsReferenceNumber, 10415, true, false);
-    }
-
-    return lra;
   }
 
 

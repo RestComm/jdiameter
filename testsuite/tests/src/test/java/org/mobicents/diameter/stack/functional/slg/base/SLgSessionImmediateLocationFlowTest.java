@@ -53,8 +53,8 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class SLgSessionImmediateLocationFlowTest {
   // TODO: add test on replicated nodes ?
-  private ClientSLg clientNode;
-  private ServerSLg serverNode1;
+  private ClientSLgPLR clientNode;
+  private ServerSLgPLA serverNode1;
   private URI clientConfigURI;
   private URI serverNode1ConfigURI;
 
@@ -73,8 +73,8 @@ public class SLgSessionImmediateLocationFlowTest {
   @Before
   public void setUp() throws Exception {
     try {
-      this.clientNode = new ClientSLg();
-      this.serverNode1 = new ServerSLg();
+      this.clientNode = new ClientSLgPLR();
+      this.serverNode1 = new ServerSLgPLA();
 
       this.serverNode1.init(new FileInputStream(new File(this.serverNode1ConfigURI)), "SERVER1");
       this.serverNode1.start();
